@@ -1,0 +1,26 @@
+# Unit tests only. The e2e suite needs a 30 MB Pyodide download and a browser
+# (DECISIONS_LOG 0.17, 0.20); running it here would dominate the workflow for a
+# suite that mostly guards the runtime, so it stays a local and manual step
+# until Phase 4 sets up hosting and there is a reason to pay for it.
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  unit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install
+        run: python -m pip install --upgrade pip pytest numpy pandas matplotlib
+
+      - name: Run unit tests
+        run: python -m pytest tests/test_tutorial_tools.py
