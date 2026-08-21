@@ -411,3 +411,18 @@ escaped inside it, reusing the class Phase 0's stylesheet already defined for
 this and never had anything to apply it to. The runtime upgrades that in place,
 so the code is readable with JavaScript off and highlighted with it on.
 *Cost to change: small.*
+
+**1.10 — Pages and Actions confirmed; the build stays Python for now.**
+Josh confirmed GitHub Pages plus Actions as the hosting, said a local preview
+would be good, and pointed at his FAQ repository's markdown editor as the model
+for dewlab's. The first is what REPO_AND_EDITOR.md already specified and what
+Phase 4 builds; the third is a starting point rather than a decision.
+
+The second does not, on its own, force a JavaScript rewrite. `python3 build.py`
+followed by a static server is a local preview today. What Python cannot give is
+a preview *inside* a hosted editor, or on a machine with no Python at all — and
+whether either is worth roughly 400 lines and 49 tests is a Phase 4 question, not
+one Phases 2 and 3 need answered. Left open deliberately, so nothing in between
+quietly assumes it.
+*Cost to change: rises with everything built on `build.py`. Decide before the
+editor is built.*
