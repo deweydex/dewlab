@@ -2,7 +2,8 @@
  *
  * Owns three things on a generated tutorial page:
  *   1. the texture panel (theme/font/size/width/link colour -> CSS variables),
- *   2. the CodeMirror editors for `exec` cells,
+ *   2. the CodeMirror editors for `exec` cells, and read-only CodeMirror over
+ *      the illustrative blocks build.py marked as `pre.dl-static`,
  *   3. booting Pyodide and running a cell's code.
  *
  * Deliberately thin on rendering: everything a cell produces is turned into
@@ -14,7 +15,7 @@
  * navigation (Phase 3) are not here yet.
  */
 
-import { createCodeEditor, setEditorTheme } from "./vendor/codemirror.bundle.js";
+import { createCodeEditor, createReadOnlyCode, setEditorTheme } from "./vendor/codemirror.bundle.js";
 
 /* ------------------------------------------------------------------ config */
 
@@ -327,15 +328,55 @@ async function runCell(cell) {
   }
 }
 
+/* ------------------------------------------------- illustrative code, maths */
+
+const readOnlyBlocks = [];
+
+/* An untagged fence. build.py leaves the escaped source inside <pre><code>, so
+ * this is an upgrade of something already readable rather than the only way the
+ * code ever appears — with JavaScript off, the page still shows it. */
+function highlightIllustrativeCode() {
+  const dark = isDarkNow();
+  for (const pre of document.querySelectorAll("pre.dl-static")) {
+    const code = pre.querySelector("code");
+    if (!code) continue;
+    const source = code.textContent.replace(/\n$/, "");
+    const language = pre.dataset.lang || "";
+    pre.textContent = "";
+    readOnlyBlocks.push(createReadOnlyCode(pre, source, { dark, language }));
+  }
+}
+
+/* KaTeX is fetched only when the manifest says the page has maths — 266 KB that
+ * a prose-and-code tutorial never pays for (DECISIONS_LOG 1.8). Each span holds
+ * its own source TeX, which is both the fallback and the input. */
+async function renderMaths(manifest) {
+  const spans = document.querySelectorAll(".dl-math");
+  if (!manifest.math || spans.length === 0) return;
+  let renderMath;
+  try {
+    ({ renderMath } = await import("./vendor/katex.bundle.js"));
+  } catch (err) {
+    console.error("dewlab: KaTeX failed to load; maths stays as source TeX", err);
+    return;
+  }
+  for (const span of spans) {
+    renderMath(span, span.textContent, span.classList.contains("dl-math-display"));
+  }
+}
+
 /* ------------------------------------------------------------------ start */
 
 const currentManifest = readManifest();
 
 initTexture((dark) => {
   for (const cell of cells) setEditorTheme(cell.editor, dark);
+  for (const block of readOnlyBlocks) setEditorTheme(block, dark);
 });
 
 buildCells(currentManifest);
+highlightIllustrativeCode();
+const mathsRendered = renderMaths(currentManifest);
 
 if (cells.length === 0) {
   /* A prose-only tutorial is a normal tutorial, not a special case
@@ -351,7 +392,11 @@ if (cells.length === 0) {
 globalThis.dewlab = {
   version: PYODIDE_VERSION,
   cells,
-  ready: () => (cells.length === 0 ? Promise.resolve() : ensureBooted(currentManifest)),
+  ready: () =>
+    Promise.all([
+      mathsRendered,
+      cells.length === 0 ? Promise.resolve() : ensureBooted(currentManifest),
+    ]),
   runCell: (id) => {
     const cell = cells.find((c) => c.id === id);
     if (!cell) throw new Error(`no cell "${id}"`);

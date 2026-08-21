@@ -86,3 +86,30 @@ export function setEditorTheme(editor, dark) {
   const view = editor.view;
   view.dispatch({ effects: view._dewlabTheme.reconfigure(themeOf(dark)) });
 }
+
+/* Illustrative code — an untagged fence — gets the same highlighting as a live
+ * cell, from the same theme, so the two never drift apart visually. It is not
+ * an editor: no gutter, no cursor, no history, and the document cannot change.
+ */
+export function createReadOnlyCode(parent, doc, { dark = false, language = "python" } = {}) {
+  const themeCompartment = new Compartment();
+  const view = new EditorView({
+    parent,
+    state: EditorState.create({
+      doc,
+      extensions: [
+        EditorState.readOnly.of(true),
+        EditorView.editable.of(false),
+        highlightSpecialChars(),
+        ...(language === "python" ? [python()] : []),
+        themeCompartment.of(themeOf(dark)),
+        baseTheme,
+        EditorView.lineWrapping,
+      ],
+    }),
+  });
+  view._dewlabTheme = themeCompartment;
+  /* Same shape as createCodeEditor's return, so setEditorTheme works on both
+   * and the texture panel does not need to know which kind it is holding. */
+  return { view, destroy: () => view.destroy() };
+}

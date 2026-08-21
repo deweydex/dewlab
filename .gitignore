@@ -8,3 +8,7 @@
 # Vendor toolchain. assets/vendor/ IS committed; what builds it is not.
 /vendor-src/node_modules/
 /vendor-src/package-lock.json
+
+# Python bytecode.
+__pycache__/
+*.py[cod]

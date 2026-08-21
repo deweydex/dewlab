@@ -232,7 +232,16 @@ class TestOutsideACell:
 
 # --------------------------------------------------------------- tables
 
-pd = pytest.importorskip("pandas")
+# Imported at module level rather than through pytest.importorskip, which would
+# skip this whole file — all 61 tests reported as one skip, which reads as a
+# pass. tutorial_tools imports pandas lazily, so everything that does not touch
+# a DataFrame still runs on a machine without it.
+try:
+    import pandas as pd
+except ImportError:  # pragma: no cover - exercised only where pandas is absent
+    pd = None
+
+needs_pandas = pytest.mark.skipif(pd is None, reason="pandas is not installed")
 
 
 @pytest.fixture()
@@ -240,6 +249,7 @@ def frame():
     return pd.DataFrame({"country": ["IE", "ES", "JP"], "value": [1, 2, 3]})
 
 
+@needs_pandas
 class TestTables:
     def test_dataframe_renders_as_a_table(self, cell, frame):
         tt._render_value(frame)
@@ -281,9 +291,15 @@ class TestTables:
         assert "DataFrame" in detail
 
 
-np = pytest.importorskip("numpy")
+try:
+    import numpy as np
+except ImportError:  # pragma: no cover - exercised only where numpy is absent
+    np = None
+
+needs_numpy = pytest.mark.skipif(np is None, reason="numpy is not installed")
 
 
+@needs_numpy
 class TestArrays:
     def test_equal_arrays_pass(self):
         assert tt._compare(np.array([1, 2, 3]), np.array([1, 2, 3]), None)[0]

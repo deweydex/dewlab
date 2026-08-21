@@ -1,0 +1,5 @@
+# What build.py needs. Not what a student needs — nothing here reaches the
+# browser; the page's own dependencies are vendored in assets/vendor/ and
+# loaded from Pyodide at runtime.
+Markdown>=3.5
+PyYAML>=6.0

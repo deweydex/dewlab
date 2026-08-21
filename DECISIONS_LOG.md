@@ -306,3 +306,108 @@ against both the light and the dark page background — slightly less contrast
 than a theme-matched ink at its best, and never wrong. The plotted data keeps
 whatever colours the student's code chose.
 *Cost to change: small.*
+
+---
+
+## Phase 1 — Build script v1
+
+**1.1 — `build.py` depends on Python-Markdown and PyYAML.**
+DECISIONS.md names markdown-it plus markdown-it-texmath as the reference
+toolchain, which is JavaScript; BUILD_PLAN.md and REPO_AND_EDITOR.md put
+`build.py` at the repository root, which is Python. Rather than pull Node into
+the build for the prose half, the converter is Python-Markdown with the `extra`,
+`sane_lists` and `toc` extensions, and frontmatter is parsed with PyYAML. Both
+are pure Python, build-time only, and pinned loosely in `requirements-build.txt`
+— nothing here reaches a student's browser. The one thing this loses is the
+texmath half of that toolchain; see 1.5.
+*Cost to change: moderate. Swapping the converter means re-checking the prose
+output, not rewriting the cell or link handling, which do not go through it.*
+
+**1.2 — `exec` fences are lifted out before markdown conversion, not after.**
+Each one is replaced by an HTML comment placeholder, the remaining prose goes
+through the converter, and the cell markup is substituted back in. Handing
+`python exec` to the markdown library as an info string and trying to catch it
+in a fence-handling extension is the other route; it means fighting the library
+for control of the one construct dewlab most needs to be exact about. Doing the
+split first means a cell's Python is never seen by the markdown parser at all,
+so nothing in it can be reinterpreted as markup.
+*Cost to change: large. It is the shape of the whole converter.*
+
+**1.3 — Built pages mirror the source tree: `site/tutorials/<module>/<slug>.html`.**
+`/site/` was already the output directory named in `.gitignore` at the end of
+Phase 0. Mirroring `tutorials/<module>/` rather than flattening keeps the
+built tree legible against the source, and means a new module folder needs no
+build change. Cross-tutorial links are computed with `os.path.relpath`, so a
+link between two tutorials in the same module comes out as a bare filename
+rather than a walk up to the site root and back down.
+*Cost to change: small, but Phase 3's navigation and Phase 4's Pages deploy
+will both assume this layout once written.*
+
+**1.4 — A dead cross-link fails the build; a missing `alt` fails it too.**
+CONTENT_AND_FILE_ARCHITECTURE.md asks for a failure "or at minimum a loud
+warning" on an unresolved link; a warning in a CI log is a warning nobody reads,
+so it is an error. The same treatment answers OPEN_QUESTIONS.md 33 for images:
+an `<img>` with no `alt` attribute at all stops the build, while an explicit
+`alt=""` passes, which is how a decorative image is meant to be marked. Anchors
+are checked as well as slugs, and a cell id counts as an anchor.
+*Cost to change: trivial to downgrade to warnings, and a bad idea.*
+
+**1.5 — Math is not rendered yet, and nothing in Phase 1 touches `$`.**
+DECISIONS.md settles KaTeX rendered at build time, and `assets/vendor/` carries
+KaTeX's CSS but no KaTeX JavaScript — so the markup has to be produced by the
+build, and there is no client-side fallback. Phase 1's brief does not include
+math, so the converter leaves `$…$` alone as literal text rather than guessing
+at a mechanism. The question of how a Python build script produces KaTeX markup
+is in `QUESTIONS.md`.
+*Cost to change: none yet — this is deferred, not decided.*
+
+**1.6 — CI runs the unit tests and a full build; the e2e suite stays manual.**
+`.github/workflows/tests.yml` runs both unit modules and then `build.py --clean`,
+so a change that breaks the build fails the pull request even if every unit test
+passes. The e2e tests need a 30 MB Pyodide download and a browser, which is not
+worth paying on every push before Phase 4 exists.
+*Cost to change: small — the e2e job is a handful of lines whenever it earns
+its place.*
+
+**1.7 — The two `pytest.importorskip` calls became per-class `skipif` marks.**
+Both sat at module level in `tests/test_tutorial_tools.py`, so a machine without
+pandas skipped the entire file and reported "1 skipped" — indistinguishable from
+a pass at a glance, and about to become CI's problem. The guards now sit on the
+two classes that need the libraries: 49 tests run and 12 skip visibly where
+pandas and numpy are absent.
+*Cost to change: none, it should not change.*
+
+**1.8 — Maths renders in the browser, from marked spans, with KaTeX vendored.**
+Josh settled that student-side parsing is not a cost worth avoiding, which
+removes the reason DECISIONS.md gave for build-time rendering. That leaves 0.19
+deciding it: `assets/vendor/` is committed precisely so neither CI nor an author
+previewing locally needs Node, and calling Node from `build.py` to render maths
+would undo exactly that. So KaTeX is bundled into `assets/vendor/katex.bundle.js`
+(266 KB) and the runtime imports it dynamically, only on pages the manifest
+flags as containing maths.
+
+`build.py` still owns finding the maths. It lifts `$…$` and `$$…$$` out before
+the markdown converter runs — otherwise `$a_i + b_j$` comes back with the
+subscripts turned into emphasis — and emits a `<span class="dl-math">` holding
+the source TeX. That span is the input KaTeX renders from and the fallback if it
+never loads, so a reader with JavaScript off sees the TeX rather than a gap.
+KaTeX's auto-render contrib script is deliberately unused: the build already
+knows where every maths span is, so there is nothing for a delimiter scan to
+find that is not already marked.
+*Cost to change: moderate. Moving to build-time rendering later means a Node
+step in `build.py` and in CI, and nothing else — the marking is already done.*
+
+**1.9 — Illustrative code is highlighted by a read-only CodeMirror, not a second
+highlighter.**
+An untagged fence had no highlighting at all; only `exec` cells did. Pygments at
+build time was the obvious alternative and was rejected: it means a second
+syntax theme to keep in step with the CodeMirror pair the texture panel already
+switches (0.26, DECISIONS.md "Code cell theme"), and two themes drift. The same
+`createReadOnlyCode` view is used instead — same theme compartment, so one
+texture change repaints live cells and illustrative blocks together.
+
+`build.py` emits `<pre class="dl-static" data-lang="…"><code>` with the source
+escaped inside it, reusing the class Phase 0's stylesheet already defined for
+this and never had anything to apply it to. The runtime upgrades that in place,
+so the code is readable with JavaScript off and highlighted with it on.
+*Cost to change: small.*
