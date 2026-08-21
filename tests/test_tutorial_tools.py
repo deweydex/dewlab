@@ -5,7 +5,7 @@ place of the DOM, which is what makes this possible without a browser. Anything
 that genuinely needs Pyodide — running a cell, `load_csv`, widget event
 handlers — is covered by the e2e test instead.
 
-    python3 -m pytest dewlab/tests -q
+    python3 -m pytest tests -q
 """
 
 from __future__ import annotations

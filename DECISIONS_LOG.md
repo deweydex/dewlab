@@ -228,7 +228,7 @@ after.
 
 ### Repository
 
-**0.27 — Built inside `everlearning/dewlab/`, not its own repo. Needs a decision.**
+**0.27 — Built inside `everlearning/dewlab/`, then moved here. Resolved.**
 REPO_AND_EDITOR.md wants a standalone repo with GitHub Pages, and there is no
 `deweydex/dewlab` yet. This session's GitHub access is scoped to four existing
 repositories and cannot create a fifth (`create_repository` returns 403), so
@@ -238,7 +238,16 @@ root. `git subtree split -P dewlab` extracts it with its history intact once
 the repo exists.
 Phase 4 (Pages deployment) cannot be done from here at all. Nothing before it
 is blocked.
-*Cost to change: small if done before Phase 4, and it has to be done by then.*
+
+`deweydex/dewlab` now exists, and that is what this repository is. The subtree
+split ran as described: every file arrived byte-identical, `dewlab/` is the
+root, and the single Phase 0 commit is preserved rather than squashed. The
+everlearning copy is left where it is for now — deleting it there is a separate
+change against that repository, not part of the move.
+
+Phase 4 is unblocked: Pages can be enabled on this repo whenever Phase 1
+produces something to deploy.
+*Resolved. No remaining cost.*
 
 ---
 

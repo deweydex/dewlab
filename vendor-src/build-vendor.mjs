@@ -1,4 +1,4 @@
-/* Builds dewlab/assets/vendor/ from the pinned packages in package.json.
+/* Builds assets/vendor/ from the pinned packages in package.json.
  *
  * The output is committed to the repo. That is deliberate: GitHub Actions runs
  * build.py and nothing else, and an author previewing a tutorial locally
