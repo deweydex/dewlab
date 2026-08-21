@@ -376,3 +376,38 @@ a pass at a glance, and about to become CI's problem. The guards now sit on the
 two classes that need the libraries: 49 tests run and 12 skip visibly where
 pandas and numpy are absent.
 *Cost to change: none, it should not change.*
+
+**1.8 — Maths renders in the browser, from marked spans, with KaTeX vendored.**
+Josh settled that student-side parsing is not a cost worth avoiding, which
+removes the reason DECISIONS.md gave for build-time rendering. That leaves 0.19
+deciding it: `assets/vendor/` is committed precisely so neither CI nor an author
+previewing locally needs Node, and calling Node from `build.py` to render maths
+would undo exactly that. So KaTeX is bundled into `assets/vendor/katex.bundle.js`
+(266 KB) and the runtime imports it dynamically, only on pages the manifest
+flags as containing maths.
+
+`build.py` still owns finding the maths. It lifts `$…$` and `$$…$$` out before
+the markdown converter runs — otherwise `$a_i + b_j$` comes back with the
+subscripts turned into emphasis — and emits a `<span class="dl-math">` holding
+the source TeX. That span is the input KaTeX renders from and the fallback if it
+never loads, so a reader with JavaScript off sees the TeX rather than a gap.
+KaTeX's auto-render contrib script is deliberately unused: the build already
+knows where every maths span is, so there is nothing for a delimiter scan to
+find that is not already marked.
+*Cost to change: moderate. Moving to build-time rendering later means a Node
+step in `build.py` and in CI, and nothing else — the marking is already done.*
+
+**1.9 — Illustrative code is highlighted by a read-only CodeMirror, not a second
+highlighter.**
+An untagged fence had no highlighting at all; only `exec` cells did. Pygments at
+build time was the obvious alternative and was rejected: it means a second
+syntax theme to keep in step with the CodeMirror pair the texture panel already
+switches (0.26, DECISIONS.md "Code cell theme"), and two themes drift. The same
+`createReadOnlyCode` view is used instead — same theme compartment, so one
+texture change repaints live cells and illustrative blocks together.
+
+`build.py` emits `<pre class="dl-static" data-lang="…"><code>` with the source
+escaped inside it, reusing the class Phase 0's stylesheet already defined for
+this and never had anything to apply it to. The runtime upgrades that in place,
+so the code is readable with JavaScript off and highlighted with it on.
+*Cost to change: small.*

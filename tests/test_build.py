@@ -286,3 +286,89 @@ class TestFrontmatter:
 class TestBuildingNothing:
     def test_an_empty_tutorials_folder_builds_nothing_and_does_not_fail(self, repo):
         assert b.build() == []
+
+
+class TestMaths:
+    def test_inline_maths_is_marked_and_survives_markdown(self, repo):
+        write(repo, "The term $a_i + b_j$ matters.\n")
+        b.build()
+        page = built(repo)
+        assert '<span class="dl-math">a_i + b_j</span>' in page
+        assert "<em>" not in page  # the underscores would otherwise become emphasis
+
+    def test_display_maths_gets_its_own_class(self, repo):
+        write(repo, "$$x^2$$\n")
+        b.build()
+        assert '<span class="dl-math dl-math-display">x^2</span>' in built(repo)
+
+    def test_the_source_tex_stays_in_the_page_as_a_fallback(self, repo):
+        write(repo, r"Here: $\frac{1}{3}$." + "\n")
+        b.build()
+        assert r"\frac{1}{3}" in built(repo)
+
+    def test_currency_is_not_mistaken_for_maths(self, repo):
+        write(repo, "It cost $5 or $6 depending on the day.\n")
+        b.build()
+        page = built(repo)
+        assert "dl-math" not in page
+        assert "$5 or $6" in page
+
+    def test_an_escaped_dollar_stays_literal(self, repo):
+        write(repo, r"A round \$99 exactly." + "\n")
+        b.build()
+        page = built(repo)
+        assert "$99" in page
+        assert "dl-math" not in page
+
+    def test_maths_inside_a_fence_is_left_alone(self, repo):
+        write(repo, "```python\ncost = '$5 and $6'\n```\n")
+        b.build()
+        assert "dl-math" not in built(repo)
+
+    def test_the_manifest_flags_a_page_with_maths(self, repo):
+        write(repo, "Some $x$ here.\n")
+        b.build()
+        assert manifest(built(repo))["math"] is True
+
+    def test_a_page_without_maths_carries_no_flag(self, repo):
+        write(repo, "No maths at all.\n")
+        b.build()
+        assert "math" not in manifest(built(repo))
+
+    def test_tex_is_escaped_into_the_markup(self, repo):
+        write(repo, "$a < b$\n")
+        b.build()
+        page = built(repo)
+        assert "a &lt; b" in page
+
+
+class TestIllustrativeCode:
+    def test_an_untagged_fence_is_marked_for_highlighting(self, repo):
+        write(repo, "```python\ntotal = 1\n```\n")
+        b.build()
+        assert '<pre class="dl-static" data-lang="python"><code>total = 1</code></pre>' in built(repo)
+
+    def test_a_fence_with_no_language_still_renders(self, repo):
+        write(repo, "```\nplain text\n```\n")
+        b.build()
+        page = built(repo)
+        assert '<pre class="dl-static"><code>plain text</code></pre>' in page
+
+    def test_illustrative_code_is_escaped(self, repo):
+        write(repo, "```python\nprint('<b>hi</b>')\n```\n")
+        b.build()
+        page = built(repo)
+        assert "&lt;b&gt;hi&lt;/b&gt;" in page
+        assert "<b>hi</b>" not in page
+
+    def test_it_carries_no_run_button(self, repo):
+        write(repo, "```python\ntotal = 1\n```\n")
+        b.build()
+        assert "dl-btn-run" not in built(repo)
+
+    def test_markdown_cannot_reinterpret_what_is_inside_it(self, repo):
+        write(repo, "```python\nname_with_underscores = 1\n```\n")
+        b.build()
+        page = built(repo)
+        assert "name_with_underscores" in page
+        assert "<em>" not in page

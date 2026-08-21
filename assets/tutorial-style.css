@@ -475,3 +475,11 @@ p code, li code {
 
 /* KaTeX display math may be wider than the measure. */
 .katex-display { overflow-x: auto; overflow-y: hidden; padding: 0.2rem 0; }
+
+/* A maths span holds its own source TeX until KaTeX replaces it, and keeps
+   holding it if KaTeX never loads — so this has to read acceptably either way. */
+.dl-math { font-family: var(--dl-mono); font-size: 0.92em; }
+.dl-math .katex { font-family: KaTeX_Main, var(--dl-font-family); font-size: 1.09em; }
+.dl-math-display { display: block; margin: 1.4rem 0; text-align: center; }
+.dl-math-display .katex { font-size: 1.15em; }
+.dl-math-error { color: var(--dl-error-fg); background: var(--dl-error-bg); }

@@ -27,8 +27,22 @@ await build({
   legalComments: "none",
 });
 
-/* KaTeX ships the stylesheet the built pages use; the maths itself is rendered
- * at build time by build.py, so no KaTeX JavaScript reaches a student. */
+/* KaTeX: the stylesheet every built page links, plus a bundle of the renderer
+ * itself, which the runtime imports only on pages that contain maths. Josh
+ * settled that student-side rendering is fine (DECISIONS_LOG 1.8), and doing it
+ * here rather than from build.py keeps the property this whole directory exists
+ * for: neither CI nor an author previewing locally needs Node. */
+await build({
+  entryPoints: [join(here, "katex-entry.js")],
+  outfile: join(outDir, "katex.bundle.js"),
+  bundle: true,
+  format: "esm",
+  minify: true,
+  sourcemap: false,
+  target: ["es2020"],
+  legalComments: "none",
+});
+
 const katex = join(here, "node_modules", "katex", "dist");
 await cp(join(katex, "katex.min.css"), join(outDir, "katex.min.css"));
 
@@ -39,5 +53,5 @@ for (const file of fonts.filter((f) => f.endsWith(".woff2"))) {
   await cp(join(katex, "fonts", file), join(outDir, "fonts", file));
 }
 
-console.log(`vendor/ rebuilt: codemirror.bundle.js, katex.min.css, ${
+console.log(`vendor/ rebuilt: codemirror.bundle.js, katex.bundle.js, katex.min.css, ${
   fonts.filter((f) => f.endsWith(".woff2")).length} fonts`);

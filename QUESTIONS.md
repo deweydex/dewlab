@@ -38,35 +38,6 @@ complete answer.
 
 ## Open
 
-**1 — How should `build.py` render math?**
-
-DECISIONS.md settles KaTeX, rendered at build time rather than in the student's
-browser, and names markdown-it-texmath as the toolchain. That toolchain is
-JavaScript and `build.py` is Python. `assets/vendor/` carries KaTeX's stylesheet
-but no KaTeX JavaScript, so there is no client-side fallback to lean on either —
-whatever produces the markup has to run during the build.
-
-Three ways out, in rough order of how much they cost. Shell out to Node from
-`build.py`, using the KaTeX already pinned in `vendor-src/` — keeps the settled
-toolchain exactly, at the price of Node becoming a build dependency for CI and
-for any author previewing locally. Add KaTeX's JavaScript to the vendor bundle
-and render in the browser after all — cheapest to build, but it reverses the
-"no client-side LaTeX parsing cost for students" reasoning in DECISIONS.md.
-Or find a Python LaTeX-to-HTML renderer that targets KaTeX's markup, which I
-have not surveyed and would want to before recommending.
-
-Shipped meanwhile: nothing. Phase 1's brief does not include math, so the
-converter passes `$…$` through untouched as literal text. No tutorial written so
-far contains any, and none should until this is settled, because a tutorial
-written against the wrong mechanism has to be rewritten rather than rebuilt.
-
-Cost to change: low now, higher later. Whichever way this goes, it is a change
-to `build.py`'s rendering path and to `vendor-src/`, not to the cell or link
-handling.
-
-Blocks: any Mathematics for IT content, which is a quarter of the year-one
-modules. Nothing in Phases 2 or 3.
-
 **2 — Are the two sample tutorials meant to stay?**
 
 Phase 1 needed one hand-written tutorial to test the converter end to end, so
@@ -83,6 +54,64 @@ does not care and no test depends on their content.
 
 Blocks: nothing.
 
+**3 — Should the toolchain move to JavaScript, and should the editor be hosted?**
+
+Josh asked how `build.py` runs without Python on his machine, whether the editor
+could be hosted so he can edit remotely through GitHub, and said that doing it
+all in JavaScript so no machine needs Python would be ideal.
+
+The direct answer first, because it may dissolve most of the question. Python is
+never needed on a student's machine — they get built HTML and a Python that runs
+inside their browser. It is needed in GitHub Actions, which has it already, and
+on an author's machine only for previewing a build locally. So a hosted editor
+that commits markdown to GitHub and lets Actions build already satisfies "no
+Python on my machine", with no rewrite at all. What it does not give is an
+instant preview: the round trip becomes commit, wait for Actions, reload.
+
+That is the real fork, and it is yours: is a fast local preview worth rewriting
+`build.py` in JavaScript for? If it is, the case is decent — Node is already a
+repository dependency for `vendor-src/`, so a JavaScript build consolidates the
+toolchain rather than adding to it, and the same code could then render a live
+preview inside a hosted editor. If it is not, `build.py` stays as it is and the
+editor is a separate piece of work.
+
+A hosted editor is the larger change of the two regardless. REPO_AND_EDITOR.md
+specifies a *local* GUI on Milkdown; hosting it means a GitHub-authenticated web
+application, which is a different thing to build and to secure, and it is not in
+any of the five phases.
+
+Shipped meanwhile: `build.py` in Python, as Phase 1 specified, with 49 tests
+covering its rules. Nothing about this question blocks Phases 2 or 3, and the
+rules are the part that survives a port — the parsing, the link checking, the
+manifest contract — so the work is not lost either way.
+
+Cost to change: a rewrite of roughly 400 lines and its tests. Higher the longer
+Phases 2 and 3 build on top of it, which is a reason to decide before Phase 3
+rather than after.
+
+Blocks: nothing yet. It should be settled before the editor is built, and
+ideally before Phase 3.
+
 ## Answered
 
-*Nothing yet.*
+**1 — How should `build.py` render math?** *(answered 21 Aug)*
+
+Josh: there is no need to keep parsing off students' machines; build-time via an
+existing JavaScript tool called from `build.py` if that is clean, otherwise a
+separate JavaScript file is fine.
+
+Done the second way, and 0.19 is why rather than convenience: the vendor bundle
+is committed so that neither CI nor an author previewing locally needs Node, and
+shelling out to Node from `build.py` would have undone that for every build.
+KaTeX is now bundled at `assets/vendor/katex.bundle.js` and imported by the
+runtime only on pages the manifest flags as containing maths. `build.py` finds
+and marks the maths; the browser renders it. Recorded as DECISIONS_LOG 1.8.
+
+Josh also asked, in the same exchange, whether Pyodide could do it. It could,
+but it would be the most expensive option available: a prose-and-maths tutorial
+currently never boots Pyodide at all (0.16), and making one load a Python
+runtime to render `$x^2$` costs far more than KaTeX's 266 KB.
+
+And: syntax highlighting on ordinary markdown code blocks, which he called
+essential. Those had none — only `exec` cells were highlighted. They now get a
+read-only CodeMirror from the same theme as the live cells. Recorded as 1.9.

@@ -7,6 +7,12 @@ directives into the setup code they name, resolve cross-tutorial links to real
 relative hrefs and fail on any that do not resolve, then render the result into
 assets/shell.html.
 
+Maths and illustrative code are lifted out of the source before the markdown
+converter ever sees them, for the same reason cells are: `$a_i$` would otherwise
+come back with the subscript turned into emphasis. Both are marked for the
+runtime to finish — KaTeX for the maths, a read-only CodeMirror for the code —
+rather than rendered here (DECISIONS_LOG 1.8).
+
 The markup this emits for a cell, and the manifest it writes into the page, are
 the contract the runtime reads (DECISIONS_LOG 0.23). dev/make_harness.py wrote
 the same markup by hand for Phase 0.
@@ -51,6 +57,14 @@ ID_RE = re.compile(r'\bid="([^"]+)"')
 IMG_RE = re.compile(r"<img\b[^>]*>", re.IGNORECASE)
 ALT_RE = re.compile(r"\balt\s*=", re.IGNORECASE)
 
+# Maths, matched only against prose — every fence is already out of the way by
+# the time these run. Display first so $$…$$ is never read as two inline spans.
+# Inline maths may not span a line, and may not open or close against a space,
+# which is what keeps "it cost $5 or $6" out of it.
+DISPLAY_MATH_RE = re.compile(r"\$\$(?P<tex>.+?)\$\$", re.DOTALL)
+INLINE_MATH_RE = re.compile(r"\$(?!\s)(?P<tex>[^$\n]+?)(?<!\s)\$")
+ESCAPED_DOLLAR = "\x00dldollar\x00"
+
 
 class BuildError(Exception):
     """Something in the source is wrong. The build stops and says where."""
@@ -64,11 +78,26 @@ class Cell:
 
 
 @dataclass
+class CodeBlock:
+    """An untagged fence: read-only, illustrative, no Run button."""
+
+    language: str
+    code: str
+
+
+@dataclass
+class Math:
+    tex: str
+    display: bool
+
+
+@dataclass
 class Tutorial:
     path: Path
     meta: dict
     cells: list[Cell]
     body_html: str
+    has_math: bool = False
     anchors: set[str] = field(default_factory=set)
 
     @property
@@ -150,16 +179,25 @@ def parse_cell(body: str, path: Path) -> Cell:
     return Cell(id=header["id"], hint=header.get("hint") or None, code=code)
 
 
-def extract_cells(body: str, path: Path) -> tuple[str, list[Cell]]:
-    """Pull exec fences out, leaving a comment placeholder markdown will keep."""
+def extract_blocks(body: str, path: Path) -> tuple[str, list[Cell], list[CodeBlock]]:
+    """Pull every fence out, leaving a comment placeholder markdown will keep.
+
+    An `exec` fence becomes a cell; any other fence becomes an illustrative,
+    read-only block. Both leave the source before the markdown converter runs,
+    so nothing inside either can be reinterpreted as markup.
+    """
     cells: list[Cell] = []
+    blocks: list[CodeBlock] = []
 
     def one(match: re.Match) -> str:
         info = match.group("info").strip().split()
-        if "exec" not in info:
-            return match.group(0)
-        cells.append(parse_cell(match.group("body"), path))
-        return f"{match.group('indent')}<!--dewlab-cell-{len(cells) - 1}-->"
+        indent = match.group("indent")
+        if "exec" in info:
+            cells.append(parse_cell(match.group("body"), path))
+            return f"{indent}<!--dewlab-cell-{len(cells) - 1}-->"
+        language = info[0] if info else ""
+        blocks.append(CodeBlock(language=language, code=match.group("body").strip("\n")))
+        return f"{indent}<!--dewlab-code-{len(blocks) - 1}-->"
 
     rewritten = FENCE_RE.sub(one, body)
     seen: set[str] = set()
@@ -167,7 +205,29 @@ def extract_cells(body: str, path: Path) -> tuple[str, list[Cell]]:
         if cell.id in seen:
             fail(path, f"two exec cells share the id {cell.id!r}")
         seen.add(cell.id)
-    return rewritten, cells
+    return rewritten, cells, blocks
+
+
+def extract_math(body: str) -> tuple[str, list[Math]]:
+    """Lift $…$ and $$…$$ out, leaving a token markdown will not touch.
+
+    The placeholder is a bare alphanumeric word on purpose: an HTML comment
+    works for a block-level fence but not mid-sentence, where markdown's inline
+    pass can reach it.
+    """
+    found: list[Math] = []
+    body = body.replace("\\$", ESCAPED_DOLLAR)
+
+    def take(display: bool):
+        def one(match: re.Match) -> str:
+            found.append(Math(tex=match.group("tex").strip(), display=display))
+            return f"dlmath{len(found) - 1}z"
+
+        return one
+
+    body = DISPLAY_MATH_RE.sub(take(True), body)
+    body = INLINE_MATH_RE.sub(take(False), body)
+    return body.replace(ESCAPED_DOLLAR, "$"), found
 
 
 # ----------------------------------------------------------------- rendering
@@ -199,17 +259,45 @@ def render_cell(cell: Cell) -> str:
     )
 
 
+def render_code_block(block: CodeBlock) -> str:
+    """Illustrative code. The runtime swaps in a read-only CodeMirror over it.
+
+    The escaped source stays in the markup rather than travelling in the
+    manifest, so a reader with no JavaScript still sees the code, correctly
+    escaped, instead of an empty box.
+    """
+    lang = html.escape(block.language, quote=True)
+    attr = f' data-lang="{lang}"' if lang else ""
+    return f'<pre class="dl-static"{attr}><code>{html.escape(block.code)}</code></pre>'
+
+
+def render_math(item: Math) -> str:
+    """A marked span. KaTeX replaces its contents in the browser.
+
+    Until then — and permanently, without JavaScript — the span holds the
+    source TeX, which is a far better fallback than a blank gap.
+    """
+    classes = "dl-math dl-math-display" if item.display else "dl-math"
+    return f'<span class="{classes}">{html.escape(item.tex)}</span>'
+
+
 def to_html(body: str) -> str:
     converter = markdown.Markdown(extensions=["extra", "sane_lists", "toc"])
     return converter.convert(body)
 
 
-def place_cells(page_html: str, cells: list[Cell]) -> str:
+def place_blocks(
+    page_html: str, cells: list[Cell], blocks: list[CodeBlock], maths: list[Math]
+) -> str:
     for index, cell in enumerate(cells):
         placeholder = f"<!--dewlab-cell-{index}-->"
         if placeholder not in page_html:
             raise BuildError(f"cell {cell.id!r} was lost during markdown conversion")
         page_html = page_html.replace(placeholder, render_cell(cell))
+    for index, block in enumerate(blocks):
+        page_html = page_html.replace(f"<!--dewlab-code-{index}-->", render_code_block(block))
+    for index, item in enumerate(maths):
+        page_html = page_html.replace(f"dlmath{index}z", render_math(item))
     return page_html
 
 
@@ -248,10 +336,18 @@ def resolve_links(tutorial: Tutorial, registry: dict[str, Tutorial]) -> str:
 
 def load(path: Path) -> Tutorial:
     meta, body = split_frontmatter(path.read_text(), path)
-    stripped, cells = extract_cells(body, path)
-    body_html = place_cells(to_html(stripped), cells)
+    stripped, cells, blocks = extract_blocks(body, path)
+    stripped, maths = extract_math(stripped)
+    body_html = place_blocks(to_html(stripped), cells, blocks, maths)
     anchors = set(ID_RE.findall(body_html)) | {c.id for c in cells}
-    return Tutorial(path=path, meta=meta, cells=cells, body_html=body_html, anchors=anchors)
+    return Tutorial(
+        path=path,
+        meta=meta,
+        cells=cells,
+        body_html=body_html,
+        has_math=bool(maths),
+        anchors=anchors,
+    )
 
 
 def write(tutorial: Tutorial, shell: str, body_html: str) -> Path:
@@ -263,6 +359,10 @@ def write(tutorial: Tutorial, shell: str, body_html: str) -> Path:
         "dataBase": f"{up}data/",
         "cells": [{"id": c.id, "hint": c.hint, "code": c.code} for c in tutorial.cells],
     }
+    if tutorial.has_math:
+        # The runtime fetches the 266 KB KaTeX bundle only when this is set, so
+        # a tutorial with no maths never pays for it.
+        manifest["math"] = True
     packages = tutorial.meta.get("packages")
     if packages:
         manifest["packages"] = list(packages)
