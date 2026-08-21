@@ -1,0 +1,9 @@
+// The planning packet, kept verbatim as the specification this build works
+// from. These are source documents, not repo prose: they are not reformatted
+// to satisfy lint rules, so the two rules their formatting trips are turned
+// off here and here only, on top of the repo-wide config.
+{
+  "extends": "../../.markdownlint.jsonc",
+  "MD040": false, // fenced blocks without a language
+  "MD046": false  // indented and fenced code blocks mixed in one file
+}

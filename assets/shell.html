@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{TITLE}} — dewlab</title>
+
+<!-- Version metadata the Phase 2 loader compares saved progress against
+     (VERSIONING_AND_PROGRESS.md). Written here by build.py from frontmatter. -->
+<meta name="tutorial-version" content="{{VERSION}}">
+<meta name="tutorial-slug" content="{{SLUG}}">
+<meta name="tutorial-module" content="{{MODULE}}">
+<meta name="tutorial-year" content="{{YEAR}}">
+<meta name="tutorial-series" content="{{SERIES}}">
+
+<link rel="stylesheet" href="{{ASSET_BASE}}vendor/katex.min.css">
+<link rel="stylesheet" href="{{ASSET_BASE}}tutorial-style.css">
+
+<script>
+/* Apply saved texture preferences before first paint, so a reader who chose
+   dark doesn't get a white flash on every page of the series. Kept inline and
+   tiny on purpose; the panel itself lives in tutorial-runtime.js. */
+(function () {
+  try {
+    var s = JSON.parse(localStorage.getItem("dewlab:texture") || "{}");
+    var r = document.documentElement;
+    if (s.theme && s.theme !== "system") r.setAttribute("data-theme", s.theme);
+    if (s.font && s.font !== "serif") r.setAttribute("data-font", s.font);
+    if (s.size) r.style.setProperty("--dl-font-size", s.size + "px");
+    if (s.width) r.style.setProperty("--dl-line-width", s.width + "rem");
+    if (s.link) r.style.setProperty("--dl-link", s.link);
+  } catch (e) { /* private mode, blocked storage: fall through to defaults */ }
+})();
+</script>
+</head>
+
+<body>
+<div class="dl-page">
+
+  <header class="dl-masthead">
+    <a class="dl-wordmark" href="{{ROOT_BASE}}index.html">dewlab</a>
+    <span class="dl-crumbs">{{MODULE}} · {{YEAR}}</span>
+    <button type="button" class="dl-texture-toggle" id="dl-texture-toggle"
+            aria-expanded="false" aria-controls="dl-texture">texture</button>
+  </header>
+
+  <!-- Phase 3 fills these. Empty until then. -->
+  <nav class="dl-nav dl-nav-top">{{NAV_PREV_NEXT}}</nav>
+
+  <div class="dl-status" id="dl-status" role="status" aria-live="polite" hidden></div>
+
+  <main id="dl-body">
+{{BODY}}
+  </main>
+
+  <nav class="dl-nav dl-nav-bottom">{{NAV_PREV_NEXT}}</nav>
+
+</div>
+
+<div class="dl-texture" id="dl-texture" hidden>
+  <h2>Texture</h2>
+
+  <div class="dl-texture-row">
+    <span>Theme</span>
+    <div class="dl-seg" data-texture="theme">
+      <button type="button" data-value="system">auto</button>
+      <button type="button" data-value="light">light</button>
+      <button type="button" data-value="dark">dark</button>
+    </div>
+  </div>
+
+  <div class="dl-texture-row">
+    <span>Font</span>
+    <div class="dl-seg" data-texture="font">
+      <button type="button" data-value="serif">serif</button>
+      <button type="button" data-value="sans">sans</button>
+      <button type="button" data-value="mono">mono</button>
+    </div>
+  </div>
+
+  <div class="dl-texture-row">
+    <span>Size</span>
+    <input type="range" id="dl-texture-size" min="15" max="24" step="1" aria-label="Text size">
+  </div>
+
+  <div class="dl-texture-row">
+    <span>Width</span>
+    <input type="range" id="dl-texture-width" min="26" max="60" step="1" aria-label="Line width">
+  </div>
+
+  <div class="dl-texture-row">
+    <span>Links</span>
+    <input type="color" id="dl-texture-link" aria-label="Link colour">
+  </div>
+
+  <button type="button" class="dl-texture-reset" id="dl-texture-reset">reset to defaults</button>
+</div>
+
+<!-- Cell source and page metadata, JSON-encoded so Python code containing
+     any HTML-significant character survives the round trip untouched. -->
+<script type="application/json" id="dewlab-manifest">{{MANIFEST_JSON}}</script>
+<script type="module" src="{{ASSET_BASE}}tutorial-runtime.js"></script>
+</body>
+</html>

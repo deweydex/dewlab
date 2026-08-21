@@ -1,0 +1,10 @@
+# Build output. Generated fresh on push and deployed to Pages, never committed.
+/site/
+/dev/harness/
+
+# Local Pyodide for the e2e tests. Fetched with dev/fetch_pyodide.py, ~30 MB.
+/dev/pyodide/
+
+# Vendor toolchain. assets/vendor/ IS committed; what builds it is not.
+/vendor-src/node_modules/
+/vendor-src/package-lock.json

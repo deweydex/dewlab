@@ -1,0 +1,477 @@
+/* dewlab tutorial house style.
+ *
+ * Navy/orange/Georgia, extending the existing teaching-materials identity
+ * (DECISIONS.md, "Palette and texture"). Everything a reader can retune from
+ * the texture panel is a custom property on :root, so the panel only ever
+ * writes variables and never touches rules.
+ *
+ * Prose stays borderless serif; exec cells get a subtle tint and border so the
+ * page structure is scannable without color-blocking the reading surface
+ * (DECISIONS.md, "Cell visual treatment").
+ */
+
+/* ---------------------------------------------------------------- tokens */
+
+:root {
+  /* Fixed brand hues. These are the identity, not reader preferences. */
+  --dl-navy: #1b2a4a;
+  --dl-orange: #d4692a;
+
+  /* Reader-tunable, written by the texture panel. */
+  --dl-font-family: Georgia, "Iowan Old Style", "Times New Roman", serif;
+  --dl-font-size: 18px;
+  --dl-line-width: 34rem;
+  --dl-link: var(--dl-orange);
+
+  /* Light palette. The dark block below redefines only these. */
+  --dl-bg: #fdfcfa;
+  --dl-fg: #1a1a1a;
+  --dl-muted: #5f6b7a;
+  --dl-rule: #e2ddd5;
+  --dl-heading: var(--dl-navy);
+  --dl-cell-bg: #f6f4f0;
+  --dl-cell-border: #ddd7cd;
+  --dl-output-bg: #fbfaf8;
+  --dl-error-fg: #9b2226;
+  --dl-error-bg: #fdf0ef;
+  --dl-pass-fg: #1f6b3f;
+  --dl-pass-bg: #edf7f0;
+  --dl-panel-bg: #ffffff;
+  --dl-shadow: rgba(27, 42, 74, 0.14);
+
+  --dl-mono: "SF Mono", "Cascadia Mono", Menlo, Consolas, monospace;
+}
+
+:root[data-theme="dark"] {
+  --dl-bg: #14181f;
+  --dl-fg: #e6e3dd;
+  --dl-muted: #98a2b3;
+  --dl-rule: #2a3140;
+  --dl-heading: #b9c8e6;
+  --dl-cell-bg: #1b2129;
+  --dl-cell-border: #2f3743;
+  --dl-output-bg: #171c24;
+  --dl-error-fg: #f2999b;
+  --dl-error-bg: #2a1a1c;
+  --dl-pass-fg: #86d6a5;
+  --dl-pass-bg: #16261d;
+  --dl-panel-bg: #1b2129;
+  --dl-shadow: rgba(0, 0, 0, 0.5);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --dl-bg: #14181f;
+    --dl-fg: #e6e3dd;
+    --dl-muted: #98a2b3;
+    --dl-rule: #2a3140;
+    --dl-heading: #b9c8e6;
+    --dl-cell-bg: #1b2129;
+    --dl-cell-border: #2f3743;
+    --dl-output-bg: #171c24;
+    --dl-error-fg: #f2999b;
+    --dl-error-bg: #2a1a1c;
+    --dl-pass-fg: #86d6a5;
+    --dl-pass-bg: #16261d;
+    --dl-panel-bg: #1b2129;
+    --dl-shadow: rgba(0, 0, 0, 0.5);
+  }
+}
+
+/* Font choices offered by the texture panel. */
+:root[data-font="sans"] {
+  --dl-font-family: "Helvetica Neue", Inter, system-ui, -apple-system, sans-serif;
+}
+:root[data-font="mono"] {
+  --dl-font-family: var(--dl-mono);
+}
+
+/* ------------------------------------------------------------ page frame */
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--dl-bg);
+  color: var(--dl-fg);
+  font-family: var(--dl-font-family);
+  font-size: var(--dl-font-size);
+  line-height: 1.62;
+  -webkit-text-size-adjust: 100%;
+}
+
+.dl-page {
+  max-width: var(--dl-line-width);
+  margin: 0 auto;
+  padding: 2rem 1.25rem 6rem;
+}
+
+/* Wide things — tables, plots, code — may exceed the reading measure. They
+ * scroll inside their own box; the page body never scrolls sideways. */
+.dl-page > * { min-width: 0; }
+
+/* --------------------------------------------------------------- masthead */
+
+.dl-masthead {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1rem;
+  align-items: baseline;
+  justify-content: space-between;
+  border-bottom: 2px solid var(--dl-navy);
+  padding-bottom: 0.6rem;
+  margin-bottom: 2rem;
+}
+
+.dl-wordmark {
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--dl-heading);
+  text-decoration: none;
+  font-size: 1rem;
+}
+.dl-wordmark::after {
+  content: "";
+  display: inline-block;
+  width: 0.4em;
+  height: 0.4em;
+  margin-left: 0.35em;
+  border-radius: 50%;
+  background: var(--dl-orange);
+}
+
+.dl-crumbs {
+  color: var(--dl-muted);
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* ------------------------------------------------------------ prose blocks */
+
+h1, h2, h3, h4 {
+  color: var(--dl-heading);
+  line-height: 1.25;
+  margin: 2.2rem 0 0.7rem;
+  font-weight: 600;
+}
+h1 { font-size: 1.9rem; margin-top: 0; }
+h2 { font-size: 1.4rem; }
+h3 { font-size: 1.12rem; }
+
+p, ul, ol, blockquote { margin: 0 0 1.15rem; }
+li { margin-bottom: 0.3rem; }
+
+a { color: var(--dl-link); text-underline-offset: 0.15em; }
+
+blockquote {
+  border-left: 3px solid var(--dl-orange);
+  padding-left: 1rem;
+  margin-left: 0;
+  color: var(--dl-muted);
+}
+
+hr { border: none; border-top: 1px solid var(--dl-rule); margin: 2.5rem 0; }
+
+/* Read-only illustrative code: an untagged fence. No cell, no Run button. */
+pre.dl-static {
+  background: var(--dl-cell-bg);
+  border: 1px solid var(--dl-cell-border);
+  border-radius: 4px;
+  padding: 0.85rem 1rem;
+  overflow-x: auto;
+}
+pre.dl-static code, p code, li code {
+  font-family: var(--dl-mono);
+  font-size: 0.86em;
+}
+p code, li code {
+  background: var(--dl-cell-bg);
+  border-radius: 3px;
+  padding: 0.1em 0.35em;
+}
+
+/* ------------------------------------------------------------- exec cells */
+
+.dl-cell {
+  margin: 1.6rem 0 1.9rem;
+  border: 1px solid var(--dl-cell-border);
+  border-radius: 5px;
+  background: var(--dl-cell-bg);
+  overflow: hidden;
+}
+
+.dl-cell-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.5rem 0.35rem 0.75rem;
+  border-bottom: 1px solid var(--dl-cell-border);
+  font-family: var(--dl-mono);
+  font-size: 0.72rem;
+  color: var(--dl-muted);
+}
+
+.dl-cell-id { letter-spacing: 0.03em; }
+.dl-cell-spacer { flex: 1; }
+
+.dl-btn {
+  font: inherit;
+  font-family: var(--dl-mono);
+  font-size: 0.72rem;
+  padding: 0.22rem 0.7rem;
+  border-radius: 3px;
+  border: 1px solid var(--dl-cell-border);
+  background: var(--dl-panel-bg);
+  color: var(--dl-fg);
+  cursor: pointer;
+}
+.dl-btn:hover:not(:disabled) { border-color: var(--dl-orange); color: var(--dl-orange); }
+.dl-btn:disabled { opacity: 0.45; cursor: default; }
+
+.dl-btn-run {
+  background: var(--dl-navy);
+  border-color: var(--dl-navy);
+  color: #fff;
+}
+.dl-btn-run:hover:not(:disabled) { background: var(--dl-orange); border-color: var(--dl-orange); color: #fff; }
+
+/* Author-written hover hint (CONTENT_AND_FILE_ARCHITECTURE.md, `hint:`).
+ * Static text only — this is not the live docstring-on-hover feature that
+ * DECISIONS.md defers past v1. */
+.dl-hint { position: relative; display: inline-flex; }
+.dl-hint-icon {
+  width: 1.15rem; height: 1.15rem;
+  border-radius: 50%;
+  border: 1px solid var(--dl-cell-border);
+  background: var(--dl-panel-bg);
+  color: var(--dl-muted);
+  font-family: var(--dl-mono);
+  font-size: 0.7rem;
+  line-height: 1.05rem;
+  text-align: center;
+  cursor: help;
+  padding: 0;
+}
+.dl-hint-text {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: 1.6rem;
+  z-index: 5;
+  width: max-content;
+  max-width: min(24rem, 70vw);
+  padding: 0.5rem 0.7rem;
+  border: 1px solid var(--dl-cell-border);
+  border-radius: 4px;
+  background: var(--dl-panel-bg);
+  box-shadow: 0 4px 14px var(--dl-shadow);
+  font-family: var(--dl-font-family);
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: var(--dl-fg);
+  white-space: normal;
+}
+.dl-hint:hover .dl-hint-text,
+.dl-hint:focus-within .dl-hint-text { display: block; }
+
+.dl-editor { background: var(--dl-panel-bg); }
+.dl-editor .cm-editor { font-size: 0.86rem; }
+.dl-editor .cm-editor.cm-focused { outline: none; }
+.dl-editor .cm-scroller { font-family: var(--dl-mono); line-height: 1.5; }
+.dl-editor .cm-content { padding: 0.5rem 0; }
+
+/* --------------------------------------------------------------- output */
+
+.dl-output {
+  border-top: 1px solid var(--dl-cell-border);
+  background: var(--dl-output-bg);
+  padding: 0.7rem 0.85rem;
+  font-family: var(--dl-mono);
+  font-size: 0.82rem;
+  line-height: 1.5;
+  overflow-x: auto;
+}
+.dl-output:empty { display: none; }
+
+.dl-output pre { margin: 0 0 0.5rem; white-space: pre-wrap; word-break: break-word; }
+.dl-output pre:last-child { margin-bottom: 0; }
+
+.dl-stdout { color: var(--dl-fg); }
+.dl-repr { color: var(--dl-navy); }
+:root[data-theme="dark"] .dl-repr { color: var(--dl-heading); }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .dl-repr { color: var(--dl-heading); }
+}
+
+.dl-error {
+  color: var(--dl-error-fg);
+  background: var(--dl-error-bg);
+  border-left: 3px solid var(--dl-error-fg);
+  padding: 0.5rem 0.7rem;
+  border-radius: 0 3px 3px 0;
+}
+
+.dl-figure { margin: 0.4rem 0; }
+.dl-figure img { max-width: 100%; height: auto; display: block; border-radius: 3px; }
+
+/* DataFrame / show_table output. Scrolls inside its own box. */
+.dl-table-wrap { overflow-x: auto; margin: 0.2rem 0 0.6rem; }
+.dl-table-wrap table {
+  border-collapse: collapse;
+  font-size: 0.8rem;
+  font-family: var(--dl-mono);
+}
+.dl-table-wrap th, .dl-table-wrap td {
+  border: 1px solid var(--dl-cell-border);
+  padding: 0.22rem 0.55rem;
+  text-align: right;
+  white-space: nowrap;
+}
+.dl-table-wrap thead th { background: var(--dl-cell-bg); color: var(--dl-heading); font-weight: 600; }
+.dl-table-wrap tbody th { background: var(--dl-cell-bg); color: var(--dl-muted); font-weight: 400; }
+.dl-table-caption { color: var(--dl-muted); font-size: 0.76rem; margin-bottom: 0.25rem; }
+.dl-table-note { color: var(--dl-muted); font-size: 0.76rem; margin-top: 0.2rem; }
+
+/* check() verdicts. Formative feedback, deliberately not scored-looking. */
+.dl-check {
+  display: flex;
+  gap: 0.5rem;
+  align-items: baseline;
+  padding: 0.45rem 0.7rem;
+  border-radius: 3px;
+  margin: 0.2rem 0 0.5rem;
+  font-family: var(--dl-font-family);
+  font-size: 0.88rem;
+}
+.dl-check-pass { background: var(--dl-pass-bg); color: var(--dl-pass-fg); }
+.dl-check-fail { background: var(--dl-error-bg); color: var(--dl-error-fg); }
+.dl-check-mark { font-family: var(--dl-mono); font-weight: 700; }
+.dl-check-detail { font-family: var(--dl-mono); font-size: 0.78rem; opacity: 0.85; }
+
+/* ------------------------------------------------------- widget controls */
+
+.dl-widget {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  align-items: baseline;
+  margin: 0.25rem 0 0.55rem;
+  font-family: var(--dl-font-family);
+  font-size: 0.9rem;
+}
+.dl-widget label { color: var(--dl-muted); }
+.dl-widget input[type="text"], .dl-widget select {
+  font: inherit;
+  font-family: var(--dl-mono);
+  font-size: 0.82rem;
+  padding: 0.22rem 0.45rem;
+  border: 1px solid var(--dl-cell-border);
+  border-radius: 3px;
+  background: var(--dl-panel-bg);
+  color: var(--dl-fg);
+}
+.dl-widget input[type="text"]:focus, .dl-widget select:focus {
+  outline: 2px solid var(--dl-orange);
+  outline-offset: -1px;
+}
+
+/* ---------------------------------------------------------- runtime status */
+
+.dl-status {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  margin: 0 0 1.5rem;
+  padding: 0.45rem 0.8rem;
+  border: 1px solid var(--dl-cell-border);
+  border-radius: 4px;
+  background: var(--dl-cell-bg);
+  color: var(--dl-muted);
+  font-family: var(--dl-mono);
+  font-size: 0.76rem;
+}
+.dl-status[hidden] { display: none; }
+.dl-status-error { color: var(--dl-error-fg); background: var(--dl-error-bg); border-color: var(--dl-error-fg); }
+
+/* ---------------------------------------------------------- texture panel */
+
+.dl-texture-toggle {
+  font-family: var(--dl-mono);
+  font-size: 0.72rem;
+  background: none;
+  border: 1px solid var(--dl-cell-border);
+  border-radius: 3px;
+  color: var(--dl-muted);
+  padding: 0.2rem 0.55rem;
+  cursor: pointer;
+}
+.dl-texture-toggle:hover { border-color: var(--dl-orange); color: var(--dl-orange); }
+
+.dl-texture {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 30;
+  width: min(19rem, calc(100vw - 2rem));
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--dl-cell-border);
+  border-radius: 6px;
+  background: var(--dl-panel-bg);
+  box-shadow: 0 8px 28px var(--dl-shadow);
+  font-family: var(--dl-font-family);
+  font-size: 0.85rem;
+}
+.dl-texture[hidden] { display: none; }
+.dl-texture h2 {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--dl-muted);
+  margin: 0 0 0.8rem;
+}
+.dl-texture-row {
+  display: grid;
+  grid-template-columns: 5.2rem 1fr;
+  gap: 0.5rem;
+  align-items: center;
+  margin-bottom: 0.65rem;
+}
+.dl-texture-row > span { color: var(--dl-muted); font-size: 0.78rem; }
+.dl-seg { display: flex; gap: 0.25rem; }
+.dl-seg button {
+  flex: 1;
+  font-family: var(--dl-mono);
+  font-size: 0.7rem;
+  padding: 0.25rem 0;
+  border: 1px solid var(--dl-cell-border);
+  border-radius: 3px;
+  background: none;
+  color: var(--dl-fg);
+  cursor: pointer;
+}
+.dl-seg button[aria-pressed="true"] {
+  background: var(--dl-navy);
+  border-color: var(--dl-navy);
+  color: #fff;
+}
+.dl-texture input[type="range"] { width: 100%; accent-color: var(--dl-orange); }
+.dl-texture input[type="color"] {
+  width: 100%; height: 1.7rem; padding: 0;
+  border: 1px solid var(--dl-cell-border); border-radius: 3px; background: none; cursor: pointer;
+}
+.dl-texture-reset {
+  width: 100%;
+  margin-top: 0.35rem;
+  font-family: var(--dl-mono);
+  font-size: 0.7rem;
+  padding: 0.3rem;
+  border: 1px solid var(--dl-cell-border);
+  border-radius: 3px;
+  background: none;
+  color: var(--dl-muted);
+  cursor: pointer;
+}
+
+/* KaTeX display math may be wider than the measure. */
+.katex-display { overflow-x: auto; overflow-y: hidden; padding: 0.2rem 0; }
