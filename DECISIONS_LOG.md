@@ -831,3 +831,17 @@ the numbers gone they match titles instead — which is what a tutorial would
 naturally write anyway, and turned out to find exactly the same seven
 references.
 *Cost to change: small.*
+
+**7.5 — A downloadable copy lives under its module, like its page.**
+Scoping slugs to the module (7.3) left one thing keyed by slug alone: the flat
+`site/download/` folder. Two modules each having a `first-steps` meant one
+silently overwrote the other, and the loser simply never appeared.
+
+The publish guard from 4.3 caught it — *"20 tutorial pages but 19 downloadable
+copies"* — on main, which is later than it should have been. The unit tests had
+a case for two modules sharing a slug and a case for the downloadable copies,
+and neither exercised both at once.
+
+Copies now sit under `download/<module>/`, and four tests cover the crossing.
+Each was checked against the broken build first: all four fail without the fix.
+*Cost to change: small, and the guard is what makes it safe.*

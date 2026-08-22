@@ -629,7 +629,7 @@ class TestTheDownloadableCopy:
     def test_it_is_written_beside_the_site(self, repo_with_assets):
         write(repo_with_assets, "Some prose.\n")
         b.build(standalone=True)
-        assert (repo_with_assets / "site" / "download" / "sample.html").is_file()
+        assert (repo_with_assets / "site" / "download" / "computational-methods" / "sample.html").is_file()
 
     def test_it_is_not_written_unless_asked(self, repo_with_assets):
         write(repo_with_assets, "Some prose.\n")
@@ -640,10 +640,10 @@ class TestTheDownloadableCopy:
         write(repo_with_assets, "Some prose.\n")
         b.build(standalone=True)
         page = built(repo_with_assets)
-        assert 'class="dl-download" href="../../download/sample.html" download' in page
+        assert 'href="../../download/computational-methods/sample.html"' in page
 
     def standalone(self, repo) -> str:
-        return (repo / "site" / "download" / "sample.html").read_text()
+        return (repo / "site" / "download" / "computational-methods" / "sample.html").read_text()
 
     def test_nothing_is_left_pointing_outside_the_file(self, repo_with_assets):
         write(repo_with_assets, "```python exec\nid: c\n1 + 1\n```\n")
@@ -695,7 +695,7 @@ class TestTheDownloadableCopy:
             )
         set_order(repo_with_assets, "computational-methods", "s", ["t1", "t2"])
         b.build(standalone=True)
-        page = (repo_with_assets / "site" / "download" / "t1.html").read_text()
+        page = (repo_with_assets / "site" / "download" / "computational-methods" / "t1.html").read_text()
         assert "<nav" not in page
 
     def test_it_warns_when_a_tutorial_loads_data_it_cannot_carry(self, repo_with_assets, capsys):
@@ -776,7 +776,7 @@ class TestTheSettingsPanel:
             r'<section class="dl-settings-section" id="dl-settings-download">.*?</section>',
             page, re.DOTALL,
         ).group(0)
-        assert 'href="../../download/sample.html"' in section
+        assert 'href="../../download/computational-methods/sample.html"' in section
 
     def test_the_contents_page_has_no_tutorial_to_download(self, repo):
         write(repo, "Some prose.\n")
@@ -800,17 +800,17 @@ class TestTheSettingsPanel:
     def test_a_downloadable_copy_does_not_offer_its_own_download(self, repo_with_assets):
         write(repo_with_assets, "Some prose.\n")
         b.build(standalone=True)
-        page = (repo_with_assets / "site" / "download" / "sample.html").read_text()
+        page = (repo_with_assets / "site" / "download" / "computational-methods" / "sample.html").read_text()
         assert (
             '<section class="dl-settings-section" id="dl-settings-download"></section>'
             in page
         )
-        assert "download/sample.html" not in page
+        assert "download/computational-methods/sample.html" not in page
 
     def test_a_downloadable_copy_keeps_the_rest_of_the_panel(self, repo_with_assets):
         write(repo_with_assets, "```python exec\nid: c\n1 + 1\n```\n")
         b.build(standalone=True)
-        page = (repo_with_assets / "site" / "download" / "sample.html").read_text()
+        page = (repo_with_assets / "site" / "download" / "computational-methods" / "sample.html").read_text()
         assert 'id="dl-settings-toggle"' in page
         assert 'id="dl-settings-work"' in page
         assert 'id="dl-settings-texture"' in page
@@ -887,7 +887,7 @@ class TestTheContentsOfAPage:
         """Its links are inside the file, so they work from a student's disk."""
         write(repo_with_assets, self.sections(3))
         b.build(standalone=True)
-        page = (repo_with_assets / "site" / "download" / "sample.html").read_text()
+        page = (repo_with_assets / "site" / "download" / "computational-methods" / "sample.html").read_text()
         assert 'href="#section-1"' in page
 
 
@@ -905,7 +905,7 @@ class TestTheStickyChrome:
     ):
         write(repo_with_assets, "Some prose.\n")
         b.build(standalone=True)
-        page = (repo_with_assets / "site" / "download" / "sample.html").read_text()
+        page = (repo_with_assets / "site" / "download" / "computational-methods" / "sample.html").read_text()
         assert "dl-chrome" in page
         assert "dl-nav" not in page.split("<style>")[0] + page.split("</style>")[-1]
 
@@ -1175,3 +1175,52 @@ class TestTheTopicTree:
         index = (repo / "site" / "index.html").read_text()
         assert "runs in this browser" in index
         assert 'href="tree.html"' in index
+
+
+class TestDownloadsDoNotCollide:
+    """Slugs are unique within a module, not across the site — so a flat
+    download folder would let two modules' `first-steps` overwrite each other.
+    Silently, because the loser simply never appears.
+
+    The publish workflow's guard caught this on main once. This catches it
+    before that.
+    """
+
+    def two_modules(self, repo):
+        write(repo, "One.\n", slug="first-steps")
+        other = repo / "tutorials" / "other-module" / "first-steps.md"
+        other.parent.mkdir(parents=True)
+        other.write_text(
+            '---\ntitle: "First Steps"\nslug: first-steps\nmodule: other-module\n'
+            'year: "2026-2027"\nseries: intro\nversion: 1\n---\n\nProse.\n'
+        )
+        set_order(repo, "other-module", "intro", ["first-steps"])
+
+    def test_every_page_has_its_own_downloadable_copy(self, repo_with_assets):
+        self.two_modules(repo_with_assets)
+        b.build(standalone=True)
+        pages = list((repo_with_assets / "site" / "tutorials").rglob("*.html"))
+        copies = list((repo_with_assets / "site" / "download").rglob("*.html"))
+        assert len(copies) == len(pages) == 2
+
+    def test_a_copy_sits_under_the_module_its_page_does(self, repo_with_assets):
+        self.two_modules(repo_with_assets)
+        b.build(standalone=True)
+        for module in ("computational-methods", "other-module"):
+            assert (repo_with_assets / "site" / "download" / module
+                    / "first-steps.html").is_file()
+
+    def test_the_link_points_at_the_right_one(self, repo_with_assets):
+        self.two_modules(repo_with_assets)
+        b.build(standalone=True)
+        page = (repo_with_assets / "site" / "tutorials" / "other-module"
+                / "first-steps.html").read_text()
+        assert 'href="../../download/other-module/first-steps.html"' in page
+
+    def test_the_archive_gathers_the_right_module(self, repo_with_assets):
+        self.two_modules(repo_with_assets)
+        b.build(standalone=True)
+        archive = (repo_with_assets / "site" / "download"
+                   / "other-module-intro.zip")
+        with zipfile.ZipFile(archive) as opened:
+            assert opened.namelist() == ["other-module-intro/first-steps.html"]
