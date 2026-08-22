@@ -540,8 +540,8 @@ def download_section(tutorial: Tutorial) -> str:
     up = "../" * tutorial.depth
     return (
         "<h3>This tutorial</h3>"
-        f'<a class="dl-download" href="{up}download/{tutorial.slug}.html" download>'
-        "Download to keep</a>"
+        f'<a class="dl-download" href="{up}download/{tutorial.module}/'
+        f'{tutorial.slug}.html" download>Download to keep</a>'
         '<p class="dl-panel-note">One file with the reading and the cells inside '
         "it. It needs an internet connection the first time you open it, and "
         "then it is yours.</p>"
@@ -1272,7 +1272,11 @@ def write_standalone(tutorial: Tutorial, page: str) -> Path:
             file=sys.stderr,
         )
 
-    target = OUT / "download" / f"{tutorial.slug}.html"
+    # Under the module, like the page it came from. Slugs are unique within a
+    # module and not across the site, so a flat download folder would let two
+    # modules' "first-steps" overwrite each other — silently, since the loser
+    # simply never appears.
+    target = OUT / "download" / tutorial.module / f"{tutorial.slug}.html"
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text(standalone_html(tutorial, page))
     return target
@@ -1301,7 +1305,8 @@ def write_series_zip(module: str, series: str, members: list[Tutorial]) -> Path:
     with zipfile.ZipFile(target, "w", zipfile.ZIP_DEFLATED) as archive:
         for member in members:
             archive.write(
-                OUT / "download" / f"{member.slug}.html", f"{folder}/{member.slug}.html"
+                OUT / "download" / member.module / f"{member.slug}.html",
+                f"{folder}/{member.slug}.html",
             )
     return target
 

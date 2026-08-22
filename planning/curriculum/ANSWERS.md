@@ -66,7 +66,7 @@ falls out of it.** The chain rule is not a prerequisite being withheld; it is a
 pattern the students are led to notice in work they have already done.
 
 That last sentence turned out to be a general principle rather than a remark
-about calculus, and it now has a decision of its own (DECISIONS_LOG 7.6). It
+about calculus, and it now has a decision of its own (DECISIONS_LOG 7.7). It
 also changed the dependency data: divide and conquer moved to *after* searching
 and sorting, because binary search is what gives a student a reason to name the
 idea.

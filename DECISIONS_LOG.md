@@ -832,7 +832,21 @@ naturally write anyway, and turned out to find exactly the same seven
 references.
 *Cost to change: small.*
 
-**7.5 — Dependencies answer "can I start this now?", not "what comes next?".**
+**7.5 — A downloadable copy lives under its module, like its page.**
+Scoping slugs to the module (7.3) left one thing keyed by slug alone: the flat
+`site/download/` folder. Two modules each having a `first-steps` meant one
+silently overwrote the other, and the loser simply never appeared.
+
+The publish guard from 4.3 caught it — *"20 tutorial pages but 19 downloadable
+copies"* — on main, which is later than it should have been. The unit tests had
+a case for two modules sharing a slug and a case for the downloadable copies,
+and neither exercised both at once.
+
+Copies now sit under `download/<module>/`, and four tests cover the crossing.
+Each was checked against the broken build first: all four fail without the fix.
+*Cost to change: small, and the guard is what makes it safe.*
+
+**7.6 — Dependencies answer "can I start this now?", not "what comes next?".**
 The topic tree was built topic by topic — "what does this one obviously need?" —
 which produces edges that are individually reasonable and collectively
 arbitrary. Josh's reframing settled what it is for: *"this is about giving
@@ -852,7 +866,7 @@ removing seven. What actually moved was depth, from a longest path of 6 to 5,
 with one more topic open from a standing start.
 *Cost to change: small. It is one `needs:` list per topic in `topics.yaml`.*
 
-**7.6 — Discover first, name afterwards.**
+**7.7 — Discover first, name afterwards.**
 Josh, on the chain rule: *"we can discover these in the tutorials, meaning that
 we don't need to name them until after we've done some step by step thinking
 things through."* Applied as a principle rather than a one-off, it changes edge
@@ -862,7 +876,7 @@ Substitution comes before the chain rule for the same reason, and because
 substitution is algebra the students have already done.
 *Cost to change: small, and reversible per topic.*
 
-**7.7 — The tree reads downwards.**
+**7.8 — The tree reads downwards.**
 Roots at the top, and nothing ever points upwards. The first attempt was the
 direct flip of the old horizontal layout — one column per subject — which
 measured 5854px wide against 756px tall: a horizontal tree wearing a hat, and
