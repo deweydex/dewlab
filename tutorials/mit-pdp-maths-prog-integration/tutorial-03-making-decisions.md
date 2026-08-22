@@ -95,7 +95,8 @@ Notice the use of the modulo operator `%` here. If a number divided by 2 has a r
 
 Write a program that takes a variable `year` and prints whether it is a leap year or not. The rule is: a year is a leap year if it is divisible by 4. (There are more detailed rules involving centuries, but let's start simple.)
 
-**Pseudocode first** (double-click to edit):
+Pseudocode first, as comments in the cell below — then the Python for each
+step underneath it.
 
 ```python exec
 id: your-turn-2
