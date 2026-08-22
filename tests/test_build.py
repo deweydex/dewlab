@@ -372,3 +372,54 @@ class TestIllustrativeCode:
         page = built(repo)
         assert "name_with_underscores" in page
         assert "<em>" not in page
+
+
+class TestListsWrittenTightAgainstProse:
+    """Markdown written elsewhere often puts a list straight under a paragraph."""
+
+    def test_a_bullet_list_under_a_paragraph_still_becomes_a_list(self, repo):
+        write(repo, "When you look at it, consider:\n- Is it symmetric?\n- Is there one peak?\n")
+        b.build()
+        page = built(repo)
+        assert "<ul>" in page
+        assert page.count("<li>") == 2
+
+    def test_a_numbered_list_under_a_paragraph_still_becomes_a_list(self, repo):
+        write(repo, "Then do this:\n1. Print the first value\n2. Print the last value\n")
+        b.build()
+        page = built(repo)
+        assert "<ol>" in page
+        assert page.count("<li>") == 2
+
+    def test_the_paragraph_above_it_is_left_intact(self, repo):
+        write(repo, "The pattern appears everywhere:\n- Looking up a contact\n")
+        b.build()
+        assert "<p>The pattern appears everywhere:</p>" in built(repo)
+
+    def test_a_list_that_already_had_its_blank_line_is_untouched(self, repo):
+        write(repo, "Consider:\n\n- One\n- Two\n")
+        b.build()
+        assert built(repo).count("<li>") == 2
+
+    def test_a_list_under_a_heading_is_untouched(self, repo):
+        write(repo, "## A heading\n- One\n- Two\n")
+        b.build()
+        page = built(repo)
+        assert "<ul>" in page and "<h2" in page
+
+    def test_items_within_a_list_are_not_split_apart(self, repo):
+        write(repo, "Consider:\n- One\n- Two\n- Three\n")
+        b.build()
+        page = built(repo)
+        assert page.count("<ul>") == 1
+        assert page.count("<li>") == 3
+
+    def test_a_dash_inside_a_fence_is_left_alone(self, repo):
+        write(repo, "```python\ntotal = 1\n- not a list\n```\n")
+        b.build()
+        assert "<li>" not in built(repo)
+
+    def test_a_hyphenated_sentence_is_not_mistaken_for_a_list(self, repo):
+        write(repo, "A sentence.\n-5 degrees is cold.\n")
+        b.build()
+        assert "<li>" not in built(repo)

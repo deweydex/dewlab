@@ -52,6 +52,15 @@ FENCE_RE = re.compile(r"^(?P<indent> *)```(?P<info>[^\n]*)\n(?P<body>.*?)^ *```[
                       re.MULTILINE | re.DOTALL)
 HEADER_RE = re.compile(r"^\s*(id|hint)\s*:\s*(.*)$")
 INCLUDE_RE = re.compile(r"\{\{\s*include\s*:\s*(?P<path>[^}]+?)\s*\}\}")
+# A list written directly under a line of prose, with no blank line between.
+# Most markdown an author has written before — in a notebook, on GitHub — treats
+# that as a list. This converter does not, and silently runs the items together
+# into the paragraph instead, which is the kind of mistake nobody notices until
+# a student is reading it. The blank line is inserted for them.
+TIGHT_LIST_RE = re.compile(
+    r"(?m)^(?P<prose>(?![ \t]*(?:[-*+]|\d+[.)])\s)(?![ \t]*#)(?![ \t]*>)[^\n]*\S[^\n]*)\n"
+    r"(?P<item>[ \t]*(?:[-*+]|\d+[.)])\s+\S)"
+)
 TUTORIAL_HREF_RE = re.compile(r'href="tutorial:(?P<slug>[^"#]+)(?:#(?P<anchor>[^"]*))?"')
 ID_RE = re.compile(r'\bid="([^"]+)"')
 IMG_RE = re.compile(r"<img\b[^>]*>", re.IGNORECASE)
@@ -142,6 +151,15 @@ def split_frontmatter(text: str, path: Path) -> tuple[dict, str]:
     if missing:
         fail(path, f"frontmatter is missing {', '.join(missing)}")
     return meta, body.lstrip("\n")
+
+
+def loosen_tight_lists(body: str) -> str:
+    """Give a list that starts straight after a paragraph the blank line it needs."""
+    previous = None
+    while previous != body:
+        previous = body
+        body = TIGHT_LIST_RE.sub(lambda m: f"{m.group('prose')}\n\n{m.group('item')}", body)
+    return body
 
 
 def expand_includes(code: str, path: Path) -> str:
@@ -338,6 +356,7 @@ def load(path: Path) -> Tutorial:
     meta, body = split_frontmatter(path.read_text(), path)
     stripped, cells, blocks = extract_blocks(body, path)
     stripped, maths = extract_math(stripped)
+    stripped = loosen_tight_lists(stripped)
     body_html = place_blocks(to_html(stripped), cells, blocks, maths)
     anchors = set(ID_RE.findall(body_html)) | {c.id for c in cells}
     return Tutorial(

@@ -16,14 +16,22 @@ Welcome. Over the coming weeks we are going to learn to program and to think mat
 
 This first tutorial is about getting comfortable with the tools and the way of thinking. There is nothing to be afraid of here -- we will take it step by step, and every expert started exactly where you are now.
 
-## What is a Jupyter Notebook?
+## How this page works
 
-You are looking at one right now. A Jupyter notebook is a document made up of *cells*. Each cell is either a **markdown cell** (like this one, which contains text) or a **code cell** (which contains Python that you can run).
+You are looking at a page you can run. Most of it is ordinary reading — like
+this paragraph. Interleaved with the reading are *cells*: small boxes of Python
+that you can edit and run, with the result appearing directly underneath.
 
-To run a code cell, click on it and press **Shift+Enter**. Try it with the cell below.
+The Python runs inside this browser tab, on the machine in front of you.
+Nothing is installed, nothing is sent anywhere, and nobody else can see what
+you type. If you make a mess of a cell, the **reset** button on it puts back
+the version you started with.
+
+To run a cell, press its **Run** button, or hold Ctrl and press Enter. Try it
+with the cell below.
 
 ```python exec
-id: what-is-a-jupyter-notebook-1
+id: how-this-page-works-1
 print("Hello, world!")
 ```
 
@@ -32,7 +40,7 @@ If you saw `Hello, world!` appear below the cell, everything is working. That si
 Let's try a few more things.
 
 ```python exec
-id: what-is-a-jupyter-notebook-2
+id: how-this-page-works-2
 # This is a comment. Python ignores everything after the # symbol.
 # Comments are how we leave notes for ourselves and for other people
 # reading our code. They are surprisingly important.
@@ -106,7 +114,10 @@ That is the core loop of programming: think about what you want to do, write it 
 
 Here is a different formula: to convert kilometres to miles, multiply by 0.621371.
 
-First write the pseudocode in this markdown cell (double-click to edit):
+Write your pseudocode first, as comments in the cell below — a line of plain
+English per step. Then turn each line into Python underneath it. Working this
+way keeps the thinking and the code side by side, which is exactly what you
+want when a step turns out to be harder than it looked.
 
 ```python exec
 id: your-turn-2
@@ -153,7 +164,7 @@ print(15 % 4)           # prediction:
 
 In this first tutorial we have covered:
 
-- Running code in Jupyter notebook cells
+- Running code in cells, and reading what comes back
 - Using `print()` to display output
 - Writing comments with `#`
 - Basic arithmetic: `+`, `-`, `*`, `/`, `//`, `%`, `**`
