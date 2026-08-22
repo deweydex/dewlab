@@ -24,6 +24,7 @@ teach anything.
 from __future__ import annotations
 
 import functools
+import re
 import http.server
 import shutil
 import socketserver
@@ -62,6 +63,9 @@ def site_dir(tmp_path_factory) -> Path:
         shutil.copy(source, root / "tutorials" / MODULE / source.name)
     shutil.copytree(DEWLAB / "assets", root / "assets")
     shutil.copytree(DEWLAB / "data", root / "data")
+    # The topic tree is built from the curriculum data, and its behaviour —
+    # panning, zooming, choosing a topic — only exists in a browser.
+    shutil.copytree(DEWLAB / "planning" / "curriculum", root / "planning" / "curriculum")
 
     out = root / "site"
     for name, value in {
@@ -80,8 +84,14 @@ def site_dir(tmp_path_factory) -> Path:
     # which is what a network with no route to jsdelivr would also have to do.
     page = out / PAGE
     html = page.read_text()
-    original = f'<script type="module" src="{UP}assets/tutorial-runtime.js"></script>'
-    assert original in html, "the built page no longer loads the runtime as this expects"
+    # The URL carries a content hash, so match the shape rather than the string.
+    found = re.search(
+        rf'<script type="module" src="{re.escape(UP)}assets/tutorial-runtime\.js[^"]*">'
+        r"</script>",
+        html,
+    )
+    assert found, "the built page no longer loads the runtime as this expects"
+    original = found.group(0)
     page.write_text(
         html.replace(
             original,

@@ -714,6 +714,19 @@ p code, li code {
 }
 :root[data-header="minimal"] .dl-toc { margin-bottom: 1.5rem; }
 
+/* ------------------------------------------------------- the contents page
+
+   What somebody sees first. Three short paragraphs answering the questions a
+   student arrives with — do I need to install anything, can I break it, where
+   is my work — and then the list they came for. */
+.dl-intro { margin: 0 0 2.5rem; }
+.dl-intro p { margin: 0 0 0.9rem; }
+.dl-intro-tree {
+  padding-top: 0.8rem;
+  border-top: 1px solid var(--dl-rule);
+  color: var(--dl-muted);
+}
+
 /* ------------------------------------------------------------ knowledge map
 
    The series as nodes and arrows on the contents page. A list says what order
@@ -885,4 +898,185 @@ p code, li code {
     grid-template-columns: 1fr auto 1fr;
     grid-template-areas: "prev up next";
   }
+}
+
+
+/* -------------------------------------------------------------- topic tree
+
+   Its own page: every topic in both module descriptors, positioned left to
+   right by what has to come first and grouped top to bottom by subject. The
+   layout arrives as data from build.py; tree.js adds moving, zooming and
+   choosing.
+
+   Light and dark come free, because this page uses the same tokens and the
+   same settings panel as every other. */
+
+.dl-tree-intro { max-width: 34rem; }
+
+.dl-tree-main { min-width: 0; }
+.dl-tree-layout {
+  display: grid;
+  grid-template-columns: 1fr 20rem;
+  gap: 1.2rem;
+  align-items: start;
+  /* Out of the reading measure: a map of sixty-seven things needs the window. */
+  width: min(78rem, calc(100vw - 3rem));
+  margin-left: 50%;
+  transform: translateX(-50%);
+}
+
+.dl-tree-frame {
+  position: relative;
+  overflow: hidden;
+  height: min(72vh, 44rem);
+  border: 1px solid var(--dl-cell-border);
+  border-radius: 6px;
+  background: var(--dl-output-bg);
+  cursor: grab;
+  touch-action: none;
+}
+.dl-tree-frame.dl-tree-dragging { cursor: grabbing; }
+
+.dl-tree-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: 0 0;
+}
+.dl-tree-edges { position: absolute; top: 0; left: 0; overflow: visible; }
+
+/* A band per subject, so one thread can be followed across the whole tree. */
+.dl-tree-band { fill: var(--dl-cell-bg); opacity: 0.45; }
+.dl-tree-band-label {
+  font-family: var(--dl-mono);
+  font-size: 11px;
+  fill: var(--dl-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.dl-tree-edge {
+  fill: none;
+  stroke: var(--dl-cell-border);
+  stroke-width: 1.2;
+}
+/* Lit when a topic is chosen: what it needs, and what needs it. */
+.dl-tree-edge.is-lit { stroke: var(--dl-orange); stroke-width: 2; }
+
+.dl-tree-node {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.3rem 0.5rem;
+  border: 1px solid var(--dl-cell-border);
+  border-radius: 6px;
+  background: var(--dl-panel-bg);
+  color: var(--dl-fg);
+  font-family: var(--dl-font-family);
+  font-size: 0.78rem;
+  line-height: 1.22;
+  text-align: center;
+  cursor: pointer;
+  /* Three lines fit; a fourth would spill over the border, so it is cut. */
+  overflow: hidden;
+}
+.dl-tree-node[data-state="taught"] { border-color: var(--dl-navy); }
+.dl-tree-node[data-state="planned"] {
+  border-style: dashed;
+  color: var(--dl-muted);
+}
+.dl-tree-node[data-state="excluded"] { opacity: 0.5; }
+.dl-tree-node:hover { border-color: var(--dl-orange); }
+.dl-tree-node.is-related { border-color: var(--dl-orange); }
+.dl-tree-node.is-chosen {
+  background: var(--dl-navy);
+  border-color: var(--dl-navy);
+  color: #fff;
+}
+
+.dl-tree-controls {
+  position: absolute;
+  right: 0.6rem;
+  bottom: 0.6rem;
+  display: flex;
+  gap: 0.3rem;
+}
+.dl-tree-controls button {
+  min-width: 2rem;
+  min-height: 2rem;
+  font-family: var(--dl-mono);
+  font-size: 0.8rem;
+  border: 1px solid var(--dl-cell-border);
+  border-radius: 4px;
+  background: var(--dl-panel-bg);
+  color: var(--dl-fg);
+  cursor: pointer;
+}
+.dl-tree-controls button:hover { border-color: var(--dl-orange); color: var(--dl-orange); }
+
+/* Under the frame rather than floating over it: at the bottom-left corner it
+   sat on top of whichever topics happened to be there. */
+.dl-tree-key {
+  margin: 0.5rem 0 0;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  font-size: 0.72rem;
+  color: var(--dl-muted);
+}
+.dl-tree-swatch {
+  width: 0.8rem;
+  height: 0.8rem;
+  border-radius: 3px;
+  border: 1px solid var(--dl-navy);
+  background: var(--dl-panel-bg);
+}
+.dl-tree-swatch:not(:first-child) { margin-left: 0.7rem; }
+.dl-tree-swatch[data-state="planned"] { border-style: dashed; border-color: var(--dl-cell-border); }
+.dl-tree-swatch[data-state="excluded"] { opacity: 0.5; }
+
+.dl-tree-detail {
+  border: 1px solid var(--dl-cell-border);
+  border-radius: 6px;
+  background: var(--dl-panel-bg);
+  padding: 1rem 1.1rem;
+  font-size: 0.9rem;
+  max-height: min(72vh, 44rem);
+  overflow-y: auto;
+}
+.dl-tree-detail h2 { margin: 0 0 0.15rem; font-size: 1.05rem; }
+.dl-tree-detail h3 {
+  margin: 1rem 0 0.35rem;
+  font-size: 0.76rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--dl-muted);
+}
+.dl-tree-code { margin: 0 0 0.7rem; font-family: var(--dl-mono); font-size: 0.72rem; color: var(--dl-muted); }
+.dl-tree-plain { margin: 0; line-height: 1.55; }
+.dl-tree-hint { margin: 0; color: var(--dl-muted); line-height: 1.55; }
+.dl-tree-uses, .dl-tree-needs { margin: 0; padding-left: 1.1rem; }
+.dl-tree-uses li { margin-bottom: 0.45rem; line-height: 1.5; }
+.dl-tree-needs { list-style: none; padding-left: 0; }
+.dl-tree-jump {
+  background: none;
+  border: none;
+  padding: 0.1rem 0;
+  color: var(--dl-link);
+  font: inherit;
+  cursor: pointer;
+  text-align: left;
+}
+.dl-tree-jump:hover { text-decoration: underline; }
+.dl-tree-goto { display: inline-block; margin-top: 0.9rem; font-size: 0.9rem; }
+.dl-tree-state { margin: 0.9rem 0 0; color: var(--dl-muted); line-height: 1.5; }
+
+/* On a narrow screen the panel goes underneath rather than beside, and the
+   frame gives up height to it. */
+@media (max-width: 52rem) {
+  .dl-tree-layout { grid-template-columns: 1fr; }
+  .dl-tree-frame { height: min(58vh, 30rem); }
+  .dl-tree-detail { max-height: none; }
 }

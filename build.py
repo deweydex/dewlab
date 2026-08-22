@@ -505,7 +505,7 @@ TOPIC_DATA = ROOT / "planning" / "curriculum" / "topics.yaml"
 SCOPE_DATA = ROOT / "planning" / "curriculum" / "out-of-scope.yaml"
 
 # One node is a comfortable tap target with room for a two-line name.
-TOPIC_W, TOPIC_H = 176, 58
+TOPIC_W, TOPIC_H = 178, 66
 TIER_GAP, ROW_GAP = 56, 22
 BAND_GAP = 34
 TREE_PAD = 40
@@ -604,6 +604,52 @@ def topic_layout(topics: dict, strands: dict[str, str]) -> tuple[dict, float, fl
 
     width = TREE_PAD * 2 + (max(tier.values()) + 1) * (TOPIC_W + TIER_GAP) - TIER_GAP
     return place, width, y - BAND_GAP + TREE_PAD
+
+
+def tree_data(tutorials: list[Tutorial]) -> dict:
+    """Everything the topic tree page needs, as one blob of data.
+
+    Assembled here rather than fetched by the page, because the page is static
+    and a fetch would be one more thing to fail on a school network.
+    """
+    topics = load_topics()
+    if not topics:
+        return {}
+    strands = load_strands()
+    excluded = load_out_of_scope()
+    taught = taught_where(tutorials)
+    place, width, height = topic_layout(topics, strands)
+
+    nodes = []
+    for code, topic in sorted(topics.items()):
+        at = place[code]
+        where = taught.get(code)
+        state = "excluded" if code in excluded else ("taught" if where else "planned")
+        nodes.append({
+            "code": code,
+            "name": topic["name"],
+            "plain": " ".join(topic["plain"].split()),
+            "uses": [" ".join(u.split()) for u in topic.get("uses") or []],
+            "needs": [n for n in (topic.get("needs") or []) if n in topics],
+            "strand": at["strand"],
+            "tier": at["tier"],
+            "x": at["x"],
+            "y": at["y"],
+            "state": state,
+            "where": where,
+        })
+
+    bands = [
+        {"strand": key[5:], "y": value["y"], "height": value["height"]}
+        for key, value in place.items() if key.startswith("band:")
+    ]
+    return {
+        "nodes": nodes,
+        "bands": sorted(bands, key=lambda b: b["y"]),
+        "width": width,
+        "height": height,
+        "node": {"w": TOPIC_W, "h": TOPIC_H},
+    }
 
 
 # ------------------------------------------------------- the knowledge map
@@ -817,22 +863,26 @@ def render_index(
             if member.meta.get("module_title"):
                 names.setdefault(module, member.module_title)
 
-    strands = load_strands()
-    out = ["<h1>Tutorials</h1>"]
-
-    # The map goes above the lists, because it answers a different question:
-    # the lists say what order to read in, the map says how the parts relate.
-    # Only for a series long enough to have a shape worth seeing.
-    for (module, series), members in sorted(groups.items()):
-        svg = render_knowledge_map(members, strands)
-        if svg:
-            out.append(
-                '<figure class="dl-map-figure">' + svg +
-                '<figcaption>Every tutorial, grouped by what it is about. '
-                'Solid arrows are the reading order. A dashed arrow means the '
-                'later tutorial builds on the earlier one and says so. '
-                'Any box takes you there.</figcaption></figure>'
-            )
+    # An introduction rather than a diagram. The map moved to its own page,
+    # where it can have the whole window; this page's job is to say what dewlab
+    # is to somebody who has just arrived, and then get out of the way of the
+    # list they came for.
+    out = [
+        "<h1>Tutorials</h1>",
+        '<div class="dl-intro">',
+        "<p>Everything here runs in this browser. There is nothing to install, "
+        "nothing to sign into, and no way to break anything — the Python you "
+        "write runs on your own machine, inside this page, and never leaves "
+        "it.</p>",
+        "<p>Every tutorial is a page of reading with code you can change and "
+        "run as you go. Your work is saved automatically in this browser, so "
+        "you can close the tab and come back. Each one can be downloaded as a "
+        "single file to keep.</p>",
+        '<p class="dl-intro-tree">New here, or not sure where a topic fits? '
+        'The <a href="tree.html">topic tree</a> shows everything the course '
+        "covers and what has to come first.</p>",
+        "</div>",
+    ]
 
     for module in sorted({module for module, _ in groups}):
         out.append(f"<h2>{html.escape(names.get(module, module))}</h2>")
@@ -980,6 +1030,7 @@ def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "") -> Path
         "{{ROOT_BASE}}": up,
         "{{CRUMBS}}": html.escape(f"{tutorial.module_title} · {tutorial.meta['year']}"),
         "{{NAV_PREV_NEXT}}": nav,
+        "{{PAGE_SCRIPT}}": "",
         "{{DOWNLOAD}}": download_section(tutorial),
         "{{TOC}}": render_toc(tutorial),
         "{{BODY}}": body_html,
@@ -1175,6 +1226,7 @@ def write_index(
         "{{RUNTIME_URL}}": versioned("assets/", "tutorial-runtime.js"),
         "{{ROOT_BASE}}": "",
         "{{NAV_PREV_NEXT}}": "",
+        "{{PAGE_SCRIPT}}": "",
         # The contents page is not a tutorial and has nothing to download; the
         # runtime hides the empty section rather than showing a bare heading.
         "{{DOWNLOAD}}": "",
@@ -1191,6 +1243,101 @@ def write_index(
         raise BuildError(f"shell template has tokens the index does not fill: {leftover}")
     OUT.mkdir(parents=True, exist_ok=True)
     target = OUT / "index.html"
+    target.write_text(page)
+    return target
+
+
+def write_tree_page(shell: str, tutorials: list[Tutorial]) -> Path | None:
+    """The topic tree: every topic in both descriptors, and what needs what.
+
+    Its own page rather than part of the contents, because it wants the whole
+    window and the contents page wants to be a list. It uses the same shell, so
+    it gets the masthead, the settings panel and the reader's theme for free —
+    which is most of what "light and dark" would otherwise cost.
+    """
+    data = tree_data(tutorials)
+    if not data:
+        return None
+
+    body = (
+        '<h1>The topic tree</h1>'
+        '<p class="dl-tree-intro">Everything both modules cover, and what has to '
+        "come before what. Drag to move around it, scroll to zoom, and choose any "
+        "topic to find out what it is, where it turns up in computing, and where "
+        "it is taught.</p>"
+        '<div class="dl-tree-layout">'
+        '<div class="dl-tree-main">'
+        '<div class="dl-tree-frame" id="dl-tree">'
+        '<div class="dl-tree-canvas" id="dl-tree-canvas"></div>'
+        '<div class="dl-tree-controls">'
+        '<button type="button" id="dl-tree-out" aria-label="Zoom out">−</button>'
+        '<button type="button" id="dl-tree-fit" aria-label="Fit the whole tree">fit</button>'
+        '<button type="button" id="dl-tree-in" aria-label="Zoom in">+</button>'
+        "</div>"
+        "</div>"
+        '<p class="dl-tree-key">'
+        '<span class="dl-tree-swatch" data-state="taught"></span>taught here'
+        '<span class="dl-tree-swatch" data-state="planned"></span>planned'
+        '<span class="dl-tree-swatch" data-state="excluded"></span>not on this course'
+        "</p>"
+        "</div>"
+        '<aside class="dl-tree-detail" id="dl-tree-detail" aria-live="polite"></aside>'
+        "</div>"
+    )
+
+    # The tutorial map underneath, because it answers a different question. The
+    # tree says what a topic needs; this says what order the tutorials come in
+    # and which ones lean on which — and that second part is found by reading
+    # the tutorials, so it exists nowhere else.
+    strands = load_strands()
+    for (_, _), members in sorted(series_of(tutorials).items()):
+        svg = render_knowledge_map(members, strands)
+        if svg:
+            body += (
+                '<h2 class="dl-tree-second">How the tutorials relate</h2>'
+                '<figure class="dl-map-figure">' + svg +
+                "<figcaption>The reading order, in solid arrows. A dashed arrow "
+                "means the later tutorial builds on the earlier one and says so "
+                "in its own text. Any box takes you there.</figcaption></figure>"
+            )
+            break
+
+    manifest = {"slug": "tree", "version": 1, "assetBase": "assets/",
+                "dataBase": "data/", "cells": [], "assetVersions": {}}
+    tokens = {
+        "{{TITLE}}": "The topic tree",
+        "{{VERSION}}": "1",
+        "{{SLUG}}": "tree",
+        "{{MODULE}}": "",
+        "{{YEAR}}": "",
+        "{{SERIES}}": "",
+        "{{CRUMBS}}": "topic tree",
+        "{{ASSET_BASE}}": "assets/",
+        "{{STYLE_URL}}": versioned("assets/", "tutorial-style.css"),
+        "{{KATEX_CSS_URL}}": versioned("assets/", "vendor/katex.min.css"),
+        "{{RUNTIME_URL}}": versioned("assets/", "tutorial-runtime.js"),
+        "{{ROOT_BASE}}": "",
+        "{{NAV_PREV_NEXT}}": '<a class="dl-nav-up" href="index.html">All tutorials</a>',
+        "{{PAGE_SCRIPT}}": (
+            '<script type="application/json" id="dewlab-tree">'
+            + json.dumps(data).replace("<", "\\u003c")
+            + "</script>\n"
+            + f'<script type="module" src="{versioned("assets/", "tree.js")}"></script>'
+        ),
+        "{{DOWNLOAD}}": "",
+        "{{TOC}}": "",
+        "{{BODY}}": body,
+        "{{MANIFEST_JSON}}": json.dumps(manifest).replace("<", "\\u003c"),
+    }
+    page = shell
+    for token, value in tokens.items():
+        page = page.replace(token, value)
+    if "{{" in page:
+        leftover = sorted({p.split("}}")[0] + "}}" for p in page.split("{{")[1:]})
+        raise BuildError(f"shell template has tokens the tree page does not fill: {leftover}")
+
+    OUT.mkdir(parents=True, exist_ok=True)
+    target = OUT / "tree.html"
     target.write_text(page)
     return target
 
@@ -1234,6 +1381,9 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
 
     if tutorials:
         written.append(write_index(shell, groups, archives))
+        tree = write_tree_page(shell, tutorials)
+        if tree is not None:
+            written.append(tree)
 
     OUT.mkdir(parents=True, exist_ok=True)
     shutil.rmtree(OUT / "assets", ignore_errors=True)
