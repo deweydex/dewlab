@@ -244,7 +244,7 @@ graph TD
 | `MIT-3.4` Complete the square to find roots and vertex | 🟥 | — |
 | `MIT-3.5` The limit of a function | 🟥 | — |
 | `MIT-3.6` The derivative as a limit, a tangent slope, a rate of change | 🟥 | — |
-| `MIT-3.7` Sum, product, quotient and chain rules | 🟥 | **Not written. When it is:** the sum rule and the product rule only, not the chain rule and the quotient rule |
+| `MIT-3.7` Sum, product, quotient and chain rules | 🟥 | **Not written. When it is:** the sum and product rules as a tutorial of their own; integration by substitution as a second tutorial; the chain rule as a bonus section only, not the quotient rule, and integration by parts |
 
 #### 4. Geometry and Trigonometry
 
@@ -256,7 +256,7 @@ graph TD
 | `MIT-4.4` The Pythagorean theorem | 🟥 | — |
 | `MIT-4.5` Degree and radian measure | 🟥 | — |
 | `MIT-4.6` sin, cos, tan and the unit circle: amplitude, phase, period | 🟥 | — |
-| `MIT-4.7` Trigonometric ratios in surd form | ⬜ | **Out of scope** — Trigonometric ratios in surd form. Exact values from the special triangles are a hand-calculation skill; the trigonometry we want is the graphing and the two rules, both of which work in decimals. |
+| `MIT-4.7` Trigonometric ratios in surd form | ⬜ | **Out of scope** — Trigonometric ratios in surd form. Exact values from the special triangles are a hand-calculation skill; the trigonometry we want is the graphing and the two rules, both of which work in decimals. Note that the rest of Section 4 came back into scope on 2026-08-22 — this is now the only part of it left out. |
 | `MIT-4.8` Triangle area as one half a b sin theta | 🟥 | — |
 | `MIT-4.9` Practical right-triangle trigonometry | 🟥 | — |
 | `MIT-4.10` The Sine Rule and the Cosine Rule | 🟥 | — |
@@ -345,10 +345,11 @@ A word appearing in an earlier tutorial than the one that stops to explain it. S
 | *store* | 1 | 2 |
 | *tools* | 1 | 8 |
 
-## Scope questions still open
+## Scope questions, settled
 
-Counted as gaps until they are settled, which is the safer default.
+Kept rather than deleted: a decision is worth as much as the question it answered, and the next person to wonder will wonder the same thing.
 
-- **MIT-4.4, MIT-4.9 — Pythagoras and practical right-triangle trigonometry** — "Trigonometry beyond graphing and the Sine and Cosine Rules" could be read as excluding SOH-CAH-TOA as well. It is the usual way in to the subject and the students will have met it before, so it may be worth keeping as the bridge into the two rules rather than dropping.
-- **MIT-4.5, MIT-4.6 — radians and the unit circle** — Graphing sine and cosine needs an x-axis, and radians are what that axis is normally in. Keep radians as the minimum needed for the graphs, or teach the graphs in degrees and drop radians entirely?
-- **MIT-4.1, MIT-4.2, MIT-4.3 — coordinate geometry** — Not mentioned either way. Slope and midpoint are cheap to teach, sit naturally beside graphing straight lines in the polynomial tutorial, and are the one part of Section 4 that the programming half of the course can use directly. Keep?
+- **MIT-4.4, MIT-4.9 — Pythagoras and right-triangle trigonometry** — In scope, in full.
+- **MIT-4.5, MIT-4.6 — radians and the unit circle** — In scope, in full. Radians taught properly rather than avoided.
+- **MIT-4.1, MIT-4.2, MIT-4.3 — coordinate geometry** — In scope, in full.
+- **How much material this adds** — Not a constraint. More tutorials is a good outcome rather than a cost — teachers pick which ones they use, and a student who is going well can go further. Tutorials may also be long, and may refer to each other freely.

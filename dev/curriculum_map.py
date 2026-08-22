@@ -191,6 +191,7 @@ def load_scope() -> dict:
         "partial": {e["code"]: e for e in data.get("partial") or []},
         "topics": data.get("topics") or [],
         "undecided": data.get("undecided") or [],
+        "settled": data.get("settled") or [],
     }
 
 
@@ -636,6 +637,21 @@ def render() -> str:
         for entry in undecided:
             parts.append(f"- **{entry['about']}** — "
                          f"{entry['question'].strip().replace(chr(10), ' ')}")
+        parts.append("")
+
+    settled = scope.get("settled") or []
+    if settled:
+        parts += [
+            "## Scope questions, settled",
+            "",
+            "Kept rather than deleted: a decision is worth as much as the "
+            "question it answered, and the next person to wonder will wonder "
+            "the same thing.",
+            "",
+        ]
+        for entry in settled:
+            parts.append(f"- **{entry['about']}** — "
+                         f"{entry['answer'].strip().replace(chr(10), ' ')}")
         parts.append("")
 
     return "\n".join(parts).rstrip("\n") + "\n"
