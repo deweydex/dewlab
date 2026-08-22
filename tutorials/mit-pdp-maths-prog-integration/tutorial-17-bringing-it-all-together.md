@@ -7,6 +7,15 @@ year: "2026-2027"
 series: maths-and-programming
 order: 17
 version: 1
+covers:
+  problem-1-the-polynomial-workshop:
+    touches: [MIT-1.6, MIT-1.8]
+  problem-2-where-do-they-meet:
+    touches: [MIT-1.12]
+  problem-3-sets-of-solutions:
+    touches: [MIT-2.2]
+  problem-4-building-and-verifying:
+    covers: [PDP-LO10]
 ---
 
 # Tutorial 17: Bringing It All Together

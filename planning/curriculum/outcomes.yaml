@@ -1,0 +1,252 @@
+# The two QQI Level 5 module descriptors, one entry per learning outcome.
+#
+# This is the spine of the curriculum map. Every tutorial declares which of
+# these codes it covers, in its `covers:` frontmatter, and dev/curriculum_map.py
+# turns the two together into planning/CURRICULUM_MAP.md. A code that appears in
+# a tutorial but not here fails the build, so the map cannot drift from either
+# side.
+#
+# Wording is a close paraphrase of each outcome rather than the descriptor's
+# exact legal text — enough to recognise the outcome, short enough to read in a
+# diagram. The descriptors themselves are the authority:
+#   Maths for Information Technology 5N18396
+#   Programming and Design Principles 5N2927
+# Both PDFs live in the everlearning repository, under
+# PDP_MIT_2026_2027_Integrated/.
+#
+# `strand` groups an outcome for the map's colouring, and is our word rather
+# than the descriptor's: it answers "what kind of thing is this?" in a way a
+# student would recognise, which the descriptor's section numbers do not.
+
+modules:
+  MIT:
+    title: "Maths for Information Technology"
+    code: "5N18396"
+    sections:
+      "1": "Basic Arithmetic and Algebra"
+      "2": "Set Theory and Boolean Logic"
+      "3": "Functions and Calculus"
+      "4": "Geometry and Trigonometry"
+      "5": "Probability and Statistics"
+      "6": "Algorithms and Computations"
+  PDP:
+    title: "Programming and Design Principles"
+    code: "5N2927"
+    sections:
+      LO: "Learning outcomes"
+
+outcomes:
+  # ---------------------------------------------- MIT 1: arithmetic & algebra
+  - code: MIT-1.1
+    title: "Operations in N, Z, Q, R; indices and logarithms"
+    strand: number
+  - code: MIT-1.2
+    title: "Area and perimeter: square, rectangle, triangle, circle"
+    strand: geometry
+  - code: MIT-1.3
+    title: "Volume and surface area: cube, cylinder, cone, sphere"
+    strand: geometry
+  - code: MIT-1.4
+    title: "Binary and hexadecimal arithmetic and conversion"
+    strand: number
+  - code: MIT-1.5
+    title: "Distinguish an expression from an equation"
+    strand: algebra
+  - code: MIT-1.6
+    title: "Evaluate, expand and simplify expressions"
+    strand: algebra
+  - code: MIT-1.7
+    title: "Transpose formulae; operate on rational algebraic expressions"
+    strand: algebra
+  - code: MIT-1.8
+    title: "Multiply linear expressions into quadratics and cubics"
+    strand: algebra
+  - code: MIT-1.9
+    title: "Factor quadratics by inspection and solve them"
+    strand: algebra
+  - code: MIT-1.10
+    title: "Solve quadratics, including complex roots"
+    strand: algebra
+  - code: MIT-1.11
+    title: "Solve linear inequalities"
+    strand: algebra
+  - code: MIT-1.12
+    title: "Simultaneous equations in two and three unknowns"
+    strand: algebra
+
+  # ------------------------------------------------- MIT 2: sets & boolean
+  - code: MIT-2.1
+    title: "Set language: N, Z, Q, R, C, the empty set; finite, infinite, cardinality"
+    strand: sets
+  - code: MIT-2.2
+    title: "Set operations: union, intersection, complement, symmetric difference, Cartesian product, power set"
+    strand: sets
+  - code: MIT-2.3
+    title: "Venn diagrams for two and three sets"
+    strand: sets
+  - code: MIT-2.4
+    title: "Truth tables: AND, NOT, OR, XOR"
+    strand: logic
+  - code: MIT-2.5
+    title: "De Morgan's Laws"
+    strand: logic
+
+  # --------------------------------------------- MIT 3: functions & calculus
+  - code: MIT-3.1
+    title: "The function and inverse function concept"
+    strand: functions
+  - code: MIT-3.2
+    title: "Graph linear, quadratic and cubic functions; solve from a graph"
+    strand: functions
+  - code: MIT-3.3
+    title: "Define and graph the trigonometric functions"
+    strand: trigonometry
+  - code: MIT-3.4
+    title: "Complete the square to find roots and vertex"
+    strand: functions
+  - code: MIT-3.5
+    title: "The limit of a function"
+    strand: calculus
+  - code: MIT-3.6
+    title: "The derivative as a limit, a tangent slope, a rate of change"
+    strand: calculus
+  - code: MIT-3.7
+    title: "Sum, product, quotient and chain rules"
+    strand: calculus
+
+  # ------------------------------------------- MIT 4: geometry & trigonometry
+  - code: MIT-4.1
+    title: "Linear equations in the form ax + by + c = 0"
+    strand: geometry
+  - code: MIT-4.2
+    title: "Slope; parallel and perpendicular lines"
+    strand: geometry
+  - code: MIT-4.3
+    title: "Midpoint and length of a line segment"
+    strand: geometry
+  - code: MIT-4.4
+    title: "The Pythagorean theorem"
+    strand: geometry
+  - code: MIT-4.5
+    title: "Degree and radian measure"
+    strand: trigonometry
+  - code: MIT-4.6
+    title: "sin, cos, tan and the unit circle: amplitude, phase, period"
+    strand: trigonometry
+  - code: MIT-4.7
+    title: "Trigonometric ratios in surd form"
+    strand: trigonometry
+  - code: MIT-4.8
+    title: "Triangle area as one half a b sin theta"
+    strand: trigonometry
+  - code: MIT-4.9
+    title: "Practical right-triangle trigonometry"
+    strand: trigonometry
+  - code: MIT-4.10
+    title: "The Sine Rule and the Cosine Rule"
+    strand: trigonometry
+
+  # ----------------------------------------- MIT 5: probability & statistics
+  - code: MIT-5.1
+    title: "List the outcomes of an experiment"
+    strand: probability
+  - code: MIT-5.2
+    title: "The fundamental principle of counting"
+    strand: probability
+  - code: MIT-5.3
+    title: "Arrangements of n objects (n factorial)"
+    strand: probability
+  - code: MIT-5.4
+    title: "Permutations P(n, r)"
+    strand: probability
+  - code: MIT-5.5
+    title: "Combinations C(n, r)"
+    strand: probability
+  - code: MIT-5.6
+    title: "Probability as a scale from 0 to 1"
+    strand: probability
+  - code: MIT-5.7
+    title: "Probability from equally likely outcomes"
+    strand: probability
+  - code: MIT-5.8
+    title: "Compound probability: independent and mutually exclusive events"
+    strand: probability
+  - code: MIT-5.9
+    title: "Data types: nominal, ordinal, discrete, continuous"
+    strand: statistics
+  - code: MIT-5.10
+    title: "Effectiveness of displays: pie, histogram, stem-and-leaf"
+    strand: statistics
+  - code: MIT-5.11
+    title: "Frequency tables and histograms"
+    strand: statistics
+  - code: MIT-5.12
+    title: "Mean, median, mode, range, standard deviation"
+    strand: statistics
+  - code: MIT-5.13
+    title: "Merits and limitations of the averages with skewed data"
+    strand: statistics
+
+  # ------------------------------------------ MIT 6: algorithms & computation
+  - code: MIT-6.1
+    title: "The concept of an algorithm"
+    strand: algorithms
+  - code: MIT-6.2
+    title: "An algorithm as a function on a domain of inputs"
+    strand: algorithms
+  - code: MIT-6.3
+    title: "Manipulate lists and arrays, including addition and multiplication"
+    strand: algorithms
+  - code: MIT-6.4
+    title: "Index, sigma and pi notation"
+    strand: algorithms
+  - code: MIT-6.5
+    title: "Lists and arrays applied to simple problems"
+    strand: algorithms
+  - code: MIT-6.6
+    title: "Divide and conquer"
+    strand: algorithms
+  - code: MIT-6.7
+    title: "Iterate over a one-dimensional array by index"
+    strand: algorithms
+  - code: MIT-6.8
+    title: "Recursion; linear and binary search; bubble, insertion, selection and shell sort"
+    strand: algorithms
+
+  # ------------------------------------------------------------------- PDP
+  - code: PDP-LO1
+    title: "The history of computer programming"
+    strand: programming
+  - code: PDP-LO2
+    title: "Algorithms and their real-world application"
+    strand: algorithms
+  - code: PDP-LO3
+    title: "Differentiate programming languages by their characteristics"
+    strand: programming
+  - code: PDP-LO4
+    title: "Procedural syntax: storage, expressions, statements, input and output, keywords, operators"
+    strand: programming
+  - code: PDP-LO5
+    title: "The sequential nature of problem solving"
+    strand: programming
+  - code: PDP-LO6
+    title: "Structured design: pseudocode, storage, selection and iteration"
+    strand: programming
+  - code: PDP-LO7
+    title: "Develop documented programs for familiar and unfamiliar problems"
+    strand: programming
+  - code: PDP-LO8
+    title: "Modularisation: functions, procedures, scope, parameter passing"
+    strand: programming
+  - code: PDP-LO9
+    title: "Interpret compiler and linker messages and react appropriately"
+    strand: programming
+  - code: PDP-LO10
+    title: "The testing process: structured walkthroughs and debugging tools"
+    strand: programming
+  - code: PDP-LO11
+    title: "Coding standards: comments, indentation, variable naming"
+    strand: programming
+  - code: PDP-LO12
+    title: "Team programming: design, develop, release and review over time, in teams of three to five"
+    strand: programming

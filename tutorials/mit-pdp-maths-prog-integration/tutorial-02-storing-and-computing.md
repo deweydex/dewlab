@@ -7,6 +7,17 @@ year: "2026-2027"
 series: maths-and-programming
 order: 2
 version: 1
+covers:
+  variables-giving-names-to-things:
+    covers: [PDP-LO4, PDP-LO11]
+  data-types-different-kinds-of-information:
+    covers: [PDP-LO4]
+  type-conversion:
+    covers: [PDP-LO4]
+  number-systems-how-computers-count:
+    covers: [MIT-1.4]
+  putting-it-together-a-small-program:
+    covers: [PDP-LO7]
 ---
 
 # Tutorial 2: Storing and Computing

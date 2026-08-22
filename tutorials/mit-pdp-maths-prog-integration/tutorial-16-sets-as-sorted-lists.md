@@ -7,6 +7,17 @@ year: "2026-2027"
 series: maths-and-programming
 order: 16
 version: 1
+covers:
+  making-a-set:
+    covers: [MIT-2.1]
+  membership-testing:
+    covers: [MIT-2.1]
+  set-operations-the-merge-pattern:
+    covers: [MIT-2.2]
+  set-language-and-notation:
+    covers: [MIT-2.1]
+  sets-in-practice:
+    covers: [MIT-2.2]
 ---
 
 # Tutorial 16: Sets as Sorted Lists

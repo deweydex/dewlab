@@ -38,6 +38,12 @@ jobs:
       - name: Build the tutorials
         run: python build.py --clean
 
+      # The curriculum map is generated from the outcome data and the tutorials'
+      # own `covers:` frontmatter. A stale map is worse than none: it links to
+      # sections that may have moved and reports coverage that may have changed.
+      - name: Fail if the curriculum map is out of date
+        run: python3 dev/curriculum_map.py --check
+
   # The standalone bundle is the runtime rebuilt in the older script format and
   # committed, so that build.py needs no Node. That means it can go stale the
   # moment anyone edits the runtime — and a stale copy would make downloaded

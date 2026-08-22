@@ -7,6 +7,17 @@ year: "2026-2027"
 series: maths-and-programming
 order: 8
 version: 1
+covers:
+  what-makes-a-good-function:
+    covers: [PDP-LO8, PDP-LO11]
+  functions-calling-functions:
+    covers: [PDP-LO8]
+  handling-edge-cases:
+    covers: [PDP-LO7]
+  variable-scope-revisited:
+    covers: [PDP-LO8]
+  testing-as-a-habit:
+    covers: [PDP-LO10]
 ---
 
 # Tutorial 8: Building Reusable Tools

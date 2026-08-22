@@ -7,6 +7,17 @@ year: "2026-2027"
 series: maths-and-programming
 order: 15
 version: 1
+covers:
+  solving-linear-equations:
+    touches: [MIT-1.7]
+  the-quadratic-formula:
+    touches: [MIT-1.10]
+  factorisation:
+    covers: [MIT-1.9]
+  solving-inequalities:
+    covers: [MIT-1.11]
+  simultaneous-equations:
+    covers: [MIT-1.12]
 ---
 
 # Tutorial 15: Cracking Equations

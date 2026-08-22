@@ -1,0 +1,151 @@
+# Tutorials that do not exist yet, and where each one would go.
+#
+# Written as data rather than prose so the curriculum map can place them in the
+# existing sequence and show what they would close. Each has a fuller outline in
+# planning/outlines/.
+#
+# `after` is a placement argument, not a filing decision: it says which existing
+# tutorial the new one should follow, and `because` says why that position and
+# not another. Several of these want to go in the middle of the series rather
+# than on the end, which would renumber everything after them — that is a real
+# cost and it is Josh's call, so nothing here has been given an `order`.
+
+proposed:
+  - id: rearranging-formulae
+    outline: rearranging-formulae
+    title: "Rearranging Formulae"
+    after: tutorial-14-expressions-come-alive
+    covers: [MIT-1.7]
+    builds_on: [tutorial-14-expressions-come-alive]
+    because: >
+      The one algebra outcome with no home. Tutorial 14 builds polynomials and
+      Tutorial 15 solves them; getting a formula into the shape you need sits
+      exactly between the two, and every science subject the students take
+      assumes they can do it.
+    size: short
+
+  - id: complex-roots
+    outline: complex-roots
+    title: "When There Is No Answer (And Then There Is)"
+    after: tutorial-15-cracking-equations
+    covers: [MIT-1.10]
+    extends: [MIT-2.1]
+    builds_on: [tutorial-15-cracking-equations, tutorial-13-numbers-and-their-families]
+    because: >
+      Tutorial 15 computes the discriminant, finds it negative, and stops at "no
+      real solutions". That is a cliff-edge the descriptor asks us to walk over:
+      the roots exist, they are just not real. It also completes the set of
+      number domains that Tutorial 13 lays out and leaves at R.
+    size: short
+
+  - id: drawing-functions
+    outline: drawing-functions
+    title: "Drawing Functions"
+    after: tutorial-15-cracking-equations
+    covers: [MIT-3.1, MIT-3.2, MIT-3.4]
+    optional: [MIT-4.1, MIT-4.2, MIT-4.3]
+    builds_on: [tutorial-12-pictures-worth-numbers, tutorial-14-expressions-come-alive, tutorial-15-cracking-equations]
+    because: >
+      The largest single gap and the one that unlocks the rest. The students can
+      already build a polynomial (14), solve it (15), and plot data (12); nobody
+      has yet asked them to plot a function and read an answer off the picture.
+      Completing the square belongs here rather than in 15 because its payoff is
+      the vertex, which is a fact about the graph.
+    size: full
+
+  - id: angles-and-waves
+    outline: angles-and-waves
+    title: "Angles and Waves"
+    after: drawing-functions
+    covers: [MIT-3.3, MIT-4.5, MIT-4.6, MIT-4.8, MIT-4.10]
+    optional: [MIT-4.4, MIT-4.9]
+    builds_on: [drawing-functions]
+    because: >
+      All of trigonometry that survives the scope decisions, in one place: what
+      the sine and cosine curves look like and what amplitude, period and phase
+      do to them, then solving a triangle that is not right-angled. Needs
+      Drawing Functions first, because the graphing habit is the point of entry.
+    size: full
+
+  - id: approaching-a-limit
+    outline: approaching-a-limit
+    title: "Approaching a Limit"
+    after: angles-and-waves
+    covers: [MIT-3.5]
+    builds_on: [drawing-functions]
+    because: >
+      A short tutorial that exists to make the next one honest. A limit is
+      exactly the sort of idea a runnable cell teaches better than a page does:
+      evaluate closer and closer, watch the number settle, notice that the
+      function need not be defined at the point at all.
+    size: short
+
+  - id: rates-of-change
+    outline: rates-of-change
+    title: "Rates of Change"
+    after: approaching-a-limit
+    covers: [MIT-3.6, MIT-3.7]
+    builds_on: [approaching-a-limit, drawing-functions]
+    because: >
+      The derivative as the limit of a slope, which is why the limit tutorial
+      comes first, and as a rate of change, which is why it matters. Sum and
+      product rules only, per the scope decisions, and polynomial integration as
+      the closing idea that differentiation runs backwards.
+    size: full
+
+  - id: logic-and-truth
+    outline: logic-and-truth
+    title: "Logic and Truth"
+    after: tutorial-16-sets-as-sorted-lists
+    covers: [MIT-2.4, MIT-2.5]
+    builds_on: [tutorial-03-making-decisions, tutorial-16-sets-as-sorted-lists]
+    because: >
+      Students have been writing `and`, `or` and `not` since Tutorial 3 without
+      ever seeing them laid out. A truth table is a small table a loop can
+      generate, De Morgan's Laws are two claims a loop can check exhaustively,
+      and both land better after sets have made the union/intersection shape
+      familiar.
+    size: short
+
+  - id: how-we-got-here
+    outline: from-everlearning
+    title: "How We Got Here"
+    after: tutorial-01-first-steps
+    covers: [PDP-LO1, PDP-LO3]
+    builds_on: [tutorial-01-first-steps]
+    because: >
+      Two programming outcomes with no dewlab home at all. everlearning already
+      has a built notebook for this pair, framed around the binary and hex work
+      — it needs converting rather than writing.
+    size: full
+    source: >
+      everlearning
+      PDP_MIT_2026_2027_Integrated/LearningOutcomes/PDP/PDP-LO1_LO3_MIT-1.4_The-Computing-Time-Machine.ipynb
+
+  - id: when-it-goes-wrong
+    outline: from-everlearning
+    title: "When It Goes Wrong"
+    after: tutorial-03-making-decisions
+    covers: [PDP-LO9]
+    builds_on: [tutorial-01-first-steps]
+    because: >
+      Reading an error message is the single most useful thing a beginner can
+      learn, and it is currently taught only in passing. Early in the series,
+      while the errors are still small ones.
+    size: full
+    source: >
+      everlearning
+      PDP_MIT_2026_2027_Integrated/LearningOutcomes/PDP/PDP-LO9_LO10_Reading-Compiler-Errors-and-Debugging.ipynb
+
+  - id: team-project
+    outline: team-project
+    title: "The Team Project"
+    after: tutorial-17-bringing-it-all-together
+    covers: [PDP-LO12]
+    builds_on: [tutorial-17-bringing-it-all-together]
+    because: >
+      Not a tutorial. The outcome asks for teams of three to five designing,
+      releasing and reviewing successive versions over time, which is an
+      assessment structure and a schedule, not a page of cells. Listed here so
+      the map stops showing it as a tutorial-shaped hole.
+    size: not-a-tutorial

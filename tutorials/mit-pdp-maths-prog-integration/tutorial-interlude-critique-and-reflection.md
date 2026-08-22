@@ -7,6 +7,11 @@ year: "2026-2027"
 series: maths-and-programming
 order: 18
 version: 1
+covers:
+  part-1-reading-your-own-code:
+    covers: [PDP-LO11]
+  part-2-reading-someone-elses-code:
+    covers: [PDP-LO11]
 ---
 
 # Interlude: Looking Back Before Moving Forward

@@ -7,6 +7,20 @@ year: "2026-2027"
 series: maths-and-programming
 order: 3
 version: 1
+covers:
+  comparisons-true-or-false:
+    covers: [PDP-LO6]
+  if-statements-choosing-a-path:
+    covers: [PDP-LO6]
+  if-else-two-paths:
+    covers: [PDP-LO6]
+  elif-multiple-paths:
+    covers: [PDP-LO6]
+  boolean-operators-combining-conditions:
+    covers: [PDP-LO6]
+    touches: [MIT-2.4]
+  classifying-numbers-a-mathematical-application:
+    covers: [MIT-1.1]
 ---
 
 # Tutorial 3: Making Decisions

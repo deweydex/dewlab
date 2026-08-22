@@ -1,6 +1,6 @@
 # Build plan
 
-Five phases, in dependency order. Each rests on the one before it, and nothing
+Six phases, in dependency order. Each rests on the one before it, and nothing
 in a later phase should send you back to reopen an earlier one.
 
 The order is not arbitrary. It puts the thing most likely to be wrong first —
@@ -80,3 +80,47 @@ machine that is not the one they were built on.
 
 Converting everything first and discovering a problem afterwards is the
 expensive order to do this in.
+
+## Phase 6 — Closing the curriculum
+
+Phases 0 to 5 were about the tool. This one is about whether the material it
+carries actually covers the two module descriptors, which is a different
+question and was not answerable until there was something to measure.
+
+The measuring is done. [`CURRICULUM_MAP.md`](./CURRICULUM_MAP.md) is generated
+from the outcome data and each tutorial's own `covers:` frontmatter, so it
+cannot drift from the tutorials, and CI fails if it is out of date. It reports
+**41 of 65 outcomes in place**, with the gaps concentrated almost entirely in the
+mathematics: calculus, trigonometry, function graphing and Boolean logic have no
+coverage at all.
+
+What is left is writing, and it divides into three kinds of work that cost very
+different amounts.
+
+**Conversions — cheapest.** `PDP-LO1`, `PDP-LO3` and `PDP-LO9` already exist as
+finished notebooks in `everlearning`, and `dev/from_notebook.py` already converts
+notebooks. Two tutorials, no new material, three outcomes closed. See
+[`outlines/from-everlearning.md`](./outlines/from-everlearning.md).
+
+**Short tutorials — cheap.** Rearranging Formulae, When There Is No Answer,
+Approaching a Limit, Logic and Truth. Each closes one or two outcomes, each fits
+in a sitting, and three of the four close a *quiet* gap — an outcome students
+currently meet without being taught.
+
+**Full tutorials — the real work.** Drawing Functions, then Angles and Waves,
+then Rates of Change, in that order, because each needs the graphing habit the
+one before it builds. This is the mathematics half of the course, and it is
+roughly as much writing as everything converted so far.
+
+Before any of it:
+
+- Settle the three scope questions in `curriculum/out-of-scope.yaml` —
+  coordinate geometry, right-triangle trigonometry, and radians. Each changes
+  what Drawing Functions and Angles and Waves contain.
+- Decide whether Tutorial 15 is revised or extended. Two of the outlines take
+  material that arguably belongs in it.
+- Decide whether the new tutorials go on the end or get slotted in. Slotting in
+  is better teaching and renumbers everything after them.
+
+`PDP-LO12`, the team project, is the one item here that dewlab cannot solve by
+writing a tutorial. See [`outlines/team-project.md`](./outlines/team-project.md).

@@ -7,6 +7,21 @@ year: "2026-2027"
 series: maths-and-programming
 order: 14
 version: 1
+covers:
+  expressions-versus-equations:
+    covers: [MIT-1.5]
+  representing-polynomials:
+    covers: [MIT-1.6]
+  evaluating-polynomials:
+    covers: [MIT-1.6]
+  displaying-polynomials:
+    covers: [MIT-1.6]
+  adding-polynomials:
+    covers: [MIT-1.6]
+  multiplying-polynomials:
+    covers: [MIT-1.8]
+  subtracting-and-scaling:
+    covers: [MIT-1.6]
 ---
 
 # Tutorial 14: Expressions Come Alive
