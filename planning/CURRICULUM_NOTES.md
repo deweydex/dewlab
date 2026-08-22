@@ -17,6 +17,7 @@ working surface, not the record.
 | [`curriculum/outcomes.yaml`](./curriculum/outcomes.yaml) | Every learning outcome in the two module descriptors. |
 | [`curriculum/out-of-scope.yaml`](./curriculum/out-of-scope.yaml) | What we have decided not to teach, and why. |
 | [`curriculum/proposed.yaml`](./curriculum/proposed.yaml) | Tutorials that do not exist yet and where each would go. |
+| [`curriculum/DECISIONS_NEEDED.md`](./curriculum/DECISIONS_NEEDED.md) | The six open questions, set out so they can be answered. |
 | [`outlines/`](./outlines/) | One outline per proposed tutorial. |
 | each tutorial's `covers:` frontmatter | Which outcome each section teaches, and which it only uses. |
 
@@ -72,6 +73,45 @@ the course gets substantially longer at the end, and the two cheap PDP
 conversions want to go near the *front* (after Tutorials 1 and 3). Slotting them
 in renumbers everything after them, which is a real cost. Nothing in
 `proposed.yaml` has been given an `order` for that reason.
+
+---
+
+## 2026-08-22 — everlearning has far more reusable material than expected
+
+`PDP_MIT_2026_2027_Integrated/LearningOutcomes/MIT/` holds **seven finished
+worksheets, 3,072 lines and 486 problems, every one with an answer key**, and
+between them they cover almost exactly the gaps the map found: quadratic
+graphing and completing the square, graphing sine and cosine, derivatives and
+integrals, the differentiation rules, coordinate geometry, right-triangle
+trigonometry, and radians.
+
+This changes what Phase 6 is. It is not "write the mathematics half of the
+course"; it is "convert seven worksheets, cut what is out of scope, and add the
+cells that make dewlab worth using instead of a PDF".
+
+Two things follow:
+
+- **The scope decisions are now decisions about specific parts of specific
+  files**, which is what made `DECISIONS_NEEDED.md` writable. The chain-rule
+  exclusion, for instance, cuts 62 of the 74 problems in the `MIT-3.7`
+  worksheet — a fact worth knowing before confirming it.
+- **`MIT-3.6` is the best-matched source of the seven.** All 82 problems are
+  within scope as written: power rule both directions, the constant of
+  integration, sums, polynomials, and a Fundamental Theorem preview. Nothing
+  needs cutting.
+
+### Renumbering is a 50-place edit nothing checks
+
+Measured while working out what inserting a tutorial would cost: **50 prose
+references by number** ("your functions from Tutorial 11"), 17 numbered titles,
+17 numbered slugs — and only **three** cross-links use the `tutorial:slug`
+syntax the build validates. So the build would catch almost none of a
+renumbering.
+
+`order:` in the frontmatter is what actually sequences a series; the number in
+the title is decoration the build never reads. Placement and numbering are
+therefore separable, which is the argument for dropping the numbers once and
+placing freely thereafter.
 
 ---
 
