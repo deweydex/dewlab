@@ -100,22 +100,53 @@ It says more than "matrices are in scope", and some of it is a surprise:
 | 7. Modelling and simulation | abstraction; server-room temperature, robot control, autonomous vehicles, traffic flow |
 | 8–13 | problem definition and solution design, heuristics, symptom versus root cause, iterative model creation and validation, personal attributes, reflection |
 
-Three things this settles:
+### Everything after an "e.g." is a suggestion, not a requirement
 
-1. **Markov chains are not a bonus, they are the syllabus.** LO4 names Google
-   PageRank explicitly, and PageRank *is* a Markov chain — the stationary
-   distribution of a transition matrix. Josh's instinct that "markov would be
-   great" lands exactly on a named outcome.
-2. **Dropping eigenvectors is fine, but PageRank is an eigenvector problem** in
-   disguise. It can be taught as repeated multiplication converging, which is
-   tutorial 2 of the strand doing something a student cares about, with no
-   eigenvector vocabulary anywhere.
-3. **Matrices are a fraction of it.** Monte Carlo, randomness and PKI,
-   complexity analysis, recurrence relations, and modelling are all in here and
-   none is matrices. Five to seven tutorials on matrices is comfortable, but the
-   series needs several more strands beyond them — which answers the matrices
-   outline's open question about whether five tutorials is too much of the
-   series. It is not.
+**Read the table above with that in mind.** Josh corrected me on this and he is
+right — I had written that Markov chains "are the syllabus", which is wrong. The
+descriptor states it plainly in its own front matter:
+
+> The indicative content in Section 10 does not cover all teaching
+> possibilities. The teacher/tutor is encouraged to be creative in devising and
+> implementing other approaches, as appropriate. **The use of examples is there
+> to provide suggestions. The teacher/tutor is free to use other examples, as
+> appropriate.**
+
+And again at the head of Section 10: *"This section provides suggestions for
+programme content but is not intended to be prescriptive."*
+
+So the split is:
+
+| Binding | Optional |
+|---|---|
+| The **learning outcome** — "demonstrate knowledge and understanding of numeric and structural data representations", "apply knowledge and understanding of ... arrays/matrices" | Every worked example — ASCII art, Google PageRank, Monte Carlo, decision matrices, server-room temperature, autonomous vehicles, traffic flow, sequence alignment, nearest neighbour |
+| The **topic** the outcome names — matrices, trees, recurrence relations, iterative versus recursive, sample mean and variance, best/expected/worst case | The **route** through it, and which application carries it |
+
+What has to be true is that a learner can do the thing the outcome describes.
+Which example gets them there is ours to choose, and choosing a better one than
+the descriptor suggests is explicitly encouraged.
+
+### What that means for the plan
+
+1. **Markov chains are a good idea, not an obligation.** LO4's binding half is
+   applying matrices to a computational problem; PageRank is one suggested way,
+   sitting alongside graphics, games, sequence alignment and nearest neighbour.
+   Josh asked for Markov because it is worth teaching, and that is reason
+   enough — it does not need to be dressed up as compulsory.
+2. **Dropping eigenvectors stays fine.** PageRank is an eigenvector problem in
+   disguise and teaches perfectly well as repeated multiplication converging,
+   with no eigenvector vocabulary anywhere. But if a different application
+   serves the outcome better, take it.
+3. **Matrices are one strand of seven.** Monte Carlo, randomness and PKI,
+   complexity analysis, recurrence relations and modelling are all separate
+   outcomes. Five to seven matrix tutorials is proportionate in a 150-hour
+   module — which answers the matrices outline's open question about whether
+   that would swamp the series. It would not.
+4. **Cover the topics; do not chase the examples.** When the outcomes go into
+   `outcomes.yaml`, the outcome is the entry. Examples belong in the `uses:`
+   list — where the topic glossary already puts applications — not as things
+   coverage is measured against. Measuring against suggestions would make the
+   map claim gaps that are not gaps.
 
 **Still to do:** the outcomes need transcribing into `outcomes.yaml` in the
 shape MIT and PDP use, so coverage can be tracked the same way. Not done here.
