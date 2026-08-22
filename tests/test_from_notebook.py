@@ -237,9 +237,10 @@ class TestTheOutputActuallyBuilds:
             monkeypatch.setattr(b, name, value)
 
         written = b.build()
-        # The tutorial, plus the contents page the build always writes.
-        pages = [path for path in written if path.name != "index.html"]
-        assert len(pages) == 1
+        # The tutorial, minus the pages the build always writes alongside it.
+        alongside = {"index.html", "tree.html"}
+        pages = [path for path in written if path.name not in alongside]
+        assert len(pages) == 1, [path.name for path in pages]
         page = pages[0].read_text()
         assert "{{" not in page
         assert 'data-cell-id="making-decisions-1"' in page

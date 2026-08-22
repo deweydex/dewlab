@@ -14,6 +14,8 @@ import json
 import re
 import sys
 import zipfile
+
+import yaml
 from pathlib import Path
 
 import pytest
@@ -866,8 +868,10 @@ class TestTheKnowledgeMap:
             )
 
     def svg(self, repo) -> str:
-        index = (repo / "site" / "index.html").read_text()
-        match = re.search(r'<svg class="dl-map".*?</svg>', index, re.DOTALL)
+        """The tutorial map lives on the tree page, under the topic tree."""
+        page = repo / "site" / "tree.html"
+        match = re.search(r'<svg class="dl-map".*?</svg>',
+                          page.read_text() if page.is_file() else "", re.DOTALL)
         return match.group(0) if match else ""
 
     def test_a_series_gets_a_map(self, repo):
@@ -896,11 +900,12 @@ class TestTheKnowledgeMap:
         assert ">algorithms</text>" in svg
 
     def test_it_still_builds_without_the_curriculum_data(self, repo):
-        """The site has to build from the tutorials alone."""
+        """The site has to build from the tutorials alone. Without the outcome
+        data there is no topic tree — but the tutorial map does not need it."""
         self.series(repo, covers=False)
         (repo / "planning" / "curriculum" / "outcomes.yaml").unlink()
         b.build()
-        assert self.svg(repo).count('class="dl-map-node"') == 4
+        assert (repo / "site" / "index.html").is_file()
 
     def test_naming_an_earlier_tutorial_draws_an_arrow_back_to_it(self, repo):
         self.series(repo)
@@ -1003,3 +1008,102 @@ class TestTheExportFailsLoudly:
         """A silent no-op here is a downloadable copy with no stylesheet."""
         with pytest.raises(b.BuildError, match="drifted apart"):
             b.replace_once("<p>a page</p>", "<not-here>", "x", "the thing")
+
+
+class TestTheTopicTree:
+    """The tree page: every topic in both descriptors, positioned by what has
+    to come first, with what each one is and where it is used."""
+
+    def tree(self, repo) -> str:
+        page = repo / "site" / "tree.html"
+        return page.read_text() if page.is_file() else ""
+
+    def data(self, repo) -> dict:
+        match = re.search(
+            r'<script type="application/json" id="dewlab-tree">(.*?)</script>',
+            self.tree(repo), re.DOTALL,
+        )
+        return json.loads(match.group(1)) if match else {}
+
+    def test_the_page_is_built(self, repo):
+        write(repo, "Some prose.\n")
+        b.build()
+        assert "The topic tree" in self.tree(repo)
+
+    def test_every_topic_in_the_glossary_becomes_a_node(self, repo):
+        write(repo, "Some prose.\n")
+        b.build()
+        topics = yaml.safe_load(
+            (Path(__file__).resolve().parent.parent
+             / "planning" / "curriculum" / "topics.yaml").read_text()
+        )["topics"]
+        assert len(self.data(repo)["nodes"]) == len(topics)
+
+    def test_a_topic_carries_what_it_is_and_where_it_is_used(self, repo):
+        write(repo, "Some prose.\n")
+        b.build()
+        node = next(n for n in self.data(repo)["nodes"] if n["code"] == "MIT-1.4")
+        assert "two digits" in node["plain"]
+        assert node["uses"]
+        assert node["strand"] == "number"
+
+    def test_nothing_needs_something_to_its_right(self, repo):
+        """The whole layout rests on this: left to right is dependency, so an
+        arrow that pointed backwards would be a lie about the tree."""
+        write(repo, "Some prose.\n")
+        b.build()
+        data = self.data(repo)
+        tier = {n["code"]: n["tier"] for n in data["nodes"]}
+        for node in data["nodes"]:
+            for need in node["needs"]:
+                assert tier[need] < node["tier"], f"{node['code']} needs {need}"
+
+    def test_a_taught_topic_links_to_the_section_that_teaches_it(self, repo):
+        """The link comes from the tutorial's own `covers:`, so it cannot point
+        somewhere the tutorial does not claim."""
+        path = write(repo, "## A section\n\nProse.\n")
+        path.write_text(path.read_text().replace(
+            "version: 1\n", "version: 1\ncovers:\n  a-section:\n    covers: [MIT-1.4]\n"
+        ))
+        b.build()
+        node = next(n for n in self.data(repo)["nodes"] if n["code"] == "MIT-1.4")
+        assert node["state"] == "taught"
+        assert node["where"]["href"] == (
+            "tutorials/computational-methods/sample.html#a-section"
+        )
+
+    def test_a_topic_no_tutorial_claims_is_not_marked_taught(self, repo):
+        write(repo, "Some prose.\n")
+        b.build()
+        assert all(n["state"] != "taught" for n in self.data(repo)["nodes"])
+
+    def test_a_topic_nobody_teaches_is_marked_planned(self, repo):
+        write(repo, "Some prose.\n")
+        b.build()
+        states = {n["code"]: n["state"] for n in self.data(repo)["nodes"]}
+        assert states["MIT-3.6"] == "planned"
+
+    def test_a_topic_we_ruled_out_says_so(self, repo):
+        write(repo, "Some prose.\n")
+        b.build()
+        states = {n["code"]: n["state"] for n in self.data(repo)["nodes"]}
+        assert states["MIT-2.3"] == "excluded"
+
+    def test_the_tutorial_map_moved_here_from_the_contents_page(self, repo):
+        for n in (1, 2, 3):
+            (repo / "tutorials" / "computational-methods" / f"t{n}.md").write_text(
+                f'---\ntitle: "T{n}"\nslug: t{n}\nmodule: computational-methods\n'
+                f'year: "2026-2027"\nseries: python-fundamentals\norder: {n}\n'
+                f"version: 1\n---\n\n# T{n}\n\nProse.\n"
+            )
+        b.build()
+        assert "dl-map-node" not in (repo / "site" / "index.html").read_text()
+        assert "How the tutorials relate" in self.tree(repo)
+        assert self.tree(repo).count('class="dl-map-node"') == 3
+
+    def test_the_contents_page_introduces_the_place_instead(self, repo):
+        write(repo, "Some prose.\n")
+        b.build()
+        index = (repo / "site" / "index.html").read_text()
+        assert "runs in this browser" in index
+        assert 'href="tree.html"' in index

@@ -95,16 +95,21 @@ all 18 as single files**, which is a zip of exactly those files. That is the one
 to reach for when you are setting up a room, filling a memory stick, or handing
 a class something to take home — rather than clicking through eighteen pages.
 
-The contents page opens with a **map of the series**: every tutorial as a box,
-grouped into the subject it is mostly about, with arrows for what follows what.
-A dashed arrow means a later tutorial builds on an earlier one and says so in
-its own text — those are found by reading the tutorials, not by anybody
-maintaining a list, so they cannot go out of date. Any box is a link.
+There is a **topic tree** on its own page: every topic both module descriptors
+cover, laid out left to right by what has to come first and grouped top to
+bottom by subject. Drag to move around it, scroll to zoom, and choose any topic
+to read what it is, two or three places it turns up in computing, what it needs
+first, and — if it is taught here — a link straight to the section that teaches
+it. Topics dewlab does not teach yet are drawn but dashed, so the tree is honest
+about its own gaps rather than quietly leaving them out.
 
-It answers a question the numbered list cannot: how the parts relate. You can
-see that the course spends four tutorials on programming before any mathematics
-appears, and that Tutorial 17 leans on five earlier ones, which makes it the
-expensive one to move.
+Underneath it, a second and smaller map shows how the **tutorials** relate:
+reading order in solid arrows, and a dashed arrow wherever a later tutorial
+builds on an earlier one and says so in its own text. Those are found by reading
+the tutorials, not by anybody maintaining a list, so they cannot go out of date.
+
+The contents page itself is an introduction and a list, which is what somebody
+arriving actually wants.
 
 A tutorial with no code in it at all is a perfectly ordinary dewlab tutorial —
 same format, same styling — and it never loads the Python runtime, so a page of

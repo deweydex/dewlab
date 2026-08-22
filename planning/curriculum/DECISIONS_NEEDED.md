@@ -1,5 +1,11 @@
 # Decisions needed before Phase 6
 
+> **All seven answered by Josh on 2026-08-22.** The answers are recorded at the
+> top of each question and in `ANSWERS.md`, which is the short version. The
+> reasoning below is kept because it is what the answers were answers to, and
+> because two of them turned into larger pieces of work than the question
+> anticipated.
+
 Six questions. Each blocks a specific piece of writing, each has a
 recommendation, and each ends with the form of words that would settle it.
 

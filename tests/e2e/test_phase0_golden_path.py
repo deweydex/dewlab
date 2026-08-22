@@ -50,8 +50,9 @@ def test_the_page_loads_its_shared_assets_rather_than_inlining_them(page):
         "link[rel=stylesheet], script[src]",
         "els => els.map(e => e.href || e.src)",
     )
-    assert any(h.endswith("/assets/tutorial-style.css") for h in hrefs)
-    assert any(h.endswith("/assets/tutorial-runtime.js") for h in hrefs)
+    # The URL carries a content hash, so match the path and ignore the query.
+    assert any("/assets/tutorial-style.css" in h for h in hrefs)
+    assert any("/assets/tutorial-runtime.js" in h for h in hrefs)
 
     # And the stylesheet actually applied, rather than 404ing quietly.
     background = page.eval_on_selector(
@@ -303,14 +304,13 @@ def test_the_contents_list_jumps_to_a_section(page):
 
 
 def test_the_contents_page_never_scrolls_sideways(browser, base_url):
-    """The map is wider than the reading measure by design. Widening it must not
-    push the page itself sideways — that is the one thing wide content on a
-    dewlab page is not allowed to do."""
+    """It carries an introduction and a list now, and neither is wide — but the
+    rule is worth holding onto whatever the page contains."""
     for width in (1400, 900, 390):
         context = browser.new_context(viewport={"width": width, "height": 800})
         tab = context.new_page()
         tab.goto(f"{base_url}/index.html")
-        tab.wait_for_selector("svg.dl-map", timeout=10_000)
+        tab.wait_for_selector(".dl-contents", timeout=10_000)
         overflow = tab.evaluate(
             "document.documentElement.scrollWidth - document.documentElement.clientWidth"
         )
@@ -319,9 +319,10 @@ def test_the_contents_page_never_scrolls_sideways(browser, base_url):
 
 
 def test_every_box_on_the_map_is_a_link_to_a_tutorial(browser, base_url):
+    """The tutorial map lives on the tree page now, under the topic tree."""
     context = browser.new_context(viewport={"width": 1400, "height": 900})
     tab = context.new_page()
-    tab.goto(f"{base_url}/index.html")
+    tab.goto(f"{base_url}/tree.html")
     tab.wait_for_selector("svg.dl-map", timeout=10_000)
     hrefs = tab.eval_on_selector_all(
         "svg.dl-map a.dl-map-node", "els => els.map(e => e.getAttribute('href'))"
@@ -338,3 +339,107 @@ def test_texture_choices_survive_a_reload(page, base_url):
     page.click("#dl-settings-texture .dl-seg[data-texture=theme] button[data-value=dark]")
     page.reload()
     page.wait_for_selector("html[data-theme=dark]", timeout=5_000)
+
+
+# ------------------------------------------------------------- the topic tree
+
+def open_tree(browser, base_url, width=1400):
+    context = browser.new_context(viewport={"width": width, "height": 900})
+    tab = context.new_page()
+    tab.goto(f"{base_url}/tree.html")
+    tab.wait_for_function("globalThis.dewlabTree !== undefined", timeout=10_000)
+    return context, tab
+
+
+def test_the_tree_draws_every_topic_and_its_prerequisites(browser, base_url):
+    context, tab = open_tree(browser, base_url)
+    nodes = tab.eval_on_selector_all(".dl-tree-node", "e => e.length")
+    edges = tab.eval_on_selector_all(".dl-tree-edge", "e => e.length")
+    assert nodes == tab.evaluate("globalThis.dewlabTree.data.nodes.length")
+    assert edges == tab.evaluate(
+        "globalThis.dewlabTree.data.nodes.reduce((n, t) => n + t.needs.length, 0)"
+    )
+    context.close()
+
+
+def test_choosing_a_topic_shows_what_it_is_and_lights_its_path(browser, base_url):
+    context, tab = open_tree(browser, base_url)
+    tab.click('.dl-tree-node[data-code="MIT-6.8"]')
+    panel = tab.inner_text("#dl-tree-detail")
+    assert "Searching and sorting" in panel
+    # inner_text is what the reader sees, and these headings are uppercased by
+    # the stylesheet — so compare against that rather than against the source.
+    assert "WHERE IT TURNS UP" in panel
+    assert "NEEDS FIRST" in panel
+    assert tab.eval_on_selector_all(".dl-tree-uses li", "e => e.length") >= 2
+    # Both prerequisites, and only those.
+    assert tab.eval_on_selector_all(".dl-tree-edge.is-lit", "e => e.length") == 2
+    context.close()
+
+
+def test_a_topic_that_is_taught_links_to_the_tutorial(browser, base_url):
+    """The fixture claims MIT-5.10 in its matplotlib section, so that topic —
+    and only a topic some tutorial claims — offers a way to read it."""
+    context, tab = open_tree(browser, base_url)
+    tab.click('.dl-tree-node[data-code="MIT-5.10"]')
+    href = tab.get_attribute(".dl-tree-goto", "href")
+    assert href and href.endswith("#matplotlib")
+    context.close()
+
+
+def test_a_topic_nobody_teaches_says_so_instead(browser, base_url):
+    context, tab = open_tree(browser, base_url)
+    tab.click('.dl-tree-node[data-code="MIT-3.6"]')
+    assert tab.query_selector(".dl-tree-goto") is None
+    assert "Not written yet" in tab.inner_text("#dl-tree-detail")
+    context.close()
+
+
+def test_a_prerequisite_in_the_panel_moves_the_selection(browser, base_url):
+    context, tab = open_tree(browser, base_url)
+    tab.click('.dl-tree-node[data-code="MIT-6.8"]')
+    tab.click(".dl-tree-jump")
+    assert tab.evaluate("globalThis.dewlabTree.chosen()") != "MIT-6.8"
+    context.close()
+
+
+def test_scrolling_zooms_and_dragging_moves(browser, base_url):
+    context, tab = open_tree(browser, base_url)
+    before = tab.evaluate("({...globalThis.dewlabTree.view})")
+
+    tab.mouse.move(500, 500)
+    tab.mouse.wheel(0, -240)
+    tab.wait_for_timeout(120)
+    zoomed = tab.evaluate("globalThis.dewlabTree.view.scale")
+    assert zoomed > before["scale"]
+
+    tab.mouse.move(700, 600)
+    tab.mouse.down()
+    tab.mouse.move(560, 520, steps=6)
+    tab.mouse.up()
+    tab.wait_for_timeout(120)
+    moved = tab.evaluate("({...globalThis.dewlabTree.view})")
+    assert (moved["x"], moved["y"]) != (before["x"], before["y"])
+    context.close()
+
+
+def test_fit_brings_the_whole_tree_back(browser, base_url):
+    context, tab = open_tree(browser, base_url)
+    tab.mouse.move(500, 500)
+    for _ in range(4):
+        tab.mouse.wheel(0, -240)
+    tab.wait_for_timeout(120)
+    tab.click("#dl-tree-fit")
+    tab.wait_for_timeout(120)
+    assert tab.evaluate("globalThis.dewlabTree.view.scale") <= 1.01
+    context.close()
+
+
+def test_the_tree_page_never_scrolls_sideways(browser, base_url):
+    for width in (1400, 900, 390):
+        context, tab = open_tree(browser, base_url, width)
+        overflow = tab.evaluate(
+            "document.documentElement.scrollWidth - document.documentElement.clientWidth"
+        )
+        assert overflow <= 1, f"the tree page scrolls sideways at {width}px"
+        context.close()

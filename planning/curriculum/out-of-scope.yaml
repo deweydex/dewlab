@@ -33,15 +33,30 @@ outcomes:
       are a hand-calculation skill; the trigonometry we want is the graphing and
       the two rules, both of which work in decimals.
 
+      Note that the rest of Section 4 came back into scope on 2026-08-22 — this
+      is now the only part of it left out.
+
 # Outcomes we are covering, but not all of.
 partial:
   - code: MIT-3.7
-    excluded: the chain rule and the quotient rule
-    kept: the sum rule and the product rule
+    excluded: the quotient rule, and integration by parts
+    kept: >
+      the sum and product rules as a tutorial of their own; integration by
+      substitution as a second tutorial; the chain rule as a bonus section
     reason: >
-      Differentiating a composed or divided function is a mechanical skill that
-      sits well above the level these students need. Sum and product carry the
-      idea that differentiation has rules and that they compose.
+      Settled 2026-08-22. The quotient rule and integration by parts are
+      mechanical skills well above the level these students need. The chain rule
+      is worth meeting but not worth drilling, so it is a bonus section rather
+      than a tutorial.
+
+      One wrinkle worth raising before this is written: integration by
+      substitution *is* the chain rule run backwards, so a substitution tutorial
+      that comes before the chain rule bonus would be teaching the reverse of
+      something students have not met. The bonus section probably wants to sit
+      immediately before substitution rather than after it.
+
+      "Combining everything" becomes applications and fun problems rather than
+      further drill: calculus is not the focus of this course.
 
   - code: MIT-1.5
     excluded: the formal expression-versus-equation distinction as an assessed item
@@ -59,37 +74,26 @@ topics:
       differentiation and gives area under a curve. Substitution, parts, and
       trigonometric integrals do not add to that and cost weeks.
 
-  - topic: Trigonometry beyond graphing and the Sine and Cosine Rules
+  - topic: Trigonometric identities, equations, and compound angle formulae
     reason: >
-      The trigonometry worth having here is: what the sine and cosine curves
-      look like and what amplitude, period and phase do to them; and solving a
-      triangle that is not right-angled. Identities, equations, and compound
-      angle formulae are not.
+      Narrowed 2026-08-22. This entry used to read "trigonometry beyond graphing
+      and the Sine and Cosine Rules", which was written while most of Section 4
+      was out of scope and would now exclude things that are in it. What is
+      actually out is the manipulation: identities to prove, trigonometric
+      equations to solve, and the compound angle formulae.
 
-# Things the decisions above brush against without settling. Each needs a yes or
-# no from Josh; until then the map counts them as gaps, which is the safer
-# default.
-#
-# These are stated here in one line each. DECISIONS_NEEDED.md in this folder
-# sets each one out properly — what exists already, what each answer costs, a
-# recommendation, and a form of words that would settle it.
-undecided:
-  - about: MIT-4.4, MIT-4.9 — Pythagoras and practical right-triangle trigonometry
-    question: >
-      "Trigonometry beyond graphing and the Sine and Cosine Rules" could be read
-      as excluding SOH-CAH-TOA as well. It is the usual way in to the subject and
-      the students will have met it before, so it may be worth keeping as the
-      bridge into the two rules rather than dropping.
-
+# Settled by Josh, 2026-08-22. Everything that was open here is now in scope;
+# the entries are kept so the reasoning survives rather than being deleted along
+# with the question.
+settled:
+  - about: MIT-4.4, MIT-4.9 — Pythagoras and right-triangle trigonometry
+    answer: In scope, in full.
   - about: MIT-4.5, MIT-4.6 — radians and the unit circle
-    question: >
-      Graphing sine and cosine needs an x-axis, and radians are what that axis is
-      normally in. Keep radians as the minimum needed for the graphs, or teach
-      the graphs in degrees and drop radians entirely?
-
+    answer: In scope, in full. Radians taught properly rather than avoided.
   - about: MIT-4.1, MIT-4.2, MIT-4.3 — coordinate geometry
-    question: >
-      Not mentioned either way. Slope and midpoint are cheap to teach, sit
-      naturally beside graphing straight lines in the polynomial tutorial, and
-      are the one part of Section 4 that the programming half of the course can
-      use directly. Keep?
+    answer: In scope, in full.
+  - about: How much material this adds
+    answer: >
+      Not a constraint. More tutorials is a good outcome rather than a cost —
+      teachers pick which ones they use, and a student who is going well can go
+      further. Tutorials may also be long, and may refer to each other freely.

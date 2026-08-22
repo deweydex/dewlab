@@ -745,3 +745,41 @@ The export works by replacing markup this same file wrote moments earlier.
 version the export quietly stopped inlining the stylesheet, and only the tests
 noticed. Every replacement now raises instead, naming what it could not find.
 *Cost to change: small, and it is the guard that made the previous entry safe.*
+
+**6.1 — The map became a topic tree, on its own page.**
+The map on the contents page was of *tutorials*, and it had to fit above a list
+without pushing it off the screen. Both of those were limits, and the second was
+the reason it could never be more than a diagram.
+
+On its own page it can take the window, and it can be about topics rather than
+tutorials: all 67 outcomes in both descriptors, laid out left to right by what
+has to come first and grouped top to bottom by subject. Two axes doing two jobs,
+so a strand reads as a band across the whole tree and nothing ever points
+backwards.
+
+Drag to pan, scroll to zoom, choose a topic to read it. No library — the layout
+is computed in `build.py` and arrives as data, so the page has nothing to fetch
+and the interaction is the forty lines of pointer handling a library would have
+needed anyway.
+*Cost to change: moderate. The layout arithmetic and the pan/zoom clamping are
+the parts to be careful with.*
+
+**6.2 — The tutorial map moved rather than being deleted.**
+It shows something the topic tree does not: which tutorials lean on which, found
+by reading each tutorial for the earlier ones it names. That is evidence about
+our own material and it exists nowhere else, so it sits under the tree on the
+same page rather than being replaced by it.
+*Cost to change: small.*
+
+**6.3 — Light and dark cost nothing because the tree uses the same shell.**
+It could have been a standalone page with its own styling. Built on the shell
+every tutorial uses, it inherits the masthead, the settings panel, the theme
+tokens and the reader's saved preferences — so "works in dark mode" was not a
+feature to build, it was a consequence of not building a second thing.
+*Cost to change: small, but building it standalone would have cost far more.*
+
+**6.4 — The contents page introduces rather than illustrates.**
+With the map gone it says what dewlab is to somebody who has just arrived —
+nothing to install, nothing to break, work saved in this browser — and then gets
+out of the way of the list they came for.
+*Cost to change: small.*

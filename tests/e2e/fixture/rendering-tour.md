@@ -6,6 +6,11 @@ year: "2026-2027"
 series: e2e
 order: 1
 version: 1
+covers:
+  matplotlib:
+    covers: [MIT-5.10]
+  when-it-goes-wrong:
+    covers: [PDP-LO9]
 ---
 
 <!--
