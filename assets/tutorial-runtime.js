@@ -42,7 +42,10 @@ const DEFAULT_PACKAGES = ["numpy", "pandas", "matplotlib"];
 const TEXTURE_KEY = "dewlab:texture";
 const PROGRESS_PREFIX = "dewlab:progress:";
 const AUTOSAVE_DELAY = 500;
-const TEXTURE_DEFAULTS = { theme: "system", font: "serif", size: 18, width: 34, link: "#d4692a" };
+const TEXTURE_DEFAULTS = {
+  theme: "system", font: "serif", size: 18, width: 34,
+  link: "#d4692a", header: "full",
+};
 
 /* -------------------------------------------------------------- manifest */
 
@@ -61,6 +64,33 @@ function readManifest() {
   m.assetBase = m.assetBase || "";
   m.dataBase = m.dataBase || "";
   return m;
+}
+
+/* ---------------------------------------------------------------- chrome */
+
+/* The sticky masthead and navigation are one group, and everything below has
+ * to clear it: the status line, the settings panel, and an anchored jump, which
+ * would otherwise land its heading underneath. Its height is not a constant —
+ * it depends on how far the neighbouring tutorials' titles wrap, which depends
+ * on the window and on the reader's text size — so it is measured rather than
+ * guessed, and measured again whenever it changes. */
+function trackChromeHeight() {
+  const chrome = document.getElementById("dl-chrome");
+  if (!chrome) return;
+
+  const publish = () => {
+    document.documentElement.style.setProperty(
+      "--dl-chrome-h", `${Math.round(chrome.getBoundingClientRect().height)}px`
+    );
+  };
+  publish();
+
+  if (typeof ResizeObserver === "function") {
+    new ResizeObserver(publish).observe(chrome);
+  } else {
+    /* No observer: the window changing size is the case that matters most. */
+    window.addEventListener("resize", publish);
+  }
 }
 
 /* -------------------------------------------------------- settings panel */
@@ -136,6 +166,8 @@ function applyTexture(state) {
   else root.setAttribute("data-theme", state.theme);
   if (state.font === "serif") root.removeAttribute("data-font");
   else root.setAttribute("data-font", state.font);
+  if (state.header === "full") root.removeAttribute("data-header");
+  else root.setAttribute("data-header", state.header);
   root.style.setProperty("--dl-font-size", state.size + "px");
   root.style.setProperty("--dl-line-width", state.width + "rem");
   root.style.setProperty("--dl-link", state.link);
@@ -155,8 +187,12 @@ function initTexture(onThemeChange) {
   function sync() {
     for (const group of panel.querySelectorAll(".dl-seg")) {
       const key = group.dataset.texture;
+      /* Width is a number with three named presets and a slider behind them.
+       * Setting it to something between the presets is allowed and leaves none
+       * of the three pressed, which is the honest way to show it. */
+      const current = group.hasAttribute("data-number") ? String(state[key]) : state[key];
       for (const btn of group.querySelectorAll("button")) {
-        btn.setAttribute("aria-pressed", String(btn.dataset.value === state[key]));
+        btn.setAttribute("aria-pressed", String(btn.dataset.value === current));
       }
     }
     sizeEl.value = state.size;
@@ -175,7 +211,9 @@ function initTexture(onThemeChange) {
     group.addEventListener("click", (ev) => {
       const btn = ev.target.closest("button");
       if (!btn) return;
-      state[group.dataset.texture] = btn.dataset.value;
+      state[group.dataset.texture] = group.hasAttribute("data-number")
+        ? Number(btn.dataset.value)
+        : btn.dataset.value;
       commit();
     });
   }
@@ -649,6 +687,7 @@ initTexture((dark) => {
 buildCells(currentManifest);
 initProgressSection();
 initSettingsPanel();
+trackChromeHeight();
 announceRestore(restoreSaved());
 highlightIllustrativeCode();
 const mathsRendered = renderMaths(currentManifest);

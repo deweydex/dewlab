@@ -57,7 +57,10 @@ student can change or take away lives behind it, in three sections:
   load one back, or start the tutorial again.
 - **This tutorial** — **Download to keep**, which is described below.
 - **Texture** — theme (auto, light, dark), serif or sans or mono, text size,
-  line width, and link colour.
+  line width as **narrow / medium / wide** with a slider behind them for
+  anything in between, and link colour. Also **Header: full or minimal**, which
+  tightens the masthead and puts the previous/next row on one line — worth
+  knowing about if a class is reading on phones.
 
 One button rather than a row of them, because a student who has found Settings
 once has found all of it. Texture choices persist across pages and across
@@ -66,7 +69,16 @@ students can actually use.
 
 That leaves the previous / **All tutorials** / next row carrying nothing but
 navigation, which is what makes it work on a phone: two long tutorial titles
-side by side, the way back to the contents beneath them.
+side by side, the way back to the contents beneath them. It sticks along with
+the masthead, so moving on to the next tutorial never means scrolling to one end
+of the page to find the link.
+
+Under that, every tutorial with more than one section carries a **Contents**
+list, closed by default. Open, it is the whole page's headings, with
+sub-headings nested underneath — the fastest way back to a section a student
+half-remembers. Sub-headings that repeat, like the several *Your turn* prompts in
+a long tutorial, are left out of the listing: a contents entry a reader cannot
+choose between is noise.
 
 **Download to keep** gives the student one HTML file — on a memory stick, in
 their downloads folder, anywhere — that they open by double-clicking. It

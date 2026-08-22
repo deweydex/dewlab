@@ -621,3 +621,53 @@ be imported yet; a warning filter covers the one cell that imports pyplot and
 calls show() before that lands.
 *Cost to change: small, but any change should keep both halves — the
 replacement and the filter behind it.*
+
+**5.5 — The chapter navigation sticks with the masthead, as one group.**
+Making the masthead sticky (5.2) left the previous/next row scrolling away, so
+moving on to the next tutorial still meant a scroll to one end of a long page.
+They now stick together.
+
+One group rather than two sticky elements, because everything below has to clear
+whatever is up there: the status line, the settings panel, and an anchored jump,
+which would otherwise land its heading underneath. That height is no longer a
+constant — it depends on how far the neighbouring tutorials' titles wrap, which
+depends on the window and on the reader's text size — so the runtime measures it
+into `--dl-chrome-h` and remeasures on every resize.
+*Cost to change: small, but the measured variable is load-bearing for three
+other rules.*
+
+**5.6 — A minimal header, chosen rather than imposed.**
+Sticking the navigation costs vertical space, and on a phone with two long
+titles it costs a lot: 143px of a 780px screen. The obvious fix is to drop
+things at narrow widths automatically, which takes the choice away from the
+reader who wanted them.
+
+**Header: full or minimal** in Settings instead. Minimal tightens the masthead
+and truncates the neighbouring titles to one line each — 70px, and nothing is
+removed: every link is still there and still reaches the same place. It is a
+reading-comfort preference like text size, and it lives beside them.
+*Cost to change: small.*
+
+**5.7 — Every page carries its own contents list, built from its headings.**
+A tutorial runs to eight sections. Getting back to one a student half-remembers
+meant scrolling, and the series contents page is no help — it lists tutorials,
+not what is inside them.
+
+The list is generated from the same heading tree that gives the headings their
+ids, so it cannot disagree with the anchors it links to. Closed by default: a
+reader arriving at a tutorial should meet the tutorial, not a list of its parts.
+
+Two rules keep it useful rather than exhaustive. A page with fewer than two
+sections gets none, because a contents list for a single heading is furniture.
+And a sub-heading whose text repeats within the tutorial is left out — five
+entries reading "Your turn" are a list nobody can choose from. The headings keep
+their anchors either way; only the listing drops them.
+*Cost to change: small.*
+
+**5.8 — Line width has three presets and a slider, not one or the other.**
+The slider alone gave no idea what a good value was, and three buttons alone
+would have taken away a control some readers had already set. So both: narrow,
+medium and wide write to the same number the slider does, and setting something
+between the presets leaves none of the three pressed, which is the honest way to
+show it.
+*Cost to change: small.*

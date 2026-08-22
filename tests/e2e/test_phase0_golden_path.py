@@ -250,6 +250,58 @@ def test_the_settings_panel_switches_theme_and_the_editors_follow(page):
     assert page.get_attribute("html", "data-font") == "mono"
 
 
+def test_the_width_presets_set_the_measure(page):
+    page.click("#dl-settings-toggle")
+    page.click(
+        '#dl-settings-texture .dl-seg[data-texture=width] button[data-value="56"]'
+    )
+    assert page.eval_on_selector(
+        ":root", "el => getComputedStyle(el).getPropertyValue('--dl-line-width').trim()"
+    ) == "56rem"
+    # The slider and the presets are two views of one number, not two settings.
+    assert page.input_value("#dl-texture-width") == "56"
+
+
+def test_the_minimal_header_is_shorter_and_keeps_every_link(page):
+    def chrome_height():
+        return page.eval_on_selector(".dl-chrome", "el => el.getBoundingClientRect().height")
+
+    def links():
+        return page.eval_on_selector_all(".dl-nav-top a", "els => els.map(e => e.href)")
+
+    full_height, full_links = chrome_height(), links()
+
+    page.click("#dl-settings-toggle")
+    page.click("#dl-settings-texture .dl-seg[data-texture=header] button[data-value=minimal]")
+    page.keyboard.press("Escape")
+
+    assert page.get_attribute("html", "data-header") == "minimal"
+    assert chrome_height() < full_height, "minimal should be shorter, that is the point"
+    assert links() == full_links, "minimal hides nothing — it only takes less room"
+
+
+def test_the_chrome_height_is_published_for_everything_below_it(page):
+    """The status line, the settings panel and anchored jumps all measure from
+    this. A wrong value puts a heading underneath the header."""
+    published = page.eval_on_selector(
+        ":root", "el => getComputedStyle(el).getPropertyValue('--dl-chrome-h').trim()"
+    )
+    measured = page.eval_on_selector(".dl-chrome", "el => el.getBoundingClientRect().height")
+    assert abs(float(published.replace("px", "")) - measured) <= 1
+
+
+def test_the_contents_list_jumps_to_a_section(page):
+    page.click(".dl-toc > summary")
+    first = page.get_attribute(".dl-toc nav a", "href")
+    page.click(".dl-toc nav a")
+    assert page.evaluate("location.hash") == first
+    # The sticky chrome must not be sitting on top of the heading it landed on.
+    top = page.eval_on_selector(first.lstrip("#") and f"[id='{first[1:]}']",
+                                "el => el.getBoundingClientRect().top")
+    chrome = page.eval_on_selector(".dl-chrome", "el => el.getBoundingClientRect().bottom")
+    assert top >= chrome - 1, "the heading landed underneath the sticky header"
+
+
 def test_texture_choices_survive_a_reload(page, base_url):
     page.click("#dl-settings-toggle")
     page.click("#dl-settings-texture .dl-seg[data-texture=theme] button[data-value=dark]")
