@@ -1,0 +1,232 @@
+---
+title: "Tutorial 10: What Are the Chances?"
+slug: tutorial-10-what-are-the-chances
+module: mit-pdp-maths-prog-integration
+year: "2026-2027"
+series: maths-and-programming
+order: 10
+version: 1
+---
+
+# Tutorial 10: What Are the Chances?
+
+**Programming Design Principles / Maths for IT**
+
+Probability is the mathematics of uncertainty. It gives us a precise language for talking about how likely things are, and it underpins everything from weather forecasts to medical diagnosis to machine learning. Today we build the foundations, and we will use an approach that is unique to programming: we can *simulate* random events to verify our calculations.
+
+## Basic Probability
+
+The probability of an event is a number between 0 (impossible) and 1 (certain). When all outcomes are equally likely, the probability of an event A is:
+
+$$P(A) = \frac{\text{number of favourable outcomes}}{\text{total number of outcomes}}$$
+
+Flip a fair coin: there are 2 equally likely outcomes and 1 favourable outcome (heads), so $P(\text{heads}) = \frac{1}{2} = 0.5$.
+
+Roll a fair die: $P(\text{rolling a 4}) = \frac{1}{6}$. $P(\text{rolling an even number}) = \frac{3}{6} = \frac{1}{2}$.
+
+### Your turn
+
+Write a function `probability(favourable, total)` that computes a basic probability. Include a docstring and think about edge cases: what if total is 0? What if favourable is greater than total?
+
+```python exec
+id: your-turn-1
+# Your probability function
+```
+
+```python exec
+id: your-turn-2
+# Test cases
+# probability(1, 6)     -> a specific die face
+# probability(13, 52)   -> drawing a heart from a deck
+# probability(4, 52)    -> drawing an ace
+```
+
+## Compound Events
+
+Things get interesting when we combine events. There are a few key rules.
+
+**The complement rule**: the probability that an event does *not* happen is $1 - P(A)$. If there is a 30% chance of rain, there is a 70% chance of no rain.
+
+**The addition rule**: for two events that cannot both happen at the same time (*mutually exclusive* events):
+
+$$P(A \text{ or } B) = P(A) + P(B)$$
+
+Rolling a 2 or a 5 on a die: $P = \frac{1}{6} + \frac{1}{6} = \frac{2}{6} = \frac{1}{3}$
+
+**The general addition rule**: when events *can* overlap:
+
+$$P(A \text{ or } B) = P(A) + P(B) - P(A \text{ and } B)$$
+
+We subtract the overlap to avoid counting it twice.
+
+```python exec
+id: compound-events-1
+# Card example: probability of drawing an Ace OR a Heart
+p_ace = 4 / 52
+p_heart = 13 / 52
+p_ace_of_hearts = 1 / 52    # the overlap: it's both an ace AND a heart
+
+p_ace_or_heart = p_ace + p_heart - p_ace_of_hearts
+print("P(Ace or Heart):", p_ace_or_heart)
+print("That's", round(p_ace_or_heart, 4), "or about", round(p_ace_or_heart * 100, 1), "%")
+```
+
+**The multiplication rule**: for *independent* events (one happening does not affect the other):
+
+$$P(A \text{ and } B) = P(A) \times P(B)$$
+
+Flipping heads twice in a row: $P = \frac{1}{2} \times \frac{1}{2} = \frac{1}{4}$
+
+When events are *not* independent (like drawing cards without replacement), the second probability depends on the first:
+
+$$P(\text{two aces in a row}) = \frac{4}{52} \times \frac{3}{51}$$
+
+After drawing one ace, there are 3 aces left among 51 remaining cards.
+
+### Your turn
+
+Using your `probability` function and the combination functions from Tutorial 9, work through these card probability questions. Write your reasoning before computing.
+
+1. What is the probability of drawing a face card (Jack, Queen, or King)?
+2. What is the probability of drawing a card that is red *and* a face card?
+3. What is the probability of drawing a card that is red *or* a face card?
+4. If you draw two cards without replacement, what is the probability both are hearts?
+5. What is the probability of being dealt a royal flush (A, K, Q, J, 10 all of the same suit) in a 5-card hand?
+
+```python exec
+id: your-turn-3
+# Your reasoning and calculations for each question
+
+# 1. Face cards
+
+# 2. Red AND face card
+
+# 3. Red OR face card (careful: these overlap!)
+
+# 4. Two hearts without replacement
+
+# 5. Royal flush (hint: how many royal flushes are possible? 
+#    how many total 5-card hands are possible?)
+```
+
+## Simulation: Testing Probability with Code
+
+One of the wonderful things about having programming skills: we can *simulate* random events to verify our calculations. If we flip a simulated coin 10,000 times, we should see heads about 50% of the time.
+
+Python's `random` module provides the tools:
+
+```python exec
+id: simulation-testing-probability-with-code-1
+import random
+
+# Simulate flipping a coin 10,000 times
+num_flips = 10000
+heads_count = 0
+
+for i in range(num_flips):
+    flip = random.choice(["heads", "tails"])
+    if flip == "heads":
+        heads_count = heads_count + 1
+
+proportion = heads_count / num_flips
+print("Heads:", heads_count, "out of", num_flips)
+print("Proportion:", round(proportion, 4))
+print("Expected:   0.5")
+```
+
+The simulated proportion will not be exactly 0.5, but it should be close. The more trials we run, the closer it gets. This is the *law of large numbers* in action.
+
+### Your turn
+
+Write a function `simulate_coin_flips(num_trials)` that returns the proportion of heads. Then call it with 100, 1000, 10000, and 100000 trials. What do you notice about the proportion as the number of trials increases?
+
+```python exec
+id: your-turn-4
+# Your simulate_coin_flips function
+```
+
+```python exec
+id: your-turn-5
+# Run with increasing numbers of trials
+```
+
+### Simulating card draws
+
+Let's simulate the card probabilities we calculated earlier. We will represent a deck of cards and draw from it:
+
+```python exec
+id: simulating-card-draws-1
+def make_deck():
+    """Create a standard 52-card deck as a list of (rank, suit) tuples."""
+    ranks = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"]
+    suits = ["Hearts", "Diamonds", "Clubs", "Spades"]
+    deck = []
+    for suit in suits:
+        for rank in ranks:
+            deck.append((rank, suit))
+    return deck
+
+deck = make_deck()
+print("Deck size:", len(deck))
+print("First 5 cards:", deck[:5])
+print("Last 5 cards:", deck[-5:])
+```
+
+### Your turn
+
+Write a function `simulate_draw(num_trials)` that simulates drawing a single card from a shuffled deck many times, and counts how often you get an Ace or a Heart. Compare the simulated proportion to your calculated probability from earlier.
+
+Hint: `random.shuffle(deck)` shuffles a list in place, and `deck[0]` gives the top card.
+
+```python exec
+id: your-turn-6
+# Your simulate_draw function
+```
+
+```python exec
+id: your-turn-7
+# Compare simulation to calculation
+```
+
+### A more complex simulation
+
+Write a function that simulates drawing two cards without replacement, and counts how often both are hearts. Compare to your calculation.
+
+Then, if you are feeling ambitious, simulate dealing 5-card hands and count how many are a royal flush. You will need a *lot* of trials (millions) to see even one, which gives you an intuitive sense of just how rare they are.
+
+```python exec
+id: a-more-complex-simulation-1
+# Your two-hearts simulation
+```
+
+```python exec
+id: a-more-complex-simulation-2
+# Optional: royal flush simulation (this may take a while to run!)
+```
+
+## Conditional Probability
+
+Sometimes the probability of an event depends on what has already happened. The probability of drawing a heart *given that* we already drew a heart (without replacement) is $\frac{12}{51}$, not $\frac{13}{52}$.
+
+This is called *conditional probability* and is written $P(B|A)$ -- "the probability of B given A":
+
+$$P(B|A) = \frac{P(A \text{ and } B)}{P(A)}$$
+
+We will not go deep into this today, but it is worth knowing the concept because it is foundational in machine learning (where Bayes' theorem, which builds on conditional probability, is everywhere).
+
+### Your turn
+
+If you draw one card and see that it is red, what is the probability that it is a heart? Think about this intuitively first, then verify with the formula.
+
+```python exec
+id: your-turn-8
+# Your reasoning and calculation
+```
+
+## Reflection
+
+We have covered the fundamental rules of probability (complement, addition, multiplication) and learned to use simulation to verify our calculations. The simulation approach is not just a teaching tool -- it is a genuine technique used in industry when problems become too complex for exact calculation.
+
+The combination of mathematical reasoning and computational verification is powerful: we calculate an expected probability, then simulate to check. If they agree, we have confidence in both. If they disagree, we have a bug to find -- and finding bugs is learning.
+
+What was most surprising about the relationship between calculation and simulation?
