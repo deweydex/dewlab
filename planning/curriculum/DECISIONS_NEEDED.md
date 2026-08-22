@@ -371,7 +371,7 @@ has the full working; this is the decision.
 ### The question
 
 **7a.** Tutorial 13 holds three unrelated topics — number domains (set theory),
-indices and logarithms (algebra), and area and volume formulas (mensuration).
+powers and logarithms (algebra), and area and volume formulas (mensuration).
 Split it into three and place each where it is needed?
 
 **7b.** Tutorial 14 is not a mishmash — it is polynomials, done properly, in one
@@ -397,12 +397,12 @@ anybody made.
 | Piece | Where it should go | Why |
 |---|---|---|
 | Number domains | Into Tutorial 2, or immediately after | Same idea as `int` versus `float`, which Tutorial 2 is already half-teaching |
-| Indices and logarithms | Before Tutorial 9, expanded to a full tutorial | Powers and roots are what counting, standard deviation and polynomials all assume |
+| Powers and logarithms | Before Tutorial 9, expanded to a full tutorial | Powers and roots are what counting, standard deviation and polynomials all assume |
 | Practical geometry | After functions are introduced (5 or 8) | "A formula is a function" is the best first use of a function there is |
 
 **7b: leave 14 as one.** It is the most coherent tutorial in the series. It
-follows the indices tutorial naturally and still precedes 15, so whether it
-moves depends on whether indices moves — not on anything about 14.
+follows the powers tutorial naturally and still precedes 15, so whether it
+moves depends on whether powers moves — not on anything about 14.
 
 ### The catch
 

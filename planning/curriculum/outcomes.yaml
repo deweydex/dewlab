@@ -17,6 +17,12 @@
 # `strand` groups an outcome for the map's colouring, and is our word rather
 # than the descriptor's: it answers "what kind of thing is this?" in a way a
 # student would recognise, which the descriptor's section numbers do not.
+#
+# Where the descriptor's vocabulary and ours differ, both appear here — this is
+# the file an examiner's wording has to be findable in. The tutorials use ours.
+# `MIT-1.1` is the case in point: the syllabus says "indices", dewlab says
+# "powers", because "index" is already taken by the position of an item in a
+# list, which students meet nine tutorials earlier.
 
 modules:
   MIT:
@@ -38,7 +44,7 @@ modules:
 outcomes:
   # ---------------------------------------------- MIT 1: arithmetic & algebra
   - code: MIT-1.1
-    title: "Operations in N, Z, Q, R; indices and logarithms"
+    title: "Operations in N, Z, Q, R; powers (the syllabus says indices) and logarithms"
     strand: number
   - code: MIT-1.2
     title: "Area and perimeter: square, rectangle, triangle, circle"

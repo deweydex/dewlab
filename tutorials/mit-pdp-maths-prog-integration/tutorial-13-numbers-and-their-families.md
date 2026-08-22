@@ -6,11 +6,11 @@ module_title: "Programming and Maths, Integrated"
 year: "2026-2027"
 series: maths-and-programming
 order: 13
-version: 1
+version: 2
 covers:
   the-number-domains:
     covers: [MIT-2.1]
-  indices-powers-and-their-rules:
+  powers-and-their-rules:
     covers: [MIT-1.1]
   logarithms-the-inverse-of-powers:
     covers: [MIT-1.1]
@@ -69,7 +69,7 @@ id: your-turn-2
 # Test with: 7, -3, 0, 0.5, -2.5, 3.14159
 ```
 
-## Indices (Powers) and Their Rules
+## Powers and Their Rules
 
 An expression like $a^n$ means "multiply a by itself n times." The rules that govern powers are elegant and worth knowing by heart:
 
@@ -82,8 +82,8 @@ An expression like $a^n$ means "multiply a by itself n times." The rules that go
 Let's verify these rules computationally:
 
 ```python exec
-id: indices-powers-and-their-rules-1
-# Verifying the rules of indices
+id: powers-and-their-rules-1
+# Verifying the rules of powers
 a = 3
 
 print("a^2 * a^3 =", a**2 * a**3, "  a^5 =", a**5)
@@ -91,6 +91,12 @@ print("(a^2)^3  =", (a**2)**3, "  a^6 =", a**6)
 print("a^0      =", a**0)
 print("a^(-2)   =", a**(-2), "  1/a^2 =", 1/a**2)
 ```
+
+One note on names. The syllabus, and any exam paper you sit, calls these
+**indices** and calls the rules above the *laws of indices*. That is the same
+thing as powers -- recognise the word if you meet it. This course says *power*
+and *exponent*, because *index* already means something else here: the position
+of an item in a list.
 
 ### Your turn
 
