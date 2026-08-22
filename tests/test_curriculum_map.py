@@ -175,3 +175,73 @@ class TestTheRealMap:
         for path in folder.glob("*.md"):
             if path.name != "README.md":
                 assert path.name in index, f"{path.name} is not in the outlines index"
+
+
+class TestTheTopicGlossary:
+    """`topics.yaml` says, for every learning outcome, what the topic actually
+    is and where it turns up in computing. It is what the knowledge map shows
+    when a node is opened, and it stands on its own as a glossary.
+
+    These tests are about it staying complete and consistent with the outcome
+    list, because a map with a node missing its description is a dead end.
+    """
+
+    @staticmethod
+    def topics() -> dict:
+        path = cm.ROOT / "planning" / "curriculum" / "topics.yaml"
+        return yaml.safe_load(path.read_text())["topics"]
+
+    def test_every_outcome_has_a_topic(self):
+        outcomes, _ = cm.load_outcomes()
+        missing = sorted(set(outcomes) - set(self.topics()))
+        assert not missing, f"no topic written for {missing}"
+
+    def test_no_topic_invents_an_outcome(self):
+        outcomes, _ = cm.load_outcomes()
+        unknown = sorted(set(self.topics()) - set(outcomes))
+        assert not unknown, f"{unknown} are not in any module descriptor"
+
+    def test_every_prerequisite_is_a_real_topic(self):
+        """A `needs` pointing nowhere is an arrow the map cannot draw."""
+        topics = self.topics()
+        for code, topic in topics.items():
+            for need in topic.get("needs") or []:
+                assert need in topics, f"{code} needs {need}, which does not exist"
+
+    def test_nothing_requires_itself(self):
+        for code, topic in self.topics().items():
+            assert code not in (topic.get("needs") or [])
+
+    def test_the_prerequisites_have_no_cycles(self):
+        """A cycle would make the tiers of a tech tree impossible to compute."""
+        topics = self.topics()
+        state: dict[str, int] = {}
+
+        def walk(code: str, trail: list[str]) -> None:
+            if state.get(code) == 2:
+                return
+            assert state.get(code) != 1, f"cycle: {' -> '.join(trail + [code])}"
+            state[code] = 1
+            for need in topics[code].get("needs") or []:
+                walk(need, trail + [code])
+            state[code] = 2
+
+        for code in topics:
+            walk(code, [])
+
+    def test_every_topic_says_what_it_is_and_where_it_is_used(self):
+        for code, topic in self.topics().items():
+            assert topic.get("name"), f"{code} has no name"
+            assert len(topic.get("plain", "").split()) >= 12, (
+                f"{code}'s description is too short to be worth reading"
+            )
+            assert topic.get("uses"), f"{code} lists no applications"
+
+    def test_the_descriptions_avoid_the_jargon_they_are_there_to_replace(self):
+        """A plain-English description that opens with the term itself has not
+        explained anything."""
+        for code, topic in self.topics().items():
+            first = topic["plain"].strip().split(".")[0].lower()
+            assert not first.startswith(topic["name"].lower()), (
+                f"{code} defines itself with its own name"
+            )
