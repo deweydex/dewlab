@@ -54,6 +54,13 @@ jobs:
           count=$(find site/tutorials -name '*.html' | wc -l)
           echo "built $count tutorial pages"
           test "$count" -gt 0 || { echo "no tutorials were built"; exit 1; }
+          # Every page offers a download, so every page needs one to exist.
+          # Without this the site publishes happily with dead download links,
+          # which a student finds before anybody else does.
+          downloads=$(find site/download -name '*.html' 2>/dev/null | wc -l)
+          echo "built $downloads downloadable copies and $(find site/download -name '*.zip' 2>/dev/null | wc -l) series archives"
+          test "$downloads" -eq "$count" || {
+            echo "$count tutorial pages but $downloads downloadable copies"; exit 1; }
 
       # enablement turns Pages on for the repository if it is not on already,
       # rather than failing and waiting for someone to find the setting. The
