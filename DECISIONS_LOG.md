@@ -1,14 +1,22 @@
-# dewlab decision log
+# Decision log
 
-Decisions made while building that the planning packet does not settle.
+A record of the choices made while building dewlab that the planning documents
+did not settle — and, for each one, what it would cost to change your mind.
 
-DECISIONS.md is the source of truth and nothing here overrides it. This file
-records the gaps: places the packet named a thing without specifying it, places
-two settled decisions left a choice between them, and places the build hit
-something the packet did not anticipate. Every entry says what was decided, why,
-and how expensive it would be to change.
+The second half is the point. Any project accumulates decisions; what makes
+them hard to revisit later is not that they were undocumented but that nobody
+wrote down how much they cost. An entry marked *trivial* is an invitation to
+change it if you disagree. An entry marked *large* is a warning that several
+other things are resting on it, and that changing it is a piece of work rather
+than an edit.
 
-Entries are grouped by build phase and numbered so they can be referred to.
+`planning/` holds what was decided before any code existed, and nothing here
+overrides it. This file records the gaps: places the plan named something
+without specifying it, places two settled decisions left a genuine choice
+between them, and places the build met something the plan had not anticipated.
+
+Entries are grouped by build phase and numbered so that code comments and
+commit messages can point at them.
 
 ---
 
@@ -16,10 +24,12 @@ Entries are grouped by build phase and numbered so they can be referred to.
 
 ### Reconstructing tutorial_tools.py
 
-DECISIONS.md commits to `text_input`, `dropdown`, `button`, `show`,
-`show_table` and `check`, and gives exactly one signature: `check(actual,
-expected)`. `exam_tools.py` no longer exists to read the rest off. Everything
-below is reconstruction, flagged here rather than left implicit in the code.
+`planning/DECISIONS.md` commits to six functions — `text_input`, `dropdown`,
+`button`, `show`, `show_table` and `check` — and pins down exactly one
+signature, `check(actual, expected)`. Everything else about how these behave
+had to be designed rather than looked up. Each choice is written down here
+rather than left implicit in the code, so that a later disagreement has
+something to argue with.
 
 **0.1 — Widgets return a handle; `.value` reads the live DOM.**
 `text_input("Your name")` returns an object whose `.value` property reads the
@@ -112,7 +122,7 @@ saved into Phase 2's `output_html` with no extra work.
 The notebook model: cell 3 sees what cell 1 defined. This does not extend
 across pages — each tutorial page is its own Pyodide instance, exactly as
 CONTENT_AND_FILE_ARCHITECTURE.md says, so an included setup cell re-executes on
-every page load. The packet implies this without stating it.
+every page load. The planning documents imply this without stating it.
 *Cost to change: large. Everything else assumes it.*
 
 **0.13 — The whole cell lifecycle lives in Python, not split with JavaScript.**
@@ -215,12 +225,12 @@ should delete it once `build.py` can build the same page.
 *Cost to change: none, it is meant to be thrown away.*
 
 **0.25 — Ctrl/Cmd+Enter runs a cell.**
-Not in the packet. It is the shortcut every notebook user reaches for first,
+Not in the plan. It is the shortcut every notebook user reaches for first,
 and it is three lines.
 *Cost to change: trivial.*
 
 **0.26 — Each cell has a "reset" button restoring the author's starter code.**
-Not in the packet. A student who has edited a cell into an unrecoverable state
+Not in the plan. A student who has edited a cell into an unrecoverable state
 otherwise has to reload the page and lose everything else. Cheap now, and it
 interacts with Phase 2's restore, so better decided before that is built than
 after.
@@ -228,25 +238,14 @@ after.
 
 ### Repository
 
-**0.27 — Built inside `everlearning/dewlab/`, then moved here. Resolved.**
-REPO_AND_EDITOR.md wants a standalone repo with GitHub Pages, and there is no
-`deweydex/dewlab` yet. This session's GitHub access is scoped to four existing
-repositories and cannot create a fifth (`create_repository` returns 403), so
-the work went into `everlearning/` — the closest thing to an infrastructure
-repo — laid out so that the `dewlab/` directory *is* the intended repository
-root. `git subtree split -P dewlab` extracts it with its history intact once
-the repo exists.
-Phase 4 (Pages deployment) cannot be done from here at all. Nothing before it
-is blocked.
+**0.27 — dewlab is its own repository. Resolved.**
+`planning/REPO_AND_EDITOR.md` specifies a standalone repository publishing to
+GitHub Pages, and that is what this is. The first phase of work was built
+elsewhere while this repository did not yet exist, and was moved here with its
+history intact once it did; every file arrived unchanged.
 
-`deweydex/dewlab` now exists, and that is what this repository is. The subtree
-split ran as described: every file arrived byte-identical, `dewlab/` is the
-root, and the single Phase 0 commit is preserved rather than squashed. The
-everlearning copy is left where it is for now — deleting it there is a separate
-change against that repository, not part of the move.
-
-Phase 4 is unblocked: Pages can be enabled on this repo whenever Phase 1
-produces something to deploy.
+Phase 4 is therefore unblocked: Pages can be switched on whenever there is
+something worth publishing.
 *Resolved. No remaining cost.*
 
 ---
@@ -378,9 +377,9 @@ pandas and numpy are absent.
 *Cost to change: none, it should not change.*
 
 **1.8 — Maths renders in the browser, from marked spans, with KaTeX vendored.**
-Josh settled that student-side parsing is not a cost worth avoiding, which
-removes the reason DECISIONS.md gave for build-time rendering. That leaves 0.19
-deciding it: `assets/vendor/` is committed precisely so neither CI nor an author
+The reason `planning/DECISIONS.md` gave for rendering at build time was to keep
+the parsing cost off students' machines. That cost was reviewed and judged not
+worth avoiding, which leaves 0.19 deciding the question instead: `assets/vendor/` is committed precisely so neither CI nor an author
 previewing locally needs Node, and calling Node from `build.py` to render maths
 would undo exactly that. So KaTeX is bundled into `assets/vendor/katex.bundle.js`
 (266 KB) and the runtime imports it dynamically, only on pages the manifest
@@ -413,16 +412,18 @@ so the code is readable with JavaScript off and highlighted with it on.
 *Cost to change: small.*
 
 **1.10 — Pages and Actions confirmed; the build stays Python for now.**
-Josh confirmed GitHub Pages plus Actions as the hosting, said a local preview
-would be good, and pointed at his FAQ repository's markdown editor as the model
-for dewlab's. The first is what REPO_AND_EDITOR.md already specified and what
-Phase 4 builds; the third is a starting point rather than a decision.
+GitHub Pages with an automated build on push is confirmed as the hosting, which
+is what `planning/REPO_AND_EDITOR.md` already specified and what Phase 4 will
+build. A local preview is wanted. The authoring editor is to follow an existing
+markdown editor pattern rather than being designed from scratch — a starting
+point rather than a decision.
 
-The second does not, on its own, force a JavaScript rewrite. `python3 build.py`
-followed by a static server is a local preview today. What Python cannot give is
-a preview *inside* a hosted editor, or on a machine with no Python at all — and
-whether either is worth roughly 400 lines and 49 tests is a Phase 4 question, not
-one Phases 2 and 3 need answered. Left open deliberately, so nothing in between
-quietly assumes it.
+Wanting a local preview does not, on its own, force a JavaScript rewrite.
+`python3 build.py` followed by a static server is a local preview today, on any
+machine with Python. What Python cannot give is a preview *inside* a
+browser-based editor, or on a machine with no Python at all — and whether
+either is worth roughly 400 lines and 49 tests is a Phase 4 question, not one
+Phases 2 and 3 need answered. Left open deliberately, so that nothing built in
+between quietly assumes an answer.
 *Cost to change: rises with everything built on `build.py`. Decide before the
 editor is built.*

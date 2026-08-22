@@ -14,7 +14,7 @@ Each tutorial's frontmatter carries a plain integer `version` field, incremented
 
 ## What gets saved
 
-The save format — student name, an array of cells with `task_id`, `student_code`, `output_html`, and so on, following the exam tool's original design — gains one new top-level field: the `tutorial-version` the page was showing when the student saved.
+The save format — student name, and an array of cells each carrying `task_id`, `student_code`, `output_html` and so on — gains one new top-level field: the `tutorial-version` the page was showing when the student saved.
 
 ## What happens on load
 
@@ -26,10 +26,10 @@ If they don't match, restore still happens, but with a visible, non-blocking not
 
 ## Interactive widgets
 
-A known limitation from the exam tool's load-JSON design carries over: widget cells restore their HTML snapshot but need a re-run to reinstantiate the live Python-side object behind them. Worth a one-line note in the restore summary so it doesn't read as broken.
+One limitation is worth stating plainly rather than discovering: a widget cell restores its saved HTML, but the live Python object behind it does not come back until the cell is re-run. Worth a one-line note in the restore summary so it doesn't read as broken.
 
 ## Save transport
 
-Tutorials are confirmed ungraded — self-paced practice, not tied to a mark — which changes what this needs to protect against. Autosave to `localStorage` is the primary mechanism: progress persists across a closed tab or browser restart on the same device with no explicit action required. A manual "export to JSON" option stays available as a secondary path, for moving to another device or keeping an offline copy, but it's no longer the primary safety net the way it was in the exam tool's design — losing progress here is an inconvenience, not a lost grade. An optional GitHub Gist-sync layer (a PAT-authenticated "Save" button calling the Gists API directly from browser JS) can still sit on top of either path without changing any of the version-compare logic above — it only changes where the JSON blob lives between sessions.
+Tutorials are confirmed ungraded — self-paced practice, not tied to a mark — which changes what this needs to protect against. Autosave to `localStorage` is the primary mechanism: progress persists across a closed tab or browser restart on the same device with no explicit action required. A manual "export to JSON" option stays available as a secondary path, for moving to another device or keeping an offline copy, but it is not the primary safety net — losing progress here is an inconvenience, not a lost grade. An optional GitHub Gist-sync layer (a PAT-authenticated "Save" button calling the Gists API directly from browser JS) can still sit on top of either path without changing any of the version-compare logic above — it only changes where the JSON blob lives between sessions.
 
 A `check()` cell's pass/fail result is saved and restored the same way as any other cell's output — nothing new required in the save schema for it.
