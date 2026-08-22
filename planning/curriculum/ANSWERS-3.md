@@ -78,11 +78,47 @@ chains from bonus to a tutorial. `everlearning/OtherCourses/Markov-Chains-and-Te
 is a whole small course already, and `worksheet_07d_markov_chains.md` is the
 paper half.
 
-**Blocked on one thing.** Josh asked me to check the everlearning computational
-methods module description. There is no such descriptor in the repository — the
-only module descriptors it holds are MIT and PDP. He offered to supply it
-separately, and that is what the matrices strand needs before it is sized
-properly.
+**No longer blocked.** The descriptor was not in `everlearning` — only MIT and
+PDP are — so Josh supplied it. It is now in the repository at
+`planning/curriculum/descriptors/ComputationalMethodsandProblemSolving5N0554.pdf`,
+which is the first module descriptor dewlab holds as a source document rather
+than as `outcomes.yaml` entries somebody typed up.
+
+**Computational Methods and Problem Solving 5N0554**, Dublin and Dún Laoghaire
+ETB. 150 hours, 15 credits, thirteen learning outcomes across seven sections.
+
+It says more than "matrices are in scope", and some of it is a surprise:
+
+| Section | What it names |
+|---|---|
+| 1. Discrete computational structures | arrays, lists, **matrices**, trees — used for ASCII art, computer graphics, **Gaussian elimination**, decision matrices, classical sorting/searching/filtering. Functions and **recurrence relations**. Iterative versus recursive. |
+| 2. Discrete probability | distributions (Gaussian), sample mean and variance, expectation, dependent vs independent events, **random numbers in computing**, and why randomness matters to PKI |
+| 3. Modelling and simulation | computational and numerical methods, **Monte Carlo** |
+| 4. **Linear algebra and applications** | arrays and matrices in graphics and games, **Google PageRank**, sequence alignment, nearest neighbour |
+| 5. Algorithms and complexity | best, expected and worst case |
+| 6. Applications of discrete probability | average-case analysis, failure prediction, branch prediction, network packet loss |
+| 7. Modelling and simulation | abstraction; server-room temperature, robot control, autonomous vehicles, traffic flow |
+| 8–13 | problem definition and solution design, heuristics, symptom versus root cause, iterative model creation and validation, personal attributes, reflection |
+
+Three things this settles:
+
+1. **Markov chains are not a bonus, they are the syllabus.** LO4 names Google
+   PageRank explicitly, and PageRank *is* a Markov chain — the stationary
+   distribution of a transition matrix. Josh's instinct that "markov would be
+   great" lands exactly on a named outcome.
+2. **Dropping eigenvectors is fine, but PageRank is an eigenvector problem** in
+   disguise. It can be taught as repeated multiplication converging, which is
+   tutorial 2 of the strand doing something a student cares about, with no
+   eigenvector vocabulary anywhere.
+3. **Matrices are a fraction of it.** Monte Carlo, randomness and PKI,
+   complexity analysis, recurrence relations, and modelling are all in here and
+   none is matrices. Five to seven tutorials on matrices is comfortable, but the
+   series needs several more strands beyond them — which answers the matrices
+   outline's open question about whether five tutorials is too much of the
+   series. It is not.
+
+**Still to do:** the outcomes need transcribing into `outcomes.yaml` in the
+shape MIT and PDP use, so coverage can be tracked the same way. Not done here.
 
 ## 6. The map is MIT and PDP only
 
