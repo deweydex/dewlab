@@ -13,6 +13,7 @@ from __future__ import annotations
 import json
 import re
 import sys
+import zipfile
 from pathlib import Path
 
 import pytest
@@ -542,3 +543,157 @@ class TestTheContentsPage:
     def test_no_tutorials_means_no_index(self, repo):
         assert b.build() == []
         assert not (repo / "site" / "index.html").exists()
+
+
+@pytest.fixture()
+def repo_with_assets(repo):
+    """A repository carrying the real assets, which the standalone export needs.
+
+    Separate from `repo` because copying the vendor bundles costs a moment, and
+    only these tests care. It is the same reason build() does not write the
+    downloadable copies unless asked.
+    """
+    import shutil
+
+    real = Path(__file__).resolve().parent.parent / "assets"
+    shutil.rmtree(repo / "assets")
+    shutil.copytree(real, repo / "assets")
+    return repo
+
+
+class TestTheDownloadableCopy:
+    def test_it_is_written_beside_the_site(self, repo_with_assets):
+        write(repo_with_assets, "Some prose.\n")
+        b.build(standalone=True)
+        assert (repo_with_assets / "site" / "download" / "sample.html").is_file()
+
+    def test_it_is_not_written_unless_asked(self, repo_with_assets):
+        write(repo_with_assets, "Some prose.\n")
+        b.build()
+        assert not (repo_with_assets / "site" / "download").exists()
+
+    def test_the_page_links_to_it(self, repo_with_assets):
+        write(repo_with_assets, "Some prose.\n")
+        b.build(standalone=True)
+        page = built(repo_with_assets)
+        assert 'class="dl-download" href="../../download/sample.html" download' in page
+
+    def standalone(self, repo) -> str:
+        return (repo / "site" / "download" / "sample.html").read_text()
+
+    def test_nothing_is_left_pointing_outside_the_file(self, repo_with_assets):
+        write(repo_with_assets, "```python exec\nid: c\n1 + 1\n```\n")
+        b.build(standalone=True)
+        page = self.standalone(repo_with_assets)
+        assert '<link rel="stylesheet"' not in page
+        assert '<script type="module"' not in page
+
+    def test_the_stylesheet_travels_inside_it(self, repo_with_assets):
+        write(repo_with_assets, "Some prose.\n")
+        b.build(standalone=True)
+        assert "--dl-navy" in self.standalone(repo_with_assets)
+
+    def test_the_runtime_travels_inside_it_as_a_classic_script(self, repo_with_assets):
+        write(repo_with_assets, "Some prose.\n")
+        b.build(standalone=True)
+        page = self.standalone(repo_with_assets)
+        assert "pyodide.js" in page  # the classic loader, not the module
+        assert len(page) > 300_000  # the bundle really is in there
+
+    def test_the_python_tools_travel_inside_it(self, repo_with_assets):
+        write(repo_with_assets, "```python exec\nid: c\n1 + 1\n```\n")
+        b.build(standalone=True)
+        page = self.standalone(repo_with_assets)
+        assert "toolsSource" in page
+        assert "def check(" in page
+
+    def test_it_marks_itself_as_standalone(self, repo_with_assets):
+        write(repo_with_assets, "Some prose.\n")
+        b.build(standalone=True)
+        assert manifest(self.standalone(repo_with_assets))["standalone"] is True
+
+    def test_maths_fonts_travel_with_a_maths_tutorial(self, repo_with_assets):
+        write(repo_with_assets, "An equation: $x^2$.\n")
+        b.build(standalone=True)
+        assert "data:font/woff2;base64," in self.standalone(repo_with_assets)
+
+    def test_a_tutorial_without_maths_does_not_carry_them(self, repo_with_assets):
+        write(repo_with_assets, "No maths at all.\n")
+        b.build(standalone=True)
+        assert "data:font/woff2;base64," not in self.standalone(repo_with_assets)
+
+    def test_navigation_is_dropped_rather_than_left_broken(self, repo_with_assets):
+        for n in (1, 2):
+            path = repo_with_assets / "tutorials" / "computational-methods" / f"t{n}.md"
+            path.write_text(
+                f'---\ntitle: "T{n}"\nslug: t{n}\nmodule: computational-methods\n'
+                f'year: "2026-2027"\nseries: s\norder: {n}\nversion: 1\n---\n\nProse.\n'
+            )
+        b.build(standalone=True)
+        page = (repo_with_assets / "site" / "download" / "t1.html").read_text()
+        assert "<nav" not in page
+
+    def test_it_warns_when_a_tutorial_loads_data_it_cannot_carry(self, repo_with_assets, capsys):
+        write(repo_with_assets, '```python exec\nid: c\ndf = await load_csv("x.csv")\n```\n')
+        b.build(standalone=True)
+        assert "cannot reach" in capsys.readouterr().err
+
+
+class TestTheSeriesArchive:
+    def two_tutorials(self, repo):
+        for n in (1, 2):
+            path = repo / "tutorials" / "computational-methods" / f"t{n}.md"
+            path.write_text(
+                f'---\ntitle: "T{n}"\nslug: t{n}\nmodule: computational-methods\n'
+                f'year: "2026-2027"\nseries: Core skills\norder: {n}\nversion: 1\n---\n\nProse.\n'
+            )
+
+    def archive(self, repo) -> Path:
+        return repo / "site" / "download" / "computational-methods-core-skills.zip"
+
+    def test_a_series_is_gathered_into_one_archive(self, repo_with_assets):
+        self.two_tutorials(repo_with_assets)
+        b.build(standalone=True)
+        assert self.archive(repo_with_assets).is_file()
+
+    def test_it_holds_every_downloadable_copy_in_the_series(self, repo_with_assets):
+        self.two_tutorials(repo_with_assets)
+        b.build(standalone=True)
+        with zipfile.ZipFile(self.archive(repo_with_assets)) as archive:
+            assert sorted(archive.namelist()) == [
+                "computational-methods-core-skills/t1.html",
+                "computational-methods-core-skills/t2.html",
+            ]
+
+    def test_what_it_holds_still_runs(self, repo_with_assets):
+        self.two_tutorials(repo_with_assets)
+        b.build(standalone=True)
+        with zipfile.ZipFile(self.archive(repo_with_assets)) as archive:
+            page = archive.read("computational-methods-core-skills/t1.html").decode()
+        assert "pyodide.js" in page
+        assert "--dl-navy" in page
+
+    def test_the_contents_page_offers_it(self, repo_with_assets):
+        self.two_tutorials(repo_with_assets)
+        b.build(standalone=True)
+        index = (repo_with_assets / "site" / "index.html").read_text()
+        assert 'href="download/computational-methods-core-skills.zip"' in index
+        assert "Download all 2" in index
+
+    def test_a_build_without_the_copies_offers_nothing_to_download(self, repo):
+        self.two_tutorials(repo)
+        b.build()
+        index = (repo / "site" / "index.html").read_text()
+        assert ".zip" not in index
+        assert not (repo / "site" / "download").exists()
+
+    def test_a_series_name_written_for_people_becomes_a_filename(self):
+        assert b.series_slug("MIT-PDP", "Maths & Programming") == "mit-pdp-maths-programming"
+
+    def test_a_size_is_reported_in_units_a_person_reads(self, tmp_path):
+        small = tmp_path / "small"
+        small.write_bytes(b"x" * 4000)
+        big = tmp_path / "big"
+        big.write_bytes(b"x" * 2_500_000)
+        assert b.readable_size(small) == "4 KB"
+        assert b.readable_size(big) == "2 MB"

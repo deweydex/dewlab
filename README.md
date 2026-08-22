@@ -49,6 +49,22 @@ time:
   can use what cell one defined. Pages do **not** share anything with each
   other — each page starts clean.
 
+At the foot of every tutorial there is a **Download this tutorial** link. It
+gives the student one HTML file they can keep — on a memory stick, in their
+downloads folder, anywhere — and open by double-clicking. It carries the
+reading, the cells, the editor and the mathematics inside it, and looks and
+behaves like the page they downloaded it from.
+
+One caveat worth passing on to a class: the file needs an internet connection
+the *first* time it is opened, because Python itself is fetched then. Without
+one, the reading works and the cells say so plainly rather than failing
+silently.
+
+The contents page carries the same offer for a whole series at once: **Download
+all 18 as single files**, which is a zip of exactly those files. That is the one
+to reach for when you are setting up a room, filling a memory stick, or handing
+a class something to take home — rather than clicking through eighteen pages.
+
 There is also a **texture** panel in the corner: theme (auto, light, dark),
 serif or sans or mono, text size, line width, and link colour. Choices persist
 across pages and across visits. It is there because a reading surface a student
@@ -226,6 +242,11 @@ Build the tutorials and read them:
 python3 build.py --clean
 python3 -m http.server -d site 8000
 ```
+
+That writes the downloadable copies too, into `site/download/` — one HTML file
+per tutorial, plus one zip per series holding that series' files. They are the
+slow part of a build, so `python3 build.py --no-standalone` skips them while
+you are working on content.
 
 Then open `http://localhost:8000/tutorials/<module>/<slug>.html`. The built
 site lives in `site/` and is never committed — it is regenerated on every push

@@ -24,12 +24,14 @@ in tests/e2e/ drive.
 from __future__ import annotations
 
 import argparse
+import base64
 import html
 import json
 import os
 import re
 import shutil
 import sys
+import zipfile
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -393,6 +395,10 @@ def nav_for(tutorial: Tutorial, members: list[Tutorial]) -> str:
         )
     up = "../" * tutorial.depth
     parts.append(f'<a class="dl-nav-up" href="{up}index.html">All tutorials</a>')
+    parts.append(
+        f'<a class="dl-download" href="{up}download/{tutorial.slug}.html" download>'
+        "Download this tutorial</a>"
+    )
     if index < len(members) - 1:
         following = members[index + 1]
         parts.append(
@@ -402,8 +408,17 @@ def nav_for(tutorial: Tutorial, members: list[Tutorial]) -> str:
     return "".join(parts)
 
 
-def render_index(groups: dict[tuple[str, str], list[Tutorial]]) -> str:
-    """The contents page: every module, every series, in order."""
+def render_index(
+    groups: dict[tuple[str, str], list[Tutorial]],
+    archives: dict[tuple[str, str], Path] | None = None,
+) -> str:
+    """The contents page: every module, every series, in order.
+
+    `archives` maps a series to its zip of downloadable copies, when the build
+    wrote them. Without it the page simply carries no whole-series link, which
+    is what a quick local build wants.
+    """
+    archives = archives or {}
     if not groups:
         return "<p>No tutorials have been written yet.</p>"
 
@@ -428,6 +443,15 @@ def render_index(groups: dict[tuple[str, str], list[Tutorial]]) -> str:
                     f'<li><a href="{href}">{html.escape(member.title)}</a></li>'
                 )
             out.append("</ol>")
+            archive = archives.get((owner, series))
+            if archive is not None:
+                count = len(members)
+                out.append(
+                    '<p class="dl-series">'
+                    f'<a class="dl-download" href="download/{archive.name}" download>'
+                    f"Download all {count} as single files"
+                    f" ({readable_size(archive)})</a></p>"
+                )
     return "\n".join(out)
 
 
@@ -525,7 +549,136 @@ def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "") -> Path
     return tutorial.out_path
 
 
-def write_index(shell: str, groups: dict[tuple[str, str], list[Tutorial]]) -> Path:
+# --------------------------------------------------------------- standalone
+
+# A page opened from a file cannot load an ES module, fetch a neighbouring
+# file, or resolve a relative link to a page that is not there. A standalone
+# export therefore carries everything inside it and drops what it cannot honour.
+PYODIDE_CLASSIC = (
+    '<script src="https://cdn.jsdelivr.net/pyodide/v0.28.3/full/pyodide.js"></script>'
+)
+FONT_URL_RE = re.compile(r"url\((?P<quote>['\"]?)fonts/(?P<name>[\w.-]+\.woff2)(?P=quote)\)")
+
+
+def inline_katex_css() -> str:
+    """KaTeX's stylesheet with its fonts folded in as data.
+
+    Only the woff2 files it actually names, which is what keeps this to a few
+    hundred kilobytes rather than the whole family.
+    """
+    css = (ASSETS / "vendor" / "katex.min.css").read_text()
+
+    def one(match: re.Match) -> str:
+        font = ASSETS / "vendor" / "fonts" / match.group("name")
+        if not font.is_file():
+            return match.group(0)
+        data = base64.b64encode(font.read_bytes()).decode("ascii")
+        return f"url(data:font/woff2;base64,{data})"
+
+    return FONT_URL_RE.sub(one, css)
+
+
+def standalone_html(tutorial: Tutorial, page: str) -> str:
+    """Turn a built page into one file that works from a student's disk."""
+    # The same prefix build.py wrote into the page's own asset references.
+    up = "../" * tutorial.depth + "assets/"
+    style = (ASSETS / "tutorial-style.css").read_text()
+    bundle = (ASSETS / "vendor" / "standalone.bundle.js").read_text()
+    tools = (ASSETS / "tutorial_tools.py").read_text()
+
+    # The stylesheets, inlined. KaTeX's only travels with a page that has maths.
+    page = page.replace(
+        f'<link rel="stylesheet" href="{up}vendor/katex.min.css">',
+        f"<style>{inline_katex_css()}</style>" if tutorial.has_math else "",
+    )
+    page = page.replace(
+        f'<link rel="stylesheet" href="{up}tutorial-style.css">',
+        f"<style>{style}</style>",
+    )
+
+    # The runtime, as a classic script, behind Pyodide's classic loader.
+    page = page.replace(
+        f'<script type="module" src="{up}tutorial-runtime.js"></script>',
+        PYODIDE_CLASSIC + "\n<script>" + bundle + "</script>",
+    )
+
+    # The Python tools, which cannot be fetched from a file.
+    marker = '<script type="application/json" id="dewlab-manifest">'
+    start = page.index(marker) + len(marker)
+    end = page.index("</script>", start)
+    manifest = json.loads(page[start:end])
+    manifest["toolsSource"] = tools
+    manifest["standalone"] = True
+    page = page[:start] + json.dumps(manifest).replace("<", "\\u003c") + page[end:]
+
+    # Navigation points at pages that are not beside this file, and the offer to
+    # download it is already taken. Both go rather than break.
+    page = re.sub(r"<nav class=\"dl-nav[^\"]*\">.*?</nav>", "", page, flags=re.DOTALL)
+    page = re.sub(r'<a class="dl-download".*?</a>', "", page, flags=re.DOTALL)
+    root = "../" * tutorial.depth
+    page = page.replace(f'href="{root}index.html"', 'href="#" onclick="return false"')
+    return page
+
+
+def write_standalone(tutorial: Tutorial, page: str) -> Path:
+    # A standalone file carries the page but not the /data/ folder beside it, so
+    # a tutorial that loads a dataset at runtime will read fine and fail at that
+    # cell. Better said at build time than discovered by a student.
+    if any("load_csv" in cell.code for cell in tutorial.cells):
+        print(
+            f"note: {tutorial.path.relative_to(ROOT)} loads a dataset, which its "
+            "downloadable copy cannot reach — that cell will fail when the file "
+            "is opened from disk",
+            file=sys.stderr,
+        )
+
+    target = OUT / "download" / f"{tutorial.slug}.html"
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text(standalone_html(tutorial, page))
+    return target
+
+
+SERIES_SLUG_RE = re.compile(r"[^a-z0-9]+")
+
+
+def series_slug(module: str, series: str) -> str:
+    """A filename for a whole series, out of names that were written for people."""
+    slug = SERIES_SLUG_RE.sub("-", f"{module}-{series}".lower()).strip("-")
+    return slug or "tutorials"
+
+
+def write_series_zip(module: str, series: str, members: list[Tutorial]) -> Path:
+    """Every downloadable copy in one series, gathered into one archive.
+
+    A student takes one tutorial. Somebody setting up a room, or filling a
+    memory stick for a class with no reliable connection, wants the set. The
+    archive holds the very files the download links point at, so there is no
+    second copy to keep in step with anything.
+    """
+    folder = series_slug(module, series)
+    target = OUT / "download" / f"{folder}.zip"
+    target.parent.mkdir(parents=True, exist_ok=True)
+    with zipfile.ZipFile(target, "w", zipfile.ZIP_DEFLATED) as archive:
+        for member in members:
+            archive.write(
+                OUT / "download" / f"{member.slug}.html", f"{folder}/{member.slug}.html"
+            )
+    return target
+
+
+def readable_size(path: Path) -> str:
+    """A size a person can act on, rather than a byte count."""
+    size = path.stat().st_size
+    if size >= 1_000_000:
+        return f"{size / 1_000_000:.0f} MB"
+    return f"{max(size // 1000, 1)} KB"
+
+
+def write_index(
+    shell: str,
+    groups: dict[tuple[str, str], list[Tutorial]],
+    archives: dict[tuple[str, str], Path] | None = None,
+) -> Path:
     """The contents page at the site root, which every page's masthead links to."""
     manifest = {"slug": "index", "version": 1, "assetBase": "assets/",
                 "dataBase": "data/", "cells": []}
@@ -540,7 +693,7 @@ def write_index(shell: str, groups: dict[tuple[str, str], list[Tutorial]]) -> Pa
         "{{ASSET_BASE}}": "assets/",
         "{{ROOT_BASE}}": "",
         "{{NAV_PREV_NEXT}}": "",
-        "{{BODY}}": render_index(groups),
+        "{{BODY}}": render_index(groups, archives),
         "{{MANIFEST_JSON}}": json.dumps(manifest).replace("<", "\\u003c"),
     }
     page = shell
@@ -555,7 +708,9 @@ def write_index(shell: str, groups: dict[tuple[str, str], list[Tutorial]]) -> Pa
     return target
 
 
-def build(clean: bool = False) -> list[Path]:
+def build(clean: bool = False, standalone: bool = False) -> list[Path]:
+    """Build the site. `standalone` also writes the downloadable single files,
+    which need the real assets on disk and are the slow part of a build."""
     if not SHELL.is_file():
         raise BuildError(f"no shell template at {SHELL.relative_to(ROOT)}")
     if clean and OUT.exists():
@@ -577,12 +732,21 @@ def build(clean: bool = False) -> list[Path]:
     for tutorial in tutorials:
         check_alt_text(tutorial)
         members = groups[(tutorial.module, tutorial.series)]
-        written.append(
-            write(tutorial, shell, resolve_links(tutorial, registry), nav_for(tutorial, members))
+        page_path = write(
+            tutorial, shell, resolve_links(tutorial, registry), nav_for(tutorial, members)
         )
+        written.append(page_path)
+        if standalone:
+            written.append(write_standalone(tutorial, page_path.read_text()))
+
+    archives: dict[tuple[str, str], Path] = {}
+    if standalone:
+        for key, members in groups.items():
+            archives[key] = write_series_zip(key[0], key[1], members)
+        written.extend(archives.values())
 
     if tutorials:
-        written.append(write_index(shell, groups))
+        written.append(write_index(shell, groups, archives))
 
     OUT.mkdir(parents=True, exist_ok=True)
     shutil.rmtree(OUT / "assets", ignore_errors=True)
@@ -596,9 +760,14 @@ def build(clean: bool = False) -> list[Path]:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--clean", action="store_true", help="remove site/ before building")
+    parser.add_argument(
+        "--no-standalone",
+        action="store_true",
+        help="skip the downloadable single-file copies, which are the slow part",
+    )
     args = parser.parse_args()
     try:
-        written = build(clean=args.clean)
+        written = build(clean=args.clean, standalone=not args.no_standalone)
     except BuildError as exc:
         print(f"build failed — {exc}", file=sys.stderr)
         return 1

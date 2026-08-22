@@ -37,3 +37,32 @@ jobs:
 
       - name: Build the tutorials
         run: python build.py --clean
+
+  # The standalone bundle is the runtime rebuilt in the older script format and
+  # committed, so that build.py needs no Node. That means it can go stale the
+  # moment anyone edits the runtime — and a stale copy would make downloaded
+  # tutorials quietly behave like an older version of the tool. Rebuilding it
+  # here and failing on any difference turns that into a caught mistake.
+  standalone-bundle-is-current:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Rebuild the vendor bundles
+        working-directory: vendor-src
+        run: |
+          npm install --no-audit --no-fund
+          npm run build
+
+      - name: Fail if the committed bundle differs from a fresh build
+        run: |
+          if ! git diff --exit-code --stat assets/vendor/; then
+            echo
+            echo "assets/vendor/ is out of date with vendor-src/."
+            echo "Run 'npm install && npm run build' in vendor-src/ and commit the result."
+            exit 1
+          fi
