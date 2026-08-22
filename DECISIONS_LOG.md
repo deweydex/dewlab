@@ -427,3 +427,31 @@ Phases 2 and 3 need answered. Left open deliberately, so that nothing built in
 between quietly assumes an answer.
 *Cost to change: rises with everything built on `build.py`. Decide before the
 editor is built.*
+
+**1.11 — `dev/from_notebook.py` converts notebooks; three things it drops on purpose.**
+The first real series comes from eighteen Jupyter notebooks rather than being
+written from scratch. Converting them is a script rather than an afternoon of
+copying, and the script makes three decisions worth stating.
+
+*Saved outputs are dropped.* A notebook stores the output of the last run
+alongside the code. dewlab re-runs everything in the reader's browser, so a
+stored output is redundant at best and, once the code above it changes, a
+confident answer to a question nobody asked.
+
+*Magics and shell escapes are dropped, and reported.* `%matplotlib inline` is
+unnecessary here and `!pip install …` cannot work. Silently keeping either
+would produce a cell that fails on the student's first run; silently dropping
+them would hide a change from the author. They are dropped and named in the
+conversion report.
+
+*Cell ids come from the section heading, not from position.* Ids are what saved
+progress matches on. A positional id rebinds a student's work to the wrong cell
+the first time one is inserted above it, which is precisely the failure
+VERSIONING_AND_PROGRESS.md exists to avoid. `counting-carefully-1` also happens
+to be readable, which matters when an author later edits the markdown by hand.
+
+The `SOLUTION_` variants are not converted. They exist because a notebook
+cannot check a student's answer; dewlab has `check()`, so converting them would
+duplicate the series to no purpose.
+*Cost to change: small. The conversion is a one-off — after it, the markdown is
+the source and the script has done its job.*
