@@ -509,3 +509,47 @@ raises questions neither they nor the tool can answer, and the export exists to
 carry work between machines, not to combine it.
 *Cost to change: small, but merging is a design problem rather than an
 implementation one.*
+
+## Phase 4 addendum — the downloadable copy
+
+**4.1 — One source, two outputs; the export is built, not duplicated.**
+A student should be able to take a tutorial away as a file and still run it.
+The obvious way to get that — keeping a hand-maintained HTML copy of each
+tutorial — is the thing worth refusing: it puts every tutorial in two places,
+and the second one goes stale the first time somebody is in a hurry.
+
+`build.py` therefore writes both from the same markdown in the same run. Editing
+a tutorial regenerates the page and its downloadable twin together, and neither
+can drift from the other because neither is written by hand. The download link
+on each page points at that twin.
+*Cost to change: small. The export is a transformation of the built page, so it
+follows the page rather than needing to be kept level with it.*
+
+**4.2 — The export is one file that still needs the internet once.**
+A page opened from a file cannot load an ES module, cannot fetch a neighbouring
+file, and cannot resolve a link to a page that is not beside it. So the export
+inlines the stylesheet, the editor, the maths renderer and its fonts, and the
+Python tools; it loads Pyodide through its classic script rather than as a
+module; and it drops the navigation rather than shipping links that would break.
+
+What it does not do is carry Python itself. That is 30 MB and would make the
+file unwieldy for the common case, where a student has a connection the first
+time they open it. If school filtering turns out to block the runtime — the
+risk `OPEN_QUESTIONS.md` 32 tracks — this is the decision to revisit, and the
+runtime can be inlined the same way everything else was.
+
+The runtime says so plainly rather than failing obscurely: with no connection,
+the reading works and a single line explains why the cells do not.
+*Cost to change: moderate. Inlining Python is a size decision, not a redesign.*
+
+**4.3 — The classic bundle is committed, and CI checks it is not stale.**
+`assets/vendor/standalone.bundle.js` is the whole runtime rebuilt in the older
+script format, committed like the rest of `vendor/` so that `build.py` needs no
+Node. Unlike the rest of that directory it depends on `assets/tutorial-runtime.js`
+rather than on a pinned version, so it goes stale whenever the runtime changes —
+and a stale copy would mean downloaded tutorials quietly behaving like an older
+version of the tool.
+
+CI rebuilds it and fails if the committed copy differs. That turns a silent
+divergence into a failed check.
+*Cost to change: small, but do not remove the check without replacing it.*

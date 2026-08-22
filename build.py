@@ -24,6 +24,7 @@ in tests/e2e/ drive.
 from __future__ import annotations
 
 import argparse
+import base64
 import html
 import json
 import os
@@ -393,6 +394,10 @@ def nav_for(tutorial: Tutorial, members: list[Tutorial]) -> str:
         )
     up = "../" * tutorial.depth
     parts.append(f'<a class="dl-nav-up" href="{up}index.html">All tutorials</a>')
+    parts.append(
+        f'<a class="dl-download" href="{up}download/{tutorial.slug}.html" download>'
+        "Download this tutorial</a>"
+    )
     if index < len(members) - 1:
         following = members[index + 1]
         parts.append(
@@ -525,6 +530,95 @@ def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "") -> Path
     return tutorial.out_path
 
 
+# --------------------------------------------------------------- standalone
+
+# A page opened from a file cannot load an ES module, fetch a neighbouring
+# file, or resolve a relative link to a page that is not there. A standalone
+# export therefore carries everything inside it and drops what it cannot honour.
+PYODIDE_CLASSIC = (
+    '<script src="https://cdn.jsdelivr.net/pyodide/v0.28.3/full/pyodide.js"></script>'
+)
+FONT_URL_RE = re.compile(r"url\((?P<quote>['\"]?)fonts/(?P<name>[\w.-]+\.woff2)(?P=quote)\)")
+
+
+def inline_katex_css() -> str:
+    """KaTeX's stylesheet with its fonts folded in as data.
+
+    Only the woff2 files it actually names, which is what keeps this to a few
+    hundred kilobytes rather than the whole family.
+    """
+    css = (ASSETS / "vendor" / "katex.min.css").read_text()
+
+    def one(match: re.Match) -> str:
+        font = ASSETS / "vendor" / "fonts" / match.group("name")
+        if not font.is_file():
+            return match.group(0)
+        data = base64.b64encode(font.read_bytes()).decode("ascii")
+        return f"url(data:font/woff2;base64,{data})"
+
+    return FONT_URL_RE.sub(one, css)
+
+
+def standalone_html(tutorial: Tutorial, page: str) -> str:
+    """Turn a built page into one file that works from a student's disk."""
+    # The same prefix build.py wrote into the page's own asset references.
+    up = "../" * tutorial.depth + "assets/"
+    style = (ASSETS / "tutorial-style.css").read_text()
+    bundle = (ASSETS / "vendor" / "standalone.bundle.js").read_text()
+    tools = (ASSETS / "tutorial_tools.py").read_text()
+
+    # The stylesheets, inlined. KaTeX's only travels with a page that has maths.
+    page = page.replace(
+        f'<link rel="stylesheet" href="{up}vendor/katex.min.css">',
+        f"<style>{inline_katex_css()}</style>" if tutorial.has_math else "",
+    )
+    page = page.replace(
+        f'<link rel="stylesheet" href="{up}tutorial-style.css">',
+        f"<style>{style}</style>",
+    )
+
+    # The runtime, as a classic script, behind Pyodide's classic loader.
+    page = page.replace(
+        f'<script type="module" src="{up}tutorial-runtime.js"></script>',
+        PYODIDE_CLASSIC + "\n<script>" + bundle + "</script>",
+    )
+
+    # The Python tools, which cannot be fetched from a file.
+    marker = '<script type="application/json" id="dewlab-manifest">'
+    start = page.index(marker) + len(marker)
+    end = page.index("</script>", start)
+    manifest = json.loads(page[start:end])
+    manifest["toolsSource"] = tools
+    manifest["standalone"] = True
+    page = page[:start] + json.dumps(manifest).replace("<", "\\u003c") + page[end:]
+
+    # Navigation points at pages that are not beside this file, and the offer to
+    # download it is already taken. Both go rather than break.
+    page = re.sub(r"<nav class=\"dl-nav[^\"]*\">.*?</nav>", "", page, flags=re.DOTALL)
+    page = re.sub(r'<a class="dl-download".*?</a>', "", page, flags=re.DOTALL)
+    root = "../" * tutorial.depth
+    page = page.replace(f'href="{root}index.html"', 'href="#" onclick="return false"')
+    return page
+
+
+def write_standalone(tutorial: Tutorial, page: str) -> Path:
+    # A standalone file carries the page but not the /data/ folder beside it, so
+    # a tutorial that loads a dataset at runtime will read fine and fail at that
+    # cell. Better said at build time than discovered by a student.
+    if any("load_csv" in cell.code for cell in tutorial.cells):
+        print(
+            f"note: {tutorial.path.relative_to(ROOT)} loads a dataset, which its "
+            "downloadable copy cannot reach — that cell will fail when the file "
+            "is opened from disk",
+            file=sys.stderr,
+        )
+
+    target = OUT / "download" / f"{tutorial.slug}.html"
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text(standalone_html(tutorial, page))
+    return target
+
+
 def write_index(shell: str, groups: dict[tuple[str, str], list[Tutorial]]) -> Path:
     """The contents page at the site root, which every page's masthead links to."""
     manifest = {"slug": "index", "version": 1, "assetBase": "assets/",
@@ -555,7 +649,9 @@ def write_index(shell: str, groups: dict[tuple[str, str], list[Tutorial]]) -> Pa
     return target
 
 
-def build(clean: bool = False) -> list[Path]:
+def build(clean: bool = False, standalone: bool = False) -> list[Path]:
+    """Build the site. `standalone` also writes the downloadable single files,
+    which need the real assets on disk and are the slow part of a build."""
     if not SHELL.is_file():
         raise BuildError(f"no shell template at {SHELL.relative_to(ROOT)}")
     if clean and OUT.exists():
@@ -577,9 +673,12 @@ def build(clean: bool = False) -> list[Path]:
     for tutorial in tutorials:
         check_alt_text(tutorial)
         members = groups[(tutorial.module, tutorial.series)]
-        written.append(
-            write(tutorial, shell, resolve_links(tutorial, registry), nav_for(tutorial, members))
+        page_path = write(
+            tutorial, shell, resolve_links(tutorial, registry), nav_for(tutorial, members)
         )
+        written.append(page_path)
+        if standalone:
+            written.append(write_standalone(tutorial, page_path.read_text()))
 
     if tutorials:
         written.append(write_index(shell, groups))
@@ -596,9 +695,14 @@ def build(clean: bool = False) -> list[Path]:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--clean", action="store_true", help="remove site/ before building")
+    parser.add_argument(
+        "--no-standalone",
+        action="store_true",
+        help="skip the downloadable single-file copies, which are the slow part",
+    )
     args = parser.parse_args()
     try:
-        written = build(clean=args.clean)
+        written = build(clean=args.clean, standalone=not args.no_standalone)
     except BuildError as exc:
         print(f"build failed — {exc}", file=sys.stderr)
         return 1

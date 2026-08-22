@@ -252,7 +252,24 @@ let bootPromise = null;
 async function boot(manifest) {
   setStatus("Starting Python…");
 
-  const { loadPyodide } = await import(/* @vite-ignore */ PYODIDE_BASE + "pyodide.mjs");
+  /* Two ways in, because a page opened from a file cannot import a module.
+   * A standalone export loads Pyodide's classic script first, which leaves
+   * loadPyodide on the global; a hosted page has no such script and imports
+   * the module instead. */
+  if (manifest.standalone && !globalThis.loadPyodide) {
+    /* The classic script this file depends on did not load. Falling through to
+     * the module import cannot work from a file either, and would report the
+     * wrong thing — so say what actually happened. */
+    const offline = new Error(
+      "Python could not be downloaded. This file needs an internet connection " +
+        "the first time you open it — the reading works without one."
+    );
+    offline.dewlabFinal = true; // already says everything useful; do not dress it up
+    throw offline;
+  }
+  const loadPyodide =
+    globalThis.loadPyodide ||
+    (await import(/* @vite-ignore */ PYODIDE_BASE + "pyodide.mjs")).loadPyodide;
   pyodide = await loadPyodide({ indexURL: PYODIDE_BASE });
 
   setStatus(`Loading ${manifest.packages.join(", ")}…`);
@@ -260,10 +277,14 @@ async function boot(manifest) {
   await pyodide.loadPackage(manifest.packages);
 
   setStatus("Preparing the notebook tools…");
-  const source = await fetch(manifest.assetBase + "tutorial_tools.py").then((r) => {
-    if (!r.ok) throw new Error(`tutorial_tools.py: HTTP ${r.status}`);
-    return r.text();
-  });
+  /* A standalone export carries this source inside the page, because fetch
+   * cannot read a neighbouring file from disk either. */
+  const source =
+    manifest.toolsSource ||
+    (await fetch(manifest.assetBase + "tutorial_tools.py").then((r) => {
+      if (!r.ok) throw new Error(`tutorial_tools.py: HTTP ${r.status}`);
+      return r.text();
+    }));
   pyodide.FS.writeFile("/home/pyodide/tutorial_tools.py", source, { encoding: "utf8" });
   tools = pyodide.pyimport("tutorial_tools");
 
@@ -296,7 +317,12 @@ function ensureBooted(manifest) {
   if (!bootPromise) {
     bootPromise = boot(manifest).catch((err) => {
       console.error("dewlab: Pyodide failed to start", err);
-      setStatus(`Python failed to start: ${err.message}. Reloading the page usually fixes it.`, "error");
+      setStatus(
+        err.dewlabFinal
+          ? err.message
+          : `Python failed to start: ${err.message}. Reloading the page usually fixes it.`,
+        "error"
+      );
       setRunnable(false, "unavailable");
       throw err;
     });
