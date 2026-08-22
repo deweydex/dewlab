@@ -69,6 +69,10 @@ topics:
 # Things the decisions above brush against without settling. Each needs a yes or
 # no from Josh; until then the map counts them as gaps, which is the safer
 # default.
+#
+# These are stated here in one line each. DECISIONS_NEEDED.md in this folder
+# sets each one out properly — what exists already, what each answer costs, a
+# recommendation, and a form of words that would settle it.
 undecided:
   - about: MIT-4.4, MIT-4.9 — Pythagoras and practical right-triangle trigonometry
     question: >
