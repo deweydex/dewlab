@@ -394,6 +394,22 @@ def order_files() -> dict[tuple[str, str], list[str]]:
     return found
 
 
+def series_titles() -> dict[tuple[str, str], str]:
+    """What each series is called, from the `series:` line in its order file.
+
+    The slug is a filename. "reflections-and-review" is fine in a path and
+    wrong in a heading, and until a module had two series nobody saw the
+    heading at all.
+    """
+    titles: dict[tuple[str, str], str] = {}
+    for path in sorted(TUTORIALS.rglob(f"*{ORDER_SUFFIX}")):
+        data = yaml.safe_load(path.read_text()) or {}
+        name = data.get("series")
+        if isinstance(name, str) and name.strip():
+            titles[(path.parent.name, path.name[: -len(ORDER_SUFFIX)])] = name.strip()
+    return titles
+
+
 def series_of(tutorials: list[Tutorial]) -> dict[tuple[str, str], list[Tutorial]]:
     """Group tutorials into the series a student actually works through.
 
@@ -976,13 +992,15 @@ def render_index(
         "</div>",
     ]
 
+    titles = series_titles()
     for module in sorted({module for module, _ in groups}):
         out.append(f"<h2>{html.escape(names.get(module, module))}</h2>")
         for (owner, series), members in sorted(groups.items()):
             if owner != module:
                 continue
             if len({s for m, s in groups if m == module}) > 1:
-                out.append(f'<h3>{html.escape(series)}</h3>')
+                name = titles.get((owner, series), series)
+                out.append(f'<h3>{html.escape(name)}</h3>')
             out.append('<ol class="dl-contents">')
             for member in members:
                 href = member.out_path.relative_to(OUT).as_posix()
@@ -993,10 +1011,15 @@ def render_index(
             archive = archives.get((owner, series))
             if archive is not None:
                 count = len(members)
+                # A series of one is a real case now that reflections live in
+                # their own section, and "Download all 1 as single files" is
+                # not a sentence anybody wrote on purpose.
+                what = ("this one as a single file" if count == 1
+                        else f"all {count} as single files")
                 out.append(
                     '<p class="dl-series">'
                     f'<a class="dl-download" href="download/{archive.name}" download>'
-                    f"Download all {count} as single files"
+                    f"Download {what}"
                     f" ({readable_size(archive)})</a></p>"
                 )
     return "\n".join(out)

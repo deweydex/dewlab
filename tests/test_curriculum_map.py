@@ -9,6 +9,7 @@ a map that quietly links to a section that does not exist is worse than no map.
 
 from __future__ import annotations
 
+import re
 import sys
 from pathlib import Path
 
@@ -257,3 +258,42 @@ class TestTheTopicGlossary:
             assert not first.startswith(topic["name"].lower()), (
                 f"{code} defines itself with its own name"
             )
+
+
+class TestWhatTheTutorialsSayAboutTheCourse:
+    """Checks against the real tutorials, not a fixture. These are about the
+    course rather than the converter, and there is nowhere else for them."""
+
+    def tutorials(self):
+        folder = cm.ROOT / "tutorials"
+        return sorted(p for p in folder.rglob("*.md"))
+
+    def test_the_sequence_graph_has_no_repeated_node(self):
+        """`order` restarts at 1 in each series. When reflections moved into
+        their own, the mermaid graph came out with two nodes called T1 and an
+        arrow from one of them to itself."""
+        # The map holds several mermaid blocks; the sequence one is whichever
+        # declares T-nodes. Taking "the first block" silently tested the strand
+        # diagram instead, and passed against a map that was visibly broken.
+        blocks = [
+            b for b in re.findall(r"```mermaid\n(.*?)```", cm.MAP.read_text(), re.S)
+            if re.search(r"^  T\d+\[", b, re.MULTILINE)
+        ]
+        assert blocks, "no tutorial sequence graph in the map"
+        for block in blocks:
+            ids = re.findall(r"^  (T\d+)\[", block, re.MULTILINE)
+            assert len(ids) == len(set(ids)), f"repeated node: {sorted(ids)}"
+            assert not re.search(r"^  (T\d+) --> \1$", block, re.MULTILINE)
+
+    def test_no_tutorial_mentions_a_skills_demo(self):
+        """The assessments were named throughout the prose — "you are now ready
+        for Skills Demo 1", "the last tutorial before Skills Demo 2B". That ties
+        the tutorials to one institution's assessment schedule, and the schedule
+        is the thing most likely to change. A tutorial can say what a student is
+        ready to build without naming the paperwork."""
+        guilty = [
+            path.relative_to(cm.ROOT)
+            for path in self.tutorials()
+            if "skills demo" in path.read_text().lower()
+        ]
+        assert guilty == [], f"still names a skills demo: {guilty}"

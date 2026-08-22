@@ -236,6 +236,6 @@ We have built equation-solving machinery from scratch: linear equations, quadrat
 
 The power of this approach is that we can verify everything computationally. Find a root, then evaluate the polynomial at that root to confirm it is zero. Factor a quadratic, then multiply the factors to confirm we get the original. Solve a system, then substitute back to confirm both equations hold.
 
-Next tutorial we will work with sets -- collections where membership and relationships matter -- which is the last major topic before Skills Demo 2B.
+Next tutorial we will work with sets -- collections where membership and relationships matter -- which is the last major topic in this set.
 
 Which type of equation did you find most satisfying to solve programmatically?

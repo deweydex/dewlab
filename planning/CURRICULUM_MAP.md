@@ -91,7 +91,6 @@ graph TD
   T15["15. Cracking Equations"]
   T16["16. Sets as Sorted Lists"]
   T17["17. Bringing It All Together"]
-  T18["18. Looking Back Before Moving Forward"]
 
   T1 --> T2
   T2 --> T3
@@ -109,7 +108,6 @@ graph TD
   T14 --> T15
   T15 --> T16
   T16 --> T17
-  T17 --> T18
 
   T9 -.->|builds on| T4
   T16 -.->|builds on| T6
@@ -145,7 +143,6 @@ graph TD
   T15["15. Cracking Equations"]
   T16["16. Sets as Sorted Lists"]
   T17["17. Bringing It All Together"]
-  T18["18. Looking Back Before Moving Forward"]
   N0("Rearranging Formulae")
   N1("When There Is No Answer (And Then There Is)")
   N2("Drawing Functions")
@@ -173,7 +170,6 @@ graph TD
   T14 --> T15
   T15 --> T16
   T16 --> T17
-  T17 --> T18
 
   N2 ==> N3
   N3 ==> N4
@@ -316,7 +312,6 @@ The same word presented as new in two places. Either it is being introduced twic
 | *expressions come alive* | 15, 17 |
 | *finding things* | 7, 16 |
 | *index* | 4, 5, 13 |
-| *modular* | 5, 18 |
 | *set* | 15, 16 |
 | *solve* | 14, 15 |
 | *zahlen* | 2, 13 |

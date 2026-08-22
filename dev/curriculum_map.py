@@ -38,6 +38,22 @@ OUT_OF_SCOPE = ROOT / "planning" / "curriculum" / "out-of-scope.yaml"
 MAP = ROOT / "planning" / "CURRICULUM_MAP.md"
 SITE = "https://deweydex.github.io/dewlab"
 
+# The series this report is about. It used to be enough to name the module,
+# because the module had one series — and then reflections moved into their own,
+# `order` started at 1 twice, and the mermaid graph came out with two nodes
+# called T1 and an arrow from one of them to itself.
+MAIN_MODULE = "mit-pdp-maths-prog-integration"
+MAIN_SERIES = "maths-and-programming"
+
+
+def in_the_main_series(tutorial) -> bool:
+    return bool(
+        tutorial.order
+        and tutorial.module == MAIN_MODULE
+        and tutorial.series == MAIN_SERIES
+    )
+
+
 HEADING_RE = re.compile(r"^##\s+(?P<text>.+?)\s*$", re.MULTILINE)
 # Python-Markdown's toc slugify, which is what build.py's anchors come from.
 PUNCTUATION_RE = re.compile(r"[^\w\s-]")
@@ -177,7 +193,11 @@ def back_references(tutorials: list[Tutorial]) -> dict[str, set[int]]:
         refs[tutorial.slug] = {
             earlier.order
             for earlier in tutorials
+            # Series as well as module: order restarts at 1 in each series, so
+            # comparing across them would read a reflections tutorial's 1 as
+            # coming before everything in the main sequence.
             if earlier.module == tutorial.module
+            and earlier.series == tutorial.series
             and 0 < earlier.order < tutorial.order
             and len(earlier.title) > 6
             and earlier.title in body
@@ -292,7 +312,7 @@ def sequence_graph(tutorials: list[Tutorial], refs: dict[str, set[int]]) -> str:
     """The teaching order, with a dashed arrow wherever one tutorial names
     an earlier one in its own text."""
     ordered = sorted(
-        [t for t in tutorials if t.order and t.module == "mit-pdp-maths-prog-integration"],
+        [t for t in tutorials if in_the_main_series(t)],
         key=lambda t: t.order,
     )
     by_order = {t.order: t for t in ordered}
@@ -431,7 +451,7 @@ def term_findings(tutorials: list[Tutorial]) -> dict[str, list]:
     doing ordinary work and can be ignored; the ones that are not are places
     where a student met a term as if they already knew it.
     """
-    ordered = [t for t in tutorials if t.order and t.module == "mit-pdp-maths-prog-integration"]
+    ordered = [t for t in tutorials if in_the_main_series(t)]
     order_of = {t.slug: t.order for t in ordered}
     prose = {t.slug: prose_of(t).lower() for t in ordered}
     terms = terms_of(ordered)
@@ -464,8 +484,7 @@ def load_proposals() -> list[dict]:
 def proposal_graph(tutorials: list[Tutorial], proposals: list[dict]) -> str:
     """The existing series with the proposed tutorials slotted into it."""
     ordered = sorted(
-        [t for t in tutorials
-         if t.order and t.module == "mit-pdp-maths-prog-integration"],
+        [t for t in tutorials if in_the_main_series(t)],
         key=lambda t: t.order,
     )
     node_of = {t.slug: f"T{t.order}" for t in ordered}

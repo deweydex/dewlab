@@ -21,7 +21,7 @@ covers:
 
 **Programming Design Principles / Maths for IT**
 
-We are entering the final stretch of tutorials before Skills Demo 2B. This set is about algebra, equations, and sets -- the classical mathematical tools, built as programs.
+The next few tutorials are about algebra, equations, and sets -- the classical mathematical tools, built as programs.
 
 Today we start with the raw material: numbers themselves. Mathematicians organise numbers into a hierarchy of families, and understanding these families helps us understand what operations are possible and what results to expect.
 

@@ -292,6 +292,6 @@ We have built a complete set of descriptive statistics tools: mean, median, mode
 
 The progression matters: we started with individual numbers (central tendency), then measured spread, then looked at the full distribution. Each level gives us more information. Together they give us a rich picture of a dataset.
 
-You are now ready for Skills Demo 2A, which will ask you to build these tools and apply them to probability and data analysis problems.
+You now have everything you need to build these tools yourself, from nothing, and turn them on real probability and data analysis problems.
 
 What surprised you about working with data?
