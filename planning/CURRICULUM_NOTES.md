@@ -152,7 +152,7 @@ unrelated topics under one title:
 | Section | Outcome | What it actually is |
 |---|---|---|
 | The Number Domains | `MIT-2.1` | Set theory |
-| Indices (Powers) and Their Rules | `MIT-1.1` | Algebra |
+| Powers and Their Rules | `MIT-1.1` | Algebra |
 | Logarithms: The Inverse of Powers | `MIT-1.1` | Algebra |
 | Practical Geometry: Formulas as Functions | `MIT-1.2`, `MIT-1.3` | Mensuration |
 | Putting It Together: A Number Explorer | — | Synthesis of all three |
@@ -200,10 +200,10 @@ made.
 - **Number domains → into Tutorial 2, or immediately after it.** It is the same
   idea as `int` versus `float`, and Tutorial 2 is already half-teaching it. This
   is the strongest of the three moves.
-- **Indices and logarithms → before Tutorial 9.** Powers and roots are the
+- **Powers and logarithms → before Tutorial 9.** Powers and roots are the
   arithmetic that counting, standard deviation and polynomials all assume.
-  Expanded, this is a full tutorial: index laws, roots as fractional powers,
-  logarithms as the inverse, and why a computer's `log` has a base.
+  Expanded, this is a full tutorial: the laws of powers, roots as fractional
+  powers, logarithms as the inverse, and why a computer's `log` has a base.
 - **Practical geometry → straight after functions are introduced** (Tutorial 5
   or 8). "A formula is a function" is the best first use of a function there is,
   and it currently sits eight tutorials past the point where it would land.
@@ -222,3 +222,57 @@ new maths tutorials means two renumberings.
 Dropping the numbers from titles once makes both free, and this is the clearest
 case yet for it: the reordering is worth doing on its own merits, and the
 numbering is the only thing making it expensive.
+
+---
+
+## 2026-08-22 — "Indices" was the wrong word, and in the worst possible order
+
+Josh: *why are you calling exponents indices? indices are different (and used
+for counting)… I think it's important to only introduce terms as needed, and
+indices will be needed when we discuss lists.*
+
+Correct, and the collision is worse than it first looks. Counted across the
+series:
+
+| Tutorial | Word | Sense |
+|---|---|---|
+| 4 — Repeating Yourself | *index* ×1 | the index of summation, in sigma notation |
+| 5 — Lists and Sequences | *index* ×7, *indices* ×1 | positions in a list — "elements at indices 2, 3, 4" |
+| 6 — Finding Things | *indices* ×1 | the `low` and `high` positions in binary search |
+| 13 — Numbers and Their Families | *indices* ×4 | **exponents** |
+
+So a student meets the exact plural, *indices*, meaning list positions in
+Tutorial 5 — and then meets it again eight tutorials later meaning something
+entirely different. The one word arrives in the sense we do not want first.
+
+### Where it came from
+
+Not a choice anybody made. The QQI descriptor words `MIT-1.1` as "indices and
+logarithms", the source notebook titled its section *Indices (Powers) and Their
+Rules*, and that carried into `outcomes.yaml` when the map was built. Tutorial
+13's own body was already inconsistent with its heading: it says "exponents"
+five times and "indices" only in the title and one comment.
+
+### The rule from here
+
+**Reserve *index* and *indices* for position. Say *power* or *exponent* for the
+other thing.** More generally, Josh's principle: introduce a term when it is
+needed, and do not spend a word twice.
+
+The syllabus word still has to be recognisable — an exam paper will say *laws of
+indices* — so Tutorial 13 now names it once, at the end of the section, and says
+why this course uses a different one. That is one sentence of recognition rather
+than a vocabulary a student has to hold two meanings for.
+
+`outcomes.yaml` keeps both, deliberately: it is the file an examiner's wording
+has to be findable in, and the tutorials are where ours is used.
+
+### Worth a sweep
+
+This is unlikely to be the only word doing double duty across a course that
+teaches mathematics and programming side by side. Candidates worth checking when
+the tutorials next get a pass: **function** (mathematical mapping versus `def`),
+**range** (spread of data versus `range()`), **set** (mathematical set versus
+assignment), **domain** (of a function versus of a problem), and **expression**
+(algebraic versus Python). Each of those already appears in both senses
+somewhere in the series.
