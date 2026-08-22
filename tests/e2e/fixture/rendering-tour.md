@@ -4,7 +4,6 @@ slug: rendering-tour
 module: fixtures
 year: "2026-2027"
 series: e2e
-order: 1
 version: 1
 covers:
   matplotlib:

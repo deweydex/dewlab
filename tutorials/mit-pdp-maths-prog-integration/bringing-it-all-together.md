@@ -1,11 +1,10 @@
 ---
-title: "Tutorial 17: Bringing It All Together"
-slug: tutorial-17-bringing-it-all-together
+title: "Bringing It All Together"
+slug: bringing-it-all-together
 module: mit-pdp-maths-prog-integration
 module_title: "Programming and Maths, Integrated"
 year: "2026-2027"
 series: maths-and-programming
-order: 17
 version: 1
 covers:
   problem-1-the-polynomial-workshop:
@@ -18,7 +17,7 @@ covers:
     covers: [PDP-LO10]
 ---
 
-# Tutorial 17: Bringing It All Together
+# Bringing It All Together
 
 **Programming Design Principles / Maths for IT**
 
@@ -28,13 +27,13 @@ This is the last tutorial before Skills Demo 2B. Rather than introducing new mat
 
 Over Tutorials 13-16, we built:
 
-**From Tutorial 13:** `classify_number`, `power`, `log_base`, geometry functions
+**From *Numbers and Their Families*:** `classify_number`, `power`, `log_base`, geometry functions
 
-**From Tutorial 14:** `evaluate_poly`, `poly_to_string`, `add_poly`, `multiply_poly`, `subtract_poly`, `scale_poly`
+**From *Expressions Come Alive*:** `evaluate_poly`, `poly_to_string`, `add_poly`, `multiply_poly`, `subtract_poly`, `scale_poly`
 
-**From Tutorial 15:** `solve_linear`, `solve_quadratic`, `factor_quadratic`, `solve_linear_inequality`, `solve_simultaneous`
+**From *Cracking Equations*:** `solve_linear`, `solve_quadratic`, `factor_quadratic`, `solve_linear_inequality`, `solve_simultaneous`
 
-**From Tutorial 16:** `make_set`, `is_member`, `union`, `intersection`, `difference`, `symmetric_difference`, `is_subset`, `is_equal`
+**From *Sets as Sorted Lists*:** `make_set`, `is_member`, `union`, `intersection`, `difference`, `symmetric_difference`, `is_subset`, `is_equal`
 
 Let's start by collecting our key functions. Copy them into the cell below (or rewrite them -- sometimes rewriting from memory is the best test of understanding):
 
@@ -178,6 +177,6 @@ id: looking-ahead-to-skills-demo-2b-1
 
 ## Reflection
 
-We have come a long way: from "Hello, world!" in Tutorial 1 to polynomial algebra, equation solving, and set theory in Tutorial 16. Each piece builds on the ones before it, and the mathematical ideas and programming concepts are woven together throughout.
+We have come a long way: from "Hello, world!" in *First Steps* to polynomial algebra, equation solving, and set theory in *Sets as Sorted Lists*. Each piece builds on the ones before it, and the mathematical ideas and programming concepts are woven together throughout.
 
 The final reflection: what has changed about how you think about mathematics since we started? And what has changed about how you think about programming?

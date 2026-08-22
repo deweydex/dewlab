@@ -4,7 +4,6 @@ slug: prose-only
 module: fixtures
 year: "2026-2027"
 series: e2e
-order: 2
 version: 1
 ---
 

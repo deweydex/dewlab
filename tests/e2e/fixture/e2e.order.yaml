@@ -1,0 +1,7 @@
+# The reading order of the fixture series. See build.py's order_files().
+
+series: End to end
+order:
+  - rendering-tour
+  - prose-only
+  - third-page

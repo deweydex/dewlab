@@ -225,6 +225,11 @@ class TestTheOutputActuallyBuilds:
         repo = tmp_path / "repo"
         (repo / "tutorials" / "fixtures").mkdir(parents=True)
         (repo / "tutorials" / "fixtures" / f"{result.slug}.md").write_text(text)
+        # Ordering lives in one file per series now, not in the frontmatter, so
+        # a converted notebook has to be listed before the build will place it.
+        (repo / "tutorials" / "fixtures" / "s.order.yaml").write_text(
+            f"order:\n  - {result.slug}\n"
+        )
         (repo / "assets").mkdir()
         (repo / "assets" / "shell.html").write_text(
             (Path(__file__).resolve().parent.parent / "assets" / "shell.html").read_text()

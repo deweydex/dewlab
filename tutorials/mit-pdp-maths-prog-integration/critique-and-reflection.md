@@ -1,11 +1,10 @@
 ---
-title: "Interlude: Looking Back Before Moving Forward"
-slug: tutorial-interlude-critique-and-reflection
+title: "Looking Back Before Moving Forward"
+slug: critique-and-reflection
 module: mit-pdp-maths-prog-integration
 module_title: "Programming and Maths, Integrated"
 year: "2026-2027"
 series: maths-and-programming
-order: 18
 version: 1
 covers:
   part-1-reading-your-own-code:
@@ -14,7 +13,7 @@ covers:
     covers: [PDP-LO11]
 ---
 
-# Interlude: Looking Back Before Moving Forward
+# Looking Back Before Moving Forward
 
 **Programming Design Principles / Maths for IT**
 

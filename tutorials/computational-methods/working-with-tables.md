@@ -5,7 +5,6 @@ module: computational-methods
 module_title: "Computational Methods"
 year: "2026-2027"
 series: python-fundamentals
-order: 2
 version: 1
 ---
 

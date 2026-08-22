@@ -1,11 +1,10 @@
 ---
-title: "Tutorial 10: What Are the Chances?"
-slug: tutorial-10-what-are-the-chances
+title: "What Are the Chances?"
+slug: what-are-the-chances
 module: mit-pdp-maths-prog-integration
 module_title: "Programming and Maths, Integrated"
 year: "2026-2027"
 series: maths-and-programming
-order: 10
 version: 1
 covers:
   basic-probability:
@@ -18,7 +17,7 @@ covers:
     covers: [MIT-5.8]
 ---
 
-# Tutorial 10: What Are the Chances?
+# What Are the Chances?
 
 **Programming Design Principles / Maths for IT**
 
@@ -95,7 +94,7 @@ After drawing one ace, there are 3 aces left among 51 remaining cards.
 
 ### Your turn
 
-Using your `probability` function and the combination functions from Tutorial 9, work through these card probability questions. Write your reasoning before computing.
+Using your `probability` function and the combination functions from *Counting Carefully*, work through these card probability questions. Write your reasoning before computing.
 
 1. What is the probability of drawing a face card (Jack, Queen, or King)?
 2. What is the probability of drawing a card that is red *and* a face card?

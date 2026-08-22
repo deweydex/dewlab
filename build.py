@@ -47,7 +47,14 @@ ASSETS = ROOT / "assets"
 SHELL = ASSETS / "shell.html"
 OUT = ROOT / "site"
 
-REQUIRED_FRONTMATTER = ("title", "slug", "module", "year", "series", "order", "version")
+REQUIRED_FRONTMATTER = ("title", "slug", "module", "year", "series", "version")
+
+# `order` used to live here. It moved into one file per series, so a tutorial
+# that still carries it is half-migrated — and the half that is not migrated is
+# the half that would be silently ignored.
+MOVED_FRONTMATTER = {
+    "order": "the series' .order.yaml file, which lists slugs in reading order",
+}
 
 # ```python exec — the tag that makes a fence a live cell. An untagged fence is
 # ordinary illustrative code and markdown renders it as it always would.
@@ -112,6 +119,9 @@ class Tutorial:
     has_math: bool = False
     anchors: set[str] = field(default_factory=set)
     toc: list = field(default_factory=list)
+    # Where this sits in its series. Not from the frontmatter — the order file
+    # decides it, and series_of() fills it in once the series is assembled.
+    order: int = 0
 
     @property
     def slug(self) -> str:
@@ -144,14 +154,6 @@ class Tutorial:
         return str(self.meta["title"])
 
     @property
-    def order(self) -> int:
-        try:
-            return int(self.meta["order"])
-        except (TypeError, ValueError):
-            fail(self.path, f"order must be a whole number, not {self.meta['order']!r}")
-            raise  # unreachable; fail() always raises
-
-    @property
     def depth(self) -> int:
         """How many directories deep the built page sits under site/."""
         return len(self.out_path.relative_to(OUT).parts) - 1
@@ -180,6 +182,10 @@ def split_frontmatter(text: str, path: Path) -> tuple[dict, str]:
     missing = [f for f in REQUIRED_FRONTMATTER if f not in meta]
     if missing:
         fail(path, f"frontmatter is missing {', '.join(missing)}")
+    for field_name, moved_to in MOVED_FRONTMATTER.items():
+        if field_name in meta:
+            fail(path, f"{field_name} no longer belongs in frontmatter — it moved "
+                       f"to {moved_to}")
     return meta, body.lstrip("\n")
 
 
@@ -361,32 +367,75 @@ def place_blocks(
 # -------------------------------------------------------------- navigation
 
 
+ORDER_SUFFIX = ".order.yaml"
+
+
+def order_files() -> dict[tuple[str, str], list[str]]:
+    """The reading order of each series, read from one file per series.
+
+    Order used to live in every tutorial's own frontmatter, which meant
+    inserting one in the middle was an edit to every file after it. In one list
+    per series, moving a tutorial is moving a line and inserting one is adding
+    a line — which is what makes reordering something an editor can do, and
+    something a person can still do by hand in the GitHub web editor.
+    """
+    found: dict[tuple[str, str], list[str]] = {}
+    for path in sorted(TUTORIALS.rglob(f"*{ORDER_SUFFIX}")):
+        data = yaml.safe_load(path.read_text()) or {}
+        module = path.parent.name
+        series = path.name[: -len(ORDER_SUFFIX)]
+        order = data.get("order")
+        if not isinstance(order, list) or not all(isinstance(s, str) for s in order):
+            fail(path, "an order file needs `order:` as a list of slugs")
+        if len(set(order)) != len(order):
+            duplicates = sorted({s for s in order if order.count(s) > 1})
+            fail(path, f"lists {', '.join(duplicates)} more than once")
+        found[(module, series)] = order
+    return found
+
+
 def series_of(tutorials: list[Tutorial]) -> dict[tuple[str, str], list[Tutorial]]:
     """Group tutorials into the series a student actually works through.
 
     A series is per module: two modules may both have a series called
     `fundamentals` without being the same sequence.
     """
+    orders = order_files()
     groups: dict[tuple[str, str], list[Tutorial]] = {}
     for tutorial in tutorials:
         groups.setdefault((tutorial.module, tutorial.series), []).append(tutorial)
-    for members in groups.values():
-        # Title breaks a tie, so the sequence is at least stable and repeatable.
-        # Two tutorials sharing a position is worth mentioning but not worth
-        # stopping for: the pages still build and still link to each other, the
-        # author just did not choose which came first. That is a different kind
-        # of mistake from a dead link, and deserves a different response.
-        members.sort(key=lambda t: (t.order, t.title))
-        seen: dict[int, Tutorial] = {}
+
+    for key, members in groups.items():
+        module, series = key
+        listed = orders.get(key)
+        if listed is None:
+            fail(
+                members[0].path,
+                f"series {series!r} in {module} has no "
+                f"{series}{ORDER_SUFFIX} beside it. That file is what decides "
+                "the reading order.",
+            )
+
+        position = {slug: index for index, slug in enumerate(listed)}
         for member in members:
-            if member.order in seen:
-                print(
-                    f"note: {member.path.relative_to(ROOT)} and "
-                    f"{seen[member.order].path.name} are both order {member.order}; "
-                    "ordering them by title",
-                    file=sys.stderr,
+            if member.slug not in position:
+                fail(
+                    member.path,
+                    f"is not listed in {series}{ORDER_SUFFIX}, so nothing knows "
+                    "where it goes. Add its slug to that file.",
                 )
-            seen.setdefault(member.order, member)
+        # A slug listed with no tutorial behind it is the more dangerous
+        # direction: the order file looks complete and the series is short.
+        missing = [slug for slug in listed if slug not in {m.slug for m in members}]
+        if missing:
+            fail(
+                TUTORIALS / module / f"{series}{ORDER_SUFFIX}",
+                f"lists {', '.join(missing)}, which no tutorial in this series "
+                "has as its slug",
+            )
+        members.sort(key=lambda t: position[t.slug])
+        for index, member in enumerate(members, start=1):
+            member.order = index
     return groups
 
 
@@ -792,20 +841,21 @@ def shorten(label: str, limit: int = 22) -> str:
     return (cut or label[:limit]) + "…"
 
 
-BACKLINK_RE = re.compile(r"\bTutorial\s+(\d{1,2})\b")
-
-
 def back_links(tutorial: Tutorial, members: list[Tutorial]) -> list[str]:
     """Earlier tutorials this one names in its own text, skipping its neighbour.
 
-    Evidence rather than intention. The arrow to the tutorial immediately before
-    is left out because the reading-order arrow already says it.
+    By title rather than by number, because the numbers are gone — and because
+    a title is what a tutorial would say anyway. Evidence rather than intention:
+    nobody maintains this list, it is found by reading. The tutorial immediately
+    before is left out, since the reading-order arrow already says that one.
     """
-    by_order = {t.order: t for t in members}
-    named = {int(n) for n in BACKLINK_RE.findall(tutorial.body_html)}
+    text = tutorial.body_html
     return [
-        by_order[n].slug for n in sorted(named)
-        if n in by_order and 0 < n < tutorial.order - 1
+        earlier.slug
+        for earlier in members
+        if 0 < earlier.order < tutorial.order - 1
+        and len(earlier.title) > 6
+        and earlier.title in text
     ]
 
 
@@ -920,14 +970,32 @@ def check_alt_text(tutorial: Tutorial) -> None:
             fail(tutorial.path, f"image has no alt attribute: {tag}")
 
 
-def resolve_links(tutorial: Tutorial, registry: dict[str, Tutorial]) -> str:
-    """Rewrite tutorial:slug#anchor into a real relative href, or fail."""
+def resolve_links(tutorial: Tutorial, registry: dict[tuple[str, str], Tutorial]) -> str:
+    """Rewrite tutorial:slug#anchor into a real relative href, or fail.
+
+    A slug is looked for in this tutorial's own module first, which is what
+    makes a cross-module name clash harmless: `tutorial:first-steps` in a
+    maths tutorial means the maths one. Outside the module it still resolves,
+    but only when exactly one other module has that slug — anything else is
+    ambiguous and stops the build rather than guessing.
+    """
 
     def one(match: re.Match) -> str:
         slug, anchor = match.group("slug"), match.group("anchor")
-        target = registry.get(slug)
+        target = registry.get((tutorial.module, slug))
         if target is None:
-            known = ", ".join(sorted(registry)) or "none"
+            elsewhere = [t for (module, s), t in registry.items() if s == slug]
+            if len(elsewhere) == 1:
+                target = elsewhere[0]
+            elif len(elsewhere) > 1:
+                modules = ", ".join(sorted(t.module for t in elsewhere))
+                fail(
+                    tutorial.path,
+                    f"link to {slug!r} is ambiguous — it exists in {modules}, "
+                    "and not in this module",
+                )
+        if target is None:
+            known = ", ".join(sorted(s for _, s in registry)) or "none"
             fail(tutorial.path, f"link to unknown tutorial {slug!r} (built: {known})")
         if anchor and anchor not in target.anchors:
             fail(
@@ -1353,12 +1421,18 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
     sources = sorted(TUTORIALS.rglob("*.md"))
     tutorials = [load(p) for p in sources]
 
-    registry: dict[str, Tutorial] = {}
+    # Unique within a module, not across the whole site. The built path already
+    # carries the module, so two modules may each have a "first-steps" without
+    # any ambiguity about which page is which — and forcing them apart would
+    # mean naming tutorials around a constraint that does not exist.
+    registry: dict[tuple[str, str], Tutorial] = {}
     for tutorial in tutorials:
-        if tutorial.slug in registry:
-            fail(tutorial.path, f"slug {tutorial.slug!r} is already used by "
-                                f"{registry[tutorial.slug].path.relative_to(ROOT)}")
-        registry[tutorial.slug] = tutorial
+        key = (tutorial.module, tutorial.slug)
+        if key in registry:
+            fail(tutorial.path, f"slug {tutorial.slug!r} is already used in "
+                                f"{tutorial.module} by "
+                                f"{registry[key].path.relative_to(ROOT)}")
+        registry[key] = tutorial
 
     shell = SHELL.read_text()
     groups = series_of(tutorials)

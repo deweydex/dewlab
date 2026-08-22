@@ -1,11 +1,10 @@
 ---
-title: "Tutorial 4: Repeating Yourself"
-slug: tutorial-04-repeating-yourself
+title: "Repeating Yourself"
+slug: repeating-yourself
 module: mit-pdp-maths-prog-integration
 module_title: "Programming and Maths, Integrated"
 year: "2026-2027"
 series: maths-and-programming
-order: 4
 version: 1
 covers:
   while-loops-repeat-until-done:
@@ -20,7 +19,7 @@ covers:
     covers: [MIT-6.7]
 ---
 
-# Tutorial 4: Repeating Yourself
+# Repeating Yourself
 
 **Programming Design Principles / Maths for IT**
 

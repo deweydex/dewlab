@@ -1,0 +1,6 @@
+# The reading order of this series. See the note in the other order file.
+
+series: Python fundamentals
+order:
+  - first-steps
+  - working-with-tables

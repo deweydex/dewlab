@@ -1,11 +1,10 @@
 ---
-title: "Tutorial 2: Storing and Computing"
-slug: tutorial-02-storing-and-computing
+title: "Storing and Computing"
+slug: storing-and-computing
 module: mit-pdp-maths-prog-integration
 module_title: "Programming and Maths, Integrated"
 year: "2026-2027"
 series: maths-and-programming
-order: 2
 version: 1
 covers:
   variables-giving-names-to-things:
@@ -20,7 +19,7 @@ covers:
     covers: [PDP-LO7]
 ---
 
-# Tutorial 2: Storing and Computing
+# Storing and Computing
 
 **Programming Design Principles / Maths for IT**
 

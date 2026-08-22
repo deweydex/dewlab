@@ -1,11 +1,10 @@
 ---
-title: "Tutorial 14: Expressions Come Alive"
-slug: tutorial-14-expressions-come-alive
+title: "Expressions Come Alive"
+slug: expressions-come-alive
 module: mit-pdp-maths-prog-integration
 module_title: "Programming and Maths, Integrated"
 year: "2026-2027"
 series: maths-and-programming
-order: 14
 version: 1
 covers:
   expressions-versus-equations:
@@ -24,7 +23,7 @@ covers:
     covers: [MIT-1.6]
 ---
 
-# Tutorial 14: Expressions Come Alive
+# Expressions Come Alive
 
 **Programming Design Principles / Maths for IT**
 
@@ -36,7 +35,7 @@ An important distinction first. An *expression* is a mathematical phrase that ha
 
 An *equation* is a statement that two expressions are equal: $3x + 7 = 22$, $x^2 - 4 = 0$. An equation asserts something and can be true or false depending on x.
 
-We *evaluate* expressions. We *solve* equations. Today is about evaluation; solving comes in Tutorial 15.
+We *evaluate* expressions. We *solve* equations. Today is about evaluation; solving comes in *Cracking Equations*.
 
 ## Representing Polynomials
 

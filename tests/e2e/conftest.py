@@ -61,6 +61,9 @@ def site_dir(tmp_path_factory) -> Path:
     (root / "tutorials" / MODULE).mkdir(parents=True)
     for source in sorted(FIXTURE_DIR.glob("*.md")):
         shutil.copy(source, root / "tutorials" / MODULE / source.name)
+    # The series' reading order, which lives beside the tutorials now.
+    for source in sorted(FIXTURE_DIR.glob("*.order.yaml")):
+        shutil.copy(source, root / "tutorials" / MODULE / source.name)
     shutil.copytree(DEWLAB / "assets", root / "assets")
     shutil.copytree(DEWLAB / "data", root / "data")
     # The topic tree is built from the curriculum data, and its behaviour —

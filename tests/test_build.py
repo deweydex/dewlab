@@ -32,7 +32,6 @@ slug: {slug}
 module: computational-methods
 year: "2026-2027"
 series: python-fundamentals
-order: 1
 version: {version}
 ---
 
@@ -56,9 +55,22 @@ def repo(tmp_path, monkeypatch):
     return tmp_path
 
 
+def set_order(repo: Path, module: str, series: str, slugs: list[str]) -> Path:
+    """Write a series' order file. Ordering lives here now, not in frontmatter."""
+    path = repo / "tutorials" / module / f"{series}.order.yaml"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text("order:\n" + "".join(f"  - {slug}\n" for slug in slugs))
+    return path
+
+
 def write(repo: Path, body: str, slug: str = "sample", version: int = 1) -> Path:
     path = repo / "tutorials" / "computational-methods" / f"{slug}.md"
     path.write_text(FRONTMATTER.format(slug=slug, version=version) + body)
+    # Keep the series' order file listing whatever has been written so far.
+    existing = sorted(
+        p.stem for p in path.parent.glob("*.md")
+    )
+    set_order(repo, "computational-methods", "python-fundamentals", existing)
     return path
 
 
@@ -221,12 +233,43 @@ class TestCrossLinks:
         with pytest.raises(b.BuildError, match="no anchor"):
             b.build()
 
-    def test_two_tutorials_sharing_a_slug_fail_the_build(self, repo):
+    def test_two_tutorials_sharing_a_slug_in_one_module_fail_the_build(self, repo):
         write(repo, "One.\n", slug="same")
         path = repo / "tutorials" / "computational-methods" / "second.md"
         path.write_text(FRONTMATTER.format(slug="same", version=1) + "Two.\n")
-        with pytest.raises(b.BuildError, match="already used by"):
+        set_order(repo, "computational-methods", "python-fundamentals", ["same"])
+        with pytest.raises(b.BuildError, match="already used in"):
             b.build()
+
+    def test_two_modules_may_each_have_the_same_slug(self, repo):
+        """The built path carries the module, so there is no ambiguity — and
+        forcing them apart would mean naming tutorials around a constraint that
+        does not exist."""
+        write(repo, "One.\n", slug="first-steps")
+        other = repo / "tutorials" / "other-module" / "first-steps.md"
+        other.parent.mkdir(parents=True)
+        other.write_text(
+            '---\ntitle: "First Steps"\nslug: first-steps\nmodule: other-module\n'
+            'year: "2026-2027"\nseries: intro\nversion: 1\n---\n\nProse.\n'
+        )
+        set_order(repo, "other-module", "intro", ["first-steps"])
+        b.build()
+        assert (repo / "site" / "tutorials" / "other-module" / "first-steps.html").is_file()
+        assert (repo / "site" / "tutorials" / "computational-methods"
+                / "first-steps.html").is_file()
+
+    def test_a_link_prefers_a_slug_in_its_own_module(self, repo):
+        write(repo, "See [it](tutorial:twin).\n", slug="here")
+        write(repo, "Mine.\n", slug="twin")
+        other = repo / "tutorials" / "other-module" / "twin.md"
+        other.parent.mkdir(parents=True)
+        other.write_text(
+            '---\ntitle: "Twin"\nslug: twin\nmodule: other-module\n'
+            'year: "2026-2027"\nseries: intro\nversion: 1\n---\n\nProse.\n'
+        )
+        set_order(repo, "other-module", "intro", ["twin"])
+        b.build()
+        assert 'href="twin.html"' in built(repo, "here")
 
     def test_an_ordinary_link_is_left_alone(self, repo):
         write(repo, "See [the docs](https://example.org/page).\n")
@@ -429,14 +472,17 @@ class TestListsWrittenTightAgainstProse:
 
 
 class TestNavigation:
-    def series(self, repo, count: int = 3, series: str = "s", module: str = "computational-methods"):
+    def series(self, repo, count: int = 3, series: str = "s", module: str = "computational-methods",
+               order: list[str] | None = None):
         for n in range(1, count + 1):
             path = repo / "tutorials" / module / f"t{n}.md"
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_text(
                 f'---\ntitle: "Tutorial {n}"\nslug: t{n}\nmodule: {module}\n'
-                f'year: "2026-2027"\nseries: {series}\norder: {n}\nversion: 1\n---\n\nProse.\n'
+                f'year: "2026-2027"\nseries: {series}\nversion: 1\n---\n\nProse.\n'
             )
+        set_order(repo, module, series,
+                  order or [f"t{n}" for n in range(1, count + 1)])
 
     def page(self, repo, slug, module="computational-methods"):
         return (repo / "site" / "tutorials" / module / f"{slug}.html").read_text()
@@ -462,12 +508,9 @@ class TestNavigation:
         for slug in ("t1", "t2", "t3"):
             assert '<a class="dl-nav-up" href="../../index.html">' in self.page(repo, slug)
 
-    def test_order_decides_the_sequence_not_the_filename(self, repo):
-        self.series(repo)
-        # reverse the orders: t1 becomes last, t3 first
-        for n, order in ((1, 3), (3, 1)):
-            path = repo / "tutorials" / "computational-methods" / f"t{n}.md"
-            path.write_text(path.read_text().replace(f"order: {n}", f"order: {order}"))
+    def test_the_order_file_decides_the_sequence_not_the_filename(self, repo):
+        """Reordering is moving a line, and nothing else changes."""
+        self.series(repo, order=["t3", "t2", "t1"])
         b.build()
         assert '<a class="dl-nav-next" href="t2.html">' in self.page(repo, "t3")
         assert "dl-nav-next" not in self.page(repo, "t1")
@@ -477,26 +520,44 @@ class TestNavigation:
         path = repo / "tutorials" / "computational-methods" / "other.md"
         path.write_text(
             '---\ntitle: "Other"\nslug: other\nmodule: computational-methods\n'
-            'year: "2026-2027"\nseries: two\norder: 1\nversion: 1\n---\n\nProse.\n'
+            'year: "2026-2027"\nseries: two\nversion: 1\n---\n\nProse.\n'
         )
+        set_order(repo, "computational-methods", "two", ["other"])
         b.build()
         assert "dl-nav-prev" not in self.page(repo, "other")
         assert "dl-nav-next" not in self.page(repo, "other")
 
-    def test_two_tutorials_in_the_same_position_still_build(self, repo, capsys):
-        """Ambiguous ordering is worth saying, not worth stopping for."""
+    def test_a_series_with_no_order_file_stops_the_build(self, repo):
+        """Nothing knows the reading order, and guessing one would be worse."""
         self.series(repo, count=2)
-        path = repo / "tutorials" / "computational-methods" / "t2.md"
-        path.write_text(path.read_text().replace("order: 2", "order: 1"))
-        b.build()
-        assert "both order 1" in capsys.readouterr().err
-        assert '<a class="dl-nav-next" href="t2.html">' in self.page(repo, "t1")
+        (repo / "tutorials" / "computational-methods" / "s.order.yaml").unlink()
+        with pytest.raises(b.BuildError, match="decides the reading order"):
+            b.build()
 
-    def test_a_non_numeric_order_fails_the_build(self, repo):
+    def test_a_tutorial_the_order_file_forgets_stops_the_build(self, repo):
+        self.series(repo, count=3, order=["t1", "t2"])
+        with pytest.raises(b.BuildError, match="not listed"):
+            b.build()
+
+    def test_a_slug_with_no_tutorial_behind_it_stops_the_build(self, repo):
+        """The more dangerous direction: the file looks complete and the series
+        is quietly short."""
+        self.series(repo, count=2, order=["t1", "t2", "t3"])
+        with pytest.raises(b.BuildError, match="no tutorial in this series"):
+            b.build()
+
+    def test_a_slug_listed_twice_stops_the_build(self, repo):
+        self.series(repo, count=2, order=["t1", "t2", "t1"])
+        with pytest.raises(b.BuildError, match="more than once"):
+            b.build()
+
+    def test_order_left_in_the_frontmatter_stops_the_build(self, repo):
+        """Half-migrated is worse than either state: the field would be ignored
+        in silence, and it is exactly the field somebody would edit."""
         self.series(repo, count=1)
         path = repo / "tutorials" / "computational-methods" / "t1.md"
-        path.write_text(path.read_text().replace("order: 1", "order: first"))
-        with pytest.raises(b.BuildError, match="whole number"):
+        path.write_text(path.read_text().replace("version: 1", "order: 1\nversion: 1"))
+        with pytest.raises(b.BuildError, match="no longer belongs in frontmatter"):
             b.build()
 
 
@@ -507,12 +568,13 @@ class TestTheContentsPage:
         assert (repo / "site" / "index.html").is_file()
 
     def test_it_lists_every_tutorial_in_order(self, repo):
-        for n, order in ((1, 2), (2, 1)):
+        for n in (1, 2):
             path = repo / "tutorials" / "computational-methods" / f"t{n}.md"
             path.write_text(
                 f'---\ntitle: "Tutorial {n}"\nslug: t{n}\nmodule: computational-methods\n'
-                f'year: "2026-2027"\nseries: s\norder: {order}\nversion: 1\n---\n\nProse.\n'
+                f'year: "2026-2027"\nseries: s\nversion: 1\n---\n\nProse.\n'
             )
+        set_order(repo, "computational-methods", "s", ["t2", "t1"])
         b.build()
         index = (repo / "site" / "index.html").read_text()
         assert index.index("Tutorial 2") < index.index("Tutorial 1")
@@ -629,8 +691,9 @@ class TestTheDownloadableCopy:
             path = repo_with_assets / "tutorials" / "computational-methods" / f"t{n}.md"
             path.write_text(
                 f'---\ntitle: "T{n}"\nslug: t{n}\nmodule: computational-methods\n'
-                f'year: "2026-2027"\nseries: s\norder: {n}\nversion: 1\n---\n\nProse.\n'
+                f'year: "2026-2027"\nseries: s\nversion: 1\n---\n\nProse.\n'
             )
+        set_order(repo_with_assets, "computational-methods", "s", ["t1", "t2"])
         b.build(standalone=True)
         page = (repo_with_assets / "site" / "download" / "t1.html").read_text()
         assert "<nav" not in page
@@ -647,8 +710,9 @@ class TestTheSeriesArchive:
             path = repo / "tutorials" / "computational-methods" / f"t{n}.md"
             path.write_text(
                 f'---\ntitle: "T{n}"\nslug: t{n}\nmodule: computational-methods\n'
-                f'year: "2026-2027"\nseries: Core skills\norder: {n}\nversion: 1\n---\n\nProse.\n'
+                f'year: "2026-2027"\nseries: Core skills\nversion: 1\n---\n\nProse.\n'
             )
+        set_order(repo, "computational-methods", "Core skills", ["t1", "t2"])
 
     def archive(self, repo) -> Path:
         return repo / "site" / "download" / "computational-methods-core-skills.zip"
@@ -863,9 +927,11 @@ class TestTheKnowledgeMap:
                 block = f"covers:\n  a-section:\n    covers: [{codes[(n - 1) % 4]}]\n"
             (repo / "tutorials" / "computational-methods" / f"t{n}.md").write_text(
                 f'---\ntitle: "Tutorial {n}"\nslug: t{n}\nmodule: computational-methods\n'
-                f'year: "2026-2027"\nseries: s\norder: {n}\nversion: 1\n{block}'
+                f'year: "2026-2027"\nseries: s\nversion: 1\n{block}'
                 f"---\n\n# Tutorial {n}\n\n## A section\n\nProse.\n"
             )
+        set_order(repo, "computational-methods", "s",
+                  [f"t{n}" for n in range(1, count + 1)])
 
     def svg(self, repo) -> str:
         """The tutorial map lives on the tree page, under the topic tree."""
@@ -1093,9 +1159,11 @@ class TestTheTopicTree:
         for n in (1, 2, 3):
             (repo / "tutorials" / "computational-methods" / f"t{n}.md").write_text(
                 f'---\ntitle: "T{n}"\nslug: t{n}\nmodule: computational-methods\n'
-                f'year: "2026-2027"\nseries: python-fundamentals\norder: {n}\n'
+                f'year: "2026-2027"\nseries: python-fundamentals\n'
                 f"version: 1\n---\n\n# T{n}\n\nProse.\n"
             )
+        set_order(repo, "computational-methods", "python-fundamentals",
+                  ["t1", "t2", "t3"])
         b.build()
         assert "dl-map-node" not in (repo / "site" / "index.html").read_text()
         assert "How the tutorials relate" in self.tree(repo)

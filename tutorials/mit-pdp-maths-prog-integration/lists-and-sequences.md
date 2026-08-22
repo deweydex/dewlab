@@ -1,11 +1,10 @@
 ---
-title: "Tutorial 5: Lists and Sequences"
-slug: tutorial-05-lists-and-sequences
+title: "Lists and Sequences"
+slug: lists-and-sequences
 module: mit-pdp-maths-prog-integration
 module_title: "Programming and Maths, Integrated"
 year: "2026-2027"
 series: maths-and-programming
-order: 5
 version: 1
 covers:
   lists-ordered-collections:
@@ -22,7 +21,7 @@ covers:
     covers: [MIT-6.3]
 ---
 
-# Tutorial 5: Lists and Sequences
+# Lists and Sequences
 
 **Programming Design Principles / Maths for IT**
 

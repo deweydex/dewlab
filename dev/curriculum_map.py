@@ -127,10 +127,21 @@ def load_tutorials(known: dict[str, Outcome]) -> list[Tutorial]:
                 title=str(meta["title"]),
                 module=str(meta["module"]),
                 series=str(meta["series"]),
-                order=int(meta.get("order", 0)),
+                order=0,  # filled in below, from the series' order file
                 sections=sections,
             )
         )
+
+    # Order comes from one file per series now, not from each tutorial. A
+    # tutorial its series does not list keeps order 0 and simply does not appear
+    # in the sequence diagram, which is the honest thing to draw.
+    for path in sorted(TUTORIALS.rglob("*.order.yaml")):
+        listed = (yaml.safe_load(path.read_text()) or {}).get("order") or []
+        position = {slug: index for index, slug in enumerate(listed, start=1)}
+        module = path.parent.name
+        for tutorial in tutorials:
+            if tutorial.module == module and tutorial.slug in position:
+                tutorial.order = position[tutorial.slug]
     return tutorials
 
 
@@ -150,23 +161,27 @@ def coverage(
 
 # ------------------------------------------------------------- back-references
 
-BACKREF_RE = re.compile(r"\bTutorial\s+(\d{1,2})\b")
-
-
 def back_references(tutorials: list[Tutorial]) -> dict[str, set[int]]:
     """Which earlier tutorials each tutorial actually names in its own text.
 
-    Evidence rather than intention: a tutorial that says "your functions from
-    Tutorial 11" depends on Tutorial 11 whether or not anyone recorded that.
-    Drawing these makes the load-bearing tutorials visible — and a tutorial
-    nothing refers back to is a candidate for moving.
+    By title, now that the numbers are gone. Evidence rather than intention: a
+    tutorial that says "your functions from *Making Sense of Data*" depends on
+    it whether or not anyone recorded that. Drawing these makes the
+    load-bearing tutorials visible — and a tutorial nothing refers back to is a
+    candidate for moving.
     """
     refs: dict[str, set[int]] = {}
     for tutorial in tutorials:
         path = next(TUTORIALS.rglob(f"{tutorial.slug}.md"))
         body = path.read_text()
-        seen = {int(n) for n in BACKREF_RE.findall(body)}
-        refs[tutorial.slug] = {n for n in seen if 0 < n < tutorial.order}
+        refs[tutorial.slug] = {
+            earlier.order
+            for earlier in tutorials
+            if earlier.module == tutorial.module
+            and 0 < earlier.order < tutorial.order
+            and len(earlier.title) > 6
+            and earlier.title in body
+        }
     return refs
 
 

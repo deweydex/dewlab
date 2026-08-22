@@ -180,7 +180,6 @@ def convert(
             f"module: {module}",
             f'year: "{year}"',
             f"series: {series}",
-            f"order: {order}",
             "version: 1",
             "---",
         ]
