@@ -1,0 +1,65 @@
+# Builds the tutorials and publishes them, on every push to main.
+#
+# The point of this running here rather than on someone's machine is that the
+# published pages cannot drift from the markdown they came from: there is no
+# step anybody can forget. Editing a tutorial and pushing it is the whole
+# workflow.
+name: publish
+
+on:
+  push:
+    branches: [main]
+  # So a publish can be re-run without inventing a commit to trigger it.
+  workflow_dispatch:
+
+# Read the repository, write to Pages, and prove identity to the deploy step.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One publish at a time. A second push while the first is deploying should
+# wait rather than race it — but do not cancel a deploy already in progress,
+# since a half-published site is worse than a slightly stale one.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install the build's dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements-build.txt
+
+      - name: Build
+        run: python build.py --clean
+
+      # A build that produced nothing would otherwise publish an empty site
+      # over a working one, silently.
+      - name: Check something was actually built
+        run: |
+          test -f site/index.html || { echo "no contents page was built"; exit 1; }
+          count=$(find site/tutorials -name '*.html' | wc -l)
+          echo "built $count tutorial pages"
+          test "$count" -gt 0 || { echo "no tutorials were built"; exit 1; }
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+      - id: deploy
+        uses: actions/deploy-pages@v4
