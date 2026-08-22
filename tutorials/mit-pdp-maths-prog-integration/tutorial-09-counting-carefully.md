@@ -7,6 +7,15 @@ year: "2026-2027"
 series: maths-and-programming
 order: 9
 version: 1
+covers:
+  factorials-the-foundation:
+    covers: [MIT-5.3]
+  permutations-order-matters:
+    covers: [MIT-5.4]
+  combinations-order-does-not-matter:
+    covers: [MIT-5.5]
+  a-practical-application-password-strength:
+    covers: [MIT-5.2]
 ---
 
 # Tutorial 9: Counting Carefully

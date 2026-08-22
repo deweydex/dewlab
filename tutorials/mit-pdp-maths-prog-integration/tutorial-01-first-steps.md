@@ -7,6 +7,13 @@ year: "2026-2027"
 series: maths-and-programming
 order: 1
 version: 1
+covers:
+  what-is-an-algorithm:
+    covers: [MIT-6.1, PDP-LO2]
+  pseudocode-planning-before-coding:
+    covers: [PDP-LO5, PDP-LO6]
+  a-few-more-things-python-can-do:
+    covers: [PDP-LO4]
 ---
 
 # Tutorial 1: First Steps

@@ -7,6 +7,17 @@ year: "2026-2027"
 series: maths-and-programming
 order: 4
 version: 1
+covers:
+  while-loops-repeat-until-done:
+    covers: [PDP-LO6]
+  for-loops-when-you-know-how-many-times:
+    covers: [PDP-LO6, MIT-6.7]
+  sigma-notation-mathematics-meets-loops:
+    covers: [MIT-6.4]
+  nested-loops:
+    covers: [PDP-LO6]
+  building-up-gradually-counting-with-conditions:
+    covers: [MIT-6.7]
 ---
 
 # Tutorial 4: Repeating Yourself

@@ -7,6 +7,19 @@ year: "2026-2027"
 series: maths-and-programming
 order: 11
 version: 1
+covers:
+  measures-of-central-tendency:
+    covers: [MIT-5.12]
+  measures-of-spread:
+    covers: [MIT-5.12]
+  data-types:
+    covers: [MIT-5.9]
+  frequency-distributions:
+    covers: [MIT-5.11]
+  visualisation-with-matplotlib:
+    covers: [MIT-5.10]
+  a-note-on-limitations:
+    covers: [MIT-5.13]
 ---
 
 # Tutorial 11: Making Sense of Data

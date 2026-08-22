@@ -40,6 +40,13 @@
   --dl-shadow: rgba(27, 42, 74, 0.14);
 
   --dl-mono: "SF Mono", "Cascadia Mono", Menlo, Consolas, monospace;
+
+  /* The sticky masthead's height. Everything that has to sit clear of it —
+     the status bar, the settings panel, an anchored jump — measures from here
+     rather than from its own guess. Fixed rather than measured because the
+     masthead's parts are sized in rem and do not follow the reader's text
+     size, so it is the same height on every page. */
+  --dl-header-h: 3.6rem;
 }
 
 :root[data-theme="dark"] {
@@ -90,6 +97,10 @@
 
 * { box-sizing: border-box; }
 
+/* An anchored jump has to clear the sticky masthead, or the heading it lands
+   on ends up hidden behind it. */
+html { scroll-padding-top: calc(var(--dl-header-h) + 1rem); }
+
 body {
   margin: 0;
   background: var(--dl-bg);
@@ -103,7 +114,7 @@ body {
 .dl-page {
   max-width: var(--dl-line-width);
   margin: 0 auto;
-  padding: 2rem 1.25rem 6rem;
+  padding: 0 1.25rem 6rem;
 }
 
 /* Wide things — tables, plots, code — may exceed the reading measure. They
@@ -112,18 +123,27 @@ body {
 
 /* --------------------------------------------------------------- masthead */
 
+/* The masthead follows the reader down the page, so the way out — back to the
+   contents, or into Settings — is always one tap away rather than a scroll to
+   one end of the tutorial. It spans the page's own padding, which is why the
+   negative margins are here and the page's top padding is not. */
 .dl-masthead {
+  position: sticky;
+  top: 0;
+  z-index: 40;
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem 1rem;
-  align-items: baseline;
+  gap: 0.5rem 1rem;
+  align-items: center;
   justify-content: space-between;
+  background: var(--dl-bg);
   border-bottom: 2px solid var(--dl-navy);
-  padding-bottom: 0.6rem;
-  margin-bottom: 2rem;
+  margin: 0 -1.25rem 2rem;
+  padding: 0.8rem 1.25rem 0.65rem;
 }
 
 .dl-wordmark {
+  flex: none;
+  white-space: nowrap;
   font-weight: 700;
   letter-spacing: 0.02em;
   color: var(--dl-heading);
@@ -145,6 +165,14 @@ body {
   font-size: 0.78rem;
   letter-spacing: 0.04em;
   text-transform: uppercase;
+  /* On a narrow screen the module name is the first thing to go: the wordmark
+     and the way into Settings both matter more than knowing which course you
+     are in while you are reading it. */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 0 1 auto;
+  min-width: 0;
 }
 
 /* ------------------------------------------------------------ prose blocks */
@@ -380,7 +408,9 @@ p code, li code {
 
 .dl-status {
   position: sticky;
-  top: 0;
+  /* Below the masthead rather than behind it: both stick, and this one is the
+     line that says whether Python is ready. */
+  top: var(--dl-header-h);
   z-index: 10;
   margin: 0 0 1.5rem;
   padding: 0.45rem 0.8rem;
@@ -394,27 +424,65 @@ p code, li code {
 .dl-status[hidden] { display: none; }
 .dl-status-error { color: var(--dl-error-fg); background: var(--dl-error-bg); border-color: var(--dl-error-fg); }
 
-/* ---------------------------------------------------------- texture panel */
+/* --------------------------------------------------------- settings panel */
 
-.dl-texture-toggle {
+/* The one control in the masthead, and the reason the masthead is worth
+   sticking: it is how a reader reaches their work, the download, and the
+   reading texture. Sized to be a comfortable tap target rather than the
+   smallest thing that could carry the word. */
+.dl-settings-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex: none;
   font-family: var(--dl-mono);
-  font-size: 0.72rem;
+  font-size: 0.78rem;
   background: none;
-  border: 1px solid var(--dl-cell-border);
-  border-radius: 3px;
-  color: var(--dl-muted);
-  padding: 0.2rem 0.55rem;
+  border: 1px solid var(--dl-navy);
+  border-radius: 4px;
+  color: var(--dl-heading);
+  padding: 0.38rem 0.7rem;
   cursor: pointer;
+  min-height: 2rem;
 }
-.dl-texture-toggle:hover { border-color: var(--dl-orange); color: var(--dl-orange); }
+.dl-settings-toggle:hover,
+.dl-settings-toggle:focus-visible {
+  border-color: var(--dl-orange);
+  color: var(--dl-orange);
+}
+.dl-settings-toggle[aria-expanded="true"] {
+  background: var(--dl-navy);
+  border-color: var(--dl-navy);
+  color: #fff;
+}
 
-.dl-texture {
+/* Three bars drawn rather than typed, so the mark does not depend on a glyph
+   the reader's font may not carry. */
+.dl-settings-icon {
+  width: 0.85em;
+  height: 0.62em;
+  border-top: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  position: relative;
+}
+.dl-settings-icon::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(50% - 1px);
+  border-top: 2px solid currentColor;
+}
+
+.dl-settings {
   position: fixed;
   right: 1rem;
-  bottom: 1rem;
-  z-index: 30;
-  width: min(19rem, calc(100vw - 2rem));
-  padding: 1rem 1.1rem;
+  top: calc(var(--dl-header-h) + 0.5rem);
+  z-index: 50;
+  width: min(21rem, calc(100vw - 2rem));
+  max-height: calc(100vh - var(--dl-header-h) - 1.5rem);
+  overflow-y: auto;
+  padding: 1rem 1.1rem 1.1rem;
   border: 1px solid var(--dl-cell-border);
   border-radius: 6px;
   background: var(--dl-panel-bg);
@@ -422,17 +490,58 @@ p code, li code {
   font-family: var(--dl-font-family);
   font-size: 0.85rem;
 }
-.dl-texture[hidden] { display: none; }
-.dl-texture h2 {
+.dl-settings[hidden] { display: none; }
+
+.dl-settings-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.9rem;
+}
+.dl-settings h2 {
   font-size: 0.72rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: var(--dl-muted);
-  margin: 0 0 0.8rem;
+  margin: 0;
 }
+.dl-settings-close {
+  font-size: 1.3rem;
+  line-height: 1;
+  background: none;
+  border: none;
+  color: var(--dl-muted);
+  cursor: pointer;
+  padding: 0 0.2rem;
+}
+.dl-settings-close:hover { color: var(--dl-orange); }
+
+/* Sections are separated by a rule rather than a box, so the panel reads as
+   one list of things you can do and not three stacked cards. */
+.dl-settings-section + .dl-settings-section {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--dl-rule);
+}
+.dl-settings-section[hidden] { display: none; }
+.dl-settings h3 {
+  font-size: 0.8rem;
+  letter-spacing: 0.02em;
+  color: var(--dl-heading);
+  margin: 0 0 0.55rem;
+}
+
+.dl-panel-note {
+  margin: 0 0 0.9rem;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--dl-muted);
+}
+
 .dl-texture-row {
   display: grid;
-  grid-template-columns: 5.2rem 1fr;
+  grid-template-columns: 4.6rem 1fr;
   gap: 0.5rem;
   align-items: center;
   margin-bottom: 0.65rem;
@@ -443,7 +552,7 @@ p code, li code {
   flex: 1;
   font-family: var(--dl-mono);
   font-size: 0.7rem;
-  padding: 0.25rem 0;
+  padding: 0.35rem 0;
   border: 1px solid var(--dl-cell-border);
   border-radius: 3px;
   background: none;
@@ -455,8 +564,8 @@ p code, li code {
   border-color: var(--dl-navy);
   color: #fff;
 }
-.dl-texture input[type="range"] { width: 100%; accent-color: var(--dl-orange); }
-.dl-texture input[type="color"] {
+.dl-settings input[type="range"] { width: 100%; accent-color: var(--dl-orange); }
+.dl-settings input[type="color"] {
   width: 100%; height: 1.7rem; padding: 0;
   border: 1px solid var(--dl-cell-border); border-radius: 3px; background: none; cursor: pointer;
 }
@@ -465,7 +574,7 @@ p code, li code {
   margin-top: 0.35rem;
   font-family: var(--dl-mono);
   font-size: 0.7rem;
-  padding: 0.3rem;
+  padding: 0.4rem;
   border: 1px solid var(--dl-cell-border);
   border-radius: 3px;
   background: none;
@@ -476,32 +585,45 @@ p code, li code {
 /* ------------------------------------------------------------ navigation */
 
 /* Previous, contents, next — in that order, so the row reads the way the
-   series does. The middle link is always present; the outer two are not, and
-   the layout has to look deliberate either way rather than lopsided. */
+   series does. A grid rather than a flex row because the outer two links are
+   often missing (the first and last tutorial in a series) and the contents
+   link has to stay centred either way rather than sliding to whichever side
+   is empty. Titles are long; each link gets its own column and wraps inside
+   it instead of pushing the others off the screen. */
 .dl-nav {
-  display: flex;
-  align-items: baseline;
-  gap: 1rem;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  grid-template-areas: "prev up next";
+  gap: 0.6rem 1rem;
+  align-items: start;
   font-size: 0.88rem;
+  line-height: 1.4;
 }
 .dl-nav:empty { display: none; }
 .dl-nav-top { margin-bottom: 2rem; }
 .dl-nav-bottom { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--dl-rule); }
 .dl-nav a { text-decoration: none; }
 .dl-nav a:hover { text-decoration: underline; }
-.dl-nav-prev::before { content: "← "; color: var(--dl-muted); }
-.dl-nav-next::after { content: " →"; color: var(--dl-muted); }
-/* The contents link sits between them wherever the other two happen to be. */
-.dl-nav-up { margin-inline: auto; color: var(--dl-muted); }
-.dl-nav-prev { order: 1; }
-.dl-nav-up { order: 2; }
-.dl-nav-next { order: 3; }
 
-/* Taking the tutorial away with you. Deliberately quieter than the
-   previous/next links either side of it: it is an occasional action, not part
-   of moving through the series. */
-.dl-download { color: var(--dl-muted); font-size: 0.95em; }
-.dl-download::before { content: "↓ "; }
+.dl-nav-prev { grid-area: prev; justify-self: start; }
+.dl-nav-up { grid-area: up; justify-self: center; color: var(--dl-muted); white-space: nowrap; }
+.dl-nav-next { grid-area: next; justify-self: end; text-align: right; }
+
+/* Non-breaking, so the arrow never wraps onto a line of its own under a long
+   title — which is exactly what a phone-width column makes it do. */
+.dl-nav-prev::before { content: "←\00a0"; color: var(--dl-muted); }
+.dl-nav-next::after { content: "\00a0→"; color: var(--dl-muted); }
+
+/* Taking the tutorial away with you. It sits in the settings panel rather
+   than the navigation row: it is an occasional action, not part of moving
+   through the series. */
+.dl-download {
+  display: inline-block;
+  margin-bottom: 0.55rem;
+  font-family: var(--dl-mono);
+  font-size: 0.78rem;
+}
+.dl-download::before { content: "↓ "; color: var(--dl-muted); }
 
 /* The contents page. Numbered because a series has an order and the numbers
    are part of the information, not decoration. */
@@ -512,18 +634,11 @@ p code, li code {
 .dl-series { margin: 0 0 2rem; }
 .dl-contents:has(+ .dl-series) { margin-bottom: 0.5rem; }
 
-/* The progress panel reuses the texture panel's shell — same box, same
-   placement, same open/close behaviour — so there is one panel pattern on the
-   page rather than two that drift. Only its contents differ. */
+/* Saving, exporting and starting again — the "Your work" section of the
+   settings panel. */
 .dl-progress-state { margin: 0 0 0.6rem; font-size: 0.9rem; }
-.dl-progress-note {
-  margin: 0 0 0.9rem;
-  font-size: 0.82rem;
-  line-height: 1.5;
-  color: var(--dl-muted);
-}
 .dl-progress-actions { display: flex; flex-wrap: wrap; gap: 0.4rem; }
-.dl-progress-actions .dl-btn { flex: 1 1 auto; }
+.dl-progress-actions .dl-btn { flex: 1 1 auto; min-height: 2rem; }
 .dl-progress-clear { color: var(--dl-error-fg); }
 
 /* The restore notice: visible, and deliberately not a blocker. */
@@ -559,3 +674,39 @@ p code, li code {
 .dl-math-display { display: block; margin: 1.4rem 0; text-align: center; }
 .dl-math-display .katex { font-size: 1.15em; }
 .dl-math-error { color: var(--dl-error-fg); background: var(--dl-error-bg); }
+
+
+/* ------------------------------------------------------------ small screens */
+
+/* A phone held in one hand, which is how a good deal of the reading will
+   actually happen. Three changes: the panel becomes a sheet across the foot of
+   the screen rather than a card floating off one corner; the navigation puts
+   previous and next on one line with the contents link beneath them, so two
+   long titles stop fighting for the same row; and the module name in the
+   masthead gives up its space to the Settings button. */
+@media (max-width: 34rem) {
+  .dl-settings {
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: auto;
+    max-height: 78vh;
+    border-radius: 8px 8px 0 0;
+    border-bottom: none;
+    padding-bottom: 1.4rem;
+  }
+
+  .dl-nav {
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      "prev next"
+      "up   up";
+    gap: 0.8rem 0.75rem;
+  }
+  .dl-nav-up { justify-self: center; }
+
+  .dl-crumbs { display: none; }
+  .dl-page { padding-left: 1rem; padding-right: 1rem; }
+  .dl-masthead { margin-inline: -1rem; padding-inline: 1rem; }
+}

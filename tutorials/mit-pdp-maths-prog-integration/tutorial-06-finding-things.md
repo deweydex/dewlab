@@ -7,6 +7,18 @@ year: "2026-2027"
 series: maths-and-programming
 order: 6
 version: 1
+covers:
+  functions-as-input-output-machines:
+    covers: [MIT-6.2]
+    touches: [MIT-3.1]
+  scope-where-variables-live:
+    covers: [PDP-LO8]
+  linear-search-the-straightforward-approach:
+    covers: [MIT-6.8]
+  binary-search-the-power-of-sorted-data:
+    covers: [MIT-6.8]
+  divide-and-conquer:
+    covers: [MIT-6.6]
 ---
 
 # Tutorial 6: Finding Things

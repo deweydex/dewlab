@@ -49,11 +49,29 @@ time:
   can use what cell one defined. Pages do **not** share anything with each
   other — each page starts clean.
 
-At the foot of every tutorial there is a **Download this tutorial** link. It
-gives the student one HTML file they can keep — on a memory stick, in their
-downloads folder, anywhere — and open by double-clicking. It carries the
-reading, the cells, the editor and the mathematics inside it, and looks and
-behaves like the page they downloaded it from.
+Every page carries a **Settings** button in the masthead, and the masthead
+follows the reader down the page, so it is always one tap away. Everything a
+student can change or take away lives behind it, in three sections:
+
+- **Your work** — whether the page is saving, and the buttons to export a copy,
+  load one back, or start the tutorial again.
+- **This tutorial** — **Download to keep**, which is described below.
+- **Texture** — theme (auto, light, dark), serif or sans or mono, text size,
+  line width, and link colour.
+
+One button rather than a row of them, because a student who has found Settings
+once has found all of it. Texture choices persist across pages and across
+visits; a reading surface a student can adjust is a reading surface more
+students can actually use.
+
+That leaves the previous / **All tutorials** / next row carrying nothing but
+navigation, which is what makes it work on a phone: two long tutorial titles
+side by side, the way back to the contents beneath them.
+
+**Download to keep** gives the student one HTML file — on a memory stick, in
+their downloads folder, anywhere — that they open by double-clicking. It
+carries the reading, the cells, the editor and the mathematics inside it, and
+looks and behaves like the page they downloaded it from.
 
 One caveat worth passing on to a class: the file needs an internet connection
 the *first* time it is opened, because Python itself is fetched then. Without
@@ -64,11 +82,6 @@ The contents page carries the same offer for a whole series at once: **Download
 all 18 as single files**, which is a zip of exactly those files. That is the one
 to reach for when you are setting up a room, filling a memory stick, or handing
 a class something to take home — rather than clicking through eighteen pages.
-
-There is also a **texture** panel in the corner: theme (auto, light, dark),
-serif or sans or mono, text size, line width, and link colour. Choices persist
-across pages and across visits. It is there because a reading surface a student
-can adjust is a reading surface more students can actually use.
 
 A tutorial with no code in it at all is a perfectly ordinary dewlab tutorial —
 same format, same styling — and it never loads the Python runtime, so a page of
@@ -280,7 +293,7 @@ setup/                shared setup snippets, pulled in with {{include: ...}}
 data/                 shared CSV datasets
 assets/
   shell.html          the page template every tutorial is rendered into
-  tutorial-style.css  the house style and the texture panel
+  tutorial-style.css  the house style and the settings panel
   tutorial-runtime.js starts Python, mounts the editors, runs a cell
   tutorial_tools.py   what a student's cell code can call
   vendor/             CodeMirror and KaTeX, built from vendor-src/
@@ -302,7 +315,7 @@ result.
 ## Where this has got to
 
 Working today: the whole reading and running experience described above — the
-page, the cells, output rendering, mathematics, highlighting, the texture
+page, the cells, output rendering, mathematics, highlighting, the settings
 panel, and the build that produces it all from markdown.
 
 Not built yet:

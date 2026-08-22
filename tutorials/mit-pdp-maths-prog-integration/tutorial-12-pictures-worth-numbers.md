@@ -7,6 +7,17 @@ year: "2026-2027"
 series: maths-and-programming
 order: 12
 version: 1
+covers:
+  why-visualise:
+    covers: [MIT-5.10]
+  choosing-the-right-chart:
+    covers: [MIT-5.10]
+  writing-reusable-plotting-functions:
+    covers: [PDP-LO8]
+  combining-statistics-and-visualisation:
+    covers: [MIT-5.12]
+  good-practices-for-visualisation:
+    covers: [MIT-5.10]
 ---
 
 # Tutorial 12: Pictures Worth Numbers

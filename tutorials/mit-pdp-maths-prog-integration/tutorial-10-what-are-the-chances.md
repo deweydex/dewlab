@@ -7,6 +7,15 @@ year: "2026-2027"
 series: maths-and-programming
 order: 10
 version: 1
+covers:
+  basic-probability:
+    covers: [MIT-5.1, MIT-5.6, MIT-5.7]
+  compound-events:
+    covers: [MIT-5.8]
+  simulation-testing-probability-with-code:
+    touches: [MIT-5.7]
+  conditional-probability:
+    covers: [MIT-5.8]
 ---
 
 # Tutorial 10: What Are the Chances?

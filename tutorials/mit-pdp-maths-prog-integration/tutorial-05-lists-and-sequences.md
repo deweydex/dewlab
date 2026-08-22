@@ -7,6 +7,19 @@ year: "2026-2027"
 series: maths-and-programming
 order: 5
 version: 1
+covers:
+  lists-ordered-collections:
+    covers: [MIT-6.3]
+  building-lists-with-loops:
+    covers: [MIT-6.3, MIT-6.7]
+  looping-over-lists:
+    covers: [MIT-6.5, MIT-6.7]
+  functions-reusable-algorithms:
+    covers: [PDP-LO8]
+  mathematical-sequences-as-functions:
+    covers: [MIT-6.2]
+  the-dot-product-lists-meet-arithmetic:
+    covers: [MIT-6.3]
 ---
 
 # Tutorial 5: Lists and Sequences

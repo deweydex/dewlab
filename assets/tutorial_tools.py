@@ -33,11 +33,21 @@ import math
 import os
 import sys
 import traceback
+import warnings
 
 # Force matplotlib's non-interactive backend before it is ever imported. dewlab
 # captures figures itself, as PNGs written into the cell's output area, rather
 # than letting a canvas backend draw wherever it likes on the page.
 os.environ.setdefault("MPLBACKEND", "AGG")
+
+# That backend has no window to open, so matplotlib warns when a student calls
+# plt.show(). The figure appears anyway — dewlab renders it — which makes the
+# warning purely alarming: a scarlet block under a plot that worked. dewlab
+# replaces show() with its own (see _patch_pyplot_show); this covers the gap in
+# a cell that imports pyplot and calls show() before that replacement lands.
+warnings.filterwarnings(
+    "ignore", message="FigureCanvasAgg is non-interactive", category=UserWarning
+)
 
 __all__ = [
     "text_input",
@@ -391,6 +401,32 @@ def _render_value(value) -> None:
     cell.sink.append_html(f'<pre class="dl-repr">{html.escape(repr(value))}</pre>')
 
 
+def _patch_pyplot_show() -> None:
+    """Make `plt.show()` mean what someone learning matplotlib expects.
+
+    Every tutorial and every textbook ends a plot with `plt.show()`, so students
+    write it whether or not dewlab needs it. Under the non-interactive backend
+    matplotlib's own show() draws nothing and warns about a canvas — noise at
+    best, and at worst a red block under a plot that rendered perfectly well.
+
+    dewlab's replacement renders the open figures at the point of the call, so a
+    cell that draws, prints something, then draws again reads in the order it
+    was written. Installed lazily because pyplot may not be imported yet, and
+    idempotent because it is called on every cell.
+    """
+    plt = sys.modules.get("matplotlib.pyplot")
+    if plt is None or getattr(plt.show, "_dewlab", False):
+        return
+
+    def show(*args, **kwargs):
+        """Render the figures drawn so far. Accepts and ignores matplotlib's
+        own arguments (`block=`) so existing code keeps working."""
+        _flush_figures()
+
+    show._dewlab = True
+    plt.show = show
+
+
 def _flush_figures() -> None:
     """Render any figure the cell created but never returned.
 
@@ -401,6 +437,7 @@ def _flush_figures() -> None:
     plt = sys.modules.get("matplotlib.pyplot")
     if plt is None:
         return
+    _patch_pyplot_show()
 
     cell = _require_cell()
     for number in plt.get_fignums():
@@ -488,6 +525,7 @@ def _begin(cell_id: str, sink, code: str = "") -> None:
     sink.clear()
     _current = _CellContext(cell_id, sink)
     _register_source(_current.filename, code)
+    _patch_pyplot_show()
     sys.stdout = _StreamWriter("dl-stdout")
     sys.stderr = _StreamWriter("dl-error")
 

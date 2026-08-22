@@ -395,10 +395,6 @@ def nav_for(tutorial: Tutorial, members: list[Tutorial]) -> str:
         )
     up = "../" * tutorial.depth
     parts.append(f'<a class="dl-nav-up" href="{up}index.html">All tutorials</a>')
-    parts.append(
-        f'<a class="dl-download" href="{up}download/{tutorial.slug}.html" download>'
-        "Download this tutorial</a>"
-    )
     if index < len(members) - 1:
         following = members[index + 1]
         parts.append(
@@ -406,6 +402,24 @@ def nav_for(tutorial: Tutorial, members: list[Tutorial]) -> str:
             f"{html.escape(following.title)}</a>"
         )
     return "".join(parts)
+
+
+def download_section(tutorial: Tutorial) -> str:
+    """The settings panel's offer to take this tutorial away.
+
+    Written here rather than in the shell because only build.py knows where a
+    tutorial's downloadable copy ended up, and because the contents page — which
+    shares the shell — has no single tutorial to offer.
+    """
+    up = "../" * tutorial.depth
+    return (
+        "<h3>This tutorial</h3>"
+        f'<a class="dl-download" href="{up}download/{tutorial.slug}.html" download>'
+        "Download to keep</a>"
+        '<p class="dl-panel-note">One file with the reading and the cells inside '
+        "it. It needs an internet connection the first time you open it, and "
+        "then it is yours.</p>"
+    )
 
 
 def render_index(
@@ -533,6 +547,7 @@ def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "") -> Path
         "{{ROOT_BASE}}": up,
         "{{CRUMBS}}": html.escape(f"{tutorial.module_title} · {tutorial.meta['year']}"),
         "{{NAV_PREV_NEXT}}": nav,
+        "{{DOWNLOAD}}": download_section(tutorial),
         "{{BODY}}": body_html,
         # `<` escaped so nothing in a cell can close the surrounding <script>.
         "{{MANIFEST_JSON}}": json.dumps(manifest).replace("<", "\\u003c"),
@@ -612,9 +627,15 @@ def standalone_html(tutorial: Tutorial, page: str) -> str:
     page = page[:start] + json.dumps(manifest).replace("<", "\\u003c") + page[end:]
 
     # Navigation points at pages that are not beside this file, and the offer to
-    # download it is already taken. Both go rather than break.
+    # download it is already taken — this is the download. Both go rather than
+    # break: the runtime hides the emptied section.
     page = re.sub(r"<nav class=\"dl-nav[^\"]*\">.*?</nav>", "", page, flags=re.DOTALL)
-    page = re.sub(r'<a class="dl-download".*?</a>', "", page, flags=re.DOTALL)
+    page = re.sub(
+        r'(<section class="dl-settings-section" id="dl-settings-download">).*?(</section>)',
+        r"\1\2",
+        page,
+        flags=re.DOTALL,
+    )
     root = "../" * tutorial.depth
     page = page.replace(f'href="{root}index.html"', 'href="#" onclick="return false"')
     return page
@@ -693,6 +714,9 @@ def write_index(
         "{{ASSET_BASE}}": "assets/",
         "{{ROOT_BASE}}": "",
         "{{NAV_PREV_NEXT}}": "",
+        # The contents page is not a tutorial and has nothing to download; the
+        # runtime hides the empty section rather than showing a bare heading.
+        "{{DOWNLOAD}}": "",
         "{{BODY}}": render_index(groups, archives),
         "{{MANIFEST_JSON}}": json.dumps(manifest).replace("<", "\\u003c"),
     }

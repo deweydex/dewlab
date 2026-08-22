@@ -406,3 +406,63 @@ class TestTracebackTrimming:
         except ValueError as exc:
             text = tt._format_exception(exc)
         assert "ValueError: straight from the test" in text
+
+
+class TestPltShow:
+    """`plt.show()` is in every textbook, so students write it. Under the
+    non-interactive backend matplotlib's own show() draws nothing and warns.
+
+    matplotlib is not installed for these tests — it does not need to be. The
+    patch only ever looks for `matplotlib.pyplot` in `sys.modules`, so a stub
+    module exercises the whole of it.
+    """
+
+    @contextmanager
+    def fake_pyplot(self):
+        import types
+
+        module = types.ModuleType("matplotlib.pyplot")
+        module.calls = []
+
+        def show(*args, **kwargs):
+            module.calls.append(("original", args, kwargs))
+
+        module.show = show
+        module.get_fignums = lambda: []
+        module.close = lambda *a: module.calls.append(("close", a, {}))
+        sys.modules["matplotlib.pyplot"] = module
+        try:
+            yield module
+        finally:
+            del sys.modules["matplotlib.pyplot"]
+
+    def test_show_is_replaced_when_a_cell_starts(self, cell):
+        with self.fake_pyplot() as plt:
+            tt._begin("c", tt._RecordingSink())
+            assert plt.show is not None
+            assert getattr(plt.show, "_dewlab", False) is True
+
+    def test_the_replacement_renders_instead_of_warning(self, cell):
+        with self.fake_pyplot() as plt:
+            tt._begin("c", tt._RecordingSink())
+            plt.show()
+            # The original would have recorded a call; ours flushes figures,
+            # which on a stub with no open figures closes them and returns.
+            assert ("original", (), {}) not in plt.calls
+            assert ("close", ("all",), {}) in plt.calls
+
+    def test_it_accepts_the_arguments_matplotlib_takes(self, cell):
+        with self.fake_pyplot() as plt:
+            tt._begin("c", tt._RecordingSink())
+            plt.show(block=False)  # would be a TypeError if the signature were bare
+
+    def test_patching_twice_keeps_the_first_replacement(self, cell):
+        with self.fake_pyplot() as plt:
+            tt._begin("c", tt._RecordingSink())
+            first = plt.show
+            tt._patch_pyplot_show()
+            assert plt.show is first
+
+    def test_nothing_happens_when_matplotlib_was_never_imported(self, cell):
+        sys.modules.pop("matplotlib.pyplot", None)
+        tt._patch_pyplot_show()  # must not raise

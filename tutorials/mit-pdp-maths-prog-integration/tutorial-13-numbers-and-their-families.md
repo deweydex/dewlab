@@ -7,6 +7,15 @@ year: "2026-2027"
 series: maths-and-programming
 order: 13
 version: 1
+covers:
+  the-number-domains:
+    covers: [MIT-2.1]
+  indices-powers-and-their-rules:
+    covers: [MIT-1.1]
+  logarithms-the-inverse-of-powers:
+    covers: [MIT-1.1]
+  practical-geometry-formulas-as-functions:
+    covers: [MIT-1.2, MIT-1.3]
 ---
 
 # Tutorial 13: Numbers and Their Families

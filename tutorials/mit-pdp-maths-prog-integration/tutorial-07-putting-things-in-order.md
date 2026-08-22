@@ -7,6 +7,17 @@ year: "2026-2027"
 series: maths-and-programming
 order: 7
 version: 1
+covers:
+  bubble-sort-let-things-rise:
+    covers: [MIT-6.8]
+  insertion-sort-sort-like-you-sort-cards:
+    covers: [MIT-6.8]
+  selection-sort-find-the-smallest:
+    covers: [MIT-6.8]
+  comparing-our-sorts:
+    covers: [MIT-6.8]
+  optional-challenges:
+    touches: [MIT-6.8]
 ---
 
 # Tutorial 7: Putting Things in Order
