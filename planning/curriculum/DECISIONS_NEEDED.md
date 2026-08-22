@@ -363,6 +363,62 @@ material in the other repositories.
 
 ---
 
+## 7. Splitting Tutorial 13, and where the foundations sit
+
+Added after the first six, from your read of 13 and 14. `CURRICULUM_NOTES.md`
+has the full working; this is the decision.
+
+### The question
+
+**7a.** Tutorial 13 holds three unrelated topics — number domains (set theory),
+indices and logarithms (algebra), and area and volume formulas (mensuration).
+Split it into three and place each where it is needed?
+
+**7b.** Tutorial 14 is not a mishmash — it is polynomials, done properly, in one
+arc. Split it anyway, or leave it as one and possibly move it?
+
+### What is at stake
+
+Tutorial 2, at *Data Types*, already tells students that `int` corresponds to ℤ
+and `float` approximates ℝ. Tutorial 13 then teaches ℕ ⊂ ℤ ⊂ ℚ ⊂ ℝ properly,
+with a `classify_number` exercise, **eleven tutorials later**. The shallow
+version arrives first and the real one arrives long after anybody needs it.
+
+More broadly, MIT Section 1 is the *basic arithmetic and algebra*, and dewlab
+teaches it at positions 13 to 15 — after counting and probability (9, 10) and
+statistics (11, 12) have already leaned on powers, roots and factorials. That
+ordering came from the source notebooks' numbering rather than from a decision
+anybody made.
+
+### Recommendation
+
+**7a: yes, three ways.**
+
+| Piece | Where it should go | Why |
+|---|---|---|
+| Number domains | Into Tutorial 2, or immediately after | Same idea as `int` versus `float`, which Tutorial 2 is already half-teaching |
+| Indices and logarithms | Before Tutorial 9, expanded to a full tutorial | Powers and roots are what counting, standard deviation and polynomials all assume |
+| Practical geometry | After functions are introduced (5 or 8) | "A formula is a function" is the best first use of a function there is |
+
+**7b: leave 14 as one.** It is the most coherent tutorial in the series. It
+follows the indices tutorial naturally and still precedes 15, so whether it
+moves depends on whether indices moves — not on anything about 14.
+
+### The catch
+
+Every one of these moves renumbers everything after it, and doing this *as well
+as* inserting the new maths tutorials means two renumberings — 50 unchecked
+prose references each time (question 5). This is the clearest case yet for
+dropping the numbers: the reordering is worth doing on its own merits, and the
+numbering is the only thing making it expensive.
+
+### To settle it
+
+> "7a: split 13 three ways as proposed / differently / leave it.
+> 7b: leave 14 as one / split it too."
+
+---
+
 ## Summary
 
 | # | Question | Recommendation |
@@ -373,6 +429,7 @@ material in the other repositories.
 | 4 | Tutorial 15 / tutorial size | Leave 15, write the short tutorial; split Drawing Functions in two |
 | 5 | Numbering | Drop the numbers from titles, then place freely |
 | 6 | Calculus scope | Product rule only, with an honest note — but consider keeping the chain rule |
+| 7 | Tutorial 13 and the ordering | Split 13 three ways, each placed where it is needed; leave 14 as one |
 
-Answering 1, 2, 3 and 6 unblocks all the writing. 4 and 5 can follow later
-without stalling anything.
+Answering 1, 2, 3 and 6 unblocks all the writing. 4, 5 and 7 can follow later
+without stalling anything — though 7 sharpens the case for 5.
