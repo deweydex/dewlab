@@ -35,7 +35,8 @@ import pytest
 
 DEWLAB = Path(__file__).resolve().parents[2]
 PYODIDE = DEWLAB / "dev" / "pyodide"
-FIXTURE = Path(__file__).resolve().parent / "fixture" / "rendering-tour.md"
+FIXTURE_DIR = Path(__file__).resolve().parent / "fixture"
+FIXTURE = FIXTURE_DIR / "rendering-tour.md"
 
 sys.path.insert(0, str(DEWLAB))
 
@@ -57,7 +58,8 @@ def site_dir(tmp_path_factory) -> Path:
 
     root = tmp_path_factory.mktemp("dewlab-e2e")
     (root / "tutorials" / MODULE).mkdir(parents=True)
-    shutil.copy(FIXTURE, root / "tutorials" / MODULE / FIXTURE.name)
+    for source in sorted(FIXTURE_DIR.glob("*.md")):
+        shutil.copy(source, root / "tutorials" / MODULE / source.name)
     shutil.copytree(DEWLAB / "assets", root / "assets")
     shutil.copytree(DEWLAB / "data", root / "data")
 
