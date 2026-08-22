@@ -456,6 +456,21 @@ duplicate the series to no purpose.
 *Cost to change: small. The conversion is a one-off — after it, the markdown is
 the source and the script has done its job.*
 
+**1.12 — A list written tight against a paragraph is given its blank line.**
+Markdown converters disagree about whether a list may start on the line
+immediately after a paragraph. Most of the ones an author has met before — a
+notebook, GitHub — say yes. The converter here says no, and quietly runs the
+items together into the paragraph instead. Nobody notices until a student is
+reading it: there is no error, no warning, just prose where a list should be.
+Six places in the first converted series were like this.
+
+`build.py` now inserts the blank line rather than leaving the trap open. The
+alternative — warning and asking the author to fix it — trades a silent
+rendering bug for a noisy one, and the author's intent is not in doubt: a line
+beginning with a bullet under a sentence ending in a colon is a list.
+*Cost to change: small, and the tests pin the edge cases — a hyphenated
+sentence, a dash inside a fence, a list that already had its blank line.*
+
 ## Phase 2 — Saved work
 
 **2.1 — Autosave is silent; the restore is not.**

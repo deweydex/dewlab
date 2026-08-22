@@ -221,7 +221,8 @@ print(str(celsius) + " degrees Celsius = " + str(fahrenheit) + " degrees Fahrenh
 
 Write a small program that converts between two units of your choice. Some ideas: kilometres to miles (multiply by 0.621371), kilograms to pounds (multiply by 2.20462), or euros to another currency. Follow the same pattern: pseudocode first, then implementation, then test with a few values you can verify by hand.
 
-**Pseudocode** (double-click to edit this cell):
+Start with the pseudocode, written as comments at the top of the cell below,
+then fill in the Python underneath each step.
 
 ```python exec
 id: your-turn-4
