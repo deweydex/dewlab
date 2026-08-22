@@ -499,6 +499,113 @@ def download_section(tutorial: Tutorial) -> str:
     )
 
 
+# ------------------------------------------------------------ the topic tree
+
+TOPIC_DATA = ROOT / "planning" / "curriculum" / "topics.yaml"
+SCOPE_DATA = ROOT / "planning" / "curriculum" / "out-of-scope.yaml"
+
+# One node is a comfortable tap target with room for a two-line name.
+TOPIC_W, TOPIC_H = 176, 58
+TIER_GAP, ROW_GAP = 56, 22
+BAND_GAP = 34
+TREE_PAD = 40
+
+
+def load_topics() -> dict:
+    """The glossary: what each topic is, where it is used, what it needs first.
+
+    Optional, like the outcome data — the site has to build from the tutorials
+    alone, and without this there is simply no topic tree.
+    """
+    if not TOPIC_DATA.is_file():
+        return {}
+    return (yaml.safe_load(TOPIC_DATA.read_text()) or {}).get("topics") or {}
+
+
+def load_out_of_scope() -> set[str]:
+    """Outcomes we have decided not to teach. Shown, and shown as decided."""
+    if not SCOPE_DATA.is_file():
+        return set()
+    data = yaml.safe_load(SCOPE_DATA.read_text()) or {}
+    return {entry["code"] for entry in data.get("outcomes") or []}
+
+
+def taught_where(tutorials: list[Tutorial]) -> dict[str, dict]:
+    """Outcome code to the tutorial section that teaches it.
+
+    Read from each tutorial's own `covers:` frontmatter, so a topic's link
+    cannot point somewhere the tutorial does not claim.
+    """
+    where: dict[str, dict] = {}
+    for tutorial in tutorials:
+        for anchor, claim in (tutorial.meta.get("covers") or {}).items():
+            for code in claim.get("covers") or []:
+                where.setdefault(code, {
+                    "title": tutorial.title,
+                    "href": f"tutorials/{tutorial.module}/{tutorial.slug}.html#{anchor}",
+                })
+    return where
+
+
+def topic_tiers(topics: dict) -> dict[str, int]:
+    """How much you need to know before a topic — its column in the tree.
+
+    A topic with no prerequisites is tier 0; anything else is one past the
+    deepest thing it needs. The glossary's tests guarantee no cycles, so this
+    always terminates.
+    """
+    tier: dict[str, int] = {}
+
+    def depth(code: str) -> int:
+        if code in tier:
+            return tier[code]
+        needs = [n for n in (topics[code].get("needs") or []) if n in topics]
+        tier[code] = 0 if not needs else 1 + max(depth(n) for n in needs)
+        return tier[code]
+
+    for code in topics:
+        depth(code)
+    return tier
+
+
+def topic_layout(topics: dict, strands: dict[str, str]) -> tuple[dict, float, float]:
+    """Where every topic sits: across by how much it needs, down by subject.
+
+    Two axes doing two jobs. Left to right is dependency — nothing points
+    backwards, so the further right a topic is, the more has to come first. Top
+    to bottom is subject, so a strand reads as a band across the whole tree and
+    you can follow one thread without losing it among the others.
+    """
+    tier = topic_tiers(topics)
+    bands: dict[str, list[str]] = {}
+    for code in topics:
+        bands.setdefault(strands.get(code, "other"), []).append(code)
+
+    place: dict[str, dict] = {}
+    y = TREE_PAD
+    for strand in sorted(bands):
+        members = bands[strand]
+        # Within a band, a tier may hold several topics; they stack.
+        rows: dict[int, int] = {}
+        band_height = 0
+        for code in sorted(members, key=lambda c: (tier[c], topics[c]["name"])):
+            column = tier[code]
+            row = rows.get(column, 0)
+            rows[column] = row + 1
+            place[code] = {
+                "x": TREE_PAD + column * (TOPIC_W + TIER_GAP),
+                "y": y + row * (TOPIC_H + ROW_GAP),
+                "tier": column,
+                "strand": strand,
+            }
+            band_height = max(band_height, (row + 1) * (TOPIC_H + ROW_GAP))
+        place[f"band:{strand}"] = {"x": 0, "y": y, "height": band_height - ROW_GAP}
+        y += band_height + BAND_GAP
+
+    width = TREE_PAD * 2 + (max(tier.values()) + 1) * (TOPIC_W + TIER_GAP) - TIER_GAP
+    return place, width, y - BAND_GAP + TREE_PAD
+
+
 # ------------------------------------------------------- the knowledge map
 
 OUTCOME_DATA = ROOT / "planning" / "curriculum" / "outcomes.yaml"
