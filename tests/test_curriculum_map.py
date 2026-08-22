@@ -123,24 +123,36 @@ class TestStatus:
 
 
 class TestBackReferences:
+    def order_file(self, repo, slugs):
+        (repo / "tutorials" / "demo" / "s.order.yaml").write_text(
+            "order:\n" + "".join(f"  - {s}\n" for s in slugs)
+        )
+
     def test_it_finds_an_earlier_tutorial_named_in_the_text(self, repo):
+        """By title now that the numbers are gone — which is also what a
+        tutorial would naturally write."""
+        titles = {1: "Counting Carefully", 2: "What Are the Chances"}
         for n in (1, 2):
             (repo / "tutorials" / "demo" / f"t{n}.md").write_text(
-                f'---\ntitle: "T{n}"\nslug: t{n}\nmodule: demo\nyear: "2026-2027"\n'
-                f"series: s\norder: {n}\nversion: 1\n---\n\n# T{n}\n\n"
-                + ("Recall your work from Tutorial 1.\n" if n == 2 else "Prose.\n")
+                f'---\ntitle: "{titles[n]}"\nslug: t{n}\nmodule: demo\n'
+                f'year: "2026-2027"\nseries: s\nversion: 1\n---\n\n# {titles[n]}\n\n'
+                + ("Recall your work from Counting Carefully.\n" if n == 2 else "Prose.\n")
             )
+        self.order_file(repo, ["t1", "t2"])
         outcomes, _ = cm.load_outcomes()
         refs = cm.back_references(cm.load_tutorials(outcomes))
         assert refs["t2"] == {1}
         assert refs["t1"] == set()
 
-    def test_it_ignores_a_reference_to_itself_or_later(self, repo):
-        (repo / "tutorials" / "demo" / "t1.md").write_text(
-            '---\ntitle: "T1"\nslug: t1\nmodule: demo\nyear: "2026-2027"\n'
-            "series: s\norder: 1\nversion: 1\n---\n\n# T1\n\n"
-            "Covered in Tutorial 1 and again in Tutorial 5.\n"
-        )
+    def test_it_ignores_a_tutorial_naming_itself_or_a_later_one(self, repo):
+        titles = {1: "Counting Carefully", 2: "What Are the Chances"}
+        for n in (1, 2):
+            (repo / "tutorials" / "demo" / f"t{n}.md").write_text(
+                f'---\ntitle: "{titles[n]}"\nslug: t{n}\nmodule: demo\n'
+                f'year: "2026-2027"\nseries: s\nversion: 1\n---\n\n# {titles[n]}\n\n'
+                "Covered in Counting Carefully and later in What Are the Chances.\n"
+            )
+        self.order_file(repo, ["t1", "t2"])
         outcomes, _ = cm.load_outcomes()
         refs = cm.back_references(cm.load_tutorials(outcomes))
         assert refs["t1"] == set()

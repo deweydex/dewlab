@@ -1,11 +1,10 @@
 ---
-title: "Tutorial 9: Counting Carefully"
-slug: tutorial-09-counting-carefully
+title: "Counting Carefully"
+slug: counting-carefully
 module: mit-pdp-maths-prog-integration
 module_title: "Programming and Maths, Integrated"
 year: "2026-2027"
 series: maths-and-programming
-order: 9
 version: 1
 covers:
   factorials-the-foundation:
@@ -18,7 +17,7 @@ covers:
     covers: [MIT-5.2]
 ---
 
-# Tutorial 9: Counting Carefully
+# Counting Carefully
 
 **Programming Design Principles / Maths for IT**
 
@@ -40,7 +39,7 @@ By convention, $0! = 1$. This seems strange but is mathematically consistent -- 
 
 ### Your turn
 
-Write a function `factorial(n)` that computes $n!$. Use the product accumulator pattern we learned in Tutorial 4. Include a docstring and handle the case $n = 0$.
+Write a function `factorial(n)` that computes $n!$. Use the product accumulator pattern we learned in *Repeating Yourself*. Include a docstring and handle the case $n = 0$.
 
 **Pseudocode:**
 ```

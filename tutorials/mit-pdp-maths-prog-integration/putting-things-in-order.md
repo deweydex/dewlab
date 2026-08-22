@@ -1,11 +1,10 @@
 ---
-title: "Tutorial 7: Putting Things in Order"
-slug: tutorial-07-putting-things-in-order
+title: "Putting Things in Order"
+slug: putting-things-in-order
 module: mit-pdp-maths-prog-integration
 module_title: "Programming and Maths, Integrated"
 year: "2026-2027"
 series: maths-and-programming
-order: 7
 version: 1
 covers:
   bubble-sort-let-things-rise:
@@ -20,7 +19,7 @@ covers:
     touches: [MIT-6.8]
 ---
 
-# Tutorial 7: Putting Things in Order
+# Putting Things in Order
 
 **Programming Design Principles / Maths for IT**
 
@@ -217,7 +216,7 @@ If you have time, here are two extensions worth exploring.
 
 **Shell sort** is a clever improvement on insertion sort. Instead of comparing adjacent elements, it compares elements that are a fixed distance apart (the "gap"), then reduces the gap gradually. When the gap reaches 1, it becomes a regular insertion sort -- but by then, the list is nearly sorted, so insertion sort runs quickly. Try implementing it.
 
-**Recursive binary search**: In Tutorial 6 we wrote binary search with a while loop. Can you rewrite it so the function calls itself with a smaller range instead? This is called *recursion*, and it is an elegant way to express divide-and-conquer algorithms.
+**Recursive binary search**: In *Finding Things* we wrote binary search with a while loop. Can you rewrite it so the function calls itself with a smaller range instead? This is called *recursion*, and it is an elegant way to express divide-and-conquer algorithms.
 
 ```
 def binary_search_recursive(items, target, low, high):
@@ -244,7 +243,7 @@ id: optional-challenges-2
 
 ## Reflection
 
-We have now built three sorting algorithms from scratch, and we understand how to compare their efficiency by counting operations. Combined with the search algorithms from Tutorial 6, we have a solid toolkit for organising and finding data.
+We have now built three sorting algorithms from scratch, and we understand how to compare their efficiency by counting operations. Combined with the search algorithms from *Finding Things*, we have a solid toolkit for organising and finding data.
 
 More importantly, we have practised the full cycle of algorithm development: understand the problem, write pseudocode, implement, test, and analyse. This cycle is the same whether the problem is sorting numbers or building a machine learning system.
 

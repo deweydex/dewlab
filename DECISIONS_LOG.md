@@ -783,3 +783,51 @@ With the map gone it says what dewlab is to somebody who has just arrived —
 nothing to install, nothing to break, work saved in this browser — and then gets
 out of the way of the list they came for.
 *Cost to change: small.*
+
+**7.1 — Reading order lives in one file per series, not in every tutorial.**
+`order: 12` in each tutorial's frontmatter meant inserting one in the middle was
+an edit to every file after it. In `<series>.order.yaml` — a list of slugs —
+moving a tutorial is moving a line and inserting one is adding a line.
+
+The build checks both directions. A tutorial the file forgets stops the build;
+so does a slug with no tutorial behind it, which is the more dangerous of the
+two because the file looks complete and the series is quietly short. And a
+tutorial still carrying `order:` in its frontmatter stops the build rather than
+having that field silently ignored — half-migrated is worse than either state,
+since the ignored field is exactly the one somebody would edit.
+
+This is what makes the editor small: it edits one list. It is also what makes
+the editor optional, because one list is something a person can reorder by hand
+in the GitHub web interface.
+*Cost to change: moderate, and it should not change again.*
+
+**7.2 — The numbers are gone from titles, slugs and prose.**
+"Tutorial 14: Expressions Come Alive" is now "Expressions Come Alive", at
+`expressions-come-alive.html`, and the fifty prose references say the name
+rather than the number. Published URLs changed, which is the real cost and the
+reason to do it exactly once.
+
+What it buys is that inserting a tutorial anywhere is now free. Nothing carries
+a position except the order file, so the re-planned series — splitting Tutorial
+13, adding the maths tutorials, putting the two conversions near the front — no
+longer implies a fifty-place edit that nothing verifies.
+*Cost to change: high, in the sense that putting them back would be as much
+work again.*
+
+**7.3 — A slug is unique within its module, not across the site.**
+The rename made both modules want `first-steps`, and the built path already
+carries the module, so there was never any real ambiguity — only a global check
+that would have forced tutorials to be named around a constraint that does not
+exist.
+
+`tutorial:slug` links now look in the linking tutorial's own module first, fall
+back to another module when exactly one has that slug, and stop the build when
+more than one does. Guessing would be the only other option.
+*Cost to change: small.*
+
+**7.4 — "Builds on" is found by title now.**
+The map's dashed arrows were found by matching "Tutorial 11" in the prose. With
+the numbers gone they match titles instead — which is what a tutorial would
+naturally write anyway, and turned out to find exactly the same seven
+references.
+*Cost to change: small.*

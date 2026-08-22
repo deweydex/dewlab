@@ -4,7 +4,6 @@ slug: third-page
 module: fixtures
 year: "2026-2027"
 series: e2e
-order: 3
 version: 1
 ---
 

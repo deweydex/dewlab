@@ -1,11 +1,10 @@
 ---
-title: "Tutorial 13: Numbers and Their Families"
-slug: tutorial-13-numbers-and-their-families
+title: "Numbers and Their Families"
+slug: numbers-and-their-families
 module: mit-pdp-maths-prog-integration
 module_title: "Programming and Maths, Integrated"
 year: "2026-2027"
 series: maths-and-programming
-order: 13
 version: 2
 covers:
   the-number-domains:
@@ -18,7 +17,7 @@ covers:
     covers: [MIT-1.2, MIT-1.3]
 ---
 
-# Tutorial 13: Numbers and Their Families
+# Numbers and Their Families
 
 **Programming Design Principles / Maths for IT**
 

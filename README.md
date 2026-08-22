@@ -129,7 +129,6 @@ slug: working-with-tables
 module: computational-methods
 year: "2026-2027"
 series: python-fundamentals
-order: 2
 version: 1
 ---
 ```
@@ -141,12 +140,37 @@ version: 1
 | `module` | Which subject this belongs to. It is also the folder name. Any value you like — a new module is a new folder, not a code change. |
 | `year` | An academic year like `2026-2027`, since the programme is scoped a year at a time. |
 | `series` | Groups tutorials that are meant to be worked through in order. |
-| `order` | Position within that series. |
 | `version` | Bump this when you change the code in a cell, so a student's saved progress knows the page moved on. Prose fixes do not need it. |
 
 You can add `packages: [sympy]` if a tutorial needs a library beyond the three
 that always load, and any other field you find useful — nothing validates
 against a fixed list.
+
+### Where a tutorial sits in its series
+
+Not in the frontmatter. Each series has one file beside its tutorials listing
+them in reading order:
+
+```yaml
+# tutorials/computational-methods/python-fundamentals.order.yaml
+series: Python fundamentals
+order:
+  - first-steps
+  - working-with-tables
+```
+
+**Moving a tutorial is moving a line. Inserting one is adding a line**, and
+nothing else changes — no renumbering, no editing every file after it. That is
+the whole reason this is not a field on each tutorial.
+
+The build checks it both ways: a tutorial the file forgets stops the build, and
+so does a slug with no tutorial behind it. The second is the one worth having,
+because a file that looks complete and a series that is quietly short is a
+mistake nobody notices.
+
+Slugs are unique **within a module**, not across the site — the built path
+already carries the module, so two modules may each have a `first-steps`. A
+`tutorial:` link looks in its own module first.
 
 ### Cells students can run
 

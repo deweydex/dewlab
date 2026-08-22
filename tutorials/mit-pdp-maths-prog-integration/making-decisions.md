@@ -1,11 +1,10 @@
 ---
-title: "Tutorial 3: Making Decisions"
-slug: tutorial-03-making-decisions
+title: "Making Decisions"
+slug: making-decisions
 module: mit-pdp-maths-prog-integration
 module_title: "Programming and Maths, Integrated"
 year: "2026-2027"
 series: maths-and-programming
-order: 3
 version: 1
 covers:
   comparisons-true-or-false:
@@ -23,7 +22,7 @@ covers:
     covers: [MIT-1.1]
 ---
 
-# Tutorial 3: Making Decisions
+# Making Decisions
 
 **Programming Design Principles / Maths for IT**
 

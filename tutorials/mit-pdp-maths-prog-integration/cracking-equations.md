@@ -1,11 +1,10 @@
 ---
-title: "Tutorial 15: Cracking Equations"
-slug: tutorial-15-cracking-equations
+title: "Cracking Equations"
+slug: cracking-equations
 module: mit-pdp-maths-prog-integration
 module_title: "Programming and Maths, Integrated"
 year: "2026-2027"
 series: maths-and-programming
-order: 15
 version: 1
 covers:
   solving-linear-equations:
@@ -20,7 +19,7 @@ covers:
     covers: [MIT-1.12]
 ---
 
-# Tutorial 15: Cracking Equations
+# Cracking Equations
 
 **Programming Design Principles / Maths for IT**
 
@@ -160,7 +159,7 @@ id: your-turn-8
 
 ### Verification by expansion
 
-We can verify a factorisation by multiplying the factors back together and checking that we get the original polynomial. This is where `multiply_poly` from Tutorial 14 pays off:
+We can verify a factorisation by multiplying the factors back together and checking that we get the original polynomial. This is where `multiply_poly` from *Expressions Come Alive* pays off:
 
 ```python exec
 id: verification-by-expansion-1

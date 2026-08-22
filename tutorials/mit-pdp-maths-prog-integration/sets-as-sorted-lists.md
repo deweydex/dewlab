@@ -1,11 +1,10 @@
 ---
-title: "Tutorial 16: Sets as Sorted Lists"
-slug: tutorial-16-sets-as-sorted-lists
+title: "Sets as Sorted Lists"
+slug: sets-as-sorted-lists
 module: mit-pdp-maths-prog-integration
 module_title: "Programming and Maths, Integrated"
 year: "2026-2027"
 series: maths-and-programming
-order: 16
 version: 1
 covers:
   making-a-set:
@@ -20,7 +19,7 @@ covers:
     covers: [MIT-2.2]
 ---
 
-# Tutorial 16: Sets as Sorted Lists
+# Sets as Sorted Lists
 
 **Programming Design Principles / Maths for IT**
 
@@ -28,7 +27,7 @@ A *set* is a collection of distinct elements where order does not matter and dup
 
 Sets give us a language for talking about membership ("is 7 in this set?"), relationships ("what do these two sets have in common?"), and operations ("combine these two sets"). Today we build all of this from scratch, using sorted lists as our underlying data structure.
 
-This connects beautifully to our earlier work: the sort algorithms from Tutorial 7 prepare the data, and the binary search from Tutorial 6 makes membership testing efficient.
+This connects beautifully to our earlier work: the sort algorithms from *Putting Things in Order* prepare the data, and the binary search from *Finding Things* makes membership testing efficient.
 
 ## Why Sorted Lists?
 

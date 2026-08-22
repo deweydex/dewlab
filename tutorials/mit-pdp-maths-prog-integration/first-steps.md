@@ -1,11 +1,10 @@
 ---
-title: "Tutorial 1: First Steps"
-slug: tutorial-01-first-steps
+title: "First Steps"
+slug: first-steps
 module: mit-pdp-maths-prog-integration
 module_title: "Programming and Maths, Integrated"
 year: "2026-2027"
 series: maths-and-programming
-order: 1
 version: 1
 covers:
   what-is-an-algorithm:
@@ -16,7 +15,7 @@ covers:
     covers: [PDP-LO4]
 ---
 
-# Tutorial 1: First Steps
+# First Steps
 
 **Programming Design Principles / Maths for IT**
 

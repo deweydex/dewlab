@@ -1,11 +1,10 @@
 ---
-title: "Tutorial 11: Making Sense of Data"
-slug: tutorial-11-making-sense-of-data
+title: "Making Sense of Data"
+slug: making-sense-of-data
 module: mit-pdp-maths-prog-integration
 module_title: "Programming and Maths, Integrated"
 year: "2026-2027"
 series: maths-and-programming
-order: 11
 version: 1
 covers:
   measures-of-central-tendency:
@@ -22,7 +21,7 @@ covers:
     covers: [MIT-5.13]
 ---
 
-# Tutorial 11: Making Sense of Data
+# Making Sense of Data
 
 **Programming Design Principles / Maths for IT**
 

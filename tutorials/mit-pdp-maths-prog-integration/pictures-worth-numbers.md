@@ -1,11 +1,10 @@
 ---
-title: "Tutorial 12: Pictures Worth Numbers"
-slug: tutorial-12-pictures-worth-numbers
+title: "Pictures Worth Numbers"
+slug: pictures-worth-numbers
 module: mit-pdp-maths-prog-integration
 module_title: "Programming and Maths, Integrated"
 year: "2026-2027"
 series: maths-and-programming
-order: 12
 version: 1
 covers:
   why-visualise:
@@ -20,7 +19,7 @@ covers:
     covers: [MIT-5.10]
 ---
 
-# Tutorial 12: Pictures Worth Numbers
+# Pictures Worth Numbers
 
 **Programming Design Principles / Maths for IT**
 
@@ -196,7 +195,7 @@ The most informative approach is to combine numerical summaries with visual disp
 id: combining-statistics-and-visualisation-1
 def analyse_dataset(data, title):
     """Print summary statistics and show a histogram for a dataset."""
-    # We are using our functions from Tutorial 11
+    # We are using our functions from *Making Sense of Data*
     # (you may need to redefine mean, median, mode, std_dev here
     #  or copy them from your previous work)
     
@@ -212,7 +211,7 @@ def analyse_dataset(data, title):
 
 ### Your turn
 
-Complete the `analyse_dataset` function by adding calls to your statistical functions from Tutorial 11. Then use it on the quiz scores. If you want a challenge, create a second dataset and compare the two analyses side by side.
+Complete the `analyse_dataset` function by adding calls to your statistical functions from *Making Sense of Data*. Then use it on the quiz scores. If you want a challenge, create a second dataset and compare the two analyses side by side.
 
 ```python exec
 id: your-turn-5
