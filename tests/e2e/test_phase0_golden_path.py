@@ -302,6 +302,37 @@ def test_the_contents_list_jumps_to_a_section(page):
     assert top >= chrome - 1, "the heading landed underneath the sticky header"
 
 
+def test_the_contents_page_never_scrolls_sideways(browser, base_url):
+    """The map is wider than the reading measure by design. Widening it must not
+    push the page itself sideways — that is the one thing wide content on a
+    dewlab page is not allowed to do."""
+    for width in (1400, 900, 390):
+        context = browser.new_context(viewport={"width": width, "height": 800})
+        tab = context.new_page()
+        tab.goto(f"{base_url}/index.html")
+        tab.wait_for_selector("svg.dl-map", timeout=10_000)
+        overflow = tab.evaluate(
+            "document.documentElement.scrollWidth - document.documentElement.clientWidth"
+        )
+        assert overflow <= 1, f"the page scrolls sideways at {width}px"
+        context.close()
+
+
+def test_every_box_on_the_map_is_a_link_to_a_tutorial(browser, base_url):
+    context = browser.new_context(viewport={"width": 1400, "height": 900})
+    tab = context.new_page()
+    tab.goto(f"{base_url}/index.html")
+    tab.wait_for_selector("svg.dl-map", timeout=10_000)
+    hrefs = tab.eval_on_selector_all(
+        "svg.dl-map a.dl-map-node", "els => els.map(e => e.getAttribute('href'))"
+    )
+    assert hrefs, "the map has no nodes"
+    tab.click("svg.dl-map a.dl-map-node")
+    tab.wait_for_load_state()
+    assert hrefs[0].split("/")[-1] in tab.url
+    context.close()
+
+
 def test_texture_choices_survive_a_reload(page, base_url):
     page.click("#dl-settings-toggle")
     page.click("#dl-settings-texture .dl-seg[data-texture=theme] button[data-value=dark]")

@@ -842,3 +842,90 @@ class TestTheStickyChrome:
         page = (repo_with_assets / "site" / "download" / "sample.html").read_text()
         assert "dl-chrome" in page
         assert "dl-nav" not in page.split("<style>")[0] + page.split("</style>")[-1]
+
+
+class TestTheKnowledgeMap:
+    def series(self, repo, count=4, covers=True):
+        strands = ["programming", "programming", "algorithms", "algebra"]
+        codes = ["PDP-LO4", "PDP-LO6", "MIT-6.3", "MIT-1.6"]
+        (repo / "planning" / "curriculum").mkdir(parents=True, exist_ok=True)
+        (repo / "planning" / "curriculum" / "outcomes.yaml").write_text(
+            "outcomes:\n" + "".join(
+                f"  - code: {c}\n    title: t\n    strand: {s}\n"
+                for c, s in zip(codes, strands)
+            )
+        )
+        for n in range(1, count + 1):
+            block = ""
+            if covers:
+                block = f"covers:\n  a-section:\n    covers: [{codes[(n - 1) % 4]}]\n"
+            (repo / "tutorials" / "computational-methods" / f"t{n}.md").write_text(
+                f'---\ntitle: "Tutorial {n}"\nslug: t{n}\nmodule: computational-methods\n'
+                f'year: "2026-2027"\nseries: s\norder: {n}\nversion: 1\n{block}'
+                f"---\n\n# Tutorial {n}\n\n## A section\n\nProse.\n"
+            )
+
+    def svg(self, repo) -> str:
+        index = (repo / "site" / "index.html").read_text()
+        match = re.search(r'<svg class="dl-map".*?</svg>', index, re.DOTALL)
+        return match.group(0) if match else ""
+
+    def test_a_series_gets_a_map(self, repo):
+        self.series(repo)
+        b.build()
+        svg = self.svg(repo)
+        assert svg.count('class="dl-map-node"') == 4
+        assert svg.count('class="dl-map-next"') == 3
+
+    def test_a_series_too_short_to_have_a_shape_gets_none(self, repo):
+        self.series(repo, count=2)
+        b.build()
+        assert self.svg(repo) == ""
+
+    def test_every_node_links_to_a_page_that_exists(self, repo):
+        self.series(repo)
+        b.build()
+        for href in re.findall(r'<a class="dl-map-node" href="([^"]+)"', self.svg(repo)):
+            assert (repo / "site" / href).is_file(), href
+
+    def test_lanes_come_from_the_curriculum_data(self, repo):
+        self.series(repo)
+        b.build()
+        svg = self.svg(repo)
+        assert ">programming</text>" in svg
+        assert ">algorithms</text>" in svg
+
+    def test_it_still_builds_without_the_curriculum_data(self, repo):
+        """The site has to build from the tutorials alone."""
+        self.series(repo, covers=False)
+        (repo / "planning" / "curriculum" / "outcomes.yaml").unlink()
+        b.build()
+        assert self.svg(repo).count('class="dl-map-node"') == 4
+
+    def test_naming_an_earlier_tutorial_draws_an_arrow_back_to_it(self, repo):
+        self.series(repo)
+        path = repo / "tutorials" / "computational-methods" / "t4.md"
+        path.write_text(path.read_text() + "\nWe used this in Tutorial 1.\n")
+        b.build()
+        assert 'class="dl-map-back"' in self.svg(repo)
+
+    def test_the_tutorial_just_before_does_not_get_a_second_arrow(self, repo):
+        """The reading-order arrow already says that one."""
+        self.series(repo)
+        path = repo / "tutorials" / "computational-methods" / "t4.md"
+        path.write_text(path.read_text() + "\nAs in Tutorial 3.\n")
+        b.build()
+        assert 'class="dl-map-back"' not in self.svg(repo)
+
+    def test_a_long_title_is_shortened_rather_than_overflowing(self):
+        assert b.shorten("Short") == "Short"
+        # Cut at the limit, then back to the last whole word.
+        assert b.shorten("A very considerably longer tutorial title") == (
+            "A very considerably…"
+        )
+        assert len(b.shorten("A" * 60)) <= 23
+
+    def test_a_tutorial_is_placed_by_what_it_mostly_covers(self):
+        strands = {"A": "algebra", "B": "algebra", "C": "sets"}
+        assert b.strand_of(["A", "B", "C"], strands) == "algebra"
+        assert b.strand_of([], strands) == "other"

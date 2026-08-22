@@ -498,6 +498,197 @@ def download_section(tutorial: Tutorial) -> str:
     )
 
 
+# ------------------------------------------------------- the knowledge map
+
+OUTCOME_DATA = ROOT / "planning" / "curriculum" / "outcomes.yaml"
+
+# Nodes wide enough for two short lines of title, spaced so an arrow between
+# them is visibly an arrow rather than a join.
+NODE_W, NODE_H = 132, 46
+GAP_X, GAP_Y = 34, 30
+LANE_LABEL_W = 96
+MAP_PAD = 14
+
+
+def strand_of(codes: list[str], outcomes: dict[str, str]) -> str:
+    """The strand a tutorial mostly belongs to.
+
+    Mostly, not only: a tutorial that teaches four algorithm outcomes and one
+    programming one belongs on the algorithms row, and putting it in both would
+    make a diagram nobody can follow. Ties break alphabetically, which is
+    arbitrary but stable — and a genuine tie is worth noticing in itself, since
+    it usually means the tutorial is about two things.
+    """
+    counts: dict[str, int] = {}
+    for code in codes:
+        strand = outcomes.get(code)
+        if strand:
+            counts[strand] = counts.get(strand, 0) + 1
+    if not counts:
+        return "other"
+    best = max(counts.values())
+    return sorted(s for s, n in counts.items() if n == best)[0]
+
+
+def load_strands() -> dict[str, str]:
+    """Outcome code to strand, from the curriculum data if it is there.
+
+    Optional on purpose: the site has to build without the planning folder, so
+    a missing file means a map without lanes rather than a failed build.
+    """
+    if not OUTCOME_DATA.is_file():
+        return {}
+    data = yaml.safe_load(OUTCOME_DATA.read_text()) or {}
+    return {e["code"]: e["strand"] for e in data.get("outcomes") or []}
+
+
+def map_rows(members: list[Tutorial], strands: dict[str, str]) -> list[tuple[str, list]]:
+    """Tutorials grouped into strand bands, bands in teaching order.
+
+    A band is broken and started again if the series leaves it and comes back —
+    programming runs 1 to 4, goes away for algorithms and probability, and
+    returns at 17. Drawing that as one row would put an arrow across the whole
+    diagram and suggest a continuity that is not there.
+    """
+    rows: list[tuple[str, list]] = []
+    for tutorial in members:
+        declared = (tutorial.meta.get("covers") or {}).values()
+        covered = [c for claim in declared for c in (claim.get("covers") or [])]
+        touched = [c for claim in declared for c in (claim.get("touches") or [])]
+        strand = strand_of(covered or touched, strands)
+        if rows and rows[-1][0] == strand:
+            rows[-1][1].append(tutorial)
+        else:
+            rows.append((strand, [tutorial]))
+    return rows
+
+
+def render_knowledge_map(members: list[Tutorial], strands: dict[str, str]) -> str:
+    """The series as nodes and arrows: what follows what, and what leans on what.
+
+    A contents list says what order to read in. It does not say that Tutorial 17
+    leans on five earlier ones, or that the course spends four tutorials on
+    programming before mathematics appears. The map is for the reader deciding
+    where they are and what they need first.
+    """
+    if len(members) < 3:
+        return ""
+
+    rows = map_rows(members, strands)
+    widest = max(len(row) for _, row in rows)
+    width = LANE_LABEL_W + widest * NODE_W + (widest - 1) * GAP_X + MAP_PAD * 2
+    height = len(rows) * NODE_H + (len(rows) - 1) * GAP_Y + MAP_PAD * 2
+
+    place: dict[str, tuple[float, float]] = {}
+    for index, (_, row) in enumerate(rows):
+        y = MAP_PAD + index * (NODE_H + GAP_Y)
+        for column, tutorial in enumerate(row):
+            place[tutorial.slug] = (LANE_LABEL_W + column * (NODE_W + GAP_X), y)
+
+    parts = [
+        f'<svg class="dl-map" viewBox="0 0 {width} {height}" role="img" '
+        f'aria-label="Map of the tutorials, grouped by subject, '
+        f'with arrows for what follows what">',
+        '<defs><marker id="dl-arrow" viewBox="0 0 8 8" refX="7" refY="4" '
+        'markerWidth="6" markerHeight="6" orient="auto-start-reverse">'
+        '<path d="M0 0 L8 4 L0 8 z" fill="currentColor"/></marker>'
+        '<marker id="dl-arrow-back" viewBox="0 0 8 8" refX="7" refY="4" '
+        'markerWidth="5" markerHeight="5" orient="auto-start-reverse">'
+        '<path d="M0 0 L8 4 L0 8 z" fill="currentColor"/></marker></defs>',
+    ]
+
+    # Edges first so the nodes sit on top of them. A long arrow crossing the
+    # diagram passes behind the boxes it crosses, which is what stops it
+    # reading as though it touched them.
+    for tutorial in members:
+        for fan, target in enumerate(back_links(tutorial, members)):
+            parts.append(
+                arrow_between(place, tutorial.slug, target, "dl-map-back", fan)
+            )
+    for before, after in zip(members, members[1:]):
+        parts.append(arrow_between(place, before.slug, after.slug, "dl-map-next"))
+
+    for index, (strand, row) in enumerate(rows):
+        y = MAP_PAD + index * (NODE_H + GAP_Y)
+        parts.append(
+            f'<text class="dl-map-lane" x="{MAP_PAD}" y="{y + NODE_H / 2 + 4}">'
+            f"{html.escape(strand)}</text>"
+        )
+        for tutorial in row:
+            x, _ = place[tutorial.slug]
+            href = tutorial.out_path.relative_to(OUT).as_posix()
+            label = tutorial.title.split(":", 1)[-1].strip()
+            parts.append(
+                f'<a class="dl-map-node" href="{href}">'
+                f'<title>{html.escape(tutorial.title)}</title>'
+                f'<rect x="{x}" y="{y}" width="{NODE_W}" height="{NODE_H}" rx="5"/>'
+                f'<text x="{x + NODE_W / 2}" y="{y + NODE_H / 2 + 4}">'
+                f"{html.escape(shorten(label))}</text></a>"
+            )
+
+    parts.append("</svg>")
+    return "".join(p for p in parts if p)
+
+
+def shorten(label: str, limit: int = 22) -> str:
+    """Node labels are one line. A title that will not fit is cut at a word."""
+    if len(label) <= limit:
+        return label
+    cut = label[:limit].rsplit(" ", 1)[0]
+    return (cut or label[:limit]) + "…"
+
+
+BACKLINK_RE = re.compile(r"\bTutorial\s+(\d{1,2})\b")
+
+
+def back_links(tutorial: Tutorial, members: list[Tutorial]) -> list[str]:
+    """Earlier tutorials this one names in its own text, skipping its neighbour.
+
+    Evidence rather than intention. The arrow to the tutorial immediately before
+    is left out because the reading-order arrow already says it.
+    """
+    by_order = {t.order: t for t in members}
+    named = {int(n) for n in BACKLINK_RE.findall(tutorial.body_html)}
+    return [
+        by_order[n].slug for n in sorted(named)
+        if n in by_order and 0 < n < tutorial.order - 1
+    ]
+
+
+def arrow_between(place: dict, a: str, b: str, css: str, fan: int = 0) -> str:
+    """One arrow, routed so it can be told apart from the others.
+
+    `fan` separates several arrows leaving the same node. Tutorial 17 names five
+    earlier tutorials, and without this they would all leave the same point,
+    travel the same column and arrive as one thick unreadable line. Each is bowed
+    a little further out than the last.
+    """
+    if a not in place or b not in place:
+        return ""
+    (ax, ay), (bx, by) = place[a], place[b]
+
+    if ay == by:
+        # Same row: straight across, edge to edge.
+        x1, x2 = (ax + NODE_W, bx) if ax < bx else (ax, bx + NODE_W)
+        y = ay + NODE_H / 2
+        return f'<path class="{css}" d="M{x1} {y} L{x2} {y}"/>'
+
+    # Different rows: leave the side nearer the destination and arrive on the
+    # matching side, bowed outwards so the path is a curve rather than a spine.
+    going_up = by < ay
+    y1 = ay if going_up else ay + NODE_H
+    y2 = by + NODE_H if going_up else by
+    x1, x2 = ax + NODE_W / 2, bx + NODE_W / 2
+    reach = abs(y2 - y1) / 2 + fan * 22
+    side = NODE_W * 0.7 + fan * 26 if going_up else 0
+    return (
+        f'<path class="{css}" d="M{x1} {y1} '
+        f"C{x1 + side} {y1 - reach if going_up else y1 + reach}, "
+        f"{x2 + side} {y2 + reach if going_up else y2 - reach}, "
+        f'{x2} {y2}"/>'
+    )
+
+
 def render_index(
     groups: dict[tuple[str, str], list[Tutorial]],
     archives: dict[tuple[str, str], Path] | None = None,
@@ -518,7 +709,23 @@ def render_index(
             if member.meta.get("module_title"):
                 names.setdefault(module, member.module_title)
 
+    strands = load_strands()
     out = ["<h1>Tutorials</h1>"]
+
+    # The map goes above the lists, because it answers a different question:
+    # the lists say what order to read in, the map says how the parts relate.
+    # Only for a series long enough to have a shape worth seeing.
+    for (module, series), members in sorted(groups.items()):
+        svg = render_knowledge_map(members, strands)
+        if svg:
+            out.append(
+                '<figure class="dl-map-figure">' + svg +
+                '<figcaption>Every tutorial, grouped by what it is about. '
+                'Solid arrows are the reading order. A dashed arrow means the '
+                'later tutorial builds on the earlier one and says so. '
+                'Any box takes you there.</figcaption></figure>'
+            )
+
     for module in sorted({module for module, _ in groups}):
         out.append(f"<h2>{html.escape(names.get(module, module))}</h2>")
         for (owner, series), members in sorted(groups.items()):
