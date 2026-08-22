@@ -31,6 +31,7 @@ import os
 import re
 import shutil
 import sys
+import zipfile
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -407,8 +408,17 @@ def nav_for(tutorial: Tutorial, members: list[Tutorial]) -> str:
     return "".join(parts)
 
 
-def render_index(groups: dict[tuple[str, str], list[Tutorial]]) -> str:
-    """The contents page: every module, every series, in order."""
+def render_index(
+    groups: dict[tuple[str, str], list[Tutorial]],
+    archives: dict[tuple[str, str], Path] | None = None,
+) -> str:
+    """The contents page: every module, every series, in order.
+
+    `archives` maps a series to its zip of downloadable copies, when the build
+    wrote them. Without it the page simply carries no whole-series link, which
+    is what a quick local build wants.
+    """
+    archives = archives or {}
     if not groups:
         return "<p>No tutorials have been written yet.</p>"
 
@@ -433,6 +443,15 @@ def render_index(groups: dict[tuple[str, str], list[Tutorial]]) -> str:
                     f'<li><a href="{href}">{html.escape(member.title)}</a></li>'
                 )
             out.append("</ol>")
+            archive = archives.get((owner, series))
+            if archive is not None:
+                count = len(members)
+                out.append(
+                    '<p class="dl-series">'
+                    f'<a class="dl-download" href="download/{archive.name}" download>'
+                    f"Download all {count} as single files"
+                    f" ({readable_size(archive)})</a></p>"
+                )
     return "\n".join(out)
 
 
@@ -619,7 +638,47 @@ def write_standalone(tutorial: Tutorial, page: str) -> Path:
     return target
 
 
-def write_index(shell: str, groups: dict[tuple[str, str], list[Tutorial]]) -> Path:
+SERIES_SLUG_RE = re.compile(r"[^a-z0-9]+")
+
+
+def series_slug(module: str, series: str) -> str:
+    """A filename for a whole series, out of names that were written for people."""
+    slug = SERIES_SLUG_RE.sub("-", f"{module}-{series}".lower()).strip("-")
+    return slug or "tutorials"
+
+
+def write_series_zip(module: str, series: str, members: list[Tutorial]) -> Path:
+    """Every downloadable copy in one series, gathered into one archive.
+
+    A student takes one tutorial. Somebody setting up a room, or filling a
+    memory stick for a class with no reliable connection, wants the set. The
+    archive holds the very files the download links point at, so there is no
+    second copy to keep in step with anything.
+    """
+    folder = series_slug(module, series)
+    target = OUT / "download" / f"{folder}.zip"
+    target.parent.mkdir(parents=True, exist_ok=True)
+    with zipfile.ZipFile(target, "w", zipfile.ZIP_DEFLATED) as archive:
+        for member in members:
+            archive.write(
+                OUT / "download" / f"{member.slug}.html", f"{folder}/{member.slug}.html"
+            )
+    return target
+
+
+def readable_size(path: Path) -> str:
+    """A size a person can act on, rather than a byte count."""
+    size = path.stat().st_size
+    if size >= 1_000_000:
+        return f"{size / 1_000_000:.0f} MB"
+    return f"{max(size // 1000, 1)} KB"
+
+
+def write_index(
+    shell: str,
+    groups: dict[tuple[str, str], list[Tutorial]],
+    archives: dict[tuple[str, str], Path] | None = None,
+) -> Path:
     """The contents page at the site root, which every page's masthead links to."""
     manifest = {"slug": "index", "version": 1, "assetBase": "assets/",
                 "dataBase": "data/", "cells": []}
@@ -634,7 +693,7 @@ def write_index(shell: str, groups: dict[tuple[str, str], list[Tutorial]]) -> Pa
         "{{ASSET_BASE}}": "assets/",
         "{{ROOT_BASE}}": "",
         "{{NAV_PREV_NEXT}}": "",
-        "{{BODY}}": render_index(groups),
+        "{{BODY}}": render_index(groups, archives),
         "{{MANIFEST_JSON}}": json.dumps(manifest).replace("<", "\\u003c"),
     }
     page = shell
@@ -680,8 +739,14 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
         if standalone:
             written.append(write_standalone(tutorial, page_path.read_text()))
 
+    archives: dict[tuple[str, str], Path] = {}
+    if standalone:
+        for key, members in groups.items():
+            archives[key] = write_series_zip(key[0], key[1], members)
+        written.extend(archives.values())
+
     if tutorials:
-        written.append(write_index(shell, groups))
+        written.append(write_index(shell, groups, archives))
 
     OUT.mkdir(parents=True, exist_ok=True)
     shutil.rmtree(OUT / "assets", ignore_errors=True)

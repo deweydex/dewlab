@@ -553,3 +553,16 @@ version of the tool.
 CI rebuilds it and fails if the committed copy differs. That turns a silent
 divergence into a failed check.
 *Cost to change: small, but do not remove the check without replacing it.*
+
+**4.4 — A whole series downloads as one archive, built from the same files.**
+One tutorial at a time is right for a student who wants the one they are on.
+It is the wrong shape for a teacher setting up a room or filling a memory stick
+for a class, who would otherwise click through eighteen pages.
+
+So the build gathers each series into `site/download/<series>.zip` and the
+contents page links to it. The archive holds the very files the per-tutorial
+links point at — byte for byte, copied rather than regenerated — so there is no
+third thing that can go stale. A build without the downloadable copies writes no
+archive and the contents page shows no link, which keeps a quick local preview
+quick.
+*Cost to change: small. It is a dozen lines around the files that already exist.*
