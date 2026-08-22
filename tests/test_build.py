@@ -697,3 +697,54 @@ class TestTheSeriesArchive:
         big.write_bytes(b"x" * 2_500_000)
         assert b.readable_size(small) == "4 KB"
         assert b.readable_size(big) == "2 MB"
+
+
+class TestTheSettingsPanel:
+    def test_the_download_sits_in_the_panel_and_not_in_the_navigation(self, repo):
+        write(repo, "Some prose.\n")
+        b.build()
+        page = built(repo)
+        nav = re.search(r'<nav class="dl-nav dl-nav-top">.*?</nav>', page, re.DOTALL).group(0)
+        assert "dl-download" not in nav
+        section = re.search(
+            r'<section class="dl-settings-section" id="dl-settings-download">.*?</section>',
+            page, re.DOTALL,
+        ).group(0)
+        assert 'href="../../download/sample.html"' in section
+
+    def test_the_contents_page_has_no_tutorial_to_download(self, repo):
+        write(repo, "Some prose.\n")
+        b.build()
+        index = (repo / "site" / "index.html").read_text()
+        assert (
+            '<section class="dl-settings-section" id="dl-settings-download"></section>'
+            in index
+        )
+
+    def test_one_control_opens_it(self, repo):
+        write(repo, "Some prose.\n")
+        b.build()
+        page = built(repo)
+        assert 'id="dl-settings-toggle"' in page
+        assert 'aria-controls="dl-settings"' in page
+        # The two separate toggles it replaced.
+        assert "dl-texture-toggle" not in page
+        assert "dl-progress-toggle" not in page
+
+    def test_a_downloadable_copy_does_not_offer_its_own_download(self, repo_with_assets):
+        write(repo_with_assets, "Some prose.\n")
+        b.build(standalone=True)
+        page = (repo_with_assets / "site" / "download" / "sample.html").read_text()
+        assert (
+            '<section class="dl-settings-section" id="dl-settings-download"></section>'
+            in page
+        )
+        assert "download/sample.html" not in page
+
+    def test_a_downloadable_copy_keeps_the_rest_of_the_panel(self, repo_with_assets):
+        write(repo_with_assets, "```python exec\nid: c\n1 + 1\n```\n")
+        b.build(standalone=True)
+        page = (repo_with_assets / "site" / "download" / "sample.html").read_text()
+        assert 'id="dl-settings-toggle"' in page
+        assert 'id="dl-settings-work"' in page
+        assert 'id="dl-settings-texture"' in page

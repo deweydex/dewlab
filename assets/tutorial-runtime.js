@@ -1,7 +1,8 @@
 /* dewlab tutorial runtime.
  *
  * Owns three things on a generated tutorial page:
- *   1. the texture panel (theme/font/size/width/link colour -> CSS variables),
+ *   1. the settings panel — the reader's work, the download, and the reading
+ *      texture (theme/font/size/width/link colour -> CSS variables),
  *   2. the CodeMirror editors for `exec` cells, and read-only CodeMirror over
  *      the illustrative blocks build.py marked as `pre.dl-static`,
  *   3. booting Pyodide and running a cell's code.
@@ -62,6 +63,47 @@ function readManifest() {
   return m;
 }
 
+/* -------------------------------------------------------- settings panel */
+
+/* One panel holds everything a reader can change or take away, so this is the
+ * only open/close behaviour on the page. Escape and a click outside both close
+ * it: a panel that can only be dismissed by finding the same small button
+ * again is the kind of thing that gets left open. */
+function initSettingsPanel() {
+  const toggle = document.getElementById("dl-settings-toggle");
+  const panel = document.getElementById("dl-settings");
+  if (!toggle || !panel) return;
+
+  function setOpen(open) {
+    panel.toggleAttribute("hidden", !open);
+    toggle.setAttribute("aria-expanded", String(open));
+  }
+
+  toggle.addEventListener("click", () => setOpen(panel.hasAttribute("hidden")));
+
+  const close = document.getElementById("dl-settings-close");
+  if (close) close.addEventListener("click", () => { setOpen(false); toggle.focus(); });
+
+  document.addEventListener("keydown", (ev) => {
+    if (ev.key !== "Escape" || panel.hasAttribute("hidden")) return;
+    setOpen(false);
+    toggle.focus();
+  });
+
+  document.addEventListener("click", (ev) => {
+    if (panel.hasAttribute("hidden")) return;
+    if (panel.contains(ev.target) || toggle.contains(ev.target)) return;
+    setOpen(false);
+  });
+
+  /* A section with nothing in it is a heading over a gap. build.py leaves the
+   * download section empty on the contents page, which has nothing to
+   * download, and on a downloadable copy, which is already the file. */
+  for (const section of panel.querySelectorAll(".dl-settings-section")) {
+    if (!section.textContent.trim()) section.hidden = true;
+  }
+}
+
 /* --------------------------------------------------------- texture panel */
 
 function isDarkNow() {
@@ -103,9 +145,8 @@ function initTexture(onThemeChange) {
   const state = loadTexture();
   applyTexture(state);
 
-  const panel = document.getElementById("dl-texture");
-  const toggle = document.getElementById("dl-texture-toggle");
-  if (!panel || !toggle) return state;
+  const panel = document.getElementById("dl-settings-texture");
+  if (!panel) return state;
 
   const sizeEl = document.getElementById("dl-texture-size");
   const widthEl = document.getElementById("dl-texture-width");
@@ -129,12 +170,6 @@ function initTexture(onThemeChange) {
     sync();
     onThemeChange(isDarkNow());
   }
-
-  toggle.addEventListener("click", () => {
-    const open = panel.hasAttribute("hidden");
-    panel.toggleAttribute("hidden", !open);
-    toggle.setAttribute("aria-expanded", String(open));
-  });
 
   for (const group of panel.querySelectorAll(".dl-seg")) {
     group.addEventListener("click", (ev) => {
@@ -546,26 +581,18 @@ function showSaveState(savedAt, problem) {
     : "Saving as you go.";
 }
 
-function initProgressPanel() {
-  const toggle = document.getElementById("dl-progress-toggle");
-  const panel = document.getElementById("dl-progress");
-  if (!toggle || !panel) return;
+function initProgressSection() {
+  const section = document.getElementById("dl-settings-work");
+  if (!section) return;
 
   /* A page with no cells has nothing to save — the contents page, or a
    * tutorial that is all prose and mathematics. Offering to export a student's
    * work from a page where they cannot do any is a button that can only
-   * disappoint. */
+   * disappoint, so the whole section goes rather than sitting there empty. */
   if (cells.length === 0) {
-    toggle.remove();
-    panel.remove();
+    section.remove();
     return;
   }
-
-  toggle.addEventListener("click", () => {
-    const open = panel.hasAttribute("hidden");
-    panel.toggleAttribute("hidden", !open);
-    toggle.setAttribute("aria-expanded", String(open));
-  });
 
   document.getElementById("dl-progress-export").addEventListener("click", () => {
     saveNow();
@@ -620,7 +647,8 @@ initTexture((dark) => {
 });
 
 buildCells(currentManifest);
-initProgressPanel();
+initProgressSection();
+initSettingsPanel();
 announceRestore(restoreSaved());
 highlightIllustrativeCode();
 const mathsRendered = renderMaths(currentManifest);

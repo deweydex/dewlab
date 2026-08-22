@@ -40,10 +40,10 @@
   <header class="dl-masthead">
     <a class="dl-wordmark" href="{{ROOT_BASE}}index.html">dewlab</a>
     <span class="dl-crumbs">{{CRUMBS}}</span>
-    <button type="button" class="dl-texture-toggle" id="dl-progress-toggle"
-            aria-expanded="false" aria-controls="dl-progress">progress</button>
-    <button type="button" class="dl-texture-toggle" id="dl-texture-toggle"
-            aria-expanded="false" aria-controls="dl-texture">texture</button>
+    <button type="button" class="dl-settings-toggle" id="dl-settings-toggle"
+            aria-expanded="false" aria-controls="dl-settings">
+      <span class="dl-settings-icon" aria-hidden="true"></span>Settings
+    </button>
   </header>
 
   <!-- Phase 3 fills these. Empty until then. -->
@@ -59,62 +59,78 @@
 
 </div>
 
-<div class="dl-texture" id="dl-texture" hidden>
-  <h2>Texture</h2>
+<!-- One panel, three sections. Everything a reader can change about the page
+     or do with their work lives here, so there is one place to look rather
+     than a row of small buttons to learn. Sections that do not apply to a page
+     are removed at load: the contents page saves no work, and a downloadable
+     copy is already the file you are reading. -->
+<div class="dl-settings" id="dl-settings" role="dialog" aria-modal="false"
+     aria-labelledby="dl-settings-title" hidden>
+  <div class="dl-settings-head">
+    <h2 id="dl-settings-title">Settings</h2>
+    <button type="button" class="dl-settings-close" id="dl-settings-close"
+            aria-label="Close settings">&times;</button>
+  </div>
 
-  <div class="dl-texture-row">
-    <span>Theme</span>
-    <div class="dl-seg" data-texture="theme">
-      <button type="button" data-value="system">auto</button>
-      <button type="button" data-value="light">light</button>
-      <button type="button" data-value="dark">dark</button>
+  <section class="dl-settings-section" id="dl-settings-work">
+    <h3>Your work</h3>
+
+    <p class="dl-progress-state" id="dl-progress-state">Saving as you go.</p>
+
+    <p class="dl-panel-note">
+      Your work is kept in this browser, on this device. Nothing is sent
+      anywhere and nobody else can see it. Export a copy if you want to carry
+      it to another machine, or keep it after clearing your browser data.
+    </p>
+
+    <div class="dl-progress-actions">
+      <button type="button" class="dl-btn" id="dl-progress-export">Export a copy</button>
+      <button type="button" class="dl-btn" id="dl-progress-import">Load a copy</button>
+      <button type="button" class="dl-btn dl-progress-clear" id="dl-progress-clear">Start again</button>
     </div>
-  </div>
+    <input type="file" id="dl-progress-file" accept="application/json,.json" hidden>
+  </section>
 
-  <div class="dl-texture-row">
-    <span>Font</span>
-    <div class="dl-seg" data-texture="font">
-      <button type="button" data-value="serif">serif</button>
-      <button type="button" data-value="sans">sans</button>
-      <button type="button" data-value="mono">mono</button>
+  <section class="dl-settings-section" id="dl-settings-download">{{DOWNLOAD}}</section>
+
+  <section class="dl-settings-section" id="dl-settings-texture">
+    <h3>Texture</h3>
+
+    <div class="dl-texture-row">
+      <span>Theme</span>
+      <div class="dl-seg" data-texture="theme">
+        <button type="button" data-value="system">auto</button>
+        <button type="button" data-value="light">light</button>
+        <button type="button" data-value="dark">dark</button>
+      </div>
     </div>
-  </div>
 
-  <div class="dl-texture-row">
-    <span>Size</span>
-    <input type="range" id="dl-texture-size" min="15" max="24" step="1" aria-label="Text size">
-  </div>
+    <div class="dl-texture-row">
+      <span>Font</span>
+      <div class="dl-seg" data-texture="font">
+        <button type="button" data-value="serif">serif</button>
+        <button type="button" data-value="sans">sans</button>
+        <button type="button" data-value="mono">mono</button>
+      </div>
+    </div>
 
-  <div class="dl-texture-row">
-    <span>Width</span>
-    <input type="range" id="dl-texture-width" min="26" max="60" step="1" aria-label="Line width">
-  </div>
+    <div class="dl-texture-row">
+      <span>Size</span>
+      <input type="range" id="dl-texture-size" min="15" max="24" step="1" aria-label="Text size">
+    </div>
 
-  <div class="dl-texture-row">
-    <span>Links</span>
-    <input type="color" id="dl-texture-link" aria-label="Link colour">
-  </div>
+    <div class="dl-texture-row">
+      <span>Width</span>
+      <input type="range" id="dl-texture-width" min="26" max="60" step="1" aria-label="Line width">
+    </div>
 
-  <button type="button" class="dl-texture-reset" id="dl-texture-reset">reset to defaults</button>
-</div>
+    <div class="dl-texture-row">
+      <span>Links</span>
+      <input type="color" id="dl-texture-link" aria-label="Link colour">
+    </div>
 
-<div class="dl-texture" id="dl-progress" hidden>
-  <h2>Your work</h2>
-
-  <p class="dl-progress-state" id="dl-progress-state">Saving as you go.</p>
-
-  <p class="dl-progress-note">
-    Your work is kept in this browser, on this device. Nothing is sent anywhere
-    and nobody else can see it. Export a copy if you want to carry it to
-    another machine, or keep it after clearing your browser data.
-  </p>
-
-  <div class="dl-progress-actions">
-    <button type="button" class="dl-btn" id="dl-progress-export">Export a copy</button>
-    <button type="button" class="dl-btn" id="dl-progress-import">Load a copy</button>
-    <button type="button" class="dl-btn dl-progress-clear" id="dl-progress-clear">Start again</button>
-  </div>
-  <input type="file" id="dl-progress-file" accept="application/json,.json" hidden>
+    <button type="button" class="dl-texture-reset" id="dl-texture-reset">reset to defaults</button>
+  </section>
 </div>
 
 <!-- Cell source and page metadata, JSON-encoded so Python code containing

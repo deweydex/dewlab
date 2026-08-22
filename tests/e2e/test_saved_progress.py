@@ -175,7 +175,7 @@ class TestStartingAgain:
         page.wait_for_function("globalThis.dewlab.readSaved() !== null", timeout=10_000)
 
         page.on("dialog", lambda dialog: dialog.accept())
-        page.click("#dl-progress-toggle")
+        page.click("#dl-settings-toggle")
         page.click("#dl-progress-clear")
 
         assert "to be cleared" not in editor_text(page, "plain-python")
@@ -190,9 +190,11 @@ class TestAPageWithNothingToSave:
         tab = context.new_page()
         tab.goto(f"{base_url}/tutorials/fixtures/prose-only.html")
         tab.wait_for_function("globalThis.dewlab !== undefined", timeout=30_000)
-        assert tab.query_selector("#dl-progress-toggle") is None
-        # The texture panel still belongs: it is a reading surface either way.
-        assert tab.query_selector("#dl-texture-toggle") is not None
+        assert tab.query_selector("#dl-settings-work") is None
+        # The panel itself still belongs: a page with no cells is still a
+        # reading surface, and the texture section is what makes it one.
+        assert tab.query_selector("#dl-settings-toggle") is not None
+        assert tab.query_selector("#dl-settings-texture") is not None
         context.close()
 
     def test_it_never_starts_python(self, browser, base_url):

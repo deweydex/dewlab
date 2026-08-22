@@ -14,6 +14,9 @@ tests/test_tutorial_tools.py.
 from __future__ import annotations
 
 import json
+from pathlib import Path
+
+FIXTURE = Path(__file__).resolve().parent / "fixture" / "rendering-tour.md"
 
 
 def output_selector(cell_id: str) -> str:
@@ -64,9 +67,14 @@ def test_version_metadata_is_in_the_page(page):
 
 
 def test_every_exec_cell_became_an_editor_with_line_numbers(page):
+    """One editor per exec cell in the fixture, and no editor without a cell.
+
+    Counted against the fixture rather than a fixed number, so adding a cell to
+    rendering-tour.md does not fail a test that is not about counting."""
+    expected = FIXTURE.read_text().count("```python exec")
     cells = page.query_selector_all(".dl-cell")
-    assert len(cells) == 7
-    assert len(page.query_selector_all(".dl-cell .cm-editor")) == 7
+    assert len(cells) == expected
+    assert len(page.query_selector_all(".dl-cell .cm-editor")) == expected
     # Line numbers are one of the affordances DECISIONS.md calls free.
     assert page.query_selector(".dl-cell .cm-lineNumbers") is not None
 
@@ -104,6 +112,20 @@ def test_matplotlib_renders_a_figure_beneath_the_cell(page):
     assert 'src="data:image/png;base64,' in output
     height = page.eval_on_selector(
         f"{output_selector('matplotlib-figure')} img",
+        "el => el.naturalHeight",
+    )
+    assert height > 50, "the figure decoded to a real image"
+
+
+def test_plt_show_renders_the_figure_rather_than_warning(page):
+    """The warning a non-interactive backend raises is noise under a plot that
+    worked, and it arrives in the cell's error colour. It should not appear."""
+    output = run(page, "matplotlib-show")
+    assert "non-interactive" not in output
+    assert "UserWarning" not in output
+    assert "after the plot" in output
+    height = page.eval_on_selector(
+        f"{output_selector('matplotlib-show')} img",
         "el => el.naturalHeight",
     )
     assert height > 50, "the figure decoded to a real image"
@@ -211,12 +233,12 @@ def keyword_colour(page) -> str:
     )
 
 
-def test_the_texture_panel_switches_theme_and_the_editors_follow(page):
-    page.click("#dl-texture-toggle")
-    page.click("#dl-texture .dl-seg[data-texture=theme] button[data-value=light]")
+def test_the_settings_panel_switches_theme_and_the_editors_follow(page):
+    page.click("#dl-settings-toggle")
+    page.click("#dl-settings-texture .dl-seg[data-texture=theme] button[data-value=light]")
     light_keyword_colour = keyword_colour(page)
 
-    page.click("#dl-texture .dl-seg[data-texture=theme] button[data-value=dark]")
+    page.click("#dl-settings-texture .dl-seg[data-texture=theme] button[data-value=dark]")
     dark_keyword_colour = keyword_colour(page)
 
     assert page.get_attribute("html", "data-theme") == "dark"
@@ -224,12 +246,12 @@ def test_the_texture_panel_switches_theme_and_the_editors_follow(page):
     # shows through. What the theme switch changes is the syntax colours.
     assert dark_keyword_colour != light_keyword_colour
 
-    page.click("#dl-texture .dl-seg[data-texture=font] button[data-value=mono]")
+    page.click("#dl-settings-texture .dl-seg[data-texture=font] button[data-value=mono]")
     assert page.get_attribute("html", "data-font") == "mono"
 
 
 def test_texture_choices_survive_a_reload(page, base_url):
-    page.click("#dl-texture-toggle")
-    page.click("#dl-texture .dl-seg[data-texture=theme] button[data-value=dark]")
+    page.click("#dl-settings-toggle")
+    page.click("#dl-settings-texture .dl-seg[data-texture=theme] button[data-value=dark]")
     page.reload()
     page.wait_for_selector("html[data-theme=dark]", timeout=5_000)

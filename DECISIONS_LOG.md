@@ -566,3 +566,58 @@ third thing that can go stale. A build without the downloadable copies writes no
 archive and the contents page shows no link, which keeps a quick local preview
 quick.
 *Cost to change: small. It is a dozen lines around the files that already exist.*
+
+**5.1 — One Settings menu, not a row of small buttons.**
+The masthead grew a control per feature: "progress" when saving arrived, then
+"texture", with the download sitting in the navigation row because that is where
+there was space. Three unrelated things in two places, each too small to read as
+an invitation, and the navigation row paying for one of them.
+
+They are now one **Settings** button opening one panel with three sections —
+your work, this tutorial, texture. A student who finds Settings once has found
+all of it, and each section can grow without another button appearing beside the
+wordmark. The panel closes on Escape and on a click outside, because a panel
+that can only be dismissed by finding the same small button again is one that
+gets left open.
+*Cost to change: small. It is one panel and one controller.*
+
+**5.2 — The masthead follows the reader down the page.**
+A tutorial is long. With the header at the top only, the way back to the
+contents and the way into Settings were both a scroll to one end — and on a
+phone that is most of a page of scrolling to change the text size.
+
+The masthead is now sticky. Everything that has to clear it measures from
+`--dl-header-h` rather than guessing: the status line, the settings panel, and
+an anchored jump, which would otherwise land its heading underneath the header.
+The parts of the masthead are sized in rem and do not follow the reader's text
+size, so that one number holds at every width.
+*Cost to change: small, but change the variable rather than the three places
+that read it.*
+
+**5.3 — The navigation row is a grid, and the phone gets its own shape.**
+Previous / contents / next was a flex row with `margin-inline: auto` holding the
+middle link in place. That works until a title is long or an outer link is
+missing — the first and last tutorial of every series — and then the row goes
+lopsided or pushes a title off the screen.
+
+It is a three-column grid now, so the contents link stays centred whether or not
+the outer two exist, and each title wraps inside its own column. Under 34rem the
+grid becomes previous and next side by side with the contents link beneath, and
+the module name in the masthead gives up its space to the Settings button.
+*Cost to change: small.*
+
+**5.4 — `plt.show()` renders the figure instead of warning about a canvas.**
+Every textbook ends a plot with `plt.show()`, so students write it. Under the
+non-interactive backend dewlab uses, matplotlib's own show() has nothing to draw
+on and says so — a `UserWarning` about `FigureCanvasAgg`, arriving in the cell's
+error colour, under a plot that rendered perfectly well. For someone meeting
+matplotlib for the first time that is indistinguishable from having done
+something wrong.
+
+dewlab replaces `plt.show` with its own, which renders the open figures at the
+point of the call. A cell that draws, prints, then draws again now reads in the
+order it was written. The replacement is installed lazily, since pyplot may not
+be imported yet; a warning filter covers the one cell that imports pyplot and
+calls show() before that lands.
+*Cost to change: small, but any change should keep both halves — the
+replacement and the filter behind it.*

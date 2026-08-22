@@ -76,6 +76,19 @@ plt.plot(x, np.sin(x))
 plt.title("One period of sin(x)")
 ```
 
+Every textbook ends a plot with `plt.show()`, so students write it. It renders
+the figure rather than warning about a canvas it cannot open.
+
+```python exec
+id: matplotlib-show
+import matplotlib.pyplot as plt
+
+plt.plot([1, 4, 9, 16])
+plt.title("Squares")
+plt.show()
+print("after the plot")
+```
+
 ## When it goes wrong
 
 Errors are part of the lesson.
