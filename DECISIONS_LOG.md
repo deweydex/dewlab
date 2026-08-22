@@ -470,3 +470,42 @@ rendering bug for a noisy one, and the author's intent is not in doubt: a line
 beginning with a bullet under a sentence ending in a colon is a list.
 *Cost to change: small, and the tests pin the edge cases — a hyphenated
 sentence, a dash inside a fence, a list that already had its blank line.*
+
+## Phase 2 — Saved work
+
+**2.1 — Autosave is silent; the restore is not.**
+VERSIONING_AND_PROGRESS.md makes autosave the primary mechanism, so a student
+never has to think about saving. That means the moment they *do* need to think
+about it — coming back to a tutorial that changed underneath them — has to
+announce itself. Work is restored either way; the notice is visible,
+dismissable, and never blocks the page.
+
+The notice says three separate things when they apply: that the tutorial was
+updated, that some saved cells no longer exist here, and that a cell with a box
+or a button in it needs running again before it works. The third is the
+limitation the plan anticipated — a widget's saved HTML comes back, but the
+live Python object behind it does not.
+*Cost to change: small.*
+
+**2.2 — A saved cell with nowhere to go is reported, not discarded.**
+Restore matches on cell id, so reordering a tutorial or inserting a cell is
+harmless. Deleting one is not: whatever the student wrote there has no home.
+Silently dropping it is the easy path and the wrong one — they wrote it, and
+they should be told it is gone rather than quietly losing it.
+*Cost to change: trivial.*
+
+**2.3 — Saved output is written back as markup, and that is safe here.**
+Restoring means putting stored HTML back into the output area. Everything that
+lands there was escaped on the way in by `tutorial_tools` (0.15), the record
+never leaves the student's own browser, and the only person who can write to it
+is the person reading it. There is no second party for this to be dangerous to.
+*Cost to change: it should not change while the record stays device-local. If
+progress ever syncs between machines, this needs revisiting first.*
+
+**2.4 — Export is a file the student can keep; import replaces what is there.**
+The panel offers a copy to export, a copy to load, and starting again. Import
+overwrites rather than merging: merging two versions of a student's own work
+raises questions neither they nor the tool can answer, and the export exists to
+carry work between machines, not to combine it.
+*Cost to change: small, but merging is a design problem rather than an
+implementation one.*
