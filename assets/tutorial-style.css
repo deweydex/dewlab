@@ -473,6 +473,43 @@ p code, li code {
   cursor: pointer;
 }
 
+/* The progress panel reuses the texture panel's shell — same box, same
+   placement, same open/close behaviour — so there is one panel pattern on the
+   page rather than two that drift. Only its contents differ. */
+.dl-progress-state { margin: 0 0 0.6rem; font-size: 0.9rem; }
+.dl-progress-note {
+  margin: 0 0 0.9rem;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--dl-muted);
+}
+.dl-progress-actions { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.dl-progress-actions .dl-btn { flex: 1 1 auto; }
+.dl-progress-clear { color: var(--dl-error-fg); }
+
+/* The restore notice: visible, and deliberately not a blocker. */
+.dl-restored {
+  margin: 0 0 1.5rem;
+  padding: 0.7rem 0.9rem;
+  border-left: 3px solid var(--dl-orange);
+  background: var(--dl-cell-bg);
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+.dl-restored p { margin: 0 0 0.35rem; }
+.dl-restored p:last-child { margin-bottom: 0; }
+.dl-restored-dismiss {
+  margin-top: 0.5rem;
+  font: inherit;
+  font-size: 0.82rem;
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--dl-muted);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
 /* KaTeX display math may be wider than the measure. */
 .katex-display { overflow-x: auto; overflow-y: hidden; padding: 0.2rem 0; }
 

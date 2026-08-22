@@ -8,6 +8,11 @@ on:
   push:
     branches: [main]
   pull_request:
+  # Lets a human re-run the checks without inventing a commit to do it with.
+  # A push made by a GitHub App does not start a workflow, so a branch updated
+  # that way — a merge conflict resolved through the web interface, say — can
+  # otherwise sit with no checks at all on the commit that would actually land.
+  workflow_dispatch:
 
 jobs:
   unit:

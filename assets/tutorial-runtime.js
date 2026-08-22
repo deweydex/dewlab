@@ -39,6 +39,8 @@ const PYODIDE_BASE = new URL(
 const DEFAULT_PACKAGES = ["numpy", "pandas", "matplotlib"];
 
 const TEXTURE_KEY = "dewlab:texture";
+const PROGRESS_PREFIX = "dewlab:progress:";
+const AUTOSAVE_DELAY = 500;
 const TEXTURE_DEFAULTS = { theme: "system", font: "serif", size: 18, width: 34, link: "#d4692a" };
 
 /* -------------------------------------------------------------- manifest */
@@ -198,7 +200,10 @@ function buildCells(manifest) {
     const runBtn = host.querySelector(".dl-btn-run");
     const resetBtn = host.querySelector(".dl-btn-reset");
 
-    const editor = createCodeEditor(editorHost, spec.code || "", { dark });
+    const editor = createCodeEditor(editorHost, spec.code || "", {
+      dark,
+      onChange: () => scheduleSave(),
+    });
 
     const cell = {
       id: spec.id,
@@ -318,6 +323,9 @@ async function runCell(cell) {
      * so they appear in the order the code produced them. A student's error is
      * normal traffic and is rendered in the cell, not thrown up here. */
     await tools.run_cell(cell.id, cell.outputEl, cell.getCode());
+    /* Saved after the run rather than during it, so what is stored is the
+     * output the student actually ended up looking at. */
+    saveNow();
   } catch (err) {
     /* Boot failure. Already surfaced in the status bar; nothing useful to add
      * inside the cell. */
@@ -365,6 +373,207 @@ async function renderMaths(manifest) {
   }
 }
 
+
+/* ------------------------------------------------------------- saved work */
+
+/* Everything a student types is kept in their own browser, on their own
+ * device, and goes nowhere else. VERSIONING_AND_PROGRESS.md sets the rules:
+ * autosave is the real safety net, restore matches on cell id rather than
+ * position, and a tutorial edited since they last saved restores anyway — with
+ * a notice, never a block. Losing an afternoon's practice is an annoyance, not
+ * a lost grade, and the design is sized to that.
+ */
+
+let saveTimer = null;
+
+function progressKey() {
+  return PROGRESS_PREFIX + (currentManifest.slug || "unknown");
+}
+
+function readSaved() {
+  try {
+    const raw = localStorage.getItem(progressKey());
+    return raw ? JSON.parse(raw) : null;
+  } catch (err) {
+    /* Private browsing, blocked storage, or something that is not ours. */
+    return null;
+  }
+}
+
+function saveNow() {
+  clearTimeout(saveTimer);
+  saveTimer = null;
+  if (cells.length === 0) return;
+  const record = {
+    "tutorial-slug": currentManifest.slug,
+    "tutorial-version": currentManifest.version,
+    saved_at: new Date().toISOString(),
+    cells: cells.map((cell) => ({
+      task_id: cell.id,
+      student_code: cell.getCode(),
+      output_html: cell.outputEl.innerHTML,
+    })),
+  };
+  try {
+    localStorage.setItem(progressKey(), JSON.stringify(record));
+    showSaveState(record.saved_at);
+  } catch (err) {
+    /* Storage full or refused. Say so rather than pretending it saved. */
+    showSaveState(null, "Your browser would not let this page save your work.");
+  }
+}
+
+function scheduleSave() {
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(saveNow, AUTOSAVE_DELAY);
+}
+
+/* Put the work back, and report honestly on what could not be put back. */
+function restoreSaved() {
+  const record = readSaved();
+  if (!record || !Array.isArray(record.cells)) return null;
+
+  const byId = new Map(cells.map((cell) => [cell.id, cell]));
+  const restored = [];
+  const dropped = [];
+  let widgets = false;
+
+  for (const saved of record.cells) {
+    const cell = byId.get(saved.task_id);
+    if (!cell) {
+      /* The tutorial no longer has this cell. Say so rather than discarding it
+       * silently — a student who wrote something there deserves to know. */
+      dropped.push(saved.task_id);
+      continue;
+    }
+    if (typeof saved.student_code === "string") cell.editor.setValue(saved.student_code);
+    if (typeof saved.output_html === "string" && saved.output_html) {
+      cell.outputEl.innerHTML = saved.output_html;
+      if (saved.output_html.includes("dl-widget")) widgets = true;
+    }
+    restored.push(cell.id);
+  }
+
+  return {
+    restored,
+    dropped,
+    widgets,
+    savedAt: record.saved_at,
+    versionChanged: String(record["tutorial-version"]) !== String(currentManifest.version),
+  };
+}
+
+function announceRestore(summary) {
+  if (!summary || (summary.restored.length === 0 && summary.dropped.length === 0)) return;
+
+  const box = document.createElement("div");
+  box.className = "dl-restored";
+  box.setAttribute("role", "status");
+
+  const lines = [];
+  if (summary.versionChanged) {
+    lines.push(
+      "This tutorial has been updated since you last worked on it. Your work is " +
+        "back below, but some of it may not line up with the new version."
+    );
+  } else {
+    lines.push("Your work from last time is back below.");
+  }
+  if (summary.dropped.length) {
+    lines.push(
+      `${summary.dropped.length} saved ${summary.dropped.length === 1 ? "cell is" : "cells are"} ` +
+        "not in this tutorial any more, so there was nowhere to put it back."
+    );
+  }
+  if (summary.widgets) {
+    lines.push(
+      "Cells with a box or a button in them need running again before they work."
+    );
+  }
+
+  for (const text of lines) {
+    const p = document.createElement("p");
+    p.textContent = text;
+    box.appendChild(p);
+  }
+
+  const dismiss = document.createElement("button");
+  dismiss.type = "button";
+  dismiss.className = "dl-restored-dismiss";
+  dismiss.textContent = "Hide this";
+  dismiss.addEventListener("click", () => box.remove());
+  box.appendChild(dismiss);
+
+  const body = document.getElementById("dl-body");
+  body.insertBefore(box, body.firstChild);
+}
+
+function showSaveState(savedAt, problem) {
+  const el = document.getElementById("dl-progress-state");
+  if (!el) return;
+  if (problem) {
+    el.textContent = problem;
+    return;
+  }
+  el.textContent = savedAt
+    ? `Saved at ${new Date(savedAt).toLocaleTimeString()}. Saving as you go.`
+    : "Saving as you go.";
+}
+
+function initProgressPanel() {
+  const toggle = document.getElementById("dl-progress-toggle");
+  const panel = document.getElementById("dl-progress");
+  if (!toggle || !panel) return;
+
+  toggle.addEventListener("click", () => {
+    const open = panel.hasAttribute("hidden");
+    panel.toggleAttribute("hidden", !open);
+    toggle.setAttribute("aria-expanded", String(open));
+  });
+
+  document.getElementById("dl-progress-export").addEventListener("click", () => {
+    saveNow();
+    const record = readSaved() || {};
+    const blob = new Blob([JSON.stringify(record, null, 2)], { type: "application/json" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = `${currentManifest.slug || "dewlab"}-progress.json`;
+    link.click();
+    URL.revokeObjectURL(link.href);
+  });
+
+  const file = document.getElementById("dl-progress-file");
+  document.getElementById("dl-progress-import").addEventListener("click", () => file.click());
+  file.addEventListener("change", async () => {
+    const chosen = file.files && file.files[0];
+    if (!chosen) return;
+    try {
+      const record = JSON.parse(await chosen.text());
+      localStorage.setItem(progressKey(), JSON.stringify(record));
+      announceRestore(restoreSaved());
+      showSaveState(record.saved_at);
+    } catch (err) {
+      showSaveState(null, "That file could not be read as saved dewlab work.");
+    }
+    file.value = "";
+  });
+
+  document.getElementById("dl-progress-clear").addEventListener("click", () => {
+    if (!window.confirm("Clear your work on this tutorial and start again?")) return;
+    try {
+      localStorage.removeItem(progressKey());
+    } catch (err) {
+      /* Nothing to remove, or storage refused. Reset the page either way. */
+    }
+    for (const cell of cells) {
+      cell.editor.setValue(cell.starter);
+      cell.outputEl.replaceChildren();
+    }
+    for (const box of document.querySelectorAll(".dl-restored")) box.remove();
+    showSaveState(null);
+  });
+}
+
 /* ------------------------------------------------------------------ start */
 
 const currentManifest = readManifest();
@@ -375,6 +584,8 @@ initTexture((dark) => {
 });
 
 buildCells(currentManifest);
+initProgressPanel();
+announceRestore(restoreSaved());
 highlightIllustrativeCode();
 const mathsRendered = renderMaths(currentManifest);
 
@@ -392,6 +603,9 @@ if (cells.length === 0) {
 globalThis.dewlab = {
   version: PYODIDE_VERSION,
   cells,
+  saveNow,
+  readSaved,
+  progressKey,
   ready: () =>
     Promise.all([
       mathsRendered,
