@@ -2,6 +2,7 @@
 title: "Tutorial 8: Building Reusable Tools"
 slug: tutorial-08-building-reusable-tools
 module: mit-pdp-maths-prog-integration
+module_title: "Programming and Maths, Integrated"
 year: "2026-2027"
 series: maths-and-programming
 order: 8

@@ -2,6 +2,7 @@
 title: "Tutorial 2: Storing and Computing"
 slug: tutorial-02-storing-and-computing
 module: mit-pdp-maths-prog-integration
+module_title: "Programming and Maths, Integrated"
 year: "2026-2027"
 series: maths-and-programming
 order: 2

@@ -2,6 +2,7 @@
 title: "Tutorial 17: Bringing It All Together"
 slug: tutorial-17-bringing-it-all-together
 module: mit-pdp-maths-prog-integration
+module_title: "Programming and Maths, Integrated"
 year: "2026-2027"
 series: maths-and-programming
 order: 17

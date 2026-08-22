@@ -2,6 +2,7 @@
 title: "Tutorial 10: What Are the Chances?"
 slug: tutorial-10-what-are-the-chances
 module: mit-pdp-maths-prog-integration
+module_title: "Programming and Maths, Integrated"
 year: "2026-2027"
 series: maths-and-programming
 order: 10

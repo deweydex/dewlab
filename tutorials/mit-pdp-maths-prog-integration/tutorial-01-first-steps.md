@@ -2,6 +2,7 @@
 title: "Tutorial 1: First Steps"
 slug: tutorial-01-first-steps
 module: mit-pdp-maths-prog-integration
+module_title: "Programming and Maths, Integrated"
 year: "2026-2027"
 series: maths-and-programming
 order: 1
