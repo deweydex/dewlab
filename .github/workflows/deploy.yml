@@ -55,7 +55,14 @@ jobs:
           echo "built $count tutorial pages"
           test "$count" -gt 0 || { echo "no tutorials were built"; exit 1; }
 
+      # enablement turns Pages on for the repository if it is not on already,
+      # rather than failing and waiting for someone to find the setting. The
+      # first successful run of this workflow is therefore the moment the site
+      # becomes public — which is the point of the workflow, but worth knowing
+      # is what this line does.
       - uses: actions/configure-pages@v5
+        with:
+          enablement: true
 
       - uses: actions/upload-pages-artifact@v3
         with:
