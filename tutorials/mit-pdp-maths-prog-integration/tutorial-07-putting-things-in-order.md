@@ -2,6 +2,7 @@
 title: "Tutorial 7: Putting Things in Order"
 slug: tutorial-07-putting-things-in-order
 module: mit-pdp-maths-prog-integration
+module_title: "Programming and Maths, Integrated"
 year: "2026-2027"
 series: maths-and-programming
 order: 7

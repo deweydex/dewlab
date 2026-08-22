@@ -79,7 +79,7 @@ class TestTheHappyPath:
     def test_a_tutorial_builds_to_its_module_folder(self, repo):
         write(repo, "Some prose.\n")
         written = b.build()
-        assert written == [repo / "site" / "tutorials" / "computational-methods" / "sample.html"]
+        assert repo / "site" / "tutorials" / "computational-methods" / "sample.html" in written
 
     def test_every_shell_token_is_filled(self, repo):
         write(repo, "Some prose.\n")
@@ -423,3 +423,122 @@ class TestListsWrittenTightAgainstProse:
         write(repo, "A sentence.\n-5 degrees is cold.\n")
         b.build()
         assert "<li>" not in built(repo)
+
+
+class TestNavigation:
+    def series(self, repo, count: int = 3, series: str = "s", module: str = "computational-methods"):
+        for n in range(1, count + 1):
+            path = repo / "tutorials" / module / f"t{n}.md"
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(
+                f'---\ntitle: "Tutorial {n}"\nslug: t{n}\nmodule: {module}\n'
+                f'year: "2026-2027"\nseries: {series}\norder: {n}\nversion: 1\n---\n\nProse.\n'
+            )
+
+    def page(self, repo, slug, module="computational-methods"):
+        return (repo / "site" / "tutorials" / module / f"{slug}.html").read_text()
+
+    def test_a_middle_tutorial_links_both_ways(self, repo):
+        self.series(repo)
+        b.build()
+        page = self.page(repo, "t2")
+        assert '<a class="dl-nav-prev" href="t1.html">Tutorial 1</a>' in page
+        assert '<a class="dl-nav-next" href="t3.html">Tutorial 3</a>' in page
+
+    def test_the_first_has_no_previous_and_the_last_no_next(self, repo):
+        self.series(repo)
+        b.build()
+        assert "dl-nav-prev" not in self.page(repo, "t1")
+        assert "dl-nav-next" in self.page(repo, "t1")
+        assert "dl-nav-next" not in self.page(repo, "t3")
+        assert "dl-nav-prev" in self.page(repo, "t3")
+
+    def test_every_page_offers_the_way_back_to_the_contents(self, repo):
+        self.series(repo)
+        b.build()
+        for slug in ("t1", "t2", "t3"):
+            assert '<a class="dl-nav-up" href="../../index.html">' in self.page(repo, slug)
+
+    def test_order_decides_the_sequence_not_the_filename(self, repo):
+        self.series(repo)
+        # reverse the orders: t1 becomes last, t3 first
+        for n, order in ((1, 3), (3, 1)):
+            path = repo / "tutorials" / "computational-methods" / f"t{n}.md"
+            path.write_text(path.read_text().replace(f"order: {n}", f"order: {order}"))
+        b.build()
+        assert '<a class="dl-nav-next" href="t2.html">' in self.page(repo, "t3")
+        assert "dl-nav-next" not in self.page(repo, "t1")
+
+    def test_two_series_do_not_link_into_each_other(self, repo):
+        self.series(repo, count=2, series="one")
+        path = repo / "tutorials" / "computational-methods" / "other.md"
+        path.write_text(
+            '---\ntitle: "Other"\nslug: other\nmodule: computational-methods\n'
+            'year: "2026-2027"\nseries: two\norder: 1\nversion: 1\n---\n\nProse.\n'
+        )
+        b.build()
+        assert "dl-nav-prev" not in self.page(repo, "other")
+        assert "dl-nav-next" not in self.page(repo, "other")
+
+    def test_two_tutorials_in_the_same_position_still_build(self, repo, capsys):
+        """Ambiguous ordering is worth saying, not worth stopping for."""
+        self.series(repo, count=2)
+        path = repo / "tutorials" / "computational-methods" / "t2.md"
+        path.write_text(path.read_text().replace("order: 2", "order: 1"))
+        b.build()
+        assert "both order 1" in capsys.readouterr().err
+        assert '<a class="dl-nav-next" href="t2.html">' in self.page(repo, "t1")
+
+    def test_a_non_numeric_order_fails_the_build(self, repo):
+        self.series(repo, count=1)
+        path = repo / "tutorials" / "computational-methods" / "t1.md"
+        path.write_text(path.read_text().replace("order: 1", "order: first"))
+        with pytest.raises(b.BuildError, match="whole number"):
+            b.build()
+
+
+class TestTheContentsPage:
+    def test_it_is_written_at_the_site_root(self, repo):
+        write(repo, "Prose.\n")
+        b.build()
+        assert (repo / "site" / "index.html").is_file()
+
+    def test_it_lists_every_tutorial_in_order(self, repo):
+        for n, order in ((1, 2), (2, 1)):
+            path = repo / "tutorials" / "computational-methods" / f"t{n}.md"
+            path.write_text(
+                f'---\ntitle: "Tutorial {n}"\nslug: t{n}\nmodule: computational-methods\n'
+                f'year: "2026-2027"\nseries: s\norder: {order}\nversion: 1\n---\n\nProse.\n'
+            )
+        b.build()
+        index = (repo / "site" / "index.html").read_text()
+        assert index.index("Tutorial 2") < index.index("Tutorial 1")
+
+    def test_the_links_reach_the_pages_they_name(self, repo):
+        write(repo, "Prose.\n")
+        b.build()
+        index = (repo / "site" / "index.html").read_text()
+        assert 'href="tutorials/computational-methods/sample.html"' in index
+        assert (repo / "site" / "tutorials" / "computational-methods" / "sample.html").is_file()
+
+    def test_it_needs_no_python_runtime(self, repo):
+        write(repo, "Prose.\n")
+        b.build()
+        assert manifest((repo / "site" / "index.html").read_text())["cells"] == []
+
+    def test_a_module_title_is_shown_where_one_is_given(self, repo):
+        path = write(repo, "Prose.\n")
+        path.write_text(path.read_text().replace(
+            "module: computational-methods",
+            'module: computational-methods\nmodule_title: "Computational Methods"'))
+        b.build()
+        assert "<h2>Computational Methods</h2>" in (repo / "site" / "index.html").read_text()
+
+    def test_without_one_the_folder_name_is_shown(self, repo):
+        write(repo, "Prose.\n")
+        b.build()
+        assert "<h2>computational-methods</h2>" in (repo / "site" / "index.html").read_text()
+
+    def test_no_tutorials_means_no_index(self, repo):
+        assert b.build() == []
+        assert not (repo / "site" / "index.html").exists()

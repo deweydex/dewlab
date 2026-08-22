@@ -1,0 +1,23 @@
+---
+title: "Prose Only"
+slug: prose-only
+module: fixtures
+year: "2026-2027"
+series: e2e
+order: 2
+version: 1
+---
+
+<!--
+A test fixture. A tutorial with no runnable cells is an ordinary tutorial, and
+two things follow from that which are easy to get wrong: it must never start
+the Python runtime, and it must not offer to save work that cannot exist.
+-->
+
+## Reading, and nothing to run
+
+This page has prose and mathematics and no code at all. It should open
+immediately, because there is nothing here that needs Python.
+
+The quadratic formula, $x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$, is here to
+prove that mathematics still renders without a runtime behind it.

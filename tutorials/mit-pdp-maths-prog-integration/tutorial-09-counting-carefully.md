@@ -2,6 +2,7 @@
 title: "Tutorial 9: Counting Carefully"
 slug: tutorial-09-counting-carefully
 module: mit-pdp-maths-prog-integration
+module_title: "Programming and Maths, Integrated"
 year: "2026-2027"
 series: maths-and-programming
 order: 9

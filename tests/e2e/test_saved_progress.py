@@ -180,3 +180,36 @@ class TestStartingAgain:
 
         assert "to be cleared" not in editor_text(page, "plain-python")
         assert page.evaluate("globalThis.dewlab.readSaved()") is None
+
+
+class TestAPageWithNothingToSave:
+    """A prose-only tutorial, and the contents page, have no cells at all."""
+
+    def test_it_does_not_offer_to_save_work_that_cannot_exist(self, browser, base_url):
+        context = browser.new_context()
+        tab = context.new_page()
+        tab.goto(f"{base_url}/tutorials/fixtures/prose-only.html")
+        tab.wait_for_function("globalThis.dewlab !== undefined", timeout=30_000)
+        assert tab.query_selector("#dl-progress-toggle") is None
+        # The texture panel still belongs: it is a reading surface either way.
+        assert tab.query_selector("#dl-texture-toggle") is not None
+        context.close()
+
+    def test_it_never_starts_python(self, browser, base_url):
+        context = browser.new_context()
+        tab = context.new_page()
+        requested = []
+        tab.on("request", lambda r: requested.append(r.url))
+        tab.goto(f"{base_url}/tutorials/fixtures/prose-only.html")
+        tab.wait_for_function("globalThis.dewlab !== undefined", timeout=30_000)
+        tab.wait_for_timeout(1500)
+        assert not any("pyodide" in url for url in requested)
+        context.close()
+
+    def test_its_mathematics_still_renders(self, browser, base_url):
+        context = browser.new_context()
+        tab = context.new_page()
+        tab.goto(f"{base_url}/tutorials/fixtures/prose-only.html")
+        tab.wait_for_selector(".dl-math .katex", timeout=15_000)
+        assert tab.eval_on_selector_all(".dl-math .katex", "e => e.length") >= 1
+        context.close()

@@ -2,6 +2,7 @@
 title: "Tutorial 3: Making Decisions"
 slug: tutorial-03-making-decisions
 module: mit-pdp-maths-prog-integration
+module_title: "Programming and Maths, Integrated"
 year: "2026-2027"
 series: maths-and-programming
 order: 3

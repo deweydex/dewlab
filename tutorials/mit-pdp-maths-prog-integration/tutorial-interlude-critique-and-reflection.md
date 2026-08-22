@@ -2,6 +2,7 @@
 title: "Interlude: Looking Back Before Moving Forward"
 slug: tutorial-interlude-critique-and-reflection
 module: mit-pdp-maths-prog-integration
+module_title: "Programming and Maths, Integrated"
 year: "2026-2027"
 series: maths-and-programming
 order: 18

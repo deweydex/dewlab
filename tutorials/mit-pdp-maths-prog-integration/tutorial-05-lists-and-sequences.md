@@ -2,6 +2,7 @@
 title: "Tutorial 5: Lists and Sequences"
 slug: tutorial-05-lists-and-sequences
 module: mit-pdp-maths-prog-integration
+module_title: "Programming and Maths, Integrated"
 year: "2026-2027"
 series: maths-and-programming
 order: 5

@@ -122,6 +122,32 @@ class Tutorial:
         return OUT / "tutorials" / self.module / f"{self.slug}.html"
 
     @property
+    def module_title(self) -> str:
+        """What a student sees. The slug is a folder name, not a course name.
+
+        Optional, and any tutorial in the module may carry it — the first one
+        that does, wins. Without it the slug is shown, which is honest but
+        rarely what you would put in front of a class.
+        """
+        return str(self.meta.get("module_title") or self.module)
+
+    @property
+    def series(self) -> str:
+        return str(self.meta["series"])
+
+    @property
+    def title(self) -> str:
+        return str(self.meta["title"])
+
+    @property
+    def order(self) -> int:
+        try:
+            return int(self.meta["order"])
+        except (TypeError, ValueError):
+            fail(self.path, f"order must be a whole number, not {self.meta['order']!r}")
+            raise  # unreachable; fail() always raises
+
+    @property
     def depth(self) -> int:
         """How many directories deep the built page sits under site/."""
         return len(self.out_path.relative_to(OUT).parts) - 1
@@ -319,6 +345,92 @@ def place_blocks(
     return page_html
 
 
+# -------------------------------------------------------------- navigation
+
+
+def series_of(tutorials: list[Tutorial]) -> dict[tuple[str, str], list[Tutorial]]:
+    """Group tutorials into the series a student actually works through.
+
+    A series is per module: two modules may both have a series called
+    `fundamentals` without being the same sequence.
+    """
+    groups: dict[tuple[str, str], list[Tutorial]] = {}
+    for tutorial in tutorials:
+        groups.setdefault((tutorial.module, tutorial.series), []).append(tutorial)
+    for members in groups.values():
+        # Title breaks a tie, so the sequence is at least stable and repeatable.
+        # Two tutorials sharing a position is worth mentioning but not worth
+        # stopping for: the pages still build and still link to each other, the
+        # author just did not choose which came first. That is a different kind
+        # of mistake from a dead link, and deserves a different response.
+        members.sort(key=lambda t: (t.order, t.title))
+        seen: dict[int, Tutorial] = {}
+        for member in members:
+            if member.order in seen:
+                print(
+                    f"note: {member.path.relative_to(ROOT)} and "
+                    f"{seen[member.order].path.name} are both order {member.order}; "
+                    "ordering them by title",
+                    file=sys.stderr,
+                )
+            seen.setdefault(member.order, member)
+    return groups
+
+
+def link_between(here: Tutorial, there: Tutorial) -> str:
+    return os.path.relpath(there.out_path, here.out_path.parent)
+
+
+def nav_for(tutorial: Tutorial, members: list[Tutorial]) -> str:
+    """Previous and next within the series, and the way back to the contents."""
+    index = members.index(tutorial)
+    parts = []
+    if index > 0:
+        previous = members[index - 1]
+        parts.append(
+            f'<a class="dl-nav-prev" href="{link_between(tutorial, previous)}">'
+            f"{html.escape(previous.title)}</a>"
+        )
+    up = "../" * tutorial.depth
+    parts.append(f'<a class="dl-nav-up" href="{up}index.html">All tutorials</a>')
+    if index < len(members) - 1:
+        following = members[index + 1]
+        parts.append(
+            f'<a class="dl-nav-next" href="{link_between(tutorial, following)}">'
+            f"{html.escape(following.title)}</a>"
+        )
+    return "".join(parts)
+
+
+def render_index(groups: dict[tuple[str, str], list[Tutorial]]) -> str:
+    """The contents page: every module, every series, in order."""
+    if not groups:
+        return "<p>No tutorials have been written yet.</p>"
+
+    names = {}
+    for (module, _), members in groups.items():
+        for member in members:
+            if member.meta.get("module_title"):
+                names.setdefault(module, member.module_title)
+
+    out = ["<h1>Tutorials</h1>"]
+    for module in sorted({module for module, _ in groups}):
+        out.append(f"<h2>{html.escape(names.get(module, module))}</h2>")
+        for (owner, series), members in sorted(groups.items()):
+            if owner != module:
+                continue
+            if len({s for m, s in groups if m == module}) > 1:
+                out.append(f'<h3>{html.escape(series)}</h3>')
+            out.append('<ol class="dl-contents">')
+            for member in members:
+                href = member.out_path.relative_to(OUT).as_posix()
+                out.append(
+                    f'<li><a href="{href}">{html.escape(member.title)}</a></li>'
+                )
+            out.append("</ol>")
+    return "\n".join(out)
+
+
 # ------------------------------------------------------------------- checks
 
 
@@ -369,7 +481,7 @@ def load(path: Path) -> Tutorial:
     )
 
 
-def write(tutorial: Tutorial, shell: str, body_html: str) -> Path:
+def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "") -> Path:
     up = "../" * tutorial.depth
     manifest: dict[str, object] = {
         "slug": tutorial.slug,
@@ -395,7 +507,8 @@ def write(tutorial: Tutorial, shell: str, body_html: str) -> Path:
         "{{SERIES}}": html.escape(str(tutorial.meta["series"]), quote=True),
         "{{ASSET_BASE}}": f"{up}assets/",
         "{{ROOT_BASE}}": up,
-        "{{NAV_PREV_NEXT}}": "",  # Phase 3 fills this.
+        "{{CRUMBS}}": html.escape(f"{tutorial.module_title} · {tutorial.meta['year']}"),
+        "{{NAV_PREV_NEXT}}": nav,
         "{{BODY}}": body_html,
         # `<` escaped so nothing in a cell can close the surrounding <script>.
         "{{MANIFEST_JSON}}": json.dumps(manifest).replace("<", "\\u003c"),
@@ -410,6 +523,36 @@ def write(tutorial: Tutorial, shell: str, body_html: str) -> Path:
     tutorial.out_path.parent.mkdir(parents=True, exist_ok=True)
     tutorial.out_path.write_text(page)
     return tutorial.out_path
+
+
+def write_index(shell: str, groups: dict[tuple[str, str], list[Tutorial]]) -> Path:
+    """The contents page at the site root, which every page's masthead links to."""
+    manifest = {"slug": "index", "version": 1, "assetBase": "assets/",
+                "dataBase": "data/", "cells": []}
+    tokens = {
+        "{{TITLE}}": "Tutorials",
+        "{{VERSION}}": "1",
+        "{{SLUG}}": "index",
+        "{{MODULE}}": "",
+        "{{YEAR}}": "",
+        "{{SERIES}}": "",
+        "{{CRUMBS}}": "contents",
+        "{{ASSET_BASE}}": "assets/",
+        "{{ROOT_BASE}}": "",
+        "{{NAV_PREV_NEXT}}": "",
+        "{{BODY}}": render_index(groups),
+        "{{MANIFEST_JSON}}": json.dumps(manifest).replace("<", "\\u003c"),
+    }
+    page = shell
+    for token, value in tokens.items():
+        page = page.replace(token, value)
+    if "{{" in page:
+        leftover = sorted({p.split("}}")[0] + "}}" for p in page.split("{{")[1:]})
+        raise BuildError(f"shell template has tokens the index does not fill: {leftover}")
+    OUT.mkdir(parents=True, exist_ok=True)
+    target = OUT / "index.html"
+    target.write_text(page)
+    return target
 
 
 def build(clean: bool = False) -> list[Path]:
@@ -429,10 +572,17 @@ def build(clean: bool = False) -> list[Path]:
         registry[tutorial.slug] = tutorial
 
     shell = SHELL.read_text()
+    groups = series_of(tutorials)
     written: list[Path] = []
     for tutorial in tutorials:
         check_alt_text(tutorial)
-        written.append(write(tutorial, shell, resolve_links(tutorial, registry)))
+        members = groups[(tutorial.module, tutorial.series)]
+        written.append(
+            write(tutorial, shell, resolve_links(tutorial, registry), nav_for(tutorial, members))
+        )
+
+    if tutorials:
+        written.append(write_index(shell, groups))
 
     OUT.mkdir(parents=True, exist_ok=True)
     shutil.rmtree(OUT / "assets", ignore_errors=True)

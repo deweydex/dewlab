@@ -2,6 +2,7 @@
 title: "Tutorial 15: Cracking Equations"
 slug: tutorial-15-cracking-equations
 module: mit-pdp-maths-prog-integration
+module_title: "Programming and Maths, Integrated"
 year: "2026-2027"
 series: maths-and-programming
 order: 15

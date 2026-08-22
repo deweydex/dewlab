@@ -525,6 +525,16 @@ function initProgressPanel() {
   const panel = document.getElementById("dl-progress");
   if (!toggle || !panel) return;
 
+  /* A page with no cells has nothing to save — the contents page, or a
+   * tutorial that is all prose and mathematics. Offering to export a student's
+   * work from a page where they cannot do any is a button that can only
+   * disappoint. */
+  if (cells.length === 0) {
+    toggle.remove();
+    panel.remove();
+    return;
+  }
+
   toggle.addEventListener("click", () => {
     const open = panel.hasAttribute("hidden");
     panel.toggleAttribute("hidden", !open);

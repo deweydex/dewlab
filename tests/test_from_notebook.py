@@ -237,8 +237,10 @@ class TestTheOutputActuallyBuilds:
             monkeypatch.setattr(b, name, value)
 
         written = b.build()
-        assert len(written) == 1
-        page = written[0].read_text()
+        # The tutorial, plus the contents page the build always writes.
+        pages = [path for path in written if path.name != "index.html"]
+        assert len(pages) == 1
+        page = pages[0].read_text()
         assert "{{" not in page
         assert 'data-cell-id="making-decisions-1"' in page
         assert 'data-cell-id="a-second-section-1"' in page

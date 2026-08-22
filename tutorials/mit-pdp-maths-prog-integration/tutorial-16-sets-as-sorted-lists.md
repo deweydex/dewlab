@@ -2,6 +2,7 @@
 title: "Tutorial 16: Sets as Sorted Lists"
 slug: tutorial-16-sets-as-sorted-lists
 module: mit-pdp-maths-prog-integration
+module_title: "Programming and Maths, Integrated"
 year: "2026-2027"
 series: maths-and-programming
 order: 16

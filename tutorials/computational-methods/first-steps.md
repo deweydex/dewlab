@@ -2,6 +2,7 @@
 title: "First Steps"
 slug: first-steps
 module: computational-methods
+module_title: "Computational Methods"
 year: "2026-2027"
 series: python-fundamentals
 order: 1

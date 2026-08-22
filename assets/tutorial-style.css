@@ -473,6 +473,37 @@ p code, li code {
   cursor: pointer;
 }
 
+/* ------------------------------------------------------------ navigation */
+
+/* Previous, contents, next — in that order, so the row reads the way the
+   series does. The middle link is always present; the outer two are not, and
+   the layout has to look deliberate either way rather than lopsided. */
+.dl-nav {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  font-size: 0.88rem;
+}
+.dl-nav:empty { display: none; }
+.dl-nav-top { margin-bottom: 2rem; }
+.dl-nav-bottom { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--dl-rule); }
+.dl-nav a { text-decoration: none; }
+.dl-nav a:hover { text-decoration: underline; }
+.dl-nav-prev::before { content: "← "; color: var(--dl-muted); }
+.dl-nav-next::after { content: " →"; color: var(--dl-muted); }
+/* The contents link sits between them wherever the other two happen to be. */
+.dl-nav-up { margin-inline: auto; color: var(--dl-muted); }
+.dl-nav-prev { order: 1; }
+.dl-nav-up { order: 2; }
+.dl-nav-next { order: 3; }
+
+/* The contents page. Numbered because a series has an order and the numbers
+   are part of the information, not decoration. */
+.dl-contents { margin: 0 0 2rem; padding-left: 1.6rem; }
+.dl-contents li { margin: 0.35rem 0; }
+.dl-contents a { text-decoration: none; }
+.dl-contents a:hover { text-decoration: underline; }
+
 /* The progress panel reuses the texture panel's shell — same box, same
    placement, same open/close behaviour — so there is one panel pattern on the
    page rather than two that drift. Only its contents differ. */
