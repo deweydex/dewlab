@@ -25,6 +25,7 @@ from __future__ import annotations
 
 import argparse
 import base64
+import hashlib
 import html
 import json
 import os
@@ -804,12 +805,49 @@ def load(path: Path) -> Tutorial:
     )
 
 
+# ------------------------------------------------------------ asset versions
+
+_ASSET_VERSIONS: dict[str, str] = {}
+
+
+def asset_version(name: str) -> str:
+    """A short hash of an asset's contents, for the end of its URL.
+
+    Without one, a browser that has the site cached keeps serving the stylesheet
+    and runtime it downloaded the first time, however many times we publish. The
+    page is new and the CSS is old, which does not look like a caching problem —
+    it looks like the page is broken, and only for the people who have been here
+    before. A student on a school machine is exactly that person.
+
+    Hashed per file rather than one version for everything, so editing the
+    stylesheet does not also force a fresh download of the 266 KB maths bundle.
+    """
+    # Keyed by the full path, not the name: the tests build several repositories
+    # in one process, and a cache keyed by "tutorial-style.css" alone would hand
+    # the second one the first one's hash.
+    path = ASSETS / name
+    key = str(path)
+    if key not in _ASSET_VERSIONS:
+        _ASSET_VERSIONS[key] = (
+            hashlib.sha256(path.read_bytes()).hexdigest()[:8] if path.is_file()
+            else "missing"
+        )
+    return _ASSET_VERSIONS[key]
+
+
+def versioned(base: str, name: str) -> str:
+    return f"{base}{name}?v={asset_version(name)}"
+
+
 def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "") -> Path:
     up = "../" * tutorial.depth
     manifest: dict[str, object] = {
         "slug": tutorial.slug,
         "version": tutorial.meta["version"],
         "assetBase": f"{up}assets/",
+        # The runtime fetches these itself, so they need their own versions —
+        # a page can only cache-bust what its own markup names.
+        "assetVersions": {"tutorial_tools.py": asset_version("tutorial_tools.py")},
         "dataBase": f"{up}data/",
         "cells": [{"id": c.id, "hint": c.hint, "code": c.code} for c in tutorial.cells],
     }
@@ -829,6 +867,9 @@ def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "") -> Path
         "{{YEAR}}": html.escape(str(tutorial.meta["year"]), quote=True),
         "{{SERIES}}": html.escape(str(tutorial.meta["series"]), quote=True),
         "{{ASSET_BASE}}": f"{up}assets/",
+        "{{STYLE_URL}}": versioned(f"{up}assets/", "tutorial-style.css"),
+        "{{KATEX_CSS_URL}}": versioned(f"{up}assets/", "vendor/katex.min.css"),
+        "{{RUNTIME_URL}}": versioned(f"{up}assets/", "tutorial-runtime.js"),
         "{{ROOT_BASE}}": up,
         "{{CRUMBS}}": html.escape(f"{tutorial.module_title} · {tutorial.meta['year']}"),
         "{{NAV_PREV_NEXT}}": nav,
@@ -879,6 +920,22 @@ def inline_katex_css() -> str:
     return FONT_URL_RE.sub(one, css)
 
 
+def replace_once(page: str, needle: str, replacement: str, what: str) -> str:
+    """Substitute, and fail if there was nothing to substitute.
+
+    `str.replace` with no match is a silent no-op, which is how a downloadable
+    copy can come out missing its stylesheet and look fine to the build. Every
+    replacement here is against markup this same file wrote moments earlier, so
+    a miss means the two have drifted apart and the export is wrong.
+    """
+    if needle not in page:
+        raise BuildError(
+            f"the downloadable copy could not find {what} in the built page. "
+            "shell.html and build.py have drifted apart."
+        )
+    return page.replace(needle, replacement, 1)
+
+
 def standalone_html(tutorial: Tutorial, page: str) -> str:
     """Turn a built page into one file that works from a student's disk."""
     # The same prefix build.py wrote into the page's own asset references.
@@ -888,19 +945,27 @@ def standalone_html(tutorial: Tutorial, page: str) -> str:
     tools = (ASSETS / "tutorial_tools.py").read_text()
 
     # The stylesheets, inlined. KaTeX's only travels with a page that has maths.
-    page = page.replace(
-        f'<link rel="stylesheet" href="{up}vendor/katex.min.css">',
+    # Matched on the versioned URLs the page actually carries: a file inlined
+    # into the page has no URL to cache, so the version simply goes with it.
+    page = replace_once(
+        page,
+        f'<link rel="stylesheet" href="{versioned(up, "vendor/katex.min.css")}">',
         f"<style>{inline_katex_css()}</style>" if tutorial.has_math else "",
+        "the maths stylesheet",
     )
-    page = page.replace(
-        f'<link rel="stylesheet" href="{up}tutorial-style.css">',
+    page = replace_once(
+        page,
+        f'<link rel="stylesheet" href="{versioned(up, "tutorial-style.css")}">',
         f"<style>{style}</style>",
+        "the stylesheet",
     )
 
     # The runtime, as a classic script, behind Pyodide's classic loader.
-    page = page.replace(
-        f'<script type="module" src="{up}tutorial-runtime.js"></script>',
+    page = replace_once(
+        page,
+        f'<script type="module" src="{versioned(up, "tutorial-runtime.js")}"></script>',
         PYODIDE_CLASSIC + "\n<script>" + bundle + "</script>",
+        "the runtime",
     )
 
     # The Python tools, which cannot be fetched from a file.
@@ -988,7 +1053,7 @@ def write_index(
 ) -> Path:
     """The contents page at the site root, which every page's masthead links to."""
     manifest = {"slug": "index", "version": 1, "assetBase": "assets/",
-                "dataBase": "data/", "cells": []}
+                "dataBase": "data/", "cells": [], "assetVersions": {}}
     tokens = {
         "{{TITLE}}": "Tutorials",
         "{{VERSION}}": "1",
@@ -998,6 +1063,9 @@ def write_index(
         "{{SERIES}}": "",
         "{{CRUMBS}}": "contents",
         "{{ASSET_BASE}}": "assets/",
+        "{{STYLE_URL}}": versioned("assets/", "tutorial-style.css"),
+        "{{KATEX_CSS_URL}}": versioned("assets/", "vendor/katex.min.css"),
+        "{{RUNTIME_URL}}": versioned("assets/", "tutorial-runtime.js"),
         "{{ROOT_BASE}}": "",
         "{{NAV_PREV_NEXT}}": "",
         # The contents page is not a tutorial and has nothing to download; the
