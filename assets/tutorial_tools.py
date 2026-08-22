@@ -6,17 +6,17 @@ This is the module a student's cell code sees. It does two jobs:
     value of the last expression, DataFrames, matplotlib figures, tracebacks —
     into that cell's own output area, in the order the code produced it;
 
-  * it provides the widget bridge named in DECISIONS.md: `text_input`,
-    `dropdown`, `button`, `show`, `show_table`, and `check`.
+  * it provides the small bridge a cell uses to put something on the page and
+    read something back: `text_input`, `dropdown`, `button`, `show`,
+    `show_table`, and `check`.
 
-Rebuilt from specification, not ported. The exam tool's `exam_tools.py` no
-longer exists, and DECISIONS.md records only the function names plus the one
-signature `check(actual, expected)`. Everything else about the widget API here
-is a reconstruction; every such choice is written down in DECISIONS_LOG.md
-rather than left implicit in the code.
+Built from the specification in planning/DECISIONS.md, which names those six
+functions and pins down one signature, `check(actual, expected)`. Everything
+else about how they behave was designed rather than looked up, and every such
+choice is written down in DECISIONS_LOG.md rather than left implicit here.
 
-Nothing exam-shaped survives: no task scoring, no integrity banner, no
-submission. `check` is formative feedback and records nothing anywhere.
+Nothing about this is assessment-shaped: no scoring, no submission, no record
+kept anywhere. `check` tells a student whether they got it, and that is all.
 
 The module imports and works under plain CPython, with the DOM replaced by a
 recording stub. That is what lets the rendering rules be unit-tested without a

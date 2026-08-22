@@ -1,27 +1,82 @@
-# Build Plan
+# Build plan
 
-Five phases, each depending on the one before it. Nothing in a later phase should require reopening an earlier one.
+Five phases, in dependency order. Each rests on the one before it, and nothing
+in a later phase should send you back to reopen an earlier one.
 
-## Phase 0 — Foundations
+The order is not arbitrary. It puts the thing most likely to be wrong first —
+whether Python actually runs acceptably in a browser — and the thing easiest to
+change last. If the first phase had failed, nothing after it would have been
+worth building.
 
-Stand up the repo skeleton described in REPO_AND_EDITOR.md, including the per-module subfolder structure under `/tutorials/`. Build the shell HTML template every generated tutorial will use, referencing the shared `/assets/` CSS and JS rather than inlining them. Confirm `pyodide.loadPackage(['numpy', 'pandas', 'matplotlib'])` loads cleanly against that shell with no micropip step involved, and that a plain `exec` cell running numpy/pandas/matplotlib code renders its output beneath it correctly — worth checking against whatever Pyodide version this ends up targeting, since package availability shifts between releases. Build tutorial_tools.py's DOM-bridge widget functions (text_input, dropdown, button, show, show_table, check) against the specification in DECISIONS.md after that core execution path is confirmed, not before — the widget bridge is a bonus layer, not a precondition for the plain execution path working.
+---
 
-## Phase 1 — Build script v1
+## Phase 0 — Foundations *(complete)*
 
-Write the markdown-to-HTML converter: parse frontmatter and body, convert exec-tagged fences into cell objects, expand include directives into their referenced setup code, resolve cross-tutorial links to relative hrefs and warn on anything that doesn't resolve, then render the result into the shell template. Test this against one hand-written sample tutorial, start to finish, before touching real content.
+Prove that the hard part works before building anything on top of it.
 
-## Phase 2 — Save, load, and versioning
+- Stand up the repository structure, including a folder per module under
+  `tutorials/`.
+- Build the page template that every generated tutorial is rendered into,
+  linking shared files in `assets/` rather than inlining them into each page.
+- Confirm that numpy, pandas and matplotlib all load in one step, with no
+  extra package-installation stage.
+- Confirm that a plain cell running code from those libraries renders its
+  output underneath itself correctly.
+- Only then build the widget bridge in `tutorial_tools.py`. It is a useful
+  layer, not a precondition — if plain execution does not work, widgets on top
+  of it are worthless.
 
-Build the save/load JSON logic in tutorial_tools' runtime against the schema in VERSIONING_AND_PROGRESS.md. Add the version metadata and the compare-on-load logic from that same document. Test the mismatch path deliberately — bump a tutorial's version number on purpose and confirm the restore still works and the notice appears, rather than only testing the happy path where nothing has changed.
+Worth re-checking whenever the Python runtime version changes: which packages
+are available shifts between releases.
 
-## Phase 3 — Navigation shell
+## Phase 1 — The build script *(complete)*
 
-Build the series-level table of contents page and the prev/next header shared across every generated tutorial.
+Turn markdown into pages.
 
-## Phase 4 — Hosting
+- Parse frontmatter and body.
+- Turn `exec`-tagged fences into runnable cells.
+- Expand include directives into the setup code they name.
+- Resolve cross-tutorial links into real relative addresses, and fail the build
+  on any that do not resolve.
+- Render the result into the page template.
 
-Write the GitHub Actions workflow that runs the build script on push to main and deploys to Pages. Confirm the relative data-file fetches work against the live Pages URL, not just a local server — path resolution is one of the more common places hosted-vs-local behavior diverges.
+Test it against one hand-written tutorial, start to finish, before pointing it
+at real content. A converter that works on a file you wrote to exercise it is
+not the same as one that works on a file someone wrote to teach with.
+
+## Phase 2 — Saved progress
+
+Let a student close the tab and come back.
+
+- Build the save and restore logic against the schema in
+  `VERSIONING_AND_PROGRESS.md`.
+- Add the version comparison that document describes.
+- Test the mismatch path deliberately — bump a tutorial's version on purpose
+  and confirm the restore still works and the notice appears.
+
+That last point is the whole phase, really. The happy path where nothing has
+changed will work almost by accident; the path where you have edited a tutorial
+under a student's feet is the one that matters and the one nobody tests.
+
+## Phase 3 — Navigation
+
+Make a series navigable as a series.
+
+- A contents page per series.
+- Previous and next links in the header of every generated page.
+
+## Phase 4 — Publishing
+
+- A workflow that runs the build on every push and publishes the result.
+- Confirm that data files load correctly from the published address, not only
+  from a local server. Path handling behaves differently once hosted, and this
+  is a common place for it to differ.
 
 ## Phase 5 — Pilot
 
-Convert two or three real tutorials end to end before converting the whole series. Get them in front of students, or at minimum dry-run them on a machine that isn't the development machine, before committing to converting everything that already exists as a static tutorial.
+Convert two or three real tutorials end to end before converting a whole
+series. Put them in front of students, or at the very least run them on a
+machine that is not the one they were built on.
+
+Converting everything first and discovering a problem afterwards is the
+expensive order to do this in.

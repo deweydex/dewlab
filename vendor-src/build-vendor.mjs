@@ -28,8 +28,8 @@ await build({
 });
 
 /* KaTeX: the stylesheet every built page links, plus a bundle of the renderer
- * itself, which the runtime imports only on pages that contain maths. Josh
- * settled that student-side rendering is fine (DECISIONS_LOG 1.8), and doing it
+ * itself, which the runtime imports only on pages that contain maths.
+ * Student-side rendering was settled as acceptable (DECISIONS_LOG 1.8), and doing it
  * here rather than from build.py keeps the property this whole directory exists
  * for: neither CI nor an author previewing locally needs Node. */
 await build({

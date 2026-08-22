@@ -1,19 +1,44 @@
-# dewlab — Planning Packet
+# Planning
 
-Prep material for the next build session. Five documents, each answering one question. Read DECISIONS.md first — everything else expands on entries in that log.
+What was decided before any code existed, and why. Five documents, each
+answering one question.
 
-## Contents
+Read `DECISIONS.md` first — the others expand on entries in it.
 
-- **DECISIONS.md** — every settled decision (libraries, style, hosting, versioning, editor, math rendering) with the reasoning behind it, plus a short list of things assumed rather than settled.
-- **BUILD_PLAN.md** — the build in dependency order, five phases, ending in a pilot before converting the full series.
-- **CONTENT_AND_FILE_ARCHITECTURE.md** — the markdown source format, the cell/layout pattern, and how a tutorial references data, shared setup code, or another tutorial.
-- **VERSIONING_AND_PROGRESS.md** — what happens to a student's saved progress when a tutorial gets edited after they've started it.
-- **REPO_AND_EDITOR.md** — the GitHub repo layout, the Pages deploy setup, and what the editor is for v1.
+- **`DECISIONS.md`** — every settled decision, with its reasoning: libraries,
+  visual style, hosting, versioning, the editor, mathematics. Ends with a short
+  list of things assumed rather than settled, which are the ones most likely to
+  need revisiting.
+- **`BUILD_PLAN.md`** — the build in dependency order, five phases, ending in a
+  pilot before converting a whole series.
+- **`CONTENT_AND_FILE_ARCHITECTURE.md`** — the markdown format a tutorial is
+  written in, and how a tutorial refers to a dataset, to shared setup code, or
+  to another tutorial.
+- **`VERSIONING_AND_PROGRESS.md`** — what happens to a student's saved work when
+  you edit a tutorial they have already started.
+- **`REPO_AND_EDITOR.md`** — the repository layout, how publishing works, and
+  what the authoring editor is for in its first version.
 
-## Where this started
+`OPEN_QUESTIONS.md` sits alongside them: the questions raised at the start,
+which are settled and which are not.
 
-An earlier exam tool (hvit_exam.html) proved out the hard problems conceptually — Pyodide loading, CodeMirror cells, save/load JSON — but that file, and its widget-bridge module, no longer exist. This packet rebuilds that functionality from the specification the exam tool left behind, rather than porting working code, and changes two structural things given dewlab's own constraints (no sqlite, hosted rather than double-clicked, a series rather than one file): assets move from fully inlined to shared-and-hosted, and saved state gets a version number so it survives edits.
+## Why it is written down
 
-## Scope, confirmed
+Two authors, and a project that will be picked up and put down across a term.
+Most of what these documents record is not hard to work out — it is hard to
+work out *twice*, the same way, six weeks apart. Writing the reasoning next to
+the decision is what makes it possible to disagree with it later on the merits
+rather than re-deriving it from scratch.
 
-Not tied to any single course. Two authors, both comfortable with git. Year-one modules: Computational Methods, Mathematics for IT, Programming and Design Principles, Database Methods, plus a pilot in a colleague's Foundations of Object-Oriented Programming LV5. `module` and `year` are editable frontmatter fields rather than a fixed list, so a new module later is a new value and a new folder, not an architecture change. OPEN_QUESTIONS.md tracks what's still unresolved — aesthetics chief among what's left.
+The same habit continues after the build starts, in `DECISIONS_LOG.md` and
+`QUESTIONS.md` at the root of the repository.
+
+## What is fixed and what is not
+
+Fixed: this is not tied to a single course; two authors, both comfortable with
+git; and the module and academic year are fields a tutorial declares for
+itself, so a new module is a new value and a new folder rather than an
+architectural change.
+
+Not fixed: everything in the "Still open" half of `OPEN_QUESTIONS.md`, which is
+mostly questions about content rather than about the tool.
