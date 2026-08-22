@@ -715,3 +715,33 @@ Neither is a verdict. `index` turned up under the first question and cost a
 rewrite; `modular` turned up the same way and is merely said twice.
 *Cost to change: small. The stress-word list is the only hand-maintained part,
 and a wrong entry there costs a little noise, not a wrong answer.*
+
+**5.12 — Asset URLs carry a content hash.**
+The map rendered as black boxes and filled blobs on a phone that had visited the
+site before. Nothing was wrong with the markup or the stylesheet: the browser was
+still serving the stylesheet it had downloaded on an earlier visit, so the page
+was new and the CSS was old.
+
+That failure does not look like caching. It looks like the site is broken, and
+only for people who have been here before — which is every student after their
+first lesson, on a school machine that caches aggressively.
+
+Every asset URL the markup names now ends in a short hash of that file's
+contents. Hashed per file rather than one version for the lot, so editing the
+stylesheet does not also force a fresh download of the 266 KB maths bundle. The
+one file the runtime fetches for itself, `tutorial_tools.py`, is not in the
+markup and so cannot be busted by it; its version travels in the manifest
+instead.
+
+`vendor/katex.bundle.js` is deliberately left unversioned: the standalone export
+can only bundle that import into one file if the specifier is a plain string,
+and the bundle is vendored and pinned, so it changes only when we re-vendor on
+purpose.
+*Cost to change: small. But removing it brings the bug back invisibly.*
+
+**5.13 — The standalone export fails loudly when a substitution finds nothing.**
+The export works by replacing markup this same file wrote moments earlier.
+`str.replace` with no match is a silent no-op, so when the asset URLs gained a
+version the export quietly stopped inlining the stylesheet, and only the tests
+noticed. Every replacement now raises instead, naming what it could not find.
+*Cost to change: small, and it is the guard that made the previous entry safe.*

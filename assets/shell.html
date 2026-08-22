@@ -13,8 +13,8 @@
 <meta name="tutorial-year" content="{{YEAR}}">
 <meta name="tutorial-series" content="{{SERIES}}">
 
-<link rel="stylesheet" href="{{ASSET_BASE}}vendor/katex.min.css">
-<link rel="stylesheet" href="{{ASSET_BASE}}tutorial-style.css">
+<link rel="stylesheet" href="{{KATEX_CSS_URL}}">
+<link rel="stylesheet" href="{{STYLE_URL}}">
 
 <script>
 /* Apply saved texture preferences before first paint, so a reader who chose
@@ -161,6 +161,6 @@
 <!-- Cell source and page metadata, JSON-encoded so Python code containing
      any HTML-significant character survives the round trip untouched. -->
 <script type="application/json" id="dewlab-manifest">{{MANIFEST_JSON}}</script>
-<script type="module" src="{{ASSET_BASE}}tutorial-runtime.js"></script>
+<script type="module" src="{{RUNTIME_URL}}"></script>
 </body>
 </html>
