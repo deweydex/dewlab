@@ -21,4 +21,5 @@ and why that position. `planning/CURRICULUM_MAP.md` shows what each would close.
 | [Rates of Change](./rates-of-change.md) | `MIT-3.6`, `MIT-3.7` | full |
 | [Logic and Truth](./logic-and-truth.md) | `MIT-2.4`, `MIT-2.5` | short |
 | [Two conversions from everlearning](./from-everlearning.md) | `PDP-LO1`, `PDP-LO3`, `PDP-LO9` | full |
+| [The Matrices Strand](./matrices.md) | nothing in MIT — deliberately beyond it | five tutorials |
 | [The Team Project](./team-project.md) | `PDP-LO12` | not a tutorial |

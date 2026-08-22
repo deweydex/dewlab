@@ -372,7 +372,8 @@ def test_choosing_a_topic_shows_what_it_is_and_lights_its_path(browser, base_url
     assert "WHERE IT TURNS UP" in panel
     assert "NEEDS FIRST" in panel
     assert tab.eval_on_selector_all(".dl-tree-uses li", "e => e.length") >= 2
-    # Both prerequisites, and only those.
+    # What it needs and what needs it: iterating by index above it, divide and
+    # conquer below. Nothing else.
     assert tab.eval_on_selector_all(".dl-tree-edge.is-lit", "e => e.length") == 2
     context.close()
 
@@ -432,6 +433,76 @@ def test_fit_brings_the_whole_tree_back(browser, base_url):
     tab.click("#dl-tree-fit")
     tab.wait_for_timeout(120)
     assert tab.evaluate("globalThis.dewlabTree.view.scale") <= 1.01
+    context.close()
+
+
+def test_the_zoom_buttons_do_something(browser, base_url):
+    """They did not. The frame starts a pan on any press that is not a topic,
+    and capturing the pointer swallowed the click — so the +, − and fit buttons
+    were decorative, and nothing noticed because every test that used them
+    happened to pass anyway."""
+    context, tab = open_tree(browser, base_url)
+    start = tab.evaluate("globalThis.dewlabTree.view.scale")
+    tab.click("#dl-tree-in")
+    tab.wait_for_timeout(120)
+    bigger = tab.evaluate("globalThis.dewlabTree.view.scale")
+    assert bigger > start
+    tab.click("#dl-tree-out")
+    tab.wait_for_timeout(120)
+    assert tab.evaluate("globalThis.dewlabTree.view.scale") < bigger
+    context.close()
+
+
+def test_fit_really_fits_on_a_phone(browser, base_url):
+    """The zoom floor and the tree's width have to agree. They did not: a floor
+    tuned against the old horizontal tree left the vertical one clipped off the
+    right-hand edge of a phone, with "fit" unable to do anything about it."""
+    context, tab = open_tree(browser, base_url, width=390)
+    tab.click("#dl-tree-fit")
+    tab.wait_for_timeout(150)
+    drawn = tab.evaluate(
+        "globalThis.dewlabTree.data.width * globalThis.dewlabTree.view.scale"
+    )
+    frame = tab.eval_on_selector("#dl-tree", "e => e.getBoundingClientRect().width")
+    assert drawn <= frame, f"{drawn}px of tree in a {frame}px frame"
+    context.close()
+
+
+def test_the_tree_reads_downwards(browser, base_url):
+    """Every node sits below everything it needs, on screen and not merely in
+    the data — the one promise the vertical layout makes to a reader."""
+    context, tab = open_tree(browser, base_url)
+    upward = tab.evaluate("""() => {
+      const by = new Map(globalThis.dewlabTree.data.nodes.map((n) => [n.code, n]));
+      const wrong = [];
+      for (const node of by.values()) {
+        for (const need of node.needs) {
+          const box = document.querySelector(`.dl-tree-node[data-code="${node.code}"]`);
+          const above = document.querySelector(`.dl-tree-node[data-code="${need}"]`);
+          if (!box || !above) continue;
+          if (above.getBoundingClientRect().top >= box.getBoundingClientRect().top) {
+            wrong.push(`${node.code} needs ${need}`);
+          }
+        }
+      }
+      return wrong;
+    }""")
+    assert upward == []
+    context.close()
+
+
+def test_a_topic_says_what_it_opens_up(browser, base_url):
+    """The map exists so somebody can ask "where do I go next?", and that is the
+    edges pointing away from a topic rather than towards it."""
+    context, tab = open_tree(browser, base_url)
+    tab.click('.dl-tree-node[data-code="MIT-3.2"]')
+    panel = tab.inner_text("#dl-tree-detail")
+    assert "OPENS UP" in panel
+    opens = tab.eval_on_selector_all(".dl-tree-opens button", "e => e.map(b => b.textContent)")
+    assert "Limits" in opens
+    # And choosing one of them moves the selection, same as a prerequisite does.
+    tab.click(".dl-tree-opens button")
+    assert tab.evaluate("globalThis.dewlabTree.chosen()") != "MIT-3.2"
     context.close()
 
 

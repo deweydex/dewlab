@@ -1162,9 +1162,9 @@ class TestTheTopicTree:
         assert node["uses"]
         assert node["strand"] == "number"
 
-    def test_nothing_needs_something_to_its_right(self, repo):
-        """The whole layout rests on this: left to right is dependency, so an
-        arrow that pointed backwards would be a lie about the tree."""
+    def test_nothing_needs_something_below_it(self, repo):
+        """The whole layout rests on this: top to bottom is dependency, so an
+        arrow that pointed upwards would be a lie about the tree."""
         write(repo, "Some prose.\n")
         b.build()
         data = self.data(repo)
@@ -1172,6 +1172,47 @@ class TestTheTopicTree:
         for node in data["nodes"]:
             for need in node["needs"]:
                 assert tier[need] < node["tier"], f"{node['code']} needs {need}"
+
+    def test_the_tree_is_drawn_vertically(self, repo):
+        """Tier is an abstraction; y is what a student actually sees. The two
+        agreeing is the difference between a vertical tree and a horizontal one
+        with vertical labels."""
+        write(repo, "Some prose.\n")
+        b.build()
+        data = self.data(repo)
+        place = {n["code"]: n for n in data["nodes"]}
+        for node in data["nodes"]:
+            for need in node["needs"]:
+                assert place[need]["y"] < node["y"], f"{node['code']} needs {need}"
+
+    def test_each_tier_is_a_row_of_its_own(self, repo):
+        """A tier is a stripe across the tree, and the stripes stack without
+        overlapping. Two tiers sharing vertical space would say two different
+        depths are the same depth."""
+        write(repo, "Some prose.\n")
+        b.build()
+        bands = self.data(repo)["bands"]
+        assert [band["tier"] for band in bands] == sorted(band["tier"] for band in bands)
+        for earlier, later in zip(bands, bands[1:]):
+            assert earlier["y"] + earlier["height"] <= later["y"]
+
+    def test_the_tree_is_taller_than_it_is_wide(self, repo):
+        """The reason for the vertical layout in the first place. Giving each
+        subject its own column produced 5854px wide against 756px tall — a
+        horizontal tree in disguise, and unusable on a phone."""
+        write(repo, "Some prose.\n")
+        b.build()
+        data = self.data(repo)
+        assert data["height"] > data["width"]
+
+    def test_the_top_row_says_you_can_start_there(self, repo):
+        """The stripe labels are the only place the map explains itself."""
+        write(repo, "Some prose.\n")
+        b.build()
+        bands = {band["tier"]: band["label"] for band in self.data(repo)["bands"]}
+        assert bands[0] == "start anywhere here"
+        assert bands[1] == "one layer down"
+        assert bands[2] == "two layers down"
 
     def test_a_taught_topic_links_to_the_section_that_teaches_it(self, repo):
         """The link comes from the tutorial's own `covers:`, so it cannot point
