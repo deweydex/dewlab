@@ -1,4 +1,4 @@
-"""Fixtures for the e2e tests: a built harness page and a server to hold it.
+"""Fixtures for the e2e tests: a page built by build.py, and a server for it.
 
 These tests drive a real Chromium against a real Pyodide, because that is the
 only way to know the execution path actually works. They need two things the
@@ -12,6 +12,13 @@ Missing either, the tests skip with a message saying which. Self-hosting rather
 than using the CDN keeps the suite runnable on a machine with no route to
 jsdelivr, and exercises the same DEWLAB_PYODIDE_BASE override that a
 CDN-blocked school network would need.
+
+The page under test is built by `build.py` from `fixture/rendering-tour.md`,
+which is the point: these tests now exercise the real build rather than a
+stand-in for it, so a change that breaks the markup a student would receive
+fails here. The fixture lives beside the tests rather than in `tutorials/`
+because its cells exist to reach every branch of the output renderer, not to
+teach anything.
 """
 
 from __future__ import annotations
@@ -20,7 +27,6 @@ import functools
 import http.server
 import shutil
 import socketserver
-import subprocess
 import sys
 import threading
 from pathlib import Path
@@ -28,47 +34,68 @@ from pathlib import Path
 import pytest
 
 DEWLAB = Path(__file__).resolve().parents[2]
-HARNESS = DEWLAB / "dev" / "harness"
 PYODIDE = DEWLAB / "dev" / "pyodide"
+FIXTURE = Path(__file__).resolve().parent / "fixture" / "rendering-tour.md"
 
-RUNTIME_OVERRIDE = (
-    '<script>globalThis.DEWLAB_PYODIDE_BASE = "pyodide/";</script>\n'
-    '<script type="module" src="assets/tutorial-runtime.js"></script>'
-)
+sys.path.insert(0, str(DEWLAB))
+
+import build as b  # noqa: E402
+
+MODULE = "fixtures"
+SLUG = "rendering-tour"
+PAGE = f"tutorials/{MODULE}/{SLUG}.html"
+UP = "../../"  # from the built page back to the site root
 
 
 @pytest.fixture(scope="session")
-def harness_dir() -> Path:
-    """Build the harness page and stage a local Pyodide beside it."""
+def site_dir(tmp_path_factory) -> Path:
+    """Build the fixture tutorial with build.py and stage Pyodide beside it."""
     if not (PYODIDE / "pyodide.mjs").exists():
         pytest.skip(
             "no self-hosted Pyodide — run `python3 dev/fetch_pyodide.py` first"
         )
 
-    subprocess.run(
-        [sys.executable, str(DEWLAB / "dev" / "make_harness.py")],
-        check=True,
-        capture_output=True,
+    root = tmp_path_factory.mktemp("dewlab-e2e")
+    (root / "tutorials" / MODULE).mkdir(parents=True)
+    shutil.copy(FIXTURE, root / "tutorials" / MODULE / FIXTURE.name)
+    shutil.copytree(DEWLAB / "assets", root / "assets")
+    shutil.copytree(DEWLAB / "data", root / "data")
+
+    out = root / "site"
+    for name, value in {
+        "ROOT": root,
+        "TUTORIALS": root / "tutorials",
+        "SETUP": root / "setup",
+        "DATA": root / "data",
+        "ASSETS": root / "assets",
+        "SHELL": root / "assets" / "shell.html",
+        "OUT": out,
+    }.items():
+        setattr(b, name, value)
+    b.build(clean=True)
+
+    # Point the runtime at the Pyodide staged in this tree rather than the CDN,
+    # which is what a network with no route to jsdelivr would also have to do.
+    page = out / PAGE
+    html = page.read_text()
+    original = f'<script type="module" src="{UP}assets/tutorial-runtime.js"></script>'
+    assert original in html, "the built page no longer loads the runtime as this expects"
+    page.write_text(
+        html.replace(
+            original,
+            f'<script>globalThis.DEWLAB_PYODIDE_BASE = "{UP}pyodide/";</script>\n'
+            + original,
+        )
     )
 
-    page = HARNESS / "index.html"
-    html = page.read_text()
-    original = '<script type="module" src="assets/tutorial-runtime.js"></script>'
-    assert original in html, "harness no longer loads the runtime the way this expects"
-    page.write_text(html.replace(original, RUNTIME_OVERRIDE))
-
-    served = HARNESS / "pyodide"
-    if served.exists():
-        shutil.rmtree(served)
-    shutil.copytree(PYODIDE, served)
-
-    return HARNESS
+    shutil.copytree(PYODIDE, out / "pyodide")
+    return out
 
 
 @pytest.fixture(scope="session")
-def base_url(harness_dir: Path):
-    """Serve the harness on a free port for the duration of the session."""
-    handler = functools.partial(_QuietHandler, directory=str(harness_dir))
+def base_url(site_dir: Path):
+    """Serve the built site on a free port for the duration of the session."""
+    handler = functools.partial(_QuietHandler, directory=str(site_dir))
     with _QuietServer(("127.0.0.1", 0), handler) as server:
         port = server.server_address[1]
         thread = threading.Thread(target=server.serve_forever, daemon=True)
@@ -123,7 +150,7 @@ def _chromium_path() -> str | None:
 
 @pytest.fixture()
 def page(browser, base_url):
-    """A page with the harness loaded and Python already started."""
+    """A page with the built tutorial loaded and Python already started."""
     context = browser.new_context()
     tab = context.new_page()
 
@@ -137,7 +164,7 @@ def page(browser, base_url):
     )
     tab.problems = problems
 
-    tab.goto(f"{base_url}/index.html")
+    tab.goto(f"{base_url}/{PAGE}")
     # Pyodide plus three packages is a slow first load, and deliberately so:
     # it happens once per page, not once per cell.
     tab.wait_for_function("globalThis.dewlab !== undefined", timeout=30_000)

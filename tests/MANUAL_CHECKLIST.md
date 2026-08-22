@@ -11,12 +11,18 @@ for the phases that add them.
 ## Setup
 
 ```sh
+pip install -r requirements-build.txt
 python3 dev/fetch_pyodide.py        # once, ~30 MB, for the e2e tests
-python3 dev/make_harness.py
-python3 -m http.server -d dev/harness 8000
+python3 build.py --clean
+python3 -m http.server -d site 8000
 ```
 
-Then open `http://localhost:8000`.
+Then open a built tutorial, for example
+`http://localhost:8000/tutorials/computational-methods/first-steps.html`.
+
+Note that this serves the tutorials as a reader would meet them, which is the
+point of checking by hand: everything below is about what actually happens on a
+machine that is not the one this was built on.
 
 ## Phase 0 — foundations
 

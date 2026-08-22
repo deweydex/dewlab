@@ -14,8 +14,8 @@ runtime to finish â€” KaTeX for the maths, a read-only CodeMirror for the code â
 rather than rendered here (DECISIONS_LOG 1.8).
 
 The markup this emits for a cell, and the manifest it writes into the page, are
-the contract the runtime reads (DECISIONS_LOG 0.23). dev/make_harness.py wrote
-the same markup by hand for Phase 0.
+the contract the runtime reads (DECISIONS_LOG 0.23), and what the browser tests
+in tests/e2e/ drive.
 
     python3 build.py            build into site/
     python3 build.py --clean    remove site/ first
