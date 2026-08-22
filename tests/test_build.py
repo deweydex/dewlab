@@ -748,3 +748,97 @@ class TestTheSettingsPanel:
         assert 'id="dl-settings-toggle"' in page
         assert 'id="dl-settings-work"' in page
         assert 'id="dl-settings-texture"' in page
+
+
+class TestTheContentsOfAPage:
+    def toc(self, repo) -> str:
+        page = built(repo)
+        match = re.search(r'<details class="dl-toc">.*?</details>', page, re.DOTALL)
+        return match.group(0) if match else ""
+
+    def sections(self, count: int, sub: str = "") -> str:
+        return "\n".join(f"## Section {n}\n\n{sub}Prose.\n" for n in range(1, count + 1))
+
+    def test_a_page_with_sections_gets_a_contents_list(self, repo):
+        write(repo, self.sections(3))
+        b.build()
+        toc = self.toc(repo)
+        assert 'href="#section-1"' in toc
+        assert 'href="#section-3"' in toc
+        assert "3 sections" in toc
+
+    def test_it_starts_closed(self, repo):
+        write(repo, self.sections(3))
+        b.build()
+        assert "<details class=\"dl-toc\">" in built(repo)
+        assert "<details open" not in built(repo)
+
+    def test_one_section_does_not_get_a_contents_list(self, repo):
+        """A contents list for a single heading is furniture."""
+        write(repo, self.sections(1))
+        b.build()
+        assert self.toc(repo) == ""
+
+    def test_prose_with_no_sections_does_not_either(self, repo):
+        write(repo, "Just prose, no headings at all.\n")
+        b.build()
+        assert self.toc(repo) == ""
+
+    def test_sub_headings_nest_under_their_section(self, repo):
+        write(repo, "## First\n\nProse.\n\n### Detail\n\nProse.\n\n## Second\n\nProse.\n")
+        b.build()
+        toc = self.toc(repo)
+        assert re.search(r'href="#first".*?<ul>.*?href="#detail".*?</ul>', toc, re.DOTALL)
+
+    def test_a_sub_heading_that_repeats_is_left_out(self, repo):
+        """Five entries reading "Your turn" are a list nobody can choose from."""
+        write(
+            repo,
+            "## First\n\nProse.\n\n### Your turn\n\nProse.\n\n"
+            "## Second\n\nProse.\n\n### Your turn\n\nProse.\n",
+        )
+        b.build()
+        toc = self.toc(repo)
+        assert "Your turn" not in toc
+        assert 'href="#first"' in toc
+        assert 'href="#second"' in toc
+
+    def test_a_sub_heading_that_appears_once_is_kept(self, repo):
+        write(
+            repo,
+            "## First\n\nProse.\n\n### Your turn\n\nProse.\n\n"
+            "## Second\n\nProse.\n\n### Something distinct\n\nProse.\n",
+        )
+        b.build()
+        assert "Something distinct" in self.toc(repo)
+
+    def test_the_contents_page_has_no_contents_list_of_its_own(self, repo):
+        write(repo, self.sections(3))
+        b.build()
+        assert "dl-toc" not in (repo / "site" / "index.html").read_text()
+
+    def test_a_downloadable_copy_keeps_it(self, repo_with_assets):
+        """Its links are inside the file, so they work from a student's disk."""
+        write(repo_with_assets, self.sections(3))
+        b.build(standalone=True)
+        page = (repo_with_assets / "site" / "download" / "sample.html").read_text()
+        assert 'href="#section-1"' in page
+
+
+class TestTheStickyChrome:
+    def test_the_masthead_and_navigation_are_one_group(self, repo):
+        write(repo, "Some prose.\n")
+        b.build()
+        page = built(repo)
+        chrome = re.search(r'<div class="dl-chrome".*?</div>', page, re.DOTALL).group(0)
+        assert "dl-masthead" in chrome
+        assert "dl-nav-top" in chrome
+
+    def test_a_downloadable_copy_keeps_the_chrome_without_the_navigation(
+        self, repo_with_assets
+    ):
+        write(repo_with_assets, "Some prose.\n")
+        b.build(standalone=True)
+        page = (repo_with_assets / "site" / "download" / "sample.html").read_text()
+        assert "dl-chrome" in page
+        assert "dl-nav" not in page.split("<style>")[0] + page.split("</style>")[-1]

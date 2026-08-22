@@ -26,6 +26,7 @@
     var r = document.documentElement;
     if (s.theme && s.theme !== "system") r.setAttribute("data-theme", s.theme);
     if (s.font && s.font !== "serif") r.setAttribute("data-font", s.font);
+    if (s.header && s.header !== "full") r.setAttribute("data-header", s.header);
     if (s.size) r.style.setProperty("--dl-font-size", s.size + "px");
     if (s.width) r.style.setProperty("--dl-line-width", s.width + "rem");
     if (s.link) r.style.setProperty("--dl-link", s.link);
@@ -37,17 +38,23 @@
 <body>
 <div class="dl-page">
 
-  <header class="dl-masthead">
-    <a class="dl-wordmark" href="{{ROOT_BASE}}index.html">dewlab</a>
-    <span class="dl-crumbs">{{CRUMBS}}</span>
-    <button type="button" class="dl-settings-toggle" id="dl-settings-toggle"
-            aria-expanded="false" aria-controls="dl-settings">
-      <span class="dl-settings-icon" aria-hidden="true"></span>Settings
-    </button>
-  </header>
+  <!-- Masthead and chapter navigation stick together as one group, so the way
+       out of a page and the way to the next one are always on screen, and so
+       there is one height for everything below to measure against. -->
+  <div class="dl-chrome" id="dl-chrome">
+    <header class="dl-masthead">
+      <a class="dl-wordmark" href="{{ROOT_BASE}}index.html">dewlab</a>
+      <span class="dl-crumbs">{{CRUMBS}}</span>
+      <button type="button" class="dl-settings-toggle" id="dl-settings-toggle"
+              aria-expanded="false" aria-controls="dl-settings">
+        <span class="dl-settings-icon" aria-hidden="true"></span>Settings
+      </button>
+    </header>
 
-  <!-- Phase 3 fills these. Empty until then. -->
-  <nav class="dl-nav dl-nav-top">{{NAV_PREV_NEXT}}</nav>
+    <nav class="dl-nav dl-nav-top">{{NAV_PREV_NEXT}}</nav>
+  </div>
+
+  {{TOC}}
 
   <div class="dl-status" id="dl-status" role="status" aria-live="polite" hidden></div>
 
@@ -121,7 +128,25 @@
 
     <div class="dl-texture-row">
       <span>Width</span>
-      <input type="range" id="dl-texture-width" min="26" max="60" step="1" aria-label="Line width">
+      <div class="dl-seg" data-texture="width" data-number>
+        <button type="button" data-value="34">narrow</button>
+        <button type="button" data-value="44">medium</button>
+        <button type="button" data-value="56">wide</button>
+      </div>
+    </div>
+
+    <div class="dl-texture-row">
+      <span></span>
+      <input type="range" id="dl-texture-width" min="26" max="60" step="1"
+             aria-label="Line width, finer than the three presets">
+    </div>
+
+    <div class="dl-texture-row">
+      <span>Header</span>
+      <div class="dl-seg" data-texture="header">
+        <button type="button" data-value="full">full</button>
+        <button type="button" data-value="minimal">minimal</button>
+      </div>
     </div>
 
     <div class="dl-texture-row">

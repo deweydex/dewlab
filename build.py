@@ -110,6 +110,7 @@ class Tutorial:
     body_html: str
     has_math: bool = False
     anchors: set[str] = field(default_factory=set)
+    toc: list = field(default_factory=list)
 
     @property
     def slug(self) -> str:
@@ -327,9 +328,18 @@ def render_math(item: Math) -> str:
     return f'<span class="{classes}">{html.escape(item.tex)}</span>'
 
 
-def to_html(body: str) -> str:
+def to_html(body: str) -> tuple[str, list]:
+    """The page's HTML, and the heading tree the `toc` extension collected.
+
+    The tree comes free — the extension is already here to give headings their
+    ids, which is what makes `tutorial:slug#anchor` links and the curriculum
+    map's section links possible. Taking its tokens as well means the contents
+    list on the page is built from the same headings the anchors came from,
+    rather than from a second pass that could disagree with them.
+    """
     converter = markdown.Markdown(extensions=["extra", "sane_lists", "toc"])
-    return converter.convert(body)
+    html_out = converter.convert(body)
+    return html_out, list(getattr(converter, "toc_tokens", []))
 
 
 def place_blocks(
@@ -401,6 +411,72 @@ def nav_for(tutorial: Tutorial, members: list[Tutorial]) -> str:
             f'<a class="dl-nav-next" href="{link_between(tutorial, following)}">'
             f"{html.escape(following.title)}</a>"
         )
+    return "".join(parts)
+
+
+def render_toc(tutorial: Tutorial) -> str:
+    """A contents list for one page, nested one level.
+
+    Closed by default: a reader arriving at a tutorial should meet the tutorial,
+    not a list of its parts. Open, it is the fastest way back to a section they
+    half-remember, which on a long page is the thing that is otherwise hard.
+
+    Sub-headings nest under the section they belong to rather than sitting in
+    one flat list, because the flat version of an eight-section tutorial with
+    "Your turn" under half of them is unreadable.
+    """
+    def at_level(entries: list, level: int) -> list:
+        """The headings at one level, wherever the tree happens to nest them.
+
+        The `toc` extension hangs everything under the page's single `#`
+        heading, so the sections are grandchildren rather than children.
+        Searching by level rather than by depth means the shape of a tutorial's
+        headings cannot break this.
+        """
+        found = []
+        for entry in entries:
+            if entry.get("level") == level:
+                found.append(entry)
+            else:
+                found.extend(at_level(entry.get("children") or [], level))
+        return found
+
+    sections = at_level(tutorial.toc, 2)
+    if len(sections) < 2:
+        # One section, or none. A contents list for a single heading is furniture.
+        return ""
+
+    # Sub-headings that repeat cannot be told apart in a list, so they are worse
+    # than useless there: "Your turn" appears five times in some tutorials, and
+    # a contents entry a reader cannot choose between is noise. They keep their
+    # anchors — only the listing drops them.
+    names = [str(s.get("name", "")) for s in at_level(tutorial.toc, 3)]
+    ambiguous = {name for name in names if names.count(name) > 1}
+
+    def item(entry: dict, depth: int) -> list[str]:
+        text = html.escape(str(entry.get("name", "")))
+        out = [f'<li><a href="#{html.escape(str(entry["id"]), quote=True)}">{text}</a>']
+        children = [
+            child for child in entry.get("children") or []
+            if child.get("level") == 3 and str(child.get("name", "")) not in ambiguous
+        ]
+        if children and depth == 0:
+            out.append("<ul>")
+            for child in children:
+                out.extend(item(child, depth + 1))
+            out.append("</ul>")
+        out.append("</li>")
+        return out
+
+    parts = [
+        '<details class="dl-toc">',
+        f"<summary>Contents<span class=\"dl-toc-count\">"
+        f"{len(sections)} sections</span></summary>",
+        '<nav aria-label="Sections of this tutorial"><ul>',
+    ]
+    for section in sections:
+        parts.extend(item(section, 0))
+    parts += ["</ul></nav>", "</details>"]
     return "".join(parts)
 
 
@@ -507,7 +583,8 @@ def load(path: Path) -> Tutorial:
     stripped, cells, blocks = extract_blocks(body, path)
     stripped, maths = extract_math(stripped)
     stripped = loosen_tight_lists(stripped)
-    body_html = place_blocks(to_html(stripped), cells, blocks, maths)
+    converted, toc = to_html(stripped)
+    body_html = place_blocks(converted, cells, blocks, maths)
     anchors = set(ID_RE.findall(body_html)) | {c.id for c in cells}
     return Tutorial(
         path=path,
@@ -516,6 +593,7 @@ def load(path: Path) -> Tutorial:
         body_html=body_html,
         has_math=bool(maths),
         anchors=anchors,
+        toc=toc,
     )
 
 
@@ -548,6 +626,7 @@ def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "") -> Path
         "{{CRUMBS}}": html.escape(f"{tutorial.module_title} · {tutorial.meta['year']}"),
         "{{NAV_PREV_NEXT}}": nav,
         "{{DOWNLOAD}}": download_section(tutorial),
+        "{{TOC}}": render_toc(tutorial),
         "{{BODY}}": body_html,
         # `<` escaped so nothing in a cell can close the surrounding <script>.
         "{{MANIFEST_JSON}}": json.dumps(manifest).replace("<", "\\u003c"),
@@ -717,6 +796,8 @@ def write_index(
         # The contents page is not a tutorial and has nothing to download; the
         # runtime hides the empty section rather than showing a bare heading.
         "{{DOWNLOAD}}": "",
+        # The contents page is a contents page. It does not need one of its own.
+        "{{TOC}}": "",
         "{{BODY}}": render_index(groups, archives),
         "{{MANIFEST_JSON}}": json.dumps(manifest).replace("<", "\\u003c"),
     }
