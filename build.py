@@ -555,6 +555,9 @@ SCOPE_DATA = ROOT / "planning" / "curriculum" / "out-of-scope.yaml"
 
 # One node is a comfortable tap target with room for a two-line name.
 TOPIC_W, TOPIC_H = 178, 66
+# How many topics a tier fits before it wraps onto another line. Five keeps the
+# whole tree about a thousand pixels wide, which a phone can zoom to fit.
+TREE_COLUMNS = 5
 TIER_GAP, ROW_GAP = 56, 22
 BAND_GAP = 34
 TREE_PAD = 40
@@ -618,41 +621,67 @@ def topic_tiers(topics: dict) -> dict[str, int]:
 
 
 def topic_layout(topics: dict, strands: dict[str, str]) -> tuple[dict, float, float]:
-    """Where every topic sits: across by how much it needs, down by subject.
+    """Where every topic sits: one row per tier, reading downwards.
 
-    Two axes doing two jobs. Left to right is dependency — nothing points
-    backwards, so the further right a topic is, the more has to come first. Top
-    to bottom is subject, so a strand reads as a band across the whole tree and
-    you can follow one thread without losing it among the others.
+    **Top to bottom is dependency.** Nothing in the top row needs anything, and
+    nothing ever points upwards, so how far down a topic sits is how much has to
+    come first. That is the one thing the layout has to make obvious.
+
+    Vertical because that is how a page scrolls. The first attempt at this gave
+    each subject its own column, which is the direct flip of the old horizontal
+    tree — and measured 5854px wide against 756px tall, which is a horizontal
+    tree wearing a hat. With twelve subjects there is no width to spare, so
+    subject stops being an axis and becomes a sort: a tier wider than
+    ``TREE_COLUMNS`` wraps onto more lines, and within a tier topics are grouped
+    by subject so like still sits beside like.
+
+    Lines are centred, which is what makes it read as a tree rather than a
+    left-aligned list — a narrow tier looks like a narrow tier.
     """
     tier = topic_tiers(topics)
-    bands: dict[str, list[str]] = {}
+    rows: dict[int, list[str]] = {}
     for code in topics:
-        bands.setdefault(strands.get(code, "other"), []).append(code)
+        rows.setdefault(tier[code], []).append(code)
+
+    span = TOPIC_W + ROW_GAP
+    width = TREE_PAD * 2 + TREE_COLUMNS * span - ROW_GAP
 
     place: dict[str, dict] = {}
     y = TREE_PAD
-    for strand in sorted(bands):
-        members = bands[strand]
-        # Within a band, a tier may hold several topics; they stack.
-        rows: dict[int, int] = {}
-        band_height = 0
-        for code in sorted(members, key=lambda c: (tier[c], topics[c]["name"])):
-            column = tier[code]
-            row = rows.get(column, 0)
-            rows[column] = row + 1
-            place[code] = {
-                "x": TREE_PAD + column * (TOPIC_W + TIER_GAP),
-                "y": y + row * (TOPIC_H + ROW_GAP),
-                "tier": column,
-                "strand": strand,
-            }
-            band_height = max(band_height, (row + 1) * (TOPIC_H + ROW_GAP))
-        place[f"band:{strand}"] = {"x": 0, "y": y, "height": band_height - ROW_GAP}
-        y += band_height + BAND_GAP
+    for level in sorted(rows):
+        members = sorted(
+            rows[level], key=lambda c: (strands.get(c, "other"), topics[c]["name"])
+        )
+        lines = [members[i:i + TREE_COLUMNS] for i in range(0, len(members), TREE_COLUMNS)]
+        top = y
+        for line in lines:
+            left = (width - (len(line) * span - ROW_GAP)) / 2
+            for column, code in enumerate(line):
+                place[code] = {
+                    "x": left + column * span,
+                    "y": y,
+                    "tier": level,
+                    "strand": strands.get(code, "other"),
+                }
+            y += TOPIC_H + ROW_GAP
+        place[f"band:{level}"] = {"y": top, "height": y - top - ROW_GAP}
+        y += TIER_GAP
 
-    width = TREE_PAD * 2 + (max(tier.values()) + 1) * (TOPIC_W + TIER_GAP) - TIER_GAP
-    return place, width, y - BAND_GAP + TREE_PAD
+    return place, width, y - TIER_GAP + TREE_PAD
+
+
+def tier_label(level: int) -> str:
+    """What a tier stripe says, in words a student can act on.
+
+    "Tier 3" is a number about the data structure. "Three layers down" is a
+    number about how much has to come first, which is the only reason anybody
+    is reading the stripe.
+    """
+    if level == 0:
+        return "start anywhere here"
+    words = ["", "one", "two", "three", "four", "five", "six", "seven", "eight"]
+    count = words[level] if level < len(words) else str(level)
+    return f"{count} layer{'' if level == 1 else 's'} down"
 
 
 def tree_data(tutorials: list[Tutorial]) -> dict:
@@ -688,8 +717,16 @@ def tree_data(tutorials: list[Tutorial]) -> dict:
             "where": where,
         })
 
+    # One stripe per tier, labelled by what it means rather than by its number:
+    # a student reading the map should not have to work out that "tier 0" is the
+    # place to start.
     bands = [
-        {"strand": key[5:], "y": value["y"], "height": value["height"]}
+        {
+            "tier": int(key[5:]),
+            "label": tier_label(int(key[5:])),
+            "y": value["y"],
+            "height": value["height"],
+        }
         for key, value in place.items() if key.startswith("band:")
     ]
     return {
@@ -924,6 +961,11 @@ def render_index(
         "nothing to sign into, and no way to break anything — the Python you "
         "write runs on your own machine, inside this page, and never leaves "
         "it.</p>",
+        "<p>The material covers two QQI Level 5 modules — <strong>Maths for "
+        "Information Technology</strong> (5N18396) and <strong>Programming and Design "
+        "Principles</strong> (5N2927) — taught together rather than side by "
+        "side, because most of the maths is easier to see once you can make a "
+        "computer do it. Everything on your course is in here somewhere.</p>",
         "<p>Every tutorial is a page of reading with code you can change and "
         "run as you go. Your work is saved automatically in this browser, so "
         "you can close the tab and come back. Each one can be downloaded as a "
@@ -1330,16 +1372,18 @@ def write_tree_page(shell: str, tutorials: list[Tutorial]) -> Path | None:
     body = (
         '<h1>The topic tree</h1>'
         '<p class="dl-tree-intro">Everything both modules cover, and what has to '
-        "come before what. Drag to move around it, scroll to zoom, and choose any "
-        "topic to find out what it is, where it turns up in computing, and where "
-        "it is taught.</p>"
+        "come before what. <strong>It reads downwards.</strong> Nothing in the top "
+        "row needs anything, so any of it can be started today; the further down a "
+        "topic sits, the more has to come first. Drag to move around it, scroll to "
+        "zoom, and choose any topic to find out what it is, where it turns up in "
+        "computing, and where it is taught.</p>"
         '<div class="dl-tree-layout">'
         '<div class="dl-tree-main">'
         '<div class="dl-tree-frame" id="dl-tree">'
         '<div class="dl-tree-canvas" id="dl-tree-canvas"></div>'
         '<div class="dl-tree-controls">'
         '<button type="button" id="dl-tree-out" aria-label="Zoom out">−</button>'
-        '<button type="button" id="dl-tree-fit" aria-label="Fit the whole tree">fit</button>'
+        '<button type="button" id="dl-tree-fit" aria-label="Fit the width and return to the top">fit</button>'
         '<button type="button" id="dl-tree-in" aria-label="Zoom in">+</button>'
         "</div>"
         "</div>"

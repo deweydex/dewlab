@@ -51,11 +51,25 @@ The editor is new ground — nothing in dewlab has touched it. Planned in
 - "Combining everything" becomes applications and fun problems rather than more
   drill. Calculus is not the focus of this course.
 
-**One thing to settle before writing it:** integration by substitution *is* the
-chain rule run backwards. A substitution tutorial that arrives before the chain
-rule bonus would be teaching the reverse of something students have not met. The
-bonus section probably wants to sit immediately *before* substitution rather
-than after. Flagged rather than assumed.
+**Settled, and the other way round.** I flagged that integration by
+substitution *is* the chain rule run backwards, and suggested the chain rule
+bonus should therefore come first. Josh chose the opposite, and gave the reason:
+
+> Substitution should come first because it feels algebraic, and substituting
+> one function for another is something we've done. So we've done composition of
+> functions, and then the chain rule can come out of that as an example. And we
+> can discover these in the tutorials, meaning that we don't need to name them
+> until after we've done some step by step thinking things through.
+
+So: **composition of functions → substitution → the chain rule as the thing that
+falls out of it.** The chain rule is not a prerequisite being withheld; it is a
+pattern the students are led to notice in work they have already done.
+
+That last sentence turned out to be a general principle rather than a remark
+about calculus, and it now has a decision of its own (DECISIONS_LOG 7.6). It
+also changed the dependency data: divide and conquer moved to *after* searching
+and sorting, because binary search is what gives a student a reason to name the
+idea.
 
 ## 7. Splitting tutorials — **yes, and further than proposed**
 
