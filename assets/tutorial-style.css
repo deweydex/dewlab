@@ -945,7 +945,8 @@ p code, li code {
 }
 .dl-tree-edges { position: absolute; top: 0; left: 0; overflow: visible; }
 
-/* A band per subject, so one thread can be followed across the whole tree. */
+/* A stripe per tier. Alternating them is what makes the rows read as levels
+   rather than as one long list of boxes. */
 .dl-tree-band { fill: var(--dl-cell-bg); opacity: 0.45; }
 .dl-tree-band-label {
   font-family: var(--dl-mono);
@@ -954,6 +955,7 @@ p code, li code {
   text-transform: uppercase;
   letter-spacing: 0.08em;
 }
+
 
 .dl-tree-edge {
   fill: none;
@@ -981,6 +983,37 @@ p code, li code {
   /* Three lines fit; a fourth would spill over the border, so it is cut. */
   overflow: hidden;
 }
+
+/* Subject as a coloured edge, since subject stopped being an axis when the tree
+   went vertical. An inset shadow rather than a left border, because the states
+   below all set `border-color` and would wipe a border out — a taught topic
+   would silently lose its subject, which is the kind of bug that only shows up
+   in a screenshot. Twelve hues around the wheel: distinguishable side by side,
+   and none of them load-bearing, since the panel gives the real answer. */
+.dl-tree-node { box-shadow: inset 4px 0 0 var(--dl-strand, transparent); }
+/* The same colour, named, in the panel — so the edge on a node is
+   readable rather than merely decorative. */
+.dl-tree-hue {
+  display: inline-block;
+  width: 0.62rem;
+  height: 0.62rem;
+  border-radius: 2px;
+  margin-right: 0.4rem;
+  background: var(--dl-strand, transparent);
+}
+[data-strand="algebra"]      { --dl-strand: hsl(4 62% 55%); }
+[data-strand="algorithms"]   { --dl-strand: hsl(34 68% 50%); }
+[data-strand="calculus"]     { --dl-strand: hsl(64 52% 42%); }
+[data-strand="functions"]    { --dl-strand: hsl(94 46% 42%); }
+[data-strand="geometry"]     { --dl-strand: hsl(124 42% 42%); }
+[data-strand="logic"]        { --dl-strand: hsl(154 46% 40%); }
+[data-strand="number"]       { --dl-strand: hsl(184 52% 42%); }
+[data-strand="probability"]  { --dl-strand: hsl(214 60% 56%); }
+[data-strand="programming"]  { --dl-strand: hsl(244 52% 62%); }
+[data-strand="sets"]         { --dl-strand: hsl(274 46% 58%); }
+[data-strand="statistics"]   { --dl-strand: hsl(304 44% 56%); }
+[data-strand="trigonometry"] { --dl-strand: hsl(334 56% 56%); }
+
 .dl-tree-node[data-state="taught"] { border-color: var(--dl-navy); }
 .dl-tree-node[data-state="planned"] {
   border-style: dashed;
@@ -1057,9 +1090,9 @@ p code, li code {
 .dl-tree-code { margin: 0 0 0.7rem; font-family: var(--dl-mono); font-size: 0.72rem; color: var(--dl-muted); }
 .dl-tree-plain { margin: 0; line-height: 1.55; }
 .dl-tree-hint { margin: 0; color: var(--dl-muted); line-height: 1.55; }
-.dl-tree-uses, .dl-tree-needs { margin: 0; padding-left: 1.1rem; }
+.dl-tree-uses, .dl-tree-needs, .dl-tree-opens { margin: 0; padding-left: 1.1rem; }
 .dl-tree-uses li { margin-bottom: 0.45rem; line-height: 1.5; }
-.dl-tree-needs { list-style: none; padding-left: 0; }
+.dl-tree-needs, .dl-tree-opens { list-style: none; padding-left: 0; }
 .dl-tree-jump {
   background: none;
   border: none;

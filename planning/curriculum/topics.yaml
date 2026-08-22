@@ -224,7 +224,7 @@ topics:
         once it has three clauses and a `not` in the middle.
       - How a processor is built. AND, OR and NOT gates are these tables in
         silicon.
-    needs: [MIT-2.1]
+    needs: []
 
   MIT-2.5:
     name: De Morgan's Laws
@@ -263,7 +263,7 @@ topics:
       - Every chart in every dashboard is this.
       - Seeing at a glance whether an algorithm's running time is levelling off
         or about to run away from you.
-    needs: [MIT-3.1, MIT-1.8]
+    needs: [MIT-3.1]
 
   MIT-3.3:
     name: Graphing sine and cosine
@@ -275,7 +275,7 @@ topics:
         these.
       - Animation and easing, where a smooth back-and-forth is a sine curve.
       - Anything that repeats on a cycle — daily traffic, seasonal demand.
-    needs: [MIT-4.6, MIT-3.2]
+    needs: [MIT-3.2, MIT-4.6]
 
   MIT-3.4:
     name: Completing the square
@@ -286,7 +286,7 @@ topics:
     uses:
       - Finding the best setting for something — the cheapest, the fastest, the
         least wasteful — when the thing behaves like a quadratic.
-    needs: [MIT-1.9]
+    needs: [MIT-1.9, MIT-3.2]
 
   MIT-3.5:
     name: Limits
@@ -313,7 +313,7 @@ topics:
         acceleration the derivative of velocity.
       - Detecting a spike in monitoring data, which is asking when the
         derivative got large.
-    needs: [MIT-3.5]
+    needs: [MIT-3.5, MIT-1.8]
 
   MIT-3.7:
     name: Rules for differentiating
@@ -564,7 +564,7 @@ topics:
     uses:
       - Performance monitoring. The average response time hides the slow tail;
         the histogram shows it.
-    needs: [MIT-5.9]
+    needs: [MIT-5.9, MIT-6.3]
 
   MIT-5.12:
     name: Averages and spread
@@ -649,7 +649,7 @@ topics:
     uses:
       - Binary search, the fast sorting algorithms, and the way large files are
         processed in parallel.
-    needs: [MIT-1.1]
+    needs: [MIT-6.8]
 
   MIT-6.7:
     name: Iterating by index
@@ -671,7 +671,7 @@ topics:
       - Sorting is the most-used non-trivial algorithm there is, and almost
         every "find" is faster on sorted data.
       - Understanding why a database index exists, and what it costs.
-    needs: [MIT-6.7, MIT-6.6]
+    needs: [MIT-6.7]
 
   # ------------------------------------------------------------------- PDP
   PDP-LO1:
@@ -706,7 +706,7 @@ topics:
     uses:
       - Reading code in a language you do not know, which is easier than it
         sounds once you know what to expect.
-    needs: [PDP-LO1]
+    needs: [PDP-LO1, PDP-LO4]
 
   PDP-LO4:
     name: The parts of a program

@@ -845,3 +845,49 @@ and neither exercised both at once.
 Copies now sit under `download/<module>/`, and four tests cover the crossing.
 Each was checked against the broken build first: all four fail without the fix.
 *Cost to change: small, and the guard is what makes it safe.*
+
+**7.6 — Dependencies answer "can I start this now?", not "what comes next?".**
+The topic tree was built topic by topic — "what does this one obviously need?" —
+which produces edges that are individually reasonable and collectively
+arbitrary. Josh's reframing settled what it is for: *"this is about giving
+students the opportunity to jump around, to find places where they struggle, and
+also allow teachers to understand, okay, I've gotta cover these things
+eventually."*
+
+That inverts the design rule. A route wants few branches and one clear line; a
+reachability map wants as few edges as it can honestly get away with, because
+**every edge closes a door**. Three trees built on three different rules are
+written up in `planning/curriculum/DEPENDENCIES.md`, with the places they
+disagree left visible rather than quietly resolved. Tree C — five gateway topics
+with everything else hanging off one — is what shipped.
+
+The measured result is not the one predicted: it added an edge rather than
+removing seven. What actually moved was depth, from a longest path of 6 to 5,
+with one more topic open from a standing start.
+*Cost to change: small. It is one `needs:` list per topic in `topics.yaml`.*
+
+**7.7 — Discover first, name afterwards.**
+Josh, on the chain rule: *"we can discover these in the tutorials, meaning that
+we don't need to name them until after we've done some step by step thinking
+things through."* Applied as a principle rather than a one-off, it changes edge
+directions. Divide and conquer no longer comes before searching and sorting —
+binary search is the reason to care about the idea, so it now comes after it.
+Substitution comes before the chain rule for the same reason, and because
+substitution is algebra the students have already done.
+*Cost to change: small, and reversible per topic.*
+
+**7.8 — The tree reads downwards.**
+Roots at the top, and nothing ever points upwards. The first attempt was the
+direct flip of the old horizontal layout — one column per subject — which
+measured 5854px wide against 756px tall: a horizontal tree wearing a hat, and
+useless on a phone. With twelve subjects there is no width to spend, so subject
+stopped being an axis and became a sort. A tier wider than five topics wraps,
+subjects stay grouped within a tier, and each node carries its subject as a
+colour. The tree is now 1058 × 1768 and fits a phone.
+
+Two bugs fell out of the change. The zoom controls sit inside the frame, and the
+frame starts a pan on any press that is not a topic — so pressing +, − or fit
+captured the pointer and swallowed the click. They had never worked. And the
+zoom floor of 0.35 was set against the old short tree; against the tall one it
+stopped "fit" from fitting.
+*Cost to change: small.*

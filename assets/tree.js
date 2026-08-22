@@ -9,7 +9,10 @@
  * whole of this and would still need the same forty lines of pointer handling.
  */
 
-const MIN_SCALE = 0.35;
+/* Low enough that the whole vertical tree fits a phone. The old floor of 0.35
+ * was set against a tree 756px tall; this one is 1768, and a floor that stops
+ * "fit" from fitting is worse than small text you can zoom into. */
+const MIN_SCALE = 0.2;
 const MAX_SCALE = 2.4;
 
 function readData() {
@@ -25,15 +28,15 @@ function readData() {
 /* --------------------------------------------------------------- drawing */
 
 function edgePath(from, to, node) {
-  /* Out of the right-hand side of the earlier topic and into the left of the
-   * later one. Prerequisites always run left to right, so an edge never has to
-   * double back and every curve can use the same shape. */
-  const x1 = from.x + node.w;
-  const y1 = from.y + node.h / 2;
-  const x2 = to.x;
-  const y2 = to.y + node.h / 2;
-  const reach = Math.max(40, (x2 - x1) / 2);
-  return `M${x1} ${y1} C${x1 + reach} ${y1}, ${x2 - reach} ${y2}, ${x2} ${y2}`;
+  /* Out of the bottom of the earlier topic and into the top of the later one.
+   * Prerequisites always run downwards, so an edge never has to double back and
+   * every curve can use the same shape. */
+  const x1 = from.x + node.w / 2;
+  const y1 = from.y + node.h;
+  const x2 = to.x + node.w / 2;
+  const y2 = to.y;
+  const reach = Math.max(30, (y2 - y1) / 2);
+  return `M${x1} ${y1} C${x1} ${y1 + reach}, ${x2} ${y2 - reach}, ${x2} ${y2}`;
 }
 
 function draw(data, canvas) {
@@ -50,16 +53,16 @@ function draw(data, canvas) {
     const rect = document.createElementNS(svgNS, "rect");
     rect.setAttribute("class", "dl-tree-band");
     rect.setAttribute("x", 0);
-    rect.setAttribute("y", band.y - 14);
+    rect.setAttribute("y", band.y - 12);
     rect.setAttribute("width", data.width);
-    rect.setAttribute("height", band.height + 28);
+    rect.setAttribute("height", band.height + 24);
     svg.appendChild(rect);
 
     const label = document.createElementNS(svgNS, "text");
     label.setAttribute("class", "dl-tree-band-label");
     label.setAttribute("x", 10);
-    label.setAttribute("y", band.y - 20);
-    label.textContent = band.strand;
+    label.setAttribute("y", band.y - 18);
+    label.textContent = band.label;
     svg.appendChild(label);
   }
 
@@ -83,6 +86,9 @@ function draw(data, canvas) {
     button.className = "dl-tree-node";
     button.dataset.code = node.code;
     button.dataset.state = node.state;
+    /* Subject is no longer an axis, so it has to live on the node itself — a
+     * coloured edge is enough to follow one thread down the tree. */
+    button.dataset.strand = node.strand;
     button.style.left = `${node.x}px`;
     button.style.top = `${node.y}px`;
     button.style.width = `${data.node.w}px`;
@@ -132,6 +138,11 @@ function controlView(frame, canvas, data) {
   }
 
   function fit() {
+    /* Fit the width and go to the top, rather than squeezing the whole tree
+     * into the frame. The tree is deliberately taller than it is wide, so
+     * fitting its height would shrink every label past reading. Starting at
+     * the top also starts where the tree does: nothing up there needs
+     * anything. */
     const box = frame.getBoundingClientRect();
     view.scale = Math.min(1, (box.width - 32) / data.width);
     view.scale = Math.max(MIN_SCALE, view.scale);
@@ -145,7 +156,10 @@ function controlView(frame, canvas, data) {
    * does not strand the tree half-moved. */
   let dragging = null;
   frame.addEventListener("pointerdown", (ev) => {
-    if (ev.target.closest(".dl-tree-node")) return;
+    /* The controls sit inside the frame, so a press on one of them would
+     * otherwise start a pan and capture the pointer — which swallows the click
+     * and leaves the zoom buttons quietly doing nothing. */
+    if (ev.target.closest(".dl-tree-node, .dl-tree-controls")) return;
     dragging = { id: ev.pointerId, x: ev.clientX - view.x, y: ev.clientY - view.y };
     frame.setPointerCapture(ev.pointerId);
     frame.classList.add("dl-tree-dragging");
@@ -179,6 +193,18 @@ function controlView(frame, canvas, data) {
 
 /* ------------------------------------------------------------- the panel */
 
+function opensUp(node, byCode) {
+  /* What this topic unlocks. The map's whole reason for existing is a student
+   * asking "where can I go next?", and that question is answered by the edges
+   * pointing away from a topic rather than towards it — which nothing in the
+   * panel said until now. */
+  const out = [];
+  for (const other of byCode.values()) {
+    if (other.needs.includes(node.code)) out.push(other);
+  }
+  return out.sort((a, b) => a.name.localeCompare(b.name));
+}
+
 function showDetail(node, byCode, panel) {
   if (!node) {
     panel.innerHTML =
@@ -199,6 +225,14 @@ function showDetail(node, byCode, panel) {
 
   const uses = node.uses.map((u) => `<li>${u}</li>`).join("");
 
+  const opens = opensUp(node, byCode)
+    .map(
+      (n) =>
+        `<li><button type="button" class="dl-tree-jump" data-code="${n.code}">` +
+        `${n.name}</button></li>`
+    )
+    .join("");
+
   const state = {
     taught: node.where
       ? `<a class="dl-tree-goto" href="${node.where.href}">Read it in ` +
@@ -214,10 +248,12 @@ function showDetail(node, byCode, panel) {
 
   panel.innerHTML =
     `<h2>${node.name}</h2>` +
-    `<p class="dl-tree-code">${node.code}</p>` +
+    `<p class="dl-tree-code"><span class="dl-tree-hue" data-strand="${node.strand}">` +
+    `</span>${node.strand} · ${node.code}</p>` +
     `<p class="dl-tree-plain">${node.plain}</p>` +
     (uses ? `<h3>Where it turns up</h3><ul class="dl-tree-uses">${uses}</ul>` : "") +
     (needs ? `<h3>Needs first</h3><ul class="dl-tree-needs">${needs}</ul>` : "") +
+    (opens ? `<h3>Opens up</h3><ul class="dl-tree-opens">${opens}</ul>` : "") +
     (state || "");
 }
 
