@@ -714,6 +714,85 @@ p code, li code {
 }
 :root[data-header="minimal"] .dl-toc { margin-bottom: 1.5rem; }
 
+/* ------------------------------------------------------------ knowledge map
+
+   The series as nodes and arrows on the contents page. A list says what order
+   to read in; this says how the parts relate — which tutorials a later one
+   leans on, and how long the course spends on each thing before moving.
+
+   A diagram is not prose and reads worse squeezed into a line length chosen for
+   reading, so it is the one thing on a dewlab page that is not bound by the
+   measure: centred on the column, up to 58rem wide, and scrolling inside its
+   own box when there is less room than that. The page still never scrolls
+   sideways — the 3rem inset leaves room for a scrollbar so that stays true. */
+.dl-map-figure {
+  margin: 0 0 2.5rem;
+  overflow-x: auto;
+  /* Half the container, then back by half of itself: centred whatever width it
+     ends up taking. */
+  width: min(58rem, calc(100vw - 3rem));
+  margin-left: 50%;
+  transform: translateX(-50%);
+}
+.dl-map { display: block; min-width: 30rem; width: 100%; height: auto; }
+
+.dl-map-lane {
+  font-family: var(--dl-mono);
+  font-size: 10px;
+  fill: var(--dl-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.dl-map-node rect {
+  fill: var(--dl-cell-bg);
+  stroke: var(--dl-cell-border);
+  stroke-width: 1;
+  transition: fill 0.12s ease, stroke 0.12s ease;
+}
+.dl-map-node text {
+  font-family: var(--dl-font-family);
+  font-size: 12px;
+  fill: var(--dl-fg);
+  text-anchor: middle;
+  pointer-events: none;
+}
+.dl-map-node:hover rect,
+.dl-map-node:focus-visible rect {
+  fill: var(--dl-navy);
+  stroke: var(--dl-navy);
+}
+.dl-map-node:hover text,
+.dl-map-node:focus-visible text { fill: #fff; }
+
+/* Reading order: solid, and the darker of the two, because it is the line a
+   student follows. */
+.dl-map-next {
+  fill: none;
+  stroke: var(--dl-muted);
+  stroke-width: 1.4;
+  marker-end: url(#dl-arrow);
+  color: var(--dl-muted);
+}
+/* Builds on: dashed and lighter, because it is a fact about the material
+   rather than an instruction to the reader. */
+.dl-map-back {
+  fill: none;
+  stroke: var(--dl-orange);
+  stroke-width: 1.1;
+  stroke-dasharray: 4 3;
+  opacity: 0.65;
+  marker-end: url(#dl-arrow-back);
+  color: var(--dl-orange);
+}
+
+.dl-map-figure figcaption {
+  margin-top: 0.6rem;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--dl-muted);
+}
+
 /* The contents page. Numbered because a series has an order and the numbers
    are part of the information, not decoration. */
 .dl-contents { margin: 0 0 2rem; padding-left: 1.6rem; }

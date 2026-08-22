@@ -309,6 +309,42 @@ graph TD
 | `PDP-LO11` Coding standards: comments, indentation, variable naming | 🟩 | [Tutorial 2: Storing and Computing — Variables: Giving Names to Things](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/tutorial-02-storing-and-computing.html#variables-giving-names-to-things)<br/>[Tutorial 8: Building Reusable Tools — What Makes a Good Function?](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/tutorial-08-building-reusable-tools.html#what-makes-a-good-function)<br/>[Interlude: Looking Back Before Moving Forward — Part 1: Reading Your Own Code](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/tutorial-interlude-critique-and-reflection.html#part-1-reading-your-own-code)<br/>[Interlude: Looking Back Before Moving Forward — Part 2: Reading Someone Else's Code](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/tutorial-interlude-critique-and-reflection.html#part-2-reading-someone-elses-code) |
 | `PDP-LO12` Team programming: design, develop, release and review over time, in teams of three to five | 🟥 | — |
 
+## Vocabulary
+
+The tutorials mark a term being introduced by putting it in italics the first time it means something particular. **68 terms** are marked that way, and asking two questions of them is free.
+
+### Introduced more than once
+
+The same word presented as new in two places. Either it is being introduced twice, or the two places mean different things by it — nothing here can tell which, and a person reading both decides. `index` was the second kind and cost a rewrite.
+
+| Term | Introduced in tutorials |
+|---|---|
+| *index* | 4, 5, 13 |
+| *modular* | 5, 18 |
+| *set* | 15, 16 |
+| *solve* | 14, 15 |
+| *zahlen* | 2, 13 |
+
+### Used before it was introduced
+
+A word appearing in an earlier tutorial than the one that stops to explain it. Some are ordinary English doing ordinary work and can be ignored; the rest are places a student met a term as though they already knew it.
+
+| Term | First appears in | Introduced in |
+|---|---:|---:|
+| *design* | 6 | 8 |
+| *expression* | 4 | 14 |
+| *functions* | 1 | 5 |
+| *independent* | 8 | 10 |
+| *parameters* | 5 | 8 |
+| *power* | 2 | 13 |
+| *repetition* | 3 | 9 |
+| *representation* | 2 | 14 |
+| *return values* | 5 | 8 |
+| *set* | 5 | 15 |
+| *solve* | 5 | 14 |
+| *store* | 1 | 2 |
+| *tools* | 1 | 8 |
+
 ## Scope questions still open
 
 Counted as gaps until they are settled, which is the safer default.

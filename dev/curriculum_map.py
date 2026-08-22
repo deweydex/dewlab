@@ -356,6 +356,84 @@ def conflicts(found, scope) -> list[str]:
     return notes
 
 
+
+# ---------------------------------------------------------------------- terms
+
+# A term being introduced is already marked in these tutorials: single-asterisk
+# emphasis around the word, the first time it means something particular. That
+# convention was there before anybody thought to check it, which is what makes
+# it usable — it is evidence of what the author considered a new word, not a
+# list somebody would have to maintain.
+EMPHASIS_RE = re.compile(r"(?<![*\w])\*(?!\s)([^*\n]{2,40}?)(?<!\s)\*(?![*\w])")
+FENCE_BLOCK_RE = re.compile(r"```.*?```", re.DOTALL)
+INLINE_CODE_RE = re.compile(r"`[^`]*`")
+SUBTITLE_RE = re.compile(r"^\*\*Programming Design Principles.*$", re.MULTILINE)
+
+# Emphasis is also used for ordinary stress — "*not* the same", "*exactly* one".
+# Those are not terms and listing them buries the ones that are.
+STRESS_WORDS = {
+    "not", "both", "or", "and", "either", "exactly", "at least one", "can",
+    "lot", "is", "without", "except", "how to think", "given that",
+    "solutions to homework problems", "another function", "cells",
+}
+
+
+def prose_of(tutorial: Tutorial) -> str:
+    """A tutorial's text with the code and the standing subtitle taken out.
+
+    Code because a `*` in a docstring is not emphasis; the subtitle because
+    "Programming Design Principles" appears on every page and would make
+    "design" look like a word used everywhere from the first tutorial.
+    """
+    path = next(TUTORIALS.rglob(f"{tutorial.slug}.md"))
+    body = FENCE_BLOCK_RE.sub("", path.read_text())
+    body = INLINE_CODE_RE.sub("", body)
+    return SUBTITLE_RE.sub("", body)
+
+
+def terms_of(tutorials: list[Tutorial]) -> dict[str, set[str]]:
+    """Every emphasised term, and which tutorials emphasise it."""
+    found: dict[str, set[str]] = {}
+    for tutorial in tutorials:
+        for match in EMPHASIS_RE.findall(prose_of(tutorial)):
+            term = match.strip().lower()
+            if term not in STRESS_WORDS:
+                found.setdefault(term, set()).add(tutorial.slug)
+    return found
+
+
+def term_findings(tutorials: list[Tutorial]) -> dict[str, list]:
+    """Two questions about vocabulary that the tutorials can answer themselves.
+
+    **Introduced more than once** — the same word presented as new in two
+    tutorials. Either it is being re-introduced, or the two places mean
+    different things by it. Nothing here can tell which; a person reads the two
+    and decides. `index` was the second kind, and cost a rewrite.
+
+    **Used before it was introduced** — a word appearing in an earlier tutorial
+    than the one that stops to explain it. Some of these are ordinary English
+    doing ordinary work and can be ignored; the ones that are not are places
+    where a student met a term as if they already knew it.
+    """
+    ordered = [t for t in tutorials if t.order and t.module == "mit-pdp-maths-prog-integration"]
+    order_of = {t.slug: t.order for t in ordered}
+    prose = {t.slug: prose_of(t).lower() for t in ordered}
+    terms = terms_of(ordered)
+
+    repeated, late = [], []
+    for term in sorted(terms):
+        where = sorted(order_of[s] for s in terms[term] if s in order_of)
+        if not where:
+            continue
+        if len(where) > 1:
+            repeated.append((term, where))
+        word = re.compile(rf"\b{re.escape(term)}\b")
+        used = [order_of[s] for s, body in prose.items() if word.search(body)]
+        if used and min(used) < where[0]:
+            late.append((term, min(used), where[0]))
+    return {"repeated": repeated, "late": late, "count": len(terms)}
+
+
 # ------------------------------------------------------------------ proposals
 
 PROPOSED = ROOT / "planning" / "curriculum" / "proposed.yaml"
@@ -509,6 +587,43 @@ def render() -> str:
         "",
         outcome_tables(outcomes, modules, found, scope),
     ]
+
+    words = term_findings(tutorials)
+    parts += [
+        "## Vocabulary",
+        "",
+        f"The tutorials mark a term being introduced by putting it in italics "
+        f"the first time it means something particular. **{words['count']} terms** "
+        "are marked that way, and asking two questions of them is free.",
+        "",
+        "### Introduced more than once",
+        "",
+        "The same word presented as new in two places. Either it is being "
+        "introduced twice, or the two places mean different things by it — "
+        "nothing here can tell which, and a person reading both decides. "
+        "`index` was the second kind and cost a rewrite.",
+        "",
+        "| Term | Introduced in tutorials |",
+        "|---|---|",
+    ]
+    for term, where in words["repeated"]:
+        parts.append(f"| *{term}* | {', '.join(str(n) for n in where)} |")
+
+    parts += [
+        "",
+        "### Used before it was introduced",
+        "",
+        "A word appearing in an earlier tutorial than the one that stops to "
+        "explain it. Some are ordinary English doing ordinary work and can be "
+        "ignored; the rest are places a student met a term as though they "
+        "already knew it.",
+        "",
+        "| Term | First appears in | Introduced in |",
+        "|---|---:|---:|",
+    ]
+    for term, used, introduced in words["late"]:
+        parts.append(f"| *{term}* | {used} | {introduced} |")
+    parts.append("")
 
     undecided = scope.get("undecided") or []
     if undecided:

@@ -95,6 +95,17 @@ all 18 as single files**, which is a zip of exactly those files. That is the one
 to reach for when you are setting up a room, filling a memory stick, or handing
 a class something to take home — rather than clicking through eighteen pages.
 
+The contents page opens with a **map of the series**: every tutorial as a box,
+grouped into the subject it is mostly about, with arrows for what follows what.
+A dashed arrow means a later tutorial builds on an earlier one and says so in
+its own text — those are found by reading the tutorials, not by anybody
+maintaining a list, so they cannot go out of date. Any box is a link.
+
+It answers a question the numbered list cannot: how the parts relate. You can
+see that the course spends four tutorials on programming before any mathematics
+appears, and that Tutorial 17 leans on five earlier ones, which makes it the
+expensive one to move.
+
 A tutorial with no code in it at all is a perfectly ordinary dewlab tutorial —
 same format, same styling — and it never loads the Python runtime, so a page of
 prose and mathematics opens instantly.
