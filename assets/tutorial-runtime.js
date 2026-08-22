@@ -63,7 +63,17 @@ function readManifest() {
   m.packages = m.packages && m.packages.length ? m.packages : DEFAULT_PACKAGES;
   m.assetBase = m.assetBase || "";
   m.dataBase = m.dataBase || "";
+  m.assetVersions = m.assetVersions || {};
   return m;
+}
+
+/* An asset the runtime fetches for itself, with the version build.py hashed for
+ * it. The page's own <link> and <script> tags are versioned in the markup; these
+ * two are not in the markup, so they would otherwise be the only files a
+ * returning visitor could be served a stale copy of. */
+function assetUrl(manifest, name) {
+  const version = manifest.assetVersions[name];
+  return manifest.assetBase + name + (version ? `?v=${version}` : "");
 }
 
 /* ---------------------------------------------------------------- chrome */
@@ -354,7 +364,7 @@ async function boot(manifest) {
    * cannot read a neighbouring file from disk either. */
   const source =
     manifest.toolsSource ||
-    (await fetch(manifest.assetBase + "tutorial_tools.py").then((r) => {
+    (await fetch(assetUrl(manifest, "tutorial_tools.py")).then((r) => {
       if (!r.ok) throw new Error(`tutorial_tools.py: HTTP ${r.status}`);
       return r.text();
     }));
@@ -462,6 +472,11 @@ async function renderMaths(manifest) {
   if (!manifest.math || spans.length === 0) return;
   let renderMath;
   try {
+    /* Deliberately a plain string: the standalone export bundles this import
+     * into one file, and it can only do that if the specifier is static. That
+     * costs the maths bundle its cache-busting, which is the right trade — it
+     * is vendored and pinned, so it changes only when we re-vendor on purpose,
+     * whereas the stylesheet and the runtime change most weeks. */
     ({ renderMath } = await import("./vendor/katex.bundle.js"));
   } catch (err) {
     console.error("dewlab: KaTeX failed to load; maths stays as source TeX", err);

@@ -929,3 +929,77 @@ class TestTheKnowledgeMap:
         strands = {"A": "algebra", "B": "algebra", "C": "sets"}
         assert b.strand_of(["A", "B", "C"], strands) == "algebra"
         assert b.strand_of([], strands) == "other"
+
+
+class TestAssetVersions:
+    """A page that has been visited before must not be served an old stylesheet.
+
+    Without a version in the URL, a browser keeps the copy it downloaded the
+    first time however many times the site is published — and the result does
+    not look like a caching problem, it looks like the page is broken, only for
+    people who have been here before.
+
+    Against the real assets, because a version of a file that is not there
+    proves nothing.
+    """
+
+    def urls(self, repo) -> str:
+        return built(repo) + (repo / "site" / "index.html").read_text()
+
+    def test_the_stylesheet_and_the_runtime_both_carry_a_version(self, repo_with_assets):
+        write(repo_with_assets, "Some prose.\n")
+        b.build()
+        page = self.urls(repo_with_assets)
+        assert re.search(r"tutorial-style\.css\?v=[0-9a-f]{8}", page)
+        assert re.search(r"tutorial-runtime\.js\?v=[0-9a-f]{8}", page)
+
+    def test_the_maths_stylesheet_does_too(self, repo_with_assets):
+        write(repo_with_assets, "Some prose.\n")
+        b.build()
+        assert re.search(r"katex\.min\.css\?v=[0-9a-f]{8}", self.urls(repo_with_assets))
+
+    def test_what_the_runtime_fetches_for_itself_is_versioned(self, repo_with_assets):
+        """It is not in the markup, so the page cannot bust it — the manifest can."""
+        write(repo_with_assets, "```python exec\nid: c\n1 + 1\n```\n")
+        b.build()
+        versions = manifest(built(repo_with_assets))["assetVersions"]
+        assert re.fullmatch(r"[0-9a-f]{8}", versions["tutorial_tools.py"])
+
+    def test_editing_an_asset_changes_its_version(self, repo_with_assets):
+        write(repo_with_assets, "Some prose.\n")
+        b.build()
+        before = re.search(r"tutorial-style\.css\?v=([0-9a-f]{8})", built(repo_with_assets))
+
+        style = repo_with_assets / "assets" / "tutorial-style.css"
+        style.write_text(style.read_text() + "\n.something-new { color: red; }\n")
+        b._ASSET_VERSIONS.clear()
+        b.build()
+        after = re.search(r"tutorial-style\.css\?v=([0-9a-f]{8})", built(repo_with_assets))
+        assert before.group(1) != after.group(1)
+
+    def test_the_same_assets_give_the_same_version(self, repo_with_assets):
+        """Otherwise every publish invalidates every cache for no reason."""
+        write(repo_with_assets, "Some prose.\n")
+        b.build()
+        first = re.search(r"tutorial-style\.css\?v=([0-9a-f]{8})", built(repo_with_assets))
+        b._ASSET_VERSIONS.clear()
+        b.build()
+        again = re.search(r"tutorial-style\.css\?v=([0-9a-f]{8})", built(repo_with_assets))
+        assert first.group(1) == again.group(1)
+
+    def test_two_repositories_in_one_process_do_not_share_a_version(self, repo_with_assets):
+        """The cache is keyed by path. Keyed by name, the second build here
+        would be handed the first one's hash."""
+        write(repo_with_assets, "Some prose.\n")
+        b.build()
+        mine = b.asset_version("tutorial-style.css")
+        assert mine != "missing"
+        assert len(b._ASSET_VERSIONS) >= 1
+        assert all(k.startswith("/") for k in b._ASSET_VERSIONS)
+
+
+class TestTheExportFailsLoudly:
+    def test_a_replacement_that_finds_nothing_stops_the_build(self):
+        """A silent no-op here is a downloadable copy with no stylesheet."""
+        with pytest.raises(b.BuildError, match="drifted apart"):
+            b.replace_once("<p>a page</p>", "<not-here>", "x", "the thing")
