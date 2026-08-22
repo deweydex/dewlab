@@ -260,6 +260,6 @@ We have implemented a complete set library from scratch: construction, membershi
 
 The connection to earlier work is satisfying: our sorting algorithms prepare the data, our binary search makes membership efficient, and the merge pattern from sorting theory drives all the set operations. Everything builds on everything else.
 
-You are now ready for Skills Demo 2B, which will ask you to combine polynomial algebra, equation solving, and set operations into a coherent toolkit.
+You are now ready to combine polynomial algebra, equation solving, and set operations into a single coherent toolkit of your own.
 
 What was the most elegant connection you noticed between sets and earlier material?

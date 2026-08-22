@@ -591,6 +591,41 @@ class TestTheContentsPage:
         b.build()
         assert manifest((repo / "site" / "index.html").read_text())["cells"] == []
 
+    def test_a_series_is_headed_by_its_name_not_its_filename(self, repo):
+        """A module with two series shows a heading per series, and until one
+        had two nobody saw that the heading was the slug."""
+        write(repo, "Prose.\n")
+        second = repo / "tutorials" / "computational-methods" / "looking-back.md"
+        second.write_text(
+            '---\ntitle: "Looking Back"\nslug: looking-back\n'
+            "module: computational-methods\n"
+            'year: "2026-2027"\nseries: reflections-and-review\nversion: 1\n---\n\nProse.\n'
+        )
+        order = set_order(repo, "computational-methods", "reflections-and-review",
+                          ["looking-back"])
+        order.write_text('series: Reflections and review\n' + order.read_text())
+        # `write` re-lists every markdown file it finds, so put the first series
+        # back to just its own.
+        set_order(repo, "computational-methods", "python-fundamentals", ["sample"])
+        b.build()
+        index = (repo / "site" / "index.html").read_text()
+        assert "<h3>Reflections and review</h3>" in index
+        assert "<h3>reflections-and-review</h3>" not in index
+
+    def test_a_series_without_a_name_falls_back_to_its_filename(self, repo):
+        """Optional, because a heading nobody sees is not worth a build error."""
+        write(repo, "Prose.\n")
+        second = repo / "tutorials" / "computational-methods" / "looking-back.md"
+        second.write_text(
+            '---\ntitle: "Looking Back"\nslug: looking-back\n'
+            "module: computational-methods\n"
+            'year: "2026-2027"\nseries: later\nversion: 1\n---\n\nProse.\n'
+        )
+        set_order(repo, "computational-methods", "later", ["looking-back"])
+        set_order(repo, "computational-methods", "python-fundamentals", ["sample"])
+        b.build()
+        assert "<h3>later</h3>" in (repo / "site" / "index.html").read_text()
+
     def test_a_module_title_is_shown_where_one_is_given(self, repo):
         path = write(repo, "Prose.\n")
         path.write_text(path.read_text().replace(
@@ -745,6 +780,20 @@ class TestTheSeriesArchive:
         index = (repo_with_assets / "site" / "index.html").read_text()
         assert 'href="download/computational-methods-core-skills.zip"' in index
         assert "Download all 2" in index
+
+    def test_a_series_of_one_is_offered_in_the_singular(self, repo_with_assets):
+        """"Download all 1 as single files" is not a sentence, and a series of
+        one stopped being hypothetical when reflections moved to their own."""
+        path = repo_with_assets / "tutorials" / "computational-methods" / "t1.md"
+        path.write_text(
+            '---\ntitle: "One"\nslug: t1\nmodule: computational-methods\n'
+            'year: "2026-2027"\nseries: core-skills\nversion: 1\n---\n\nProse.\n'
+        )
+        set_order(repo_with_assets, "computational-methods", "core-skills", ["t1"])
+        b.build(standalone=True)
+        index = (repo_with_assets / "site" / "index.html").read_text()
+        assert "Download this one as a single file" in index
+        assert "Download all 1" not in index
 
     def test_a_build_without_the_copies_offers_nothing_to_download(self, repo):
         self.two_tutorials(repo)

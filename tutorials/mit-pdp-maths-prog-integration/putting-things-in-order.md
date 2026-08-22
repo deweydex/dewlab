@@ -247,6 +247,6 @@ We have now built three sorting algorithms from scratch, and we understand how t
 
 More importantly, we have practised the full cycle of algorithm development: understand the problem, write pseudocode, implement, test, and analyse. This cycle is the same whether the problem is sorting numbers or building a machine learning system.
 
-You are now ready for Skills Demo 1, which will ask you to build these tools fresh, demonstrating your understanding of the algorithms and the programming concepts behind them.
+You are now ready to build these tools fresh, from nothing but the ideas -- which is the only real way to find out whether the algorithms and the programming behind them have landed.
 
 What was the most satisfying moment in these last two tutorials? What would you like to understand better?

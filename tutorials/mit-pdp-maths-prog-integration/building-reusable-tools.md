@@ -23,7 +23,7 @@ covers:
 
 **Programming Design Principles / Maths for IT**
 
-In the first seven tutorials, we learned to write functions. In Skills Demo 1, we used them to build algorithms. Now we are going to think more carefully about how to *design* functions -- not just to solve a specific problem, but to create tools we can reuse and combine.
+In the first seven tutorials, we learned to write functions, and then used them to build algorithms. Now we are going to think more carefully about how to *design* functions -- not just to solve a specific problem, but to create tools we can reuse and combine.
 
 This tutorial is about the craft of writing good functions. It connects to a professional practice called *modular design*, where complex programs are built from small, independent, well-tested pieces.
 

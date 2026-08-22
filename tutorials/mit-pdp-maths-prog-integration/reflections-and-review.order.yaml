@@ -1,0 +1,13 @@
+# The reading order of this series.
+#
+# Its own series rather than the last item of the main one, because it is not
+# the last thing you do -- it is the thing you come back to whenever you have
+# finished something worth looking at again. Sitting at position eighteen of
+# eighteen said the opposite.
+#
+# Every tutorial in the series must appear here exactly once, and every
+# slug here must belong to a tutorial. The build checks both.
+
+series: Reflections and review
+order:
+  - critique-and-reflection

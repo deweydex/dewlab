@@ -845,3 +845,37 @@ and neither exercised both at once.
 Copies now sit under `download/<module>/`, and four tests cover the crossing.
 Each was checked against the broken build first: all four fail without the fix.
 *Cost to change: small, and the guard is what makes it safe.*
+
+**7.6 — The tutorials do not name the assessments.**
+The prose named them throughout: *"you are now ready for Skills Demo 1"*, *"the
+last tutorial before Skills Demo 2B"*, *"in the next set of tutorials and Skills
+Demo 2"*. Thirteen references across nine tutorials.
+
+That ties the material to one institution's assessment schedule, and the
+schedule is the thing most likely to change. Every reference had a version that
+said the same thing about the student's own work — "you are now ready to build
+these tools fresh, from nothing but the ideas" says more than "you are now ready
+for Skills Demo 1" did, because it says what readiness consists of.
+
+A test guards it. Not because anybody would put them back deliberately, but
+because prose written next year will reach for whatever the prose around it
+does.
+
+**7.7 — Reflection is its own series, not the last tutorial.**
+"Looking Back Before Moving Forward" sat at position eighteen of eighteen, which
+said it was the thing you do at the end. It is not: it is the thing you come
+back to whenever you have finished something worth looking at again. It now
+lives in a `Reflections and review` series of its own, and its text no longer
+assumes you have just handed in one particular piece of work.
+
+Splitting it surfaced three things that had never been exercised, because no
+module had ever had two series:
+
+- The contents page headed each series with its **filename slug** rather than
+  the name in its order file.
+- The archive link read *"Download all 1 as single files"*.
+- The curriculum map's sequence graph keyed nodes on `order`, which restarts at
+  1 per series — so it emitted two nodes called `T1` and an arrow from one of
+  them to itself. The back-reference finder had the same fault.
+
+*Cost to change: small. Moving it back is a line in each of two order files.*

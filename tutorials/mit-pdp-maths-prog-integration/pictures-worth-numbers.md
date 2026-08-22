@@ -237,6 +237,6 @@ Find a chart online (in a news article, a textbook, or a website) that you think
 
 Visualisation is not a separate skill from statistics -- it is part of the same process of understanding data. A good analyst moves fluidly between numbers and pictures, using each to check and complement the other.
 
-We now have a complete toolkit for exploratory data analysis: counting, probability, summary statistics, and visualisation. In Skills Demo 2A, you will use all of these together.
+We now have a complete toolkit for exploratory data analysis: counting, probability, summary statistics, and visualisation. From here on they get used together rather than one at a time.
 
 What is the most important thing you have learned about presenting data?
