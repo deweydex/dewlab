@@ -236,3 +236,93 @@ class TestCommitting:
         editor.wait_for_function("globalThis.__committed !== undefined")
         editor.wait_for_selector("#dl-editor-save[disabled]")
         assert "pull/999" in editor.inner_text("#dl-editor-status")
+
+
+class TestStatus:
+    """Draft, beta, live, archived — set from the editor rather than by hand.
+
+    The field on its own would be trivial. What makes it worth automating is
+    that only a live tutorial is on the reading order, and the build refuses an
+    order file listing anything else — so the line has to move with the field
+    or the next build stops."""
+
+    def status_of(self, editor, slug: str) -> str:
+        return editor.evaluate(
+            """(slug) => {
+                 const text = globalThis.dewlabEditor.state.files.get(
+                   `tutorials/fixtures/${slug}.md`);
+                 const m = /^status:\\s*(\\S+)/m.exec(text);
+                 return m ? m[1] : "live";
+               }""", slug)
+
+    def order_of(self, editor) -> list:
+        return editor.evaluate(
+            """() => [...globalThis.dewlabEditor.state.series.values()]
+                 .find((s) => s.name === "maths").order""")
+
+    def test_every_tutorial_shows_its_status(self, editor):
+        assert editor.eval_on_selector_all(
+            '.dl-editor-card[data-slug="first-steps"] .dl-editor-status-option',
+            "e => e.map(b => b.textContent)") == ["draft", "beta", "live", "archived"]
+
+    def test_live_is_the_one_marked_when_nothing_says_otherwise(self, editor):
+        assert editor.get_attribute(
+            '.dl-editor-card[data-slug="first-steps"] '
+            '.dl-editor-status-option[data-status="live"]', "aria-pressed") == "true"
+
+    def test_setting_a_status_writes_the_field(self, editor):
+        editor.click('.dl-editor-card[data-slug="first-steps"] '
+                     '.dl-editor-status-option[data-status="beta"]')
+        assert self.status_of(editor, "first-steps") == "beta"
+
+    def test_leaving_live_takes_it_out_of_the_reading_order(self, editor):
+        assert "first-steps" in self.order_of(editor)
+        editor.click('.dl-editor-card[data-slug="first-steps"] '
+                     '.dl-editor-status-option[data-status="archived"]')
+        assert "first-steps" not in self.order_of(editor)
+
+    def test_returning_to_live_puts_it_back(self, editor):
+        editor.click('.dl-editor-card[data-slug="first-steps"] '
+                     '.dl-editor-status-option[data-status="draft"]')
+        assert "first-steps" not in self.order_of(editor)
+        editor.click('.dl-editor-off[data-slug="first-steps"] '
+                     '.dl-editor-status-option[data-status="live"]')
+        assert "first-steps" in self.order_of(editor)
+
+    def test_a_tutorial_off_the_route_is_still_listed(self, editor):
+        """Otherwise setting something to draft is a one-way trip: it drops out
+        of the order file and out of the list at once, with no way back to it."""
+        editor.click('.dl-editor-card[data-slug="first-steps"] '
+                     '.dl-editor-status-option[data-status="draft"]')
+        assert editor.query_selector('.dl-editor-off[data-slug="first-steps"]')
+        titles = editor.eval_on_selector_all(
+            ".dl-editor-open", "e => e.map(b => b.textContent)")
+        assert "First Steps" in titles
+
+    def test_the_status_change_commits_both_files_together(self, editor):
+        """Either file alone leaves the repository contradicting itself, and
+        the build stops on exactly that."""
+        editor.click('.dl-editor-card[data-slug="first-steps"] '
+                     '.dl-editor-status-option[data-status="archived"]')
+        editor.once("dialog", lambda d: d.accept("Retire first steps"))
+        editor.click("#dl-editor-save")
+        editor.wait_for_function("globalThis.__committed !== undefined")
+        paths = sorted(f["path"] for f in editor.evaluate("globalThis.__committed.files"))
+        assert paths == [
+            "tutorials/fixtures/first-steps.md",
+            "tutorials/fixtures/maths.order.yaml",
+        ]
+        written = next(f for f in editor.evaluate("globalThis.__committed.files")
+                       if f["path"].endswith(".md"))["text"]
+        assert "status: archived" in written
+
+    def test_the_field_lands_above_covers_rather_than_inside_it(self, editor):
+        """`covers:` has indented children, and anything written below them
+        would be read as one of them."""
+        written = editor.evaluate(
+            """() => {
+                 const meta = 'title: "T"\\nslug: t\\nversion: 2026.08.23.1\\n'
+                   + 'covers:\\n  a-section:\\n    covers: [MIT-1.4]';
+                 return globalThis.dewlabEditor.setFrontmatterField(meta, "status", "beta");
+               }""")
+        assert written.index("status: beta") < written.index("covers:")

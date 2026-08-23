@@ -1280,3 +1280,34 @@ p code, li code {
 .dl-contents.dl-archive { list-style: none; padding-left: 0; }
 .dl-contents.dl-archive a { color: var(--dl-muted); text-decoration: underline; }
 .dl-contents.dl-archive a:hover { color: var(--dl-orange); }
+
+/* Status, in the editor's list. Four small buttons rather than a select,
+   because the current one should be readable without opening anything. */
+.dl-editor-status { display: inline-flex; gap: 0.15rem; }
+.dl-editor-status-option {
+  font-family: var(--dl-mono);
+  font-size: 0.62rem;
+  padding: 0.1rem 0.35rem;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  background: none;
+  color: var(--dl-muted);
+  cursor: pointer;
+}
+.dl-editor-status-option:hover { border-color: var(--dl-cell-border); }
+.dl-editor-status-option[aria-pressed="true"] {
+  border-color: var(--dl-navy);
+  color: var(--dl-fg);
+  background: var(--dl-cell-bg);
+}
+/* Live is the ordinary state and needs no emphasis; the other three are
+   worth noticing from across the list. */
+.dl-editor-status-option[data-status="draft"][aria-pressed="true"],
+.dl-editor-status-option[data-status="beta"][aria-pressed="true"],
+.dl-editor-status-option[data-status="archived"][aria-pressed="true"] {
+  border-color: var(--dl-orange);
+  color: var(--dl-orange);
+}
+/* Off the reading order: present, and visibly not part of the sequence. */
+.dl-editor-off { border-style: dashed; }
+.dl-editor-off .dl-editor-open { color: var(--dl-muted); }

@@ -926,6 +926,66 @@ module had ever had two series:
 
 *Cost to change: small. Moving it back is a line in each of two order files.*
 
+**7.11 — The editor edits content, and previews structure rather than appearance.**
+The plan said it was not a markdown editor. Josh said "both", and the original
+argument turns out to have been about effort rather than about what the tool is
+for.
+
+A preview would have to be a second renderer — the build is Python-Markdown
+with three extensions, maths lifted out before conversion, and cells replaced
+by markup the runtime finishes — and a second renderer that drifts is worse
+than none, because it shows a page the build does not produce. So the editor
+previews what the build will *see*: the count of runnable cells, their ids, the
+headings, and every structural problem that would stop a build. A fence left
+open, a missing id, two cells sharing one. Appearance is checked by reading the
+page after it republishes.
+*Cost to change: small. The parser is pure and tested on its own.*
+
+**7.12 — Renaming a cell id destroys saved work, and only the editor can say so.**
+A cell's id is the key a student's work is stored under. Renaming one does not
+move their work; it orphans it, and the cell comes back empty. The build cannot
+warn about this — by the time it runs, the old id is gone. The editor is the
+only place both versions exist at once, so it names the ids that vanished
+before the commit is made.
+*Cost to change: small, but the warning is the reason the feature is safe.*
+
+**7.13 — Divide and conquer sits beside searching and sorting, not before it.**
+7.7 turned the edge around; Josh's answer says the edge should not be there at
+all. *"Both searching and sorting can be in the same module as divide and
+conquer, maybe we can split sorting and searching into two different tutorials
+and divide and conquer can be present in both."* The tutorials are already that
+split — `finding-things` and `putting-things-in-order` — so the change is only
+in the topic data: divide and conquer now needs iterating by index, the same as
+searching and sorting does, and neither is a prerequisite of the other.
+*Cost to change: one line.*
+
+**7.14 — Some things a student needs are nobody's learning outcome.**
+Josh: SOH-CAH-TOA needs *"categorization of different triangles (scalene,
+isosceles, equilateral) and coordinates so we can have the unit circle."*
+Coordinates was straightforward — the unit circle is drawn on axes, so it now
+needs the coordinate plane. Naming the kinds of triangle was not: it appears in
+no descriptor, and the map was built on a one-to-one correspondence between
+topics and outcomes.
+
+Topics may now carry a `PRE-` code, meaning **groundwork**: assumed, met in
+passing wherever it is first needed, and belonging to no outcome. They show on
+the map as groundwork rather than as "planned", which would have read as a gap
+in the course. They also carry their own `strand:`, since strands come from
+`outcomes.yaml` and a non-outcome would otherwise land in "other" — which is
+not a subject, it is a shrug.
+
+The guard against typos survives: a `MIT-` or `PDP-` code must still be a real
+outcome.
+*Cost to change: small. One code prefix and one branch in the state.*
+
+**7.15 — The colours on the tree are explained where they are used.**
+Every node carries its subject as a coloured edge, and the only way to learn
+what a colour meant was to choose a topic and read the panel — the wrong way
+round for a key. There is now one on the page, generated from the strands
+actually on the tree, so it cannot list a colour nothing uses or miss one that
+is there.
+*Cost to change: small.*
+
 **7.16 — The zoom controls are above the tree, not on it.**
 They floated over the canvas, which meant they covered whichever topics
 happened to sit under them and took the clicks meant for those topics —
@@ -1008,19 +1068,6 @@ the frontmatter and the URL.
 *Cost to change: small while nothing is versioned yet; large once tutorials
 carry dated versions and students have saved against them.*
 
-**7.20 — Modules appear in a declared order, not an alphabetical accident.**
-The contents page sorted modules by folder name, so Computational Methods came
-before Programming and Maths, Integrated for no reason anybody chose. That is
-the same invisible ordering the series order files were introduced to end
-(7.1), surviving one level up.
-
-`tutorials/modules.yaml` lists module names in the order they should appear.
-Lenient where the series files are strict, and deliberately: a tutorial missing
-from its order file *vanishes* from the site, so that has to stop the build; a
-module missing from here still appears, just last, which is visible on the page
-and not worth refusing to build over. No file at all falls back to alphabetical.
-*Cost to change: small.*
-
 **7.21 — Saved work is keyed on the module and the slug, not the slug alone.**
 A slug is unique within its module (7.3), and both modules have a
 `first-steps`. `progressKey()` was the prefix plus the slug, so the two
@@ -1100,3 +1147,55 @@ There is no server and no login, so "not finished" has exactly two meanings and
 they differ by whether a page exists. A draft is not built. A beta is built and
 findable only by someone given the link, and says so unmissably.
 *Cost to change: small.*
+
+**7.27 — Setting a status is two files, and that is why it belongs in the editor.**
+The frontmatter field on its own would be trivial to edit by hand. What is not
+trivial is that only a live tutorial is on the reading order, and the build
+refuses an order file that lists anything else (7.19) — so the line has to move
+with the field, or the next build stops. The editor does both in one commit.
+
+The list shows the four statuses on every tutorial with the current one marked,
+which also answers "what state is everything in?" at a glance.
+
+**One thing this surfaced, before it shipped.** Taking a tutorial off the
+reading order took it out of the editor's list too, because the list was built
+from the order file. Setting something to draft would have been a one-way trip:
+gone from the route and gone from the only place you could put it back. The list
+now shows what belongs to a series, not what is on its route, with the off-route
+ones unnumbered and visibly apart.
+*Cost to change: small.*
+
+
+**7.28 — Modules appear in a declared order, not an alphabetical accident.**
+The contents page sorted modules by folder name, so Computational Methods came
+before Programming and Maths, Integrated for no reason anybody chose. That is
+the same invisible ordering the series order files were introduced to end
+(7.1), surviving one level up.
+
+`tutorials/modules.yaml` lists module names in the order they should appear.
+Lenient where the series files are strict, and deliberately: a tutorial missing
+from its order file *vanishes* from the site, so that has to stop the build; a
+module missing from here still appears, just last, which is visible on the page
+and not worth refusing to build over. No file at all falls back to alphabetical.
+*Cost to change: small.*
+
+*Numbered out of sequence: this and 7.20 were written on two branches at once and both claimed the same number. The other one had already been cited, so this is the one that moved.*
+**7.29 — Five decisions were written to the wrong file and nearly lost.**
+7.11 to 7.15 are in this log now. They were not in it for two days, because the
+`cat >> DECISIONS_LOG.md` that wrote them ran in a shell whose working directory
+a previous command had changed — so they landed in a stray file outside the
+repository, and the commit that was meant to carry them carried nothing. The log
+jumped from 7.10 to 7.16 and neither of us noticed.
+
+Two things fixed, and one habit changed:
+
+- The five entries are back, in their place.
+- **Two branches both numbered an entry 7.20** and the merge took both without
+  complaint. The numbers are references — 7.19 is cited by 7.27, 7.3 by 7.21 —
+  so a duplicate is not cosmetic. The later one is 7.28, out of sequence and
+  saying why, because renumbering an entry something else already cites would be
+  the worse repair.
+- Appends to a file in the repository now use an absolute path or a fresh shell.
+  A relative redirect is only as good as the last `cd` anybody ran.
+
+*Cost to change: none. This is the record catching up with what happened.*
