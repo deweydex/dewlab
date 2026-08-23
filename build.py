@@ -710,6 +710,11 @@ def tree_data(tutorials: list[Tutorial]) -> dict:
     if not topics:
         return {}
     strands = load_strands()
+    # A topic may name its own strand, which is the only way a topic that is not
+    # an outcome can have one at all.
+    for code, topic in topics.items():
+        if topic.get("strand"):
+            strands[code] = str(topic["strand"])
     excluded = load_out_of_scope()
     taught = taught_where(tutorials)
     place, width, height = topic_layout(topics, strands)
@@ -718,7 +723,16 @@ def tree_data(tutorials: list[Tutorial]) -> dict:
     for code, topic in sorted(topics.items()):
         at = place[code]
         where = taught.get(code)
-        state = "excluded" if code in excluded else ("taught" if where else "planned")
+        # Groundwork is not an outcome, so no tutorial can claim it in `covers:`
+        # and it would otherwise sit on the map forever marked "planned". It is
+        # not planned; it is assumed, and picked up in passing wherever it is
+        # first needed.
+        if code.startswith("PRE-"):
+            state = "groundwork"
+        elif code in excluded:
+            state = "excluded"
+        else:
+            state = "taught" if where else "planned"
         nodes.append({
             "code": code,
             "name": topic["name"],
@@ -1385,6 +1399,33 @@ def write_index(
     return target
 
 
+def strand_key(data: dict) -> str:
+    """The colour on each node, said out loud.
+
+    Every node carries its subject as a coloured edge and, until this, the only
+    way to find out what a colour meant was to choose a topic and read the
+    panel — which is the wrong way round for a key. Generated from the strands
+    actually on the tree, so it cannot list a colour nothing uses or miss one
+    that is there.
+    """
+    strands = sorted({node["strand"] for node in data.get("nodes") or []})
+    if not strands:
+        return ""
+    items = "".join(
+        f'<span class="dl-tree-key-strand">'
+        f'<span class="dl-tree-hue" data-strand="{html.escape(strand)}"></span>'
+        f"{html.escape(strand)}</span>"
+        for strand in strands
+    )
+    return (
+        '<details class="dl-tree-strands"><summary>What the colours mean</summary>'
+        '<p class="dl-tree-strands-note">The stripe down the left of every topic '
+        "is its subject. Subjects are not laid out in columns — depth is — so "
+        "the colour is how you follow one thread down the tree.</p>"
+        f'<p class="dl-tree-key-list">{items}</p></details>'
+    )
+
+
 def write_tree_page(shell: str, tutorials: list[Tutorial]) -> Path | None:
     """The topic tree: every topic in both descriptors, and what needs what.
 
@@ -1407,20 +1448,26 @@ def write_tree_page(shell: str, tutorials: list[Tutorial]) -> Path | None:
         "computing, and where it is taught.</p>"
         '<div class="dl-tree-layout">'
         '<div class="dl-tree-main">'
-        '<div class="dl-tree-frame" id="dl-tree">'
-        '<div class="dl-tree-canvas" id="dl-tree-canvas"></div>'
+        # Above the frame rather than floating inside it. Floating, they sat on
+        # top of whichever topics happened to land under them and swallowed the
+        # clicks — the tree is taller now, so which topics those were changed
+        # with the layout.
         '<div class="dl-tree-controls">'
         '<button type="button" id="dl-tree-out" aria-label="Zoom out">−</button>'
         '<button type="button" id="dl-tree-fit" aria-label="Fit the width and return to the top">fit</button>'
         '<button type="button" id="dl-tree-in" aria-label="Zoom in">+</button>'
         "</div>"
+        '<div class="dl-tree-frame" id="dl-tree">'
+        '<div class="dl-tree-canvas" id="dl-tree-canvas"></div>'
         "</div>"
         '<p class="dl-tree-key">'
         '<span class="dl-tree-swatch" data-state="taught"></span>taught here'
         '<span class="dl-tree-swatch" data-state="planned"></span>planned'
+        '<span class="dl-tree-swatch" data-state="groundwork"></span>groundwork'
         '<span class="dl-tree-swatch" data-state="excluded"></span>not on this course'
         "</p>"
-        "</div>"
+        + strand_key(data)
+        + "</div>"
         '<aside class="dl-tree-detail" id="dl-tree-detail" aria-live="polite"></aside>'
         "</div>"
     )
@@ -1482,6 +1529,61 @@ def write_tree_page(shell: str, tutorials: list[Tutorial]) -> Path | None:
     return target
 
 
+def write_editor_page(shell: str) -> Path:
+    """The editor: reorder a series, insert a tutorial, and edit what is in one.
+
+    It edits the repository through the GitHub API rather than anything this
+    build produces, so it needs no data from here — only the shell, so that it
+    looks like the rest of the site and inherits the reader's theme.
+
+    Not linked from anywhere a student goes. It is a tool for the two people
+    who write the tutorials, and it holds a token.
+    """
+    body = (
+        "<h1>Editor</h1>"
+        '<p class="dl-editor-intro">Reorder a series by dragging, insert a '
+        "tutorial between two others, start a new one, or open any tutorial and "
+        "edit its text and its runnable cells. Nothing here touches the live "
+        "site: every change becomes one commit on a new branch and a draft pull "
+        "request, which you then read before merging.</p>"
+        '<div id="dl-editor"></div>'
+    )
+    manifest = {"slug": "editor", "version": 1, "assetBase": "assets/",
+                "dataBase": "data/", "cells": [], "assetVersions": {}}
+    tokens = {
+        "{{TITLE}}": "Editor",
+        "{{VERSION}}": "1",
+        "{{SLUG}}": "editor",
+        "{{MODULE}}": "",
+        "{{YEAR}}": "",
+        "{{SERIES}}": "",
+        "{{CRUMBS}}": "editor",
+        "{{ASSET_BASE}}": "assets/",
+        "{{STYLE_URL}}": versioned("assets/", "tutorial-style.css"),
+        "{{KATEX_CSS_URL}}": versioned("assets/", "vendor/katex.min.css"),
+        "{{RUNTIME_URL}}": versioned("assets/", "tutorial-runtime.js"),
+        "{{ROOT_BASE}}": "",
+        "{{NAV_PREV_NEXT}}": '<a class="dl-nav-up" href="index.html">All tutorials</a>',
+        "{{PAGE_SCRIPT}}": (
+            f'<script type="module" src="{versioned("assets/", "editor.js")}"></script>'
+        ),
+        "{{DOWNLOAD}}": "",
+        "{{TOC}}": "",
+        "{{BODY}}": body,
+        "{{MANIFEST_JSON}}": json.dumps(manifest).replace("<", "\\u003c"),
+    }
+    page = shell
+    for token, value in tokens.items():
+        page = page.replace(token, value)
+    if "{{" in page:
+        leftover = sorted({p.split("}}")[0] + "}}" for p in page.split("{{")[1:]})
+        raise BuildError(f"shell template has tokens the editor does not fill: {leftover}")
+    OUT.mkdir(parents=True, exist_ok=True)
+    target = OUT / "editor.html"
+    target.write_text(page)
+    return target
+
+
 def build(clean: bool = False, standalone: bool = False) -> list[Path]:
     """Build the site. `standalone` also writes the downloadable single files,
     which need the real assets on disk and are the slow part of a build."""
@@ -1530,6 +1632,7 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
         tree = write_tree_page(shell, tutorials)
         if tree is not None:
             written.append(tree)
+        written.append(write_editor_page(shell))
 
     OUT.mkdir(parents=True, exist_ok=True)
     shutil.rmtree(OUT / "assets", ignore_errors=True)

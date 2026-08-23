@@ -1028,12 +1028,14 @@ p code, li code {
   color: #fff;
 }
 
+/* Above the tree, not on it. These used to float over the canvas, which meant
+   they covered whichever topics happened to sit under them and took the clicks
+   meant for those topics. */
 .dl-tree-controls {
-  position: absolute;
-  right: 0.6rem;
-  bottom: 0.6rem;
   display: flex;
+  justify-content: flex-end;
   gap: 0.3rem;
+  margin-bottom: 0.4rem;
 }
 .dl-tree-controls button {
   min-width: 2rem;
@@ -1113,3 +1115,135 @@ p code, li code {
   .dl-tree-frame { height: min(58vh, 30rem); }
   .dl-tree-detail { max-height: none; }
 }
+
+/* ---------------------------------------------------------------- the editor
+   Not a student-facing page. It still uses the same shell and tokens, because
+   a tool that looks like the thing it edits is easier to trust. */
+
+.dl-editor-intro { max-width: var(--dl-line-width); line-height: 1.6; }
+
+.dl-editor-gate {
+  max-width: 34rem;
+  border: 1px solid var(--dl-cell-border);
+  border-radius: 6px;
+  padding: 1.2rem;
+  background: var(--dl-panel-bg);
+}
+.dl-editor-gate p { line-height: 1.55; margin: 0 0 0.8rem; }
+.dl-editor-warn { color: var(--dl-muted); font-size: 0.88rem; }
+.dl-editor-gate input {
+  width: 100%;
+  font-family: var(--dl-mono);
+  padding: 0.5rem;
+  margin-bottom: 0.8rem;
+  border: 1px solid var(--dl-cell-border);
+  border-radius: 4px;
+  background: var(--dl-output-bg);
+  color: var(--dl-fg);
+}
+
+.dl-editor-bar {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+.dl-editor-bar button,
+.dl-editor-gate button {
+  font: inherit;
+  font-size: 0.85rem;
+  padding: 0.35rem 0.8rem;
+  border: 1px solid var(--dl-cell-border);
+  border-radius: 4px;
+  background: var(--dl-panel-bg);
+  color: var(--dl-fg);
+  cursor: pointer;
+}
+.dl-editor-bar button:disabled { opacity: 0.5; cursor: default; }
+
+.dl-editor-status { margin: 0 0 1rem; font-size: 0.88rem; }
+.dl-editor-status[data-kind="error"] { color: var(--dl-orange); }
+
+.dl-editor-series { margin-bottom: 2rem; }
+.dl-editor-where { font-family: var(--dl-mono); font-size: 0.72rem; color: var(--dl-muted); margin: 0 0 0.6rem; }
+
+.dl-editor-list { list-style: none; padding: 0; margin: 0; }
+.dl-editor-card {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  border: 1px solid var(--dl-cell-border);
+  border-radius: 6px;
+  padding: 0.45rem 0.7rem;
+  background: var(--dl-panel-bg);
+  cursor: grab;
+}
+.dl-editor-pos { font-family: var(--dl-mono); font-size: 0.75rem; color: var(--dl-muted); min-width: 1.5rem; }
+.dl-editor-open {
+  flex: 1;
+  text-align: left;
+  font: inherit;
+  background: none;
+  border: 0;
+  color: var(--dl-fg);
+  cursor: pointer;
+  padding: 0;
+}
+.dl-editor-open:hover { color: var(--dl-orange); }
+.dl-editor-moves button {
+  font: inherit;
+  background: none;
+  border: 0;
+  color: var(--dl-muted);
+  cursor: pointer;
+  padding: 0 0.2rem;
+}
+
+/* The gaps are where an insertion goes, so they are visible targets rather
+   than hover-only — a place you can put something is worth seeing. */
+.dl-editor-gap { padding: 0.15rem 0; }
+.dl-editor-gap button {
+  font: inherit;
+  font-size: 0.72rem;
+  background: none;
+  border: 0;
+  border-radius: 3px;
+  color: var(--dl-muted);
+  cursor: pointer;
+  padding: 0.1rem 0.4rem;
+}
+.dl-editor-gap button:hover { color: var(--dl-orange); background: var(--dl-cell-bg); }
+
+.dl-editor-body {
+  width: 100%;
+  font-family: var(--dl-mono);
+  font-size: 0.82rem;
+  line-height: 1.5;
+  padding: 0.8rem;
+  border: 1px solid var(--dl-cell-border);
+  border-radius: 6px;
+  background: var(--dl-output-bg);
+  color: var(--dl-fg);
+  resize: vertical;
+}
+.dl-editor-meta pre { font-size: 0.75rem; overflow-x: auto; }
+
+.dl-editor-report { margin-top: 0.8rem; font-size: 0.85rem; }
+.dl-editor-report p { margin: 0 0 0.4rem; line-height: 1.5; }
+.dl-editor-danger {
+  border-left: 3px solid var(--dl-orange);
+  padding-left: 0.7rem;
+  font-weight: 600;
+}
+.dl-editor-error { color: var(--dl-orange); }
+.dl-editor-structure { color: var(--dl-muted); }
+
+/* The colour key. A details element because it is a reference, not a caption:
+   wanted once, then in the way. */
+.dl-tree-strands { margin: 0.4rem 0 1rem; font-size: 0.85rem; }
+.dl-tree-strands summary { cursor: pointer; color: var(--dl-muted); }
+.dl-tree-strands-note { max-width: var(--dl-line-width); line-height: 1.55; margin: 0.5rem 0; }
+.dl-tree-key-list { display: flex; flex-wrap: wrap; gap: 0.3rem 1.1rem; margin: 0; }
+.dl-tree-key-strand { display: inline-flex; align-items: center; }
+.dl-tree-swatch[data-state="groundwork"] { border-style: dotted; border-color: var(--dl-muted); }

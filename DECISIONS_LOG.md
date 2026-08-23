@@ -925,3 +925,13 @@ module had ever had two series:
   them to itself. The back-reference finder had the same fault.
 
 *Cost to change: small. Moving it back is a line in each of two order files.*
+
+**7.16 — The zoom controls are above the tree, not on it.**
+They floated over the canvas, which meant they covered whichever topics
+happened to sit under them and took the clicks meant for those topics —
+invisibly, differently at every zoom level, and only noticed because adding one
+topic moved the layout enough to put a tested node underneath them.
+
+The guard added in 7.8, which stopped the frame stealing presses on the
+controls, is gone with them: outside the frame it guards nothing.
+*Cost to change: small.*

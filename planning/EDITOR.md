@@ -88,13 +88,39 @@ The alternative — a GitHub App with proper OAuth — removes the token from th
 browser and costs an app registration, a redirect URL, and somewhere to keep a
 secret. Worth revisiting if a third person ever edits; overkill for two.
 
-## What it deliberately does not do
+## It edits content too
 
-**It is not a markdown editor.** Writing a tutorial happens where writing
-happens — an editor, an IDE, the GitHub web editor. This page exists for the
-things that are painful precisely because they are spread across many files:
-order, insertion, creation. Trying to make it a content editor as well would
-double its size and halve its chance of being finished.
+The plan used to say the opposite — *"it is not a markdown editor"* — on the
+grounds that writing happens where writing happens and a content editor would
+double the size of the page. Josh answered "both", and he was right: the
+argument was about effort, not about what the tool is for.
+
+Editing content raises three things that reordering never did.
+
+**A cell's `id:` is the key a student's saved work is stored under.** Renaming
+one does not move their work; it orphans it, and the cell comes back empty on
+their next visit. Nothing in the build can warn about this, because by the time
+the build runs the rename has already happened and the old id is gone. The
+editor is the only place both versions exist at once, so it is the only place
+the warning can be made — it names the ids that vanished, before the commit.
+
+**A preview would have to be a second renderer.** The build is Python:
+Python-Markdown with three extensions, maths lifted out before conversion,
+cells replaced by markup the runtime finishes. A browser preview of that is a
+reimplementation, and a reimplementation that drifts is worse than none — it
+would show a page the build does not produce.
+
+So the editor previews **structure, not appearance**. It shows what the build
+will see: how many runnable cells, what their ids are, how many headings, and
+every structural problem that would stop the build — a fence left open, a
+missing id, two cells sharing one, an id that is not a slug. That is honest
+about what a browser can check, and it catches the mistakes that actually
+happen. Appearance is checked by reading the page after it republishes.
+
+**The token is open far more often.** It was sized for occasional structural
+edits. Content editing means the page is open while writing, so the gate states
+the trade plainly, there is a "forget my token" button on every screen, and the
+page is linked from nowhere a student goes.
 
 ## Order of work
 

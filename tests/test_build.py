@@ -1239,6 +1239,34 @@ class TestTheTopicTree:
         states = {n["code"]: n["state"] for n in self.data(repo)["nodes"]}
         assert states["MIT-3.6"] == "planned"
 
+    def test_groundwork_is_not_reported_as_a_missing_tutorial(self, repo):
+        """A `PRE-` topic is nobody's learning outcome, so no tutorial can claim
+        it in `covers:`. Left alone it would sit on the map forever marked
+        "planned", which reads as a gap in the course rather than as something
+        picked up in passing."""
+        write(repo, "Some prose.\n")
+        b.build()
+        node = next(n for n in self.data(repo)["nodes"] if n["code"] == "PRE-1")
+        assert node["state"] == "groundwork"
+
+    def test_a_topic_may_name_its_own_strand(self, repo):
+        """Strands come from outcomes.yaml, so a topic that is deliberately not
+        an outcome has none — and lands in "other", which is not a subject."""
+        write(repo, "Some prose.\n")
+        b.build()
+        node = next(n for n in self.data(repo)["nodes"] if n["code"] == "PRE-1")
+        assert node["strand"] == "geometry"
+
+    def test_the_colour_key_lists_every_strand_on_the_tree_and_no_others(self, repo):
+        """The colours are on every node and were explained nowhere except the
+        panel you only see after choosing something."""
+        write(repo, "Some prose.\n")
+        b.build()
+        page = self.tree(repo)
+        listed = set(re.findall(r'<span class="dl-tree-hue" data-strand="([^"]+)"', page))
+        assert listed == {n["strand"] for n in self.data(repo)["nodes"]}
+        assert "What the colours mean" in page
+
     def test_a_topic_we_ruled_out_says_so(self, repo):
         write(repo, "Some prose.\n")
         b.build()
