@@ -1,0 +1,265 @@
+---
+title: "What Are the Chances?"
+slug: what-are-the-chances
+module: mit-pdp-maths-prog-integration
+module_title: "Programming and Maths, Integrated"
+year: "2026-2027"
+series: maths-and-programming
+version: 2026.08.23.2
+covers:
+  basic-probability:
+    covers: [MIT-5.1, MIT-5.6, MIT-5.7]
+  compound-events:
+    covers: [MIT-5.8]
+  simulation-testing-probability-with-code:
+    touches: [MIT-5.7]
+  conditional-probability:
+    covers: [MIT-5.8]
+---
+
+# What Are the Chances?
+
+**Programming Design Principles / Maths for IT**
+
+Probability is the mathematics of uncertainty. It gives us a precise language for talking about how likely things are, and it underpins everything from weather forecasts to medical diagnosis to machine learning. Today we build the foundations, and we will use an approach that is unique to programming: we can *simulate* random events to verify our calculations.
+
+## Basic Probability
+
+The probability of an event is a number between 0 (impossible) and 1 (certain). When all outcomes are equally likely, the probability of an event A is:
+
+$$P(A) = \frac{\text{number of favourable outcomes}}{\text{total number of outcomes}}$$
+
+Flip a fair coin: there are 2 equally likely outcomes and 1 favourable outcome (heads), so $P(\text{heads}) = \frac{1}{2} = 0.5$.
+
+Roll a fair die: $P(\text{rolling a 4}) = \frac{1}{6}$. $P(\text{rolling an even number}) = \frac{3}{6} = \frac{1}{2}$.
+
+### Your turn
+
+Let's try a function `probability(favourable, total)` for a basic probability, with a docstring. Two edge cases are worth deciding about before writing it: what should happen when the total is 0, and what should happen when the favourable count is larger than the total?
+
+```python exec
+id: your-turn-1
+# Your probability function
+```
+
+```python exec
+id: your-turn-2
+# Test cases
+# probability(1, 6)     -> a specific die face
+# probability(13, 52)   -> drawing a heart from a deck
+# probability(4, 52)    -> drawing an ace
+```
+
+## Compound Events
+
+Things get interesting when we combine events. There are a few key rules.
+
+**The complement rule**: the probability that an event does *not* happen is $1 - P(A)$. If there is a 30% chance of rain, there is a 70% chance of no rain.
+
+**The addition rule**: for two events that cannot both happen at the same time (*mutually exclusive* events):
+
+$$P(A \text{ or } B) = P(A) + P(B)$$
+
+Rolling a 2 or a 5 on a die: $P = \frac{1}{6} + \frac{1}{6} = \frac{2}{6} = \frac{1}{3}$
+
+**The general addition rule**: when events *can* overlap:
+
+$$P(A \text{ or } B) = P(A) + P(B) - P(A \text{ and } B)$$
+
+We subtract the overlap to avoid counting it twice.
+
+```python exec
+id: compound-events-1
+# Card example: probability of drawing an Ace OR a Heart
+p_ace = 4 / 52
+p_heart = 13 / 52
+p_ace_of_hearts = 1 / 52    # the overlap: it's both an ace AND a heart
+
+p_ace_or_heart = p_ace + p_heart - p_ace_of_hearts
+print("P(Ace or Heart):", p_ace_or_heart)
+print("That's", round(p_ace_or_heart, 4), "or about", round(p_ace_or_heart * 100, 1), "%")
+```
+
+**The multiplication rule**: for *independent* events (one happening does not affect the other):
+
+$$P(A \text{ and } B) = P(A) \times P(B)$$
+
+Flipping heads twice in a row: $P = \frac{1}{2} \times \frac{1}{2} = \frac{1}{4}$
+
+When events are *not* independent (like drawing cards without replacement), the second probability depends on the first:
+
+$$P(\text{two aces in a row}) = \frac{4}{52} \times \frac{3}{51}$$
+
+After drawing one ace, there are 3 aces left among 51 remaining cards.
+
+### Your turn
+
+Using your `probability` function and the combination functions from *Counting Carefully*, here are five card questions. The reasoning is worth writing down before the computing — it is where the mistakes are visible.
+
+1. What is the probability of drawing a face card (Jack, Queen, or King)?
+2. What is the probability of drawing a card that is red *and* a face card?
+3. What is the probability of drawing a card that is red *or* a face card?
+4. If you draw two cards without replacement, what is the probability both are hearts?
+5. What is the probability of being dealt a royal flush (A, K, Q, J, 10 all of the same suit) in a 5-card hand?
+
+```python exec
+id: your-turn-3
+# Your reasoning and calculations for each question
+
+# 1. Face cards
+
+# 2. Red AND face card
+
+# 3. Red OR face card (careful: these overlap!)
+
+# 4. Two hearts without replacement
+
+# 5. Royal flush (hint: how many royal flushes are possible? 
+#    how many total 5-card hands are possible?)
+```
+
+## Simulation: Testing Probability with Code
+
+One of the wonderful things about having programming skills: we can *simulate* random events to verify our calculations. If we flip a simulated coin 10,000 times, we should see heads about 50% of the time.
+
+Python's `random` module provides the tools:
+
+```python exec
+id: simulation-testing-probability-with-code-1
+import random
+
+# Simulate flipping a coin 10,000 times
+num_flips = 10000
+heads_count = 0
+
+for i in range(num_flips):
+    flip = random.choice(["heads", "tails"])
+    if flip == "heads":
+        heads_count = heads_count + 1
+
+proportion = heads_count / num_flips
+print("Heads:", heads_count, "out of", num_flips)
+print("Proportion:", round(proportion, 4))
+print("Expected:   0.5")
+```
+
+The simulated proportion will not be exactly 0.5, but it should be close. The more trials we run, the closer it gets. This is the *law of large numbers* in action.
+
+### Your turn
+
+How might you write `simulate_coin_flips(num_trials)`, returning the proportion of heads? Calling it with 100, then 1000, then 10000, then 100000 trials is the interesting part. What happens to the proportion as the number of trials grows, and how fast?
+
+```python exec
+id: your-turn-4
+# Your simulate_coin_flips function
+```
+
+```python exec
+id: your-turn-5
+# Run with increasing numbers of trials
+```
+
+### Simulating card draws
+
+Let's simulate the card probabilities we calculated earlier. We will represent a deck of cards and draw from it:
+
+```python exec
+id: simulating-card-draws-1
+def make_deck():
+    """Create a standard 52-card deck as a list of (rank, suit) tuples."""
+    ranks = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"]
+    suits = ["Hearts", "Diamonds", "Clubs", "Spades"]
+    deck = []
+    for suit in suits:
+        for rank in ranks:
+            deck.append((rank, suit))
+    return deck
+
+deck = make_deck()
+print("Deck size:", len(deck))
+print("First 5 cards:", deck[:5])
+print("Last 5 cards:", deck[-5:])
+```
+
+### Your turn
+
+A function `simulate_draw(num_trials)` could draw a single card from a shuffled deck many times over, counting how often it is an Ace or a Heart. How close does the simulated proportion get to the probability you calculated earlier?
+
+Hint: `random.shuffle(deck)` shuffles a list in place, and `deck[0]` gives the top card.
+
+```python exec
+id: your-turn-6
+# Your simulate_draw function
+```
+
+```python exec
+id: your-turn-7
+# Compare simulation to calculation
+```
+
+### A more complex simulation
+
+What would it take to simulate drawing two cards *without replacement* and count how often both are hearts? The phrase without replacement is the whole difficulty. How close does it come to your calculation?
+
+Then, if there is time, dealing 5-card hands and counting the royal flushes is worth trying. It takes millions of trials to see even one, and watching a simulation fail to find something is its own lesson about how rare that something is.
+
+```python exec
+id: a-more-complex-simulation-1
+# Your two-hearts simulation
+```
+
+```python exec
+id: a-more-complex-simulation-2
+# Optional: royal flush simulation (this may take a while to run!)
+```
+
+## Conditional Probability
+
+Sometimes the probability of an event depends on what has already happened. The probability of drawing a heart *given that* we already drew a heart (without replacement) is $\frac{12}{51}$, not $\frac{13}{52}$.
+
+This is called *conditional probability* and is written $P(B|A)$ -- "the probability of B given A":
+
+$$P(B|A) = \frac{P(A \text{ and } B)}{P(A)}$$
+
+We will not go deep into this today, but it is worth knowing the concept because it is foundational in machine learning (where Bayes' theorem, which builds on conditional probability, is everywhere).
+
+### Your turn
+
+If you draw one card and see that it is red, what is the probability that it is a heart? Think about this intuitively first, then verify with the formula.
+
+```python exec
+id: your-turn-8
+# Your reasoning and calculation
+```
+
+## Reflection
+
+We have covered the fundamental rules of probability — complement, addition, multiplication — and used simulation to check the calculations. Simulation is not only a teaching device here. When a problem gets too tangled for an exact answer, running it a million times is what people actually do, and the method has a name: Monte Carlo.
+
+The combination of mathematical reasoning and computational verification is powerful: we calculate an expected probability, then simulate to check. If they agree, we have confidence in both. If they disagree, we have a bug to find -- and finding bugs is learning.
+
+What was most surprising about the relationship between calculation and simulation?
+
+## Where to Read More
+
+3Blue1Brown (2020). *Bayes theorem, the geometry of changing beliefs.*
+<https://www.youtube.com/watch?v=HZGCoVF3YvM>. Conditional probability drawn as
+areas, which is the representation that makes the medical-test result stop being
+surprising.
+
+StatQuest with Josh Starmer (2017). *Probability is not Likelihood.*
+<https://www.youtube.com/watch?v=pYxNSUDSFH4>. A distinction this tutorial skirts
+and which matters the moment you meet statistics properly.
+
+Numberphile (2016). *Monty Hall Problem.*
+<https://www.youtube.com/watch?v=4Lb-6rxZxx0>. The classic worked argument, and
+worth watching after simulating it rather than before.
+
+Mlodinow, L. (2008). *The Drunkard's Walk: How Randomness Rules Our Lives.*
+Pantheon. Accessible, and unusually good on why human intuition about
+probability is so unreliable.
+
+Python Software Foundation. *`random` — Generate pseudo-random numbers.*
+<https://docs.python.org/3/library/random.html>. In particular the difference
+between `random.choice` and `random.sample`, which is the difference between
+drawing with and without replacement.

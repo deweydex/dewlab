@@ -2036,3 +2036,54 @@ class TestPracticeIsReachable:
         assert "one-practice.html" in page and "mixed.html" in page
         # Its own practice page comes first: it is the one for now.
         assert page.index("one-practice.html") < page.index("mixed.html")
+
+
+class TestTwoReleasesOnOneDay:
+    """The picker shows a date. Two releases on one day show the same date.
+
+    Found by releasing four tutorials on the afternoon they were first written:
+    a reader choosing between them saw two identical options."""
+
+    def release(self, repo, slug: str, version: str, status: str = "live") -> Path:
+        folder = repo / "tutorials" / "computational-methods" / slug
+        folder.mkdir(parents=True, exist_ok=True)
+        name = f"{slug}.md" if status == "live" and version.endswith(".9") else f"v{version}.md"
+        path = folder / name
+        path.write_text(
+            FRONTMATTER.format(slug=slug, version=version).replace(
+                f"version: {version}\n", f"version: {version}\nstatus: {status}\n")
+            + "Prose.\n"
+        )
+        set_order(repo, "computational-methods", "python-fundamentals", [slug])
+        return path
+
+    def versions(self, repo, slug: str) -> list[dict]:
+        page = (repo / "site" / "tutorials" / "computational-methods"
+                / f"{slug}.html").read_text()
+        return manifest(page).get("versions", [])
+
+    def test_two_releases_on_one_day_are_told_apart(self, repo):
+        self.release(repo, "sample", "2026.08.23.1")
+        self.release(repo, "sample", "2026.08.23.2")
+        b.build()
+        shown = [v["date"] for v in self.versions(repo, "sample")]
+        assert len(shown) == 2
+        assert len(set(shown)) == 2, f"both options read the same: {shown}"
+        assert shown == ["23 August 2026 (2)", "23 August 2026 (1)"]
+
+    def test_releases_on_different_days_keep_a_plain_date(self, repo):
+        """The number is noise where the date already separates them."""
+        self.release(repo, "sample", "2026.08.23.1")
+        self.release(repo, "sample", "2026.09.15.1")
+        b.build()
+        shown = [v["date"] for v in self.versions(repo, "sample")]
+        assert shown == ["15 September 2026", "23 August 2026"]
+
+    def test_only_the_crowded_day_is_numbered(self, repo):
+        """Three releases, two of them on one day."""
+        self.release(repo, "sample", "2026.08.23.1")
+        self.release(repo, "sample", "2026.08.23.2")
+        self.release(repo, "sample", "2026.09.15.1")
+        b.build()
+        shown = [v["date"] for v in self.versions(repo, "sample")]
+        assert shown == ["15 September 2026", "23 August 2026 (2)", "23 August 2026 (1)"]

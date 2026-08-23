@@ -1472,3 +1472,55 @@ the fold renders as a browser-default triangle sitting in the prose.
 
 *Cost to change: the classes are in the markdown of every practice page. The
 check is six lines and five tests.*
+
+**7.53 — Four tutorials re-released, and what the trial found.**
+Josh asked for the versioning system to be tried on real content: "some of the
+sections that are more traditional and use more imperatives — you can just pick
+4 that are diverse in their subject matter."
+
+*First Steps* (introductory programming), *Numbers and Their Families* (number
+and algebra), *What Are the Chances* (probability) and *Putting Things in Order*
+(algorithms). All four were among the highest in the repository for command
+language, being converted from notebooks, and they cover four different
+subjects.
+
+Each is now a folder: the working copy at `2026.08.23.2` and the previous
+release frozen at `v2026.08.23.1.md`. Thirty-one tutorials became a hundred and
+fifty-two pages.
+
+The trial did what a trial is for. **Three defects, none of which any test would
+have caught:**
+
+**The curriculum map counted every release as a tutorial.** It reads every `.md`
+under `tutorials/`, so the four re-released ones appeared twice: the sequence
+graph came out with two nodes called T1 and thirty-one tutorials became
+thirty-five. Fixed by giving the map build.py's rule — newest live release
+answers for the tutorial — in a `newest_live` function of its own, with five
+tests, four of which fail against the old behaviour.
+
+**Two releases on one day were indistinguishable.** The picker shows a date, and
+both said "23 August 2026". A student choosing between two identical options is
+choosing at random. The sequence number is now shown, and only where it is
+needed, so an ordinary tutorial released once keeps a plain date.
+
+**One cell had never worked on a fresh page.** *Numbers and Their Families* has a
+`explore_number` that calls `classify_number`, which the student is asked to
+write in an earlier cell that ships empty — so it raised `NameError` for anybody
+who ran it before doing the exercise. It reports what is missing now instead.
+The frozen release keeps the bug, which is what a frozen release is for.
+
+*Cost to change: the folder layout is what build.py already expected. Undoing a
+release means moving the file back and deleting the frozen copy, and is free
+while no class has seen either.*
+
+**7.54 — The first bibliographies.**
+Josh's guide requires one in every tutorial; none had one. These four now do,
+four or five entries each, chosen to be genuinely worth an hour rather than to
+fill a section — Timo Bingmann's sorting visualisation, 3Blue1Brown on
+logarithms, the Python documentation on floating point, Downey's *Think Python*.
+
+Thirty-one to go. That is the largest single piece of style work outstanding and
+it is not mechanical: a bibliography of plausible-looking links is worse than
+none, because a student who follows a dead one stops following any of them.
+
+*Cost to change: per tutorial, and each needs a person who knows the sources.*

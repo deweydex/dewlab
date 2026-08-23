@@ -368,3 +368,61 @@ class TestWhatTheTutorialsSayAboutTheCourse:
             if "skills demo" in path.read_text().lower()
         ]
         assert guilty == [], f"still names a skills demo: {guilty}"
+
+
+class TestSeveralReleasesOfOneTutorial:
+    """A tutorial with more than one release is a folder of files.
+
+    All of them carry real frontmatter, so reading the folder naively counts one
+    tutorial several times. That is how this was found: re-releasing four
+    tutorials put two nodes called T1 in the sequence graph and turned
+    thirty-one tutorials into thirty-five."""
+
+    def release(self, repo, name: str, version: str, status: str = "live",
+                slug: str = "sample", heading: str = "A Real Section") -> Path:
+        folder = repo / "tutorials" / "demo" / slug
+        folder.mkdir(parents=True, exist_ok=True)
+        path = folder / name
+        path.write_text(
+            f'---\ntitle: "Sample"\nslug: {slug}\nmodule: demo\n'
+            f'year: "2026-2027"\nseries: s\nversion: {version}\n'
+            f"status: {status}\n---\n\n# Sample\n\n## {heading}\n\nProse.\n"
+        )
+        (repo / "tutorials" / "demo" / "s.order.yaml").write_text(
+            f"order:\n  - {slug}\n")
+        return path
+
+    def test_one_tutorial_however_many_releases(self, repo):
+        self.release(repo, "v2026.08.23.1.md", "2026.08.23.1")
+        self.release(repo, "v2026.08.23.2.md", "2026.08.23.2")
+        self.release(repo, "sample.md", "2026.08.24.1")
+        assert len(cm.load_tutorials(cm.load_outcomes()[0])) == 1
+
+    def test_the_newest_live_release_is_the_one_reported(self, repo):
+        """Not merely one of them — the current one."""
+        old = self.release(repo, "v2026.08.23.1.md", "2026.08.23.1")
+        old.write_text(old.read_text().replace('title: "Sample"', 'title: "The Old Name"'))
+        new = self.release(repo, "sample.md", "2026.08.24.1")
+        new.write_text(new.read_text().replace('title: "Sample"', 'title: "The New Name"'))
+        found = cm.load_tutorials(cm.load_outcomes()[0])
+        assert [t.title for t in found] == ["The New Name"]
+
+    def test_a_beta_release_does_not_displace_the_live_one(self, repo):
+        """Same rule build.py uses: newest live, not newest."""
+        live = self.release(repo, "v2026.08.23.1.md", "2026.08.23.1", status="live")
+        self.release(repo, "sample.md", "2026.08.24.1", status="beta")
+        assert cm.newest_live(sorted(
+            (repo / "tutorials").rglob("*.md"))) == {live}
+
+    def test_with_nothing_live_the_newest_still_answers(self, repo):
+        self.release(repo, "v2026.08.23.1.md", "2026.08.23.1", status="beta")
+        newest = self.release(repo, "sample.md", "2026.08.24.1", status="beta")
+        assert cm.newest_live(sorted(
+            (repo / "tutorials").rglob("*.md"))) == {newest}
+
+    def test_two_different_tutorials_are_still_two(self, repo):
+        self.release(repo, "sample.md", "2026.08.24.1", slug="sample")
+        self.release(repo, "other.md", "2026.08.24.1", slug="other")
+        (repo / "tutorials" / "demo" / "s.order.yaml").write_text(
+            "order:\n  - sample\n  - other\n")
+        assert len(cm.load_tutorials(cm.load_outcomes()[0])) == 2

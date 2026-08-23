@@ -1596,10 +1596,19 @@ def version_manifest(tutorial: Tutorial, family: list[Tutorial]) -> list[dict]:
     """
     if len(family) < 2:
         return []
+    # Two releases on one day read as the same option in the picker, because a
+    # reader sees the date and not the sequence number. Found the first time a
+    # tutorial was released twice in an afternoon. The number is added only
+    # where it is needed, so the ordinary case stays a plain date.
+    same_day = {
+        version.date for version in family
+        if sum(1 for other in family if other.date == version.date) > 1
+    }
     return [
         {
             "version": other.version,
-            "date": other.date,
+            "date": (f"{other.date} ({other.released[3]})"
+                     if other.date in same_day else other.date),
             "status": other.status,
             "isDefault": other.is_default,
             "url": os.path.relpath(other.out_path, tutorial.out_path.parent),
