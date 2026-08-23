@@ -137,8 +137,8 @@ def load_tutorials(known: dict[str, Outcome]) -> list[Tutorial]:
                     )
             sections.append(Section(anchor, headings[anchor], covers, touches))
 
-        if meta.get("practice_for"):
-            # A page of problems sets them on what its tutorial taught. Reading
+        if meta.get("practice_for") or meta.get("practice_across"):
+            # A page of problems sets them on what its tutorials taught. Reading
             # it as a tutorial would report the same outcome as taught twice and
             # put a link to a question where the answer should be.
             continue
