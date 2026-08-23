@@ -1,0 +1,13 @@
+# The order the modules appear on the contents page.
+#
+# Without this they came out in alphabetical order of their folder names, which
+# is not an order anybody chose — it is the same invisible accident the series
+# order files were introduced to end.
+#
+# Lenient where the series files are strict, and deliberately so: a tutorial
+# missing from its order file vanishes from the site, so that has to stop the
+# build. A module missing from here still appears, just last — which is visible
+# on the page, and not worth refusing to build over.
+order:
+  - mit-pdp-maths-prog-integration
+  - computational-methods

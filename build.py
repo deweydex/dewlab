@@ -392,6 +392,29 @@ def place_blocks(
 ORDER_SUFFIX = ".order.yaml"
 
 
+MODULE_ORDER_FILE = "modules.yaml"
+
+
+def module_order() -> list[str]:
+    """The order modules appear in, from `tutorials/modules.yaml`.
+
+    Optional: without it the contents page falls back to alphabetical, which is
+    what it did before and is at least stable.
+
+    The path is worked out here rather than held in a constant beside TUTORIALS,
+    because the tests point TUTORIALS at a temporary directory and a constant
+    computed at import time would still be looking at the real one.
+    """
+    path = TUTORIALS / MODULE_ORDER_FILE
+    if not path.is_file():
+        return []
+    data = yaml.safe_load(path.read_text()) or {}
+    listed = data.get("order") or []
+    if not isinstance(listed, list) or not all(isinstance(m, str) for m in listed):
+        fail(path, "a module order file needs `order:` as a list of module names")
+    return listed
+
+
 def order_files() -> dict[tuple[str, str], list[str]]:
     """The reading order of each series, read from one file per series.
 
@@ -1086,7 +1109,12 @@ def render_index(
     ]
 
     titles = series_titles()
-    for module in sorted({module for module, _ in groups}):
+    listed = module_order()
+    everywhere = {module for module, _ in groups} | set(retired)
+    # Listed modules in the order given, then anything else alphabetically, so
+    # adding a module lands it at the end rather than breaking the page.
+    ordered = [m for m in listed if m in everywhere] + sorted(everywhere - set(listed))
+    for module in ordered:
         out.append(f"<h2>{html.escape(names.get(module, module))}</h2>")
         for (owner, series), members in sorted(groups.items()):
             if owner != module:

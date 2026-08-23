@@ -1007,3 +1007,16 @@ reads stays prose — "20 August 2026" — with the dotted form kept for the fil
 the frontmatter and the URL.
 *Cost to change: small while nothing is versioned yet; large once tutorials
 carry dated versions and students have saved against them.*
+
+**7.20 — Modules appear in a declared order, not an alphabetical accident.**
+The contents page sorted modules by folder name, so Computational Methods came
+before Programming and Maths, Integrated for no reason anybody chose. That is
+the same invisible ordering the series order files were introduced to end
+(7.1), surviving one level up.
+
+`tutorials/modules.yaml` lists module names in the order they should appear.
+Lenient where the series files are strict, and deliberately: a tutorial missing
+from its order file *vanishes* from the site, so that has to stop the build; a
+module missing from here still appears, just last, which is visible on the page
+and not worth refusing to build over. No file at all falls back to alphabetical.
+*Cost to change: small.*

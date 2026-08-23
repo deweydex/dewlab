@@ -591,6 +591,57 @@ class TestTheContentsPage:
         b.build()
         assert manifest((repo / "site" / "index.html").read_text())["cells"] == []
 
+    def module_headings(self, repo) -> list[str]:
+        """The module headings in page order.
+
+        By the heading rather than by substring: the slug also appears in every
+        href below it, so a plain `index()` finds the link, not the heading."""
+        page = (repo / "site" / "index.html").read_text()
+        return re.findall(r"<h2>(.*?)</h2>", page)
+
+    def test_modules_appear_in_the_order_the_module_file_gives(self, repo):
+        """Alphabetical by folder name is not an order anybody chose — it is the
+        same invisible accident the series order files were introduced to end."""
+        write(repo, "Prose.\n")
+        other = repo / "tutorials" / "zz-later-module"
+        other.mkdir(parents=True)
+        (other / "t1.md").write_text(
+            '---\ntitle: "Elsewhere"\nslug: t1\nmodule: zz-later-module\n'
+            'module_title: "Later Module"\nyear: "2026-2027"\nseries: s\nversion: 1\n---\n\nProse.\n'
+        )
+        set_order(repo, "zz-later-module", "s", ["t1"])
+        (repo / "tutorials" / "modules.yaml").write_text(
+            "order:\n  - computational-methods\n  - zz-later-module\n")
+        b.build()
+        assert self.module_headings(repo) == ["computational-methods", "Later Module"]
+
+        (repo / "tutorials" / "modules.yaml").write_text(
+            "order:\n  - zz-later-module\n  - computational-methods\n")
+        b.build()
+        assert self.module_headings(repo) == ["Later Module", "computational-methods"]
+
+    def test_an_unlisted_module_lands_last_rather_than_breaking_the_page(self, repo):
+        """Lenient where the series files are strict: a tutorial missing from
+        its order file vanishes, so that must stop the build. A module missing
+        from here is still on the page, and that is not worth refusing over."""
+        write(repo, "Prose.\n")
+        other = repo / "tutorials" / "zz-later-module"
+        other.mkdir(parents=True)
+        (other / "t1.md").write_text(
+            '---\ntitle: "Elsewhere"\nslug: t1\nmodule: zz-later-module\n'
+            'module_title: "Later Module"\nyear: "2026-2027"\nseries: s\nversion: 1\n---\n\nProse.\n'
+        )
+        set_order(repo, "zz-later-module", "s", ["t1"])
+        (repo / "tutorials" / "modules.yaml").write_text(
+            "order:\n  - zz-later-module\n")
+        b.build()
+        assert self.module_headings(repo) == ["Later Module", "computational-methods"]
+
+    def test_no_module_file_falls_back_to_alphabetical(self, repo):
+        write(repo, "Prose.\n")
+        b.build()
+        assert "computational-methods" in (repo / "site" / "index.html").read_text()
+
     def test_a_series_is_headed_by_its_name_not_its_filename(self, repo):
         """A module with two series shows a heading per series, and until one
         had two nobody saw that the heading was the slug."""
