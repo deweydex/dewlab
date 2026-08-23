@@ -40,20 +40,20 @@ Review, two in the Computational Methods series.
 
 ## What is left, and who has thought about it
 
-Sixty-six outcomes, one ruled out, forty-one in place. **Twenty-five still need
-writing** — twenty-one nothing touches, and four the students meet in passing
-without anything teaching them.
+Sixty-seven outcomes, none ruled out, forty-one in place. **Twenty-six still
+need writing** — twenty-two nothing touches, and four the students meet in
+passing without anything teaching them.
 
-**Every one of the twenty-five now has a proposal.** That was not true on the
+**Every one of the twenty-six now has a proposal.** That was not true on the
 morning of 23 August, when five had neither a tutorial nor a plan, and it is the
 one thing in this document worth checking again later. The map prints the number.
 
 Where the outstanding work sits:
 
-- **Functions and calculus**, all seven outcomes. Drawing Functions, Approaching
-  a Limit, Rates of Change.
-- **Geometry and trigonometry**, nine of the ten in scope. Lines and Distances,
-  Angles and Waves, How Tall Is That?
+- **Functions and calculus**, all seven outcomes. Drawing Functions, Parabolas,
+  Approaching a Limit, Rates of Change.
+- **Geometry and trigonometry**, all ten. Lines and Distances, The Unit Circle,
+  Sine and Cosine Waves, Solving Triangles.
 - **Logic and sets**, three. Logic and Truth, Drawing Sets.
 - **Algebra**, two used-but-not-taught. Rearranging Formulae, When There Is No
   Answer.
@@ -66,14 +66,44 @@ mathematics threaded through it, and the mathematics that is threaded is
 arithmetic, algebra, counting, probability and statistics. The half of the
 descriptor that needs pictures has none of them yet.
 
-## What was decided on 23 August
+## What was decided on 23 August, later the same day
+
+Everything below the next heading was written before these, and the counts in it
+were superseded within hours. **Twenty-six outcomes now need writing, not
+twenty-five**, because `MIT-4.7` came back into scope — and nothing is out of
+scope at all any more.
+
+Three things changed the shape of the plan:
+
+**Trigonometry became three tutorials.** *Angles and Waves* carried five
+outcomes and gave the unit circle a fifth of itself. It is now The Unit Circle,
+Sine and Cosine Waves, and Solving Triangles. *Parabolas* came out of *Drawing
+Functions* for the same reason.
+
+**`MIT-4.7` came back**, and it is the reason The Unit Circle exists as its own
+tutorial. Ruled out, the exact values were three numbers to memorise; on the
+circle they are the places the angles land, and Pythagoras produces them in a
+line.
+
+**The re-cut went too far and was pulled back.** Four proposals were split to one
+outcome each and three of them were put back the same day. Josh: *"I'd rather
+they not be too short — they still need to motivate, introduce and explain
+content, and give students a chance to work through things. So let's not
+overcorrect before making things."* The floor is the teaching, not the outcome
+count. See DECISIONS_LOG 7.42.
+
+**And a new thread.** The practice problems for most of this already exist in
+`deweydex/Mathematics` — twenty-seven worksheets with answer keys, mapping almost
+one-to-one onto the proposals. `planning/EXERCISES.md` is the plan.
+
+## What was decided earlier on 23 August
 
 **Coordinate geometry became a tutorial of its own.** `MIT-4.1` to `4.4` were
 settled as in scope in full on 22 August and nothing was written to carry them;
 `drawing-functions.md` had them as a conditional extra, written back when Section
 4 was mostly out of scope. They are now
 [Lines and Distances](./outlines/lines-and-distances.md), which sits between
-Drawing Functions and Angles and Waves.
+Drawing Functions and the trigonometry.
 
 Two reasons it is not a section of Drawing Functions. Pythagoras is one of the
 six gateways in the topic tree, unlocking seven downstream topics — a gateway
@@ -88,10 +118,12 @@ which of the three descriptions of a line comes first and why the general form
 arrives last, whether slope is named as rise-over-run or as a rate of change, and
 why the distance formula should come before Pythagoras rather than after.
 
-**`MIT-4.9`, practical right-triangle trigonometry, became a short tutorial after
-Angles and Waves** — *How Tall Is That?* It needs Pythagoras from Lines and
-Distances and the ratios from Angles and Waves, so it can only come after both,
-and Angles and Waves already carries five outcomes.
+~~**`MIT-4.9` became a short tutorial called *How Tall Is That?*.**~~ Superseded
+the same day. It is a section of Solving Triangles now — the easy case the Sine
+and Cosine Rules are the repair for. Josh: *"I don't really think we need to
+worry about it… we can deal with more appropriate to computer science types of
+questions there."* Once the examples stopped being ladders and roofs, the
+material had no reason to sit apart from the rules it is a special case of.
 
 **Venn diagrams came back into scope** as [Drawing Sets](./outlines/venn-diagrams.md),
 a short tutorial of its own. It had been ruled out on the grounds that the
@@ -105,10 +137,10 @@ back is not the notation but the picture drawn by matplotlib from real sets:
 output rather than convention, and the point at which three sets stop fitting in
 a person's head.
 
-**`MIT-4.7` stays out of scope.** Trigonometric ratios in surd form — the exact
-values at 30, 45 and 60 degrees. The first version of this survey called it a gap
-and proposed folding it into Angles and Waves; it is not a gap, it is a decision
-with a reason on record, and the reason still holds.
+**`MIT-4.7` stayed out of scope** — for about four hours. Trigonometric ratios in
+surd form. The first version of this survey called it a gap; it was a decision
+with a reason. Then Josh reversed the decision, and it is now the reason The Unit
+Circle is a tutorial rather than a section. Both of those are recorded above.
 
 ## Computational Methods 5N0554 is not measured
 
@@ -141,14 +173,17 @@ One strand outlined, six not, and no measurement either way.
 1. **The two everlearning conversions** — How We Got Here and When It Goes Wrong.
    Conversions rather than new writing, so they are the cheapest real progress
    available, and they close three PDP outcomes.
-2. **Drawing Functions**, then **Lines and Distances**, then **Angles and
-   Waves**. The spine everything else in Sections 3 and 4 hangs off, in the only
-   order that works.
-3. The short ones — Rearranging Formulae, When There Is No Answer, Drawing Sets,
-   Logic and Truth — which can be written in any order and slotted in.
+2. **Drawing Functions**, **Lines and Distances**, **The Unit Circle**. The
+   spine everything else in Sections 3 and 4 hangs off, in the only order that
+   works — each one is assumed by the next.
+3. The short ones — Rearranging Formulae, When There Is No Answer, Parabolas,
+   Drawing Sets, Logic and Truth — which can be written in any order and slotted
+   in.
 4. **Approaching a Limit** and **Rates of Change**, which need Drawing Functions
    and nothing else.
-5. **How Tall Is That?**, after Angles and Waves.
+5. **Sine and Cosine Waves** and **Solving Triangles**, after The Unit Circle.
+6. **The first practice set**, by hand, against whichever tutorial lands first.
+   `planning/EXERCISES.md` says why one by hand comes before a converter.
 
 The matrices strand and the rest of 5N0554 are a separate body of work, not the
 next thing.

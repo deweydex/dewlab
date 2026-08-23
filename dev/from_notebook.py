@@ -206,6 +206,21 @@ def convert(
     )
 
 
+def shown(path: Path) -> str:
+    """A path to print. Relative to the repository where it is inside it, and
+    absolute where it is not.
+
+    `--out` is a documented option and may point anywhere. Reporting through
+    `relative_to` alone wrote every file and then crashed on the line saying so,
+    which is the worst order to fail in: the work is done and the run looks like
+    it failed.
+    """
+    try:
+        return str(path.relative_to(ROOT))
+    except ValueError:
+        return str(path)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("notebooks", nargs="+", type=Path)
@@ -235,12 +250,12 @@ def main() -> int:
 
         target = out_dir / f"{result.slug}.md"
         if target.exists() and not args.force:
-            print(f"exists, left alone: {target.relative_to(ROOT)}")
+            print(f"exists, left alone: {shown(target)}")
             continue
         target.write_text(text)
         written += 1
         print(
-            f"{target.relative_to(ROOT)}  "
+            f"{shown(target)}  "
             f"order {result.order}, {result.cells} cells, {result.prose_blocks} prose blocks"
         )
         for note in dict.fromkeys(result.notes):

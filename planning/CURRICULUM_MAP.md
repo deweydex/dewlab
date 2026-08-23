@@ -15,15 +15,14 @@ so this doubles as a way of finding where anything is taught.
 
 ## Where we stand
 
-**41 of 66** outcomes are in place, once the 1 we have ruled out is set aside.
+**41 of 67** outcomes are in place.
 
 - 🟩 **40 taught** — a tutorial section teaches it.
 - 🟦 **1 taught in part** — deliberately narrowed, and the narrowed version is written.
 - 🟨 **4 used but not taught** — students meet it in passing without it ever being the subject. These are the quiet gaps: they look covered from a distance.
-- 🟥 **21 not covered** — nothing in dewlab touches it.
-- ⬜ **1 out of scope** — see `planning/curriculum/out-of-scope.yaml` for why.
+- 🟥 **22 not covered** — nothing in dewlab touches it.
 
-**Every one of the 25 outcomes still to write has a proposal** in `planning/curriculum/proposed.yaml`. Nothing is waiting to be thought about.
+**Every one of the 26 outcomes still to write has a proposal** in `planning/curriculum/proposed.yaml`. Nothing is waiting to be thought about.
 
 ### By strand
 
@@ -40,7 +39,7 @@ so this doubles as a way of finding where anything is taught.
 | **programming** | 7 | 0 | 0 | 4 | 0 |
 | **sets** | 2 | 0 | 0 | 1 | 0 |
 | **statistics** | 5 | 0 | 0 | 0 | 0 |
-| **trigonometry** | 0 | 0 | 0 | 6 | 1 |
+| **trigonometry** | 0 | 0 | 0 | 7 | 0 |
 
 ```mermaid
 graph LR
@@ -55,7 +54,7 @@ graph LR
   programming["programming<br/>7 of 11 in place"]
   sets["sets<br/>2 of 3 in place"]
   statistics["statistics<br/>5 of 5 in place"]
-  trigonometry["trigonometry<br/>0 of 6 in place"]
+  trigonometry["trigonometry<br/>0 of 7 in place"]
 
   classDef full fill:#edf7f0,stroke:#1f6b3f,color:#1f6b3f;
   classDef part fill:#fdf6ec,stroke:#b5651d,color:#7a4310;
@@ -148,16 +147,18 @@ graph TD
   N0("Rearranging Formulae")
   N1("When There Is No Answer (And Then There Is)")
   N2("Drawing Functions")
-  N3("Lines and Distances")
-  N4("How Tall Is That?")
-  N5("Angles and Waves")
-  N6("Approaching a Limit")
-  N7("Rates of Change")
-  N8("Logic and Truth")
-  N9("Drawing Sets")
-  N10("How We Got Here")
-  N11("When It Goes Wrong")
-  N12("The Team Project")
+  N3("Parabolas")
+  N4("Lines and Distances")
+  N5("The Unit Circle")
+  N6("Sine and Cosine Waves")
+  N7("Solving Triangles")
+  N8("Approaching a Limit")
+  N9("Rates of Change")
+  N10("Logic and Truth")
+  N11("Drawing Sets")
+  N12("How We Got Here")
+  N13("When It Goes Wrong")
+  N14("The Team Project")
 
   T1 --> T2
   T2 --> T3
@@ -177,28 +178,31 @@ graph TD
   T16 --> T17
 
   N2 ==> N3
-  N5 ==> N4
-  N2 ==> N5
+  N2 ==> N4
+  N4 ==> N5
   N5 ==> N6
   N6 ==> N7
+  N8 ==> N9
 
   classDef new fill:#fdf6ec,stroke:#b5651d,color:#7a4310,stroke-dasharray:4 3;
-  class N0,N1,N2,N3,N4,N5,N6,N7,N8,N9,N10,N11,N12 new;
+  class N0,N1,N2,N3,N4,N5,N6,N7,N8,N9,N10,N11,N12,N13,N14 new;
 ```
 
 | Proposed | Goes after | Closes | Size |
 |---|---|---|---|
 | **Rearranging Formulae** | after tutorial-14-expressions-come-alive | `MIT-1.7` | short |
 | **When There Is No Answer (And Then There Is)** | after tutorial-15-cracking-equations | `MIT-1.10` | short |
-| **Drawing Functions** | after tutorial-15-cracking-equations | `MIT-3.1`, `MIT-3.2`, `MIT-3.4` | full |
+| **Drawing Functions** | after tutorial-15-cracking-equations | `MIT-3.1`, `MIT-3.2` | full |
+| **Parabolas** | after drawing-functions | `MIT-3.4` | short |
 | **Lines and Distances** | after drawing-functions | `MIT-4.1`, `MIT-4.2`, `MIT-4.3`, `MIT-4.4` | full |
-| **How Tall Is That?** | after angles-and-waves | `MIT-4.9` | short |
-| **Angles and Waves** | after drawing-functions | `MIT-3.3`, `MIT-4.5`, `MIT-4.6`, `MIT-4.8`, `MIT-4.10`<br/>_if kept:_ `MIT-4.4`, `MIT-4.9` | full |
+| **The Unit Circle** | after lines-and-distances | `MIT-4.5`, `MIT-4.6`, `MIT-4.7` | full |
+| **Sine and Cosine Waves** | after the-unit-circle | `MIT-3.3` | short |
+| **Solving Triangles** | after sine-and-cosine-waves | `MIT-4.8`, `MIT-4.9`, `MIT-4.10` | full |
 | **Approaching a Limit** | after angles-and-waves | `MIT-3.5` | short |
 | **Rates of Change** | after approaching-a-limit | `MIT-3.6`, `MIT-3.7` | full |
 | **Logic and Truth** | after tutorial-16-sets-as-sorted-lists | `MIT-2.4`, `MIT-2.5` | short |
 | **Drawing Sets** | after tutorial-16-sets-as-sorted-lists | `MIT-2.3` | short |
-| **How We Got Here** | after tutorial-01-first-steps | `PDP-LO1`, `PDP-LO3` | full |
+| **How We Got Here** | after tutorial-02-storing-and-computing | `PDP-LO1`, `PDP-LO3` | full |
 | **When It Goes Wrong** | after tutorial-03-making-decisions | `PDP-LO9` | full |
 | **The Team Project** | after tutorial-17-bringing-it-all-together | `PDP-LO12` | not-a-tutorial |
 
@@ -255,7 +259,7 @@ graph TD
 | `MIT-4.4` The Pythagorean theorem | 🟥 | — |
 | `MIT-4.5` Degree and radian measure | 🟥 | — |
 | `MIT-4.6` sin, cos, tan and the unit circle: amplitude, phase, period | 🟥 | — |
-| `MIT-4.7` Trigonometric ratios in surd form | ⬜ | **Out of scope** — Trigonometric ratios in surd form. Exact values from the special triangles are a hand-calculation skill; the trigonometry we want is the graphing and the two rules, both of which work in decimals. Note that the rest of Section 4 came back into scope on 2026-08-22 — this is now the only part of it left out. |
+| `MIT-4.7` Trigonometric ratios in surd form | 🟥 | — |
 | `MIT-4.8` Triangle area as one half a b sin theta | 🟥 | — |
 | `MIT-4.9` Practical right-triangle trigonometry | 🟥 | — |
 | `MIT-4.10` The Sine Rule and the Cosine Rule | 🟥 | — |
