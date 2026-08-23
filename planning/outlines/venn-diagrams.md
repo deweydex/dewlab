@@ -7,46 +7,20 @@ notation.
 **Builds on:** Tutorial 16 (set operations), Tutorial 12 (plotting).
 **Size:** short.
 
-## It was out of scope, and Josh has reversed that
+## Scope Rationale & Computational Framing
 
-`out-of-scope.yaml` ruled this outcome out with a reason worth quoting, because
-it is a good reason and the reversal has to answer it:
+Venn diagrams were initially excluded from the curriculum when considered as manual pen-and-paper notation.
 
-> The set operations themselves are taught in Tutorial 16 and that is the part
-> the students use. The diagram is a pen-and-paper convention that adds notation
-> without adding understanding here.
+Restructuring Venn diagrams as a computational visualization module resolves this objection: Matplotlib plots diagram regions directly from real Python set operations, framing the diagram as computed output rather than manual drawing notation.
 
-Josh's call is that it comes back as **a small tutorial of its own**, linked to
-Logic and Truth and to Sets as Sorted Lists rather than folded into either:
-*"those can be connections. We don't need to do combinations here."*
+## Modular Isolation vs Composite Merging
 
-That resolves the original objection rather than overruling it. The objection was
-to the diagram as *notation* — one more convention to learn and be examined on.
-What survives is the diagram as a **picture that settles arguments**: three
-overlapping circles are how a person checks whether two set expressions are the
-same, and matplotlib draws them from real sets rather than from a convention.
-Drawn by code, from data, it is not a notation at all — it is a plot of what the
-students already computed in Tutorial 16.
+Rather than folding Venn diagrams into *Logic and Truth* or *Sets as Sorted Lists*, keeping *Drawing Sets* as a dedicated, focused module provides clear modular boundaries:
+- *Sets as Sorted Lists* focuses on algorithmic data structures (sorted lists, membership, operations from scratch).
+- *Logic and Truth* focuses on Boolean truth tables and formal proofs.
+- *Drawing Sets* focuses on visual set verification and Venn region plotting in Python.
 
-The tutorial should be short and should not pretend otherwise.
-
-## Why not fold it in
-
-Two obvious homes, and both are worse:
-
-**Into Logic and Truth** — De Morgan is the natural pairing, and the picture
-really is the proof. But that outline is deliberately short, and adding a
-plotting section turns it into a full tutorial about two things.
-
-**Into Sets as Sorted Lists** — the vocabulary is already there. But that
-tutorial is written and shipped, and its subject is sets as an implementation:
-sorted lists, membership, the operations built from scratch. Drawing them is a
-different question.
-
-Kept separate, both existing tutorials link to it and neither changes. Josh's
-instinct here is the same one behind splitting Reflections and Review out of the
-main series, and behind the archive rather than the delete button: **connections
-between whole things, rather than things merged.**
+This adheres to the core architecture pattern: **explicit connections between focused modules rather than overloaded composite tutorials**.
 
 ## The shape
 

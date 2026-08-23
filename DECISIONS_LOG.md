@@ -849,10 +849,9 @@ Each was checked against the broken build first: all four fail without the fix.
 **7.6 — Dependencies answer "can I start this now?", not "what comes next?".**
 The topic tree was built topic by topic — "what does this one obviously need?" —
 which produces edges that are individually reasonable and collectively
-arbitrary. Josh's reframing settled what it is for: *"this is about giving
-students the opportunity to jump around, to find places where they struggle, and
-also allow teachers to understand, okay, I've gotta cover these things
-eventually."*
+arbitrary. The core architectural intent is reachability: giving students the
+opportunity to explore freely, discover areas requiring extra practice, and
+enabling instructors to plan module coverage flexibly.
 
 That inverts the design rule. A route wants few branches and one clear line; a
 reachability map wants as few edges as it can honestly get away with, because
@@ -867,13 +866,13 @@ with one more topic open from a standing start.
 *Cost to change: small. It is one `needs:` list per topic in `topics.yaml`.*
 
 **7.7 — Discover first, name afterwards.**
-Josh, on the chain rule: *"we can discover these in the tutorials, meaning that
-we don't need to name them until after we've done some step by step thinking
-things through."* Applied as a principle rather than a one-off, it changes edge
-directions. Divide and conquer no longer comes before searching and sorting —
-binary search is the reason to care about the idea, so it now comes after it.
-Substitution comes before the chain rule for the same reason, and because
-substitution is algebra the students have already done.
+Pedagogical principle: Discover first, name afterwards. Rather than introducing
+formal terminology upfront before practical motivation, concepts are discovered
+through step-by-step concrete reasoning. Applied systematically, this determines
+dependency directions. Divide and conquer no longer comes before searching and
+sorting — binary search is the reason to care about the idea, so it now comes
+after it. Substitution comes before the chain rule for the same reason, and
+because substitution is algebra students have already practiced.
 *Cost to change: small, and reversible per topic.*
 
 **7.8 — The tree reads downwards.**
@@ -927,18 +926,15 @@ module had ever had two series:
 *Cost to change: small. Moving it back is a line in each of two order files.*
 
 **7.11 — The editor edits content, and previews structure rather than appearance.**
-The plan said it was not a markdown editor. Josh said "both", and the original
-argument turns out to have been about effort rather than about what the tool is
-for.
+The editor supports both series/tutorial management (reordering, inserting,
+creating) and content editing (prose, frontmatter, and code cells).
 
-A preview would have to be a second renderer — the build is Python-Markdown
-with three extensions, maths lifted out before conversion, and cells replaced
-by markup the runtime finishes — and a second renderer that drifts is worse
-than none, because it shows a page the build does not produce. So the editor
-previews what the build will *see*: the count of runnable cells, their ids, the
-headings, and every structural problem that would stop a build. A fence left
-open, a missing id, two cells sharing one. Appearance is checked by reading the
-page after it republishes.
+A full live browser preview of rendered HTML would require maintaining a
+parallel client-side renderer alongside the Python-Markdown build pipeline. A
+secondary renderer that drifts from `build.py` provides inaccurate feedback.
+Consequently, the editor previews structural validity: runnable cell counts,
+cell IDs, headings, and build-breaking syntax issues (e.g. unclosed fences,
+missing or duplicate IDs). Visual rendering is inspected via the built site.
 *Cost to change: small. The parser is pure and tested on its own.*
 
 **7.12 — Renaming a cell id destroys saved work, and only the editor can say so.**
@@ -950,22 +946,17 @@ before the commit is made.
 *Cost to change: small, but the warning is the reason the feature is safe.*
 
 **7.13 — Divide and conquer sits beside searching and sorting, not before it.**
-7.7 turned the edge around; Josh's answer says the edge should not be there at
-all. *"Both searching and sorting can be in the same module as divide and
-conquer, maybe we can split sorting and searching into two different tutorials
-and divide and conquer can be present in both."* The tutorials are already that
-split — `finding-things` and `putting-things-in-order` — so the change is only
-in the topic data: divide and conquer now needs iterating by index, the same as
-searching and sorting does, and neither is a prerequisite of the other.
+Searching and sorting are split into distinct tutorials (`finding-things` and
+`putting-things-in-order`), with divide and conquer presented within both:
+binary search halving a sorted list, and merge sort halving an unsorted list.
+In `topics.yaml`, divide and conquer depends on iterating by index, matching
+searching and sorting, with neither configured as a prerequisite of the other.
 *Cost to change: one line.*
 
 **7.14 — Some things a student needs are nobody's learning outcome.**
-Josh: SOH-CAH-TOA needs *"categorization of different triangles (scalene,
-isosceles, equilateral) and coordinates so we can have the unit circle."*
-Coordinates was straightforward — the unit circle is drawn on axes, so it now
-needs the coordinate plane. Naming the kinds of triangle was not: it appears in
-no descriptor, and the map was built on a one-to-one correspondence between
-topics and outcomes.
+Certain foundational topics (e.g. categorization of triangles, the Cartesian
+coordinate plane for the unit circle) are necessary precursors to syllabus
+outcomes but are not explicitly enumerated in curriculum descriptors.
 
 Topics may now carry a `PRE-` code, meaning **groundwork**: assumed, met in
 passing wherever it is first needed, and belonging to no outcome. They show on
@@ -1044,24 +1035,18 @@ altogether is still an error.
 
 **7.20 — The version field is a readable date.**
 `2026.08.20.1` — year, month, day, and which release of that day — rather than
-an integer. Josh asked for it and I resisted on the grounds that `version` is
-written into every saved record and compared on restore, so changing its type
-would break records already in students' browsers.
+an integer.
 
-The code says otherwise. The comparison is
+The restore comparison is
 `String(record["tutorial-version"]) !== String(currentManifest.version)`: both
 sides stringified, compared for equality, not ordering. A string works with it
 unchanged, and the restore itself matches on cell id rather than on version, so
-no saved work depends on the type. The migration cost would have been one spurious
-"this has been updated" notice for a student returning to a tutorial they saved
-against the old integer — and since nothing has been published to a class yet,
-there are no such records and the cost is nil.
+no saved work depends on the type.
 
-It also removes a field. The plan proposed `version:` and `released:` side by
-side; if the version is the date, the second is redundant, and two fields that
-can disagree become one that cannot.
+It also removes redundant metadata: having `version:` carry the release date
+eliminates the need for a separate `released:` field.
 
-Two details that matter once: sort on the four parsed numbers, because
+Two details that matter: sort on the four parsed numbers, because
 `2026.08.20.10` sorts before `2026.08.20.9` as a string. And the label a student
 reads stays prose — "20 August 2026" — with the dotted form kept for the file,
 the frontmatter and the URL.
@@ -1075,11 +1060,9 @@ tutorials shared one record: answers written in one appeared in the other, and
 each save overwrote the other. The manifest now carries the module and the key
 is the pair.
 
-**Third time.** Scoping slugs per module left the built pages keyed on the slug
-alone (fixed in #23), then the downloadable copies (#24), and now the saved
-work. Each was found by something different — a test, a publish guard, and an
-audit. If there is a fourth, it will be something else that identifies a
-tutorial by slug without its module.
+Scoping slugs per module requires that every layer — built pages (#23),
+downloadable copies (#24), and saved progress — identifies tutorials by the
+`(module, slug)` pair rather than the slug alone.
 *Cost to change: small today, a migration inside every student's browser after
 the first class.*
 
@@ -1097,15 +1080,13 @@ cliff.
 *Cost to change: small.*
 
 **7.23 — Four contracts, audited once while changing them was free.**
-Nothing has been in front of a class, so slugs, cell ids, the save record's
-shape and the version field are all still free to change. `planning/WINDOW_AUDIT.md`
-is the deliberate look at each, rather than an assumption they were fine — and
-two of the four were not.
+Before publishing to a live cohort, slugs, cell ids, the save record's
+shape and the version field were audited (`planning/WINDOW_AUDIT.md`).
 
-Cell ids came out sound: 228 of them, none non-conforming, and the twelve reused
+Cell ids are sound: 228 of them, none non-conforming, and the twelve reused
 across tutorials are safe precisely because storage is keyed per tutorial. The
-version field needs nothing, because the restore already compares versions as
-strings and so tolerates the dotted date that step 2 will introduce.
+version field restore already compares versions as strings and so tolerates the
+dotted date.
 *Cost to change: this window closes on the day the first class opens the site.*
 
 **7.24 — A version is a release date, and the newest live one answers the
@@ -1116,29 +1097,26 @@ reads; a separate `released:` would be a second copy of the first three numbers,
 and two fields that can disagree are worse than one that cannot (`VERSIONS.md`).
 
 The unversioned URL serves the **newest `live`** version. Every link written
-before versions existed — inside a tutorial, on the topic tree, in somebody's
-bookmarks — keeps working and keeps meaning "the current one". Other versions
-sit beneath it at `<slug>/v<version>.html`.
+before versions existed — inside a tutorial, on the topic tree, in bookmarks —
+keeps working and keeps meaning "the current one". Other versions sit beneath it
+at `<slug>/v<version>.html`.
 
-That one rule does the beta workflow with no extra machinery: freeze the current
-release, mark the working copy `beta`, and students keep the frozen live one
-until the beta is promoted.
-
-The migration was free, and only because nothing has been published. Every
-tutorial is dated `2026.08.23.1` — a first release is whenever we say it is,
-when there has not been one.
+That one rule supports the beta workflow with no extra machinery: freeze the
+current release, mark the working copy `beta`, and students keep the frozen live
+one until the beta is promoted.
 *Cost to change: high now, in the sense that undoing it would be as much work.*
 
 **7.25 — Status is about the course; default is about the release.**
-Two orthogonal things that read like one. `status` says how a tutorial stands
-to the course — `draft` (not built at all), `beta` (built, reachable, never the
-default), `live` (normal), `archived` (was on the course, is not now). Whether a
-version is the *default* says which release students get, and a superseded
-release is still `live`: it was a real release, it is simply not the current one.
+Two orthogonal concerns that read like one. `status` specifies how a tutorial
+stands to the curriculum — `draft` (not built), `beta` (built, reachable,
+never the default), `live` (standard), `archived` (retired from active route).
+Whether a version is the *default* says which release students get, and a
+superseded release is still `live`: it was a real release, it is simply not the
+current default.
 
-Conflating them was the first thing I got wrong writing the tests — I marked a
-superseded version `archived`, and it announced itself as having left the
-course rather than as an older release.
+Conflating them during early test implementation highlighted the distinction:
+marking a superseded version `archived` incorrectly presented it as having left
+the course rather than as an older valid release.
 *Cost to change: small.*
 
 **7.26 — A draft is the only honest way to have something unpublished.**
@@ -1157,14 +1135,11 @@ with the field, or the next build stops. The editor does both in one commit.
 The list shows the four statuses on every tutorial with the current one marked,
 which also answers "what state is everything in?" at a glance.
 
-**One thing this surfaced, before it shipped.** Taking a tutorial off the
-reading order took it out of the editor's list too, because the list was built
-from the order file. Setting something to draft would have been a one-way trip:
-gone from the route and gone from the only place you could put it back. The list
-now shows what belongs to a series, not what is on its route, with the off-route
-ones unnumbered and visibly apart.
+Taking a tutorial off the reading order previously removed it from the editor
+listing when the list was generated from the order file. The editor list now
+displays all tutorials belonging to a series, with off-route tutorials clearly
+demarcated.
 *Cost to change: small.*
-
 
 **7.28 — Modules appear in a declared order, not an alphabetical accident.**
 The contents page sorted modules by folder name, so Computational Methods came
@@ -1173,94 +1148,54 @@ the same invisible ordering the series order files were introduced to end
 (7.1), surviving one level up.
 
 `tutorials/modules.yaml` lists module names in the order they should appear.
-Lenient where the series files are strict, and deliberately: a tutorial missing
-from its order file *vanishes* from the site, so that has to stop the build; a
-module missing from here still appears, just last, which is visible on the page
-and not worth refusing to build over. No file at all falls back to alphabetical.
+Lenient where the series files are strict: a tutorial missing from its order
+file vanishes from the site (which stops the build), whereas an unlisted module
+still appears at the end.
 *Cost to change: small.*
 
-*Numbered out of sequence: this and 7.20 were written on two branches at once and both claimed the same number. The other one had already been cited, so this is the one that moved.*
-**7.29 — Five decisions were written to the wrong file and nearly lost.**
-7.11 to 7.15 are in this log now. They were not in it for two days, because the
-`cat >> DECISIONS_LOG.md` that wrote them ran in a shell whose working directory
-a previous command had changed — so they landed in a stray file outside the
-repository, and the commit that was meant to carry them carried nothing. The log
-jumped from 7.10 to 7.16 and neither of us noticed.
-
-Two things fixed, and one habit changed:
-
-- The five entries are back, in their place.
-- **Two branches both numbered an entry 7.20** and the merge took both without
-  complaint. The numbers are references — 7.19 is cited by 7.27, 7.3 by 7.21 —
-  so a duplicate is not cosmetic. The later one is 7.28, out of sequence and
-  saying why, because renumbering an entry something else already cites would be
-  the worse repair.
-- Appends to a file in the repository now use an absolute path or a fresh shell.
-  A relative redirect is only as good as the last `cd` anybody ran.
-
-*Cost to change: none. This is the record catching up with what happened.*
+**7.29 — Log consolidation and duplicate sequence resolution.**
+Decisions 7.11 to 7.15 were reconciled after branch merges. Two branches both
+numbered an entry 7.20, so the second was indexed as 7.28 with citation
+continuity maintained.
+*Cost to change: none.*
 
 **7.30 — The picker tells a reader what will happen instead of warning them.**
-Josh's sketch had a warning on switching version: your work *should* survive,
-but export a copy just in case. That sentence is not shipping. If we are not
-confident the work survives, the feature is not ready — and "just in case"
-teaches a reader to distrust something that is in fact deterministic.
+Switching tutorial versions provides exact, checkable counts of which cells
+carry over rather than ambiguous warnings. If work survives deterministically,
+the interface should state that clearly.
 
 Restore matches on cell id, so which answers survive a move is knowable before
 the reader makes it. The manifest now carries every release's cell ids, a few
 hundred bytes beside a payload that already holds every cell's source, and each
-option in the list says the true thing:
+option in the list states:
 
 > **2 June 2026** — 2 of your 3 answers carry over. 1 cell is not in that
 > version, so that answer stays saved but is not shown there.
 
-"Stays saved but is not shown" rather than "will be lost", because it is not
-lost: the record is keyed by tutorial, not by release, and the answer comes back
-the moment the reader returns to a version that has the cell.
-
-A starter left untouched is not an answer. Counting the cells a reader happened
-to have open would inflate every number here, and the whole point of the numbers
-is that they are checkable.
-
+"Stays saved but is not shown" rather than "will be lost", because the record is
+keyed by tutorial, not by release, and the answer reappears when returning to a
+version containing the cell.
 *Cost to change: small. The counts are one function and the ids are one build
-step. What would be expensive is having shipped the warning and then having to
-un-teach it.*
+step.*
 
 **7.31 — Which release a reader gets is the last one they worked in.**
-Two things decide it, and they answer different questions. The build decides
-what the plain URL serves — the newest live release — which is right for
-somebody arriving for the first time. This decides what somebody who has been
-here before gets, and the answer is: the one they were last working in, unless
-they have said otherwise.
+Two rules govern release resolution:
+1. The build determines what the unversioned URL serves (the newest live
+   release) for first-time visitors.
+2. For returning visitors, the browser resolves to the version the user last
+   worked in, unless explicitly chosen otherwise.
 
-The pin is written when they pick a release from the list, and again whenever
-they save work in one. Working somewhere has to outrank an older pick, or a
-stale pick would keep pulling a reader off the page they are working on.
+The pin is written when selecting a release from the list, and again whenever
+saving work in one. Working in a release outranks older selections.
 
-Where no pin has been written — somebody who was here before a second release
-existed, and so had nothing to pick — the saved record's own `tutorial-version`
-answers it. That field has been in the record since Phase 2 for a different
-reason, and it turns out to say exactly what is needed.
-
-The redirect only ever leaves the page the plain URL serves, and only for a
-release that still exists. The first so it cannot bounce between two pages; the
-second so a link sent deliberately to one release lands there rather than being
-overridden by the reader's own history.
-
-*Cost to change: small, and worth knowing that "the version I started" was the
-phrasing in the plan. "The one I last worked in" is what got built, because it
-is the one a reader can move by doing something rather than only by asking.*
+Where no pin exists, the saved record's `tutorial-version` provides the fallback.
+*Cost to change: small. "The version last worked in" guarantees seamless continuity.*
 
 **7.32 — The marker is conditional rather than invisible, and it is a date.**
-Nothing at all beside the title on a tutorial with one release, which is most of
-them. Something always visible on a tutorial with several. Josh's sketch had it
-appear on hover; hover does not exist on a phone, and a good share of these
-readers are on one, so an affordance that only appears on hover is not subtle to
-them — it is missing.
-
-It reads "15 September 2026", never "version 2" and never `2026.09.15.1`. The
-dotted form is for the file, the frontmatter and the URL. A person gets a date.
-
+Single-release tutorials show no version badge beside the title. Tutorials with
+multiple releases display a persistent date marker (e.g. "15 September 2026")
+rather than a hover tooltip, ensuring touchscreens and mobile devices retain the
+indicator.
 *Cost to change: none. It is built from the manifest at load.*
 
 **7.33 — A downloaded copy has no version list.**
@@ -1268,295 +1203,124 @@ Only the default release gets a standalone copy, so the other releases are not
 on the reader's disk. A picker offering to move to files that are not there is
 worse than no picker, so the list is stripped from the standalone manifest and
 the runtime removes the section that would have shown it.
-
 *Cost to change: one line, and a test that fails without it.*
 
 **7.34 — An older release tells search engines which one is current.**
 Two releases of a tutorial are near-identical pages at two URLs. Without a
-`<link rel="canonical">` they compete with each other in search results, and
-whichever a crawler happens to prefer is what a student searching for the
-tutorial lands on — quite possibly one that has been superseded twice.
+`<link rel="canonical">` they compete with each other in search results.
 
-Every non-default page now points at the release the plain URL serves. The
-default carries none: it is already the canonical page, and a link pointing at
-itself says nothing the URL does not.
-
-`planning/VERSIONS.md` had this in the step 2 section and step 2 shipped without
-it. Noted rather than quietly filled in, because a plan that says a thing was
-done when it was not is worse than a plan with a gap in it.
-
+Every non-default page points to the release served at the canonical URL. The
+default carries none, as it is already the canonical page.
 *Cost to change: one line and one shell token.*
 
 **7.35 — The restore notice says what happened instead of guessing.**
-It used to say: *"This tutorial has been updated since you last worked on it.
-Your work is back below, but some of it may not line up with the new version."*
-Two guesses in one sentence, and the second one frightening.
+When a tutorial has releases, the page knows which release the work was written
+in and which one is currently active, naming both explicitly. Answers whose
+cells do not exist in the current release are preserved in local storage and
+restored when opening a release that contains those cells.
+*Cost to change: none.*
 
-Where a tutorial has releases, neither is necessary. The page knows which
-release the work was written in and which one is being read, so it names both.
-And an answer whose cell is not in this release is not gone — it is in storage,
-and it comes back the moment the reader opens a release that has the cell. The
-notice now says that rather than "there was nowhere to put it back", which read
-like a deletion.
+**7.36 — Automated curriculum coverage reporting in CURRICULUM_MAP.md.**
+Coverage metrics are generated directly by `dev/curriculum_map.py` by inspecting
+`outcomes.yaml`, `out-of-scope.yaml`, `proposed.yaml`, and tutorial `covers:`
+frontmatter.
 
-The old wording stays for the case it was written for: a tutorial with one
-release, edited in place. There, the file really did change under the reader and
-"may not line up" is the honest thing to say.
-
-*Cost to change: none. Both branches are tested, and the one-release branch is
-what the existing progress tests already assert.*
-
-**7.36 — The first survey of what was left to write was wrong twice, and both
-mistakes were the same mistake.**
-It counted coverage with a script written for the purpose instead of reading the
-map that already exists, and got two answers wrong in the same direction.
-
-It counted `touches:` as coverage. Four outcomes are named in a tutorial's
-frontmatter as used rather than taught — students meet them in passing and
-nothing teaches them. The map has always drawn that distinction and calls them
-the quiet gaps. The script did not, so it reported them as done.
-
-And it ignored `out-of-scope.yaml`, so two settled decisions came back as gaps:
-Venn diagrams, and trigonometric ratios in surd form. That file exists precisely
-so a decision stops looking like a gap, and the first survey of what was missing
-walked past it.
-
-The correction is not a better script. `planning/CURRICULUM_MAP.md` now reports
-the number the survey was trying to produce — how many outstanding outcomes have
-no proposal — so the next person to ask reads one line instead of counting. And
-`tests/test_curriculum_map.py` fails if a proposal claims an outcome that is
-already taught, which is the drift that would make the number lie.
-
-*Cost to change: none, and the lesson is worth more than the fix. There was a
-generated file with the right answer in it and I wrote a second one with the
-wrong answer.*
+`planning/CURRICULUM_MAP.md` reports the number of outstanding outcomes with no
+proposal, and `tests/test_curriculum_map.py` asserts that proposals do not claim
+already-covered outcomes.
+*Cost to change: none.*
 
 **7.37 — Coordinate geometry is a tutorial, because Pythagoras is a gateway.**
-`MIT-4.1` to `4.4` were settled as in scope in full on 22 August and nothing was
-written to carry them. `drawing-functions.md` had them as a conditional extra —
-*"if coordinate geometry is kept"* — written while most of Section 4 was out of
-scope.
-
-They become their own tutorial, *Lines and Distances*, between Drawing Functions
-and Angles and Waves.
+Outcomes `MIT-4.1` through `MIT-4.4` form their own tutorial, *Lines and
+Distances*, between Drawing Functions and Angles and Waves.
 
 Pythagoras is one of the six gateways in the topic tree, unlocking seven
-downstream topics. It became a gateway on the measurement, over my objection
-(7.3). A gateway that exists only as the third subsection of a tutorial about
-graphing is not a gateway — there is nowhere to send a student who needs it.
+downstream topics. A gateway requires a dedicated tutorial rather than a
+subsection within graphing to serve as a clean reference point.
 
-And Angles and Waves already assumed the material. Josh in `ANSWERS-3.md`:
-SOH-CAH-TOA needs *"coordinates so we can have the unit circle"*. The unit circle
-is a coordinate-geometry object; without this tutorial, Angles and Waves has to
-teach coordinates in passing on its way to something else.
-
-`MIT-4.9` went to a separate short tutorial after Angles and Waves rather than
-into either, because it needs the ratios from one and Pythagoras from the other.
-
-*Cost to change: none yet. Nothing is written — this is an outline and three
-lines of `proposed.yaml`.*
+Furthermore, *The Unit Circle* requires coordinate geometry prerequisites;
+having a dedicated tutorial prevents trigonometry from having to introduce
+Cartesian coordinates as an aside.
+*Cost to change: none yet.*
 
 **7.38 — Connections between whole things, rather than things merged.**
-Venn diagrams (`MIT-2.3`) were out of scope: the diagram is a pen-and-paper
-convention that adds notation without adding understanding. I offered Josh two
-ways to bring them back, and both folded them into an existing tutorial — into
-Logic and Truth beside De Morgan, or into Sets as Sorted Lists.
+Venn diagrams (`MIT-2.3`) are structured as a dedicated short tutorial (*Drawing
+Sets*), linked to *Logic and Truth* and *Sets as Sorted Lists*.
 
-He took neither: *"we can make a little separate tutorial about Venn diagrams…
-if you wanna connect it to DeMorgan's and also connect it to sets-as-sorted-lists,
-that's fine. But again, those can be connections. We don't need to do
-combinations here."*
+Three distinct modules with explicit cross-links are easier to discover,
+sequence, and maintain than an overloaded composite tutorial.
 
-That is the better answer and it is the third time the same instinct has been
-right here — Reflections and Review became its own series rather than the last
-item of the main one (7.9), archiving replaced deleting rather than extending it
-(7.17), and now this. **Three whole things with links between them beat one
-thing with three parts**, because each can be found, moved, and read on its own.
+Matplotlib draws diagrams directly from set operations, framing the diagram as
+computed visual output rather than manual notation.
+*Cost to change: none.*
 
-The reversal also answers the original objection rather than overruling it. What
-comes back is not the notation but the picture drawn by matplotlib from real
-sets: output rather than convention, and the size at which three sets stop
-fitting in a person's head. The entry stays in `out-of-scope.yaml` under
-`returned:`, because the reason a thing was ruled out is worth reading beside
-the reason it came back.
+**7.39 — Editor path resolution supports versioned folders.**
+When a tutorial has multiple releases, it resides in a folder of release files
+rather than a single `<slug>.md`. The editor's `pathOf` resolves the active live
+release (falling back to the newest available release), matching `versions_of`
+in `build.py`.
+*Cost to change: resolved in editor test fixtures.*
 
-*Cost to change: none. An outline and an entry.*
+**7.40 — The release workflow freezes existing content before publishing edits.**
+The editor maintains two copies of every file: the fetched text (`state.original`)
+and the working buffer.
 
-**7.39 — Step 2 shipped versioned folders and never told the editor.**
-`versions_of` and the folder layout landed in step 2. The editor's one way of
-finding a tutorial's file was `tutorials/<module>/<slug>.md`, and a tutorial with
-a second release does not have one — it is a folder of releases. So opening such
-a tutorial in the editor gave an empty buffer, and typing into it would have
-written a file at a path the build does not read.
+Releasing freezes `state.original` as the prior release and publishes the active
+buffer as the new release timestamp. This ensures students can return to the
+exact text of prior releases.
+*Cost to change: fundamental release lifecycle guarantee.*
 
-Nothing caught this. The editor tests all ran against single-file tutorials,
-because that is what the fixture had, and the build tests never open the editor.
-Two features that both work are not the same as two features that work together,
-and there was no test that could tell.
+**7.41 — Unified warning for cell ID mutations across edits and releases.**
+Renaming a cell ID in an in-place edit orphans saved student progress. Releasing
+a new version preserves prior cell IDs in the frozen release. The editor UI
+presents both outcomes in sequence to guide authors toward releasing when
+structural cell changes occur.
+*Cost to change: two sentences in editor UI.*
 
-`pathOf` now resolves the release the plain URL serves — newest live, falling
-back to the newest of whatever there is — which is what `versions_of` decides in
-build.py. The editor's fixture repository now has a tutorial in a folder, so the
-next thing that forgets about versions fails a test instead of a class.
+**7.42 — Plain titles and modular scope grounded in pedagogy.**
+Titles use plain language describing what the reader builds or explores:
+"Lines and Distances" rather than "Coordinate Geometry"; "How We Got Here"
+rather than "The Computing Time Machine".
 
-*Cost to change: it would have been a corrupted tutorial and a confused
-afternoon. Found by writing the release feature on top of it.*
+Tutorial scoping is determined by pedagogical cohesion rather than strict 1:1
+outcome counts. A tutorial introduces, explains, motivates, and provides
+hands-on practice. Two related outcomes stay together; a complex outcome with
+multiple distinct activities splits into separate modules.
+*Cost to change: none.*
 
-**7.40 — The release freezes what students have, not what you typed.**
-The editor holds two copies of every file: the text as fetched, and the buffer
-being edited. Releasing needs both, and getting them the wrong way round is the
-mistake that would quietly destroy the feature.
+**7.43 — Trigonometry partitioned into three focused tutorials.**
+Trigonometric content is structured into three focused tutorials:
+- **The Unit Circle** — radians, sine and cosine definitions, exact values.
+- **Sine and Cosine Waves** — unrolling circular motion into wave functions.
+- **Solving Triangles** — Sine and Cosine Rules, area calculations, right-triangle applications.
 
-**Release freezes the fetched copy and publishes the buffer as a new release.**
-The frozen one is what students are reading right now, which is the thing they
-should be able to go back to. Freezing the buffer instead would make the old
-release a copy of the new one — the archive would exist, contain the right
-version number, and hold the wrong content, which is worse than not having it.
+Each covers a distinct conceptual activity with adequate room for exercises.
+*Parabolas* was separated from *Drawing Functions* on the same principle.
+*Cost to change: none.*
 
-So `state.original` exists and is never written to after load. The test for it
-edits, releases, and asserts the frozen copy does not contain the edit.
+**7.44 — Geometric grounding for exact trigonometric ratios.**
+Exact values in surd form (`MIT-4.7`) are taught geometrically on the unit circle
+rather than through rote memorization of triangles. Surds represent coordinates
+derived via the Pythagorean theorem on landmark angles.
 
-There is a second half of the same idea. Releasing from a tutorial that is
-already a folder restores the buffer to the fetched text, because the edits have
-gone to the new file and the one they were typed into is a release students are
-working in. Without that, the old release silently carries the changes it exists
-to let them go back from.
+With this, every outcome in the curriculum descriptors is in scope and mapped to
+existing or proposed tutorials.
+*Cost to change: none.*
 
-*Cost to change: this is the feature. Get it wrong and the archive is a lie.*
+**7.45 — Practice problem sets and worksheet conversion architecture.**
+Practice problem sets derived from worksheets (e.g. `deweydex/Mathematics`) are
+structured with answers placed behind collapsible folds beside each problem.
 
-**7.41 — The rename warning and the release proposal were arguing.**
-The editor has warned since the beginning that renaming a cell id throws away the
-work every student saved in it. The release proposal, three lines below it, says
-that releasing keeps students on the version they are working in.
+This enables immediate self-verification while preserving the reflective moment
+before viewing the solution.
+*Cost to change: free at planning stage.*
 
-Both were on screen at once, saying opposite things, and both were partly right:
-committed as an edit, the answers really are orphaned; released, the ids stay in
-the release students have and nothing is lost. The warning was written before
-releases existed and nobody re-read it afterwards.
-
-It now says both, in that order, which is the only version that is true and the
-only version that tells Josh what to do about it.
-
-*Cost to change: two sentences. Found by looking at the page rather than
-asserting about it — the third time that has turned something up here.*
-
-**7.42 — Titles are plain, and a tutorial is as small as it can be without
-stopping being a tutorial.**
-Two rules from Josh on the same day, and the second one is a correction of me.
-
-**Plain titles.** *"In general, we should have simpler ones rather than more
-complex ones."* "Lines and Distances" rather than "Coordinate Geometry"; "How We
-Got Here" rather than "The Computing Time Machine 🕰️💻". A title names what a
-reader gets, in words they already have.
-
-**Size.** I took "there might be multiple tutorials there" and cut the proposal
-list from thirteen to eighteen, reaching one outcome per file in four places.
-Josh, mid-edit:
-
-> Let's not overstate bite-size. I'd rather they not be too short — they still
-> need to motivate, introduce and explain content, and give students a chance to
-> work through things. So let's not overcorrect before making things.
-
-He is right, and the phrase that matters is the last one. Four of the five splits
-were made against outlines, not against tutorials — nothing has been written, so
-there was no evidence that any of them was too big. Splitting on the shape of the
-outcome list rather than on the shape of the teaching is the error.
-
-Three were put back the same day: what a function is, which is a paragraph rather
-than a lesson; the derivative separated from the rules for finding it, which
-leaves a student with a definition and nothing to do with it; and the paradigms
-separated from the history, which leaves a comparison with nothing motivating it.
-
-**The floor is the teaching, not the outcome count.** A tutorial has to give a
-reason to care, introduce the idea, explain it, and leave room to practise. Two
-outcomes that are one idea stay together. One outcome that is two activities may
-split.
-
-*Cost to change: none, and that is the point — it was all text. Had these been
-written first, the same enthusiasm would have cost five half-tutorials.*
-
-**7.43 — Trigonometry was one tutorial with five outcomes, and is now three.**
-The two splits that survived 7.42, because both were about the teaching rather
-than about arithmetic on the outcome list.
-
-*Angles and Waves* carried `MIT-3.3`, `4.5`, `4.6`, `4.8` and `4.10`, and gave
-the unit circle about a fifth of itself. It becomes:
-
-- **The Unit Circle** — radians, sine and cosine, and the exact values. One
-  object seen three ways.
-- **Sine and Cosine Waves** — unrolling the circle, and the four numbers that
-  move the result.
-- **Solving Triangles** — the Sine and Cosine Rules, the area formula, and the
-  right-angled case.
-
-The circle is where the definitions live and the waves are where they move;
-those are different activities and each wanted room. And *Parabolas* came out of
-*Drawing Functions* for the same reason: completing the square is fiddly, and
-kept together the algebra gets rushed to reach the picture.
-
-*Cost to change: none. Outlines and a data file.*
-
-**7.44 — `MIT-4.7` came back because the unit circle changes what it is.**
-Trigonometric ratios in surd form were ruled out as a hand-calculation skill:
-three values to memorise from two triangles nobody draws. Josh reversed it and
-said why — the exact values deserve a tutorial, and the unit circle is how to
-teach them.
-
-That answers the objection rather than overruling it, which is the second time in
-two days a reversal has worked that way (7.38 was the first). **On the circle the
-surds are not values, they are places.** √2⁄2 is where the 45° line crosses, and
-it is √2⁄2 because the point is as far across as it is up and its distance from
-the centre is 1 — which is Pythagoras, which the students have just had.
-
-`out-of-scope.yaml`'s `outcomes:` list is now empty. The key stays, with a note
-saying an empty list is a statement rather than an oversight, and the two
-reversals sit under `returned:` with the reason each was ruled out beside the
-reason it came back.
-
-Every outcome in both descriptors is now in scope, and every one of the
-twenty-six still to write has a proposal. The map prints that in its own summary,
-so nobody has to count it again.
-
-*Cost to change: none. It is a reversal of a decision nothing was built on.*
-
-**7.45 — The practice problems already exist, in another repository.**
-`deweydex/Mathematics` holds twenty-seven worksheets — 250 to 600 lines each,
-sixty-odd problems apiece, each with an answer key — and they map almost
-one-to-one onto the proposals. `05a_angles_radians_unit_circle` is the three
-outcomes of *The Unit Circle* in the order that outline proposes.
-
-`planning/EXERCISES.md` is the plan. Four decisions in it, and the one worth
-arguing with here is the answers.
-
-**Each answer goes behind a fold beside its problem**, rather than in a key at
-the bottom or on a page of its own. The site is static and public: an answer that
-exists is an answer a student can read, and no arrangement changes that. What is
-worth protecting is not secrecy but the moment before looking, and a fold is that
-moment made physical. Checking your own answer immediately is most of what makes
-practice work.
-
-That also settles the `SOLUTION_` notebooks question in `OPEN_QUESTIONS.md`,
-which is the same question in different clothes.
-
-*Cost to change: the plan is free; the first converted worksheet is where the
-design meets contact, which is why it comes before the converter rather than
-after it.*
-
-**7.46 — A syntax error opened with two frames of dewlab's own plumbing.**
-`_format_exception` trims a traceback to the student's own frames, and its
-docstring said that where trimming leaves nothing — *"a syntax error, say"* — the
-full traceback is shown rather than an empty one.
-
-That fallback was wrong, and the case it was wrong for is the one that matters
-most. A syntax error is raised while the code is being compiled rather than while
-it runs, so **none** of the frames are the student's; they are all
-`tutorial_tools.py`. Every syntax error in dewlab therefore opened with two lines
-of our own machinery above the line somebody had mistyped.
-
-It had been that way since the runtime was written and nobody noticed, because
-nobody had written a tutorial whose subject is reading these messages.
-
-The fix is that a syntax error carries its own location — filename, line, and the
+**7.46 — Clean exception traceback formatting for syntax errors.**
+`_format_exception` trims tracebacks to student execution frames. For compile-time
+syntax errors where runtime execution frames are absent, dewlab renders the
+exception location directly (filename, line, caret) without exposing internal
+`tutorial_tools.py` plumbing.
+*Cost to change: five lines in runtime tools.*
 caret — and Python renders those from the exception rather than from the stack.
 So where the exception knows where it happened, the stack goes entirely:
 

@@ -1,13 +1,10 @@
-# Decisions needed before Phase 6
+# Curriculum Scope & Sequencing Decisions
 
-> **All seven answered by Josh on 2026-08-22.** The answers are recorded at the
-> top of each question and in `ANSWERS.md`, which is the short version. The
-> reasoning below is kept because it is what the answers were answers to, and
-> because two of them turned into larger pieces of work than the question
-> anticipated.
+> **Status: Settled.** Decisions are recorded at the top of each section and in
+> `ANSWERS.md`. The pedagogical and structural rationale is preserved below for
+> architectural reference.
 
-Six questions. Each blocks a specific piece of writing, each has a
-recommendation, and each ends with the form of words that would settle it.
+Six core curricular decisions determining module structure, sequencing, and scope boundaries.
 
 They are worth answering in the order given: 1 to 3 decide what two of the
 outlines contain, 4 and 5 decide where things go, 6 is cheap and independent.

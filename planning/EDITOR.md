@@ -1,26 +1,16 @@
-# The editor
+# Visual Authoring Editor Specification
 
-A page where Josh reorders tutorials, inserts one between two others, and
-creates a new one — without a terminal, without Python, and without asking
-anybody.
-
-Not built yet. This is the plan.
+A browser-based management and editing interface enabling course maintainers to reorder series, insert tutorials, create new modules, edit Markdown content and code cells, and publish versioned releases directly to GitHub via pull requests without local terminal dependencies.
 
 ---
 
-## The problem underneath the request
+## 1. Problem & Architecture
 
-Reordering is currently expensive for a reason that has nothing to do with
-editors: **the order is stored in eighteen places.** Every tutorial carries
-`order: 12` in its own frontmatter, so inserting one in the middle means editing
-every file after it. Add the numbers in titles and filenames and a single
-insertion becomes a fifty-place edit that nothing verifies
-(`curriculum/DECISIONS_NEEDED.md`, question 5).
+Sequencing in dewlab was historically coupled to frontmatter `order:` fields across individual tutorial files, making insertions and reordering multi-file manual edits.
 
-An editor built on top of that would be a nice front end for a bad
-representation. So the first piece of work is not the editor.
+The editor architecture decouples sequence configuration from content files into dedicated series order files (`<series>.order.yaml`), providing a unified interface for content management and release operations.
 
-## Step 1 — Order becomes one file per series
+## 2. Structural Layer — Order Files
 
 ```yaml
 # tutorials/mit-pdp-maths-prog-integration/maths-and-programming.order.yaml
@@ -31,161 +21,44 @@ order:
   - making-decisions
 ```
 
-`order:` leaves the frontmatter. The build reads this list; a tutorial not
-listed is not in the series and the build says so.
+- **Single Point of Ordering**: Moving or inserting a tutorial modifies a single line in `order.yaml`.
+- **Validation**: The build verifies that every slug in `order.yaml` corresponds to a valid Markdown tutorial, and that unlisted tutorials are not silently included on the active path.
 
-What that buys, before any editor exists:
+## 3. Editor Interface Architecture (`assets/editor.html`, `assets/editor.js`)
 
-- **Reordering is one file and one commit.** Moving a line moves a tutorial.
-- **Inserting is one line**, and nothing else changes.
-- **A human can do it in the GitHub web editor today**, which is worth having
-  even after the editor is built, because it still works when the editor does
-  not.
-- The editor becomes a small thing: it edits one list.
+The editor runs as a standalone client-side application in the built site (`editor.html`), interacting with the repository via the GitHub REST API.
 
-This step also carries the rename. Filenames lose their numbers
-(`tutorial-14-expressions-come-alive.md` → `expressions-come-alive.md`), titles
-lose theirs, and the fifty prose references become names rather than numbers.
-Published URLs change, which is a real cost and the reason to do it exactly once.
+### Core Capabilities
+- **Series Reordering**: Drag-and-drop or accessible keyboard controls to reorder tutorial cards within a series. Saving writes the updated `order.yaml` as a branch commit.
+- **Tutorial Insertion & Creation**: Insert tutorial cards at any position or at the end of a series. Prompting for title generates a slug, initializes frontmatter, and creates a template file with standard sections, executable cells, and reflection blocks.
+- **Content & Frontmatter Editing**: In-place editing of Markdown prose, YAML frontmatter, and executable Python code cells with syntax highlighting.
+- **Structural Validation Preview**: Rather than maintaining a secondary renderer that could drift from `build.py`, the editor previews structural validity (cell counts, heading levels, syntax correctness, unclosed code fences, and unique cell IDs).
 
-## Step 2 — The editor page
+## 4. Authentication & Security Model
 
-A page in the built site — `editor.html` — that reads the repository through the
-GitHub API and writes back a commit.
+The editor authenticates against GitHub using a fine-grained Personal Access Token (PAT) with `contents:write` permissions scoped to `deweydex/dewlab`.
 
-**Reordering.** The series as a list of cards, drag to reorder, or move up and
-down for anyone not using a mouse. Save writes the new `order.yaml` as one
-commit on a branch.
+### Security Considerations
+- **Storage**: Tokens are stored in browser `localStorage`. A persistent "Forget Token" control is available across all views, and the editor is not linked from student-facing pages.
+- **Branch & PR Lifecycle**: The editor commits modifications to a dedicated feature branch and opens a Pull Request on GitHub rather than pushing directly to `main`, ensuring peer review and CI validation before deployment.
 
-**Inserting.** A gap between any two cards, and at the end. Choosing one asks for
-a title, makes a slug from it, writes a new markdown file from a template, and
-adds it to the list. One commit, two files.
+## 5. Supported Operations & Safety Tiers
 
-**Creating.** The same as inserting, at the end.
+Operations are categorized by their impact on student progress data:
 
-The template matters more than it sounds: it is where the house conventions live
-— frontmatter with the fields the build requires, an opening section, a first
-exec cell, a `## Reflection` at the end. A new tutorial should start out looking
-like the others.
+### Safe Operations (Fully Reversible)
+- **Reorder Series**: Updates `order.yaml` without mutating tutorial content.
+- **Insert / Create Tutorial**: Adds new files from standardized templates.
+- **Edit Prose & Cells**: Edits content within existing cell IDs.
+- **Edit Frontmatter**: Updates `title`, `module`, `year`, and `packages`.
+- **Set Status**: Toggles lifecycle status (`draft`, `beta`, `live`, `archived`).
+- **Release New Version**: Freezes current live content and publishes the editor buffer as a new timestamped release (`YYYY.MM.DD.N`). Proposes releases automatically when cell structure or IDs change.
 
-## How it writes
+### Guarded Operations (Structural Impact)
+- **Duplicate Tutorial**: Clones tutorial structure under a new slug and renames cell IDs to prevent local storage key collisions.
+- **Move to Another Series**: Updates both series order files and the tutorial's `series:` frontmatter field.
 
-The page holds a **GitHub personal access token**, fine-scoped to contents:write
-on `deweydex/dewlab`, in `localStorage`. Then a commit is three API calls.
-
-Being honest about what that means:
-
-- **The token is in the browser.** On Josh's own machine that is a reasonable
-  trade; on a shared one it is not. The page should say so plainly, offer a
-  "forget this token" button, and never be linked from anywhere students go.
-- **Fine-scoped, not classic.** Contents write on one repository. Not a token
-  that can do anything else.
-- **It commits to a branch and opens a pull request**, never straight to main.
-  That keeps the two-author review the access model was designed around, and it
-  means a mistake in the editor is a pull request rather than a live site.
-
-The alternative — a GitHub App with proper OAuth — removes the token from the
-browser and costs an app registration, a redirect URL, and somewhere to keep a
-secret. Worth revisiting if a third person ever edits; overkill for two.
-
-## It edits content too
-
-The plan used to say the opposite — *"it is not a markdown editor"* — on the
-grounds that writing happens where writing happens and a content editor would
-double the size of the page. Josh answered "both", and he was right: the
-argument was about effort, not about what the tool is for.
-
-Editing content raises three things that reordering never did.
-
-**A cell's `id:` is the key a student's saved work is stored under.** Renaming
-one does not move their work; it orphans it, and the cell comes back empty on
-their next visit. Nothing in the build can warn about this, because by the time
-the build runs the rename has already happened and the old id is gone. The
-editor is the only place both versions exist at once, so it is the only place
-the warning can be made — it names the ids that vanished, before the commit.
-
-**A preview would have to be a second renderer.** The build is Python:
-Python-Markdown with three extensions, maths lifted out before conversion,
-cells replaced by markup the runtime finishes. A browser preview of that is a
-reimplementation, and a reimplementation that drifts is worse than none — it
-would show a page the build does not produce.
-
-So the editor previews **structure, not appearance**. It shows what the build
-will see: how many runnable cells, what their ids are, how many headings, and
-every structural problem that would stop the build — a fence left open, a
-missing id, two cells sharing one, an id that is not a slug. That is honest
-about what a browser can check, and it catches the mistakes that actually
-happen. Appearance is checked by reading the page after it republishes.
-
-**The token is open far more often.** It was sized for occasional structural
-edits. Content editing means the page is open while writing, so the gate states
-the trade plainly, there is a "forget my token" button on every screen, and the
-page is linked from nowhere a student goes.
-
-## The operations it offers
-
-Josh: *"we definitely need to have the option on the editor to have things like
-draft, archive, published — it would also be great to be able to duplicate with
-a new version and other classical operations."*
-
-The set below is those, plus the ones that fall out of them. They divide by how
-much damage they can do, which is the only division worth making in a tool that
-edits published material.
-
-**Safe — the change is reversible and nobody loses anything.**
-
-- **Reorder** a series. Done.
-- **Insert** a tutorial, or **create** one at the end. Done.
-- **Edit** prose and cells. Done, with the cell-id warning.
-- **Edit the frontmatter.** Josh has said yes to this. Every field except
-  `slug` is safe to change from here: a title, the module title, the year, the
-  packages a page needs.
-- **Set the status** — draft, beta, live, archived. One field, and the build
-  does the rest (`planning/VERSIONS.md`).
-- **Release a new version.** Done. Freezes the release students have, dates the
-  new one from the browser's own clock, and leaves the reading order untouched —
-  an order file lists slugs, and a new version of a tutorial is not a new
-  tutorial. This is Josh's "duplicate with a new version", and it is the
-  operation the whole versions plan exists to support.
-
-  It **proposes** rather than acts. The editor knows whether cells appeared,
-  disappeared or changed id since the last release and says so when they did;
-  when only prose moved it stays quiet, because a version per save is the thing
-  the design rejects. The button is always there — a large prose rewrite can be
-  a release too — but the prompt only appears when the shape changed.
-
-  Refused in three cases, each for its own reason: on a tutorial that has never
-  been committed, because there is nothing for a student to go back to; on one
-  that is not live, because a draft has no page and a beta becomes live with the
-  status control; and when nothing has changed, because the new release would be
-  identical to the one students already have.
-
-**Careful — the change is fine, but only if something else changes with it.**
-
-- **Duplicate as a new tutorial.** Copies the shape of an existing one under a
-  new slug and title, with the cell ids renamed to match the new sections —
-  because copying them unchanged would give two pages the same storage keys and
-  a student's work would appear in both.
-- **Move to another series.** Two order files change, plus the tutorial's own
-  `series:`. One commit or none.
-
-**Dangerous — refused, or offered only with the consequence stated.**
-
-- **Rename a slug.** It breaks every link to the tutorial and orphans every
-  student's saved work, since both are keyed on it. The editor should not offer
-  this as an edit. What it can offer is *archive the old one and create a new
-  one*, which is the same intent with the losses made visible.
-- **Delete.** Not offered. Josh has settled this: archive is the whole of it.
-  Deleting a file remains possible by hand, for something published in error.
-
-**The rule underneath all of it:** an operation that changes what a student's
-saved work is keyed to — a slug, a cell id — has to say so before it happens,
-because nothing downstream can. By the time the build runs, the old key is gone.
-
-## Order of work
-
-1. `order.yaml` and the rename. Nothing here needs the editor, and everything
-   after it is easier. **This is the piece that unblocks the re-planned series.**
-2. The editor page, reordering only. Useful the day it works.
-3. Insert and create, with the template.
-4. Revisit the token if anyone else needs to edit.
+### Destructive Operations (Restricted & Warned)
+- **Rename Slug**: Modifying a slug breaks external links and orphans student progress keyed by `(module, slug)`. The editor requires archiving the old slug and creating a new module.
+- **Rename Cell ID**: Renaming a cell ID in an existing release orphans saved student progress for that cell. The editor inspects original versus working cell IDs and provides an explicit warning before commit.
+- **Deletion**: Hard deletion of tutorial files is disabled in the UI; tutorials are retired by transitioning status to `archived`.

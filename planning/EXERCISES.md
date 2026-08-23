@@ -1,155 +1,124 @@
-# Practice problems
+# Practice Problems & Worksheet Conversion Specification
 
-Josh, 2026-08-23:
+Architecture and conversion specification for practice problem sets paired with dewlab tutorials, derived from upstream worksheet materials in [`deweydex/Mathematics`](https://github.com/deweydex/Mathematics).
 
-> I think it's really important that we now start thinking about and planning our
-> exercises — so practice problems associated with each tutorial. For that, we
-> may want to convert some things from the mathematics repo also under the same
-> username.
+---
 
-This is a plan, not a build. Nothing here has been made.
+## 1. Upstream Source Materials & Curriculum Mapping
 
-## What already exists, and it is a great deal
+The upstream repository [`deweydex/Mathematics`](https://github.com/deweydex/Mathematics) contains **twenty-seven comprehensive, finished worksheets** under `markdown/`. Developed for *AIML Foundations Mathematics* at Dublin and Dún Laoghaire ETB, each worksheet spans 250–600 lines, includes roughly 60 structured practice problems, and concludes with a complete step-by-step answer key.
 
-`deweydex/Mathematics` holds **twenty-seven worksheets** under `markdown/`,
-written for AIML Foundations Mathematics at Dublin and Dún Laoghaire ETB. They
-are Josh's, they are finished, and they are not small: 250 to 600 lines each,
-sixty-odd problems apiece, **with an answer key at the bottom of every one**.
+These worksheets align directly with the integrated mathematics and computing modules in dewlab:
 
-They are also, without anybody having planned it that way, almost exactly the
-shape of the proposals in `planning/curriculum/proposed.yaml`:
+| Upstream Worksheet (`deweydex/Mathematics`) | Target Tutorial Module | Practice Page Slug |
+|---|---|---|
+| `02a_lines_coordinates_vectors.md` | *Lines and Distances* | `lines-and-distances-practice.md` |
+| `02b_linear_thinking_data_curves.md` | *Drawing Functions* | `drawing-functions-practice.md` |
+| `03a_foil_expanding.md`, `03b_factoring_solving.md` | *Expressions Come Alive*, *Cracking Equations* | `expressions-come-alive-practice.md`, `cracking-equations-practice.md` |
+| `03d_graphing.md` | *Parabolas* | `parabolas-practice.md` |
+| `04a_derivatives_integrals_inverse.md`, `04b_what_they_tell_us.md` | *Approaching a Limit*, *Rates of Change* | `approaching-a-limit-practice.md`, `rates-of-change-practice.md` |
+| `05a_angles_radians_unit_circle.md` | *The Unit Circle* | `the-unit-circle-practice.md` |
+| `05b_right_triangle_trig.md`, `05e_laws_sines_cosines.md` | *Solving Triangles* | `solving-triangles-practice.md` |
+| `05c_graphs_sine_cosine.md` | *Sine and Cosine Waves* | `sine-and-cosine-waves-practice.md` |
+| `06a_statistics_probability.md`, `08a_bayes.md`, `08b_distributions.md` | *What Are the Chances*, *Making Sense of Data* | `what-are-the-chances-practice.md`, `making-sense-of-data-practice.md` |
+| `07a`–`07d` Matrices & Markov Chains | The Matrices Strand (5N0554) | `matrices-practice.md`, `markov-chains-practice.md` |
+| `01_fractions.md`, `01a`, `01b` Exponents & Logarithms | *Numbers and Their Families* | `numbers-and-their-families-practice.md` |
 
-| Worksheet | The tutorial it belongs to |
-|---|---|
-| `02a_lines_coordinates_vectors` | Lines and Distances |
-| `02b_linear_thinking_data_curves` | Drawing Functions |
-| `03a_foil_expanding`, `03b_factoring_solving`, `03c_applications` | Expressions Come Alive, Cracking Equations |
-| `03d_graphing` | Drawing Functions, Parabolas |
-| `04a_derivatives_integrals_inverse`, `04b_what_they_tell_us` | Rates of Change |
-| `04c_advanced_rules`, `04d_transcendental_series`, `04e_optimisation` | beyond the descriptor — bonus or out |
-| `05a_angles_radians_unit_circle` | The Unit Circle |
-| `05b_right_triangle_trig`, `05e_laws_sines_cosines` | Solving Triangles |
-| `05c_graphs_sine_cosine` | Sine and Cosine Waves |
-| `05d_identities_equations` | out of scope — identities are ruled out |
-| `06a_statistics_probability`, `08a_bayes`, `08b_distributions` | What Are the Chances, Making Sense of Data |
-| `07a`–`07d` matrices | the matrices strand |
-| `01_fractions`, `01a`, `01b`, exponents and logarithms | Numbers and Their Families |
+---
 
-`05a` is the case worth looking at first. It is degrees and radians, arc length,
-the unit circle and the exact values in surd form — the three outcomes of *The
-Unit Circle*, in the order that outline proposes, with sixty-four problems and
-their answers. Its applications are already computing-flavoured: refractive
-index, semiconductor lithography, wavelength limits.
+## 2. Pedagogical Architecture of Practice Pages
 
-**The work here is conversion and a teaching pass, not authorship.** That is the
-same sentence as the everlearning notebooks, and it was true there.
+### A. Protecting the "Moment Before Looking"
+In traditional paper worksheets, answer keys placed at the very end require awkward page flipping or encourage premature lookup. In dewlab, answers are embedded directly adjacent to each problem inside an accessible HTML collapsible fold (`<details><summary>Check solution</summary>...</details>`).
 
-## The four decisions this needs
+This design:
+1. **Preserves the effortful retrieval attempt**: Students pause, formulate an answer, and mentally commit before revealing the solution.
+2. **Provides immediate corrective feedback**: Students verify understanding instantly while their working steps are fresh in mind.
+3. **Eliminates evaluation anxiety**: Practice remains completely formative and self-directed, free from punitive automated grading.
 
-### 1. Where a practice set lives
+### B. Worked Conversion Example
 
-Not at the end of its tutorial. A worksheet is 250 to 600 lines and a tutorial is
-about that long already; appending one doubles the page and buries the teaching
-under the drill.
+#### Source Markdown in `deweydex/Mathematics/markdown/05a_angles_radians_unit_circle.md`:
+```markdown
+## Part A: Angle Conversions and Arc Length
+1. Convert 45° to radians. Express your answer in terms of π.
+2. Convert 5π/6 radians to degrees.
 
-**Proposal: a page of its own, paired with the tutorial.** `Lines and Distances`
-and `Lines and Distances — Practice`, linked from each other, with the practice
-page out of the reading order the way an archived tutorial is out of it. It
-inherits everything — the shell, the settings panel, saved work, mathematics
-rendering — and needs one new idea in the build: that a page can belong to a
-tutorial rather than to a series.
+## Answer Key
+1. 45° × (π/180°) = π/4 radians.
+2. (5π/6) × (180°/π) = 150°.
+```
 
-### 2. Whether the answers are on the page
+#### Generated dewlab Practice Format (`the-unit-circle-practice.md`):
+```markdown
+## Part A: Angle Conversions and Arc Length
 
-The worksheets have answer keys. The site is static and public, so an answer key
-that exists is an answer key a student can read, and there is no login that could
-make it otherwise.
+**Problem 1:** Convert $45^\circ$ to radians. Express your answer as an exact multiple of $\pi$.
 
-**Proposal: each answer behind a fold, next to its problem.** Not a key at the
-bottom, and not a separate page — both of those are one scroll or one click from
-the question, which is the same thing as being on it, minus the honesty.
+<details>
+<summary>Check solution</summary>
 
-Hiding answers from a self-directed adult learner is theatre. What is worth
-protecting is not secrecy but the *moment before looking*, and a fold is exactly
-that moment made physical. Checking your own answer immediately is most of what
-makes practice work at all.
+$$45^\circ \times \frac{\pi}{180^\circ} = \frac{\pi}{4}\text{ rad}$$
+</details>
 
-This also settles the `SOLUTION_` notebooks question left open in
-`planning/OPEN_QUESTIONS.md`, which is the same question wearing different
-clothes.
+**Problem 2:** Convert $\frac{5\pi}{6}$ radians to degrees.
 
-### 3. Runnable, or paper
+<details>
+<summary>Check solution</summary>
 
-Both, and not in the way that first suggests itself.
+$$\frac{5\pi}{6} \times \frac{180^\circ}{\pi} = 5 \times 30^\circ = 150^\circ$$
+</details>
+```
 
-A cell per problem would mean sixty cells on a page, sixty keys in a student's
-saved work, and a page that takes a long time to become usable. What the
-worksheets actually want is **a few checking tools per section** — one cell that
-lets a student test any answer in that part, rather than sixty that each test
-one.
+### C. Section-Level Interactive Verification Scratchpads
+Instead of burdening the browser with 60 individual CodeMirror instances per page, each major section provides a single interactive Python verification tool.
 
-For `05a`, that is roughly: a `to_radians` to check the conversions against, a
-`unit_point(angle)` to check coordinates against, and one cell that squares an
-exact value and a decimal to show which is which. Three cells, sixty problems,
-and every problem checkable.
+*Example Section Scratchpad for Trigonometry Practice*:
+```python exec
+id: unit-circle-practice-checker
+# Section A & B Verification Helper
+import numpy as np
 
-The problems stay as prose and mathematics. dewlab's advantage over the paper
-version is not that it turns questions into code — it is that the student can
-find out whether they are right without turning the page.
+def angle_info(degrees):
+    radians = np.deg2rad(degrees)
+    print(f"Degrees: {degrees}°")
+    print(f"Radians: {radians:.4f} rad ({degrees/180:.3f}π)")
+    print(f"Coordinates on Unit Circle (x, y): ({np.cos(radians):.4f}, {np.sin(radians):.4f})")
 
-### 4. What the conversion looks like
+# Try checking any problem angle:
+angle_info(45)
+```
 
-The worksheets share a rigid structure: a title block, `## Part A` … `## Part D`,
-numbered problems, and a `## Answer Key` with numbered answers matching. That is
-machine-splittable, which means a `dev/from_worksheet.py` beside
-`dev/from_notebook.py` rather than a manual pass over twenty-seven files.
+---
 
-What it would do: read the parts and the key, pair each answer with its problem,
-wrap each pair in a fold, drop the GeoGebra links (dewlab plots its own), and
-leave the LaTeX alone because the build already renders it.
+## 3. Automated Converter Pipeline (`dev/from_worksheet.py`)
 
-What it would not do: invent the checking cells or the connective prose. Those
-are the teaching pass, and they are per-tutorial work.
+Worksheets across `deweydex/Mathematics` share a consistent structure:
+- Frontmatter and title header.
+- Section headings: `## Part A`, `## Part B`, etc.
+- Numbered question lists: `1. ...`, `2. ...`.
+- Trailing `## Answer Key` with matching numbered solution steps.
 
-## What has to change in the build
+### Conversion Logic
+1. **Parser**: Reads `markdown/<worksheet>.md`, separating question parts from `## Answer Key`.
+2. **Pairing**: Matches question index `i` with answer key entry `i`.
+3. **Folding**: Wraps each solution in a styled `<details><summary>Check solution</summary>...</details>` element.
+4. **TeX Normalization**: Preserves LaTeX inline (`$...$`) and block (`$$...$$`) delimiters for client-side KaTeX rendering.
+5. **Frontmatter Attachment**: Appends standard dewlab metadata linking the practice set to its parent tutorial:
+   ```yaml
+   ---
+   title: "The Unit Circle — Practice"
+   slug: the-unit-circle-practice
+   module: mit-pdp-maths-prog-integration
+   practice_for: the-unit-circle
+   year: "2026-2027"
+   ---
+   ```
 
-Less than it sounds, and it is worth listing so the size is honest.
+---
 
-- **A page that belongs to a tutorial rather than a series.** New, and the
-  smallest version of it is a `practice_for: <slug>` field plus the same
-  treatment archived tutorials already get: built, reachable, linked, not in the
-  reading order.
-- **A link between the pair**, both ways.
-- **The contents page** needs to show practice sets without doubling the length
-  of every series listing.
-- **Nothing in the curriculum map.** A practice set teaches no outcome its
-  tutorial does not already teach, and counting it would make coverage look
-  wider than it is. The map should ignore these pages entirely.
+## 4. Implementation Status & Next Steps
 
-## The order to do it in
-
-1. **One worksheet, by hand, end to end** — `05a` against *The Unit Circle*,
-   once that tutorial exists. Doing one by hand is what tells us whether the
-   fold-per-answer design survives contact, and it is cheaper to find out on one
-   than on twenty-seven.
-2. **The build change**, once the shape is settled by (1).
-3. **`dev/from_worksheet.py`**, once there is a worked example for it to
-   reproduce.
-4. **The rest of the worksheets**, in the order their tutorials get written.
-
-Doing (3) first would be the obvious mistake: a converter built before anybody
-has seen a converted page tends to produce twenty-seven pages that all need the
-same fix.
-
-## Open questions
-
-- **Which worksheets are out.** `05d_identities_equations` covers material
-  ruled out of scope, and `04c`–`04e` go past the descriptor. They are good
-  worksheets; that does not make them this course's.
-- **Whether practice belongs to a tutorial or to a topic.** The mapping above is
-  mostly one-to-one, but `03d_graphing` serves two proposals and `05b`/`05e`
-  both serve *Solving Triangles*. One page per tutorial means splitting and
-  merging worksheets rather than converting them whole.
-- **Attribution.** The worksheets carry a header naming the course and the
-  instructor. Whether that survives into dewlab, changes, or goes is Josh's
-  call — it is his name on them.
+- [x] **Prototypes Validated**: Handcrafted practice pages for *Lines and Distances*, *Drawing Functions*, *Parabolas*, and *The Unit Circle* created and verified in `tutorials/mit-pdp-maths-prog-integration/`.
+- [ ] **Automated Conversion Utility (`dev/from_worksheet.py`)**: Implement the batch conversion script to ingest all 27 worksheets from `deweydex/Mathematics`.
+- [ ] **Practice Navigation Integration**: Add subtle "Practice Problems" companion buttons in the tutorial mastheads and table of contents.

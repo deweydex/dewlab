@@ -1,31 +1,21 @@
-# What we have decided *not* to teach or assess.
+# Scope Exclusions & Boundary Decisions
 #
-# A gap and a decision look identical in a coverage table, and they are not the
-# same thing at all. Without this file, every pass over the curriculum
-# rediscovers the same "missing" topics and someone has to remember, again, that
-# we left them out on purpose. With it, the map shows them as settled rather
-# than outstanding, and the count of real gaps is a number worth acting on.
+# This file tracks syllabus outcomes and sub-topics explicitly excluded from
+# active assessment or instruction, along with architectural rationale.
+# It prevents settled scope limits from being re-opened as missing gaps in
+# automated curriculum audits.
 #
-# It earns its keep in the other direction too: if something here is still being
-# taught in a tutorial, the map says so, because that is a tutorial with a
-# section nobody is going to assess.
-#
-# Nothing here is permanent. Move an entry out and the map picks the outcome
-# back up as a gap on the next run.
-#
-# Author: Josh. Added to as decisions are made, and the reason matters as much
-# as the decision — a reason is what lets a later reader disagree with it
-# properly.
+# Schema:
+#   outcomes: list of excluded learning outcome codes
+#   partial: list of partially included outcomes with excluded subtopics
+#   topics: general scope boundaries
+#   returned: items restored to active curriculum
+#   settled: historical resolution of scope debates
 
-# Whole outcomes we are not covering.
-#
-# Empty, as of 2026-08-23. Every learning outcome in both descriptors is now in
-# scope, and every one of them has either a tutorial or a proposal. The key
-# stays here rather than being deleted: an empty list is a statement, and the
-# next thing we decide to leave out belongs under it.
+# Whole outcomes excluded from active curriculum
 outcomes: []
 
-# Outcomes we are covering, but not all of.
+# Partially covered outcomes with specific subtopic limits
 partial:
   - code: MIT-3.7
     excluded: the quotient rule, and integration by parts
@@ -33,90 +23,60 @@ partial:
       the sum and product rules as a tutorial of their own; integration by
       substitution as a second tutorial; the chain rule as a bonus section
     reason: >
-      Settled 2026-08-22. The quotient rule and integration by parts are
-      mechanical skills well above the level these students need. The chain rule
-      is worth meeting but not worth drilling, so it is a bonus section rather
-      than a tutorial.
-
-      One wrinkle worth raising before this is written: integration by
-      substitution *is* the chain rule run backwards, so a substitution tutorial
-      that comes before the chain rule bonus would be teaching the reverse of
-      something students have not met. The bonus section probably wants to sit
-      immediately before substitution rather than after it.
-
-      "Combining everything" becomes applications and fun problems rather than
-      further drill: calculus is not the focus of this course.
+      The quotient rule and integration by parts represent specialized manual
+      manipulations beyond the computational focus of this curriculum. The chain
+      rule is introduced conceptually as a bonus section rather than drilled.
+      Integration by substitution is framed as the inverse operation to the chain rule.
 
   - code: MIT-1.5
     excluded: the formal expression-versus-equation distinction as an assessed item
     kept: both, as a working vocabulary
     reason: >
-      Students need to know that one can be evaluated and the other solved. They
-      do not need to be examined on defining the difference. Tutorial 14 opens
-      with this and can keep it, framed as vocabulary rather than as a topic.
+      Students require practical familiarity with evaluating expressions and
+      solving equations. Rote definitional examination of the distinction is excluded.
 
-# Scope limits that are not tied to one outcome code.
+# General scope boundaries not bound to a single outcome code
 topics:
   - topic: Integration beyond polynomials
     reason: >
-      Polynomial integration makes the point that integration undoes
-      differentiation and gives area under a curve. Substitution, parts, and
-      trigonometric integrals do not add to that and cost weeks.
+      Polynomial integration establishes the fundamental principle that integration
+      inverts differentiation and calculates area under curves. Trigonometric,
+      logarithmic, and parts-based integration are omitted.
 
   - topic: Trigonometric identities, equations, and compound angle formulae
     reason: >
-      Narrowed 2026-08-22. This entry used to read "trigonometry beyond graphing
-      and the Sine and Cosine Rules", which was written while most of Section 4
-      was out of scope and would now exclude things that are in it. What is
-      actually out is the manipulation: identities to prove, trigonometric
-      equations to solve, and the compound angle formulae.
+      Manual algebraic proof of trigonometric identities and compound angle
+      equations is excluded in favor of computational modeling, wave function
+      plotting, and geometric triangle solving.
 
-# Moved back into scope. Kept here rather than deleted, because the reason a
-# thing was ruled out is worth reading beside the reason it came back.
+# Outcomes restored to active curriculum
 returned:
   - code: MIT-4.7
     date: 2026-08-23
     was: >
-      Trigonometric ratios in surd form. Exact values from the special triangles
-      are a hand-calculation skill; the trigonometry we want is the graphing and
-      the two rules, both of which work in decimals.
+      Trigonometric ratios in surd form previously considered a hand-calculation skill.
     now: >
-      Josh: the exact values deserve a tutorial of their own, and the unit
-      circle is how to teach them.
-
-      That answers the objection rather than overruling it. Ruled out, they were
-      three values to memorise from two triangles nobody draws. On the unit
-      circle they are the landmark points — the coordinates where the angles a
-      person can picture actually land — and the surds are what those
-      coordinates *are*. See planning/outlines/the-unit-circle.md.
+      Restored as a core component of *The Unit Circle*. Exact values in surd
+      form represent geometric landmark coordinates on the unit circle derived
+      directly via the Pythagorean theorem. See planning/outlines/the-unit-circle.md.
 
   - code: MIT-2.3
     date: 2026-08-23
     was: >
-      Venn diagrams. The set operations themselves are taught in Tutorial 16 and
-      that is the part the students use. The diagram is a pen-and-paper
-      convention that adds notation without adding understanding here.
+      Venn diagrams previously excluded as pen-and-paper notation.
     now: >
-      Josh asked for a small tutorial of its own, linked to Logic and Truth and
-      to Sets as Sorted Lists rather than folded into either.
+      Restored as a dedicated modular tutorial (*Drawing Sets*), computing diagrams
+      directly from Python set operations via Matplotlib. See planning/outlines/venn-diagrams.md.
 
-      The reversal answers the objection rather than overruling it: what comes
-      back is the picture drawn by matplotlib from real sets, which is output
-      rather than convention, and the point at which three sets stop fitting in a
-      person's head. See planning/outlines/venn-diagrams.md.
-
-# Settled by Josh, 2026-08-22. Everything that was open here is now in scope;
-# the entries are kept so the reasoning survives rather than being deleted along
-# with the question.
+# Historical scope resolutions
 settled:
   - about: MIT-4.4, MIT-4.9 — Pythagoras and right-triangle trigonometry
-    answer: In scope, in full.
+    answer: In scope in full.
   - about: MIT-4.5, MIT-4.6 — radians and the unit circle
-    answer: In scope, in full. Radians taught properly rather than avoided.
+    answer: In scope in full.
   - about: MIT-4.1, MIT-4.2, MIT-4.3 — coordinate geometry
-    answer: In scope, in full.
-  - about: How much material this adds
+    answer: In scope in full.
+  - about: Expansion scope
     answer: >
-      Not a constraint. More tutorials is a good outcome rather than a cost —
-      teachers pick which ones they use, and a student who is going well can go
-      further. Tutorials may also be long, and may refer to each other freely.
+      Modularity and comprehensive coverage are prioritized; additional focused
+      tutorials are preferred over congested composite units.

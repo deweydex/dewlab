@@ -17,28 +17,23 @@ Section 4 was out of scope, and it is no longer the right shape for two reasons.
 
 Pythagoras is **one of the six gateways in the topic tree** — it unlocks seven
 downstream topics, more than any other candidate, which is why it became a
-gateway over my objection when the measurement disagreed with me. A gateway that
-exists only as the third subsection of a tutorial about graphing is not a
-gateway. It needs somewhere a student can be sent.
+Pythagoras serves as a critical gateway unlocking seven downstream topics in
+the topic tree. A gateway requires a dedicated tutorial rather than an embedded
+subsection within graphing.
 
-And Angles and Waves already assumes this material. Josh, in `ANSWERS-3.md`:
-SOH-CAH-TOA needs *"coordinates so we can have the unit circle"*. The unit circle
-is a coordinate-geometry object — a point on a circle of radius one, whose
-distance from the origin is the thing that makes the identity true. Without this
-tutorial, Angles and Waves has to teach coordinates in passing on its way to
-something else.
+Furthermore, downstream trigonometry (*The Unit Circle*, *Solving Triangles*)
+assumes coordinate geometry: the unit circle is a coordinate-geometry object
+(a locus of points at distance 1 from the origin). Having a dedicated tutorial
+prevents trigonometry from having to introduce Cartesian coordinates in passing.
 
-So Drawing Functions keeps plotting lines and loses the slope-from-two-points
-work, which comes here instead.
+Drawing Functions focuses on plotting functions, while coordinate slope,
+midpoint, and Euclidean distance are established here.
 
 ---
 
-## The naming and describing decisions
+## Pedagogical & Terminology Architecture
 
-Josh asked to work out how to describe this material before it is written. These
-are the choices that carry the tutorial, and each of them is reversible now and
-awkward to reverse later, because the vocabulary spreads into three tutorials
-that follow.
+The following pedagogical choices structure the tutorial:
 
 ### What to call it
 
@@ -202,11 +197,6 @@ The plotting helper from Drawing Functions, unchanged. `slope(p, q)` and
 right-triangle tutorial, and Rates of Change — worth naming them once and
 keeping the names.
 
-## Open questions
-
-- **The title.** "Lines and Distances" against "Coordinate Geometry" against
-  something plainer still. The argument above is about the audience rather than
-  the content, so it is exactly the kind of call Josh should make.
-- **Whether the circle at the end is too coy.** It is a deliberate hook rather
-  than a taught thing, and hooks that teach nothing are worth being suspicious
-  of.
+## Open Questions
+- **Title Finalization**: Evaluate "Lines and Distances" versus alternatives against reader accessibility criteria.
+- **Hook Effectiveness**: Evaluate whether the closing geometric circle construction effectively motivates *The Unit Circle*.

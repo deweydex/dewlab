@@ -7,7 +7,7 @@
  * person actually changes; site/ is a derived artefact and editing it would be
  * editing the output of a build.
  *
- * Never linked from a student page. It is for Josh and whoever edits with him.
+ * Never linked from a student page. It is for authors and course maintainers.
  */
 
 const API = "https://api.github.com";
@@ -92,8 +92,8 @@ export function isNewer(a, b) {
 
 export function nextVersion(existing, today = new Date()) {
   /* Today where you are, from the browser's own clock: a release at half past
-   * midnight in Dublin should carry the date Josh thinks it is, not the date
-   * UTC thinks it is.
+   * midnight in Dublin should carry the date the author's local clock reports,
+   * not the date UTC thinks it is.
    *
    * The trailing number is computed rather than typed. It earns its place
    * rarely — you publish, spot something, and publish again — but that is
