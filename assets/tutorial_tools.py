@@ -485,8 +485,20 @@ def _format_exception(exc: BaseException) -> str:
 
     The frames from `eval_code_async` and from this module are noise to someone
     learning Python; a NameError should point at the line they wrote, not at
-    dewlab's plumbing. If trimming leaves nothing — a syntax error, say — the
-    full traceback is shown rather than an empty one.
+    dewlab's plumbing.
+
+    A syntax error has no frames of the student's at all, because it is raised
+    while the code is being compiled rather than while it runs — so trimming
+    leaves nothing. This used to fall back to the full traceback, which opened
+    every syntax error with two frames of `tutorial_tools.py` before the line
+    the student had actually mistyped. That is the wrong thing to show anybody,
+    and it is very much the wrong thing to show a reader of *When It Goes
+    Wrong*, whose subject is reading these messages.
+
+    But a syntax error carries its own location — filename, line, and the caret
+    — and Python prints those from the exception rather than from the stack. So
+    where the exception knows where it happened, the stack goes entirely and
+    what is left is exactly the part that helps.
     """
     summary = traceback.TracebackException.from_exception(exc)
 
@@ -494,6 +506,10 @@ def _format_exception(exc: BaseException) -> str:
         user_frames = [f for f in item.stack if _is_user_frame(f.filename)]
         if user_frames:
             item.stack = traceback.StackSummary.from_list(user_frames)
+        elif getattr(item, "lineno", None) is not None:
+            # A syntax error: it says where it is, so the frames that led here
+            # are all ours and none of them help.
+            item.stack = traceback.StackSummary.from_list([])
 
     return "".join(summary.format())
 

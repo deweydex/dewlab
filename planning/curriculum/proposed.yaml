@@ -222,47 +222,6 @@ proposed:
       stop fitting in a person's head.
     size: short
 
-  - id: how-we-got-here
-    outline: from-everlearning
-    title: "How We Got Here"
-    after: tutorial-02-storing-and-computing
-    covers: [PDP-LO1, PDP-LO3]
-    builds_on: [tutorial-02-storing-and-computing]
-    because: >
-      The history of programming, from Lovelace's notes through machine code and
-      assembly to the high-level languages these students already use. Converted
-      from everlearning's Computing Time Machine notebook, which frames the
-      history around binary and hexadecimal so it reinforces a skill rather than
-      sitting beside it.
-
-      After Storing and Computing rather than after Tutorial 1, because the
-      notebook's binary and hex work assumes it — a placement the source made
-      obvious and the earlier proposal had wrong.
-
-      LO3, telling languages apart by their characteristics, stays in it. It was
-      briefly split out as its own tutorial and put back the same day: the
-      paradigms are the end of the story the history is telling, and a comparison
-      tutorial with the story removed has nothing to motivate it.
-    size: full
-    source: >
-      everlearning
-      PDP_MIT_2026_2027_Integrated/LearningOutcomes/PDP/PDP-LO1_LO3_MIT-1.4_The-Computing-Time-Machine.ipynb
-
-  - id: when-it-goes-wrong
-    outline: from-everlearning
-    title: "When It Goes Wrong"
-    after: tutorial-03-making-decisions
-    covers: [PDP-LO9]
-    builds_on: [tutorial-01-first-steps]
-    because: >
-      Reading an error message is the single most useful thing a beginner can
-      learn, and it is currently taught only in passing. Early in the series,
-      while the errors are still small ones.
-    size: full
-    source: >
-      everlearning
-      PDP_MIT_2026_2027_Integrated/LearningOutcomes/PDP/PDP-LO9_LO10_Reading-Compiler-Errors-and-Debugging.ipynb
-
   - id: team-project
     outline: team-project
     title: "The Team Project"

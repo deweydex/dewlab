@@ -11,7 +11,9 @@ series: Maths and programming
 order:
   - first-steps
   - storing-and-computing
+  - how-we-got-here
   - making-decisions
+  - when-it-goes-wrong
   - repeating-yourself
   - lists-and-sequences
   - finding-things

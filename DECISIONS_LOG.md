@@ -1541,3 +1541,63 @@ which is the same question in different clothes.
 *Cost to change: the plan is free; the first converted worksheet is where the
 design meets contact, which is why it comes before the converter rather than
 after it.*
+
+**7.46 — A syntax error opened with two frames of dewlab's own plumbing.**
+`_format_exception` trims a traceback to the student's own frames, and its
+docstring said that where trimming leaves nothing — *"a syntax error, say"* — the
+full traceback is shown rather than an empty one.
+
+That fallback was wrong, and the case it was wrong for is the one that matters
+most. A syntax error is raised while the code is being compiled rather than while
+it runs, so **none** of the frames are the student's; they are all
+`tutorial_tools.py`. Every syntax error in dewlab therefore opened with two lines
+of our own machinery above the line somebody had mistyped.
+
+It had been that way since the runtime was written and nobody noticed, because
+nobody had written a tutorial whose subject is reading these messages.
+
+The fix is that a syntax error carries its own location — filename, line, and the
+caret — and Python renders those from the exception rather than from the stack.
+So where the exception knows where it happened, the stack goes entirely:
+
+```
+  File "<cell your-turn-4>", line 2
+    result = (5 + 3
+             ^
+SyntaxError: '(' was never closed
+```
+
+Narrow on purpose. An exception with no user frames *and* no location of its own
+still shows the full traceback, because that is a bug in dewlab and hiding our
+frames would make it harder to find.
+
+*Cost to change: five lines. Found by writing a tutorial about error messages and
+then reading what the page showed, which no test would have thought to check.*
+
+**7.47 — The first two tutorials to close outcomes since the map existed.**
+*How We Got Here* (`PDP-LO1`, `PDP-LO3`) and *When It Goes Wrong* (`PDP-LO9`)
+are converted from everlearning notebooks. Forty-one outcomes in place became
+forty-four.
+
+Three things about the conversion are worth recording, because the next one will
+hit all three.
+
+**The converter is a first draft, not an output.** `dev/from_notebook.py`
+produced a slug of `pdp-lo1-lo3-mit-14-the-computing-time-machine`, a title with
+two emoji in it, and cell ids like
+`stop-2-1945-machine-code-the-only-language-the-machine-understands-1`. A cell id
+is the key a student's work is saved under and belongs in the frontmatter of
+somebody's judgement, not in a slugified heading. Both tutorials were written by
+hand from the notebook rather than patched from the converter's output.
+
+**Only half of the second notebook came across.** It is called *Testing and
+Debugging* and most of it is testing, which *Building Reusable Tools* already
+covers. Taking the whole thing would have duplicated a tutorial that exists.
+
+**Deliberately broken cells are better here than in a notebook**, which is the
+one thing this conversion gains rather than merely survives. A cell that raises
+the error in front of the reader beats a commented-out example they have to
+uncomment — and it is what turned up 7.46.
+
+*Cost to change: these are tutorials now, so their slugs and cell ids are
+contracts from the first class that uses them. The window is still open.*
