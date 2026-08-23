@@ -253,3 +253,18 @@ class TestTheOutputActuallyBuilds:
         assert 'data-cell-id="making-decisions-1"' in page
         assert 'data-cell-id="a-second-section-1"' in page
         assert '<span class="dl-math">x^2</span>' in page
+
+
+class TestTheReport:
+    """`--out` is a documented option and may point anywhere. Reporting through
+    `relative_to` alone wrote every file and then crashed on the line saying so,
+    which is the worst order to fail in: the work is done and the run looks like
+    it failed."""
+
+    def test_a_path_inside_the_repository_is_shown_relative(self):
+        inside = fn.ROOT / "tutorials" / "somewhere" / "a-tutorial.md"
+        assert fn.shown(inside) == "tutorials/somewhere/a-tutorial.md"
+
+    def test_a_path_outside_it_is_shown_in_full_rather_than_raising(self, tmp_path):
+        outside = tmp_path / "a-tutorial.md"
+        assert fn.shown(outside) == str(outside)

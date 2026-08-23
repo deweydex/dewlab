@@ -486,6 +486,17 @@ def load_proposals() -> list[dict]:
     return (yaml.safe_load(PROPOSED.read_text()) or {}).get("proposed") or []
 
 
+def ruled_out_clause(in_place: int, wanted: int, excluded: int) -> str:
+    """The headline count, and what it has set aside — where anything is."""
+    if not excluded:
+        return f"**{in_place} of {wanted}** outcomes are in place."
+    if excluded == 1:
+        return (f"**{in_place} of {wanted}** outcomes are in place, once the one "
+                "we have ruled out is set aside.")
+    return (f"**{in_place} of {wanted}** outcomes are in place, once the "
+            f"{excluded} we have ruled out are set aside.")
+
+
 def unplanned_line(states: dict[str, str], proposals: list[dict]) -> str:
     """The one number worth acting on: outcomes with no tutorial *and* no plan.
 
@@ -592,13 +603,11 @@ def render() -> str:
         "",
         "## Where we stand",
         "",
-        f"**{in_place} of {wanted}** outcomes are in place, once the "
-        # "the 1 we have ruled out are set aside" read as a typo in a generated
-        # file, which is the kind of thing that makes a reader distrust the
-        # numbers beside it.
-        + (f"{counted['excluded']} we have ruled out is set aside."
-           if counted["excluded"] == 1
-           else f"{counted['excluded']} we have ruled out are set aside."),
+        # The clause about what we ruled out only belongs here when we have
+        # ruled something out. "Once the 0 we have ruled out are set aside" is
+        # two mistakes in one line, and a generated file that reads like a typo
+        # makes a reader distrust the numbers beside it.
+        ruled_out_clause(in_place, wanted, counted["excluded"]),
         "",
         f"- {STATUS['taught'][1]} **{counted['taught']} taught** — a tutorial "
         "section teaches it.",
@@ -609,8 +618,9 @@ def render() -> str:
         "the quiet gaps: they look covered from a distance.",
         f"- {STATUS['absent'][1]} **{counted['absent']} not covered** — nothing "
         "in dewlab touches it.",
-        f"- {STATUS['excluded'][1]} **{counted['excluded']} out of scope** — see "
-        "`planning/curriculum/out-of-scope.yaml` for why.",
+        *([f"- {STATUS['excluded'][1]} **{counted['excluded']} out of scope** — see "
+           "`planning/curriculum/out-of-scope.yaml` for why."]
+          if counted["excluded"] else []),
         "",
         unplanned_line(states, proposals),
         "",

@@ -400,6 +400,38 @@ class TestTracebackTrimming:
         assert tt.cell_filename("a") != tt.cell_filename("b")
         assert "a" in tt.cell_filename("a")
 
+    def _syntax_error(self, filename, source):
+        tt._register_source(filename, source)
+        try:
+            compile(source, filename, "exec")
+        except SyntaxError as exc:
+            return tt._format_exception(exc)
+        raise AssertionError("that source compiled, so there is nothing to format")
+
+    def test_a_syntax_error_opens_with_the_students_own_line(self):
+        """It is raised while the code is compiled, so none of the frames are
+        the student's — they are all ours. Showing them put two lines of
+        tutorial_tools.py above the line somebody had actually mistyped, in a
+        tutorial whose subject is reading these messages."""
+        filename = tt.cell_filename("demo")
+        text = self._syntax_error(filename, "if hours > 10\n    print('long')\n")
+        assert "tutorial_tools" not in text
+        assert "Traceback (most recent call last)" not in text
+        assert text.lstrip().startswith("File")
+
+    def test_and_still_says_where_and_what(self):
+        filename = tt.cell_filename("demo")
+        text = self._syntax_error(filename, "if hours > 10\n    print('long')\n")
+        assert filename in text
+        assert "if hours > 10" in text
+        assert "SyntaxError" in text
+
+    def test_an_indentation_error_is_treated_the_same_way(self):
+        filename = tt.cell_filename("demo")
+        text = self._syntax_error(filename, "def check():\nprint('hello')\n")
+        assert "tutorial_tools" not in text
+        assert "IndentationError" in text
+
     def test_a_traceback_with_no_user_frames_is_still_shown(self):
         try:
             raise ValueError("straight from the test")

@@ -42,20 +42,38 @@ proposed:
     outline: drawing-functions
     title: "Drawing Functions"
     after: tutorial-15-cracking-equations
-    covers: [MIT-3.1, MIT-3.2, MIT-3.4]
+    covers: [MIT-3.1, MIT-3.2]
     builds_on: [tutorial-12-pictures-worth-numbers, tutorial-14-expressions-come-alive, tutorial-15-cracking-equations]
     because: >
       The largest single gap and the one that unlocks the rest. The students can
       already build a polynomial (14), solve it (15), and plot data (12); nobody
       has yet asked them to plot a function and read an answer off the picture.
-      Completing the square belongs here rather than in 15 because its payoff is
-      the vertex, which is a fact about the graph.
-
       It used to carry MIT-4.1 to 4.3 as an optional extra, written while most of
-      Section 4 was out of scope. Those now have a tutorial of their own —
-      lines-and-distances — so this one plots lines and leaves slope, distance
-      and Pythagoras to it.
+      Section 4 was out of scope; those have their own tutorial now. And it hands
+      completing the square to parabolas, on Josh's instinct that graphing wants
+      more than one tutorial.
+
+      What a function is stays here rather than becoming a tutorial of its own.
+      One outcome about the idea of a machine with one output per input is a
+      paragraph, not a lesson; sitting where the pictures are, it is the reason
+      the pictures mean anything.
     size: full
+
+  - id: parabolas
+    outline: parabolas
+    title: "Parabolas"
+    after: drawing-functions
+    covers: [MIT-3.4]
+    builds_on: [tutorial-15-cracking-equations, drawing-functions]
+    because: >
+      Completing the square, and the two things it tells you: where the curve
+      turns and where it crosses. Its payoff is a fact about the graph, so it
+      comes after graphing rather than beside the algebra in Tutorial 15.
+
+      Its own tutorial because the algebra is fiddly and the picture is the whole
+      reward — a section inside a graphing tutorial would rush the first to reach
+      the second.
+    size: short
 
   - id: lines-and-distances
     outline: lines-and-distances
@@ -78,36 +96,62 @@ proposed:
       trigonometry.
     size: full
 
-  - id: how-tall-is-that
-    outline: lines-and-distances
-    title: "How Tall Is That?"
-    after: angles-and-waves
-    covers: [MIT-4.9]
-    builds_on: [lines-and-distances, angles-and-waves]
+  - id: the-unit-circle
+    outline: the-unit-circle
+    title: "The Unit Circle"
+    after: lines-and-distances
+    covers: [MIT-4.5, MIT-4.6, MIT-4.7]
+    builds_on: [lines-and-distances]
     because: >
-      Practical right-triangle trigonometry — heights and distances from one
-      angle and one side. It needs Pythagoras from lines-and-distances and
-      SOH-CAH-TOA from angles-and-waves, so it can only come after both.
+      Josh, 2026-08-23: the exact values in surd form deserve a tutorial of their
+      own, and the unit circle is how to teach them — so the circle is worth
+      introducing as its own thing rather than as a step on the way to graphing.
 
-      Separate rather than a closing section of angles-and-waves, which already
-      carries five outcomes. This is the one piece of Section 4 that is plainly
-      about measuring something in the world, and it is worth being findable as
-      that. Outlined inside lines-and-distances rather than in a file of its own
-      until Josh has settled whether it earns a tutorial.
+      All three outcomes here are the same object seen three ways. A radian is
+      arc length on it. Sine and cosine are the coordinates of a point on it.
+      The surd values are where the angles a person can picture actually land.
+      Taught apart, each is a convention to accept; taught here, each is a fact
+      about one drawing.
+
+      After lines-and-distances because a point on a circle of radius one is a
+      coordinate-geometry object, and the distance formula is what makes the
+      identity true.
+    size: full
+
+  - id: sine-and-cosine-waves
+    outline: sine-and-cosine-waves
+    title: "Sine and Cosine Waves"
+    after: the-unit-circle
+    covers: [MIT-3.3]
+    builds_on: [drawing-functions, the-unit-circle]
+    because: >
+      Unrolling the circle into a wave, and what amplitude, phase and period do
+      to it. One outcome, one idea, and the animation of a point going round
+      while a curve draws itself is the thing dewlab can do that paper cannot.
+
+      Separated from the circle itself so that neither is rushed: the circle is
+      where the definitions live, this is where they move.
     size: short
 
-  - id: angles-and-waves
-    outline: angles-and-waves
-    title: "Angles and Waves"
-    after: drawing-functions
-    covers: [MIT-3.3, MIT-4.5, MIT-4.6, MIT-4.8, MIT-4.10]
-    optional: [MIT-4.4, MIT-4.9]
-    builds_on: [drawing-functions]
+  - id: solving-triangles
+    outline: solving-triangles
+    title: "Solving Triangles"
+    after: sine-and-cosine-waves
+    covers: [MIT-4.8, MIT-4.9, MIT-4.10]
+    builds_on: [lines-and-distances, the-unit-circle]
     because: >
-      All of trigonometry that survives the scope decisions, in one place: what
-      the sine and cosine curves look like and what amplitude, period and phase
-      do to them, then solving a triangle that is not right-angled. Needs
-      Drawing Functions first, because the graphing habit is the point of entry.
+      Given some of a triangle, find the rest. The Sine and Cosine Rules, the
+      area from two sides and the angle between them, and the right-angled case
+      that needs neither.
+
+      This absorbs what was proposed as "How Tall Is That?". Josh: *"I don't
+      really think we need to worry about it. I don't think we need to deal with
+      roof pitches and buildings because we can deal with more appropriate to
+      computer science types of questions there."* So the practical work stays
+      and its examples change — bearings and headings, the angle between two
+      vectors, a robot arm reaching a point, distances on a plot — and it does
+      not need a tutorial to itself once the examples are of a piece with the
+      rules.
     size: full
 
   - id: approaching-a-limit
@@ -128,12 +172,22 @@ proposed:
     title: "Rates of Change"
     after: approaching-a-limit
     covers: [MIT-3.6, MIT-3.7]
-    builds_on: [approaching-a-limit, drawing-functions]
+    builds_on: [lines-and-distances, approaching-a-limit]
     because: >
-      The derivative as the limit of a slope, which is why the limit tutorial
-      comes first, and as a rate of change, which is why it matters. Sum and
-      product rules only, per the scope decisions, and polynomial integration as
-      the closing idea that differentiation runs backwards.
+      The slope of a line that keeps changing, and then the rules for finding it
+      without going back to the limit each time.
+
+      One tutorial rather than two. Splitting the idea from the rules was tried
+      on 2026-08-23 and undone the same day: a derivative tutorial that stops
+      before you can differentiate anything leaves a student with a definition
+      and nothing to do with it, and a rules tutorial on its own is a drill.
+
+      Narrowed deliberately — see the `partial:` entry in out-of-scope.yaml. The
+      sum and product rules, the chain rule as a bonus, and neither the quotient
+      rule nor integration by parts.
+
+      Slope was named as a rate of change in lines-and-distances precisely so
+      this arrives as a continuation rather than as new vocabulary.
     size: full
 
   - id: logic-and-truth
@@ -167,36 +221,6 @@ proposed:
       real sets — output rather than convention, and the size at which three sets
       stop fitting in a person's head.
     size: short
-
-  - id: how-we-got-here
-    outline: from-everlearning
-    title: "How We Got Here"
-    after: tutorial-01-first-steps
-    covers: [PDP-LO1, PDP-LO3]
-    builds_on: [tutorial-01-first-steps]
-    because: >
-      Two programming outcomes with no dewlab home at all. everlearning already
-      has a built notebook for this pair, framed around the binary and hex work
-      — it needs converting rather than writing.
-    size: full
-    source: >
-      everlearning
-      PDP_MIT_2026_2027_Integrated/LearningOutcomes/PDP/PDP-LO1_LO3_MIT-1.4_The-Computing-Time-Machine.ipynb
-
-  - id: when-it-goes-wrong
-    outline: from-everlearning
-    title: "When It Goes Wrong"
-    after: tutorial-03-making-decisions
-    covers: [PDP-LO9]
-    builds_on: [tutorial-01-first-steps]
-    because: >
-      Reading an error message is the single most useful thing a beginner can
-      learn, and it is currently taught only in passing. Early in the series,
-      while the errors are still small ones.
-    size: full
-    source: >
-      everlearning
-      PDP_MIT_2026_2027_Integrated/LearningOutcomes/PDP/PDP-LO9_LO10_Reading-Compiler-Errors-and-Debugging.ipynb
 
   - id: team-project
     outline: team-project

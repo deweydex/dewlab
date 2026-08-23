@@ -207,10 +207,6 @@ keeping the names.
 - **The title.** "Lines and Distances" against "Coordinate Geometry" against
   something plainer still. The argument above is about the audience rather than
   the content, so it is exactly the kind of call Josh should make.
-- **Whether `MIT-4.9` gets its own short tutorial** (*How Tall Is That?*) or
-  becomes a closing section of Angles and Waves. The proposal above is for the
-  first, on the grounds that Angles and Waves is already a full tutorial with
-  five outcomes in it.
 - **Whether the circle at the end is too coy.** It is a deliberate hook rather
   than a taught thing, and hooks that teach nothing are worth being suspicious
   of.

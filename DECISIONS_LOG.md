@@ -1439,3 +1439,165 @@ only version that tells Josh what to do about it.
 
 *Cost to change: two sentences. Found by looking at the page rather than
 asserting about it — the third time that has turned something up here.*
+
+**7.42 — Titles are plain, and a tutorial is as small as it can be without
+stopping being a tutorial.**
+Two rules from Josh on the same day, and the second one is a correction of me.
+
+**Plain titles.** *"In general, we should have simpler ones rather than more
+complex ones."* "Lines and Distances" rather than "Coordinate Geometry"; "How We
+Got Here" rather than "The Computing Time Machine 🕰️💻". A title names what a
+reader gets, in words they already have.
+
+**Size.** I took "there might be multiple tutorials there" and cut the proposal
+list from thirteen to eighteen, reaching one outcome per file in four places.
+Josh, mid-edit:
+
+> Let's not overstate bite-size. I'd rather they not be too short — they still
+> need to motivate, introduce and explain content, and give students a chance to
+> work through things. So let's not overcorrect before making things.
+
+He is right, and the phrase that matters is the last one. Four of the five splits
+were made against outlines, not against tutorials — nothing has been written, so
+there was no evidence that any of them was too big. Splitting on the shape of the
+outcome list rather than on the shape of the teaching is the error.
+
+Three were put back the same day: what a function is, which is a paragraph rather
+than a lesson; the derivative separated from the rules for finding it, which
+leaves a student with a definition and nothing to do with it; and the paradigms
+separated from the history, which leaves a comparison with nothing motivating it.
+
+**The floor is the teaching, not the outcome count.** A tutorial has to give a
+reason to care, introduce the idea, explain it, and leave room to practise. Two
+outcomes that are one idea stay together. One outcome that is two activities may
+split.
+
+*Cost to change: none, and that is the point — it was all text. Had these been
+written first, the same enthusiasm would have cost five half-tutorials.*
+
+**7.43 — Trigonometry was one tutorial with five outcomes, and is now three.**
+The two splits that survived 7.42, because both were about the teaching rather
+than about arithmetic on the outcome list.
+
+*Angles and Waves* carried `MIT-3.3`, `4.5`, `4.6`, `4.8` and `4.10`, and gave
+the unit circle about a fifth of itself. It becomes:
+
+- **The Unit Circle** — radians, sine and cosine, and the exact values. One
+  object seen three ways.
+- **Sine and Cosine Waves** — unrolling the circle, and the four numbers that
+  move the result.
+- **Solving Triangles** — the Sine and Cosine Rules, the area formula, and the
+  right-angled case.
+
+The circle is where the definitions live and the waves are where they move;
+those are different activities and each wanted room. And *Parabolas* came out of
+*Drawing Functions* for the same reason: completing the square is fiddly, and
+kept together the algebra gets rushed to reach the picture.
+
+*Cost to change: none. Outlines and a data file.*
+
+**7.44 — `MIT-4.7` came back because the unit circle changes what it is.**
+Trigonometric ratios in surd form were ruled out as a hand-calculation skill:
+three values to memorise from two triangles nobody draws. Josh reversed it and
+said why — the exact values deserve a tutorial, and the unit circle is how to
+teach them.
+
+That answers the objection rather than overruling it, which is the second time in
+two days a reversal has worked that way (7.38 was the first). **On the circle the
+surds are not values, they are places.** √2⁄2 is where the 45° line crosses, and
+it is √2⁄2 because the point is as far across as it is up and its distance from
+the centre is 1 — which is Pythagoras, which the students have just had.
+
+`out-of-scope.yaml`'s `outcomes:` list is now empty. The key stays, with a note
+saying an empty list is a statement rather than an oversight, and the two
+reversals sit under `returned:` with the reason each was ruled out beside the
+reason it came back.
+
+Every outcome in both descriptors is now in scope, and every one of the
+twenty-six still to write has a proposal. The map prints that in its own summary,
+so nobody has to count it again.
+
+*Cost to change: none. It is a reversal of a decision nothing was built on.*
+
+**7.45 — The practice problems already exist, in another repository.**
+`deweydex/Mathematics` holds twenty-seven worksheets — 250 to 600 lines each,
+sixty-odd problems apiece, each with an answer key — and they map almost
+one-to-one onto the proposals. `05a_angles_radians_unit_circle` is the three
+outcomes of *The Unit Circle* in the order that outline proposes.
+
+`planning/EXERCISES.md` is the plan. Four decisions in it, and the one worth
+arguing with here is the answers.
+
+**Each answer goes behind a fold beside its problem**, rather than in a key at
+the bottom or on a page of its own. The site is static and public: an answer that
+exists is an answer a student can read, and no arrangement changes that. What is
+worth protecting is not secrecy but the moment before looking, and a fold is that
+moment made physical. Checking your own answer immediately is most of what makes
+practice work.
+
+That also settles the `SOLUTION_` notebooks question in `OPEN_QUESTIONS.md`,
+which is the same question in different clothes.
+
+*Cost to change: the plan is free; the first converted worksheet is where the
+design meets contact, which is why it comes before the converter rather than
+after it.*
+
+**7.46 — A syntax error opened with two frames of dewlab's own plumbing.**
+`_format_exception` trims a traceback to the student's own frames, and its
+docstring said that where trimming leaves nothing — *"a syntax error, say"* — the
+full traceback is shown rather than an empty one.
+
+That fallback was wrong, and the case it was wrong for is the one that matters
+most. A syntax error is raised while the code is being compiled rather than while
+it runs, so **none** of the frames are the student's; they are all
+`tutorial_tools.py`. Every syntax error in dewlab therefore opened with two lines
+of our own machinery above the line somebody had mistyped.
+
+It had been that way since the runtime was written and nobody noticed, because
+nobody had written a tutorial whose subject is reading these messages.
+
+The fix is that a syntax error carries its own location — filename, line, and the
+caret — and Python renders those from the exception rather than from the stack.
+So where the exception knows where it happened, the stack goes entirely:
+
+```
+  File "<cell your-turn-4>", line 2
+    result = (5 + 3
+             ^
+SyntaxError: '(' was never closed
+```
+
+Narrow on purpose. An exception with no user frames *and* no location of its own
+still shows the full traceback, because that is a bug in dewlab and hiding our
+frames would make it harder to find.
+
+*Cost to change: five lines. Found by writing a tutorial about error messages and
+then reading what the page showed, which no test would have thought to check.*
+
+**7.47 — The first two tutorials to close outcomes since the map existed.**
+*How We Got Here* (`PDP-LO1`, `PDP-LO3`) and *When It Goes Wrong* (`PDP-LO9`)
+are converted from everlearning notebooks. Forty-one outcomes in place became
+forty-four.
+
+Three things about the conversion are worth recording, because the next one will
+hit all three.
+
+**The converter is a first draft, not an output.** `dev/from_notebook.py`
+produced a slug of `pdp-lo1-lo3-mit-14-the-computing-time-machine`, a title with
+two emoji in it, and cell ids like
+`stop-2-1945-machine-code-the-only-language-the-machine-understands-1`. A cell id
+is the key a student's work is saved under and belongs in the frontmatter of
+somebody's judgement, not in a slugified heading. Both tutorials were written by
+hand from the notebook rather than patched from the converter's output.
+
+**Only half of the second notebook came across.** It is called *Testing and
+Debugging* and most of it is testing, which *Building Reusable Tools* already
+covers. Taking the whole thing would have duplicated a tutorial that exists.
+
+**Deliberately broken cells are better here than in a notebook**, which is the
+one thing this conversion gains rather than merely survives. A cell that raises
+the error in front of the reader beats a commented-out example they have to
+uncomment — and it is what turned up 7.46.
+
+*Cost to change: these are tutorials now, so their slugs and cell ids are
+contracts from the first class that uses them. The window is still open.*
