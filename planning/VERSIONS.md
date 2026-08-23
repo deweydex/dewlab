@@ -391,7 +391,16 @@ editor. It touches:
    Josh can do from the editor rather than by hand.
 
 Each step is useful on its own, and each is a pull request. Steps 1 to 3 have
-landed; step 4 is not worth starting until 2 and 3 have been lived with.
+landed, and step 4 follows them directly — Josh's call on 23 August, against my
+suggestion of waiting.
+
+He is right that waiting had no content to it. The argument for a pause was that
+2 and 3 might teach us something before the editor commits to their shape, but
+neither has been in front of anyone yet, so a pause would produce no information
+and delay the part that makes the feature usable. Releasing, archiving and
+marking a beta by hand means editing frontmatter and moving a slug between two
+lists in an order file — which is exactly the two-file edit the editor exists to
+stop anybody doing by hand.
 
 Step 2 was where the cost was. Everything above about resolving a default, building
 a page per version, and keeping the unversioned URL meaning "the current one"

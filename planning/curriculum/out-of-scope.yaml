@@ -19,13 +19,6 @@
 
 # Whole outcomes we are not covering.
 outcomes:
-  - code: MIT-2.3
-    scope: whole
-    reason: >
-      Venn diagrams. The set operations themselves are taught in Tutorial 16 and
-      that is the part the students use. The diagram is a pen-and-paper
-      convention that adds notation without adding understanding here.
-
   - code: MIT-4.7
     scope: whole
     reason: >
@@ -81,6 +74,24 @@ topics:
       was out of scope and would now exclude things that are in it. What is
       actually out is the manipulation: identities to prove, trigonometric
       equations to solve, and the compound angle formulae.
+
+# Moved back into scope. Kept here rather than deleted, because the reason a
+# thing was ruled out is worth reading beside the reason it came back.
+returned:
+  - code: MIT-2.3
+    date: 2026-08-23
+    was: >
+      Venn diagrams. The set operations themselves are taught in Tutorial 16 and
+      that is the part the students use. The diagram is a pen-and-paper
+      convention that adds notation without adding understanding here.
+    now: >
+      Josh asked for a small tutorial of its own, linked to Logic and Truth and
+      to Sets as Sorted Lists rather than folded into either.
+
+      The reversal answers the objection rather than overruling it: what comes
+      back is the picture drawn by matplotlib from real sets, which is output
+      rather than convention, and the point at which three sets stop fitting in a
+      person's head. See planning/outlines/venn-diagrams.md.
 
 # Settled by Josh, 2026-08-22. Everything that was open here is now in scope;
 # the entries are kept so the reasoning survives rather than being deleted along

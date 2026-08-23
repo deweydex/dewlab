@@ -182,6 +182,43 @@ class TestTheRealMap:
             outline = cm.ROOT / "planning" / "outlines" / f"{proposal['outline']}.md"
             assert outline.is_file(), f"{proposal['id']} points at a missing {outline.name}"
 
+    def test_a_proposal_never_claims_something_already_taught(self):
+        """A proposal left in place after its tutorial shipped would make the
+        plan look larger than it is, and make the next survey wrong."""
+        outcomes, _ = cm.load_outcomes()
+        tutorials = cm.load_tutorials(outcomes)
+        found = cm.coverage(outcomes, tutorials)
+        scope = cm.load_scope()
+        for proposal in cm.load_proposals():
+            for code in proposal.get("covers") or []:
+                state = cm.status_of(found[code], code, scope)
+                assert state in ("absent", "touched"), (
+                    f"{proposal['id']} proposes to teach {code}, which is "
+                    f"already {state}"
+                )
+
+    def test_the_map_says_how_many_gaps_nobody_has_planned(self):
+        """The number worth acting on. "Not covered" is the work outstanding;
+        this is the work nobody has thought about, which is smaller and more
+        urgent — and it is what the first survey of this got wrong."""
+        outcomes, _ = cm.load_outcomes()
+        tutorials = cm.load_tutorials(outcomes)
+        found = cm.coverage(outcomes, tutorials)
+        scope = cm.load_scope()
+        states = {c: cm.status_of(found[c], c, scope) for c in outcomes}
+        wanted = {c for c, state in states.items() if state in ("absent", "touched")}
+
+        line = cm.unplanned_line(states, cm.load_proposals())
+        assert str(len(wanted)) in line
+        assert "proposal" in line
+
+    def test_it_names_the_outcomes_that_have_no_proposal(self):
+        outcomes, _ = cm.load_outcomes()
+        states = {c: "absent" for c in outcomes}
+        line = cm.unplanned_line(states, [{"covers": []}])
+        for code in outcomes:
+            assert f"`{code}`" in line
+
     def test_the_outlines_index_lists_every_outline(self):
         folder = cm.ROOT / "planning" / "outlines"
         index = (folder / "README.md").read_text()

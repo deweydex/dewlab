@@ -3,9 +3,14 @@
 **Closes:** `MIT-3.3` (define and graph the trigonometric functions), `MIT-4.5`
 (degree and radian measure), `MIT-4.6` (sin, cos, tan and the unit circle),
 `MIT-4.8` (triangle area), `MIT-4.10` (Sine and Cosine Rules).
-**If right-triangle trigonometry is kept:** `MIT-4.4`, `MIT-4.9`.
-**Goes after:** Drawing Functions.
-**Builds on:** Drawing Functions.
+**Goes after:** [Lines and Distances](./lines-and-distances.md), which the unit
+circle needs — a point on a circle of radius one is a coordinate-geometry
+object, and the distance formula is what makes the identity true.
+**Followed by:** *How Tall Is That?*, the short tutorial that takes `MIT-4.9`.
+This outline used to carry `MIT-4.4` and `MIT-4.9` conditionally; Pythagoras is
+in Lines and Distances now and practical right-triangle work has its own short
+tutorial, so this one keeps its five outcomes and its smallness.
+**Builds on:** Drawing Functions, Lines and Distances.
 
 ## What this is not
 

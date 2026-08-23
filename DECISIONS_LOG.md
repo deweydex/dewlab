@@ -1305,3 +1305,79 @@ release, edited in place. There, the file really did change under the reader and
 
 *Cost to change: none. Both branches are tested, and the one-release branch is
 what the existing progress tests already assert.*
+
+**7.36 — The first survey of what was left to write was wrong twice, and both
+mistakes were the same mistake.**
+It counted coverage with a script written for the purpose instead of reading the
+map that already exists, and got two answers wrong in the same direction.
+
+It counted `touches:` as coverage. Four outcomes are named in a tutorial's
+frontmatter as used rather than taught — students meet them in passing and
+nothing teaches them. The map has always drawn that distinction and calls them
+the quiet gaps. The script did not, so it reported them as done.
+
+And it ignored `out-of-scope.yaml`, so two settled decisions came back as gaps:
+Venn diagrams, and trigonometric ratios in surd form. That file exists precisely
+so a decision stops looking like a gap, and the first survey of what was missing
+walked past it.
+
+The correction is not a better script. `planning/CURRICULUM_MAP.md` now reports
+the number the survey was trying to produce — how many outstanding outcomes have
+no proposal — so the next person to ask reads one line instead of counting. And
+`tests/test_curriculum_map.py` fails if a proposal claims an outcome that is
+already taught, which is the drift that would make the number lie.
+
+*Cost to change: none, and the lesson is worth more than the fix. There was a
+generated file with the right answer in it and I wrote a second one with the
+wrong answer.*
+
+**7.37 — Coordinate geometry is a tutorial, because Pythagoras is a gateway.**
+`MIT-4.1` to `4.4` were settled as in scope in full on 22 August and nothing was
+written to carry them. `drawing-functions.md` had them as a conditional extra —
+*"if coordinate geometry is kept"* — written while most of Section 4 was out of
+scope.
+
+They become their own tutorial, *Lines and Distances*, between Drawing Functions
+and Angles and Waves.
+
+Pythagoras is one of the six gateways in the topic tree, unlocking seven
+downstream topics. It became a gateway on the measurement, over my objection
+(7.3). A gateway that exists only as the third subsection of a tutorial about
+graphing is not a gateway — there is nowhere to send a student who needs it.
+
+And Angles and Waves already assumed the material. Josh in `ANSWERS-3.md`:
+SOH-CAH-TOA needs *"coordinates so we can have the unit circle"*. The unit circle
+is a coordinate-geometry object; without this tutorial, Angles and Waves has to
+teach coordinates in passing on its way to something else.
+
+`MIT-4.9` went to a separate short tutorial after Angles and Waves rather than
+into either, because it needs the ratios from one and Pythagoras from the other.
+
+*Cost to change: none yet. Nothing is written — this is an outline and three
+lines of `proposed.yaml`.*
+
+**7.38 — Connections between whole things, rather than things merged.**
+Venn diagrams (`MIT-2.3`) were out of scope: the diagram is a pen-and-paper
+convention that adds notation without adding understanding. I offered Josh two
+ways to bring them back, and both folded them into an existing tutorial — into
+Logic and Truth beside De Morgan, or into Sets as Sorted Lists.
+
+He took neither: *"we can make a little separate tutorial about Venn diagrams…
+if you wanna connect it to DeMorgan's and also connect it to sets-as-sorted-lists,
+that's fine. But again, those can be connections. We don't need to do
+combinations here."*
+
+That is the better answer and it is the third time the same instinct has been
+right here — Reflections and Review became its own series rather than the last
+item of the main one (7.9), archiving replaced deleting rather than extending it
+(7.17), and now this. **Three whole things with links between them beat one
+thing with three parts**, because each can be found, moved, and read on its own.
+
+The reversal also answers the original objection rather than overruling it. What
+comes back is not the notation but the picture drawn by matplotlib from real
+sets: output rather than convention, and the size at which three sets stop
+fitting in a person's head. The entry stays in `out-of-scope.yaml` under
+`returned:`, because the reason a thing was ruled out is worth reading beside
+the reason it came back.
+
+*Cost to change: none. An outline and an entry.*

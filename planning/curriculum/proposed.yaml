@@ -43,7 +43,6 @@ proposed:
     title: "Drawing Functions"
     after: tutorial-15-cracking-equations
     covers: [MIT-3.1, MIT-3.2, MIT-3.4]
-    optional: [MIT-4.1, MIT-4.2, MIT-4.3]
     builds_on: [tutorial-12-pictures-worth-numbers, tutorial-14-expressions-come-alive, tutorial-15-cracking-equations]
     because: >
       The largest single gap and the one that unlocks the rest. The students can
@@ -51,7 +50,51 @@ proposed:
       has yet asked them to plot a function and read an answer off the picture.
       Completing the square belongs here rather than in 15 because its payoff is
       the vertex, which is a fact about the graph.
+
+      It used to carry MIT-4.1 to 4.3 as an optional extra, written while most of
+      Section 4 was out of scope. Those now have a tutorial of their own —
+      lines-and-distances — so this one plots lines and leaves slope, distance
+      and Pythagoras to it.
     size: full
+
+  - id: lines-and-distances
+    outline: lines-and-distances
+    title: "Lines and Distances"
+    after: drawing-functions
+    covers: [MIT-4.1, MIT-4.2, MIT-4.3, MIT-4.4]
+    builds_on: [tutorial-12-pictures-worth-numbers, drawing-functions]
+    because: >
+      The only part of the map with outcomes in scope, no tutorial, and no
+      proposal — found by counting rather than remembered. Josh settled MIT-4.1
+      to 4.4 as in scope in full on 2026-08-22 and nothing was written to carry
+      them.
+
+      Its own tutorial rather than a section of drawing-functions, for two
+      reasons. Pythagoras is one of the six gateways in the topic tree, unlocking
+      seven downstream topics, and a gateway that exists only as somebody else's
+      third subsection is not a gateway. And angles-and-waves already assumes
+      this material: the unit circle is a coordinate-geometry object, so without
+      this it would have to teach coordinates in passing on the way to
+      trigonometry.
+    size: full
+
+  - id: how-tall-is-that
+    outline: lines-and-distances
+    title: "How Tall Is That?"
+    after: angles-and-waves
+    covers: [MIT-4.9]
+    builds_on: [lines-and-distances, angles-and-waves]
+    because: >
+      Practical right-triangle trigonometry — heights and distances from one
+      angle and one side. It needs Pythagoras from lines-and-distances and
+      SOH-CAH-TOA from angles-and-waves, so it can only come after both.
+
+      Separate rather than a closing section of angles-and-waves, which already
+      carries five outcomes. This is the one piece of Section 4 that is plainly
+      about measuring something in the world, and it is worth being findable as
+      that. Outlined inside lines-and-distances rather than in a file of its own
+      until Josh has settled whether it earns a tutorial.
+    size: short
 
   - id: angles-and-waves
     outline: angles-and-waves
@@ -105,6 +148,24 @@ proposed:
       generate, De Morgan's Laws are two claims a loop can check exhaustively,
       and both land better after sets have made the union/intersection shape
       familiar.
+    size: short
+
+  - id: venn-diagrams
+    outline: venn-diagrams
+    title: "Drawing Sets"
+    after: tutorial-16-sets-as-sorted-lists
+    covers: [MIT-2.3]
+    builds_on: [tutorial-12-pictures-worth-numbers, tutorial-16-sets-as-sorted-lists]
+    because: >
+      Was out of scope, on the grounds that the diagram is a pen-and-paper
+      convention adding notation rather than understanding. Josh reversed that on
+      2026-08-23 and asked for a small tutorial of its own, linked to
+      logic-and-truth and to sets-as-sorted-lists rather than folded into either.
+
+      The reversal answers the original objection rather than overruling it. What
+      comes back is not the notation but the picture drawn by matplotlib from
+      real sets — output rather than convention, and the size at which three sets
+      stop fitting in a person's head.
     size: short
 
   - id: how-we-got-here

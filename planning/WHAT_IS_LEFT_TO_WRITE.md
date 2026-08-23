@@ -1,178 +1,154 @@
 # What is left to write
 
-A survey, not a plan: what exists, what the curriculum map says is still
-uncovered, and which of those gaps nobody has proposed a tutorial for.
+What exists, what the curriculum map says is still to be written, and whether
+anybody has decided how to teach it.
 
-Counted from the repository on 23 August 2026 — `tutorials/`,
-`planning/curriculum/outcomes.yaml`, and `planning/curriculum/proposed.yaml`.
-It will go stale, and the way to refresh it is to re-run the counts rather than
-to trust the numbers below.
+**Read the map, not this file, for numbers.** `planning/CURRICULUM_MAP.md` is
+generated from the outcomes, the tutorials' own `covers:` frontmatter and
+`out-of-scope.yaml`, and it now reports the one figure this document exists to
+give: how many outstanding outcomes have no proposal. This file is the prose
+around that figure, and it will go stale before the map does.
+
+## The first version of this was wrong, twice
+
+Worth saying at the top, because both mistakes are the kind that recur.
+
+The first pass counted coverage with a script written for the purpose instead of
+reading the map that already exists, and got two different answers wrong in the
+same direction:
+
+- **It counted "used" as "taught".** Four outcomes are named in a tutorial's
+  `covers:` under `touches:` rather than `covers:` — students meet them in
+  passing and nothing teaches them. The map has always drawn that distinction and
+  calls them the quiet gaps. The script did not, so it reported them as done.
+- **It ignored `out-of-scope.yaml` entirely**, and so reported two settled
+  decisions as gaps: Venn diagrams and trigonometric ratios in surd form. That
+  file exists precisely so a decision stops looking like a gap, and the first
+  survey of what was missing walked straight past it.
+
+Both errors are now caught by the map itself rather than by whoever reads it
+next. The map reports the unplanned count in its own summary, and
+`tests/test_curriculum_map.py` fails if a proposal claims an outcome that is
+already taught.
 
 ---
 
 ## What exists
 
-| Series | Module | Tutorials |
-|---|---|---|
-| Maths and programming | MIT + PDP integrated | 17 |
-| Reflections and review | MIT + PDP integrated | 1 |
-| Python fundamentals | Computational Methods 5N0554 | 2 |
+Twenty tutorials: seventeen in Maths and Programming, one in Reflections and
+Review, two in the Computational Methods series.
 
-Twenty tutorials, of which eighteen are the integrated series that the
-curriculum map measures.
+## What is left, and who has thought about it
 
-## What the map says is missing
+Sixty-six outcomes, one ruled out, forty-one in place. **Twenty-five still need
+writing** — twenty-one nothing touches, and four the students meet in passing
+without anything teaching them.
 
-Sixty-seven outcomes across the two mapped descriptors. **Forty-one are taught;
-twenty-six are not.**
+**Every one of the twenty-five now has a proposal.** That was not true on the
+morning of 23 August, when five had neither a tutorial nor a plan, and it is the
+one thing in this document worth checking again later. The map prints the number.
 
-Twenty-two of the twenty-six are Maths for IT, and they are not scattered — they
-are two whole sections of the descriptor:
+Where the outstanding work sits:
 
-- **Section 3, Functions and Calculus** — all seven outcomes. Functions and
-  inverses, graphing, completing the square, limits, the derivative, the rules
-  of differentiation.
-- **Section 4, Geometry and Trigonometry** — all ten outcomes. Coordinate
-  geometry, Pythagoras, radians, the unit circle, surds, triangle area, the
-  Sine and Cosine Rules.
+- **Functions and calculus**, all seven outcomes. Drawing Functions, Approaching
+  a Limit, Rates of Change.
+- **Geometry and trigonometry**, nine of the ten in scope. Lines and Distances,
+  Angles and Waves, How Tall Is That?
+- **Logic and sets**, three. Logic and Truth, Drawing Sets.
+- **Algebra**, two used-but-not-taught. Rearranging Formulae, When There Is No
+  Answer.
+- **Programming and Design Principles**, four. Two everlearning conversions and
+  the team project.
 
-Plus five singles: transposing formulae (1.7), quadratics with complex roots
-(1.10), Venn diagrams (2.3), truth tables (2.4) and De Morgan (2.5).
+Nothing on the mathematics side past algebra has been written. That is not a
+surprise: the seventeen tutorials that exist are the programming spine with
+mathematics threaded through it, and the mathematics that is threaded is
+arithmetic, algebra, counting, probability and statistics. The half of the
+descriptor that needs pictures has none of them yet.
 
-The four Programming and Design Principles gaps are the history of programming
-(LO1), telling languages apart (LO3), reading compiler messages (LO9) and the
-team project (LO12).
+## What was decided on 23 August
 
-**Nothing on the maths side of the course past algebra has been written yet.**
-That is the headline, and it is not a surprise — the eighteen tutorials that
-exist are the programming spine with maths threaded through it, and the maths
-that is threaded is arithmetic, algebra, counting, probability and statistics.
-The half of the descriptor that needs pictures has none.
+**Coordinate geometry became a tutorial of its own.** `MIT-4.1` to `4.4` were
+settled as in scope in full on 22 August and nothing was written to carry them;
+`drawing-functions.md` had them as a conditional extra, written back when Section
+4 was mostly out of scope. They are now
+[Lines and Distances](./outlines/lines-and-distances.md), which sits between
+Drawing Functions and Angles and Waves.
 
-## What is already proposed
+Two reasons it is not a section of Drawing Functions. Pythagoras is one of the
+six gateways in the topic tree, unlocking seven downstream topics — a gateway
+that exists only as somebody else's third subsection is not a gateway. And Angles
+and Waves already assumes this material: the unit circle is a coordinate-geometry
+object, so without this tutorial it would have to teach coordinates in passing on
+its way to trigonometry.
 
-`planning/curriculum/proposed.yaml` holds ten proposals, each with an outline in
-`planning/outlines/`. Between them they close **nineteen of the twenty-six**.
+The outline is mostly about **how to describe the material** rather than what to
+include, because that was the part Josh asked to work out first: what to call it,
+which of the three descriptions of a line comes first and why the general form
+arrives last, whether slope is named as rise-over-run or as a rate of change, and
+why the distance formula should come before Pythagoras rather than after.
 
-| Proposal | Closes | Size |
-|---|---|---|
-| Rearranging Formulae | MIT-1.7 | short |
-| When There Is No Answer | MIT-1.10 | short |
-| Drawing Functions | MIT-3.1, 3.2, 3.4 | full |
-| Angles and Waves | MIT-3.3, 4.5, 4.6, 4.8, 4.10 | full |
-| Approaching a Limit | MIT-3.5 | short |
-| Rates of Change | MIT-3.6, 3.7 | full |
-| Logic and Truth | MIT-2.4, 2.5 | short |
-| How We Got Here | PDP-LO1, LO3 | full, converted from everlearning |
-| When It Goes Wrong | PDP-LO9 | full, converted from everlearning |
-| The Team Project | PDP-LO12 | not a tutorial |
+**`MIT-4.9`, practical right-triangle trigonometry, became a short tutorial after
+Angles and Waves** — *How Tall Is That?* It needs Pythagoras from Lines and
+Distances and the ratios from Angles and Waves, so it can only come after both,
+and Angles and Waves already carries five outcomes.
 
-Four full tutorials, three short ones, two conversions and one thing that is
-not a tutorial at all. That is the written-down plan, and it is a good one.
+**Venn diagrams came back into scope** as [Drawing Sets](./outlines/venn-diagrams.md),
+a short tutorial of its own. It had been ruled out on the grounds that the
+diagram is a pen-and-paper convention adding notation rather than understanding.
+Josh reversed that and asked for it separate, linked to Logic and Truth and to
+Sets as Sorted Lists rather than folded into either — *"those can be connections.
+We don't need to do combinations here."*
 
-## What nothing covers: seven outcomes
+The reversal answers the original objection rather than overruling it. What comes
+back is not the notation but the picture drawn by matplotlib from real sets:
+output rather than convention, and the point at which three sets stop fitting in
+a person's head.
 
-These have no tutorial and no proposal. **Build all ten proposals and the map
-still shows seven gaps.**
+**`MIT-4.7` stays out of scope.** Trigonometric ratios in surd form — the exact
+values at 30, 45 and 60 degrees. The first version of this survey called it a gap
+and proposed folding it into Angles and Waves; it is not a gap, it is a decision
+with a reason on record, and the reason still holds.
 
-| Outcome | |
-|---|---|
-| MIT-4.1 | Linear equations in the form ax + by + c = 0 |
-| MIT-4.2 | Slope; parallel and perpendicular lines |
-| MIT-4.3 | Midpoint and length of a line segment |
-| MIT-4.4 | The Pythagorean theorem |
-| MIT-4.7 | Trigonometric ratios in surd form |
-| MIT-4.9 | Practical right-triangle trigonometry |
-| MIT-2.3 | Venn diagrams for two and three sets |
-
-### The first four are one missing tutorial
-
-MIT-4.1 to 4.4 is coordinate geometry, and it is a coherent subject rather than
-four loose ends: a line as an equation, what its slope means, the distance
-between two points, and Pythagoras — which is the same theorem as the distance
-formula, written the other way round.
-
-It is also a **prerequisite that is already assumed**. Josh said so in
-`planning/curriculum/ANSWERS-3.md`: SOH-CAH-TOA needs "coordinates so we can
-have the unit circle", and Pythagoras is one of the six gateways in the topic
-tree. So `angles-and-waves` — the proposal that carries the unit circle — is
-building on a tutorial that does not exist and is not proposed.
-
-This is the clearest thing the survey turned up. **The next outline to write is
-coordinate geometry**, and it sits before Angles and Waves rather than after it.
-
-It is also the most natural home for **MIT-4.9**, practical right-triangle
-trigonometry: heights and distances from an angle and a side, which is
-Pythagoras and the ratios put to work. Whether it belongs there or in Angles and
-Waves is a judgement about pacing rather than about the maths.
-
-### MIT-4.7 is a sentence, not a tutorial
-
-Trigonometric ratios in surd form — the exact values at 30, 45 and 60 degrees.
-It belongs inside Angles and Waves as a section, and the outline should say so
-rather than leaving it to be noticed later. One line in `covers:`.
-
-### MIT-2.3 is Venn diagrams, and it has no home at all
-
-`sets-as-sorted-lists` teaches sets and does not draw them; `logic-and-truth`
-proposes truth tables and De Morgan and does not draw them either. Two and three
-set Venn diagrams are a drawing exercise, and matplotlib can do them.
-
-Three options, and I would take the second:
-
-1. A section inside `logic-and-truth`, which turns a short tutorial into a full
-   one. De Morgan's Laws are the natural pairing — the picture is the proof.
-2. A section added to `sets-as-sorted-lists`, which already exists and already
-   has the vocabulary. Cheapest, and it puts the picture where the sets are.
-3. Its own short tutorial. Hard to justify for one outcome.
-
-## Computational Methods 5N0554: not measured at all
+## Computational Methods 5N0554 is not measured
 
 Two tutorials against a 150-hour, 15-credit module with thirteen outcomes.
 
-The thirteen outcomes are **not in `outcomes.yaml`**, so the curriculum map does
-not measure this module and the numbers above do not include it. That is a
-deliberate decision — Josh asked for the map to be MIT and PDP only — but it has
-a side effect worth naming: *there is no count of what this module is missing,
-so it cannot appear in a survey like this one.*
+Those thirteen are not in `outcomes.yaml`, so the map does not measure this module
+and none of the numbers above include it. That follows from Josh's decision that
+the map is Maths for IT and Programming and Design Principles only, and it has a
+side effect worth naming: *there is no count of what this module is missing, so
+it cannot appear in a survey like this one.*
 
-Transcribing the thirteen outcomes is still on the list. Doing it would let this
-module be counted without putting it on the map, if `outcomes.yaml` grows a way
-to say "tracked but not mapped". Whether that is worth the machinery is a real
-question and not one to answer here.
+What is known about its shape, from `planning/curriculum/ANSWERS-3.md`:
 
-What is known about the shape of it, from `planning/curriculum/ANSWERS-3.md`:
-
-- **The matrices strand** — five tutorials outlined in
-  `planning/outlines/matrices.md`, ending in Markov chains and PageRank rather
-  than eigenvectors. That outline still needs the eigenvector bonus dropped and
-  Markov promoted, which was agreed and not yet applied to the file.
-- **Six other strands named by the descriptor** and not outlined at all: discrete
+- **The matrices strand** — six tutorials outlined in
+  [The Matrices Strand](./outlines/matrices.md), ending in Markov chains rather
+  than eigenvectors.
+- **Six other strands the descriptor names** and nothing outlines: discrete
   probability and randomness, modelling and simulation, algorithms and
   complexity, applications of probability, problem definition and solution
   design, and reflection.
-- Every worked example the descriptor names is **a suggestion rather than a
-  requirement**. Cover the topics; choose the route.
+- Every worked example the descriptor names is a suggestion rather than a
+  requirement. Cover the topics; choose the route.
 
-So the honest summary for this module is: one strand outlined, six not, and no
-measurement either way.
+One strand outlined, six not, and no measurement either way.
 
 ---
 
 ## If I had to order it
 
-1. **Coordinate geometry** — write the outline. It closes four outcomes, it is
-   already assumed by a proposal, and it is the only gap that is a whole missing
-   tutorial rather than a section in somebody else's.
-2. **Fold MIT-4.7 into Angles and Waves and MIT-2.3 into one of the two set
-   tutorials.** Both are edits to outlines that already exist, and both stop a
-   gap being discovered at the end.
-3. **The two everlearning conversions** — How We Got Here and When It Goes
-   Wrong. They are conversions rather than new writing, so they are the cheapest
-   real progress available, and they close three PDP outcomes.
-4. **Drawing Functions**, then **Angles and Waves**. The two full maths
-   tutorials everything else in Section 3 and 4 hangs off.
-5. Everything else in the proposals table, in the order it already declares.
+1. **The two everlearning conversions** — How We Got Here and When It Goes Wrong.
+   Conversions rather than new writing, so they are the cheapest real progress
+   available, and they close three PDP outcomes.
+2. **Drawing Functions**, then **Lines and Distances**, then **Angles and
+   Waves**. The spine everything else in Sections 3 and 4 hangs off, in the only
+   order that works.
+3. The short ones — Rearranging Formulae, When There Is No Answer, Drawing Sets,
+   Logic and Truth — which can be written in any order and slotted in.
+4. **Approaching a Limit** and **Rates of Change**, which need Drawing Functions
+   and nothing else.
+5. **How Tall Is That?**, after Angles and Waves.
 
 The matrices strand and the rest of 5N0554 are a separate body of work, not the
 next thing.

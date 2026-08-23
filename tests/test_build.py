@@ -20,11 +20,12 @@ from pathlib import Path
 
 import pytest
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+DEWLAB = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(DEWLAB))
 
 import build as b  # noqa: E402
 
-SHELL = (Path(__file__).resolve().parent.parent / "assets" / "shell.html").read_text()
+SHELL = (DEWLAB / "assets" / "shell.html").read_text()
 
 FRONTMATTER = """---
 title: "A Title"
@@ -1709,10 +1710,19 @@ class TestTheTopicTree:
         assert "What the colours mean" in page
 
     def test_a_topic_we_ruled_out_says_so(self, repo):
+        """Read from the file rather than named here. This test used to assert
+        on MIT-2.3 by name and broke the day Venn diagrams came back into
+        scope — which is a decision changing, not the tree breaking."""
         write(repo, "Some prose.\n")
         b.build()
+        scope = yaml.safe_load(
+            (DEWLAB / "planning" / "curriculum" / "out-of-scope.yaml").read_text()
+        )
+        ruled_out = [entry["code"] for entry in scope["outcomes"]]
+        assert ruled_out, "nothing is out of scope, so this test proves nothing"
         states = {n["code"]: n["state"] for n in self.data(repo)["nodes"]}
-        assert states["MIT-2.3"] == "excluded"
+        for code in ruled_out:
+            assert states[code] == "excluded", f"{code} is out of scope and the tree does not say so"
 
     def test_the_tutorial_map_moved_here_from_the_contents_page(self, repo):
         for n in (1, 2, 3):
