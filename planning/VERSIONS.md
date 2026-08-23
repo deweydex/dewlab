@@ -13,6 +13,41 @@ Yes, and the last sentence is the best part of it. This is a plan, not a build.
 
 ---
 
+## First, a fact that changes the arithmetic
+
+**Nothing has been published to a class yet.** No student has saved work in
+dewlab, because dewlab has not been in front of anyone. Josh said so while this
+was being written, and it is worth stating at the top because several arguments
+below are about protecting saved work, and right now there is none to protect.
+
+Two things follow, and the second is the useful one.
+
+**The problems below are real but not yet painful.** Deleting a tutorial would
+strand a student's work; today it strands nobody. That does not make the design
+wrong — it means the fix is cheap now and expensive later, which is the best
+possible time to make it.
+
+**The window for breaking changes is open, and it closes on the day the first
+class uses this.** Everything keyed to a slug, a cell id, or a version can be
+changed today for free. From first use, each of those becomes a contract:
+
+- **Slugs** are in every URL and every saved record. Renaming one after first use
+  breaks links and orphans work; renaming one today costs a `git mv`.
+- **Cell ids** are the keys a student's answers are stored under. The convention
+  — `section-slug-n` — is fixed from first use. If it should be something else,
+  now.
+- **The save record format** itself. It carries a version, a saved-at time, and
+  an array of cells. Changing its shape later means either migrating records in
+  the browser or dropping them.
+- **The version field**, which is changing to a dated string anyway, and can do
+  so at no cost precisely because of this.
+
+None of those obviously needs changing. But they should be looked at once,
+deliberately, before the window shuts — and that look is worth scheduling rather
+than assuming.
+
+---
+
 ## What it is actually solving
 
 Three separate problems, worth keeping separate because they have different

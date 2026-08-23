@@ -937,11 +937,14 @@ controls, is gone with them: outside the frame it guards nothing.
 *Cost to change: small.*
 
 **7.17 — A tutorial is archived, not deleted.**
-Deleting the file was the only way to retire a tutorial, and deleting it
-strands every student who saved work in it: the work sits in local storage
-keyed to a page that no longer exists, with no way back and no trace it was
-ever there. That was the worst property in the system, and it is why the editor
-was built without a delete button.
+Deleting the file was the only way to retire a tutorial, and deleting it would
+strand every student who had saved work in it: the work sits in local storage
+keyed to a page that no longer exists, with no way back and no trace it was ever
+there. That is why the editor was built without a delete button.
+
+*Nobody has lost anything yet — the site has not been in front of a class, so
+there is no saved work anywhere.* The property is a property of the design, and
+it was worth fixing before the first cohort rather than after.
 
 `status: archived` in the frontmatter. The page is still built, still runs, and
 still holds whatever a student saved. What changes is everything about its
@@ -989,9 +992,10 @@ The code says otherwise. The comparison is
 `String(record["tutorial-version"]) !== String(currentManifest.version)`: both
 sides stringified, compared for equality, not ordering. A string works with it
 unchanged, and the restore itself matches on cell id rather than on version, so
-no saved work depends on the type. The whole migration cost is one spurious
+no saved work depends on the type. The migration cost would have been one spurious
 "this has been updated" notice for a student returning to a tutorial they saved
-against the old integer.
+against the old integer — and since nothing has been published to a class yet,
+there are no such records and the cost is nil.
 
 It also removes a field. The plan proposed `version:` and `released:` side by
 side; if the version is the date, the second is redundant, and two fields that
