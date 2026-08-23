@@ -788,6 +788,27 @@ class TestTheDownloadableCopy:
         page = (repo_with_assets / "site" / "download" / "computational-methods" / "t1.html").read_text()
         assert "<nav" not in page
 
+    def test_the_version_list_does_not_travel_with_it(self, repo_with_assets):
+        """Only the default gets a downloadable copy, so the other releases are
+        not on the reader's disk. A picker offering to move to files that are
+        not there would be worse than no picker."""
+        for version in ("2026.06.02.1", "2026.09.15.1"):
+            folder = repo_with_assets / "tutorials" / "computational-methods" / "sample"
+            folder.mkdir(parents=True, exist_ok=True)
+            (folder / f"v{version}.md").write_text(
+                '---\ntitle: "The Tutorial"\nslug: sample\n'
+                "module: computational-methods\n"
+                f'year: "2026-2027"\nseries: python-fundamentals\nversion: {version}\n'
+                "status: live\n---\n\nProse.\n"
+            )
+        set_order(repo_with_assets, "computational-methods", "python-fundamentals",
+                  ["sample"])
+        b.build(standalone=True)
+        hosted = (repo_with_assets / "site" / "tutorials" / "computational-methods"
+                  / "sample.html").read_text()
+        assert len(manifest(hosted)["versions"]) == 2
+        assert "versions" not in manifest(self.standalone(repo_with_assets))
+
     def test_it_warns_when_a_tutorial_loads_data_it_cannot_carry(self, repo_with_assets, capsys):
         write(repo_with_assets, '```python exec\nid: c\ndf = await load_csv("x.csv")\n```\n')
         b.build(standalone=True)
@@ -1278,8 +1299,14 @@ class TestVersionsOfATutorial:
                   ["thing", "other"])
         b.build()
         page = self.out(repo, "thing.html").read_text()
-        assert "other.html" in page          # next, in the series
-        assert "v2026.09.15.1" not in page   # the beta is nowhere in the route
+        # The route, rather than the whole page: the beta *is* in the version
+        # list, tagged as a draft, which is the point of having a list. What it
+        # must never be is the next thing a reader is walked into.
+        route = "".join(re.findall(r"<nav class=\"dl-nav.*?</nav>", page, re.DOTALL))
+        assert "other.html" in route          # next, in the series
+        assert "v2026.09.15.1" not in route   # the beta is nowhere in the route
+        assert "v2026.09.15.1" not in re.sub(
+            r'<script type="application/json".*?</script>', "", page, flags=re.DOTALL)
 
     def test_only_the_default_teaches_an_outcome(self, repo):
         """A superseded release claims the same coverage as the one that
@@ -1297,12 +1324,119 @@ class TestVersionsOfATutorial:
         assert node["state"] == "taught"
         assert "/thing.html#" in node["where"]["href"]
 
+    def test_an_older_release_points_search_at_the_current_one(self, repo):
+        """Two releases of one tutorial are near-identical pages. Without a
+        canonical link they compete with each other in search results, and the
+        one that wins is whichever the crawler happened to like."""
+        self.release(repo, "thing", "2026.06.02.1")
+        self.release(repo, "thing", "2026.09.15.1")
+        b.build()
+        older = self.out(repo, "thing", "v2026.06.02.1.html").read_text()
+        assert '<link rel="canonical" href="../thing.html">' in older
+
+    def test_the_current_one_does_not_point_at_itself(self, repo):
+        self.release(repo, "thing", "2026.06.02.1")
+        self.release(repo, "thing", "2026.09.15.1")
+        b.build()
+        assert "canonical" not in self.out(repo, "thing.html").read_text()
+
     def test_a_version_that_is_not_a_release_date_stops_the_build(self, repo):
         path = write(repo, "Prose.\n")
         path.write_text(path.read_text().replace(
             "version: 2026.08.23.1", "version: 3"))
         with pytest.raises(b.BuildError, match="release date"):
             b.build()
+
+
+class TestTheVersionListInTheManifest:
+    """What the page needs to offer a reader another release, and to say what
+    moving there will do to their work before they do it.
+
+    Saved answers are matched back on cell id, so which of them survive a move
+    is knowable rather than a matter of hope — but only if the page knows which
+    cells each release has. `planning/VERSIONS.md`."""
+
+    release = TestVersionsOfATutorial.release
+    out = TestVersionsOfATutorial.out
+
+    CELLS = (
+        "## A section\n\n```python exec\nid: one\nprint(1)\n```\n\n"
+        "```python exec\nid: two\nprint(2)\n```\n"
+    )
+
+    def test_one_release_carries_no_list(self, repo):
+        """A picker with a single entry is furniture, and every tutorial would
+        pay for it in bytes and in clutter."""
+        write(repo, "Prose.\n")
+        b.build()
+        assert "versions" not in manifest(built(repo))
+
+    def test_every_release_is_listed_newest_first(self, repo):
+        self.release(repo, "thing", "2026.06.02.1")
+        self.release(repo, "thing", "2026.09.15.1")
+        b.build()
+        listed = manifest(self.out(repo, "thing.html").read_text())["versions"]
+        assert [v["version"] for v in listed] == ["2026.09.15.1", "2026.06.02.1"]
+
+    def test_each_entry_carries_the_date_a_reader_would_read(self, repo):
+        """"15 September 2026", not "2026.09.15.1" and not "version 2". The
+        dotted form is for the file and the URL; a person gets a date."""
+        self.release(repo, "thing", "2026.06.02.1")
+        self.release(repo, "thing", "2026.09.15.1")
+        b.build()
+        listed = manifest(self.out(repo, "thing.html").read_text())["versions"]
+        assert [v["date"] for v in listed] == ["15 September 2026", "2 June 2026"]
+
+    def test_the_default_is_marked_and_the_others_are_not(self, repo):
+        self.release(repo, "thing", "2026.06.02.1")
+        self.release(repo, "thing", "2026.09.15.1")
+        b.build()
+        listed = manifest(self.out(repo, "thing.html").read_text())["versions"]
+        assert [v["isDefault"] for v in listed] == [True, False]
+
+    def test_a_beta_is_listed_as_a_beta(self, repo):
+        """It is reachable, so it belongs in the list. It is not the course, so
+        the list has to say which one it is."""
+        self.release(repo, "thing", "2026.06.02.1")
+        self.release(repo, "thing", "2026.09.15.1", status="beta")
+        b.build()
+        listed = manifest(self.out(repo, "thing.html").read_text())["versions"]
+        assert {v["version"]: v["status"] for v in listed} == {
+            "2026.06.02.1": "live", "2026.09.15.1": "beta",
+        }
+
+    def test_each_url_is_relative_to_the_page_that_carries_it(self, repo):
+        """The default sits one folder up from its own older releases, so the
+        same list is written twice with different paths in it."""
+        self.release(repo, "thing", "2026.06.02.1")
+        self.release(repo, "thing", "2026.09.15.1")
+        b.build()
+
+        from_default = manifest(self.out(repo, "thing.html").read_text())["versions"]
+        assert {v["version"]: v["url"] for v in from_default} == {
+            "2026.09.15.1": "thing.html",
+            "2026.06.02.1": "thing/v2026.06.02.1.html",
+        }
+
+        older = self.out(repo, "thing", "v2026.06.02.1.html").read_text()
+        from_older = manifest(older)["versions"]
+        assert {v["version"]: v["url"] for v in from_older} == {
+            "2026.09.15.1": "../thing.html",
+            "2026.06.02.1": "v2026.06.02.1.html",
+        }
+
+    def test_each_entry_carries_that_release_s_cell_ids(self, repo):
+        """The whole point of the list. Without these the page can only warn a
+        reader that their work "may not line up"; with them it can count."""
+        self.release(repo, "thing", "2026.06.02.1", body=self.CELLS)
+        self.release(repo, "thing", "2026.09.15.1",
+                     body=self.CELLS.replace("id: two", "id: three"))
+        b.build()
+        listed = manifest(self.out(repo, "thing.html").read_text())["versions"]
+        assert {v["version"]: v["cells"] for v in listed} == {
+            "2026.09.15.1": ["one", "three"],
+            "2026.06.02.1": ["one", "two"],
+        }
 
 
 class TestTheManifestIdentifiesThePage:

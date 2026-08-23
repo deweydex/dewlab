@@ -562,6 +562,7 @@ function saveNow() {
   };
   try {
     localStorage.setItem(progressKey(), JSON.stringify(record));
+    rememberVersion();
     showSaveState(record.saved_at);
   } catch (err) {
     /* Storage full or refused. Say so rather than pretending it saved. */
@@ -605,6 +606,7 @@ function restoreSaved() {
     dropped,
     widgets,
     savedAt: record.saved_at,
+    savedVersion: String(record["tutorial-version"]),
     versionChanged: String(record["tutorial-version"]) !== String(currentManifest.version),
   };
 }
@@ -616,8 +618,21 @@ function announceRestore(summary) {
   box.className = "dl-restored";
   box.setAttribute("role", "status");
 
+  /* Where the tutorial has releases, both lines below can say what happened
+   * rather than guess at it: which release the work came from, which one this
+   * is, and that an answer with no cell to go in is still saved. Where it has
+   * only one, the work was written against a file that has since been edited
+   * in place, and "may not line up" is the honest thing to say (7.30). */
+  const from = versionList().find((v) => v.version === summary.savedVersion);
+  const here = thisVersion();
+
   const lines = [];
-  if (summary.versionChanged) {
+  if (summary.versionChanged && from && here) {
+    lines.push(
+      `Your work is back below. You wrote it in the ${from.date} version and ` +
+        `you are reading the ${here.date} one.`
+    );
+  } else if (summary.versionChanged) {
     lines.push(
       "This tutorial has been updated since you last worked on it. Your work is " +
         "back below, but some of it may not line up with the new version."
@@ -626,9 +641,18 @@ function announceRestore(summary) {
     lines.push("Your work from last time is back below.");
   }
   if (summary.dropped.length) {
+    const many = summary.dropped.length !== 1;
     lines.push(
-      `${summary.dropped.length} saved ${summary.dropped.length === 1 ? "cell is" : "cells are"} ` +
-        "not in this tutorial any more, so there was nowhere to put it back."
+      here
+        ? (many
+            ? `${summary.dropped.length} of your saved answers are in cells this `
+              + "version does not have. They are still saved, and they come back "
+              + "in a version that has those cells."
+            : "One of your saved answers is in a cell this version does not "
+              + "have. It is still saved, and it comes back in a version that "
+              + "has the cell.")
+        : `${summary.dropped.length} saved ${many ? "cells are" : "cell is"} `
+          + "not in this tutorial any more, so there was nowhere to put it back."
     );
   }
   if (summary.widgets) {
@@ -650,8 +674,13 @@ function announceRestore(summary) {
   dismiss.addEventListener("click", () => box.remove());
   box.appendChild(dismiss);
 
+  /* Below the page's own notice where there is one. Which release you are
+   * reading is the thing to know first; what happened to your work only makes
+   * sense once you know it. */
   const body = document.getElementById("dl-body");
-  body.insertBefore(box, body.firstChild);
+  const notice = body.querySelector(".dl-archived");
+  if (notice) notice.insertAdjacentElement("afterend", box);
+  else body.insertBefore(box, body.firstChild);
 }
 
 function showSaveState(savedAt, problem) {
@@ -735,9 +764,359 @@ function initProgressSection() {
   });
 }
 
+/* -------------------------------------------------------------- versions */
+/*
+ * A tutorial can have more than one release, and two different questions
+ * decide which one a reader gets:
+ *
+ *   the build  — what the plain URL serves, for somebody arriving for the
+ *                first time. The newest live release.
+ *   this file  — what somebody who has already worked here gets. The release
+ *                they last worked in, unless they have said otherwise.
+ *
+ * Saved work is keyed by tutorial rather than by release, and restore matches
+ * on cell id, so answers move between releases on their own. That is what lets
+ * this list say what will happen rather than warn that something might: the
+ * manifest carries every release's cell ids, so the page can count the answers
+ * that survive a move before the reader makes it.
+ */
+
+const VERSION_PIN_PREFIX = "dewlab:version:";
+const FOLLOW_KEY = "dewlab:versions-follow";
+
+function versionList() {
+  /* Absent on a tutorial with one release, which is most of them. */
+  const list = currentManifest && currentManifest.versions;
+  return Array.isArray(list) ? list : [];
+}
+
+function versionPinKey() {
+  const manifest = currentManifest || {};
+  return `${VERSION_PIN_PREFIX}${manifest.module || "unknown"}:${manifest.slug || "unknown"}`;
+}
+
+/* Which release this reader is on: the one they picked, or failing that the
+ * one their saved work was written against.
+ *
+ * The fallback is what makes this work for somebody who was here before a
+ * second release existed — there was nothing to pick then, but the record
+ * says where they were. */
+function readPin() {
+  try {
+    const picked = localStorage.getItem(versionPinKey());
+    if (picked) return picked;
+  } catch (err) {
+    /* Private browsing or blocked storage. Fall through to the record, which
+     * has its own guard and will return null under the same conditions. */
+  }
+  const record = readSaved();
+  const worked = record && record["tutorial-version"];
+  return worked ? String(worked) : null;
+}
+
+function writePin(version) {
+  try {
+    localStorage.setItem(versionPinKey(), version);
+  } catch (err) {
+    /* The reader still gets where they clicked; they just will not land there
+     * again by themselves. */
+  }
+}
+
+function rememberVersion() {
+  /* Working in a release is a reader saying that is the one they are on, and
+   * it has to outrank an older pick or a stale pick would keep pulling them
+   * back off the page they are working on.
+   *
+   * Nothing to remember where there is no choice. */
+  if (versionList().length < 2) return;
+  writePin(currentManifest.version);
+}
+
+function readFollow() {
+  /* "started" is the default because it is the one that does not move the
+   * ground under somebody halfway through. */
+  try {
+    return localStorage.getItem(FOLLOW_KEY) === "newest" ? "newest" : "started";
+  } catch (err) {
+    return "started";
+  }
+}
+
+function writeFollow(mode) {
+  try {
+    localStorage.setItem(FOLLOW_KEY, mode);
+  } catch (err) {
+    /* As above: the choice holds for this page and is forgotten after it. */
+  }
+}
+
+function thisVersion() {
+  return versionList().find((v) => v.version === currentManifest.version) || null;
+}
+
+function defaultVersion() {
+  return versionList().find((v) => v.isDefault) || null;
+}
+
+/* Where a reader who has been here before is sent.
+ *
+ * Only ever away from the page the plain URL serves, and only to a release
+ * that still exists — the first so this cannot bounce between two pages, the
+ * second so a reader following a link to one particular release lands on the
+ * release they asked for rather than on their own.
+ */
+function continuityTarget() {
+  if (readFollow() !== "started") return null;
+  const here = thisVersion();
+  if (!here || !here.isDefault) return null;
+  const pin = readPin();
+  if (!pin || pin === currentManifest.version) return null;
+  return versionList().find((v) => v.version === pin) || null;
+}
+
+function followTheVersionYouLeftOff() {
+  const target = continuityTarget();
+  if (!target) return false;
+  /* replace rather than assign: Back should go where the reader came from, not
+   * to a page that immediately sends them here again. */
+  location.replace(target.url);
+  return true;
+}
+
+/* The answers a reader has written, as opposed to the cells they happened to
+ * have open. A starter left untouched is not an answer, and counting it would
+ * inflate every number below — the point of these counts is that they are
+ * true. */
+function answeredCells() {
+  const record = readSaved();
+  if (!record || !Array.isArray(record.cells)) return [];
+  const starters = new Map(cells.map((cell) => [cell.id, cell.starter]));
+  return record.cells.filter((saved) => {
+    const code = typeof saved.student_code === "string" ? saved.student_code.trim() : "";
+    if (!code) return false;
+    const starter = starters.get(saved.task_id);
+    return starter === undefined || code !== String(starter).trim();
+  });
+}
+
+function carryOver(entry) {
+  const answers = answeredCells();
+  if (answers.length === 0) return null;
+  const there = new Set(Array.isArray(entry.cells) ? entry.cells : []);
+  return {
+    carried: answers.filter((saved) => there.has(saved.task_id)).length,
+    total: answers.length,
+  };
+}
+
+function describeCarry(entry) {
+  const count = carryOver(entry);
+  if (!count) return "";
+  if (count.carried === count.total) {
+    return count.total === 1
+      ? "Your answer carries over."
+      : `All ${count.total} of your answers carry over.`;
+  }
+  const missing = count.total - count.carried;
+  const rest = missing === 1
+    ? "1 cell is not in that version, so that answer stays saved but is not shown there."
+    : `${missing} cells are not in that version, so those answers stay saved `
+      + "but are not shown there.";
+  return `${count.carried} of your ${count.total} answers carry over. ${rest}`;
+}
+
+function versionOption(entry) {
+  const item = document.createElement("li");
+  item.className = "dl-version";
+  item.dataset.version = entry.version;
+
+  const here = entry.version === currentManifest.version;
+  if (here) item.dataset.current = "";
+
+  const name = document.createElement(here ? "span" : "a");
+  name.className = "dl-version-name";
+  name.textContent = entry.date;
+  if (!here) {
+    name.href = entry.url;
+    name.addEventListener("click", () => writePin(entry.version));
+  }
+  item.appendChild(name);
+
+  const tags = [];
+  if (here) tags.push("you are reading this");
+  if (entry.isDefault && !here) tags.push("current");
+  if (entry.status === "beta") tags.push("draft");
+  if (entry.status === "archived") tags.push("retired");
+  for (const text of tags) {
+    const tag = document.createElement("span");
+    tag.className = "dl-version-tag";
+    tag.textContent = text;
+    item.appendChild(tag);
+  }
+
+  const carry = here ? "" : describeCarry(entry);
+  if (carry) {
+    const line = document.createElement("p");
+    line.className = "dl-version-carry";
+    line.textContent = carry;
+    item.appendChild(line);
+  }
+  return item;
+}
+
+function fillVersionList(list) {
+  list.replaceChildren();
+  for (const entry of versionList()) list.appendChild(versionOption(entry));
+}
+
+/* The control beside the title: nothing at all on a tutorial with one release,
+ * something always visible on a tutorial with several.
+ *
+ * Not a control that appears on hover. Hover does not exist on a phone, and a
+ * good share of these readers are on one — an affordance that only appears on
+ * hover is not subtle to them, it is missing.
+ */
+function initVersionMarker() {
+  if (versionList().length < 2) return;
+  const here = thisVersion();
+  const wrap = document.createElement("div");
+  wrap.className = "dl-versions";
+  wrap.id = "dl-versions";
+
+  const toggle = document.createElement("button");
+  toggle.type = "button";
+  toggle.className = "dl-versions-toggle";
+  toggle.id = "dl-versions-toggle";
+  toggle.setAttribute("aria-expanded", "false");
+  toggle.setAttribute("aria-controls", "dl-versions-list");
+  toggle.append(here ? here.date : currentManifest.version);
+  const caret = document.createElement("span");
+  caret.className = "dl-versions-caret";
+  caret.setAttribute("aria-hidden", "true");
+  toggle.appendChild(caret);
+  wrap.appendChild(toggle);
+
+  const list = document.createElement("ul");
+  list.className = "dl-versions-list";
+  list.id = "dl-versions-list";
+  list.hidden = true;
+  wrap.appendChild(list);
+
+  function setOpen(open) {
+    /* Built on opening rather than at load, because the counts read saved work
+     * and the reader may have written some since the page loaded. */
+    if (open) fillVersionList(list);
+    list.hidden = !open;
+    toggle.setAttribute("aria-expanded", String(open));
+  }
+
+  toggle.addEventListener("click", () => setOpen(list.hidden));
+  document.addEventListener("click", (ev) => {
+    if (!list.hidden && !wrap.contains(ev.target)) setOpen(false);
+  });
+  document.addEventListener("keydown", (ev) => {
+    if (ev.key === "Escape" && !list.hidden) {
+      setOpen(false);
+      toggle.focus();
+    }
+  });
+
+  /* Under the title where there is one, which is every tutorial that opens
+   * with a `# Heading`. A tutorial that opens straight into a section is legal
+   * and would otherwise get no marker at all, so it goes to the top of the
+   * body instead — after the notice, which is the one thing that outranks it. */
+  const heading = document.querySelector("#dl-body h1");
+  if (heading) {
+    heading.insertAdjacentElement("afterend", wrap);
+    return;
+  }
+  const body = document.getElementById("dl-body");
+  const notice = body.querySelector(".dl-archived");
+  if (notice) notice.insertAdjacentElement("afterend", wrap);
+  else body.insertBefore(wrap, body.firstChild);
+}
+
+/* build.py already writes the notice that says which release this is and links
+ * to the current one. What it cannot know is how much of this reader's work
+ * moves with them, so that is added here rather than duplicated as a second
+ * box saying nearly the same thing. */
+function annotateNotice() {
+  const notice = document.querySelector("#dl-body .dl-archived");
+  const home = defaultVersion();
+  if (!notice || !home || home.version === currentManifest.version) return;
+
+  for (const link of notice.querySelectorAll(`a[href="${CSS.escape(home.url)}"]`)) {
+    link.addEventListener("click", () => writePin(home.version));
+  }
+
+  const lines = [];
+  if (readPin() === currentManifest.version) {
+    lines.push("You are on this one because it is where you left off.");
+  }
+  const carry = describeCarry(home);
+  if (carry) lines.push(`Moving to the current version: ${carry[0].toLowerCase()}${carry.slice(1)}`);
+  for (const text of lines) {
+    const line = document.createElement("p");
+    line.className = "dl-version-carry";
+    line.textContent = text;
+    notice.appendChild(line);
+  }
+}
+
+function initVersionsSection() {
+  const section = document.getElementById("dl-settings-versions");
+  if (!section) return;
+  if (versionList().length < 2) {
+    section.remove();
+    return;
+  }
+
+  const note = document.getElementById("dl-versions-note");
+  if (note) {
+    note.textContent =
+      `This tutorial has ${versionList().length} releases. Your work is saved `
+      + "against the tutorial rather than against one of them, so it moves with "
+      + "you: an answer is there in every version whose cells it belongs to.";
+  }
+
+  const group = section.querySelector("[data-versions-follow]");
+  const list = document.getElementById("dl-versions-settings");
+
+  function sync() {
+    const mode = readFollow();
+    for (const btn of group.querySelectorAll("button")) {
+      btn.setAttribute("aria-pressed", String(btn.dataset.value === mode));
+    }
+    fillVersionList(list);
+  }
+
+  group.addEventListener("click", (ev) => {
+    const btn = ev.target.closest("button");
+    if (!btn) return;
+    writeFollow(btn.dataset.value);
+    sync();
+    /* Asking for the newest from an older release is a request to be on the
+     * newest, not a preference to take effect the next time they visit. */
+    const home = defaultVersion();
+    if (btn.dataset.value === "newest" && home
+        && home.version !== currentManifest.version) {
+      location.href = home.url;
+    }
+  });
+
+  sync();
+}
+
 /* ------------------------------------------------------------------ start */
 
 const currentManifest = readManifest();
+
+/* Before anything is built or booted: a reader who has worked in an older
+ * release goes back to it rather than being handed the newest one halfway
+ * through. Everything below is skipped, because this page is about to be
+ * replaced by another one. */
+const leaving = followTheVersionYouLeftOff();
 
 initTexture((dark) => {
   for (const cell of cells) setEditorTheme(cell.editor, dark);
@@ -746,16 +1125,21 @@ initTexture((dark) => {
 
 buildCells(currentManifest);
 initProgressSection();
+initVersionsSection();
+initVersionMarker();
 initSettingsPanel();
 trackChromeHeight();
 announceRestore(restoreSaved());
+annotateNotice();
 highlightIllustrativeCode();
 const mathsRendered = renderMaths(currentManifest);
 
-if (cells.length === 0) {
+if (cells.length === 0 || leaving) {
   /* A prose-only tutorial is a normal tutorial, not a special case
    * (CONTENT_AND_FILE_ARCHITECTURE.md). No cells means no reason to pay for
    * Pyodide at all. */
+  /* Nor is there a reason to pay for it on a page that is being replaced this
+   * instant by the release the reader left off in. */
   setStatus("");
 } else {
   setRunnable(false, "…");
@@ -770,6 +1154,12 @@ globalThis.dewlab = {
   readSaved,
   progressKey,
   describeMismatch,
+  versionList,
+  readPin,
+  writePin,
+  readFollow,
+  carryOver,
+  describeCarry,
   ready: () =>
     Promise.all([
       mathsRendered,

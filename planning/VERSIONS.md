@@ -298,7 +298,9 @@ topic tree's "taught in" links, the curriculum map, and anything a student
 bookmarked all point at the unversioned path, and all of them want the default.
 
 A versioned page carries `<link rel="canonical">` at the default, so the
-duplicates do not compete in search.
+duplicates do not compete in search. **This shipped in step 3 rather than step
+2, where it is written** — step 2 landed without it and nobody noticed until the
+step 3 review. See DECISIONS_LOG 7.34.
 
 ---
 
@@ -372,17 +374,26 @@ editor. It touches:
 2. **Versions as releases.** The folder layout, the `released`/`status` fields,
    the default resolved at build time, versioned pages built, unversioned paths
    unchanged. No student-facing control yet — the default is simply correct.
-3. **Continuity, the notice, and the picker.** Pin a student to what they
-   started; show the "newer version available" line; the conditional marker
-   beside the title; the same list plus the site-wide switch in Settings; and
-   the "6 of your 8 answers carry over" count on each option.
+3. ~~**Continuity, the notice, and the picker.**~~ **Done.** A reader goes back
+   to the release they last worked in; the marker sits under the title on the
+   tutorials that have more than one release and nowhere else; Settings carries
+   the same list plus the one site-wide switch; and every option says how many
+   of that reader's answers carry over to it. See DECISIONS_LOG 7.30 to 7.33.
+
+   Two things came out differently from what is written above. The pin is **the
+   release you last worked in**, not the one you started — working somewhere has
+   to outrank an older pick, or a stale pick keeps pulling a reader off the page
+   they are on. And there is **no separate "newer version available" line**: the
+   notice build.py already writes on a superseded page says which release this is
+   and links to the current one, so the runtime adds the carry-over count to that
+   box rather than putting a second box beside it saying nearly the same thing.
 4. **Beta, and the editor actions.** Release, archive, and mark-beta as things
    Josh can do from the editor rather than by hand.
 
-Each step is useful on its own, and each is a pull request. Step 1 has landed;
-step 4 is not worth starting until 2 and 3 have been lived with.
+Each step is useful on its own, and each is a pull request. Steps 1 to 3 have
+landed; step 4 is not worth starting until 2 and 3 have been lived with.
 
-Step 2 is where the cost is. Everything above about resolving a default, building
+Step 2 was where the cost was. Everything above about resolving a default, building
 a page per version, and keeping the unversioned URL meaning "the current one"
 happens there, and steps 3 and 4 are comparatively small on top of it.
 

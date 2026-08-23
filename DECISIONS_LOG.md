@@ -1199,3 +1199,109 @@ Two things fixed, and one habit changed:
   A relative redirect is only as good as the last `cd` anybody ran.
 
 *Cost to change: none. This is the record catching up with what happened.*
+
+**7.30 — The picker tells a reader what will happen instead of warning them.**
+Josh's sketch had a warning on switching version: your work *should* survive,
+but export a copy just in case. That sentence is not shipping. If we are not
+confident the work survives, the feature is not ready — and "just in case"
+teaches a reader to distrust something that is in fact deterministic.
+
+Restore matches on cell id, so which answers survive a move is knowable before
+the reader makes it. The manifest now carries every release's cell ids, a few
+hundred bytes beside a payload that already holds every cell's source, and each
+option in the list says the true thing:
+
+> **2 June 2026** — 2 of your 3 answers carry over. 1 cell is not in that
+> version, so that answer stays saved but is not shown there.
+
+"Stays saved but is not shown" rather than "will be lost", because it is not
+lost: the record is keyed by tutorial, not by release, and the answer comes back
+the moment the reader returns to a version that has the cell.
+
+A starter left untouched is not an answer. Counting the cells a reader happened
+to have open would inflate every number here, and the whole point of the numbers
+is that they are checkable.
+
+*Cost to change: small. The counts are one function and the ids are one build
+step. What would be expensive is having shipped the warning and then having to
+un-teach it.*
+
+**7.31 — Which release a reader gets is the last one they worked in.**
+Two things decide it, and they answer different questions. The build decides
+what the plain URL serves — the newest live release — which is right for
+somebody arriving for the first time. This decides what somebody who has been
+here before gets, and the answer is: the one they were last working in, unless
+they have said otherwise.
+
+The pin is written when they pick a release from the list, and again whenever
+they save work in one. Working somewhere has to outrank an older pick, or a
+stale pick would keep pulling a reader off the page they are working on.
+
+Where no pin has been written — somebody who was here before a second release
+existed, and so had nothing to pick — the saved record's own `tutorial-version`
+answers it. That field has been in the record since Phase 2 for a different
+reason, and it turns out to say exactly what is needed.
+
+The redirect only ever leaves the page the plain URL serves, and only for a
+release that still exists. The first so it cannot bounce between two pages; the
+second so a link sent deliberately to one release lands there rather than being
+overridden by the reader's own history.
+
+*Cost to change: small, and worth knowing that "the version I started" was the
+phrasing in the plan. "The one I last worked in" is what got built, because it
+is the one a reader can move by doing something rather than only by asking.*
+
+**7.32 — The marker is conditional rather than invisible, and it is a date.**
+Nothing at all beside the title on a tutorial with one release, which is most of
+them. Something always visible on a tutorial with several. Josh's sketch had it
+appear on hover; hover does not exist on a phone, and a good share of these
+readers are on one, so an affordance that only appears on hover is not subtle to
+them — it is missing.
+
+It reads "15 September 2026", never "version 2" and never `2026.09.15.1`. The
+dotted form is for the file, the frontmatter and the URL. A person gets a date.
+
+*Cost to change: none. It is built from the manifest at load.*
+
+**7.33 — A downloaded copy has no version list.**
+Only the default release gets a standalone copy, so the other releases are not
+on the reader's disk. A picker offering to move to files that are not there is
+worse than no picker, so the list is stripped from the standalone manifest and
+the runtime removes the section that would have shown it.
+
+*Cost to change: one line, and a test that fails without it.*
+
+**7.34 — An older release tells search engines which one is current.**
+Two releases of a tutorial are near-identical pages at two URLs. Without a
+`<link rel="canonical">` they compete with each other in search results, and
+whichever a crawler happens to prefer is what a student searching for the
+tutorial lands on — quite possibly one that has been superseded twice.
+
+Every non-default page now points at the release the plain URL serves. The
+default carries none: it is already the canonical page, and a link pointing at
+itself says nothing the URL does not.
+
+`planning/VERSIONS.md` had this in the step 2 section and step 2 shipped without
+it. Noted rather than quietly filled in, because a plan that says a thing was
+done when it was not is worse than a plan with a gap in it.
+
+*Cost to change: one line and one shell token.*
+
+**7.35 — The restore notice says what happened instead of guessing.**
+It used to say: *"This tutorial has been updated since you last worked on it.
+Your work is back below, but some of it may not line up with the new version."*
+Two guesses in one sentence, and the second one frightening.
+
+Where a tutorial has releases, neither is necessary. The page knows which
+release the work was written in and which one is being read, so it names both.
+And an answer whose cell is not in this release is not gone — it is in storage,
+and it comes back the moment the reader opens a release that has the cell. The
+notice now says that rather than "there was nowhere to put it back", which read
+like a deletion.
+
+The old wording stays for the case it was written for: a tutorial with one
+release, edited in place. There, the file really did change under the reader and
+"may not line up" is the honest thing to say.
+
+*Cost to change: none. Both branches are tested, and the one-release branch is
+what the existing progress tests already assert.*
