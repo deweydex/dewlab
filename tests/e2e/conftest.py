@@ -59,8 +59,12 @@ def site_dir(tmp_path_factory) -> Path:
 
     root = tmp_path_factory.mktemp("dewlab-e2e")
     (root / "tutorials" / MODULE).mkdir(parents=True)
-    for source in sorted(FIXTURE_DIR.glob("*.md")):
-        shutil.copy(source, root / "tutorials" / MODULE / source.name)
+    # rglob rather than glob: a tutorial with more than one release lives in a
+    # folder of its own, and the picker only exists on one of those.
+    for source in sorted(FIXTURE_DIR.rglob("*.md")):
+        into = root / "tutorials" / MODULE / source.relative_to(FIXTURE_DIR)
+        into.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy(source, into)
     # The series' reading order, which lives beside the tutorials now.
     for source in sorted(FIXTURE_DIR.glob("*.order.yaml")):
         shutil.copy(source, root / "tutorials" / MODULE / source.name)

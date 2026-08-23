@@ -1398,8 +1398,49 @@ def page_notice(tutorial: Tutorial, default: Tutorial | None = None) -> str:
     return ""
 
 
+def version_manifest(tutorial: Tutorial, family: list[Tutorial]) -> list[dict]:
+    """Every release of this tutorial a reader could move to, newest first.
+
+    Carries each one's cell ids, so the page can say *before* a student switches
+    how much of their work will still be there — "six of your eight answers
+    carry over" rather than "it should be fine, back up first". The whole list
+    is a few hundred bytes beside a manifest that already holds every cell's
+    code.
+
+    Empty when there is only one release, which is most tutorials most of the
+    time: a picker with one entry is furniture.
+    """
+    if len(family) < 2:
+        return []
+    return [
+        {
+            "version": other.version,
+            "date": other.date,
+            "status": other.status,
+            "isDefault": other.is_default,
+            "url": os.path.relpath(other.out_path, tutorial.out_path.parent),
+            "cells": [cell.id for cell in other.cells],
+        }
+        for other in sorted(family, key=lambda t: t.released, reverse=True)
+    ]
+
+
+def canonical_link(tutorial: Tutorial, default: Tutorial | None) -> str:
+    """Where search should send somebody who finds an older release.
+
+    At the page the plain URL serves, which is the one a reader should land on
+    unless they have a reason to be elsewhere. Nothing on the default itself:
+    it is already the canonical page, and a link pointing at itself says
+    nothing the URL does not.
+    """
+    if tutorial.is_default or default is None:
+        return ""
+    here = os.path.relpath(default.out_path, tutorial.out_path.parent)
+    return f'<link rel="canonical" href="{html.escape(here, quote=True)}">'
+
+
 def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "",
-          default: Tutorial | None = None) -> Path:
+          default: Tutorial | None = None, family: list[Tutorial] | None = None) -> Path:
     up = "../" * tutorial.depth
     manifest: dict[str, object] = {
         "slug": tutorial.slug,
@@ -1416,6 +1457,9 @@ def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "",
         "dataBase": f"{up}data/",
         "cells": [{"id": c.id, "hint": c.hint, "code": c.code} for c in tutorial.cells],
     }
+    versions = version_manifest(tutorial, family or [tutorial])
+    if versions:
+        manifest["versions"] = versions
     if tutorial.has_math:
         # The runtime fetches the 266 KB KaTeX bundle only when this is set, so
         # a tutorial with no maths never pays for it.
@@ -1426,6 +1470,7 @@ def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "",
 
     tokens = {
         "{{TITLE}}": html.escape(str(tutorial.meta["title"])),
+        "{{CANONICAL}}": canonical_link(tutorial, default),
         "{{VERSION}}": html.escape(str(tutorial.meta["version"]), quote=True),
         "{{SLUG}}": html.escape(tutorial.slug, quote=True),
         "{{MODULE}}": html.escape(tutorial.module, quote=True),
@@ -1541,6 +1586,11 @@ def standalone_html(tutorial: Tutorial, page: str) -> str:
     manifest = json.loads(page[start:end])
     manifest["toolsSource"] = tools
     manifest["standalone"] = True
+    # Only the default version gets a downloadable copy, and the other releases
+    # are not beside it on disk. A picker offering to move to files that are not
+    # there is worse than no picker, so the whole list goes and the runtime
+    # removes the section that would have shown it.
+    manifest.pop("versions", None)
     page = page[:start] + json.dumps(manifest).replace("<", "\\u003c") + page[end:]
 
     # Navigation points at pages that are not beside this file, and the offer to
@@ -1643,6 +1693,7 @@ def write_index(
         "{{PAGE_SCRIPT}}": "",
         # The contents page is not a tutorial and has nothing to download; the
         # runtime hides the empty section rather than showing a bare heading.
+        "{{CANONICAL}}": "",
         "{{DOWNLOAD}}": "",
         # The contents page is a contents page. It does not need one of its own.
         "{{TOC}}": "",
@@ -1773,6 +1824,7 @@ def write_tree_page(shell: str, tutorials: list[Tutorial]) -> Path | None:
             + "</script>\n"
             + f'<script type="module" src="{versioned("assets/", "tree.js")}"></script>'
         ),
+        "{{CANONICAL}}": "",
         "{{DOWNLOAD}}": "",
         "{{TOC}}": "",
         "{{BODY}}": body,
@@ -1829,6 +1881,7 @@ def write_editor_page(shell: str) -> Path:
         "{{PAGE_SCRIPT}}": (
             f'<script type="module" src="{versioned("assets/", "editor.js")}"></script>'
         ),
+        "{{CANONICAL}}": "",
         "{{DOWNLOAD}}": "",
         "{{TOC}}": "",
         "{{BODY}}": body,
@@ -1871,6 +1924,10 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
         (t.module, t.slug): t for t in tutorials if t.is_default
     }
 
+    families: dict[tuple[str, str], list[Tutorial]] = {}
+    for tutorial in tutorials:
+        families.setdefault((tutorial.module, tutorial.slug), []).append(tutorial)
+
     shell = SHELL.read_text()
     groups = series_of(tutorials)
     retired = archived_of(tutorials)
@@ -1883,6 +1940,7 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
         page_path = write(
             tutorial, shell, resolve_links(tutorial, registry), nav_for(tutorial, members),
             default=registry.get((tutorial.module, tutorial.slug)),
+            family=families.get((tutorial.module, tutorial.slug)),
         )
         written.append(page_path)
         # 0.7MB against 19KB for the hosted page, so only the version students

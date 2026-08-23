@@ -13,6 +13,12 @@
 <meta name="tutorial-year" content="{{YEAR}}">
 <meta name="tutorial-series" content="{{SERIES}}">
 
+<!-- Empty except on a page that is one release of a tutorial with several,
+     where it points at the release the plain URL serves. Two versions of one
+     tutorial are near-identical pages, and without this they compete with each
+     other in search results rather than the current one winning. -->
+{{CANONICAL}}
+
 <link rel="stylesheet" href="{{KATEX_CSS_URL}}">
 <link rel="stylesheet" href="{{STYLE_URL}}">
 
@@ -96,6 +102,25 @@
       <button type="button" class="dl-btn dl-progress-clear" id="dl-progress-clear">Start again</button>
     </div>
     <input type="file" id="dl-progress-file" accept="application/json,.json" hidden>
+  </section>
+
+  <!-- Versions. Removed at load on the tutorials that have only one, which is
+       most of them: a list with a single entry is furniture, and the switch
+       below it would have nothing to switch between. -->
+  <section class="dl-settings-section" id="dl-settings-versions">
+    <h3>Versions</h3>
+
+    <p class="dl-panel-note" id="dl-versions-note"></p>
+
+    <div class="dl-texture-row">
+      <span>Show me</span>
+      <div class="dl-seg" data-versions-follow>
+        <button type="button" data-value="started">where I left off</button>
+        <button type="button" data-value="newest">the newest</button>
+      </div>
+    </div>
+
+    <ul class="dl-versions-list" id="dl-versions-settings"></ul>
   </section>
 
   <section class="dl-settings-section" id="dl-settings-download">{{DOWNLOAD}}</section>

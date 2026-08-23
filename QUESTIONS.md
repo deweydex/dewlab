@@ -49,7 +49,50 @@ A one-line answer is a complete answer.
 
 ## Open
 
-*Nothing waiting.*
+### Coordinate geometry has no tutorial and no outline, and something already depends on it
+
+**What is being asked.** Four Maths for IT outcomes — MIT-4.1 to 4.4, a line as
+an equation, slope, midpoint and distance, and Pythagoras — have no tutorial and
+appear in none of the ten proposals. Should coordinate geometry become the
+eleventh proposal, with an outline written next?
+
+The reason it is worth a question rather than a shrug: `angles-and-waves` is the
+proposal that carries the unit circle, and you said in `ANSWERS-3.md` that
+SOH-CAH-TOA needs "coordinates so we can have the unit circle". So a proposal
+that exists is already building on a tutorial that does not.
+
+**What was assumed and built in the meantime.** Nothing yet. The survey in
+`planning/WHAT_IS_LEFT_TO_WRITE.md` names it as the first thing to write and
+places it before Angles and Waves rather than after.
+
+**What changing it later would cost.** Nothing structural — it is a proposal and
+an outline, both of which are text. What it would cost is discovering it while
+writing Angles and Waves and having to stop.
+
+**What it blocks.** Angles and Waves, and therefore most of Section 4.
+
+### Where do Venn diagrams go?
+
+**What is being asked.** MIT-2.3, two and three set Venn diagrams, has no home.
+`sets-as-sorted-lists` teaches sets and does not draw them; the proposed
+`logic-and-truth` covers truth tables and De Morgan and does not draw them
+either. Three options:
+
+1. A section inside `logic-and-truth`. De Morgan's Laws are the natural pairing,
+   because the picture is the proof — but it turns a short tutorial into a full
+   one.
+2. A section added to `sets-as-sorted-lists`, which exists already and already
+   has the vocabulary. Cheapest, and it puts the picture where the sets are.
+3. Its own short tutorial. Hard to justify for one outcome.
+
+**What was assumed and built in the meantime.** Nothing. My preference is 2, on
+the grounds that it costs one section in a tutorial that is already written.
+
+**What changing it later would cost.** Small either way. Moving a section
+between two tutorials is moving prose and two cells.
+
+**What it blocks.** Nothing. It is the last uncovered outcome once the rest is
+planned, and it can be decided when `logic-and-truth` is written.
 
 ---
 

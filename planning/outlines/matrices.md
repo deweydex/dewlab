@@ -117,14 +117,42 @@ Determinant and inverse, arrived at from the pictures rather than the formula.
 - **Point to make:** the two-unknown elimination they did by hand earlier was
   this, on a smaller grid.
 
+## Tutorial 6 — Where it settles
+
+Markov chains, promoted from a bonus to a tutorial. Josh: *"I think we dont need
+eigenvectors but markov would be great."*
+
+A transition matrix multiplied by itself repeatedly is tutorial 2 doing
+something a student can care about, and it ends somewhere: the distribution
+stops moving. `everlearning`'s `OtherCourses/Markov-Chains-and-Text-Generation`
+is a whole small course already and `worksheet_07d_markov_chains.md` is the
+paper half, so this is largely a conversion.
+
+- **Cell:** a weather matrix, three states, one step at a time.
+- **Cell:** the same matrix raised to a power, watching the rows converge.
+- **Cell:** text generation from a transition matrix built out of a real
+  paragraph — the payoff, and the reason this is worth a tutorial rather than a
+  footnote.
+- **Point to make:** the thing it settles on does not depend on where it
+  started. That is the whole idea, and it needs no eigenvector vocabulary
+  anywhere — which is why dropping eigenvalues costs nothing.
+
+**PageRank** is the same computation on a graph of links, and it belongs here or
+as a seventh tutorial depending on how long tutorial 6 runs. The 5N0554
+descriptor names it under linear algebra and applications, as *one suggestion
+among several* — graphics, games, sequence alignment and nearest neighbour sit
+beside it. It is here because it is worth teaching, not because it is required.
+
+## Dropped, and why
+
+- **Eigenvectors.** They fall out of tutorial 3's gallery nicely, and
+  `worksheet_07c` has the paper half, so this was a real candidate. Josh's call,
+  and a defensible one: PageRank is an eigenvector problem in disguise and
+  teaches perfectly well as repeated multiplication converging. The vocabulary
+  buys nothing at this level.
+
 ## Bonus, if the strand earns it
 
-- **Eigenvectors** — the vectors the mapping does not turn. This falls straight
-  out of tutorial 3's gallery: plot a lot of arrows before and after, and find
-  the ones still pointing the same way. `worksheet_07c` has the paper half.
-- **Markov chains** — `everlearning`'s `OtherCourses/Markov-Chains-and-Text-Generation`
-  is a whole small course already, and a transition matrix multiplied by itself
-  repeatedly is tutorial 2 doing something a student cares about.
 - **Rasterization** — `OtherCourses/Computer-Graphics-Algorithms` has Bresenham
   and midpoint-circle notebooks. Different topic, same "coordinates become
   pixels" instinct, and convertible with `dev/from_notebook.py`.
@@ -136,12 +164,17 @@ strand. No NumPy anywhere until the last section of the last tutorial, where
 `numpy` appears once to say *this is what you just built, and it is why the
 library exists*.
 
-## Open questions
+## Open questions, and two that closed
 
-- Does this strand assume the maths series, or stand alone? It leans on lists
-  and on graphing, both of which live in `maths-for-it`. Either the
-  computational-methods series states that dependency, or the two series stop
-  being independent.
-- Five tutorials is a large fraction of a second series that currently has very
-  little else in it. Worth deciding what else `computational-methods` contains
-  before committing to matrices being most of it.
+- ~~Does this strand assume the maths series, or stand alone?~~ **Not a data
+  question any more.** The curriculum map is MIT and PDP only, so there is no
+  edge to draw either way and nothing in the build depends on the answer. It
+  stays a teaching note: the strand leans on lists and on graphing, and a
+  student who has not met those will feel it.
+- ~~Is five tutorials too large a fraction of the series?~~ **No.** 5N0554 is a
+  150-hour module with thirteen outcomes across seven sections, of which
+  matrices are one. Five to seven matrix tutorials is proportionate — what would
+  be out of proportion is the six other strands having nothing.
+- Still open: **which application carries tutorial 6.** Markov is settled;
+  whether PageRank rides along inside it or becomes a seventh tutorial depends
+  on how long the text-generation section runs once it is written.
