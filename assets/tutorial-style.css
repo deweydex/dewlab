@@ -1312,6 +1312,41 @@ p code, li code {
 .dl-editor-off { border-style: dashed; }
 .dl-editor-off .dl-editor-open { color: var(--dl-muted); }
 
+/* Which release you are editing, and the one gesture that makes another one.
+   Set apart from the body below it because releasing is not an edit — it is
+   the decision that a student should be able to go back. */
+.dl-editor-release {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin: 0 0 1rem;
+  padding: 0.5rem 0.7rem;
+  border: 1px solid var(--dl-cell-border);
+  border-radius: 4px;
+  background: var(--dl-cell-bg);
+}
+.dl-editor-version {
+  font-family: var(--dl-mono);
+  font-size: 0.72rem;
+  color: var(--dl-muted);
+}
+.dl-editor-release-btn {
+  font-family: var(--dl-mono);
+  font-size: 0.7rem;
+  padding: 0.3rem 0.7rem;
+  border: 1px solid var(--dl-orange);
+  border-radius: 3px;
+  background: none;
+  color: var(--dl-orange);
+  cursor: pointer;
+}
+.dl-editor-release-btn:hover {
+  background: var(--dl-orange);
+  color: #fff;
+}
+
 /* ------------------------------------------------------- version picker */
 /* Only ever present on a tutorial with more than one release; the runtime
    builds nothing at all on the rest. It sits under the title rather than

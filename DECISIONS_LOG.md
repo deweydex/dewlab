@@ -1381,3 +1381,61 @@ fitting in a person's head. The entry stays in `out-of-scope.yaml` under
 the reason it came back.
 
 *Cost to change: none. An outline and an entry.*
+
+**7.39 — Step 2 shipped versioned folders and never told the editor.**
+`versions_of` and the folder layout landed in step 2. The editor's one way of
+finding a tutorial's file was `tutorials/<module>/<slug>.md`, and a tutorial with
+a second release does not have one — it is a folder of releases. So opening such
+a tutorial in the editor gave an empty buffer, and typing into it would have
+written a file at a path the build does not read.
+
+Nothing caught this. The editor tests all ran against single-file tutorials,
+because that is what the fixture had, and the build tests never open the editor.
+Two features that both work are not the same as two features that work together,
+and there was no test that could tell.
+
+`pathOf` now resolves the release the plain URL serves — newest live, falling
+back to the newest of whatever there is — which is what `versions_of` decides in
+build.py. The editor's fixture repository now has a tutorial in a folder, so the
+next thing that forgets about versions fails a test instead of a class.
+
+*Cost to change: it would have been a corrupted tutorial and a confused
+afternoon. Found by writing the release feature on top of it.*
+
+**7.40 — The release freezes what students have, not what you typed.**
+The editor holds two copies of every file: the text as fetched, and the buffer
+being edited. Releasing needs both, and getting them the wrong way round is the
+mistake that would quietly destroy the feature.
+
+**Release freezes the fetched copy and publishes the buffer as a new release.**
+The frozen one is what students are reading right now, which is the thing they
+should be able to go back to. Freezing the buffer instead would make the old
+release a copy of the new one — the archive would exist, contain the right
+version number, and hold the wrong content, which is worse than not having it.
+
+So `state.original` exists and is never written to after load. The test for it
+edits, releases, and asserts the frozen copy does not contain the edit.
+
+There is a second half of the same idea. Releasing from a tutorial that is
+already a folder restores the buffer to the fetched text, because the edits have
+gone to the new file and the one they were typed into is a release students are
+working in. Without that, the old release silently carries the changes it exists
+to let them go back from.
+
+*Cost to change: this is the feature. Get it wrong and the archive is a lie.*
+
+**7.41 — The rename warning and the release proposal were arguing.**
+The editor has warned since the beginning that renaming a cell id throws away the
+work every student saved in it. The release proposal, three lines below it, says
+that releasing keeps students on the version they are working in.
+
+Both were on screen at once, saying opposite things, and both were partly right:
+committed as an edit, the answers really are orphaned; released, the ids stay in
+the release students have and nothing is lost. The warning was written before
+releases existed and nobody re-read it afterwards.
+
+It now says both, in that order, which is the only version that is true and the
+only version that tells Josh what to do about it.
+
+*Cost to change: two sentences. Found by looking at the page rather than
+asserting about it — the third time that has turned something up here.*

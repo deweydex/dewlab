@@ -142,10 +142,23 @@ edits published material.
   packages a page needs.
 - **Set the status** — draft, beta, live, archived. One field, and the build
   does the rest (`planning/VERSIONS.md`).
-- **Release a new version.** Freezes the current file as a version, dates the
-  new one, and leaves the reading order untouched. This is Josh's "duplicate
-  with a new version", and it is the operation the whole versions plan exists
-  to support.
+- **Release a new version.** Done. Freezes the release students have, dates the
+  new one from the browser's own clock, and leaves the reading order untouched —
+  an order file lists slugs, and a new version of a tutorial is not a new
+  tutorial. This is Josh's "duplicate with a new version", and it is the
+  operation the whole versions plan exists to support.
+
+  It **proposes** rather than acts. The editor knows whether cells appeared,
+  disappeared or changed id since the last release and says so when they did;
+  when only prose moved it stays quiet, because a version per save is the thing
+  the design rejects. The button is always there — a large prose rewrite can be
+  a release too — but the prompt only appears when the shape changed.
+
+  Refused in three cases, each for its own reason: on a tutorial that has never
+  been committed, because there is nothing for a student to go back to; on one
+  that is not live, because a draft has no page and a beta becomes live with the
+  status control; and when nothing has changed, because the new release would be
+  identical to the one students already have.
 
 **Careful — the change is fine, but only if something else changes with it.**
 

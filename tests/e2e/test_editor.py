@@ -11,6 +11,7 @@ tested.
 from __future__ import annotations
 
 import json
+import re
 
 import pytest
 
@@ -49,9 +50,48 @@ FAKE_CLIENT = """
 """
 
 
-@pytest.fixture
-def editor(browser, base_url):
-    """The editor page with a fake GitHub behind it, already loaded."""
+def _released(slug: str, version: str, cells: str, status: str = "live") -> str:
+    return (
+        f'---\ntitle: "Two Takes"\nslug: {slug}\nmodule: fixtures\n'
+        f'module_title: "Fixtures"\nyear: "2026-2027"\nseries: maths\n'
+        f"version: {version}\nstatus: {status}\n---\n\n# Two Takes\n\nProse.\n\n"
+        "## A section\n\n" + cells
+    )
+
+
+def _cell(cell_id: str) -> str:
+    return f"```python exec\nid: {cell_id}\nprint(1)\n```\n\n"
+
+
+# The same repository with one tutorial already in a folder of releases, which
+# is what a tutorial becomes the first time anything is released. The editor
+# knew nothing about this shape until step 4 and opened such a tutorial as an
+# empty buffer.
+VERSIONED = {
+    "tutorials/fixtures/maths.order.yaml":
+        "series: Maths and programming\norder:\n  - first-steps\n  - two-takes\n",
+    "tutorials/fixtures/first-steps.md":
+        '---\ntitle: "First Steps"\nslug: first-steps\nmodule: fixtures\n'
+        'module_title: "Fixtures"\nyear: "2026-2027"\nseries: maths\n'
+        "version: 2026.06.02.1\nstatus: live\n---\n\n# First Steps\n\nProse.\n\n"
+        "## Adding up\n\n" + _cell("adding-up-1"),
+    "tutorials/fixtures/two-takes/v2026.06.02.1.md":
+        _released("two-takes", "2026.06.02.1", _cell("shared-one") + _cell("only-in-june")),
+    "tutorials/fixtures/two-takes/v2026.09.15.1.md":
+        _released("two-takes", "2026.09.15.1",
+                  _cell("shared-one") + _cell("only-in-september")),
+    # Retired, with two releases, and so on none of the order files. This is
+    # the only shape in which the same tutorial could be listed twice: the
+    # off-the-route list is built by walking every markdown file, and a folder
+    # of releases is several files describing one tutorial.
+    "tutorials/fixtures/old-ways/v2026.01.01.1.md":
+        _released("old-ways", "2026.01.01.1", _cell("old-one"), status="archived"),
+    "tutorials/fixtures/old-ways/v2026.03.01.1.md":
+        _released("old-ways", "2026.03.01.1", _cell("old-two"), status="archived"),
+}
+
+
+def _open(browser, base_url, files):
     context = browser.new_context(viewport={"width": 1280, "height": 950})
     tab = context.new_page()
     tab.goto(f"{base_url}/editor.html")
@@ -59,13 +99,28 @@ def editor(browser, base_url):
     tab.evaluate(
         """async ({files, factory, url}) => {
              const mod = await import(url);
+             globalThis.__editorModule = mod;
              const client = eval(factory)(files);
              await mod.start(document.getElementById("dl-editor"), client);
            }""",
-        {"files": REPO, "factory": FAKE_CLIENT,
-         "url": "./" + _runtime_url(tab)},
+        {"files": files, "factory": FAKE_CLIENT, "url": "./" + _runtime_url(tab)},
     )
     tab.wait_for_selector(".dl-editor-card")
+    return context, tab
+
+
+@pytest.fixture
+def editor(browser, base_url):
+    """The editor page with a fake GitHub behind it, already loaded."""
+    context, tab = _open(browser, base_url, REPO)
+    yield tab
+    context.close()
+
+
+@pytest.fixture
+def versioned(browser, base_url):
+    """The editor over a repository where one tutorial has two releases."""
+    context, tab = _open(browser, base_url, VERSIONED)
     yield tab
     context.close()
 
@@ -155,15 +210,25 @@ class TestEditingWhatIsInside:
         self.open_first(editor)
         assert "1 runnable cell" in editor.inner_text("#dl-editor-report")
 
-    def test_renaming_a_cell_id_warns_that_student_work_is_lost(self, editor):
+    def test_renaming_a_cell_id_warns_that_student_work_is_orphaned(self, editor):
         """The one thing the editor knows that the build cannot: by the time
         the build runs, the rename has already happened."""
         self.open_first(editor)
         editor.fill(".dl-editor-body",
                     editor.input_value(".dl-editor-body").replace("adding-up-1", "adding-up-2"))
-        warning = editor.inner_text(".dl-editor-danger")
-        assert "throws away the work every student saved" in warning
+        warning = editor.inner_text(".dl-editor-report")
+        assert "orphaned" in warning
         assert "adding-up-1" in warning
+
+    def test_and_says_that_releasing_is_the_way_not_to(self, editor):
+        """It used to say the work was thrown away full stop, which stopped
+        being true the day releases arrived — and made this box argue with the
+        proposal underneath it."""
+        self.open_first(editor)
+        editor.fill(".dl-editor-body",
+                    editor.input_value(".dl-editor-body").replace("adding-up-1", "adding-up-2"))
+        warning = editor.inner_text(".dl-editor-report")
+        assert "Released instead, nothing is orphaned" in warning
 
     def test_an_unclosed_fence_is_reported_before_it_reaches_the_build(self, editor):
         self.open_first(editor)
@@ -326,3 +391,228 @@ class TestStatus:
                  return globalThis.dewlabEditor.setFrontmatterField(meta, "status", "beta");
                }""")
         assert written.index("status: beta") < written.index("covers:")
+
+
+class TestVersionArithmetic:
+    """Pure functions, driven directly, because the interesting cases are about
+    dates and a browser test cannot move the clock without lying about it."""
+
+    def call(self, editor, expression):
+        return editor.evaluate(f"() => {{ const m = globalThis.__editorModule; return {expression}; }}")
+
+    def test_a_release_is_dated_today(self, editor):
+        got = self.call(editor, "m.nextVersion([], new Date(2026, 8, 15))")
+        assert got == "2026.09.15.1"
+
+    def test_the_trailing_number_is_computed_not_typed(self, editor):
+        """Publish, spot something, publish again. Rare, and exactly the case
+        that would otherwise collide."""
+        got = self.call(
+            editor,
+            'm.nextVersion(["2026.09.15.1", "2026.09.15.2"], new Date(2026, 8, 15))')
+        assert got == "2026.09.15.3"
+
+    def test_yesterdays_releases_do_not_raise_todays_number(self, editor):
+        got = self.call(
+            editor, 'm.nextVersion(["2026.09.14.7"], new Date(2026, 8, 15))')
+        assert got == "2026.09.15.1"
+
+    def test_releases_sort_by_date_and_not_as_text(self, editor):
+        """2026.09.02.1 comes before 2026.09.15.1. As strings it comes after."""
+        assert self.call(editor, 'm.isNewer("2026.09.15.1", "2026.09.02.1")') is True
+        assert self.call(editor, 'm.isNewer("2026.09.02.1", "2026.09.15.1")') is False
+        assert self.call(editor, 'm.isNewer("2026.09.15.10", "2026.09.15.9")') is True
+
+    def test_a_cell_appearing_or_going_is_what_tells_a_release_from_an_edit(self, editor):
+        moved = self.call(
+            editor,
+            'm.cellsChanged("```python exec\\nid: a\\n1\\n```\\n",'
+            ' "```python exec\\nid: b\\n1\\n```\\n")')
+        assert moved == {"added": ["b"], "removed": ["a"]}
+
+    def test_prose_moving_is_not_a_change_of_cells(self, editor):
+        moved = self.call(
+            editor,
+            'm.cellsChanged("Before.\\n\\n```python exec\\nid: a\\n1\\n```\\n",'
+            ' "After, rewritten.\\n\\n```python exec\\nid: a\\n2\\n```\\n")')
+        assert moved == {"added": [], "removed": []}
+
+
+class TestOpeningATutorialWithSeveralReleases:
+    def test_it_opens_the_newest_live_one(self, versioned):
+        """It used to open an empty buffer. `pathOf` looked for
+        `tutorials/<module>/<slug>.md` and a tutorial with a second release does
+        not have one — it is a folder of releases."""
+        versioned.click('.dl-editor-card[data-slug="two-takes"] .dl-editor-open')
+        where = versioned.inner_text(".dl-editor-one .dl-editor-where")
+        assert where == "tutorials/fixtures/two-takes/v2026.09.15.1.md"
+
+    def test_the_body_is_the_one_students_are_reading(self, versioned):
+        versioned.click('.dl-editor-card[data-slug="two-takes"] .dl-editor-open')
+        body = versioned.input_value(".dl-editor-body")
+        assert "only-in-september" in body
+        assert "only-in-june" not in body
+
+    def test_it_says_which_release_and_how_many_there_are(self, versioned):
+        versioned.click('.dl-editor-card[data-slug="two-takes"] .dl-editor-open')
+        assert "2026.09.15.1" in versioned.inner_text(".dl-editor-version")
+        assert "2" in versioned.inner_text(".dl-editor-version")
+
+    def test_a_tutorial_off_the_route_is_listed_once_however_many_releases(self, versioned):
+        """The off-the-route list is built by walking every markdown file, and
+        a folder of releases is several files describing one tutorial. Without
+        the guard, a retired tutorial with three releases is three cards, each
+        of which opens the same thing."""
+        cards = versioned.eval_on_selector_all(
+            '.dl-editor-off', "e => e.map(c => c.dataset.slug)")
+        assert cards == ["old-ways"]
+
+    def test_and_the_one_card_opens_its_newest_release(self, versioned):
+        versioned.click('.dl-editor-off[data-slug="old-ways"] .dl-editor-open')
+        where = versioned.inner_text(".dl-editor-one .dl-editor-where")
+        assert where == "tutorials/fixtures/old-ways/v2026.03.01.1.md"
+
+
+class TestReleasing:
+    def edit(self, tab, slug, text):
+        tab.click(f'.dl-editor-card[data-slug="{slug}"] .dl-editor-open')
+        tab.fill(".dl-editor-body", text)
+
+    def files(self, tab):
+        return {f["path"]: f["text"] for f in tab.evaluate("globalThis.__committed.files")}
+
+    def commit(self, tab, message="A release"):
+        tab.once("dialog", lambda d: d.accept(message))
+        tab.click("#dl-editor-save")
+        tab.wait_for_function("globalThis.__committed !== undefined")
+
+    def test_a_single_file_tutorial_becomes_a_folder_of_releases(self, versioned):
+        """A tutorial becomes a folder the moment it has a second release, and
+        not before. Most never do."""
+        self.edit(versioned, "first-steps", "# First Steps\n\nRewritten.\n")
+        versioned.click("#dl-editor-release")
+        self.commit(versioned)
+        files = self.files(versioned)
+
+        assert files["tutorials/fixtures/first-steps.md"] is None
+        frozen = "tutorials/fixtures/first-steps/v2026.06.02.1.md"
+        assert frozen in files
+        assert len([p for p in files if p.startswith("tutorials/fixtures/first-steps/")]) == 2
+
+    def test_the_frozen_copy_is_what_students_have_not_what_was_typed(self, versioned):
+        """The whole point. Freezing the edits would make the release a copy of
+        the thing it exists to let a reader go back from."""
+        self.edit(versioned, "first-steps", "# First Steps\n\nRewritten.\n")
+        versioned.click("#dl-editor-release")
+        self.commit(versioned)
+        frozen = self.files(versioned)["tutorials/fixtures/first-steps/v2026.06.02.1.md"]
+        assert "Rewritten." not in frozen
+        assert "adding-up-1" in frozen
+        assert "version: 2026.06.02.1" in frozen
+
+    def test_the_new_release_carries_the_edits_and_a_new_version(self, versioned):
+        self.edit(versioned, "first-steps", "# First Steps\n\nRewritten.\n")
+        versioned.click("#dl-editor-release")
+        self.commit(versioned)
+        files = self.files(versioned)
+        new = next(text for path, text in files.items()
+                   if path.startswith("tutorials/fixtures/first-steps/")
+                   and "v2026.06.02.1" not in path)
+        assert "Rewritten." in new
+        assert re.search(r"^version: \d{4}\.\d{2}\.\d{2}\.\d+$", new, re.M)
+        assert "version: 2026.06.02.1" not in new
+
+    def test_the_new_release_records_what_it_replaced(self, versioned):
+        """After two releases nothing else says which one this replaced."""
+        self.edit(versioned, "first-steps", "# First Steps\n\nRewritten.\n")
+        versioned.click("#dl-editor-release")
+        self.commit(versioned)
+        new = next(text for path, text in self.files(versioned).items()
+                   if path.startswith("tutorials/fixtures/first-steps/")
+                   and "v2026.06.02.1" not in path)
+        assert "supersedes: 2026.06.02.1" in new
+
+    def test_releasing_a_folder_writes_only_the_new_release(self, versioned):
+        """Both older files are already frozen at their own versions, so the
+        commit has nothing to say about either. The edits went to the new one
+        and the buffer they came from went back to what students have."""
+        self.edit(versioned, "two-takes", "# Two Takes\n\nA third take.\n")
+        versioned.click("#dl-editor-release")
+        self.commit(versioned)
+        files = self.files(versioned)
+        assert "tutorials/fixtures/two-takes/v2026.06.02.1.md" not in files
+        assert "tutorials/fixtures/two-takes/v2026.09.15.1.md" not in files
+        written = [p for p in files if p.startswith("tutorials/fixtures/two-takes/")]
+        assert len(written) == 1
+        assert "A third take." in files[written[0]]
+        assert "supersedes: 2026.09.15.1" in files[written[0]]
+
+    def test_and_the_release_it_came_from_goes_back_to_what_students_have(self, versioned):
+        self.edit(versioned, "two-takes", "# Two Takes\n\nA third take.\n")
+        versioned.click("#dl-editor-release")
+        held = versioned.evaluate(
+            "() => globalThis.dewlabEditor.state.files"
+            ".get('tutorials/fixtures/two-takes/v2026.09.15.1.md')")
+        assert "A third take." not in held
+        assert "only-in-september" in held
+
+    def test_the_order_file_is_not_touched_by_a_release(self, versioned):
+        """An order file lists slugs, not releases. A new version of a tutorial
+        is not a new tutorial."""
+        self.edit(versioned, "first-steps", "# First Steps\n\nRewritten.\n")
+        versioned.click("#dl-editor-release")
+        self.commit(versioned)
+        assert "tutorials/fixtures/maths.order.yaml" not in self.files(versioned)
+
+    def test_releasing_with_nothing_changed_is_refused(self, versioned):
+        versioned.click('.dl-editor-card[data-slug="first-steps"] .dl-editor-open')
+        versioned.click("#dl-editor-release")
+        assert "identical" in versioned.inner_text("#dl-editor-status")
+        assert versioned.get_attribute("#dl-editor-save", "disabled") is not None
+
+    def test_a_tutorial_that_is_not_live_is_not_released(self, versioned):
+        """A draft has no page for anybody to go back to, and a beta becomes
+        live with the status control rather than by being released."""
+        versioned.click('.dl-editor-card[data-slug="first-steps"] '
+                        '.dl-editor-status-option[data-status="beta"]')
+        self.edit(versioned, "first-steps", "# First Steps\n\nRewritten.\n")
+        versioned.click("#dl-editor-release")
+        assert "Only a live tutorial" in versioned.inner_text("#dl-editor-status")
+
+
+class TestTheProposal:
+    def test_changing_the_cells_says_this_is_probably_a_release(self, versioned):
+        versioned.click('.dl-editor-card[data-slug="first-steps"] .dl-editor-open')
+        versioned.fill(".dl-editor-body",
+                       "# First Steps\n\n## Adding up\n\n"
+                       "```python exec\nid: adding-up-2\nprint(1)\n```\n")
+        report = versioned.inner_text("#dl-editor-report")
+        assert "usually a release rather than an edit" in report
+
+    def test_the_release_you_just_made_does_not_announce_itself(self, versioned):
+        """A file with nothing committed behind it has no last release to
+        compare with. Without the guard, the release made a second ago reports
+        that every cell in it is new."""
+        versioned.click('.dl-editor-card[data-slug="first-steps"] .dl-editor-open')
+        versioned.fill(".dl-editor-body",
+                       "# First Steps\n\n## Adding up\n\n"
+                       "```python exec\nid: adding-up-2\nprint(1)\n```\n")
+        versioned.click("#dl-editor-release")
+        versioned.wait_for_selector("#dl-editor-report")
+        assert "usually a release" not in versioned.inner_text("#dl-editor-report")
+
+    def test_a_newly_created_tutorial_says_nothing_about_its_cells(self, editor):
+        editor.once("dialog", lambda d: d.accept("Brand New"))
+        editor.click(".dl-editor-series:first-of-type .dl-editor-gap:nth-of-type(1) button")
+        editor.click('.dl-editor-card[data-slug="brand-new"] .dl-editor-open')
+        assert "usually a release" not in editor.inner_text("#dl-editor-report")
+
+    def test_moving_prose_stays_quiet(self, versioned):
+        """A version per save is the thing the whole design rejects, so an edit
+        that is only an edit gets no ceremony."""
+        versioned.click('.dl-editor-card[data-slug="first-steps"] .dl-editor-open')
+        versioned.fill(".dl-editor-body",
+                       "# First Steps\n\nRewritten prose.\n\n## Adding up\n\n"
+                       "```python exec\nid: adding-up-1\nprint(2)\n```\n")
+        report = versioned.inner_text("#dl-editor-report")
+        assert "usually a release" not in report
