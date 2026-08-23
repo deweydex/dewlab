@@ -1,6 +1,6 @@
 # Planning
 
-What was decided before any code existed, and why. Six documents, each
+What was decided before any code existed, and why. Seven documents, each
 answering one question.
 
 Read `DECISIONS.md` first — the others expand on entries in it.
@@ -21,6 +21,9 @@ Read `DECISIONS.md` first — the others expand on entries in it.
 - **`VERSIONS.md`** — the proposal to give each tutorial released versions a
   student can return to, and an archive in place of deletion. Not built; it
   supersedes the second half of `VERSIONING_AND_PROGRESS.md` if adopted.
+- **`WINDOW_AUDIT.md`** — the four things that become contracts the day the
+  first class uses dewlab, looked at once while changing them was still free.
+  Two defects came out of it.
 
 `OPEN_QUESTIONS.md` sits alongside them: the questions raised at the start,
 which are settled and which are not.

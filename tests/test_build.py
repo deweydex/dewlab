@@ -1176,6 +1176,19 @@ class TestTheExportFailsLoudly:
             b.replace_once("<p>a page</p>", "<not-here>", "x", "the thing")
 
 
+class TestTheManifestIdentifiesThePage:
+    def test_it_carries_the_module_as_well_as_the_slug(self, repo):
+        """Saved work is keyed on the pair. A slug is only unique within its
+        module — both modules have a `first-steps` — so the slug alone put both
+        tutorials' answers in one record, each overwriting the other."""
+        write(repo, "Prose.\n")
+        b.build()
+        page = (repo / "site" / "tutorials" / "computational-methods"
+                / "sample.html").read_text()
+        assert manifest(page)["module"] == "computational-methods"
+        assert manifest(page)["slug"] == "sample"
+
+
 class TestArchivedTutorials:
     """Retiring a tutorial without deleting it.
 
