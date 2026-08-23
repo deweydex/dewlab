@@ -1,50 +1,36 @@
-# Planning
+# Planning and Architecture Specifications
 
-What was decided before any code existed, and why. Seven documents, each
-answering one question.
+This directory contains foundational architecture specifications, design rationale, pedagogical style guides, and curriculum planning documents for dewlab.
 
-Read `DECISIONS.md` first — the others expand on entries in it.
+## Document Index
 
-- **`DECISIONS.md`** — every settled decision, with its reasoning: libraries,
-  visual style, hosting, versioning, the editor, mathematics. Ends with a short
-  list of things assumed rather than settled, which are the ones most likely to
-  need revisiting.
-- **`BUILD_PLAN.md`** — the build in dependency order, five phases, ending in a
-  pilot before converting a whole series.
-- **`CONTENT_AND_FILE_ARCHITECTURE.md`** — the markdown format a tutorial is
-  written in, and how a tutorial refers to a dataset, to shared setup code, or
-  to another tutorial.
-- **`VERSIONING_AND_PROGRESS.md`** — what happens to a student's saved work when
-  you edit a tutorial they have already started.
-- **`REPO_AND_EDITOR.md`** — the repository layout, how publishing works, and
-  what the authoring editor is for in its first version.
-- **`VERSIONS.md`** — the proposal to give each tutorial released versions a
-  student can return to, and an archive in place of deletion. Not built; it
-  supersedes the second half of `VERSIONING_AND_PROGRESS.md` if adopted.
-- **`WINDOW_AUDIT.md`** — the four things that become contracts the day the
-  first class uses dewlab, looked at once while changing them was still free.
-  Two defects came out of it.
+### Pedagogical & Authoring Guidelines
+- **[`PEDAGOGICAL_STYLE_GUIDE.md`](./PEDAGOGICAL_STYLE_GUIDE.md)** — Core teaching philosophy ("Discover first, name afterwards"), anatomy of an ideal tutorial, concrete code-and-math integration examples, cognitive load principles, and author checklist.
+- **[`EXERCISES.md`](./EXERCISES.md)** — Specification for practice problem sets, fold-hidden solutions, and automated worksheet conversion from [`deweydex/Mathematics`](https://github.com/deweydex/Mathematics).
+- **[`PRACTICE.md`](./PRACTICE.md)** — Interactive practice architecture and student-authored runtime cell sandboxing.
 
-`OPEN_QUESTIONS.md` sits alongside them: the questions raised at the start,
-which are settled and which are not.
+### Architecture & Engine Specifications
+- **[`STATUS.md`](./STATUS.md)** — Comprehensive record of completed systems, active 100% curriculum coverage status, and upcoming roadmap phases.
+- **[`DECISIONS.md`](./DECISIONS.md)** — Architectural decision matrix (libraries, visual style, hosting, versioning, editor, mathematics).
+- **[`BUILD_PLAN.md`](./BUILD_PLAN.md)** — Staged implementation phases from runtime foundations to curriculum rollout.
+- **[`CONTENT_AND_FILE_ARCHITECTURE.md`](./CONTENT_AND_FILE_ARCHITECTURE.md)** — Specification for tutorial Markdown source format, executable code blocks, setup inclusions, and dataset references.
+- **[`VERSIONING_AND_PROGRESS.md`](./VERSIONING_AND_PROGRESS.md)** — Specification for client-side state storage, progress restoration, and schema compatibility.
+- **[`VERSIONS.md`](./VERSIONS.md)** — Multi-version release lifecycle, release date versioning, canonical URLs, and archive design.
+- **[`WINDOW_AUDIT.md`](./WINDOW_AUDIT.md)** — Pre-release contract audit (URL slugs, cell IDs, local storage schema, version types).
+- **[`REPO_AND_EDITOR.md`](./REPO_AND_EDITOR.md)** — Repository layout, GitHub Actions deployment workflow, and authoring architecture.
+- **[`EDITOR.md`](./EDITOR.md)** — Specification for the GitHub-integrated visual tutorial editor and release management interface.
 
-## Why it is written down
+### Curriculum & Syllabus Planning
+- **[`CURRICULUM_MAP.md`](./CURRICULUM_MAP.md)** — Automated mapping of all curriculum learning outcomes across active tutorials (100% covered across MIT and PDP).
+- **[`CURRICULUM_NOTES.md`](./CURRICULUM_NOTES.md)** — Curricular structure notes, modularization analysis, and terminology rules.
+- **[`WHAT_IS_LEFT_TO_WRITE.md`](./WHAT_IS_LEFT_TO_WRITE.md)** — Curriculum writing roadmap and upcoming 5N0554 expansion.
+- **[`OPEN_QUESTIONS.md`](./OPEN_QUESTIONS.md)** — Initial architectural questions, trade-off evaluations, and resolution records.
+- **[`curriculum/`](./curriculum/)** — Machine-readable outcome descriptors, scope limits, topic dependency graphs, and curriculum decisions.
+- **[`outlines/`](./outlines/)** — Structured outlines for all curriculum tutorial modules.
 
-Two authors, and a project that will be picked up and put down across a term.
-Most of what these documents record is not hard to work out — it is hard to
-work out *twice*, the same way, six weeks apart. Writing the reasoning next to
-the decision is what makes it possible to disagree with it later on the merits
-rather than re-deriving it from scratch.
+## Architectural & Educational Principles
 
-The same habit continues after the build starts, in `DECISIONS_LOG.md` and
-`QUESTIONS.md` at the root of the repository.
-
-## What is fixed and what is not
-
-Fixed: this is not tied to a single course; two authors, both comfortable with
-git; and the module and academic year are fields a tutorial declares for
-itself, so a new module is a new value and a new folder rather than an
-architectural change.
-
-Not fixed: everything in the "Still open" half of `OPEN_QUESTIONS.md`, which is
-mostly questions about content rather than about the tool.
+1. **Integrated Computation & Mathematics**: Computing acts as an interactive laboratory for building mathematical intuition, while mathematics provides the analytical structure for computational modeling.
+2. **Deterministic, Zero-Install Execution**: Real Python execution runs locally in the browser tab via Pyodide without server-side execution, data harvesting, or tracking.
+3. **Explicit Dependency & Scope Accounting**: Curriculum coverage and scope limits are tracked in machine-readable files (`outcomes.yaml`, `out-of-scope.yaml`, `proposed.yaml`) and validated via automated CI tests.
+4. **Decisions with Explicit Costs & Pedagogical Rationale**: Major technical and pedagogical choices are documented alongside their educational rationale and cost-to-change accounting.

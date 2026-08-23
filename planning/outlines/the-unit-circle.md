@@ -10,24 +10,11 @@ coordinate-geometry object, and the distance formula is what makes the identity
 true.
 **Size:** full.
 
-## Why the circle is the tutorial rather than a step on the way to one
+## Why the Unit Circle is Structured as a Dedicated Module
 
-This was a section of *Angles and Waves*, which carried five outcomes and gave
-the circle about a fifth of itself. Josh asked for the exact values in surd form
-to have a tutorial, and for the circle to be worth introducing on its own:
+Trigonometry was originally structured as a composite tutorial (*Angles and Waves*), carrying five outcomes. Decomposing it allows *The Unit Circle* to develop radians, trigonometric definitions, and exact surd ratios in depth.
 
-> The trigonometric ratios in surd form, I think, is great — especially that
-> deserves its own tutorial, and talking about the unit circle would be a great
-> way to do that. Maybe introducing the unit circle as a separate entity would
-> be helpful.
-
-That is right, and it turns out to settle a scope decision as well. `MIT-4.7`
-was ruled out on the grounds that exact values are a hand-calculation skill —
-three numbers to memorise from two triangles nobody draws. **On the circle they
-are not values to memorise, they are places.** √2⁄2 is where the 45° line
-crosses; it is √2⁄2 *because* the point is as far across as it is up and the
-distance to it is 1. Pythagoras gives it in one line, and the students have just
-had Pythagoras.
+This establishes exact values (`MIT-4.7`) through geometry rather than rote memorization: **on the unit circle, surds are coordinates**. $\frac{\sqrt{2}}{2}$ is the coordinate where the $45^\circ$ line intersects the unit circle ($x^2 + y^2 = 1$). Pythagoras yields this directly from prior coordinate geometry concepts.
 
 So all three outcomes here are one drawing seen three ways:
 

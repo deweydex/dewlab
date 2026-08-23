@@ -6,20 +6,13 @@
 Functions (plotting a function and reading an answer off it).
 **Size:** short, and not thin.
 
-## Why it is not a section of Drawing Functions
+## Why Parabolas is Structured as a Dedicated Module
 
-Josh asked for graphing to be more than one tutorial, and this is the natural
-seam. Drawing Functions is about the habit — plot the thing, read the answer.
-This is about one curve in particular, and about a piece of algebra whose entire
-payoff is a fact about that curve.
+*Drawing Functions* establishes the general workflow of plotting arbitrary functions and visually reading behavior.
 
-Kept together, the algebra gets rushed to reach the picture. Completing the
-square is fiddly, most students have met it as a trick, and it deserves the
-space to be shown as the rearrangement it actually is.
+*Parabolas* focuses specifically on quadratic geometry and completing the square ($y = a(x-h)^2 + k$). Separating the modules ensures algebraic rearrangement and vertex form derivation receive thorough treatment without being rushed to reach graphing code.
 
-Kept apart, it also has somewhere to put the thing students most want from a
-quadratic and rarely get: *where does it turn, and why is that the same
-question as where it crosses.*
+This provides dedicated focus for finding vertices, axes of symmetry, and algebraic connections between vertex form and quadratic roots.
 
 ## The naming and describing decisions
 

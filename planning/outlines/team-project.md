@@ -34,8 +34,7 @@ Not the project, but the ground it stands on:
 - A tutorial-shaped brief page could hold the specification and the schedule,
   with no cells at all — dewlab handles a prose-only tutorial perfectly well.
 
-## Open question for Josh
+## Open Curricular Consideration
 
-Is `PDP-LO12` dewlab's problem at all, or is it assessment design that lives
-outside the tool? Listed here so the curriculum map shows it as tracked rather
-than forgotten, but it may belong in a different document entirely.
+Is `PDP-LO12` best supported via an in-tool brief specification, or is it assessment design that lives
+primarily in external project guidelines? Listed here so the curriculum map tracks the outcome explicitly.

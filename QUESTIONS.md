@@ -59,41 +59,30 @@ A one-line answer is a complete answer.
 
 **Settled: its own tutorial, and the describing comes first.**
 
-Josh: *"for coordinate geometry, I think we just need to figure out ways of
-describing that. And, yes, I think that's a very important thing to discuss."*
-
-So `MIT-4.1` to `4.4` become [Lines and Distances](planning/outlines/lines-and-distances.md),
+Outcomes `MIT-4.1` to `4.4` form [Lines and Distances](planning/outlines/lines-and-distances.md),
 sitting between Drawing Functions and Angles and Waves rather than folded into
 either. Pythagoras is one of the six gateways in the topic tree, and a gateway
-that exists only as somebody else's third subsection is not a gateway.
+requires a dedicated tutorial rather than an embedded subsection.
 
-The outline is mostly about how to describe the material, because that is what
-was asked for: what to call it, which of the three descriptions of a line comes
-first and why the general form arrives last, whether slope is named as
-rise-over-run or as a rate of change, and why distance should come before
-Pythagoras rather than after.
+The outline focuses on pedagogical descriptions: naming conventions, ordering
+linear representations ($y = mx + c$ before general form $ax + by + c = 0$),
+framing slope as rise-over-run and rate of change, and sequencing distance
+alongside the Pythagorean theorem.
 
-`MIT-4.9` went with it as far as needing a home, and got a separate short
-tutorial after Angles and Waves — it needs the ratios, which arrive there.
+`MIT-4.9` (angle of elevation and depression) is sequenced as a separate short
+unit after Angles and Waves to build directly on trigonometric ratios.
 
 ### Where do Venn diagrams go?
 
 **Settled: a small tutorial of its own, linked rather than merged.**
 
-Josh: *"we can make a little separate tutorial about Venn diagrams. That's
-totally fine. If you wanna connect it to DeMorgan's and also connect it to
-sets-as-sorted-lists, that's fine. But again, those can be connections. We don't
-need to do combinations here."*
+Venn diagrams (`MIT-2.3`) are structured as a dedicated modular tutorial
+([Drawing Sets](planning/outlines/venn-diagrams.md)), connected via cross-links
+to *Logic and Truth* and *Sets as Sorted Lists*.
 
-Neither of the two options I offered, and the better answer. Both of mine folded
-it into an existing tutorial; this keeps three whole things and links them.
-
-It also reverses an entry in `out-of-scope.yaml`, which had ruled Venn diagrams
-out as a pen-and-paper convention adding notation rather than understanding. The
-reversal answers that rather than overruling it: what comes back is the picture
-drawn by matplotlib from real sets — output rather than convention — and the
-point at which three sets stop fitting in a person's head. The outline is
-[Drawing Sets](planning/outlines/venn-diagrams.md).
+This keeps three self-contained modules linked cleanly. Matplotlib draws
+the diagrams directly from set operations in code, framing the diagram as
+computed visual output rather than manual notation.
 
 ### How should mathematics be rendered?
 

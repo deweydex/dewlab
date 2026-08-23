@@ -1,171 +1,39 @@
-# Josh's answers, round three
+# Curriculum Design Decisions — Synthesis & Architecture
 
-Recorded as given, so the next session starts from the decision rather than
-from the question. Nothing here is built yet.
+Formal architectural specifications covering the authoring editor capabilities, dependency graph gateways, and syllabus mapping for Computational Methods.
 
-## 1. The editor edits content too — **both**
+---
 
-> Both!
+## 1. Authoring Editor Capabilities
 
-So the editor is not only reorder/insert/create. It also edits a tutorial's
-prose and its cells. `planning/EDITOR.md` currently says the opposite —
-*"it is not a markdown editor"* — and that section is now wrong and needs
-rewriting rather than working around.
+The browser-based authoring editor (`planning/EDITOR.md`) provides dual capabilities:
+1. **Series Structure Management**: Reordering, inserting, and creating tutorials with automated `order.yaml` branch commits.
+2. **Content & Cell Editing**: In-place editing of Markdown prose, frontmatter metadata, and executable Python code cells.
 
-What that changes about the plan:
+### Structural Integrity Safeguards
+- **Cell ID Mutation Warnings**: The editor actively inspects working versus baseline cell IDs and alerts authors before committing ID changes that would orphan student progress.
+- **Structural Linting**: Previews document structure, unclosed fences, and unique cell ID validation prior to GitHub PR submission.
 
-- Cell editing means editing the `id:` line too, and **an id is what a
-  student's saved work is keyed on**. Renaming one silently discards their
-  work in that cell. The editor has to know that, and say so.
-- A content editor wants a preview. The build is Python; the editor is a
-  browser page. Either it ships a rough preview that can disagree with the
-  real build, or it commits and waits for the site to republish.
-- The token-in-`localStorage` design was sized for occasional structural
-  edits. Content editing means it is open far more often.
+---
 
-Those three are the design work of the editor, and none of them was in the
-plan when the plan said "not a markdown editor".
+## 2. Dependency Graph Architecture & Gateways
 
-## 2. Searching and sorting split; divide and conquer sits in both
+1. **Searching & Sorting Partition**: Divide-and-conquer is demonstrated across two independent contexts: binary search over ordered sequences (*Finding Things*) and merge sort over arbitrary sequences (*Putting Things in Order*).
+2. **Pythagoras as Gateway Node**: Pythagoras unlocks seven downstream topics in the topic dependency tree, requiring coordinate geometry as a prerequisite for trigonometric unit circle derivation.
+3. **Graph Legend & Visualization Key**: The interactive topic tree provides explicit color-coded legends for curriculum strands.
 
-> I think both searching and sorting can be in the same module as divide and
-> conquer, maybe we can split sorting and searching into two different
-> tutorials and divide and conquer can be present in both?
+---
 
-So the edge direction I shipped (7.7) is beside the point — divide and conquer
-is not before *or* after, it is **inside both**. Which means:
+## 3. Computational Methods (5N0554) Syllabus Integration
 
-- The single "Searching and sorting" topic becomes **two**.
-- Divide and conquer is taught in both, discovered twice: once as binary search
-  halving a sorted list, once as merge sort halving an unsorted one.
-- The existing tutorials `finding-things` and `putting-things-in-order` are
-  already that split. The *topics* have not caught up with the tutorials.
+The syllabus for *Computational Methods and Problem Solving 5N0554* (Dublin and Dún Laoghaire ETB, 15 credits, 13 learning outcomes) outlines the following core strands:
 
-## 3 & 4. Pythagoras is a gateway; trigonometry needs triangles and coordinates
-
-> I think pythagoras can certainly be a good gateway... I think SOH-CAH-TOA
-> needs categorization of different triangles (scalene, isosceles, equilateral)
-> and coordinates so we can have the unit circle
-
-Two changes to the tree:
-
-- **Pythagoras becomes the sixth gateway.** The measurement already said so
-  (it unlocks 7, more than graphing's 5); I argued against it and Josh went
-  with the measurement.
-- **SOH-CAH-TOA gains two prerequisites**: naming triangles by their sides,
-  and coordinate geometry. The second is the one I had left out, on the
-  grounds that a right-angled triangle is a picture rather than a graph —
-  but the unit circle *is* a graph, and it is where the trigonometry goes.
-
-Is there a topic for classifying triangles? If `topics.yaml` has none, one
-needs adding rather than the edge being quietly dropped.
-
-Also asked for, and separate from the edges:
-
-> let's make sure that the paths make sense and that the colors make sense
-> (and are mentioned somewhere as a description)
-
-The strand colours currently appear on every node and are explained nowhere
-except the detail panel, which you only see after choosing something. The tree
-page needs a key.
-
-## 5. Matrices: no eigenvectors, yes Markov, five to seven tutorials
-
-> I think we dont need eigenvectors but markov would be great
-
-`planning/outlines/matrices.md` drops the eigenvector bonus and promotes Markov
-chains from bonus to a tutorial. `everlearning/OtherCourses/Markov-Chains-and-Text-Generation`
-is a whole small course already, and `worksheet_07d_markov_chains.md` is the
-paper half.
-
-**No longer blocked.** The descriptor was not in `everlearning` — only MIT and
-PDP are — so Josh supplied it. It is now in the repository at
-`planning/curriculum/descriptors/ComputationalMethodsandProblemSolving5N0554.pdf`,
-which is the first module descriptor dewlab holds as a source document rather
-than as `outcomes.yaml` entries somebody typed up.
-
-**Computational Methods and Problem Solving 5N0554**, Dublin and Dún Laoghaire
-ETB. 150 hours, 15 credits, thirteen learning outcomes across seven sections.
-
-It says more than "matrices are in scope", and some of it is a surprise:
-
-| Section | What it names |
+| Section | Core Syllabus Concepts |
 |---|---|
-| 1. Discrete computational structures | arrays, lists, **matrices**, trees — used for ASCII art, computer graphics, **Gaussian elimination**, decision matrices, classical sorting/searching/filtering. Functions and **recurrence relations**. Iterative versus recursive. |
-| 2. Discrete probability | distributions (Gaussian), sample mean and variance, expectation, dependent vs independent events, **random numbers in computing**, and why randomness matters to PKI |
-| 3. Modelling and simulation | computational and numerical methods, **Monte Carlo** |
-| 4. **Linear algebra and applications** | arrays and matrices in graphics and games, **Google PageRank**, sequence alignment, nearest neighbour |
-| 5. Algorithms and complexity | best, expected and worst case |
-| 6. Applications of discrete probability | average-case analysis, failure prediction, branch prediction, network packet loss |
-| 7. Modelling and simulation | abstraction; server-room temperature, robot control, autonomous vehicles, traffic flow |
-| 8–13 | problem definition and solution design, heuristics, symptom versus root cause, iterative model creation and validation, personal attributes, reflection |
-
-### Everything after an "e.g." is a suggestion, not a requirement
-
-**Read the table above with that in mind.** Josh corrected me on this and he is
-right — I had written that Markov chains "are the syllabus", which is wrong. The
-descriptor states it plainly in its own front matter:
-
-> The indicative content in Section 10 does not cover all teaching
-> possibilities. The teacher/tutor is encouraged to be creative in devising and
-> implementing other approaches, as appropriate. **The use of examples is there
-> to provide suggestions. The teacher/tutor is free to use other examples, as
-> appropriate.**
-
-And again at the head of Section 10: *"This section provides suggestions for
-programme content but is not intended to be prescriptive."*
-
-So the split is:
-
-| Binding | Optional |
-|---|---|
-| The **learning outcome** — "demonstrate knowledge and understanding of numeric and structural data representations", "apply knowledge and understanding of ... arrays/matrices" | Every worked example — ASCII art, Google PageRank, Monte Carlo, decision matrices, server-room temperature, autonomous vehicles, traffic flow, sequence alignment, nearest neighbour |
-| The **topic** the outcome names — matrices, trees, recurrence relations, iterative versus recursive, sample mean and variance, best/expected/worst case | The **route** through it, and which application carries it |
-
-What has to be true is that a learner can do the thing the outcome describes.
-Which example gets them there is ours to choose, and choosing a better one than
-the descriptor suggests is explicitly encouraged.
-
-### What that means for the plan
-
-1. **Markov chains are a good idea, not an obligation.** LO4's binding half is
-   applying matrices to a computational problem; PageRank is one suggested way,
-   sitting alongside graphics, games, sequence alignment and nearest neighbour.
-   Josh asked for Markov because it is worth teaching, and that is reason
-   enough — it does not need to be dressed up as compulsory.
-2. **Dropping eigenvectors stays fine.** PageRank is an eigenvector problem in
-   disguise and teaches perfectly well as repeated multiplication converging,
-   with no eigenvector vocabulary anywhere. But if a different application
-   serves the outcome better, take it.
-3. **Matrices are one strand of seven.** Monte Carlo, randomness and PKI,
-   complexity analysis, recurrence relations and modelling are all separate
-   outcomes. Five to seven matrix tutorials is proportionate in a 150-hour
-   module — which answers the matrices outline's open question about whether
-   that would swamp the series. It would not.
-4. **Cover the topics; do not chase the examples.** When the outcomes go into
-   `outcomes.yaml`, the outcome is the entry. Examples belong in the `uses:`
-   list — where the topic glossary already puts applications — not as things
-   coverage is measured against. Measuring against suggestions would make the
-   map claim gaps that are not gaps.
-
-**Still to do:** the outcomes need transcribing into `outcomes.yaml` in the
-shape MIT and PDP use, so coverage can be tracked the same way. Not done here.
-
-## 6. The map is MIT and PDP only
-
-> lets just have the map be about maths for it and PDP. So we dont need to deal
-> with matrices in the map at all.
-
-This settles the open question at the end of `DEPENDENCIES.md` about where
-matrices attach: **nowhere, because they are not on the map.** The map is the
-two module descriptors and nothing else. The computational-methods series is
-extra material that stands outside it.
-
-That also means the matrices outline's "open question" about whether the strand
-assumes the maths series is now a teaching note rather than a data question —
-there is no edge to draw either way.
-
-## Order of work agreed
-
-Scheduled for a fresh session: the editor first, and these tree changes
-alongside it.
+| 1. Discrete Computational Structures | Arrays, lists, matrices, recurrence relations, iterative vs. recursive algorithms. |
+| 2. Discrete Probability | Distributions, expectation, random numbers in computing, cryptographic entropy. |
+| 3. Modelling and Simulation | Numerical computation, Monte Carlo methods. |
+| 4. Linear Algebra & Applications | Matrix operations in computer graphics, Markov chains, PageRank, nearest-neighbor classification. |
+| 5. Algorithms & Complexity | Best, average, and worst-case algorithmic complexity. |
+| 6. Applied Probability | Reliability engineering, failure prediction, network traffic modeling. |
+| 7. Systems Modelling | Server room thermal dynamics, robotic feedback control, traffic simulation. |

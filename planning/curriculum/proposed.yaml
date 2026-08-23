@@ -7,8 +7,7 @@
 # `after` is a placement argument, not a filing decision: it says which existing
 # tutorial the new one should follow, and `because` says why that position and
 # not another. Several of these want to go in the middle of the series rather
-# than on the end, which would renumber everything after them — that is a real
-# cost and it is Josh's call, so nothing here has been given an `order`.
+# cost, so tutorial ordering is maintained in series order files.
 
 proposed:
   # Empty, as of 2026-08-23. Every proposal in this file has been written, and

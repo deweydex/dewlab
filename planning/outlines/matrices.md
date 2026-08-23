@@ -117,39 +117,28 @@ Determinant and inverse, arrived at from the pictures rather than the formula.
 - **Point to make:** the two-unknown elimination they did by hand earlier was
   this, on a smaller grid.
 
-## Tutorial 6 — Where it settles
+Markov chains, structured as a dedicated practical tutorial.
 
-Markov chains, promoted from a bonus to a tutorial. Josh: *"I think we dont need
-eigenvectors but markov would be great."*
-
-A transition matrix multiplied by itself repeatedly is tutorial 2 doing
-something a student can care about, and it ends somewhere: the distribution
-stops moving. `everlearning`'s `OtherCourses/Markov-Chains-and-Text-Generation`
-is a whole small course already and `worksheet_07d_markov_chains.md` is the
-paper half, so this is largely a conversion.
+A transition matrix multiplied by itself repeatedly demonstrates repeated matrix
+multiplication converging to a stationary distribution. Upstream materials
+in `everlearning/OtherCourses/Markov-Chains-and-Text-Generation` and
+`deweydex/Mathematics/worksheet_07d_markov_chains.md` provide established foundations.
 
 - **Cell:** a weather matrix, three states, one step at a time.
 - **Cell:** the same matrix raised to a power, watching the rows converge.
 - **Cell:** text generation from a transition matrix built out of a real
-  paragraph — the payoff, and the reason this is worth a tutorial rather than a
-  footnote.
-- **Point to make:** the thing it settles on does not depend on where it
-  started. That is the whole idea, and it needs no eigenvector vocabulary
-  anywhere — which is why dropping eigenvalues costs nothing.
+  paragraph — demonstrating computational linear algebra applications.
+- **Point to make:** convergence to stationary state without requiring
+  abstract eigenvector formalism.
 
-**PageRank** is the same computation on a graph of links, and it belongs here or
-as a seventh tutorial depending on how long tutorial 6 runs. The 5N0554
-descriptor names it under linear algebra and applications, as *one suggestion
-among several* — graphics, games, sequence alignment and nearest neighbour sit
-beside it. It is here because it is worth teaching, not because it is required.
+**PageRank** represents the same computation over a web link graph, included
+here or as a companion module.
 
-## Dropped, and why
+## Dropped from Scope
 
-- **Eigenvectors.** They fall out of tutorial 3's gallery nicely, and
-  `worksheet_07c` has the paper half, so this was a real candidate. Josh's call,
-  and a defensible one: PageRank is an eigenvector problem in disguise and
-  teaches perfectly well as repeated multiplication converging. The vocabulary
-  buys nothing at this level.
+- **Formal Eigenvector Theory**: PageRank and steady-state distributions are taught
+  empirically via iterative matrix powers rather than formal characteristic
+  polynomials and eigenspaces, keeping focus on algorithmic linear algebra.
 
 ## Bonus, if the strand earns it
 

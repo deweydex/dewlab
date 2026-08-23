@@ -22,19 +22,12 @@ would try them.
 The area formula falls out of the second: ½ab sin C is base times height, once
 you notice that `b sin C` *is* the height.
 
-## Where "How Tall Is That?" went
+## Integration of Applied Angles (`MIT-4.9`)
 
-`MIT-4.9` was briefly its own proposal — a short tutorial about heights and
-distances, ladders and roof pitches. Josh:
-
-> I don't really think we need to worry about it. I don't think we need to deal
-> with roof pitches and buildings, because we can deal with more appropriate to
-> computer science types of questions there.
-
-Both halves of that are right. The examples were the problem — a tutorial whose
-motivating question is a roof is a tutorial for a different course — and once
-the examples change, the material has no reason to be separate from the rules
-it is the easy case of.
+`MIT-4.9` (angles of elevation and depression) is integrated directly into this
+tutorial rather than separated into an artificial standalone unit. Applied
+problems are grounded in computational and vector contexts (e.g. robotics,
+drone navigation, vector angles) rather than static construction measurements:
 
 **So the practical work stays and its examples move to computing:**
 
