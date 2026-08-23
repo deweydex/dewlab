@@ -501,7 +501,15 @@ async function renderMaths(manifest) {
 let saveTimer = null;
 
 function progressKey() {
-  return PROGRESS_PREFIX + (currentManifest.slug || "unknown");
+  /* Module and slug, because a slug is only unique within its module — both
+   * modules have a `first-steps`. Keyed on the slug alone, the two shared one
+   * record and each overwrote the other's answers.
+   *
+   * This is the third time scoping slugs per module has left something keyed
+   * on the slug alone: the built pages, the downloadable copies, and now the
+   * saved work. */
+  const manifest = currentManifest || {};
+  return `${PROGRESS_PREFIX}${manifest.module || "unknown"}:${manifest.slug || "unknown"}`;
 }
 
 function readSaved() {
@@ -514,12 +522,36 @@ function readSaved() {
   }
 }
 
+function describeMismatch(record) {
+  /* Whether a loaded file belongs to this tutorial, and if not, which one it
+   * is. Slug always; module only when the record carries one, so a file saved
+   * before the module was recorded still loads where it belongs.
+   *
+   * An empty string means it fits. */
+  if (!record || typeof record !== "object" || !Array.isArray(record.cells)) {
+    return "That file could not be read as saved dewlab work.";
+  }
+  const slug = record["tutorial-slug"];
+  const module = record["tutorial-module"];
+  const here = slug === currentManifest.slug
+    && (!module || module === currentManifest.module);
+  if (here) return "";
+  const name = [module, slug].filter(Boolean).join(" / ") || "another tutorial";
+  return `That file is saved work from ${name}, not this tutorial. `
+    + "Nothing has been changed.";
+}
+
+
 function saveNow() {
   clearTimeout(saveTimer);
   saveTimer = null;
   if (cells.length === 0) return;
   const record = {
     "tutorial-slug": currentManifest.slug,
+    /* The module too, because the slug alone does not say which tutorial this
+     * came from — both modules have a `first-steps`. Written so an exported
+     * file can be checked before it replaces anything. */
+    "tutorial-module": currentManifest.module,
     "tutorial-version": currentManifest.version,
     saved_at: new Date().toISOString(),
     cells: cells.map((cell) => ({
@@ -653,7 +685,11 @@ function initProgressSection() {
     const blob = new Blob([JSON.stringify(record, null, 2)], { type: "application/json" });
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
-    link.download = `${currentManifest.slug || "dewlab"}-progress.json`;
+    /* Module in the filename: two files called first-steps-progress.json in a
+     * downloads folder are indistinguishable, and they are from different
+     * tutorials. */
+    const from = [currentManifest.module, currentManifest.slug].filter(Boolean).join("-");
+    link.download = `${from || "dewlab"}-progress.json`;
     link.click();
     URL.revokeObjectURL(link.href);
   });
@@ -665,6 +701,15 @@ function initProgressSection() {
     if (!chosen) return;
     try {
       const record = JSON.parse(await chosen.text());
+      /* Check before writing. This used to overwrite whatever was already
+       * saved and only then discover the cells did not match, which destroyed
+       * the student's real work to make room for somebody else's. */
+      const wrong = describeMismatch(record);
+      if (wrong) {
+        showSaveState(null, wrong);
+        file.value = "";
+        return;
+      }
       localStorage.setItem(progressKey(), JSON.stringify(record));
       announceRestore(restoreSaved());
       showSaveState(record.saved_at);
@@ -724,6 +769,7 @@ globalThis.dewlab = {
   saveNow,
   readSaved,
   progressKey,
+  describeMismatch,
   ready: () =>
     Promise.all([
       mathsRendered,

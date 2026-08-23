@@ -215,3 +215,84 @@ class TestAPageWithNothingToSave:
         tab.wait_for_selector(".dl-math .katex", timeout=15_000)
         assert tab.eval_on_selector_all(".dl-math .katex", "e => e.length") >= 1
         context.close()
+
+
+def test_saved_work_is_keyed_on_the_module_as_well_as_the_slug(page):
+    """A slug is only unique within its module, and both modules have a
+    `first-steps`. Keyed on the slug alone the two shared one record, so a
+    student's answers in one appeared in the other and each overwrote it.
+
+    Checked through the key rather than by building two modules: if the module
+    is in the key, the collision cannot happen, and the e2e fixture is one
+    module by design."""
+    key = page.evaluate("globalThis.dewlab.progressKey()")
+    assert key.startswith("dewlab:progress:")
+    assert "fixtures" in key, key
+    slug = page.get_attribute('meta[name="tutorial-slug"]', "content")
+    assert key.endswith(slug), key
+    # And the two parts are distinguishable, so a module named like a slug
+    # cannot be confused for one.
+    assert key == f"dewlab:progress:fixtures:{slug}"
+
+
+class TestLoadingSomebodyElsesFile:
+    """Import used to write the file into this page's key and only then find
+    out the cells did not match — destroying a student's real work to make room
+    for a record that did not belong here."""
+
+    def test_a_record_from_this_tutorial_fits(self, page):
+        slug = page.get_attribute('meta[name="tutorial-slug"]', "content")
+        assert page.evaluate(
+            "(r) => globalThis.dewlab.describeMismatch(r)",
+            {"tutorial-slug": slug, "tutorial-module": "fixtures", "cells": []},
+        ) == ""
+
+    def test_a_record_from_the_same_slug_in_another_module_does_not(self, page):
+        """The case that made this necessary: both modules have a
+        `first-steps`, so the slug alone says nothing."""
+        slug = page.get_attribute('meta[name="tutorial-slug"]', "content")
+        message = page.evaluate(
+            "(r) => globalThis.dewlab.describeMismatch(r)",
+            {"tutorial-slug": slug, "tutorial-module": "somewhere-else", "cells": []},
+        )
+        assert "not this tutorial" in message
+        assert "somewhere-else" in message
+        assert "Nothing has been changed" in message
+
+    def test_a_record_from_another_tutorial_does_not(self, page):
+        message = page.evaluate(
+            "(r) => globalThis.dewlab.describeMismatch(r)",
+            {"tutorial-slug": "something-else", "tutorial-module": "fixtures", "cells": []},
+        )
+        assert "not this tutorial" in message
+
+    def test_a_record_with_no_module_still_fits_on_its_own_slug(self, page):
+        """Leniency with a reason: a file saved before the module was recorded
+        should still load where it belongs rather than hitting a cliff."""
+        slug = page.get_attribute('meta[name="tutorial-slug"]', "content")
+        assert page.evaluate(
+            "(r) => globalThis.dewlab.describeMismatch(r)",
+            {"tutorial-slug": slug, "cells": []},
+        ) == ""
+
+    def test_something_that_is_not_saved_work_is_refused(self, page):
+        for junk in ({"hello": "world"}, [], "text"):
+            assert "could not be read" in page.evaluate(
+                "(r) => globalThis.dewlab.describeMismatch(r)", junk)
+
+    def test_a_mismatched_file_leaves_the_existing_record_alone(self, page):
+        """The point of the whole check."""
+        mine = {"tutorial-slug": page.get_attribute('meta[name="tutorial-slug"]', "content"),
+                "tutorial-module": "fixtures", "saved_at": "2026-01-01T00:00:00Z",
+                "cells": []}
+        seed(page, mine)
+        page.evaluate(
+            """(other) => {
+                 if (!globalThis.dewlab.describeMismatch(other)) {
+                   localStorage.setItem(globalThis.dewlab.progressKey(),
+                                        JSON.stringify(other));
+                 }
+               }""",
+            {"tutorial-slug": "elsewhere", "tutorial-module": "other", "cells": []},
+        )
+        assert page.evaluate("globalThis.dewlab.readSaved()")["saved_at"] == mine["saved_at"]

@@ -1020,3 +1020,43 @@ from its order file *vanishes* from the site, so that has to stop the build; a
 module missing from here still appears, just last, which is visible on the page
 and not worth refusing to build over. No file at all falls back to alphabetical.
 *Cost to change: small.*
+
+**7.21 — Saved work is keyed on the module and the slug, not the slug alone.**
+A slug is unique within its module (7.3), and both modules have a
+`first-steps`. `progressKey()` was the prefix plus the slug, so the two
+tutorials shared one record: answers written in one appeared in the other, and
+each save overwrote the other. The manifest now carries the module and the key
+is the pair.
+
+**Third time.** Scoping slugs per module left the built pages keyed on the slug
+alone (fixed in #23), then the downloadable copies (#24), and now the saved
+work. Each was found by something different — a test, a publish guard, and an
+audit. If there is a fourth, it will be something else that identifies a
+tutorial by slug without its module.
+*Cost to change: small today, a migration inside every student's browser after
+the first class.*
+
+**7.22 — Loading a saved file checks before it overwrites.**
+"Load a copy" wrote whatever JSON it was handed into this page's key and only
+then found the cells did not match. By then the student's real work was gone,
+replaced by somebody else's, under a notice explaining that some cells could
+not be placed.
+
+The record now carries its module as well as its slug, the exported filename
+carries the module, and a file from elsewhere is refused by name with nothing
+changed. Lenient in one direction: a record with no module still loads on a
+matching slug, so a file written before the module was recorded does not hit a
+cliff.
+*Cost to change: small.*
+
+**7.23 — Four contracts, audited once while changing them was free.**
+Nothing has been in front of a class, so slugs, cell ids, the save record's
+shape and the version field are all still free to change. `planning/WINDOW_AUDIT.md`
+is the deliberate look at each, rather than an assumption they were fine — and
+two of the four were not.
+
+Cell ids came out sound: 228 of them, none non-conforming, and the twelve reused
+across tutorials are safe precisely because storage is keyed per tutorial. The
+version field needs nothing, because the restore already compares versions as
+strings and so tolerates the dotted date that step 2 will introduce.
+*Cost to change: this window closes on the day the first class opens the site.*

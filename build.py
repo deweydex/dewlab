@@ -1289,6 +1289,11 @@ def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "") -> Path
     up = "../" * tutorial.depth
     manifest: dict[str, object] = {
         "slug": tutorial.slug,
+        # The module, because a slug is only unique within one. Saved work is
+        # keyed on this pair — without the module, both modules' `first-steps`
+        # would share one key and a student's answers would appear in the wrong
+        # tutorial.
+        "module": tutorial.module,
         "version": tutorial.meta["version"],
         "assetBase": f"{up}assets/",
         # The runtime fetches these itself, so they need their own versions —
