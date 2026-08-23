@@ -1,3 +1,10 @@
+> **Superseded in part.** This document describes what happens to a student's
+> saved work when a tutorial they have started is edited: the answer today is
+> "restore anyway, and apologise in a notice". `VERSIONS.md` proposes not doing
+> that to them at all — pinning a student to the version they started, and
+> keeping the old one reachable. The cell-id matching described below is
+> unchanged and is what makes that possible.
+
 # Versioning and Progress
 
 ## The problem
