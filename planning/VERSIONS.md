@@ -102,18 +102,49 @@ So both, and they are not alternatives:
 
 ## Version numbers that carry their date
 
-Josh: *"the nice thing would be to have the version number somehow contain the
-date."* Yes — "3" means nothing to a student and "September" means quite a lot.
+Josh: *"version should be user readable, perhaps using numbers and dots that
+correspond to dates and the number of the change at the end — 2026.08.20.5 for
+example."*
 
-But `version` is an integer today, it is written into every saved record, and
-the restore compares it. Changing its type to a date string would rewrite the
-save format for a cosmetic gain, and break every record already in a student's
-browser.
+**Yes, and I was wrong to resist it.** I argued the integer had to stay because
+it is written into every saved record and compared on restore, so changing its
+type would break records already in students' browsers. That is not what the
+code does. The comparison is:
 
-So: **the integer stays as the key, the date becomes the label.** `released:`
-already exists in the frontmatter proposed above; the display name is built from
-it. A student sees *"15 September 2026"* in the list and *"Version 3"* nowhere.
-The machinery keeps counting; the person reads a date.
+```js
+versionChanged: String(record["tutorial-version"]) !== String(currentManifest.version)
+```
+
+Both sides are stringified and compared for equality — not ordering. A string
+version works with it unchanged. And the restore itself matches on cell id, not
+on version, so nothing about a student's saved work depends on the type at all.
+
+The real migration cost is one spurious notice: a student who saved against
+`version: 1` and returns to `2026.08.20.1` is told once that the tutorial has
+been updated, when it has not. Their work still comes back. That is a fair price
+for a field a person can read.
+
+So the field becomes `2026.08.20.1` — year, month, day, and which release of that
+day. Zero-padded, so it sorts by date on sight.
+
+**This removes a field rather than adding one.** The layout above proposed both
+`version:` and `released:`. If the version *is* the date, `released:` is
+redundant, and two fields that can disagree become one that cannot. Where they
+would have differed — a beta prepared on one day and made live on another — the
+date is when the version was made, and `status:` carries the rest.
+
+The trailing number earns its place only occasionally: with a version being a
+release rather than a save, two in one day happens when you publish, spot
+something, and publish again. Rare, but the case that would otherwise collide.
+
+**Sorted on its parts, not as a string.** `2026.08.20.10` sorts before
+`2026.08.20.9` lexically, which is wrong the first time it ever matters. Parse
+the four numbers and sort on those.
+
+And the label a student reads stays prose: **"20 August 2026"** in the list, with
+the dotted form kept for the file, the frontmatter and the URL. A date they can
+read beats a date they have to parse, and neither of us wants `2026.08.20.1`
+above a tutorial title.
 
 ## Instead of warning, tell them what will happen
 
@@ -177,13 +208,13 @@ tutorials/mit-pdp-maths-prog-integration/
 The single-file form stays legal and stays the common case. Nothing has to move
 until it needs to, which means this change costs nothing on the day it lands.
 
-Each frozen file keeps the frontmatter it had, plus:
+Each frozen file keeps the frontmatter it had, with the version now carrying
+its own date (see below) and one field added:
 
 ```yaml
-version: 2
-released: 2026-09-15        # when students first saw it
+version: 2026.09.15.1       # year, month, day, which release of that day
 status: live                # live | beta | archived
-supersedes: 1               # optional, for the "what changed" note
+supersedes: 2026.06.02.1    # optional, for the "what changed" note
 ```
 
 `status` is the whole of staged/beta/archive:
@@ -239,7 +270,7 @@ is in every tutorial's frontmatter.** A build is for a year. So the honest
 mechanism is:
 
 - The **build** resolves, for each tutorial, the newest `live` version whose
-  `released` date is on or before the year's cut-off. That is the default, and
+  own date is on or before the year's cut-off. That is the default, and
   it is baked in rather than computed in the browser.
 - The **student** may override it per tutorial, and their override sticks. The
   default of that override is "the version I started", which is the continuity
@@ -280,9 +311,12 @@ editor. It touches:
 
 ## The order to do it in
 
-1. **Archive.** No versions at all: a tutorial can be marked archived, drops out
-   of the reading order, stays built and reachable, and says what it is. Small,
-   self-contained, and it removes the worst property in the system today.
+1. ~~**Archive.**~~ **Done.** `status: archived` in the frontmatter. The page
+   stays built and reachable and still holds whatever a student saved in it; it
+   leaves the reading order, loses its previous and next, drops out of the
+   series archive, is listed under *Archive* on the contents page, and opens
+   with a notice. It no longer counts as coverage, and listing it in an order
+   file stops the build. See DECISIONS_LOG 7.17 to 7.19.
 2. **Versions as releases.** The folder layout, the `released`/`status` fields,
    the default resolved at build time, versioned pages built, unversioned paths
    unchanged. No student-facing control yet — the default is simply correct.
@@ -293,12 +327,20 @@ editor. It touches:
 4. **Beta, and the editor actions.** Release, archive, and mark-beta as things
    Josh can do from the editor rather than by hand.
 
-Each step is useful on its own, and each is a pull request. Step 1 could land
-this week; step 4 is not worth starting until 2 and 3 have been lived with.
+Each step is useful on its own, and each is a pull request. Step 1 has landed;
+step 4 is not worth starting until 2 and 3 have been lived with.
+
+Step 2 is where the cost is. Everything above about resolving a default, building
+a page per version, and keeping the unversioned URL meaning "the current one"
+happens there, and steps 3 and 4 are comparatively small on top of it.
 
 ---
 
 ## What I would want decided before step 2
+
+**Three of these are now settled**, and the sections above have been rewritten
+rather than annotated: the editor archives rather than deletes; it may edit
+frontmatter; and the version field itself is the readable date.
 
 1. **Is "a version is a release" the right rule**, or do you want a version per
    meaningful edit? The first keeps the dropdown short; the second keeps a fuller

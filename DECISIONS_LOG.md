@@ -978,3 +978,28 @@ The empty case falls out of it: archiving the last tutorial in a series leaves
 file. It is accepted, and the series simply stops appearing. `order:` missing
 altogether is still an error.
 *Cost to change: small.*
+
+**7.20 — The version field is a readable date.**
+`2026.08.20.1` — year, month, day, and which release of that day — rather than
+an integer. Josh asked for it and I resisted on the grounds that `version` is
+written into every saved record and compared on restore, so changing its type
+would break records already in students' browsers.
+
+The code says otherwise. The comparison is
+`String(record["tutorial-version"]) !== String(currentManifest.version)`: both
+sides stringified, compared for equality, not ordering. A string works with it
+unchanged, and the restore itself matches on cell id rather than on version, so
+no saved work depends on the type. The whole migration cost is one spurious
+"this has been updated" notice for a student returning to a tutorial they saved
+against the old integer.
+
+It also removes a field. The plan proposed `version:` and `released:` side by
+side; if the version is the date, the second is redundant, and two fields that
+can disagree become one that cannot.
+
+Two details that matter once: sort on the four parsed numbers, because
+`2026.08.20.10` sorts before `2026.08.20.9` as a string. And the label a student
+reads stays prose — "20 August 2026" — with the dotted form kept for the file,
+the frontmatter and the URL.
+*Cost to change: small while nothing is versioned yet; large once tutorials
+carry dated versions and students have saved against them.*
