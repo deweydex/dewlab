@@ -15,53 +15,51 @@ so this doubles as a way of finding where anything is taught.
 
 ## Where we stand
 
-**44 of 67** outcomes are in place.
+**67 of 67** outcomes are in place.
 
-- 🟩 **43 taught** — a tutorial section teaches it.
-- 🟦 **1 taught in part** — deliberately narrowed, and the narrowed version is written.
-- 🟨 **4 used but not taught** — students meet it in passing without it ever being the subject. These are the quiet gaps: they look covered from a distance.
-- 🟥 **19 not covered** — nothing in dewlab touches it.
+- 🟩 **65 taught** — a tutorial section teaches it.
+- 🟦 **2 taught in part** — deliberately narrowed, and the narrowed version is written.
+- 🟨 **0 used but not taught** — students meet it in passing without it ever being the subject. These are the quiet gaps: they look covered from a distance.
+- 🟥 **0 not covered** — nothing in dewlab touches it.
 
-**Every one of the 23 outcomes still to write has a proposal** in `planning/curriculum/proposed.yaml`. Nothing is waiting to be thought about.
+**Everything in both descriptors is written.** Nothing is outstanding.
 
 ### By strand
 
 | Strand | 🟩 Taught | 🟦 Part, by choice | 🟨 Used only | 🟥 Not covered | ⬜ Out of scope |
 |---|---:|---:|---:|---:|---:|
-| **algebra** | 5 | 1 | 2 | 0 | 0 |
+| **algebra** | 7 | 1 | 0 | 0 | 0 |
 | **algorithms** | 9 | 0 | 0 | 0 | 0 |
-| **calculus** | 0 | 0 | 0 | 3 | 0 |
-| **functions** | 0 | 0 | 1 | 2 | 0 |
-| **geometry** | 2 | 0 | 0 | 4 | 0 |
-| **logic** | 0 | 0 | 1 | 1 | 0 |
+| **calculus** | 2 | 1 | 0 | 0 | 0 |
+| **functions** | 3 | 0 | 0 | 0 | 0 |
+| **geometry** | 6 | 0 | 0 | 0 | 0 |
+| **logic** | 2 | 0 | 0 | 0 | 0 |
 | **number** | 2 | 0 | 0 | 0 | 0 |
 | **probability** | 8 | 0 | 0 | 0 | 0 |
-| **programming** | 10 | 0 | 0 | 1 | 0 |
-| **sets** | 2 | 0 | 0 | 1 | 0 |
+| **programming** | 11 | 0 | 0 | 0 | 0 |
+| **sets** | 3 | 0 | 0 | 0 | 0 |
 | **statistics** | 5 | 0 | 0 | 0 | 0 |
-| **trigonometry** | 0 | 0 | 0 | 7 | 0 |
+| **trigonometry** | 7 | 0 | 0 | 0 | 0 |
 
 ```mermaid
 graph LR
-  algebra["algebra<br/>6 of 8 in place"]
+  algebra["algebra<br/>8 of 8 in place"]
   algorithms["algorithms<br/>9 of 9 in place"]
-  calculus["calculus<br/>0 of 3 in place"]
-  functions["functions<br/>0 of 3 in place"]
-  geometry["geometry<br/>2 of 6 in place"]
-  logic["logic<br/>0 of 2 in place"]
+  calculus["calculus<br/>3 of 3 in place"]
+  functions["functions<br/>3 of 3 in place"]
+  geometry["geometry<br/>6 of 6 in place"]
+  logic["logic<br/>2 of 2 in place"]
   number["number<br/>2 of 2 in place"]
   probability["probability<br/>8 of 8 in place"]
-  programming["programming<br/>10 of 11 in place"]
-  sets["sets<br/>2 of 3 in place"]
+  programming["programming<br/>11 of 11 in place"]
+  sets["sets<br/>3 of 3 in place"]
   statistics["statistics<br/>5 of 5 in place"]
-  trigonometry["trigonometry<br/>0 of 7 in place"]
+  trigonometry["trigonometry<br/>7 of 7 in place"]
 
   classDef full fill:#edf7f0,stroke:#1f6b3f,color:#1f6b3f;
   classDef part fill:#fdf6ec,stroke:#b5651d,color:#7a4310;
   classDef none fill:#fdf0ef,stroke:#9b2226,color:#9b2226;
-  class algorithms,number,probability,statistics full;
-  class algebra,geometry,programming,sets part;
-  class calculus,functions,logic,trigonometry none;
+  class algebra,algorithms,calculus,functions,geometry,logic,number,probability,programming,sets,statistics,trigonometry full;
 ```
 
 ## The series as it stands
@@ -91,9 +89,21 @@ graph TD
   T14["14. Pictures Worth Numbers"]
   T15["15. Numbers and Their Families"]
   T16["16. Expressions Come Alive"]
-  T17["17. Cracking Equations"]
-  T18["18. Sets as Sorted Lists"]
-  T19["19. Bringing It All Together"]
+  T17["17. Rearranging Formulae"]
+  T18["18. Cracking Equations"]
+  T19["19. When There Is No Answer"]
+  T20["20. Sets as Sorted Lists"]
+  T21["21. Logic and Truth"]
+  T22["22. Drawing Sets"]
+  T23["23. Drawing Functions"]
+  T24["24. Parabolas"]
+  T25["25. Lines and Distances"]
+  T26["26. The Unit Circle"]
+  T27["27. Sine and Cosine Waves"]
+  T28["28. Solving Triangles"]
+  T29["29. Approaching a Limit"]
+  T30["30. Rates of Change"]
+  T31["31. Bringing It All Together"]
 
   T1 --> T2
   T2 --> T3
@@ -113,14 +123,50 @@ graph TD
   T16 --> T17
   T17 --> T18
   T18 --> T19
+  T19 --> T20
+  T20 --> T21
+  T21 --> T22
+  T22 --> T23
+  T23 --> T24
+  T24 --> T25
+  T25 --> T26
+  T26 --> T27
+  T27 --> T28
+  T28 --> T29
+  T29 --> T30
+  T30 --> T31
 
   T11 -.->|builds on| T6
-  T18 -.->|builds on| T8
-  T18 -.->|builds on| T9
-  T19 -.->|builds on| T1
+  T17 -.->|builds on| T2
+  T18 -.->|builds on| T16
   T19 -.->|builds on| T15
-  T19 -.->|builds on| T16
-  T19 -.->|builds on| T17
+  T20 -.->|builds on| T8
+  T20 -.->|builds on| T9
+  T21 -.->|builds on| T4
+  T22 -.->|builds on| T20
+  T23 -.->|builds on| T10
+  T23 -.->|builds on| T14
+  T23 -.->|builds on| T16
+  T23 -.->|builds on| T18
+  T24 -.->|builds on| T18
+  T24 -.->|builds on| T19
+  T25 -.->|builds on| T13
+  T25 -.->|builds on| T14
+  T25 -.->|builds on| T23
+  T27 -.->|builds on| T23
+  T27 -.->|builds on| T24
+  T27 -.->|builds on| T25
+  T28 -.->|builds on| T23
+  T28 -.->|builds on| T25
+  T28 -.->|builds on| T26
+  T29 -.->|builds on| T2
+  T30 -.->|builds on| T24
+  T30 -.->|builds on| T25
+  T31 -.->|builds on| T1
+  T31 -.->|builds on| T15
+  T31 -.->|builds on| T16
+  T31 -.->|builds on| T18
+  T31 -.->|builds on| T20
 ```
 
 ## What is missing, and where it would go
@@ -147,22 +193,21 @@ graph TD
   T14["14. Pictures Worth Numbers"]
   T15["15. Numbers and Their Families"]
   T16["16. Expressions Come Alive"]
-  T17["17. Cracking Equations"]
-  T18["18. Sets as Sorted Lists"]
-  T19["19. Bringing It All Together"]
-  N0("Rearranging Formulae")
-  N1("When There Is No Answer (And Then There Is)")
-  N2("Drawing Functions")
-  N3("Parabolas")
-  N4("Lines and Distances")
-  N5("The Unit Circle")
-  N6("Sine and Cosine Waves")
-  N7("Solving Triangles")
-  N8("Approaching a Limit")
-  N9("Rates of Change")
-  N10("Logic and Truth")
-  N11("Drawing Sets")
-  N12("The Team Project")
+  T17["17. Rearranging Formulae"]
+  T18["18. Cracking Equations"]
+  T19["19. When There Is No Answer"]
+  T20["20. Sets as Sorted Lists"]
+  T21["21. Logic and Truth"]
+  T22["22. Drawing Sets"]
+  T23["23. Drawing Functions"]
+  T24["24. Parabolas"]
+  T25["25. Lines and Distances"]
+  T26["26. The Unit Circle"]
+  T27["27. Sine and Cosine Waves"]
+  T28["28. Solving Triangles"]
+  T29["29. Approaching a Limit"]
+  T30["30. Rates of Change"]
+  T31["31. Bringing It All Together"]
 
   T1 --> T2
   T2 --> T3
@@ -182,33 +227,26 @@ graph TD
   T16 --> T17
   T17 --> T18
   T18 --> T19
+  T19 --> T20
+  T20 --> T21
+  T21 --> T22
+  T22 --> T23
+  T23 --> T24
+  T24 --> T25
+  T25 --> T26
+  T26 --> T27
+  T27 --> T28
+  T28 --> T29
+  T29 --> T30
+  T30 --> T31
 
-  N2 ==> N3
-  N2 ==> N4
-  N4 ==> N5
-  N5 ==> N6
-  N6 ==> N7
-  N8 ==> N9
 
   classDef new fill:#fdf6ec,stroke:#b5651d,color:#7a4310,stroke-dasharray:4 3;
-  class N0,N1,N2,N3,N4,N5,N6,N7,N8,N9,N10,N11,N12 new;
+  class  new;
 ```
 
 | Proposed | Goes after | Closes | Size |
 |---|---|---|---|
-| **Rearranging Formulae** | after tutorial-14-expressions-come-alive | `MIT-1.7` | short |
-| **When There Is No Answer (And Then There Is)** | after tutorial-15-cracking-equations | `MIT-1.10` | short |
-| **Drawing Functions** | after tutorial-15-cracking-equations | `MIT-3.1`, `MIT-3.2` | full |
-| **Parabolas** | after drawing-functions | `MIT-3.4` | short |
-| **Lines and Distances** | after drawing-functions | `MIT-4.1`, `MIT-4.2`, `MIT-4.3`, `MIT-4.4` | full |
-| **The Unit Circle** | after lines-and-distances | `MIT-4.5`, `MIT-4.6`, `MIT-4.7` | full |
-| **Sine and Cosine Waves** | after the-unit-circle | `MIT-3.3` | short |
-| **Solving Triangles** | after sine-and-cosine-waves | `MIT-4.8`, `MIT-4.9`, `MIT-4.10` | full |
-| **Approaching a Limit** | after angles-and-waves | `MIT-3.5` | short |
-| **Rates of Change** | after approaching-a-limit | `MIT-3.6`, `MIT-3.7` | full |
-| **Logic and Truth** | after tutorial-16-sets-as-sorted-lists | `MIT-2.4`, `MIT-2.5` | short |
-| **Drawing Sets** | after tutorial-16-sets-as-sorted-lists | `MIT-2.3` | short |
-| **The Team Project** | after tutorial-17-bringing-it-all-together | `PDP-LO12` | not-a-tutorial |
 
 ## Every outcome
 
@@ -224,10 +262,10 @@ graph TD
 | `MIT-1.4` Binary and hexadecimal arithmetic and conversion | 🟩 | [Storing and Computing — Number Systems: How Computers Count](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/storing-and-computing.html#number-systems-how-computers-count)<br/>_used in:_ [How We Got Here — The Only Language the Machine Understands](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/how-we-got-here.html#the-only-language-the-machine-understands)<br/>_used in:_ [How We Got Here — Assembly, and Why Hexadecimal Exists](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/how-we-got-here.html#assembly-and-why-hexadecimal-exists) |
 | `MIT-1.5` Distinguish an expression from an equation | 🟦 | [Expressions Come Alive — Expressions versus Equations](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/expressions-come-alive.html#expressions-versus-equations)<br/>**Narrowed:** not the formal expression-versus-equation distinction as an assessed item |
 | `MIT-1.6` Evaluate, expand and simplify expressions | 🟩 | [Expressions Come Alive — Representing Polynomials](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/expressions-come-alive.html#representing-polynomials)<br/>[Expressions Come Alive — Evaluating Polynomials](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/expressions-come-alive.html#evaluating-polynomials)<br/>[Expressions Come Alive — Displaying Polynomials](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/expressions-come-alive.html#displaying-polynomials)<br/>[Expressions Come Alive — Adding Polynomials](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/expressions-come-alive.html#adding-polynomials)<br/>[Expressions Come Alive — Subtracting and Scaling](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/expressions-come-alive.html#subtracting-and-scaling)<br/>_used in:_ [Bringing It All Together — Problem 1: The Polynomial Workshop](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/bringing-it-all-together.html#problem-1-the-polynomial-workshop) |
-| `MIT-1.7` Transpose formulae; operate on rational algebraic expressions | 🟨 | _used in:_ [Cracking Equations — Solving Linear Equations](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/cracking-equations.html#solving-linear-equations) |
+| `MIT-1.7` Transpose formulae; operate on rational algebraic expressions | 🟩 | [Rearranging Formulae — The Same Formula, Five Ways](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/rearranging-formulae.html#the-same-formula-five-ways)<br/>[Rearranging Formulae — The Moves](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/rearranging-formulae.html#the-moves)<br/>[Rearranging Formulae — When the Unknown Is Underneath](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/rearranging-formulae.html#when-the-unknown-is-underneath)<br/>[Rearranging Formulae — Checking Yourself](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/rearranging-formulae.html#checking-yourself)<br/>_used in:_ [Cracking Equations — Solving Linear Equations](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/cracking-equations.html#solving-linear-equations) |
 | `MIT-1.8` Multiply linear expressions into quadratics and cubics | 🟩 | [Expressions Come Alive — Multiplying Polynomials](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/expressions-come-alive.html#multiplying-polynomials)<br/>_used in:_ [Bringing It All Together — Problem 1: The Polynomial Workshop](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/bringing-it-all-together.html#problem-1-the-polynomial-workshop) |
 | `MIT-1.9` Factor quadratics by inspection and solve them | 🟩 | [Cracking Equations — Factorisation](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/cracking-equations.html#factorisation) |
-| `MIT-1.10` Solve quadratics, including complex roots | 🟨 | _used in:_ [Cracking Equations — The Quadratic Formula](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/cracking-equations.html#the-quadratic-formula) |
+| `MIT-1.10` Solve quadratics, including complex roots | 🟩 | [When There Is No Answer — The Cliff Edge](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/complex-roots.html#the-cliff-edge)<br/>[When There Is No Answer — Inventing a Number](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/complex-roots.html#inventing-a-number)<br/>[When There Is No Answer — Roots That Are Not Real](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/complex-roots.html#roots-that-are-not-real)<br/>[When There Is No Answer — They Come in Pairs](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/complex-roots.html#they-come-in-pairs)<br/>_used in:_ [Cracking Equations — The Quadratic Formula](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/cracking-equations.html#the-quadratic-formula) |
 | `MIT-1.11` Solve linear inequalities | 🟩 | [Cracking Equations — Solving Inequalities](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/cracking-equations.html#solving-inequalities) |
 | `MIT-1.12` Simultaneous equations in two and three unknowns | 🟩 | [Cracking Equations — Simultaneous Equations](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/cracking-equations.html#simultaneous-equations)<br/>_used in:_ [Bringing It All Together — Problem 2: Where Do They Meet?](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/bringing-it-all-together.html#problem-2-where-do-they-meet) |
 
@@ -235,38 +273,38 @@ graph TD
 
 | Outcome | | Where |
 |---|---|---|
-| `MIT-2.1` Set language: N, Z, Q, R, C, the empty set; finite, infinite, cardinality | 🟩 | [Numbers and Their Families — The Number Domains](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/numbers-and-their-families.html#the-number-domains)<br/>[Sets as Sorted Lists — Making a Set](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/sets-as-sorted-lists.html#making-a-set)<br/>[Sets as Sorted Lists — Membership Testing](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/sets-as-sorted-lists.html#membership-testing)<br/>[Sets as Sorted Lists — Set Language and Notation](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/sets-as-sorted-lists.html#set-language-and-notation) |
+| `MIT-2.1` Set language: N, Z, Q, R, C, the empty set; finite, infinite, cardinality | 🟩 | [Numbers and Their Families — The Number Domains](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/numbers-and-their-families.html#the-number-domains)<br/>[Sets as Sorted Lists — Making a Set](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/sets-as-sorted-lists.html#making-a-set)<br/>[Sets as Sorted Lists — Membership Testing](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/sets-as-sorted-lists.html#membership-testing)<br/>[Sets as Sorted Lists — Set Language and Notation](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/sets-as-sorted-lists.html#set-language-and-notation)<br/>_used in:_ [When There Is No Answer — Inventing a Number](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/complex-roots.html#inventing-a-number) |
 | `MIT-2.2` Set operations: union, intersection, complement, symmetric difference, Cartesian product, power set | 🟩 | [Sets as Sorted Lists — Set Operations: The Merge Pattern](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/sets-as-sorted-lists.html#set-operations-the-merge-pattern)<br/>[Sets as Sorted Lists — Sets in Practice](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/sets-as-sorted-lists.html#sets-in-practice)<br/>_used in:_ [Bringing It All Together — Problem 3: Sets of Solutions](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/bringing-it-all-together.html#problem-3-sets-of-solutions) |
-| `MIT-2.3` Venn diagrams for two and three sets | 🟥 | — |
-| `MIT-2.4` Truth tables: AND, NOT, OR, XOR | 🟨 | _used in:_ [Making Decisions — Boolean Operators: Combining Conditions](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/making-decisions.html#boolean-operators-combining-conditions) |
-| `MIT-2.5` De Morgan's Laws | 🟥 | — |
+| `MIT-2.3` Venn diagrams for two and three sets | 🟩 | [Drawing Sets — Two Circles, from Real Sets](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/venn-diagrams.html#two-circles-from-real-sets)<br/>[Drawing Sets — The Regions Have Names You Already Know](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/venn-diagrams.html#the-regions-have-names-you-already-know)<br/>[Drawing Sets — Three Sets, Which Is Where It Earns Its Place](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/venn-diagrams.html#three-sets-which-is-where-it-earns-its-place)<br/>[Drawing Sets — The Same Laws, in a Different Notation](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/venn-diagrams.html#the-same-laws-in-a-different-notation) |
+| `MIT-2.4` Truth tables: AND, NOT, OR, XOR | 🟩 | [Logic and Truth — Every Possible Case](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/logic-and-truth.html#every-possible-case)<br/>[Logic and Truth — Exclusive Or](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/logic-and-truth.html#exclusive-or)<br/>_used in:_ [Making Decisions — Boolean Operators: Combining Conditions](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/making-decisions.html#boolean-operators-combining-conditions) |
+| `MIT-2.5` De Morgan's Laws | 🟩 | [Logic and Truth — De Morgan's Laws](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/logic-and-truth.html#de-morgans-laws)<br/>[Logic and Truth — Where You Have Already Used This](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/logic-and-truth.html#where-you-have-already-used-this)<br/>[Logic and Truth — The Same Shapes, on Sets](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/logic-and-truth.html#the-same-shapes-on-sets) |
 
 #### 3. Functions and Calculus
 
 | Outcome | | Where |
 |---|---|---|
-| `MIT-3.1` The function and inverse function concept | 🟨 | _used in:_ [Finding Things — Functions as Input-Output Machines](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/finding-things.html#functions-as-input-output-machines) |
-| `MIT-3.2` Graph linear, quadratic and cubic functions; solve from a graph | 🟥 | — |
-| `MIT-3.3` Define and graph the trigonometric functions | 🟥 | — |
-| `MIT-3.4` Complete the square to find roots and vertex | 🟥 | — |
-| `MIT-3.5` The limit of a function | 🟥 | — |
-| `MIT-3.6` The derivative as a limit, a tangent slope, a rate of change | 🟥 | — |
-| `MIT-3.7` Sum, product, quotient and chain rules | 🟥 | **Not written. When it is:** the sum and product rules as a tutorial of their own; integration by substitution as a second tutorial; the chain rule as a bonus section only, not the quotient rule, and integration by parts |
+| `MIT-3.1` The function and inverse function concept | 🟩 | [Drawing Functions — A Function Is a Machine](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/drawing-functions.html#a-function-is-a-machine)<br/>[Drawing Functions — Undoing a Function](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/drawing-functions.html#undoing-a-function)<br/>_used in:_ [Finding Things — Functions as Input-Output Machines](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/finding-things.html#functions-as-input-output-machines) |
+| `MIT-3.2` Graph linear, quadratic and cubic functions; solve from a graph | 🟩 | [Drawing Functions — A Machine Has a Picture](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/drawing-functions.html#a-machine-has-a-picture)<br/>[Drawing Functions — Straight Lines](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/drawing-functions.html#straight-lines)<br/>[Drawing Functions — Curves That Bend](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/drawing-functions.html#curves-that-bend)<br/>[Drawing Functions — Reading an Answer Off the Picture](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/drawing-functions.html#reading-an-answer-off-the-picture) |
+| `MIT-3.3` Define and graph the trigonometric functions | 🟩 | [Sine and Cosine Waves — Unrolling the Circle](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/sine-and-cosine-waves.html#unrolling-the-circle)<br/>[Sine and Cosine Waves — Why It Repeats](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/sine-and-cosine-waves.html#why-it-repeats)<br/>[Sine and Cosine Waves — The Four Numbers](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/sine-and-cosine-waves.html#the-four-numbers)<br/>[Sine and Cosine Waves — Where a Wave Comes From](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/sine-and-cosine-waves.html#where-a-wave-comes-from) |
+| `MIT-3.4` Complete the square to find roots and vertex | 🟩 | [Parabolas — Every Quadratic Is the Same Curve](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/parabolas.html#every-quadratic-is-the-same-curve)<br/>[Parabolas — The Form That Tells You Where the Bottom Is](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/parabolas.html#the-form-that-tells-you-where-the-bottom-is)<br/>[Parabolas — Doing the Rearrangement](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/parabolas.html#doing-the-rearrangement)<br/>[Parabolas — Roots from the Same Form](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/parabolas.html#roots-from-the-same-form) |
+| `MIT-3.5` The limit of a function | 🟩 | [Approaching a Limit — A Hole in a Line](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/approaching-a-limit.html#a-hole-in-a-line)<br/>[Approaching a Limit — Getting Closer Without Arriving](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/approaching-a-limit.html#getting-closer-without-arriving)<br/>[Approaching a Limit — When There Is No Limit](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/approaching-a-limit.html#when-there-is-no-limit)<br/>[Approaching a Limit — Why Anybody Needs This](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/approaching-a-limit.html#why-anybody-needs-this) |
+| `MIT-3.6` The derivative as a limit, a tangent slope, a rate of change | 🟩 | [Rates of Change — The Slope of Something That Is Not Straight](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/rates-of-change.html#the-slope-of-something-that-is-not-straight)<br/>[Rates of Change — Three Descriptions of One Number](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/rates-of-change.html#three-descriptions-of-one-number)<br/>[Rates of Change — The Derivative as a Function](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/rates-of-change.html#the-derivative-as-a-function) |
+| `MIT-3.7` Sum, product, quotient and chain rules | 🟦 | [Rates of Change — Rules Instead of Limits](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/rates-of-change.html#rules-instead-of-limits)<br/>[Rates of Change — The Chain Rule](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/rates-of-change.html#the-chain-rule)<br/>**Narrowed:** not the quotient rule, and integration by parts |
 
 #### 4. Geometry and Trigonometry
 
 | Outcome | | Where |
 |---|---|---|
-| `MIT-4.1` Linear equations in the form ax + by + c = 0 | 🟥 | — |
-| `MIT-4.2` Slope; parallel and perpendicular lines | 🟥 | — |
-| `MIT-4.3` Midpoint and length of a line segment | 🟥 | — |
-| `MIT-4.4` The Pythagorean theorem | 🟥 | — |
-| `MIT-4.5` Degree and radian measure | 🟥 | — |
-| `MIT-4.6` sin, cos, tan and the unit circle: amplitude, phase, period | 🟥 | — |
-| `MIT-4.7` Trigonometric ratios in surd form | 🟥 | — |
-| `MIT-4.8` Triangle area as one half a b sin theta | 🟥 | — |
-| `MIT-4.9` Practical right-triangle trigonometry | 🟥 | — |
-| `MIT-4.10` The Sine Rule and the Cosine Rule | 🟥 | — |
+| `MIT-4.1` Linear equations in the form ax + by + c = 0 | 🟩 | [Lines and Distances — A Line You Have Already Written](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/lines-and-distances.html#a-line-you-have-already-written)<br/>[Lines and Distances — The Line That Breaks the Formula](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/lines-and-distances.html#the-line-that-breaks-the-formula) |
+| `MIT-4.2` Slope; parallel and perpendicular lines | 🟩 | [Lines and Distances — Slope, as How Fast Something Changes](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/lines-and-distances.html#slope-as-how-fast-something-changes)<br/>[Lines and Distances — Parallel and Perpendicular](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/lines-and-distances.html#parallel-and-perpendicular) |
+| `MIT-4.3` Midpoint and length of a line segment | 🟩 | [Lines and Distances — Midpoint, Which Needs No Theory](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/lines-and-distances.html#midpoint-which-needs-no-theory)<br/>[Lines and Distances — How Far Apart, and the Theorem That Answers It](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/lines-and-distances.html#how-far-apart-and-the-theorem-that-answers-it) |
+| `MIT-4.4` The Pythagorean theorem | 🟩 | [Lines and Distances — How Far Apart, and the Theorem That Answers It](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/lines-and-distances.html#how-far-apart-and-the-theorem-that-answers-it) |
+| `MIT-4.5` Degree and radian measure | 🟩 | [The Unit Circle — Measuring the Walk](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/the-unit-circle.html#measuring-the-walk) |
+| `MIT-4.6` sin, cos, tan and the unit circle: amplitude, phase, period | 🟩 | [The Unit Circle — Going Round in Circles](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/the-unit-circle.html#going-round-in-circles)<br/>[The Unit Circle — The Names for Those Two Columns](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/the-unit-circle.html#the-names-for-those-two-columns)<br/>[The Unit Circle — Tangent, Which Is a Slope](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/the-unit-circle.html#tangent-which-is-a-slope) |
+| `MIT-4.7` Trigonometric ratios in surd form | 🟩 | [The Unit Circle — The Landmark Points](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/the-unit-circle.html#the-landmark-points) |
+| `MIT-4.8` Triangle area as one half a b sin theta | 🟩 | [Solving Triangles — Area, and the Height Nobody Drew](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/solving-triangles.html#area-and-the-height-nobody-drew) |
+| `MIT-4.9` Practical right-triangle trigonometry | 🟩 | [Solving Triangles — When There Is a Right Angle](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/solving-triangles.html#when-there-is-a-right-angle)<br/>[Solving Triangles — Putting It Together](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/solving-triangles.html#putting-it-together) |
+| `MIT-4.10` The Sine Rule and the Cosine Rule | 🟩 | [Solving Triangles — The Cosine Rule](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/solving-triangles.html#the-cosine-rule)<br/>[Solving Triangles — The Sine Rule, and Its Two Answers](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/solving-triangles.html#the-sine-rule-and-its-two-answers)<br/>[Solving Triangles — Putting It Together](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/solving-triangles.html#putting-it-together) |
 
 #### 5. Probability and Statistics
 
@@ -314,11 +352,11 @@ graph TD
 | `PDP-LO9` Interpret compiler and linker messages and react appropriately | 🟩 | [When It Goes Wrong — Three Kinds of Wrong](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/when-it-goes-wrong.html#three-kinds-of-wrong)<br/>[When It Goes Wrong — Errors Python Catches Before It Starts](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/when-it-goes-wrong.html#errors-python-catches-before-it-starts)<br/>[When It Goes Wrong — Errors That Happen While It Runs](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/when-it-goes-wrong.html#errors-that-happen-while-it-runs)<br/>[When It Goes Wrong — Reading a Traceback](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/when-it-goes-wrong.html#reading-a-traceback)<br/>[When It Goes Wrong — The Dangerous Kind](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/when-it-goes-wrong.html#the-dangerous-kind) |
 | `PDP-LO10` The testing process: structured walkthroughs and debugging tools | 🟩 | [Bringing It All Together — Problem 4: Building and Verifying](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/bringing-it-all-together.html#problem-4-building-and-verifying)<br/>[Building Reusable Tools — Testing as a Habit](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/building-reusable-tools.html#testing-as-a-habit) |
 | `PDP-LO11` Coding standards: comments, indentation, variable naming | 🟩 | [Building Reusable Tools — What Makes a Good Function?](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/building-reusable-tools.html#what-makes-a-good-function)<br/>[Looking Back Before Moving Forward — Part 1: Reading Your Own Code](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/critique-and-reflection.html#part-1-reading-your-own-code)<br/>[Looking Back Before Moving Forward — Part 2: Reading Someone Else's Code](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/critique-and-reflection.html#part-2-reading-someone-elses-code)<br/>[Storing and Computing — Variables: Giving Names to Things](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/storing-and-computing.html#variables-giving-names-to-things) |
-| `PDP-LO12` Team programming: design, develop, release and review over time, in teams of three to five | 🟥 | — |
+| `PDP-LO12` Team programming: design, develop, release and review over time, in teams of three to five | 🟩 | [The Team Project — What You Are Being Asked to Do](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/the-team-project.html#what-you-are-being-asked-to-do)<br/>[The Team Project — Three Releases, Not One Deadline](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/the-team-project.html#three-releases-not-one-deadline)<br/>[The Team Project — Working on One Thing at Once](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/the-team-project.html#working-on-one-thing-at-once)<br/>[The Team Project — Reviewing Each Other's Work](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/the-team-project.html#reviewing-each-others-work) |
 
 ## Vocabulary
 
-The tutorials mark a term being introduced by putting it in italics the first time it means something particular. **85 terms** are marked that way, and asking two questions of them is free.
+The tutorials mark a term being introduced by putting it in italics the first time it means something particular. **104 terms** are marked that way, and asking two questions of them is free.
 
 ### Introduced more than once
 
@@ -326,12 +364,22 @@ The same word presented as new in two places. Either it is being introduced twic
 
 | Term | Introduced in tutorials |
 |---|---|
-| *cracking equations* | 16, 19 |
-| *expressions come alive* | 17, 19 |
-| *finding things* | 9, 18 |
+| *building reusable tools* | 5, 23 |
+| *cracking equations* | 16, 19, 23, 24, 31 |
+| *drawing functions* | 24, 25, 27, 28 |
+| *expressions come alive* | 17, 18, 23, 31 |
+| *finding things* | 9, 20 |
 | *index* | 6, 7, 15 |
-| *set* | 17, 18 |
-| *solve* | 16, 17 |
+| *lines and distances* | 26, 27, 28, 30 |
+| *making sense of data* | 14, 25 |
+| *numbers and their families* | 19, 31 |
+| *parabolas* | 27, 30 |
+| *pictures worth numbers* | 23, 25 |
+| *see* | 22, 29 |
+| *set* | 18, 20 |
+| *sets as sorted lists* | 21, 22, 31 |
+| *solve* | 16, 18 |
+| *storing and computing* | 3, 17, 29 |
 | *zahlen* | 2, 15 |
 
 ### Used before it was introduced
@@ -342,30 +390,45 @@ A word appearing in an earlier tutorial than the one that stops to explain it. S
 |---|---:|---:|
 | *argument* | 5 | 7 |
 | *before* | 2 | 3 |
+| *between* | 2 | 28 |
 | *counting carefully* | 11 | 12 |
 | *design* | 8 | 10 |
+| *drawing functions* | 23 | 24 |
 | *expression* | 1 | 16 |
 | *expressions come alive* | 16 | 17 |
 | *finding things* | 8 | 9 |
-| *first steps* | 1 | 19 |
+| *first steps* | 1 | 31 |
+| *function* | 2 | 23 |
 | *functions* | 2 | 7 |
 | *how* | 2 | 3 |
 | *independent* | 10 | 12 |
+| *inside* | 4 | 28 |
+| *lines and distances* | 23 | 26 |
+| *local* | 8 | 30 |
+| *logic and truth* | 21 | 22 |
+| *making decisions* | 4 | 21 |
 | *making sense of data* | 13 | 14 |
 | *numbers and their families* | 15 | 19 |
+| *opposite* | 19 | 28 |
+| *parabolas* | 24 | 27 |
 | *parameters* | 7 | 10 |
+| *pictures worth numbers* | 14 | 23 |
 | *power* | 2 | 15 |
-| *putting things in order* | 9 | 18 |
+| *putting things in order* | 9 | 20 |
+| *reaches* | 5 | 29 |
 | *repeating yourself* | 6 | 11 |
 | *repetition* | 4 | 11 |
 | *representation* | 2 | 16 |
 | *return values* | 7 | 10 |
-| *set* | 3 | 17 |
-| *sets as sorted lists* | 18 | 19 |
+| *see* | 1 | 22 |
+| *set* | 3 | 18 |
+| *sets as sorted lists* | 20 | 21 |
 | *solve* | 7 | 16 |
 | *storing and computing* | 2 | 3 |
+| *the unit circle* | 25 | 28 |
 | *tools* | 3 | 10 |
 | *what* | 2 | 3 |
+| *wrong* | 3 | 26 |
 
 ## Scope questions, settled
 

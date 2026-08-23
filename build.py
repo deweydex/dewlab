@@ -189,6 +189,18 @@ class Tutorial:
         return self.status == "archived"
 
     @property
+    def practice_for(self) -> str:
+        """The slug of the tutorial this page sets problems on, or "".
+
+        A practice page is a tutorial in every mechanical sense — same
+        frontmatter, same cells, same saved work — and belongs to a tutorial
+        rather than to a series. So it is built and reachable and linked, and it
+        is not on the reading order, which is the same shape an archived
+        tutorial already has.
+        """
+        return str(self.meta.get("practice_for") or "")
+
+    @property
     def version(self) -> str:
         return str(self.meta["version"])
 
@@ -545,6 +557,49 @@ def versions_of(tutorials: list[Tutorial]) -> list[Tutorial]:
     return built
 
 
+def practice_pairs(
+    tutorials: list[Tutorial], registry: dict[tuple[str, str], Tutorial]
+) -> dict[tuple[str, str], Tutorial]:
+    """Each tutorial's page of problems, by the tutorial it belongs to.
+
+    A practice page names its tutorial with `practice_for:`. Both directions are
+    checked here rather than being discovered by a reader following a link that
+    goes nowhere: the tutorial has to exist, it has to be in the same module,
+    and no two practice pages may claim the same one.
+
+    A practice page also declares no coverage. It sets problems on what its
+    tutorial taught, and counting it would report the same outcome as taught
+    twice — see `planning/EXERCISES.md`.
+    """
+    pairs: dict[tuple[str, str], Tutorial] = {}
+    for page in tutorials:
+        target = page.practice_for
+        if not target or not page.is_default:
+            continue
+        if page.meta.get("covers"):
+            fail(page.path, "is a practice page and declares `covers:`. It sets "
+                            "problems on what its tutorial taught; saying so "
+                            "twice would report one outcome as covered by two "
+                            "pages.")
+        if target == page.slug:
+            fail(page.path, f"has practice_for: {target}, which is itself.")
+        owner = registry.get((page.module, target))
+        if owner is None:
+            fail(page.path, f"has practice_for: {target}, and no tutorial in "
+                            f"{page.module} has that slug.")
+        if owner.practice_for:
+            fail(page.path, f"has practice_for: {target}, which is itself a "
+                            "practice page. Problems about problems is not a "
+                            "shape this supports.")
+        key = (page.module, target)
+        if key in pairs:
+            fail(page.path, f"has practice_for: {target}, and so does "
+                            f"{pairs[key].path.relative_to(ROOT)}. A tutorial "
+                            "has one page of problems.")
+        pairs[key] = page
+    return pairs
+
+
 def archived_of(tutorials: list[Tutorial]) -> dict[str, list[Tutorial]]:
     """Retired tutorials, per module, newest title order.
 
@@ -577,6 +632,12 @@ def series_of(tutorials: list[Tutorial]) -> dict[tuple[str, str], list[Tutorial]
         # Only the current, live version of each tutorial is on the route. A
         # superseded release is still readable; it is not part of the course.
         if tutorial.status != "live" or not tutorial.is_default:
+            continue
+        # A practice page hangs off its tutorial rather than sitting between two
+        # others. Putting it on the route would double the length of every
+        # series and put a page of problems between a reader and the next thing
+        # they are meant to learn.
+        if tutorial.practice_for:
             continue
         groups.setdefault((tutorial.module, tutorial.series), []).append(tutorial)
 
@@ -1153,6 +1214,7 @@ def render_index(
     groups: dict[tuple[str, str], list[Tutorial]],
     archives: dict[tuple[str, str], Path] | None = None,
     retired: dict[str, list[Tutorial]] | None = None,
+    practice: dict[tuple[str, str], Tutorial] | None = None,
 ) -> str:
     """The contents page: every module, every series, in order.
 
@@ -1162,6 +1224,7 @@ def render_index(
     """
     archives = archives or {}
     retired = retired or {}
+    practice = practice or {}
     if not groups:
         return "<p>No tutorials have been written yet.</p>"
 
@@ -1214,8 +1277,17 @@ def render_index(
             out.append('<ol class="dl-contents">')
             for member in members:
                 href = member.out_path.relative_to(OUT).as_posix()
+                # Beside the tutorial rather than under it as a second numbered
+                # item: a practice page is not the next thing to read, it is the
+                # other half of this one.
+                also = practice.get((member.module, member.slug))
+                extra = ""
+                if also is not None:
+                    where = also.out_path.relative_to(OUT).as_posix()
+                    extra = (f' <a class="dl-contents-practice" href="{where}">'
+                             "practice</a>")
                 out.append(
-                    f'<li><a href="{href}">{html.escape(member.title)}</a></li>'
+                    f'<li><a href="{href}">{html.escape(member.title)}</a>{extra}</li>'
                 )
             out.append("</ol>")
             archive = archives.get((owner, series))
@@ -1439,8 +1511,41 @@ def canonical_link(tutorial: Tutorial, default: Tutorial | None) -> str:
     return f'<link rel="canonical" href="{html.escape(here, quote=True)}">'
 
 
+def practice_link(tutorial: Tutorial, practice: Tutorial | None,
+                  registry: dict[tuple[str, str], Tutorial] | None = None) -> str:
+    """The link between a tutorial and its page of problems, in both directions.
+
+    On the tutorial it sits at the end, because that is when a reader wants it.
+    On the practice page it sits at the top, because somebody who has arrived
+    there and cannot do the first question needs the way back before they need
+    anything else.
+    """
+    if tutorial.practice_for:
+        owner = (registry or {}).get((tutorial.module, tutorial.practice_for))
+        if owner is None:
+            return ""
+        where = os.path.relpath(owner.out_path, tutorial.out_path.parent)
+        return (
+            '<p class="dl-practice-back">Problems on '
+            f'<a href="{where}">{html.escape(owner.title)}</a>. '
+            "Everything here is answerable from that tutorial, and every answer "
+            "is on this page behind a fold.</p>"
+        )
+    if practice is None:
+        return ""
+    where = os.path.relpath(practice.out_path, tutorial.out_path.parent)
+    return (
+        '<p class="dl-practice-link">'
+        f'<a href="{where}">Practice problems for this tutorial</a> — '
+        "worth doing when you have finished reading, with the answers beside "
+        "the questions.</p>"
+    )
+
+
 def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "",
-          default: Tutorial | None = None, family: list[Tutorial] | None = None) -> Path:
+          default: Tutorial | None = None, family: list[Tutorial] | None = None,
+          practice: Tutorial | None = None,
+          registry: dict[tuple[str, str], Tutorial] | None = None) -> Path:
     up = "../" * tutorial.depth
     manifest: dict[str, object] = {
         "slug": tutorial.slug,
@@ -1486,7 +1591,12 @@ def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "",
         "{{PAGE_SCRIPT}}": "",
         "{{DOWNLOAD}}": download_section(tutorial),
         "{{TOC}}": render_toc(tutorial),
-        "{{BODY}}": page_notice(tutorial, default) + body_html,
+        "{{BODY}}": (
+            page_notice(tutorial, default)
+            + (practice_link(tutorial, practice, registry) if tutorial.practice_for else "")
+            + body_html
+            + (practice_link(tutorial, practice, registry) if not tutorial.practice_for else "")
+        ),
         # `<` escaped so nothing in a cell can close the surrounding <script>.
         "{{MANIFEST_JSON}}": json.dumps(manifest).replace("<", "\\u003c"),
     }
@@ -1672,6 +1782,7 @@ def write_index(
     groups: dict[tuple[str, str], list[Tutorial]],
     archives: dict[tuple[str, str], Path] | None = None,
     retired: dict[str, list[Tutorial]] | None = None,
+    practice: dict[tuple[str, str], Tutorial] | None = None,
 ) -> Path:
     """The contents page at the site root, which every page's masthead links to."""
     manifest = {"slug": "index", "version": 1, "assetBase": "assets/",
@@ -1697,7 +1808,7 @@ def write_index(
         "{{DOWNLOAD}}": "",
         # The contents page is a contents page. It does not need one of its own.
         "{{TOC}}": "",
-        "{{BODY}}": render_index(groups, archives, retired),
+        "{{BODY}}": render_index(groups, archives, retired, practice),
         "{{MANIFEST_JSON}}": json.dumps(manifest).replace("<", "\\u003c"),
     }
     page = shell
@@ -1928,6 +2039,8 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
     for tutorial in tutorials:
         families.setdefault((tutorial.module, tutorial.slug), []).append(tutorial)
 
+    practice = practice_pairs(tutorials, registry)
+
     shell = SHELL.read_text()
     groups = series_of(tutorials)
     retired = archived_of(tutorials)
@@ -1941,6 +2054,8 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
             tutorial, shell, resolve_links(tutorial, registry), nav_for(tutorial, members),
             default=registry.get((tutorial.module, tutorial.slug)),
             family=families.get((tutorial.module, tutorial.slug)),
+            practice=practice.get((tutorial.module, tutorial.slug)),
+            registry=registry,
         )
         written.append(page_path)
         # 0.7MB against 19KB for the hosted page, so only the version students
@@ -1955,7 +2070,7 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
         written.extend(archives.values())
 
     if tutorials:
-        written.append(write_index(shell, groups, archives, retired))
+        written.append(write_index(shell, groups, archives, retired, practice))
         tree = write_tree_page(shell, tutorials)
         if tree is not None:
             written.append(tree)
