@@ -94,6 +94,19 @@ The sum of the roots is $-b/a$ and their product is $c/a$, which is a quick way 
 
 **4.** A quadratic passes through $(0, 6)$ and has roots at 1 and 3. Find it.
 
+<details class="dl-hint"><summary>stuck? here are some steps</summary>
+
+1. Knowing the roots tells you the shape. Start by writing the quadratic that has roots 1 and 3, in factorised form, without worrying about the scale.
+2. Multiply that out, or leave it factorised — either works for the next step.
+3. Now use the third fact. What does "passes through $(0, 6)$" let you substitute?
+4. Whatever number your factorised form gives at $x = 0$, you need it to be 6.
+
+**Think about:** two roots fixed the shape and one point fixed the size. Three facts, three coefficients — count them and see that it had to work.
+
+**Try this next:** find the quadratic with roots 1 and 3 passing through $(2, -4)$. What does the sign of the scale factor do to the picture?
+
+</details>
+
 <details class="dl-answer"><summary>answer</summary>
 
 $2x^2 - 8x + 6$.
@@ -117,6 +130,19 @@ Positive root only, because a radius is a length. That restriction comes from th
 </details>
 
 **6.** Make $x$ the subject of $y = \dfrac{2x + 1}{x - 3}$.
+
+<details class="dl-hint"><summary>stuck? here are some steps</summary>
+
+1. The unknown is on the bottom of a fraction, so the first move is always to get it off there. Multiply both sides by $x - 3$.
+2. Expand, and look at where $x$ now appears. There are two of them.
+3. Get every term containing $x$ onto one side and everything else onto the other.
+4. Now factor $x$ out of that side, and divide.
+
+**Think about:** step 4 is only possible because you gathered first. Whenever the unknown appears twice, gathering and factoring is the move.
+
+**Try this next:** your answer is undefined at one value of $y$. Work out which, then check that the original expression never produces that value.
+
+</details>
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -181,6 +207,19 @@ Every "where do these meet" question is a "solve this equation" question, and th
 </details>
 
 **11.** For what values of $m$ does the line $y = mx + 1$ miss the parabola $y = x^2$ entirely?
+
+<details class="dl-hint"><summary>stuck? here are some steps</summary>
+
+1. "Misses entirely" means they never meet. Start by writing the equation for where they *do* meet.
+2. Set them equal and bring everything to one side. You should have a quadratic in $x$.
+3. A quadratic has no real solutions exactly when one particular quantity is negative. Which?
+4. Work out that quantity in terms of $m$, and ask for what values of $m$ it is negative.
+
+**Think about:** you should find there are none. Before trusting the algebra, sketch the parabola and a line through $(0, 1)$ and see whether the picture agrees.
+
+**Try this next:** change the line to $y = mx - 1$ and redo it. Now there is a range of $m$ that misses. Why does the sign of the intercept change everything?
+
+</details>
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -247,6 +286,19 @@ Python prints `0j`, which is zero. Note the $4i^2$ becoming $-4$ — that single
 
 **16.** A rectangular pen is built against a wall, so only three sides need fencing. With 60 m of fence, what dimensions give the largest area?
 
+<details class="dl-hint"><summary>stuck? here are some steps</summary>
+
+1. Draw it. Three sides are fenced and one is the wall — decide which of the three are equal.
+2. Call the two equal sides $x$. If the total fence is 60, how long is the third side?
+3. Write the area as a product of those two expressions. It is a quadratic in $x$.
+4. A quadratic's highest point sits at $x = -b/2a$. You do not need calculus for this one.
+
+**Think about:** without the wall, the best rectangle for a fixed perimeter is a square. The wall changes the answer. Why?
+
+**Try this next:** what if the wall is only 20 m long, so the side along it cannot exceed 20? Where is the best pen now?
+
+</details>
+
 <details class="dl-answer"><summary>answer</summary>
 
 30 m along the wall and 15 m out, giving 450 m².
@@ -258,6 +310,19 @@ A square pen — 20 by 20 — would use 60 m of fence on all four sides and encl
 </details>
 
 **17.** A ball is thrown from a 2 m ledge at 15 m/s upwards. Its height is $h = 2 + 15t - 4.9t^2$. When does it land, how high does it get, and when is it above 10 m?
+
+<details class="dl-hint"><summary>stuck? here are some steps</summary>
+
+1. Three questions, three different things to solve for. Take them separately.
+2. "Lands" means the height is back to zero. That is a quadratic to solve, and it has two roots — one of which is in the past.
+3. The peak of a downward parabola is at $t = -b/2a$. Find the time first, then substitute for the height.
+4. "Above 10 m" means $h > 10$, so bring the 10 across and solve the quadratic you get.
+
+**Think about:** for the last part the parabola opens downwards, so the region above 10 m is *between* the two roots, not outside them. Sketching it settles which.
+
+**Try this next:** how long is the ball above 12 m? Above 14 m? At what height does the answer become "never"?
+
+</details>
 
 <details class="dl-answer"><summary>answer</summary>
 

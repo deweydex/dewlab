@@ -62,6 +62,19 @@ $1 - \frac{10}{84} = \frac{74}{84} \approx 0.881$.
 
 **3.** Four cards are dealt. What is the probability they are all different suits?
 
+<details class="dl-hint"><summary>stuck? here are some steps</summary>
+
+1. Deal the cards one at a time and ask what has to be true at each step.
+2. The first card can be anything. What fraction of the remaining pack keeps the second card in a new suit?
+3. Carry on for the third and fourth. The denominators shrink because cards have gone.
+4. Now count a second way: how many four-card *hands* have one of each suit, out of all four-card hands?
+
+**Think about:** the two routes look completely different and give the same number. When they do not, one of them has confused ordered sequences with unordered hands.
+
+**Try this next:** the probability that four cards are all *different ranks*. Same shape, different numbers.
+
+</details>
+
 <details class="dl-answer"><summary>answer</summary>
 
 About 0.1055.
@@ -110,6 +123,19 @@ The Venn diagram region is the answer, divided by the total. Probability on a fi
 
 **7.** Are "takes maths" and "takes physics" independent in that class?
 
+<details class="dl-hint"><summary>stuck? here are some steps</summary>
+
+1. Independence is not a feeling about whether two things are connected. It is an arithmetic test.
+2. Work out $P(M)$ and $P(P)$ from the class of 30.
+3. Multiply them. That is what $P(M \cap P)$ would be if the two were independent.
+4. Compare with the actual overlap of 8 out of 30.
+
+**Think about:** they are close but not equal. What would it mean about the class if the overlap were larger than the product? Smaller?
+
+**Try this next:** how many students would have to take both for the two to be exactly independent? Is that a whole number?
+
+</details>
+
 <details class="dl-answer"><summary>answer</summary>
 
 Not quite. $P(M) = 0.6$, $P(P) = 0.5$, and their product is 0.30. But $P(M \cap P) = \frac{8}{30} \approx 0.267$.
@@ -140,6 +166,19 @@ In code it is the rewrite that turns `not (a and b)` into `not a or not b`, whic
 </details>
 
 **9.** A system logs a warning if the temperature is above 80 *and* either the fan has failed *or* the load is above 90%. Write the condition, then its negation.
+
+<details class="dl-hint"><summary>stuck? here are some steps</summary>
+
+1. Write the condition in ordinary words first: warn when the temperature is high *and* one of two other things is true.
+2. Turn that into Python, and be careful with brackets — `and` binds more tightly than `or`, so the grouping matters.
+3. For the negation, apply De Morgan's law: the negation of "A and B" is "not A or not B".
+4. The inner bracket needs negating too, and every comparison flips — including its boundary.
+
+**Think about:** if you write `temperature < 80` where you should write `<=`, exactly one temperature falls through both branches. Which, and how long would that take to find?
+
+**Try this next:** write a small loop that tests every combination of inputs against both conditions and asserts they are always opposite.
+
+</details>
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -216,6 +255,19 @@ With 10,000 rolls the agreement is usually to about three decimal places. With 1
 
 **14.** A spam filter flags 95% of spam and wrongly flags 2% of real mail. 40% of incoming mail is spam. A message is flagged. What is the probability it is spam?
 
+<details class="dl-hint"><summary>stuck? here are some steps</summary>
+
+1. Do not start with the formula. Take a thousand messages and count what happens to them.
+2. How many are spam, and how many of those get flagged?
+3. How many are real, and how many of *those* get flagged anyway?
+4. Of everything flagged, what fraction was actually spam?
+
+**Think about:** compare this with the disease example, where the same-sounding accuracy gave 1%. The test did not change; the base rate did.
+
+**Try this next:** what if only 2% of mail were spam? Work it out with counts again, and see how far the answer moves.
+
+</details>
+
 <details class="dl-answer"><summary>answer</summary>
 
 About 96.9%.
@@ -241,6 +293,19 @@ The counting term $C(10,5)$ is there because there are 252 different ways to be 
 </details>
 
 **16.** Three friends each pick a number from 1 to 10. What is the probability at least two pick the same?
+
+<details class="dl-hint"><summary>stuck? here are some steps</summary>
+
+1. "At least two the same" is awkward to count directly — there are several ways it can happen.
+2. Count the opposite instead: all three different.
+3. The first person can pick anything. What fraction of choices keeps the second different? The third?
+4. Subtract from 1.
+
+**Think about:** this is the birthday problem with ten days in the year instead of 365. The method is identical and only the numbers change.
+
+**Try this next:** how many people does it take for "at least two the same" to pass a half, out of 10? Out of 365?
+
+</details>
 
 <details class="dl-answer"><summary>answer</summary>
 

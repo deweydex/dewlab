@@ -92,6 +92,19 @@ The gaps are 5 across and 12 up — a 5-12-13 triangle, which is worth recognisi
 
 **5.** A triangle has sides 7 and 9 with an angle of 40° between them. Find the third side and the remaining angles.
 
+<details class="dl-hint"><summary>stuck? here are some steps</summary>
+
+1. Draw the triangle. You have two sides and the angle *between* them, which rules out the sine rule as a starting point.
+2. The cosine rule takes exactly that arrangement: two sides and the included angle give you the third side.
+3. Once you have all three sides, the sine rule will give you an angle.
+4. Use it on the *shorter* of the two remaining sides. That matters — see the reflection.
+
+**Think about:** the sine rule cannot tell an acute angle from its obtuse partner, because both have the same sine. The angle opposite the shorter side is always acute, so choosing it removes the ambiguity rather than gambling on it.
+
+**Try this next:** find the third angle by subtracting from 180 instead, and check it agrees. Which method would you trust if the numbers were measured rather than given?
+
+</details>
+
 <details class="dl-answer"><summary>answer</summary>
 
 Third side about 5.80; the other angles about 51.0° and 89.0°.
@@ -113,6 +126,19 @@ For a right triangle the area is half the product of the two short sides. Heron'
 </details>
 
 **7.** Two sides of a triangle are 8 and 5, and the angle opposite the 5 is 30°. Find the third side.
+
+<details class="dl-hint"><summary>stuck? here are some steps</summary>
+
+1. You have two sides and an angle *not* between them. Sketch it: put the 8 down, mark the 30° at one end, and swing the 5 from the far end.
+2. The sine rule gives you the angle opposite the 8. Work out its sine first, before taking an inverse.
+3. Now stop. Your calculator gives one angle. Is there another angle between 0° and 180° with the same sine?
+4. Each of those two angles gives a different third angle, and so a different third side.
+
+**Think about:** the picture shows this directly — swinging the 5 crosses the base in two places. This is why the arrangement is called the ambiguous case.
+
+**Try this next:** change the 5 to a 3 and try again. What happens, and what does the picture look like now?
+
+</details>
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -178,6 +204,19 @@ The 3 is the mean level, the 2 is the amplitude, and the period is $\frac{2\pi}{
 
 **12.** A boat needs 4 m of water. Using the tide above, for how long each cycle can it enter?
 
+<details class="dl-hint"><summary>stuck? here are some steps</summary>
+
+1. Write down the inequality the question is asking for, using the tide formula.
+2. Rearrange it until the sine is on its own on one side.
+3. You now need the angles whose sine is at least that value. On the unit circle, which arc is that?
+4. That arc is a fraction of a full turn. The same fraction of the period is your answer.
+
+**Think about:** you never needed to work out an actual time. The answer came out as a proportion of the cycle, which means it is the same for any harbour with this amplitude.
+
+**Try this next:** a boat needing 4.5 m. Then one needing 5.5 m. At what depth does the answer become zero, and why does that make sense?
+
+</details>
+
 <details class="dl-answer"><summary>answer</summary>
 
 About 4.13 hours per cycle.
@@ -209,6 +248,19 @@ Every trigonometric identity is a fact about that circle written in a different 
 ## Longer Ones
 
 **14.** Three phone masts are at $(0,0)$, $(10,0)$ and $(4,8)$, in kilometres. A phone is 6 km from the first and 7 km from the second. Where might it be, and does the third mast settle it?
+
+<details class="dl-hint"><summary>stuck? here are some steps</summary>
+
+1. Two distances from two known points. Write each as an equation — the set of points at a fixed distance from a point is a circle.
+2. Subtracting one circle equation from the other kills the $x^2$ and $y^2$ terms. What is left is a straight line.
+3. That line is where the two circles cross. Substitute back into either circle to find the two points on it.
+4. Now use the third mast: compute the distance from each candidate to $(4, 8)$.
+
+**Think about:** two measurements always leave two candidates, and no amount of accuracy fixes that. The third measurement is not about precision, it is about which side you are on.
+
+**Try this next:** what if the third mast were at $(4, 0)$ instead — on the line between the other two? Would it still settle the question?
+
+</details>
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -257,6 +309,19 @@ The arc is $r\theta = 5 \times 1.287$. It is longer than the chord, as it must b
 </details>
 
 **18.** Write a function that takes three points and returns the three interior angles of the triangle they form. Test it on an equilateral one.
+
+<details class="dl-hint"><summary>stuck? here are some steps</summary>
+
+1. You have three points, so start by turning them into three side lengths.
+2. To get an angle from three sides, rearrange the cosine rule so that the cosine is on its own.
+3. Be careful about which side is opposite which angle. For the angle at $p$, the opposite side is the one joining $q$ and $r$.
+4. `math.acos` returns radians; convert.
+
+**Think about:** the cosine rule works from three sides and never meets the ambiguous case, because `acos` only returns angles between 0° and 180° — exactly the range an interior angle can occupy.
+
+**Try this next:** assert that your three angles sum to 180°. Then try three points in a straight line and see what the function does.
+
+</details>
 
 <details class="dl-answer"><summary>answer</summary>
 

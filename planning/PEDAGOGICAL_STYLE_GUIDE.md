@@ -1,155 +1,318 @@
-# Pedagogical Style Guide for dewlab Tutorials
+# Pedagogical style guide
 
-A guide for authors, educators, and contributors on designing, structuring, and writing engaging, interactive computational tutorials in dewlab.
+How dewlab tutorials are written, and why. This merges two documents — Josh's
+general guide for his QQI Level 5 classes, which governs all his teaching
+materials, and an earlier dewlab-specific guide — into one that describes this
+repository rather than a repository somebody imagined.
 
----
-
-## 1. Our Core Teaching Philosophy
-
-dewlab brings mathematics and programming together as mutual partners. Code is not merely a tool for automating calculations, and mathematics is not just abstract theory behind algorithms. In dewlab, **computing is an interactive laboratory for mathematical intuition**, and **mathematics provides the foundational structure for computational thinking**.
-
-### Key Principles
-
-#### 1. Discover First, Name Afterwards
-Introduce students to concrete experiments and intuitive problem-solving *before* formalizing terminology, abstract definitions, or rigorous notation.
-- *Example (Algorithms)*: Guide students through halving an ordered phonebook or sorted list step-by-step in code. Once they experience how fast the search space shrinks, introduce the formal names: **Binary Search** and **Divide-and-Conquer**.
-- *Example (Linear Algebra)*: Multiply a 3×3 weather transition matrix repeatedly in Python and watch the state vector settle onto stable probabilities. Then, explain that this equilibrium is a **stationary distribution** of a **Markov chain**.
-- *Example (Calculus)*: Compute secant line slopes between $(x, f(x))$ and $(x + h, f(x + h))$ for shrinking values of $h = 0.1, 0.01, 0.001$. Once students see the numbers converge to a tangent slope, introduce the limit definition of the **derivative**.
-
-#### 2. Plain, Welcoming Language Over Academic Jargon
-Adult learners and students meeting computing or higher mathematics for the first time often carry anxiety from previous educational experiences. 
-- Choose **plain, descriptive titles**: *Lines and Distances* instead of *Coordinate Geometry*; *How We Got Here* instead of *The Computing Time Machine*.
-- Demystify concepts using accessible analogies before introducing formal symbols.
-
-#### 3. Respect Cognitive Load
-- Keep executable code cells short, readable, and focused (typically 5–15 lines).
-- Avoid overwhelming students with extraneous syntax or unmotivated configuration boilerplate.
-- Frame error messages as helpful diagnostic feedback rather than failures.
+Where the two disagreed, section 8 says which won and on what grounds. Where
+either disagreed with the code, the code won and the guide was corrected.
 
 ---
 
-## 2. The Anatomy of an Ideal dewlab Tutorial
+## 1. Who this is for
 
-Every tutorial follows a natural, predictable rhythm that builds confidence through hands-on experimentation:
+QQI Level 5, Irish further education, in Dublin. Adult learners, most returning
+to education after a break, many balancing work and family with study. Prior
+academic experience varies enormously inside one room, and confidence varies
+more than ability does.
 
-```mermaid
-graph TD
-    A[1. Motivation & The Core Question] --> B[2. Concrete Computational Experiment]
-    B --> C[3. Mathematical Explanation & Visualization]
-    C --> D[4. Guided Challenge / 'Your Turn']
-    D --> E[5. Formative Self-Check]
-    E --> F[6. Reflection & Synthesis]
-```
+The practical consequences are specific rather than sentimental. Assume five to
+seven hours a week including three or four contact hours, so a tutorial is an
+hour of somebody's evening and not a chapter. Assume no prior knowledge without
+saying so. Assume somebody in the room is reading this in their second language
+and somebody else has not done mathematics since school and expects to be bad at
+it.
 
-### Step-by-Step Structure
-
-### 1. Motivation & The Core Question
-Open with a relatable question or computational challenge. Why does this concept matter? Where does it appear in software engineering, data analysis, graphics, or everyday life?
-
-### 2. Concrete Computational Experiment
-Provide a pre-written, runnable code cell that works immediately when the student clicks **Run**.
-```python exec
-id: intro-experiment-1
-# Let's see what happens to a unit circle when we plot (cos θ, sin θ)
-import numpy as np
-import matplotlib.pyplot as plt
-
-theta = np.linspace(0, 2 * np.pi, 200)
-x = np.cos(theta)
-y = np.sin(theta)
-
-fig, ax = plt.subplots(figsize=(5, 5))
-ax.plot(x, y, color="#1B2A4A", linewidth=2)
-ax.set_aspect("equal")
-ax.grid(True, linestyle="--", alpha=0.6)
-plt.title("The Unit Circle: x² + y² = 1")
-plt.show()
-```
-
-### 3. Mathematical Explanation & Visualization
-Connect the code output directly to the mathematical ideas. Use clear KaTeX notation to formalize the relationship:
-$$\cos^2(\theta) + \sin^2(\theta) = 1$$
-Explain *why* the equation holds geometrically using the Pythagorean theorem on coordinates $(x, y)$.
-
-### 4. Guided Challenge ("Your Turn")
-Give the student an active task to modify the code or solve a related problem. Provide a clear starter cell with helpful comments.
-```python exec
-id: your-turn-1
-hint: Remember that the hypotenuse is the distance from the origin (0, 0) to (x, y).
-# Calculate the Euclidean distance between point A (2, 3) and point B (5, 7)
-import numpy as np
-
-p1 = np.array([2, 3])
-p2 = np.array([5, 7])
-
-# Your code here:
-distance = ...
-print("Calculated distance:", distance)
-```
-
-### 5. Formative Self-Check
-Where appropriate, use `check()` from `tutorial_tools.py` to give instant, encouraging feedback without punitive scoring:
-```python exec
-id: check-distance-1
-from tutorial_tools import check
-
-# Verify your calculated distance
-expected_distance = 5.0
-check(distance, expected_distance, tolerance=1e-3)
-```
-
-### 6. Reflection & Synthesis
-Conclude with a brief reflection prompt or connection to upcoming topics:
-- *What surprised you about this behavior?*
-- *How does this concept connect to what we built in the previous tutorial?*
+The teaching this is rooted in is Freire's problem-posing education, Dewey on
+experience, Kohn on what grades do to motivation, hooks on engaged pedagogy,
+Finn on literacy and power, and Moses on mathematics as a civil right. That
+lineage is not decoration. It is why nothing here is scored, why every answer is
+visible to the student who wants it, and why the tutorials ask questions before
+they give names.
 
 ---
 
-## 3. Terminology & Style Conventions
+## 2. What dewlab is for
 
-To avoid confusion when moving between mathematics and programming, adhere to consistent terminology across all tutorials:
+Mathematics and programming as mutual partners rather than one serving the
+other. Code is an instrument for building mathematical intuition; mathematics is
+the structure underneath computational thinking. A student who has watched a
+sequence of secant slopes settle onto a number has met the derivative in a way
+that a definition cannot deliver.
 
-| Concept | Recommended Usage | Avoid / Deprecate | Rationale |
-|---|---|---|---|
-| Powers / Exponents | **Power** or **Exponent** ($x^2, 2^n$) | *Index / Indices* (for exponents) | Reserve *index* and *indices* strictly for sequence and list positioning (`list[i]`) or summation bounds ($\sum_{i=1}^n$). |
-| Functions | Distinguish **Mathematical Function** ($f(x) = x^2$) from **Python Callable** (`def f(x):`) | Unclear conflation | Clarify whether discussing a pure mathematical mapping or a programmatic subroutine with possible side effects. |
-| Data Spread vs Generator | **Spread / Dispersion** for data; **`range()`** for Python loops | Ambiguous "range" | Distinguishes descriptive statistical spread from Python iteration generators. |
-| Discrete Sets | **Set** ($\{1, 2, 3\}$) | *List* (when unordered) | Emphasize uniqueness and unordered mathematical properties over sequential collections. |
+The two things this makes possible, which paper cannot:
+
+**You can just try it.** A limit is an argument on paper and an experiment here.
+So is a probability, a sorting algorithm's cost, and the floating-point floor.
+
+**Being wrong is cheap and visible.** A cell that raises an error in front of a
+reader is better teaching than a warning that they might. Errors are diagnostic
+information, not failures, and the runtime trims its own frames out of the
+traceback so that what is left is the student's line.
 
 ---
 
-## 4. Practice Sets & Self-Evaluation Guidelines
+## 3. How a tutorial is shaped
 
-Practice problem pages (`<slug>-practice.md`) accompany core tutorials to reinforce mastery through deliberate practice:
+Not a rule, a rhythm. Most tutorials move through these and some earn a
+different order.
 
-### 1. In-Line Collapsible Solutions
-Place answers directly beneath each problem in a collapsible `<details>` fold:
-```markdown
-**Problem 3:** Find the coordinates of the point on the unit circle at $\theta = \frac{\pi}{4}$ radians ($45^\circ$).
+**Open with the question.** What is this for, and where would somebody meet it?
+The opening paragraph should be answerable to "why am I reading this", and a
+reader who stops after it should have learned something.
 
-<details>
-<summary>Check solution</summary>
+**Give them something to run.** The first cell should work on the first click,
+before anything has been explained. Confidence comes from the machine doing
+something, and it comes early or not at all.
 
-At $\theta = \frac{\pi}{4}$:
-$$x = \cos\left(\frac{\pi}{4}\right) = \frac{\sqrt{2}}{2} \approx 0.7071$$
-$$y = \sin\left(\frac{\pi}{4}\right) = \frac{\sqrt{2}}{2} \approx 0.7071$$
+**Then the explanation.** Connect what the code did to what the mathematics
+says. Formalise here, not before.
 
-The point is $\left(\frac{\sqrt{2}}{2}, \frac{\sqrt{2}}{2}\right)$.
+**Then their turn.** An active task with a starter cell, and a `hint:` if the
+step is not obvious. A hint scaffolds; it does not answer.
+
+**Then a check, where one is honest.** `check()` gives instant feedback and
+records nothing. Not every task has a checkable answer, and forcing one produces
+questions shaped by the checker rather than by the subject.
+
+**Close by looking back.** What surprised you, what connects to what you already
+built, what is still unclear. These are not decoration — for many students the
+reflection is where the learning lands.
+
+### Discover first, name afterwards
+
+The order that matters most. Let a student halve a sorted list until the search
+space collapses, and *then* say the words binary search and divide and conquer.
+Let them multiply a transition matrix until the state vector stops moving, and
+then say stationary distribution. A name given before the experience is a name
+to memorise; a name given after it is a name for something they already have.
+
+---
+
+## 4. Voice
+
+**Prose, not bullets.** Explanations are paragraphs. Bullets are for genuinely
+discrete items — a checklist, a list of operators, four things that do not
+follow from each other. An explanation broken into fragments has had its joins
+removed, and the joins were the reasoning.
+
+**Invitational, not commanding.** "Let's try", "what happens when", "how might
+you". Not "Solve this problem" or "Complete the following". The difference is
+whether the sentence positions the reader as somebody being told what to do or
+somebody being invited to find something out.
+
+This licenses "let's" and rules out imperatives aimed at the student. Both
+halves matter and they are easy to confuse — see section 8.
+
+**Warm without condescension.** Adult learners hear the difference immediately.
+"This is easy" is the worst sentence available: if they find it hard, they now
+have a second problem.
+
+**Plain titles.** *Lines and Distances*, not *Coordinate Geometry*. *How We Got
+Here*, not *The Computing Time Machine*. A title names what the reader gets in
+words they already have.
+
+**Define every technical term where it first appears**, and mark it in italics
+the first time it means something particular. The build's vocabulary report
+reads those italics and will tell you when a term is used before it is
+introduced, or introduced twice with different meanings.
+
+**No emoji**, unless Josh asks for them.
+
+**Do not over-format.** Bold that appears in every paragraph has stopped meaning
+anything.
+
+---
+
+## 5. Code in a tutorial
+
+**Short cells.** Five to fifteen lines. A thirty-line cell has usually got two
+ideas in it and wants to be two cells.
+
+**No unmotivated boilerplate.** Every import earns its place. A student should
+not meet a configuration line whose purpose cannot be explained yet.
+
+**The seven tools are already there.** `show`, `show_table`, `check`,
+`text_input`, `dropdown`, `button` and `load_csv` are injected into the page
+namespace before any cell runs. Do not write `from tutorial_tools import check`
+— it works, and it teaches an import that is not part of how the page functions.
+
+**Figures need no `plt.show()`.** Creating a figure is enough; the runtime
+collects it. `plt.show()` is harmless and two tutorials use it, which is a small
+inconsistency worth removing rather than spreading.
+
+**Cell ids are a contract.** Lowercase, hyphenated, `<section-slug>-<n>`. Once a
+tutorial has been in front of a class, a cell id is the key somebody's saved work
+lives under, and renaming one throws that work away. The editor warns about this;
+believe it.
+
+**Deliberate failure is a teaching tool.** A cell that divides by zero, in a
+tutorial about what happens when you divide by zero, is better than a paragraph
+saying it would. Say in the prose that it is meant to fail, so a reader does not
+think they broke it.
+
+---
+
+## 6. Practice pages
+
+Every tutorial has one, at `<slug>-practice.md`, declared with `practice_for:`.
+Sets that draw on several tutorials use `practice_across:` and appear on the
+contents page under their module.
+
+**Answers go behind a fold beside the problem**, not in a key at the end:
+
+```html
+<details class="dl-answer"><summary>answer</summary>
+
+The answer, with the working.
+
 </details>
 ```
 
-### 2. Section-Level Python Verification Tools
-Instead of creating dozens of individual code cells for minor arithmetic, provide one or two interactive Python scratchpads per section where students can test any calculation.
+The `dl-answer` class is load-bearing — the styling and the fold marker come from
+it. The site is public, so an answer that exists can be read and no arrangement
+changes that; what is worth protecting is the moment before looking, and a fold
+is that moment made physical.
+
+**Hints go in a fold of their own, before the answer**, for problems where a
+student can get genuinely stuck:
+
+```html
+<details class="dl-hint"><summary>stuck? here are some steps</summary>
+
+1. The first thing to work out.
+2. What that lets you do next.
+3. The step people usually miss.
+
+**Think about:** the question that makes the method make sense.
+
+**Try this next:** a related problem the same steps solve.
+
+</details>
+```
+
+Two folds, opened in order, so a stuck student gets a route rather than the
+answer. The reflection and the follow-on question at the end matter as much as
+the steps — a hint that ends at the answer teaches the answer, and one that ends
+in a related question teaches the method.
+
+**A few tools per section, not a cell per problem.** One `python exec` cell
+holding the helpers that section needs. Sixty editors on a page is a slow page,
+and a cell under every question invites running it instead of thinking.
+
+**Answers are shown with complete working.** Every step, including the ones that
+look obvious. Note the common mistake where there is one, and give the second
+method where a second method is illuminating.
+
+**Every number in an answer gets run before it is published.** Twenty-one wrong
+numbers were caught this way in one afternoon and none of them would have failed
+a test, because no test asserts on prose.
 
 ---
 
-## 5. Author Checklist for New Tutorials
+## 7. Terminology
 
-Before publishing a new tutorial, verify that it fulfills our pedagogical criteria:
+Moving between mathematics and programming makes some words ambiguous. These are
+settled.
 
-- [ ] **Warm & Accessible Tone**: Is the opening welcoming and free of unmotivated jargon?
-- [ ] **Interactive First Step**: Can a student click **Run** on the first cell within 60 seconds of opening the page?
-- [ ] **Visual or Concrete Feedback**: Does the code produce visual plots, formatted tables, or tangible numbers?
-- [ ] **Stable Cell IDs**: Are all executable cell IDs unique, lowercase, and hyphenated (`section-slug-n`)?
-- [ ] **Clean Errors & Scaffolding**: Are hints provided for non-obvious tasks without giving away the full answer?
-- [ ] **Explicit Learning Outcome Mapping**: Does the frontmatter declare all taught (`covers:`) and referenced (`touches:`) outcome codes?
+| Use | Not | Because |
+|---|---|---|
+| **power**, **exponent** — $x^2$, $2^n$ | *index*, *indices* for exponents | *Index* is reserved for a position in a list, `list[i]`, and for a summation bound. The syllabus says *laws of indices*; recognise it, and say power. |
+| **mathematical function** $f(x) = x^2$, distinct from **Python function** `def f(x):` | conflating the two silently | One is a mapping, the other is a subroutine that may have side effects and may not be a mapping at all. |
+| **spread** or **dispersion** for data; **`range()`** for the Python generator | "range" unqualified | The statistical range and the loop generator are unrelated and both come up in the same tutorial. |
+| **set** $\{1, 2, 3\}$ | *list*, when order does not matter | Uniqueness and unorderedness are the point. |
+
+---
+
+## 8. Where the two guides disagreed
+
+Recorded rather than silently resolved, because somebody will meet the same
+question again.
+
+**Whether "let's" is allowed.** The two versions of Josh's general guide differ
+on this, and it is the only substantive difference between them. The earlier one
+bans command language and names *"Let's do this!"* and *"Now we'll…"* as
+examples. The revised one — `Josh_Educational_Reference_Document.md` — drops
+those examples, narrows the ban to imperatives aimed at the student (*"Solve
+this problem!"*, *"Complete this"*), and adds a positive requirement to use
+"welcoming and invitational or reflective language, like 'let's try' or 'what
+happens when' or 'how might you'".
+
+**The revised one governs.** "Let's" is invitational — it puts the writer and
+the reader on the same side of the problem — and the thing worth banning is the
+imperative that puts the writer above the reader. This matters practically: the
+tutorials are full of "let's", and reading the earlier guide literally would
+have meant rewriting thirty-five files to remove the warmth Josh asked for.
+
+**Bibliographies.** Josh's guide requires one in every tutorial, naming Khan
+Academy, 3Blue1Brown, StatQuest, Computerphile, Ben Eater, Sebastian Lague and
+others as the sources to prefer. **No tutorial in this repository has one.** That
+is a real gap rather than a disagreement, and it is the largest single piece of
+outstanding style work — thirty-five tutorials, each needing three or four
+genuinely useful further-reading entries with working links.
+
+**Stating learning outcomes at the start.** Josh's guide asks for them
+explicitly; dewlab puts them in frontmatter under `covers:`, where the build and
+the curriculum map read them and the student never sees them. The revised guide
+softens this to "when relevant". Whether a student-visible outcome line is worth
+adding is an open question for Josh — it would be a build change and a line on
+every page.
+
+**The `check()` example.** The earlier dewlab guide showed
+`from tutorial_tools import check`. Unnecessary and now removed from this guide;
+see section 5.
+
+**The fold markup.** The earlier dewlab guide showed a bare
+`<details><summary>Check solution</summary>`. The class is required; see section
+6.
+
+---
+
+## 9. Before publishing
+
+- Is the opening welcoming, and does it say why this is worth an hour?
+- Can a student click **Run** and see something happen within a minute of
+  arriving?
+- Does the code produce something visible — a plot, a table, a number that means
+  something?
+- Are the cell ids unique, lowercase, hyphenated, and stable?
+- Is every technical term defined where it first appears, and italicised once?
+- Does the frontmatter declare `covers:` for what is taught and `touches:` for
+  what is referenced?
+- Are the explanations prose rather than bullets?
+- Any command language aimed at the student? Any emoji?
+- Has every number in the tutorial and its practice page actually been run?
+- Does the practice page exist, and do hard problems carry a stepped hint?
+- Is there a bibliography? (Today the honest answer is no. See section 8.)
+
+---
+
+## 10. Sources
+
+The pedagogy this rests on:
+
+Freire, P. (1970). *Pedagogy of the Oppressed.* Continuum.
+
+Dewey, J. (1938). *Experience and Education.* Kappa Delta Pi.
+
+Kohn, A. (1993). *Punished by Rewards.* Houghton Mifflin.
+
+hooks, b. (1994). *Teaching to Transgress: Education as the Practice of
+Freedom.* Routledge.
+
+Finn, P. J. (1999). *Literacy with an Attitude: Educating Working-Class Children
+in Their Own Self-Interest.* SUNY Press.
+
+Moses, R. P. and Cobb, C. E. (2001). *Radical Equations: Civil Rights from
+Mississippi to the Algebra Project.* Beacon Press.
+
+QQI (Quality and Qualifications Ireland). Level 5 award requirements and module
+descriptors. <https://www.qqi.ie/>
+
+Sources to prefer when writing a tutorial's own bibliography: 3Blue1Brown for
+visual mathematics, StatQuest for statistics, Computerphile for computer science
+concepts, Ben Eater for architecture and low-level work, Sebastian Lague for
+algorithms, Welch Labs for machine learning, and Khan Academy or MDN for
+straightforward reference. Cite the original paper or a textbook where one
+exists.

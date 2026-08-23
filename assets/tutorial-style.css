@@ -1464,6 +1464,13 @@ p code, li code {
 }
 .dl-practice-back { margin-top: 0; }
 
+/* The box now holds a paragraph per destination — its own practice page, then
+   any mixed set that names it. The paragraphs carry the spacing so the box does
+   not gain a blank line at each end. */
+.dl-practice-link > p { margin: 0; }
+.dl-practice-link > p + p { margin-top: 0.55rem; }
+.dl-practice-mixed { color: var(--dl-muted); }
+
 /* The answer, folded. Not hidden — a fold is the moment before looking made
    physical, which is the part worth protecting. A key at the bottom of the
    page is one scroll away, which is the same as being on it. */
@@ -1487,6 +1494,30 @@ p code, li code {
 .dl-answer > summary:hover { color: var(--dl-fg); }
 .dl-answer[open] { border-left-color: var(--dl-navy); }
 .dl-answer > :not(summary) { font-size: 0.95rem; }
+
+/* The steps, folded separately and before the answer. A stuck student needs a
+   route rather than the destination, and two folds opened in order is the
+   difference between being helped and being told. Warmer than the answer fold
+   so that opening it does not feel like giving up. */
+.dl-hint {
+  max-width: var(--dl-line-width);
+  margin: 0.5rem 0 0.6rem;
+  border-left: 2px solid var(--dl-orange);
+  padding-left: 0.8rem;
+}
+.dl-hint > summary {
+  cursor: pointer;
+  color: var(--dl-orange);
+  font-family: var(--dl-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.02em;
+  list-style: none;
+}
+.dl-hint > summary::-webkit-details-marker { display: none; }
+.dl-hint > summary::before { content: "▸ "; }
+.dl-hint[open] > summary::before { content: "▾ "; }
+.dl-hint > summary:hover { color: var(--dl-fg); }
+.dl-hint > :not(summary) { font-size: 0.95rem; }
 
 .dl-contents-practice {
   margin-left: 0.5rem;
