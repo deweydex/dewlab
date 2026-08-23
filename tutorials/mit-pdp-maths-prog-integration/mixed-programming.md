@@ -75,6 +75,19 @@ The empty case returns an empty list rather than raising, because "which marks a
 
 **3.** Write a function that returns the second-largest number in a list.
 
+<details class="dl-hint"><summary>stuck? here are some steps</summary>
+
+1. What should `[5, 5, 3]` give — 5 or 3? The question does not say, so decide before writing anything.
+2. Getting the distinct values first makes that decision visible in the code rather than hidden in it.
+3. Sorting descending puts the answer at index 1.
+4. A list of one distinct value has no second largest. What comes back then?
+
+**Think about:** why this problem is really two problems, and which one the specification forgot to answer.
+
+**Try this next:** write `second_smallest`. Can you write one function that does both, taking a direction?
+
+</details>
+
 <details class="dl-answer"><summary>answer</summary>
 
 ```python
@@ -122,6 +135,19 @@ print(word or n)
 </details>
 
 **5.** Count how many numbers below 1,000 are divisible by 3 or 5, and add them up.
+
+<details class="dl-hint"><summary>stuck? here are some steps</summary>
+
+1. Build the list of numbers below 1000 divisible by 3 or by 5, and count it.
+2. Now do it without a loop. The multiples of 3 are 3, 6, 9 … — that is 3 times the whole numbers up to 333, and you know the sum of 1 to n.
+3. Do the same for the multiples of 5.
+4. Adding those two totals counts some numbers twice. Which ones, and what do you do about them?
+
+**Think about:** the numbers counted twice are exactly the multiples of 15. Where have you seen "add both, subtract the overlap" before?
+
+**Try this next:** the same question with a limit of a billion. The loop takes a while; the formula does not.
+
+</details>
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -196,6 +222,19 @@ If the list were *not* already sorted, sorting it first costs about 20 million c
 
 **9.** Write a function that finds the two numbers in a list adding to a given target.
 
+<details class="dl-hint"><summary>stuck? here are some steps</summary>
+
+1. Write the obvious version first: check every pair. Count how many pairs that is for a list of n.
+2. Now think about what you are asking for each number. For 7 and a target of 10, you want to know whether 3 is present.
+3. You have already seen every number before it. What if you kept them?
+4. Testing membership of a `set` takes the same time whether it holds ten numbers or ten million.
+
+**Think about:** the second version does not compute anything faster. It changes the question from a search into a lookup.
+
+**Try this next:** find three numbers that add to a target. Can the same trick apply, and what does it cost now?
+
+</details>
+
 <details class="dl-answer"><summary>answer</summary>
 
 The obvious way checks every pair, which is n²:
@@ -264,6 +303,19 @@ The same merge walk as the set operations, and it is the heart of merge sort: sp
 ## Putting Several Together
 
 **12.** Write a program that reads a list of daily temperatures and reports: the warmest and coldest days, the average, how many days were above average, and the longest run of consecutive days above average.
+
+<details class="dl-hint"><summary>stuck? here are some steps</summary>
+
+1. Take the four easy parts first — warmest, coldest, average, and how many are above it.
+2. For the longest run, imagine walking the list with two numbers in your head: how long the current streak is, and the best you have seen.
+3. What happens to the current streak when a day is above average? When it is not?
+4. When do you compare the current streak against the best?
+
+**Think about:** why the "best so far" has to be updated inside the loop rather than after it.
+
+**Try this next:** report *when* the longest run started, not just how long it was. What extra do you have to remember?
+
+</details>
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -339,6 +391,19 @@ Two obvious properties, and neither alone is worth anything.
 </details>
 
 **15.** A list contains every number from 1 to n except one. Find the missing number, using as little work as possible.
+
+<details class="dl-hint"><summary>stuck? here are some steps</summary>
+
+1. Three approaches are all correct here: sort and look for the gap, build a set and test each candidate, or use arithmetic. Try to think of all three before reading on.
+2. You know something about the list that you have not used yet — what its contents *should* have been.
+3. The sum of 1 to n has a formula. You met it in *Repeating Yourself*.
+4. What is the difference between the sum it should be and the sum it is?
+
+**Think about:** the arithmetic version uses knowledge about the data, and the other two only use what they can see in it. That is usually where the good answer lives.
+
+**Try this next:** now two numbers are missing. The sum tells you what they add to. What second fact would pin them down?
+
+</details>
 
 <details class="dl-answer"><summary>answer</summary>
 

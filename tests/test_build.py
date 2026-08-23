@@ -1870,21 +1870,36 @@ class TestPagesOfProblems:
         assert "one.html" in text and "two.html" in text
 
     def test_a_mixed_set_is_off_the_reading_order(self, repo):
-        """Two tutorials, and the mixed set is not between them."""
-        write(repo, "One.\n", slug="one")
-        write(repo, "Two.\n", slug="two")
-        self.practice(repo, "mixed", practice_across=["one", "two"])
-        b.build()
-        assert "two.html" in built(repo, "one")
-        assert "mixed.html" not in built(repo, "one")
+        """Two tutorials, and the mixed set is not between them.
 
-    def test_the_tutorials_do_not_link_back_to_a_mixed_set(self, repo):
-        """A tutorial has one companion page of problems, and this is not it."""
+        Asserted on the navigation rather than on the whole page: the tutorial
+        does link to a mixed set that names it, from the practice box at the
+        end. What it must not do is offer one as the next thing to read."""
         write(repo, "One.\n", slug="one")
         write(repo, "Two.\n", slug="two")
         self.practice(repo, "mixed", practice_across=["one", "two"])
         b.build()
-        assert "dl-practice-link" not in built(repo, "one")
+        page = built(repo, "one")
+        nav = re.findall(r"<nav class=\"dl-nav[^\"]*\">.*?</nav>", page, re.S)
+        assert nav, "the tutorial has no navigation at all"
+        assert any("two.html" in bar for bar in nav)
+        assert not any("mixed.html" in bar for bar in nav)
+
+    def test_a_mixed_set_is_not_offered_as_this_tutorial_own_practice(self, repo):
+        """The two links are distinguishable.
+
+        Tutorials did not link back to mixed sets at all until Josh asked for
+        them to (DECISIONS_LOG 7.51). What still has to hold is that a reader
+        can tell the difference: one page is answerable from this tutorial and
+        the other is not."""
+        write(repo, "One.\n", slug="one")
+        write(repo, "Two.\n", slug="two")
+        self.practice(repo, "mixed", practice_across=["one", "two"])
+        b.build()
+        page = built(repo, "one")
+        assert "dl-practice-mixed" in page
+        assert "Practice problems for this tutorial" not in page
+        assert "once more of the course is behind you" in page
 
     def test_the_contents_page_lists_mixed_sets(self, repo):
         write(repo, "One.\n", slug="one")
@@ -1936,3 +1951,139 @@ class TestPagesOfProblems:
                       practice_across=["one", "two"])
         with pytest.raises(b.BuildError, match="cannot do both"):
             b.build()
+
+
+class TestFolds:
+    """A `<details>` in a tutorial has to name a fold this project styles.
+
+    Writing a bare `<details><summary>` is what a plain HTML document looks
+    like, and an earlier draft of the style guide showed exactly that. Without
+    the class it renders as a browser-default triangle sitting in the prose."""
+
+    def test_an_answer_fold_is_fine(self, repo):
+        write(repo, '<details class="dl-answer"><summary>answer</summary>\n\n'
+                    "Forty-two.\n\n</details>\n")
+        b.build()
+        assert "dl-answer" in built(repo)
+
+    def test_a_hint_fold_is_fine(self, repo):
+        write(repo, '<details class="dl-hint"><summary>stuck?</summary>\n\n'
+                    "1. Try this.\n\n</details>\n")
+        b.build()
+        assert "dl-hint" in built(repo)
+
+    def test_a_fold_with_no_class_stops_the_build(self, repo):
+        write(repo, "<details><summary>Check solution</summary>\n\nHere.\n\n</details>\n")
+        with pytest.raises(b.BuildError, match="names no style"):
+            b.build()
+
+    def test_a_fold_with_the_wrong_class_stops_the_build(self, repo):
+        write(repo, '<details class="solution"><summary>answer</summary>\n\n'
+                    "Here.\n\n</details>\n")
+        with pytest.raises(b.BuildError, match="names no style"):
+            b.build()
+
+    def test_the_stylesheet_defines_both(self):
+        """A fold whose class has no rule is as invisible as one with no class."""
+        css = (DEWLAB / "assets" / "tutorial-style.css").read_text()
+        for name in b.FOLD_CLASSES:
+            assert f".{name} " in css or f".{name}{{" in css or f".{name}[" in css
+
+
+class TestPracticeIsReachable:
+    """A tutorial links to every page of problems that names it.
+
+    Its own practice page first, then any mixed set that draws on it — described
+    as being for later, since a mixed set assumes tutorials this reader may not
+    have met yet."""
+
+    def practice(self, repo, slug: str, **frontmatter) -> Path:
+        return TestPagesOfProblems().practice(repo, slug, **frontmatter)
+
+    def test_a_tutorial_links_to_a_mixed_set_that_names_it(self, repo):
+        write(repo, "One.\n", slug="one")
+        write(repo, "Two.\n", slug="two")
+        self.practice(repo, "mixed", practice_across=["one", "two"])
+        b.build()
+        page = built(repo, "one")
+        assert "dl-practice-mixed" in page
+        assert "mixed.html" in page
+
+    def test_it_names_the_other_tutorials_the_set_draws_on(self, repo):
+        """So a reader can tell whether it is for them yet."""
+        write(repo, "One.\n", slug="one")
+        write(repo, "Two.\n", slug="two")
+        self.practice(repo, "mixed", practice_across=["one", "two"])
+        b.build()
+        page = built(repo, "one")
+        assert "It also draws on A Title" in page
+
+    def test_a_tutorial_no_mixed_set_names_gets_no_such_link(self, repo):
+        write(repo, "One.\n", slug="one")
+        write(repo, "Two.\n", slug="two")
+        write(repo, "Three.\n", slug="three")
+        self.practice(repo, "mixed", practice_across=["one", "two"])
+        b.build()
+        assert "dl-practice-mixed" not in built(repo, "three")
+
+    def test_both_kinds_of_link_appear_together(self, repo):
+        write(repo, "One.\n", slug="one")
+        write(repo, "Two.\n", slug="two")
+        self.practice(repo, "one-practice", practice_for="one")
+        self.practice(repo, "mixed", practice_across=["one", "two"])
+        b.build()
+        page = built(repo, "one")
+        assert "one-practice.html" in page and "mixed.html" in page
+        # Its own practice page comes first: it is the one for now.
+        assert page.index("one-practice.html") < page.index("mixed.html")
+
+
+class TestTwoReleasesOnOneDay:
+    """The picker shows a date. Two releases on one day show the same date.
+
+    Found by releasing four tutorials on the afternoon they were first written:
+    a reader choosing between them saw two identical options."""
+
+    def release(self, repo, slug: str, version: str, status: str = "live") -> Path:
+        folder = repo / "tutorials" / "computational-methods" / slug
+        folder.mkdir(parents=True, exist_ok=True)
+        name = f"{slug}.md" if status == "live" and version.endswith(".9") else f"v{version}.md"
+        path = folder / name
+        path.write_text(
+            FRONTMATTER.format(slug=slug, version=version).replace(
+                f"version: {version}\n", f"version: {version}\nstatus: {status}\n")
+            + "Prose.\n"
+        )
+        set_order(repo, "computational-methods", "python-fundamentals", [slug])
+        return path
+
+    def versions(self, repo, slug: str) -> list[dict]:
+        page = (repo / "site" / "tutorials" / "computational-methods"
+                / f"{slug}.html").read_text()
+        return manifest(page).get("versions", [])
+
+    def test_two_releases_on_one_day_are_told_apart(self, repo):
+        self.release(repo, "sample", "2026.08.23.1")
+        self.release(repo, "sample", "2026.08.23.2")
+        b.build()
+        shown = [v["date"] for v in self.versions(repo, "sample")]
+        assert len(shown) == 2
+        assert len(set(shown)) == 2, f"both options read the same: {shown}"
+        assert shown == ["23 August 2026 (2)", "23 August 2026 (1)"]
+
+    def test_releases_on_different_days_keep_a_plain_date(self, repo):
+        """The number is noise where the date already separates them."""
+        self.release(repo, "sample", "2026.08.23.1")
+        self.release(repo, "sample", "2026.09.15.1")
+        b.build()
+        shown = [v["date"] for v in self.versions(repo, "sample")]
+        assert shown == ["15 September 2026", "23 August 2026"]
+
+    def test_only_the_crowded_day_is_numbered(self, repo):
+        """Three releases, two of them on one day."""
+        self.release(repo, "sample", "2026.08.23.1")
+        self.release(repo, "sample", "2026.08.23.2")
+        self.release(repo, "sample", "2026.09.15.1")
+        b.build()
+        shown = [v["date"] for v in self.versions(repo, "sample")]
+        assert shown == ["15 September 2026", "23 August 2026 (2)", "23 August 2026 (1)"]

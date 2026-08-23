@@ -107,9 +107,49 @@ def load_outcomes() -> tuple[dict[str, Outcome], dict]:
     return outcomes, data["modules"]
 
 
+def newest_live(paths: list[Path]) -> set[Path]:
+    """Of several files that are versions of one tutorial, the one that counts.
+
+    A tutorial with more than one release is a folder holding the working copy
+    and every frozen release beside it. All of them are real files with real
+    frontmatter, so reading the folder naively reports one tutorial several
+    times — which is how this was found: the sequence graph came out with two
+    nodes called T1 and the map claimed thirty-five tutorials where there are
+    thirty-one.
+
+    The rule matches build.py's: the newest `live` release answers for the
+    tutorial, and where none is live the newest of what there is does.
+    """
+    families: dict[tuple[str, str], list[tuple[tuple, Path]]] = {}
+    for path in paths:
+        text = path.read_text()
+        if not text.startswith("---\n"):
+            continue
+        meta = yaml.safe_load(text[4:text.index("\n---\n", 4)])
+        if not meta or "slug" not in meta or "version" not in meta:
+            continue
+        match = re.fullmatch(r"(\d{4})\.(\d{2})\.(\d{2})\.(\d+)",
+                             str(meta["version"]))
+        released = tuple(int(g) for g in match.groups()) if match else (0, 0, 0, 0)
+        live = str(meta.get("status", "live")) == "live"
+        key = (str(meta.get("module", "")), str(meta["slug"]))
+        families.setdefault(key, []).append(((live, released), path))
+
+    keep = set()
+    for versions in families.values():
+        keep.add(max(versions, key=lambda pair: pair[0])[1])
+    return keep
+
+
 def load_tutorials(known: dict[str, Outcome]) -> list[Tutorial]:
     tutorials = []
-    for path in sorted(TUTORIALS.rglob("*.md")):
+    sources = sorted(TUTORIALS.rglob("*.md"))
+    current = newest_live(sources)
+    for path in sources:
+        if path not in current:
+            # A frozen release. Still built and still readable; not the answer
+            # to "where is this taught?", which has one answer per tutorial.
+            continue
         text = path.read_text()
         if not text.startswith("---\n"):
             continue

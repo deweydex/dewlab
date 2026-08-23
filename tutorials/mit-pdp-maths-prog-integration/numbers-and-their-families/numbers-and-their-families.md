@@ -1,0 +1,287 @@
+---
+title: "Numbers and Their Families"
+slug: numbers-and-their-families
+module: mit-pdp-maths-prog-integration
+module_title: "Programming and Maths, Integrated"
+year: "2026-2027"
+series: maths-and-programming
+version: 2026.08.23.2
+covers:
+  the-number-domains:
+    covers: [MIT-2.1]
+  powers-and-their-rules:
+    covers: [MIT-1.1]
+  logarithms-the-inverse-of-powers:
+    covers: [MIT-1.1]
+  practical-geometry-formulas-as-functions:
+    covers: [MIT-1.2, MIT-1.3]
+---
+
+# Numbers and Their Families
+
+**Programming Design Principles / Maths for IT**
+
+The next few tutorials are about algebra, equations, and sets -- the classical mathematical tools, built as programs.
+
+Today we start with the raw material: numbers themselves. Mathematicians organise numbers into a hierarchy of families, and understanding these families helps us understand what operations are possible and what results to expect.
+
+## The Number Domains
+
+Numbers live in nested families, each one extending the one before:
+
+**N** (Natural numbers): 0, 1, 2, 3, ... The counting numbers. You can always add two natural numbers and get another natural number, but you cannot always subtract (3 - 5 is not natural).
+
+**Z** (Integers): ..., -2, -1, 0, 1, 2, ... Now subtraction always works. Named from *Zahlen*, the German word for numbers.
+
+**Q** (Rationals): any number that can be written as $\frac{p}{q}$ where p and q are integers and $q \neq 0$. Now division (almost) always works -- except dividing by zero.
+
+**R** (Reals): all points on the number line, including irrationals like $\sqrt{2}$ and $\pi$. These fill in the "gaps" between rationals.
+
+Every natural number is an integer, every integer is a rational — put it over 1 — and every rational is a real. They are nested like Russian dolls: $\mathbb{N} \subset \mathbb{Z} \subset \mathbb{Q} \subset \mathbb{R}$.
+
+### Your turn
+
+How might you write a function `classify_number(n)` that takes a number and returns a list of all the domains it belongs to?
+
+Some things to think about: How do you check if a float is really an integer? `value == int(value)` works for most cases. How do you check if something is rational? For our purposes, all Python numbers are rational (true irrationals cannot be stored exactly in a computer), but we can make a distinction: if we pass in something like `math.sqrt(2)`, we might choose to classify it as "R" only.
+
+For simplicity, let's say: if it has no decimal part, it might be an integer or natural. If it has a decimal part, it is rational (and therefore real). We will not worry about true irrationals.
+
+**Pseudocode:**
+```
+IF the number equals its integer version:
+    IF the number >= 0:
+        RETURN ["N", "Z", "Q", "R"]
+    ELSE:
+        RETURN ["Z", "Q", "R"]
+ELSE:
+    RETURN ["Q", "R"]
+```
+
+```python exec
+id: your-turn-1
+# Your classify_number function
+```
+
+```python exec
+id: your-turn-2
+# Test with: 7, -3, 0, 0.5, -2.5, 3.14159
+```
+
+## Powers and Their Rules
+
+An expression like $a^n$ means "multiply a by itself n times." The rules that govern powers are elegant and worth knowing by heart:
+
+- $a^m \times a^n = a^{m+n}$ (multiplying same base: add exponents)
+- $(a^m)^n = a^{m \times n}$ (power of a power: multiply exponents)
+- $a^0 = 1$ for any $a \neq 0$
+- $a^{-n} = \frac{1}{a^n}$ (negative exponent: take the reciprocal)
+- $a^1 = a$ (anything to the first power is itself)
+
+Let's verify these rules computationally:
+
+```python exec
+id: powers-and-their-rules-1
+# Verifying the rules of powers
+a = 3
+
+print("a^2 * a^3 =", a**2 * a**3, "  a^5 =", a**5)
+print("(a^2)^3  =", (a**2)**3, "  a^6 =", a**6)
+print("a^0      =", a**0)
+print("a^(-2)   =", a**(-2), "  1/a^2 =", 1/a**2)
+```
+
+One note on names. The syllabus, and any exam paper you sit, calls these
+**indices** and calls the rules above the *laws of indices*. That is the same
+thing as powers -- recognise the word if you meet it. This course says *power*
+and *exponent*, because *index* already means something else here: the position
+of an item in a list.
+
+### Your turn
+
+Let's try building `power(base, exponent)` ourselves, without Python's `**` operator. There are three cases to think about: a positive exponent means multiplying repeatedly, zero returns 1, and a negative exponent is the positive power turned upside down.
+
+**Pseudocode:**
+```
+IF exponent is 0:
+    RETURN 1
+IF exponent is negative:
+    RETURN 1 / power(base, -exponent)
+SET result = 1
+FOR i from 1 to exponent:
+    MULTIPLY result by base
+RETURN result
+```
+
+```python exec
+id: your-turn-3
+# Your power function
+```
+
+```python exec
+id: your-turn-4
+# Test: compare your function to Python's ** operator
+# power(2, 10) should be 1024
+# power(3, 0) should be 1
+# power(2, -3) should be 0.125
+```
+
+## Logarithms: The Inverse of Powers
+
+If $a^n = x$, then $\log_a(x) = n$. The logarithm answers the question: "what power do I need to raise a to in order to get x?"
+
+For example: $2^{10} = 1024$, so $\log_2(1024) = 10$.
+
+Logarithms are fundamental in computing because of binary search and similar algorithms. When we said binary search takes "about $\log_2(n)$ steps," we were using logarithms.
+
+Python's `math` module provides logarithm functions:
+
+```python exec
+id: logarithms-the-inverse-of-powers-1
+import math
+
+print("log2(1024) =", math.log2(1024))
+print("log10(1000) =", math.log10(1000))
+print("log2(1000000) =", round(math.log2(1000000), 2), "(binary search steps for 1M items)")
+```
+
+### Your turn
+
+What happens if you keep dividing a number by the base and counting how many times you can do it before it drops below 1? That count is the integer part of $\log_{base}(x)$, and it is enough to build `log_base(x, base)`.
+
+This gives you the integer part of the logarithm, which is all we need for algorithm analysis.
+
+```python exec
+id: your-turn-5
+# Your log_base function
+```
+
+```python exec
+id: your-turn-6
+# Test: log_base(1024, 2) should be 10
+#        log_base(1000, 10) should be 3
+#        log_base(100, 3) should be 4 (3^4 = 81, 3^5 = 243)
+```
+
+## Practical Geometry: Formulas as Functions
+
+Area, perimeter, volume, and surface area formulas are really just functions: they take measurements as input and return computed values. Let's build a small geometry toolkit.
+
+The arithmetic is the easy half. The habit worth building is the other one — clean functions, meaningful parameter names, a docstring saying what goes in and what comes back. That is what separates a formula you typed once from a tool you can still use in March.
+
+### Your turn
+
+Four functions, each worth a docstring:
+
+1. `circle_area(radius)` and `circle_circumference(radius)`
+2. `rectangle_area(length, width)` and `rectangle_perimeter(length, width)`
+3. `triangle_area(base, height)`
+4. `cylinder_volume(radius, height)` and `cylinder_surface_area(radius, height)`
+5. `sphere_volume(radius)` and `sphere_surface_area(radius)`
+
+Use `math.pi` for pi. For reference:
+- Circle area: $\pi r^2$, circumference: $2\pi r$
+- Cylinder volume: $\pi r^2 h$, surface area: $2\pi r^2 + 2\pi r h$
+- Sphere volume: $\frac{4}{3}\pi r^3$, surface area: $4\pi r^2$
+
+```python exec
+id: your-turn-7
+import math
+
+# Your geometry functions
+```
+
+```python exec
+id: your-turn-8
+# Test each one with values you can verify
+# Circle with radius 5: area should be about 78.54
+# Rectangle 4x6: area 24, perimeter 20
+```
+
+## Putting It Together: A Number Explorer
+
+Let's combine our tools into a small program that takes a number and says what it can about it.
+
+This one uses `classify_number` from earlier in the tutorial. If you have not written it yet the cell says so rather than failing — which is worth noticing, because a function that reports what is missing is much easier to work with than one that stops.
+
+```python exec
+id: putting-it-together-a-number-explorer-1
+def explore_number(n):
+    """Print what we can work out about a number."""
+    print("Number:", n)
+    if "classify_number" in globals():
+        print("Domains:", classify_number(n))
+    else:
+        print("Domains: (write classify_number above and run this again)")
+    
+    if n > 0:
+        print("log2:", round(math.log2(n), 4))
+        print("log10:", round(math.log10(n), 4))
+        print("sqrt:", round(math.sqrt(n), 4))
+    
+    print("n^2:", n ** 2)
+    print("n^3:", n ** 3)
+    
+    if n == int(n) and n >= 0:
+        n_int = int(n)
+        # Check if it's a perfect square
+        root = int(math.sqrt(n_int))
+        if root * root == n_int:
+            print("Perfect square! sqrt =", root)
+        # Check if it's prime (simple check)
+        if n_int > 1:
+            is_prime = True
+            for i in range(2, int(math.sqrt(n_int)) + 1):
+                if n_int % i == 0:
+                    is_prime = False
+                    break
+            print("Prime:", is_prime)
+    print()
+
+# Try it
+explore_number(49)
+explore_number(17)
+explore_number(-3.5)
+```
+
+### Your turn
+
+What else could `explore_number` say? A few possibilities: whether the number is a perfect cube, whether it appears in the Fibonacci sequence, or what its prime factors are when it is a positive whole number. One extension is plenty — the interesting part is deciding what belongs in a function like this and what does not.
+
+```python exec
+id: your-turn-9
+# Your extended explore_number
+```
+
+## Reflection
+
+Today was about building comfort with the basic mathematical objects: number types, powers, logarithms, and geometric formulas. None of these are complicated individually, but together they form the foundation for everything that follows.
+
+The idea underneath all of this is that every formula is already a function: it takes inputs and produces an output. Writing it as code makes that explicit, and makes it testable.
+
+Next time we will start working with expressions and polynomials, which is where algebra starts to get interesting.
+
+What connections do you see between logarithms and the algorithm analysis we did in earlier tutorials?
+
+## Where to Read More
+
+3Blue1Brown (2017). *Logarithm fundamentals* (Essence of Calculus supplement).
+<https://www.youtube.com/watch?v=cEvgcoyZvB4>. Why a logarithm is an exponent
+read backwards, shown rather than stated.
+
+Veritasium (2021). *The Discovery That Transformed Pi*.
+<https://www.youtube.com/watch?v=gMlf1ELvRzc>. Not about pi's irrationality
+directly, but the best available demonstration that a number can be perfectly
+well defined and impossible to write down.
+
+Stewart, I. (2008). *Taming the Infinite: The Story of Mathematics.* Quercus.
+Chapters 2 and 3 on how the number families were built one at a time, each to
+solve a problem the previous one could not.
+
+Python Software Foundation. *Floating Point Arithmetic: Issues and Limitations.*
+<https://docs.python.org/3/tutorial/floatingpoint.html>. The authoritative short
+answer to why `0.1 + 0.2` is not `0.3`, and worth reading once properly.
+
+Khan Academy. *Exponents, radicals, and scientific notation.*
+<https://www.khanacademy.org/math/algebra/x2f8bb11595b61c86:rational-exponents-radicals>.
+Practice on the index laws, if the ones here went past too quickly.

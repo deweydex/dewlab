@@ -92,6 +92,11 @@ TUTORIAL_HREF_RE = re.compile(r'href="tutorial:(?P<slug>[^"#]+)(?:#(?P<anchor>[^
 ID_RE = re.compile(r'\bid="([^"]+)"')
 IMG_RE = re.compile(r"<img\b[^>]*>", re.IGNORECASE)
 ALT_RE = re.compile(r"\balt\s*=", re.IGNORECASE)
+DETAILS_RE = re.compile(r"<details\b[^>]*>", re.IGNORECASE)
+# The two folds a page may use. A hint offers the steps; an answer gives the
+# answer. Both are styled from their class, so a fold without one renders as a
+# bare browser triangle in the middle of the prose.
+FOLD_CLASSES = ("dl-hint", "dl-answer")
 
 # Maths, matched only against prose — every fence is already out of the way by
 # the time these run. Display first so $$…$$ is never read as two inline spans.
@@ -1423,6 +1428,22 @@ def check_alt_text(tutorial: Tutorial) -> None:
             fail(tutorial.path, f"image has no alt attribute: {tag}")
 
 
+def check_folds(tutorial: Tutorial) -> None:
+    """Every `<details>` names a fold this project styles.
+
+    Cheap, and it catches the one mistake this markup invites: writing a bare
+    `<details><summary>` because that is what HTML documents show. The class is
+    where the styling and the marker come from, so a fold without one is
+    invisible as a fold — it renders as a browser default triangle that does not
+    look like part of the page.
+    """
+    for tag in DETAILS_RE.findall(tutorial.body_html):
+        if not any(name in tag for name in FOLD_CLASSES):
+            fail(tutorial.path,
+                 f"a fold names no style: {tag} — use "
+                 f'class="dl-hint" for steps or class="dl-answer" for an answer')
+
+
 def resolve_links(tutorial: Tutorial, registry: dict[tuple[str, str], Tutorial]) -> str:
     """Rewrite tutorial:slug#anchor into a real relative href, or fail.
 
@@ -1575,10 +1596,19 @@ def version_manifest(tutorial: Tutorial, family: list[Tutorial]) -> list[dict]:
     """
     if len(family) < 2:
         return []
+    # Two releases on one day read as the same option in the picker, because a
+    # reader sees the date and not the sequence number. Found the first time a
+    # tutorial was released twice in an afternoon. The number is added only
+    # where it is needed, so the ordinary case stays a plain date.
+    same_day = {
+        version.date for version in family
+        if sum(1 for other in family if other.date == version.date) > 1
+    }
     return [
         {
             "version": other.version,
-            "date": other.date,
+            "date": (f"{other.date} ({other.released[3]})"
+                     if other.date in same_day else other.date),
             "status": other.status,
             "isDefault": other.is_default,
             "url": os.path.relpath(other.out_path, tutorial.out_path.parent),
@@ -1603,13 +1633,18 @@ def canonical_link(tutorial: Tutorial, default: Tutorial | None) -> str:
 
 
 def practice_link(tutorial: Tutorial, practice: Tutorial | None,
-                  registry: dict[tuple[str, str], Tutorial] | None = None) -> str:
-    """The link between a tutorial and its page of problems, in both directions.
+                  registry: dict[tuple[str, str], Tutorial] | None = None,
+                  also: list[Tutorial] | None = None) -> str:
+    """The link between a tutorial and its problems, in both directions.
 
     On the tutorial it sits at the end, because that is when a reader wants it.
     On the practice page it sits at the top, because somebody who has arrived
     there and cannot do the first question needs the way back before they need
     anything else.
+
+    `also` is the mixed sets that name this tutorial. They are listed after its
+    own page and described as needing more than this tutorial, so that a reader
+    who has just finished it knows which of the two is for them now.
     """
     if tutorial.practice_across:
         links = []
@@ -1638,21 +1673,43 @@ def practice_link(tutorial: Tutorial, practice: Tutorial | None,
             "Everything here is answerable from that tutorial, and every answer "
             "is on this page behind a fold.</p>"
         )
-    if practice is None:
+    also = also or []
+    if practice is None and not also:
         return ""
-    where = os.path.relpath(practice.out_path, tutorial.out_path.parent)
-    return (
-        '<p class="dl-practice-link">'
-        f'<a href="{where}">Practice problems for this tutorial</a> — '
-        "worth doing when you have finished reading, with the answers beside "
-        "the questions.</p>"
-    )
+    parts = ['<div class="dl-practice-link">']
+    if practice is not None:
+        where = os.path.relpath(practice.out_path, tutorial.out_path.parent)
+        parts.append(
+            f'<p><a href="{where}">Practice problems for this tutorial</a> — '
+            "worth doing when you have finished reading, with the answers beside "
+            "the questions, and steps to follow where a question is hard.</p>"
+        )
+    for page in also:
+        where = os.path.relpath(page.out_path, tutorial.out_path.parent)
+        others = [
+            registry[(page.module, slug)].title
+            for slug in page.practice_across
+            if slug != tutorial.slug and (page.module, slug) in (registry or {})
+        ]
+        with_what = ""
+        if others:
+            named = (others[0] if len(others) == 1
+                     else ", ".join(others[:-1]) + " and " + others[-1])
+            with_what = f" It also draws on {html.escape(named)}."
+        parts.append(
+            f'<p class="dl-practice-mixed"><a href="{where}">'
+            f"{html.escape(page.title)}</a> — for later, once more of the "
+            f"course is behind you.{with_what}</p>"
+        )
+    parts.append("</div>")
+    return "".join(parts)
 
 
 def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "",
           default: Tutorial | None = None, family: list[Tutorial] | None = None,
           practice: Tutorial | None = None,
-          registry: dict[tuple[str, str], Tutorial] | None = None) -> Path:
+          registry: dict[tuple[str, str], Tutorial] | None = None,
+          also: list[Tutorial] | None = None) -> Path:
     up = "../" * tutorial.depth
     manifest: dict[str, object] = {
         "slug": tutorial.slug,
@@ -1700,9 +1757,11 @@ def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "",
         "{{TOC}}": render_toc(tutorial),
         "{{BODY}}": (
             page_notice(tutorial, default)
-            + (practice_link(tutorial, practice, registry) if tutorial.is_practice else "")
+            + (practice_link(tutorial, practice, registry, also)
+               if tutorial.is_practice else "")
             + body_html
-            + (practice_link(tutorial, practice, registry) if not tutorial.is_practice else "")
+            + (practice_link(tutorial, practice, registry, also)
+               if not tutorial.is_practice else "")
         ),
         # `<` escaped so nothing in a cell can close the surrounding <script>.
         "{{MANIFEST_JSON}}": json.dumps(manifest).replace("<", "\\u003c"),
@@ -2156,6 +2215,7 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
     written: list[Path] = []
     for tutorial in tutorials:
         check_alt_text(tutorial)
+        check_folds(tutorial)
         # An archived tutorial belongs to no reading order, so there is no
         # previous and no next — only the way back.
         members = groups.get((tutorial.module, tutorial.series), [])
@@ -2164,6 +2224,8 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
             default=registry.get((tutorial.module, tutorial.slug)),
             family=families.get((tutorial.module, tutorial.slug)),
             practice=practice.get((tutorial.module, tutorial.slug)),
+            also=[page for page in mixed.get(tutorial.module, [])
+                  if tutorial.slug in page.practice_across],
             registry=registry,
         )
         written.append(page_path)

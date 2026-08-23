@@ -1425,3 +1425,102 @@ a student checking their work against an answer that argues with itself learns
 that the page is unreliable. Both were straightened.
 
 *Cost to change: nothing. This is a note to the next person writing an answer.*
+
+**7.51 — Tutorials link back to the mixed sets after all.**
+7.49 decided that a mixed set links out and nothing links back, on the grounds
+that a reader who has just finished one tutorial should not be sent somewhere
+assuming six more. Josh asked for the reverse: "it would indeed be great if we
+could reach more practice from each tutorial."
+
+He is right that discoverability was the weaker half of that argument. A page
+nothing links to is a page nobody finds, and the contents page is not where a
+reader is standing when they finish a tutorial.
+
+The objection is answered by saying so rather than by hiding the link. A tutorial
+now shows its own practice page first — *worth doing when you have finished
+reading* — and then any mixed set that names it, marked *for later, once more of
+the course is behind you*, followed by the names of the other tutorials it draws
+on. A reader can see at a glance whether it is for them yet.
+
+*Cost to change: about thirty lines of build.py and four tests. Two existing
+tests encoded the old decision; one was rewritten to assert what still holds,
+and the other turned out to be asserting on the whole page when it meant the
+navigation bar, which is a better test now than it was.*
+
+**7.52 — Two folds, and a build check that a fold names one of them.**
+Josh, on whether the harder problems should carry a hint: "the idea is to have
+steps in a dropdown that they might follow if they are stuck, with some
+reflection and next question at the end of each dropdown so they can think
+things through in a related question."
+
+So there are two folds. `dl-hint` holds numbered steps and closes with a
+**Think about** and a **Try this next**; `dl-answer` holds the answer. The hint
+comes first, in warmer colour, because opening it should not feel like giving up.
+
+The reflection at the end is the part that makes this more than a spoiler. A
+hint that ends at the answer teaches the answer; one that ends in a related
+question the same steps solve teaches the method.
+
+Twenty are written so far, across the four mixed sets — the hardest problems in
+the repository and the ones Josh was asking about. The per-tutorial practice
+pages have none yet.
+
+`build.py` now fails on a `<details>` whose class is neither. This is worth the
+six lines: bare `<details><summary>` is what plain HTML looks like, an earlier
+draft of the style guide showed exactly that, and the failure mode is silent —
+the fold renders as a browser-default triangle sitting in the prose.
+
+*Cost to change: the classes are in the markdown of every practice page. The
+check is six lines and five tests.*
+
+**7.53 — Four tutorials re-released, and what the trial found.**
+Josh asked for the versioning system to be tried on real content: "some of the
+sections that are more traditional and use more imperatives — you can just pick
+4 that are diverse in their subject matter."
+
+*First Steps* (introductory programming), *Numbers and Their Families* (number
+and algebra), *What Are the Chances* (probability) and *Putting Things in Order*
+(algorithms). All four were among the highest in the repository for command
+language, being converted from notebooks, and they cover four different
+subjects.
+
+Each is now a folder: the working copy at `2026.08.23.2` and the previous
+release frozen at `v2026.08.23.1.md`. Thirty-one tutorials became a hundred and
+fifty-two pages.
+
+The trial did what a trial is for. **Three defects, none of which any test would
+have caught:**
+
+**The curriculum map counted every release as a tutorial.** It reads every `.md`
+under `tutorials/`, so the four re-released ones appeared twice: the sequence
+graph came out with two nodes called T1 and thirty-one tutorials became
+thirty-five. Fixed by giving the map build.py's rule — newest live release
+answers for the tutorial — in a `newest_live` function of its own, with five
+tests, four of which fail against the old behaviour.
+
+**Two releases on one day were indistinguishable.** The picker shows a date, and
+both said "23 August 2026". A student choosing between two identical options is
+choosing at random. The sequence number is now shown, and only where it is
+needed, so an ordinary tutorial released once keeps a plain date.
+
+**One cell had never worked on a fresh page.** *Numbers and Their Families* has a
+`explore_number` that calls `classify_number`, which the student is asked to
+write in an earlier cell that ships empty — so it raised `NameError` for anybody
+who ran it before doing the exercise. It reports what is missing now instead.
+The frozen release keeps the bug, which is what a frozen release is for.
+
+*Cost to change: the folder layout is what build.py already expected. Undoing a
+release means moving the file back and deleting the frozen copy, and is free
+while no class has seen either.*
+
+**7.54 — The first bibliographies.**
+Josh's guide requires one in every tutorial; none had one. These four now do,
+four or five entries each, chosen to be genuinely worth an hour rather than to
+fill a section — Timo Bingmann's sorting visualisation, 3Blue1Brown on
+logarithms, the Python documentation on floating point, Downey's *Think Python*.
+
+Thirty-one to go. That is the largest single piece of style work outstanding and
+it is not mechanical: a bibliography of plausible-looking links is worse than
+none, because a student who follows a dead one stops following any of them.
+
+*Cost to change: per tutorial, and each needs a person who knows the sources.*
