@@ -387,11 +387,31 @@ editor. It touches:
    notice build.py already writes on a superseded page says which release this is
    and links to the current one, so the runtime adds the carry-over count to that
    box rather than putting a second box beside it saying nearly the same thing.
-4. **Beta, and the editor actions.** Release, archive, and mark-beta as things
-   Josh can do from the editor rather than by hand.
+4. ~~**Beta, and the editor actions.**~~ **Done.** Archive and mark-beta landed
+   with the status control (DECISIONS_LOG 7.27); release is the new part.
+
+   Releasing freezes the release students have and publishes the buffer as a
+   new one dated today. A tutorial becomes a folder of releases the moment it
+   has a second, and not before. The editor **proposes** rather than acts: it
+   knows whether cells appeared, disappeared or changed id since the last
+   release, and says so when they did — which is Josh's automatic bump with the
+   one decision that needs a person left to the person.
+
+   Step 4 also had to fix something step 2 left behind: the editor did not know
+   versioned folders existed, so a tutorial with a second release opened as an
+   empty buffer. See DECISIONS_LOG 7.39 to 7.41.
 
 Each step is useful on its own, and each is a pull request. Steps 1 to 3 have
-landed; step 4 is not worth starting until 2 and 3 have been lived with.
+landed, and step 4 follows them directly — Josh's call on 23 August, against my
+suggestion of waiting.
+
+He is right that waiting had no content to it. The argument for a pause was that
+2 and 3 might teach us something before the editor commits to their shape, but
+neither has been in front of anyone yet, so a pause would produce no information
+and delay the part that makes the feature usable. Releasing, archiving and
+marking a beta by hand means editing frontmatter and moving a slug between two
+lists in an order file — which is exactly the two-file edit the editor exists to
+stop anybody doing by hand.
 
 Step 2 was where the cost was. Everything above about resolving a default, building
 a page per version, and keeping the unversioned URL meaning "the current one"

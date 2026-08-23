@@ -60,6 +60,71 @@ export function statusOf(text) {
   return frontmatterField(splitFrontmatter(text).meta, "status") || "live";
 }
 
+export function versionOf(text) {
+  return frontmatterField(splitFrontmatter(text).meta, "version");
+}
+
+/* ------------------------------------------------------------------ releases
+ *
+ * A version is a release, not a save. It exists when we decide a student
+ * should be able to go back to the old one; everything else is an edit
+ * (planning/VERSIONS.md). So the editor never bumps a version on its own — it
+ * offers, and releasing is a separate gesture from committing an edit.
+ */
+
+export const VERSION_RE = /^(\d{4})\.(\d{2})\.(\d{2})\.(\d+)$/;
+
+export function releaseOrder(version) {
+  /* The four numbers, so 2026.09.02.1 sorts before 2026.09.15.1 rather than
+   * after it — which it would as a string, the first time it ever mattered. */
+  const found = VERSION_RE.exec(String(version || ""));
+  return found ? found.slice(1, 5).map(Number) : [0, 0, 0, 0];
+}
+
+export function isNewer(a, b) {
+  const left = releaseOrder(a);
+  const right = releaseOrder(b);
+  for (let i = 0; i < 4; i += 1) {
+    if (left[i] !== right[i]) return left[i] > right[i];
+  }
+  return false;
+}
+
+export function nextVersion(existing, today = new Date()) {
+  /* Today where you are, from the browser's own clock: a release at half past
+   * midnight in Dublin should carry the date Josh thinks it is, not the date
+   * UTC thinks it is.
+   *
+   * The trailing number is computed rather than typed. It earns its place
+   * rarely — you publish, spot something, and publish again — but that is
+   * exactly the case that would otherwise collide. */
+  const stem = [
+    today.getFullYear(),
+    String(today.getMonth() + 1).padStart(2, "0"),
+    String(today.getDate()).padStart(2, "0"),
+  ].join(".");
+  const taken = existing
+    .map((version) => VERSION_RE.exec(String(version || "")))
+    .filter((found) => found && found.slice(1, 4).join(".") === stem)
+    .map((found) => Number(found[4]));
+  return `${stem}.${taken.length ? Math.max(...taken) + 1 : 1}`;
+}
+
+export function cellsChanged(before, after) {
+  /* What tells an edit from a release. Prose moving is an edit; a cell
+   * appearing, disappearing or changing its id is the kind of change a student
+   * might want to go back from.
+   *
+   * A rename shows up here as one gone and one arrived, which is the truth:
+   * to a student's saved work they are two different exercises. */
+  const was = parseCells(before).map((cell) => cell.id).filter(Boolean);
+  const now = parseCells(after).map((cell) => cell.id).filter(Boolean);
+  return {
+    added: now.filter((id) => !was.includes(id)),
+    removed: was.filter((id) => !now.includes(id)),
+  };
+}
+
 export function parseCells(body) {
   /* Every exec-tagged fence, with the id the build will key saved work on.
    * An untagged fence is illustrative code and is not a cell, which is the
@@ -192,6 +257,13 @@ export function githubClient(token) {
        * would leave main briefly describing a series that does not exist. */
       const blobs = [];
       for (const file of files) {
+        if (file.text === null) {
+          /* A null sha in a tree entry removes the path. This is how a release
+           * moves a single-file tutorial into a folder of releases without the
+           * old path surviving beside the new ones. */
+          blobs.push({ path: file.path, mode: "100644", type: "blob", sha: null });
+          continue;
+        }
         const blob = await call(`/repos/${REPO}/git/blobs`, {
           method: "POST",
           body: JSON.stringify({ content: file.text, encoding: "utf-8" }),
@@ -283,7 +355,22 @@ function slugify(title) {
 }
 
 export function start(root, client, { onStatus = () => {} } = {}) {
-  const state = { series: new Map(), files: new Map(), base: null, editing: null, dirty: new Set() };
+  const state = {
+    series: new Map(),
+    files: new Map(),
+    /* The same files as fetched, never edited. Releasing needs both: the
+     * frozen copy has to be what students have now, and the buffer is what
+     * they are about to get. Without this the release would freeze the edits
+     * it exists to let them go back from. */
+    original: new Map(),
+    base: null,
+    editing: null,
+    dirty: new Set(),
+    /* Paths to delete in the next commit. A release moves a single-file
+     * tutorial into a folder, which is the only thing here that removes a
+     * file rather than writing one. */
+    removing: new Set(),
+  };
 
   function status(text, kind = "note") {
     onStatus(text, kind);
@@ -300,10 +387,14 @@ export function start(root, client, { onStatus = () => {} } = {}) {
     const { base, paths } = await client.listTutorials();
     state.base = base;
     state.files.clear();
+    state.original.clear();
     state.series.clear();
+    state.dirty.clear();
+    state.removing.clear();
     for (const path of paths) {
       const text = await client.read(path);
       state.files.set(path, text);
+      state.original.set(path, text);
     }
     for (const [path, text] of state.files) {
       if (!path.endsWith(".order.yaml")) continue;
@@ -322,11 +413,19 @@ export function start(root, client, { onStatus = () => {} } = {}) {
       });
     }
 
+    /* One entry per tutorial, not per file. A tutorial with more than one
+     * release is a folder of them, and reading each file as its own tutorial
+     * would list the same thing three times and let an edit to one of them
+     * look like an edit to the tutorial. */
+    for (const series of state.series.values()) series.off = [];
+    const seen = new Set();
     for (const [path, text] of state.files) {
       if (path.endsWith(".order.yaml") || !path.endsWith(".md")) continue;
       const meta = splitFrontmatter(text).meta;
       const module = frontmatterField(meta, "module");
       const slug = frontmatterField(meta, "slug");
+      if (seen.has(`${module}/${slug}`)) continue;
+      seen.add(`${module}/${slug}`);
       const series = [...state.series.values()].find(
         (s) => s.module === module && !s.order.includes(slug)
           && frontmatterField(meta, "series") === s.name
@@ -337,8 +436,41 @@ export function start(root, client, { onStatus = () => {} } = {}) {
     render();
   }
 
-  function pathOf(module, slug) {
+  function newPathOf(module, slug) {
+    /* Where a tutorial is created. Always a single file: a folder is what a
+     * tutorial becomes when it has a second release, and most never do. */
     return `tutorials/${module}/${slug}.md`;
+  }
+
+  function releasesOf(module, slug) {
+    /* Every file that is a release of this tutorial, newest first. One while
+     * it is a single file, several once it is a folder. */
+    const single = `tutorials/${module}/${slug}.md`;
+    const folder = `tutorials/${module}/${slug}/`;
+    const paths = [];
+    for (const path of state.files.keys()) {
+      if (!path.endsWith(".md")) continue;
+      if (path === single || (path.startsWith(folder) && !path.slice(folder.length).includes("/"))) {
+        paths.push(path);
+      }
+    }
+    return paths.sort((a, b) =>
+      isNewer(versionOf(state.files.get(b)), versionOf(state.files.get(a))) ? 1 : -1);
+  }
+
+  function pathOf(module, slug) {
+    /* The release the plain URL serves, which is the one to open and the one a
+     * status change applies to: the newest live one, matching what
+     * `versions_of` decides in build.py. Nothing live falls back to the newest
+     * of whatever there is, for the same reason the build does — a tutorial
+     * that is entirely beta or entirely archived still has to open.
+     *
+     * This used to be `tutorials/<module>/<slug>.md` and nothing else, so a
+     * tutorial with a second release opened as an empty buffer. */
+    const paths = releasesOf(module, slug);
+    if (paths.length <= 1) return paths[0] || newPathOf(module, slug);
+    const live = paths.filter((path) => statusOf(state.files.get(path)) === "live");
+    return (live.length ? live : paths)[0];
   }
 
   function titleOf(module, slug) {
@@ -374,10 +506,10 @@ export function start(root, client, { onStatus = () => {} } = {}) {
       .replaceAll("{module_title}", frontmatterField(meta, "module_title") || series.module)
       .replaceAll("{year}", frontmatterField(meta, "year") || "2026-2027")
       .replaceAll("{series}", frontmatterField(meta, "series") || series.name);
-    state.files.set(pathOf(series.module, slug), body);
+    state.files.set(newPathOf(series.module, slug), body);
     series.order.splice(at, 0, slug);
     state.dirty.add(series.path);
-    state.dirty.add(pathOf(series.module, slug));
+    state.dirty.add(newPathOf(series.module, slug));
     render();
   }
 
@@ -406,6 +538,81 @@ export function start(root, client, { onStatus = () => {} } = {}) {
       state.dirty.add(series.path);
     }
     render();
+  }
+
+  /* ---------------------------------------------------------------- release
+   *
+   * The one gesture that says "a student should be able to go back to what
+   * they had". Everything else the editor does is an edit.
+   *
+   * It freezes the release students currently have and publishes the buffer as
+   * a new one dated today. Both stay live: the build serves the newest live
+   * release at the plain URL, so the new one becomes what a reader gets and
+   * the old one keeps answering its own link and holding the work saved
+   * against it.
+   */
+  function release({ series, slug }) {
+    const current = pathOf(series.module, slug);
+    const edited = state.files.get(current) || "";
+    const frozen = state.original.get(current);
+
+    if (frozen === undefined) {
+      status("This tutorial has never been committed, so there is nothing for a "
+             + "student to go back to. Commit it first.", "error");
+      return;
+    }
+    /* Both copies, and for different reasons. The frozen one must be live or
+     * there is nothing students have to go back to; the buffer must be live or
+     * this commit is carrying two intentions at once — taking a tutorial off
+     * the course and publishing a new release of it. */
+    if (statusOf(frozen) !== "live" || statusOf(edited) !== "live") {
+      status("Only a live tutorial is released. A draft has no page to go back "
+             + "to, a beta becomes live with the status control rather than by "
+             + "being released, and taking one off the course is a separate "
+             + "gesture from publishing a new release of it.", "error");
+      return;
+    }
+    if (edited === frozen) {
+      status("Nothing has changed, so the new release would be identical to the "
+             + "one students already have.", "error");
+      return;
+    }
+
+    const family = releasesOf(series.module, slug);
+    const next = nextVersion(family.map((path) => versionOf(state.files.get(path))));
+    const was = versionOf(frozen);
+    const folder = `tutorials/${series.module}/${slug}`;
+
+    const { meta, body } = splitFrontmatter(edited);
+    let bumped = setFrontmatterField(meta, "version", next);
+    /* Lineage, for the "what changed" note. Optional to the build and worth
+     * writing, because after two releases nothing else says which one this
+     * replaced. */
+    bumped = setFrontmatterField(bumped, "supersedes", was);
+
+    if (current === `${folder}.md`) {
+      /* A tutorial becomes a folder the moment it has a second release, and
+       * not before. Most never do. */
+      state.files.delete(current);
+      state.dirty.delete(current);
+      state.removing.add(current);
+      state.files.set(`${folder}/v${was}.md`, frozen);
+      state.dirty.add(`${folder}/v${was}.md`);
+    } else {
+      /* Already a folder. The file being edited is the release students have,
+       * so it goes back to exactly that — the edits are the new release, not a
+       * revision of the old one. Without this the frozen copy would carry the
+       * changes it exists to let them go back from. */
+      state.files.set(current, frozen);
+      state.dirty.delete(current);
+    }
+
+    state.files.set(`${folder}/v${next}.md`, `---\n${bumped}\n---\n\n${body}`);
+    state.dirty.add(`${folder}/v${next}.md`);
+    render();
+    status(`Released as ${next}. The ${was} release is frozen where it is, and a `
+           + "reader who worked in it stays there until they choose otherwise. "
+           + "Commit to publish.", "done");
   }
 
   function statusControl(series, slug) {
@@ -493,13 +700,45 @@ export function start(root, client, { onStatus = () => {} } = {}) {
       report.replaceChildren();
       const gone = renamedCells(body, next);
       if (gone.length) {
+        /* This used to say the work was thrown away, which stopped being true
+         * when releases arrived and made it contradict the proposal below it.
+         * Committed as an edit it is still true; released, the old cells are
+         * still there in the release students are working in. Saying both,
+         * once, is what stops the two messages arguing. */
         report.append(el("p", { class: "dl-editor-danger" },
-          `Renaming a cell id throws away the work every student saved in it. ` +
-          `These ids are no longer here: ${gone.join(", ")}.`));
+          `A cell id is the key a student's answers are saved under. These ids ` +
+          `are no longer here: ${gone.join(", ")}. Committed as an edit, the ` +
+          `answers in them are orphaned and those cells come back empty.`));
+        report.append(el("p", { class: "dl-editor-danger" },
+          `Released instead, nothing is orphaned: the ids stay in the release ` +
+          `students are working in, and they stay there until they choose to move.`));
       }
       for (const problem of problems(next)) {
         report.append(el("p", { class: `dl-editor-${problem.level}` }, problem.text));
       }
+      /* The proposal. The editor knows what changed since the last release and
+       * says so; it does not bump anything on its own, because a version per
+       * save is the thing the whole design rejects. When only prose moved it
+       * stays quiet — that is an edit and it needs no ceremony.
+       *
+       * A file with nothing committed behind it has no last release to compare
+       * with. That is a tutorial just created, or the release just made — and
+       * without this guard the release you have this second announces that
+       * every cell in it is new. */
+      const committed = state.original.get(path);
+      const moved = committed === undefined
+        ? { added: [], removed: [] }
+        : cellsChanged(splitFrontmatter(committed).body, next);
+      if (moved.added.length || moved.removed.length) {
+        const said = [];
+        if (moved.added.length) said.push(`${moved.added.length} new`);
+        if (moved.removed.length) said.push(`${moved.removed.length} gone`);
+        report.append(el("p", { class: "dl-editor-warn" },
+          `The cells have changed since the last release — ${said.join(", ")}. ` +
+          "That is usually a release rather than an edit: releasing keeps the " +
+          "version students are working in and puts this one beside it."));
+      }
+
       const cells = parseCells(next);
       report.append(el("p", { class: "dl-editor-structure" },
         `${cells.length} runnable cell${cells.length === 1 ? "" : "s"}, ` +
@@ -514,12 +753,26 @@ export function start(root, client, { onStatus = () => {} } = {}) {
     });
     check();
 
+    const releases = releasesOf(series.module, slug);
+    const version = versionOf(original);
+
     return el("section", { class: "dl-editor-one" },
       el("p", {},
         el("button", { type: "button", class: "dl-editor-back",
                        onclick: () => { state.editing = null; render(); } }, "← all tutorials")),
       el("h2", {}, frontmatterField(meta, "title") || slug),
       el("p", { class: "dl-editor-where" }, path),
+      el("p", { class: "dl-editor-release" },
+        el("span", { class: "dl-editor-version" },
+           releases.length > 1
+             ? `Release ${version}, the newest of ${releases.length}`
+             : `Release ${version}, the only one`),
+        el("button", {
+          type: "button", class: "dl-editor-release-btn", id: "dl-editor-release",
+          title: "Freeze the release students have and publish this as a new "
+               + "one, dated today. Their saved answers move with them.",
+          onclick: () => release({ series, slug }),
+        }, "Release as a new version")),
       el("details", { class: "dl-editor-meta" },
         el("summary", {}, "Frontmatter"),
         el("pre", {}, meta)),
@@ -535,8 +788,12 @@ export function start(root, client, { onStatus = () => {} } = {}) {
     return `${head}order:\n${series.order.map((s) => `  - ${s}\n`).join("")}`;
   }
 
+  function pending() {
+    return state.dirty.size + state.removing.size;
+  }
+
   async function save() {
-    if (!state.dirty.size) {
+    if (!pending()) {
       status("Nothing has changed.", "note");
       return;
     }
@@ -547,11 +804,17 @@ export function start(root, client, { onStatus = () => {} } = {}) {
       const series = state.series.get(path);
       files.push({ path, text: series ? orderText(series) : state.files.get(path) });
     }
+    /* A release moves a single-file tutorial into a folder, which is the only
+     * thing here that removes a file. It has to travel in the same commit as
+     * the two files replacing it, or main briefly has a tutorial with no
+     * releases in it. */
+    for (const path of state.removing) files.push({ path, text: null });
     status(`Committing ${files.length} file${files.length === 1 ? "" : "s"}…`);
     try {
       const branch = `editor/${slugify(message).slice(0, 40)}-${Date.now().toString(36)}`;
       const url = await client.commit({ base: state.base, branch, message, files });
       state.dirty.clear();
+      state.removing.clear();
       /* Render first: it rebuilds the status bar, so setting the message
        * before it would write into an element about to be thrown away. */
       render();
@@ -568,8 +831,8 @@ export function start(root, client, { onStatus = () => {} } = {}) {
     root.append(
       el("div", { class: "dl-editor-bar" },
         el("button", { type: "button", id: "dl-editor-save", onclick: save,
-                       disabled: state.dirty.size ? null : "disabled" },
-           state.dirty.size ? `Commit ${state.dirty.size} change${state.dirty.size === 1 ? "" : "s"}` : "Nothing to commit"),
+                       disabled: pending() ? null : "disabled" },
+           pending() ? `Commit ${pending()} change${pending() === 1 ? "" : "s"}` : "Nothing to commit"),
         el("button", { type: "button", id: "dl-editor-forget", onclick: () => {
           try { localStorage.removeItem(TOKEN_KEY); } catch (e) { /* blocked storage */ }
           location.reload();
@@ -587,6 +850,7 @@ export function start(root, client, { onStatus = () => {} } = {}) {
 
   globalThis.dewlabEditor = {
     state, load, save, render, move, insert, setStatus, setFrontmatterField,
+    release, pathOf, releasesOf,
   };
   return load();
 }

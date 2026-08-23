@@ -49,54 +49,51 @@ A one-line answer is a complete answer.
 
 ## Open
 
-### Coordinate geometry has no tutorial and no outline, and something already depends on it
-
-**What is being asked.** Four Maths for IT outcomes — MIT-4.1 to 4.4, a line as
-an equation, slope, midpoint and distance, and Pythagoras — have no tutorial and
-appear in none of the ten proposals. Should coordinate geometry become the
-eleventh proposal, with an outline written next?
-
-The reason it is worth a question rather than a shrug: `angles-and-waves` is the
-proposal that carries the unit circle, and you said in `ANSWERS-3.md` that
-SOH-CAH-TOA needs "coordinates so we can have the unit circle". So a proposal
-that exists is already building on a tutorial that does not.
-
-**What was assumed and built in the meantime.** Nothing yet. The survey in
-`planning/WHAT_IS_LEFT_TO_WRITE.md` names it as the first thing to write and
-places it before Angles and Waves rather than after.
-
-**What changing it later would cost.** Nothing structural — it is a proposal and
-an outline, both of which are text. What it would cost is discovering it while
-writing Angles and Waves and having to stop.
-
-**What it blocks.** Angles and Waves, and therefore most of Section 4.
-
-### Where do Venn diagrams go?
-
-**What is being asked.** MIT-2.3, two and three set Venn diagrams, has no home.
-`sets-as-sorted-lists` teaches sets and does not draw them; the proposed
-`logic-and-truth` covers truth tables and De Morgan and does not draw them
-either. Three options:
-
-1. A section inside `logic-and-truth`. De Morgan's Laws are the natural pairing,
-   because the picture is the proof — but it turns a short tutorial into a full
-   one.
-2. A section added to `sets-as-sorted-lists`, which exists already and already
-   has the vocabulary. Cheapest, and it puts the picture where the sets are.
-3. Its own short tutorial. Hard to justify for one outcome.
-
-**What was assumed and built in the meantime.** Nothing. My preference is 2, on
-the grounds that it costs one section in a tutorial that is already written.
-
-**What changing it later would cost.** Small either way. Moving a section
-between two tutorials is moving prose and two cells.
-
-**What it blocks.** Nothing. It is the last uncovered outcome once the rest is
-planned, and it can be decided when `logic-and-truth` is written.
+*Nothing waiting.*
 
 ---
 
 ## Answered
+
+### Coordinate geometry has no tutorial and no outline, and something already depends on it
+
+**Settled: its own tutorial, and the describing comes first.**
+
+Josh: *"for coordinate geometry, I think we just need to figure out ways of
+describing that. And, yes, I think that's a very important thing to discuss."*
+
+So `MIT-4.1` to `4.4` become [Lines and Distances](planning/outlines/lines-and-distances.md),
+sitting between Drawing Functions and Angles and Waves rather than folded into
+either. Pythagoras is one of the six gateways in the topic tree, and a gateway
+that exists only as somebody else's third subsection is not a gateway.
+
+The outline is mostly about how to describe the material, because that is what
+was asked for: what to call it, which of the three descriptions of a line comes
+first and why the general form arrives last, whether slope is named as
+rise-over-run or as a rate of change, and why distance should come before
+Pythagoras rather than after.
+
+`MIT-4.9` went with it as far as needing a home, and got a separate short
+tutorial after Angles and Waves — it needs the ratios, which arrive there.
+
+### Where do Venn diagrams go?
+
+**Settled: a small tutorial of its own, linked rather than merged.**
+
+Josh: *"we can make a little separate tutorial about Venn diagrams. That's
+totally fine. If you wanna connect it to DeMorgan's and also connect it to
+sets-as-sorted-lists, that's fine. But again, those can be connections. We don't
+need to do combinations here."*
+
+Neither of the two options I offered, and the better answer. Both of mine folded
+it into an existing tutorial; this keeps three whole things and links them.
+
+It also reverses an entry in `out-of-scope.yaml`, which had ruled Venn diagrams
+out as a pen-and-paper convention adding notation rather than understanding. The
+reversal answers that rather than overruling it: what comes back is the picture
+drawn by matplotlib from real sets — output rather than convention — and the
+point at which three sets stop fitting in a person's head. The outline is
+[Drawing Sets](planning/outlines/venn-diagrams.md).
 
 ### How should mathematics be rendered?
 

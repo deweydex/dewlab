@@ -486,6 +486,32 @@ def load_proposals() -> list[dict]:
     return (yaml.safe_load(PROPOSED.read_text()) or {}).get("proposed") or []
 
 
+def unplanned_line(states: dict[str, str], proposals: list[dict]) -> str:
+    """The one number worth acting on: outcomes with no tutorial *and* no plan.
+
+    "Not covered" counts the work outstanding; this counts the work nobody has
+    thought about yet, which is a different and smaller thing. Reported because
+    the first survey of what was left to write missed a whole block of geometry
+    by counting gaps without checking them against the proposals — and by
+    counting them by hand rather than reading this file.
+    """
+    wanted = {c for c, state in states.items() if state in ("absent", "touched")}
+    planned = {code for p in proposals for code in (p.get("covers") or [])}
+    orphans = sorted(wanted - planned)
+    if not orphans:
+        return (
+            f"**Every one of the {len(wanted)} outcomes still to write has a "
+            "proposal** in `planning/curriculum/proposed.yaml`. Nothing is "
+            "waiting to be thought about."
+        )
+    listed = ", ".join(f"`{code}`" for code in orphans)
+    return (
+        f"**{len(orphans)} of the {len(wanted)} outcomes still to write have no "
+        f"proposal**: {listed}. These are the ones nobody has decided how to "
+        "teach yet."
+    )
+
+
 def proposal_graph(tutorials: list[Tutorial], proposals: list[dict]) -> str:
     """The existing series with the proposed tutorials slotted into it."""
     ordered = sorted(
@@ -567,7 +593,12 @@ def render() -> str:
         "## Where we stand",
         "",
         f"**{in_place} of {wanted}** outcomes are in place, once the "
-        f"{counted['excluded']} we have ruled out are set aside.",
+        # "the 1 we have ruled out are set aside" read as a typo in a generated
+        # file, which is the kind of thing that makes a reader distrust the
+        # numbers beside it.
+        + (f"{counted['excluded']} we have ruled out is set aside."
+           if counted["excluded"] == 1
+           else f"{counted['excluded']} we have ruled out are set aside."),
         "",
         f"- {STATUS['taught'][1]} **{counted['taught']} taught** — a tutorial "
         "section teaches it.",
@@ -580,6 +611,8 @@ def render() -> str:
         "in dewlab touches it.",
         f"- {STATUS['excluded'][1]} **{counted['excluded']} out of scope** — see "
         "`planning/curriculum/out-of-scope.yaml` for why.",
+        "",
+        unplanned_line(states, proposals),
         "",
         "### By strand",
         "",

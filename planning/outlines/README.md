@@ -16,10 +16,13 @@ and why that position. `planning/CURRICULUM_MAP.md` shows what each would close.
 | [Rearranging Formulae](./rearranging-formulae.md) | `MIT-1.7` | short |
 | [When There Is No Answer](./complex-roots.md) | `MIT-1.10` | short |
 | [Drawing Functions](./drawing-functions.md) | `MIT-3.1`, `MIT-3.2`, `MIT-3.4` | full |
+| [Lines and Distances](./lines-and-distances.md) | `MIT-4.1`, `MIT-4.2`, `MIT-4.3`, `MIT-4.4` | full |
+| [How Tall Is That?](./lines-and-distances.md) | `MIT-4.9` | short |
 | [Angles and Waves](./angles-and-waves.md) | `MIT-3.3`, `MIT-4.5`, `MIT-4.6`, `MIT-4.8`, `MIT-4.10` | full |
 | [Approaching a Limit](./approaching-a-limit.md) | `MIT-3.5` | short |
 | [Rates of Change](./rates-of-change.md) | `MIT-3.6`, `MIT-3.7` | full |
 | [Logic and Truth](./logic-and-truth.md) | `MIT-2.4`, `MIT-2.5` | short |
+| [Drawing Sets](./venn-diagrams.md) | `MIT-2.3` | short |
 | [Two conversions from everlearning](./from-everlearning.md) | `PDP-LO1`, `PDP-LO3`, `PDP-LO9` | full |
 | [The Matrices Strand](./matrices.md) | nothing in MIT — deliberately beyond it | five to seven tutorials |
 | [The Team Project](./team-project.md) | `PDP-LO12` | not a tutorial |

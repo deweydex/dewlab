@@ -2,7 +2,10 @@
 
 **Closes:** `MIT-3.1` (function and inverse function), `MIT-3.2` (graph linear,
 quadratic and cubic; solve from a graph), `MIT-3.4` (complete the square).
-**If coordinate geometry is kept:** `MIT-4.1`, `MIT-4.2`, `MIT-4.3`.
+**Followed by:** [Lines and Distances](./lines-and-distances.md), which takes
+the straight line seriously. This outline used to carry `MIT-4.1` to `MIT-4.3`
+conditionally, written while most of Section 4 was out of scope; they have their
+own tutorial now.
 **Goes after:** Tutorial 15, Cracking Equations.
 **Builds on:** 12 (plotting), 14 (polynomials), 15 (solving).
 
@@ -35,10 +38,11 @@ other.
 
 - **Cell:** a `plot_line(m, c)` the student writes, called several times on one
   pair of axes.
-- **Cell:** given two points, compute the slope and the equation. (This is
-  `MIT-4.2` and `MIT-4.3` arriving free, if we keep them.)
-- **Your turn:** which of these lines are parallel? Perpendicular? Check by
-  computing rather than by looking.
+- **Your turn:** which of these lines look parallel? Plot them and see.
+
+Slope from two points, the perpendicular rule, and distance all move to Lines
+and Distances. Here a line is one more function to draw; there it becomes a
+thing with parts that have names.
 
 ### 3. Curves that bend
 
