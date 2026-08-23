@@ -122,6 +122,53 @@ edits. Content editing means the page is open while writing, so the gate states
 the trade plainly, there is a "forget my token" button on every screen, and the
 page is linked from nowhere a student goes.
 
+## The operations it offers
+
+Josh: *"we definitely need to have the option on the editor to have things like
+draft, archive, published — it would also be great to be able to duplicate with
+a new version and other classical operations."*
+
+The set below is those, plus the ones that fall out of them. They divide by how
+much damage they can do, which is the only division worth making in a tool that
+edits published material.
+
+**Safe — the change is reversible and nobody loses anything.**
+
+- **Reorder** a series. Done.
+- **Insert** a tutorial, or **create** one at the end. Done.
+- **Edit** prose and cells. Done, with the cell-id warning.
+- **Edit the frontmatter.** Josh has said yes to this. Every field except
+  `slug` is safe to change from here: a title, the module title, the year, the
+  packages a page needs.
+- **Set the status** — draft, beta, live, archived. One field, and the build
+  does the rest (`planning/VERSIONS.md`).
+- **Release a new version.** Freezes the current file as a version, dates the
+  new one, and leaves the reading order untouched. This is Josh's "duplicate
+  with a new version", and it is the operation the whole versions plan exists
+  to support.
+
+**Careful — the change is fine, but only if something else changes with it.**
+
+- **Duplicate as a new tutorial.** Copies the shape of an existing one under a
+  new slug and title, with the cell ids renamed to match the new sections —
+  because copying them unchanged would give two pages the same storage keys and
+  a student's work would appear in both.
+- **Move to another series.** Two order files change, plus the tutorial's own
+  `series:`. One commit or none.
+
+**Dangerous — refused, or offered only with the consequence stated.**
+
+- **Rename a slug.** It breaks every link to the tutorial and orphans every
+  student's saved work, since both are keyed on it. The editor should not offer
+  this as an edit. What it can offer is *archive the old one and create a new
+  one*, which is the same intent with the losses made visible.
+- **Delete.** Not offered. Josh has settled this: archive is the whole of it.
+  Deleting a file remains possible by hand, for something published in error.
+
+**The rule underneath all of it:** an operation that changes what a student's
+saved work is keyed to — a slug, a cell id — has to say so before it happens,
+because nothing downstream can. By the time the build runs, the old key is gone.
+
 ## Order of work
 
 1. `order.yaml` and the rename. Nothing here needs the editor, and everything

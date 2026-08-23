@@ -217,13 +217,30 @@ status: live                # live | beta | archived
 supersedes: 2026.06.02.1    # optional, for the "what changed" note
 ```
 
-`status` is the whole of staged/beta/archive:
+`status` carries the whole lifecycle. Josh asked for *"draft, archive,
+published"*; the set below is those three plus one, and the reason to separate
+draft from beta is worth stating because it is a property of the site rather
+than a preference.
 
-- **live** — the normal state. Eligible to be the default.
-- **beta** — built, reachable by direct link, never the default, and the page
-  says so at the top in a way nobody can miss. This is Josh showing a colleague.
-- **archived** — built, reachable, not in the reading order, not in the zip,
-  marked as superseded. This is what replaces delete.
+**The site is static and public. Anything built has a URL, and a URL is
+public.** There is no server, no login, and no way to show a page to one person.
+So "not finished yet" has exactly two honest meanings, and they differ by
+whether a URL exists at all:
+
+| Status | Built? | In the reading order | What it is |
+|---|---|---|---|
+| **draft** | **no** | no | In the repository, not on the internet. Nobody can reach it, including you — you read it in the editor or a local build. |
+| **beta** | yes | no | Reachable by anyone with the link, never the default, and the page says so unmissably. This is showing a colleague, or one group. |
+| **live** | yes | yes | The normal state. Eligible to be the default. |
+| **archived** | yes | no | Was on the course, is not now. Still holds saved work, still answers old links. |
+
+Beta and archived are the same shape pointing opposite ways: not yet, and no
+longer. Draft is the one that is genuinely different, because it is the only
+state where no page exists.
+
+If that distinction turns out not to earn its keep, **beta is the one to keep**:
+a draft nobody can look at is less useful than a draft you can send to someone.
+Collapsing them costs one line.
 
 Actually deleting a file remains possible and remains a deliberate act, for the
 case where something was published in error. Archiving is the default gesture.
@@ -357,3 +374,116 @@ frontmatter; and the version field itself is the readable date.
    archived, or leave the map entirely? It still teaches the outcome it taught.
 5. **How long do archived versions live?** Forever is the honest default and
    costs 19KB each. A cut-off would need a reason.
+
+
+---
+
+## Storing it: one field, not two
+
+Josh: *"how do you suggest we store and manage versions and dates? Just two
+fields?"*
+
+**One.** A dotted date carries three of the things we need at once:
+
+| What we need it for | Where it comes from |
+|---|---|
+| Identity — which version is this, in a URL and a saved record | the string itself |
+| Order — which is newer | the four numbers, parsed |
+| When — the date a student reads | the first three numbers |
+| State — draft, beta, live, archived | `status:` |
+| Lineage — what it replaced, for "what changed" | `supersedes:`, optional |
+
+So the whole of it is `version:` and `status:`, with `supersedes:` where a
+"what changed" note is worth writing. A separate `released:` would only be a
+second copy of the first three numbers, and two fields that can disagree are
+worse than one that cannot.
+
+### The bump is the release, and it is a proposal rather than an act
+
+Fully automatic bumping would produce a version per save, which is the thing
+this whole plan rejects. So:
+
+- **The date is stamped when you release, not when you start editing.** An edit
+  that takes a fortnight is dated the day it goes out.
+- **The live file keeps its version between releases.** Editing the current
+  tutorial does not change its version — the version students are seeing and the
+  version in the file stay the same thing.
+- **The editor proposes.** It knows what changed since the last release: whether
+  cells were added, removed, or renamed. When they were, it says so and offers
+  to release. When only prose moved, it stays quiet. That is Josh's automatic
+  bump, with the one decision that needs a person left to the person.
+- **The trailing number is computed**, not typed: if a version already carries
+  today's date, the next one is the next number.
+- **Today means today where you are.** The date comes from the browser's local
+  clock, so a release at half past midnight in Dublin is dated the day Josh
+  thinks it is, not the day UTC thinks it is.
+
+### Where one field strains, and it is worth knowing
+
+A beta made on the 20th and promoted to live on the 25th has a version saying
+the 20th, but students first saw it on the 25th. That matters for exactly one
+thing: a cohort pin resolving "the newest live version released on or before the
+22nd" would include it, wrongly.
+
+**The fix is to re-stamp on promotion.** A version's date becomes the day it
+became the thing students get. The cost is that promoting a beta changes its
+URL and orphans any work saved against it — and betas are seen by a handful of
+people by definition, so that cost is small and bounded.
+
+If that trade reads badly, the alternative is the second field after all:
+`version` as the date it was written, `released` as the date it went live. It
+buys accuracy for betas and costs the guarantee that the two can never disagree.
+I would take the re-stamp.
+
+---
+
+## Linking a new tutorial to an old one
+
+Josh, raising it as a later task:
+
+> I'm not sure how we can get a new tutorial to link to the older ones without
+> some sort of automatic glossary?
+
+**Most of that glossary already exists**, which makes this smaller than it
+sounds and worth doing sooner than "later".
+
+`planning/curriculum/topics.yaml` holds 68 topics with plain-English
+descriptions. Each tutorial's `covers:` frontmatter says which section teaches
+which outcome. `taught_where()` in `build.py` already turns that into *outcome
+code → the exact tutorial section that teaches it*, and the topic tree already
+draws links from it. Nothing new has to be written down; it has to be made
+linkable.
+
+**The proposal is one new link form**, beside the `tutorial:` one that exists:
+
+```markdown
+As we saw when we met [graphing functions](topic:MIT-3.2) …
+```
+
+The build resolves it through `taught_where()` and fails if nothing teaches that
+topic — the same bargain `tutorial:` already makes, and the same reason to trust
+it.
+
+**Why this matters more once versions exist.** A `tutorial:` link points at a
+page. A `topic:` link points at a *concept*, and the build works out which page
+currently teaches it. So:
+
+- Archiving the tutorial that taught something does not break the link. It
+  breaks the *build*, loudly, which is the correct outcome: the link now points
+  at a gap in the course, and somebody should know.
+- Re-releasing a tutorial as a new version does not break the link at all.
+- Splitting one tutorial into two moves the link to whichever now teaches the
+  topic, without touching the prose that refers to it.
+
+That last property is the one that pays for the whole idea. The re-plan of the
+series — splitting tutorials, adding the maths ones, slotting the conversions in
+— is exactly the operation that breaks hand-written cross-references, and this
+is the thing that survives it.
+
+**In the editor**, the same data becomes a list to insert from while writing,
+which is the half Josh was actually asking for.
+
+**Not yet decided:** what a `topic:` link does when a topic is taught in two
+places (nearest earlier one, or the first?), and whether it should be allowed to
+point at a topic nothing teaches yet — useful while drafting a series, and a
+hole in the guarantee.
