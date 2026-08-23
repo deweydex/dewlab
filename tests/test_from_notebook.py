@@ -92,7 +92,9 @@ class TestFrontmatter:
         assert "module: mit-pdp" in text
         assert "series: maths" in text
         assert 'year: "2027-2028"' in text
-        assert "version: 1" in text
+        # Dated today: a converted notebook is being released for the first
+        # time on the day it is converted.
+        assert f"version: {fn.today_release()}" in text
 
     def test_a_quote_in_the_title_does_not_break_the_frontmatter(self, tmp_path):
         path = write(tmp_path, "T.ipynb", notebook(("markdown", '# The "Big" Idea')))

@@ -63,7 +63,7 @@ def test_the_page_loads_its_shared_assets_rather_than_inlining_them(page):
 
 def test_version_metadata_is_in_the_page(page):
     """Phase 2's compare-on-load reads this. It has to be there from Phase 0."""
-    assert page.get_attribute("meta[name=tutorial-version]", "content") == "1"
+    assert page.get_attribute("meta[name=tutorial-version]", "content") == "2026.08.23.1"
     assert page.get_attribute("meta[name=tutorial-slug]", "content") == "rendering-tour"
 
 

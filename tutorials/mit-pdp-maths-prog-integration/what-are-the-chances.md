@@ -5,7 +5,7 @@ module: mit-pdp-maths-prog-integration
 module_title: "Programming and Maths, Integrated"
 year: "2026-2027"
 series: maths-and-programming
-version: 1
+version: 2026.08.23.1
 covers:
   basic-probability:
     covers: [MIT-5.1, MIT-5.6, MIT-5.7]

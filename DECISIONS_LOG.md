@@ -1060,3 +1060,43 @@ across tutorials are safe precisely because storage is keyed per tutorial. The
 version field needs nothing, because the restore already compares versions as
 strings and so tolerates the dotted date that step 2 will introduce.
 *Cost to change: this window closes on the day the first class opens the site.*
+
+**7.24 — A version is a release date, and the newest live one answers the
+tutorial's URL.**
+`version: 1` became `version: 2026.09.15.1` — year, month, day, and which
+release of that day. One field carries identity, order and the date a student
+reads; a separate `released:` would be a second copy of the first three numbers,
+and two fields that can disagree are worse than one that cannot (`VERSIONS.md`).
+
+The unversioned URL serves the **newest `live`** version. Every link written
+before versions existed — inside a tutorial, on the topic tree, in somebody's
+bookmarks — keeps working and keeps meaning "the current one". Other versions
+sit beneath it at `<slug>/v<version>.html`.
+
+That one rule does the beta workflow with no extra machinery: freeze the current
+release, mark the working copy `beta`, and students keep the frozen live one
+until the beta is promoted.
+
+The migration was free, and only because nothing has been published. Every
+tutorial is dated `2026.08.23.1` — a first release is whenever we say it is,
+when there has not been one.
+*Cost to change: high now, in the sense that undoing it would be as much work.*
+
+**7.25 — Status is about the course; default is about the release.**
+Two orthogonal things that read like one. `status` says how a tutorial stands
+to the course — `draft` (not built at all), `beta` (built, reachable, never the
+default), `live` (normal), `archived` (was on the course, is not now). Whether a
+version is the *default* says which release students get, and a superseded
+release is still `live`: it was a real release, it is simply not the current one.
+
+Conflating them was the first thing I got wrong writing the tests — I marked a
+superseded version `archived`, and it announced itself as having left the
+course rather than as an older release.
+*Cost to change: small.*
+
+**7.26 — A draft is the only honest way to have something unpublished.**
+The site is static and public: anything built has a URL, and a URL is public.
+There is no server and no login, so "not finished" has exactly two meanings and
+they differ by whether a page exists. A draft is not built. A beta is built and
+findable only by someone given the link, and says so unmissably.
+*Cost to change: small.*

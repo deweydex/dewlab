@@ -5,7 +5,7 @@ module: computational-methods
 module_title: "Computational Methods"
 year: "2026-2027"
 series: python-fundamentals
-version: 1
+version: 2026.08.23.1
 ---
 
 # First Steps

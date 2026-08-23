@@ -5,7 +5,7 @@ module: mit-pdp-maths-prog-integration
 module_title: "Programming and Maths, Integrated"
 year: "2026-2027"
 series: reflections-and-review
-version: 1
+version: 2026.08.23.1
 covers:
   part-1-reading-your-own-code:
     covers: [PDP-LO11]

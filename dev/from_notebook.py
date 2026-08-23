@@ -29,6 +29,7 @@ left alone unless --force.
 from __future__ import annotations
 
 import argparse
+import datetime
 import json
 import re
 import sys
@@ -41,6 +42,15 @@ MAGIC_RE = re.compile(r"^\s*[%!]")
 HEADING_RE = re.compile(r"^#{1,6}\s+(?P<text>.+?)\s*#*\s*$", re.MULTILINE)
 LEADING_NUMBER_RE = re.compile(r"(?<!\d)(\d{1,3})(?!\d)")
 FENCE_RE = re.compile(r"^\s*```", re.MULTILINE)
+
+
+def today_release() -> str:
+    """A converted notebook's first release, dated today.
+
+    A version is a release date now, not a counter (planning/VERSIONS.md), and
+    a notebook arriving from everlearning is being released for the first time
+    on the day it is converted."""
+    return datetime.date.today().strftime("%Y.%m.%d") + ".1"
 
 
 class ConversionError(Exception):
@@ -180,7 +190,7 @@ def convert(
             f"module: {module}",
             f'year: "{year}"',
             f"series: {series}",
-            "version: 1",
+            f"version: {today_release()}",
             "---",
         ]
     )
