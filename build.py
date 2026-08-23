@@ -58,7 +58,13 @@ REQUIRED_FRONTMATTER = ("title", "slug", "module", "year", "series", "version")
 # and deleting it strands every student who saved work in it — their work sits
 # in local storage keyed to a page that no longer exists, with no way back and
 # no trace it was ever there (planning/VERSIONS.md).
-STATUSES = ("live", "archived")
+STATUSES = ("draft", "beta", "live", "archived")
+
+# A version is a release, not a save: the date a cohort could first see it,
+# plus which release of that day it was. The date is the whole identity — "3"
+# means nothing to a student and "September" means a good deal
+# (planning/VERSIONS.md).
+VERSION_RE = re.compile(r"^(?P<y>\d{4})\.(?P<m>\d{2})\.(?P<d>\d{2})\.(?P<n>\d+)$")
 
 # `order` used to live here. It moved into one file per series, so a tutorial
 # that still carries it is half-migrated — and the half that is not migrated is
@@ -133,6 +139,10 @@ class Tutorial:
     # Where this sits in its series. Not from the frontmatter — the order file
     # decides it, and series_of() fills it in once the series is assembled.
     order: int = 0
+    # Whether this is the version the unversioned URL serves. Set by
+    # versions_of() once every version of a tutorial has been read, because it
+    # cannot be known from one file alone.
+    is_default: bool = True
 
     @property
     def slug(self) -> str:
@@ -142,9 +152,19 @@ class Tutorial:
     def module(self) -> str:
         return str(self.meta["module"])
 
+    # Whether this is the version the unversioned URL serves. Set by
+    # versions_of() once every version of a tutorial has been read, because it
+    # cannot be known from one file alone.
     @property
     def out_path(self) -> Path:
-        return OUT / "tutorials" / self.module / f"{self.slug}.html"
+        """The default sits at the tutorial's own URL; other versions sit under
+        it. So every link written before versions existed — in a tutorial, on
+        the topic tree, in a student's bookmarks — keeps working and keeps
+        meaning "the current one"."""
+        here = OUT / "tutorials" / self.module
+        if self.is_default:
+            return here / f"{self.slug}.html"
+        return here / self.slug / f"v{self.version}.html"
 
     @property
     def module_title(self) -> str:
@@ -167,6 +187,25 @@ class Tutorial:
     @property
     def archived(self) -> bool:
         return self.status == "archived"
+
+    @property
+    def version(self) -> str:
+        return str(self.meta["version"])
+
+    @property
+    def released(self) -> tuple[int, int, int, int]:
+        """The version as something sortable. Numbers, not the string, so
+        2026.09.02.1 sorts before 2026.09.15.1 rather than after it."""
+        m = VERSION_RE.match(self.version)
+        return tuple(int(m.group(g)) for g in ("y", "m", "d", "n"))
+
+    @property
+    def date(self) -> str:
+        """What a student reads: 15 September 2026."""
+        year, month, day, _ = self.released
+        months = ("January", "February", "March", "April", "May", "June", "July",
+                  "August", "September", "October", "November", "December")
+        return f"{day} {months[month - 1]} {year}"
 
     @property
     def title(self) -> str:
@@ -208,6 +247,10 @@ def split_frontmatter(text: str, path: Path) -> tuple[dict, str]:
     status = meta.get("status", "live")
     if status not in STATUSES:
         fail(path, f"status {status!r} is not one of {', '.join(STATUSES)}")
+    version = str(meta.get("version", ""))
+    if not VERSION_RE.match(version):
+        fail(path, f"version {version!r} is not a release date — it should look "
+                   "like 2026.09.15.1 (year, month, day, which release of that day)")
     return meta, body.lstrip("\n")
 
 
@@ -461,6 +504,47 @@ def series_titles() -> dict[tuple[str, str], str]:
     return titles
 
 
+def versions_of(tutorials: list[Tutorial]) -> list[Tutorial]:
+    """Group every file by the tutorial it is a version of, and decide which
+    version the unversioned URL serves.
+
+    **The default is the newest `live` version.** Usually that is the only
+    version there is. Where it is not, the rule does the work the beta workflow
+    needs with no extra machinery: freeze the current release, mark the working
+    copy `beta`, and students keep getting the frozen live one until the beta is
+    promoted.
+
+    Returns everything that gets built, with `is_default` set. Drafts are gone
+    by the time this runs — see `load_all`.
+    """
+    families: dict[tuple[str, str], list[Tutorial]] = {}
+    for tutorial in tutorials:
+        families.setdefault((tutorial.module, tutorial.slug), []).append(tutorial)
+
+    built: list[Tutorial] = []
+    for (module, slug), versions in sorted(families.items()):
+        seen = {}
+        for version in versions:
+            if version.version in seen:
+                fail(version.path, f"is version {version.version} of {slug}, and so "
+                                   f"is {seen[version.version].path.relative_to(ROOT)}. "
+                                   "Two releases cannot share a date and a number.")
+            seen[version.version] = version
+
+        newest_live = max(
+            (v for v in versions if v.status == "live"), key=lambda v: v.released,
+            default=None,
+        )
+        # Nothing live: a tutorial that is entirely beta, or entirely archived.
+        # The newest of what there is still answers the unversioned URL, because
+        # a link that 404s is worse than a link to something marked clearly.
+        default = newest_live or max(versions, key=lambda v: v.released)
+        for version in versions:
+            version.is_default = version is default
+        built.extend(versions)
+    return built
+
+
 def archived_of(tutorials: list[Tutorial]) -> dict[str, list[Tutorial]]:
     """Retired tutorials, per module, newest title order.
 
@@ -470,7 +554,7 @@ def archived_of(tutorials: list[Tutorial]) -> dict[str, list[Tutorial]]:
     """
     out: dict[str, list[Tutorial]] = {}
     for tutorial in tutorials:
-        if tutorial.archived:
+        if tutorial.archived and tutorial.is_default:
             out.setdefault(tutorial.module, []).append(tutorial)
     for members in out.values():
         members.sort(key=lambda t: t.title)
@@ -490,13 +574,15 @@ def series_of(tutorials: list[Tutorial]) -> dict[tuple[str, str], list[Tutorial]
     orders = order_files()
     groups: dict[tuple[str, str], list[Tutorial]] = {}
     for tutorial in tutorials:
-        if tutorial.archived:
+        # Only the current, live version of each tutorial is on the route. A
+        # superseded release is still readable; it is not part of the course.
+        if tutorial.status != "live" or not tutorial.is_default:
             continue
         groups.setdefault((tutorial.module, tutorial.series), []).append(tutorial)
 
     # The contradictory case, caught by name so the message can say which.
     for tutorial in tutorials:
-        if not tutorial.archived:
+        if not tutorial.archived or not tutorial.is_default:
             continue
         listed = orders.get((tutorial.module, tutorial.series)) or []
         if tutorial.slug in listed:
@@ -704,7 +790,10 @@ def taught_where(tutorials: list[Tutorial]) -> dict[str, dict]:
         # topic today cannot be sent there. Counting it would make the map say
         # an outcome is covered when nothing on the course covers it — which is
         # exactly the lie the map exists to prevent.
-        if tutorial.archived:
+        # The current live version only. A superseded release claims the same
+        # coverage as the one that replaced it, and counting both would make
+        # one outcome look taught by four things.
+        if tutorial.archived or tutorial.status != "live" or not tutorial.is_default:
             continue
         for anchor, claim in (tutorial.meta.get("covers") or {}).items():
             for code in claim.get("covers") or []:
@@ -1265,27 +1354,52 @@ def versioned(base: str, name: str) -> str:
     return f"{base}{name}?v={asset_version(name)}"
 
 
-def archived_notice(tutorial: Tutorial) -> str:
-    """What an archived page says about itself, above everything else.
+def page_notice(tutorial: Tutorial, default: Tutorial | None = None) -> str:
+    """What a page says about itself when it is not the ordinary case.
 
-    It still runs, and a student's saved work is still in it — that is the whole
-    point of archiving rather than deleting. What it must not do is let somebody
-    read it for a fortnight without noticing it is not on the course.
+    Three of them, and each has to be impossible to read past, because all three
+    describe a page that still works perfectly — it runs, it holds saved work,
+    it looks like every other tutorial. Nothing about the page itself would tell
+    a student they are in the wrong place.
     """
-    if not tutorial.archived:
-        return ""
     up = "../" * tutorial.depth
-    return (
-        '<div class="dl-archived" role="note">'
-        "<strong>This tutorial is no longer part of the course.</strong> "
-        "It is kept here so that anything you saved in it is still yours, and "
-        "so nothing that linked to it is broken. It still runs. For what "
-        f'replaced it, see <a href="{up}index.html">all tutorials</a>.'
-        "</div>"
-    )
+    here = f'<a href="{up}index.html">all tutorials</a>'
+
+    if tutorial.archived:
+        return (
+            '<div class="dl-archived" role="note">'
+            "<strong>This tutorial is no longer part of the course.</strong> "
+            "It is kept here so that anything you saved in it is still yours, and "
+            "so nothing that linked to it is broken. It still runs. For what "
+            f"replaced it, see {here}."
+            "</div>"
+        )
+
+    if tutorial.status == "beta":
+        return (
+            '<div class="dl-archived" role="note">'
+            "<strong>This is a draft, not the tutorial your course uses.</strong> "
+            "It is here to be looked at and argued with. Anything you write in "
+            "it is saved separately from the real one, and it may change or "
+            f"disappear without warning. The one to work through is in {here}."
+            "</div>"
+        )
+
+    if not tutorial.is_default and default is not None:
+        current = os.path.relpath(default.out_path, tutorial.out_path.parent)
+        return (
+            '<div class="dl-archived" role="note">'
+            f"<strong>This is the {tutorial.date} version of this tutorial.</strong> "
+            f'There is a newer one — <a href="{current}">{html.escape(default.date)}</a>. '
+            "This one is kept so that work saved against it still opens, and so "
+            "a link to it still lands somewhere."
+            "</div>"
+        )
+    return ""
 
 
-def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "") -> Path:
+def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "",
+          default: Tutorial | None = None) -> Path:
     up = "../" * tutorial.depth
     manifest: dict[str, object] = {
         "slug": tutorial.slug,
@@ -1327,7 +1441,7 @@ def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "") -> Path
         "{{PAGE_SCRIPT}}": "",
         "{{DOWNLOAD}}": download_section(tutorial),
         "{{TOC}}": render_toc(tutorial),
-        "{{BODY}}": archived_notice(tutorial) + body_html,
+        "{{BODY}}": page_notice(tutorial, default) + body_html,
         # `<` escaped so nothing in a cell can close the surrounding <script>.
         "{{MANIFEST_JSON}}": json.dumps(manifest).replace("<", "\\u003c"),
     }
@@ -1741,20 +1855,21 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
         shutil.rmtree(OUT)
 
     sources = sorted(TUTORIALS.rglob("*.md"))
-    tutorials = [load(p) for p in sources]
+    # A draft is in the repository and not on the internet. The site is static
+    # and public, so there is no other way to have one: anything built has a
+    # URL, and a URL is public (planning/VERSIONS.md).
+    everything = [load(p) for p in sources]
+    tutorials = versions_of([t for t in everything if t.status != "draft"])
 
     # Unique within a module, not across the whole site. The built path already
     # carries the module, so two modules may each have a "first-steps" without
     # any ambiguity about which page is which — and forcing them apart would
     # mean naming tutorials around a constraint that does not exist.
-    registry: dict[tuple[str, str], Tutorial] = {}
-    for tutorial in tutorials:
-        key = (tutorial.module, tutorial.slug)
-        if key in registry:
-            fail(tutorial.path, f"slug {tutorial.slug!r} is already used in "
-                                f"{tutorial.module} by "
-                                f"{registry[key].path.relative_to(ROOT)}")
-        registry[key] = tutorial
+    # One entry per tutorial, holding its default version: a `tutorial:` link
+    # means "the current one", the same as the unversioned URL it resolves to.
+    registry: dict[tuple[str, str], Tutorial] = {
+        (t.module, t.slug): t for t in tutorials if t.is_default
+    }
 
     shell = SHELL.read_text()
     groups = series_of(tutorials)
@@ -1766,10 +1881,13 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
         # previous and no next — only the way back.
         members = groups.get((tutorial.module, tutorial.series), [])
         page_path = write(
-            tutorial, shell, resolve_links(tutorial, registry), nav_for(tutorial, members)
+            tutorial, shell, resolve_links(tutorial, registry), nav_for(tutorial, members),
+            default=registry.get((tutorial.module, tutorial.slug)),
         )
         written.append(page_path)
-        if standalone:
+        # 0.7MB against 19KB for the hosted page, so only the version students
+        # are actually being given is worth building forty times over.
+        if standalone and tutorial.is_default:
             written.append(write_standalone(tutorial, page_path.read_text()))
 
     archives: dict[tuple[str, str], Path] = {}

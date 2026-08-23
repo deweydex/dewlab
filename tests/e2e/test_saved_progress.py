@@ -65,7 +65,7 @@ class TestAutosave:
         page.evaluate("globalThis.dewlab.saveNow()")
         saved = page.evaluate("globalThis.dewlab.readSaved()")
         assert saved["tutorial-slug"] == "rendering-tour"
-        assert str(saved["tutorial-version"]) == "1"
+        assert str(saved["tutorial-version"]) == "2026.08.23.1"
         assert saved["saved_at"]
 
     def test_work_comes_back_after_a_reload(self, clean_storage):
@@ -92,7 +92,7 @@ class TestTheAwkwardPaths:
         page = clean_storage
         seed(page, {
             "tutorial-slug": "rendering-tour",
-            "tutorial-version": 99,
+            "tutorial-version": "2020.01.01.1",
             "saved_at": "2026-01-01T00:00:00Z",
             "cells": [{"task_id": "plain-python", "student_code": "# from an older version",
                        "output_html": ""}],
@@ -107,7 +107,7 @@ class TestTheAwkwardPaths:
         page = clean_storage
         seed(page, {
             "tutorial-slug": "rendering-tour",
-            "tutorial-version": 1,
+            "tutorial-version": "2026.08.23.1",
             "saved_at": "2026-01-01T00:00:00Z",
             "cells": [{"task_id": "plain-python", "student_code": "# same version",
                        "output_html": ""}],
@@ -121,7 +121,7 @@ class TestTheAwkwardPaths:
         page = clean_storage
         seed(page, {
             "tutorial-slug": "rendering-tour",
-            "tutorial-version": 1,
+            "tutorial-version": "2026.08.23.1",
             "saved_at": "2026-01-01T00:00:00Z",
             "cells": [
                 {"task_id": "plain-python", "student_code": "# still here", "output_html": ""},
@@ -139,7 +139,7 @@ class TestTheAwkwardPaths:
         page = clean_storage
         seed(page, {
             "tutorial-slug": "rendering-tour",
-            "tutorial-version": 1,
+            "tutorial-version": "2026.08.23.1",
             "saved_at": "2026-01-01T00:00:00Z",
             "cells": [{"task_id": "plain-python", "student_code": "# only this one",
                        "output_html": ""}],
@@ -152,7 +152,7 @@ class TestTheAwkwardPaths:
         page = clean_storage
         seed(page, {
             "tutorial-slug": "rendering-tour",
-            "tutorial-version": 1,
+            "tutorial-version": "2026.08.23.1",
             "saved_at": "2026-01-01T00:00:00Z",
             "cells": [{"task_id": "tools-widgets", "student_code": "# widgets",
                        "output_html": '<div class="dl-widget">a box</div>'}],

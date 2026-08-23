@@ -21,18 +21,18 @@ REPO = {
         "series: Maths and programming\norder:\n  - first-steps\n  - next-steps\n",
     "tutorials/fixtures/first-steps.md":
         '---\ntitle: "First Steps"\nslug: first-steps\nmodule: fixtures\n'
-        'module_title: "Fixtures"\nyear: "2026-2027"\nseries: maths\nversion: 1\n---\n\n'
+        'module_title: "Fixtures"\nyear: "2026-2027"\nseries: maths\nversion: 2026.08.23.1\n---\n\n'
         "# First Steps\n\nProse.\n\n## Adding up\n\n```python exec\nid: adding-up-1\n"
         "print(1 + 1)\n```\n",
     "tutorials/fixtures/next-steps.md":
         '---\ntitle: "Next Steps"\nslug: next-steps\nmodule: fixtures\n'
-        'module_title: "Fixtures"\nyear: "2026-2027"\nseries: maths\nversion: 1\n---\n\n'
+        'module_title: "Fixtures"\nyear: "2026-2027"\nseries: maths\nversion: 2026.08.23.1\n---\n\n'
         "# Next Steps\n\nMore prose.\n",
     "tutorials/fixtures/looking-back.order.yaml":
         "series: Reflections and review\norder:\n  - looking-back\n",
     "tutorials/fixtures/looking-back.md":
         '---\ntitle: "Looking Back"\nslug: looking-back\nmodule: fixtures\n'
-        'module_title: "Fixtures"\nyear: "2026-2027"\nseries: looking-back\nversion: 1\n---\n\n'
+        'module_title: "Fixtures"\nyear: "2026-2027"\nseries: looking-back\nversion: 2026.08.23.1\n---\n\n'
         "# Looking Back\n\nProse.\n",
 }
 

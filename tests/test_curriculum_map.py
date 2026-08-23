@@ -50,7 +50,7 @@ def repo(tmp_path, monkeypatch):
 def write_tutorial(repo, covers: str = "", heading: str = "A Real Section"):
     (repo / "tutorials" / "demo" / "sample.md").write_text(
         '---\ntitle: "Sample"\nslug: sample\nmodule: demo\n'
-        'year: "2026-2027"\nseries: s\norder: 1\nversion: 1\n'
+        'year: "2026-2027"\nseries: s\norder: 1\nversion: 2026.08.23.1\n'
         + covers
         + f"---\n\n# Sample\n\n## {heading}\n\nProse.\n"
     )
@@ -136,7 +136,7 @@ class TestBackReferences:
         for n in (1, 2):
             (repo / "tutorials" / "demo" / f"t{n}.md").write_text(
                 f'---\ntitle: "{titles[n]}"\nslug: t{n}\nmodule: demo\n'
-                f'year: "2026-2027"\nseries: s\nversion: 1\n---\n\n# {titles[n]}\n\n'
+                f'year: "2026-2027"\nseries: s\nversion: 2026.08.23.1\n---\n\n# {titles[n]}\n\n'
                 + ("Recall your work from Counting Carefully.\n" if n == 2 else "Prose.\n")
             )
         self.order_file(repo, ["t1", "t2"])
@@ -150,7 +150,7 @@ class TestBackReferences:
         for n in (1, 2):
             (repo / "tutorials" / "demo" / f"t{n}.md").write_text(
                 f'---\ntitle: "{titles[n]}"\nslug: t{n}\nmodule: demo\n'
-                f'year: "2026-2027"\nseries: s\nversion: 1\n---\n\n# {titles[n]}\n\n'
+                f'year: "2026-2027"\nseries: s\nversion: 2026.08.23.1\n---\n\n# {titles[n]}\n\n'
                 "Covered in Counting Carefully and later in What Are the Chances.\n"
             )
         self.order_file(repo, ["t1", "t2"])

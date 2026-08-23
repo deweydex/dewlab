@@ -63,7 +63,8 @@ def set_order(repo: Path, module: str, series: str, slugs: list[str]) -> Path:
     return path
 
 
-def write(repo: Path, body: str, slug: str = "sample", version: int = 1) -> Path:
+def write(repo: Path, body: str, slug: str = "sample",
+          version: str = "2026.08.23.1") -> Path:
     path = repo / "tutorials" / "computational-methods" / f"{slug}.md"
     path.write_text(FRONTMATTER.format(slug=slug, version=version) + body)
     # Keep the series' order file listing whatever has been written so far.
@@ -102,10 +103,10 @@ class TestTheHappyPath:
         assert "{{" not in built(repo)
 
     def test_frontmatter_reaches_the_page_metadata(self, repo):
-        write(repo, "Some prose.\n", version=4)
+        write(repo, "Some prose.\n", version="2026.08.24.1")
         b.build()
         page = built(repo)
-        assert '<meta name="tutorial-version" content="4">' in page
+        assert '<meta name="tutorial-version" content="2026.08.24.1">' in page
         assert '<meta name="tutorial-slug" content="sample">' in page
 
     def test_prose_becomes_html(self, repo):
@@ -233,12 +234,15 @@ class TestCrossLinks:
         with pytest.raises(b.BuildError, match="no anchor"):
             b.build()
 
-    def test_two_tutorials_sharing_a_slug_in_one_module_fail_the_build(self, repo):
+    def test_two_files_claiming_one_slug_and_one_version_fail_the_build(self, repo):
+        """Two files sharing a slug are two *versions* of one tutorial now, so
+        the collision that matters is the version: two releases cannot share a
+        date and a number, because nothing could then say which is which."""
         write(repo, "One.\n", slug="same")
         path = repo / "tutorials" / "computational-methods" / "second.md"
-        path.write_text(FRONTMATTER.format(slug="same", version=1) + "Two.\n")
+        path.write_text(FRONTMATTER.format(slug="same", version="2026.08.23.1") + "Two.\n")
         set_order(repo, "computational-methods", "python-fundamentals", ["same"])
-        with pytest.raises(b.BuildError, match="already used in"):
+        with pytest.raises(b.BuildError, match="cannot share a date"):
             b.build()
 
     def test_two_modules_may_each_have_the_same_slug(self, repo):
@@ -250,7 +254,7 @@ class TestCrossLinks:
         other.parent.mkdir(parents=True)
         other.write_text(
             '---\ntitle: "First Steps"\nslug: first-steps\nmodule: other-module\n'
-            'year: "2026-2027"\nseries: intro\nversion: 1\n---\n\nProse.\n'
+            'year: "2026-2027"\nseries: intro\nversion: 2026.08.23.1\n---\n\nProse.\n'
         )
         set_order(repo, "other-module", "intro", ["first-steps"])
         b.build()
@@ -265,7 +269,7 @@ class TestCrossLinks:
         other.parent.mkdir(parents=True)
         other.write_text(
             '---\ntitle: "Twin"\nslug: twin\nmodule: other-module\n'
-            'year: "2026-2027"\nseries: intro\nversion: 1\n---\n\nProse.\n'
+            'year: "2026-2027"\nseries: intro\nversion: 2026.08.23.1\n---\n\nProse.\n'
         )
         set_order(repo, "other-module", "intro", ["twin"])
         b.build()
@@ -297,7 +301,7 @@ class TestAltText:
 class TestFrontmatter:
     def test_a_missing_field_fails_the_build(self, repo):
         path = write(repo, "Prose.\n")
-        path.write_text(path.read_text().replace("version: 1\n", ""))
+        path.write_text(path.read_text().replace("version: 2026.08.23.1\n", ""))
         with pytest.raises(b.BuildError, match="missing version"):
             b.build()
 
@@ -313,7 +317,7 @@ class TestFrontmatter:
 
     def test_a_packages_list_widens_the_manifest(self, repo):
         path = write(repo, "Prose.\n")
-        path.write_text(path.read_text().replace("version: 1", "version: 1\npackages: [sympy]"))
+        path.write_text(path.read_text().replace("version: 2026.08.23.1", "version: 2026.08.23.1\npackages: [sympy]"))
         b.build()
         assert manifest(built(repo))["packages"] == ["sympy"]
 
@@ -479,7 +483,7 @@ class TestNavigation:
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_text(
                 f'---\ntitle: "Tutorial {n}"\nslug: t{n}\nmodule: {module}\n'
-                f'year: "2026-2027"\nseries: {series}\nversion: 1\n---\n\nProse.\n'
+                f'year: "2026-2027"\nseries: {series}\nversion: 2026.08.23.1\n---\n\nProse.\n'
             )
         set_order(repo, module, series,
                   order or [f"t{n}" for n in range(1, count + 1)])
@@ -520,7 +524,7 @@ class TestNavigation:
         path = repo / "tutorials" / "computational-methods" / "other.md"
         path.write_text(
             '---\ntitle: "Other"\nslug: other\nmodule: computational-methods\n'
-            'year: "2026-2027"\nseries: two\nversion: 1\n---\n\nProse.\n'
+            'year: "2026-2027"\nseries: two\nversion: 2026.08.23.1\n---\n\nProse.\n'
         )
         set_order(repo, "computational-methods", "two", ["other"])
         b.build()
@@ -556,7 +560,7 @@ class TestNavigation:
         in silence, and it is exactly the field somebody would edit."""
         self.series(repo, count=1)
         path = repo / "tutorials" / "computational-methods" / "t1.md"
-        path.write_text(path.read_text().replace("version: 1", "order: 1\nversion: 1"))
+        path.write_text(path.read_text().replace("version: 2026.08.23.1", "order: 1\nversion: 2026.08.23.1"))
         with pytest.raises(b.BuildError, match="no longer belongs in frontmatter"):
             b.build()
 
@@ -572,7 +576,7 @@ class TestTheContentsPage:
             path = repo / "tutorials" / "computational-methods" / f"t{n}.md"
             path.write_text(
                 f'---\ntitle: "Tutorial {n}"\nslug: t{n}\nmodule: computational-methods\n'
-                f'year: "2026-2027"\nseries: s\nversion: 1\n---\n\nProse.\n'
+                f'year: "2026-2027"\nseries: s\nversion: 2026.08.23.1\n---\n\nProse.\n'
             )
         set_order(repo, "computational-methods", "s", ["t2", "t1"])
         b.build()
@@ -607,7 +611,7 @@ class TestTheContentsPage:
         other.mkdir(parents=True)
         (other / "t1.md").write_text(
             '---\ntitle: "Elsewhere"\nslug: t1\nmodule: zz-later-module\n'
-            'module_title: "Later Module"\nyear: "2026-2027"\nseries: s\nversion: 1\n---\n\nProse.\n'
+            'module_title: "Later Module"\nyear: "2026-2027"\nseries: s\nversion: 2026.08.23.1\n---\n\nProse.\n'
         )
         set_order(repo, "zz-later-module", "s", ["t1"])
         (repo / "tutorials" / "modules.yaml").write_text(
@@ -629,7 +633,7 @@ class TestTheContentsPage:
         other.mkdir(parents=True)
         (other / "t1.md").write_text(
             '---\ntitle: "Elsewhere"\nslug: t1\nmodule: zz-later-module\n'
-            'module_title: "Later Module"\nyear: "2026-2027"\nseries: s\nversion: 1\n---\n\nProse.\n'
+            'module_title: "Later Module"\nyear: "2026-2027"\nseries: s\nversion: 2026.08.23.1\n---\n\nProse.\n'
         )
         set_order(repo, "zz-later-module", "s", ["t1"])
         (repo / "tutorials" / "modules.yaml").write_text(
@@ -650,7 +654,7 @@ class TestTheContentsPage:
         second.write_text(
             '---\ntitle: "Looking Back"\nslug: looking-back\n'
             "module: computational-methods\n"
-            'year: "2026-2027"\nseries: reflections-and-review\nversion: 1\n---\n\nProse.\n'
+            'year: "2026-2027"\nseries: reflections-and-review\nversion: 2026.08.23.1\n---\n\nProse.\n'
         )
         order = set_order(repo, "computational-methods", "reflections-and-review",
                           ["looking-back"])
@@ -670,7 +674,7 @@ class TestTheContentsPage:
         second.write_text(
             '---\ntitle: "Looking Back"\nslug: looking-back\n'
             "module: computational-methods\n"
-            'year: "2026-2027"\nseries: later\nversion: 1\n---\n\nProse.\n'
+            'year: "2026-2027"\nseries: later\nversion: 2026.08.23.1\n---\n\nProse.\n'
         )
         set_order(repo, "computational-methods", "later", ["looking-back"])
         set_order(repo, "computational-methods", "python-fundamentals", ["sample"])
@@ -777,7 +781,7 @@ class TestTheDownloadableCopy:
             path = repo_with_assets / "tutorials" / "computational-methods" / f"t{n}.md"
             path.write_text(
                 f'---\ntitle: "T{n}"\nslug: t{n}\nmodule: computational-methods\n'
-                f'year: "2026-2027"\nseries: s\nversion: 1\n---\n\nProse.\n'
+                f'year: "2026-2027"\nseries: s\nversion: 2026.08.23.1\n---\n\nProse.\n'
             )
         set_order(repo_with_assets, "computational-methods", "s", ["t1", "t2"])
         b.build(standalone=True)
@@ -796,7 +800,7 @@ class TestTheSeriesArchive:
             path = repo / "tutorials" / "computational-methods" / f"t{n}.md"
             path.write_text(
                 f'---\ntitle: "T{n}"\nslug: t{n}\nmodule: computational-methods\n'
-                f'year: "2026-2027"\nseries: Core skills\nversion: 1\n---\n\nProse.\n'
+                f'year: "2026-2027"\nseries: Core skills\nversion: 2026.08.23.1\n---\n\nProse.\n'
             )
         set_order(repo, "computational-methods", "Core skills", ["t1", "t2"])
 
@@ -838,7 +842,7 @@ class TestTheSeriesArchive:
         path = repo_with_assets / "tutorials" / "computational-methods" / "t1.md"
         path.write_text(
             '---\ntitle: "One"\nslug: t1\nmodule: computational-methods\n'
-            'year: "2026-2027"\nseries: core-skills\nversion: 1\n---\n\nProse.\n'
+            'year: "2026-2027"\nseries: core-skills\nversion: 2026.08.23.1\n---\n\nProse.\n'
         )
         set_order(repo_with_assets, "computational-methods", "core-skills", ["t1"])
         b.build(standalone=True)
@@ -1027,7 +1031,7 @@ class TestTheKnowledgeMap:
                 block = f"covers:\n  a-section:\n    covers: [{codes[(n - 1) % 4]}]\n"
             (repo / "tutorials" / "computational-methods" / f"t{n}.md").write_text(
                 f'---\ntitle: "Tutorial {n}"\nslug: t{n}\nmodule: computational-methods\n'
-                f'year: "2026-2027"\nseries: s\nversion: 1\n{block}'
+                f'year: "2026-2027"\nseries: s\nversion: 2026.08.23.1\n{block}'
                 f"---\n\n# Tutorial {n}\n\n## A section\n\nProse.\n"
             )
         set_order(repo, "computational-methods", "s",
@@ -1176,6 +1180,131 @@ class TestTheExportFailsLoudly:
             b.replace_once("<p>a page</p>", "<not-here>", "x", "the thing")
 
 
+class TestVersionsOfATutorial:
+    """A version is a release, not a save: the version students could first see
+    it, and one they can go back to. `planning/VERSIONS.md`."""
+
+    def release(self, repo, slug: str, version: str, status: str = "live",
+                body: str = "Prose.\n") -> Path:
+        """One release of a tutorial, in the folder its versions share."""
+        folder = repo / "tutorials" / "computational-methods" / slug
+        folder.mkdir(parents=True, exist_ok=True)
+        path = folder / f"v{version}.md"
+        path.write_text(
+            f'---\ntitle: "The Tutorial"\nslug: {slug}\n'
+            "module: computational-methods\n"
+            f'year: "2026-2027"\nseries: python-fundamentals\nversion: {version}\n'
+            f"status: {status}\n---\n\n{body}"
+        )
+        # Only a live release is on the route. A draft is not on the site at
+        # all, and a beta is reachable without being part of the course — so
+        # listing either would be the contradiction the order file refuses.
+        if status == "live":
+            listed = repo / "tutorials" / "computational-methods" / "python-fundamentals.order.yaml"
+            already = [l.strip("- ").strip() for l in listed.read_text().splitlines()
+                       if l.strip().startswith("- ")] if listed.is_file() else []
+            if slug not in already:
+                set_order(repo, "computational-methods", "python-fundamentals",
+                          already + [slug])
+        return path
+
+    def out(self, repo, *parts) -> Path:
+        return repo.joinpath("site", "tutorials", "computational-methods", *parts)
+
+    def test_the_newest_live_version_answers_the_tutorial_url(self, repo):
+        """Every link written before versions existed keeps working and keeps
+        meaning "the current one"."""
+        self.release(repo, "thing", "2026.06.02.1", body="Old.\n")
+        self.release(repo, "thing", "2026.09.15.1", body="New.\n")
+        b.build()
+        assert "New." in self.out(repo, "thing.html").read_text()
+
+    def test_an_older_version_is_still_built_and_still_reachable(self, repo):
+        self.release(repo, "thing", "2026.06.02.1", body="Old.\n")
+        self.release(repo, "thing", "2026.09.15.1", body="New.\n")
+        b.build()
+        older = self.out(repo, "thing", "v2026.06.02.1.html")
+        assert older.is_file()
+        assert "Old." in older.read_text()
+
+    def test_an_older_version_says_so_and_points_at_the_newer_one(self, repo):
+        self.release(repo, "thing", "2026.06.02.1", body="Old.\n")
+        self.release(repo, "thing", "2026.09.15.1", body="New.\n")
+        b.build()
+        page = self.out(repo, "thing", "v2026.06.02.1.html").read_text()
+        assert "2 June 2026 version" in page
+        assert "15 September 2026" in page
+        assert "../thing.html" in page
+
+    def test_dates_sort_by_date_and_not_as_text(self, repo):
+        """2026.09.02.1 comes before 2026.09.15.1. Compared as strings it would
+        come after, because "2" sorts after "1"."""
+        self.release(repo, "thing", "2026.09.02.1", body="Earlier.\n")
+        self.release(repo, "thing", "2026.09.15.1", body="Later.\n")
+        b.build()
+        assert "Later." in self.out(repo, "thing.html").read_text()
+
+    def test_two_releases_on_one_day_are_told_apart_by_the_last_number(self, repo):
+        self.release(repo, "thing", "2026.09.15.1", body="Morning.\n")
+        self.release(repo, "thing", "2026.09.15.2", body="Afternoon.\n")
+        b.build()
+        assert "Afternoon." in self.out(repo, "thing.html").read_text()
+
+    def test_a_draft_is_not_built_at_all(self, repo):
+        """The site is static and public: anything built has a URL, and a URL is
+        public. So the only honest draft is one with no page."""
+        write(repo, "Prose.\n")
+        self.release(repo, "thing", "2026.09.15.1", status="draft", body="Secret.\n")
+        b.build()
+        assert not self.out(repo, "thing.html").exists()
+        assert not self.out(repo, "thing").exists()
+
+    def test_a_beta_is_built_but_is_never_the_default(self, repo):
+        """Freeze the live release, mark the working copy beta, and students
+        keep getting the live one until the beta is promoted."""
+        self.release(repo, "thing", "2026.06.02.1", body="Live.\n")
+        self.release(repo, "thing", "2026.09.15.1", status="beta", body="Trying.\n")
+        b.build()
+        assert "Live." in self.out(repo, "thing.html").read_text()
+        beta = self.out(repo, "thing", "v2026.09.15.1.html")
+        assert "Trying." in beta.read_text()
+        assert "not the tutorial your course uses" in beta.read_text()
+
+    def test_a_beta_is_not_in_the_reading_order(self, repo):
+        self.release(repo, "thing", "2026.06.02.1", body="Live.\n")
+        self.release(repo, "thing", "2026.09.15.1", status="beta", body="Trying.\n")
+        write(repo, "Another.\n", slug="other")
+        set_order(repo, "computational-methods", "python-fundamentals",
+                  ["thing", "other"])
+        b.build()
+        page = self.out(repo, "thing.html").read_text()
+        assert "other.html" in page          # next, in the series
+        assert "v2026.09.15.1" not in page   # the beta is nowhere in the route
+
+    def test_only_the_default_teaches_an_outcome(self, repo):
+        """A superseded release claims the same coverage as the one that
+        replaced it. Counting both would make one outcome look taught twice."""
+        covers = "covers:\n  a-section:\n    covers: [MIT-1.4]\n"
+        for version in ("2026.06.02.1", "2026.09.15.1"):
+            path = self.release(repo, "thing", version, body="## A section\n\nProse.\n")
+            path.write_text(path.read_text().replace(
+                f"status: live\n", f"status: live\n{covers}"))
+        b.build()
+        data = json.loads(re.search(
+            r'<script type="application/json" id="dewlab-tree">(.*?)</script>',
+            (repo / "site" / "tree.html").read_text(), re.DOTALL).group(1))
+        node = next(n for n in data["nodes"] if n["code"] == "MIT-1.4")
+        assert node["state"] == "taught"
+        assert "/thing.html#" in node["where"]["href"]
+
+    def test_a_version_that_is_not_a_release_date_stops_the_build(self, repo):
+        path = write(repo, "Prose.\n")
+        path.write_text(path.read_text().replace(
+            "version: 2026.08.23.1", "version: 3"))
+        with pytest.raises(b.BuildError, match="release date"):
+            b.build()
+
+
 class TestTheManifestIdentifiesThePage:
     def test_it_carries_the_module_as_well_as_the_slug(self, repo):
         """Saved work is keyed on the pair. A slug is only unique within its
@@ -1200,7 +1329,7 @@ class TestArchivedTutorials:
         """Mark a tutorial archived and take it out of the reading order."""
         path = repo / "tutorials" / "computational-methods" / f"{slug}.md"
         path.write_text(path.read_text().replace(
-            "version: 1\n", "version: 1\nstatus: archived\n"))
+            "version: 2026.08.23.1\n", "version: 2026.08.23.1\nstatus: archived\n"))
         remaining = sorted(
             p.stem for p in path.parent.glob("*.md")
             if "status: archived" not in p.read_text()
@@ -1269,7 +1398,7 @@ class TestArchivedTutorials:
         write(repo, "More prose.\n", slug="second")
         path = repo / "tutorials" / "computational-methods" / "sample.md"
         path.write_text(path.read_text().replace(
-            "version: 1\n", "version: 1\nstatus: archived\n"))
+            "version: 2026.08.23.1\n", "version: 2026.08.23.1\nstatus: archived\n"))
         # `write` re-listed everything, including the one just archived.
         with pytest.raises(b.BuildError, match="archived"):
             b.build()
@@ -1277,7 +1406,7 @@ class TestArchivedTutorials:
     def test_an_unknown_status_stops_the_build(self, repo):
         path = write(repo, "Prose.\n")
         path.write_text(path.read_text().replace(
-            "version: 1\n", "version: 1\nstatus: retired\n"))
+            "version: 2026.08.23.1\n", "version: 2026.08.23.1\nstatus: retired\n"))
         with pytest.raises(b.BuildError, match="status"):
             b.build()
 
@@ -1287,7 +1416,7 @@ class TestArchivedTutorials:
         covered when nothing on the course covers it."""
         path = write(repo, "## A section\n\nProse.\n")
         path.write_text(path.read_text().replace(
-            "version: 1\n", "version: 1\ncovers:\n  a-section:\n    covers: [MIT-1.4]\n"))
+            "version: 2026.08.23.1\n", "version: 2026.08.23.1\ncovers:\n  a-section:\n    covers: [MIT-1.4]\n"))
         write(repo, "More prose.\n", slug="second")
         b.build()
         taught = json.loads(re.search(
@@ -1397,7 +1526,7 @@ class TestTheTopicTree:
         somewhere the tutorial does not claim."""
         path = write(repo, "## A section\n\nProse.\n")
         path.write_text(path.read_text().replace(
-            "version: 1\n", "version: 1\ncovers:\n  a-section:\n    covers: [MIT-1.4]\n"
+            "version: 2026.08.23.1\n", "version: 2026.08.23.1\ncovers:\n  a-section:\n    covers: [MIT-1.4]\n"
         ))
         b.build()
         node = next(n for n in self.data(repo)["nodes"] if n["code"] == "MIT-1.4")
@@ -1456,7 +1585,7 @@ class TestTheTopicTree:
             (repo / "tutorials" / "computational-methods" / f"t{n}.md").write_text(
                 f'---\ntitle: "T{n}"\nslug: t{n}\nmodule: computational-methods\n'
                 f'year: "2026-2027"\nseries: python-fundamentals\n'
-                f"version: 1\n---\n\n# T{n}\n\nProse.\n"
+                f"version: 2026.08.23.1\n---\n\n# T{n}\n\nProse.\n"
             )
         set_order(repo, "computational-methods", "python-fundamentals",
                   ["t1", "t2", "t3"])
@@ -1488,7 +1617,7 @@ class TestDownloadsDoNotCollide:
         other.parent.mkdir(parents=True)
         other.write_text(
             '---\ntitle: "First Steps"\nslug: first-steps\nmodule: other-module\n'
-            'year: "2026-2027"\nseries: intro\nversion: 1\n---\n\nProse.\n'
+            'year: "2026-2027"\nseries: intro\nversion: 2026.08.23.1\n---\n\nProse.\n'
         )
         set_order(repo, "other-module", "intro", ["first-steps"])
 
