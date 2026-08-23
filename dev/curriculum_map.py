@@ -137,6 +137,12 @@ def load_tutorials(known: dict[str, Outcome]) -> list[Tutorial]:
                     )
             sections.append(Section(anchor, headings[anchor], covers, touches))
 
+        if meta.get("practice_for"):
+            # A page of problems sets them on what its tutorial taught. Reading
+            # it as a tutorial would report the same outcome as taught twice and
+            # put a link to a question where the answer should be.
+            continue
+
         if str(meta.get("status", "live")) == "archived":
             # Retired: still in the repository, no longer on the course, so it
             # cannot be the answer to "where is this taught?".
@@ -509,12 +515,19 @@ def unplanned_line(states: dict[str, str], proposals: list[dict]) -> str:
     wanted = {c for c, state in states.items() if state in ("absent", "touched")}
     planned = {code for p in proposals for code in (p.get("covers") or [])}
     orphans = sorted(wanted - planned)
-    if not orphans:
+    if not wanted:
         return (
-            f"**Every one of the {len(wanted)} outcomes still to write has a "
-            "proposal** in `planning/curriculum/proposed.yaml`. Nothing is "
-            "waiting to be thought about."
+            "**Everything in both descriptors is written.** Nothing is "
+            "outstanding."
         )
+    if not orphans:
+        one = len(wanted) == 1
+        return (
+            f"**{'The' if one else 'Every one of the'} {'' if one else len(wanted)} "
+            f"outcome{'' if one else 's'} still to write has a proposal** in "
+            "`planning/curriculum/proposed.yaml`. Nothing is waiting to be "
+            "thought about."
+        ).replace("  ", " ")
     listed = ", ".join(f"`{code}`" for code in orphans)
     return (
         f"**{len(orphans)} of the {len(wanted)} outcomes still to write have no "

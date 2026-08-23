@@ -1430,3 +1430,56 @@ p code, li code {
   line-height: 1.45;
 }
 .dl-archived .dl-version-carry { margin-top: 0.5rem; font-size: 0.85rem; }
+
+/* ---------------------------------------------------- practice problems */
+/* A page of problems belongs to a tutorial rather than to the reading order,
+   so the link between the two carries the whole of that relationship and has
+   to say which direction it is going. */
+
+.dl-practice-link,
+.dl-practice-back {
+  max-width: var(--dl-line-width);
+  margin: 1.8rem 0;
+  padding: 0.7rem 0.9rem;
+  border: 1px solid var(--dl-cell-border);
+  border-left: 3px solid var(--dl-navy);
+  border-radius: 4px;
+  background: var(--dl-cell-bg);
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+.dl-practice-back { margin-top: 0; }
+
+/* The answer, folded. Not hidden — a fold is the moment before looking made
+   physical, which is the part worth protecting. A key at the bottom of the
+   page is one scroll away, which is the same as being on it. */
+.dl-answer {
+  max-width: var(--dl-line-width);
+  margin: 0.5rem 0 1.6rem;
+  border-left: 2px solid var(--dl-cell-border);
+  padding-left: 0.8rem;
+}
+.dl-answer > summary {
+  cursor: pointer;
+  color: var(--dl-muted);
+  font-family: var(--dl-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.02em;
+  list-style: none;
+}
+.dl-answer > summary::-webkit-details-marker { display: none; }
+.dl-answer > summary::before { content: "▸ "; }
+.dl-answer[open] > summary::before { content: "▾ "; }
+.dl-answer > summary:hover { color: var(--dl-fg); }
+.dl-answer[open] { border-left-color: var(--dl-navy); }
+.dl-answer > :not(summary) { font-size: 0.95rem; }
+
+.dl-contents-practice {
+  margin-left: 0.5rem;
+  font-family: var(--dl-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--dl-muted);
+}
+.dl-contents-practice:hover { color: var(--dl-orange); }

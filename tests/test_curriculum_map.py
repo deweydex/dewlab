@@ -209,8 +209,20 @@ class TestTheRealMap:
         wanted = {c for c, state in states.items() if state in ("absent", "touched")}
 
         line = cm.unplanned_line(states, cm.load_proposals())
-        assert str(len(wanted)) in line
+        if not wanted:
+            assert "Everything in both descriptors is written" in line
+            return
+        assert str(len(wanted)) in line or len(wanted) == 1
         assert "proposal" in line
+
+    def test_and_says_so_plainly_when_there_is_nothing_left(self):
+        """The state the course reached on 23 August. A summary that says
+        "every one of the 0 outcomes still to write has a proposal" is a
+        sentence nobody wrote on purpose."""
+        outcomes, _ = cm.load_outcomes()
+        line = cm.unplanned_line({c: "taught" for c in outcomes}, [])
+        assert "Everything in both descriptors is written" in line
+        assert "0" not in line
 
     def test_it_names_the_outcomes_that_have_no_proposal(self):
         outcomes, _ = cm.load_outcomes()
