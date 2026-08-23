@@ -372,9 +372,11 @@ def test_choosing_a_topic_shows_what_it_is_and_lights_its_path(browser, base_url
     assert "WHERE IT TURNS UP" in panel
     assert "NEEDS FIRST" in panel
     assert tab.eval_on_selector_all(".dl-tree-uses li", "e => e.length") >= 2
-    # What it needs and what needs it: iterating by index above it, divide and
-    # conquer below. Nothing else.
-    assert tab.eval_on_selector_all(".dl-tree-edge.is-lit", "e => e.length") == 2
+    # What it needs and what needs it. Divide and conquer used to hang off this
+    # one; it now sits beside it, taught inside searching and inside sorting
+    # rather than before or after either — so only the edge up to iterating by
+    # index is lit.
+    assert tab.eval_on_selector_all(".dl-tree-edge.is-lit", "e => e.length") == 1
     context.close()
 
 
@@ -450,6 +452,23 @@ def test_the_zoom_buttons_do_something(browser, base_url):
     tab.click("#dl-tree-out")
     tab.wait_for_timeout(120)
     assert tab.evaluate("globalThis.dewlabTree.view.scale") < bigger
+    context.close()
+
+
+def test_the_zoom_controls_do_not_cover_any_topic(browser, base_url):
+    """They used to float over the canvas, which meant they sat on top of
+    whichever topics happened to land under them and took the clicks meant for
+    those topics — invisibly, and differently at every zoom level."""
+    context, tab = open_tree(browser, base_url)
+    overlapping = tab.evaluate("""() => {
+      const controls = document.querySelector(".dl-tree-controls").getBoundingClientRect();
+      return [...document.querySelectorAll(".dl-tree-node")].filter((node) => {
+        const box = node.getBoundingClientRect();
+        return box.left < controls.right && box.right > controls.left
+            && box.top < controls.bottom && box.bottom > controls.top;
+      }).map((n) => n.dataset.code);
+    }""")
+    assert overlapping == []
     context.close()
 
 

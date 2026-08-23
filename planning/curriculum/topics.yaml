@@ -395,7 +395,7 @@ topics:
     uses:
       - Circular motion, orbits, and anything on a dial.
       - The maths underneath rotating an image or a 3D model.
-    needs: [MIT-4.5, MIT-4.4]
+    needs: [MIT-4.5, MIT-4.4, MIT-4.1]
 
   MIT-4.7:
     name: Exact trigonometric values
@@ -428,7 +428,25 @@ topics:
         of a camera.
       - Splitting a movement into how far across and how far up, which is what
         every "move at this angle" in a game does.
-    needs: [MIT-4.4]
+    needs: [MIT-4.4, PRE-1]
+
+  PRE-1:
+    # Groundwork carries its own strand: strands otherwise come from
+    # outcomes.yaml, and a topic that is deliberately not an outcome would fall
+    # back to "other" — which is not a subject, it is a shrug.
+    strand: geometry
+    name: Kinds of triangle
+    plain: >
+      Telling triangles apart by their sides and angles — three equal sides,
+      two equal sides, none equal, and the right angle that makes one of them
+      special. Naming them is what lets any later rule say which triangles it
+      applies to.
+    uses:
+      - Collision detection and hit-testing in games, which is mostly deciding
+        which shape you are dealing with before measuring anything.
+      - Mesh generation for 3D graphics, where a surface is cut into triangles
+        and their shape decides how well it renders.
+    needs: []
 
   MIT-4.10:
     name: The Sine and Cosine Rules
@@ -649,7 +667,7 @@ topics:
     uses:
       - Binary search, the fast sorting algorithms, and the way large files are
         processed in parallel.
-    needs: [MIT-6.8]
+    needs: [MIT-6.7]
 
   MIT-6.7:
     name: Iterating by index

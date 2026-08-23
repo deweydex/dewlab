@@ -156,10 +156,7 @@ function controlView(frame, canvas, data) {
    * does not strand the tree half-moved. */
   let dragging = null;
   frame.addEventListener("pointerdown", (ev) => {
-    /* The controls sit inside the frame, so a press on one of them would
-     * otherwise start a pan and capture the pointer — which swallows the click
-     * and leaves the zoom buttons quietly doing nothing. */
-    if (ev.target.closest(".dl-tree-node, .dl-tree-controls")) return;
+    if (ev.target.closest(".dl-tree-node")) return;
     dragging = { id: ev.pointerId, x: ev.clientX - view.x, y: ev.clientY - view.y };
     frame.setPointerCapture(ev.pointerId);
     frame.classList.add("dl-tree-dragging");
@@ -244,6 +241,10 @@ function showDetail(node, byCode, panel) {
     excluded:
       '<p class="dl-tree-state">Deliberately not covered on this course. ' +
       "It is here so you know it exists.</p>",
+    groundwork:
+      '<p class="dl-tree-state">Groundwork. No module descriptor names this ' +
+      "on its own, but the topics below it do not make sense without it, so " +
+      "it turns up wherever it is first needed.</p>",
   }[node.state];
 
   panel.innerHTML =

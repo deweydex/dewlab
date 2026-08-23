@@ -210,9 +210,31 @@ class TestTheTopicGlossary:
         assert not missing, f"no topic written for {missing}"
 
     def test_no_topic_invents_an_outcome(self):
+        """A `MIT-` or `PDP-` code has to be a real one, or it is a typo that
+        silently detaches a topic from the descriptor it claims to come from.
+
+        `PRE-` codes are deliberately not outcomes — see the next test."""
         outcomes, _ = cm.load_outcomes()
-        unknown = sorted(set(self.topics()) - set(outcomes))
+        claimed = {c for c in self.topics() if not c.startswith("PRE-")}
+        unknown = sorted(claimed - set(outcomes))
         assert not unknown, f"{unknown} are not in any module descriptor"
+
+    def test_groundwork_is_marked_as_groundwork_and_says_as_much(self):
+        """Not everything a student needs is a numbered outcome. Naming the
+        kinds of triangle is nobody's learning outcome and every later rule
+        about triangles assumes it. Those topics carry a `PRE-` code so the map
+        can show the prerequisite without pretending a descriptor asked for
+        it."""
+        outcomes, _ = cm.load_outcomes()
+        groundwork = {c for c in self.topics() if c.startswith("PRE-")}
+        assert not (groundwork & set(outcomes)), (
+            "a PRE- code collides with a real outcome"
+        )
+        for code in groundwork:
+            topic = self.topics()[code]
+            assert topic.get("name") and topic.get("plain") and topic.get("uses"), (
+                f"{code} is groundwork but is not written up like a topic"
+            )
 
     def test_every_prerequisite_is_a_real_topic(self):
         """A `needs` pointing nowhere is an arrow the map cannot draw."""
