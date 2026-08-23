@@ -29,18 +29,28 @@ The following components, runtime engines, and curriculum modules are fully impl
 - **GitHub API-Backed Visual Authoring Editor**: Browser-based management interface supporting series reordering, tutorial creation, frontmatter editing, cell-ID mutation warnings, structural linting, and release publishing via GitHub API pull requests (`assets/editor.js`, `assets/editor.html`).
 
 ### Comprehensive Curriculum Modules (`tutorials/`)
-- **41 Published Tutorial & Practice Modules**:
-  - `computational-methods` (2 tutorials): `first-steps.md`, `working-with-tables.md`.
-  - `mit-pdp-maths-prog-integration` (39 tutorial and practice files):
+- **71 Published Tutorial & Practice Pages** — 35 tutorials, 32 practice pages
+  (one per tutorial, except the three that are already problems or reflection),
+  and 4 mixed sets drawing on several tutorials at once. See
+  `planning/EXERCISES.md` for where the problems came from.
+  - `computational-methods` (2 tutorials, 2 practice pages): `first-steps.md`,
+    `working-with-tables.md`.
+  - `mit-pdp-maths-prog-integration` (67 tutorial and practice files):
     - *Foundations & Programming Spine*: `first-steps.md`, `storing-and-computing.md`, `making-decisions.md`, `repeating-yourself.md`, `lists-and-sequences.md`, `finding-things.md`, `putting-things-in-order.md`, `building-reusable-tools.md`, `how-we-got-here.md`, `when-it-goes-wrong.md`, `the-team-project.md`.
     - *Discrete Math & Statistics*: `counting-carefully.md`, `what-are-the-chances.md`, `making-sense-of-data.md`, `pictures-worth-numbers.md`, `numbers-and-their-families.md`, `sets-as-sorted-lists.md`, `logic-and-truth.md`, `venn-diagrams.md`.
     - *Algebra, Functions & Calculus*: `expressions-come-alive.md`, `cracking-equations.md`, `rearranging-formulae.md`, `complex-roots.md`, `drawing-functions.md`, `parabolas.md`, `approaching-a-limit.md`, `rates-of-change.md`.
     - *Geometry & Trigonometry*: `lines-and-distances.md`, `the-unit-circle.md`, `sine-and-cosine-waves.md`, `solving-triangles.md`.
     - *Synthesis & Review*: `bringing-it-all-together.md`, `critique-and-reflection.md`.
-    - *Interactive Practice Companions*: `drawing-functions-practice.md`, `lines-and-distances-practice.md`, `parabolas-practice.md`, `the-unit-circle-practice.md`.
+    - *Interactive Practice Companions*: one `<slug>-practice.md` beside every
+      tutorial above except `bringing-it-all-together`, `critique-and-reflection`
+      and `the-team-project`.
+    - *Mixed Problem Sets*: `mixed-programming.md`, `mixed-algebra.md`,
+      `mixed-trigonometry.md`, `mixed-data.md` — problems that draw on several
+      tutorials at once, declared with `practice_across:` and listed on the
+      contents page under their module.
 
 ### Curriculum Coverage Status (`planning/CURRICULUM_MAP.md`)
-- **100% of Descriptor Outcomes Covered**: All 67 learning outcomes across *Mathematics for IT (5N18396)* and *Programming and Design Principles (5N21493)* are fully authored, mapped, and tested with zero gaps.
+- **100% of Descriptor Outcomes Covered**: All 67 learning outcomes across *Mathematics for IT (5N18396)* and *Programming and Design Principles (5N2927)* are fully authored, mapped, and tested with zero gaps.
 
 ---
 
@@ -56,13 +66,21 @@ The following components, runtime engines, and curriculum modules are fully impl
   5. *Algorithmic Complexity & Systems Modeling*: Complexity bounds, cache prediction, thermal simulation.
 
 ### Phase 8: Automated Worksheet Practice Converter (`dev/from_worksheet.py`)
-- **Objective**: Automate the conversion of all 27 structured worksheets from `deweydex/Mathematics` into companion practice pages (`<slug>-practice.md`) with fold-hidden solutions and section-level Python test scratchpads.
+- **Status**: on hold, and possibly not needed. The worksheets whose material is
+  taught have already been converted by hand; the ones that remain (`07a`–`08b`,
+  matrices, Markov chains, Bayes, distributions) cover material no tutorial
+  teaches yet, and six of those carry their answer keys only as PDFs. The
+  converter has nothing to convert until Phase 7 is written.
 
 ### Phase 9: Dynamic Student-Authored Runtime Cells (`planning/PRACTICE.md`)
 - **Objective**: Implement client-side dynamic cell insertion in `assets/tutorial-runtime.js`, allowing students to author custom practice challenges, write verification tests, and export them as JSON snippets for peer exchange.
 
 ### Phase 10: Automated CI/CD Deployment
-- **Objective**: Finalize the GitHub Actions workflow (`.github/workflows/deploy.yml`) to automatically build and deploy the 84+ page static site to GitHub Pages on pushes to `main`.
+- **Status**: done. `.github/workflows/deploy.yml` builds and publishes the
+  148-page site to GitHub Pages on every push to `main`, and has since Phase 5.
+  Two further workflows guard it: `tests` runs the unit suite, and
+  `standalone-bundle-is-current` fails if the vendored bundle has drifted from
+  `vendor-src/`.
 
 ---
 
