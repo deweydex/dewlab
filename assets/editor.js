@@ -38,6 +38,28 @@ export function frontmatterField(meta, field) {
   return line.slice(field.length + 1).trim().replace(/^"(.*)"$/, "$1");
 }
 
+export const STATUSES = ["draft", "beta", "live", "archived"];
+
+export function setFrontmatterField(meta, field, value) {
+  /* Set a field, or add it if it is not there. Added after `version:` rather
+   * than at the end, because the end of the frontmatter is where `covers:`
+   * lives and its indented children would swallow anything put below them. */
+  const lines = meta.split("\n");
+  const at = lines.findIndex((l) => l.startsWith(field + ":"));
+  if (at !== -1) {
+    lines[at] = `${field}: ${value}`;
+    return lines.join("\n");
+  }
+  const after = lines.findIndex((l) => l.startsWith("version:"));
+  const where = after === -1 ? lines.length - 1 : after;
+  lines.splice(where + 1, 0, `${field}: ${value}`);
+  return lines.join("\n");
+}
+
+export function statusOf(text) {
+  return frontmatterField(splitFrontmatter(text).meta, "status") || "live";
+}
+
 export function parseCells(body) {
   /* Every exec-tagged fence, with the id the build will key saved work on.
    * An untagged fence is illustrative code and is not a cell, which is the
@@ -205,6 +227,16 @@ export function githubClient(token) {
 
 /* ------------------------------------------------------------------ the page */
 
+/* What each one does, in the tooltip, because four words on four buttons is
+ * not enough to tell draft from beta and the difference matters. */
+const STATUS_MEANS = {
+  draft: "Not published at all. No page is built, so nobody can reach it.",
+  beta: "Published but not on the course. Anyone with the link can read it; "
+      + "students are not sent to it.",
+  live: "On the course, in the reading order.",
+  archived: "Was on the course, is not now. Stays readable, keeps saved work.",
+};
+
 const TEMPLATE = `---
 title: "{title}"
 slug: {slug}
@@ -282,7 +314,24 @@ export function start(root, client, { onStatus = () => {} } = {}) {
       state.series.set(path, {
         path, module, name, order,
         title: titled ? titled[1].trim() : name,
+        /* Everything belonging to this series, whether or not it is on the
+         * route. Without this, setting a tutorial to draft would drop it out
+         * of the order file and out of the list at once — a one-way trip, with
+         * no way back to it in the editor. */
+        off: [],
       });
+    }
+
+    for (const [path, text] of state.files) {
+      if (path.endsWith(".order.yaml") || !path.endsWith(".md")) continue;
+      const meta = splitFrontmatter(text).meta;
+      const module = frontmatterField(meta, "module");
+      const slug = frontmatterField(meta, "slug");
+      const series = [...state.series.values()].find(
+        (s) => s.module === module && !s.order.includes(slug)
+          && frontmatterField(meta, "series") === s.name
+      );
+      if (series) series.off.push(slug);
     }
     status("");
     render();
@@ -332,6 +381,46 @@ export function start(root, client, { onStatus = () => {} } = {}) {
     render();
   }
 
+  function setStatus(series, slug, status) {
+    /* One gesture, two files. A status change is not just a frontmatter edit:
+     * only a live tutorial is on the reading order, and the build refuses an
+     * order file that lists anything else — so the line has to move with the
+     * field or the next build stops. Doing that by hand is the part worth
+     * automating; the field on its own is trivial. */
+    const path = pathOf(series.module, slug);
+    const text = state.files.get(path);
+    if (!text) return;
+    const { meta, body } = splitFrontmatter(text);
+    state.files.set(path, `---\n${setFrontmatterField(meta, "status", status)}\n---\n\n${body}`);
+    state.dirty.add(path);
+
+    const at = series.order.indexOf(slug);
+    const off = series.off.indexOf(slug);
+    if (status === "live" && at === -1) {
+      series.order.push(slug);
+      if (off !== -1) series.off.splice(off, 1);
+      state.dirty.add(series.path);
+    } else if (status !== "live" && at !== -1) {
+      series.order.splice(at, 1);
+      if (off === -1) series.off.push(slug);
+      state.dirty.add(series.path);
+    }
+    render();
+  }
+
+  function statusControl(series, slug) {
+    const now = statusOf(state.files.get(pathOf(series.module, slug)) || "");
+    return el("span", { class: "dl-editor-status", "data-status": now },
+      ...STATUSES.map((status) => el("button", {
+        type: "button",
+        class: "dl-editor-status-option",
+        "data-status": status,
+        "aria-pressed": String(status === now),
+        title: STATUS_MEANS[status],
+        onclick: () => setStatus(series, slug, status),
+      }, status)));
+  }
+
   function seriesView(series) {
     const list = el("ol", { class: "dl-editor-list", "data-series": series.name });
     series.order.forEach((slug, index) => {
@@ -349,6 +438,7 @@ export function start(root, client, { onStatus = () => {} } = {}) {
           class: "dl-editor-open", type: "button",
           onclick: () => { state.editing = { series, slug }; render(); },
         }, titleOf(series.module, slug)),
+        statusControl(series, slug),
         el("span", { class: "dl-editor-moves" },
           el("button", { type: "button", class: "dl-editor-up", "aria-label": `Move ${slug} earlier`,
                          onclick: () => move(series, index, index - 1) }, "↑"),
@@ -367,6 +457,19 @@ export function start(root, client, { onStatus = () => {} } = {}) {
         el("button", { type: "button", class: "dl-editor-new",
                        onclick: () => insert(series, series.order.length) }, "new tutorial at the end")),
     );
+    /* Off the route but still here: drafts, betas, and anything archived. They
+     * have no position, so they carry no number and no move arrows — only what
+     * they are, and the way back to live. */
+    for (const slug of series.off) {
+      list.append(el("li", { class: "dl-editor-card dl-editor-off", "data-slug": slug },
+        el("span", { class: "dl-editor-pos" }, "—"),
+        el("button", {
+          class: "dl-editor-open", type: "button",
+          onclick: () => { state.editing = { series, slug }; render(); },
+        }, titleOf(series.module, slug)),
+        statusControl(series, slug),
+      ));
+    }
     return el("section", { class: "dl-editor-series" },
       el("h2", {}, series.title),
       el("p", { class: "dl-editor-where" }, series.path),
@@ -482,7 +585,9 @@ export function start(root, client, { onStatus = () => {} } = {}) {
     }
   }
 
-  globalThis.dewlabEditor = { state, load, save, render, move, insert };
+  globalThis.dewlabEditor = {
+    state, load, save, render, move, insert, setStatus, setFrontmatterField,
+  };
   return load();
 }
 
