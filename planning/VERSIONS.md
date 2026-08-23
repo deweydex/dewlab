@@ -65,32 +65,75 @@ smaller, curated, student-facing set on top of it.
 
 ---
 
-## Where I disagree, and it is about the dropdown
+## The control on the page: not hidden, but conditional
 
-**A version picker at the top of a student-facing page is the wrong default.**
+I first argued the picker belonged in Settings and the page should carry only a
+quiet line. Josh pushed back — he wants a clue, on the page, that other versions
+exist — and he is right. What I was avoiding was clutter, and there is a better
+way to avoid it than hiding the control.
 
-Most students will never touch it, and a control they do not understand sitting
-above the title is noise on a page whose job is to teach. Worse, it invites the
-one behaviour we do not want: a student idly picking an old version and working
-in it for a fortnight.
+His sketch was an invisible triangle beside the title that appears on hover.
+**The invisibility is the problem, not the placement.**
 
-But the reason underneath the proposal is right. So invert it:
+- **Hover does not exist on touch.** A good share of these students read on a
+  phone. An affordance that only appears on hover is not subtle to them, it is
+  absent — which defeats the one thing it is for.
+- It is also awkward for keyboard and screen-reader users, who get either
+  nothing or a control that announces itself with no visible counterpart.
 
-- **Continuity should be automatic.** The first time a student opens a tutorial,
-  they are pinned to the version they started. A later release does not move
-  them. No control, no decision, nothing to understand.
-- **A new release announces itself, quietly.** A line under the title: *"A newer
-  version of this tutorial is available. See what changed."* That is where the
-  choice lives — at the moment it is relevant, phrased as an offer.
-- **The full list lives in Settings**, with the other things a reader might want
-  once and then never again. Same place as the theme and the width.
+The fix is to make the control **conditional rather than invisible**:
 
-So: keep every capability Josh described, move the prominence. The picker is the
-escape hatch, not the front door. If that reads as too subtle in practice, the
-line under the title can become a small inline control later — but starting
-prominent and retreating is harder than the reverse.
+> A tutorial with one version shows nothing at all. A tutorial with more than
+> one shows a small, always-visible marker beside the title.
 
----
+That gives exactly the clue Josh wants, on the page, where he wants it — and it
+costs nothing on single-version tutorials, which is most of them most of the
+time. The clutter problem solves itself, because the control only exists where
+there is something to choose.
+
+So both, and they are not alternatives:
+
+- **Beside the title**, when and only when there is more than one version: the
+  current version's date, and a marker that opens the list. Current version
+  marked, others in date order, newest first.
+- **In Settings**, always: the same list, plus the one site-wide switch that has
+  no natural home on a page — *stay on the version I started* against *always
+  show me the newest*.
+
+## Version numbers that carry their date
+
+Josh: *"the nice thing would be to have the version number somehow contain the
+date."* Yes — "3" means nothing to a student and "September" means quite a lot.
+
+But `version` is an integer today, it is written into every saved record, and
+the restore compares it. Changing its type to a date string would rewrite the
+save format for a cosmetic gain, and break every record already in a student's
+browser.
+
+So: **the integer stays as the key, the date becomes the label.** `released:`
+already exists in the frontmatter proposed above; the display name is built from
+it. A student sees *"15 September 2026"* in the list and *"Version 3"* nowhere.
+The machinery keeps counting; the person reads a date.
+
+## Instead of warning, tell them what will happen
+
+Josh's sketch has a warning on switching: going back *should* keep their work,
+but they might want to export first, just in case.
+
+I would not ship that sentence. If we are not confident the work survives, the
+feature is not ready; and "just in case" teaches a student to distrust a thing
+that is actually deterministic. The restore matches on cell id — it either
+matches or it does not, and we can know which **before** they switch rather than
+after.
+
+The manifest already carries every cell's id. Adding each version's ids to it
+costs a few hundred bytes, and then the page can say the true thing:
+
+> **15 September 2026** — 6 of your 8 answers carry over. Two cells are not in
+> that version, so their answers will not appear. *(Export a copy first.)*
+
+Specific, checkable, and it turns a vague anxiety into a decision. The export
+link stays, as an offer rather than an apology.
 
 ## What already works in our favour
 
@@ -220,7 +263,9 @@ editor. It touches:
   restrict standalone copies and zips to the default, and teach `series_of` that
   archived tutorials are not in the reading order.
 - **`tutorial-runtime.js`** — remember the version a student started, honour the
-  pin, render the "newer version available" line, and put the version list in
+  pin, render the "newer version available" line, draw the marker beside the
+  title when there is more than one version, count how many saved answers carry
+  over to each option, and put the same list plus the site-wide switch in
   Settings.
 - **The editor** — "release a new version" as an explicit action distinct from
   saving an edit, "archive this tutorial", and "mark this version beta". This is
@@ -241,8 +286,10 @@ editor. It touches:
 2. **Versions as releases.** The folder layout, the `released`/`status` fields,
    the default resolved at build time, versioned pages built, unversioned paths
    unchanged. No student-facing control yet — the default is simply correct.
-3. **Continuity and the notice.** Pin a student to what they started; show the
-   "newer version available" line; the full list in Settings.
+3. **Continuity, the notice, and the picker.** Pin a student to what they
+   started; show the "newer version available" line; the conditional marker
+   beside the title; the same list plus the site-wide switch in Settings; and
+   the "6 of your 8 answers carry over" count on each option.
 4. **Beta, and the editor actions.** Release, archive, and mark-beta as things
    Josh can do from the editor rather than by hand.
 
@@ -256,10 +303,12 @@ this week; step 4 is not worth starting until 2 and 3 have been lived with.
 1. **Is "a version is a release" the right rule**, or do you want a version per
    meaningful edit? The first keeps the dropdown short; the second keeps a fuller
    history but needs the picker to be collapsible by date.
-2. **Does a student get to pick a version at all, or only to stay put?** I have
-   argued for both, with the picker in Settings. The simpler system — pinned to
-   what you started, no picker, no list — is genuinely defensible and about a
-   third of the work.
+2. ~~Does a student get to pick a version at all?~~ **Settled: yes.** Josh chose
+   a picker on the page, and the conditional marker above is how it avoids
+   cluttering the tutorials that have only one version. Worth knowing that the
+   picker is the cheap half — perhaps forty lines of script and some styling.
+   The cost of this whole feature is in the build resolving versions, and both
+   designs pay it in full. "Settings is the easy win" is not quite true.
 3. **The "what changed" note.** Written by hand per release, or generated from
    the diff? By hand is better to read and one more thing to write.
 4. **Does an archived tutorial keep its place in the topic tree**, marked as
