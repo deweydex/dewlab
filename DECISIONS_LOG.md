@@ -935,3 +935,46 @@ topic moved the layout enough to put a tested node underneath them.
 The guard added in 7.8, which stopped the frame stealing presses on the
 controls, is gone with them: outside the frame it guards nothing.
 *Cost to change: small.*
+
+**7.17 — A tutorial is archived, not deleted.**
+Deleting the file was the only way to retire a tutorial, and deleting it
+strands every student who saved work in it: the work sits in local storage
+keyed to a page that no longer exists, with no way back and no trace it was
+ever there. That was the worst property in the system, and it is why the editor
+was built without a delete button.
+
+`status: archived` in the frontmatter. The page is still built, still runs, and
+still holds whatever a student saved. What changes is everything about its
+place on the course: it leaves the reading order, it has no previous and no
+next, it is not in the series archive, it is listed under *Archive* on the
+contents page rather than among the series, and it opens with a notice saying
+it is not part of the course any more.
+
+`live` is the default, so nothing already written has to say anything.
+Deleting a file is still possible and still the right move for something
+published in error — archiving is now the ordinary gesture.
+*Cost to change: small.*
+
+**7.18 — An archived tutorial teaches nothing the map can point at.**
+It taught what it taught. But a student picking a topic today cannot be sent
+there, so counting it as coverage would make the map claim an outcome is
+covered when nothing on the course covers it — the exact lie the map exists to
+prevent. Both the topic tree and `dev/curriculum_map.py` skip archived
+tutorials when working out where an outcome is taught.
+
+This is the entry most worth disagreeing with. The other reading is that
+coverage means "we have written this", in which case an archived tutorial still
+counts and the map is a record of work rather than a guide to the course.
+*Cost to change: small — two `continue`s.*
+
+**7.19 — Listing an archived tutorial in the order file stops the build.**
+A reading order is a route through the course and a retired tutorial is not on
+the route, so the two statements contradict each other. Ignoring the line
+silently would leave the order file saying one thing and the site doing
+another, which is the class of problem the order file was introduced to end.
+
+The empty case falls out of it: archiving the last tutorial in a series leaves
+`order:` with nothing under it, and that is a real state rather than a broken
+file. It is accepted, and the series simply stops appearing. `order:` missing
+altogether is still an error.
+*Cost to change: small.*
