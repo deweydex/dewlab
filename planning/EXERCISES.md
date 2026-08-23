@@ -1,124 +1,123 @@
-# Practice Problems & Worksheet Conversion Specification
+# Practice problems
 
-Architecture and conversion specification for practice problem sets paired with dewlab tutorials, derived from upstream worksheet materials in [`deweydex/Mathematics`](https://github.com/deweydex/Mathematics).
-
----
-
-## 1. Upstream Source Materials & Curriculum Mapping
-
-The upstream repository [`deweydex/Mathematics`](https://github.com/deweydex/Mathematics) contains **twenty-seven comprehensive, finished worksheets** under `markdown/`. Developed for *AIML Foundations Mathematics* at Dublin and Dún Laoghaire ETB, each worksheet spans 250–600 lines, includes roughly 60 structured practice problems, and concludes with a complete step-by-step answer key.
-
-These worksheets align directly with the integrated mathematics and computing modules in dewlab:
-
-| Upstream Worksheet (`deweydex/Mathematics`) | Target Tutorial Module | Practice Page Slug |
-|---|---|---|
-| `02a_lines_coordinates_vectors.md` | *Lines and Distances* | `lines-and-distances-practice.md` |
-| `02b_linear_thinking_data_curves.md` | *Drawing Functions* | `drawing-functions-practice.md` |
-| `03a_foil_expanding.md`, `03b_factoring_solving.md` | *Expressions Come Alive*, *Cracking Equations* | `expressions-come-alive-practice.md`, `cracking-equations-practice.md` |
-| `03d_graphing.md` | *Parabolas* | `parabolas-practice.md` |
-| `04a_derivatives_integrals_inverse.md`, `04b_what_they_tell_us.md` | *Approaching a Limit*, *Rates of Change* | `approaching-a-limit-practice.md`, `rates-of-change-practice.md` |
-| `05a_angles_radians_unit_circle.md` | *The Unit Circle* | `the-unit-circle-practice.md` |
-| `05b_right_triangle_trig.md`, `05e_laws_sines_cosines.md` | *Solving Triangles* | `solving-triangles-practice.md` |
-| `05c_graphs_sine_cosine.md` | *Sine and Cosine Waves* | `sine-and-cosine-waves-practice.md` |
-| `06a_statistics_probability.md`, `08a_bayes.md`, `08b_distributions.md` | *What Are the Chances*, *Making Sense of Data* | `what-are-the-chances-practice.md`, `making-sense-of-data-practice.md` |
-| `07a`–`07d` Matrices & Markov Chains | The Matrices Strand (5N0554) | `matrices-practice.md`, `markov-chains-practice.md` |
-| `01_fractions.md`, `01a`, `01b` Exponents & Logarithms | *Numbers and Their Families* | `numbers-and-their-families-practice.md` |
+Every tutorial has a page of problems beside it, and four more sets draw on
+several tutorials at once. This file records where the material came from, how
+the pages are built, and what is still worth doing.
 
 ---
 
-## 2. Pedagogical Architecture of Practice Pages
+## 1. What exists
 
-### A. Protecting the "Moment Before Looking"
-In traditional paper worksheets, answer keys placed at the very end require awkward page flipping or encourage premature lookup. In dewlab, answers are embedded directly adjacent to each problem inside an accessible HTML collapsible fold (`<details><summary>Check solution</summary>...</details>`).
+| | Count |
+|---|---:|
+| Tutorials | 35 |
+| Practice pages, one per tutorial | 32 |
+| Mixed sets, drawing on several | 4 |
 
-This design:
-1. **Preserves the effortful retrieval attempt**: Students pause, formulate an answer, and mentally commit before revealing the solution.
-2. **Provides immediate corrective feedback**: Students verify understanding instantly while their working steps are fresh in mind.
-3. **Eliminates evaluation anxiety**: Practice remains completely formative and self-directed, free from punitive automated grading.
+Three tutorials have no practice page, on purpose. *Bringing It All Together*
+is already a set of integrative problems, and *Looking Back Before Moving
+Forward* and *The Team Project* ask for reflection rather than answers.
 
-### B. Worked Conversion Example
+The mixed sets are on the programming spine, on algebra and functions, on
+trigonometry and geometry, and on data, chance and logic.
 
-#### Source Markdown in `deweydex/Mathematics/markdown/05a_angles_radians_unit_circle.md`:
-```markdown
-## Part A: Angle Conversions and Arc Length
-1. Convert 45° to radians. Express your answer in terms of π.
-2. Convert 5π/6 radians to degrees.
+## 2. Where the material came from
 
-## Answer Key
-1. 45° × (π/180°) = π/4 radians.
-2. (5π/6) × (180°/π) = 150°.
+### `deweydex/Mathematics`
+
+Twenty-six worksheets under `markdown/`, written for *AIML Foundations
+Mathematics* at Dublin and Dún Laoghaire ETB. Each is 200–600 lines and holds
+roughly 60 problems.
+
+**Twenty of the twenty-six end in an answer key in the markdown.** The other six
+— `04e_optimisation`, `07a_matrix_operations`, `07c_eigenvalues`,
+`07d_markov_chains`, `08a_bayes` and `08b_distributions` — have answers only as
+PDFs under `pdfs/solutions/`. Those six are also the ones whose material is not
+yet taught here, so nothing has been lost yet; when the 5N0554 strands are
+written, their answers will have to come out of the PDFs or be worked afresh.
+
+Which worksheet fed which page:
+
+| Worksheet | Practice page |
+|---|---|
+| `01_fractions`, `01a`, `01b` | `numbers-and-their-families-practice` |
+| `02a_lines_coordinates_vectors` | `lines-and-distances-practice` |
+| `02b_linear_thinking_data_curves` | `drawing-functions-practice` |
+| `03a_foil_expanding` | `expressions-come-alive-practice` |
+| `03b_factoring_solving`, `03c_applications` | `cracking-equations-practice` |
+| `03d_graphing` | `parabolas-practice` |
+| `04a_derivatives_integrals_inverse` | `approaching-a-limit-practice` |
+| `04b_what_they_tell_us` | `rates-of-change-practice` |
+| `05a_angles_radians_unit_circle` | `the-unit-circle-practice` |
+| `05b_right_triangle_trig`, `05e_laws_sines_cosines` | `solving-triangles-practice` |
+| `05c_graphs_sine_cosine` | `sine-and-cosine-waves-practice` |
+| `06a_statistics_probability` | `what-are-the-chances-practice`, `making-sense-of-data-practice` |
+| `07a`–`07d`, `08a`, `08b` | not yet — the material is not taught yet |
+
+### `deweydex/everlearning`
+
+`PDP_MIT_2026_2027_Integrated/PracticeProblems/PDP-Practice-Problem-Bank.py`
+holds thirty-eight programming problems as **blank stubs with docstrings and no
+answers**. They gave the questions for the programming spine's practice pages;
+every answer was written here.
+
+### The tutorials themselves
+
+The largest source. Every "your turn" prompt in a tutorial is a problem that was
+already set and never answered, and those now have answers to compare against.
+
+## 3. How a practice page is built
+
+**Frontmatter.** One line beyond an ordinary tutorial:
+
+```yaml
+title: "The Unit Circle — Practice"
+slug: the-unit-circle-practice
+practice_for: the-unit-circle
 ```
 
-#### Generated dewlab Practice Format (`the-unit-circle-practice.md`):
-```markdown
-## Part A: Angle Conversions and Arc Length
+`build.py` checks both directions: the tutorial has to exist, be in the same
+module, and not be a practice page itself, and no two pages may claim the same
+tutorial. A practice page declares no `covers:` — it sets problems on what its
+tutorial taught, and saying so twice would report one outcome as taught by two
+pages.
 
-**Problem 1:** Convert $45^\circ$ to radians. Express your answer as an exact multiple of $\pi$.
+A mixed set uses `practice_across:` with a list of slugs instead. It links to
+each of them and none links back; see `DECISIONS_LOG.md` 7.49 for why.
 
-<details>
-<summary>Check solution</summary>
+**Answers behind folds.**
 
-$$45^\circ \times \frac{\pi}{180^\circ} = \frac{\pi}{4}\text{ rad}$$
+```html
+<details class="dl-answer"><summary>answer</summary>
+
+The answer, with the working.
+
 </details>
-
-**Problem 2:** Convert $\frac{5\pi}{6}$ radians to degrees.
-
-<details>
-<summary>Check solution</summary>
-
-$$\frac{5\pi}{6} \times \frac{180^\circ}{\pi} = 5 \times 30^\circ = 150^\circ$$
-</details>
 ```
 
-### C. Section-Level Interactive Verification Scratchpads
-Instead of burdening the browser with 60 individual CodeMirror instances per page, each major section provides a single interactive Python verification tool.
+The site is public, so an answer that exists can be read. What is worth
+protecting is not the answer but the moment before looking, and a fold is that
+moment made physical. A key at the bottom of the page is one scroll away, which
+is the same as being on it.
 
-*Example Section Scratchpad for Trigonometry Practice*:
-```python exec
-id: unit-circle-practice-checker
-# Section A & B Verification Helper
-import numpy as np
+**A few checking tools, not a cell per problem.** One `python exec` cell per
+section, holding the helpers that section's problems need. Sixty CodeMirror
+instances on a page is a slow page, and a cell under every question invites
+running it instead of thinking.
 
-def angle_info(degrees):
-    radians = np.deg2rad(degrees)
-    print(f"Degrees: {degrees}°")
-    print(f"Radians: {radians:.4f} rad ({degrees/180:.3f}π)")
-    print(f"Coordinates on Unit Circle (x, y): ({np.cos(radians):.4f}, {np.sin(radians):.4f})")
+**Every number gets run.** Twenty-one wrong numbers were caught this way while
+these pages were written, and none of them would have failed a test — no test
+asserts on prose. See `DECISIONS_LOG.md` 7.50.
 
-# Try checking any problem angle:
-angle_info(45)
-```
+## 4. What is left
 
----
-
-## 3. Automated Converter Pipeline (`dev/from_worksheet.py`)
-
-Worksheets across `deweydex/Mathematics` share a consistent structure:
-- Frontmatter and title header.
-- Section headings: `## Part A`, `## Part B`, etc.
-- Numbered question lists: `1. ...`, `2. ...`.
-- Trailing `## Answer Key` with matching numbered solution steps.
-
-### Conversion Logic
-1. **Parser**: Reads `markdown/<worksheet>.md`, separating question parts from `## Answer Key`.
-2. **Pairing**: Matches question index `i` with answer key entry `i`.
-3. **Folding**: Wraps each solution in a styled `<details><summary>Check solution</summary>...</details>` element.
-4. **TeX Normalization**: Preserves LaTeX inline (`$...$`) and block (`$$...$$`) delimiters for client-side KaTeX rendering.
-5. **Frontmatter Attachment**: Appends standard dewlab metadata linking the practice set to its parent tutorial:
-   ```yaml
-   ---
-   title: "The Unit Circle — Practice"
-   slug: the-unit-circle-practice
-   module: mit-pdp-maths-prog-integration
-   practice_for: the-unit-circle
-   year: "2026-2027"
-   ---
-   ```
-
----
-
-## 4. Implementation Status & Next Steps
-
-- [x] **Prototypes Validated**: Handcrafted practice pages for *Lines and Distances*, *Drawing Functions*, *Parabolas*, and *The Unit Circle* created and verified in `tutorials/mit-pdp-maths-prog-integration/`.
-- [ ] **Automated Conversion Utility (`dev/from_worksheet.py`)**: Implement the batch conversion script to ingest all 27 worksheets from `deweydex/Mathematics`.
-- [ ] **Practice Navigation Integration**: Add subtle "Practice Problems" companion buttons in the tutorial mastheads and table of contents.
+- **`dev/from_worksheet.py`.** A converter for the Mathematics worksheets. The
+  two conditions for writing it are now met: the build supports practice pages,
+  and several have been done by hand so the shape is known. Whether it is worth
+  writing at all is a fair question — the remaining worksheets are the ones for
+  material that is not taught yet, so the converter would have nothing to
+  convert until those tutorials exist.
+- **Practice for the 5N0554 strands**, once they are written. Worksheets `07a`
+  through `08b` are waiting, and their answers are in PDFs.
+- **Student-authored problems**, which is a runtime feature rather than a
+  content one. See `planning/PRACTICE.md`.

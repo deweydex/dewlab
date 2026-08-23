@@ -37,7 +37,21 @@ Practice pages follow a three-tier structure:
 
 ## 5. Implementation Roadmap
 
-1. **Static Practice Page Prototyping**: Validate practice layout using existing static build mechanisms.
-2. **Build-Level Integration**: Add `practice_for:` frontmatter recognition and bidirectional linking in `build.py`.
+1. ~~**Static Practice Page Prototyping**~~ — done. Thirty-two per-tutorial
+   pages and four mixed sets; see `planning/EXERCISES.md`.
+2. ~~**Build-Level Integration**~~ — done. `practice_for:` with bidirectional
+   linking, and `practice_across:` for a set with no single owner. Both are
+   validated at build time and covered by fourteen tests.
 3. **Runtime Cell Engine**: Implement client-side dynamic cell insertion and CodeMirror editor mounting in `assets/tutorial-runtime.js`.
 4. **Peer Problem Serialization**: Extend export/import tools to package student-authored problems into portable JSON snippets.
+
+Steps 3 and 4 are the ones still open, and they are the two that need runtime
+work rather than content. Nothing written so far depends on them: every page of
+problems in the repository is static, which was the point of doing them in that
+order.
+
+One thing the static pages settled that this document assumed would need code:
+**a practice page does not need `check()` under every question.** What it needs
+is a few tools per section and the answer behind a fold. Sixty CodeMirror
+instances on a page is a slow page, and a check under every question invites
+running it instead of thinking about it.

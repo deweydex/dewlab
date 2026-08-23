@@ -1365,3 +1365,63 @@ uncomment — and it is what turned up 7.46.
 
 *Cost to change: these are tutorials now, so their slugs and cell ids are
 contracts from the first class that uses them. The window is still open.*
+
+**7.48 — Every tutorial has a page of problems, and some problems have no
+tutorial.**
+Fourteen practice pages became thirty-two: one for every tutorial except the
+three that are already problems or reflection — *Bringing It All Together*,
+*Looking Back Before Moving Forward* and *The Team Project*.
+
+Three sources fed them, and only one is a transcription in any sense.
+
+**`deweydex/Mathematics`** has twenty-six worksheets under `markdown/`, twenty
+of which carry an answer key in the file. The claim in `planning/EXERCISES.md`
+that all of them do is wrong: `04e`, `07a`, `07c`, `07d`, `08a` and `08b` have
+answers only as PDFs under `pdfs/solutions/`. Those six are also the ones whose
+material is not yet taught, so nothing was lost.
+
+**`deweydex/everlearning`** has thirty-eight programming problems in
+`PracticeProblems/PDP-Practice-Problem-Bank.py`, as blank stubs with docstrings
+and no answers at all. Those gave questions; every answer here was written.
+
+**The tutorials themselves** are the third source, and the largest. Every "your
+turn" prompt is a problem that was already set and never answered.
+
+*Cost to change: thirty-two files. The frontmatter contract is one line each.*
+
+**7.49 — `practice_across:` for a set of problems with no single owner.**
+Some problems are only worth setting once several tutorials are behind you, and
+giving one of them ownership would be a lie about what the page needs. So a page
+may name several tutorials instead of one.
+
+The asymmetry is deliberate: a mixed set links to everything it draws on, and
+nothing links back. A tutorial has one companion page of problems, reachable from
+its own last paragraph, and a reader who has just finished it does not want to be
+sent somewhere that assumes six more.
+
+That leaves mixed sets as the only pages on the site nothing else links to, so
+they are listed on the contents page under their module — after the series,
+before the archive, which is the only place in that list they belong.
+
+*Cost to change: about ninety lines of build.py and fourteen tests. The four
+pages using it are content, and would survive a different mechanism.*
+
+**7.50 — Twenty-one numbers in answer keys were wrong before they were run.**
+Not a decision, a measurement, and the reason the practice pages took as long as
+the tutorials did.
+
+Among them: binary search costing 9 comparisons where it costs 8; two roots of an
+ambiguous triangle; a Heron semi-perimeter; a standard deviation out by a tenth;
+a password-cracking time out by a quarter; where `2**x` overtakes `x**3`; and
+when compound interest first beats simple by a hundred euro.
+
+Every one was plausible, and none would have failed a test — no test asserts on
+prose. The only thing that finds them is running the arithmetic, which is cheap
+and has to be done deliberately.
+
+Two answers were also written as a wrong attempt followed by its own correction,
+on the theory that the correction was instructive. It is not, in an answer key:
+a student checking their work against an answer that argues with itself learns
+that the page is unreliable. Both were straightened.
+
+*Cost to change: nothing. This is a note to the next person writing an answer.*

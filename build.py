@@ -201,6 +201,29 @@ class Tutorial:
         return str(self.meta.get("practice_for") or "")
 
     @property
+    def practice_across(self) -> tuple[str, ...]:
+        """The slugs a mixed problem set draws on, or ().
+
+        Most practice belongs to one tutorial. Some does not: a set of problems
+        that is only worth doing once several tutorials are behind you has no
+        single owner, and giving it one would be a lie about what it needs.
+
+        Mechanically it is the same shape as `practice_for` — off the reading
+        order, no coverage of its own, linked to what it draws on — except that
+        it points at several tutorials and none of them points back. A tutorial
+        has one companion page of problems; a mixed set is not it.
+        """
+        value = self.meta.get("practice_across") or []
+        if isinstance(value, str):
+            value = [value]
+        return tuple(str(s) for s in value)
+
+    @property
+    def is_practice(self) -> bool:
+        """Whether this page sets problems rather than teaching."""
+        return bool(self.practice_for or self.practice_across)
+
+    @property
     def version(self) -> str:
         return str(self.meta["version"])
 
@@ -574,6 +597,10 @@ def practice_pairs(
     pairs: dict[tuple[str, str], Tutorial] = {}
     for page in tutorials:
         target = page.practice_for
+        if target and page.practice_across:
+            fail(page.path, "sets both practice_for and practice_across. A page "
+                            "of problems either belongs to one tutorial or "
+                            "draws on several; it cannot do both.")
         if not target or not page.is_default:
             continue
         if page.meta.get("covers"):
@@ -598,6 +625,51 @@ def practice_pairs(
                             "has one page of problems.")
         pairs[key] = page
     return pairs
+
+
+def mixed_practice(
+    tutorials: list[Tutorial], registry: dict[tuple[str, str], Tutorial]
+) -> dict[str, list[Tutorial]]:
+    """Problem sets that draw on several tutorials, per module, in title order.
+
+    Checked the same way as `practice_for`: every slug it names has to exist, be
+    in the same module, and be a tutorial rather than another page of problems.
+    A set naming one tutorial is an error rather than an eccentricity — that is
+    what `practice_for` is, and having two ways to say it would mean a tutorial
+    could quietly acquire a second companion page.
+    """
+    out: dict[str, list[Tutorial]] = {}
+    for page in tutorials:
+        across = page.practice_across
+        if not across or not page.is_default:
+            continue
+        if page.meta.get("covers"):
+            fail(page.path, "is a practice page and declares `covers:`. It sets "
+                            "problems on what its tutorials taught; saying so "
+                            "twice would report one outcome as covered by two "
+                            "pages.")
+        if len(across) < 2:
+            fail(page.path, "has practice_across naming one tutorial. That is "
+                            "what practice_for is for.")
+        if len(set(across)) != len(across):
+            repeated = sorted({s for s in across if across.count(s) > 1})
+            fail(page.path, f"names {', '.join(repeated)} in practice_across "
+                            "more than once.")
+        for slug in across:
+            if slug == page.slug:
+                fail(page.path, f"has practice_across naming {slug}, which is "
+                                "itself.")
+            owner = registry.get((page.module, slug))
+            if owner is None:
+                fail(page.path, f"has practice_across naming {slug}, and no "
+                                f"tutorial in {page.module} has that slug.")
+            if owner.is_practice:
+                fail(page.path, f"has practice_across naming {slug}, which is "
+                                "itself a page of problems.")
+        out.setdefault(page.module, []).append(page)
+    for members in out.values():
+        members.sort(key=lambda t: t.title)
+    return out
 
 
 def archived_of(tutorials: list[Tutorial]) -> dict[str, list[Tutorial]]:
@@ -637,7 +709,7 @@ def series_of(tutorials: list[Tutorial]) -> dict[tuple[str, str], list[Tutorial]
         # others. Putting it on the route would double the length of every
         # series and put a page of problems between a reader and the next thing
         # they are meant to learn.
-        if tutorial.practice_for:
+        if tutorial.is_practice:
             continue
         groups.setdefault((tutorial.module, tutorial.series), []).append(tutorial)
 
@@ -1215,6 +1287,7 @@ def render_index(
     archives: dict[tuple[str, str], Path] | None = None,
     retired: dict[str, list[Tutorial]] | None = None,
     practice: dict[tuple[str, str], Tutorial] | None = None,
+    mixed: dict[str, list[Tutorial]] | None = None,
 ) -> str:
     """The contents page: every module, every series, in order.
 
@@ -1225,6 +1298,7 @@ def render_index(
     archives = archives or {}
     retired = retired or {}
     practice = practice or {}
+    mixed = mixed or {}
     if not groups:
         return "<p>No tutorials have been written yet.</p>"
 
@@ -1304,6 +1378,23 @@ def render_index(
                     f"Download {what}"
                     f" ({readable_size(archive)})</a></p>"
                 )
+        # After the series and before the archive. A mixed set is part of the
+        # course and belongs to no series in it, so there is nowhere else it
+        # could go — and it is the only kind of page nothing else links to.
+        for member in mixed.get(module, []):
+            if member is mixed[module][0]:
+                out.append('<h3 class="dl-mixed-head">Mixed problems</h3>')
+                out.append(
+                    '<p class="dl-mixed-note">Problems drawing on several '
+                    "tutorials at once. Worth doing once the tutorials they "
+                    "name are behind you.</p>"
+                )
+                out.append('<ul class="dl-contents dl-mixed">')
+            href = member.out_path.relative_to(OUT).as_posix()
+            out.append(f'<li><a href="{href}">{html.escape(member.title)}</a></li>')
+            if member is mixed[module][-1]:
+                out.append("</ul>")
+
         # Last, and marked, because it is not part of the course any more — but
         # present, because a student who worked in one has to be able to find it.
         for member in retired.get(module, []):
@@ -1520,6 +1611,22 @@ def practice_link(tutorial: Tutorial, practice: Tutorial | None,
     there and cannot do the first question needs the way back before they need
     anything else.
     """
+    if tutorial.practice_across:
+        links = []
+        for slug in tutorial.practice_across:
+            owner = (registry or {}).get((tutorial.module, slug))
+            if owner is None:
+                continue
+            where = os.path.relpath(owner.out_path, tutorial.out_path.parent)
+            links.append(f'<a href="{where}">{html.escape(owner.title)}</a>')
+        if not links:
+            return ""
+        named = links[0] if len(links) == 1 else ", ".join(links[:-1]) + " and " + links[-1]
+        return (
+            '<p class="dl-practice-back">Problems drawing on '
+            f"{named}. Nothing here needs anything those tutorials did not "
+            "cover, and every answer is on this page behind a fold.</p>"
+        )
     if tutorial.practice_for:
         owner = (registry or {}).get((tutorial.module, tutorial.practice_for))
         if owner is None:
@@ -1593,9 +1700,9 @@ def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "",
         "{{TOC}}": render_toc(tutorial),
         "{{BODY}}": (
             page_notice(tutorial, default)
-            + (practice_link(tutorial, practice, registry) if tutorial.practice_for else "")
+            + (practice_link(tutorial, practice, registry) if tutorial.is_practice else "")
             + body_html
-            + (practice_link(tutorial, practice, registry) if not tutorial.practice_for else "")
+            + (practice_link(tutorial, practice, registry) if not tutorial.is_practice else "")
         ),
         # `<` escaped so nothing in a cell can close the surrounding <script>.
         "{{MANIFEST_JSON}}": json.dumps(manifest).replace("<", "\\u003c"),
@@ -1783,6 +1890,7 @@ def write_index(
     archives: dict[tuple[str, str], Path] | None = None,
     retired: dict[str, list[Tutorial]] | None = None,
     practice: dict[tuple[str, str], Tutorial] | None = None,
+    mixed: dict[str, list[Tutorial]] | None = None,
 ) -> Path:
     """The contents page at the site root, which every page's masthead links to."""
     manifest = {"slug": "index", "version": 1, "assetBase": "assets/",
@@ -1808,7 +1916,7 @@ def write_index(
         "{{DOWNLOAD}}": "",
         # The contents page is a contents page. It does not need one of its own.
         "{{TOC}}": "",
-        "{{BODY}}": render_index(groups, archives, retired, practice),
+        "{{BODY}}": render_index(groups, archives, retired, practice, mixed),
         "{{MANIFEST_JSON}}": json.dumps(manifest).replace("<", "\\u003c"),
     }
     page = shell
@@ -2040,6 +2148,7 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
         families.setdefault((tutorial.module, tutorial.slug), []).append(tutorial)
 
     practice = practice_pairs(tutorials, registry)
+    mixed = mixed_practice(tutorials, registry)
 
     shell = SHELL.read_text()
     groups = series_of(tutorials)
@@ -2070,7 +2179,7 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
         written.extend(archives.values())
 
     if tutorials:
-        written.append(write_index(shell, groups, archives, retired, practice))
+        written.append(write_index(shell, groups, archives, retired, practice, mixed))
         tree = write_tree_page(shell, tutorials)
         if tree is not None:
             written.append(tree)

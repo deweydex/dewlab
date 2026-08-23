@@ -1281,6 +1281,20 @@ p code, li code {
 .dl-contents.dl-archive a { color: var(--dl-muted); text-decoration: underline; }
 .dl-contents.dl-archive a:hover { color: var(--dl-orange); }
 
+/* Mixed problem sets. Unnumbered like the archive, because they are not in an
+   order either — but at full strength, because unlike the archive they are
+   part of the course and nothing else on the site links to them. */
+.dl-mixed-head { margin-top: 1.6rem; }
+.dl-mixed-note {
+  max-width: var(--dl-line-width);
+  margin: 0 0 0.6rem;
+  color: var(--dl-muted);
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+.dl-contents.dl-mixed { list-style: none; padding-left: 0; }
+.dl-contents.dl-mixed li::before { content: "· "; color: var(--dl-muted); }
+
 /* Status, in the editor's list. Four small buttons rather than a select,
    because the current one should be readable without opening anything. */
 .dl-editor-status { display: inline-flex; gap: 0.15rem; }

@@ -1795,3 +1795,144 @@ class TestDownloadsDoNotCollide:
                    / "other-module-intro.zip")
         with zipfile.ZipFile(archive) as opened:
             assert opened.namelist() == ["other-module-intro/first-steps.html"]
+
+
+class TestPagesOfProblems:
+    """A practice page belongs to a tutorial, or draws on several.
+
+    Both shapes are the same mechanically — built, reachable, off the reading
+    order, no coverage of their own. What differs is what they point at, and
+    whether anything points back."""
+
+    def practice(self, repo, slug: str, **frontmatter) -> Path:
+        """Write a page of problems, and keep it out of the order file."""
+        path = repo / "tutorials" / "computational-methods" / f"{slug}.md"
+        extra = "".join(
+            f"{key}: {value}\n" if not isinstance(value, list)
+            else f"{key}:\n" + "".join(f"  - {v}\n" for v in value)
+            for key, value in frontmatter.items()
+        )
+        path.write_text(
+            FRONTMATTER.format(slug=slug, version="2026.08.23.1").replace(
+                "version: 2026.08.23.1\n", f"version: 2026.08.23.1\n{extra}")
+            + "**1.** A question.\n"
+        )
+        listed = sorted(
+            p.stem for p in path.parent.glob("*.md")
+            if "practice_for" not in p.read_text()
+            and "practice_across" not in p.read_text()
+        )
+        set_order(repo, "computational-methods", "python-fundamentals", listed)
+        return path
+
+    def test_a_page_of_problems_is_off_the_reading_order(self, repo):
+        write(repo, "One.\n", slug="one")
+        write(repo, "Two.\n", slug="two")
+        self.practice(repo, "one-practice", practice_for="one")
+        b.build()
+        page = built(repo, "one")
+        assert "two.html" in page          # next is the next tutorial
+        assert "dl-nav-next" in page
+        assert "one-practice.html" in page  # linked, but not as next
+
+    def test_the_tutorial_links_to_its_problems_and_back(self, repo):
+        write(repo, "One.\n", slug="one")
+        self.practice(repo, "one-practice", practice_for="one")
+        b.build()
+        assert "dl-practice-link" in built(repo, "one")
+        assert "dl-practice-back" in built(repo, "one-practice")
+
+    def test_two_pages_cannot_claim_the_same_tutorial(self, repo):
+        write(repo, "One.\n", slug="one")
+        self.practice(repo, "one-practice", practice_for="one")
+        self.practice(repo, "more-practice", practice_for="one")
+        with pytest.raises(b.BuildError, match="has one page of problems"):
+            b.build()
+
+    def test_a_page_of_problems_declaring_coverage_is_an_error(self, repo):
+        write(repo, "One.\n", slug="one")
+        path = self.practice(repo, "one-practice", practice_for="one")
+        path.write_text(path.read_text().replace(
+            "practice_for: one\n",
+            "practice_for: one\ncovers:\n  a-question:\n    covers: [MIT-1.1]\n"))
+        with pytest.raises(b.BuildError, match="declares `covers:`"):
+            b.build()
+
+    def test_a_mixed_set_draws_on_several_tutorials(self, repo):
+        write(repo, "One.\n", slug="one")
+        write(repo, "Two.\n", slug="two")
+        self.practice(repo, "mixed", practice_across=["one", "two"])
+        page = (repo / "site" / "tutorials" / "computational-methods"
+                / "mixed.html")
+        b.build()
+        text = page.read_text()
+        assert "dl-practice-back" in text
+        assert "one.html" in text and "two.html" in text
+
+    def test_a_mixed_set_is_off_the_reading_order(self, repo):
+        """Two tutorials, and the mixed set is not between them."""
+        write(repo, "One.\n", slug="one")
+        write(repo, "Two.\n", slug="two")
+        self.practice(repo, "mixed", practice_across=["one", "two"])
+        b.build()
+        assert "two.html" in built(repo, "one")
+        assert "mixed.html" not in built(repo, "one")
+
+    def test_the_tutorials_do_not_link_back_to_a_mixed_set(self, repo):
+        """A tutorial has one companion page of problems, and this is not it."""
+        write(repo, "One.\n", slug="one")
+        write(repo, "Two.\n", slug="two")
+        self.practice(repo, "mixed", practice_across=["one", "two"])
+        b.build()
+        assert "dl-practice-link" not in built(repo, "one")
+
+    def test_the_contents_page_lists_mixed_sets(self, repo):
+        write(repo, "One.\n", slug="one")
+        write(repo, "Two.\n", slug="two")
+        self.practice(repo, "mixed", practice_across=["one", "two"])
+        b.build()
+        index = (repo / "site" / "index.html").read_text()
+        assert "Mixed problems" in index
+        assert "dl-mixed" in index
+        assert "mixed.html" in index
+
+    def test_a_mixed_set_naming_one_tutorial_is_an_error(self, repo):
+        write(repo, "One.\n", slug="one")
+        self.practice(repo, "mixed", practice_across=["one"])
+        with pytest.raises(b.BuildError, match="practice_for is for"):
+            b.build()
+
+    def test_a_mixed_set_naming_a_slug_that_does_not_exist_is_an_error(self, repo):
+        write(repo, "One.\n", slug="one")
+        self.practice(repo, "mixed", practice_across=["one", "nowhere"])
+        with pytest.raises(b.BuildError, match="no tutorial in"):
+            b.build()
+
+    def test_a_mixed_set_naming_a_page_of_problems_is_an_error(self, repo):
+        write(repo, "One.\n", slug="one")
+        write(repo, "Two.\n", slug="two")
+        self.practice(repo, "one-practice", practice_for="one")
+        self.practice(repo, "mixed", practice_across=["two", "one-practice"])
+        with pytest.raises(b.BuildError, match="itself a page of problems"):
+            b.build()
+
+    def test_a_mixed_set_naming_itself_is_an_error(self, repo):
+        write(repo, "One.\n", slug="one")
+        self.practice(repo, "mixed", practice_across=["one", "mixed"])
+        with pytest.raises(b.BuildError, match="which is itself"):
+            b.build()
+
+    def test_a_repeated_slug_is_an_error(self, repo):
+        write(repo, "One.\n", slug="one")
+        write(repo, "Two.\n", slug="two")
+        self.practice(repo, "mixed", practice_across=["one", "two", "one"])
+        with pytest.raises(b.BuildError, match="more than once"):
+            b.build()
+
+    def test_a_page_cannot_be_both_kinds_at_once(self, repo):
+        write(repo, "One.\n", slug="one")
+        write(repo, "Two.\n", slug="two")
+        self.practice(repo, "mixed", practice_for="one",
+                      practice_across=["one", "two"])
+        with pytest.raises(b.BuildError, match="cannot do both"):
+            b.build()
