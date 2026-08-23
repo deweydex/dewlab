@@ -137,6 +137,11 @@ def load_tutorials(known: dict[str, Outcome]) -> list[Tutorial]:
                     )
             sections.append(Section(anchor, headings[anchor], covers, touches))
 
+        if str(meta.get("status", "live")) == "archived":
+            # Retired: still in the repository, no longer on the course, so it
+            # cannot be the answer to "where is this taught?".
+            continue
+
         tutorials.append(
             Tutorial(
                 slug=str(meta["slug"]),

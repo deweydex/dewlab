@@ -1125,6 +1125,120 @@ class TestTheExportFailsLoudly:
             b.replace_once("<p>a page</p>", "<not-here>", "x", "the thing")
 
 
+class TestArchivedTutorials:
+    """Retiring a tutorial without deleting it.
+
+    Deleting the file was the only way to retire one, and deleting it strands
+    every student who saved work in it — the work sits in local storage keyed to
+    a page that no longer exists. Archiving keeps the page."""
+
+    def archive(self, repo, slug: str = "sample") -> Path:
+        """Mark a tutorial archived and take it out of the reading order."""
+        path = repo / "tutorials" / "computational-methods" / f"{slug}.md"
+        path.write_text(path.read_text().replace(
+            "version: 1\n", "version: 1\nstatus: archived\n"))
+        remaining = sorted(
+            p.stem for p in path.parent.glob("*.md")
+            if "status: archived" not in p.read_text()
+        )
+        set_order(repo, "computational-methods", "python-fundamentals", remaining)
+        return path
+
+    def test_an_archived_tutorial_is_still_built(self, repo):
+        write(repo, "Prose.\n")
+        write(repo, "More prose.\n", slug="second")
+        self.archive(repo)
+        b.build()
+        page = repo / "site" / "tutorials" / "computational-methods" / "sample.html"
+        assert page.is_file()
+
+    def test_it_says_it_is_no_longer_part_of_the_course(self, repo):
+        write(repo, "# Sample\n\nThe body of it.\n")
+        write(repo, "More prose.\n", slug="second")
+        self.archive(repo)
+        b.build()
+        page = (repo / "site" / "tutorials" / "computational-methods"
+                / "sample.html").read_text()
+        assert "no longer part of the course" in page
+        # And the notice comes before the tutorial, not after it.
+        assert page.index("dl-archived") < page.index("The body of it.")
+
+    def test_it_is_not_in_the_reading_order(self, repo):
+        """No previous, no next: there is nowhere in the series it sits."""
+        write(repo, "Prose.\n")
+        write(repo, "More prose.\n", slug="second")
+        self.archive(repo)
+        b.build()
+        page = (repo / "site" / "tutorials" / "computational-methods"
+                / "sample.html").read_text()
+        assert "dl-nav-prev" not in page
+        assert "dl-nav-next" not in page
+        assert "dl-nav-up" in page
+
+    def test_the_live_tutorials_close_up_behind_it(self, repo):
+        """The tutorial after an archived one moves up rather than leaving a
+        gap, because the order file no longer lists the archived one."""
+        for slug in ("one", "two", "three"):
+            write(repo, "Prose.\n", slug=slug)
+        self.archive(repo, "two")
+        b.build()
+        page = (repo / "site" / "tutorials" / "computational-methods"
+                / "one.html").read_text()
+        assert "three.html" in page
+        assert "two.html" not in page
+
+    def test_the_contents_page_lists_it_under_an_archive_heading(self, repo):
+        write(repo, "Prose.\n")
+        write(repo, "More prose.\n", slug="second")
+        self.archive(repo)
+        b.build()
+        index = (repo / "site" / "index.html").read_text()
+        assert "Archive" in index
+        assert 'href="tutorials/computational-methods/sample.html"' in index
+        # Below the live series, not among it.
+        assert index.index("second.html") < index.index("sample.html")
+
+    def test_listing_an_archived_tutorial_in_the_order_file_is_an_error(self, repo):
+        """The contradictory case. Silently ignoring the line would leave the
+        order file saying one thing and the site doing another."""
+        write(repo, "Prose.\n")
+        write(repo, "More prose.\n", slug="second")
+        path = repo / "tutorials" / "computational-methods" / "sample.md"
+        path.write_text(path.read_text().replace(
+            "version: 1\n", "version: 1\nstatus: archived\n"))
+        # `write` re-listed everything, including the one just archived.
+        with pytest.raises(b.BuildError, match="archived"):
+            b.build()
+
+    def test_an_unknown_status_stops_the_build(self, repo):
+        path = write(repo, "Prose.\n")
+        path.write_text(path.read_text().replace(
+            "version: 1\n", "version: 1\nstatus: retired\n"))
+        with pytest.raises(b.BuildError, match="status"):
+            b.build()
+
+    def test_it_teaches_nothing_the_map_can_point_at(self, repo):
+        """It taught what it taught, but a student picking a topic today cannot
+        be sent there. Counting it would make the map claim an outcome is
+        covered when nothing on the course covers it."""
+        path = write(repo, "## A section\n\nProse.\n")
+        path.write_text(path.read_text().replace(
+            "version: 1\n", "version: 1\ncovers:\n  a-section:\n    covers: [MIT-1.4]\n"))
+        write(repo, "More prose.\n", slug="second")
+        b.build()
+        taught = json.loads(re.search(
+            r'<script type="application/json" id="dewlab-tree">(.*?)</script>',
+            (repo / "site" / "tree.html").read_text(), re.DOTALL).group(1))
+        assert next(n for n in taught["nodes"] if n["code"] == "MIT-1.4")["state"] == "taught"
+
+        self.archive(repo)
+        b.build()
+        taught = json.loads(re.search(
+            r'<script type="application/json" id="dewlab-tree">(.*?)</script>',
+            (repo / "site" / "tree.html").read_text(), re.DOTALL).group(1))
+        assert next(n for n in taught["nodes"] if n["code"] == "MIT-1.4")["state"] != "taught"
+
+
 class TestTheTopicTree:
     """The tree page: every topic in both descriptors, positioned by what has
     to come first, with what each one is and where it is used."""

@@ -49,6 +49,17 @@ OUT = ROOT / "site"
 
 REQUIRED_FRONTMATTER = ("title", "slug", "module", "year", "series", "version")
 
+# What a tutorial is for. `live` is the normal state and the default, so nothing
+# already written has to say anything. `archived` means superseded: still built,
+# still reachable, still holding whatever a student saved in it, but out of the
+# reading order and marked as no longer part of the course.
+#
+# This exists because deleting the file was the only way to retire a tutorial,
+# and deleting it strands every student who saved work in it — their work sits
+# in local storage keyed to a page that no longer exists, with no way back and
+# no trace it was ever there (planning/VERSIONS.md).
+STATUSES = ("live", "archived")
+
 # `order` used to live here. It moved into one file per series, so a tutorial
 # that still carries it is half-migrated — and the half that is not migrated is
 # the half that would be silently ignored.
@@ -150,6 +161,14 @@ class Tutorial:
         return str(self.meta["series"])
 
     @property
+    def status(self) -> str:
+        return str(self.meta.get("status", "live"))
+
+    @property
+    def archived(self) -> bool:
+        return self.status == "archived"
+
+    @property
     def title(self) -> str:
         return str(self.meta["title"])
 
@@ -186,6 +205,9 @@ def split_frontmatter(text: str, path: Path) -> tuple[dict, str]:
         if field_name in meta:
             fail(path, f"{field_name} no longer belongs in frontmatter — it moved "
                        f"to {moved_to}")
+    status = meta.get("status", "live")
+    if status not in STATUSES:
+        fail(path, f"status {status!r} is not one of {', '.join(STATUSES)}")
     return meta, body.lstrip("\n")
 
 
@@ -384,7 +406,13 @@ def order_files() -> dict[tuple[str, str], list[str]]:
         data = yaml.safe_load(path.read_text()) or {}
         module = path.parent.name
         series = path.name[: -len(ORDER_SUFFIX)]
-        order = data.get("order")
+        # `order:` with nothing under it is a series whose every tutorial has
+        # been archived. That is a real state and should not force somebody to
+        # delete the file as well — but `order:` missing altogether is still a
+        # broken file, so the two are told apart rather than both allowed.
+        if "order" not in data:
+            fail(path, "an order file needs `order:` as a list of slugs")
+        order = data.get("order") or []
         if not isinstance(order, list) or not all(isinstance(s, str) for s in order):
             fail(path, "an order file needs `order:` as a list of slugs")
         if len(set(order)) != len(order):
@@ -410,16 +438,51 @@ def series_titles() -> dict[tuple[str, str], str]:
     return titles
 
 
+def archived_of(tutorials: list[Tutorial]) -> dict[str, list[Tutorial]]:
+    """Retired tutorials, per module, newest title order.
+
+    Kept apart from the series rather than filtered out of it, because they are
+    still built and still reachable — a student who saved work in one can still
+    get to it. They simply are not part of the course any more.
+    """
+    out: dict[str, list[Tutorial]] = {}
+    for tutorial in tutorials:
+        if tutorial.archived:
+            out.setdefault(tutorial.module, []).append(tutorial)
+    for members in out.values():
+        members.sort(key=lambda t: t.title)
+    return out
+
+
 def series_of(tutorials: list[Tutorial]) -> dict[tuple[str, str], list[Tutorial]]:
-    """Group tutorials into the series a student actually works through.
+    """Group the live tutorials into the series a student works through.
 
     A series is per module: two modules may both have a series called
     `fundamentals` without being the same sequence.
+
+    Archived tutorials are not here. A reading order is a route through the
+    course, and a retired tutorial is not on the route — so it is not listed in
+    the order file, and listing it is an error rather than a no-op.
     """
     orders = order_files()
     groups: dict[tuple[str, str], list[Tutorial]] = {}
     for tutorial in tutorials:
+        if tutorial.archived:
+            continue
         groups.setdefault((tutorial.module, tutorial.series), []).append(tutorial)
+
+    # The contradictory case, caught by name so the message can say which.
+    for tutorial in tutorials:
+        if not tutorial.archived:
+            continue
+        listed = orders.get((tutorial.module, tutorial.series)) or []
+        if tutorial.slug in listed:
+            fail(
+                TUTORIALS / tutorial.module / f"{tutorial.series}{ORDER_SUFFIX}",
+                f"lists {tutorial.slug}, which is archived. An archived tutorial "
+                "is not part of the reading order — remove the line, or take "
+                "`status: archived` out of the tutorial.",
+            )
 
     for key, members in groups.items():
         module, series = key
@@ -460,9 +523,17 @@ def link_between(here: Tutorial, there: Tutorial) -> str:
 
 
 def nav_for(tutorial: Tutorial, members: list[Tutorial]) -> str:
-    """Previous and next within the series, and the way back to the contents."""
-    index = members.index(tutorial)
+    """Previous and next within the series, and the way back to the contents.
+
+    A tutorial that is not among `members` — an archived one — gets the way back
+    and nothing else, which is the honest shape: there is nowhere in the series
+    it comes before or after.
+    """
+    index = members.index(tutorial) if tutorial in members else -1
     parts = []
+    if index == -1:
+        up = "../" * tutorial.depth
+        return f'<a class="dl-nav-up" href="{up}index.html">All tutorials</a>' 
     if index > 0:
         previous = members[index - 1]
         parts.append(
@@ -606,6 +677,12 @@ def taught_where(tutorials: list[Tutorial]) -> dict[str, dict]:
     """
     where: dict[str, dict] = {}
     for tutorial in tutorials:
+        # An archived tutorial taught what it taught, but a student picking a
+        # topic today cannot be sent there. Counting it would make the map say
+        # an outcome is covered when nothing on the course covers it — which is
+        # exactly the lie the map exists to prevent.
+        if tutorial.archived:
+            continue
         for anchor, claim in (tutorial.meta.get("covers") or {}).items():
             for code in claim.get("covers") or []:
                 where.setdefault(code, {
@@ -963,6 +1040,7 @@ def arrow_between(place: dict, a: str, b: str, css: str, fan: int = 0) -> str:
 def render_index(
     groups: dict[tuple[str, str], list[Tutorial]],
     archives: dict[tuple[str, str], Path] | None = None,
+    retired: dict[str, list[Tutorial]] | None = None,
 ) -> str:
     """The contents page: every module, every series, in order.
 
@@ -971,14 +1049,15 @@ def render_index(
     is what a quick local build wants.
     """
     archives = archives or {}
+    retired = retired or {}
     if not groups:
         return "<p>No tutorials have been written yet.</p>"
 
     names = {}
-    for (module, _), members in groups.items():
+    for members in list(groups.values()) + list(retired.values()):
         for member in members:
             if member.meta.get("module_title"):
-                names.setdefault(module, member.module_title)
+                names.setdefault(member.module, member.module_title)
 
     # An introduction rather than a diagram. The map moved to its own page,
     # where it can have the whole window; this page's job is to say what dewlab
@@ -1036,6 +1115,21 @@ def render_index(
                     f"Download {what}"
                     f" ({readable_size(archive)})</a></p>"
                 )
+        # Last, and marked, because it is not part of the course any more — but
+        # present, because a student who worked in one has to be able to find it.
+        for member in retired.get(module, []):
+            if member is retired[module][0]:
+                out.append('<h3 class="dl-archive-head">Archive</h3>')
+                out.append(
+                    '<p class="dl-archive-note">No longer part of the course. '
+                    "Kept so that saved work is still reachable and old links "
+                    "still work.</p>"
+                )
+                out.append('<ul class="dl-contents dl-archive">')
+            href = member.out_path.relative_to(OUT).as_posix()
+            out.append(f'<li><a href="{href}">{html.escape(member.title)}</a></li>')
+            if member is retired[module][-1]:
+                out.append("</ul>")
     return "\n".join(out)
 
 
@@ -1143,6 +1237,26 @@ def versioned(base: str, name: str) -> str:
     return f"{base}{name}?v={asset_version(name)}"
 
 
+def archived_notice(tutorial: Tutorial) -> str:
+    """What an archived page says about itself, above everything else.
+
+    It still runs, and a student's saved work is still in it — that is the whole
+    point of archiving rather than deleting. What it must not do is let somebody
+    read it for a fortnight without noticing it is not on the course.
+    """
+    if not tutorial.archived:
+        return ""
+    up = "../" * tutorial.depth
+    return (
+        '<div class="dl-archived" role="note">'
+        "<strong>This tutorial is no longer part of the course.</strong> "
+        "It is kept here so that anything you saved in it is still yours, and "
+        "so nothing that linked to it is broken. It still runs. For what "
+        f'replaced it, see <a href="{up}index.html">all tutorials</a>.'
+        "</div>"
+    )
+
+
 def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "") -> Path:
     up = "../" * tutorial.depth
     manifest: dict[str, object] = {
@@ -1180,7 +1294,7 @@ def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "") -> Path
         "{{PAGE_SCRIPT}}": "",
         "{{DOWNLOAD}}": download_section(tutorial),
         "{{TOC}}": render_toc(tutorial),
-        "{{BODY}}": body_html,
+        "{{BODY}}": archived_notice(tutorial) + body_html,
         # `<` escaped so nothing in a cell can close the surrounding <script>.
         "{{MANIFEST_JSON}}": json.dumps(manifest).replace("<", "\\u003c"),
     }
@@ -1360,6 +1474,7 @@ def write_index(
     shell: str,
     groups: dict[tuple[str, str], list[Tutorial]],
     archives: dict[tuple[str, str], Path] | None = None,
+    retired: dict[str, list[Tutorial]] | None = None,
 ) -> Path:
     """The contents page at the site root, which every page's masthead links to."""
     manifest = {"slug": "index", "version": 1, "assetBase": "assets/",
@@ -1384,7 +1499,7 @@ def write_index(
         "{{DOWNLOAD}}": "",
         # The contents page is a contents page. It does not need one of its own.
         "{{TOC}}": "",
-        "{{BODY}}": render_index(groups, archives),
+        "{{BODY}}": render_index(groups, archives, retired),
         "{{MANIFEST_JSON}}": json.dumps(manifest).replace("<", "\\u003c"),
     }
     page = shell
@@ -1610,10 +1725,13 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
 
     shell = SHELL.read_text()
     groups = series_of(tutorials)
+    retired = archived_of(tutorials)
     written: list[Path] = []
     for tutorial in tutorials:
         check_alt_text(tutorial)
-        members = groups[(tutorial.module, tutorial.series)]
+        # An archived tutorial belongs to no reading order, so there is no
+        # previous and no next — only the way back.
+        members = groups.get((tutorial.module, tutorial.series), [])
         page_path = write(
             tutorial, shell, resolve_links(tutorial, registry), nav_for(tutorial, members)
         )
@@ -1628,7 +1746,7 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
         written.extend(archives.values())
 
     if tutorials:
-        written.append(write_index(shell, groups, archives))
+        written.append(write_index(shell, groups, archives, retired))
         tree = write_tree_page(shell, tutorials)
         if tree is not None:
             written.append(tree)
