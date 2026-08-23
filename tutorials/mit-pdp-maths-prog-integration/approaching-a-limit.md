@@ -269,12 +269,21 @@ def f(x):
 
 for step in [1e-10, 1e-13, 1e-15, 1e-16]:
     x = 1 + step
-    print(f"f(1 + {step:<8}) = {f(x)}")
+    try:
+        print(f"f(1 + {step:<8}) = {f(x)}")
+    except ZeroDivisionError:
+        print(f"f(1 + {step:<8}) = the arithmetic gave up")
 ```
 
-Push close enough and the answers stop improving and start wandering. `1 + 1e-16` is not even a different number from 1 in floating point, so the subtraction on the bottom gives zero or something arbitrary.
+The first three are fine. The fourth stops being arithmetic at all.
 
-**The mathematics is fine and the arithmetic ran out.** You met the same thing in *Storing and Computing*, where two floats that should be equal were not.
+`1 + 1e-16` is **not a different number from 1** in double-precision floating point — there is no room left to record the difference. So `x - 1` on the bottom is exactly zero, and the division fails.
+
+Notice what did *not* happen. The answers did not drift or degrade gracefully; they were exactly right and then the calculation died. That is characteristic: floating point usually fails suddenly rather than gradually, at whichever step first asks it to represent a difference smaller than it can hold.
+
+**The mathematics is fine and the arithmetic ran out.** The limit is still 2 — nothing about the function changed at `1e-16`. What changed is that the computer stopped being able to tell `1 + 1e-16` from `1`.
+
+You met the same floor in *Storing and Computing*, where two floats that should have been equal were not.
 
 So use the numbers to see what the answer is, and use algebra to know it. In the very first example, cancelling `(x − 1)` tells you the answer is `x + 1` and therefore 2 — with no approximation anywhere.
 

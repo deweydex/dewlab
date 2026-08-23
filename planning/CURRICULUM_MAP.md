@@ -356,7 +356,7 @@ graph TD
 
 ## Vocabulary
 
-The tutorials mark a term being introduced by putting it in italics the first time it means something particular. **108 terms** are marked that way, and asking two questions of them is free.
+The tutorials mark a term being introduced by putting it in italics the first time it means something particular. **104 terms** are marked that way, and asking two questions of them is free.
 
 ### Introduced more than once
 
@@ -369,7 +369,6 @@ The same word presented as new in two places. Either it is being introduced twic
 | *drawing functions* | 24, 25, 27, 28 |
 | *expressions come alive* | 17, 18, 23, 31 |
 | *finding things* | 9, 20 |
-| *function* | 1, 23 |
 | *index* | 6, 7, 15 |
 | *lines and distances* | 26, 27, 28, 30 |
 | *making sense of data* | 14, 25 |
@@ -390,19 +389,20 @@ A word appearing in an earlier tutorial than the one that stops to explain it. S
 | Term | First appears in | Introduced in |
 |---|---:|---:|
 | *argument* | 5 | 7 |
-| *before* | 1 | 3 |
+| *before* | 2 | 3 |
 | *between* | 2 | 28 |
 | *counting carefully* | 11 | 12 |
 | *design* | 8 | 10 |
 | *drawing functions* | 23 | 24 |
-| *expression* | 6 | 16 |
+| *expression* | 1 | 16 |
 | *expressions come alive* | 16 | 17 |
 | *finding things* | 8 | 9 |
 | *first steps* | 1 | 31 |
-| *functions* | 1 | 7 |
-| *how* | 1 | 3 |
+| *function* | 2 | 23 |
+| *functions* | 2 | 7 |
+| *how* | 2 | 3 |
 | *independent* | 10 | 12 |
-| *inside* | 1 | 28 |
+| *inside* | 4 | 28 |
 | *lines and distances* | 23 | 26 |
 | *local* | 8 | 30 |
 | *logic and truth* | 21 | 22 |
@@ -424,12 +424,11 @@ A word appearing in an earlier tutorial than the one that stops to explain it. S
 | *set* | 3 | 18 |
 | *sets as sorted lists* | 20 | 21 |
 | *solve* | 7 | 16 |
-| *store* | 1 | 2 |
 | *storing and computing* | 2 | 3 |
 | *the unit circle* | 25 | 28 |
-| *tools* | 1 | 10 |
-| *what* | 1 | 3 |
-| *wrong* | 1 | 26 |
+| *tools* | 3 | 10 |
+| *what* | 2 | 3 |
+| *wrong* | 3 | 26 |
 
 ## Scope questions, settled
 
