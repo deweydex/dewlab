@@ -1349,6 +1349,12 @@ def render_index(
         "<p>dewlab is a set of browser-based tutorials for learning mathematics "
         "and programming together. Open any page and start immediately: no "
         "installs, no accounts, and no setup before you can begin.</p>",
+        "<p>Every tutorial opens with something to run, before it explains "
+        "anything — you meet an idea by trying it, and the name for what you "
+        "just did comes afterwards, once you already have something to hang it "
+        "on. Being wrong here is cheap and visible: a cell that raises an error "
+        "in front of you is doing its job, not marking you down, and nothing "
+        "you do is scored or sent anywhere.</p>",
         "<p>Each tutorial combines reading with runnable Python cells, so you can "
         "test ideas while you work through the explanation. Your edits stay in "
         "this browser on this device, and every tutorial can also be downloaded "

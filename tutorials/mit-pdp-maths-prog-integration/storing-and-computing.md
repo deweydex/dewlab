@@ -53,7 +53,7 @@ Names must start with a letter or underscore, can contain letters, numbers, and 
 
 ### Your turn
 
-Create variables to store the following information about yourself (or make something up): your first name, your age, the number of years you have been using computers, and whether you have programmed before (True or False). Then print each one with a descriptive label.
+Let's create variables to store the following information about yourself (or make something up): your first name, your age, the number of years you have been using computers, and whether you have programmed before (True or False). Then print each one with a descriptive label.
 
 ```python exec
 id: your-turn-1
@@ -180,7 +180,7 @@ Hexadecimal is popular because each hex digit corresponds to exactly four binary
 
 ### Your turn
 
-Convert these numbers by hand first (write your working in comments), then verify with Python:
+Let's convert these numbers by hand first (write your working in comments), then verify with Python:
 
 1. What is the decimal value of binary `11001`?
 2. What is the binary representation of decimal 100?
@@ -230,7 +230,7 @@ print(str(celsius) + " degrees Celsius = " + str(fahrenheit) + " degrees Fahrenh
 
 ### Your turn
 
-Write a small program that converts between two units of your choice. Some ideas: kilometres to miles (multiply by 0.621371), kilograms to pounds (multiply by 2.20462), or euros to another currency. Follow the same pattern: pseudocode first, then implementation, then test with a few values you can verify by hand.
+Let's write a small program that converts between two units of your choice. Some ideas: kilometres to miles (multiply by 0.621371), kilograms to pounds (multiply by 2.20462), or euros to another currency. Follow the same pattern: pseudocode first, then implementation, then test with a few values you can verify by hand.
 
 Start with the pseudocode, written as comments at the top of the cell below,
 then fill in the Python underneath each step.
@@ -251,7 +251,7 @@ We covered a lot of ground today: variables, data types (int, float, str, bool),
 
 The key idea is that *types matter*. The same symbols can mean different things depending on context -- `+` adds numbers but concatenates strings, `"42"` looks like a number but is text. Being precise about types is one of the things that separates clear thinking from fuzzy thinking, in programming and in mathematics.
 
-Write a few sentences about what you found most interesting or most confusing:
+In a few sentences, what did you find most interesting or most confusing?
 
 ## Where to Read More
 
