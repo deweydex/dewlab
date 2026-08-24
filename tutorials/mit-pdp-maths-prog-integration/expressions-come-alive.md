@@ -265,3 +265,14 @@ The deeper lesson is about *representation*. By choosing to represent polynomial
 Next time we will use this machinery to solve equations and factor polynomials.
 
 What was the trickiest part of this tutorial? The `poly_to_string` formatting, or the `multiply_poly` algorithm?
+
+## Where to Read More
+
+Khan Academy. *Adding and Subtracting Polynomials.*
+<https://www.youtube.com/watch?v=ZGl2ExHwdak>. The same coefficient-by-
+coefficient operation this page builds as `add_poly`, worked by hand
+first.
+
+Khan Academy. *Multiplying Polynomials Example.*
+<https://www.youtube.com/watch?v=yJzLYa-_Y1k>. The FOIL method this page
+turns into a nested loop over coefficients.

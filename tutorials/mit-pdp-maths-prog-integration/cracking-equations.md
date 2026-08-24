@@ -239,3 +239,10 @@ The power of this approach is that we can verify everything computationally. Fin
 Next tutorial we will work with sets -- collections where membership and relationships matter -- which is the last major topic in this set.
 
 Which type of equation did you find most satisfying to solve programmatically?
+
+## Where to Read More
+
+Khan Academy. *Quadratic Formula (Proof).*
+<https://www.youtube.com/watch?v=mDmRYfma9C0>. Where the formula this page
+turns into `solve_quadratic` actually comes from — completing the square,
+step by step.

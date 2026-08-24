@@ -262,3 +262,9 @@ Three things worth taking away.
 **You can check.** Not by re-reading your algebra and hoping, but by putting numbers through both versions and comparing. That habit will outlast every formula in this tutorial.
 
 Write a few sentences: which of the rearrangements above did you find hardest, and what specifically made it harder than the others?
+
+## Where to Read More
+
+Khan Academy. *Rearrange Formulas to Isolate Specific Variables.*
+<https://www.youtube.com/watch?v=eTSVTTg_QZ4>. The same one rule — do the
+same thing to both sides — applied to a different set of formulae.
