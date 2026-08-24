@@ -302,3 +302,11 @@ A limit is what a function is heading towards, whether or not it ever gets there
 **Numbers show you the answer; algebra proves it.** And past about fifteen decimal places, the numbers stop showing you anything at all.
 
 Write a few sentences: in your own words, what is the difference between "f(1) = 2" and "the limit of f as x approaches 1 is 2"?
+
+## Where to Read More
+
+Grant Sanderson (3Blue1Brown) (2017). *Essence of Calculus, Chapter 7:
+Limits, L'Hôpital's Rule, and Epsilon Delta Definitions.*
+<https://www.youtube.com/watch?v=kfF40MiS7zA>. The formal definition
+behind the "getting closer without arriving" this page does by trying
+numbers.
