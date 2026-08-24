@@ -25,6 +25,7 @@ from __future__ import annotations
 
 import argparse
 import base64
+import datetime
 import hashlib
 import html
 import json
@@ -1705,6 +1706,18 @@ def practice_link(tutorial: Tutorial, practice: Tutorial | None,
     return "".join(parts)
 
 
+_LICENCE_URL = "https://github.com/deweydex/dewlab/blob/main/LICENSE.md"
+
+
+def site_footer() -> str:
+    """Copyright line and licence link, stamped with the current year."""
+    year = datetime.date.today().year
+    return (
+        f'© {year} J. S. Aaron · '
+        f'<a href="{_LICENCE_URL}">Licence</a>'
+    )
+
+
 def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "",
           default: Tutorial | None = None, family: list[Tutorial] | None = None,
           practice: Tutorial | None = None,
@@ -1765,6 +1778,7 @@ def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "",
         ),
         # `<` escaped so nothing in a cell can close the surrounding <script>.
         "{{MANIFEST_JSON}}": json.dumps(manifest).replace("<", "\\u003c"),
+        "{{FOOTER}}": site_footer(),
     }
     page = shell
     for token, value in tokens.items():
@@ -1977,6 +1991,7 @@ def write_index(
         "{{TOC}}": "",
         "{{BODY}}": render_index(groups, archives, retired, practice, mixed),
         "{{MANIFEST_JSON}}": json.dumps(manifest).replace("<", "\\u003c"),
+        "{{FOOTER}}": site_footer(),
     }
     page = shell
     for token, value in tokens.items():
@@ -2107,6 +2122,7 @@ def write_tree_page(shell: str, tutorials: list[Tutorial]) -> Path | None:
         "{{TOC}}": "",
         "{{BODY}}": body,
         "{{MANIFEST_JSON}}": json.dumps(manifest).replace("<", "\\u003c"),
+        "{{FOOTER}}": site_footer(),
     }
     page = shell
     for token, value in tokens.items():
@@ -2164,6 +2180,7 @@ def write_editor_page(shell: str) -> Path:
         "{{TOC}}": "",
         "{{BODY}}": body,
         "{{MANIFEST_JSON}}": json.dumps(manifest).replace("<", "\\u003c"),
+        "{{FOOTER}}": site_footer(),
     }
     page = shell
     for token, value in tokens.items():
