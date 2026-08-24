@@ -245,7 +245,7 @@ class TestTheOutputActuallyBuilds:
 
         written = b.build()
         # The tutorial, minus the pages the build always writes alongside it.
-        alongside = {"index.html", "tree.html", "editor.html"}
+        alongside = {"index.html", "tree.html", "about.html", "editor.html"}
         pages = [path for path in written if path.name not in alongside]
         assert len(pages) == 1, [path.name for path in pages]
         page = pages[0].read_text()

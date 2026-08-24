@@ -1346,19 +1346,16 @@ def render_index(
     out = [
         "<h1>Tutorials</h1>",
         '<div class="dl-intro">',
-        "<p>Everything here runs in this browser. There is nothing to install, "
-        "nothing to sign into, and no way to break anything — the Python you "
-        "write runs on your own machine, inside this page, and never leaves "
-        "it.</p>",
-        "<p>The material covers two QQI Level 5 modules — <strong>Maths for "
-        "Information Technology</strong> (5N18396) and <strong>Programming and Design "
-        "Principles</strong> (5N2927) — taught together rather than side by "
-        "side, because most of the maths is easier to see once you can make a "
-        "computer do it. Everything on your course is in here somewhere.</p>",
-        "<p>Every tutorial is a page of reading with code you can change and "
-        "run as you go. Your work is saved automatically in this browser, so "
-        "you can close the tab and come back. Each one can be downloaded as a "
-        "single file to keep.</p>",
+        "<p>dewlab is a set of browser-based tutorials for learning mathematics "
+        "and programming together. Open any page and start immediately: no "
+        "installs, no accounts, and no setup before you can begin.</p>",
+        "<p>Each tutorial combines reading with runnable Python cells, so you can "
+        "test ideas while you work through the explanation. Your edits stay in "
+        "this browser on this device, and every tutorial can also be downloaded "
+        "as a single file to keep.</p>",
+        '<p>This project is open and still evolving. The <a href="about.html">About '
+        "this project</a> page explains how to suggest improvements, report "
+        "errors, and contribute directly on GitHub.</p>",
         '<p class="dl-intro-tree">New here, or not sure where a topic fits? '
         'The <a href="tree.html">topic tree</a> shows everything the course '
         "covers and what has to come first.</p>",
@@ -2162,6 +2159,61 @@ def write_tree_page(shell: str, tutorials: list[Tutorial]) -> Path | None:
     return target
 
 
+def write_about_page(shell: str) -> Path:
+    """A short guide to what the project is and how to contribute to it."""
+    body = (
+        "<h1>About this project</h1>"
+        "<p>dewlab is an open educational project: tutorials that mix prose, "
+        "mathematics and runnable Python in one page so students can read and "
+        "experiment at the same time.</p>"
+        "<p>If you would like to improve the material, you are very welcome to "
+        "contribute. You can open an issue for ideas, requests, suggestions or "
+        "comments, or send a pull request with a direct edit.</p>"
+        '<p><strong>Project repository:</strong> <a href="https://github.com/deweydex/dewlab">'
+        "github.com/deweydex/dewlab</a></p>"
+        "<p><strong>Found an error?</strong> Please report it in a GitHub issue, "
+        "or fix it directly and open a pull request so it can be reviewed and "
+        "merged.</p>"
+        '<p><strong>Contact:</strong> <a href="mailto:deweydex@jsaaron.com">'
+        "deweydex@jsaaron.com</a></p>"
+    )
+    manifest = {"slug": "about", "version": 1, "assetBase": "assets/",
+                "dataBase": "data/", "cells": [], "assetVersions": {}}
+    tokens = {
+        "{{TITLE}}": "About this project",
+        "{{VERSION}}": "1",
+        "{{SLUG}}": "about",
+        "{{MODULE}}": "",
+        "{{YEAR}}": "",
+        "{{SERIES}}": "",
+        "{{CRUMBS}}": "about",
+        "{{ASSET_BASE}}": "assets/",
+        "{{STYLE_URL}}": versioned("assets/", "tutorial-style.css"),
+        "{{KATEX_CSS_URL}}": versioned("assets/", "vendor/katex.min.css"),
+        "{{RUNTIME_URL}}": versioned("assets/", "tutorial-runtime.js"),
+        "{{ROOT_BASE}}": "",
+        "{{NAV_PREV_NEXT}}": '<a class="dl-nav-up" href="index.html">All tutorials</a>',
+        "{{PAGE_SCRIPT}}": "",
+        "{{CANONICAL}}": "",
+        "{{DOWNLOAD}}": "",
+        "{{TOC}}": "",
+        "{{BODY}}": body,
+        "{{MANIFEST_JSON}}": json.dumps(manifest).replace("<", "\\u003c"),
+        "{{FOOTER}}": site_footer(),
+    }
+    page = shell
+    for token, value in tokens.items():
+        page = page.replace(token, value)
+    if "{{" in page:
+        leftover = sorted({p.split("}}")[0] + "}}" for p in page.split("{{")[1:]})
+        raise BuildError(f"shell template has tokens the about page does not fill: {leftover}")
+
+    OUT.mkdir(parents=True, exist_ok=True)
+    target = OUT / "about.html"
+    target.write_text(page)
+    return target
+
+
 def write_editor_page(shell: str) -> Path:
     """The editor: reorder a series, insert a tutorial, and edit what is in one.
 
@@ -2287,6 +2339,7 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
         tree = write_tree_page(shell, tutorials)
         if tree is not None:
             written.append(tree)
+        written.append(write_about_page(shell))
         written.append(write_editor_page(shell))
 
     OUT.mkdir(parents=True, exist_ok=True)

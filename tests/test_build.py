@@ -572,6 +572,11 @@ class TestTheContentsPage:
         b.build()
         assert (repo / "site" / "index.html").is_file()
 
+    def test_the_about_page_is_written_at_the_site_root(self, repo):
+        write(repo, "Prose.\n")
+        b.build()
+        assert (repo / "site" / "about.html").is_file()
+
     def test_it_lists_every_tutorial_in_order(self, repo):
         for n in (1, 2):
             path = repo / "tutorials" / "computational-methods" / f"t{n}.md"
