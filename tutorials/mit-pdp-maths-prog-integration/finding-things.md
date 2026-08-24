@@ -67,7 +67,7 @@ Variables defined outside any function have *global scope* -- they can be read f
 
 ### Your turn
 
-Write a function `circle_info(radius)` that returns *both* the area and circumference of a circle. Python lets you return multiple values by separating them with a comma:
+Let's write a function `circle_info(radius)` that returns *both* the area and circumference of a circle. Python lets you return multiple values by separating them with a comma:
 
 ```python
 def example():
@@ -93,7 +93,7 @@ Given a list and a target value, linear search checks each element one by one un
 
 ### Your turn
 
-Write a function `linear_search(items, target)` that returns the index where the target was found, or -1 if the target is not in the list.
+Let's write a function `linear_search(items, target)` that returns the index where the target was found, or -1 if the target is not in the list.
 
 **Pseudocode:**
 ```
@@ -194,7 +194,7 @@ The pattern appears everywhere:
 
 Here is a small puzzle. I am thinking of a number between 1 and 100. You can ask questions of the form "is it greater than X?" and I will answer truthfully. What is the maximum number of questions you need to guarantee finding the number?
 
-Write your reasoning:
+What's your reasoning?
 
 ## Putting It Together
 

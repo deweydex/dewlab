@@ -108,7 +108,7 @@ print("Liftoff!")
 
 ### Your turn
 
-Write a for loop that prints the first 10 multiples of 7 (that is: 7, 14, 21, ..., 70). Think about what start, stop, and step values you need for `range()`.
+Let's write a for loop that prints the first 10 multiples of 7 (that is: 7, 14, 21, ..., 70). Think about what start, stop, and step values you need for `range()`.
 
 **Pseudocode:**
 
@@ -164,7 +164,7 @@ Notice the key difference between sum and product accumulators: the sum starts a
 
 ### Your turn
 
-Compute the following using loops. Write pseudocode first for each one.
+Let's compute the following using loops, with pseudocode first for each one.
 
 1. $\sum_{i=1}^{100} i$ (the sum of the first 100 natural numbers -- there is a famous story about the young Gauss solving this instantly)
 
@@ -208,7 +208,7 @@ for row in range(1, 4):
 
 ### Your turn
 
-Modify the code above to produce a full 10x10 multiplication table. Then think about how many total multiplications it computes. If the outer loop runs n times and the inner loop runs n times, the total number of operations is n x n, or $n^2$. This idea -- counting how many operations an algorithm performs -- will be very important when we study search and sort algorithms.
+Let's modify the code above to produce a full 10x10 multiplication table. Then think about how many total multiplications it computes. If the outer loop runs n times and the inner loop runs n times, the total number of operations is n x n, or $n^2$. This idea -- counting how many operations an algorithm performs -- will be very important when we study search and sort algorithms.
 
 ```python exec
 id: your-turn-6
@@ -232,7 +232,7 @@ print("Total:", count)
 
 ### Your turn
 
-Write a program that finds and prints all numbers between 1 and 50 that are *either* perfect squares (1, 4, 9, 16, ...) *or* perfect cubes (1, 8, 27, ...). One approach: for each number, check whether its square root (or cube root) is a whole number.
+Let's write a program that finds and prints all numbers between 1 and 50 that are *either* perfect squares (1, 4, 9, 16, ...) *or* perfect cubes (1, 8, 27, ...). One approach: for each number, check whether its square root (or cube root) is a whole number.
 
 **Pseudocode:**
 

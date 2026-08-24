@@ -49,7 +49,7 @@ Each comparison produces a Boolean value: `True` or `False`. These are the build
 
 ### Your turn
 
-Predict the output of each comparison, then run the cell to check:
+What do you predict each comparison below will output? Run the cell to check.
 
 ```python exec
 id: your-turn-1
@@ -107,7 +107,7 @@ Notice the use of the modulo operator `%` here. If a number divided by 2 has a r
 
 ### Your turn
 
-Write a program that takes a variable `year` and prints whether it is a leap year or not. The rule is: a year is a leap year if it is divisible by 4. (There are more detailed rules involving centuries, but let's start simple.)
+Let's write a program that takes a variable `year` and prints whether it is a leap year or not. The rule is: a year is a leap year if it is divisible by 4. (There are more detailed rules involving centuries, but let's start simple.)
 
 Pseudocode first, as comments in the cell below — then the Python for each
 step underneath it.
@@ -142,7 +142,7 @@ Python checks each condition from top to bottom and executes the first one that 
 
 ### Your turn
 
-Modify the cell above to try different scores. Make sure you test at least one value in each range, plus the boundary values (50, 65, 80). Boundary testing is where bugs often hide.
+Let's modify the cell above to try different scores. Make sure you test at least one value in each range, plus the boundary values (50, 65, 80). Boundary testing is where bugs often hide.
 
 Now write your own classifier. Create a program that takes a number and classifies it as positive, negative, or zero:
 
@@ -203,7 +203,7 @@ Let's revisit the leap year problem with the full rule: a year is a leap year if
 
 So 2024 is a leap year (divisible by 4). 1900 is not (divisible by 100 but not 400). 2000 is (divisible by 400).
 
-Write pseudocode first, then implement it:
+Let's write pseudocode first, then implement it:
 
 ```python exec
 id: your-turn-4
