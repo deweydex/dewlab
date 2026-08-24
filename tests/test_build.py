@@ -2087,3 +2087,52 @@ class TestTwoReleasesOnOneDay:
         b.build()
         shown = [v["date"] for v in self.versions(repo, "sample")]
         assert shown == ["15 September 2026", "23 August 2026 (2)", "23 August 2026 (1)"]
+
+
+class TestNoDuplicateKeysInCurriculumData:
+    """A repeated mapping key in curriculum YAML is a bug, not a style choice.
+
+    Found in the wild: a bundle's insertion of the CMPS outcomes was spliced
+    into the middle of the pre-existing PDP-LO12 entry in topics.yaml, giving
+    CMPS-LO13 a second `needs:` key. Plain `yaml.safe_load` kept the last one
+    and silently dropped the real prerequisite — no error, and every existing
+    test still passed, because both the right and wrong values happened to be
+    real topic codes with no cycle. These tests guard against that class of
+    corruption reappearing unnoticed.
+    """
+
+    def test_a_repeated_top_level_key_is_rejected(self):
+        with pytest.raises(yaml.YAMLError, match="duplicate key"):
+            b.load_yaml_no_duplicate_keys("one: 1\ntwo: 2\none: 3\n")
+
+    def test_a_repeated_key_inside_a_nested_mapping_is_rejected(self):
+        """The actual shape of the bug: the duplicate was not at the top
+        level, it was a second `needs:` inside one topic's own entry."""
+        text = (
+            "topics:\n"
+            "  T1:\n"
+            "    name: One\n"
+            "    needs: [A]\n"
+            "    needs: [B]\n"
+        )
+        with pytest.raises(yaml.YAMLError, match="duplicate key"):
+            b.load_yaml_no_duplicate_keys(text)
+
+    def test_ordinary_yaml_with_no_repeats_still_loads(self):
+        text = "topics:\n  T1:\n    name: One\n    needs: [A]\n"
+        assert b.load_yaml_no_duplicate_keys(text) == {
+            "topics": {"T1": {"name": "One", "needs": ["A"]}}
+        }
+
+    def test_the_real_topics_yaml_has_no_duplicate_keys(self):
+        path = DEWLAB / "planning" / "curriculum" / "topics.yaml"
+        b.load_yaml_no_duplicate_keys(path.read_text())
+
+    def test_the_real_outcomes_yaml_has_no_duplicate_keys(self):
+        path = DEWLAB / "planning" / "curriculum" / "outcomes.yaml"
+        b.load_yaml_no_duplicate_keys(path.read_text())
+
+    def test_the_real_out_of_scope_yaml_has_no_duplicate_keys(self):
+        path = DEWLAB / "planning" / "curriculum" / "out-of-scope.yaml"
+        if path.is_file():
+            b.load_yaml_no_duplicate_keys(path.read_text())
