@@ -472,3 +472,9 @@ Two questions, and both of them turned out to be about the same right-angled tri
 **Distance is Pythagoras, and Pythagoras is distance.** You did not learn a theorem and apply it; you asked how far apart two things were and the theorem is what the answer looks like.
 
 Write a few sentences: of the three ways to write a line, which would you use to describe the edge of a building on a map, and why?
+
+## Where to Read More
+
+Khan Academy. *Proof: Perpendicular Lines Have Negative Reciprocal Slope.*
+<https://www.youtube.com/watch?v=HyThzLRuqXo>. The same quarter-turn
+picture this page draws, proved a second way.

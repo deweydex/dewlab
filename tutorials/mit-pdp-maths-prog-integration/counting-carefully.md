@@ -214,3 +214,15 @@ We have built three core counting functions -- factorial, permutations, combinat
 The key insight is knowing which tool to use: if order matters, it is a permutation; if order does not matter, it is a combination; if repetition is allowed, it is the multiplication principle. Getting this choice right is the hard part -- the computation itself is mechanical.
 
 What counting question did you find most surprising?
+
+## Where to Read More
+
+Khan Academy. *The Fundamental Principle of Counting.*
+<https://www.youtube.com/watch?v=HDLBCv4yyIs>. The multiplication
+principle this page uses for PINs and letter sequences, built up from
+first principles.
+
+Mike Pound (Computerphile) (2016). *Password Cracking.*
+<https://www.youtube.com/watch?v=7U-RbOKanYs>. What the numbers this page
+computes actually mean in practice — how fast a real machine gets through
+them.

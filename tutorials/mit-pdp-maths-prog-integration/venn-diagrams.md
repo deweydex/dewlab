@@ -253,3 +253,13 @@ Three things.
 **It runs out at four.** Not because the drawing is bad, but because of a fact about circles — and the operations carry on regardless.
 
 Write a few sentences: think of three overlapping groups you belong to. Which regions of that diagram have people in them, and which are empty?
+
+## Where to Read More
+
+Khan Academy. *Visualising Set Operations Using Venn Diagrams.*
+<https://www.youtube.com/watch?v=c6TY6fVUlDQ>. The same two-circle
+pictures this page draws from real data, drawn by hand instead.
+
+Khan Academy. *Properties of Set Operations Using Venn Diagrams.*
+<https://www.youtube.com/watch?v=lWjmbch870g>. De Morgan's Laws shaded on
+a diagram, which is exactly where this page ends up.

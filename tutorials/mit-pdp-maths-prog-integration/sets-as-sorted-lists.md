@@ -263,3 +263,14 @@ The connection to earlier work is satisfying: our sorting algorithms prepare the
 You are now ready to combine polynomial algebra, equation solving, and set operations into a single coherent toolkit of your own.
 
 What was the most elegant connection you noticed between sets and earlier material?
+
+## Where to Read More
+
+Khan Academy. *Intersection and Union of Sets.*
+<https://www.youtube.com/watch?v=jAfNg3ylZAI>. The same two operations
+this page builds with a merge-walk, introduced from the mathematics side.
+
+Python Software Foundation. *The Python Tutorial — Sets.*
+<https://docs.python.org/3/tutorial/datastructures.html#sets>. The
+built-in `set` this page deliberately avoids, for comparison once you have
+built your own.

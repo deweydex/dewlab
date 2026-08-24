@@ -383,3 +383,10 @@ The slope of a curve at a single point, which is a limit, which is what made the
 **The rules save you the limit.** Bring the power down and reduce it by one; sums come apart; products do not, and need `f′g + fg′`; nesting multiplies the rates.
 
 Write a few sentences: pick something that changes over time — a bank balance, a temperature, a download. What would its derivative be, in words, and what units would it have?
+
+## Where to Read More
+
+Grant Sanderson (3Blue1Brown) (2017). *Essence of Calculus, Chapter 2: The
+Paradox of the Derivative.* <https://www.youtube.com/watch?v=9vKqVkMQHKk>.
+The same chords-closing-in-on-a-tangent picture this page draws, and why
+"instantaneous rate of change" is a stranger idea than it sounds.

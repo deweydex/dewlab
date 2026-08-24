@@ -332,3 +332,10 @@ The circle, laid out flat.
 **Tangent is not one of these.** It repeats without swinging, and it breaks where the slope of a vertical line breaks.
 
 Write a few sentences: name something in your own life that repeats. Would it plot as a wave, and if not, what would be different about its shape?
+
+## Where to Read More
+
+Khan Academy. *Midline, Amplitude and Period of a Function.*
+<https://www.youtube.com/watch?v=s4cLM0l1gd4>. The same four numbers this
+page changes one at a time, read the other way round — off a graph rather
+than off a function.

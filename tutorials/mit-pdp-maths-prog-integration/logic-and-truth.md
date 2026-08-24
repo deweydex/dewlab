@@ -235,3 +235,10 @@ The things worth keeping.
 **De Morgan's Laws are for readability.** They do not make code do anything new; they make tangled conditions into ones a person can read, and you will use them mostly on code you wrote yourself a fortnight earlier.
 
 Write a few sentences: find a condition in something you have written before, and say whether De Morgan would make it easier to read.
+
+## Where to Read More
+
+Khan Academy. *Equivalent Compound Booleans.*
+<https://www.khanacademy.org/computing/ap-computer-science-principles/programming-101/x2d2f703b37b450a3:logical-equivalence/a/equivalent-compound-booleans>.
+De Morgan's Laws from the programming side, with the same two rules this
+page proves by looping over four rows.

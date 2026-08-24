@@ -296,3 +296,9 @@ One curve, moved around, and one rearrangement that tells you where it has been 
 **No roots is a fact about the picture.** The vertex is above the axis and the curve opens upwards, so nothing crosses. No amount of algebra will produce a real answer, and that is not a failure.
 
 Write a few sentences: for `x² − 6x + 5`, which of the two forms would you rather be given, and for what question?
+
+## Where to Read More
+
+Khan Academy. *Example 3: Completing the Square.*
+<https://www.youtube.com/watch?v=TV5kDqiJ1Os>. The same halve-square-
+subtract steps this page walks through, worked on a different quadratic.

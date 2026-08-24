@@ -223,3 +223,14 @@ Today was less about new Python syntax and more about *how to think* when writin
 In the next tutorials, we will use these practices to build tools for counting, probability, and statistics -- each one a well-documented, well-tested function that becomes part of our growing toolkit.
 
 What feels different about thinking of functions as *tools* versus thinking of them as *solutions to homework problems*?
+
+## Where to Read More
+
+Corey Schafer (2017). *Python Tutorial: Unit Testing Your Code with the
+unittest Module.* <https://www.youtube.com/watch?v=6tNS--WetLI>. Testing by
+hand, the way this page does it, is the first step; this is the second.
+
+Python Software Foundation. *The Python Tutorial — Defining Functions.*
+<https://docs.python.org/3/tutorial/controlflow.html#defining-functions>.
+The official reference for docstrings, default arguments, and everything
+else a function definition can do.

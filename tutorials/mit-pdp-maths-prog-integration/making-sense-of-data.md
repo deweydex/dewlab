@@ -295,3 +295,10 @@ The progression matters: we started with individual numbers (central tendency), 
 You now have everything you need to build these tools yourself, from nothing, and turn them on real probability and data analysis problems.
 
 What surprised you about working with data?
+
+## Where to Read More
+
+Josh Starmer (StatQuest) (2019). *Calculating the Mean, Variance and
+Standard Deviation, Clearly Explained!!!*
+<https://www.youtube.com/watch?v=SzZ6GpcfoQY>. The same three measures
+this page builds as functions, worked through by hand first.

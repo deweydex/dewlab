@@ -221,3 +221,10 @@ Three things to take.
 **You can check an answer you do not fully believe.** Put the root back into the equation. If it gives zero, it is a root, whatever it looks like.
 
 Write a few sentences: before this tutorial, what did you think "no solution" meant? Has that changed?
+
+## Where to Read More
+
+Stephen Welch (Welch Labs) (2015). *Imaginary Numbers Are Real
+[Part 1: Introduction].* <https://www.youtube.com/watch?v=T647CGsuOVU>.
+The same story this page tells — number systems extended one refusal at a
+time — as a ten-part series, starting here.

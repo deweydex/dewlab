@@ -83,3 +83,10 @@ Write a few sentences about what you are curious about or apprehensive about as 
 id: part-3-looking-ahead-1
 # Your thoughts on what comes next
 ```
+
+## Where to Read More
+
+Google. *How to Do a Code Review.*
+<https://google.github.io/eng-practices/review/reviewer/>. The professional
+version of Part 2 of this page — what a reviewer is actually looking for,
+and how to say it usefully.

@@ -180,3 +180,11 @@ id: looking-ahead-to-skills-demo-2b-1
 We have come a long way: from "Hello, world!" in *First Steps* to polynomial algebra, equation solving, and set theory in *Sets as Sorted Lists*. Each piece builds on the ones before it, and the mathematical ideas and programming concepts are woven together throughout.
 
 The final reflection: what has changed about how you think about mathematics since we started? And what has changed about how you think about programming?
+
+## Where to Read More
+
+Pastötter, B. and Bäuml, K.-H. T. (2014). *Retrieval Practice Enhances New
+Learning: The Forward Effect of Testing.* Frontiers in Psychology, 5, 286.
+<https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3983480/>. Why rebuilding a
+function from memory, as this page asks you to, teaches more than copying
+it out again.

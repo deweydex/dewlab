@@ -291,3 +291,10 @@ Three kinds of wrong, and each is found a different way.
 There is one more thing worth saying, and it is about the feeling rather than the technique. An error message is not a rebuke. It is the most specific, most patient help you will get from anything all day: an exact location, an exact category, and usually a description of the fix. Learning to read one calmly is a real skill, and it is one you can practise deliberately by doing exactly what this tutorial did -- breaking things on purpose, when nothing is at stake.
 
 Write a few sentences: which of the three kinds do you expect to give you the most trouble, and what could you do while writing code to catch it earlier?
+
+## Where to Read More
+
+Corey Schafer (2015). *Python Tutorial: Using Try/Except Blocks for Error
+Handling.* <https://www.youtube.com/watch?v=NIWwJbo-9_8>. Where the errors
+this page teaches you to read get handled deliberately, rather than fixed
+by rewriting the line that raised them.

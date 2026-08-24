@@ -292,3 +292,13 @@ Two threads run through all of it and are worth naming.
 **Notation is a tool with a purpose.** Hexadecimal is not a fact about computers, it is a decision about legibility -- and knowing why it was made is more useful than knowing the conversion table.
 
 Write a few sentences on this: which of the steps in this tutorial do you think made the biggest difference to what a person could build, and why?
+
+## Where to Read More
+
+Computerphile (2016). *Computer Science's Wonder Woman: Ada Lovelace.*
+<https://www.youtube.com/watch?v=wnHHzBY1SPQ>. The fuller story of the
+translator's note that got longer than the paper it was translating.
+
+Ben Eater. *Build an 8-Bit Computer.* <https://eater.net/8bit>. Everything
+this page only describes — machine code, binary, and an instruction set —
+built by hand, one logic gate at a time, on video.
