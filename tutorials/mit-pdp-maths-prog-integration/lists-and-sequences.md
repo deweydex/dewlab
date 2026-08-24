@@ -261,3 +261,15 @@ Today we covered lists (creation, indexing, slicing, mutability, building with l
 Functions are a major turning point. From now on, when we solve a problem, we will package the solution as a function so we can reuse it. This is the beginning of *modular* programming -- building complex programs from simple, tested pieces.
 
 What connections are you seeing between the mathematical ideas and the programming patterns?
+
+## Where to Read More
+
+Grant Sanderson (3Blue1Brown) (2016). *Essence of Linear Algebra, Chapter 9:
+Dot Products and Duality.* <https://www.youtube.com/watch?v=LyGKycYT2v0>.
+The dot product this page introduces algebraically, seen geometrically
+instead — worth watching before the matrices strand builds on it further.
+
+Python Software Foundation. *The Python Tutorial — Data Structures.*
+<https://docs.python.org/3/tutorial/datastructures.html>. The official
+reference for everything a list can do, including the methods this page
+does not cover.

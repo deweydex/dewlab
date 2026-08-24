@@ -455,6 +455,11 @@ EMPHASIS_RE = re.compile(r"(?<![*\w])\*(?!\s)([^*\n]{2,40}?)(?<!\s)\*(?![*\w])")
 FENCE_BLOCK_RE = re.compile(r"```.*?```", re.DOTALL)
 INLINE_CODE_RE = re.compile(r"`[^`]*`")
 SUBTITLE_RE = re.compile(r"^\*\*Programming Design Principles.*$", re.MULTILINE)
+# A bibliography entry is `*Title.*` — genuine emphasis markup, but not a term
+# being introduced. Cut the whole section rather than trying to tell the two
+# apart line by line, since a bibliography is always the tutorial's last
+# section.
+BIBLIOGRAPHY_RE = re.compile(r"^## Where to Read More.*", re.DOTALL | re.MULTILINE)
 
 # Emphasis is also used for ordinary stress — "*not* the same", "*exactly* one".
 # Those are not terms and listing them buries the ones that are.
@@ -475,6 +480,7 @@ def prose_of(tutorial: Tutorial) -> str:
     path = next(TUTORIALS.rglob(f"{tutorial.slug}.md"))
     body = FENCE_BLOCK_RE.sub("", path.read_text())
     body = INLINE_CODE_RE.sub("", body)
+    body = BIBLIOGRAPHY_RE.sub("", body)
     return SUBTITLE_RE.sub("", body)
 
 

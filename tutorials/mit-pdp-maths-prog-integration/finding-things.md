@@ -253,3 +253,14 @@ Today we explored functions more deeply (scope, return values, pure functions as
 Next time, we will tackle the other side of this coin: how do we sort data in the first place?
 
 What surprised you most about the difference between linear and binary search?
+
+## Where to Read More
+
+Mike Pound (Computerphile) (2023). *Binary Search Algorithm.*
+<https://www.youtube.com/watch?v=hDn8iOc30Tk>. The same halve-and-repeat
+idea this page builds, explained with a different worked example.
+
+Computerphile (2013). *Getting Sorted & Big O Notation.*
+<https://www.youtube.com/watch?v=kgBjXUE_Nwc>. Where the $O(\log n)$ and
+$O(n)$ this page mentions come from, and how the same notation applies to
+sorting as well as searching.

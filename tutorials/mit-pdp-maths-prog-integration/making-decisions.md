@@ -262,3 +262,15 @@ Today we learned to make our programs choose different paths: `if`, `else`, `eli
 We also saw that the simple act of classifying a number into mathematical categories requires exactly the kind of conditional logic we have been learning. The mathematics and the programming are the same activity viewed from different angles.
 
 What did you find most interesting or challenging today?
+
+## Where to Read More
+
+Khan Academy. *If Statements.*
+<https://www.khanacademy.org/computing/intro-to-python-fundamentals/x5279a44ae0ab15d6:designing-algorithms-with-conditionals/x5279a44ae0ab15d6:boolean-conditions/v/if-statements>.
+A second walk through the same idea — a program choosing between paths —
+with its own examples.
+
+Khan Academy. *Evaluating Compound Boolean Expressions.*
+<https://www.khanacademy.org/computing/intro-to-python-fundamentals/x5279a44ae0ab15d6:designing-algorithms-with-conditionals/x5279a44ae0ab15d6:compound-boolean-conditions/v/evaluating-compound-boolean-expressions>.
+Traces through `and`, `or` and `not` step by step, which is worth watching
+once before trusting your own head to do it.
