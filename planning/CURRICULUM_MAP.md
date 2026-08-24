@@ -390,7 +390,7 @@ graph TD
 
 ## Vocabulary
 
-The tutorials mark a term being introduced by putting it in italics the first time it means something particular. **106 terms** are marked that way, and asking two questions of them is free.
+The tutorials mark a term being introduced by putting it in italics the first time it means something particular. **107 terms** are marked that way, and asking two questions of them is free.
 
 ### Introduced more than once
 
