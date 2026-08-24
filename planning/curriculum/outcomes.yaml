@@ -40,6 +40,11 @@ modules:
     code: "5N2927"
     sections:
       LO: "Learning outcomes"
+  CMPS:
+    title: "Computational Methods and Problem Solving"
+    code: "5N0554"
+    sections:
+      LO: "Learning outcomes"
 
 outcomes:
   # ---------------------------------------------- MIT 1: arithmetic & algebra
@@ -256,3 +261,50 @@ outcomes:
   - code: PDP-LO12
     title: "Team programming: design, develop, release and review over time, in teams of three to five"
     strand: programming
+
+  # ---------------------------------------------------------------- CMPS 5N0554
+  # Computational Methods and Problem Solving. Thirteen outcomes, paraphrased
+  # from the descriptor at planning/curriculum/descriptors/. The descriptor's
+  # own "e.g." examples (ASCII art, PKI, Google PageRank, server-room
+  # temperature, and so on) are suggested content, not the thing coverage is
+  # measured against — they live in topics.yaml's `uses:` for each code, never
+  # here. See DECISIONS_LOG.md 7.55.
+  - code: CMPS-LO1
+    title: "Data structures and representations — arrays, lists, matrices, trees — and the difference between iterative and recursive algorithms"
+    strand: data-structures
+  - code: CMPS-LO2
+    title: "Elementary probability and information theory: distributions, sample statistics, dependent and independent events, conditional probability, and randomness in computing"
+    strand: probability
+  - code: CMPS-LO3
+    title: "Basic computational and numerical methods for computer simulation"
+    strand: simulation
+  - code: CMPS-LO4
+    title: "Apply array and matrix representations to real-world computational problems"
+    strand: linear-algebra
+  - code: CMPS-LO5
+    title: "Assess an algorithm or computational approach for speed, efficiency, and best/expected/worst-case behaviour"
+    strand: complexity
+  - code: CMPS-LO6
+    title: "Apply probability and information theory to computational approaches to real-world problems"
+    strand: probability
+  - code: CMPS-LO7
+    title: "Differentiate modelling from simulation, and the abstraction that lets a machine address a real-world problem"
+    strand: modelling
+  - code: CMPS-LO8
+    title: "Identify approaches to problem definition, solution design, testing and evaluation"
+    strand: problem-solving
+  - code: CMPS-LO9
+    title: "Strengths, weaknesses and areas of application of contemporary problem definition and analysis techniques"
+    strand: complexity
+  - code: CMPS-LO10
+    title: "Distinguish pragmatic problem-solving (treating the symptom) from semantic analysis (finding the root cause)"
+    strand: problem-solving
+  - code: CMPS-LO11
+    title: "An iterative process of model creation and validation against the real-world situation being modelled"
+    strand: modelling
+  - code: CMPS-LO12
+    title: "The role of personal attributes — initiative, a methodical approach, logical reasoning, persistence, lateral thinking — in preventing and resolving problems"
+    strand: problem-solving
+  - code: CMPS-LO13
+    title: "Reflect on the impact of numerical and logical thinking in the real world: accuracy, precision, and decisions made from computational models and simulations"
+    strand: reflection

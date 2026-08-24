@@ -1,9 +1,11 @@
 # Outline — The Matrices Strand
 
-**Series:** `computational-methods` (not `maths-for-it`).
-**Closes:** nothing in the MIT descriptor. That is the point — this is the first
-strand that is deliberately *beyond* the module, and the reason the second
-series exists.
+**Module:** `computational-methods` (not `mit-pdp-maths-prog-integration`),
+**series:** `matrices` — alongside `python-fundamentals`, already in that
+module.
+**Closes:** nothing in the MIT descriptor, which is why this outline was
+written before 5N0554 existed as data. It now closes `CMPS-LO4` in full, and
+touches `CMPS-LO1` and `CMPS-LO2` — see DECISIONS_LOG 7.56.
 **Attaches to:** lists and arrays (`MIT-6.3`) and coordinate graphing
 (`MIT-3.2`). Nothing else in the map depends on it.
 
@@ -164,6 +166,11 @@ library exists*.
   150-hour module with thirteen outcomes across seven sections, of which
   matrices are one. Five to seven matrix tutorials is proportionate — what would
   be out of proportion is the six other strands having nothing.
-- Still open: **which application carries tutorial 6.** Markov is settled;
-  whether PageRank rides along inside it or becomes a seventh tutorial depends
-  on how long the text-generation section runs once it is written.
+- ~~Which application carries tutorial 6.~~ **Settled: it rides along.**
+  *Where Chains Lead* is weather, then convergence, then word-level text
+  generation, then a hand-checkable three-page PageRank example, in that
+  order — four sections, not a fifth tutorial's worth. PageRank as a
+  dedicated tutorial over a real, larger link graph remains open; what is
+  closed here is small enough that a worked example inside the Markov
+  tutorial was the honest size for it, rather than manufacturing a seventh
+  tutorial to hold three cells.

@@ -1,0 +1,10 @@
+# The reading order of this series. See the note in the other order file.
+
+series: Matrices
+order:
+  - grid-of-numbers
+  - multiplying-grids
+  - what-a-matrix-does-to-a-picture
+  - undoing-it
+  - solving-systems
+  - where-chains-lead

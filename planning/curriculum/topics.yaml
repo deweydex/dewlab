@@ -816,4 +816,192 @@ topics:
       including reviewing each other's work and shipping more than one version.
     uses:
       - How essentially all professional software is made.
+    needs: [PDP-LO7]
+
+  # ---------------------------------------------------------------- CMPS 5N0554
+  CMPS-LO1:
+    name: Data structures and recursion
+    plain: >
+      Arranging many values so a program can find, change and reason about them
+      efficiently — a flat row, a two-dimensional grid, a tree that branches —
+      together with the choice between repeating a step in a loop and having a
+      function call itself.
+    uses:
+      - ASCII art and computer graphics, where a grid of characters or pixels
+        is a matrix in the plainest possible sense.
+      - Gaussian elimination for solving simultaneous equations, and decision
+        matrices for weighing several options against several criteria at
+        once.
+      - Classical searching, sorting and filtering, all of which walk one of
+        these structures.
+    needs: [MIT-6.7]
+
+  CMPS-LO2:
+    name: Probability and information
+    plain: >
+      How likely something is, expressed as a number between zero and one, and
+      how that idea extends to sample statistics, to events that do or do not
+      depend on each other, and to the random numbers a computer needs and
+      cannot truly produce on its own.
+    uses:
+      - Games of chance, and any feature that needs a fair-seeming shuffle or
+        deal.
+      - Conditional probability in spam filters, medical testing, and
+        recommendation engines.
+      - Public-key infrastructure, which depends on numbers a system can
+        generate but an attacker cannot predict.
+    needs: [MIT-5.6, MIT-5.7]
+
+  CMPS-LO3:
+    name: Computer simulation
+    plain: >
+      Standing in for a process that would be slow, expensive or impossible to
+      run for real, by working it out numerically instead — repeating a
+      calculation many times, often with randomness built in, until the
+      results settle into a trustworthy answer.
+    uses:
+      - Monte Carlo estimation, which turns a geometric or physical question
+        into a counting exercise a computer can just run.
+      - Testing a design against thousands of random scenarios before it is
+        built.
+    needs: [CMPS-LO2]
+
+  CMPS-LO4:
+    name: Matrices in practice
+    plain: >
+      Taking the grid of numbers from a data-structures course and putting it
+      to work — as the machinery behind a graphics transformation, a game's
+      state, a web search ranking, or a way of comparing one thing with its
+      nearest neighbours.
+    uses:
+      - Computer graphics and game engines, where every rotation, scale and
+        camera move is a matrix multiplication.
+      - Google's PageRank algorithm, which ranks the entire web by repeatedly
+        multiplying a matrix of links.
+      - Sequence alignment and nearest-neighbour search, both of which compare
+        rows of numbers to find the closest match.
+    needs: [MIT-6.3, MIT-3.2]
+
+  CMPS-LO5:
+    name: Algorithmic complexity
+    plain: >
+      Judging an algorithm by how its cost grows as the input grows, rather
+      than by how fast it feels on one small example — separating the best
+      case, the case you should expect, and the worst case that has to be
+      planned for.
+    uses:
+      - Choosing between two libraries that solve the same problem, where the
+        real difference only shows up at scale.
+      - Capacity planning — knowing before you ship that a correct answer will
+        become too slow.
+    needs: [MIT-6.8]
+
+  CMPS-LO6:
+    name: Probability applied to computing
+    plain: >
+      Turning the probability toolkit outward onto the machine itself — asking
+      how often an algorithm meets its average case rather than its worst, how
+      likely a component is to fail, and what a stream of network traffic
+      looks like when some of it is lost.
+    uses:
+      - Average-case analysis of an algorithm, which is often the number that
+        actually matters in production.
+      - Failure prediction and reliability engineering, and branch prediction
+        inside a processor.
+      - Analysing packet loss and jitter on a network link.
+    needs: [CMPS-LO2, CMPS-LO5]
+
+  CMPS-LO7:
+    name: Modelling versus simulation
+    plain: >
+      Two related but different acts — a model is the simplified description
+      of a real system, stripped down to the parts that matter, and a
+      simulation is running that description forward in time to see what it
+      predicts.
+    uses:
+      - A server room's cooling system, described as a model and then
+        simulated to test a heatwave before it happens.
+      - Robot control and autonomous-vehicle software, both of which simulate
+        a model of the world many times before it meets the real one.
+    needs: [CMPS-LO3]
+
+  CMPS-LO8:
+    name: Problem definition and design
+    plain: >
+      The stage before any code is written — pinning down what problem is
+      actually being solved, sketching a solution, and deciding in advance how
+      it will be tested and judged to have worked.
+    uses:
+      - Writing a specification or an assessment brief that someone else could
+        implement without asking you what you meant.
+      - Deciding what "done" means before starting, rather than after.
+    needs: [PDP-LO7]
+
+  CMPS-LO9:
+    name: Problem-solving strategies
+    plain: >
+      Comparing the handful of general approaches to a hard problem — trying
+      everything, splitting the problem in half and combining the answers, or
+      accepting a good-enough answer quickly — and knowing which suits which
+      situation.
+    uses:
+      - Brute force where the input is small enough that cleverness is not
+        worth the risk of a bug.
+      - Divide-and-conquer in sorting, searching, and any problem that shrinks
+        cleanly.
+      - Heuristic strategies where an exact answer would take too long and an
+        approximate one is good enough.
+    needs: [MIT-6.6]
+
+  CMPS-LO10:
+    name: Symptoms versus root cause
+    plain: >
+      The difference between a fix that makes an error message go away and a
+      fix that addresses why the program produced it — reading a problem for
+      its logic rather than patching the first thing that looks wrong.
+    uses:
+      - Debugging — a crash on line 40 is often caused by a bad value created
+        on line 12.
+      - Any support ticket where the reported symptom and the actual defect
+        are two different things.
+    needs: [CMPS-LO8]
+
+  CMPS-LO11:
+    name: Iterating a model
+    plain: >
+      Building a model, checking it against what actually happens, and
+      adjusting it — not once, but as a loop, because the first version of a
+      model is almost never the last one that is needed.
+    uses:
+      - Traffic flow at a single intersection, refined against observed queue
+        lengths until the model's predictions hold up.
+      - Any simulation used to make a real decision, which has to earn trust
+        by matching reality before it is relied on.
+    needs: [CMPS-LO7]
+
+  CMPS-LO12:
+    name: Personal attributes in problem-solving
+    plain: >
+      The habits that make someone good at solving problems and are not
+      themselves a technique — starting before every detail is settled,
+      working methodically, reasoning logically, not giving up at the first
+      dead end, and occasionally trying the unlikely idea.
+    uses:
+      - Debugging a stubborn fault, which usually rewards persistence over any
+        particular tool.
+      - Approaching an unfamiliar problem with no worked example to copy.
+    needs: []
+
+  CMPS-LO13:
+    name: What a model's numbers are worth
+    plain: >
+      Stepping back from a computational model to ask how much its accuracy
+      and precision can actually be trusted, and what it means to make a real
+      decision on the strength of a simulation's output.
+    uses:
+      - Deciding whether a weather or climate model's forecast is precise
+        enough to act on.
+      - Knowing the difference between a model being wrong and a model being
+        usefully approximate.
+    needs: [CMPS-LO11]
     needs: [PDP-LO10, PDP-LO11]

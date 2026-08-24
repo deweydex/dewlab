@@ -27,5 +27,5 @@ Pedagogical outlines and structural specifications for all proposed and outstand
 | [Rates of Change](./rates-of-change.md) | `MIT-3.6`, `MIT-3.7` | Comprehensive |
 | [Logic and Truth](./logic-and-truth.md) | `MIT-2.4`, `MIT-2.5` | Standard |
 | [Drawing Sets](./venn-diagrams.md) | `MIT-2.3` | Standard |
-| [The Matrices Strand](./matrices.md) | 5N0554 Section 4 | Multi-unit strand (5–7 modules) |
+| [The Matrices Strand](./matrices.md) | `CMPS-LO4` (written); touches `CMPS-LO1`, `CMPS-LO2` | Multi-unit strand, six tutorials, written |
 | [The Team Project](./team-project.md) | `PDP-LO12` | Collaborative project specification |

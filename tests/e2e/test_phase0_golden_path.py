@@ -374,9 +374,12 @@ def test_choosing_a_topic_shows_what_it_is_and_lights_its_path(browser, base_url
     assert tab.eval_on_selector_all(".dl-tree-uses li", "e => e.length") >= 2
     # What it needs and what needs it. Divide and conquer used to hang off this
     # one; it now sits beside it, taught inside searching and inside sorting
-    # rather than before or after either — so only the edge up to iterating by
-    # index is lit.
-    assert tab.eval_on_selector_all(".dl-tree-edge.is-lit", "e => e.length") == 1
+    # rather than before or after either — so only one edge runs backward, to
+    # iterating by index. The second lit edge runs forward: CMPS-LO5
+    # (algorithmic complexity, not yet taught) names MIT-6.8 as a prerequisite
+    # in topics.yaml, and an arrow into an untaught topic is exactly what the
+    # map is for — see topics.yaml's own docstring on `needs`.
+    assert tab.eval_on_selector_all(".dl-tree-edge.is-lit", "e => e.length") == 2
     context.close()
 
 

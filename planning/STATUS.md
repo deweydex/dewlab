@@ -57,13 +57,36 @@ The following components, runtime engines, and curriculum modules are fully impl
 ## 2. Active Roadmap & Next Phases
 
 ### Phase 7: Computational Methods (5N0554) Curriculum Expansion
-- **Objective**: Full curriculum specification, mapping, and authoring for *Computational Methods and Problem Solving 5N0554* (15 credits, 13 learning outcomes across 7 strands).
+- **Objective**: Full curriculum specification, mapping, and authoring for *Computational Methods and Problem Solving 5N0554* (15 credits, 13 learning outcomes across 7 sections).
+- **Status, as of the run that closed the first strand**: all 13 outcomes are
+  transcribed into `outcomes.yaml` under a new `CMPS` module, with the
+  descriptor's own "e.g." examples moved to `topics.yaml`'s `uses:` rather than
+  folded into what coverage is measured against (DECISIONS_LOG 7.55). The
+  first target strand is written and released; the other four are not.
 - **Target Strands**:
-  1. *Linear Algebra & Matrix Operations*: 2D/3D transformations, systems of linear equations, Gaussian elimination.
-  2. *Markov Chains & Text Generation*: Transition matrices, state convergence, n-gram text generation (adapting `everlearning/OtherCourses/Markov-Chains-and-Text-Generation` and `deweydex/Mathematics/worksheet_07d_markov_chains.md`).
-  3. *Link Graph Analysis & PageRank*: Iterative power methods over adjacency matrices.
-  4. *Discrete Simulation & Monte Carlo Methods*: Estimation of $\pi$, queuing models, randomness in computing.
-  5. *Algorithmic Complexity & Systems Modeling*: Complexity bounds, cache prediction, thermal simulation.
+  1. *Linear Algebra & Matrix Operations*: **done.** Six tutorials —
+     *A Grid of Numbers*, *Multiplying Grids*, *What a Matrix Does to a
+     Picture*, *Undoing It*, *Solving Systems*, *Where Chains Lead* — under
+     `tutorials/computational-methods/`, series `matrices`, each with a
+     practice page. `Where Chains Lead` folds in Markov chains, word-level
+     text generation, and a worked small-scale PageRank, closing what were
+     planned as strands 1 and 2 (and part of 3) into one series — see
+     `planning/outlines/matrices.md`'s resolved open question and
+     DECISIONS_LOG 7.56. `CMPS-LO4` is fully taught; `CMPS-LO1` and `CMPS-LO2`
+     are touched but not taught, since only the data-structures half of LO1
+     and the randomness half of LO2 came up along the way.
+  2. *Markov Chains & Text Generation*: **folded into strand 1** — see above,
+     rather than written as a separate strand.
+  3. *Link Graph Analysis & PageRank*: **partly done**, as the closing section
+     of *Where Chains Lead* — a hand-checkable three-page example rather than
+     a dedicated tutorial on crawling or a real link graph, which remains
+     unwritten.
+  4. *Discrete Simulation & Monte Carlo Methods*: **not started.** Estimation
+     of $\pi$, queuing models, randomness in computing — this is `CMPS-LO3`,
+     `CMPS-LO6`, and touches `CMPS-LO2`'s randomness half.
+  5. *Algorithmic Complexity & Systems Modeling*: **not started.** Complexity
+     bounds, cache prediction, thermal simulation — `CMPS-LO5`, `CMPS-LO7`
+     through `CMPS-LO13`, all still red on the curriculum map.
 
 ### Phase 8: Automated Worksheet Practice Converter (`dev/from_worksheet.py`)
 - **Status**: on hold, and possibly not needed. The worksheets whose material is
