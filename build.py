@@ -40,6 +40,31 @@ from pathlib import Path
 import markdown
 import yaml
 
+
+class _NoDuplicateKeysLoader(yaml.SafeLoader):
+    """A YAML loader that refuses a mapping with the same key twice.
+
+    Plain `yaml.safe_load` silently keeps the last value for a repeated key,
+    which is how a botched merge once overwrote `topics.yaml`'s PDP-LO12
+    entry and quietly dropped CMPS-LO13's real prerequisite — no error, no
+    warning, just a fact that stopped being true. Curriculum data is hand
+    and bundle-edited often enough that this is worth catching at load time
+    rather than trusting the next reviewer to notice.
+    """
+
+    def construct_mapping(self, node, deep=False):
+        seen = set()
+        for key_node, _ in node.value:
+            key = self.construct_object(key_node, deep=True)
+            if key in seen:
+                raise yaml.YAMLError(f"duplicate key {key!r} at {node.start_mark}")
+            seen.add(key)
+        return super().construct_mapping(node, deep=deep)
+
+
+def load_yaml_no_duplicate_keys(text: str):
+    return yaml.load(text, Loader=_NoDuplicateKeysLoader)
+
 ROOT = Path(__file__).resolve().parent
 TUTORIALS = ROOT / "tutorials"
 SETUP = ROOT / "setup"
@@ -906,14 +931,14 @@ def load_topics() -> dict:
     """
     if not TOPIC_DATA.is_file():
         return {}
-    return (yaml.safe_load(TOPIC_DATA.read_text()) or {}).get("topics") or {}
+    return (load_yaml_no_duplicate_keys(TOPIC_DATA.read_text()) or {}).get("topics") or {}
 
 
 def load_out_of_scope() -> set[str]:
     """Outcomes we have decided not to teach. Shown, and shown as decided."""
     if not SCOPE_DATA.is_file():
         return set()
-    data = yaml.safe_load(SCOPE_DATA.read_text()) or {}
+    data = load_yaml_no_duplicate_keys(SCOPE_DATA.read_text()) or {}
     return {entry["code"] for entry in data.get("outcomes") or []}
 
 
@@ -1136,7 +1161,7 @@ def load_strands() -> dict[str, str]:
     """
     if not OUTCOME_DATA.is_file():
         return {}
-    data = yaml.safe_load(OUTCOME_DATA.read_text()) or {}
+    data = load_yaml_no_duplicate_keys(OUTCOME_DATA.read_text()) or {}
     return {e["code"]: e["strand"] for e in data.get("outcomes") or []}
 
 
