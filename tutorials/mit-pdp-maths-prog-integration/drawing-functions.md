@@ -135,7 +135,7 @@ That is worth saying because a graph can feel like a separate object that a func
 
 ### Your turn
 
-Plot `f(x) = x**3 - 4*x`. Before you run it: how many times do you think it will cross the horizontal axis?
+What happens when you plot `f(x) = x**3 - 4*x`? Before you run it, how many times do you think it will cross the horizontal axis?
 
 ```python exec
 id: your-turn-1
@@ -182,7 +182,7 @@ The names are conventional rather than meaningful — `m` for the slope, `c` for
 
 ### Your turn
 
-Which of these three lines are parallel? Predict first, then plot.
+Which of these three lines are parallel? Make a prediction, then plot them to check.
 
 ```python exec
 id: your-turn-2
@@ -268,7 +268,7 @@ Two curves cross where the two functions are equal. Reading those two points off
 
 ### Your turn
 
-Find, from a picture, roughly where `x³ − 4x = 1`.
+How might you find, from a picture, roughly where `x³ − 4x = 1`?
 
 ```python exec
 id: your-turn-3
@@ -355,7 +355,7 @@ What to take from this.
 
 **An inverse is a round trip, and not everything has one.** Whether a function can be undone is a question about whether two inputs ever collide.
 
-Write a few sentences: which did you find easier for `x² − 5x + 6 = 0` — the formula or the picture? What would change your answer?
+In a few sentences, which did you find easier for `x² − 5x + 6 = 0` — the formula or the picture? What would change your answer?
 
 ## Where to Read More
 

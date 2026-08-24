@@ -75,7 +75,7 @@ This is a direct application of sigma notation -- and it maps perfectly to a loo
 
 ### Your turn
 
-Write a function `evaluate_poly(coeffs, x)` that takes a list of coefficients and a value of x, and returns the polynomial's value at that point.
+Let's write a function `evaluate_poly(coeffs, x)` that takes a list of coefficients and a value of x, and returns the polynomial's value at that point.
 
 **Pseudocode:**
 ```
@@ -112,7 +112,7 @@ This is trickier than it looks. We need to handle:
 
 ### Your turn
 
-Write a function `poly_to_string(coeffs)` that returns a human-readable string. Start with a simple version that works for basic cases, then refine it to handle the edge cases above.
+How might you write a function `poly_to_string(coeffs)` that returns a human-readable string? Start with a simple version that works for basic cases, then refine it to handle the edge cases above.
 
 Do not worry about making it perfect on the first try -- string formatting with many special cases is genuinely tricky. Get the basic version working first, then improve.
 
@@ -143,7 +143,7 @@ When the polynomials have different degrees (different list lengths), the shorte
 
 ### Your turn
 
-Write a function `add_poly(a, b)` that returns a new list representing the sum. Handle different-length lists gracefully.
+Let's write a function `add_poly(a, b)` that returns a new list representing the sum, handling different-length lists gracefully.
 
 **Pseudocode:**
 ```
@@ -176,7 +176,7 @@ The key insight: when we multiply $c_i x^i$ by $c_j x^j$, the result is $c_i \cd
 
 ### Your turn
 
-Write a function `multiply_poly(a, b)` that returns a new list representing the product.
+How might you write a function `multiply_poly(a, b)` that returns a new list representing the product?
 
 **Pseudocode:**
 ```
@@ -226,7 +226,7 @@ This is a powerful testing technique: use a known mathematical property to verif
 
 ### Your turn
 
-Write a function `test_multiply(a, b)` that automatically verifies the multiplication by checking the evaluation at x = 0, 1, 2, -1, and 10. Print PASS or FAIL for each.
+Let's write a function `test_multiply(a, b)` that automatically verifies the multiplication by checking the evaluation at x = 0, 1, 2, -1, and 10, printing PASS or FAIL for each.
 
 ```python exec
 id: your-turn-9
@@ -244,7 +244,7 @@ Two more operations before we finish: subtracting polynomials and multiplying by
 
 ### Your turn
 
-Write `subtract_poly(a, b)` and `scale_poly(coeffs, scalar)`. Think about how each relates to what you have already built.
+Let's write `subtract_poly(a, b)` and `scale_poly(coeffs, scalar)` — think about how each relates to what you have already built. If you want to push further, try a `poly_derivative(coeffs)` function too; differentiating a polynomial turns out to be its own simple rule about coefficients and exponents, one you will meet properly in *Rates of Change*.
 
 ```python exec
 id: your-turn-11
