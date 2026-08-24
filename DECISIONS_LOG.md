@@ -1524,3 +1524,111 @@ it is not mechanical: a bibliography of plausible-looking links is worse than
 none, because a student who follows a dead one stops following any of them.
 
 *Cost to change: per tutorial, and each needs a person who knows the sources.*
+
+**7.55 — 5N0554's thirteen outcomes, and where the examples went.**
+Transcribed from the descriptor PDF into `outcomes.yaml`, under a new `CMPS`
+module. The descriptor states each outcome and then, for most of them, an
+"e.g." — Google PageRank, ASCII art, PKI, a server room's temperature. Those
+examples are suggested content, not the outcome, and the map's coverage has to
+be measured against the outcome or a tutorial that teaches PageRank and
+nothing else would read as having taught LO4 in full. So the wording in
+`outcomes.yaml` is the outcome stripped of its examples, and every example
+moved to that code's `uses:` in `topics.yaml`, alongside the `name`, `plain`
+and `needs` every other topic already carries.
+
+Two outcomes bundle more than one idea under one descriptor number — LO1 pairs
+data structures with iterative-versus-recursive algorithms, and several of
+LO7–LO13 are closer to a paragraph than a sentence. Left as one code each,
+matching the descriptor's own numbering rather than splitting further:
+`covers:` is keyed on these codes, and inventing sub-codes the descriptor does
+not have would be the tutorials disagreeing with the assessment document they
+have to answer to.
+
+`dev/curriculum_map.py` confirms what this is expected to say: thirteen new
+red squares, all thirteen listed as having no proposal yet, because a
+paraphrase of a descriptor is not a lesson plan.
+
+*Cost to change: two files, twenty-six entries between them. The wording is a
+paraphrase rather than a legal transcription, so restating any one of them
+costs nothing the descriptor itself would object to.*
+
+**7.56 — The first 5N0554 strand: six tutorials, and PageRank rides along
+rather than getting its own.**
+`planning/outlines/matrices.md` planned five tutorials plus a Markov chains
+tutorial plus an open question about where PageRank goes. Built as six:
+*A Grid of Numbers*, *Multiplying Grids*, *What a Matrix Does to a Picture*,
+*Undoing It*, *Solving Systems*, and *Where Chains Lead* — the last folding
+weather prediction, convergence, word-level text generation, and a
+hand-checkable three-page PageRank example into one tutorial rather than
+four. Module `computational-methods`, a new series called `matrices`,
+alongside the existing `python-fundamentals`.
+
+Sourced rather than invented, per the instruction that started this: worksheet
+`07a_matrix_operations` gave the add/scale/transpose/multiply arithmetic in
+*A Grid of Numbers* and *Multiplying Grids*, `07b_linear_systems` gave the
+augmented-matrix and row-operation framing in *Solving Systems*, and
+`07d_markov_chains` gave the Dublin weather example and the three-page
+PageRank problem in *Where Chains Lead*. All three worksheets have their
+answer keys only as PDFs, so every number that reached a tutorial or its
+practice page was worked fresh in Python and checked against the worksheet's
+own claims where one existed (problem 30 in `07a` asserts $(2,1)$ solves
+$2x+3y=7, x-y=1$; that assertion is what *Solving Systems* opens with,
+confirmed rather than copied). The word-transition example in *Where Chains
+Lead* uses the opening sentence of Dickens' *A Tale of Two Cities*, which
+`everlearning/OtherCourses/Markov-Chains-and-Text-Generation` also trains on
+and which is public domain either way.
+
+**PageRank rides along, closing the open question in `matrices.md`.** A
+three-page link graph, solved by the same repeated-multiplication technique
+the tutorial had just built for weather, is three cells — not a tutorial's
+worth of new machinery, and building one anyway would have meant padding it
+with material (crawling, a larger graph, damping factors) this module does
+not ask for. A dedicated PageRank tutorial over a real link graph is still
+open, and now a smaller piece of work than it was, since the core mechanism
+is already taught.
+
+**Closes `CMPS-LO4` in full**, touches `CMPS-LO1` (the data-structures half,
+not the recursion half) and `CMPS-LO2` (the randomness half, not the
+distributions or independence half) — see the curriculum map. Nine outcomes
+remain untouched: `CMPS-LO3`, `LO5` through `LO13`. Those are the discrete
+simulation, algorithmic complexity, and problem-solving strands STATUS.md
+lists as not started.
+
+*Cost to change: six tutorials, six practice pages, one series file. Nothing
+downstream depends on this strand yet — matrices.md itself said so — so
+reshaping it costs only the content, not any other page's links.*
+
+**7.57 — What the browser QA pass caught, run before this pushed.**
+Every cell of the six new tutorials was run in a real Chromium against a
+self-hosted Pyodide, with a correct solution injected into every blank "your
+turn" cell before running it — otherwise a NameError from an unstarted
+exercise stops meaning anything, since it is not testing the tutorial, only
+confirming a blank cell is blank. The practice pages needed no injection:
+every runnable cell on a practice page is a tool cell, and the worked
+solutions live in `dl-answer` folds as inert markdown, not as `exec` cells.
+
+Two real bugs turned up, neither of which any of the numeric checking would
+have caught, because both were about what does and does not carry over
+between pages rather than about arithmetic.
+
+**`Multiplying Grids` never defined `transpose`.** Its own prose says "you
+already wrote something that turns columns into rows: `transpose`, from the
+last tutorial" — true of the *tutorial*, false of the *page*: each tutorial
+is its own Pyodide instance, nothing carries over, and a student arriving
+fresh at tutorial 2 has no `transpose` in this page's namespace at all. Fixed
+with a one-line recap cell, given rather than a "your turn" — the point of
+this tutorial is multiplication, not making someone re-derive transpose a
+second time.
+
+**A "your turn" cell's own shipped starter was the fix, not the bug** — in
+`Undoing It`, the QA script's first pass overwrote a cell whose entire
+starter was `import matplotlib.pyplot as plt`, and broke on the resulting
+`NameError: name 'plt' is not defined`. The tutorial was right; the harness
+had dropped a line it should have kept. Recorded because it is the kind of
+false positive that erodes trust in this exact check if it happens quietly —
+worth naming so the next QA pass looks at the starter before assuming a
+failure is the tutorial's fault.
+
+*Cost to change: two lines, once each. The QA script itself is not
+committed — it lives in the scratchpad, per the instruction that started
+this, as a tool rather than a test.*

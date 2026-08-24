@@ -10,9 +10,15 @@ the pages are built, and what is still worth doing.
 
 | | Count |
 |---|---:|
-| Tutorials | 35 |
-| Practice pages, one per tutorial | 32 |
+| Tutorials | 41 |
+| Practice pages, one per tutorial | 38 |
 | Mixed sets, drawing on several | 4 |
+
+Six of the tutorials and six of the practice pages are the first 5N0554
+strand — `computational-methods`'s `matrices` series — and unlike the other
+thirty-two, their worksheets (`07a`, `07b`, `07d`) have no answer key in the
+markdown, only a PDF. Every number on those six practice pages was worked
+fresh rather than transcribed; see DECISIONS_LOG 7.56.
 
 Three tutorials have no practice page, on purpose. *Bringing It All Together*
 is already a set of integrative problems, and *Looking Back Before Moving
@@ -52,7 +58,10 @@ Which worksheet fed which page:
 | `05b_right_triangle_trig`, `05e_laws_sines_cosines` | `solving-triangles-practice` |
 | `05c_graphs_sine_cosine` | `sine-and-cosine-waves-practice` |
 | `06a_statistics_probability` | `what-are-the-chances-practice`, `making-sense-of-data-practice` |
-| `07a`–`07d`, `08a`, `08b` | not yet — the material is not taught yet |
+| `07a_matrix_operations` | `grid-of-numbers-practice`, `multiplying-grids-practice`, `undoing-it-practice` |
+| `07b_linear_systems` | `solving-systems-practice` |
+| `07d_markov_chains` | `where-chains-lead-practice` |
+| `07c_eigenvalues`, `08a_bayes`, `08b_distributions` | not yet — the material is not taught yet |
 
 ### `deweydex/everlearning`
 
@@ -117,7 +126,9 @@ asserts on prose. See `DECISIONS_LOG.md` 7.50.
   writing at all is a fair question — the remaining worksheets are the ones for
   material that is not taught yet, so the converter would have nothing to
   convert until those tutorials exist.
-- **Practice for the 5N0554 strands**, once they are written. Worksheets `07a`
-  through `08b` are waiting, and their answers are in PDFs.
+- **Practice for the remaining 5N0554 strands**, once they are written. `07a`,
+  `07b`, and `07d` fed the matrices strand's six pages; `07c` (eigenvalues),
+  `08a` (Bayes) and `08b` (distributions) are still waiting, and their answers
+  are in PDFs too.
 - **Student-authored problems**, which is a runtime feature rather than a
   content one. See `planning/PRACTICE.md`.
