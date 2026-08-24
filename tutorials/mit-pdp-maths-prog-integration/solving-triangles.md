@@ -443,3 +443,15 @@ Given some of a triangle, find the rest — and which tool you reach for depends
 **The Sine Rule can give two answers**, because sine cannot tell an angle from 180 minus that angle. Both triangles are real. Choosing between them is not arithmetic.
 
 Write a few sentences: of the three situations at the top of this tutorial, which do you think you would meet most often, and in what?
+
+## Where to Read More
+
+Khan Academy. *Proof of the Law of Cosines.*
+<https://www.youtube.com/watch?v=pGaDcOMdw48>. Where `c² = a² + b² − 2ab
+cos C` actually comes from — the same correction-to-Pythagoras idea this
+page arrives at by comparing gaps.
+
+Khan Academy. *Proof: Law of Sines.*
+<https://www.youtube.com/watch?v=APNkWrD-U1k>. Why every side divided by
+the sine of its opposite angle gives the same number, derived rather than
+just checked.
