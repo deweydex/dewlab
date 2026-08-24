@@ -387,3 +387,13 @@ One circle, and everything else was a description of it.
 Next, [Sine and Cosine Waves](tutorial:sine-and-cosine-waves) takes this circle and unrolls it flat.
 
 Write a few sentences: before this tutorial, what did you think sine and cosine were? Has that changed, and if so, when in the tutorial did it change?
+
+## Where to Read More
+
+Khan Academy. *Introduction to the Unit Circle.*
+<https://www.youtube.com/watch?v=1m9p9iubMLU>. The same across-and-up
+coordinates this page builds, introduced from SOH CAH TOA instead.
+
+Khan Academy. *Introduction to Radians.*
+<https://www.youtube.com/watch?v=EnwWxMZVBeg>. Why a full turn is `2π`
+radians, covered a second way.
