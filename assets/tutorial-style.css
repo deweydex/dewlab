@@ -1528,3 +1528,17 @@ p code, li code {
   color: var(--dl-muted);
 }
 .dl-contents-practice:hover { color: var(--dl-orange); }
+
+/* ------------------------------------------------------------------ footer */
+
+.dl-footer {
+  max-width: var(--dl-line-width);
+  margin: 2rem auto 0;
+  padding: 1.25rem 1.25rem 3rem;
+  font-size: 0.78rem;
+  color: var(--dl-muted);
+  text-align: center;
+}
+
+.dl-footer a { color: inherit; }
+.dl-footer a:hover { color: var(--dl-fg); }
