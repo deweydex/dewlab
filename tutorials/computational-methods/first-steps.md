@@ -56,3 +56,16 @@ one, the code is an illustration.
 The next tutorial in this series works with a table of data rather than single
 values. See [working with a table](tutorial:working-with-tables#the-shared-table)
 when you are ready.
+
+## Where to Read More
+
+Python Software Foundation. *The Python Tutorial — An Informal Introduction
+to Python.* <https://docs.python.org/3/tutorial/introduction.html>. The
+official walk through what a first program does — printing, arithmetic, and
+the difference between an instruction and an expression — for anyone who
+wants the same ground covered a second way.
+
+Khan Academy. *Intro to Python Fundamentals.*
+<https://www.khanacademy.org/computing/intro-to-python-fundamentals>. A
+slower course through the same first ideas, with its own practice problems,
+if one cell was not enough.

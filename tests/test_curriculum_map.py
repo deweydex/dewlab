@@ -96,6 +96,34 @@ class TestTheAnchors:
         cm.load_tutorials(outcomes)  # raises if any anchor is wrong
 
 
+class TestProseExcludesTheBibliography:
+    """A bibliography entry is written as `*Title.*` — genuine emphasis markup,
+    by the same convention that marks a term being introduced. Without an
+    exclusion, every one of a tutorial's further-reading titles shows up in
+    the vocabulary report as a term the tutorial "introduces", burying the
+    real findings the report exists to surface. Found when the matrices
+    strand's own citation, `*Getting Sorted & Big O Notation.*`, appeared in
+    `planning/CURRICULUM_MAP.md`'s "introduced more than once" table."""
+
+    def test_a_bibliography_title_is_not_read_as_a_term(self, tmp_path, monkeypatch):
+        (tmp_path / "mod").mkdir(parents=True)
+        path = tmp_path / "mod" / "sample.md"
+        path.write_text(
+            "# Sample\n\nSome *actual term* here.\n\n"
+            "## Where to Read More\n\n"
+            "Computerphile (2013). *Getting Sorted & Big O Notation.*\n"
+            "<https://www.youtube.com/watch?v=kgBjXUE_Nwc>. Why this matters.\n"
+        )
+        monkeypatch.setattr(cm, "TUTORIALS", tmp_path)
+        tutorial = cm.Tutorial(
+            slug="sample", title="Sample", module="mod", series="s", order=1,
+            sections=[],
+        )
+        prose = cm.prose_of(tutorial)
+        assert "actual term" in prose
+        assert "getting sorted" not in prose.lower()
+
+
 class TestStatus:
     def covered(self, **kw):
         return {"covers": kw.get("covers", []), "touches": kw.get("touches", [])}

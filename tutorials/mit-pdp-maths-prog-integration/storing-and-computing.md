@@ -252,3 +252,20 @@ We covered a lot of ground today: variables, data types (int, float, str, bool),
 The key idea is that *types matter*. The same symbols can mean different things depending on context -- `+` adds numbers but concatenates strings, `"42"` looks like a number but is text. Being precise about types is one of the things that separates clear thinking from fuzzy thinking, in programming and in mathematics.
 
 Write a few sentences about what you found most interesting or most confusing:
+
+## Where to Read More
+
+Computerphile (2014). *Floating Point Numbers.*
+<https://www.youtube.com/watch?v=PZRI1IfStY0>. Why `float` cannot represent
+every number exactly, and why that turns out to matter — the part of this
+page that is easiest to skim past.
+
+Python Software Foundation. *The Python Tutorial — An Informal Introduction
+to Python.* <https://docs.python.org/3/tutorial/introduction.html>. The
+official reference for `int`, `float`, `str` and `bool`, with the exact
+rules Python follows for each.
+
+Khan Academy. *The Binary Number System.*
+<https://www.khanacademy.org/computing/computers-and-internet/xcae6f4a7ff015e7d:digital-information/xcae6f4a7ff015e7d:binary-numbers/v/the-binary-number-system>.
+Slower, worked ground through binary, for anyone who wants a second example
+before trying the conversions themselves.

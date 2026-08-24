@@ -55,3 +55,15 @@ check(readings["morning"].mean(), 10.85)
 
 If you would rather go back to where this series started, the
 [first tutorial](tutorial:first-steps) is still there.
+
+## Where to Read More
+
+Corey Schafer (2020). *Python Pandas Tutorial (Part 4): Filtering — Using
+Conditionals to Filter Rows and Columns.*
+<https://www.youtube.com/watch?v=Lw2rlcxScZY>. The exact operation this page
+teaches — selecting rows with a comparison — worked through on a different
+dataset.
+
+pandas development team. *10 minutes to pandas.*
+<https://pandas.pydata.org/docs/user_guide/10min.html>. The official quick
+tour of the DataFrame, for the parts this page did not have room to cover.

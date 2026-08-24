@@ -250,3 +250,15 @@ The big insight is the connection between loops and mathematical notation. When 
 We now have all three fundamental control structures: sequential execution, selection (if/elif/else), and iteration (while, for). Every program ever written is built from these three building blocks.
 
 What patterns are you starting to see? What questions do you have?
+
+## Where to Read More
+
+Khan Academy. *Sigma Notation for Sums.*
+<https://www.youtube.com/watch?v=5jwXThH6fg4>. The mathematical side of the
+accumulator pattern this page builds — the same $\sum$ notation, worked
+through on paper.
+
+Python Software Foundation. *The Python Tutorial — More Control Flow
+Tools.* <https://docs.python.org/3/tutorial/controlflow.html>. The official
+reference for `for`, `range()`, and the rest of Python's looping tools,
+including a few this page does not have room for.
