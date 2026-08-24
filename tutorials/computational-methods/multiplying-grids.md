@@ -208,7 +208,8 @@ Linear Transformations and Matrices.*
 rule in this tutorial comes from geometrically — essential watching before
 the next tutorial, which is built entirely on this idea.
 
-Ben Eater and Grant Sanderson (2022). *But What Is a Neural Network?*
+Grant Sanderson (3Blue1Brown) (2017). *But What Is a Neural Network? |
+Deep Learning, Chapter 1.*
 <https://www.youtube.com/watch?v=aircAruvnKk>. A forward pass through a
 network is nothing but the matrix multiplication from this tutorial, applied
 over and over.

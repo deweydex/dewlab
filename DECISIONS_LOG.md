@@ -1632,3 +1632,41 @@ failure is the tutorial's fault.
 *Cost to change: two lines, once each. The QA script itself is not
 committed — it lives in the scratchpad, per the instruction that started
 this, as a tool rather than a test.*
+
+**7.58 — Three wrong citations in the matrices strand's bibliographies,
+caught by checking each video id rather than trusting the author's own
+memory of it.** The style guide asks for a bibliography in every tutorial
+(section 6) and the matrices strand is the first to actually have one in
+every file — worth a second pass precisely because it is the first, and a
+pattern of small factual slips here would spread to every strand that copies
+its shape.
+
+Checked every entry against the video id or paper it links to, not against
+what seemed plausible. Three did not match what they claimed:
+
+**`Multiplying Grids`** attributed the 3Blue1Brown video at `aircAruvnKk` to
+"Ben Eater and Grant Sanderson (2022)". It is Grant Sanderson alone,
+published 2017 — *But what is a neural network? | Deep learning, chapter 1*.
+Ben Eater had no part in it.
+
+**`Solving Systems`** labelled the video at `P2LTAUO1TdA` "Chapter 9" of
+*Essence of Linear Algebra*. It is chapter 13. Chapter 9 of that series is
+*Dot products and duality*, a different video entirely.
+
+**`Where Chains Lead`** cited "Grant Sanderson (3Blue1Brown) (2022). *Markov
+Chains.*" at `JGSaEwGZoDE` — a video id that does not resolve to anything,
+and 3Blue1Brown has no video by that title. Replaced with a real one that
+fits the same role and the guide's own list of preferred sources: Josh
+Starmer's StatQuest video *Markov Chains Clearly Explained! Part 1*
+(`i3AkTO9HLXo`, 2020). The same tutorial's Page and Brin citation had the
+authors in reverse order from how the paper is conventionally cited — fixed
+to Brin first, matching the paper itself and every index of it.
+
+Every other entry across the six tutorials — five more 3Blue1Brown chapter
+numbers, the Strang, Downey, Hughes et al., BetterExplained, Shannon and
+Dickens citations — checked out against a real search rather than being
+assumed correct by association with the ones that did not.
+
+*Cost to change: four lines, once each. The failure mode this guards
+against is a plausible-sounding citation nobody follows — see 7.54 on why a
+bibliography of dead or wrong links is worse than none.*

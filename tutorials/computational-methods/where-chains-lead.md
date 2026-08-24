@@ -241,12 +241,12 @@ arithmetic level, the same handful of lines?
 
 ## Where to Read More
 
-Grant Sanderson (3Blue1Brown) (2022). *Markov Chains.*
-<https://www.youtube.com/watch?v=JGSaEwGZoDE>. A visual argument for why
+Josh Starmer (StatQuest) (2020). *Markov Chains Clearly Explained! Part 1.*
+<https://www.youtube.com/watch?v=i3AkTO9HLXo>. A visual argument for why
 repeated multiplication by a transition matrix settles down at all, which
 this tutorial only demonstrates numerically.
 
-Page, L. and Brin, S. (1998). *The Anatomy of a Large-Scale Hypertextual Web
+Brin, S. and Page, L. (1998). *The Anatomy of a Large-Scale Hypertextual Web
 Search Engine.* Computer Networks and ISDN Systems, 30(1-7), 107–117.
 <http://infolab.stanford.edu/~backrub/google.html>. The original PageRank
 paper, from the two Stanford students who wrote it — the small three-page

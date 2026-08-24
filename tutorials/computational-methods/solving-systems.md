@@ -190,7 +190,7 @@ that scales.
 
 ## Where to Read More
 
-Grant Sanderson (3Blue1Brown) (2016). *Essence of Linear Algebra, Chapter 9:
+Grant Sanderson (3Blue1Brown) (2016). *Essence of Linear Algebra, Chapter 13:
 Change of Basis.* <https://www.youtube.com/watch?v=P2LTAUO1TdA>. Not about
 elimination directly, but the clearest available picture of what a system of
 equations is actually asking, geometrically.
