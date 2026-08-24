@@ -54,13 +54,19 @@ jobs:
           count=$(find site/tutorials -name '*.html' | wc -l)
           echo "built $count tutorial pages"
           test "$count" -gt 0 || { echo "no tutorials were built"; exit 1; }
-          # Every page offers a download, so every page needs one to exist.
-          # Without this the site publishes happily with dead download links,
-          # which a student finds before anybody else does.
+          # Every *current* page offers a download, so every current page
+          # needs one to exist. Without this the site publishes happily with
+          # dead download links, which a student finds before anybody else
+          # does. Frozen versioned releases (<slug>/v<version>.html) are
+          # archived copies of a past release, not the current page, and by
+          # design get no downloadable copy — only the live default-serving
+          # release does — so they are excluded from this count.
+          current=$(find site/tutorials -name '*.html' | grep -Ev '/v[0-9].*\.html$' | wc -l)
+          echo "of which $current are current releases"
           downloads=$(find site/download -name '*.html' 2>/dev/null | wc -l)
           echo "built $downloads downloadable copies and $(find site/download -name '*.zip' 2>/dev/null | wc -l) series archives"
-          test "$downloads" -eq "$count" || {
-            echo "$count tutorial pages but $downloads downloadable copies"; exit 1; }
+          test "$downloads" -eq "$current" || {
+            echo "$current current tutorial pages but $downloads downloadable copies"; exit 1; }
 
       # enablement turns Pages on for the repository if it is not on already,
       # rather than failing and waiting for someone to find the setting. The
