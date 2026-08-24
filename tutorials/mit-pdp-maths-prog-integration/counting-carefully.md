@@ -39,7 +39,7 @@ By convention, $0! = 1$. This seems strange but is mathematically consistent -- 
 
 ### Your turn
 
-Write a function `factorial(n)` that computes $n!$. Use the product accumulator pattern we learned in *Repeating Yourself*. Include a docstring and handle the case $n = 0$.
+Let's write a function `factorial(n)` that computes $n!$, using the product accumulator pattern we learned in *Repeating Yourself*. Include a docstring and handle the case $n = 0$.
 
 **Pseudocode:**
 ```
@@ -81,7 +81,7 @@ You can also think of it directly: 8 choices for 1st place, then 7 for 2nd, then
 
 ### Your turn
 
-Write a function `permutations(n, r)` that computes $P(n, r)$ using your `factorial` function. Think about what should happen if $r > n$ (it should be impossible to choose more items than you have).
+Let's write a function `permutations(n, r)` that computes $P(n, r)$ using your `factorial` function. Think about what should happen if $r > n$ (it should be impossible to choose more items than you have).
 
 ```python exec
 id: your-turn-3
@@ -113,7 +113,7 @@ $$C(52, 5) = \frac{52!}{5! \cdot 47!} = 2,598,960$$
 
 ### Your turn
 
-Write a function `combinations(n, r)` using your `factorial` function.
+How might you write `combinations(n, r)`, building it from your `factorial` function the same way `permutations` did above?
 
 ```python exec
 id: your-turn-5
@@ -160,7 +160,7 @@ Questions 2 and 3 are interesting because they involve *repetition* -- the same 
 
 ### Your turn
 
-Write a function `count_with_repetition(choices, positions)` that implements the multiplication principle. Then verify your answers to questions 2 and 3.
+Let's turn the multiplication principle itself into a function, `count_with_repetition(choices, positions)`, and use it to check your answers to questions 2 and 3 above.
 
 ```python exec
 id: your-turn-7
@@ -195,7 +195,7 @@ The numbers grow enormously with both the character set size and the length. Thi
 
 ### Your turn
 
-If a computer can test one billion ($10^9$) passwords per second, how long would it take to try all possibilities for each of the cases above? Write a function `crack_time(num_possibilities, guesses_per_second)` that returns the time in a sensible unit (seconds, minutes, hours, days, or years).
+If a computer can test one billion ($10^9$) passwords per second, how long would it take to try all possibilities for each of the cases above? Try building a function `crack_time(num_possibilities, guesses_per_second)` that returns the time in a sensible unit (seconds, minutes, hours, days, or years) — and if you want to push further, see how much that changes again for a 16-character password, or for an attacker who can only try a thousand guesses a second instead of a billion.
 
 ```python exec
 id: your-turn-9

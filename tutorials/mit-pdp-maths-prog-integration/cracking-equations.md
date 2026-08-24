@@ -37,7 +37,7 @@ In our coefficient-list convention, a linear polynomial `[b, a]` represents $ax 
 
 ### Your turn
 
-Write a function `solve_linear(coeffs)` that takes `[b, a]` and returns the solution. Think about edge cases: what if $a = 0$? That means there is no x term, so it is not really a linear equation. Your function should handle this gracefully.
+Let's write a function `solve_linear(coeffs)` that takes `[b, a]` and returns the solution. What should happen if $a = 0$? That means there is no x term at all, so it is not really a linear equation — have your function handle that case gracefully rather than crashing.
 
 ```python exec
 id: your-turn-1
@@ -66,7 +66,7 @@ The expression under the square root, $b^2 - 4ac$, is called the *discriminant* 
 
 ### Your turn
 
-Write a function `solve_quadratic(coeffs)` that takes `[c, b, a]` (our convention) and returns the solutions. Handle all three cases of the discriminant.
+How might you write a function `solve_quadratic(coeffs)` that takes `[c, b, a]` (our convention) and returns the solutions, handling all three cases of the discriminant?
 
 **Pseudocode:**
 ```
@@ -116,7 +116,7 @@ for root in roots:
 
 ### Your turn
 
-Write a function `verify_roots(coeffs, roots)` that checks whether each root really is a root by evaluating the polynomial at that point. Print PASS or FAIL for each (use a small tolerance like 0.0001 for floating-point comparison instead of exact equality).
+Let's write a function `verify_roots(coeffs, roots)` that checks whether each root really is a root, by evaluating the polynomial at that point and printing PASS or FAIL for each (use a small tolerance like 0.0001 for floating-point comparison instead of exact equality).
 
 ```python exec
 id: your-turn-5
@@ -140,7 +140,7 @@ This is the reverse of expanding (FOIL): instead of multiplying two binomials to
 
 ### Your turn
 
-Write a function `factor_quadratic(coeffs)` that returns a string showing the factored form. If the quadratic has no real roots, return a message saying it cannot be factored over the reals.
+Let's write a function `factor_quadratic(coeffs)` that returns a string showing the factored form — and if the quadratic has no real roots, have it say so plainly rather than guessing at an answer.
 
 Hint: use `solve_quadratic` to find the roots, then construct the string. Be careful with the leading coefficient $a$.
 
@@ -178,7 +178,7 @@ $$2x + 3 > 7 \implies 2x > 4 \implies x > 2$$
 
 ### Your turn
 
-Write a function `solve_linear_inequality(a, b, c, operator)` that solves $ax + b$ [operator] $c$ where operator is one of ">", ">=", "<", "<=". Return a string describing the solution set.
+How might you write a function `solve_linear_inequality(a, b, c, operator)` that solves $ax + b$ [operator] $c$, where operator is one of ">", ">=", "<", "<=", and returns a string describing the solution set?
 
 Think about what happens when $a$ is negative (the inequality direction reverses).
 
@@ -212,7 +212,7 @@ The denominator $a_1 b_2 - a_2 b_1$ is called the *determinant*. If it is zero, 
 
 ### Your turn
 
-Write a function `solve_simultaneous(eq1, eq2)` where each equation is represented as `[a, b, c]` meaning $ax + by = c$. Return the values of x and y, or indicate if no unique solution exists.
+Let's write a function `solve_simultaneous(eq1, eq2)` where each equation is represented as `[a, b, c]` meaning $ax + by = c$, returning the values of x and y — or saying plainly if no unique solution exists. If you want to push further, try extending it to three equations in three unknowns.
 
 ```python exec
 id: your-turn-11

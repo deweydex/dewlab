@@ -80,7 +80,7 @@ If we later discover a bug in `mean()`, we fix it once and `std_dev()` automatic
 
 ### Your turn
 
-Write a function `data_range(numbers)` that returns the difference between the largest and smallest values in a list. Then write a function `describe(numbers)` that calls `mean()`, `std_dev()`, and `data_range()` to print a summary of the data.
+Let's write a function `data_range(numbers)` that returns the difference between the largest and smallest values in a list. Then write a function `describe(numbers)` that calls `mean()`, `std_dev()`, and `data_range()` to print a summary of the data.
 
 Include docstrings for both functions.
 
@@ -158,7 +158,7 @@ The way functions communicate is through *parameters* (values passed in) and *re
 
 ### Your turn
 
-Write two functions that each use a variable called `count` internally but for different purposes. Verify that they do not interfere with each other.
+Let's write two functions that each use a variable called `count` internally but for different purposes, and check that they do not interfere with each other.
 
 ```python exec
 id: your-turn-5
@@ -209,7 +209,7 @@ Writing tests like this before or alongside your functions is one of the most va
 
 ### Your turn
 
-Write a test function for your `data_range` function. Include at least four test cases: a normal list, a list where all elements are the same, a list with negative numbers, and a single-element list.
+Let's write a test function for your `data_range` function. Include at least four test cases: a normal list, a list where all elements are the same, a list with negative numbers, and a single-element list.
 
 ```python exec
 id: your-turn-7
