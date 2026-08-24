@@ -240,3 +240,14 @@ Visualisation is not a separate skill from statistics -- it is part of the same 
 We now have a complete toolkit for exploratory data analysis: counting, probability, summary statistics, and visualisation. From here on they get used together rather than one at a time.
 
 What is the most important thing you have learned about presenting data?
+
+## Where to Read More
+
+Anscombe, F. J. (1973). *Graphs in Statistical Analysis.* The American
+Statistician, 27(1), 17–21. The original paper behind the quartet this
+page opens with — four datasets, one lesson.
+
+Matplotlib development team. *Pyplot Tutorial.*
+<https://matplotlib.org/stable/tutorials/pyplot.html>. The official
+reference for everything this page's charts do, and the many options it
+does not have room to cover.
