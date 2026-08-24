@@ -109,3 +109,10 @@ The hardest problem in a team project is almost never technical.
 It is somebody being stuck and not saying so, for a fortnight, because they think everybody else understands it. This happens in professional teams constantly and it is the single most expensive thing that goes wrong.
 
 If you are stuck, say so on the day. If somebody has gone quiet, ask them. Neither of those is a small kindness — they are the actual skill this outcome is about.
+
+## Where to Read More
+
+Fowler, M. (2006). *Continuous Integration.*
+<https://martinfowler.com/articles/continuousIntegration.html>. The
+professional version of "release early, release small" — merging and
+testing everyone's work together constantly, rather than once at the end.
