@@ -356,3 +356,10 @@ What to take from this.
 **An inverse is a round trip, and not everything has one.** Whether a function can be undone is a question about whether two inputs ever collide.
 
 Write a few sentences: which did you find easier for `x² − 5x + 6 = 0` — the formula or the picture? What would change your answer?
+
+## Where to Read More
+
+Khan Academy. *Domain and Range of a Function.*
+<https://www.youtube.com/watch?v=O0uUVH8dRiU>. The same two ideas this
+page introduces through `reciprocal` and `square_root`, from a graph
+instead of an error message.
