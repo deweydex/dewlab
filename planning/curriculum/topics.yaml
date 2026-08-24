@@ -816,7 +816,7 @@ topics:
       including reviewing each other's work and shipping more than one version.
     uses:
       - How essentially all professional software is made.
-    needs: [PDP-LO7]
+    needs: [PDP-LO10, PDP-LO11]
 
   # ---------------------------------------------------------------- CMPS 5N0554
   CMPS-LO1:
@@ -1004,4 +1004,3 @@ topics:
       - Knowing the difference between a model being wrong and a model being
         usefully approximate.
     needs: [CMPS-LO11]
-    needs: [PDP-LO10, PDP-LO11]
