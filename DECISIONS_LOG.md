@@ -1836,3 +1836,70 @@ not — nothing here depends on Crepe's own code-block internals. Both
 ever reaches for `@milkdown/utils`'s `insert()` for a mark-bearing inline
 node, or for `replaceSelectionWith` at all: check what's active at the
 cursor before assuming `inheritMarks: true` is harmless.*
+
+**7.63 — The slash menu was fully transparent and the text cursor never
+appeared, because Crepe's structural stylesheet reads ~25 custom properties
+that only one of its own skins defines, and this editor loads neither.**
+Reported live, by a person actually using the editor rather than surfacing
+in a test: the `/` command menu was there but unreadable, sitting
+transparent over whatever text was behind it, and typing produced no
+visible caret to type against at all.
+
+`milkdown-entry.js` deliberately imports only `@milkdown/crepe/theme/
+common/style.css` — the structural rules — and none of Crepe's skins
+(`crepe`, `crepe-dark`, `frame`, `nord-dark`), because a skin is a fixed
+colour scheme and this editor retextures the same elements from dewlab's
+own `--dl-*` variables instead, so it follows the reader's light/dark
+choice like the rest of the site. What that comment did not yet reckon
+with: the structural stylesheet does not carry its own colours at all — it
+reads them from `--crepe-color-*`, `--crepe-font-*` and `--crepe-shadow-*`
+custom properties (surface colours, hover/selected backgrounds, even the
+virtual text cursor's own colour), and only a skin defines those. With
+none loaded, every one of ~25 properties was undefined, and a `var()`
+reference to an undefined custom property with no fallback is invalid at
+computed-value time — which resolves to that property's own *initial*
+value, not anything Crepe intended: `background: var(--crepe-color-
+surface)` on the slash menu came out `transparent` (background's initial
+value), and the replacement caret `prosemirror-virtual-cursor` draws after
+hiding the real one (`caret-color: transparent` on the `.ProseMirror`
+element itself — correct, deliberate, how that package works at all) got
+its own `border-color` from `--crepe-color-outline`, equally undefined,
+and came out invisible too.
+
+The existing fix for the one instance of this already found (7.60's
+editor styling pass had already patched the slash menu, block handle, and
+link/latex popovers' *background* by hand, four class selectors at a
+time) turned out not to be reliably winning the cascade at all — verified
+live with `getComputedStyle()`, not assumed, the override rule and Crepe's
+own rule are equal specificity, and source order between two separately
+built stylesheets is not something to depend on. The real fix is
+upstream of all of that: define the ~25 `--crepe-*` custom properties
+themselves, once, mapped to the matching `--dl-*` token
+(`.dl-editor-body .milkdown` in `tutorial-style.css`) — every downstream
+`var(--crepe-color-surface)` across Crepe's *entire* structural
+stylesheet then resolves correctly from that one place, including
+elements this pass never went looking for individually (the code block's
+own surface, list markers, table borders, the image-block and AI
+features' own popovers even though neither is enabled) — which is also
+why the four-selector override block shrank down to just a `border` (Crepe's
+own popovers use box-shadow alone for definition; this editor still wants
+a crisper edge) once the variables underneath it were actually real.
+
+Worth remembering for its own sake: the first attempt at this fix silently
+did nothing, for a third, unrelated reason — the explanatory comment
+written above the new rule contained the literal text
+"`--crepe-color-*` and `--crepe-font-*`" side by side, and the `*` ending
+one word immediately followed by the `/` starting the next formed a
+literal `*/`, which closed the CSS comment early. Everything from there to
+the block's real closing `*/` was then parsed as CSS source, not comment —
+found by checking `getComputedStyle()` in a real browser and seeing the
+custom property come back empty despite the rule visibly being present,
+byte for byte, in the served file; a syntax error inside a CSS comment
+produces no error anywhere, only a silently different stylesheet.
+
+*Cost to change: the mapping itself is cheap — one block of `--dl-*`
+references, no new colours invented. The real cost is trusting a browser's
+CSS cascade or its comment parsing by reading the rule rather than
+querying `getComputedStyle()` against a real, rendered page; both bugs
+this entry describes, and the meta-bug in fixing the first one, would have
+shipped unnoticed by any amount of re-reading the CSS text.*

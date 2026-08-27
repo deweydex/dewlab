@@ -312,6 +312,19 @@ found by asserting on the markdown `getBody()` actually produced in
 `tests/e2e/test_editor.py`'s `TestLinkPicker`, not by reading past either
 call's default behaviour and assuming it was fine.
 
+Importing only Crepe's structural stylesheet, not one of its skins (this
+section's opening paragraph, and the comment above `.dl-editor-body
+.milkdown` in `tutorial-style.css`), turned out to have a real gap: the
+structural stylesheet reads roughly two dozen `--crepe-color-*`/`--crepe-
+font-*`/`--crepe-shadow-*` custom properties that only a skin defines, and
+with none loaded they were simply undefined — silently producing a fully
+transparent slash menu and no visible text cursor at all, not merely wrong
+colours. `tutorial-style.css` now defines that whole set once, mapped to
+the matching `--dl-*` token, rather than hand-patching each broken consumer
+as found. DECISIONS_LOG.md 7.63 has the full account, including a second,
+unrelated bug (a CSS comment closed early by its own text) that made the
+first attempt at this fix silently do nothing.
+
 ---
 
 ## 4. Two build systems, on purpose
