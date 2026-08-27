@@ -71,8 +71,8 @@ print(tomorrow)
 
 ### Your turn
 
-Starting from a definitely-rainy today, `[[0, 1]]`, compute tomorrow's
-weather, and the day after that.
+Starting from a definitely-rainy today, `[[0, 1]]`, what does tomorrow's
+weather look like — and the day after that?
 
 ```python exec
 id: a-weather-machine-3
@@ -97,8 +97,8 @@ matters at all that today started out definitely sunny.
 
 ### Your turn
 
-Run the same ten steps starting from definitely rainy, `[[0, 1]]`, instead.
-Does it settle on the same numbers?
+What happens if you run the same ten steps starting from definitely rainy,
+`[[0, 1]]`, instead? Does it settle on the same numbers?
 
 ```python exec
 id: watching-it-settle-2
@@ -214,8 +214,8 @@ links a page has.
 
 ### Your turn
 
-Rank the three pages from the numbers above. Does the order match what you
-predicted before running the cell?
+How would you rank the three pages from the numbers above? Does the order
+match what you predicted before running the cell?
 
 ```python exec
 id: ranking-a-small-web-2
