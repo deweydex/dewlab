@@ -1,0 +1,48 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+entries:
+  - term: matrix
+    kind: concept
+    definition: A grid of numbers, arranged in rows and columns.
+  - term: row
+    kind: concept
+    definition: One horizontal line of a matrix. Rows are counted first — a 5×5 matrix has 5 rows.
+  - term: column
+    kind: concept
+    definition: One vertical line of a matrix.
+  - term: shape
+    kind: concept
+    definition: >
+      A matrix's own number of rows and columns. Two matrices need the
+      same shape before you can add them.
+  - term: a_ij
+    kind: formula
+    definition: >
+      The entry in row i and column j of a matrix — written a_ij in
+      maths, and pixels[i][j] in Python (row index first, then column).
+  - term: matrix addition
+    kind: concept
+    definition: >
+      Add the numbers in matching positions. Only defined when both
+      matrices have the same shape.
+  - term: scalar
+    kind: concept
+    definition: A single number, as opposed to a matrix.
+  - term: scalar multiplication
+    kind: concept
+    definition: Multiplying a matrix by a scalar multiplies every entry in it by that number.
+  - term: transpose
+    kind: concept
+    definition: >
+      Swapping a matrix's rows and columns — the entry at row i, column j
+      moves to row j, column i. Written A^T. Rearranges only; no
+      arithmetic involved.
+  - term: symmetric
+    kind: concept
+    definition: A matrix that is its own transpose — swapping rows and columns changes nothing.
+  - term: "ValueError"
+    kind: keyword
+    definition: >
+      An error you raise yourself, with a message that says what actually
+      went wrong — the fix for a confusing built-in error like IndexError
+      that only points at where something failed, not why.
+    example: "raise ValueError(\"matrices must be the same shape\")"

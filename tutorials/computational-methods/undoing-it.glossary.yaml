@@ -1,0 +1,21 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+entries:
+  - term: shoelace formula
+    kind: formula
+    definition: >
+      Measures the area enclosed by a shape's corner points: cross-multiply
+      consecutive corners, add the results up, and halve the total.
+  - term: determinant
+    kind: concept
+    definition: >
+      For a 2×2 matrix [[a, b], [c, d]], ad - bc. Exactly the factor by
+      which the matrix scales area — zero means the matrix flattens
+      everything onto a line, with no way back.
+    example: "ad - bc"
+  - term: "A^-1 (inverse matrix)"
+    kind: formula
+    definition: >
+      The matrix that undoes A. For a 2×2 matrix, (1/det(A)) times [[d, -b],
+      [-c, a]] — undefined when det(A) is zero, which is the algebra for
+      why a flattened shape cannot be recovered.
+    example: "multiply(A, inverse(A)) == identity"

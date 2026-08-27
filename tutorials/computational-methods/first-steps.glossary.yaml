@@ -1,0 +1,19 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+entries:
+  - term: cell
+    kind: concept
+    definition: >
+      A small piece of Python you can edit and run. Press Run, or hold
+      Ctrl and press Enter, and whatever the code produces appears
+      directly underneath it.
+  - term: expression
+    kind: concept
+    definition: >
+      A line whose value is shown automatically, with no print needed —
+      as opposed to an ordinary instruction, which produces nothing on its
+      own unless it prints something.
+  - term: illustrative code
+    kind: concept
+    definition: >
+      A code block with no Run button. It is there to be read, not
+      executed — the way you can tell it apart from a cell.
