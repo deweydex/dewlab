@@ -1,0 +1,24 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# factorial (n!) is not repeated here — already introduced in
+# repeating-yourself.glossary.yaml, earlier in this series.
+entries:
+  - term: "permutation, P(n, r)"
+    kind: formula
+    definition: >
+      The number of ways to choose and arrange r objects from n distinct
+      ones, where order matters. n! / (n-r)!.
+    example: "P(8, 3) = 8! / 5! = 336"
+  - term: "combination, C(n, r)"
+    kind: formula
+    definition: >
+      The number of ways to choose r objects from n where order does not
+      matter — a permutation count divided by r!, since each combination
+      can be arranged r! ways. Written (n choose r).
+    example: "C(52, 5) = 52! / (5! * 47!) = 2,598,960"
+  - term: multiplication principle
+    kind: concept
+    definition: >
+      If there are k choices at each of r steps, and repetition is
+      allowed, the total number of outcomes is k^r.
+    example: "26 ** 4  # four-letter sequences from 26 letters"

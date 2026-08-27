@@ -1,0 +1,36 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# plt.hist() is not repeated here — already introduced in
+# making-sense-of-data.glossary.yaml, earlier in this series.
+entries:
+  - term: "histogram, bar chart, line chart, scatter plot, pie chart"
+    kind: concept
+    definition: >
+      Five chart types for five jobs: a histogram shows the distribution
+      of one numerical variable; a bar chart compares quantities across
+      categories; a line chart shows a trend over an ordered sequence; a
+      scatter plot shows the relationship between two numerical
+      variables; a pie chart shows proportions of a whole, best used
+      sparingly since a bar chart is usually clearer.
+  - term: "plt.bar()"
+    kind: function
+    definition: Draws a bar chart from category labels and their values.
+    example: 'plt.bar(languages, counts)'
+  - term: "plt.plot()"
+    kind: function
+    definition: Draws a line chart connecting a sequence of points.
+    example: "plt.plot(hours, temperatures, marker='o')"
+  - term: "plt.scatter()"
+    kind: function
+    definition: Draws a scatter plot, one point per (x, y) pair.
+    example: "plt.scatter(study_hours, test_scores)"
+  - term: Anscombe's Quartet
+    kind: concept
+    definition: >
+      Four datasets with nearly identical statistics (same mean, standard
+      deviation, correlation) that look completely different when
+      plotted — the classic argument for why visualising data matters,
+      not just summarising it.
+  - term: chart junk
+    kind: concept
+    definition: Decorative elements on a chart that do not convey information — worth avoiding, since simplicity aids understanding.
