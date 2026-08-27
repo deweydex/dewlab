@@ -44,6 +44,19 @@
 <body>
 <div class="dl-page">
 
+  <!-- The cheat sheet toggle: pinned to the page's own top-left corner
+       rather than sharing the masthead row with the wordmark, which already
+       owns that side. Starts hidden; tutorial-runtime.js reveals it only
+       when this page's manifest actually carries a glossary — a tutorial
+       with nothing accumulated yet (planning/CHEAT_SHEETS.md §6) shows no
+       button at all, the same "nothing to show, nothing to click" rule the
+       Settings panel already applies to its own empty sections below. Also
+       hidden outright under the phone breakpoint in tutorial-style.css. -->
+  <button type="button" class="dl-cheatsheet-toggle" id="dl-cheatsheet-toggle"
+          aria-expanded="false" aria-controls="dl-cheatsheet" hidden>
+    <span class="dl-cheatsheet-icon" aria-hidden="true"></span>Cheat sheet
+  </button>
+
   <!-- Masthead and chapter navigation stick together as one group, so the way
        out of a page and the way to the next one are always on screen, and so
        there is one height for everything below to measure against. -->
@@ -185,6 +198,27 @@
 
     <button type="button" class="dl-texture-reset" id="dl-texture-reset">reset to defaults</button>
   </section>
+</div>
+
+<!-- The cheat sheet: definitions, functions, and formulas this specific page
+     has accumulated (planning/CHEAT_SHEETS.md), rendered by
+     tutorial-runtime.js from this page's own manifest — there is no server
+     round trip, and a page with nothing accumulated never reveals the toggle
+     that would open this. Positioned the same way .dl-settings is, on
+     purpose (tutorial-style.css) — opening one closes the other, since both
+     anchor to the same corner of the page. -->
+<div class="dl-cheatsheet" id="dl-cheatsheet" role="dialog" aria-modal="false"
+     aria-labelledby="dl-cheatsheet-title" hidden>
+  <div class="dl-cheatsheet-head">
+    <h2 id="dl-cheatsheet-title">Cheat sheet</h2>
+    <button type="button" class="dl-cheatsheet-close" id="dl-cheatsheet-close"
+            aria-label="Close cheat sheet">&times;</button>
+  </div>
+  <p class="dl-panel-note">
+    What this page — and everything before it in the series — has covered so
+    far. Nothing here is something you have not been taught yet.
+  </p>
+  <div class="dl-cheatsheet-groups" id="dl-cheatsheet-groups"></div>
 </div>
 
 <!-- Cell source and page metadata, JSON-encoded so Python code containing

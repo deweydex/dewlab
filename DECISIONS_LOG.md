@@ -1903,3 +1903,62 @@ CSS cascade or its comment parsing by reading the rule rather than
 querying `getComputedStyle()` against a real, rendered page; both bugs
 this entry describes, and the meta-bug in fixing the first one, would have
 shipped unnoticed by any amount of re-reading the CSS text.*
+
+**7.64 — The reading page gained a cheat sheet, assembled per tutorial so it
+never shows a reader something they have not been taught yet.** Full design
+in `planning/CHEAT_SHEETS.md`; this is the shape of what landed.
+
+A glossary file (`<slug>.glossary.yaml`) says what one specific tutorial
+introduces — a new sibling of the tutorial's own `.md`, not frontmatter,
+because a build already reads frontmatter for other reasons and a bad
+glossary entry should fail the build the same way a bad `covers:` entry
+does (`own_glossary()`'s `kind`/`term`/`definition` checks, `build.py`).
+`cumulative_glossary()` walks a series in `order.yaml` order — the same
+`members` list `nav_for()` already uses for previous/next — accumulating
+each member's own entries into the next, so a tutorial's manifest carries
+its own glossary plus everything before it and nothing after. A practice
+page has no series position that means anything of its own
+(`practice_for`/`practice_across` name what it tests, not where it sits),
+so its cheat sheet is the union of the tutorial(s) it names instead —
+resolved through the exact same `registry` lookup `practice_pairs()`
+already validates, not a parallel mechanism.
+
+The panel itself reuses `.dl-settings`'s own floating-card positioning
+rather than inventing a second panel language, anchored to the same corner
+on purpose — and the two now close each other on open
+(`closeCheatSheet()`/`closeSettings()`, `tutorial-runtime.js`), since
+showing both at once would overlap. The toggle is the one new thing with no
+existing analogue: pinned to the page's own top-left corner, independent of
+the masthead (which already gives its left side to the wordmark), starting
+`hidden` in `shell.html` and revealed only when `initCheatSheet()` finds a
+non-empty `manifest.glossary` — a tutorial with nothing accumulated yet,
+which is every tutorial for a while, offers no button at all rather than
+one that opens onto an empty panel.
+
+That toggle's own CSS shipped broken on the first pass, caught by
+`tests/e2e/test_cheat_sheet.py`'s `TestVisibility` rather than by reading
+the rule: `.dl-cheatsheet-toggle`'s unconditional `display: inline-flex`
+has the same specificity as the browser's own `[hidden] { display: none }`
+and, loading later, won the tie — showing the button regardless of the
+`hidden` attribute JS uses to hide it. `.dl-cheatsheet-toggle[hidden] {
+display: none }`, stated explicitly rather than assumed, fixed it. The
+`.dl-settings-toggle` this was modelled on never hit this, because that
+button is never itself hidden — only its panel is — which is exactly the
+kind of difference that is invisible until a test actually asserts on it.
+
+Producing the glossary files themselves — the part that makes any of this
+show real content — is `.claude/skills/tutorial-glossary/SKILL.md`, run
+tutorial by tutorial in series order, deliberately built on top of the
+first-use `*emphasis*` convention `dev/curriculum_map.py` already relies on
+(`EMPHASIS_RE`/`terms_of()`) rather than reading each tutorial cold: most of
+a tutorial's glossary candidates are already marked, by an author who was
+told to mark them, before the skill reads a word of prose.
+
+*Cost to change: the schema and accumulation logic, small — one YAML shape,
+one pure function per concern (`own_glossary`, `cumulative_glossary`), fully
+covered by `tests/test_build.py`'s `TestTheCheatSheet` without touching a
+browser. The panel and toggle, small — CSS and markup mirroring
+`.dl-settings` throughout. The real cost is everything this entry is not
+about: actually running the skill across the curriculum, tutorial by
+tutorial, in series order, which is most of the remaining work and is
+tracked separately rather than bundled into this PR.*

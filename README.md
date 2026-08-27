@@ -97,6 +97,16 @@ half-remembers. Sub-headings that repeat, like the several *Your turn* prompts i
 a long tutorial, are left out of the listing: a contents entry a reader cannot
 choose between is noise.
 
+A **Cheat sheet** button, pinned to the page's own top-left corner, opens a
+panel of the definitions, functions, and formulas this specific tutorial —
+and everything before it in its series — has actually covered. Nothing in
+it is ever something a student has not been taught yet: it is assembled per
+tutorial from `<slug>.glossary.yaml` files
+(`.claude/skills/tutorial-glossary/SKILL.md` writes these; the whole design
+is `planning/CHEAT_SHEETS.md`), and a tutorial with nothing accumulated yet
+shows no button at all rather than an empty panel. Not yet available on a
+phone-sized screen.
+
 **Download to keep** gives the student one HTML file — on a memory stick, in
 their downloads folder, anywhere — that they open by double-clicking. It
 carries the reading, the cells, the editor and the mathematics inside it, and

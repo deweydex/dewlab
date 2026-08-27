@@ -1,0 +1,72 @@
+# Hand-written, not skill-generated — the first two glossaries in the series
+# exist to prove out the schema and the judgment rules in
+# .claude/skills/tutorial-glossary/SKILL.md before trusting the skill to run
+# unattended over the rest of the curriculum. See planning/CHEAT_SHEETS.md.
+#
+# "variables" is emphasised in this tutorial's own closing paragraph
+# ("In the next tutorial we will learn about *variables*") but is left out
+# here on purpose: that sentence describes what storing-and-computing.md
+# teaches, not something this tutorial itself defines. A term only belongs to
+# the tutorial that actually introduces it.
+entries:
+  - term: cell
+    kind: concept
+    definition: >
+      A small, runnable box of Python inside a tutorial page. You can edit
+      it and run it, and the result appears underneath. Nothing you type
+      leaves your browser.
+  - term: function
+    kind: concept
+    definition: >
+      A named, reusable piece of code you call by writing its name followed
+      by parentheses, like print(). What a function is made of comes later
+      — for now, it is a tool you reach for by name.
+  - term: "print()"
+    kind: function
+    definition: Displays whatever is inside its parentheses.
+    example: 'print("Hello, world!")'
+  - term: algorithm
+    kind: concept
+    definition: >
+      A sequence of clear, unambiguous steps that accomplish a task —
+      followed exactly, in order, by whoever or whatever is doing them.
+  - term: loop
+    kind: concept
+    definition: >
+      A step, or group of steps, repeated until some condition is met —
+      like "while the water has not boiled, wait."
+  - term: pseudocode
+    kind: concept
+    definition: >
+      A plan for what code should do, written in plain English (or a mix of
+      English and code-like structure) before writing the actual Python.
+  - term: "+"
+    kind: operator
+    definition: Addition.
+  - term: "-"
+    kind: operator
+    definition: Subtraction.
+  - term: "*"
+    kind: operator
+    definition: Multiplication.
+  - term: "/"
+    kind: operator
+    definition: "Regular division — always gives a decimal result, e.g. 17 / 5 = 3.4."
+  - term: "//"
+    kind: operator
+    definition: "Floor division — divides and rounds down to a whole number, e.g. 17 // 5 = 3."
+  - term: "%"
+    kind: operator
+    definition: "Modulo — the remainder after division, e.g. 17 % 5 = 2."
+  - term: "**"
+    kind: operator
+    definition: "Exponent (power), e.g. 2 ** 3 = 8."
+  - term: "#"
+    kind: keyword
+    definition: Marks the rest of the line as a comment — Python ignores everything after it.
+  - term: order of operations
+    kind: concept
+    definition: >
+      The order Python evaluates an expression in: parentheses first, then
+      exponents, then multiplication and division, then addition and
+      subtraction — the same rule taught as PEMDAS or BODMAS in maths.
