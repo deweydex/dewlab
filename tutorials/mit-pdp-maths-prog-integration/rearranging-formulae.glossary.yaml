@@ -1,0 +1,21 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+entries:
+  - term: transposing a formula, subject of a formula
+    kind: concept
+    definition: >
+      Rearranging a formula so a different letter sits alone on one side
+      — the subject. No arrangement is more correct than another; the
+      original just reflects what whoever wrote it wanted to know.
+  - term: do the same thing to both sides
+    kind: concept
+    definition: >
+      The one rule behind every rearrangement — whatever you do to one
+      side of an equation, do to the other, working backwards through the
+      operations from the outside in to isolate the letter you want.
+  - term: floating-point comparison tolerance
+    kind: concept
+    definition: >
+      Two floats that should be mathematically equal can differ in the
+      last decimal place, so check whether they are closer together than
+      you care about rather than asking if they are exactly equal.
+    example: "abs(recovered - expected) > 1e-9"
