@@ -20,7 +20,10 @@ materials in dewlab, or you are about to write a tutorial for the first time,
 this is the document to read. If you have not seen it yet, read
 [`planning/PEDAGOGICAL_STYLE_GUIDE.md`](planning/PEDAGOGICAL_STYLE_GUIDE.md)
 next — it governs how a tutorial is written, and this document governs how it
-is built.
+is built. If you're here to read or change the *code* rather than write a
+tutorial, [`ARCHITECTURE.md`](ARCHITECTURE.md) is the door in: what runs
+where, how a tutorial's markdown becomes a running page, and how the
+authoring editor talks to GitHub.
 
 ---
 
@@ -543,7 +546,7 @@ assets/
   tutorial_tools.py   what a student's cell code can call
   tree.html, tree.js  the topic tree page
   editor.html, editor.js  the browser-based authoring editor
-  vendor/             CodeMirror and KaTeX, built from vendor-src/
+  vendor/             CodeMirror, KaTeX, and Milkdown, built from vendor-src/
 build.py              markdown in, site/ out
 dev/curriculum_map.py generates planning/CURRICULUM_MAP.md from outcomes.yaml, topics.yaml and the tutorials
 tests/                unit tests, browser tests, and a manual checklist
@@ -551,6 +554,7 @@ planning/
   PEDAGOGICAL_STYLE_GUIDE.md  how a tutorial is written, and why
   curriculum/          outcomes.yaml, topics.yaml, and the QQI descriptor PDFs coverage is measured against
   STATUS.md             what has actually been built, and what has not
+ARCHITECTURE.md       how the code works — build, runtime, and editor, for a technical reader
 DECISIONS_LOG.md      what was decided during the build, and what changing it costs
 QUESTIONS.md           decisions still open, waiting on Josh
 LICENSE.md             terms for reusing this material
