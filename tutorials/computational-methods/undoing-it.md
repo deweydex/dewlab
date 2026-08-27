@@ -78,8 +78,8 @@ id: measuring-the-square-3
 ### Your turn
 
 For a 2×2 matrix $\begin{bmatrix} a & b \\ c & d \end{bmatrix}$, the quantity
-$ad - bc$ is called the *determinant*. Compute $ad - bc$ by hand for `stretch`
-and for `shear`, and compare each to the area you measured for it.
+$ad - bc$ is called the *determinant*. What is $ad - bc$ by hand for `stretch`
+and for `shear`? Compare each to the area you measured for it.
 
 ```python exec
 id: measuring-the-square-4
@@ -108,7 +108,7 @@ always produces: not a smaller square, but a shape with no width at all.
 
 ### Your turn
 
-Plot `square` and `collapsed` on the same axes to see the flattening
+Try plotting `square` and `collapsed` on the same axes to see the flattening
 directly.
 
 ```python exec
@@ -132,9 +132,9 @@ dimension.
 
 ### Your turn
 
-Write `inverse(M)` for a 2×2 matrix, following the formula above. Apply it to
-`transformed` from the `measuring-the-square` section, and check that you get
-`square` back.
+How might you write `inverse(M)` for a 2×2 matrix, following the formula
+above? Apply it to `transformed` from the `measuring-the-square` section, and
+check that you get `square` back.
 
 ```python exec
 id: undoing-a-transformation-1
@@ -178,8 +178,8 @@ for name, M in candidates.items():
 ### Your turn
 
 Which of the five can be undone, on the strength of the determinants alone?
-Pick one you predicted is singular and confirm by trying to transform
-`square` with it and looking at whether the picture collapses.
+Try one you predicted is singular, and confirm by transforming `square` with
+it and looking at whether the picture collapses.
 
 ```python exec
 id: which-ones-can-be-undone-2
