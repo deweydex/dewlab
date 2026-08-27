@@ -28,6 +28,8 @@ A GitHub Actions workflow triggered on push to main: checks out the repo, runs `
 
 ## The editor, v1
 
+**Built, as of the change that added this note** — see `ARCHITECTURE.md` §3. The gap between this spec and what shipped: the tool always had the reordering, frontmatter, and release machinery below, but the prose surface itself was a plain `<textarea>` until Milkdown was actually wired in.
+
 A GUI built on Milkdown (Crepe preset) — live, borderless block editing — rather than a command-line-only workflow. Two people will be authoring tutorials, both comfortable with git, and both prefer working visually: open a folder, see the tutorials already there, create a new one, add and reorder cells, rather than hand-editing YAML frontmatter and fenced code blocks directly in a text editor.
 
 The GUI operates on the same markdown files CONTENT_AND_FILE_ARCHITECTURE.md specifies — a front end onto `/tutorials/`, not a separate storage format. Concretely: a folder view listing existing tutorials grouped by module subfolder, and a per-file editor where prose and math render live as you type (Crepe's native behavior — no separate preview pane needed for that half), with `exec` cells as distinct blocks you can add, reorder, or delete, each one a CodeMirror instance with syntax highlighting. Frontmatter (title, slug, module, year, series, order, version) is exposed as form fields rather than raw YAML. Saving writes plain markdown back to disk, so a file edited through the GUI and one edited by hand afterward stay interchangeable — nothing about the underlying format is GUI-specific.

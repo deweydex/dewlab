@@ -26,7 +26,7 @@ The following components, runtime engines, and curriculum modules are fully impl
 - **Responsive Reading Surface**: Accessible typography, serif prose base, distraction-free margins, and custom reader texture controls (light/dark/auto themes, font families, line-width scaling, minimal header mode).
 - **Table of Contents & Navigation**: Dynamic table of contents with automatic filtering of repetitive prompts, sticky mastheads, and declared module ordering (`tutorials/modules.yaml`).
 - **Interactive Curriculum Dependency Tree**: Visual graph viewer displaying learning outcome strands, prerequisite dependencies, zoom/pan navigation, and direct tutorial links (`assets/tree.js`, `assets/tree.html`).
-- **GitHub API-Backed Visual Authoring Editor**: Browser-based management interface supporting series reordering, tutorial creation, frontmatter editing, cell-ID mutation warnings, structural linting, and release publishing via GitHub API pull requests (`assets/editor.js`, `assets/editor.html`).
+- **GitHub API-Backed Visual Authoring Editor**: Browser-based management interface supporting series reordering, tutorial creation, frontmatter editing, cell-ID mutation warnings, structural linting, and release publishing via GitHub API pull requests (`assets/editor.js`, `assets/editor.html`). The prose-editing surface itself is a Milkdown (Crepe preset) block editor, vendored via `vendor-src/` the same way CodeMirror and KaTeX are — the design `REPO_AND_EDITOR.md` specified for editor v1, in place of the plain `<textarea>` it shipped with until this was built.
 
 ### Comprehensive Curriculum Modules (`tutorials/`)
 - **71 Published Tutorial & Practice Pages** — 35 tutorials, 32 practice pages

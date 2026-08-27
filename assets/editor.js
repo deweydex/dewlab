@@ -10,6 +10,8 @@
  * Never linked from a student page. It is for authors and course maintainers.
  */
 
+import { createProseEditor } from "./vendor/milkdown.bundle.js";
+
 const API = "https://api.github.com";
 const TOKEN_KEY = "dewlab:editor:token";
 const REPO = "deweydex/dewlab";
@@ -154,6 +156,20 @@ export function parseCells(body) {
     });
   }
   return cells;
+}
+
+/* Crepe's code-block feature keeps only the first word of a fence's info
+ * string as its "language" — its language picker has no way to select or
+ * preserve a second word, so `python exec` round-trips through it as plain
+ * `python`, silently turning every runnable cell into inert illustrative
+ * code the moment an author saves through this editor. Restored here on the
+ * same signal build.py itself treats as what makes a fence a cell: an `id:`
+ * line as the very first thing inside it (parse_cell/HEADER_RE in build.py).
+ * A plain illustrative example coincidentally opening with a literal `id:`
+ * line would be misread as a cell — unlikely enough in practice, and exactly
+ * the same convention the source format already leans on, not a new one. */
+export function restoreExecTag(markdown) {
+  return markdown.replace(/^```python\n(?=id:\s*\S)/gm, "```python exec\n");
 }
 
 export function headings(body) {
@@ -370,6 +386,13 @@ export function start(root, client, { onStatus = () => {} } = {}) {
      * tutorial into a folder, which is the only thing here that removes a
      * file rather than writing one. */
     removing: new Set(),
+    /* The prose editor currently mounted, if a tutorial is open. Crepe reads
+     * its document once at construction and has no supported way to swap it
+     * in place (see vendor-src/milkdown-entry.js), so switching tutorials
+     * means destroying this one and creating another — tracked here so
+     * render() can do that teardown itself rather than every caller
+     * remembering to. */
+    editor: null,
   };
 
   function status(text, kind = "note") {
@@ -690,13 +713,10 @@ export function start(root, client, { onStatus = () => {} } = {}) {
     const original = state.files.get(path) || "";
     const { meta, body } = splitFrontmatter(original);
 
-    const area = el("textarea", { class: "dl-editor-body", spellcheck: "true", rows: "28" });
-    area.value = body;
-
+    const mount = el("div", { class: "dl-editor-body" });
     const report = el("div", { class: "dl-editor-report", id: "dl-editor-report" });
 
-    function check() {
-      const next = area.value;
+    function check(next) {
       report.replaceChildren();
       const gone = renamedCells(body, next);
       if (gone.length) {
@@ -746,12 +766,23 @@ export function start(root, client, { onStatus = () => {} } = {}) {
         `This is what the build will see — it is not a picture of the page.`));
     }
 
-    area.addEventListener("input", () => {
-      state.files.set(path, `---\n${meta}\n---\n\n${area.value}`);
+    function applyEdit(raw) {
+      const next = restoreExecTag(raw);
+      state.files.set(path, `---\n${meta}\n---\n\n${next}`);
       state.dirty.add(path);
-      check();
-    });
-    check();
+      check(next);
+    }
+
+    state.editor = createProseEditor(mount, body, { onChange: applyEdit });
+    /* The one thing a fresh render() cannot preserve: `body` above is this
+     * open document's own baseline, captured once, that renamedCells()
+     * compares every further edit against to catch a mid-session rename.
+     * Exposed so a test can drive a plain "the open document changed"
+     * edit — matching the effect of typing, without needing to drive
+     * Crepe's own contenteditable DOM — as distinct from setBody() below,
+     * which opens fresh content and is a new baseline in its own right. */
+    state.editBody = applyEdit;
+    check(body);
 
     const releases = releasesOf(series.module, slug);
     const version = versionOf(original);
@@ -771,12 +802,25 @@ export function start(root, client, { onStatus = () => {} } = {}) {
           type: "button", class: "dl-editor-release-btn", id: "dl-editor-release",
           title: "Freeze the release students have and publish this as a new "
                + "one, dated today. Their saved answers move with them.",
-          onclick: () => release({ series, slug }),
+          onclick: async () => {
+            /* markdownUpdated fires a beat after the keystroke that caused it
+             * (vendor-src/milkdown-entry.js), so releasing a moment after the
+             * last keystroke could otherwise still be looking at the
+             * previous edit. Reading straight from the editor here is the
+             * same fix FAQ's own editor uses for the same gap — and awaiting
+             * `ready` first covers releasing a moment after *opening*, before
+             * Crepe has finished mounting at all. */
+            const editor = state.editor;
+            await editor.ready;
+            if (editor !== state.editor) return; // a different tutorial opened meanwhile
+            applyEdit(editor.getMarkdown());
+            release({ series, slug });
+          },
         }, "Release as a new version")),
       el("details", { class: "dl-editor-meta" },
         el("summary", {}, "Frontmatter"),
         el("pre", {}, meta)),
-      area,
+      mount,
       report);
   }
 
@@ -827,6 +871,16 @@ export function start(root, client, { onStatus = () => {} } = {}) {
   /* ------------------------------------------------------------------ render */
 
   function render() {
+    /* Every render rebuilds the DOM from scratch (below), which would
+     * otherwise abandon a mounted Crepe instance with its listeners and
+     * ProseMirror view still alive underneath a subtree about to be thrown
+     * away. Torn down here so every path that calls render() — switching
+     * tutorials, going back to the list, committing — gets this for free. */
+    if (state.editor) {
+      state.editor.destroy();
+      state.editor = null;
+      state.editBody = null;
+    }
     root.replaceChildren();
     root.append(
       el("div", { class: "dl-editor-bar" },
@@ -848,9 +902,42 @@ export function start(root, client, { onStatus = () => {} } = {}) {
     }
   }
 
+  /* The body of whichever tutorial is open, and two ways to replace it. A
+   * block editor cannot be typed into the way a <textarea> could — there is
+   * no `.value` to set — so this is what the browser tests drive instead of
+   * `fill()`ing one; see tests/e2e/test_editor.py.
+   *
+   * setBody opens fresh content as a new document — a full render(), the
+   * same thing switching to a different tutorial does, and a new baseline
+   * for renamedCells() to compare against. editBody instead reuses the
+   * currently mounted editor's own onChange path (state.editBody, set in
+   * editorView()) to simulate the one thing a remount cannot: the same
+   * open document being typed into further, which is what an author
+   * renaming a cell id mid-session actually looks like. Reach for setBody
+   * to load a tutorial's content in one step; editBody to change what is
+   * already open. */
+  function getBody() {
+    if (!state.editing) return "";
+    const path = pathOf(state.editing.series.module, state.editing.slug);
+    return splitFrontmatter(state.files.get(path) || "").body;
+  }
+
+  function setBody(markdown) {
+    if (!state.editing) return;
+    const path = pathOf(state.editing.series.module, state.editing.slug);
+    const { meta } = splitFrontmatter(state.files.get(path) || "");
+    state.files.set(path, `---\n${meta}\n---\n\n${markdown}`);
+    state.dirty.add(path);
+    render();
+  }
+
+  function editBody(markdown) {
+    if (state.editBody) state.editBody(markdown);
+  }
+
   globalThis.dewlabEditor = {
     state, load, save, render, move, insert, setStatus, setFrontmatterField,
-    release, pathOf, releasesOf,
+    release, pathOf, releasesOf, getBody, setBody, editBody,
   };
   return load();
 }

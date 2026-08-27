@@ -1215,17 +1215,91 @@ p code, li code {
 }
 .dl-editor-gap button:hover { color: var(--dl-orange); background: var(--dl-cell-bg); }
 
+/* The prose editor (assets/editor.js, vendor-src/milkdown-entry.js). Only
+ * Crepe's structural stylesheet is vendored, not its "classic" skin — that
+ * skin is a fixed light-mode colour scheme, and retexturing the same
+ * elements from --dl-* here is what makes this editor follow the reader's
+ * own theme like the rest of the site, dark mode included, rather than
+ * looking like a different application dropped into the page. */
 .dl-editor-body {
-  width: 100%;
-  font-family: var(--dl-mono);
-  font-size: 0.82rem;
-  line-height: 1.5;
-  padding: 0.8rem;
+  min-height: 20rem;
+  padding: 0.9rem 1.1rem;
   border: 1px solid var(--dl-cell-border);
   border-radius: 6px;
   background: var(--dl-output-bg);
+}
+.dl-editor-body .ProseMirror {
+  font-family: var(--dl-font-family);
+  font-size: 0.98rem;
+  line-height: 1.65;
   color: var(--dl-fg);
-  resize: vertical;
+  outline: none;
+}
+.dl-editor-body .ProseMirror h1,
+.dl-editor-body .ProseMirror h2,
+.dl-editor-body .ProseMirror h3 { color: var(--dl-heading); }
+.dl-editor-body .ProseMirror a { color: var(--dl-link); }
+.dl-editor-body .ProseMirror blockquote {
+  margin: 0.6rem 0;
+  padding-left: 0.85rem;
+  border-left: 3px solid var(--dl-cell-border);
+  color: var(--dl-muted);
+}
+.dl-editor-body .ProseMirror code {
+  font-family: var(--dl-mono);
+  background: var(--dl-cell-bg);
+  border-radius: 3px;
+  padding: 0.05rem 0.3rem;
+}
+/* Placeholder text on an empty block — Crepe's own "type '/' for commands"
+ * hint — reads as muted rather than as real content already typed. */
+.dl-editor-body .ProseMirror .placeholder,
+.dl-editor-body .ProseMirror [data-placeholder]::before { color: var(--dl-muted); opacity: 0.75; }
+
+/* A `python exec` fence, rendered as a live block with its own CodeMirror —
+ * the same visual family as a cell on the reading page (--dl-cell-bg /
+ * --dl-cell-border), so an author sees roughly what a student will. */
+.dl-editor-body .milkdown-code-block {
+  margin: 0.7rem 0;
+  border: 1px solid var(--dl-cell-border);
+  border-radius: 6px;
+  background: var(--dl-cell-bg);
+  overflow: hidden;
+}
+.dl-editor-body .milkdown-code-block .tools {
+  padding: 0.3rem 0.6rem;
+  border-bottom: 1px solid var(--dl-cell-border);
+  color: var(--dl-muted);
+  font-size: 0.78rem;
+}
+.dl-editor-body .milkdown-code-block .cm-editor { background: transparent; font-size: 0.86rem; }
+.dl-editor-body .milkdown-code-block .cm-editor.cm-focused { outline: none; }
+.dl-editor-body .milkdown-code-block .cm-scroller { font-family: var(--dl-mono); line-height: 1.5; }
+.dl-editor-body .milkdown-code-block .cm-content { padding: 0.5rem 0.6rem; }
+.dl-editor-body .milkdown-code-block .cm-gutters { background: transparent; border: none; opacity: 0.6; }
+
+/* A list item's own block wrapper — Crepe gives every item a drag handle and
+ * marker, which is what the extra nesting here belongs to. */
+.dl-editor-body .ProseMirror ul, .dl-editor-body .ProseMirror ol { padding-left: 1.3rem; }
+.dl-editor-body .milkdown-list-item-block .label-wrapper { color: var(--dl-muted); }
+
+/* Block handle, slash menu, and the link/latex edit popovers are the editor's
+ * own floating UI, positioned by Crepe — only their colours are dewlab's. */
+.dl-editor-body .milkdown-block-handle,
+.dl-editor-body .milkdown-slash-menu,
+.dl-editor-body .milkdown-link-edit,
+.dl-editor-body .milkdown-link-preview,
+.dl-editor-body .milkdown-latex-inline-edit {
+  background: var(--dl-panel-bg);
+  border: 1px solid var(--dl-cell-border);
+  border-radius: 6px;
+  box-shadow: 0 4px 14px var(--dl-shadow);
+  color: var(--dl-fg);
+}
+.dl-editor-body .milkdown-slash-menu .operation-item:hover,
+.dl-editor-body .milkdown-slash-menu .operation-item.selected {
+  background: var(--dl-cell-bg);
+  color: var(--dl-orange);
 }
 .dl-editor-meta pre { font-size: 0.75rem; overflow-x: auto; }
 

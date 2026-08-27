@@ -1670,3 +1670,47 @@ assumed correct by association with the ones that did not.
 *Cost to change: four lines, once each. The failure mode this guards
 against is a plausible-sounding citation nobody follows — see 7.54 on why a
 bibliography of dead or wrong links is worse than none.*
+
+**7.59 — The editor's prose surface is now a Milkdown (Crepe) block editor,
+vendored the same way as CodeMirror and KaTeX, with no framework adopted.**
+`planning/REPO_AND_EDITOR.md` specified this for editor v1 from the start —
+"live, borderless block editing" rather than raw markdown in a box — and what
+shipped instead was a plain `<textarea>` wrapped in the reordering,
+frontmatter, and release machinery around it. That gap sat unnoticed until an
+outside critique of dewlab (mistakenly diagnosing it as an unoptimised React
+single-page app, which it has never been) happened to recommend a React
+block-editor library for the wrong reasons, on the wrong codebase — and
+pointed at a real gap between this repository's own plan and what it had
+actually built.
+
+Milkdown's Crepe preset was chosen over the critique's own suggestions
+(BlockNote, Tiptap, Lexical, Novel.sh) for one reason none of those satisfy:
+its API is plain JavaScript, not React. `deweydex/faq` already uses it, and
+only wraps it in Preact because FAQ itself is a Preact app — the underlying
+`new Crepe({ root, defaultValue, features })` needs no component framework at
+all. Bundled with esbuild in `vendor-src/` into `assets/vendor/milkdown.bundle.js`,
+committed like the other two vendored libraries, so neither CI nor an author
+previewing a tutorial locally needs Node installed for the ordinary case.
+
+Two things were true of Crepe that the library's own documentation does not
+warn about, both found by actually driving the built editor in a real browser
+rather than trusted from reading the API: it fires its `markdownUpdated`
+callback once while still parsing the *starting* document, before a reader
+has touched anything, which without a guard made opening any tutorial and
+touching nothing look like an edit; and its code-block feature keeps only the
+first word of a fence's info string as its "language", which round-trips
+`python exec` back out as plain `python` — silently turning a runnable cell
+into inert illustrative code the moment it passed through an unmodified
+save. Both are fixed (`vendor-src/milkdown-entry.js`'s hydration guard,
+`editor.js`'s `restoreExecTag()`, keyed off the same `id:`-first-line
+convention `build.py` already uses to mean "this fence is a cell") and both
+have browser tests driving the real editor rather than a stand-in, in
+`tests/e2e/test_editor.py`.
+
+*Cost to change: moderate. Reverting to a `<textarea>` is small — delete the
+Crepe mount, restore the input listener — but would be giving up exactly what
+this entry exists to close. Swapping to a different block editor later means
+re-solving the exec-tag round-trip problem, if the replacement has the same
+one-word-language limitation; nothing else here should be library-specific,
+since `restoreExecTag()`, `problems()`, and the release logic all operate on
+plain markdown text rather than on Crepe's own document model.*

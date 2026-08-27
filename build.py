@@ -2256,6 +2256,7 @@ def write_editor_page(shell: str) -> Path:
         "{{ROOT_BASE}}": "",
         "{{NAV_PREV_NEXT}}": '<a class="dl-nav-up" href="index.html">All tutorials</a>',
         "{{PAGE_SCRIPT}}": (
+            f'<link rel="stylesheet" href="{versioned("assets/", "vendor/milkdown.bundle.css")}">'
             f'<script type="module" src="{versioned("assets/", "editor.js")}"></script>'
         ),
         "{{CANONICAL}}": "",

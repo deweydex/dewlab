@@ -14,6 +14,7 @@
     "@codemirror/state": "6.5.2",
     "@codemirror/theme-one-dark": "6.1.2",
     "@codemirror/view": "6.36.8",
+    "@milkdown/crepe": "7.21.3",
     "esbuild": "0.25.5",
     "katex": "0.16.22"
   }

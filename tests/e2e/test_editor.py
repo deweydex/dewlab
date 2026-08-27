@@ -196,13 +196,29 @@ class TestInsertingAndCreating:
 
 
 class TestEditingWhatIsInside:
+    """The editor holds a block editor, not a <textarea> — there is no
+    `.value` a script can fill() or read reliably (Crepe/ProseMirror manage
+    that DOM themselves, and a raw content replacement would just desync
+    from it). globalThis.dewlabEditor exposes what these tests need instead:
+    getBody() to read the open document, and editBody() to change it —
+    the same effect typing has on the currently open document, used here
+    rather than setBody() because a couple of these (the rename-orphan
+    warning) specifically test a comparison against what was on screen when
+    the tutorial was opened, which setBody's remount would reset."""
+
     def open_first(self, editor):
         editor.click('.dl-editor-card[data-slug="first-steps"] .dl-editor-open')
         editor.wait_for_selector(".dl-editor-body")
 
+    def body_of(self, editor) -> str:
+        return editor.evaluate("() => globalThis.dewlabEditor.getBody()")
+
+    def edit_body(self, editor, text: str) -> None:
+        editor.evaluate("(md) => globalThis.dewlabEditor.editBody(md)", text)
+
     def test_a_tutorial_opens_with_its_body_and_not_its_frontmatter(self, editor):
         self.open_first(editor)
-        body = editor.input_value(".dl-editor-body")
+        body = self.body_of(editor)
         assert body.startswith("# First Steps")
         assert "slug: first-steps" not in body
 
@@ -214,8 +230,7 @@ class TestEditingWhatIsInside:
         """The one thing the editor knows that the build cannot: by the time
         the build runs, the rename has already happened."""
         self.open_first(editor)
-        editor.fill(".dl-editor-body",
-                    editor.input_value(".dl-editor-body").replace("adding-up-1", "adding-up-2"))
+        self.edit_body(editor, self.body_of(editor).replace("adding-up-1", "adding-up-2"))
         warning = editor.inner_text(".dl-editor-report")
         assert "orphaned" in warning
         assert "adding-up-1" in warning
@@ -225,34 +240,33 @@ class TestEditingWhatIsInside:
         being true the day releases arrived — and made this box argue with the
         proposal underneath it."""
         self.open_first(editor)
-        editor.fill(".dl-editor-body",
-                    editor.input_value(".dl-editor-body").replace("adding-up-1", "adding-up-2"))
+        self.edit_body(editor, self.body_of(editor).replace("adding-up-1", "adding-up-2"))
         warning = editor.inner_text(".dl-editor-report")
         assert "Released instead, nothing is orphaned" in warning
 
     def test_an_unclosed_fence_is_reported_before_it_reaches_the_build(self, editor):
         self.open_first(editor)
-        editor.fill(".dl-editor-body", "# T\n\n```python exec\nid: a-1\nprint(1)\n")
+        self.edit_body(editor, "# T\n\n```python exec\nid: a-1\nprint(1)\n")
         assert "opened and never closed" in editor.inner_text("#dl-editor-report")
 
     def test_two_cells_sharing_an_id_are_reported(self, editor):
         self.open_first(editor)
-        editor.fill(
-            ".dl-editor-body",
+        self.edit_body(
+            editor,
             "# T\n\n```python exec\nid: a-1\nprint(1)\n```\n\n"
             "```python exec\nid: a-1\nprint(2)\n```\n")
         assert 'used 2 times' in editor.inner_text("#dl-editor-report")
 
     def test_a_cell_with_no_id_is_reported(self, editor):
         self.open_first(editor)
-        editor.fill(".dl-editor-body", "# T\n\n```python exec\nprint(1)\n```\n")
+        self.edit_body(editor, "# T\n\n```python exec\nprint(1)\n```\n")
         assert "has no id" in editor.inner_text("#dl-editor-report")
 
     def test_an_illustrative_fence_is_not_counted_as_a_cell(self, editor):
         """`python exec` makes a cell; a plain fence is illustrative code. The
         editor has to draw that line exactly where build.py draws it."""
         self.open_first(editor)
-        editor.fill(".dl-editor-body", "# T\n\n```python\nprint(1)\n```\n")
+        self.edit_body(editor, "# T\n\n```python\nprint(1)\n```\n")
         assert "0 runnable cells" in editor.inner_text("#dl-editor-report")
 
 
@@ -449,7 +463,7 @@ class TestOpeningATutorialWithSeveralReleases:
 
     def test_the_body_is_the_one_students_are_reading(self, versioned):
         versioned.click('.dl-editor-card[data-slug="two-takes"] .dl-editor-open')
-        body = versioned.input_value(".dl-editor-body")
+        body = versioned.evaluate("() => globalThis.dewlabEditor.getBody()")
         assert "only-in-september" in body
         assert "only-in-june" not in body
 
@@ -476,10 +490,31 @@ class TestOpeningATutorialWithSeveralReleases:
 class TestReleasing:
     def edit(self, tab, slug, text):
         tab.click(f'.dl-editor-card[data-slug="{slug}"] .dl-editor-open')
-        tab.fill(".dl-editor-body", text)
+        tab.evaluate("(md) => globalThis.dewlabEditor.setBody(md)", text)
 
     def files(self, tab):
         return {f["path"]: f["text"] for f in tab.evaluate("globalThis.__committed.files")}
+
+    def release(self, tab):
+        """Click Release and wait for it to actually finish.
+
+        Releasing reads the editor's live markdown, which needs Crepe's async
+        mount to be ready (assets/editor.js) — so unlike the rest of this
+        page, the effects land a beat after the click returns rather than
+        inside it. status() always updates #dl-editor-status directly, on
+        every path release() can take, success or refusal alike, which is
+        what makes waiting for that text to change a reliable "it's done"
+        signal regardless of which one this call hits.
+        """
+        before = tab.eval_on_selector(
+            "#dl-editor-status", "e => e.textContent"
+        ) if tab.query_selector("#dl-editor-status") else None
+        tab.click("#dl-editor-release")
+        tab.wait_for_function(
+            "(before) => { const e = document.getElementById('dl-editor-status'); "
+            "return e && e.textContent !== before; }",
+            arg=before,
+        )
 
     def commit(self, tab, message="A release"):
         tab.once("dialog", lambda d: d.accept(message))
@@ -490,7 +525,7 @@ class TestReleasing:
         """A tutorial becomes a folder the moment it has a second release, and
         not before. Most never do."""
         self.edit(versioned, "first-steps", "# First Steps\n\nRewritten.\n")
-        versioned.click("#dl-editor-release")
+        self.release(versioned)
         self.commit(versioned)
         files = self.files(versioned)
 
@@ -503,7 +538,7 @@ class TestReleasing:
         """The whole point. Freezing the edits would make the release a copy of
         the thing it exists to let a reader go back from."""
         self.edit(versioned, "first-steps", "# First Steps\n\nRewritten.\n")
-        versioned.click("#dl-editor-release")
+        self.release(versioned)
         self.commit(versioned)
         frozen = self.files(versioned)["tutorials/fixtures/first-steps/v2026.06.02.1.md"]
         assert "Rewritten." not in frozen
@@ -512,7 +547,7 @@ class TestReleasing:
 
     def test_the_new_release_carries_the_edits_and_a_new_version(self, versioned):
         self.edit(versioned, "first-steps", "# First Steps\n\nRewritten.\n")
-        versioned.click("#dl-editor-release")
+        self.release(versioned)
         self.commit(versioned)
         files = self.files(versioned)
         new = next(text for path, text in files.items()
@@ -525,7 +560,7 @@ class TestReleasing:
     def test_the_new_release_records_what_it_replaced(self, versioned):
         """After two releases nothing else says which one this replaced."""
         self.edit(versioned, "first-steps", "# First Steps\n\nRewritten.\n")
-        versioned.click("#dl-editor-release")
+        self.release(versioned)
         self.commit(versioned)
         new = next(text for path, text in self.files(versioned).items()
                    if path.startswith("tutorials/fixtures/first-steps/")
@@ -537,7 +572,7 @@ class TestReleasing:
         commit has nothing to say about either. The edits went to the new one
         and the buffer they came from went back to what students have."""
         self.edit(versioned, "two-takes", "# Two Takes\n\nA third take.\n")
-        versioned.click("#dl-editor-release")
+        self.release(versioned)
         self.commit(versioned)
         files = self.files(versioned)
         assert "tutorials/fixtures/two-takes/v2026.06.02.1.md" not in files
@@ -549,7 +584,7 @@ class TestReleasing:
 
     def test_and_the_release_it_came_from_goes_back_to_what_students_have(self, versioned):
         self.edit(versioned, "two-takes", "# Two Takes\n\nA third take.\n")
-        versioned.click("#dl-editor-release")
+        self.release(versioned)
         held = versioned.evaluate(
             "() => globalThis.dewlabEditor.state.files"
             ".get('tutorials/fixtures/two-takes/v2026.09.15.1.md')")
@@ -560,13 +595,13 @@ class TestReleasing:
         """An order file lists slugs, not releases. A new version of a tutorial
         is not a new tutorial."""
         self.edit(versioned, "first-steps", "# First Steps\n\nRewritten.\n")
-        versioned.click("#dl-editor-release")
+        self.release(versioned)
         self.commit(versioned)
         assert "tutorials/fixtures/maths.order.yaml" not in self.files(versioned)
 
     def test_releasing_with_nothing_changed_is_refused(self, versioned):
         versioned.click('.dl-editor-card[data-slug="first-steps"] .dl-editor-open')
-        versioned.click("#dl-editor-release")
+        self.release(versioned)
         assert "identical" in versioned.inner_text("#dl-editor-status")
         assert versioned.get_attribute("#dl-editor-save", "disabled") is not None
 
@@ -576,14 +611,17 @@ class TestReleasing:
         versioned.click('.dl-editor-card[data-slug="first-steps"] '
                         '.dl-editor-status-option[data-status="beta"]')
         self.edit(versioned, "first-steps", "# First Steps\n\nRewritten.\n")
-        versioned.click("#dl-editor-release")
+        self.release(versioned)
         assert "Only a live tutorial" in versioned.inner_text("#dl-editor-status")
 
 
 class TestTheProposal:
+    def set_body(self, tab, text: str) -> None:
+        tab.evaluate("(md) => globalThis.dewlabEditor.setBody(md)", text)
+
     def test_changing_the_cells_says_this_is_probably_a_release(self, versioned):
         versioned.click('.dl-editor-card[data-slug="first-steps"] .dl-editor-open')
-        versioned.fill(".dl-editor-body",
+        self.set_body(versioned,
                        "# First Steps\n\n## Adding up\n\n"
                        "```python exec\nid: adding-up-2\nprint(1)\n```\n")
         report = versioned.inner_text("#dl-editor-report")
@@ -594,12 +632,17 @@ class TestTheProposal:
         compare with. Without the guard, the release made a second ago reports
         that every cell in it is new."""
         versioned.click('.dl-editor-card[data-slug="first-steps"] .dl-editor-open')
-        versioned.fill(".dl-editor-body",
+        self.set_body(versioned,
                        "# First Steps\n\n## Adding up\n\n"
                        "```python exec\nid: adding-up-2\nprint(1)\n```\n")
         versioned.click("#dl-editor-release")
-        versioned.wait_for_selector("#dl-editor-report")
-        assert "usually a release" not in versioned.inner_text("#dl-editor-report")
+        # Releasing reads the editor's own current markdown, which needs the
+        # freshly (re)mounted Crepe instance to finish loading first — async,
+        # so the report updates a beat after the click returns rather than
+        # inside it. Polled for rather than read immediately.
+        versioned.wait_for_function(
+            "!document.querySelector('#dl-editor-report').textContent.includes('usually a release')"
+        )
 
     def test_a_newly_created_tutorial_says_nothing_about_its_cells(self, editor):
         editor.once("dialog", lambda d: d.accept("Brand New"))
@@ -611,7 +654,7 @@ class TestTheProposal:
         """A version per save is the thing the whole design rejects, so an edit
         that is only an edit gets no ceremony."""
         versioned.click('.dl-editor-card[data-slug="first-steps"] .dl-editor-open')
-        versioned.fill(".dl-editor-body",
+        self.set_body(versioned,
                        "# First Steps\n\nRewritten prose.\n\n## Adding up\n\n"
                        "```python exec\nid: adding-up-1\nprint(2)\n```\n")
         report = versioned.inner_text("#dl-editor-report")
