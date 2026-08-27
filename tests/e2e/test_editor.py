@@ -91,7 +91,7 @@ VERSIONED = {
 }
 
 
-def _open(browser, base_url, files):
+def _open(browser, base_url, files, factory=FAKE_CLIENT):
     context = browser.new_context(viewport={"width": 1280, "height": 950})
     tab = context.new_page()
     tab.goto(f"{base_url}/editor.html")
@@ -103,7 +103,7 @@ def _open(browser, base_url, files):
              const client = eval(factory)(files);
              await mod.start(document.getElementById("dl-editor"), client);
            }""",
-        {"files": files, "factory": FAKE_CLIENT, "url": "./" + _runtime_url(tab)},
+        {"files": files, "factory": factory, "url": "./" + _runtime_url(tab)},
     )
     tab.wait_for_selector(".dl-editor-card")
     return context, tab
@@ -134,6 +134,71 @@ def _runtime_url(tab) -> str:
     src = tab.get_attribute('script[src*="editor.js"]', "src")
     assert src, "the editor page loads no editor.js"
     return src
+
+
+def _big_repo(count: int) -> dict:
+    """`count` tutorials in one series, each with distinct, checkable
+    content — enough to cross load()'s READ_CONCURRENCY batch boundary more
+    than once (16 at a time, as of this writing), and titled with its own
+    index so a mixed-up batch (wrong text landing against the wrong path)
+    would actually be caught rather than passing by coincidence."""
+    order = [f"tutorial-{i:03d}" for i in range(count)]
+    files = {
+        "tutorials/fixtures/big.order.yaml":
+            "series: Big\norder:\n" + "".join(f"  - {slug}\n" for slug in order),
+    }
+    for i, slug in enumerate(order):
+        files[f"tutorials/fixtures/{slug}.md"] = (
+            f'---\ntitle: "Tutorial number {i}"\nslug: {slug}\nmodule: fixtures\n'
+            f'module_title: "Fixtures"\nyear: "2026-2027"\nseries: big\n'
+            f"version: 2026.08.23.1\n---\n\n# Tutorial number {i}\n\nProse.\n"
+        )
+    return files
+
+
+# read() resolves after a random short delay rather than instantly, so a
+# batch-index mistake in load() (assets/editor.js) — text from one request
+# landing against a different request's path — would show up as scrambled
+# titles instead of being masked by every request finishing in call order.
+SLOW_CLIENT = """
+(files) => ({
+  committed: null,
+  listTutorials: async () => ({ base: "basesha", paths: Object.keys(files) }),
+  read: async (path) => {
+    await new Promise((resolve) => setTimeout(resolve, Math.random() * 20));
+    return files[path];
+  },
+  commit: async () => "x",
+})
+"""
+
+
+class TestLoadingManyTutorialsAtOnce:
+    """load() (assets/editor.js) reads files in concurrent batches rather
+    than one at a time — DECISIONS_LOG.md 7.61 has the why. 40 crosses that
+    batch boundary (16 at a time) more than once."""
+
+    def test_every_tutorial_in_a_large_repo_loads_with_the_right_content(self, browser, base_url):
+        files = _big_repo(40)
+        context, tab = _open(browser, base_url, files)
+        try:
+            titles = tab.eval_on_selector_all(
+                ".dl-editor-open", "e => e.map(b => b.textContent)")
+            assert len(titles) == 40
+            assert set(titles) == {f"Tutorial number {i}" for i in range(40)}
+        finally:
+            context.close()
+
+    def test_the_same_holds_when_requests_resolve_out_of_order(self, browser, base_url):
+        files = _big_repo(40)
+        context, tab = _open(browser, base_url, files, factory=SLOW_CLIENT)
+        try:
+            titles = tab.eval_on_selector_all(
+                ".dl-editor-open", "e => e.map(b => b.textContent)")
+            assert len(titles) == 40
+            assert set(titles) == {f"Tutorial number {i}" for i in range(40)}
+        finally:
+            context.close()
 
 
 class TestTheListView:
@@ -268,6 +333,233 @@ class TestEditingWhatIsInside:
         self.open_first(editor)
         self.edit_body(editor, "# T\n\n```python\nprint(1)\n```\n")
         assert "0 runnable cells" in editor.inner_text("#dl-editor-report")
+
+
+LINKS = {
+    "tutorials/fixtures/maths.order.yaml":
+        "series: Maths and programming\norder:\n  - first-steps\n",
+    "tutorials/fixtures/first-steps.md":
+        '---\ntitle: "First Steps"\nslug: first-steps\nmodule: fixtures\n'
+        'module_title: "Fixtures"\nyear: "2026-2027"\nseries: maths\nversion: 2026.08.23.1\n---\n\n'
+        "# First Steps\n\n## A Grid of Numbers\n\n"
+        "```python exec\nid: adding-up-1\n# not a heading\nprint(1)\n```\n",
+    "tutorials/other/next-steps.order.yaml":
+        "series: Other\norder:\n  - next-steps\n",
+    "tutorials/other/next-steps.md":
+        '---\ntitle: "Next Steps"\nslug: next-steps\nmodule: other\n'
+        'module_title: "Other"\nyear: "2026-2027"\nseries: other\nversion: 2026.08.23.1\n---\n\n'
+        "# Next Steps\n\nProse.\n",
+    # Two different modules with the same slug, neither of them "fixtures" —
+    # a link from first-steps naming this slug has to be reported ambiguous
+    # rather than guessed at.
+    "tutorials/third/shared-name.order.yaml":
+        "series: Third\norder:\n  - shared-name\n",
+    "tutorials/third/shared-name.md":
+        '---\ntitle: "Shared Name (Third)"\nslug: shared-name\nmodule: third\n'
+        'module_title: "Third"\nyear: "2026-2027"\nseries: third\nversion: 2026.08.23.1\n---\n\n'
+        "# Shared Name\n\nProse.\n",
+    "tutorials/fourth/shared-name.order.yaml":
+        "series: Fourth\norder:\n  - shared-name\n",
+    "tutorials/fourth/shared-name.md":
+        '---\ntitle: "Shared Name (Fourth)"\nslug: shared-name\nmodule: fourth\n'
+        'module_title: "Fourth"\nyear: "2026-2027"\nseries: fourth\nversion: 2026.08.23.1\n---\n\n'
+        "# Shared Name\n\nProse.\n",
+}
+
+
+@pytest.fixture
+def links(browser, base_url):
+    """The editor over a repository shaped for cross-tutorial link checking:
+    one tutorial with a heading and a cell to link to, one tutorial alone in
+    its own module, and a slug that exists in two other modules at once."""
+    context, tab = _open(browser, base_url, LINKS)
+    yield tab
+    context.close()
+
+
+class TestTutorialLinkChecking:
+    """The one thing build.py already refuses that the editor's own report
+    did not catch until now: a dead `tutorial:slug#anchor` link. Everything
+    else problems() checks, the build would also refuse — this closes the
+    same gap for cross-tutorial links, so it surfaces here instead of after
+    a commit fails CI."""
+
+    def open_first(self, tab):
+        tab.click('.dl-editor-card[data-slug="first-steps"] .dl-editor-open')
+        tab.wait_for_selector(".dl-editor-body")
+
+    def edit_body(self, tab, text: str) -> None:
+        tab.evaluate("(md) => globalThis.dewlabEditor.editBody(md)", text)
+
+    def test_a_link_to_an_unknown_tutorial_is_reported(self, links):
+        self.open_first(links)
+        self.edit_body(links, "# T\n\nSee [it](tutorial:nope-not-real).\n")
+        assert "does not match any tutorial" in links.inner_text("#dl-editor-report")
+
+    def test_a_link_to_a_real_tutorial_in_another_module_is_not_reported(self, links):
+        self.open_first(links)
+        self.edit_body(links, "# T\n\nSee [it](tutorial:next-steps).\n")
+        assert "does not match" not in links.inner_text("#dl-editor-report")
+
+    def test_a_slug_ambiguous_across_two_other_modules_is_reported(self, links):
+        self.open_first(links)
+        self.edit_body(links, "# T\n\nSee [it](tutorial:shared-name).\n")
+        report = links.inner_text("#dl-editor-report")
+        assert "ambiguous" in report
+        assert "third" in report and "fourth" in report
+
+    def test_a_link_to_a_real_heading_anchor_is_not_reported(self, links):
+        """Linking into the tutorial's own heading and cell, alongside them
+        rather than in place of them — replacing the body outright would
+        delete the very anchors this checks against, in the one tutorial
+        that also happens to be the one being edited."""
+        self.open_first(links)
+        self.edit_body(
+            links,
+            "# First Steps\n\n## A Grid of Numbers\n\n"
+            "See [it](tutorial:first-steps#a-grid-of-numbers).\n\n"
+            "```python exec\nid: adding-up-1\nprint(1)\n```\n")
+        assert "no heading or cell" not in links.inner_text("#dl-editor-report")
+
+    def test_a_link_to_a_real_cell_anchor_is_not_reported(self, links):
+        self.open_first(links)
+        self.edit_body(
+            links,
+            "# First Steps\n\n## A Grid of Numbers\n\n"
+            "See [it](tutorial:first-steps#adding-up-1).\n\n"
+            "```python exec\nid: adding-up-1\nprint(1)\n```\n")
+        assert "no heading or cell" not in links.inner_text("#dl-editor-report")
+
+    def test_a_link_to_a_missing_anchor_is_reported(self, links):
+        self.open_first(links)
+        self.edit_body(links, "# T\n\nSee [it](tutorial:first-steps#not-a-real-anchor).\n")
+        assert 'no heading or cell "not-a-real-anchor"' in links.inner_text("#dl-editor-report")
+
+    def test_a_python_comment_is_not_mistaken_for_a_heading(self, links):
+        """A single `#` at the start of a line inside a cell is an ordinary
+        Python comment, not a markdown heading — build.py never sees the two
+        confused because it strips fences out before scanning for headings;
+        the editor has to do the same on raw source. The fixture's own body
+        has exactly two real headings (# First Steps, ## A Grid of Numbers);
+        without the fix, `# not a heading` inside its cell reads as a third,
+        phantom one."""
+        self.open_first(links)
+        report = links.inner_text("#dl-editor-report")
+        assert "2 headings" in report
+        assert "3 headings" not in report
+
+
+class TestLinkPicker:
+    """Search-and-insert a `[title](tutorial:slug#anchor)` link
+    (matchTutorials() in assets/editor.js, insertLink() in
+    vendor-src/milkdown-entry.js) rather than typing a slug from memory and
+    finding out it was wrong only from TestTutorialLinkChecking's report,
+    after the fact. Reuses the `links` fixture: first-steps has both a
+    heading and a cell anchor to offer, next-steps sits in a different
+    module, and the two shared-name tutorials give the "lists everything"
+    test something to tell apart."""
+
+    def open(self, tab, slug):
+        tab.click(f'.dl-editor-card[data-slug="{slug}"] .dl-editor-open')
+        tab.wait_for_selector(".dl-editor-body .ProseMirror")
+
+    def open_picker(self, tab):
+        tab.click(".dl-editor-body .ProseMirror")
+        tab.keyboard.press("Control+End")
+        tab.click("text=Link to another tutorial")
+        tab.wait_for_selector(".dl-editor-linkpicker-row")
+
+    def body_of(self, tab) -> str:
+        return tab.evaluate("() => globalThis.dewlabEditor.getBody()")
+
+    def test_opening_the_picker_lists_every_tutorial(self, links):
+        self.open(links, "first-steps")
+        self.open_picker(links)
+        rows = links.inner_text(".dl-editor-linkpicker-results")
+        assert "Next Steps" in rows
+        assert "Shared Name (Third)" in rows
+        assert "Shared Name (Fourth)" in rows
+
+    def test_searching_narrows_to_matching_tutorials(self, links):
+        self.open(links, "first-steps")
+        self.open_picker(links)
+        links.fill(".dl-editor-linkpicker-search", "next")
+        rows = links.locator(".dl-editor-linkpicker-row")
+        assert rows.count() == 1
+        assert "Next Steps" in rows.inner_text()
+
+    def test_a_query_matching_nothing_says_so(self, links):
+        self.open(links, "first-steps")
+        self.open_picker(links)
+        links.fill(".dl-editor-linkpicker-search", "zzzznope")
+        assert "No tutorials match" in links.inner_text(".dl-editor-linkpicker-results")
+
+    def test_picking_a_tutorial_inserts_a_link_to_it(self, links):
+        self.open(links, "first-steps")
+        self.open_picker(links)
+        links.fill(".dl-editor-linkpicker-search", "next")
+        links.click(".dl-editor-linkpicker-pick")
+        assert "[Next Steps](tutorial:next-steps)" in self.body_of(links)
+
+    def test_picking_a_tutorial_closes_the_picker(self, links):
+        self.open(links, "first-steps")
+        self.open_picker(links)
+        links.fill(".dl-editor-linkpicker-search", "next")
+        links.click(".dl-editor-linkpicker-pick")
+        assert not links.is_visible(".dl-editor-linkpicker-row")
+
+    def test_a_heading_and_a_cell_anchor_are_both_offered(self, links):
+        self.open(links, "next-steps")
+        self.open_picker(links)
+        links.fill(".dl-editor-linkpicker-search", "first")
+        results = links.inner_text(".dl-editor-linkpicker-results")
+        assert "a-grid-of-numbers" in results
+        assert "adding-up-1" in results
+
+    def test_picking_an_anchor_inserts_the_anchored_link(self, links):
+        self.open(links, "next-steps")
+        self.open_picker(links)
+        links.fill(".dl-editor-linkpicker-search", "first")
+        links.click('.dl-editor-linkpicker-anchor:text-is("adding-up-1")')
+        assert "[First Steps](tutorial:first-steps#adding-up-1)" in self.body_of(links)
+
+
+class TestCodeCompletion:
+    """A `python exec` block is Crepe's own CodeMirror
+    (vendor-src/milkdown-entry.js's Feature.CodeMirror config), the same
+    static completion sources tutorial-runtime.js gives a student
+    (tests/e2e/test_autocomplete.py) — an author gets the same behaviour
+    writing a cell as a student gets running it."""
+
+    def open_first(self, editor):
+        editor.click('.dl-editor-card[data-slug="first-steps"] .dl-editor-open')
+        editor.wait_for_selector(".milkdown-code-block .cm-content")
+
+    def code_cell(self, editor):
+        return editor.locator(".milkdown-code-block .cm-content")
+
+    def completion_labels(self, editor):
+        return editor.eval_on_selector_all(
+            ".cm-tooltip-autocomplete .cm-completionLabel", "els => els.map(e => e.textContent)")
+
+    def test_typing_a_partial_builtin_offers_it(self, editor):
+        self.open_first(editor)
+        cell = self.code_cell(editor)
+        cell.click()
+        editor.keyboard.press("Control+End")
+        editor.keyboard.type("\nlis")
+        editor.wait_for_selector(".cm-tooltip-autocomplete")
+        assert "list" in self.completion_labels(editor)
+
+    def test_accepting_a_completion_inserts_it(self, editor):
+        self.open_first(editor)
+        cell = self.code_cell(editor)
+        cell.click()
+        editor.keyboard.press("Control+End")
+        editor.keyboard.type("\nlis")
+        editor.wait_for_selector(".cm-tooltip-autocomplete")
+        editor.keyboard.press("Enter")
+        assert "list" in cell.inner_text()
 
 
 class TestCommitting:

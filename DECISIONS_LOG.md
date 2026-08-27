@@ -1714,3 +1714,125 @@ re-solving the exec-tag round-trip problem, if the replacement has the same
 one-word-language limitation; nothing else here should be library-specific,
 since `restoreExecTag()`, `problems()`, and the release logic all operate on
 plain markdown text rather than on Crepe's own document model.*
+
+**7.60 — The editor gained code completion and a dead-link check; a hover
+docstring in Crepe's own code blocks was attempted and pulled back out.**
+Three of these landed and are covered by tests/e2e/test_editor.py and
+tests/e2e/test_autocomplete.py: `problems()` now checks `tutorial:slug#anchor`
+links against every other tutorial's real slugs and anchors — the one class
+of mistake build.py already refused that the editor's own report did not
+catch, closing that gap rather than leaving it for CI to find first
+(`tutorialLinkProblems()`, `assets/editor.js`); both the editor's code
+blocks and a student's own cells gained keyword/builtin and locally-typed-name
+completion, wired from CodeMirror's already-vendored `@codemirror/autocomplete`
+and `@codemirror/lang-python` — genuinely close to free, since both packages
+were already dependencies for close-brackets and syntax highlighting; and a
+student's cell additionally gained *live* completion and a real hover
+docstring, reading `tutorial_tools._page_globals` and `inspect.getdoc()` off
+the actual interpreter running that page (`pageNamesCompletion`, `docFor`,
+`assets/tutorial-runtime.js`) — accurate by construction, since there is
+nothing bundled to fall out of date with the running interpreter.
+
+The fourth piece — the same hover docstring inside the *editor's* own code
+blocks, for `module.name` written out in full (plt.plot, pd.DataFrame, …) —
+does not have a live interpreter to read from, so it was built to answer
+from `assets/editor-doc-snippets.js` instead: real docstrings, captured once
+from a real Pyodide by `dev/generate_doc_snippets.py`, for a small,
+grep-derived set of names the curriculum actually calls (that script's own
+comment has the full account, including why numpy is not in the list — it is
+not currently called as `np.anything` anywhere in `tutorials/` or `setup/`).
+The CodeMirror wiring — `hoverTooltip()`, the identical extension shape
+`codemirror-entry.js` uses successfully for a student's own cells — compiled,
+ran with no error, and simply never surfaced a tooltip inside Crepe's
+code-block feature specifically: not from a real mouse hover, not from a
+Playwright-driven one, despite confirming the underlying `mousemove` event
+genuinely reaches the code block's DOM node. Ruled out along the way: a
+`hoverTooltip()`-returns-a-wrapper-object mistake (`{ active, extension }`,
+not a plain `Extension` — real, fixed in both files, and worth having fixed
+regardless of whether it was the cause here) and Crepe's code-block instance
+not yet existing at hover time (it was — the same click-then-hover sequence
+that works for a student's cell was tried here too). Not chased past that;
+Crepe's code-block feature is evidently doing something to the CodeMirror
+instances it hosts that `autocompletion()` — confirmed working in the same
+file — does not run into, and finding what wants reading Crepe's own
+ProseMirror node-view integration for the code-block feature more closely
+than this pass had the budget for.
+
+*Cost to change: the three landed pieces, small — each is a self-contained
+static function plus a documented CodeMirror extension. The fourth: the data
+and the generator are real and committed, unused only because nothing reads
+them yet. Whoever picks it back up should start from confirming whether
+Crepe's other hover-driven UI (the link-edit popover, the language picker)
+uses `hoverTooltip()` internally or something else entirely — if it is
+something else, that is probably the answer.*
+
+**7.61 — `load()` reads a repository's files in concurrent batches of 16,
+not one at a time.** Noticed live, not in a test: the editor's own
+Playwright-driven suite never caught this because its fake GitHub client
+resolves instantly, with no network latency to expose a loop that awaits
+each request before starting the next. Against the real repository — 90-odd
+files under `tutorials/`, each its own GitHub Contents API round-trip — that
+loop was 15-25 seconds of an author staring at "Reading the repository…"
+before seeing a single tutorial, entirely serial for no reason the code
+itself needed.
+
+Batched rather than one `Promise.all()` over every file: GitHub's secondary
+rate limiting is real, and 90-odd simultaneous requests from one token reads
+as closer to abuse than a person opening a page. 16 at a time is a guess at
+a reasonable middle, not a measured optimum — nothing here needed it to be
+exact, only better than fully serial. `tests/e2e/test_editor.py`'s
+`TestLoadingManyTutorialsAtOnce` covers the part a fake client's own instant
+resolution could otherwise hide: a 40-tutorial repository, read once with
+requests resolving in call order and once with a random delay on each so
+they resolve out of order, checked both times for the same thing — every
+tutorial present, its title matched to its own slug, no batch-index mistake
+scrambling one request's text onto another's path.
+
+*Cost to change: trivial — one constant (`READ_CONCURRENCY`). Raising it
+trades a faster load for a higher chance of a real GitHub rate-limit
+response on a large enough repository; nothing currently retries or backs
+off if that happens, which would be the next thing to add before raising it
+much.*
+
+**7.62 — The editor gained a search-and-insert tutorial link picker, and it
+uncovered a real bug in `@milkdown/utils`'s own `insert()` helper.**
+`tutorialLinkProblems()` (7.60) catches a `tutorial:slug#anchor` link after
+it is typed wrong; this is the other half — a toggle above the prose editor
+that searches every known tutorial by title, slug or module
+(`matchTutorials()`, `assets/editor.js`) and inserts a real link at the
+cursor, so an author reaches for a tutorial that exists rather than
+remembering a slug and finding out it was wrong from the report afterward.
+
+The first working version used `@milkdown/utils`'s own `insert(markdown,
+true)` — the obvious, documented way to put markdown at a selection — and
+it silently produced a link with no href every time. Two separate bugs, both
+found by asserting on what `getBody()` actually returned in
+`tests/e2e/test_editor.py`'s `TestLinkPicker`, not by trusting either call's
+default behaviour: (1) `insert()`'s inline path round-trips the parsed
+content through a real DOM node — `DOMSerializer.serializeFragment()` then
+`DOMParser.parseSlice()` — before inserting it, and the commonmark preset's
+link mark sanitizes `href` down to empty for any scheme outside
+http/https/mailto/tel/ftp (`sanitizeLinkHref`, a real and correct guard
+against a mark rendering as `<a href="javascript:...">` in the editable
+DOM) — which means it also erases `tutorial:` before the round trip's
+second half ever reads the href back, a case that guard was never meant to
+catch and had no way to tell apart from one it was. (2) Once past that, by
+building the link mark directly instead of going through `insert()`,
+`replaceSelectionWith(node, true)` — `true` is the default — still dropped
+it: `inheritMarks: true` means prosemirror-state's own implementation calls
+`node.mark(marksAtCursor)`, which *replaces* the node's marks with whatever
+is active at the cursor rather than merging, and a cursor at the end of a
+paragraph typically carries none. `insertLink(title, href)`
+(`vendor-src/milkdown-entry.js`) now builds the text node and its link mark
+straight against the schema, with no DOM step in between, and calls
+`replaceSelectionWith(node, false)`.
+
+*Cost to change: small — `matchTutorials()` is a pure function over
+`allTutorials()`'s existing shape (already computed for
+`tutorialLinkProblems()`); the picker itself is plain DOM, no ProseMirror
+plugin surgery, which is why this one shipped where 7.60's hover tooltip did
+not — nothing here depends on Crepe's own code-block internals. Both
+`insertLink()` bugs are worth remembering if anything else in this codebase
+ever reaches for `@milkdown/utils`'s `insert()` for a mark-bearing inline
+node, or for `replaceSelectionWith` at all: check what's active at the
+cursor before assuming `inheritMarks: true` is harmless.*

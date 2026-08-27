@@ -286,6 +286,8 @@ function buildCells(manifest) {
     const editor = createCodeEditor(editorHost, spec.code || "", {
       dark,
       onChange: () => scheduleSave(),
+      completeNames: pageNamesCompletion,
+      getDoc: docFor,
     });
 
     const cell = {
@@ -330,7 +332,57 @@ function setRunnable(enabled, label) {
 
 let pyodide = null;
 let tools = null;
+let inspectModule = null;
 let bootPromise = null;
+
+/* --------------------------------------------------- code intelligence
+ *
+ * Both wired into every cell's editor at buildCells() time, before Pyodide
+ * exists — each checks for a live interpreter itself, at call time, rather
+ * than needing anything reconfigured once boot() finishes. A page left open
+ * through a boot just starts offering real completions and real docs; there
+ * is no "not ready yet" state for a caller to manage.
+ */
+
+/* Every name currently defined in the shared page namespace — the same
+ * dict every cell actually runs against, tutorial_tools._page_globals
+ * (run_cell's `globals=`) — so what is offered is exactly what a cell could
+ * reference right now: a name from an earlier cell, or from this tutorial's
+ * own setup cell, not a generic Python index. `__name__` and anything else
+ * tutorial_tools itself seeds with a leading underscore are filtered out. */
+function pageNamesCompletion(context) {
+  if (!tools) return null;
+  const word = context.matchBefore(/\w+/);
+  if (!word || (word.from === word.to && !context.explicit)) return null;
+  const names = [...tools._page_globals.keys()].filter((name) => !name.startsWith("_"));
+  if (!names.length) return null;
+  return { from: word.from, options: names.map((label) => ({ label, type: "variable" })) };
+}
+
+/* A real docstring for a name the student defined or imported, read from the
+ * interpreter actually running their code — accurate by construction, and
+ * there is nothing bundled to fall out of date with it. Only ever looks an
+ * existing name up in the page's own namespace; never evaluates anything a
+ * student typed, and Python builtins (print, len, …) are deliberately out of
+ * scope here — they are not in _page_globals, and reaching into __builtins__
+ * as well was a bigger surface than this needed for a first pass. */
+function docFor(name) {
+  if (!tools || !inspectModule || !/^[A-Za-z_]\w*$/.test(name)) return null;
+  let obj;
+  try {
+    obj = tools._page_globals.get(name);
+  } catch {
+    return null;
+  }
+  if (obj === undefined || obj === null) return null;
+  try {
+    return inspectModule.getdoc(obj) || null;
+  } catch {
+    return null;
+  } finally {
+    if (obj && typeof obj.destroy === "function") obj.destroy();
+  }
+}
 
 async function boot(manifest) {
   setStatus("Starting Python…");
@@ -370,6 +422,7 @@ async function boot(manifest) {
     }));
   pyodide.FS.writeFile("/home/pyodide/tutorial_tools.py", source, { encoding: "utf8" });
   tools = pyodide.pyimport("tutorial_tools");
+  inspectModule = pyodide.pyimport("inspect");
 
   /* Where a tutorial's `/data/` CSVs live, relative to this page. Setup cells
    * fetch through this rather than hard-coding a path per tutorial. */

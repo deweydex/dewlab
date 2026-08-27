@@ -172,11 +172,134 @@ export function restoreExecTag(markdown) {
   return markdown.replace(/^```python\n(?=id:\s*\S)/gm, "```python exec\n");
 }
 
+/* A fence's body, blanked to the same number of lines rather than removed —
+ * so `headings()` and the anchor scan below never mistake a Python comment
+ * (`# a note`, one hash, at the start of a cell's line) for a markdown
+ * heading, without disturbing every other line number a caller might care
+ * about. build.py never has this problem: it lifts fences out with
+ * extract_blocks() before anything scans for headings. The editor scans raw
+ * source directly, so it has to do the equivalent itself. */
+function withoutFences(body) {
+  return body.replace(FENCE, (match) => match.replace(/[^\n]/g, " "));
+}
+
 export function headings(body) {
-  return [...body.matchAll(/^(#{1,3})\s+(.+?)\s*$/gm)].map((m) => ({
+  return [...withoutFences(body).matchAll(/^(#{1,3})\s+(.+?)\s*$/gm)].map((m) => ({
     level: m[1].length,
     text: m[2],
   }));
+}
+
+/* build.py's toc extension (Python-Markdown) assigns every heading an id by
+ * Unicode-folding accents away, lowercasing, dropping anything that isn't a
+ * letter, digit, space or hyphen, then collapsing whitespace to single
+ * hyphens — "Über café & naïve" becomes uber-cafe-naive, "What's Next?"
+ * becomes whats-next. Reproduced here rather than guessed at, checked
+ * directly against a real `markdown.Markdown(extensions=["toc"])` run.
+ * Not reproduced: the `_1`, `_2` suffix the toc extension appends when two
+ * headings on the same page slugify identically. That is rare, and the
+ * asymmetry is deliberate — this function existing to warn about a broken
+ * link, wrongly, is worse than it occasionally missing one. */
+export function slugifyHeading(text) {
+  return text
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9\s_-]/g, "")
+    .trim()
+    .replace(/\s+/g, "-");
+}
+
+/* Every anchor a `tutorial:slug#anchor` link could target inside this body:
+ * a cell's own id (matching build.py's Cell.id, verbatim, no slugifying —
+ * cells are addressed by data-cell-id, not a heading id) or a heading at any
+ * level (matching build.py's ID_RE scan of the rendered page, which is not
+ * limited to h1–h3 the way headings() above is for the structure count). */
+export function tutorialAnchors(body) {
+  const cellIds = parseCells(body).map((cell) => cell.id).filter(Boolean);
+  const headingIds = [...withoutFences(body).matchAll(/^#{1,6}\s+(.+?)\s*$/gm)]
+    .map((m) => slugifyHeading(m[1]));
+  return new Set([...cellIds, ...headingIds]);
+}
+
+/* Every `[text](tutorial:slug#anchor)` link in a body, in the raw markdown
+ * source rather than rendered HTML — the editor never renders the page
+ * build.py would, on purpose (planning/EDITOR.md), so this is the only form
+ * these links exist in here. The anchor is optional, same as build.py's own
+ * TUTORIAL_HREF_RE. */
+export function findTutorialLinks(body) {
+  const RE = /\]\(tutorial:([^)#\s]+)(?:#([^)\s]+))?\)/g;
+  return [...body.matchAll(RE)].map((m) => ({ slug: m[1], anchor: m[2] || null }));
+}
+
+/* Which tutorial a link resolves to, or why it does not — the same
+ * three-way rule build.py's resolve_links() applies: this tutorial's own
+ * module first, then exactly one match elsewhere, then either ambiguous
+ * (found in more than one other module) or unknown. `all` is every tutorial
+ * currently known, as {module, slug, anchors}. */
+export function resolveTutorialLink(slug, ownModule, all) {
+  const own = all.find((t) => t.module === ownModule && t.slug === slug);
+  if (own) return { target: own };
+  const elsewhere = all.filter((t) => t.slug === slug);
+  if (elsewhere.length === 1) return { target: elsewhere[0] };
+  if (elsewhere.length > 1) {
+    return { ambiguous: [...new Set(elsewhere.map((t) => t.module))].sort() };
+  }
+  return {};
+}
+
+/* The cross-tutorial-link half of what problems() checks within one page —
+ * kept separate rather than folded in, because this needs to know about
+ * every other tutorial and problems() deliberately does not (it is a pure
+ * function of one body, exercised directly by tests with no editor state
+ * behind it). `all` is built once per keystroke from state.files in
+ * editorView() below, and passed in here. */
+export function tutorialLinkProblems(body, ownModule, all) {
+  const found = [];
+  for (const { slug, anchor } of findTutorialLinks(body)) {
+    const resolved = resolveTutorialLink(slug, ownModule, all);
+    if (resolved.ambiguous) {
+      found.push({ level: "error",
+        text: `Link to "${slug}" is ambiguous — it exists in ${resolved.ambiguous.join(", ")}, `
+            + "and not in this module. The build will fail on this." });
+      continue;
+    }
+    if (!resolved.target) {
+      found.push({ level: "error",
+        text: `Link to "${slug}" does not match any tutorial. The build will fail on this.` });
+      continue;
+    }
+    if (anchor && !resolved.target.anchors.has(anchor)) {
+      found.push({ level: "error",
+        text: `Link to "${slug}#${anchor}" — that tutorial has no heading or cell "${anchor}". `
+            + "The build will fail on this." });
+    }
+  }
+  return found;
+}
+
+/* Which tutorials in `all` a search phrase could mean — the pure half of the
+ * link picker in editorView() below, so a test can drive it without opening
+ * the picker's DOM. Matches title, slug or module, case-insensitively;
+ * ranked so a title match sorts ahead of a slug/module-only one, and a
+ * title starting with the phrase ahead of one merely containing it. An
+ * empty query matches everything, alphabetically by title — that is the
+ * picker's own resting state, meant for browsing rather than only search. */
+export function matchTutorials(query, all) {
+  const q = query.trim().toLowerCase();
+  const ranked = all
+    .map((t) => {
+      if (!q) return { t, score: 0 };
+      const title = t.title.toLowerCase();
+      if (title.includes(q)) return { t, score: title.startsWith(q) ? 0 : 1 };
+      if (t.slug.toLowerCase().includes(q) || t.module.toLowerCase().includes(q)) {
+        return { t, score: 2 };
+      }
+      return null;
+    })
+    .filter(Boolean);
+  ranked.sort((a, b) => a.score - b.score || a.t.title.localeCompare(b.t.title));
+  return ranked.map((r) => r.t);
 }
 
 export function problems(body) {
@@ -405,6 +528,17 @@ export function start(root, client, { onStatus = () => {} } = {}) {
     }
   }
 
+  /* How many files load() reads at once. GitHub's Contents API has no bulk
+   * read, so this is one request per file regardless — the question is only
+   * how many are in flight together. One at a time, fully sequential, is
+   * what this used to be, and against a real tutorials/ tree of 90-odd
+   * files that was 15-25 seconds of real GitHub round-trips before an author
+   * saw anything. All 90-odd at once is the other extreme, and risks
+   * tripping GitHub's secondary rate limit rather than just being slow. This
+   * is the middle: enough concurrency to matter, not enough to look like an
+   * abuse pattern to GitHub's own throttling. */
+  const READ_CONCURRENCY = 16;
+
   async function load() {
     status("Reading the repository…");
     const { base, paths } = await client.listTutorials();
@@ -414,10 +548,14 @@ export function start(root, client, { onStatus = () => {} } = {}) {
     state.series.clear();
     state.dirty.clear();
     state.removing.clear();
-    for (const path of paths) {
-      const text = await client.read(path);
-      state.files.set(path, text);
-      state.original.set(path, text);
+    for (let i = 0; i < paths.length; i += READ_CONCURRENCY) {
+      const batch = paths.slice(i, i + READ_CONCURRENCY);
+      const texts = await Promise.all(batch.map((path) => client.read(path)));
+      batch.forEach((path, j) => {
+        state.files.set(path, texts[j]);
+        state.original.set(path, texts[j]);
+      });
+      status(`Reading the repository… (${Math.min(i + READ_CONCURRENCY, paths.length)}/${paths.length})`);
     }
     for (const [path, text] of state.files) {
       if (!path.endsWith(".order.yaml")) continue;
@@ -500,6 +638,37 @@ export function start(root, client, { onStatus = () => {} } = {}) {
     const text = state.files.get(pathOf(module, slug));
     if (!text) return slug;
     return frontmatterField(splitFrontmatter(text).meta, "title") || slug;
+  }
+
+  /* Every tutorial as {module, slug, title, anchors}, one entry per (module,
+   * slug) rather than one per file — a tutorial with several releases is
+   * several files, and a link means the current one, matching pathOf(). Used
+   * for cross-tutorial link checking below; `title` is carried on each entry
+   * unused by that, ready for a search-and-insert link picker if one gets
+   * built later, rather than the shape changing again when it does.
+   * Recomputed on demand rather than cached: it is only read while a report
+   * re-renders, already re-running on every keystroke, and caching it would
+   * be one more thing to invalidate on insert/release/rename. */
+  function allTutorials() {
+    const seen = new Set();
+    const out = [];
+    for (const path of state.files.keys()) {
+      if (path.endsWith(".order.yaml") || !path.endsWith(".md")) continue;
+      const meta = splitFrontmatter(state.files.get(path)).meta;
+      const module = frontmatterField(meta, "module");
+      const slug = frontmatterField(meta, "slug");
+      const key = `${module}/${slug}`;
+      if (!module || !slug || seen.has(key)) continue;
+      seen.add(key);
+      const current = state.files.get(pathOf(module, slug)) || "";
+      const { meta: currentMeta, body } = splitFrontmatter(current);
+      out.push({
+        module, slug,
+        title: frontmatterField(currentMeta, "title") || slug,
+        anchors: tutorialAnchors(body),
+      });
+    }
+    return out;
   }
 
   /* ------------------------------------------------------------ the list view */
@@ -716,6 +885,73 @@ export function start(root, client, { onStatus = () => {} } = {}) {
     const mount = el("div", { class: "dl-editor-body" });
     const report = el("div", { class: "dl-editor-report", id: "dl-editor-report" });
 
+    /* The link picker: search tutorialAnchors() searched, matchTutorials()
+     * ranked, so an author reaches for a real tutorial and a real anchor
+     * inside it rather than typing `tutorial:some-remembered-slug` from
+     * memory and finding out it was wrong from tutorialLinkProblems() only
+     * after the fact. Inserts through insertLink() (vendor-src/milkdown-
+     * entry.js) at wherever the cursor already is — ProseMirror keeps its
+     * own selection state independent of DOM focus, so it does not matter
+     * that clicking into this search box moved focus away from the prose
+     * editor first. */
+    const linkQuery = el("input", {
+      type: "text", class: "dl-editor-linkpicker-search",
+      placeholder: "Search tutorials to link to…",
+      "aria-label": "Search tutorials to link to",
+      oninput: () => renderLinkResults(linkQuery.value),
+    });
+    const linkResults = el("div", { class: "dl-editor-linkpicker-results" });
+    const linkPicker = el("div", { class: "dl-editor-linkpicker", hidden: "hidden" },
+      linkQuery, linkResults);
+
+    function insertTutorialLink(t, anchor) {
+      const href = anchor ? `tutorial:${t.slug}#${anchor}` : `tutorial:${t.slug}`;
+      state.editor.insertLink(t.title, href);
+      /* markdownUpdated fires a beat after the dispatch that caused it, the
+       * same gap the release button works around above — reading straight
+       * from the editor rather than waiting for onChange keeps the report
+       * and state.files current the instant the link lands, not on the
+       * next tick. */
+      applyEdit(state.editor.getMarkdown());
+      linkPicker.hidden = true;
+      linkQuery.value = "";
+    }
+
+    function renderLinkResults(query) {
+      linkResults.replaceChildren();
+      const matches = matchTutorials(query, allTutorials());
+      if (!matches.length) {
+        linkResults.append(el("p", { class: "dl-editor-linkpicker-empty" }, "No tutorials match."));
+        return;
+      }
+      /* A handful, not the whole course — this is a search box, and a list
+       * of everything defeats the point of one. */
+      for (const t of matches.slice(0, 8)) {
+        const anchors = [...t.anchors].sort();
+        linkResults.append(el("div", { class: "dl-editor-linkpicker-row" },
+          el("button", {
+            type: "button", class: "dl-editor-linkpicker-pick",
+            title: `Insert a link to ${t.title}`,
+            onclick: () => insertTutorialLink(t),
+          }, t.title, " ", el("span", { class: "dl-editor-linkpicker-where" }, `${t.module}/${t.slug}`)),
+          anchors.length ? el("span", { class: "dl-editor-linkpicker-anchors" },
+            ...anchors.map((a) => el("button", {
+              type: "button", class: "dl-editor-linkpicker-anchor",
+              title: `Link to "${a}" in ${t.title}`,
+              onclick: () => insertTutorialLink(t, a),
+            }, a))) : null,
+        ));
+      }
+    }
+
+    const linkToggle = el("button", {
+      type: "button", class: "dl-editor-linkpicker-toggle",
+      onclick: () => {
+        linkPicker.hidden = !linkPicker.hidden;
+        if (!linkPicker.hidden) { renderLinkResults(""); linkQuery.focus(); }
+      },
+    }, "Link to another tutorial");
+
     function check(next) {
       report.replaceChildren();
       const gone = renamedCells(body, next);
@@ -733,7 +969,8 @@ export function start(root, client, { onStatus = () => {} } = {}) {
           `Released instead, nothing is orphaned: the ids stay in the release ` +
           `students are working in, and they stay there until they choose to move.`));
       }
-      for (const problem of problems(next)) {
+      const allProblems = [...problems(next), ...tutorialLinkProblems(next, series.module, allTutorials())];
+      for (const problem of allProblems) {
         report.append(el("p", { class: `dl-editor-${problem.level}` }, problem.text));
       }
       /* The proposal. The editor knows what changed since the last release and
@@ -820,6 +1057,8 @@ export function start(root, client, { onStatus = () => {} } = {}) {
       el("details", { class: "dl-editor-meta" },
         el("summary", {}, "Frontmatter"),
         el("pre", {}, meta)),
+      linkToggle,
+      linkPicker,
       mount,
       report);
   }

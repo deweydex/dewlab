@@ -17,6 +17,27 @@
  */
 import { Crepe } from "@milkdown/crepe";
 import "@milkdown/crepe/theme/common/style.css";
+import { keymap } from "@codemirror/view";
+import { autocompletion, completionKeymap } from "@codemirror/autocomplete";
+import { localCompletionSource, globalCompletion } from "@codemirror/lang-python";
+import { editorViewCtx, schemaCtx } from "@milkdown/core";
+
+/* A hover-docstring tooltip for `module.name` (plt.plot, pd.DataFrame, …),
+ * reading dev/generate_doc_snippets.py's output — assets/editor-doc-snippets.js,
+ * real docstrings captured once from a real Pyodide — was attempted here and
+ * pulled back out. Wired the same way as pythonCompletion below, using
+ * CodeMirrorFeatureConfig's `extensions`, it compiled and ran with no error,
+ * but Crepe's code-block CodeMirror instance never actually surfaced it: no
+ * tooltip ever appeared, in an author's own hover or in a Playwright-driven
+ * one, despite the underlying mousemove event demonstrably reaching the
+ * editor's DOM node. The identical hoverTooltip() wiring works correctly in
+ * tutorial-runtime.js's own cells (vendor-src/codemirror-entry.js,
+ * tests/e2e/test_autocomplete.py's TestHoverDocs) — Crepe's own code-block
+ * feature is doing something to the ones it hosts that autocompletion()
+ * (confirmed working here) does not run into. Not chased further; the
+ * generator script and its output are real and kept, ready for whoever
+ * next has a lead on the Crepe side. See DECISIONS_LOG.md for the fuller
+ * account and what would need to be true to pick this back up. */
 
 const FEATURES = {
   /* No image upload UI: every <img> in a tutorial needs an alt attribute
@@ -31,6 +52,22 @@ const FEATURES = {
   [Crepe.Feature.Toolbar]: false,
   [Crepe.Feature.TopBar]: false,
   [Crepe.Feature.AI]: false,
+  /* Keyword/builtin and locally-defined-name completion inside a `python
+   * exec` block, same two static sources tutorial-runtime.js's own cells
+   * use (vendor-src/codemirror-entry.js) — an author gets the same
+   * completion behaviour writing a cell as a student gets running it.
+   * No live-namespace source here: the editor never boots Pyodide
+   * (planning/EDITOR.md's own reason for not shipping a live preview
+   * applies just as much to a live interpreter), so there is nothing to
+   * introspect beyond the cell's own text. `override` for the same reason
+   * as codemirror-entry.js: a generic word-list fallback suggests things
+   * that are not valid Python. */
+  [Crepe.Feature.CodeMirror]: {
+    extensions: [
+      autocompletion({ override: [localCompletionSource, globalCompletion], activateOnTyping: true }),
+      keymap.of(completionKeymap),
+    ],
+  },
 };
 
 /* Crepe reads its starting document once, at construction, and has no
@@ -75,6 +112,37 @@ export function createProseEditor(parent, doc, { onChange = null, spellcheck = t
      * about to commit, about to release — reads it here rather than trusting
      * the last onChange it received. */
     getMarkdown: () => crepe.getMarkdown(),
+    /* Inserts a `[title](href)` link at the current selection, replacing it
+     * if anything is selected — used for the tutorial link picker
+     * (assets/editor.js), which knows `title` and `href`
+     * (`tutorial:slug#anchor`) as separate values from a search result and
+     * needs the link to land wherever the author's cursor already is, not
+     * appended at the document's end.
+     *
+     * Not built from `@milkdown/utils`'s own insert(markdown, true): that
+     * helper round-trips the parsed content through a real DOM node (dom =
+     * DOMSerializer...serializeFragment(...), then DOMParser...parseSlice(dom))
+     * before inserting it, and the commonmark preset's link toDOM sanitizes
+     * `href` to empty for any scheme outside http/https/mailto/tel/ftp
+     * (preset-commonmark's sanitizeLinkHref) — which strips `tutorial:`
+     * before the DOM round-trip's second half ever reads it back. Building
+     * the text node and its link mark directly, with no DOM in between,
+     * carries the real href straight into the document; only rendering a
+     * mark to an actual `<a>` tag sanitizes it, which is the right place for
+     * that check to live (a real anchor's href can navigate the browser; the
+     * mark's own attrs, and what getMarkdown() serializes, are not that). */
+    insertLink: (title, href) => crepe.editor.action((ctx) => {
+      const view = ctx.get(editorViewCtx);
+      const schema = ctx.get(schemaCtx);
+      const node = schema.text(title, [schema.marks.link.create({ href })]);
+      /* inheritMarks: false — true (the default) replaces the node's own
+       * marks with whatever marks are active at the cursor
+       * (prosemirror-state's replaceSelectionWith: `node.mark(...)`, which
+       * overwrites rather than merges), which silently dropped the link
+       * mark this node exists to carry the instant the cursor had no marks
+       * of its own — the common case, including every test below. */
+      view.dispatch(view.state.tr.replaceSelectionWith(node, false).scrollIntoView());
+    }),
     destroy: () => crepe.destroy(),
   };
 }
