@@ -132,7 +132,7 @@ plt.show()
 
 ### Your turn
 
-For each of the following scenarios, choose the most appropriate chart type and explain why. Then pick one and create it using matplotlib.
+For each of the following scenarios, what's the most appropriate chart type, and why? Then pick one and build it using matplotlib.
 
 1. Showing how your daily step count varied over a month
 2. Comparing the number of bugs found in five different modules
@@ -170,7 +170,7 @@ plot_histogram(scores, 'Quiz Score Distribution', 'Score', num_bins=6)
 
 ### Your turn
 
-Write a reusable function `plot_bar_chart(categories, values, title, xlabel, ylabel)` and another `plot_scatter(x, y, title, xlabel, ylabel)`. Include docstrings. Test them with the data from earlier in this tutorial.
+Let's write a reusable function `plot_bar_chart(categories, values, title, xlabel, ylabel)` and another `plot_scatter(x, y, title, xlabel, ylabel)`, each with a docstring. Test them with the data from earlier in this tutorial.
 
 ```python exec
 id: your-turn-2
@@ -211,7 +211,7 @@ def analyse_dataset(data, title):
 
 ### Your turn
 
-Complete the `analyse_dataset` function by adding calls to your statistical functions from *Making Sense of Data*. Then use it on the quiz scores. If you want a challenge, create a second dataset and compare the two analyses side by side.
+How might you complete the `analyse_dataset` function, adding calls to your statistical functions from *Making Sense of Data*? Use it on the quiz scores — and if you want a challenge, create a second dataset and compare the two analyses side by side.
 
 ```python exec
 id: your-turn-5
@@ -231,7 +231,7 @@ Every chart should have a clear title and labelled axes. If someone sees the cha
 
 ### Your turn
 
-Find a chart online (in a news article, a textbook, or a website) that you think communicates well, and one that communicates poorly. Describe what makes each one effective or ineffective:
+Can you find a chart online (in a news article, a textbook, or a website) that communicates well, and one that communicates poorly? What makes each one effective or ineffective?
 
 ## Reflection
 
