@@ -53,9 +53,9 @@ import math
 
 ## Problem 1: The Polynomial Workshop
 
-Given two polynomials, produce a complete analysis: display them, add them, multiply them, find the roots of each (if they are linear or quadratic), and verify the roots by evaluation.
+Given two polynomials, how might you produce a complete analysis: displaying them, adding them, multiplying them, finding the roots of each (if they are linear or quadratic), and verifying the roots by evaluation?
 
-Write a function `analyse_polynomials(p, q)` that does all of this:
+Let's write a function `analyse_polynomials(p, q)` that does all of this:
 
 ```python exec
 id: problem-1-the-polynomial-workshop-1
@@ -73,7 +73,7 @@ id: problem-1-the-polynomial-workshop-2
 
 Two polynomials $p(x)$ and $q(x)$ intersect where $p(x) = q(x)$, which means $p(x) - q(x) = 0$.
 
-Write a function `find_intersections(p, q)` that finds where two polynomials (up to quadratic) intersect. Use `subtract_poly` to get the difference, then solve the resulting equation.
+How might you write a function `find_intersections(p, q)` that finds where two polynomials (up to quadratic) intersect? Use `subtract_poly` to get the difference, then solve the resulting equation.
 
 ```python exec
 id: problem-2-where-do-they-meet-1
@@ -93,7 +93,7 @@ id: problem-2-where-do-they-meet-2
 
 Different quadratic equations have different solution sets. Let's explore the relationship between the solutions of several equations using our set tools.
 
-Given a list of quadratic polynomials, find the set of all real roots across all of them, and determine which roots are shared between which equations.
+Given a list of quadratic polynomials, how might you find the set of all real roots across all of them, and work out which roots are shared between which equations?
 
 ```python exec
 id: problem-3-sets-of-solutions-1
@@ -114,9 +114,9 @@ equations = [
 
 ## Problem 4: Building and Verifying
 
-Here is a challenge that ties everything together. Start with the roots you want: say, $x = 2$ and $x = -5$. Build a quadratic that has those roots by multiplying the factors $(x - 2)(x + 5)$. Then solve the quadratic to verify you get the original roots back. Finally, display the polynomial, its factored form, and its roots.
+Here is a challenge that ties everything together. Start with the roots you want: say, $x = 2$ and $x = -5$. What quadratic has those roots? Multiply the factors $(x - 2)(x + 5)$ to build it, then solve the quadratic to verify you get the original roots back, and display the polynomial, its factored form, and its roots.
 
-Write a function `roundtrip(root1, root2)` that demonstrates this full cycle.
+Let's write a function `roundtrip(root1, root2)` that demonstrates this full cycle.
 
 ```python exec
 id: problem-4-building-and-verifying-1
@@ -133,7 +133,7 @@ id: problem-4-building-and-verifying-2
 
 ## Problem 5: Self-Assessment
 
-For each of the following tasks, rate your confidence on a scale of 1 (not confident) to 5 (very confident). Then pick one task you rated low and spend some time working on it.
+For each of the following tasks, how confident are you, on a scale of 1 (not confident) to 5 (very confident)? Then pick one task you rated low and spend some time working on it.
 
 1. Representing a polynomial as a list of coefficients
 2. Evaluating a polynomial at a given value of x
@@ -165,7 +165,7 @@ The real test of this material is building an algebra engine from nothing: polyn
 
 The key is not to memorise code but to understand the ideas well enough to reconstruct them. If you understand that polynomial multiplication works by combining every term in the first with every term in the second, you can write the nested loop. If you understand that set intersection keeps elements that appear in both sorted lists, you can write the merge-walk. Understanding beats memorisation every time.
 
-Take a few minutes to write down the three most important ideas from Tutorials 13-16 -- the ones you would want to remember even if you forgot everything else:
+What are the three most important ideas from Tutorials 13-16 — the ones you would want to remember even if you forgot everything else? Take a few minutes to write them down:
 
 ```python exec
 id: looking-ahead-to-skills-demo-2b-1
