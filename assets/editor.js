@@ -172,11 +172,110 @@ export function restoreExecTag(markdown) {
   return markdown.replace(/^```python\n(?=id:\s*\S)/gm, "```python exec\n");
 }
 
+/* A fence's body, blanked to the same number of lines rather than removed —
+ * so `headings()` and the anchor scan below never mistake a Python comment
+ * (`# a note`, one hash, at the start of a cell's line) for a markdown
+ * heading, without disturbing every other line number a caller might care
+ * about. build.py never has this problem: it lifts fences out with
+ * extract_blocks() before anything scans for headings. The editor scans raw
+ * source directly, so it has to do the equivalent itself. */
+function withoutFences(body) {
+  return body.replace(FENCE, (match) => match.replace(/[^\n]/g, " "));
+}
+
 export function headings(body) {
-  return [...body.matchAll(/^(#{1,3})\s+(.+?)\s*$/gm)].map((m) => ({
+  return [...withoutFences(body).matchAll(/^(#{1,3})\s+(.+?)\s*$/gm)].map((m) => ({
     level: m[1].length,
     text: m[2],
   }));
+}
+
+/* build.py's toc extension (Python-Markdown) assigns every heading an id by
+ * Unicode-folding accents away, lowercasing, dropping anything that isn't a
+ * letter, digit, space or hyphen, then collapsing whitespace to single
+ * hyphens — "Über café & naïve" becomes uber-cafe-naive, "What's Next?"
+ * becomes whats-next. Reproduced here rather than guessed at, checked
+ * directly against a real `markdown.Markdown(extensions=["toc"])` run.
+ * Not reproduced: the `_1`, `_2` suffix the toc extension appends when two
+ * headings on the same page slugify identically. That is rare, and the
+ * asymmetry is deliberate — this function existing to warn about a broken
+ * link, wrongly, is worse than it occasionally missing one. */
+export function slugifyHeading(text) {
+  return text
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9\s_-]/g, "")
+    .trim()
+    .replace(/\s+/g, "-");
+}
+
+/* Every anchor a `tutorial:slug#anchor` link could target inside this body:
+ * a cell's own id (matching build.py's Cell.id, verbatim, no slugifying —
+ * cells are addressed by data-cell-id, not a heading id) or a heading at any
+ * level (matching build.py's ID_RE scan of the rendered page, which is not
+ * limited to h1–h3 the way headings() above is for the structure count). */
+export function tutorialAnchors(body) {
+  const cellIds = parseCells(body).map((cell) => cell.id).filter(Boolean);
+  const headingIds = [...withoutFences(body).matchAll(/^#{1,6}\s+(.+?)\s*$/gm)]
+    .map((m) => slugifyHeading(m[1]));
+  return new Set([...cellIds, ...headingIds]);
+}
+
+/* Every `[text](tutorial:slug#anchor)` link in a body, in the raw markdown
+ * source rather than rendered HTML — the editor never renders the page
+ * build.py would, on purpose (planning/EDITOR.md), so this is the only form
+ * these links exist in here. The anchor is optional, same as build.py's own
+ * TUTORIAL_HREF_RE. */
+export function findTutorialLinks(body) {
+  const RE = /\]\(tutorial:([^)#\s]+)(?:#([^)\s]+))?\)/g;
+  return [...body.matchAll(RE)].map((m) => ({ slug: m[1], anchor: m[2] || null }));
+}
+
+/* Which tutorial a link resolves to, or why it does not — the same
+ * three-way rule build.py's resolve_links() applies: this tutorial's own
+ * module first, then exactly one match elsewhere, then either ambiguous
+ * (found in more than one other module) or unknown. `all` is every tutorial
+ * currently known, as {module, slug, anchors}. */
+export function resolveTutorialLink(slug, ownModule, all) {
+  const own = all.find((t) => t.module === ownModule && t.slug === slug);
+  if (own) return { target: own };
+  const elsewhere = all.filter((t) => t.slug === slug);
+  if (elsewhere.length === 1) return { target: elsewhere[0] };
+  if (elsewhere.length > 1) {
+    return { ambiguous: [...new Set(elsewhere.map((t) => t.module))].sort() };
+  }
+  return {};
+}
+
+/* The cross-tutorial-link half of what problems() checks within one page —
+ * kept separate rather than folded in, because this needs to know about
+ * every other tutorial and problems() deliberately does not (it is a pure
+ * function of one body, exercised directly by tests with no editor state
+ * behind it). `all` is built once per keystroke from state.files in
+ * editorView() below, and passed in here. */
+export function tutorialLinkProblems(body, ownModule, all) {
+  const found = [];
+  for (const { slug, anchor } of findTutorialLinks(body)) {
+    const resolved = resolveTutorialLink(slug, ownModule, all);
+    if (resolved.ambiguous) {
+      found.push({ level: "error",
+        text: `Link to "${slug}" is ambiguous — it exists in ${resolved.ambiguous.join(", ")}, `
+            + "and not in this module. The build will fail on this." });
+      continue;
+    }
+    if (!resolved.target) {
+      found.push({ level: "error",
+        text: `Link to "${slug}" does not match any tutorial. The build will fail on this.` });
+      continue;
+    }
+    if (anchor && !resolved.target.anchors.has(anchor)) {
+      found.push({ level: "error",
+        text: `Link to "${slug}#${anchor}" — that tutorial has no heading or cell "${anchor}". `
+            + "The build will fail on this." });
+    }
+  }
+  return found;
 }
 
 export function problems(body) {
@@ -405,6 +504,17 @@ export function start(root, client, { onStatus = () => {} } = {}) {
     }
   }
 
+  /* How many files load() reads at once. GitHub's Contents API has no bulk
+   * read, so this is one request per file regardless — the question is only
+   * how many are in flight together. One at a time, fully sequential, is
+   * what this used to be, and against a real tutorials/ tree of 90-odd
+   * files that was 15-25 seconds of real GitHub round-trips before an author
+   * saw anything. All 90-odd at once is the other extreme, and risks
+   * tripping GitHub's secondary rate limit rather than just being slow. This
+   * is the middle: enough concurrency to matter, not enough to look like an
+   * abuse pattern to GitHub's own throttling. */
+  const READ_CONCURRENCY = 16;
+
   async function load() {
     status("Reading the repository…");
     const { base, paths } = await client.listTutorials();
@@ -414,10 +524,14 @@ export function start(root, client, { onStatus = () => {} } = {}) {
     state.series.clear();
     state.dirty.clear();
     state.removing.clear();
-    for (const path of paths) {
-      const text = await client.read(path);
-      state.files.set(path, text);
-      state.original.set(path, text);
+    for (let i = 0; i < paths.length; i += READ_CONCURRENCY) {
+      const batch = paths.slice(i, i + READ_CONCURRENCY);
+      const texts = await Promise.all(batch.map((path) => client.read(path)));
+      batch.forEach((path, j) => {
+        state.files.set(path, texts[j]);
+        state.original.set(path, texts[j]);
+      });
+      status(`Reading the repository… (${Math.min(i + READ_CONCURRENCY, paths.length)}/${paths.length})`);
     }
     for (const [path, text] of state.files) {
       if (!path.endsWith(".order.yaml")) continue;
@@ -500,6 +614,37 @@ export function start(root, client, { onStatus = () => {} } = {}) {
     const text = state.files.get(pathOf(module, slug));
     if (!text) return slug;
     return frontmatterField(splitFrontmatter(text).meta, "title") || slug;
+  }
+
+  /* Every tutorial as {module, slug, title, anchors}, one entry per (module,
+   * slug) rather than one per file — a tutorial with several releases is
+   * several files, and a link means the current one, matching pathOf(). Used
+   * for cross-tutorial link checking below; `title` is carried on each entry
+   * unused by that, ready for a search-and-insert link picker if one gets
+   * built later, rather than the shape changing again when it does.
+   * Recomputed on demand rather than cached: it is only read while a report
+   * re-renders, already re-running on every keystroke, and caching it would
+   * be one more thing to invalidate on insert/release/rename. */
+  function allTutorials() {
+    const seen = new Set();
+    const out = [];
+    for (const path of state.files.keys()) {
+      if (path.endsWith(".order.yaml") || !path.endsWith(".md")) continue;
+      const meta = splitFrontmatter(state.files.get(path)).meta;
+      const module = frontmatterField(meta, "module");
+      const slug = frontmatterField(meta, "slug");
+      const key = `${module}/${slug}`;
+      if (!module || !slug || seen.has(key)) continue;
+      seen.add(key);
+      const current = state.files.get(pathOf(module, slug)) || "";
+      const { meta: currentMeta, body } = splitFrontmatter(current);
+      out.push({
+        module, slug,
+        title: frontmatterField(currentMeta, "title") || slug,
+        anchors: tutorialAnchors(body),
+      });
+    }
+    return out;
   }
 
   /* ------------------------------------------------------------ the list view */
@@ -733,7 +878,8 @@ export function start(root, client, { onStatus = () => {} } = {}) {
           `Released instead, nothing is orphaned: the ids stay in the release ` +
           `students are working in, and they stay there until they choose to move.`));
       }
-      for (const problem of problems(next)) {
+      const allProblems = [...problems(next), ...tutorialLinkProblems(next, series.module, allTutorials())];
+      for (const problem of allProblems) {
         report.append(el("p", { class: `dl-editor-${problem.level}` }, problem.text));
       }
       /* The proposal. The editor knows what changed since the last release and

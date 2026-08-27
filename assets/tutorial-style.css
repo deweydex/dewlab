@@ -317,6 +317,24 @@ p code, li code {
 .dl-editor .cm-scroller { font-family: var(--dl-mono); line-height: 1.5; }
 .dl-editor .cm-content { padding: 0.5rem 0; }
 
+/* A hover docstring (vendor-src/codemirror-entry.js's pythonDocTooltip),
+ * inside CodeMirror's own tooltip positioning wrapper rather than nested
+ * under .dl-editor — the same popover language as .dl-hint-text, since both
+ * are "a little more explanation, out of the way until asked for". */
+.cm-tooltip .cm-dewlab-doc-tooltip {
+  max-width: min(28rem, 80vw);
+  padding: 0.5rem 0.7rem;
+  border-radius: 4px;
+  background: var(--dl-panel-bg);
+  border: 1px solid var(--dl-cell-border);
+  box-shadow: 0 4px 14px var(--dl-shadow);
+  font-family: var(--dl-font-family);
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: var(--dl-fg);
+  white-space: pre-wrap;
+}
+
 /* --------------------------------------------------------------- output */
 
 .dl-output {

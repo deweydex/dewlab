@@ -178,6 +178,23 @@ classic script rather than an ES module, which is what a **Download to
 keep** file actually runs, since a page opened via `file://` cannot load a
 module.
 
+**Code intelligence** — completion and hover docs — is layered onto every
+cell's CodeMirror instance in `vendor-src/codemirror-entry.js`, and it is
+worth knowing which part is static and which is live. Keyword/builtin
+completion and completion on names already typed in the cell
+(`@codemirror/lang-python`'s `globalCompletion`/`localCompletionSource`) are
+static: no interpreter involved, available the instant a cell mounts.
+Layered on top, `tutorial-runtime.js`'s `pageNamesCompletion` and `docFor`
+are live — they read `tutorial_tools._page_globals`, the exact dict every
+cell actually executes against, and call `inspect.getdoc()` on a real object
+sitting in it. Both are plain functions passed into `createCodeEditor()` and
+each checks for a booted interpreter itself, at call time, rather than
+needing to be reconfigured once boot finishes — a page left open through a
+boot just starts offering real completions and real docs. See
+DECISIONS_LOG.md 7.60 for what this looked like to build and what it does
+and does not cover (Python builtins are deliberately out of scope for
+`docFor` — see that entry for why).
+
 ---
 
 ## 3. The authoring editor: a GitHub client, not a server client
@@ -254,17 +271,26 @@ Two things about that integration are worth knowing if you touch it:
   round-trip is exactly the kind of thing worth checking live rather than
   assuming, before trusting it with a tutorial's cells.
 
-Everything *else* about the editor — the structural report (`problems()`,
-the same checks `build.py` would fail on, run here before a commit rather
-than after CI), the cell-id-rename warning (`renamedCells()`, the one thing
-the editor knows that the build cannot, because by the time the build runs
-the rename has already happened), and the release mechanism
+The structural report (`problems()`, the same checks `build.py` would fail
+on, run here before a commit rather than after CI) also checks cross-tutorial
+links now — `tutorialLinkProblems()` validates every `tutorial:slug#anchor`
+against every other tutorial's real slugs and headings (`tutorialAnchors()`,
+which reproduces Python-Markdown's toc heading-id algorithm in JavaScript,
+checked directly against a real `markdown.Markdown(extensions=["toc"])` run
+rather than guessed at). The cell-id-rename warning (`renamedCells()`, the
+one thing the editor knows that the build cannot, because by the time the
+build runs the rename has already happened) and the release mechanism
 (`release()`: freeze what students have, publish the buffer as a new dated
-version beside it) — is unchanged by any of this, and is described well
-enough by its own comments in `assets/editor.js` that this document won't
-repeat them. Start there if you're changing that logic; start in
+version beside it) are unchanged by any of this. `assets/editor.js`'s own
+comments describe all of it well enough that this document won't repeat
+them — start there if you're changing that logic; start in
 `vendor-src/milkdown-entry.js` if you're changing what the prose surface
-itself can do.
+itself can do, including its code blocks' own completion (the same static
+sources §2 describes for a student's cells, minus the live layer — the
+editor has no interpreter to read from). DECISIONS_LOG.md 7.60 also records
+an attempt at a hover-docstring tooltip for the editor's code blocks,
+specifically, that did not work and was pulled back out — worth reading
+before trying it again.
 
 ---
 
@@ -336,5 +362,7 @@ runtime or the editor.
 | The authoring editor's structural checks, release logic, GitHub calls | `assets/editor.js` |
 | The authoring editor's prose-editing surface itself | `vendor-src/milkdown-entry.js` |
 | A vendored library's version | `vendor-src/package.json`, then `npm run build` there |
+| Code completion or hover docs, either surface | `vendor-src/codemirror-entry.js` (both surfaces' static sources, plus the extension points); `assets/tutorial-runtime.js` (the runtime's live sources) |
+| The curated names the editor's future hover docs would cover | `dev/generate_doc_snippets.py`, then re-run it |
 | House styling, both reading pages and the editor | `assets/tutorial-style.css` |
 | *Why* something works the way it does, before you change it | `DECISIONS_LOG.md` (numbered, searchable) |
