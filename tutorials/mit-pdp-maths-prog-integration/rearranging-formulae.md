@@ -67,7 +67,7 @@ That is worth saying plainly, because textbooks tend to present the original for
 
 ### Your turn
 
-The area of a circle is `A = pi * r**2`. Write the function that goes the other way: given an area, what was the radius?
+The area of a circle is `A = pi * r**2`. How would you write the function that goes the other way: given an area, what was the radius?
 
 ```python exec
 id: your-turn-1
@@ -185,7 +185,7 @@ This is worth a habit. **When you divide by something, ask what happens when tha
 
 ### Your turn
 
-The lens formula is `1/f = 1/u + 1/v`. Make `f` the subject, then make `u` the subject.
+The lens formula is `1/f = 1/u + 1/v`. How would you make `f` the subject? And `u`?
 
 The second one is harder: you will need to get `1/u` on its own first, and then flip.
 
@@ -240,7 +240,7 @@ The `1e-9` is there because these are floating-point numbers and two calculation
 
 ### Your turn
 
-Write a check for one of the formulae you rearranged earlier, and then deliberately break your rearrangement to make sure the check catches it.
+How might you write a check for one of the formulae you rearranged earlier? Then deliberately break your rearrangement and make sure the check catches it.
 
 A test that has never failed has not been tested.
 
@@ -261,7 +261,7 @@ Three things worth taking away.
 
 **You can check.** Not by re-reading your algebra and hoping, but by putting numbers through both versions and comparing. That habit will outlast every formula in this tutorial.
 
-Write a few sentences: which of the rearrangements above did you find hardest, and what specifically made it harder than the others?
+In a few sentences, which of the rearrangements above did you find hardest, and what specifically made it harder than the others?
 
 ## Where to Read More
 

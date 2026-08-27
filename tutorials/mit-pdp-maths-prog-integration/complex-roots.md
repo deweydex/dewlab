@@ -168,7 +168,7 @@ Every one comes back to zero, or to something like `(4.44e-16+0j)`, which is zer
 
 ### Your turn
 
-Solve these three by hand, in `a + bi` form, using the quadratic formula. Then check each one with the solver.
+How would you solve these three by hand, in `a + bi` form, using the quadratic formula? Check each one with the solver.
 
 - `x² + 4 = 0`
 - `x² − 2x + 5 = 0`
@@ -220,7 +220,7 @@ Three things to take.
 
 **You can check an answer you do not fully believe.** Put the root back into the equation. If it gives zero, it is a root, whatever it looks like.
 
-Write a few sentences: before this tutorial, what did you think "no solution" meant? Has that changed?
+In a few sentences, before this tutorial, what did you think "no solution" meant? Has that changed?
 
 ## Where to Read More
 
