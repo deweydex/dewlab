@@ -45,7 +45,7 @@ One approach: sort the list, then walk through it removing consecutive duplicate
 
 ### Your turn
 
-Write a function `make_set(items)` that returns a sorted list with no duplicates.
+Let's write a function `make_set(items)` that returns a sorted list with no duplicates.
 
 **Pseudocode:**
 ```
@@ -77,7 +77,7 @@ Is a particular element in the set? Since our sets are sorted, we can use binary
 
 ### Your turn
 
-Write a function `is_member(s, item)` that returns True if item is in the set s, False otherwise. Use the binary search approach since the set is sorted.
+How might you write a function `is_member(s, item)` that returns True if item is in the set s, False otherwise? Use the binary search approach since the set is sorted.
 
 ```python exec
 id: your-turn-3
@@ -141,13 +141,13 @@ print("union:", union(a, b))
 
 ### Your turn
 
-Using the same merge-walk pattern as a guide, write the remaining set operations:
+Using the same merge-walk pattern as a guide, how might you write the remaining set operations?
 
 1. `intersection(a, b)` -- elements that are in *both* a and b
 2. `difference(a, b)` -- elements that are in a but *not* in b
 3. `symmetric_difference(a, b)` -- elements that are in a or b but *not* both
 
-Think carefully about what changes in the merge-walk logic for each operation. Which elements do we keep when `a[i] == b[j]`? When `a[i] < b[j]`?
+What changes in the merge-walk logic for each operation? Which elements do we keep when `a[i] == b[j]`? When `a[i] < b[j]`?
 
 ```python exec
 id: your-turn-5
@@ -215,12 +215,12 @@ Mathematicians use specific notation and terminology for sets:
 
 ### Your turn
 
-Write two more functions:
+Let's write two more functions:
 
 1. `is_subset(a, b)` -- returns True if every element of a is also in b
 2. `is_equal(a, b)` -- returns True if the two sets contain exactly the same elements
 
-Think about: how does `is_subset` relate to `intersection`? And how does `is_equal` relate to `is_subset`?
+How does `is_subset` relate to `intersection`? And how does `is_equal` relate to `is_subset`?
 
 ```python exec
 id: your-turn-9
@@ -247,7 +247,7 @@ A spell checker: it checks whether each word is a member of the set of known wor
 
 ### Your turn
 
-Think of one more practical application of sets and describe it briefly. Then implement a small example using your set functions.
+What's one more practical application of sets you can think of? Describe it briefly, then implement a small example using your set functions.
 
 ```python exec
 id: your-turn-11

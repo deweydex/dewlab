@@ -64,7 +64,7 @@ for a in [True, False]:
 
 ### Your turn
 
-Write the table for `A and (not B)`. Predict the four rows before you run it.
+What would the table for `A and (not B)` look like? Predict the four rows, then run it to check.
 
 ```python exec
 id: your-turn-1
@@ -98,7 +98,7 @@ The third, `^`, is Python's built-in bitwise XOR, which works on whole numbers b
 
 ### Your turn
 
-Write XOR a fourth way, using only `not` and `==`. Then check it against all four rows.
+How might you write XOR a fourth way, using only `not` and `==`? Check it against all four rows.
 
 ```python exec
 id: your-turn-2
@@ -174,7 +174,7 @@ Nobody writes the first version on purpose. They arrive at it by adding a condit
 
 ### Your turn
 
-Three conditions to simplify. Check each with the same `all(...)` trick.
+Three conditions to simplify — how would you rewrite each one? Check your versions with the same `all(...)` trick.
 
 ```python exec
 id: your-turn-3
@@ -234,7 +234,7 @@ The things worth keeping.
 
 **De Morgan's Laws are for readability.** They do not make code do anything new; they make tangled conditions into ones a person can read, and you will use them mostly on code you wrote yourself a fortnight earlier.
 
-Write a few sentences: find a condition in something you have written before, and say whether De Morgan would make it easier to read.
+In a few sentences, find a condition in something you have written before, and say whether De Morgan would make it easier to read.
 
 ## Where to Read More
 
