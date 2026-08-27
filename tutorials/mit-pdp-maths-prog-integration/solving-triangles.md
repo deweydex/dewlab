@@ -265,7 +265,7 @@ print("Distance from home:", round(cosine_rule_side(first_leg, second_leg, inter
 
 ### Your turn
 
-Two vectors from the origin: one to `(4, 1)` and one to `(1, 4)`. Use the Cosine Rule to find the angle between them.
+Two vectors from the origin: one to `(4, 1)` and one to `(1, 4)`. What is the angle between them? The Cosine Rule will get you there.
 
 You have all three sides already — two from `distance` and one between the two tips.
 
@@ -423,7 +423,7 @@ The middle one should have a 90 in it, and it does — a 3-4-5 triangle is right
 
 A surveyor stands at point A and measures the angle to a mast as 32 degrees. She walks 50 m directly towards it and measures again: 47 degrees. How tall is the mast?
 
-Draw it first. There is a triangle in there with one side of 50 and two angles you can work out.
+Try drawing it first — there is a triangle in there with one side of 50 and two angles you can work out.
 
 ```python exec
 id: your-turn-5
@@ -442,7 +442,7 @@ Given some of a triangle, find the rest — and which tool you reach for depends
 
 **The Sine Rule can give two answers**, because sine cannot tell an angle from 180 minus that angle. Both triangles are real. Choosing between them is not arithmetic.
 
-Write a few sentences: of the three situations at the top of this tutorial, which do you think you would meet most often, and in what?
+In a few sentences, of the three situations at the top of this tutorial, which do you think you would meet most often, and in what?
 
 ## Where to Read More
 

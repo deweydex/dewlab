@@ -126,7 +126,7 @@ for step in range(9):
 
 ### Your turn
 
-Predict the sign of the across value and the up value in each of the four quarters of the circle, then check.
+What sign would you predict for the across value and the up value in each of the four quarters of the circle? Check your predictions below.
 
 ```python exec
 id: your-turn-1
@@ -222,7 +222,7 @@ That last number is worth remembering as a sanity check. A radian is a bit under
 
 ### Your turn
 
-Convert these without using `math.radians`, then check.
+How would you convert these without using `math.radians`? Work them out, then check.
 
 - 270 degrees
 - 135 degrees
@@ -316,7 +316,7 @@ print("rounded is exactly a half:", rounded ** 2 == 0.5)
 
 ### Your turn
 
-Fill in the exact values for 120°, 135° and 150°, using the first-quarter table and the signs you worked out earlier.
+What are the exact values for 120°, 135° and 150°? Use the first-quarter table and the signs you worked out earlier.
 
 ```python exec
 id: your-turn-3
@@ -386,7 +386,7 @@ One circle, and everything else was a description of it.
 
 Next, [Sine and Cosine Waves](tutorial:sine-and-cosine-waves) takes this circle and unrolls it flat.
 
-Write a few sentences: before this tutorial, what did you think sine and cosine were? Has that changed, and if so, when in the tutorial did it change?
+In a few sentences, before this tutorial, what did you think sine and cosine were? Has that changed, and if so, when in the tutorial did it change?
 
 ## Where to Read More
 
