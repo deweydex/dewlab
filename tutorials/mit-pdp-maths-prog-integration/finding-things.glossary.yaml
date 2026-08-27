@@ -1,0 +1,45 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+entries:
+  - term: pure function
+    kind: concept
+    definition: >
+      A function whose output depends only on its inputs — the same
+      inputs always give the same output, with no dependence on external
+      state or randomness. The easiest kind to understand, test, and
+      trust.
+  - term: local scope, global scope
+    kind: concept
+    definition: >
+      A variable defined inside a function only exists while that
+      function is running (local scope) — each function has its own
+      workspace. A variable defined outside any function can be read from
+      anywhere (global scope), though passing values in as parameters is
+      usually the better habit.
+  - term: multiple return values
+    kind: concept
+    definition: A function can return more than one value at once, separated by commas, and unpack them the same way on the receiving end.
+    example: "def example():\n    return 10, 20\n\na, b = example()"
+  - term: linear search
+    kind: concept
+    definition: Checks each element one by one until it finds the target or runs out of list. Works on unsorted data.
+  - term: "O(n)"
+    kind: concept
+    definition: >
+      "Order n" — the time an algorithm takes grows directly with the
+      size of its input. Linear search is O(n): doubling the list roughly
+      doubles the worst-case comparisons.
+  - term: binary search
+    kind: concept
+    definition: >
+      Repeatedly checks the middle of a sorted range and eliminates half
+      the remaining possibilities — only works on sorted data, but is
+      dramatically faster than linear search.
+  - term: "O(log n)"
+    kind: concept
+    definition: >
+      The time an algorithm takes grows with the logarithm of its input
+      size. Binary search is O(log n): a million items takes about 20
+      comparisons, not a million.
+  - term: divide and conquer
+    kind: concept
+    definition: Split a problem into smaller pieces, solve the pieces, and combine the results. Binary search is the first example of it here.

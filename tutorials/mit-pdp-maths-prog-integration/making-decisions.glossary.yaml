@@ -1,0 +1,43 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# "iteration" is named in this tutorial's own reflection ("The third --
+# *iteration* (repetition) -- comes next") but deliberately left out: that
+# sentence describes what the *next* tutorial teaches, not this one.
+entries:
+  - term: comparison operators
+    kind: operator
+    definition: >
+      >, <, >=, <=, ==, != — each produces True or False. == is
+      comparison ("are these equal?"); = is assignment. Mixing the two up
+      is one of the most common mistakes in programming.
+  - term: if statement
+    kind: keyword
+    definition: Runs its indented body only when a condition is True. Everything else continues regardless.
+    example: 'if temperature > 30:\n    print("hot")'
+  - term: if-else
+    kind: keyword
+    definition: Runs one body when the condition is True, the other when it is False. Between them, every case is covered.
+  - term: elif
+    kind: keyword
+    definition: >
+      Short for "else if" — chains another condition onto an if. Python
+      checks each one top to bottom and runs the first that is True,
+      skipping the rest, so order matters.
+  - term: and, or, not
+    kind: operator
+    definition: >
+      Combine or invert conditions. "and" needs both sides True; "or"
+      needs at least one; "not" flips True and False. Evaluated in that
+      precedence order — not, then and, then or.
+  - term: selection structures
+    kind: concept
+    definition: The name for if/elif/else and the like — code that chooses between paths, rather than running every line every time.
+  - term: sequential execution
+    kind: concept
+    definition: Running every line from top to bottom, every time — what a program does before it has any selection structures in it.
+  - term: "natural numbers, integers, rationals, reals (N, Z, Q, R)"
+    kind: concept
+    definition: >
+      Nested number families, each containing the last: every natural
+      number is an integer, every integer a rational, every rational a
+      real.
