@@ -562,6 +562,52 @@ class TestCodeCompletion:
         assert "list" in cell.inner_text()
 
 
+class TestCrepeIsActuallyThemed:
+    """Crepe's own structural stylesheet (imported alone, without one of its
+    skins — see the comment above `.dl-editor-body .milkdown` in
+    tutorial-style.css) reads roughly two dozen --crepe-* custom properties
+    that only a skin would otherwise define. Undefined, a `var()` reference
+    with no fallback is invalid at computed-value time and resolves to the
+    property's own initial value instead of anything Crepe intended — which
+    silently produced two real, live bugs rather than merely wrong colours:
+    a fully transparent slash menu, and no visible text cursor at all
+    (Crepe wires up `prosemirror-virtual-cursor` for a consistent caret
+    across browsers, which hides the native one and draws its own — and
+    that replacement's own colour comes from one of the same undefined
+    variables). DECISIONS_LOG.md 7.63 has the fuller account."""
+
+    def open_first(self, editor):
+        editor.click('.dl-editor-card[data-slug="first-steps"] .dl-editor-open')
+        editor.wait_for_selector(".dl-editor-body .ProseMirror")
+
+    def test_the_slash_menu_is_not_transparent(self, editor):
+        self.open_first(editor)
+        editor.click(".dl-editor-body .ProseMirror p:has-text('Prose.')")
+        editor.keyboard.press("End")
+        editor.keyboard.type("\n/")
+        editor.wait_for_selector(".milkdown-slash-menu[data-show='true']")
+        background = editor.eval_on_selector(
+            ".milkdown-slash-menu", "el => getComputedStyle(el).backgroundColor")
+        assert background not in ("rgba(0, 0, 0, 0)", "transparent")
+
+    def test_a_visible_cursor_is_drawn_in_place_of_the_hidden_native_one(self, editor):
+        """caret-color: transparent on the ProseMirror element itself is
+        correct and expected — prosemirror-virtual-cursor hides the native
+        caret on purpose so it can draw its own, consistently-styled one in
+        its place; this checks that replacement is actually visible, not
+        that the native caret is (it deliberately is not)."""
+        self.open_first(editor)
+        editor.click(".dl-editor-body .ProseMirror p:has-text('Prose.')")
+        editor.wait_for_selector(".dl-editor-body .prosemirror-virtual-cursor")
+        info = editor.eval_on_selector(
+            ".dl-editor-body .prosemirror-virtual-cursor",
+            "el => { const cs = getComputedStyle(el); "
+            "return {color: cs.borderLeftColor, opacity: cs.opacity, width: el.getBoundingClientRect().width}; }")
+        assert info["color"] not in ("rgba(0, 0, 0, 0)", "transparent")
+        assert float(info["opacity"]) > 0
+        assert info["width"] > 0
+
+
 class TestCommitting:
     def test_a_reorder_commits_the_order_file_and_opens_a_pull_request(self, editor):
         editor.click('.dl-editor-card[data-slug="next-steps"] .dl-editor-up')

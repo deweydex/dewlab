@@ -1285,6 +1285,66 @@ p code, li code {
   border-radius: 6px;
   background: var(--dl-output-bg);
 }
+/* Crepe's structural stylesheet (imported above) is written to be paired
+ * with one of its own skins, which is what actually defines every
+ * --crepe-color-*, --crepe-font-* and --crepe-shadow-* custom property it
+ * reads
+ * — main text colour, popover surfaces, hover/selected backgrounds, the
+ * virtual text cursor's own colour, all of it. None of Crepe's skins are
+ * loaded here (this file retextures from --dl-* instead, see the comment
+ * below), so every one of those custom properties was undefined: a
+ * property whose value is `var(--undefined-thing)` with no fallback is
+ * invalid at computed-value time, which resolves it to that property's
+ * *initial* value rather than anything Crepe intended. Two of those
+ * silently produced real, live bugs rather than merely wrong colours: the
+ * slash menu's `background: var(--crepe-color-surface)` came out fully
+ * transparent (background's initial value) and sat unreadable over
+ * whatever text was behind it, and the virtual cursor package Crepe wires
+ * up for a consistent caret (`prosemirror-virtual-cursor`, cursor.css)
+ * draws its own fake caret in `border-color:
+ * var(--prosemirror-virtual-cursor-color)`, which cursor.css itself
+ * redefines to `var(--crepe-color-outline)` — also undefined, so the
+ * replacement caret it draws to replace the native one it hides
+ * (`caret-color: transparent`, on purpose, is how that package works) came
+ * out invisible too, which is why no cursor appeared to type at all. Both
+ * found live, not read off the CSS — DECISIONS_LOG.md 7.63 has the fuller
+ * account, including how they were tracked down.
+ *
+ * Defining the properties themselves, once, here, is the fix: every
+ * downstream `var(--crepe-color-surface)` and the like across Crepe's own
+ * CSS (popovers, hover states, the code block's own surface, the table and
+ * image-block features, even ones this editor doesn't currently enable)
+ * resolves correctly from this one place, rather than this file chasing
+ * each broken consumer individually — the .milkdown-block-handle /
+ * .milkdown-slash-menu rule further down used to do exactly that chasing,
+ * for four classes, and still missed the cursor. Scoped to `.milkdown`
+ * (the element Crepe's own skins target) under `.dl-editor-body` so it
+ * cannot leak to a future `.milkdown` mount elsewhere on the site. */
+.dl-editor-body .milkdown {
+  --crepe-color-background: var(--dl-output-bg);
+  --crepe-color-on-background: var(--dl-fg);
+  --crepe-color-surface: var(--dl-panel-bg);
+  --crepe-color-surface-low: var(--dl-cell-bg);
+  --crepe-color-on-surface: var(--dl-fg);
+  --crepe-color-on-surface-variant: var(--dl-muted);
+  --crepe-color-outline: var(--dl-muted);
+  --crepe-color-primary: var(--dl-orange);
+  --crepe-color-secondary: var(--dl-cell-bg);
+  --crepe-color-on-secondary: var(--dl-fg);
+  --crepe-color-inverse: var(--dl-fg);
+  --crepe-color-on-inverse: var(--dl-bg);
+  --crepe-color-hover: var(--dl-cell-bg);
+  --crepe-color-selected: var(--dl-cell-bg);
+  --crepe-color-inline-area: var(--dl-cell-bg);
+  --crepe-color-inline-code: var(--dl-fg);
+  --crepe-color-diff-added-bg: var(--dl-pass-bg);
+  --crepe-color-diff-removed-bg: var(--dl-error-bg);
+  --crepe-font-title: var(--dl-font-family);
+  --crepe-font-default: var(--dl-font-family);
+  --crepe-font-code: var(--dl-mono);
+  --crepe-shadow-1: 0 4px 14px var(--dl-shadow);
+  --crepe-shadow-2: 0 8px 24px var(--dl-shadow);
+}
 .dl-editor-body .ProseMirror {
   font-family: var(--dl-font-family);
   font-size: 0.98rem;
@@ -1340,22 +1400,21 @@ p code, li code {
 .dl-editor-body .ProseMirror ul, .dl-editor-body .ProseMirror ol { padding-left: 1.3rem; }
 .dl-editor-body .milkdown-list-item-block .label-wrapper { color: var(--dl-muted); }
 
-/* Block handle, slash menu, and the link/latex edit popovers are the editor's
- * own floating UI, positioned by Crepe — only their colours are dewlab's. */
+/* Block handle, slash menu, and the link/latex edit popovers are the
+ * editor's own floating UI, positioned by Crepe and now correctly coloured
+ * by the --crepe-* variables defined above — a border is the one thing
+ * added here, since Crepe's own popovers rely on box-shadow alone for
+ * definition against the page behind them and this editor wants a crisper
+ * edge than that gives on a plain-coloured background. */
 .dl-editor-body .milkdown-block-handle,
 .dl-editor-body .milkdown-slash-menu,
 .dl-editor-body .milkdown-link-edit,
 .dl-editor-body .milkdown-link-preview,
 .dl-editor-body .milkdown-latex-inline-edit {
-  background: var(--dl-panel-bg);
   border: 1px solid var(--dl-cell-border);
-  border-radius: 6px;
-  box-shadow: 0 4px 14px var(--dl-shadow);
-  color: var(--dl-fg);
 }
 .dl-editor-body .milkdown-slash-menu .operation-item:hover,
 .dl-editor-body .milkdown-slash-menu .operation-item.selected {
-  background: var(--dl-cell-bg);
   color: var(--dl-orange);
 }
 .dl-editor-meta pre { font-size: 0.75rem; overflow-x: auto; }
