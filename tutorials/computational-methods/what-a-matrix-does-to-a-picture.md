@@ -75,8 +75,8 @@ print(transformed)
 
 ### Your turn
 
-Plot `square` and `transformed` on the same axes, in two different colours.
-What did `stretch` actually do to the picture?
+How would you plot `square` and `transformed` on the same axes, in two
+different colours? What did `stretch` actually do to the picture?
 
 ```python exec
 id: where-do-the-corners-go-3
@@ -143,8 +143,8 @@ tell you what the matrix does to every other point.
 
 ### Your turn
 
-Look at `shear` above and read its columns directly: $(1,0) \to (1,0)$,
-$(0,1) \to (1,1)$. Does that match the picture the shear cell drew — does the
+What do you get if you read `shear`'s columns directly: $(1,0) \to (1,0)$,
+$(0,1) \to (1,1)$? Does that match the picture the shear cell drew — does the
 bottom edge of the square stay put, and does the top edge shift?
 
 ```python exec

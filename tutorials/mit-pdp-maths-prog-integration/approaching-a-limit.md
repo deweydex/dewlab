@@ -122,7 +122,7 @@ So **this limit does not exist** — not because the calculation is hard, but be
 
 ### Your turn
 
-Find the limit of `(x² − 4)/(x − 2)` as `x` approaches 2, by trying values from both sides. Then factorise the top and see whether the answer makes sense.
+What is the limit of `(x² − 4)/(x − 2)` as `x` approaches 2? Try values from both sides, then factorise the top and see whether the answer makes sense.
 
 ```python exec
 id: your-turn-1
@@ -248,9 +248,9 @@ ax.set_title("Closing in on the speed at one instant")
 
 ### Your turn
 
-Do the same at `t = 3`. What speed is the ball travelling at three seconds in?
+What speed is the ball travelling at three seconds in? Try the same approach at `t = 3`.
 
-Then try `t = 0`, and say whether the answer makes sense for a ball that has just been let go.
+Then try `t = 0` — does the answer make sense for a ball that has just been let go?
 
 ```python exec
 id: your-turn-2
@@ -301,7 +301,7 @@ A limit is what a function is heading towards, whether or not it ever gets there
 
 **Numbers show you the answer; algebra proves it.** And past about fifteen decimal places, the numbers stop showing you anything at all.
 
-Write a few sentences: in your own words, what is the difference between "f(1) = 2" and "the limit of f as x approaches 1 is 2"?
+In a few sentences and in your own words, what is the difference between "f(1) = 2" and "the limit of f as x approaches 1 is 2"?
 
 ## Where to Read More
 

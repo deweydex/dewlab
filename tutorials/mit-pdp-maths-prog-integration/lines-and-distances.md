@@ -131,7 +131,7 @@ Nobody had to mention geometry for that to be useful.
 
 ### Your turn
 
-A phone plan costs €15 a month plus 8 cent a minute. Write it as a line, plot it, and confirm that computing the slope from any two points on your plot gives you back the 8 cent.
+A phone plan costs €15 a month plus 8 cent a minute. How would you write it as a line? Plot it, and confirm that computing the slope from any two points on your plot gives you back the 8 cent.
 
 ```python exec
 id: your-turn-1
@@ -203,7 +203,7 @@ ax.set_title("And they do meet at a right angle")
 
 ### Your turn
 
-Given the line `y = 4x − 1` and the point `(2, 3)`, find the line through that point at right angles to it. Plot both to check.
+Given the line `y = 4x − 1` and the point `(2, 3)`, what is the line through that point at right angles to it? Plot both to check.
 
 ```python exec
 id: your-turn-2
@@ -293,7 +293,7 @@ print(to_slope_intercept(1, 0, -3))
 
 ### Your turn
 
-Convert these to `ax + by + c = 0`, and say which of them could not have been written as `y = mx + c`.
+How would you convert these to `ax + by + c = 0`? Say which of them could not have been written as `y = mx + c`.
 
 - The line through `(0, 4)` with slope `−2`
 - The vertical line through `(−5, 0)`
@@ -471,7 +471,7 @@ Two questions, and both of them turned out to be about the same right-angled tri
 
 **Distance is Pythagoras, and Pythagoras is distance.** You did not learn a theorem and apply it; you asked how far apart two things were and the theorem is what the answer looks like.
 
-Write a few sentences: of the three ways to write a line, which would you use to describe the edge of a building on a map, and why?
+In a few sentences, of the three ways to write a line, which would you use to describe the edge of a building on a map, and why?
 
 ## Where to Read More
 

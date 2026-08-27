@@ -108,7 +108,7 @@ Nothing new is being defined here. The diagram is giving the operations from *Se
 
 ### Your turn
 
-Using the two sets above, write the expression for each of these, then check what it gives.
+Using the two sets above, how would you write the expression for each of these? Check what it gives.
 
 - People who own exactly one of the two (a bike or a car, but not both).
 - People who own neither, given that everybody in the class is `{"Aoife", "Ben", "Cara", "Dara", "Eoin", "Fiona", "Gearoid", "Hannah"}`.
@@ -182,7 +182,7 @@ Find those people on the diagram above. They are the two top regions and the one
 
 ### Your turn
 
-Two expressions that look different. Are they the same set? Answer from the picture first, then check.
+Two expressions that look different. Are they the same set? Predict from the picture first, then check.
 
 ```python exec
 id: your-turn-2
@@ -252,7 +252,7 @@ Three things.
 
 **It runs out at four.** Not because the drawing is bad, but because of a fact about circles — and the operations carry on regardless.
 
-Write a few sentences: think of three overlapping groups you belong to. Which regions of that diagram have people in them, and which are empty?
+In a few sentences, think of three overlapping groups you belong to. Which regions of that diagram have people in them, and which are empty?
 
 ## Where to Read More
 

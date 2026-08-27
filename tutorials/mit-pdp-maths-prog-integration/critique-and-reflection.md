@@ -23,7 +23,7 @@ This tutorial has no single right moment. Come back to it whenever you have fini
 
 ## Part 1: Reading Your Own Code
 
-Open your own work alongside this page -- whatever you built most recently. Read through it as if you were seeing it for the first time. Then answer these questions honestly in the cells below.
+Try opening your own work alongside this page — whatever you built most recently — and reading through it as if you were seeing it for the first time. Then answer these questions honestly in the cells below.
 
 What would you change if you were starting over? Not "what did I get wrong" but "what would I do differently now that I have been through the process?"
 
@@ -39,7 +39,7 @@ id: part-1-reading-your-own-code-2
 # Where you got stuck and how you moved through it
 ```
 
-Look at your variable names, your comments, and your function structure. If a classmate read your code with no other context, would they understand what each piece does and why? Be specific about which parts are clear and which are not.
+What do your variable names, comments, and function structure tell you? If a classmate read your code with no other context, would they understand what each piece does and why? Be specific about which parts are clear and which are not.
 
 ```python exec
 id: part-1-reading-your-own-code-3
@@ -57,14 +57,14 @@ id: part-2-reading-someone-elses-code-1
 # Your observations on their structure
 ```
 
-Find one thing they did that you think is particularly clear or clever. What makes it work well?
+What's one thing they did that you think is particularly clear or clever? What makes it work well?
 
 ```python exec
 id: part-2-reading-someone-elses-code-2
 # Something that works well in their code
 ```
 
-Find one place where you were confused or had to read twice. Describe what was confusing -- not to criticise, but to help them see it through fresh eyes.
+Where were you confused, or did you have to read twice? Describe what was confusing — not to criticise, but to help them see it through fresh eyes.
 
 ```python exec
 id: part-2-reading-someone-elses-code-3
@@ -77,7 +77,7 @@ From here the emphasis shifts. You already know how to write functions, use loop
 
 The programming will feel familiar. The mathematics will be new for some of you. The key insight we will keep returning to is that *writing a function to compute something is one of the best ways to understand that something*. If you can explain a concept clearly enough to write code for it, you understand it.
 
-Write a few sentences about what you are curious about or apprehensive about as we move into the next section:
+In a few sentences, what are you curious about or apprehensive about as we move into the next section?
 
 ```python exec
 id: part-3-looking-ahead-1

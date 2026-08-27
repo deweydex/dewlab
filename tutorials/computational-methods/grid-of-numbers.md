@@ -136,8 +136,9 @@ by it. $k\begin{bmatrix} a & b \\ c & d \end{bmatrix} = \begin{bmatrix} ka & kb 
 
 ### Your turn
 
-Write `scale(k, m)`, and use it together with `add` (or a `subtract` you write
-the same way) to work out `3A` and `2B - A` from the matrices above.
+How might you write `scale(k, m)`? Use it together with `add` (or a
+`subtract` you write the same way) to work out `3A` and `2B - A` from the
+matrices above.
 
 ```python exec
 id: scaling-and-the-shape-rule-1
@@ -167,11 +168,11 @@ inside a loop, rather than the actual problem, which is that the two matrices
 were never addable in the first place.
 
 A matrix has a *shape* — its number of rows and columns — and addition is only
-defined when both matrices have the same shape. Add one line to the top of
-your `add` that checks `len(a) == len(b) and len(a[0]) == len(b[0])`, and
-raises a `ValueError` with a message that says what actually went wrong if it
-does not. Then `add(A, D)` fails immediately, with an error that tells you why
-instead of where.
+defined when both matrices have the same shape. What if you added one line to
+the top of your `add` that checks `len(a) == len(b) and len(a[0]) == len(b[0])`,
+and raises a `ValueError` with a message that says what actually went wrong if
+it does not? Then `add(A, D)` fails immediately, with an error that tells you
+why instead of where.
 
 ```python exec
 id: scaling-and-the-shape-rule-4
@@ -199,10 +200,10 @@ swapped — the first *column* of `M` written out as the first *row*?
 
 ### Your turn
 
-Write `transpose(m)`, which returns a new matrix where row $i$, column $j$
-holds what used to be at row $j$, column $i$. Try it on `M` above, and check
-the shape of the result — it should come out 3 rows by 2 columns, the other
-way round from `M`.
+How might you write `transpose(m)`, returning a new matrix where row $i$,
+column $j$ holds what used to be at row $j$, column $i$? Try it on `M` above,
+and check the shape of the result — it should come out 3 rows by 2 columns,
+the other way round from `M`.
 
 ```python exec
 id: turning-it-sideways-the-transpose-2

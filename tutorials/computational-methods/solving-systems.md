@@ -67,8 +67,8 @@ numbers.
 
 ### Your turn
 
-Confirm it: solve $2x + 3y = 7$ and $x - y = 1$ by substitution, on paper,
-and check that it agrees with the cell above.
+Can you confirm it? Solve $2x + 3y = 7$ and $x - y = 1$ by substitution, on
+paper, and check that it agrees with the cell above.
 
 ```python exec
 id: a-system-you-can-already-solve-2
@@ -136,9 +136,9 @@ The last row now says one thing about one unknown: $-7z = -21$.
 
 ### Your turn
 
-Work back up the staircase. Solve the last row for $z$. Substitute that into
-row 2, which now only has $y$ and $z$ in it, and solve for $y$. Substitute
-both into row 1 and solve for $x$.
+How would you work back up the staircase? Solve the last row for $z$,
+substitute that into row 2 — which now only has $y$ and $z$ in it — to get
+$y$, then substitute both into row 1 to get $x$.
 
 ```python exec
 id: reading-off-the-answer-1
@@ -159,9 +159,9 @@ any row operation touched them.
 
 ### Your turn
 
-Substitute your answer into all three of the original equations —
-$x+y+z$, $2x-y+z$, and $x+2y-z$ — and confirm each gives the right-hand side
-it is supposed to: 6, 3, and 2.
+What happens when you substitute your answer into all three of the original
+equations — $x+y+z$, $2x-y+z$, and $x+2y-z$? Confirm each gives the
+right-hand side it is supposed to: 6, 3, and 2.
 
 ```python exec
 id: checking-your-work-1

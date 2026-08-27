@@ -59,7 +59,7 @@ Each captures a different notion of "typical," and they can give quite different
 
 ### Your turn
 
-Write three functions: `mean(data)`, `median(data)`, and `mode(data)`.
+Let's write three functions: `mean(data)`, `median(data)`, and `mode(data)`.
 
 For `mean`, you have already written this -- bring it forward or rewrite it. For `median`, you will need to sort the data first (use Python's built-in `sorted()` -- we earned that right after building our own sorts). For `mode`, think about how to count how many times each value appears. A dictionary is a natural tool here:
 
@@ -107,7 +107,7 @@ print("Mode:", mode(scores))
 
 Do your three measures agree? Are they close together or far apart? When they differ, what does that tell us about the shape of the data?
 
-Write your interpretation:
+What's your interpretation?
 
 ### When measures disagree
 
@@ -139,7 +139,7 @@ The formula looks complicated, but the idea is straightforward: find each value'
 
 ### Your turn
 
-Write `data_range(data)` and `std_dev(data)`. For `std_dev`, break the calculation into steps:
+Let's write `data_range(data)` and `std_dev(data)`. For `std_dev`, break the calculation into steps:
 
 **Pseudocode:**
 ```
@@ -172,7 +172,7 @@ A standard deviation of about 5-6 on data with a mean around 38 tells us that mo
 
 ### Your turn
 
-Create two artificial datasets with the same mean but very different standard deviations. Verify using your functions.
+See if you can create two artificial datasets with the same mean but very different standard deviations, then verify using your functions.
 
 ```python exec
 id: your-turn-9
@@ -193,7 +193,7 @@ Not all data is the same. Before applying statistical tools, we need to know wha
 
 ### Your turn
 
-For each of the following, identify the data type and state which measures of central tendency (mean, median, mode) are appropriate:
+For each of the following, what data type is it, and which measures of central tendency (mean, median, mode) would be appropriate?
 
 1. The brands of laptops in a classroom
 2. Student satisfaction ratings (1 to 5)
@@ -217,7 +217,7 @@ For discrete data with few unique values, we can count each one directly. For co
 
 ### Your turn
 
-Write a function `frequency_table(data, num_bins)` that divides the range of the data into `num_bins` equal-width bins and counts how many values fall in each. Return the result as a list of tuples, where each tuple contains the bin range and the count.
+How might you write a function `frequency_table(data, num_bins)` that divides the range of the data into `num_bins` equal-width bins and counts how many values fall in each? Return the result as a list of tuples, where each tuple contains the bin range and the count.
 
 **Pseudocode:**
 ```
@@ -264,7 +264,7 @@ The `hist()` function does the binning and plotting for us. The `edgecolor` make
 
 ### Your turn
 
-Create a histogram with different numbers of bins (try 3, 5, 8, and 12). How does the number of bins affect what you see? Too few bins hides detail; too many bins creates noise. Finding the right balance is part of the art of data analysis.
+What happens when you create a histogram with different numbers of bins (try 3, 5, 8, and 12)? Too few bins hides detail; too many bins creates noise. Finding the right balance is part of the art of data analysis.
 
 ```python exec
 id: your-turn-13
@@ -278,7 +278,7 @@ When you look at a histogram, consider:
 - Is there a single peak (unimodal) or multiple peaks?
 - Are there gaps or outliers?
 
-Write your observations about the score distribution:
+What do you observe about the score distribution?
 
 ## A note on limitations
 

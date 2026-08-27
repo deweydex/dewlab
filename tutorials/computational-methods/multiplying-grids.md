@@ -44,8 +44,9 @@ $1(4) + 2(5) + 3(6)$ — and you have the *dot product* of `a` and `b`.
 
 ### Your turn
 
-Write `dot(a, b)`, returning that single number. A comprehension over
-`zip(a, b)` does it in one line, or a loop does it in three.
+How might you write `dot(a, b)`, returning that single number? A
+comprehension over `zip(a, b)` does it in one line, or a loop does it in
+three.
 
 ```python exec
 id: the-dot-product-first-2
@@ -63,8 +64,8 @@ id: the-dot-product-first-3
 Nothing raises, and that is worth being suspicious of. `zip` quietly stops at
 the shorter list, so `dot` silently used only the first two entries of `a`
 and ignored the third — no error, no warning, just a wrong-shaped answer that
-looks exactly like a right one. Add a check at the top of `dot` — `if len(a) != len(b): raise ValueError(...)` — so that a length
-mismatch is loud instead of silent.
+looks exactly like a right one. What if you added a check at the top of `dot` — `if len(a) != len(b): raise ValueError(...)` — so that a length
+mismatch is loud instead of silent?
 
 ```python exec
 id: the-dot-product-first-4
@@ -94,9 +95,9 @@ def transpose(m):
 
 ### Your turn
 
-Write `multiply(a, b)`, using your own `dot` and `transpose`. For every row
-of `a`, and every column of `b` — which is every row of `transpose(b)` — the
-entry of the result is `dot(row, column)`.
+How might you write `multiply(a, b)`, using your own `dot` and `transpose`?
+For every row of `a`, and every column of `b` — which is every row of
+`transpose(b)` — the entry of the result is `dot(row, column)`.
 
 ```python exec
 id: multiplying-two-grids-2
@@ -152,9 +153,9 @@ of matrices" breaks down.
 
 ### Your turn
 
-Pick any two 2×2 matrices of your own and confirm the same thing — does
-`multiply` ever give you the same answer both ways? Try a pair where you
-suspect it might, before trying a pair where you are sure it will not.
+Pick any two 2×2 matrices of your own — does `multiply` ever give you the
+same answer both ways? Try a pair where you suspect it might, before trying a
+pair where you are sure it will not.
 
 ```python exec
 id: order-matters-2
@@ -168,8 +169,8 @@ the matrix equivalent of multiplying a number by 1?
 
 ### Your turn
 
-Construct a 3×3 matrix `I3` that you think should have this property, and
-test it against some matrix `C` of your choosing: does `multiply(C, I3)`
+What 3×3 matrix `I3` do you think should have this property? Construct it,
+and test it against some matrix `C` of your choosing: does `multiply(C, I3)`
 equal `C`? Does `multiply(I3, C)`?
 
 ```python exec

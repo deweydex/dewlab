@@ -82,7 +82,7 @@ Notice what `from_binary` is doing: it walks along the string, doubling what it 
 
 An ENIAC operator has left a message, written as ASCII character codes in binary. Each group of eight digits is one letter's code -- `01001000` is 72, and 72 is `H`.
 
-Write `decode_binary_message(groups)`. For each group, convert it to a number with `from_binary`, turn that number into a character with `chr`, and join the characters together.
+How might you write `decode_binary_message(groups)`? For each group, convert it to a number with `from_binary`, turn that number into a character with `chr`, and join the characters together.
 
 ```python exec
 id: your-turn-1
@@ -212,7 +212,7 @@ None of them is correct and the others wrong. They are habits of thought, and wh
 
 ### Your turn
 
-Three snippets below, all adding up a shopping basket. For each one, say which paradigm it is closest to and -- this is the part that matters -- *what specific feature of the code told you*.
+Three snippets below, all adding up a shopping basket. For each one, which paradigm is it closest to — and, this is the part that matters, *what specific feature of the code told you*?
 
 ```python exec
 id: your-turn-3
@@ -291,7 +291,7 @@ Two threads run through all of it and are worth naming.
 
 **Notation is a tool with a purpose.** Hexadecimal is not a fact about computers, it is a decision about legibility -- and knowing why it was made is more useful than knowing the conversion table.
 
-Write a few sentences on this: which of the steps in this tutorial do you think made the biggest difference to what a person could build, and why?
+In a few sentences, which of the steps in this tutorial do you think made the biggest difference to what a person could build, and why?
 
 ## Where to Read More
 

@@ -66,7 +66,7 @@ Now the awkward part. **The marker frequently points after the real error, not a
 
 ### Your turn
 
-Four broken lines. Fix them one at a time -- run, read, repair, run again. Do them in order and pay attention to how the message differs each time.
+Four broken lines below. See if you can fix them one at a time — run, read, repair, run again — in order, paying attention to how the message differs each time.
 
 ```python exec
 id: your-turn-1
@@ -182,7 +182,7 @@ So the bottom tells you *what happened*, and the frames above tell you *how it c
 
 ### Your turn
 
-Run this. Read the traceback, then say -- in a comment -- which line is *responsible*, as opposed to which line failed.
+Run this and read the traceback — which line is *responsible*, as opposed to which line failed? Say so in a comment.
 
 ```python exec
 id: your-turn-8
@@ -250,7 +250,7 @@ The first uses `>` where it means `>=`, so a student on exactly the pass mark fa
 
 ### Your turn
 
-Each of these runs and each is wrong. Find the mistake by working out the right answer yourself first, then comparing.
+Each of these runs and each is wrong. Can you find the mistake? Work out the right answer yourself first, then compare.
 
 ```python exec
 id: your-turn-9
@@ -290,7 +290,7 @@ Three kinds of wrong, and each is found a different way.
 
 There is one more thing worth saying, and it is about the feeling rather than the technique. An error message is not a rebuke. It is the most specific, most patient help you will get from anything all day: an exact location, an exact category, and usually a description of the fix. Learning to read one calmly is a real skill, and it is one you can practise deliberately by doing exactly what this tutorial did -- breaking things on purpose, when nothing is at stake.
 
-Write a few sentences: which of the three kinds do you expect to give you the most trouble, and what could you do while writing code to catch it earlier?
+In a few sentences, which of the three kinds do you expect to give you the most trouble, and what could you do while writing code to catch it earlier?
 
 ## Where to Read More
 

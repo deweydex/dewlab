@@ -182,7 +182,7 @@ Zero at −3, exactly where completing the square put the vertex. **Two complete
 
 ### Your turn
 
-Find the turning points of `x³ − 3x` by looking for where its slope is zero.
+Where are the turning points of `x³ − 3x`? Look for where its slope is zero.
 
 ```python exec
 id: your-turn-1
@@ -312,7 +312,7 @@ There is a sanity check available here. `x² · x³` is `x⁵`, whose derivative
 
 ### Your turn
 
-Differentiate these by hand, then check each numerically.
+How would you differentiate these by hand? Work them out, then check each numerically.
 
 - `3x⁴ − 2x + 7`
 - `(x + 1)(x² − 3)`
@@ -353,7 +353,7 @@ The intuition is about rates stacking. If `u` changes three times as fast as `x`
 
 ### Your turn
 
-Differentiate `(3x + 2)⁵` using the chain rule, then check.
+How might you differentiate `(3x + 2)⁵` using the chain rule? Work it out, then check.
 
 ```python exec
 id: your-turn-3
@@ -382,7 +382,7 @@ The slope of a curve at a single point, which is a limit, which is what made the
 
 **The rules save you the limit.** Bring the power down and reduce it by one; sums come apart; products do not, and need `f′g + fg′`; nesting multiplies the rates.
 
-Write a few sentences: pick something that changes over time — a bank balance, a temperature, a download. What would its derivative be, in words, and what units would it have?
+In a few sentences, pick something that changes over time — a bank balance, a temperature, a download. What would its derivative be, in words, and what units would it have?
 
 ## Where to Read More
 

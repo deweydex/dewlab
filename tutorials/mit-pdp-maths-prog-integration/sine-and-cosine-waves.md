@@ -111,7 +111,7 @@ The proper word is **periodic**, and the length of one repeat is the **period**.
 
 ### Your turn
 
-Without plotting anything: what is `sin(10π)`? And `cos(4π)`? Say why, then check.
+Without plotting anything: what is `sin(10π)`? And `cos(4π)`? What's your reasoning — then check.
 
 ```python exec
 id: your-turn-1
@@ -196,7 +196,7 @@ ax.set_title("A wave with all four numbers set")
 
 ### Your turn
 
-Four waves below, drawn without their numbers shown. For each one, work out the four numbers by reading the picture, then plot your version over the original and see whether it lands.
+Four waves below, drawn without their numbers shown. For each one, how might you work out the four numbers by reading the picture? Plot your version over the original and see whether it lands.
 
 ```python exec
 id: your-turn-2
@@ -279,7 +279,7 @@ Not perfect, and close enough to be useful. Each of the four numbers was read st
 
 ### Your turn
 
-Adjust the four numbers until the curve sits better on the points. There is no formula for this — look at where it is wrong and change the number responsible.
+See if you can adjust the four numbers until the curve sits better on the points. There is no formula for this — look at where it is wrong and change the number responsible.
 
 ```python exec
 id: your-turn-4
@@ -331,7 +331,7 @@ The circle, laid out flat.
 
 **Tangent is not one of these.** It repeats without swinging, and it breaks where the slope of a vertical line breaks.
 
-Write a few sentences: name something in your own life that repeats. Would it plot as a wave, and if not, what would be different about its shape?
+In a few sentences, name something in your own life that repeats. Would it plot as a wave, and if not, what would be different about its shape?
 
 ## Where to Read More
 
