@@ -20,6 +20,7 @@ import "@milkdown/crepe/theme/common/style.css";
 import { keymap } from "@codemirror/view";
 import { autocompletion, completionKeymap } from "@codemirror/autocomplete";
 import { localCompletionSource, globalCompletion } from "@codemirror/lang-python";
+import { editorViewCtx, schemaCtx } from "@milkdown/core";
 
 /* A hover-docstring tooltip for `module.name` (plt.plot, pd.DataFrame, …),
  * reading dev/generate_doc_snippets.py's output — assets/editor-doc-snippets.js,
@@ -111,6 +112,37 @@ export function createProseEditor(parent, doc, { onChange = null, spellcheck = t
      * about to commit, about to release — reads it here rather than trusting
      * the last onChange it received. */
     getMarkdown: () => crepe.getMarkdown(),
+    /* Inserts a `[title](href)` link at the current selection, replacing it
+     * if anything is selected — used for the tutorial link picker
+     * (assets/editor.js), which knows `title` and `href`
+     * (`tutorial:slug#anchor`) as separate values from a search result and
+     * needs the link to land wherever the author's cursor already is, not
+     * appended at the document's end.
+     *
+     * Not built from `@milkdown/utils`'s own insert(markdown, true): that
+     * helper round-trips the parsed content through a real DOM node (dom =
+     * DOMSerializer...serializeFragment(...), then DOMParser...parseSlice(dom))
+     * before inserting it, and the commonmark preset's link toDOM sanitizes
+     * `href` to empty for any scheme outside http/https/mailto/tel/ftp
+     * (preset-commonmark's sanitizeLinkHref) — which strips `tutorial:`
+     * before the DOM round-trip's second half ever reads it back. Building
+     * the text node and its link mark directly, with no DOM in between,
+     * carries the real href straight into the document; only rendering a
+     * mark to an actual `<a>` tag sanitizes it, which is the right place for
+     * that check to live (a real anchor's href can navigate the browser; the
+     * mark's own attrs, and what getMarkdown() serializes, are not that). */
+    insertLink: (title, href) => crepe.editor.action((ctx) => {
+      const view = ctx.get(editorViewCtx);
+      const schema = ctx.get(schemaCtx);
+      const node = schema.text(title, [schema.marks.link.create({ href })]);
+      /* inheritMarks: false — true (the default) replaces the node's own
+       * marks with whatever marks are active at the cursor
+       * (prosemirror-state's replaceSelectionWith: `node.mark(...)`, which
+       * overwrites rather than merges), which silently dropped the link
+       * mark this node exists to carry the instant the cursor had no marks
+       * of its own — the common case, including every test below. */
+      view.dispatch(view.state.tr.replaceSelectionWith(node, false).scrollIntoView());
+    }),
     destroy: () => crepe.destroy(),
   };
 }

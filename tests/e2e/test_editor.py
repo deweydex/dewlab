@@ -449,6 +449,81 @@ class TestTutorialLinkChecking:
         assert "3 headings" not in report
 
 
+class TestLinkPicker:
+    """Search-and-insert a `[title](tutorial:slug#anchor)` link
+    (matchTutorials() in assets/editor.js, insertLink() in
+    vendor-src/milkdown-entry.js) rather than typing a slug from memory and
+    finding out it was wrong only from TestTutorialLinkChecking's report,
+    after the fact. Reuses the `links` fixture: first-steps has both a
+    heading and a cell anchor to offer, next-steps sits in a different
+    module, and the two shared-name tutorials give the "lists everything"
+    test something to tell apart."""
+
+    def open(self, tab, slug):
+        tab.click(f'.dl-editor-card[data-slug="{slug}"] .dl-editor-open')
+        tab.wait_for_selector(".dl-editor-body .ProseMirror")
+
+    def open_picker(self, tab):
+        tab.click(".dl-editor-body .ProseMirror")
+        tab.keyboard.press("Control+End")
+        tab.click("text=Link to another tutorial")
+        tab.wait_for_selector(".dl-editor-linkpicker-row")
+
+    def body_of(self, tab) -> str:
+        return tab.evaluate("() => globalThis.dewlabEditor.getBody()")
+
+    def test_opening_the_picker_lists_every_tutorial(self, links):
+        self.open(links, "first-steps")
+        self.open_picker(links)
+        rows = links.inner_text(".dl-editor-linkpicker-results")
+        assert "Next Steps" in rows
+        assert "Shared Name (Third)" in rows
+        assert "Shared Name (Fourth)" in rows
+
+    def test_searching_narrows_to_matching_tutorials(self, links):
+        self.open(links, "first-steps")
+        self.open_picker(links)
+        links.fill(".dl-editor-linkpicker-search", "next")
+        rows = links.locator(".dl-editor-linkpicker-row")
+        assert rows.count() == 1
+        assert "Next Steps" in rows.inner_text()
+
+    def test_a_query_matching_nothing_says_so(self, links):
+        self.open(links, "first-steps")
+        self.open_picker(links)
+        links.fill(".dl-editor-linkpicker-search", "zzzznope")
+        assert "No tutorials match" in links.inner_text(".dl-editor-linkpicker-results")
+
+    def test_picking_a_tutorial_inserts_a_link_to_it(self, links):
+        self.open(links, "first-steps")
+        self.open_picker(links)
+        links.fill(".dl-editor-linkpicker-search", "next")
+        links.click(".dl-editor-linkpicker-pick")
+        assert "[Next Steps](tutorial:next-steps)" in self.body_of(links)
+
+    def test_picking_a_tutorial_closes_the_picker(self, links):
+        self.open(links, "first-steps")
+        self.open_picker(links)
+        links.fill(".dl-editor-linkpicker-search", "next")
+        links.click(".dl-editor-linkpicker-pick")
+        assert not links.is_visible(".dl-editor-linkpicker-row")
+
+    def test_a_heading_and_a_cell_anchor_are_both_offered(self, links):
+        self.open(links, "next-steps")
+        self.open_picker(links)
+        links.fill(".dl-editor-linkpicker-search", "first")
+        results = links.inner_text(".dl-editor-linkpicker-results")
+        assert "a-grid-of-numbers" in results
+        assert "adding-up-1" in results
+
+    def test_picking_an_anchor_inserts_the_anchored_link(self, links):
+        self.open(links, "next-steps")
+        self.open_picker(links)
+        links.fill(".dl-editor-linkpicker-search", "first")
+        links.click('.dl-editor-linkpicker-anchor:text-is("adding-up-1")')
+        assert "[First Steps](tutorial:first-steps#adding-up-1)" in self.body_of(links)
+
+
 class TestCodeCompletion:
     """A `python exec` block is Crepe's own CodeMirror
     (vendor-src/milkdown-entry.js's Feature.CodeMirror config), the same

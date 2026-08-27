@@ -1793,3 +1793,46 @@ trades a faster load for a higher chance of a real GitHub rate-limit
 response on a large enough repository; nothing currently retries or backs
 off if that happens, which would be the next thing to add before raising it
 much.*
+
+**7.62 — The editor gained a search-and-insert tutorial link picker, and it
+uncovered a real bug in `@milkdown/utils`'s own `insert()` helper.**
+`tutorialLinkProblems()` (7.60) catches a `tutorial:slug#anchor` link after
+it is typed wrong; this is the other half — a toggle above the prose editor
+that searches every known tutorial by title, slug or module
+(`matchTutorials()`, `assets/editor.js`) and inserts a real link at the
+cursor, so an author reaches for a tutorial that exists rather than
+remembering a slug and finding out it was wrong from the report afterward.
+
+The first working version used `@milkdown/utils`'s own `insert(markdown,
+true)` — the obvious, documented way to put markdown at a selection — and
+it silently produced a link with no href every time. Two separate bugs, both
+found by asserting on what `getBody()` actually returned in
+`tests/e2e/test_editor.py`'s `TestLinkPicker`, not by trusting either call's
+default behaviour: (1) `insert()`'s inline path round-trips the parsed
+content through a real DOM node — `DOMSerializer.serializeFragment()` then
+`DOMParser.parseSlice()` — before inserting it, and the commonmark preset's
+link mark sanitizes `href` down to empty for any scheme outside
+http/https/mailto/tel/ftp (`sanitizeLinkHref`, a real and correct guard
+against a mark rendering as `<a href="javascript:...">` in the editable
+DOM) — which means it also erases `tutorial:` before the round trip's
+second half ever reads the href back, a case that guard was never meant to
+catch and had no way to tell apart from one it was. (2) Once past that, by
+building the link mark directly instead of going through `insert()`,
+`replaceSelectionWith(node, true)` — `true` is the default — still dropped
+it: `inheritMarks: true` means prosemirror-state's own implementation calls
+`node.mark(marksAtCursor)`, which *replaces* the node's marks with whatever
+is active at the cursor rather than merging, and a cursor at the end of a
+paragraph typically carries none. `insertLink(title, href)`
+(`vendor-src/milkdown-entry.js`) now builds the text node and its link mark
+straight against the schema, with no DOM step in between, and calls
+`replaceSelectionWith(node, false)`.
+
+*Cost to change: small — `matchTutorials()` is a pure function over
+`allTutorials()`'s existing shape (already computed for
+`tutorialLinkProblems()`); the picker itself is plain DOM, no ProseMirror
+plugin surgery, which is why this one shipped where 7.60's hover tooltip did
+not — nothing here depends on Crepe's own code-block internals. Both
+`insertLink()` bugs are worth remembering if anything else in this codebase
+ever reaches for `@milkdown/utils`'s `insert()` for a mark-bearing inline
+node, or for `replaceSelectionWith` at all: check what's active at the
+cursor before assuming `inheritMarks: true` is harmless.*

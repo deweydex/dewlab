@@ -278,6 +278,30 @@ export function tutorialLinkProblems(body, ownModule, all) {
   return found;
 }
 
+/* Which tutorials in `all` a search phrase could mean — the pure half of the
+ * link picker in editorView() below, so a test can drive it without opening
+ * the picker's DOM. Matches title, slug or module, case-insensitively;
+ * ranked so a title match sorts ahead of a slug/module-only one, and a
+ * title starting with the phrase ahead of one merely containing it. An
+ * empty query matches everything, alphabetically by title — that is the
+ * picker's own resting state, meant for browsing rather than only search. */
+export function matchTutorials(query, all) {
+  const q = query.trim().toLowerCase();
+  const ranked = all
+    .map((t) => {
+      if (!q) return { t, score: 0 };
+      const title = t.title.toLowerCase();
+      if (title.includes(q)) return { t, score: title.startsWith(q) ? 0 : 1 };
+      if (t.slug.toLowerCase().includes(q) || t.module.toLowerCase().includes(q)) {
+        return { t, score: 2 };
+      }
+      return null;
+    })
+    .filter(Boolean);
+  ranked.sort((a, b) => a.score - b.score || a.t.title.localeCompare(b.t.title));
+  return ranked.map((r) => r.t);
+}
+
 export function problems(body) {
   /* What the build would refuse, found before the commit rather than after.
    * This is the whole justification for not shipping a visual preview: the
@@ -861,6 +885,73 @@ export function start(root, client, { onStatus = () => {} } = {}) {
     const mount = el("div", { class: "dl-editor-body" });
     const report = el("div", { class: "dl-editor-report", id: "dl-editor-report" });
 
+    /* The link picker: search tutorialAnchors() searched, matchTutorials()
+     * ranked, so an author reaches for a real tutorial and a real anchor
+     * inside it rather than typing `tutorial:some-remembered-slug` from
+     * memory and finding out it was wrong from tutorialLinkProblems() only
+     * after the fact. Inserts through insertLink() (vendor-src/milkdown-
+     * entry.js) at wherever the cursor already is — ProseMirror keeps its
+     * own selection state independent of DOM focus, so it does not matter
+     * that clicking into this search box moved focus away from the prose
+     * editor first. */
+    const linkQuery = el("input", {
+      type: "text", class: "dl-editor-linkpicker-search",
+      placeholder: "Search tutorials to link to…",
+      "aria-label": "Search tutorials to link to",
+      oninput: () => renderLinkResults(linkQuery.value),
+    });
+    const linkResults = el("div", { class: "dl-editor-linkpicker-results" });
+    const linkPicker = el("div", { class: "dl-editor-linkpicker", hidden: "hidden" },
+      linkQuery, linkResults);
+
+    function insertTutorialLink(t, anchor) {
+      const href = anchor ? `tutorial:${t.slug}#${anchor}` : `tutorial:${t.slug}`;
+      state.editor.insertLink(t.title, href);
+      /* markdownUpdated fires a beat after the dispatch that caused it, the
+       * same gap the release button works around above — reading straight
+       * from the editor rather than waiting for onChange keeps the report
+       * and state.files current the instant the link lands, not on the
+       * next tick. */
+      applyEdit(state.editor.getMarkdown());
+      linkPicker.hidden = true;
+      linkQuery.value = "";
+    }
+
+    function renderLinkResults(query) {
+      linkResults.replaceChildren();
+      const matches = matchTutorials(query, allTutorials());
+      if (!matches.length) {
+        linkResults.append(el("p", { class: "dl-editor-linkpicker-empty" }, "No tutorials match."));
+        return;
+      }
+      /* A handful, not the whole course — this is a search box, and a list
+       * of everything defeats the point of one. */
+      for (const t of matches.slice(0, 8)) {
+        const anchors = [...t.anchors].sort();
+        linkResults.append(el("div", { class: "dl-editor-linkpicker-row" },
+          el("button", {
+            type: "button", class: "dl-editor-linkpicker-pick",
+            title: `Insert a link to ${t.title}`,
+            onclick: () => insertTutorialLink(t),
+          }, t.title, " ", el("span", { class: "dl-editor-linkpicker-where" }, `${t.module}/${t.slug}`)),
+          anchors.length ? el("span", { class: "dl-editor-linkpicker-anchors" },
+            ...anchors.map((a) => el("button", {
+              type: "button", class: "dl-editor-linkpicker-anchor",
+              title: `Link to "${a}" in ${t.title}`,
+              onclick: () => insertTutorialLink(t, a),
+            }, a))) : null,
+        ));
+      }
+    }
+
+    const linkToggle = el("button", {
+      type: "button", class: "dl-editor-linkpicker-toggle",
+      onclick: () => {
+        linkPicker.hidden = !linkPicker.hidden;
+        if (!linkPicker.hidden) { renderLinkResults(""); linkQuery.focus(); }
+      },
+    }, "Link to another tutorial");
+
     function check(next) {
       report.replaceChildren();
       const gone = renamedCells(body, next);
@@ -966,6 +1057,8 @@ export function start(root, client, { onStatus = () => {} } = {}) {
       el("details", { class: "dl-editor-meta" },
         el("summary", {}, "Frontmatter"),
         el("pre", {}, meta)),
+      linkToggle,
+      linkPicker,
       mount,
       report);
   }

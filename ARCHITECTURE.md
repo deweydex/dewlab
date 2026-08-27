@@ -292,6 +292,26 @@ an attempt at a hover-docstring tooltip for the editor's code blocks,
 specifically, that did not work and was pulled back out — worth reading
 before trying it again.
 
+The report catches a dead link after it is typed; the link picker
+(`matchTutorials()`, the toggle above the prose editor) is the other half —
+search every tutorial by title, slug or module, then insert
+`[title](tutorial:slug#anchor)` at the cursor without typing a slug from
+memory in the first place. Insertion is `insertLink(title, href)`
+(`vendor-src/milkdown-entry.js`), and it does not go through
+`@milkdown/utils`'s own `insert()` helper: that helper's inline path
+round-trips the parsed link through a real DOM node before inserting it,
+and the commonmark preset's link `toDOM` sanitizes `href` to empty for any
+scheme outside http/https/mailto/tel/ftp — which silently stripped
+`tutorial:` before the round trip's second half ever read it back.
+`insertLink` builds the text node and its link mark directly against the
+schema, with no DOM in between, and calls `replaceSelectionWith(node,
+false)` — `inheritMarks: true` (the default) replaces a node's own marks
+with whatever marks are active at the cursor, which is empty in the common
+case and silently dropped the link mark the node exists to carry. Both were
+found by asserting on the markdown `getBody()` actually produced in
+`tests/e2e/test_editor.py`'s `TestLinkPicker`, not by reading past either
+call's default behaviour and assuming it was fine.
+
 ---
 
 ## 4. Two build systems, on purpose
@@ -364,5 +384,6 @@ runtime or the editor.
 | A vendored library's version | `vendor-src/package.json`, then `npm run build` there |
 | Code completion or hover docs, either surface | `vendor-src/codemirror-entry.js` (both surfaces' static sources, plus the extension points); `assets/tutorial-runtime.js` (the runtime's live sources) |
 | The curated names the editor's future hover docs would cover | `dev/generate_doc_snippets.py`, then re-run it |
+| The tutorial link picker (search-and-insert `tutorial:` links) | `matchTutorials()`/the picker UI in `assets/editor.js`; `insertLink()` in `vendor-src/milkdown-entry.js` |
 | House styling, both reading pages and the editor | `assets/tutorial-style.css` |
 | *Why* something works the way it does, before you change it | `DECISIONS_LOG.md` (numbered, searchable) |

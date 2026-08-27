@@ -1233,6 +1233,45 @@ p code, li code {
 }
 .dl-editor-gap button:hover { color: var(--dl-orange); background: var(--dl-cell-bg); }
 
+/* The tutorial link picker (assets/editor.js) — search-and-insert rather
+ * than typing a `tutorial:slug#anchor` href from memory. Sits between the
+ * frontmatter details and the prose editor it inserts into. */
+.dl-editor-linkpicker-toggle {
+  background: none; border: 1px solid var(--dl-cell-border); border-radius: 4px;
+  color: var(--dl-muted); font-size: 0.82rem; padding: 0.3rem 0.6rem;
+  cursor: pointer; margin: 0 0 0.5rem;
+}
+.dl-editor-linkpicker-toggle:hover { color: var(--dl-orange); border-color: var(--dl-orange); }
+.dl-editor-linkpicker {
+  border: 1px solid var(--dl-cell-border); border-radius: 4px;
+  padding: 0.6rem; margin: 0 0 0.8rem; background: var(--dl-cell-bg);
+}
+.dl-editor-linkpicker-search {
+  width: 100%; box-sizing: border-box; font-size: 0.85rem;
+  padding: 0.35rem 0.5rem; margin: 0 0 0.5rem;
+  border: 1px solid var(--dl-cell-border); border-radius: 4px;
+  background: var(--dl-panel-bg); color: inherit;
+}
+.dl-editor-linkpicker-empty { color: var(--dl-muted); font-size: 0.85rem; margin: 0; }
+.dl-editor-linkpicker-row {
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.4rem;
+  padding: 0.3rem 0; border-top: 1px solid var(--dl-cell-border);
+}
+.dl-editor-linkpicker-row:first-child { border-top: none; }
+.dl-editor-linkpicker-pick {
+  background: none; border: none; color: inherit; font-size: 0.86rem;
+  cursor: pointer; padding: 0; text-align: left;
+}
+.dl-editor-linkpicker-pick:hover { color: var(--dl-orange); }
+.dl-editor-linkpicker-where { font-family: var(--dl-mono); font-size: 0.72rem; color: var(--dl-muted); }
+.dl-editor-linkpicker-anchors { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+.dl-editor-linkpicker-anchor {
+  background: none; border: 1px solid var(--dl-cell-border); border-radius: 3px;
+  color: var(--dl-muted); font-family: var(--dl-mono); font-size: 0.72rem;
+  padding: 0.05rem 0.35rem; cursor: pointer;
+}
+.dl-editor-linkpicker-anchor:hover { color: var(--dl-orange); border-color: var(--dl-orange); }
+
 /* The prose editor (assets/editor.js, vendor-src/milkdown-entry.js). Only
  * Crepe's structural stylesheet is vendored, not its "classic" skin — that
  * skin is a fixed light-mode colour scheme, and retexturing the same

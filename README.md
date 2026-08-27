@@ -483,11 +483,15 @@ an ordinary editor is still the more comfortable tool.
 The editor reports a `tutorial:slug#anchor` link that does not resolve —
 against every other tutorial's real slugs and headings, the same check
 `python3 build.py` would otherwise catch first — before you commit rather
-than after. Its code cells offer keyword and locally-typed-name completion
-as you write them, same as any editor; open the same tutorial as a student
-and their cell offers the same completion plus a real hover docstring, read
-off whatever your setup cell actually imported and whatever the student has
-defined so far.
+than after. A "Link to another tutorial" toggle above the prose editor
+searches every tutorial by title, slug or module and inserts a real link at
+the cursor, so you reach for a tutorial that exists rather than typing a
+slug from memory and finding out it was wrong from the report. Its code
+cells offer keyword and locally-typed-name completion as you write them,
+same as any editor; open the same tutorial as a student and their cell
+offers the same completion plus a real hover docstring, read off whatever
+your setup cell actually imported and whatever the student has defined so
+far.
 
 ---
 
