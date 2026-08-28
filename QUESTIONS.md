@@ -95,32 +95,6 @@ first would need undoing to add Jedi afterward.
 **Blocks:** nothing — cells work exactly as before until this is answered
 and acted on.
 
-### Do pedagogical notes and datasets belong in the cheat sheet panel, or in a panel of their own?
-
-`planning/SIDEBAR_CONTENT.md` designs a second sidebar's worth of content —
-pedagogical notes authored as `<aside class="dl-note">` (reusing the
-hint/answer fold's own already-proven pattern rather than a new fence tag),
-and datasets with attribution (`data/ATTRIBUTION.yaml` plus a `datasets:`
-frontmatter list; the runtime fetch mechanism, `load_csv()`, already
-exists and is simply unused so far). It recommends surfacing both as new
-sections inside the *existing* cheat-sheet panel — "or, better yet, in
-the other side bar," as floated when this was raised — rather than a
-third floating panel, since that reuses the toggle, the panel, and the
-open/close wiring 7.64/7.65 already shipped.
-
-**Assumed and built in the meantime:** nothing implemented — this was a
-design task. No note, dataset, or panel section exists yet.
-
-**Cost to change later:** small for the panel-vs-panel question (a CSS/JS
-change to the container, not to how notes or datasets are authored or
-extracted). Larger for the authoring-mechanism question (fence vs. HTML
-aside) once tutorials have actually been written using one — same shape
-as the YAML-vs-markdown glossary question above, cheaper the earlier it is
-settled.
-
-**Blocks:** nothing today — building §2's dataset pieces (frontmatter +
-attribution file) does not require the notes question to be settled
-first, since they are independent additions to the same panel either way.
 
 ---
 
@@ -166,6 +140,30 @@ Revisit with `.claude/skills/tutorial-glossary/SKILL.md` if a real
 `practice_across` page's union ever looks too long in practice — the skill
 can be pointed at a mixed page's actual accumulated list to judge whether
 curation would visibly help, rather than deciding in the abstract.
+
+### Do pedagogical notes and datasets belong in the cheat sheet panel, or in a panel of their own? And is a second, left-anchored panel worth having?
+
+**Settled: notes and datasets extend the existing cheat-sheet panel, as
+`planning/SIDEBAR_CONTENT.md` §4 recommended** — no third panel for them.
+A left-anchored panel is worth having after all, but for a different
+purpose: navigation (this tutorial's table of contents, and the series'),
+not notes or datasets — `SIDEBAR_CONTENT.md` §4b. Neither is built yet;
+both are design settled, ready to implement.
+
+### What should the contents page and a tutorial's own page show about a reader's progress?
+
+**Settled, and designed in `planning/PROGRESS_INDICATORS.md`:** both a
+per-tutorial completion indicator on the contents page (a build-time
+`data-cells` count plus a client-side read of the existing
+`dl-progress:<module>:<slug>` `localStorage` record — no new save format,
+just one new `errored` boolean captured alongside what `saveNow()` already
+writes) and, inside a tutorial, a plain summary line folded into the
+existing Settings panel rather than a new persistent bar. Colouring is
+grey (not started) / green (done) / red reserved specifically for a cell
+whose last run errored, not for "not attempted yet." Only the contents
+page's indicator gets a Settings toggle — the in-tutorial summary lives
+inside a panel a reader already chose to open, so it needs no toggle of
+its own. Not built yet; ready to implement.
 
 ### Coordinate geometry has no tutorial and no outline, and something already depends on it
 
