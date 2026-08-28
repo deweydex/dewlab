@@ -223,7 +223,7 @@ id: your-turn-5
 
 ## Classifying Numbers: A Mathematical Application
 
-Let's use our new tools for something that connects to mathematics. Remember the number domains from our last tutorial: natural numbers (N), integers (Z), rationals (Q), and reals (R)?
+Let's use our new tools for something that connects to mathematics: classifying numbers into families. Mathematicians organise numbers into nested domains -- natural numbers (N), integers (Z), rationals (Q), and reals (R) -- each one extending the one before.
 
 We can write a program that examines a number and tells us which domains it belongs to. Every natural number is also an integer, which is also a rational, which is also a real -- they are nested like Russian dolls.
 
