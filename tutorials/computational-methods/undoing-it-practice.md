@@ -26,7 +26,7 @@ def det2(M):
 def inverse(M):
     d = det2(M)
     a, b = M[0]
-    c, e = M[1]
+    c, e = M[1]  # e stands in for the formula's own d, already taken by the determinant above
     return [[e / d, -b / d], [-c / d, a / d]]
 
 
@@ -188,7 +188,7 @@ def inverse(M):
     if d == 0:
         raise ValueError("this matrix has no inverse")
     a, b = M[0]
-    c, e = M[1]
+    c, e = M[1]  # e stands in for the formula's own d, already taken by the determinant above
     return [[e / d, -b / d], [-c / d, a / d]]
 ```
 
