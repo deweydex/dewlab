@@ -115,6 +115,32 @@ the codebase.
 **Blocks:** nothing — a phone reader today sees the page exactly as before
 this feature existed.
 
+### Is pre-run tooltip coverage (Jedi in Pyodide) worth its cost, or do the free extensions cover enough?
+
+`planning/CELL_TOOLTIPS.md` surveys what is available for cell tooltips.
+Two pieces close real gaps for free — widening `docFor` to also answer for
+Python builtins, and a CodeMirror signature-help tooltip on typing `(`,
+both reusing data already available from the live interpreter (`inspect`)
+with no new dependency. A third piece, Jedi run inside Pyodide itself
+(pure Python, already in Pyodide's own package index, and the same
+combination JupyterLite's official Pyodide kernel uses in production),
+would additionally cover hover/completion for a name **before** its
+defining cell has run — but as a real new dependency downloaded on every
+page with a cell, running alongside `docFor`'s live introspection rather
+than replacing it.
+
+**Assumed and built in the meantime:** nothing implemented yet — this was
+a research task, not a build one. No cell today gets a tooltip it did not
+already have before this question was raised.
+
+**Cost to change later:** small either way. Building (a) and (b) first
+does not foreclose adding Jedi later — they answer different questions
+(live vs. static) and can coexist; nothing about building the free pieces
+first would need undoing to add Jedi afterward.
+
+**Blocks:** nothing — cells work exactly as before until this is answered
+and acted on.
+
 ### Does a mixed practice page's cheat sheet need curation, or is the raw union always right?
 
 `practice_across` lets one practice page test several tutorials at once
