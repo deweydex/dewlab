@@ -1,0 +1,23 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+entries:
+  - term: parabola
+    kind: concept
+    definition: >
+      The curve every quadratic makes. Every quadratic with the same
+      leading coefficient a is the same parabola, just slid sideways and
+      up or down.
+  - term: vertex
+    kind: concept
+    definition: A parabola's turning point — its lowest point if it opens upward, highest if it opens downward.
+  - term: completing the square
+    kind: concept
+    definition: >
+      Rewriting x^2 + bx + c as (x + h)^2 + k, which is the same function
+      written so its vertex is visible without solving anything: halve b
+      to get h, then k = c - h^2.
+  - term: "vertex form: (x + h)^2 + k"
+    kind: formula
+    definition: >
+      A quadratic written so its vertex sits at (-h, k) — readable
+      directly from the expression, since a square can never be negative.
+    example: "x^2 + 6x + 5 = (x + 3)^2 - 4, vertex at (-3, -4)"

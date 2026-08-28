@@ -1,0 +1,38 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# Shell sort and recursion, from this tutorial's own "Optional Challenges"
+# section, are left out on purpose — enrichment a student may or may not
+# have done, not core material every reader has met.
+entries:
+  - term: swap
+    kind: concept
+    definition: >
+      Exchange two elements' positions. Python does it in one line, with
+      no temporary variable needed, because the right-hand side is fully
+      evaluated before anything is assigned.
+    example: "a, b = b, a"
+  - term: bubble sort
+    kind: concept
+    definition: >
+      Walk the list comparing adjacent pairs, swapping any that are in
+      the wrong order. One pass moves the largest remaining element to
+      its final position; repeat until sorted.
+  - term: insertion sort
+    kind: concept
+    definition: >
+      Keep a sorted portion at the start of the list, and insert each new
+      element into its correct place within it — the way most people sort
+      a hand of playing cards.
+  - term: selection sort
+    kind: concept
+    definition: >
+      Find the smallest element in the unsorted portion and swap it into
+      place at the front, then repeat for what remains.
+  - term: "O(n^2)"
+    kind: concept
+    definition: >
+      Roughly n(n-1)/2 comparisons in the worst case — what bubble,
+      insertion, and selection sort all cost, growing with the square of
+      the list's size. Faster sorts exist (merge sort, quicksort) at
+      O(n log n), the same growth rate as the search algorithms already
+      met.

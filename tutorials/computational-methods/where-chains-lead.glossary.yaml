@@ -1,0 +1,36 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+entries:
+  - term: transition matrix
+    kind: concept
+    definition: >
+      A matrix where each row is a probability distribution over what
+      happens next, given the current state. Every row sums to 1.
+  - term: state vector
+    kind: concept
+    definition: >
+      The current probabilities across every state, as a row — [1, 0] for
+      "definitely the first state," for instance. Multiplying it by a
+      transition matrix gives the next step's probabilities.
+  - term: stationary distribution
+    kind: concept
+    definition: >
+      The state vector a transition matrix eventually settles into,
+      regardless of where it started. A fixed point of the process — once
+      reached, multiplying by the transition matrix again changes nothing.
+    example: "pi @ P == pi"
+  - term: Markov chain
+    kind: concept
+    definition: >
+      A process that moves between states using a transition matrix, where
+      what happens next depends only on the current state, never on how it
+      got there.
+  - term: PageRank
+    kind: concept
+    definition: >
+      Ranks pages by the stationary distribution of a random-surfer Markov
+      chain over the web's link graph — a page's rank is how much of a
+      random surfer's long-run time it accumulates.
+  - term: "random.choices()"
+    kind: function
+    definition: Picks one item from a list at random, according to a list of weights.
+    example: 'random.choices(states, weights=row)[0]'

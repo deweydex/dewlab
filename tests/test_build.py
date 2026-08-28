@@ -80,6 +80,13 @@ def built(repo: Path, slug: str = "sample") -> str:
     return (repo / "site" / "tutorials" / "computational-methods" / f"{slug}.html").read_text()
 
 
+def glossary(repo: Path, slug: str, entries: list[dict]) -> Path:
+    """A tutorial's own glossary file — planning/CHEAT_SHEETS.md §3."""
+    path = repo / "tutorials" / "computational-methods" / f"{slug}.glossary.yaml"
+    path.write_text(yaml.dump({"entries": entries}))
+    return path
+
+
 def manifest(page: str) -> dict:
     raw = re.search(r'id="dewlab-manifest">(.*?)</script>', page, re.S).group(1)
     return json.loads(raw)
@@ -1956,6 +1963,113 @@ class TestPagesOfProblems:
                       practice_across=["one", "two"])
         with pytest.raises(b.BuildError, match="cannot do both"):
             b.build()
+
+
+class TestTheCheatSheet:
+    """planning/CHEAT_SHEETS.md's cumulative glossary: a tutorial's manifest
+    carries its own glossary entries plus every earlier series member's, so
+    the reader-facing panel never shows a term this specific reader has not
+    been taught yet."""
+
+    def practice(self, repo, slug: str, **frontmatter) -> Path:
+        """Same shape as TestPagesOfProblems' own helper — a page of
+        problems, kept out of the order file."""
+        path = repo / "tutorials" / "computational-methods" / f"{slug}.md"
+        extra = "".join(
+            f"{key}: {value}\n" if not isinstance(value, list)
+            else f"{key}:\n" + "".join(f"  - {v}\n" for v in value)
+            for key, value in frontmatter.items()
+        )
+        path.write_text(
+            FRONTMATTER.format(slug=slug, version="2026.08.23.1").replace(
+                "version: 2026.08.23.1\n", f"version: 2026.08.23.1\n{extra}")
+            + "**1.** A question.\n"
+        )
+        listed = sorted(
+            p.stem for p in path.parent.glob("*.md")
+            if "practice_for" not in p.read_text()
+            and "practice_across" not in p.read_text()
+        )
+        set_order(repo, "computational-methods", "python-fundamentals", listed)
+        return path
+
+    def test_a_tutorials_own_glossary_appears_in_its_manifest(self, repo):
+        write(repo, "One.\n", slug="one")
+        glossary(repo, "one", [
+            {"term": "x", "kind": "concept", "definition": "The first thing."},
+        ])
+        b.build()
+        assert manifest(built(repo, "one"))["glossary"] == [
+            {"term": "x", "kind": "concept", "definition": "The first thing."},
+        ]
+
+    def test_a_tutorial_with_no_glossary_file_has_no_glossary_key(self, repo):
+        write(repo, "One.\n", slug="one")
+        b.build()
+        assert "glossary" not in manifest(built(repo, "one"))
+
+    def test_a_later_tutorial_inherits_earlier_ones_terms(self, repo):
+        write(repo, "One.\n", slug="one")
+        write(repo, "Two.\n", slug="two")
+        set_order(repo, "computational-methods", "python-fundamentals", ["one", "two"])
+        glossary(repo, "one", [{"term": "x", "kind": "concept", "definition": "First."}])
+        glossary(repo, "two", [{"term": "y", "kind": "concept", "definition": "Second."}])
+        b.build()
+        assert [e["term"] for e in manifest(built(repo, "two"))["glossary"]] == ["x", "y"]
+
+    def test_an_earlier_tutorial_never_shows_a_later_ones_terms(self, repo):
+        """The one guarantee that matters more than any other in this
+        feature (planning/CHEAT_SHEETS.md §1): nothing forward-looking."""
+        write(repo, "One.\n", slug="one")
+        write(repo, "Two.\n", slug="two")
+        set_order(repo, "computational-methods", "python-fundamentals", ["one", "two"])
+        glossary(repo, "one", [{"term": "x", "kind": "concept", "definition": "First."}])
+        glossary(repo, "two", [{"term": "y", "kind": "concept", "definition": "Second."}])
+        b.build()
+        assert [e["term"] for e in manifest(built(repo, "one"))["glossary"]] == ["x"]
+
+    def test_a_term_repeated_later_keeps_its_first_definition(self, repo):
+        write(repo, "One.\n", slug="one")
+        write(repo, "Two.\n", slug="two")
+        set_order(repo, "computational-methods", "python-fundamentals", ["one", "two"])
+        glossary(repo, "one", [{"term": "x", "kind": "concept", "definition": "First."}])
+        glossary(repo, "two", [{"term": "x", "kind": "concept", "definition": "Second, wrongly."}])
+        b.build()
+        entries = manifest(built(repo, "two"))["glossary"]
+        assert entries == [{"term": "x", "kind": "concept", "definition": "First."}]
+
+    def test_an_unknown_kind_fails_the_build(self, repo):
+        write(repo, "One.\n", slug="one")
+        glossary(repo, "one", [{"term": "x", "kind": "vibe", "definition": "Nope."}])
+        with pytest.raises(b.BuildError, match="not one of"):
+            b.build()
+
+    def test_an_entry_missing_a_definition_fails_the_build(self, repo):
+        write(repo, "One.\n", slug="one")
+        glossary(repo, "one", [{"term": "x", "kind": "concept"}])
+        with pytest.raises(b.BuildError, match="missing a term or a definition"):
+            b.build()
+
+    def test_a_practice_page_gets_its_tutorials_cumulative_glossary(self, repo):
+        write(repo, "One.\n", slug="one")
+        glossary(repo, "one", [{"term": "x", "kind": "concept", "definition": "First."}])
+        self.practice(repo, "one-practice", practice_for="one")
+        b.build()
+        page = (repo / "site" / "tutorials" / "computational-methods"
+                / "one-practice.html").read_text()
+        assert [e["term"] for e in manifest(page)["glossary"]] == ["x"]
+
+    def test_a_mixed_practice_page_unions_its_tutorials_glossaries(self, repo):
+        write(repo, "One.\n", slug="one")
+        write(repo, "Two.\n", slug="two")
+        set_order(repo, "computational-methods", "python-fundamentals", ["one", "two"])
+        glossary(repo, "one", [{"term": "x", "kind": "concept", "definition": "First."}])
+        glossary(repo, "two", [{"term": "y", "kind": "concept", "definition": "Second."}])
+        self.practice(repo, "mixed", practice_across=["one", "two"])
+        b.build()
+        page = (repo / "site" / "tutorials" / "computational-methods"
+                / "mixed.html").read_text()
+        assert [e["term"] for e in manifest(page)["glossary"]] == ["x", "y"]
 
 
 class TestFolds:

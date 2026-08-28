@@ -565,6 +565,144 @@ p code, li code {
   color: var(--dl-muted);
 }
 
+/* The cheat sheet toggle (planning/CHEAT_SHEETS.md §6) — pinned to the
+   page's own top-left corner rather than sharing the masthead row, which
+   already gives that side to the wordmark. Closed by default and revealed
+   only by tutorial-runtime.js, when this page's manifest actually carries
+   something (an empty toggle that opens onto nothing is worse than no
+   toggle), and hidden outright on a phone below. */
+/* [hidden] first and separately: an unconditional `display: inline-flex`
+   below has the same specificity as the UA stylesheet's own
+   `[hidden] { display: none }` and would win the tie by loading later,
+   showing the button regardless of the attribute JS uses to hide it —
+   found by a real test (TestVisibility in tests/e2e/test_cheat_sheet.py)
+   rather than by re-reading this rule and assuming it was fine. */
+.dl-cheatsheet-toggle[hidden] { display: none; }
+.dl-cheatsheet-toggle {
+  position: fixed;
+  top: 0.9rem;
+  left: 0.9rem;
+  z-index: 51;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--dl-mono);
+  font-size: 0.78rem;
+  background: var(--dl-panel-bg);
+  border: 1px solid var(--dl-navy);
+  border-radius: 4px;
+  color: var(--dl-heading);
+  padding: 0.38rem 0.7rem;
+  cursor: pointer;
+  box-shadow: 0 2px 8px var(--dl-shadow);
+}
+.dl-cheatsheet-toggle:hover,
+.dl-cheatsheet-toggle:focus-visible {
+  border-color: var(--dl-orange);
+  color: var(--dl-orange);
+}
+.dl-cheatsheet-toggle[aria-expanded="true"] {
+  background: var(--dl-navy);
+  border-color: var(--dl-navy);
+  color: #fff;
+}
+/* A small card with a fold, drawn rather than typed for the same reason
+   .dl-settings-icon's bars are: it should not depend on a glyph the
+   reader's font may not carry. */
+.dl-cheatsheet-icon {
+  width: 0.75em;
+  height: 0.95em;
+  border: 2px solid currentColor;
+  border-radius: 1px;
+  position: relative;
+}
+.dl-cheatsheet-icon::after {
+  content: "";
+  position: absolute;
+  left: 0.12em;
+  right: 0.12em;
+  top: 0.32em;
+  border-top: 1px solid currentColor;
+}
+
+/* Anchored the same way .dl-settings is, on the same corner — the two are
+   mutually exclusive at runtime (initCheatSheet() in tutorial-runtime.js)
+   for exactly that reason, rather than risking one covering the other. */
+.dl-cheatsheet {
+  position: fixed;
+  right: 1rem;
+  top: calc(var(--dl-chrome-h) + 0.5rem);
+  z-index: 50;
+  width: min(22rem, calc(100vw - 2rem));
+  max-height: calc(100vh - var(--dl-chrome-h) - 1.5rem);
+  overflow-y: auto;
+  padding: 1rem 1.1rem 1.1rem;
+  border: 1px solid var(--dl-cell-border);
+  border-radius: 6px;
+  background: var(--dl-panel-bg);
+  box-shadow: 0 8px 28px var(--dl-shadow);
+  font-family: var(--dl-font-family);
+  font-size: 0.85rem;
+}
+.dl-cheatsheet[hidden] { display: none; }
+.dl-cheatsheet-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.6rem;
+}
+.dl-cheatsheet h2 {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--dl-muted);
+  margin: 0;
+}
+.dl-cheatsheet-close {
+  font-size: 1.3rem;
+  line-height: 1;
+  background: none;
+  border: none;
+  color: var(--dl-muted);
+  cursor: pointer;
+  padding: 0 0.2rem;
+}
+.dl-cheatsheet-close:hover { color: var(--dl-orange); }
+
+.dl-cheatsheet-group + .dl-cheatsheet-group {
+  margin-top: 0.9rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--dl-rule);
+}
+.dl-cheatsheet-group h3 {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--dl-muted);
+  margin: 0 0 0.5rem;
+}
+.dl-cheatsheet-group dl { margin: 0; }
+.dl-cheatsheet-group dt {
+  font-weight: 700;
+  color: var(--dl-heading);
+  font-family: var(--dl-mono);
+  font-size: 0.82rem;
+}
+.dl-cheatsheet-group dd {
+  margin: 0.15rem 0 0.7rem;
+  line-height: 1.5;
+}
+.dl-cheatsheet-group dd code {
+  display: block;
+  margin-top: 0.3rem;
+  font-family: var(--dl-mono);
+  font-size: 0.78rem;
+  background: var(--dl-cell-bg);
+  border-radius: 3px;
+  padding: 0.2rem 0.4rem;
+}
+
 .dl-texture-row {
   display: grid;
   grid-template-columns: 4.6rem 1fr;
@@ -895,6 +1033,11 @@ p code, li code {
     border-bottom: none;
     padding-bottom: 1.4rem;
   }
+
+  /* Not yet on a phone — a fixed-position corner button and a floating
+     panel are exactly the two things that stop working at this width.
+     QUESTIONS.md has what a phone-sized version should look like instead. */
+  .dl-cheatsheet-toggle, .dl-cheatsheet { display: none; }
 
   .dl-nav {
     grid-template-columns: 1fr 1fr;

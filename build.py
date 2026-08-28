@@ -824,6 +824,98 @@ def nav_for(tutorial: Tutorial, members: list[Tutorial]) -> str:
     return "".join(parts)
 
 
+# --------------------------------------------------------------- cheat sheet
+#
+# planning/CHEAT_SHEETS.md has the full design. In short: a glossary file says
+# what one specific tutorial introduces; a page's cheat sheet is the
+# accumulation of every earlier series member's glossary plus its own, so a
+# tutorial never shows a reader something they have not been taught yet.
+
+GLOSSARY_KINDS = ("concept", "function", "operator", "formula", "keyword")
+
+
+def glossary_path(tutorial: Tutorial) -> Path:
+    """Where a tutorial's own glossary file lives — keyed by (module, slug),
+    beside the tutorial rather than inside a release folder, because what a
+    tutorial teaches does not change release to release the way its prose
+    might."""
+    return TUTORIALS / tutorial.module / f"{tutorial.slug}.glossary.yaml"
+
+
+def own_glossary(tutorial: Tutorial) -> list[dict]:
+    """This tutorial's own contribution — what it introduces, not what it
+    inherits from earlier in its series. A missing file means none written
+    yet, not an error: that is what lets this feature ship before every
+    tutorial has one."""
+    path = glossary_path(tutorial)
+    if not path.is_file():
+        return []
+    data = load_yaml_no_duplicate_keys(path.read_text()) or {}
+    entries = data.get("entries") or []
+    for entry in entries:
+        if entry.get("kind") not in GLOSSARY_KINDS:
+            fail(path, f'glossary entry "{entry.get("term")}" has kind '
+                       f'{entry.get("kind")!r}, not one of {GLOSSARY_KINDS}.')
+        if not entry.get("term") or not entry.get("definition"):
+            fail(path, "a glossary entry is missing a term or a definition.")
+    return entries
+
+
+def cumulative_glossary(
+    tutorial: Tutorial,
+    members: list[Tutorial],
+    registry: dict[tuple[str, str], Tutorial],
+    groups: dict[tuple[str, str], list[Tutorial]],
+) -> list[dict]:
+    """Everything a reader has met by this point: this tutorial's own
+    glossary plus every earlier series member's, in the order `order.yaml`
+    introduced them (`members` is already sorted that way — see
+    `series_of()`). Whichever entry came first wins on a term repeated
+    later, so a definition never contradicts an earlier one on the same
+    page.
+
+    A practice page has no series position that means anything —
+    `practice_for`/`practice_across` name what it tests instead of where it
+    sits — so its cheat sheet is the union of the tutorial(s) it names, each
+    resolved the same way, rather than its own (nonexistent) coverage.
+    """
+    if tutorial.is_practice:
+        targets = (
+            [tutorial.practice_for] if tutorial.practice_for
+            else list(tutorial.practice_across)
+        )
+        seen: set[tuple[str, str]] = set()
+        found: list[dict] = []
+        for slug in targets:
+            target = registry.get((tutorial.module, slug))
+            if target is None:
+                continue
+            target_members = groups.get((target.module, target.series), [])
+            for entry in cumulative_glossary(target, target_members, registry, groups):
+                key = (entry["term"], entry["kind"])
+                if key in seen:
+                    continue
+                seen.add(key)
+                found.append(entry)
+        return found
+
+    if tutorial not in members:
+        # Archived, same as nav_for()'s own "nowhere in the series it comes
+        # before or after" — only its own entries, nothing inherited.
+        return own_glossary(tutorial)
+
+    seen = set()
+    found = []
+    for member in members[: members.index(tutorial) + 1]:
+        for entry in own_glossary(member):
+            key = (entry["term"], entry["kind"])
+            if key in seen:
+                continue
+            seen.add(key)
+            found.append(entry)
+    return found
+
+
 def render_toc(tutorial: Tutorial) -> str:
     """A contents list for one page, nested one level.
 
@@ -1750,7 +1842,8 @@ def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "",
           default: Tutorial | None = None, family: list[Tutorial] | None = None,
           practice: Tutorial | None = None,
           registry: dict[tuple[str, str], Tutorial] | None = None,
-          also: list[Tutorial] | None = None) -> Path:
+          also: list[Tutorial] | None = None,
+          glossary: list[dict] | None = None) -> Path:
     up = "../" * tutorial.depth
     manifest: dict[str, object] = {
         "slug": tutorial.slug,
@@ -1777,6 +1870,11 @@ def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "",
     packages = tutorial.meta.get("packages")
     if packages:
         manifest["packages"] = list(packages)
+    # Absent rather than an empty list when there is nothing accumulated yet —
+    # the runtime hides the cheat sheet toggle entirely on that signal, same
+    # as an empty dl-settings-section elsewhere on this page.
+    if glossary:
+        manifest["glossary"] = glossary
 
     tokens = {
         "{{TITLE}}": html.escape(str(tutorial.meta["title"])),
@@ -2328,6 +2426,7 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
             also=[page for page in mixed.get(tutorial.module, [])
                   if tutorial.slug in page.practice_across],
             registry=registry,
+            glossary=cumulative_glossary(tutorial, members, registry, groups),
         )
         written.append(page_path)
         # 0.7MB against 19KB for the hosted page, so only the version students

@@ -1,0 +1,32 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# slope, m, c are not repeated here — already introduced in
+# drawing-functions.glossary.yaml, earlier in this series.
+entries:
+  - term: parallel, perpendicular
+    kind: concept
+    definition: >
+      Two lines are parallel when they have the same slope. They are
+      perpendicular (meet at a right angle) when their slopes multiply to
+      -1 — turn the slope triangle a quarter turn and the rise and run
+      swap, with one changing sign, which is exactly what that -1 is.
+  - term: "general form of a line: ax + by + c = 0"
+    kind: formula
+    definition: >
+      A third way to write a line, alongside y = mx + c and the plain
+      function form. Worse for most lines, but the only one of the three
+      that can describe a vertical line (b = 0 is allowed here; y = mx + c
+      has no slope that produces one).
+  - term: midpoint
+    kind: formula
+    definition: The halfway point between two points — average the x values, average the y values.
+    example: "midpoint((1, 2), (7, 6)) = ((1+7)/2, (2+6)/2) = (4, 4)"
+  - term: "Pythagorean theorem, distance formula"
+    kind: formula
+    definition: >
+      In a right-angled triangle, the two short sides squared and added
+      give the long side squared. The distance between two points is
+      exactly this, with the horizontal and vertical gaps as the short
+      sides — the same fact seen from two directions, not two separate
+      things to remember.
+    example: "distance = sqrt((x2-x1)**2 + (y2-y1)**2)"

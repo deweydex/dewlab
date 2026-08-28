@@ -1,0 +1,27 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# "modular design"/"modular programming" is not repeated here — it was
+# already introduced in lists-and-sequences.glossary.yaml, earlier in this
+# series.
+entries:
+  - term: docstring
+    kind: concept
+    definition: >
+      A triple-quoted string at the top of a function describing what it
+      does, what it expects, and what it returns — the contract of the
+      function, readable by anyone who wants to use it without reading
+      its code.
+    example: 'def mean(numbers):\n    """Compute the arithmetic mean of a list of numbers."""'
+  - term: edge case
+    kind: concept
+    definition: >
+      An input a function needs to handle deliberately rather than let
+      crash — an empty list handed to a function that divides by its
+      length, for instance.
+  - term: test function
+    kind: concept
+    definition: >
+      A function that calls another function with known input and checks
+      the result against the expected answer, printing PASS or FAIL —
+      writing one forces you to think clearly about what a function
+      should do.

@@ -1,0 +1,42 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+entries:
+  - term: unit circle
+    kind: concept
+    definition: A circle of radius 1 centred on the origin. Every point on it is distance 1 from the centre — the one fact everything about sine and cosine rests on.
+  - term: cosine, sine
+    kind: concept
+    definition: >
+      The coordinates of a point on the unit circle: cosine is the across
+      (x) value, sine is the up (y) value, for a given angle from the
+      positive x-axis. Named after the coordinates, not the other way
+      round.
+    example: "math.cos(angle), math.sin(angle)"
+  - term: "sin^2(theta) + cos^2(theta) = 1"
+    kind: formula
+    definition: >
+      Follows directly from the unit circle being distance 1 from the
+      centre and the Pythagorean theorem (x^2 + y^2 = 1) — not a separate
+      fact to learn.
+  - term: radian
+    kind: concept
+    definition: >
+      The angle where the arc walked equals the radius. A full turn is
+      2*pi radians, because 2*pi is the distance round a circle of
+      radius 1.
+  - term: degrees, radians conversion
+    kind: formula
+    definition: 360 degrees equals 2*pi radians, so convert by proportion.
+    example: "radians = degrees * math.pi / 180"
+  - term: exact trig values (0, 30, 45, 60, 90 degrees)
+    kind: formula
+    definition: >
+      cos/sin pairs worked out exactly with Pythagoras rather than
+      approximated: 0 -> (1, 0); 30 -> (sqrt(3)/2, 1/2); 45 -> (sqrt(2)/2,
+      sqrt(2)/2); 60 -> (1/2, sqrt(3)/2); 90 -> (0, 1). Exact form matters
+      because the decimal is a genuinely different, slightly wrong number.
+  - term: tangent
+    kind: concept
+    definition: >
+      up divided by across (sin/cos) — the slope of the line from the
+      origin to that point on the circle. Undefined at 90 degrees, for
+      the same reason a vertical line has no slope.

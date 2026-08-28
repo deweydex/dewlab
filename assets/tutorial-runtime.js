@@ -105,10 +105,28 @@ function trackChromeHeight() {
 
 /* -------------------------------------------------------- settings panel */
 
-/* One panel holds everything a reader can change or take away, so this is the
- * only open/close behaviour on the page. Escape and a click outside both close
- * it: a panel that can only be dismissed by finding the same small button
- * again is the kind of thing that gets left open. */
+/* Settings and the cheat sheet (initCheatSheet(), below) are two open/close
+ * behaviours on the page rather than one now, and both panels anchor to the
+ * same corner (tutorial-style.css) — opening either one closes the other,
+ * or they would sit on top of each other. Escape and a click outside both
+ * close whichever is open: a panel that can only be dismissed by finding the
+ * same small button again is the kind of thing that gets left open. */
+function closeCheatSheet() {
+  const toggle = document.getElementById("dl-cheatsheet-toggle");
+  const panel = document.getElementById("dl-cheatsheet");
+  if (!panel || panel.hasAttribute("hidden")) return;
+  panel.setAttribute("hidden", "");
+  if (toggle) toggle.setAttribute("aria-expanded", "false");
+}
+
+function closeSettings() {
+  const toggle = document.getElementById("dl-settings-toggle");
+  const panel = document.getElementById("dl-settings");
+  if (!panel || panel.hasAttribute("hidden")) return;
+  panel.setAttribute("hidden", "");
+  if (toggle) toggle.setAttribute("aria-expanded", "false");
+}
+
 function initSettingsPanel() {
   const toggle = document.getElementById("dl-settings-toggle");
   const panel = document.getElementById("dl-settings");
@@ -117,6 +135,7 @@ function initSettingsPanel() {
   function setOpen(open) {
     panel.toggleAttribute("hidden", !open);
     toggle.setAttribute("aria-expanded", String(open));
+    if (open) closeCheatSheet();
   }
 
   toggle.addEventListener("click", () => setOpen(panel.hasAttribute("hidden")));
@@ -142,6 +161,98 @@ function initSettingsPanel() {
   for (const section of panel.querySelectorAll(".dl-settings-section")) {
     if (!section.textContent.trim()) section.hidden = true;
   }
+}
+
+/* -------------------------------------------------------- cheat sheet */
+
+/* build.py's own kind list — GLOSSARY_KINDS — in the order a reader would
+ * find most useful to scan: what a thing *is* before what you *do* with it. */
+const GLOSSARY_GROUP_LABELS = {
+  concept: "Concepts",
+  function: "Functions",
+  operator: "Operators",
+  formula: "Formulas",
+  keyword: "Keywords",
+};
+
+function renderCheatSheet(entries) {
+  const container = document.getElementById("dl-cheatsheet-groups");
+  if (!container) return;
+  container.replaceChildren();
+
+  const byKind = new Map();
+  for (const entry of entries) {
+    if (!byKind.has(entry.kind)) byKind.set(entry.kind, []);
+    byKind.get(entry.kind).push(entry);
+  }
+
+  for (const [kind, label] of Object.entries(GLOSSARY_GROUP_LABELS)) {
+    const group = byKind.get(kind);
+    if (!group || !group.length) continue;
+
+    const section = document.createElement("div");
+    section.className = "dl-cheatsheet-group";
+    const heading = document.createElement("h3");
+    heading.textContent = label;
+    section.append(heading);
+
+    const dl = document.createElement("dl");
+    for (const entry of group) {
+      const dt = document.createElement("dt");
+      dt.textContent = entry.term;
+      const dd = document.createElement("dd");
+      dd.append(document.createTextNode(entry.definition));
+      if (entry.example) {
+        const code = document.createElement("code");
+        code.textContent = entry.example;
+        dd.append(code);
+      }
+      dl.append(dt, dd);
+    }
+    section.append(dl);
+    container.append(section);
+  }
+}
+
+/* Same open/close mechanics as initSettingsPanel(), and the two stay in sync
+ * (closeCheatSheet()/closeSettings(), above) because both panels anchor to
+ * the same corner. The one real difference: this toggle starts `hidden` in
+ * shell.html, and stays that way — offering nothing at all — unless this
+ * page's own manifest actually carries a glossary. A tutorial with nothing
+ * accumulated yet (planning/CHEAT_SHEETS.md §6) is not a rare case early on:
+ * it is every tutorial before the skill has been run on anything ahead of
+ * it in its series. */
+function initCheatSheet(manifest) {
+  const entries = manifest.glossary;
+  const toggle = document.getElementById("dl-cheatsheet-toggle");
+  const panel = document.getElementById("dl-cheatsheet");
+  if (!toggle || !panel || !entries || !entries.length) return;
+
+  renderCheatSheet(entries);
+  toggle.hidden = false;
+
+  function setOpen(open) {
+    panel.toggleAttribute("hidden", !open);
+    toggle.setAttribute("aria-expanded", String(open));
+    if (open) closeSettings();
+  }
+
+  toggle.addEventListener("click", () => setOpen(panel.hasAttribute("hidden")));
+
+  const close = document.getElementById("dl-cheatsheet-close");
+  if (close) close.addEventListener("click", () => { setOpen(false); toggle.focus(); });
+
+  document.addEventListener("keydown", (ev) => {
+    if (ev.key !== "Escape" || panel.hasAttribute("hidden")) return;
+    setOpen(false);
+    toggle.focus();
+  });
+
+  document.addEventListener("click", (ev) => {
+    if (panel.hasAttribute("hidden")) return;
+    if (panel.contains(ev.target) || toggle.contains(ev.target)) return;
+    setOpen(false);
+  });
 }
 
 /* --------------------------------------------------------- texture panel */
@@ -1181,6 +1292,7 @@ initProgressSection();
 initVersionsSection();
 initVersionMarker();
 initSettingsPanel();
+initCheatSheet(currentManifest);
 trackChromeHeight();
 announceRestore(restoreSaved());
 annotateNotice();

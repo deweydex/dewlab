@@ -1,0 +1,50 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+entries:
+  - term: syntax error, runtime error, logical error
+    kind: concept
+    definition: >
+      Three kinds of wrong, found three different ways. A syntax error
+      means the code is not valid Python — caught before anything runs. A
+      runtime error means valid code tried something impossible — caught
+      partway through. A logical error means the code runs fine and gives
+      the wrong answer — caught only by checking against an answer you
+      already know.
+  - term: "SyntaxError"
+    kind: keyword
+    definition: >
+      Your code is not valid Python at all. Python's marker often points
+      just after the real problem, not at it — and an unclosed bracket is
+      reported at the point Python gives up looking for the closer, which
+      modern Python now traces back to where it was opened.
+  - term: "ZeroDivisionError"
+    kind: keyword
+    definition: You divided by zero. Almost always means a count came out empty when you assumed it would not.
+  - term: "TypeError"
+    kind: keyword
+    definition: You did something to a value that its type does not support — adding a number to a string, for instance.
+  - term: "ValueError"
+    kind: keyword
+    definition: >
+      The right type, the wrong content — int("hello") is a string, which
+      is what int wants, but not one that means anything as a number.
+  - term: "IndexError"
+    kind: keyword
+    definition: A position that does not exist in a list.
+  - term: "KeyError"
+    kind: keyword
+    definition: A name that does not exist in a dictionary.
+  - term: "NameError"
+    kind: keyword
+    definition: A variable you never created, or created somewhere the code cannot see, or misspelled.
+  - term: "AttributeError"
+    kind: keyword
+    definition: >
+      You asked a value for something it does not have — often a sign
+      that the value is not the type you thought it was.
+  - term: traceback
+    kind: concept
+    definition: >
+      The record of how a running program got to the place it broke. Read
+      it from the bottom: the last line says what went wrong, the lines
+      above say how it got there — and the line that failed is often not
+      the line that is responsible.

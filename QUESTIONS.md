@@ -49,7 +49,143 @@ A one-line answer is a complete answer.
 
 ## Open
 
-*Nothing waiting.*
+### Should a module's series carry an explicit reading order, and should the cheat sheet cross series within one module?
+
+A tutorial's cheat sheet (`planning/CHEAT_SHEETS.md`) draws from everything
+earlier in its own series (`order.yaml`), because that is the only ordering
+the build actually has. Series within a module have no defined order —
+`write_index()` lists them alphabetically — even though, e.g.,
+`computational-methods`' Matrices series plausibly comes after its Python
+fundamentals series for a student working through the module in the obvious
+way.
+
+**Assumed and built in the meantime:** scope stays inside one series. A
+matrices tutorial's cheat sheet will not include anything Python
+fundamentals introduced, even if a reader met it first.
+
+**Cost to change later:** small if it happens before many glossaries exist —
+one field (`order.yaml` gaining a module-level series sequence, or an
+explicit `after: python-fundamentals` on a series) and a build.py change to
+walk it. Larger once dozens of glossary files exist and some entries turn
+out to already be covered by an earlier series — those would need pruning,
+not just the assembly logic changing.
+
+**Blocks:** nothing today. It only produces a cheat sheet that is narrower
+than it could correctly be, never one that shows something too early.
+
+### Is a structured YAML glossary file the right format, or did "a markdown file" mean the glossary content itself?
+
+The request described the glossary as something a skill produces "as a
+markdown file." `planning/CHEAT_SHEETS.md` §3 instead specifies YAML
+(`<slug>.glossary.yaml`, `term`/`kind`/`definition`/`example` fields) — read
+as "the *skill* is written as a markdown file," which is simply how a
+Claude Code skill (`SKILL.md`) works, rather than as a requirement on the
+glossary's own output format.
+
+**Assumed and built in the meantime:** YAML output, because build.py needs
+to parse it structurally (group by `kind`, walk it in `order.yaml` order)
+and a freeform markdown glossary would need its own parser to do the same
+job less reliably.
+
+**Cost to change later:** moderate — every already-generated `.glossary.yaml`
+would need converting (mechanical, scriptable) or the build's parser would
+need to grow a second input format. Cheaper the earlier it happens, same as
+the schema question in §7 of the spec.
+
+**Blocks:** nothing yet — no glossary files exist before the schema PR
+lands, so there is nothing to convert if the answer is "markdown after all."
+
+### What should the cheat sheet become on a phone, later?
+
+`planning/CHEAT_SHEETS.md` §6 hides the toggle entirely under the existing
+34rem phone breakpoint, matching the request's own "we wouldn't have this
+option [on mobile], but maybe we can do that later." What "later" should
+look like is not decided: a bottom sheet like `.dl-settings` already becomes
+on a phone, a plain link to a standalone per-tutorial glossary page, or
+something else.
+
+**Assumed and built in the meantime:** nothing on mobile, matching the
+request exactly.
+
+**Cost to change later:** small — the panel's content and the data feeding
+it are unaffected either way; only its container needs a phone-specific
+layout, and `.dl-settings`'s own mobile CSS is a template already sitting in
+the codebase.
+
+**Blocks:** nothing — a phone reader today sees the page exactly as before
+this feature existed.
+
+### Is pre-run tooltip coverage (Jedi in Pyodide) worth its cost, or do the free extensions cover enough?
+
+`planning/CELL_TOOLTIPS.md` surveys what is available for cell tooltips.
+Two pieces close real gaps for free — widening `docFor` to also answer for
+Python builtins, and a CodeMirror signature-help tooltip on typing `(`,
+both reusing data already available from the live interpreter (`inspect`)
+with no new dependency. A third piece, Jedi run inside Pyodide itself
+(pure Python, already in Pyodide's own package index, and the same
+combination JupyterLite's official Pyodide kernel uses in production),
+would additionally cover hover/completion for a name **before** its
+defining cell has run — but as a real new dependency downloaded on every
+page with a cell, running alongside `docFor`'s live introspection rather
+than replacing it.
+
+**Assumed and built in the meantime:** nothing implemented yet — this was
+a research task, not a build one. No cell today gets a tooltip it did not
+already have before this question was raised.
+
+**Cost to change later:** small either way. Building (a) and (b) first
+does not foreclose adding Jedi later — they answer different questions
+(live vs. static) and can coexist; nothing about building the free pieces
+first would need undoing to add Jedi afterward.
+
+**Blocks:** nothing — cells work exactly as before until this is answered
+and acted on.
+
+### Do pedagogical notes and datasets belong in the cheat sheet panel, or in a panel of their own?
+
+`planning/SIDEBAR_CONTENT.md` designs a second sidebar's worth of content —
+pedagogical notes authored as `<aside class="dl-note">` (reusing the
+hint/answer fold's own already-proven pattern rather than a new fence tag),
+and datasets with attribution (`data/ATTRIBUTION.yaml` plus a `datasets:`
+frontmatter list; the runtime fetch mechanism, `load_csv()`, already
+exists and is simply unused so far). It recommends surfacing both as new
+sections inside the *existing* cheat-sheet panel — "or, better yet, in
+the other side bar," as floated when this was raised — rather than a
+third floating panel, since that reuses the toggle, the panel, and the
+open/close wiring 7.64/7.65 already shipped.
+
+**Assumed and built in the meantime:** nothing implemented — this was a
+design task. No note, dataset, or panel section exists yet.
+
+**Cost to change later:** small for the panel-vs-panel question (a CSS/JS
+change to the container, not to how notes or datasets are authored or
+extracted). Larger for the authoring-mechanism question (fence vs. HTML
+aside) once tutorials have actually been written using one — same shape
+as the YAML-vs-markdown glossary question above, cheaper the earlier it is
+settled.
+
+**Blocks:** nothing today — building §2's dataset pieces (frontmatter +
+attribution file) does not require the notes question to be settled
+first, since they are independent additions to the same panel either way.
+
+### Does a mixed practice page's cheat sheet need curation, or is the raw union always right?
+
+`practice_across` lets one practice page test several tutorials at once
+(`build.py`'s `practice_pairs()`/`mixed_practice()`). §2 of the spec unions
+every named tutorial's cumulative cheat sheet for such a page. If a mixed
+practice page spans much of a series, that union could be long enough that
+"a cheat sheet" stops being the right word for it.
+
+**Assumed and built in the meantime:** the raw union, uncapped — simplest
+to build, and never wrong in the sense that matters (nothing forward-looking
+ever appears), only potentially long.
+
+**Cost to change later:** small — a length cap or a "most relevant" ranking
+is a filter applied after the union is already computed, not a change to how
+the union itself is built.
+
+**Blocks:** nothing — no `practice_across` page currently spans enough of a
+series for this to have been checked against a real, long example.
 
 ---
 

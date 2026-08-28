@@ -1,0 +1,38 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+entries:
+  - term: "zip()"
+    kind: function
+    definition: >
+      Pairs up two lists position by position. Stops silently at the
+      shorter one if they are different lengths — worth checking lengths
+      yourself first if that matters.
+    example: "list(zip([1, 2, 3], [4, 5, 6]))  # [(1, 4), (2, 5), (3, 6)]"
+  - term: dot product
+    kind: concept
+    definition: >
+      Multiply each pair of matching entries from two same-length lists,
+      then add up the results. The building block matrix multiplication is
+      made from.
+  - term: matrix multiplication
+    kind: concept
+    definition: >
+      Row i, column j of the result is the dot product of row i of the
+      first matrix with column j of the second.
+  - term: "c_ij = sum(a_ik * b_kj)"
+    kind: formula
+    definition: The matrix multiplication rule, stated precisely — sum over k.
+  - term: matrix multiplication shape rule
+    kind: concept
+    definition: >
+      To multiply an m×n matrix by an n×p matrix, the inner dimensions
+      (the n's) have to match. The result is m×p.
+  - term: "AB is not BA"
+    kind: concept
+    definition: >
+      Matrix multiplication is not commutative — order genuinely matters,
+      unlike multiplying ordinary numbers.
+  - term: identity matrix
+    kind: concept
+    definition: >
+      Written I. Ones down the main diagonal, zeros everywhere else —
+      multiplied by any matrix of a matching shape, it changes nothing.

@@ -1,0 +1,44 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# N/Z/Q/R themselves are not repeated here — already introduced in
+# making-decisions.glossary.yaml, earlier in this series (that tutorial's
+# own reference to "the number domains from our last tutorial" does not
+# actually match this series' order.yaml sequence; see
+# tutorials/mit-pdp-maths-prog-integration/making-decisions.md and the
+# spawned follow-up task about it). What follows is what this tutorial adds
+# beyond the names themselves.
+entries:
+  - term: closure (number domains)
+    kind: concept
+    definition: >
+      Which operations stay inside a number family. N is closed under
+      addition but not subtraction (3 - 5 is not natural); Z is closed
+      under addition and subtraction but not always division; Q is closed
+      under all four operations except dividing by zero; R fills in the
+      remaining gaps with irrationals like sqrt(2) and pi.
+  - term: laws of indices (powers)
+    kind: formula
+    definition: >
+      a^m * a^n = a^(m+n); (a^m)^n = a^(m*n); a^0 = 1 (a not 0); a^-n =
+      1/a^n; a^1 = a. Called "indices" on exam papers and in the
+      syllabus — this course says "power"/"exponent" instead, since
+      "index" already means a list position here.
+  - term: logarithm
+    kind: formula
+    definition: >
+      The inverse of a power — log_a(x) = n means a^n = x. Fundamental to
+      algorithm analysis: binary search's O(log n) is counting how many
+      times you can halve something.
+    example: "log2(1024) = 10, since 2**10 = 1024"
+  - term: "math.log2(), math.log10()"
+    kind: function
+    definition: The base-2 and base-10 logarithm of a number.
+    example: "math.log2(1024)  # 10.0"
+  - term: geometry formulas
+    kind: formula
+    definition: >
+      Circle: area = pi*r^2, circumference = 2*pi*r. Rectangle: area =
+      length*width, perimeter = 2*(length+width). Triangle: area =
+      base*height/2. Cylinder: volume = pi*r^2*h, surface area =
+      2*pi*r^2 + 2*pi*r*h. Sphere: volume = (4/3)*pi*r^3, surface area =
+      4*pi*r^2.

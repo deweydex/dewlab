@@ -1,0 +1,33 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+entries:
+  - term: truth table
+    kind: concept
+    definition: >
+      Every possible combination of True/False inputs to a logical
+      operator, and what it outputs for each — not a fact to memorise, but
+      what a loop over every case produces.
+  - term: exclusive or, XOR
+    kind: concept
+    definition: >
+      True when exactly one of its two inputs is true, not both — the
+      "or" ordinary English usually means. The same operation as "not
+      equal to" for True/False values.
+    example: "a ^ b   # Python's bitwise XOR, also works on booleans"
+  - term: De Morgan's Laws
+    kind: formula
+    definition: >
+      Pushing a not inside a bracket flips and to or (and vice versa):
+      not (A and B) equals (not A) or (not B); not (A or B) equals
+      (not A) and (not B). The same two laws hold for sets, with union
+      for or, intersection for and, and complement for not.
+  - term: "Python's built-in set: |, &, -"
+    kind: operator
+    definition: >
+      A real set, written {1, 2, 3}. | is union, & is intersection, - is
+      difference — the same operations built from scratch in Sets as
+      Sorted Lists, now via Python's own type.
+    example: "a | b   # union;  a & b   # intersection"
+  - term: complement (of a set)
+    kind: concept
+    definition: Everything in the universal set that is not in this one.
+    example: "everyone - s"

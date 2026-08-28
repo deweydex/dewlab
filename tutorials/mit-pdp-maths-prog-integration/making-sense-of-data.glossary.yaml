@@ -1,0 +1,58 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+entries:
+  - term: mean
+    kind: formula
+    definition: The arithmetic average — add everything up and divide by the count.
+    example: "x-bar = (1/n) * sum(x)"
+  - term: median
+    kind: concept
+    definition: The middle value once the data is sorted. With an even count, the average of the two middle values.
+  - term: mode
+    kind: concept
+    definition: The value that appears most frequently in the data.
+  - term: outlier, robust
+    kind: concept
+    definition: >
+      An outlier is a value far from the rest of the data. A statistic is
+      robust when an outlier barely changes it — the median is robust to
+      outliers; the mean is not.
+  - term: data range
+    kind: concept
+    definition: >
+      The simplest measure of spread — maximum minus minimum. (Not the
+      same thing as Python's range() function.)
+  - term: standard deviation
+    kind: formula
+    definition: >
+      How far, on average, each data point sits from the mean: find each
+      value's distance from the mean, square it, average those, then take
+      the square root.
+    example: "sigma = sqrt((1/N) * sum((x - x_bar)**2))"
+  - term: categorical, ordinal, discrete, continuous
+    kind: concept
+    definition: >
+      Four kinds of data. Categorical has no order (favourite colour);
+      ordinal has order but no consistent spacing (star ratings); discrete
+      is countable (bugs in a program); continuous can take any value in a
+      range (temperature). What kind a value is decides which summary
+      measures make sense for it.
+  - term: frequency distribution, bins
+    kind: concept
+    definition: >
+      Shows how often each value, or each range of values (a bin), occurs
+      in the data — often more informative than any single summary
+      number.
+  - term: dictionary
+    kind: concept
+    definition: >
+      Stores values under keys you choose, rather than under numbered
+      positions like a list. Look one up the same way, and check whether
+      a key exists with "in".
+    example: 'counts = {}\ncounts["apples"] = 5\n"oranges" in counts'
+  - term: "sorted()"
+    kind: function
+    definition: Returns a new list with the elements in order, leaving the original list unchanged.
+  - term: "plt.hist()"
+    kind: function
+    definition: Bins a list of values and draws them as a histogram.
+    example: "plt.hist(scores, bins=5)"

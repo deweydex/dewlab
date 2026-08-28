@@ -1,0 +1,40 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+entries:
+  - term: quadratic formula
+    kind: formula
+    definition: >
+      Solves ax^2 + bx + c = 0 directly, without factoring or completing
+      the square by hand.
+    example: "x = (-b +/- sqrt(b**2 - 4*a*c)) / (2*a)"
+  - term: discriminant
+    kind: concept
+    definition: >
+      b^2 - 4ac, the part of the quadratic formula under the square root.
+      Positive means two real roots; zero means one repeated root;
+      negative means no real roots.
+  - term: factored form (of a quadratic)
+    kind: formula
+    definition: >
+      A quadratic written as a(x - r1)(x - r2), where r1 and r2 are its
+      roots — the reverse of expanding two binomials with FOIL.
+    example: "x^2 - 4x + 3 = (x - 1)(x - 3)"
+  - term: linear inequality
+    kind: concept
+    definition: >
+      Solved the same way as an equation, with one extra rule: multiplying
+      or dividing both sides by a negative number flips the inequality's
+      direction.
+    example: "2x + 3 > 7  ->  x > 2"
+  - term: "simultaneous equations, elimination"
+    kind: formula
+    definition: >
+      Two equations, two unknowns, solved at once — multiply the
+      equations so one variable cancels when added or subtracted. For
+      a1*x + b1*y = c1 and a2*x + b2*y = c2, both x and y have a direct
+      formula in terms of the coefficients.
+  - term: determinant (of a 2x2 system)
+    kind: concept
+    definition: >
+      a1*b2 - a2*b1, the denominator in the simultaneous-equations
+      formula. Zero means the system has no unique solution — the lines
+      are parallel or identical.

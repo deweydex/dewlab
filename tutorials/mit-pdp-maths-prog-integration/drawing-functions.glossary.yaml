@@ -1,0 +1,43 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+entries:
+  - term: function (exactly one output)
+    kind: concept
+    definition: >
+      A rule that gives the same input the same output every time. A
+      Python function that can return different results for the same
+      input (like one using random) is not a function in this stricter,
+      mathematical sense — and has no graph, because there is no single
+      height above any given x.
+  - term: domain, range (of a function)
+    kind: concept
+    definition: >
+      The domain is the set of inputs a function will accept; the range
+      is the set of outputs it can produce. reciprocal(0) and
+      sqrt(-1) fail because 0 and -1 are outside those functions' domains.
+  - term: closure (a function returning a function)
+    kind: concept
+    definition: >
+      A function that builds and returns another function, remembering
+      the values it was given — useful whenever you want a whole family
+      of similar functions rather than one.
+    example: "def line(m, c):\n    def f(x):\n        return m * x + c\n    return f"
+  - term: slope (m), intercept (c)
+    kind: concept
+    definition: >
+      The two numbers that describe a straight line: m tilts it, c slides
+      it up or down — neither affects the other.
+    example: "y = m*x + c"
+  - term: highest power sets the number of turns
+    kind: concept
+    definition: >
+      A line (x^1) does not turn. A quadratic (x^2) turns once. A cubic
+      (x^3) turns at most twice. A rule of thumb for sketching a curve
+      before plotting it.
+  - term: inverse function
+    kind: concept
+    definition: >
+      Undoes what a function did — if f turns 3 into 6, its inverse turns
+      6 back into 3. Its graph is the original reflected across y = x. Only
+      exists when the function never sends two different inputs to the
+      same output (squaring cannot be undone over all numbers, since 3 and
+      -3 both give 9; doubling can).

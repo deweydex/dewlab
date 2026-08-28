@@ -1,0 +1,23 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+entries:
+  - term: expression, equation
+    kind: concept
+    definition: >
+      An expression is a mathematical phrase with a value (3x + 7) — it
+      asserts nothing. An equation states two expressions are equal
+      (3x + 7 = 22) and can be true or false depending on x. You evaluate
+      an expression; you solve an equation.
+  - term: polynomial (as a coefficient list)
+    kind: concept
+    definition: >
+      A polynomial like 3x^2 + 5x - 2 represented as a list of
+      coefficients, where index i holds the coefficient of x^i — so the
+      list index matches the exponent.
+    example: "3x^2 + 5x - 2  <->  [-2, 5, 3]"
+  - term: FOIL method
+    kind: concept
+    definition: >
+      Distribute each term of the first expression across every term of
+      the second when multiplying two polynomials — First, Outer, Inner,
+      Last, for two two-term expressions.
+    example: "(2x + 3)(x + 4) = 2x^2 + 8x + 3x + 12"

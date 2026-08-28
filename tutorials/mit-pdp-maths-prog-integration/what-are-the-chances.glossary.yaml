@@ -1,0 +1,41 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+entries:
+  - term: "P(A), basic probability"
+    kind: formula
+    definition: >
+      Number of favourable outcomes divided by total outcomes, when every
+      outcome is equally likely. A number between 0 (impossible) and 1
+      (certain).
+    example: "P(heads) = 1 / 2"
+  - term: complement rule
+    kind: formula
+    definition: "The probability an event does not happen: 1 - P(A)."
+  - term: "addition rule (P(A or B))"
+    kind: formula
+    definition: >
+      For mutually exclusive events (cannot both happen), P(A) + P(B). If
+      they can overlap, subtract the overlap: P(A) + P(B) - P(A and B).
+  - term: "multiplication rule (P(A and B))"
+    kind: formula
+    definition: For independent events, P(A) x P(B). If not independent, the second probability depends on what already happened.
+    example: "P(two aces in a row) = 4/52 * 3/51"
+  - term: law of large numbers
+    kind: concept
+    definition: The more trials a random process is simulated, the closer the observed proportion gets to the true probability.
+  - term: "random.choice()"
+    kind: function
+    definition: Picks one item at random from a list.
+    example: 'random.choice(["heads", "tails"])'
+  - term: "random.shuffle()"
+    kind: function
+    definition: Shuffles a list in place.
+    example: "random.shuffle(deck)"
+  - term: "conditional probability, P(B|A)"
+    kind: formula
+    definition: >
+      The probability of B given that A has already happened — different
+      from P(B) alone whenever A changes what remains possible.
+    example: "P(B|A) = P(A and B) / P(A)"
+  - term: Monte Carlo
+    kind: concept
+    definition: Estimating an answer by simulating a random process many times, rather than calculating it exactly — used when an exact calculation gets too tangled.

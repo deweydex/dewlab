@@ -1,0 +1,49 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+entries:
+  - term: machine code
+    kind: concept
+    definition: >
+      The raw, native language of the hardware — every instruction written
+      in binary, with nothing standing between it and the circuits.
+  - term: Assembly language
+    kind: concept
+    definition: >
+      Gives each machine instruction a short readable name (ADD, MOV, JMP)
+      instead of a binary pattern.
+  - term: assembler
+    kind: concept
+    definition: A program that translates assembly language back into the binary the hardware needs.
+  - term: high-level language
+    kind: concept
+    definition: >
+      Code that reads more like English or mathematics, translated into
+      machine code by software rather than by a person. Python is one.
+  - term: compiler
+    kind: concept
+    definition: Translates a whole program into machine code before it runs, producing a file the machine can execute on its own.
+  - term: interpreter
+    kind: concept
+    definition: >
+      Reads and runs a program line by line as it goes, with no separate
+      translation step first. Python behaves like one, from where you're
+      sitting.
+  - term: paradigm
+    kind: concept
+    definition: >
+      A way of organising a program — a set of habits about where the
+      logic goes and what the pieces are. A language tends to encourage
+      one, though some let you use several.
+  - term: procedural, functional, object-oriented
+    kind: concept
+    definition: >
+      Three paradigms for the same task: procedural says how to build the
+      answer step by step; functional describes the transformation, not
+      the loop that applies it; object-oriented keeps the data and the
+      things you do to it together, as a class.
+  - term: "chr()"
+    kind: function
+    definition: Turns a number into the character it represents.
+    example: 'chr(72)  # "H"'
+  - term: ASCII
+    kind: concept
+    definition: A standard way of representing text characters as numbers.

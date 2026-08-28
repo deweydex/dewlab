@@ -1,0 +1,30 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+entries:
+  - term: set
+    kind: concept
+    definition: A collection of distinct elements where order does not matter and duplicates are not allowed.
+    example: "{3, 1, 4, 1, 5} is the same set as {1, 3, 4, 5}"
+  - term: merge-walk pattern
+    kind: concept
+    definition: >
+      Walk two sorted lists with two pointers at once, advancing whichever
+      side is behind (or both, on a match) — the pattern behind merge
+      sort's merge step and every set operation here, runs in O(n + m).
+  - term: union, intersection, difference, symmetric difference
+    kind: concept
+    definition: >
+      Union: elements in either set. Intersection: elements in both.
+      Difference (a - b): elements in a but not b. Symmetric difference:
+      elements in exactly one of the two, not both.
+  - term: "set notation: in, not in, union, intersection, difference, subset, empty set"
+    kind: formula
+    definition: >
+      x in A ("x is a member of A"); x not in A; A union B; A intersect
+      B; A \ B (difference); A subset B (every element of A is also in
+      B); {} (the empty set).
+  - term: inclusion-exclusion principle
+    kind: concept
+    definition: >
+      len(a) + len(b) - len(intersection(a, b)) equals len(union(a, b)) —
+      the set-sizes version of the same overlap-subtracting idea behind
+      the general addition rule for probabilities.

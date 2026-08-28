@@ -1,0 +1,30 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+entries:
+  - term: imaginary unit (i, written 1j in Python)
+    kind: concept
+    definition: >
+      Defined by i^2 = -1 — invented the same way negatives, fractions,
+      and irrationals were, because "no real solution" was a smaller
+      claim than it sounded.
+  - term: "complex number (C)"
+    kind: concept
+    definition: >
+      A number with a real part and an imaginary part, like 3 + 2i. The
+      fifth number family, and the last one needed — every polynomial
+      equation has a solution in C.
+    example: "z = 3 + 2j"
+  - term: "z.real, z.imag"
+    kind: function
+    definition: The real and imaginary parts of a complex number, as plain numbers.
+    example: "(3 + 2j).real  # 3.0"
+  - term: "cmath.sqrt()"
+    kind: function
+    definition: >
+      Like math.sqrt(), but takes the square root of a negative number
+      too, returning a complex result instead of raising an error.
+  - term: conjugate
+    kind: concept
+    definition: >
+      Two complex numbers with the same real part and opposite imaginary
+      parts, like 2 + 3i and 2 - 3i. A quadratic with real coefficients
+      always produces its complex roots in a conjugate pair.

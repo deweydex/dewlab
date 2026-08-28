@@ -1,0 +1,54 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+entries:
+  - term: list
+    kind: concept
+    definition: An ordered sequence of values, written in square brackets.
+    example: "[42, 38, 35]"
+  - term: index, zero-based indexing
+    kind: concept
+    definition: >
+      A value's position in a list. Python counts from 0, so the first
+      element is index 0; a negative index counts from the end (-1 is the
+      last element).
+  - term: slice
+    kind: concept
+    definition: A portion of a list, taken with [start:end] — the element at end is excluded.
+    example: "scores[2:5]"
+  - term: mutable
+    kind: concept
+    definition: Can be changed after it is created. A list is mutable — you can replace, add, or remove elements from it in place.
+  - term: "append()"
+    kind: function
+    definition: Adds one element to the end of a list, in place.
+    example: "scores.append(50)"
+  - term: "len()"
+    kind: function
+    definition: The number of elements in a list (or characters in a string).
+    example: "len(scores)"
+  - term: "enumerate()"
+    kind: function
+    definition: Loops over a list giving both the index and the value at once, instead of just the value.
+    example: "for index, name in enumerate(names):"
+  - term: function, def
+    kind: keyword
+    definition: >
+      A named, reusable block of code, defined with def and a name. You
+      call it by writing that name followed by parentheses, as many times
+      as you like.
+    example: "def greet(name):\n    print(\"Hello, \" + name)"
+  - term: parameter, argument, return
+    kind: concept
+    definition: >
+      A parameter is a function's own placeholder name for a value it
+      expects; the argument is the actual value handed over when you call
+      it. return sends a value back to whoever called the function, so it
+      can be used in further calculations rather than only printed.
+  - term: dot product
+    kind: formula
+    definition: >
+      Multiply two lists' elements pairwise and add the results —
+      fundamental in machine learning, physics, and elsewhere.
+    example: "[1, 2, 3] . [4, 5, 6] = 1*4 + 2*5 + 3*6 = 32"
+  - term: modular programming
+    kind: concept
+    definition: Building a complex program out of simple, tested, reusable pieces — functions being the first tool for it.

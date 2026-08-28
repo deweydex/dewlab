@@ -1,0 +1,18 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# Deliberately short — this tutorial's own point is that it introduces no
+# new set operations, only a picture of ones already covered in
+# sets-as-sorted-lists.glossary.yaml and logic-and-truth.glossary.yaml.
+entries:
+  - term: Venn diagram
+    kind: concept
+    definition: >
+      Overlapping circles, one per set, with each region showing what
+      belongs to exactly that combination of sets. Drawn from the actual
+      set operations, not placed by hand — it earns its keep at three
+      sets, where the expressions stop fitting in your head, and stops
+      working at four (no arrangement of four circles produces all
+      fifteen possible regions).
+  - term: "2^n - 1 regions"
+    kind: formula
+    definition: How many distinct regions n overlapping sets divide a picture into.

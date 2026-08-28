@@ -1903,3 +1903,113 @@ CSS cascade or its comment parsing by reading the rule rather than
 querying `getComputedStyle()` against a real, rendered page; both bugs
 this entry describes, and the meta-bug in fixing the first one, would have
 shipped unnoticed by any amount of re-reading the CSS text.*
+
+**7.64 — The reading page gained a cheat sheet, assembled per tutorial so it
+never shows a reader something they have not been taught yet.** Full design
+in `planning/CHEAT_SHEETS.md`; this is the shape of what landed.
+
+A glossary file (`<slug>.glossary.yaml`) says what one specific tutorial
+introduces — a new sibling of the tutorial's own `.md`, not frontmatter,
+because a build already reads frontmatter for other reasons and a bad
+glossary entry should fail the build the same way a bad `covers:` entry
+does (`own_glossary()`'s `kind`/`term`/`definition` checks, `build.py`).
+`cumulative_glossary()` walks a series in `order.yaml` order — the same
+`members` list `nav_for()` already uses for previous/next — accumulating
+each member's own entries into the next, so a tutorial's manifest carries
+its own glossary plus everything before it and nothing after. A practice
+page has no series position that means anything of its own
+(`practice_for`/`practice_across` name what it tests, not where it sits),
+so its cheat sheet is the union of the tutorial(s) it names instead —
+resolved through the exact same `registry` lookup `practice_pairs()`
+already validates, not a parallel mechanism.
+
+The panel itself reuses `.dl-settings`'s own floating-card positioning
+rather than inventing a second panel language, anchored to the same corner
+on purpose — and the two now close each other on open
+(`closeCheatSheet()`/`closeSettings()`, `tutorial-runtime.js`), since
+showing both at once would overlap. The toggle is the one new thing with no
+existing analogue: pinned to the page's own top-left corner, independent of
+the masthead (which already gives its left side to the wordmark), starting
+`hidden` in `shell.html` and revealed only when `initCheatSheet()` finds a
+non-empty `manifest.glossary` — a tutorial with nothing accumulated yet,
+which is every tutorial for a while, offers no button at all rather than
+one that opens onto an empty panel.
+
+That toggle's own CSS shipped broken on the first pass, caught by
+`tests/e2e/test_cheat_sheet.py`'s `TestVisibility` rather than by reading
+the rule: `.dl-cheatsheet-toggle`'s unconditional `display: inline-flex`
+has the same specificity as the browser's own `[hidden] { display: none }`
+and, loading later, won the tie — showing the button regardless of the
+`hidden` attribute JS uses to hide it. `.dl-cheatsheet-toggle[hidden] {
+display: none }`, stated explicitly rather than assumed, fixed it. The
+`.dl-settings-toggle` this was modelled on never hit this, because that
+button is never itself hidden — only its panel is — which is exactly the
+kind of difference that is invisible until a test actually asserts on it.
+
+Producing the glossary files themselves — the part that makes any of this
+show real content — is `.claude/skills/tutorial-glossary/SKILL.md`, run
+tutorial by tutorial in series order, deliberately built on top of the
+first-use `*emphasis*` convention `dev/curriculum_map.py` already relies on
+(`EMPHASIS_RE`/`terms_of()`) rather than reading each tutorial cold: most of
+a tutorial's glossary candidates are already marked, by an author who was
+told to mark them, before the skill reads a word of prose.
+
+*Cost to change: the schema and accumulation logic, small — one YAML shape,
+one pure function per concern (`own_glossary`, `cumulative_glossary`), fully
+covered by `tests/test_build.py`'s `TestTheCheatSheet` without touching a
+browser. The panel and toggle, small — CSS and markup mirroring
+`.dl-settings` throughout. The real cost is everything this entry is not
+about: actually running the skill across the curriculum, tutorial by
+tutorial, in series order, which is most of the remaining work and is
+tracked separately rather than bundled into this PR.*
+
+**7.65 — Every tutorial in both live modules now has a glossary file, so the
+cheat sheet described in 7.64 shows real content everywhere rather than only
+where a handful of hand-written examples put it.** Run per `.claude/skills/
+tutorial-glossary/SKILL.md`, series by series, in `order.yaml` order:
+`computational-methods`' `python-fundamentals` and `matrices` series (8
+tutorials), then `mit-pdp-maths-prog-integration`'s `maths-and-programming`
+series (all 31), then its `reflections-and-review` series (2). A handful of
+tutorials — `bringing-it-all-together`, `critique-and-reflection`,
+`the-team-project` — got an empty `entries: []` rather than no file at all,
+each with a comment saying why (a stated review with nothing new, or a
+project brief with no code), which keeps "this tutorial was deliberately
+considered and has nothing to add" distinguishable from "nobody has gotten
+to this one yet" (the latter still resolves to an empty list either way, by
+`own_glossary()`'s missing-file case in 7.64 — the file's only audience is a
+future reader of the repo, not the build).
+
+One same-word collision surfaced doing this: *tangent* already names the
+trig ratio (`the-unit-circle.glossary.yaml`), and `rates-of-change.md`
+introduces an unrelated *tangent line* for the derivative. Reusing the term
+string `tangent` there would have `cumulative_glossary()`'s
+first-definition-wins dedup silently keep the trig definition and drop the
+calculus one — caught only by writing the tangent-line entry and finding it
+missing from a rebuilt manifest. Fixed by using the distinct term string
+"tangent line" for the second meaning rather than teaching the dedup logic
+about senses of a word, with a comment at the top of the file recording why
+the two are separate entries on purpose. `making-decisions.glossary.yaml`
+already carries a related note from earlier in this rollout, about a
+tutorial's own prose citing the wrong predecessor for where N/Z/Q/R were
+first covered; the glossary there follows the real `order.yaml` sequence
+rather than the tutorial's own (incorrect) claim, and does not re-teach
+those names in `numbers-and-their-families.glossary.yaml` where the
+same content is genuinely first covered per the tutorial's prose — a
+content fix for the prose itself is tracked as a follow-up task rather than
+made part of this rollout.
+
+Practice-page resolution was verified against real builds rather than only
+unit tests, across both modules: every single-target practice page compared
+equal to its target tutorial's own manifest glossary, and all four
+`practice_across` "mixed" pages in `mit-pdp-maths-prog-integration`
+(`mixed-programming`, `mixed-algebra`, `mixed-data`, `mixed-trigonometry`)
+compared equal to the union of their named targets' manifest glossaries —
+confirming `cumulative_glossary()`'s practice-page branch, exercised so far
+mostly by hand-written fixtures in `tests/test_build.py`, holds up against
+the full, real curriculum.
+
+*Cost to change: none of this changes the mechanism from 7.64 — it is
+content, not code. Adding a glossary for a tutorial written after this
+entry, or correcting one, is exactly the workflow `.claude/skills/
+tutorial-glossary/SKILL.md` already describes: one tutorial, the cumulative
+glossary of what came before it in its series, one YAML file out.*

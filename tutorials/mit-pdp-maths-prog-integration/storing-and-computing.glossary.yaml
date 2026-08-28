@@ -1,0 +1,80 @@
+# Hand-written — see first-steps.glossary.yaml for why these two exist and
+# what they are proving out before the skill runs unattended.
+#
+# Nothing from first-steps.glossary.yaml is repeated here even where this
+# tutorial uses it again (+, -, print(), …) — reusing an earlier tutorial's
+# vocabulary is not introducing it a second time. "types matter" (the
+# reflection's own emphasis) is left out too: stress emphasis on a phrase,
+# not a term someone would look up.
+entries:
+  - term: variable
+    kind: concept
+    definition: >
+      A name that refers to a value, created with = ("assign this value to
+      this name" — not "is equal to," as in maths). Python figures out what
+      kind of data it holds from the value you give it.
+  - term: int
+    kind: concept
+    definition: >
+      Python's whole-number type: 42, -7, 0, and so on, extending in both
+      directions from zero. int(x) also converts x to a whole number.
+  - term: float
+    kind: concept
+    definition: >
+      Python's decimal-number type: 3.14, -0.5, 2.0. Approximates the real
+      numbers, but cannot represent every one of them exactly. float(x)
+      also converts x to one.
+  - term: str
+    kind: concept
+    definition: >
+      Python's text type, written in quotes: "hello", 'world'. str(x) also
+      converts x to text.
+  - term: bool
+    kind: concept
+    definition: >
+      Python's true/false type — the value is either True or False. Named
+      after George Boole. bool(x) also converts x to one.
+  - term: "type()"
+    kind: function
+    definition: Tells you which type a value is.
+    example: "type(42)  # int"
+  - term: concatenate
+    kind: concept
+    definition: >
+      To join text end to end. + does this for strings ("40" + "2" gives
+      "402"), rather than adding, which is what it does for numbers.
+  - term: "="
+    kind: operator
+    definition: >
+      Assignment — stores the value on the right in the name on the left.
+      Not the same thing as mathematical equality.
+  - term: "input()"
+    kind: function
+    definition: >
+      Asks the person using the page to type something, and hands back
+      whatever they typed — always as a str, even if it looks like a number.
+  - term: binary
+    kind: concept
+    definition: >
+      Base 2 — the number system computers use natively, built from just
+      two digits (0 and 1) because a transistor has two states. Written
+      with a 0b prefix in Python (0b101010).
+  - term: hexadecimal
+    kind: concept
+    definition: >
+      Base 16, using digits 0-9 and letters A-F. Popular because one hex
+      digit always corresponds to exactly four binary digits. Written with
+      a 0x prefix in Python (0x2A).
+  - term: "bin()"
+    kind: function
+    definition: Converts a number to its binary representation, as text.
+    example: "bin(42)  # '0b101010'"
+  - term: "hex()"
+    kind: function
+    definition: Converts a number to its hexadecimal representation, as text.
+    example: "hex(42)  # '0x2a'"
+  - term: snake_case
+    kind: concept
+    definition: >
+      Python's naming convention for variables: lowercase words separated
+      by underscores, like temperature_in_celsius.

@@ -1,0 +1,25 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+entries:
+  - term: pandas
+    kind: concept
+    definition: A library for handling tabular data in Python.
+  - term: DataFrame
+    kind: concept
+    definition: >
+      A table of rows and columns — how pandas holds a dataset in memory.
+      Renders as a real table rather than as text.
+  - term: filtering with a comparison
+    kind: concept
+    definition: >
+      A comparison like readings["evening"] > 14 applies to a whole column
+      at once, giving one True/False answer per row — and that result can
+      be used to select just the rows where it was True.
+    example: 'readings[readings["evening"] > 14]'
+  - term: "check()"
+    kind: function
+    definition: Tells you whether a value matches what was expected. Not graded, not recorded.
+    example: "check(readings[\"morning\"].mean(), 10.85)"
+  - term: "mean()"
+    kind: function
+    definition: The average of a column's values.
+    example: 'readings["morning"].mean()'
