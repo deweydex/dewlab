@@ -120,18 +120,18 @@ Sometimes we need to convert between types. Python gives us functions for this: 
 ```python exec
 id: type-conversion-1
 # Converting between types
-x = "42"
-print(type(x))          # str
+text_value = "42"
+print(type(text_value))          # str
 
-y = int(x)              # convert string to integer
-print(type(y))          # int
-print(y + 8)            # now we can do arithmetic: 50
+number_value = int(text_value)   # convert string to integer
+print(type(number_value))        # int
+print(number_value + 8)          # now we can do arithmetic: 50
 
-z = float("3.14")       # string to float
-print(z * 2)            # 6.28
+decimal_value = float("3.14")    # string to float
+print(decimal_value * 2)         # 6.28
 
-w = str(100)            # integer to string
-print("The answer is " + w)
+number_as_text = str(100)        # integer to string
+print("The answer is " + number_as_text)
 ```
 
 This becomes especially important when we get input from the user, because the `input()` function always returns a string -- even if the user types a number.
