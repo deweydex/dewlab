@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mini IDE - dewlab</title>
+
+<link rel="stylesheet" href="tutorial-style.css">
+<link rel="stylesheet" href="mini-ide-style.css">
+
+<!-- Apply saved texture preferences before first paint -->
+<script>
+(function () {
+  try {
+    var s = JSON.parse(localStorage.getItem("dewlab:texture") || "{}");
+    var r = document.documentElement;
+    if (s.theme && s.theme !== "system") r.setAttribute("data-theme", s.theme);
+    if (s.font && s.font !== "serif") r.setAttribute("data-font", s.font);
+    if (s.header && s.header !== "full") r.setAttribute("data-header", s.header);
+    if (s.size) r.style.setProperty("--dl-font-size", s.size + "px");
+    if (s.width) r.style.setProperty("--dl-line-width", s.width + "rem");
+    if (s.link) r.style.setProperty("--dl-link", s.link);
+  } catch (e) { /* private mode, blocked storage */ }
+})();
+</script>
+
+<!-- Load CodeMirror vendor bundle -->
+<script type="module">
+  import { createCodeEditor, setEditorTheme } from './vendor/codemirror.bundle.js';
+  window.createCodeEditor = createCodeEditor;
+  window.setEditorTheme = setEditorTheme;
+</script>
+
+</head>
+<body>
+<div class="dl-page">
+  
+  <header class="dl-masthead">
+    <a class="dl-wordmark" href="index.html">dewlab</a>
+    <h1>Mini IDE</h1>
+  </header>
+
+  <main>
+    <div class="mini-ide-toolbar">
+      <div class="mini-ide-toolbar-left">
+        <button id="add-python-cell" class="dl-btn" title="Add a Python code cell">
+          <span class="mini-ide-icon mini-ide-icon-python"></span>Python Cell
+        </button>
+        <button id="add-text-cell" class="dl-btn" title="Add a text/markdown cell">
+          <span class="mini-ide-icon mini-ide-icon-text"></span>Text Cell
+        </button>
+        <button id="run-all" class="dl-btn" title="Run all cells in order">
+          <span class="mini-ide-icon mini-ide-icon-run"></span>Run All
+        </button>
+        <button id="clear-all" class="dl-btn dl-btn-secondary" title="Clear all cells">
+          <span class="mini-ide-icon mini-ide-icon-clear"></span>Clear All
+        </button>
+      </div>
+      <div class="mini-ide-toolbar-right">
+        <button id="download-python" class="dl-btn" title="Download as Python file">
+          <span class="mini-ide-icon mini-ide-icon-download"></span>Download .py
+        </button>
+        <button id="download-html" class="dl-btn" title="Download as standalone HTML">
+          <span class="mini-ide-icon mini-ide-icon-download"></span>Download .html
+        </button>
+        <button id="download-ipynb" class="dl-btn" title="Download as Jupyter Notebook">
+          <span class="mini-ide-icon mini-ide-icon-download"></span>Download .ipynb
+        </button>
+      </div>
+    </div>
+
+    <div class="mini-ide-helper" id="mini-ide-helper">
+      <h2>Welcome to the Mini IDE</h2>
+      <p>
+        This is a simple development environment where you can create and run Python code 
+        cells, along with text cells for documentation. It works entirely in your browser 
+        with nothing to install.
+      </p>
+      <ul>
+        <li><strong>Python Cells:</strong> Write and execute Python code. Cells share a common namespace, 
+        so variables and functions defined in one cell are available in others.</li>
+        <li><strong>Text Cells:</strong> Write documentation, comments, or explanations in plain text.</li>
+        <li><strong>Execution:</strong> Click <strong>Run</strong> on any cell to execute it, or <strong>Run All</strong> 
+        to execute all cells in order.</li>
+        <li><strong>Reordering:</strong> Drag and drop cells to rearrange them.</li>
+        <li><strong>Persistence:</strong> Your work is automatically saved in your browser's local storage.</li>
+        <li><strong>Downloads:</strong> Export your work as a Python file, standalone HTML, or Jupyter Notebook.</li>
+      </ul>
+      <p>
+        <strong>Available Functions:</strong> You can use <code>show()</code>, <code>show_table()</code>, 
+        <code>check()</code>, <code>text_input()</code>, <code>dropdown()</code>, <code>button()</code>, 
+        and <code>load_csv()</code> just like in the tutorials.
+      </p>
+      <button id="helper-close" class="dl-btn dl-btn-secondary">Get Started</button>
+    </div>
+
+    <div id="cells-container" class="mini-ide-cells"></div>
+
+    <div class="mini-ide-status" id="mini-ide-status" role="status" aria-live="polite"></div>
+  </main>
+
+</div>
+
+<!-- Load Pyodide - will be loaded on demand -->
+<script type="module" src="mini-ide.js"></script>
+</body>
+</html>

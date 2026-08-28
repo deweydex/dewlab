@@ -4,7 +4,7 @@
  *
  * Everything here is stock CodeMirror: line numbers, the standard Python
  * language support, and the default light / one-dark highlight pair. That is
- * what DECISIONS.md means by these affordances being free — built-in
+ * what DECISIONS.md means by these affordances being free  built-in
  * extensions, not custom design work.
  */
 
@@ -17,7 +17,7 @@ import { python, localCompletionSource, globalCompletion } from "@codemirror/lan
 import { syntaxHighlighting, defaultHighlightStyle, indentOnInput,
          bracketMatching, indentUnit } from "@codemirror/language";
 import { closeBrackets, closeBracketsKeymap,
-         autocompletion, completionKeymap } from "@codemirror/autocomplete";
+         autocompletion, completionKeymap, snippetCompletion } from "@codemirror/autocomplete";
 import { oneDark } from "@codemirror/theme-one-dark";
 
 /* Theme lives in a compartment so the texture panel can swap light/dark
@@ -30,34 +30,100 @@ const baseTheme = EditorView.theme({
   ".cm-activeLine, .cm-activeLineGutter": { backgroundColor: "transparent" },
 });
 
-/* Keyword/builtin completion (`print`, `for`, `len`, …) and local-name
+/* Keyword/builtin completion (`print`, `for`, `len`, ) and local-name
  * completion (whatever the student has already typed in this cell) are both
- * static — no interpreter involved, so they work the instant a cell mounts,
+ * static  no interpreter involved, so they work the instant a cell mounts,
  * before Pyodide has even started loading. `completeNames`, when the caller
  * supplies one, goes first: it is how a booted cell's own runtime namespace
  * (imported modules, names a student defined) reaches the completion list,
  * wired in from tutorial-runtime.js rather than here, since this file has no
  * idea Pyodide exists. `override` rather than adding to CodeMirror's
- * defaults on purpose — the generic any-word-on-the-page fallback suggests
+ * defaults on purpose  the generic any-word-on-the-page fallback suggests
  * things that are not valid Python, which is worse than fewer, correct
- * suggestions for someone meeting the language for the first time. */
-function pythonCompletion(completeNames) {
+ * suggestions for someone meeting the language for the first time.
+ *
+ * Jedi-based completion is added as an optional source. When `getJediCompletions`
+ * is provided, it is used for pre-execution completion (before the cell has run). */
+function pythonCompletion(completeNames, getJediCompletions = null) {
   const sources = [completeNames, localCompletionSource, globalCompletion].filter(Boolean);
+  
+  // Add Jedi-based completion if available
+  if (getJediCompletions) {
+    sources.unshift(jediCompletionSource(getJediCompletions));
+  }
+  
   return autocompletion({ override: sources, activateOnTyping: true });
 }
 
-/* A docstring on hover, when the caller can supply one — tutorial-runtime.js
+/* Jedi completion source for pre-execution autocomplete.
+ * This allows completion and hover docs to work before a cell has been executed,
+ * using Jedi's static analysis running inside Pyodide. */
+function jediCompletionSource(getJediCompletions) {
+  return (context) => {
+    const { state } = context;
+    const { doc } = state;
+    const cursorPos = context.pos;
+    
+    // Get the text up to the cursor
+    const textBeforeCursor = doc.sliceString(0, cursorPos);
+    const line = doc.lineAt(cursorPos);
+    const lineText = line.text;
+    const linePos = cursorPos - line.from;
+    
+    // Find the word at cursor
+    let start = linePos;
+    let end = linePos;
+    while (start > 0 && /[a-zA-Z0-9_]/.test(lineText[start - 1])) start--;
+    while (end < lineText.length && /[a-zA-Z0-9_]/.test(lineText[end])) end++;
+    
+    if (start === end) {
+      // No word at cursor, try to get completions for empty string
+      return getJediCompletions(textBeforeCursor, linePos).then(completions => {
+        return {
+          from: cursorPos,
+          options: completions.map(c => ({ label: c.name, type: c.type })),
+          validFor: /^[a-zA-Z_]$/
+        };
+      });
+    }
+    
+    const word = lineText.slice(start, end);
+    
+    // Get completions from Jedi
+    return getJediCompletions(textBeforeCursor, linePos, word).then(completions => {
+      if (!completions || completions.length === 0) {
+        return null;
+      }
+      
+      return {
+        from: line.from + start,
+        to: line.from + end,
+        options: completions.map(c => ({
+          label: c.name,
+          type: c.type,
+          detail: c.description || ''
+        })),
+        validFor: /^[a-zA-Z0-9_]$/
+      };
+    });
+  };
+}
+
+/* A docstring on hover, when the caller can supply one  tutorial-runtime.js
  * wires this to a real, running Pyodide interpreter (a name's actual
  * `inspect.getdoc()`, not bundled documentation); the authoring editor has
  * none to offer and passes nothing, which is why this degrades to no
  * extension at all rather than an empty tooltip. `getDoc` is a plain
  * synchronous function so this stays framework-agnostic about where the
- * answer comes from — CodeMirror accepts either a Tooltip or a Promise of
- * one from a hover source, but nothing here needs the async form. */
-function pythonDocTooltip(getDoc) {
-  if (!getDoc) return [];
+ * answer comes from  CodeMirror accepts either a Tooltip or a Promise of
+ * one from a hover source, but nothing here needs the async form.
+ *
+ * Jedi-based hover is added as an optional fallback for names not yet defined
+ * in the running interpreter. */
+function pythonDocTooltip(getDoc, getJediDoc = null) {
+  if (!getDoc && !getJediDoc) return [];
   /* hoverTooltip() returns { active, extension } rather than a plain
-   * Extension — .extension is the actual StateField/ViewPlugin bundle
+   * Extension  .extension is the actual StateField/ViewPlugin bundle
    * CodeMirror needs; `active` is metadata for callers tracking tooltip
    * state elsewhere, which nothing here does. */
   return hoverTooltip((view, pos) => {
@@ -68,8 +134,35 @@ function pythonDocTooltip(getDoc) {
     while (start > 0 && /\w/.test(text[start - 1])) start--;
     while (end < text.length && /\w/.test(text[end])) end++;
     if (start === end) return null;
-    const doc = getDoc(text.slice(start, end));
+    
+    const word = text.slice(start, end);
+    
+    // Try live doc first (from running interpreter)
+    let doc = getDoc ? getDoc(word) : null;
+    
+    // If not found and Jedi is available, try static analysis
+    if (!doc && getJediDoc) {
+      // This is async, but hoverTooltip can handle promises
+      return getJediDoc(word).then(jediDoc => {
+        if (jediDoc) {
+          return {
+            pos: from + start,
+            end: from + end,
+            above: true,
+            create() {
+              const dom = document.createElement("div");
+              dom.className = "cm-dewlab-doc-tooltip";
+              dom.textContent = jediDoc;
+              return { dom };
+            },
+          };
+        }
+        return null;
+      });
+    }
+    
     if (!doc) return null;
+    
     return {
       pos: from + start,
       end: from + end,
@@ -85,7 +178,8 @@ function pythonDocTooltip(getDoc) {
 }
 
 export function createCodeEditor(
-  parent, doc, { dark = false, onChange = null, completeNames = null, getDoc = null } = {}
+  parent, doc, { dark = false, onChange = null, completeNames = null, getDoc = null, 
+    getJediCompletions = null, getJediDoc = null } = {}
 ) {
   const themeCompartment = new Compartment();
 
@@ -101,12 +195,12 @@ export function createCodeEditor(
     indentOnInput(),
     bracketMatching(),
     closeBrackets(),
-    pythonCompletion(completeNames),
-    pythonDocTooltip(getDoc),
+    pythonCompletion(completeNames, getJediCompletions),
+    pythonDocTooltip(getDoc, getJediDoc),
     indentUnit.of("    "),
     python(),
     /* indentWithTab last so Tab indents inside a cell rather than tabbing the
-     * browser out of it — with Escape still available to leave, which is what
+     * browser out of it  with Escape still available to leave, which is what
      * keeps the page keyboard-navigable. completionKeymap ahead of it: Enter
      * and Tab both need to accept an open completion before either falls
      * through to a newline or an indent. */
@@ -149,7 +243,7 @@ export function setEditorTheme(editor, dark) {
   view.dispatch({ effects: view._dewlabTheme.reconfigure(themeOf(dark)) });
 }
 
-/* Illustrative code — an untagged fence — gets the same highlighting as a live
+/* Illustrative code  an untagged fence  gets the same highlighting as a live
  * cell, from the same theme, so the two never drift apart visually. It is not
  * an editor: no gutter, no cursor, no history, and the document cannot change.
  */

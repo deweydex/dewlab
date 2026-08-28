@@ -1631,6 +1631,10 @@ def render_index(
         '<p class="dl-intro-tree">New here, or not sure where a topic fits? '
         'The <a href="tree.html">topic tree</a> shows everything the course '
         "covers and what has to come first.</p>",
+        '<p class="dl-intro-ide">Want to experiment with your own code? '
+        'The <a href="mini-ide.html" target="_blank">Mini IDE</a> lets you create '
+        'and run Python and text cells, then download your work as a Python file, '
+        'HTML, or Jupyter Notebook.</p>',
         "</div>",
     ]
 
@@ -2710,6 +2714,13 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
     if DATA.is_dir():
         shutil.rmtree(OUT / "data", ignore_errors=True)
         shutil.copytree(DATA, OUT / "data")
+    
+    # Copy Mini IDE files to site root
+    mini_ide_files = ["mini-ide.html", "mini-ide.js", "mini-ide-style.css"]
+    for filename in mini_ide_files:
+        src = ASSETS / filename
+        if src.exists():
+            shutil.copy2(src, OUT / filename)
     return written
 
 
