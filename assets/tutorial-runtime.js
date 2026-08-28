@@ -111,11 +111,12 @@ function trackChromeHeight() {
 /* -------------------------------------------------------- settings panel */
 
 /* Settings and the cheat sheet (initCheatSheet(), below) are two open/close
- * behaviours on the page rather than one now, and both panels anchor to the
- * same corner (tutorial-style.css) — opening either one closes the other,
- * or they would sit on top of each other. Escape and a click outside both
- * close whichever is open: a panel that can only be dismissed by finding the
- * same small button again is the kind of thing that gets left open. */
+ * behaviours on the page rather than one now — opening either one closes
+ * the other, so a reader is never juggling both at once even though each
+ * now anchors to its own corner (tutorial-style.css). Escape and a click
+ * outside both close whichever is open: a panel that can only be dismissed
+ * by finding the same small button again is the kind of thing that gets
+ * left open. */
 function closeCheatSheet() {
   const toggle = document.getElementById("dl-cheatsheet-toggle");
   const panel = document.getElementById("dl-cheatsheet");
@@ -220,8 +221,8 @@ function renderCheatSheet(entries) {
 }
 
 /* Same open/close mechanics as initSettingsPanel(), and the two stay in sync
- * (closeCheatSheet()/closeSettings(), above) because both panels anchor to
- * the same corner. The one real difference: this toggle starts `hidden` in
+ * (closeCheatSheet()/closeSettings(), above) so only one is ever open at a
+ * time. The one real difference: this toggle starts `hidden` in
  * shell.html, and stays that way — offering nothing at all — unless this
  * page's own manifest actually carries a glossary. A tutorial with nothing
  * accumulated yet (planning/CHEAT_SHEETS.md §6) is not a rare case early on:

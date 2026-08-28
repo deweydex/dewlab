@@ -628,12 +628,15 @@ p code, li code {
   border-top: 1px solid currentColor;
 }
 
-/* Anchored the same way .dl-settings is, on the same corner — the two are
-   mutually exclusive at runtime (initCheatSheet() in tutorial-runtime.js)
-   for exactly that reason, rather than risking one covering the other. */
+/* Anchored to the same corner as its own toggle button (top-left) rather
+   than .dl-settings' corner (top-right) — it used to share the right side
+   with Settings, which read as if the cheat sheet belonged to the Settings
+   button rather than the one above it. Still mutually exclusive at runtime
+   (initCheatSheet() in tutorial-runtime.js) so only one panel is ever open
+   at a time. */
 .dl-cheatsheet {
   position: fixed;
-  right: 1rem;
+  left: 1rem;
   top: calc(var(--dl-chrome-h) + 0.5rem);
   z-index: 50;
   width: min(22rem, calc(100vw - 2rem));
