@@ -196,13 +196,13 @@ const GLOSSARY_GROUP_LABELS = {
   keyword: "Keywords",
 };
 
-function renderCheatSheet(entries) {
+function renderCheatSheet(manifest) {
   const container = document.getElementById("dl-cheatsheet-groups");
   if (!container) return;
   container.replaceChildren();
 
   const byKind = new Map();
-  for (const entry of entries) {
+  for (const entry of manifest.glossary || []) {
     if (!byKind.has(entry.kind)) byKind.set(entry.kind, []);
     byKind.get(entry.kind).push(entry);
   }
@@ -233,23 +233,68 @@ function renderCheatSheet(entries) {
     section.append(dl);
     container.append(section);
   }
+
+  const notes = manifest.notes || [];
+  if (notes.length) {
+    const section = document.createElement("div");
+    section.className = "dl-cheatsheet-group";
+    const heading = document.createElement("h3");
+    heading.textContent = "Notes";
+    section.append(heading);
+    for (const note of notes) {
+      // note.html is build.py's own markdown-to-HTML output for this
+      // tutorial's own aside — the same trust level as the rest of the
+      // page body, which the shell already writes as raw HTML.
+      const div = document.createElement("div");
+      div.className = "dl-note";
+      div.id = note.id;
+      div.innerHTML = note.html;
+      section.append(div);
+    }
+    container.append(section);
+  }
+
+  const datasets = manifest.datasets || [];
+  if (datasets.length) {
+    const section = document.createElement("div");
+    section.className = "dl-cheatsheet-group";
+    const heading = document.createElement("h3");
+    heading.textContent = "Datasets used here";
+    section.append(heading);
+
+    const dl = document.createElement("dl");
+    for (const dataset of datasets) {
+      const dt = document.createElement("dt");
+      dt.textContent = dataset.name;
+      const dd = document.createElement("dd");
+      dd.append(document.createTextNode(
+        `${dataset.description} — ${dataset.source} (${dataset.license})`));
+      dl.append(dt, dd);
+    }
+    section.append(dl);
+    container.append(section);
+  }
 }
 
 /* Same open/close mechanics as initSettingsPanel(), and the two stay in sync
  * (closeCheatSheet()/closeSettings(), above) so only one is ever open at a
  * time. The one real difference: this toggle starts `hidden` in
  * shell.html, and stays that way — offering nothing at all — unless this
- * page's own manifest actually carries a glossary. A tutorial with nothing
+ * page's own manifest actually carries a glossary, a note, or a dataset
+ * (planning/SIDEBAR_CONTENT.md §4 — none of the three is cumulative the
+ * same way, but all three share this one panel). A tutorial with nothing
  * accumulated yet (planning/CHEAT_SHEETS.md §6) is not a rare case early on:
  * it is every tutorial before the skill has been run on anything ahead of
  * it in its series. */
 function initCheatSheet(manifest) {
-  const entries = manifest.glossary;
   const toggle = document.getElementById("dl-cheatsheet-toggle");
   const panel = document.getElementById("dl-cheatsheet");
-  if (!toggle || !panel || !entries || !entries.length) return;
+  const hasContent = (manifest.glossary && manifest.glossary.length)
+    || (manifest.notes && manifest.notes.length)
+    || (manifest.datasets && manifest.datasets.length);
+  if (!toggle || !panel || !hasContent) return;
 
-  renderCheatSheet(entries);
+  renderCheatSheet(manifest);
   toggle.hidden = false;
 
   function setOpen(open) {

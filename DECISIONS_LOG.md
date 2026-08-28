@@ -2381,3 +2381,73 @@ and a `TestSeriesNav` class in `tests/test_build.py` for
 order-file-decides-not-filename case, and the archived/no-series-position
 empty case). `standalone.bundle.js` rebuilt for the
 `tutorial-runtime.js` change.*
+
+**7.74 — Pedagogical notes and dataset attribution, both shipped as
+`planning/SIDEBAR_CONTENT.md` §2–§4 settled: extending the existing cheat
+sheet panel rather than a third one.** Neither is cumulative across a
+series the way the glossary is — a note or a dataset belongs to the
+specific tutorial that declared it, full stop, so both ride on `write()`'s
+manifest the same way `glossary` already does (present only when
+non-empty), just never accumulated through `series_chain()` first.
+
+**Notes** are authored as `<aside class="dl-note" id="...">` in the body —
+§3's recommended option (b), the same reuse-over-invention trick the
+hint/answer fold already established. Unlike a fold, a note does not stay
+inline: `extract_notes()` pulls it out of `body_html` entirely once its id
+and content are captured, because §4 settled that notes surface in the
+sidebar, not mid-paragraph. One real design correction made while
+building this, not in the original design doc: a raw HTML block's inner
+content is *not* re-run through the markdown converter by this project's
+existing pipeline — confirmed by checking what the hint/answer fold
+already does with backticks and emphasis inside it (they show up literal,
+not as `<code>`/`<em>`, a pre-existing limitation left alone here since
+fixing it is out of this change's scope). §1's own design intent for
+notes was explicit that this had to work — "a note that contains an image
+is just markdown content" — so `extract_notes()` runs the captured inner
+text through `to_html()` on its own, separately from the surrounding
+document, which does convert correctly (checked directly: `![a
+chart](chart.png)` inside a note becomes a real `<img>`). `check_alt_text()`
+was extended to scan every note's own html alongside `body_html`, since an
+image inside a note needs exactly the same alt-text requirement as one in
+the body — it would otherwise go unchecked entirely, having already been
+removed from `body_html` by the time that check runs.
+
+**Datasets** use §2's `data/<name>.yaml` beside `data/<name>.csv` — the
+same beside-the-file pattern `<slug>.glossary.yaml` already established —
+plus a `datasets:` frontmatter list, cross-referenced the same
+fail()-on-mismatch way `practice_pairs()` already checks `practice_for`.
+Both the CSV and its attribution file are required once a tutorial
+declares a dataset name, and the attribution file needs all three fields
+(`source`, `license`, `description`) — an undocumented dataset would
+defeat the entire point of declaring one, so this fails loudly rather than
+shipping a nameless, sourceless entry.
+
+The cheat sheet panel's intro copy was reworded (`shell.html`) to keep its
+one real promise — "nothing here is something you have not been
+taught yet" — scoped to the glossary specifically, since that guarantee
+never applied to notes or datasets and saying it as a blanket claim would
+now be false. Each of the three now gets its own heading inside the panel
+(`renderCheatSheet()` in `tutorial-runtime.js` now takes the whole
+manifest rather than just glossary entries), which is what keeps a reader
+from mistaking a note for an examinable, taught term — the conceptual
+cost §4 flagged when it settled on reusing one panel for three different
+kinds of content.
+
+*Cost to change: moderate. New `Note` dataclass and `Tutorial.notes`/
+`Tutorial.datasets` fields, `extract_notes()` wired into `load()`,
+`dataset_attribution()`/`check_datasets()` in `build.py`; `write()` gained
+two more optional manifest fields following the same shape `glossary`
+already has. `renderCheatSheet()` restructured to read from the whole
+manifest and render three sections instead of one; `initCheatSheet()`'s
+visibility guard now checks all three instead of just `glossary`. New
+`TestNotes`/`TestDatasets` classes in `tests/test_build.py` (manifest
+shape, extraction/removal from the body, duplicate-id and
+missing-file/missing-attribution-field failures, non-inheritance across a
+series, and the markdown-conversion-inside-a-note correction with its own
+alt-text check) and new `TestNotes`/`TestDatasets` classes added to the
+existing `tests/e2e/test_cheat_sheet.py` rather than a new file, since
+this extends that panel rather than building a new one (toggle visibility
+from a note or dataset alone, per-section headings, a note pulled out of
+the page body, both a note and a glossary entry keeping their own separate
+headings). `standalone.bundle.js` rebuilt for the `tutorial-runtime.js`
+change.*

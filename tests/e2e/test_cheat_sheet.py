@@ -58,6 +58,71 @@ def _glossary(root: Path, slug: str, entries: list[dict]) -> None:
     path.write_text(yaml.dump({"entries": entries}))
 
 
+NOTE_FRONTMATTER = """---
+title: "{title}"
+slug: {slug}
+module: cheatsheet-fixtures
+module_title: "Cheat Sheet Fixtures"
+year: "2026-2027"
+series: sample-series
+version: 2026.08.23.1
+---
+
+# {title}
+
+<aside class="dl-note" id="{note_id}">
+
+{note_body}
+
+</aside>
+
+Some prose after the note.
+"""
+
+
+def _tutorial_with_note(root: Path, slug: str, note_id: str, note_body: str,
+                         title: str = "A Title") -> None:
+    path = root / "tutorials" / MODULE / f"{slug}.md"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(NOTE_FRONTMATTER.format(
+        title=title, slug=slug, note_id=note_id, note_body=note_body))
+
+
+DATASET_FRONTMATTER = """---
+title: "{title}"
+slug: {slug}
+module: cheatsheet-fixtures
+module_title: "Cheat Sheet Fixtures"
+year: "2026-2027"
+series: sample-series
+version: 2026.08.23.1
+datasets:
+  - {dataset_name}
+---
+
+# {title}
+
+Some prose. Nothing here is a cell, on purpose.
+"""
+
+
+def _tutorial_with_dataset(root: Path, slug: str, dataset_name: str,
+                            title: str = "A Title") -> None:
+    path = root / "tutorials" / MODULE / f"{slug}.md"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(DATASET_FRONTMATTER.format(
+        title=title, slug=slug, dataset_name=dataset_name))
+
+
+def _dataset_files(data_dir: Path, name: str, source: str = "Some source",
+                    license: str = "CC0", description: str = "A dataset.") -> None:
+    data_dir.mkdir(parents=True, exist_ok=True)
+    (data_dir / f"{name}.csv").write_text("a,b\n1,2\n")
+    (data_dir / f"{name}.yaml").write_text(
+        f'source: "{source}"\nlicense: "{license}"\ndescription: "{description}"\n'
+    )
+
+
 def _set_order(root: Path, slugs: list[str]) -> None:
     path = root / "tutorials" / MODULE / "sample-series.order.yaml"
     path.write_text("series: Sample Series\norder:\n" + "".join(f"  - {s}\n" for s in slugs))
@@ -243,6 +308,104 @@ class TestContent:
         headings = page.eval_on_selector_all(
             "#dl-cheatsheet-groups h3", "els => els.map(e => e.textContent)")
         assert headings == ["Concepts", "Functions"]
+        context.close()
+
+
+class TestNotes:
+    """Pedagogical notes surfacing in the cheat sheet panel —
+    planning/SIDEBAR_CONTENT.md §3/§4."""
+
+    def test_a_note_alone_shows_the_toggle(self, site, browser, base_url):
+        """No glossary at all — a note by itself is enough reason to show
+        the panel."""
+        _tutorial_with_note(site, "one", "why-it-works", "Because reasons.")
+        _set_order(site, ["one"])
+        b.build()
+        context = browser.new_context()
+        page = context.new_page()
+        page.goto(f"{base_url}/tutorials/{MODULE}/one.html")
+        assert page.is_visible("#dl-cheatsheet-toggle")
+        context.close()
+
+    def test_opening_the_panel_shows_the_notes_heading_and_content(self, site, browser, base_url):
+        _tutorial_with_note(site, "one", "why-it-works", "Because reasons.")
+        _set_order(site, ["one"])
+        b.build()
+        context = browser.new_context()
+        page = context.new_page()
+        page.goto(f"{base_url}/tutorials/{MODULE}/one.html")
+        page.click("#dl-cheatsheet-toggle")
+        headings = page.eval_on_selector_all(
+            "#dl-cheatsheet-groups h3", "els => els.map(e => e.textContent)")
+        assert "Notes" in headings
+        assert "Because reasons." in page.inner_text("#dl-cheatsheet-groups")
+        context.close()
+
+    def test_the_note_is_not_in_the_page_body(self, site, browser, base_url):
+        """It surfaces in the panel instead of staying inline
+        (planning/SIDEBAR_CONTENT.md §4's settled answer)."""
+        _tutorial_with_note(site, "one", "why-it-works", "Because reasons.")
+        _set_order(site, ["one"])
+        b.build()
+        context = browser.new_context()
+        page = context.new_page()
+        page.goto(f"{base_url}/tutorials/{MODULE}/one.html")
+        assert "Because reasons." not in page.inner_text("main#dl-body")
+        context.close()
+
+    def test_a_note_and_a_glossary_both_appear_with_their_own_headings(self, site, browser, base_url):
+        _tutorial_with_note(site, "one", "why-it-works", "Because reasons.")
+        _glossary(site, "one", [CONCEPT])
+        _set_order(site, ["one"])
+        b.build()
+        context = browser.new_context()
+        page = context.new_page()
+        page.goto(f"{base_url}/tutorials/{MODULE}/one.html")
+        page.click("#dl-cheatsheet-toggle")
+        headings = page.eval_on_selector_all(
+            "#dl-cheatsheet-groups h3", "els => els.map(e => e.textContent)")
+        assert headings == ["Concepts", "Notes"]
+        context.close()
+
+
+class TestDatasets:
+    """Dataset attribution surfacing in the cheat sheet panel —
+    planning/SIDEBAR_CONTENT.md §2/§4."""
+
+    def test_a_dataset_alone_shows_the_toggle(self, site, browser, base_url, monkeypatch):
+        monkeypatch.setattr(b, "DATA", site / "data")
+        _dataset_files(site / "data", "life-expectancy", source="World Bank",
+                        license="CC-BY-4.0", description="Life expectancy by country.")
+        _tutorial_with_dataset(site, "one", "life-expectancy")
+        _set_order(site, ["one"])
+        b.build()
+        context = browser.new_context()
+        page = context.new_page()
+        page.goto(f"{base_url}/tutorials/{MODULE}/one.html")
+        assert page.is_visible("#dl-cheatsheet-toggle")
+        context.close()
+
+    def test_opening_the_panel_shows_the_datasets_heading_and_attribution(
+        self, site, browser, base_url, monkeypatch
+    ):
+        monkeypatch.setattr(b, "DATA", site / "data")
+        _dataset_files(site / "data", "life-expectancy", source="World Bank",
+                        license="CC-BY-4.0", description="Life expectancy by country.")
+        _tutorial_with_dataset(site, "one", "life-expectancy")
+        _set_order(site, ["one"])
+        b.build()
+        context = browser.new_context()
+        page = context.new_page()
+        page.goto(f"{base_url}/tutorials/{MODULE}/one.html")
+        page.click("#dl-cheatsheet-toggle")
+        headings = page.eval_on_selector_all(
+            "#dl-cheatsheet-groups h3", "els => els.map(e => e.textContent)")
+        assert "Datasets used here" in headings
+        text = page.inner_text("#dl-cheatsheet-groups")
+        assert "life-expectancy" in text
+        assert "World Bank" in text
+        assert "CC-BY-4.0" in text
+        assert "Life expectancy by country." in text
         context.close()
 
 

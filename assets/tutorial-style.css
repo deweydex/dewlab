@@ -709,6 +709,22 @@ p code, li code {
   padding: 0.2rem 0.4rem;
 }
 
+/* A pedagogical note (planning/SIDEBAR_CONTENT.md §3), inside the cheat
+   sheet panel's "Notes" section — its own accent, distinct from both the
+   hint/answer folds (which sit inline in the body, not here) and the
+   glossary's dl/dt/dd list above it, so it reads as prose to look at
+   rather than a term to recall. */
+.dl-note {
+  border-left: 2px solid var(--dl-navy);
+  padding-left: 0.7rem;
+  line-height: 1.5;
+}
+.dl-note + .dl-note {
+  margin-top: 0.8rem;
+}
+.dl-note > :first-child { margin-top: 0; }
+.dl-note > :last-child { margin-bottom: 0; }
+
 /* The navigation panel's own toggle, stacked below the cheat sheet's
    rather than beside it — two fixed-position buttons of varying text
    width sit more predictably stacked than side by side. */

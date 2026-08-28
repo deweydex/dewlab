@@ -184,9 +184,12 @@ not just visually).
 
 ### Do pedagogical notes and datasets belong in the cheat sheet panel, or in a panel of their own? And is a second, left-anchored panel worth having?
 
-**Settled: notes and datasets extend the existing cheat-sheet panel, as
-`planning/SIDEBAR_CONTENT.md` §4 recommended** — no third panel for them.
-Not built yet.
+**Settled and built: notes and datasets extend the existing cheat-sheet
+panel, as `planning/SIDEBAR_CONTENT.md` §4 recommended** — no third panel
+for them. `DECISIONS_LOG.md` 7.74. Neither is cumulative across a series
+the way the glossary is; both ride on the same manifest `glossary` already
+uses, each with its own heading inside the panel so a reader does not
+mistake a note for an examinable, taught term.
 
 **The second, left-anchored panel is settled and built, but scaled down
 from §4b's original sketch: series navigation only, not a duplicate of
