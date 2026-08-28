@@ -1,0 +1,28 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+entries:
+  - term: limit
+    kind: concept
+    definition: >
+      What a function is heading towards as the input gets closer to some
+      value, whether or not the function actually has a value there. A
+      statement about the neighbourhood of a point, not about the point
+      itself.
+  - term: "lim(x -> a) f(x)"
+    kind: formula
+    definition: >
+      The notation for "the limit of f(x) as x approaches a" — the single
+      number f(x) gets arbitrarily close to as x gets arbitrarily close to
+      a, from either side.
+  - term: one-sided limits must agree
+    kind: concept
+    definition: >
+      A limit only exists if approaching from below and from above head
+      for the same number. If the two sides approach different numbers
+      (or one side does not settle at all), the limit does not exist,
+      even though the function may be perfectly well defined nearby.
+  - term: limit at infinity
+    kind: concept
+    definition: >
+      What a function settles on as the input grows without bound, rather
+      than as it approaches a specific point. Written the same way, with
+      x approaching infinity instead of a number.

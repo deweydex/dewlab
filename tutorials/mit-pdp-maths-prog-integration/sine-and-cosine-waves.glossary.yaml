@@ -1,0 +1,20 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# tangent is not repeated here — already introduced in
+# the-unit-circle.glossary.yaml, earlier in this series.
+entries:
+  - term: periodic, period
+    kind: concept
+    definition: >
+      A curve is periodic if it repeats exactly, forever. The period is
+      the length of one repeat — one full turn (2*pi radians) for sine
+      and cosine as drawn from the unit circle, because after a full turn
+      you are back at the same point on the circle.
+  - term: "wave formula: amplitude, period, phase, lift"
+    kind: formula
+    definition: >
+      y = amplitude * sin((x - phase) / period * 2*pi) + lift. Four
+      numbers, four separate effects: amplitude is how far it swings from
+      the middle (not top to bottom), period is how long one repeat
+      takes, phase slides it sideways, lift slides it up or down. All
+      four are readable straight off real periodic data by eye.

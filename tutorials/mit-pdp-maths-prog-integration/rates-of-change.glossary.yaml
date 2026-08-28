@@ -1,0 +1,54 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# "tangent line" is deliberately not just "tangent" — that name is
+# already taken, for the trig ratio, in the-unit-circle.glossary.yaml.
+# Same word, unrelated meaning; keeping them as distinct terms avoids
+# one silently shadowing the other.
+entries:
+  - term: derivative
+    kind: concept
+    definition: >
+      The slope of a curve at a single point, found by taking the slope
+      between two nearby points and letting the gap shrink to a limit.
+      Three names for the same number: a limit of chords, the slope of
+      the tangent line, and a rate of change.
+  - term: tangent line
+    kind: concept
+    definition: >
+      The straight line that touches a curve at one point and matches its
+      steepness there. Its slope is the derivative at that point.
+  - term: derivative is a function
+    kind: concept
+    definition: >
+      The derivative is not one number but a rule that gives the slope
+      at any x — for example the derivative of x^2 is the function 2x,
+      not a single value.
+  - term: "power rule: d/dx(x^n) = n*x^(n-1)"
+    kind: formula
+    definition: Bring the exponent down to the front, and reduce it by one.
+    example: "power_rule(3) is the function lambda x: 3 * x ** 2"
+  - term: "sum rule: d/dx(f + g) = f' + g'"
+    kind: formula
+    definition: >
+      Differentiate a sum term by term — which is why a polynomial can be
+      differentiated one power at a time.
+  - term: "product rule: d/dx(f * g) = f'*g + f*g'"
+    kind: formula
+    definition: >
+      The derivative of a product is not the product of the derivatives.
+      Differentiate each factor in turn, leaving the other alone, and add
+      the two results.
+  - term: "chain rule: d/dx(f(g(x))) = f'(g(x)) * g'(x)"
+    kind: formula
+    definition: >
+      For a function nested inside another, differentiate the outside
+      (leaving the inside alone) and multiply by the derivative of the
+      inside. Rates stack: if u changes three times as fast as x, and y
+      twice as fast as u, y changes six times as fast as x.
+  - term: turning point is where the derivative is zero
+    kind: concept
+    definition: >
+      A curve is momentarily flat at its turning points, so its slope —
+      the derivative — is zero exactly there. Confirms the vertex found
+      by completing the square in Parabolas by a completely different
+      method.
