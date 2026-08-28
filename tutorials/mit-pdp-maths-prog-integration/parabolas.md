@@ -63,20 +63,15 @@ Three different curves. Now slide each one so its lowest point sits at the origi
 
 ```python exec
 id: every-quadratic-is-the-same-curve-2
-# Each of these has been shifted by hand so its turning point is at (0, 0).
-ax = draw(lambda x: x ** 2, label="x^2")
-draw(lambda x: (x + 3) ** 2 - 4 + 4 - (x + 3) ** 2 + x ** 2, label="", ax=ax)
-ax.set_ylim(-1, 20)
-
-# Simpler: shift each one and plot the result.
+# Shift each one by hand so its turning point lands on (0, 0).
 fig, ax2 = plt.subplots()
 ax2.axhline(0, color="black", linewidth=0.8)
 ax2.axvline(0, color="black", linewidth=0.8)
 ax2.grid(alpha=0.3)
 xs = [x / 30 for x in range(-150, 151)]
 ax2.plot(xs, [x ** 2 for x in xs], linewidth=4, alpha=0.3, label="x^2")
-ax2.plot(xs, [(x + 3) ** 2 - 4 - (-4) for x in xs], "--", label="x^2 - 6x + 5, shifted")
-ax2.plot(xs, [(x - 2) ** 2 + 3 - 3 for x in xs], ":", label="x^2 + 4x + 7, shifted")
+ax2.plot(xs, [quadratic(1, -6, 5)(x + 3) + 4 for x in xs], "--", label="x^2 - 6x + 5, shifted")
+ax2.plot(xs, [quadratic(1, 4, 7)(x - 2) - 3 for x in xs], ":", label="x^2 + 4x + 7, shifted")
 ax2.legend()
 ax2.set_title("All three, moved on top of each other")
 ```
