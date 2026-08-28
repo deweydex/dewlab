@@ -123,6 +123,13 @@ DETAILS_RE = re.compile(r"<details\b[^>]*>", re.IGNORECASE)
 # answer. Both are styled from their class, so a fold without one renders as a
 # bare browser triangle in the middle of the prose.
 FOLD_CLASSES = ("dl-hint", "dl-answer")
+# A pedagogical note (planning/SIDEBAR_CONTENT.md §3): an HTML aside, same
+# trick as a fold, but pulled out of the body entirely rather than staying
+# inline — extract_notes() removes what this matches.
+NOTE_RE = re.compile(
+    r'<aside class="dl-note" id="(?P<id>[^"]+)">\s*(?P<html>.*?)\s*</aside>\n?',
+    re.DOTALL,
+)
 
 # Maths, matched only against prose — every fence is already out of the way by
 # the time these run. Display first so $$…$$ is never read as two inline spans.
@@ -159,6 +166,17 @@ class Math:
 
 
 @dataclass
+class Note:
+    """A pedagogical note — planning/SIDEBAR_CONTENT.md §3/§4. Authored
+    inline as an HTML aside, the same trick the hint/answer fold already
+    uses, but surfaced in the cheat sheet panel rather than staying inline
+    — see extract_notes()."""
+
+    id: str
+    html: str
+
+
+@dataclass
 class Tutorial:
     path: Path
     meta: dict
@@ -167,6 +185,7 @@ class Tutorial:
     has_math: bool = False
     anchors: set[str] = field(default_factory=set)
     toc: list = field(default_factory=list)
+    notes: list[Note] = field(default_factory=list)
     # Where this sits in its series. Not from the frontmatter — the order file
     # decides it, and series_of() fills it in once the series is assembled.
     order: int = 0
@@ -253,6 +272,16 @@ class Tutorial:
     def is_practice(self) -> bool:
         """Whether this page sets problems rather than teaching."""
         return bool(self.practice_for or self.practice_across)
+
+    @property
+    def datasets(self) -> tuple[str, ...]:
+        """The names this tutorial's cells load via `load_csv()` —
+        declared, not scraped, the same reasoning `covers:`/`practice_for`
+        already use (planning/SIDEBAR_CONTENT.md §2)."""
+        value = self.meta.get("datasets") or []
+        if isinstance(value, str):
+            value = [value]
+        return tuple(str(s) for s in value)
 
     @property
     def version(self) -> str:
@@ -506,6 +535,35 @@ def place_blocks(
     for index, item in enumerate(maths):
         page_html = page_html.replace(f"dlmath{index}z", render_math(item))
     return page_html
+
+
+def extract_notes(body_html: str, path: Path) -> tuple[str, list[Note]]:
+    """Pull every pedagogical note out of the page body and into its own
+    list — planning/SIDEBAR_CONTENT.md §3/§4. A note is authored as an HTML
+    aside (`NOTE_RE`), the same reuse-over-invention trick the hint/answer
+    fold already established, but unlike a fold it does not stay inline: it
+    surfaces in the cheat sheet panel instead, so the aside is removed from
+    the body once its id and content are captured.
+    """
+    notes: list[Note] = []
+    seen: set[str] = set()
+
+    def one(match: re.Match) -> str:
+        note_id = match.group("id")
+        if note_id in seen:
+            fail(path, f"two notes share the id {note_id!r}")
+        seen.add(note_id)
+        # Converted on its own, separately from the surrounding document:
+        # a raw HTML block's own contents are not otherwise re-run through
+        # the converter (the same reason a fold's backticks show up
+        # literally rather than as `<code>`), and a note needs real markdown
+        # — an image in particular (planning/SIDEBAR_CONTENT.md §1's "a note
+        # that contains an image is just markdown content").
+        note_html, _ = to_html(match.group("html"))
+        notes.append(Note(id=note_id, html=note_html))
+        return ""
+
+    return NOTE_RE.sub(one, body_html), notes
 
 
 # -------------------------------------------------------------- navigation
@@ -835,6 +893,33 @@ def nav_for(tutorial: Tutorial, members: list[Tutorial]) -> str:
             f"{html.escape(following.title)}</a>"
         )
     return "".join(parts)
+
+
+def render_series_nav(tutorial: Tutorial, members: list[Tutorial]) -> str:
+    """The whole series, in reading order, for the left-anchored navigation
+    panel (planning/SIDEBAR_CONTENT.md). `nav_for()` already gives a reader
+    the tutorial immediately before and after this one; this is what lets
+    them jump to any point in the series, not just the one next to them.
+
+    A tutorial with no series position — archived, or a practice page —
+    gets nothing here, the same honest shape `nav_for()` already uses for
+    that case: there is nowhere in the series to place it.
+    """
+    if tutorial not in members:
+        return ""
+    items = []
+    for index, member in enumerate(members, start=1):
+        if member is tutorial:
+            items.append(
+                f'<li class="dl-seriesnav-current" aria-current="page">'
+                f"{index}. {html.escape(member.title)}</li>"
+            )
+        else:
+            href = link_between(tutorial, member)
+            items.append(
+                f'<li><a href="{href}">{index}. {html.escape(member.title)}</a></li>'
+            )
+    return '<ol class="dl-seriesnav-series">' + "".join(items) + "</ol>"
 
 
 # --------------------------------------------------------------- cheat sheet
@@ -1636,10 +1721,17 @@ def render_index(
 
 
 def check_alt_text(tutorial: Tutorial) -> None:
-    """Every image declares alt. An explicit alt="" marks a decorative one."""
-    for tag in IMG_RE.findall(tutorial.body_html):
-        if not ALT_RE.search(tag):
-            fail(tutorial.path, f"image has no alt attribute: {tag}")
+    """Every image declares alt. An explicit alt="" marks a decorative one.
+
+    Notes are checked too, even though they no longer live in body_html by
+    this point (extract_notes() already pulled them out) — an image inside
+    one is exactly as real as an inline one.
+    """
+    sources = [tutorial.body_html] + [note.html for note in tutorial.notes]
+    for source in sources:
+        for tag in IMG_RE.findall(source):
+            if not ALT_RE.search(tag):
+                fail(tutorial.path, f"image has no alt attribute: {tag}")
 
 
 def check_folds(tutorial: Tutorial) -> None:
@@ -1656,6 +1748,41 @@ def check_folds(tutorial: Tutorial) -> None:
             fail(tutorial.path,
                  f"a fold names no style: {tag} — use "
                  f'class="dl-hint" for steps or class="dl-answer" for an answer')
+
+
+DATASET_ATTRIBUTION_FIELDS = ("source", "license", "description")
+
+
+def dataset_attribution(tutorial: Tutorial, name: str) -> dict:
+    """A declared dataset's own attribution file —
+    `data/<name>.yaml` beside `data/<name>.csv`, the same
+    beside-the-file pattern `<slug>.glossary.yaml` already established
+    (planning/SIDEBAR_CONTENT.md §2). Both files are required: an
+    undocumented dataset defeats the point of declaring one at all, so a
+    missing csv or a missing/incomplete attribution file fails the build
+    the same way a `practice_for` naming no real tutorial does, rather than
+    silently shipping a dataset nobody can trace.
+    """
+    csv_path = DATA / f"{name}.csv"
+    if not csv_path.is_file():
+        fail(tutorial.path, f"declares datasets: {name}, and data/{name}.csv "
+                            "does not exist.")
+    yaml_path = DATA / f"{name}.yaml"
+    if not yaml_path.is_file():
+        fail(tutorial.path, f"declares datasets: {name}, and data/{name}.yaml "
+                            "(its source, license, and description) does not exist.")
+    data = load_yaml_no_duplicate_keys(yaml_path.read_text()) or {}
+    missing = [f for f in DATASET_ATTRIBUTION_FIELDS if not data.get(f)]
+    if missing:
+        fail(yaml_path, f"is missing {', '.join(missing)}")
+    return {"name": name, **{f: str(data[f]) for f in DATASET_ATTRIBUTION_FIELDS}}
+
+
+def check_datasets(tutorial: Tutorial) -> list[dict]:
+    """Every dataset this tutorial declares, with its attribution — checked
+    and resolved together, since there is no use in resolving one without
+    the other. Returns [] for a tutorial that declares none."""
+    return [dataset_attribution(tutorial, name) for name in tutorial.datasets]
 
 
 def resolve_links(tutorial: Tutorial, registry: dict[tuple[str, str], Tutorial]) -> str:
@@ -1706,6 +1833,7 @@ def load(path: Path) -> Tutorial:
     stripped = loosen_tight_lists(stripped)
     converted, toc = to_html(stripped)
     body_html = place_blocks(converted, cells, blocks, maths)
+    body_html, notes = extract_notes(body_html, path)
     anchors = set(ID_RE.findall(body_html)) | {c.id for c in cells}
     return Tutorial(
         path=path,
@@ -1715,6 +1843,7 @@ def load(path: Path) -> Tutorial:
         has_math=bool(maths),
         anchors=anchors,
         toc=toc,
+        notes=notes,
     )
 
 
@@ -1936,7 +2065,10 @@ def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "",
           practice: Tutorial | None = None,
           registry: dict[tuple[str, str], Tutorial] | None = None,
           also: list[Tutorial] | None = None,
-          glossary: list[dict] | None = None) -> Path:
+          glossary: list[dict] | None = None,
+          series_nav: str = "",
+          notes: list[dict] | None = None,
+          datasets: list[dict] | None = None) -> Path:
     up = "../" * tutorial.depth
     manifest: dict[str, object] = {
         "slug": tutorial.slug,
@@ -1968,6 +2100,13 @@ def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "",
     # as an empty dl-settings-section elsewhere on this page.
     if glossary:
         manifest["glossary"] = glossary
+    # Same "absent, not empty" signal as glossary — neither is cumulative
+    # (planning/SIDEBAR_CONTENT.md §4): a note or a dataset belongs to this
+    # specific tutorial, not to every one after it in the series.
+    if notes:
+        manifest["notes"] = notes
+    if datasets:
+        manifest["datasets"] = datasets
 
     tokens = {
         "{{TITLE}}": html.escape(str(tutorial.meta["title"])),
@@ -1987,6 +2126,7 @@ def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "",
         "{{PAGE_SCRIPT}}": "",
         "{{DOWNLOAD}}": download_section(tutorial),
         "{{TOC}}": render_toc(tutorial),
+        "{{SERIES_NAV}}": series_nav,
         "{{BODY}}": (
             page_notice(tutorial, default)
             + (practice_link(tutorial, practice, registry, also)
@@ -2112,6 +2252,20 @@ def standalone_html(tutorial: Tutorial, page: str) -> str:
         page,
         flags=re.DOTALL,
     )
+    # The series navigation panel is the same case: every link in it points
+    # at a sibling file that is not beside this one, so both the toggle and
+    # the panel go rather than open onto a page of broken links. Matched
+    # through to the end of the panel's own <nav>, not to the first </div>
+    # — the panel has a nested <div> (its head) that would otherwise end
+    # the match early.
+    page = re.sub(
+        r'<button type="button" class="dl-seriesnav-toggle".*?</button>\n?',
+        "", page, flags=re.DOTALL,
+    )
+    page = re.sub(
+        r'<div class="dl-seriesnav" id="dl-seriesnav".*?</nav>\s*</div>\n?',
+        "", page, flags=re.DOTALL,
+    )
     root = "../" * tutorial.depth
     page = page.replace(f'href="{root}index.html"', 'href="#" onclick="return false"')
     return page
@@ -2208,6 +2362,8 @@ def write_index(
         "{{DOWNLOAD}}": "",
         # The contents page is a contents page. It does not need one of its own.
         "{{TOC}}": "",
+        # Nor a series to navigate — it is the thing every series links back to.
+        "{{SERIES_NAV}}": "",
         "{{BODY}}": render_index(groups, archives, retired, practice, mixed),
         "{{MANIFEST_JSON}}": json.dumps(manifest).replace("<", "\\u003c"),
         "{{FOOTER}}": site_footer(),
@@ -2339,6 +2495,7 @@ def write_tree_page(shell: str, tutorials: list[Tutorial]) -> Path | None:
         "{{CANONICAL}}": "",
         "{{DOWNLOAD}}": "",
         "{{TOC}}": "",
+        "{{SERIES_NAV}}": "",
         "{{BODY}}": body,
         "{{MANIFEST_JSON}}": json.dumps(manifest).replace("<", "\\u003c"),
         "{{FOOTER}}": site_footer(),
@@ -2394,6 +2551,7 @@ def write_about_page(shell: str) -> Path:
         "{{CANONICAL}}": "",
         "{{DOWNLOAD}}": "",
         "{{TOC}}": "",
+        "{{SERIES_NAV}}": "",
         "{{BODY}}": body,
         "{{MANIFEST_JSON}}": json.dumps(manifest).replace("<", "\\u003c"),
         "{{FOOTER}}": site_footer(),
@@ -2453,6 +2611,7 @@ def write_editor_page(shell: str) -> Path:
         "{{CANONICAL}}": "",
         "{{DOWNLOAD}}": "",
         "{{TOC}}": "",
+        "{{SERIES_NAV}}": "",
         "{{BODY}}": body,
         "{{MANIFEST_JSON}}": json.dumps(manifest).replace("<", "\\u003c"),
         "{{FOOTER}}": site_footer(),
@@ -2521,6 +2680,9 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
                   if tutorial.slug in page.practice_across],
             registry=registry,
             glossary=cumulative_glossary(tutorial, registry, groups),
+            series_nav=render_series_nav(tutorial, members),
+            notes=[{"id": n.id, "html": n.html} for n in tutorial.notes],
+            datasets=check_datasets(tutorial),
         )
         written.append(page_path)
         # 0.7MB against 19KB for the hosted page, so only the version students

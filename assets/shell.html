@@ -50,11 +50,27 @@
        when this page's manifest actually carries a glossary — a tutorial
        with nothing accumulated yet (planning/CHEAT_SHEETS.md §6) shows no
        button at all, the same "nothing to show, nothing to click" rule the
-       Settings panel already applies to its own empty sections below. Also
-       hidden outright under the phone breakpoint in tutorial-style.css. -->
+       Settings panel already applies to its own empty sections below.
+       Under the phone breakpoint its panel becomes a bottom sheet
+       (tutorial-style.css) rather than hiding outright. -->
   <button type="button" class="dl-cheatsheet-toggle" id="dl-cheatsheet-toggle"
           aria-expanded="false" aria-controls="dl-cheatsheet" hidden>
     <span class="dl-cheatsheet-icon" aria-hidden="true"></span>Cheat sheet
+  </button>
+
+  <!-- The navigation panel: this tutorial's whole series, browsable from
+       any point in it, not just the tutorial immediately before and after
+       (planning/SIDEBAR_CONTENT.md §4b — the "where can I go" question,
+       distinct from the cheat sheet's "what do I need right now"). Stacked
+       below the cheat sheet's own toggle rather than beside it, since both
+       are fixed-position corner buttons of varying width. Starts hidden;
+       a tutorial with no series position (archived, or a practice page)
+       has nothing to show here — build.py's render_series_nav() returns
+       an empty string, and the runtime hides the button the same way it
+       hides the cheat sheet's when there is nothing to show. -->
+  <button type="button" class="dl-seriesnav-toggle" id="dl-seriesnav-toggle"
+          aria-expanded="false" aria-controls="dl-seriesnav" hidden>
+    <span class="dl-seriesnav-icon" aria-hidden="true"></span>Series
   </button>
 
   <!-- Masthead and chapter navigation stick together as one group, so the way
@@ -236,13 +252,15 @@
   </section>
 </div>
 
-<!-- The cheat sheet: definitions, functions, and formulas this specific page
-     has accumulated (planning/CHEAT_SHEETS.md), rendered by
-     tutorial-runtime.js from this page's own manifest — there is no server
-     round trip, and a page with nothing accumulated never reveals the toggle
-     that would open this. Positioned the same way .dl-settings is, on
-     purpose (tutorial-style.css) — opening one closes the other, since both
-     anchor to the same corner of the page. -->
+<!-- The cheat sheet: definitions, functions, formulas, notes, and datasets
+     this specific page carries (planning/CHEAT_SHEETS.md,
+     planning/SIDEBAR_CONTENT.md §4), rendered by tutorial-runtime.js from
+     this page's own manifest — there is no server round trip, and a page
+     with nothing to show never reveals the toggle that would open this.
+     Anchored to the left, next to its own toggle (tutorial-style.css) —
+     mutually exclusive at runtime with both Settings and the navigation
+     panel below, since opening any of the three closes whichever of the
+     other two was open. -->
 <div class="dl-cheatsheet" id="dl-cheatsheet" role="dialog" aria-modal="false"
      aria-labelledby="dl-cheatsheet-title" hidden>
   <div class="dl-cheatsheet-head">
@@ -251,10 +269,31 @@
             aria-label="Close cheat sheet">&times;</button>
   </div>
   <p class="dl-panel-note">
-    What this page — and everything before it in the series — has covered so
-    far. Nothing here is something you have not been taught yet.
+    The glossary below is what this page — and everything before it in the
+    series — has covered so far. Nothing there is something you have not
+    been taught yet. Notes and datasets, where this page has any, belong to
+    this page alone.
   </p>
   <div class="dl-cheatsheet-groups" id="dl-cheatsheet-groups"></div>
+</div>
+
+<!-- The navigation panel: this tutorial's whole series (planning/
+     SIDEBAR_CONTENT.md §4b), rendered server-side by build.py's
+     render_series_nav() — static per page, so unlike the cheat sheet there
+     is nothing here for the runtime to assemble from a manifest. Anchored
+     to the left, the same as the cheat sheet, and mutually exclusive with
+     both it and Settings for exactly that reason: two left-anchored panels
+     open at once would sit on top of each other. -->
+<div class="dl-seriesnav" id="dl-seriesnav" role="dialog" aria-modal="false"
+     aria-labelledby="dl-seriesnav-title" hidden>
+  <div class="dl-seriesnav-head">
+    <h2 id="dl-seriesnav-title">This series</h2>
+    <button type="button" class="dl-seriesnav-close" id="dl-seriesnav-close"
+            aria-label="Close series navigation">&times;</button>
+  </div>
+  <nav aria-label="Every tutorial in this series">
+    {{SERIES_NAV}}
+  </nav>
 </div>
 
 <!-- Cell source and page metadata, JSON-encoded so Python code containing

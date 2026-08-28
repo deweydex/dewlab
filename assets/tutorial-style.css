@@ -709,6 +709,133 @@ p code, li code {
   padding: 0.2rem 0.4rem;
 }
 
+/* A pedagogical note (planning/SIDEBAR_CONTENT.md §3), inside the cheat
+   sheet panel's "Notes" section — its own accent, distinct from both the
+   hint/answer folds (which sit inline in the body, not here) and the
+   glossary's dl/dt/dd list above it, so it reads as prose to look at
+   rather than a term to recall. */
+.dl-note {
+  border-left: 2px solid var(--dl-navy);
+  padding-left: 0.7rem;
+  line-height: 1.5;
+}
+.dl-note + .dl-note {
+  margin-top: 0.8rem;
+}
+.dl-note > :first-child { margin-top: 0; }
+.dl-note > :last-child { margin-bottom: 0; }
+
+/* The navigation panel's own toggle, stacked below the cheat sheet's
+   rather than beside it — two fixed-position buttons of varying text
+   width sit more predictably stacked than side by side. */
+.dl-seriesnav-toggle[hidden] { display: none; }
+.dl-seriesnav-toggle {
+  position: fixed;
+  top: 3rem;
+  left: 0.9rem;
+  z-index: 51;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--dl-mono);
+  font-size: 0.78rem;
+  background: var(--dl-panel-bg);
+  border: 1px solid var(--dl-navy);
+  border-radius: 4px;
+  color: var(--dl-heading);
+  padding: 0.38rem 0.7rem;
+  cursor: pointer;
+  box-shadow: 0 2px 8px var(--dl-shadow);
+}
+.dl-seriesnav-toggle:hover,
+.dl-seriesnav-toggle:focus-visible {
+  border-color: var(--dl-orange);
+  color: var(--dl-orange);
+}
+.dl-seriesnav-toggle[aria-expanded="true"] {
+  background: var(--dl-navy);
+  border-color: var(--dl-navy);
+  color: #fff;
+}
+/* Three rungs, drawn rather than typed for the same reason the cheat
+   sheet's own icon is — a small ladder reads as "steps in a sequence"
+   without depending on a glyph the reader's font may not carry. */
+.dl-seriesnav-icon {
+  width: 0.75em;
+  height: 0.85em;
+  position: relative;
+}
+.dl-seriesnav-icon::before,
+.dl-seriesnav-icon::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  border-top: 2px solid currentColor;
+}
+.dl-seriesnav-icon::before { top: 0; }
+.dl-seriesnav-icon::after { bottom: 0; }
+
+/* Anchored the same way the cheat sheet is — left, next to its own
+   toggle — and mutually exclusive with both it and Settings at runtime
+   (initSeriesNav() in tutorial-runtime.js), since two left-anchored
+   panels open together would sit on top of each other. */
+.dl-seriesnav {
+  position: fixed;
+  left: 1rem;
+  top: calc(var(--dl-chrome-h) + 0.5rem);
+  z-index: 50;
+  width: min(22rem, calc(100vw - 2rem));
+  max-height: calc(100vh - var(--dl-chrome-h) - 1.5rem);
+  overflow-y: auto;
+  padding: 1rem 1.1rem 1.1rem;
+  border: 1px solid var(--dl-cell-border);
+  border-radius: 6px;
+  background: var(--dl-panel-bg);
+  box-shadow: 0 8px 28px var(--dl-shadow);
+  font-family: var(--dl-font-family);
+  font-size: 0.85rem;
+}
+.dl-seriesnav[hidden] { display: none; }
+.dl-seriesnav-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.6rem;
+}
+.dl-seriesnav h2 {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--dl-muted);
+  margin: 0;
+}
+.dl-seriesnav-close {
+  font-size: 1.3rem;
+  line-height: 1;
+  background: none;
+  border: none;
+  color: var(--dl-muted);
+  cursor: pointer;
+  padding: 0 0.2rem;
+}
+.dl-seriesnav-close:hover { color: var(--dl-orange); }
+
+.dl-seriesnav-series {
+  margin: 0;
+  padding-left: 1.4rem;
+}
+.dl-seriesnav-series li { margin: 0.35rem 0; }
+.dl-seriesnav-series a { text-decoration: none; }
+.dl-seriesnav-series a:hover { text-decoration: underline; }
+.dl-seriesnav-series .dl-seriesnav-current {
+  font-weight: 700;
+  color: var(--dl-heading);
+  list-style: "→ ";
+  margin-left: -0.3rem;
+}
+
 .dl-texture-row {
   display: grid;
   grid-template-columns: 4.6rem 1fr;
@@ -1066,17 +1193,18 @@ p code, li code {
 /* ------------------------------------------------------------ small screens */
 
 /* A phone held in one hand, which is how a good deal of the reading will
-   actually happen. Three changes: each floating panel — Settings, and the
-   cheat sheet — becomes a sheet across the foot of the screen rather than a
-   card floating off one corner (they were never both open at once even on
-   desktop, so becoming sheets at the same edge does not put them in each
-   other's way); the navigation puts previous and next on one line with the
-   contents link beneath them, so two long titles stop fighting for the same
-   row; and the module name in the masthead gives up its space to the
-   Settings button. */
+   actually happen. Three changes: each floating panel — Settings, the
+   cheat sheet, and the navigation panel — becomes a sheet across the foot
+   of the screen rather than a card floating off one corner (no two of the
+   three are ever open at once even on desktop, so becoming sheets at the
+   same edge does not put them in each other's way); the navigation puts
+   previous and next on one line with the contents link beneath them, so
+   two long titles stop fighting for the same row; and the module name in
+   the masthead gives up its space to the Settings button. */
 @media (max-width: 34rem) {
   .dl-settings,
-  .dl-cheatsheet {
+  .dl-cheatsheet,
+  .dl-seriesnav {
     top: auto;
     bottom: 0;
     left: 0;

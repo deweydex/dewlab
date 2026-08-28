@@ -5,6 +5,18 @@ together because they turned out to share one authoring question: *how
 does content get from a markdown file into a sidebar without turning the
 markdown into something else.* No code changes in this pass.
 
+**§2 (datasets) and §3/§4 (notes, and where both surface) are shipped as
+designed — `DECISIONS_LOG.md` 7.74.** One correction made while building,
+not anticipated here: §1/§3's assumption that a note's content is
+markdown, images included, needed an explicit fix — this project's markdown
+converter does not itself re-run a raw HTML block's contents through
+conversion (confirmed against the pre-existing hint/answer fold, which has
+the same limitation and was left alone), so `extract_notes()` converts a
+note's captured content separately, on its own. Images are not part of
+this pass otherwise — no sidebar image gallery was built, since neither
+asked-for use turned out to need one (§1's own conclusion, unchanged by
+implementation).
+
 ---
 
 ## 1. Three asks, and what already exists for each
@@ -162,6 +174,23 @@ naming clearly in the UI (a heading per section) so a reader does not read
 a note as if it were a taught, examinable term.
 
 ## 4b. A second panel after all — but for navigation, not notes
+
+**Shipped, in a narrower form than sketched below — see `DECISIONS_LOG.md`
+7.73.** Two things changed between this being written and being built:
+
+- An external change (PR #65, not part of this plan) moved the cheat
+  sheet panel itself from right-anchored to left-anchored. The paragraph
+  below assumes "the panel itself anchors left, where nothing currently
+  is" — that stopped being true. Rather than re-litigate placement, the
+  series nav panel shares the cheat sheet's left anchor, stacked below its
+  toggle, and joined the Settings/cheat-sheet mutual-exclusion group as a
+  third member.
+- The panel ships with series navigation only — this tutorial's own table
+  of contents was *not* duplicated into it. `render_toc()`'s inline
+  version already answers "where am I on this page"; duplicating it here
+  would only add a second place to keep in sync, for a question the panel
+  didn't need to also answer. If that changes, it's an additive change to
+  the same panel, not a redesign.
 
 Raised alongside the above: is a *left*-anchored panel worth having at
 all, for something other than notes/datasets? Settled: yes, for

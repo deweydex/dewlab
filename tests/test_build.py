@@ -109,6 +109,26 @@ def glossary(repo: Path, slug: str, entries: list[dict]) -> Path:
     return path
 
 
+def dataset(repo: Path, name: str, source: str = "Some source",
+            license: str = "CC0", description: str = "A dataset.",
+            with_csv: bool = True, with_attribution: bool = True) -> None:
+    """A dataset's files — planning/SIDEBAR_CONTENT.md §2: `data/<name>.csv`
+    plus its beside-the-file attribution, `data/<name>.yaml`."""
+    if with_csv:
+        (repo / "data" / f"{name}.csv").write_text("a,b\n1,2\n")
+    if with_attribution:
+        (repo / "data" / f"{name}.yaml").write_text(
+            f'source: "{source}"\nlicense: "{license}"\ndescription: "{description}"\n'
+        )
+
+
+def add_frontmatter(path: Path, extra: str) -> None:
+    """Insert extra frontmatter lines (each ending in its own "\\n") into an
+    already-written tutorial — `write()`'s own template has no room for
+    fields most tests never need."""
+    path.write_text(path.read_text().replace("version:", f"{extra}version:", 1))
+
+
 def manifest(page: str) -> dict:
     raw = re.search(r'id="dewlab-manifest">(.*?)</script>', page, re.S).group(1)
     return json.loads(raw)
@@ -611,6 +631,68 @@ class TestNavigation:
         path.write_text(path.read_text().replace("version: 2026.08.23.1", "order: 1\nversion: 2026.08.23.1"))
         with pytest.raises(b.BuildError, match="no longer belongs in frontmatter"):
             b.build()
+
+
+class TestSeriesNav:
+    """render_series_nav() — the left-anchored series navigation panel
+    (planning/SIDEBAR_CONTENT.md §4b), listing every tutorial in the
+    current series in reading order."""
+
+    def series(self, repo, count: int = 3, series: str = "s", module: str = "computational-methods",
+               order: list[str] | None = None):
+        for n in range(1, count + 1):
+            path = repo / "tutorials" / module / f"t{n}.md"
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(
+                f'---\ntitle: "Tutorial {n}"\nslug: t{n}\nmodule: {module}\n'
+                f'year: "2026-2027"\nseries: {series}\nversion: 2026.08.23.1\n---\n\nProse.\n'
+            )
+        set_order(repo, module, series,
+                  order or [f"t{n}" for n in range(1, count + 1)])
+
+    def page(self, repo, slug, module="computational-methods"):
+        return (repo / "site" / "tutorials" / module / f"{slug}.html").read_text()
+
+    def test_it_lists_every_member_of_the_series_in_order(self, repo):
+        self.series(repo)
+        b.build()
+        page = self.page(repo, "t2")
+        panel = re.search(r'<ol class="dl-seriesnav-series">.*?</ol>', page, re.S).group(0)
+        assert panel.index("Tutorial 1") < panel.index("Tutorial 2") < panel.index("Tutorial 3")
+
+    def test_the_current_tutorial_is_marked_and_not_linked(self, repo):
+        self.series(repo)
+        b.build()
+        page = self.page(repo, "t2")
+        assert '<li class="dl-seriesnav-current" aria-current="page">2. Tutorial 2</li>' in page
+
+    def test_the_others_are_links_to_reach_them(self, repo):
+        self.series(repo)
+        b.build()
+        page = self.page(repo, "t2")
+        assert '<li><a href="t1.html">1. Tutorial 1</a></li>' in page
+        assert '<li><a href="t3.html">3. Tutorial 3</a></li>' in page
+
+    def test_the_order_file_decides_the_numbering_not_the_filename(self, repo):
+        self.series(repo, order=["t3", "t2", "t1"])
+        b.build()
+        page = self.page(repo, "t2")
+        assert '<li><a href="t3.html">1. Tutorial 3</a></li>' in page
+        assert '<li class="dl-seriesnav-current" aria-current="page">2. Tutorial 2</li>' in page
+        assert '<li><a href="t1.html">3. Tutorial 1</a></li>' in page
+
+    def test_a_tutorial_with_nowhere_in_a_series_to_sit_gets_no_panel_content(self, repo):
+        """An archived tutorial: the same honest empty shape nav_for() already
+        gives it, for the same reason — there is nowhere in the series to
+        place it."""
+        write(repo, "Prose.\n")
+        write(repo, "More prose.\n", slug="second")
+        path = repo / "tutorials" / "computational-methods" / "sample.md"
+        path.write_text(path.read_text().replace(
+            "version: 2026.08.23.1\n", "version: 2026.08.23.1\nstatus: archived\n"))
+        set_order(repo, "computational-methods", "python-fundamentals", ["second"])
+        b.build()
+        assert "dl-seriesnav-series" not in built(repo, "sample")
 
 
 class TestTheContentsPage:
@@ -2170,6 +2252,122 @@ class TestCrossSeriesGlossary:
         set_series_order(repo, "computational-methods", ["python-fundamentals", "no-such-series"])
         with pytest.raises(b.BuildError, match="no-such-series"):
             b.build()
+
+
+class TestNotes:
+    """Pedagogical notes — planning/SIDEBAR_CONTENT.md §3/§4: an HTML aside
+    in the body, pulled out and surfaced in the cheat sheet panel instead
+    of staying inline, and never cumulative across a series — a note
+    belongs to the specific tutorial that wrote it."""
+
+    def test_a_note_appears_in_the_manifest(self, repo):
+        write(repo, '<aside class="dl-note" id="why-it-works">\n\n'
+                    "Because reasons.\n\n</aside>\n\nMore prose.\n", slug="one")
+        b.build()
+        assert manifest(built(repo, "one"))["notes"] == [
+            {"id": "why-it-works", "html": "<p>Because reasons.</p>"},
+        ]
+
+    def test_a_notes_content_is_markdown_not_raw_text(self, repo):
+        """Converted on its own, separately from the surrounding raw HTML
+        block — an image inside a note is real markdown
+        (planning/SIDEBAR_CONTENT.md §1), not literal, unconverted source
+        text the way a fold's own contents are."""
+        write(repo, '<aside class="dl-note" id="pic">\n\n'
+                    '![a chart](chart.png)\n\n</aside>\n', slug="one")
+        b.build()
+        assert manifest(built(repo, "one"))["notes"] == [
+            {"id": "pic", "html": '<p><img alt="a chart" src="chart.png" /></p>'},
+        ]
+
+    def test_an_image_in_a_note_still_needs_alt_text(self, repo):
+        write(repo, '<aside class="dl-note" id="pic">\n\n'
+                    '<img src="chart.png">\n\n</aside>\n', slug="one")
+        with pytest.raises(b.BuildError, match="no alt attribute"):
+            b.build()
+
+    def test_a_note_is_removed_from_the_page_body(self, repo):
+        write(repo, '<aside class="dl-note" id="why-it-works">\n\n'
+                    "Because reasons.\n\n</aside>\n\nMore prose.\n", slug="one")
+        b.build()
+        page = built(repo, "one")
+        assert "dl-note" not in page.split("dewlab-manifest")[0]
+        assert "More prose." in page
+
+    def test_a_tutorial_with_no_notes_has_no_notes_key(self, repo):
+        write(repo, "Prose only.\n", slug="one")
+        b.build()
+        assert "notes" not in manifest(built(repo, "one"))
+
+    def test_two_notes_sharing_an_id_fail_the_build(self, repo):
+        write(repo,
+              '<aside class="dl-note" id="dup">\n\nOne.\n\n</aside>\n\n'
+              '<aside class="dl-note" id="dup">\n\nTwo.\n\n</aside>\n', slug="one")
+        with pytest.raises(b.BuildError, match="share the id"):
+            b.build()
+
+    def test_a_note_is_not_inherited_by_a_later_tutorial(self, repo):
+        write(repo, '<aside class="dl-note" id="early">\n\nEarly note.\n\n</aside>\n',
+              slug="one")
+        write(repo, "Two.\n", slug="two")
+        set_order(repo, "computational-methods", "python-fundamentals", ["one", "two"])
+        b.build()
+        assert "notes" not in manifest(built(repo, "two"))
+
+
+class TestDatasets:
+    """Dataset attribution — planning/SIDEBAR_CONTENT.md §2: a `datasets:`
+    frontmatter list, cross-referenced against `data/<name>.csv` and its
+    beside-the-file `data/<name>.yaml` attribution."""
+
+    def test_a_declared_dataset_appears_in_the_manifest(self, repo):
+        path = write(repo, "Prose.\n", slug="one")
+        add_frontmatter(path, "datasets:\n  - life-expectancy\n")
+        dataset(repo, "life-expectancy", source="World Bank", license="CC-BY-4.0",
+                description="Life expectancy by country and year.")
+        b.build()
+        assert manifest(built(repo, "one"))["datasets"] == [{
+            "name": "life-expectancy",
+            "source": "World Bank",
+            "license": "CC-BY-4.0",
+            "description": "Life expectancy by country and year.",
+        }]
+
+    def test_a_tutorial_with_no_datasets_has_no_datasets_key(self, repo):
+        write(repo, "Prose.\n", slug="one")
+        b.build()
+        assert "datasets" not in manifest(built(repo, "one"))
+
+    def test_a_dataset_with_no_csv_file_fails_the_build(self, repo):
+        path = write(repo, "Prose.\n", slug="one")
+        add_frontmatter(path, "datasets:\n  - missing\n")
+        dataset(repo, "missing", with_csv=False)
+        with pytest.raises(b.BuildError, match="data/missing.csv"):
+            b.build()
+
+    def test_a_dataset_with_no_attribution_file_fails_the_build(self, repo):
+        path = write(repo, "Prose.\n", slug="one")
+        add_frontmatter(path, "datasets:\n  - missing\n")
+        dataset(repo, "missing", with_attribution=False)
+        with pytest.raises(b.BuildError, match="data/missing.yaml"):
+            b.build()
+
+    def test_an_attribution_file_missing_a_field_fails_the_build(self, repo):
+        path = write(repo, "Prose.\n", slug="one")
+        add_frontmatter(path, "datasets:\n  - incomplete\n")
+        (repo / "data" / "incomplete.csv").write_text("a,b\n1,2\n")
+        (repo / "data" / "incomplete.yaml").write_text('source: "Somewhere"\n')
+        with pytest.raises(b.BuildError, match="license, description"):
+            b.build()
+
+    def test_a_dataset_is_not_inherited_by_a_later_tutorial(self, repo):
+        path = write(repo, "One.\n", slug="one")
+        add_frontmatter(path, "datasets:\n  - a-dataset\n")
+        dataset(repo, "a-dataset")
+        write(repo, "Two.\n", slug="two")
+        set_order(repo, "computational-methods", "python-fundamentals", ["one", "two"])
+        b.build()
+        assert "datasets" not in manifest(built(repo, "two"))
 
 
 class TestFolds:
