@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>dewmini — dewlab</title>
+
+<link rel="stylesheet" href="../assets/tutorial-style.css">
+<link rel="stylesheet" href="dewmini-style.css">
+
+<!-- Apply saved preferences before first paint, so a reader who already set
+     dark mode or a wider measure on the tutorials doesn't get a flash of the
+     defaults here. Shared dewlab:texture keys (theme/font/size/width/link)
+     match every other page; dewmini:editor is this page's own, for the
+     code-specific controls tutorials don't have. -->
+<script>
+(function () {
+  var r = document.documentElement;
+  try {
+    var s = JSON.parse(localStorage.getItem("dewlab:texture") || "{}");
+    if (s.theme && s.theme !== "system") r.setAttribute("data-theme", s.theme);
+    if (s.font && s.font !== "serif") r.setAttribute("data-font", s.font);
+    if (s.size) r.style.setProperty("--dl-font-size", s.size + "px");
+    if (s.width) r.style.setProperty("--dl-line-width", s.width + "rem");
+    if (s.link) r.style.setProperty("--dl-link", s.link);
+  } catch (e) { /* private mode, blocked storage */ }
+  try {
+    var e = JSON.parse(localStorage.getItem("dewmini:editor") || "{}");
+    if (e.codeSize) r.style.setProperty("--dm-code-size", e.codeSize + "px");
+    if (e.density) r.setAttribute("data-dm-density", e.density);
+    if (e.cursor) r.setAttribute("data-dm-cursor", e.cursor);
+    if (e.gutter === "off") r.setAttribute("data-dm-gutter", "off");
+    if (e.activeLine === "off") r.setAttribute("data-dm-activeline", "off");
+  } catch (e) { /* private mode, blocked storage */ }
+})();
+</script>
+
+<script type="module">
+  import { createCodeEditor, setEditorTheme } from '../assets/vendor/codemirror.bundle.js';
+  window.createCodeEditor = createCodeEditor;
+  window.setEditorTheme = setEditorTheme;
+</script>
+</head>
+<body>
+<div class="dl-page dm-page">
+
+  <div class="dl-chrome" id="dl-chrome">
+    <header class="dl-masthead">
+      <a class="dl-wordmark" href="../index.html">dewlab</a>
+      <span class="dl-crumbs">compose</span>
+      <div class="dm-masthead-actions">
+        <button type="button" class="dm-help-toggle" id="dm-help-toggle"
+                aria-expanded="false" aria-controls="dm-help" title="Help">
+          <span aria-hidden="true">?</span><span class="dm-help-label">Help</span>
+        </button>
+        <button type="button" class="dl-settings-toggle" id="dl-settings-toggle"
+                aria-expanded="false" aria-controls="dl-settings">
+          <span class="dl-settings-icon" aria-hidden="true"></span>Settings
+        </button>
+      </div>
+    </header>
+  </div>
+
+  <main id="dm-body">
+    <div class="dm-title-row">
+      <h1>dewmini</h1>
+      <p class="dm-subtitle">A small, quiet notebook. Write Python, run it, keep notes — nothing to install.</p>
+    </div>
+
+    <div class="dm-toolbar">
+      <div class="dm-toolbar-group">
+        <button id="add-python-cell" class="dm-tool" title="Add a Python cell">
+          <span class="dm-tool-icon dm-tool-icon-python" aria-hidden="true"></span>Python
+        </button>
+        <button id="add-text-cell" class="dm-tool" title="Add a documentation cell">
+          <span class="dm-tool-icon dm-tool-icon-text" aria-hidden="true"></span>Text
+        </button>
+        <button id="add-practice" class="dm-tool" title="Add the next problem from dewlab's practice bank">
+          <span class="dm-tool-icon dm-tool-icon-text" aria-hidden="true"></span>Practice
+        </button>
+      </div>
+      <div class="dm-toolbar-group">
+        <button id="run-all" class="dm-tool dm-tool-accent" title="Run every cell in order">
+          <span class="dm-tool-icon dm-tool-icon-run" aria-hidden="true"></span>Run all
+        </button>
+        <button id="clear-all" class="dm-tool dm-tool-quiet" title="Remove every cell">Clear</button>
+      </div>
+      <div class="dm-toolbar-group dm-toolbar-group-end">
+        <span class="dm-status" id="dm-status" role="status" aria-live="polite"></span>
+      </div>
+    </div>
+
+    <div class="dm-empty" id="dm-empty" hidden>
+      <p>Nothing here yet.</p>
+      <p class="dm-panel-note">
+        Add a Python cell to start writing code that runs in your browser, or a
+        text cell for notes beside it. Cells share one namespace top to bottom,
+        the way a notebook does — write something in the first cell and the
+        next one can use it.
+      </p>
+      <button type="button" class="dm-tool dm-tool-accent" id="dm-empty-add">
+        <span class="dm-tool-icon dm-tool-icon-python" aria-hidden="true"></span>Start with imports
+      </button>
+    </div>
+
+    <div id="cells-container" class="dm-cells"></div>
+  </main>
+
+</div>
+
+<!-- Help: how this page works and what a cell can call, in the same
+     borderless, dt/dd shape as the reference panels elsewhere — recoloured
+     to dewlab's navy and orange rather than kept in its source palette. -->
+<div class="dm-panel dm-help" id="dm-help" role="dialog" aria-modal="false"
+     aria-labelledby="dm-help-title" hidden>
+  <div class="dm-panel-head">
+    <h2 id="dm-help-title">Help</h2>
+    <button type="button" class="dm-panel-close" id="dm-help-close" aria-label="Close help">&times;</button>
+  </div>
+
+  <section class="dm-panel-section">
+    <h3>Cells</h3>
+    <p class="dm-panel-note">
+      A Python cell runs when you press its <strong>Run</strong> arrow, or
+      <kbd>Shift</kbd>+<kbd>Enter</kbd> from inside it. <strong>Run all</strong>
+      clears every cell's output and reruns them top to bottom, so what you
+      see always matches what the code above it actually did. Drag a cell by
+      its left edge to move it.
+    </p>
+    <p class="dm-panel-note">
+      A text cell is documentation — it never runs. Click away from it and it
+      renders (<code># heading</code>, <code>**bold**</code>,
+      <code>*italic*</code>, <code>`code`</code>, <code>- bullets</code>);
+      click it again to edit the plain text underneath.
+    </p>
+    <p class="dm-panel-note">
+      Hover the seam between any two cells (or before the first, or after the
+      last) to insert exactly there — a blank Python cell, a text cell, or
+      one already carrying the common imports.
+    </p>
+  </section>
+
+  <section class="dm-panel-section">
+    <h3>Keys</h3>
+    <dl class="dm-help-list">
+      <div class="dm-help-entry"><dt>Shift+Enter</dt><dd>Run this cell</dd></div>
+      <div class="dm-help-entry"><dt>Tab</dt><dd>Indent, or accept a suggestion</dd></div>
+      <div class="dm-help-entry"><dt>Shift+Tab</dt><dd>Outdent</dd></div>
+      <div class="dm-help-entry"><dt>Esc</dt><dd>Close a suggestion list</dd></div>
+    </dl>
+  </section>
+
+  <section class="dm-panel-section">
+    <h3>What a cell can call</h3>
+    <p class="dm-panel-note">The same small API dewlab tutorials use — <code>numpy</code>, <code>pandas</code> and <code>matplotlib</code> are already imported.</p>
+    <dl class="dm-help-list">
+      <div class="dm-help-entry"><dt><code>show(*values, label=)</code></dt><dd>Display something mid-cell</dd></div>
+      <div class="dm-help-entry"><dt><code>show_table(frame)</code></dt><dd>Render a DataFrame as a table</dd></div>
+      <div class="dm-help-entry"><dt><code>check(actual, expected)</code></dt><dd>A quick right / not-yet</dd></div>
+      <div class="dm-help-entry"><dt><code>text_input(label)</code></dt><dd>A text box, read with <code>.value</code></dd></div>
+      <div class="dm-help-entry"><dt><code>dropdown(label, options)</code></dt><dd>A menu, read with <code>.value</code></dd></div>
+      <div class="dm-help-entry"><dt><code>button(label, on_click)</code></dt><dd>A button that calls a function</dd></div>
+      <div class="dm-help-entry"><dt><code>await load_csv(name)</code></dt><dd>Load one of dewlab's shared datasets</dd></div>
+    </dl>
+  </section>
+
+  <section class="dm-panel-section">
+    <h3>Practice</h3>
+    <p class="dm-panel-note">
+      <strong>Practice</strong> adds the next problem from dewlab's own
+      practice bank — a documentation cell with the problem number, and a
+      Python cell with the function stub to fill in. It works through the
+      bank in order and remembers where you left off; run the cell yourself
+      to check your work against the docstring's example.
+    </p>
+  </section>
+
+  <section class="dm-panel-section">
+    <h3>Keeping your work</h3>
+    <p class="dm-panel-note">
+      Everything you write is saved to this browser as you go — nothing is
+      sent anywhere. Settings has ways to take a copy with you: as a Python
+      file, a standalone HTML page, a <code>.ipynb</code> that opens in
+      Jupyter or Colab, or a printed PDF with the code and its output. Give
+      it a name there too. You can bring an existing <code>.ipynb</code>
+      back in from the same place.
+    </p>
+  </section>
+</div>
+
+<!-- Settings: the same shape every dewlab page uses, so a reader who has
+     found it once has found it everywhere. Texture is the shared reading
+     preferences; Editor is this page's own, for the code itself. -->
+<div class="dl-settings" id="dl-settings" role="dialog" aria-modal="false"
+     aria-labelledby="dl-settings-title" hidden>
+  <div class="dl-settings-head">
+    <h2 id="dl-settings-title">Settings</h2>
+    <button type="button" class="dl-settings-close" id="dl-settings-close" aria-label="Close settings">&times;</button>
+  </div>
+
+  <section class="dl-settings-section" id="dl-settings-work">
+    <h3>Your notes</h3>
+    <textarea class="dl-progress-notes" id="dm-notes" rows="4"
+              placeholder="Anything worth writing down as you go."></textarea>
+    <p class="dl-panel-note">Saved in this browser only, alongside your cells.</p>
+  </section>
+
+  <section class="dl-settings-section" id="dl-settings-download">
+    <h3>Keep a copy</h3>
+    <p class="dl-panel-note">Everything below is saved here as you go. These take a copy with you.</p>
+
+    <label class="dm-filename-label" for="dm-filename">File name</label>
+    <input type="text" id="dm-filename" class="dm-filename-input" placeholder="dewmini-notebook"
+           aria-label="File name for downloads">
+
+    <div class="dl-progress-actions">
+      <button type="button" class="dl-btn" id="download-python">.py</button>
+      <button type="button" class="dl-btn" id="download-html">.html</button>
+      <button type="button" class="dl-btn" id="download-ipynb">.ipynb</button>
+    </div>
+    <div class="dl-progress-actions">
+      <button type="button" class="dl-btn" id="print-pdf">Print / Save as PDF</button>
+    </div>
+    <div class="dl-progress-actions">
+      <button type="button" class="dl-btn" id="import-ipynb">Load a .ipynb</button>
+    </div>
+    <input type="file" id="import-ipynb-file" accept=".ipynb,application/json" hidden>
+  </section>
+
+  <section class="dl-settings-section" id="dl-settings-texture">
+    <h3>Texture</h3>
+
+    <div class="dl-texture-row">
+      <span>Theme</span>
+      <div class="dl-seg" data-texture="theme">
+        <button type="button" data-value="system">auto</button>
+        <button type="button" data-value="light">light</button>
+        <button type="button" data-value="dark">dark</button>
+      </div>
+    </div>
+
+    <div class="dl-texture-row">
+      <span>Font</span>
+      <div class="dl-seg" data-texture="font">
+        <button type="button" data-value="serif">serif</button>
+        <button type="button" data-value="sans">sans</button>
+        <button type="button" data-value="mono">mono</button>
+      </div>
+    </div>
+
+    <div class="dl-texture-row">
+      <span>Size</span>
+      <input type="range" id="dl-texture-size" min="15" max="24" step="1" aria-label="Text size">
+    </div>
+
+    <div class="dl-texture-row">
+      <span>Width</span>
+      <div class="dl-seg" data-texture="width" data-number>
+        <button type="button" data-value="34">narrow</button>
+        <button type="button" data-value="44">medium</button>
+        <button type="button" data-value="56">wide</button>
+      </div>
+    </div>
+
+    <div class="dl-texture-row">
+      <span></span>
+      <input type="range" id="dl-texture-width" min="26" max="60" step="1"
+             aria-label="Line width, finer than the three presets">
+    </div>
+
+    <div class="dl-texture-row">
+      <span>Links</span>
+      <input type="color" id="dl-texture-link" aria-label="Link colour">
+    </div>
+
+    <button type="button" class="dl-texture-reset" id="dl-texture-reset">reset to defaults</button>
+  </section>
+
+  <!-- The section the user specifically asked us to take care over: font,
+       cursor, size and the placement of the code itself. -->
+  <section class="dl-settings-section" id="dl-settings-editor">
+    <h3>Editor</h3>
+
+    <div class="dl-texture-row">
+      <span>Code size</span>
+      <input type="range" id="dm-code-size" min="12" max="22" step="1" aria-label="Code text size">
+    </div>
+
+    <div class="dl-texture-row">
+      <span>Spacing</span>
+      <div class="dl-seg" data-dm="density">
+        <button type="button" data-value="compact">compact</button>
+        <button type="button" data-value="cozy">cozy</button>
+        <button type="button" data-value="relaxed">relaxed</button>
+      </div>
+    </div>
+
+    <div class="dl-texture-row">
+      <span>Cursor</span>
+      <div class="dl-seg" data-dm="cursor">
+        <button type="button" data-value="thin">thin</button>
+        <button type="button" data-value="medium">medium</button>
+        <button type="button" data-value="thick">thick</button>
+      </div>
+    </div>
+
+    <div class="dl-texture-row">
+      <span>Line numbers</span>
+      <div class="dl-seg" data-dm="gutter">
+        <button type="button" data-value="on">on</button>
+        <button type="button" data-value="off">off</button>
+      </div>
+    </div>
+
+    <div class="dl-texture-row">
+      <span>Active line</span>
+      <div class="dl-seg" data-dm="activeline">
+        <button type="button" data-value="on">on</button>
+        <button type="button" data-value="off">off</button>
+      </div>
+    </div>
+
+    <button type="button" class="dl-texture-reset" id="dm-editor-reset">reset to defaults</button>
+  </section>
+</div>
+
+<script type="module" src="dewmini.js"></script>
+</body>
+</html>

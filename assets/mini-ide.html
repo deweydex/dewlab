@@ -10,7 +10,7 @@
 <meta name="tutorial-slug" content="mini-ide">
 <meta name="tutorial-module" content="tools">
 
-<link rel="stylesheet" href="tutorial-style.css">
+<link rel="stylesheet" href="assets/tutorial-style.css">
 <link rel="stylesheet" href="mini-ide-style.css">
 
 <!-- Apply saved texture preferences before first paint -->
@@ -31,7 +31,7 @@
 
 <!-- Load CodeMirror vendor bundle -->
 <script type="module">
-  import { createCodeEditor, setEditorTheme } from './vendor/codemirror.bundle.js';
+  import { createCodeEditor, setEditorTheme } from './assets/vendor/codemirror.bundle.js';
   window.createCodeEditor = createCodeEditor;
   window.setEditorTheme = setEditorTheme;
 </script>
@@ -58,6 +58,10 @@
 
   <main id="dl-body">
     <h1>Mini IDE</h1>
+    <p class="dl-panel-note">
+      Looking for something quieter? <a href="compose/dewmini.html">dewmini</a>
+      is a smaller, more minimal notebook built on the same Python runtime.
+    </p>
 
     <!-- Mini IDE toolbar - integrated into the page flow -->
     <div class="mini-ide-toolbar">

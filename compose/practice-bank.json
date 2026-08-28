@@ -1,0 +1,230 @@
+[
+  {
+    "number": 1,
+    "title": "Print 'Hello' and your name in separate lines.",
+    "section": "Arithmetic Basics",
+    "stub": "def print_hello_name(name: str) -> None:\n    \"\"\"\n    Problem 1: Print 'Hello' and your name in separate lines.\n\n    Args:\n        name (str): Your name\n\n    Expected Output:\n        Hello\n        <your name>\n    \"\"\"\n    # TODO: Print \"Hello\" and the name on separate lines\n    pass"
+  },
+  {
+    "number": 2,
+    "title": "Calculate and return the sum of two numbers.",
+    "section": "Arithmetic Basics",
+    "stub": "def sum_two_numbers(num1: float, num2: float) -> float:\n    \"\"\"\n    Problem 2: Calculate and return the sum of two numbers.\n\n    Args:\n        num1 (float): First number\n        num2 (float): Second number\n\n    Returns:\n        float: Sum of the two numbers\n    \"\"\"\n    # Your code here\n    pass"
+  },
+  {
+    "number": 3,
+    "title": "Calculate and return the result of dividing first number by second number.",
+    "section": "Arithmetic Basics",
+    "stub": "def divide_numbers(num1: float, num2: float) -> float:\n    \"\"\"\n    Problem 3: Calculate and return the result of dividing first number by second number.\n\n    Args:\n        num1 (float): Dividend (number to be divided)\n        num2 (float): Divisor (number to divide by)\n\n    Returns:\n        float: Result of division\n    \"\"\"\n    # TODO: Implement division (remember to handle division by zero!)\n    pass"
+  },
+  {
+    "number": 4,
+    "title": "Calculate the results of the following operations:",
+    "section": "Arithmetic Basics",
+    "stub": "def calculate_operations() -> list[float]:\n    \"\"\"\n    Problem 4: Calculate the results of the following operations:\n    1. -1 + 4 * 6\n    2. (35 + 5) % 7\n    3. 14 + -4 * 6 / 11\n    4. 2 + 15 / 6 * 1 - 7 % 2\n\n    Returns:\n        list[float]: List containing the results of all operations\n    \"\"\"\n    # TODO: Calculate each operation and return results in a list\n    pass"
+  },
+  {
+    "number": 5,
+    "title": "Swap two numbers and return them.",
+    "section": "Arithmetic Basics",
+    "stub": "def swap_numbers(a: float, b: float) -> tuple[float, float]:\n    \"\"\"\n    Problem 5: Swap two numbers and return them.\n\n    Args:\n        a (float): First number\n        b (float): Second number\n\n    Returns:\n        tuple[float, float]: Tuple containing the swapped numbers (b, a)\n\n    Example:\n        Input: a=5, b=6\n        Output: (6, 5)\n    \"\"\"\n    # Your code here: Swap the numbers\n    pass"
+  },
+  {
+    "number": 6,
+    "title": "Multiply three numbers input by the user.",
+    "section": "Arithmetic Basics",
+    "stub": "def multiply_three_numbers(num1: float, num2: float, num3: float) -> float:\n    \"\"\"\n    Problem 6: Multiply three numbers input by the user.\n\n    Args:\n        num1 (float): First number\n        num2 (float): Second number\n        num3 (float): Third number\n\n    Returns:\n        float: Product of the three numbers\n\n    Example:\n        Input: 2, 3, 6\n        Output: 36\n    \"\"\"\n    # TODO: Calculate and return the product\n    pass"
+  },
+  {
+    "number": 7,
+    "title": "Perform basic arithmetic operations on two numbers.",
+    "section": "Arithmetic Basics",
+    "stub": "def perform_arithmetic_operations(num1: float, num2: float) -> dict[str, float]:\n    \"\"\"\n    Problem 7: Perform basic arithmetic operations on two numbers.\n\n    Args:\n        num1 (float): First number\n        num2 (float): Second number\n\n    Returns:\n        dict[str, float]: Dictionary containing results of:\n            - addition\n            - subtraction\n            - multiplication\n            - division\n            - modulus\n\n    Example:\n        Input: 25, 4\n        Output: {\n            'addition': 29,\n            'subtraction': 21,\n            'multiplication': 100,\n            'division': 6.25,\n            'modulus': 1\n        }\n    \"\"\"\n    # TODO: Implement all arithmetic operations and return in dictionary\n    pass"
+  },
+  {
+    "number": 8,
+    "title": "Print the multiplication table for a given number from 0 to 10.",
+    "section": "Patterns, Conversions and Strings",
+    "stub": "def print_multiplication_table(number: int) -> None:\n    \"\"\"\n    Problem 8: Print the multiplication table for a given number from 0 to 10.\n\n    Args:\n        number (int): The number to create multiplication table for\n\n    Expected Output:\n        5 * 0 = 0\n        5 * 1 = 5\n        5 * 2 = 10\n        ...\n        5 * 10 = 50\n    \"\"\"\n    # TODO: Print multiplication table from 0 to 10\n    pass"
+  },
+  {
+    "number": 9,
+    "title": "Calculate the average of four numbers.",
+    "section": "Patterns, Conversions and Strings",
+    "stub": "def calculate_average(num1: float, num2: float, num3: float, num4: float) -> float:\n    \"\"\"\n    Problem 9: Calculate the average of four numbers.\n\n    Args:\n        num1 (float): First number\n        num2 (float): Second number\n        num3 (float): Third number\n        num4 (float): Fourth number\n\n    Returns:\n        float: Average of the four numbers\n\n    Example:\n        Input: 10, 15, 20, 30\n        Output: 18.75\n    \"\"\"\n    # TODO: Calculate and return the average of the four numbers\n    pass"
+  },
+  {
+    "number": 10,
+    "title": "Calculate (x+y)*z and x*y + y*z for three numbers.",
+    "section": "Patterns, Conversions and Strings",
+    "stub": "def calculate_special_operations(x: float, y: float, z: float) -> tuple[float, float]:\n    \"\"\"\n    Problem 10: Calculate (x+y)*z and x*y + y*z for three numbers.\n\n    Args:\n        x (float): First number\n        y (float): Second number\n        z (float): Third number\n\n    Returns:\n        tuple[float, float]: ((x+y)*z, x*y + y*z)\n\n    Example:\n        Input: x=5, y=6, z=7\n        Output: (77, 72)  # First number is (5+6)*7, second is 5*6 + 6*7\n    \"\"\"\n    # TODO: Calculate both expressions and return them in a tuple\n    pass"
+  },
+  {
+    "number": 11,
+    "title": "Create a message saying \"You look older than X\" where X is the input age.",
+    "section": "Patterns, Conversions and Strings",
+    "stub": "def create_age_message(age: int) -> str:\n    \"\"\"\n    Problem 11: Create a message saying \"You look older than X\" where X is the input age.\n\n    Args:\n        age (int): The person's age\n\n    Returns:\n        str: Message about looking older than the given age\n\n    Example:\n        Input: 25\n        Output: \"You look older than 25\"\n    \"\"\"\n    # TODO: Return the appropriate message\n    pass"
+  },
+  {
+    "number": 12,
+    "title": "Create four strings that display a number in different patterns.",
+    "section": "Patterns, Conversions and Strings",
+    "stub": "def display_number_pattern(number: int) -> tuple[str, str, str, str]:\n    \"\"\"\n    Problem 12: Create four strings that display a number in different patterns.\n    The number should appear:\n    - Four times with spaces between each\n    - Four times with no spaces between\n    - Repeated twice (with and without spaces)\n\n    Args:\n        number (int): The number to display\n\n    Returns:\n        tuple[str, str, str, str]: Four strings containing the number patterns\n\n    Example:\n        Input: 25\n        Output: (\"25 25 25 25\", \"25252525\", \"25 25 25 25\", \"25252525\")\n    \"\"\"\n    # TODO: Create and return the four pattern strings\n    pass"
+  },
+  {
+    "number": 13,
+    "title": "Print a rectangle pattern using a number (3 columns wide and 5 rows tall).",
+    "section": "Patterns, Conversions and Strings",
+    "stub": "def print_number_rectangle(number: int) -> None:\n    \"\"\"\n    Problem 13: Print a rectangle pattern using a number (3 columns wide and 5 rows tall).\n\n    Args:\n        number (int): The number to use in the pattern\n\n    Expected Output (for input 5):\n        555\n        5 5\n        5 5\n        5 5\n        555\n    \"\"\"\n    # TODO: Print the rectangle pattern\n    pass"
+  },
+  {
+    "number": 14,
+    "title": "Convert Celsius temperature to Kelvin and Fahrenheit.",
+    "section": "Patterns, Conversions and Strings",
+    "stub": "def convert_temperature(celsius: float) -> tuple[float, float]:\n    \"\"\"\n    Problem 14: Convert Celsius temperature to Kelvin and Fahrenheit.\n\n    Args:\n        celsius (float): Temperature in Celsius\n\n    Returns:\n        tuple[float, float]: (kelvin, fahrenheit)\n\n    Example:\n        Input: 30\n        Output: (303.15, 86.0)\n    \"\"\"\n    # TODO: Convert celsius to kelvin and fahrenheit\n    # Hint: Kelvin = Celsius + 273.15\n    #       Fahrenheit = (Celsius * 9/5) + 32\n    pass"
+  },
+  {
+    "number": 15,
+    "title": "Remove a character at the specified position from a string.",
+    "section": "Patterns, Conversions and Strings",
+    "stub": "def remove_character(text: str, position: int) -> str:\n    \"\"\"\n    Problem 15: Remove a character at the specified position from a string.\n\n    Args:\n        text (str): Input string\n        position (int): Position of character to remove (0-based index)\n\n    Returns:\n        str: String with character removed\n\n    Example:\n        Input: text=\"w3resource\", position=2\n        Output: \"w3esource\"\n    \"\"\"\n    # TODO: Remove character at given position and return modified string\n    pass"
+  },
+  {
+    "number": 16,
+    "title": "Create a new string with the first and last characters swapped.",
+    "section": "Patterns, Conversions and Strings",
+    "stub": "def swap_first_last_chars(text: str) -> str:\n    \"\"\"\n    Problem 16: Create a new string with the first and last characters swapped.\n\n    Args:\n        text (str): Input string\n\n    Returns:\n        str: String with first and last characters swapped\n\n    Examples:\n        Input: \"Python\"\n        Output: \"nythoP\"\n\n        Input: \"w3resource\"\n        Output: \"e3resourcw\"\n    \"\"\"\n    # TODO: Swap first and last characters and return modified string\n    pass"
+  },
+  {
+    "number": 17,
+    "title": "Create a new string with the first character added at front and back.",
+    "section": "Patterns, Conversions and Strings",
+    "stub": "def wrap_first_char(text: str) -> str:\n    \"\"\"\n    Problem 17: Create a new string with the first character added at front and back.\n    String must be length 1 or more.\n\n    Args:\n        text (str): Input string (length >= 1)\n\n    Returns:\n        str: Modified string with first character added at both ends\n\n    Example:\n        Input: \"Python\"\n        Output: \"PythonP\"\n\n        Input: \"The quick brown fox\"\n        Output: \"TThe quick brown foxT\"\n    \"\"\"\n    # TODO: Add first character to beginning and end of string\n    pass"
+  },
+  {
+    "number": 18,
+    "title": "Check if one number is negative and one is positive.",
+    "section": "Patterns, Conversions and Strings",
+    "stub": "def check_negative_positive(num1: int, num2: int) -> bool:\n    \"\"\"\n    Problem 18: Check if one number is negative and one is positive.\n\n    Args:\n        num1 (int): First integer\n        num2 (int): Second integer\n\n    Returns:\n        bool: True if one is negative and one is positive, False otherwise\n\n    Examples:\n        Input: -5, 25\n        Output: True\n\n        Input: 5, 25\n        Output: False\n\n        Input: -5, -25\n        Output: False\n    \"\"\"\n    # TODO: Check if one number is negative and one is positive\n    pass"
+  },
+  {
+    "number": 19,
+    "title": "Compute the sum of two integers. If the values are the same,",
+    "section": "Patterns, Conversions and Strings",
+    "stub": "def compute_triple_sum(num1: int, num2: int) -> int:\n    \"\"\"\n    Problem 19: Compute the sum of two integers. If the values are the same,\n    return triple their sum.\n\n    Args:\n        num1 (int): First integer\n        num2 (int): Second integer\n\n    Returns:\n        int: Sum of numbers, or triple the sum if numbers are equal\n\n    Examples:\n        Input: 5, 5\n        Output: 30  # (5 + 5) * 3\n\n        Input: 5, 6\n        Output: 11  # 5 + 6\n    \"\"\"\n    # TODO: Return triple sum if numbers are equal, regular sum otherwise\n    pass"
+  },
+  {
+    "number": 20,
+    "title": "Get absolute difference between two numbers. Return double the absolute",
+    "section": "Patterns, Conversions and Strings",
+    "stub": "def get_absolute_difference(num1: int, num2: int) -> int:\n    \"\"\"\n    Problem 20: Get absolute difference between two numbers. Return double the absolute\n    difference if first number is greater than second number.\n\n    Args:\n        num1 (int): First integer\n        num2 (int): Second integer\n\n    Returns:\n        int: Absolute difference or double the absolute difference\n\n    Examples:\n        Input: 25, 15\n        Output: 20  # (25 - 15) * 2\n\n        Input: 15, 25\n        Output: 10  # |15 - 25|\n    \"\"\"\n    # TODO: Calculate absolute difference and double it if num1 > num2\n    pass"
+  },
+  {
+    "number": 21,
+    "title": "Check if one of the numbers is 20 or if their sum is 20.",
+    "section": "Patterns, Conversions and Strings",
+    "stub": "def check_sum_twenty(num1: int, num2: int) -> bool:\n    \"\"\"\n    Problem 21: Check if one of the numbers is 20 or if their sum is 20.\n\n    Args:\n        num1 (int): First integer\n        num2 (int): Second integer\n\n    Returns:\n        bool: True if one number is 20 or sum is 20, False otherwise\n\n    Examples:\n        Input: 20, 5\n        Output: True  # One number is 20\n\n        Input: 15, 5\n        Output: True  # Sum is 20\n\n        Input: 15, 6\n        Output: False # Neither number is 20 and sum isn't 20\n    \"\"\"\n    # TODO: Check if either number is 20 or if their sum is 20\n    pass"
+  },
+  {
+    "number": 22,
+    "title": "Check if the given integer is within 20 of 100 or 200.",
+    "section": "Patterns, Conversions and Strings",
+    "stub": "def is_within_twenty(number: int) -> bool:\n    \"\"\"\n    Problem 22: Check if the given integer is within 20 of 100 or 200.\n\n    Args:\n        number (int): Integer to check\n\n    Returns:\n        bool: True if number is within 20 of 100 or 200, False otherwise\n\n    Examples:\n        Input: 115\n        Output: True  # Within 20 of 100\n\n        Input: 190\n        Output: True  # Within 20 of 200\n\n        Input: 25\n        Output: False # Not within 20 of either 100 or 200\n    \"\"\"\n    # TODO: Check if number is within 20 of either 100 or 200\n    pass"
+  },
+  {
+    "number": 23,
+    "title": "Write a program to convert a given string into lowercase.",
+    "section": "String & Number Utilities",
+    "stub": "def convert_to_lowercase(input_str: str) -> str:\n    \"\"\"\n    Problem 23: Write a program to convert a given string into lowercase.\n\n    Example:\n        Input: \"Write A Python PROGRAM\"\n        Output: \"write a python program\"\n\n    Args:\n        input_str: String to convert to lowercase\n\n    Returns:\n        Lowercase version of the input string\n    \"\"\"\n    # TODO: Write your code here to convert the string to lowercase\n    pass"
+  },
+  {
+    "number": 24,
+    "title": "Find the longest word in a string.",
+    "section": "String & Number Utilities",
+    "stub": "def find_longest_word(sentence: str) -> str:\n    \"\"\"\n    Problem 24: Find the longest word in a string.\n\n    Example:\n        Input: \"Write a Python Program to display the following pattern\"\n        Output: \"following\"\n\n    Note: If there are multiple words with the same length, return the first one.\n\n    Args:\n        sentence: Input string to analyze\n\n    Returns:\n        The longest word in the string\n    \"\"\"\n    # TODO: Write your code here to find the longest word\n    pass"
+  },
+  {
+    "number": 25,
+    "title": "Generate all odd numbers from 1 to 99.",
+    "section": "String & Number Utilities",
+    "stub": "def get_odd_numbers() -> List[int]:\n    \"\"\"\n    Problem 25: Generate all odd numbers from 1 to 99.\n    The function should return a list of odd numbers that can be printed one per line.\n\n    Example Output: [1, 3, 5, ..., 97, 99]\n\n    Returns:\n        List of all odd numbers from 1 to 99\n    \"\"\"\n    # TODO: Write your code here to generate odd numbers\n    pass"
+  },
+  {
+    "number": 26,
+    "title": "Compute the sum of the first 500 prime numbers.",
+    "section": "String & Number Utilities",
+    "stub": "def compute_prime_sum() -> int:\n    \"\"\"\n    Problem 26: Compute the sum of the first 500 prime numbers.\n\n    Expected Output: 824693\n\n    Returns:\n        Sum of first 500 prime numbers\n    \"\"\"\n    # TODO: Write your code here to compute the sum of first 500 primes\n    # Hint: First create a method to check if a number is prime\n    # Then find the first 500 primes and sum them\n    pass"
+  },
+  {
+    "number": 27,
+    "title": "Compute the sum of an integer's digits.",
+    "section": "String & Number Utilities",
+    "stub": "def sum_of_digits(number: int) -> int:\n    \"\"\"\n    Problem 27: Compute the sum of an integer's digits.\n\n    Example:\n        Input: 12\n        Output: 3 (because 1 + 2 = 3)\n\n    Args:\n        number: Integer whose digits should be summed\n\n    Returns:\n        Sum of the digits\n    \"\"\"\n    # TODO: Write your code here to sum the digits\n    pass"
+  },
+  {
+    "number": 28,
+    "title": "Reverse the words of a sentence.",
+    "section": "String & Number Utilities",
+    "stub": "def reverse_words(sentence: str) -> str:\n    \"\"\"\n    Problem 28: Reverse the words of a sentence.\n\n    Example:\n        Input: \"Display the pattern like pyramid using the alphabet.\"\n        Output: \"alphabet. the using pyramid like pattern the Display\"\n\n    Note: Preserve the original punctuation and spacing between words.\n\n    Args:\n        sentence: The input sentence to reverse\n\n    Returns:\n        String with words in reverse order\n    \"\"\"\n    # TODO: Write your code here to reverse the words\n    pass"
+  },
+  {
+    "number": 29,
+    "title": "Find the size of a specified file in bytes.",
+    "section": "String & Number Utilities",
+    "stub": "def get_file_size(file_path: str) -> int:\n    \"\"\"\n    Problem 29: Find the size of a specified file in bytes.\n\n    Example:\n        Input: \"example.txt\"\n        Output: 31 (bytes)\n\n    Note: Make sure to handle cases where the file doesn't exist\n\n    Args:\n        file_path: Path to the file to check\n\n    Returns:\n        Size of the file in bytes, or -1 if file doesn't exist\n    \"\"\"\n    # TODO: Write your code here to get file size\n    # Remember to use try-except for file operations\n    pass"
+  },
+  {
+    "number": 30,
+    "title": "Convert a hexadecimal number to decimal.",
+    "section": "String & Number Utilities",
+    "stub": "def hex_to_decimal(hex_number: str) -> int:\n    \"\"\"\n    Problem 30: Convert a hexadecimal number to decimal.\n\n    Example:\n        Input: \"4B0\"\n        Output: 1200\n\n    Note: Handle both uppercase and lowercase hex digits\n\n    Args:\n        hex_number: String representation of hexadecimal number\n\n    Returns:\n        Decimal (base-10) value of the number\n    \"\"\"\n    # TODO: Write your code here to convert hex to decimal\n    pass"
+  },
+  {
+    "number": 31,
+    "title": "Multiply corresponding elements of two integer arrays.",
+    "section": "String & Number Utilities",
+    "stub": "def multiply_arrays(array1: List[int], array2: List[int]) -> List[int]:\n    \"\"\"\n    Problem 31: Multiply corresponding elements of two integer arrays.\n\n    Example:\n        Input arrays: [1, 3, -5, 4] and [1, 4, -5, -2]\n        Output: [1, 12, 25, -8]\n\n    Note: Assume both arrays have the same length\n\n    Args:\n        array1: First array of integers\n        array2: Second array of integers\n\n    Returns:\n        List containing products of corresponding elements\n    \"\"\"\n    # TODO: Write your code here to multiply corresponding elements\n    pass"
+  },
+  {
+    "number": 32,
+    "title": "Create a string of four copies of the last four characters.",
+    "section": "String & Number Utilities",
+    "stub": "def repeat_last_four(text: str) -> str:\n    \"\"\"\n    Problem 32: Create a string of four copies of the last four characters.\n    If the string is less than 4 characters, return the original string.\n\n    Example:\n        Input: \"The quick brown fox jumps over the lazy dog.\"\n        Output: \"dog.dog.dog.dog.\"\n\n    Args:\n        text: Input string\n\n    Returns:\n        Four copies of last four chars or original string if length < 4\n    \"\"\"\n    # TODO: Write your code here to repeat the last four characters\n    pass"
+  },
+  {
+    "number": 33,
+    "title": "Check if a given positive number is a multiple of 3 or 7.",
+    "section": "String & Number Utilities",
+    "stub": "def is_multiple_of_3_or_7(number: int) -> bool:\n    \"\"\"\n    Problem 33: Check if a given positive number is a multiple of 3 or 7.\n\n    Examples:\n        >>> is_multiple_of_3_or_7(15)\n        True  # because 15 is a multiple of 3\n        >>> is_multiple_of_3_or_7(14)\n        True  # because 14 is a multiple of 7\n        >>> is_multiple_of_3_or_7(8)\n        False\n\n    Args:\n        number: Positive integer to check\n\n    Returns:\n        True if the number is a multiple of 3 or 7, false otherwise\n    \"\"\"\n    # TODO: Write your code here to check if number is multiple of 3 or 7\n    pass"
+  },
+  {
+    "number": 34,
+    "title": "Check if a string starts with a specified word.",
+    "section": "String & Number Utilities",
+    "stub": "def starts_with_word(text: str, word: str) -> bool:\n    \"\"\"\n    Problem 34: Check if a string starts with a specified word.\n\n    Examples:\n        >>> starts_with_word(\"Hello how are you?\", \"Hello\")\n        True\n        >>> starts_with_word(\"Good morning!\", \"Hello\")\n        False\n\n    Note: The check should be case-sensitive\n\n    Args:\n        text: String to check\n        word: Word to look for at the start\n\n    Returns:\n        True if the string starts with the specified word, false otherwise\n    \"\"\"\n    # TODO: Write your code here to check if text starts with word\n    pass"
+  },
+  {
+    "number": 35,
+    "title": "Check if one number is less than 100 and another is greater than 200.",
+    "section": "String & Number Utilities",
+    "stub": "def check_number_range(num1: int, num2: int) -> bool:\n    \"\"\"\n    Problem 35: Check if one number is less than 100 and another is greater than 200.\n\n    Examples:\n        >>> check_number_range(75, 250)\n        True\n        >>> check_number_range(150, 250)\n        False\n\n    Note: Either number can be the one less than 100 while the other is greater than 200\n\n    Args:\n        num1: First number to check\n        num2: Second number to check\n\n    Returns:\n        True if one number is < 100 and the other is > 200, false otherwise\n    \"\"\"\n    # TODO: Write your code here to check the number ranges\n    pass"
+  },
+  {
+    "number": 36,
+    "title": "Check if either of two integers is in the range -10 to 10 (inclusive).",
+    "section": "String & Number Utilities",
+    "stub": "def is_in_range(num1: int, num2: int) -> bool:\n    \"\"\"\n    Problem 36: Check if either of two integers is in the range -10 to 10 (inclusive).\n\n    Examples:\n        >>> is_in_range(-5, 8)\n        True  # both numbers are in range\n        >>> is_in_range(-15, 15)\n        False  # neither number is in range\n\n    Note: The range includes both -10 and 10\n\n    Args:\n        num1: First number to check\n        num2: Second number to check\n\n    Returns:\n        True if either number is in the range -10 to 10, false otherwise\n    \"\"\"\n    # TODO: Write your code here to check if either number is in range -10 to 10\n    pass"
+  },
+  {
+    "number": 37,
+    "title": "Given a list of integers, find the number that appears most frequently.",
+    "section": "String & Number Utilities",
+    "stub": "def find_most_frequent_number(numbers: list[int]) -> int:\n    \"\"\"\n    Problem 37: Given a list of integers, find the number that appears most frequently.\n    If there are multiple numbers that appear the same number of times, return the smallest one.\n\n    Example:\n        Input: [1, 2, 3, 2, 4, 2, 1]\n        Output: 2 (appears 3 times)\n\n    Parameters:\n        numbers (list[int]): List of integers\n    Returns:\n        int: The most frequent number in the list\n    \"\"\"\n    # TODO: Write your solution here\n    pass"
+  },
+  {
+    "number": 38,
+    "title": "Check if a string is a valid palindrome after converting all characters",
+    "section": "String & Number Utilities",
+    "stub": "def is_valid_palindrome(s: str) -> bool:\n    \"\"\"\n    Problem 38: Check if a string is a valid palindrome after converting all characters\n    to lowercase and removing all non-alphanumeric characters.\n\n    Example:\n        Input: \"A man, a plan, a canal: Panama\"\n        Output: True\n\n    Parameters:\n        s (str): Input string to check\n    Returns:\n        bool: True if the string is a palindrome, False otherwise\n    \"\"\"\n    # Your code here\n    pass"
+  }
+]
