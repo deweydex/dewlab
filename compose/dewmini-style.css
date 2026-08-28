@@ -1,0 +1,623 @@
+/* dewmini — a minimal, notebook-shaped cousin of the Mini IDE.
+ *
+ * Built on tutorial-style.css's own tokens (navy/orange, Georgia, the light
+ * and dark palettes) rather than a palette of its own — the borderless,
+ * text-on-the-page affordances are the idea worth borrowing from elsewhere;
+ * dewlab's colours are not up for grabs. Everything specific to this page
+ * lives under the --dm- prefix, so it never shadows a --dl- token by
+ * accident.
+ */
+
+:root {
+  --dm-code-size: 15px;
+  --dm-cursor-w: 2px;
+  --dm-cell-pad-y: 0.85rem;
+  --dm-code-line: 1.55;
+}
+
+/* Spacing presets. One attribute drives padding and code line-height
+ * together, because the two only ever want to move in step — the whole
+ * point of "compact" is a tighter cell, not just a tighter line. */
+:root[data-dm-density="compact"] { --dm-cell-pad-y: 0.55rem; --dm-code-line: 1.35; }
+:root[data-dm-density="relaxed"] { --dm-cell-pad-y: 1.25rem; --dm-code-line: 1.8; }
+
+:root[data-dm-cursor="thin"] { --dm-cursor-w: 1px; }
+:root[data-dm-cursor="thick"] { --dm-cursor-w: 3px; }
+
+/* ------------------------------------------------------------- masthead */
+
+.dm-masthead-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: none;
+}
+
+.dm-help-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--dl-mono);
+  font-size: 0.78rem;
+  background: none;
+  border: 1px solid var(--dl-cell-border);
+  border-radius: 999px;
+  color: var(--dl-muted);
+  padding: 0.38rem 0.7rem;
+  cursor: pointer;
+  min-height: 2rem;
+}
+.dm-help-toggle span:first-child {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.1rem;
+  height: 1.1rem;
+  border-radius: 50%;
+  border: 1px solid currentColor;
+  font-style: italic;
+  font-family: Georgia, serif;
+  font-size: 0.7rem;
+}
+.dm-help-toggle:hover,
+.dm-help-toggle:focus-visible { border-color: var(--dl-orange); color: var(--dl-orange); }
+.dm-help-toggle[aria-expanded="true"] {
+  background: var(--dl-navy);
+  border-color: var(--dl-navy);
+  color: #fff;
+}
+
+/* ----------------------------------------------------------------- title */
+
+.dm-title-row { margin: 0.4rem 0 1.6rem; }
+.dm-title-row h1 { margin-bottom: 0.3rem; }
+.dm-subtitle { color: var(--dl-muted); margin: 0; font-size: 0.95rem; }
+
+/* ---------------------------------------------------------------- toolbar */
+
+.dm-toolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.75rem;
+  padding-bottom: 0.75rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid var(--dl-rule);
+}
+.dm-toolbar-group { display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; }
+.dm-toolbar-group-end { margin-left: auto; }
+
+.dm-tool {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font: inherit;
+  font-family: var(--dl-mono);
+  font-size: 0.78rem;
+  padding: 0.42rem 0.8rem;
+  border: 1px solid var(--dl-cell-border);
+  border-radius: 5px;
+  background: var(--dl-panel-bg);
+  color: var(--dl-fg);
+  cursor: pointer;
+}
+.dm-tool:hover { border-color: var(--dl-orange); color: var(--dl-orange); }
+
+.dm-tool-accent {
+  background: var(--dl-navy);
+  border-color: var(--dl-navy);
+  color: #fff;
+}
+.dm-tool-accent:hover { background: var(--dl-orange); border-color: var(--dl-orange); color: #fff; }
+
+.dm-tool-quiet {
+  border-color: transparent;
+  background: none;
+  color: var(--dl-muted);
+}
+.dm-tool-quiet:hover { border-color: var(--dl-error-fg); color: var(--dl-error-fg); }
+
+.dm-status {
+  font-family: var(--dl-mono);
+  font-size: 0.76rem;
+  color: var(--dl-muted);
+  min-height: 1.2em;
+}
+.dm-status.dm-status-error { color: var(--dl-error-fg); }
+.dm-status.dm-status-ok { color: var(--dl-pass-fg); }
+
+.dm-tool-icon { width: 0.85em; height: 0.85em; display: inline-block; flex: none; }
+.dm-tool-icon-python {
+  background: currentColor;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2L4 5v6.09c0 5.05 3.41 9.76 8 10.91 4.59-1.15 8-5.86 8-10.91V5l-8-3z'/%3E%3C/svg%3E") center/contain no-repeat;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2L4 5v6.09c0 5.05 3.41 9.76 8 10.91 4.59-1.15 8-5.86 8-10.91V5l-8-3z'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+.dm-tool-icon-text {
+  background: currentColor;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z'/%3E%3C/svg%3E") center/contain no-repeat;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+.dm-tool-icon-run {
+  background: currentColor;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M8 5v14l11-7z'/%3E%3C/svg%3E") center/contain no-repeat;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M8 5v14l11-7z'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+
+/* ------------------------------------------------------------- empty state */
+
+.dm-empty {
+  padding: 2.2rem 1.5rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  border: 1px dashed var(--dl-cell-border);
+  border-radius: 8px;
+  color: var(--dl-muted);
+}
+.dm-empty p:first-child { margin: 0 0 0.5rem; color: var(--dl-heading); font-size: 1.05rem; }
+.dm-empty .dm-panel-note { max-width: 30rem; margin-inline: auto; }
+.dm-empty-actions {
+  display: flex;
+  gap: 0.6rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+
+/* A gentle, finite pulse on "See an example" the very first time this page
+ * ever loads — the show-it-working affordance Mini IDE gets for free from
+ * its sample cells, done here as an invitation rather than pre-filled
+ * content that squats on the empty state permanently. */
+@keyframes dm-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(212, 105, 42, 0.4); }
+  50% { box-shadow: 0 0 0 9px rgba(212, 105, 42, 0); }
+}
+.dm-pulse { animation: dm-pulse 1.7s ease-out 3; }
+@media (prefers-reduced-motion: reduce) {
+  .dm-pulse { animation: none; }
+}
+
+/* -------------------------------------------------------------------cells */
+
+.dm-cells { display: flex; flex-direction: column; }
+
+/* The seam between cells, always present, tappable at every gap — including
+ * before the first cell and after the last. Slim and quiet at rest, an
+ * ordinary divider line; it only grows into two buttons on hover, so a
+ * notebook with twenty cells doesn't read as twenty rows of controls. */
+.dm-insert {
+  position: relative;
+  height: 0.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.dm-insert-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1px;
+  background: var(--dl-rule);
+}
+.dm-insert-actions {
+  position: relative;
+  display: flex;
+  gap: 0.3rem;
+  padding: 0 0.5rem;
+  background: var(--dl-bg);
+  /* Faint at rest, not invisible — opacity: 0 meant the only way to learn
+   * this existed was reading the Help panel first. A quiet notebook can
+   * still show its own controls. */
+  opacity: 0.4;
+  transition: opacity 0.12s ease;
+}
+.dm-insert:hover .dm-insert-actions,
+.dm-insert:focus-within .dm-insert-actions { opacity: 1; }
+.dm-insert:hover .dm-insert-line { background: var(--dl-orange); }
+
+.dm-insert-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-family: var(--dl-mono);
+  font-size: 0.68rem;
+  padding: 0.22rem 0.6rem;
+  border: 1px solid var(--dl-cell-border);
+  border-radius: 999px;
+  background: var(--dl-panel-bg);
+  color: var(--dl-muted);
+  cursor: pointer;
+}
+.dm-insert-btn:hover { border-color: var(--dl-orange); color: var(--dl-orange); }
+
+/* A hover that can't happen on a touch screen would hide the only way in —
+ * so there, the seam gets real height and its buttons stay visible rather
+ * than waiting for a hover event that will never come. */
+@media (hover: none) {
+  .dm-insert { height: 2.4rem; }
+  .dm-insert-actions { opacity: 0.75; }
+}
+
+.dm-cell {
+  display: flex;
+  padding: var(--dm-cell-pad-y) 0;
+}
+
+/* A quiet coloured rail rather than a boxed card — the cell reads as part of
+ * the page, and the rail alone says "python" / "text" / "this one errored"
+ * at a glance down the whole list. */
+.dm-cell-rail {
+  flex: none;
+  width: 3px;
+  border-radius: 2px;
+  margin-right: 0.9rem;
+  background: var(--dl-cell-border);
+  transition: background 0.15s ease;
+}
+.dm-cell-python .dm-cell-rail { background: var(--dl-navy); opacity: 0.35; }
+.dm-cell-text .dm-cell-rail { background: var(--dl-muted); opacity: 0.3; }
+.dm-cell.dm-focused .dm-cell-rail { background: var(--dl-orange); opacity: 1; }
+.dm-cell.dm-error .dm-cell-rail { background: var(--dl-error-fg); opacity: 1; }
+.dm-cell.dm-dragging { opacity: 0.45; }
+.dm-cell.dm-drop-before { box-shadow: inset 0 2px 0 var(--dl-orange); }
+.dm-cell.dm-drop-after { box-shadow: inset 0 -2px 0 var(--dl-orange); }
+
+.dm-cell-main { flex: 1; min-width: 0; }
+
+.dm-cell-head {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  cursor: grab;
+  user-select: none;
+}
+.dm-cell-head:active { cursor: grabbing; }
+
+.dm-cell-pill {
+  font-family: var(--dl-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--dl-muted);
+  border: 1px solid var(--dl-cell-border);
+  border-radius: 999px;
+  padding: 0.1rem 0.55rem;
+}
+.dm-cell-spacer { flex: 1; }
+
+.dm-cell-actions {
+  display: flex;
+  gap: 0.25rem;
+  opacity: 0.4;
+  transition: opacity 0.1s ease;
+}
+@media (hover: none) {
+  .dm-cell-actions { opacity: 1; }
+}
+.dm-cell:hover .dm-cell-actions,
+.dm-cell:focus-within .dm-cell-actions { opacity: 1; }
+
+.dm-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.7rem;
+  height: 1.7rem;
+  padding: 0;
+  border: 1px solid var(--dl-cell-border);
+  border-radius: 4px;
+  background: var(--dl-panel-bg);
+  color: var(--dl-muted);
+  cursor: pointer;
+  font-size: 0.85rem;
+  line-height: 1;
+}
+.dm-icon-btn:hover { border-color: var(--dl-orange); color: var(--dl-orange); }
+.dm-icon-run:hover { border-color: var(--dl-pass-fg); color: var(--dl-pass-fg); }
+.dm-icon-delete:hover { border-color: var(--dl-error-fg); color: var(--dl-error-fg); }
+.dm-icon-btn:disabled { opacity: 0.4; cursor: default; }
+
+/* Code editor. Font/size/cursor/placement are exactly the affordances asked
+ * for, so each is its own variable rather than a hard-coded value — the
+ * Editor settings section below writes these, nothing else touches them. */
+.dm-editor {
+  border-radius: 4px;
+  background: var(--dl-cell-bg);
+}
+.dm-editor .cm-editor {
+  font-size: var(--dm-code-size);
+  border-radius: 4px;
+}
+.dm-editor .cm-editor.cm-focused { outline: none; box-shadow: 0 0 0 1px var(--dl-orange) inset; }
+.dm-editor .cm-scroller { font-family: var(--dl-mono); line-height: var(--dm-code-line); }
+.dm-editor .cm-content { padding: 0.6rem 0.75rem; }
+.dm-editor .cm-gutters { background: transparent; border: none; }
+:root[data-dm-gutter="off"] .dm-editor .cm-gutters { display: none; }
+:root[data-dm-gutter="off"] .dm-editor .cm-content { padding-left: 0.9rem; }
+
+.dm-editor .cm-cursor { border-left-width: var(--dm-cursor-w); border-left-color: var(--dl-orange); }
+.dm-editor .cm-activeLine { background: color-mix(in srgb, var(--dl-orange) 8%, transparent); }
+:root[data-dm-activeline="off"] .dm-editor .cm-activeLine,
+:root[data-dm-activeline="off"] .dm-editor .cm-activeLineGutter { background: transparent; }
+
+.dm-textarea {
+  width: 100%;
+  min-height: 3.4rem;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  background: var(--dl-cell-bg);
+  color: var(--dl-fg);
+  font-family: var(--dl-font-family);
+  font-size: 0.95rem;
+  line-height: var(--dm-code-line);
+  resize: vertical;
+}
+.dm-textarea:focus { outline: none; border-color: var(--dl-orange); }
+.dm-textarea::placeholder { color: var(--dl-muted); }
+.dm-textarea[hidden] { display: none; }
+
+/* A text cell reads as documentation, not a form field, the moment you look
+ * away from it — click it again to get the plain text back underneath. */
+.dm-doc-render {
+  padding: 0.55rem 0.75rem;
+  border-radius: 4px;
+  cursor: text;
+  font-family: var(--dl-font-family);
+  font-size: 0.98rem;
+  line-height: var(--dm-code-line);
+}
+.dm-doc-render:hover { background: var(--dl-cell-bg); }
+.dm-doc-render[hidden] { display: none; }
+.dm-doc-render h4, .dm-doc-render h5, .dm-doc-render h6 {
+  margin: 0.2rem 0 0.4rem;
+  color: var(--dl-heading);
+  font-size: 1.05em;
+}
+.dm-doc-render p { margin: 0 0 0.6rem; }
+.dm-doc-render p:last-child { margin-bottom: 0; }
+.dm-doc-render ul { margin: 0 0 0.6rem 1.1rem; padding: 0; }
+.dm-doc-render li { margin-bottom: 0.2rem; }
+.dm-doc-render code { font-family: var(--dl-mono); font-size: 0.85em; background: var(--dl-cell-bg); padding: 0.1em 0.35em; border-radius: 3px; }
+.dm-doc-render em { color: var(--dl-muted); }
+.dm-doc-empty { color: var(--dl-muted); font-style: italic; margin: 0; }
+
+.dm-cell-output {
+  margin-top: 0.6rem;
+  padding: 0.65rem 0.8rem;
+  border-radius: 4px;
+  background: var(--dl-output-bg);
+  font-family: var(--dl-mono);
+  font-size: 0.85rem;
+  line-height: 1.5;
+  overflow-x: auto;
+}
+.dm-cell-output:empty,
+.dm-cell-output.dm-empty { display: none; }
+.dm-cell-output pre { margin: 0 0 0.5rem; white-space: pre-wrap; word-break: break-word; }
+.dm-cell-output pre:last-child { margin-bottom: 0; }
+.dm-cell-output .dl-error {
+  color: var(--dl-error-fg);
+  background: var(--dl-error-bg);
+  border-left: 3px solid var(--dl-error-fg);
+  padding: 0.5rem 0.7rem;
+  border-radius: 0 3px 3px 0;
+}
+.dm-cell-output .dl-table-wrap { overflow-x: auto; margin: 0.2rem 0 0.6rem; }
+.dm-cell-output table { border-collapse: collapse; font-size: 0.8rem; font-family: var(--dl-mono); }
+.dm-cell-output th, .dm-cell-output td {
+  border: 1px solid var(--dl-cell-border);
+  padding: 0.22rem 0.55rem;
+  text-align: right;
+  white-space: nowrap;
+}
+.dm-cell-output thead th { background: var(--dl-cell-bg); color: var(--dl-heading); }
+.dm-cell-output .dl-check {
+  display: flex;
+  gap: 0.5rem;
+  align-items: baseline;
+  padding: 0.45rem 0.7rem;
+  border-radius: 3px;
+  margin: 0.2rem 0 0.5rem;
+}
+.dm-cell-output .dl-check-pass,
+.dm-cell-output [style*="1f6b3f"] { background: var(--dl-pass-bg); color: var(--dl-pass-fg); }
+.dm-cell-output .dl-check-fail,
+.dm-cell-output [style*="9b2226"] { background: var(--dl-error-bg); color: var(--dl-error-fg); }
+.dm-cell-output .dl-widget { display: flex; align-items: center; gap: 0.5rem; margin: 0.3rem 0; }
+.dm-cell-output .dl-widget input,
+.dm-cell-output .dl-widget select {
+  font: inherit;
+  font-family: var(--dl-mono);
+  font-size: 0.82rem;
+  padding: 0.22rem 0.45rem;
+  border: 1px solid var(--dl-cell-border);
+  border-radius: 3px;
+  background: var(--dl-panel-bg);
+  color: var(--dl-fg);
+}
+.dm-cell-output img { max-width: 100%; border-radius: 3px; }
+
+/* -------------------------------------------------------------- panels
+ *
+ * dm-help reuses .dl-settings' geometry (same corner, same width, same
+ * shadow) but is its own class so opening it never fights the real
+ * dl-settings panel for the same DOM node. */
+
+.dm-panel {
+  position: fixed;
+  right: 1rem;
+  top: calc(var(--dl-chrome-h) + 0.5rem);
+  z-index: 50;
+  width: min(24rem, calc(100vw - 2rem));
+  max-height: calc(100vh - var(--dl-chrome-h) - 1.5rem);
+  overflow-y: auto;
+  padding: 1rem 1.1rem 1.1rem;
+  border: 1px solid var(--dl-cell-border);
+  border-radius: 6px;
+  background: var(--dl-panel-bg);
+  box-shadow: 0 8px 28px var(--dl-shadow);
+  font-family: var(--dl-font-family);
+  font-size: 0.88rem;
+}
+.dm-panel[hidden] { display: none; }
+
+.dm-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.9rem;
+}
+.dm-panel h2 {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--dl-muted);
+  margin: 0;
+}
+.dm-panel-close {
+  font-size: 1.3rem;
+  line-height: 1;
+  background: none;
+  border: none;
+  color: var(--dl-muted);
+  cursor: pointer;
+  padding: 0 0.2rem;
+}
+.dm-panel-close:hover { color: var(--dl-orange); }
+
+.dm-panel-section + .dm-panel-section {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--dl-rule);
+}
+.dm-panel h3 {
+  font-size: 0.8rem;
+  letter-spacing: 0.02em;
+  color: var(--dl-heading);
+  margin: 0 0 0.55rem;
+}
+.dm-panel-note {
+  margin: 0 0 0.6rem;
+  font-size: 0.85rem;
+  line-height: 1.55;
+  color: var(--dl-muted);
+}
+.dm-panel-note code { font-family: var(--dl-mono); font-size: 0.85em; }
+
+kbd {
+  font-family: var(--dl-mono);
+  font-size: 0.78em;
+  border: 1px solid var(--dl-cell-border);
+  border-radius: 3px;
+  padding: 0.05em 0.4em;
+  background: var(--dl-cell-bg);
+}
+
+/* Reference lists — the FAQ app's own dt/dd shape, recoloured. */
+.dm-help-list { margin: 0; }
+.dm-help-entry {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.75rem;
+  padding: 0.4rem 0;
+  border-bottom: 1px solid var(--dl-rule);
+}
+.dm-help-entry:last-child { border-bottom: none; }
+.dm-help-entry dt {
+  font-family: var(--dl-mono);
+  font-size: 0.78rem;
+  color: var(--dl-heading);
+  white-space: nowrap;
+}
+.dm-help-entry dd { margin: 0; text-align: right; color: var(--dl-muted); font-size: 0.85rem; }
+
+/* -------------------------------------------------------- settings extras */
+
+.dl-progress-notes {
+  width: 100%;
+  padding: 0.55rem 0.65rem;
+  border: 1px solid var(--dl-cell-border);
+  border-radius: 4px;
+  background: var(--dl-cell-bg);
+  color: var(--dl-fg);
+  font: inherit;
+  font-size: 0.85rem;
+  resize: vertical;
+  margin-bottom: 0.4rem;
+}
+.dl-progress-notes:focus { outline: none; border-color: var(--dl-orange); }
+
+.dl-progress-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.5rem; }
+
+.dm-filename-label {
+  display: block;
+  font-size: 0.78rem;
+  color: var(--dl-muted);
+  margin: 0 0 0.3rem;
+}
+.dm-filename-input {
+  width: 100%;
+  padding: 0.5rem 0.65rem;
+  margin-bottom: 0.6rem;
+  border: 1px solid var(--dl-cell-border);
+  border-radius: 4px;
+  background: var(--dl-cell-bg);
+  color: var(--dl-fg);
+  font: inherit;
+  font-family: var(--dl-mono);
+  font-size: 0.85rem;
+}
+.dm-filename-input:focus { outline: none; border-color: var(--dl-orange); }
+
+/* --------------------------------------------------------------- drop zone */
+
+.dm-drop-placeholder {
+  height: 2px;
+  background: var(--dl-orange);
+  margin: -1px 0 -1px calc(3px + 0.9rem);
+}
+
+/* ---------------------------------------------------------------- loading */
+
+.dm-cell-output .dm-running { color: var(--dl-muted); font-style: italic; }
+
+/* ------------------------------------------------------------- responsive */
+
+@media (max-width: 34rem) {
+  .dm-panel { top: auto; bottom: 0; left: 0; right: 0; width: auto; max-height: 78vh; border-radius: 8px 8px 0 0; }
+  .dm-help-label { display: none; }
+  .dm-toolbar-group-end { width: 100%; order: 10; }
+  .dm-cell-rail { margin-right: 0.6rem; }
+}
+
+/* ------------------------------------------------------------------ print
+ *
+ * "Print / Save as PDF" in Settings calls window.print() — this is what a
+ * reader actually sees. Chrome, hover affordances and the insert seams have
+ * no place on a printed page; code and its output are the whole point, so
+ * they get real ink regardless of which theme was on screen. */
+
+@media print {
+  .dl-chrome, .dm-toolbar, .dm-status, .dm-panel, .dm-insert, .dm-cell-actions, .dm-subtitle {
+    display: none !important;
+  }
+  body, .dl-page { background: #fff !important; color: #111 !important; }
+  .dm-title-row { margin-bottom: 1rem; }
+  h1 { color: #1b2a4a !important; }
+  .dm-cell { break-inside: avoid; padding: 0.5rem 0; }
+  .dm-cell-rail { background: #ccc !important; opacity: 1 !important; }
+  .dm-cell-pill { color: #555 !important; border-color: #ccc !important; }
+  .dm-editor .cm-editor, .dm-cell-output, .dm-textarea, .dm-doc-render:hover {
+    background: #f7f6f3 !important;
+    color: #111 !important;
+  }
+  .dm-doc-render { background: transparent !important; }
+  .dm-cell-output { border: 1px solid #ddd; }
+  /* The cursor's last position has no meaning once nothing is interactive. */
+  .dm-editor .cm-activeLine, .dm-editor .cm-activeLineGutter, .dm-editor .cm-cursor { background: transparent !important; border: none !important; }
+  a { color: #1b2a4a !important; text-decoration: underline; }
+}

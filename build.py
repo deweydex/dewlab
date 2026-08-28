@@ -70,6 +70,7 @@ TUTORIALS = ROOT / "tutorials"
 SETUP = ROOT / "setup"
 DATA = ROOT / "data"
 ASSETS = ROOT / "assets"
+COMPOSE = ROOT / "compose"
 SHELL = ASSETS / "shell.html"
 OUT = ROOT / "site"
 
@@ -2721,6 +2722,12 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
         src = ASSETS / filename
         if src.exists():
             shutil.copy2(src, OUT / filename)
+
+    # dewmini (compose/) is its own small folder rather than more root-level
+    # files, so it copies wholesale like assets/ does.
+    if COMPOSE.is_dir():
+        shutil.rmtree(OUT / "compose", ignore_errors=True)
+        shutil.copytree(COMPOSE, OUT / "compose")
     return written
 
 
