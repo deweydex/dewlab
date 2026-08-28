@@ -36,18 +36,25 @@ student can skip around and a teacher can slot in whatever fits a spare week.
 That is the right model for the topic tree; it is the wrong model for "what
 has this specific reader already seen," which needs an actual sequence.
 
-`order.yaml` gives exactly that, but only within one series, and series
-within a module have no defined order relative to each other (`write_index`
-lists them `sorted()` by name — alphabetical, not curricular). So:
+`order.yaml` gives exactly that, but only within one series. Series within a
+module have no defined order relative to each other by default
+(`write_index` lists them `sorted()` by name — alphabetical, not curricular,
+and that display order is unrelated to this one) — but a module may add
+`tutorials/<module>/series.yaml` (`order:`, a list of series slugs) to say
+what its own curricular order is, purely for cheat-sheet purposes.
 
-**A cheat sheet draws only from the current series, up to and including the
-current tutorial's own position** — the same `members`/`index` a page's
-previous/next links already use. Matrices' cheat sheet will not include
-anything from Python fundamentals, even though a student reading
-`computational-methods` in the obvious order meets fundamentals first. This
-is a real gap, and it is `QUESTIONS.md`'s "Should a module's series carry an
-explicit reading order, and should the cheat sheet cross series within one
-module?" — assumed no for now, because no such order exists to read.
+**A cheat sheet draws from the current series, up to and including the
+current tutorial's own position, plus every earlier series `series.yaml`
+lists before this one** (`series_chain()`, `DECISIONS_LOG.md` 7.66) — never
+from another module. `computational-methods/series.yaml` lists
+`python-fundamentals` before `matrices`, so matrices' cheat sheet does
+include what fundamentals introduced. A series left off the list — or a
+module with no `series.yaml` at all — gets series-only accumulation, which
+is what a series with no fixed curricular position needs:
+`reflections-and-review`, in `mit-pdp-maths-prog-integration`, is revisited
+whenever a reader wants rather than sitting at one point in the course
+(that series' own `.order.yaml` says so), so it is never listed anywhere
+and nothing about it changed when this shipped.
 
 A **practice page** does not have its own coverage — `practice_for`/
 `practice_across` name the tutorial(s) it tests instead of appearing in
@@ -84,6 +91,11 @@ A missing glossary file is not an error: the tutorial's own contribution is
 empty, and its cheat sheet is whatever came before it in the series. This is
 what lets the feature ship before every tutorial has one, and why generating
 them is deliberately its own batch of work rather than a blocker on the UI.
+
+This shape is shown here so a reader knows what a `.glossary.yaml` actually
+looks like — not as something to hand-write. `.claude/skills/
+tutorial-glossary/SKILL.md` (§4) is the tool for writing or updating one:
+run it on a tutorial, and it produces this file.
 
 ## 4. The skill: writing one tutorial's *new* terms, not the cumulative list
 

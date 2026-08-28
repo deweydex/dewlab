@@ -202,8 +202,11 @@ runtime because both anchor to the same corner. Its content is not
 hand-written — `build.py`'s `cumulative_glossary()` assembles it per
 tutorial from `<slug>.glossary.yaml` files (one per tutorial, produced by
 `.claude/skills/tutorial-glossary/SKILL.md`), walking each series in
-`order.yaml` order so a tutorial's manifest only ever carries what it and
-everything before it actually taught. A tutorial with nothing accumulated
+`order.yaml` order — and, where a module's `series.yaml` says so
+(`series_chain()`, DECISIONS_LOG.md 7.66), every earlier series in that
+module too — so a tutorial's manifest only ever carries what it and
+everything before it actually taught, never anything from another module. A
+tutorial with nothing accumulated
 yet shows no toggle at all — the skill has now been run across every
 tutorial in both live modules (DECISIONS_LOG.md 7.65), so in practice this
 only affects a genuinely new tutorial before its own glossary file is

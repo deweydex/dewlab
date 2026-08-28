@@ -49,52 +49,6 @@ A one-line answer is a complete answer.
 
 ## Open
 
-### Should a module's series carry an explicit reading order, and should the cheat sheet cross series within one module?
-
-A tutorial's cheat sheet (`planning/CHEAT_SHEETS.md`) draws from everything
-earlier in its own series (`order.yaml`), because that is the only ordering
-the build actually has. Series within a module have no defined order —
-`write_index()` lists them alphabetically — even though, e.g.,
-`computational-methods`' Matrices series plausibly comes after its Python
-fundamentals series for a student working through the module in the obvious
-way.
-
-**Assumed and built in the meantime:** scope stays inside one series. A
-matrices tutorial's cheat sheet will not include anything Python
-fundamentals introduced, even if a reader met it first.
-
-**Cost to change later:** small if it happens before many glossaries exist —
-one field (`order.yaml` gaining a module-level series sequence, or an
-explicit `after: python-fundamentals` on a series) and a build.py change to
-walk it. Larger once dozens of glossary files exist and some entries turn
-out to already be covered by an earlier series — those would need pruning,
-not just the assembly logic changing.
-
-**Blocks:** nothing today. It only produces a cheat sheet that is narrower
-than it could correctly be, never one that shows something too early.
-
-### Is a structured YAML glossary file the right format, or did "a markdown file" mean the glossary content itself?
-
-The request described the glossary as something a skill produces "as a
-markdown file." `planning/CHEAT_SHEETS.md` §3 instead specifies YAML
-(`<slug>.glossary.yaml`, `term`/`kind`/`definition`/`example` fields) — read
-as "the *skill* is written as a markdown file," which is simply how a
-Claude Code skill (`SKILL.md`) works, rather than as a requirement on the
-glossary's own output format.
-
-**Assumed and built in the meantime:** YAML output, because build.py needs
-to parse it structurally (group by `kind`, walk it in `order.yaml` order)
-and a freeform markdown glossary would need its own parser to do the same
-job less reliably.
-
-**Cost to change later:** moderate — every already-generated `.glossary.yaml`
-would need converting (mechanical, scriptable) or the build's parser would
-need to grow a second input format. Cheaper the earlier it happens, same as
-the schema question in §7 of the spec.
-
-**Blocks:** nothing yet — no glossary files exist before the schema PR
-lands, so there is nothing to convert if the answer is "markdown after all."
-
 ### What should the cheat sheet become on a phone, later?
 
 `planning/CHEAT_SHEETS.md` §6 hides the toggle entirely under the existing
@@ -168,28 +122,50 @@ settled.
 attribution file) does not require the notes question to be settled
 first, since they are independent additions to the same panel either way.
 
-### Does a mixed practice page's cheat sheet need curation, or is the raw union always right?
-
-`practice_across` lets one practice page test several tutorials at once
-(`build.py`'s `practice_pairs()`/`mixed_practice()`). §2 of the spec unions
-every named tutorial's cumulative cheat sheet for such a page. If a mixed
-practice page spans much of a series, that union could be long enough that
-"a cheat sheet" stops being the right word for it.
-
-**Assumed and built in the meantime:** the raw union, uncapped — simplest
-to build, and never wrong in the sense that matters (nothing forward-looking
-ever appears), only potentially long.
-
-**Cost to change later:** small — a length cap or a "most relevant" ranking
-is a filter applied after the union is already computed, not a change to how
-the union itself is built.
-
-**Blocks:** nothing — no `practice_across` page currently spans enough of a
-series for this to have been checked against a real, long example.
-
 ---
 
 ## Answered
+
+### Should a module's series carry an explicit reading order, and should the cheat sheet cross series within one module?
+
+**Settled: series may cross within a module; never across modules.**
+
+`tutorials/<module>/series.yaml` (`build.py`'s `module_series_order()`,
+`series_chain()`, `check_series_order()`) optionally lists a module's
+series in accumulation order — a series listed there inherits every
+earlier listed series' own glossary too, not just its own. A series left
+off the list (or a module with no file at all) keeps series-only
+accumulation, which is what let `reflections-and-review` in
+`mit-pdp-maths-prog-integration` stay exactly as it was: that series
+already has its own documented reason for having no fixed position
+("revisited whenever a reader wants," its own `.order.yaml`'s comment),
+so it is deliberately never listed anywhere.
+`tutorials/computational-methods/series.yaml` now lists
+`python-fundamentals` before `matrices`, so a matrices tutorial's cheat
+sheet carries fundamentals' vocabulary too.
+
+Recorded as `DECISIONS_LOG.md` 7.66.
+
+### Is a structured YAML glossary file the right format, or did "a markdown file" mean the glossary content itself?
+
+**Settled: YAML, as already built** — the request's "markdown file" meant
+the skill itself (`SKILL.md` is how a Claude Code skill is written), not a
+requirement on the glossary's own output format. The one thing asked for
+alongside confirming this: make sure writing a glossary is well documented
+with the skill highlighted as the tool that makes it easy, so YAML's
+structure is never something an author has to hand-write from a blank
+page. `.claude/skills/tutorial-glossary/SKILL.md` is that documentation —
+`planning/CHEAT_SHEETS.md` §3/§4, `README.md`, and `ARCHITECTURE.md` all
+point to it by name as the way a glossary gets written, rather than
+describing the YAML shape as something to fill in by hand.
+
+### Does a mixed practice page's cheat sheet need curation, or is the raw union always right?
+
+**Settled: fine as the raw union for now.** No change needed today.
+Revisit with `.claude/skills/tutorial-glossary/SKILL.md` if a real
+`practice_across` page's union ever looks too long in practice — the skill
+can be pointed at a mixed page's actual accumulated list to judge whether
+curation would visibly help, rather than deciding in the abstract.
 
 ### Coordinate geometry has no tutorial and no outline, and something already depends on it
 

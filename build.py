@@ -861,18 +861,79 @@ def own_glossary(tutorial: Tutorial) -> list[dict]:
     return entries
 
 
+SERIES_ORDER_FILE = "series.yaml"
+
+
+def module_series_order(module: str) -> list[str]:
+    """The order this module's series accumulate a cheat sheet in, from
+    `tutorials/<module>/series.yaml`.
+
+    Optional, and deliberately so: a series with no fixed position in its
+    module — `reflections-and-review`, revisited whenever a reader wants
+    rather than sitting at one point in the course — simply is not listed,
+    and keeps series-only accumulation. A module with no file at all
+    inherits nothing across series, the same as before this existed.
+    """
+    path = TUTORIALS / module / SERIES_ORDER_FILE
+    if not path.is_file():
+        return []
+    data = yaml.safe_load(path.read_text()) or {}
+    listed = data.get("order") or []
+    if not isinstance(listed, list) or not all(isinstance(s, str) for s in listed):
+        fail(path, "a series order file needs `order:` as a list of series names")
+    return listed
+
+
+def check_series_order(groups: dict[tuple[str, str], list[Tutorial]]) -> None:
+    """A module's series.yaml, if it has one, may only list series that
+    actually exist in that module — a typo here would otherwise silently
+    exclude a series from cross-series accumulation, with nothing else ever
+    saying why a cheat sheet was missing content."""
+    modules = {module for module, _ in groups}
+    for module in modules:
+        real = {series for m, series in groups if m == module}
+        for series in module_series_order(module):
+            if series not in real:
+                fail(
+                    TUTORIALS / module / SERIES_ORDER_FILE,
+                    f"lists {series!r}, which is not a series in {module}",
+                )
+
+
+def series_chain(
+    module: str, series: str, groups: dict[tuple[str, str], list[Tutorial]]
+) -> list[Tutorial]:
+    """Every tutorial one series' cheat sheet accumulates from: every
+    earlier series `series.yaml` lists before this one, each in its own
+    `order.yaml` order, followed by this series' own members in theirs. A
+    series `series.yaml` does not mention — or a module with no
+    `series.yaml` at all — accumulates only from itself, unchanged from
+    how this feature originally shipped.
+    """
+    own = groups.get((module, series), [])
+    listed = module_series_order(module)
+    if series not in listed:
+        return own
+    chain: list[Tutorial] = []
+    for earlier in listed:
+        if earlier == series:
+            break
+        chain.extend(groups.get((module, earlier), []))
+    chain.extend(own)
+    return chain
+
+
 def cumulative_glossary(
     tutorial: Tutorial,
-    members: list[Tutorial],
     registry: dict[tuple[str, str], Tutorial],
     groups: dict[tuple[str, str], list[Tutorial]],
 ) -> list[dict]:
     """Everything a reader has met by this point: this tutorial's own
-    glossary plus every earlier series member's, in the order `order.yaml`
-    introduced them (`members` is already sorted that way — see
-    `series_of()`). Whichever entry came first wins on a term repeated
-    later, so a definition never contradicts an earlier one on the same
-    page.
+    glossary, everything earlier in its own series, and — where
+    `series.yaml` says this series follows another — everything from each
+    earlier series too (`series_chain()`). Whichever entry came first wins
+    on a term repeated later, so a definition never contradicts an earlier
+    one on the same page.
 
     A practice page has no series position that means anything —
     `practice_for`/`practice_across` name what it tests instead of where it
@@ -890,8 +951,7 @@ def cumulative_glossary(
             target = registry.get((tutorial.module, slug))
             if target is None:
                 continue
-            target_members = groups.get((target.module, target.series), [])
-            for entry in cumulative_glossary(target, target_members, registry, groups):
+            for entry in cumulative_glossary(target, registry, groups):
                 key = (entry["term"], entry["kind"])
                 if key in seen:
                     continue
@@ -899,14 +959,15 @@ def cumulative_glossary(
                 found.append(entry)
         return found
 
-    if tutorial not in members:
+    chain = series_chain(tutorial.module, tutorial.series, groups)
+    if tutorial not in chain:
         # Archived, same as nav_for()'s own "nowhere in the series it comes
         # before or after" — only its own entries, nothing inherited.
         return own_glossary(tutorial)
 
     seen = set()
     found = []
-    for member in members[: members.index(tutorial) + 1]:
+    for member in chain[: chain.index(tutorial) + 1]:
         for entry in own_glossary(member):
             key = (entry["term"], entry["kind"])
             if key in seen:
@@ -2410,6 +2471,7 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
 
     shell = SHELL.read_text()
     groups = series_of(tutorials)
+    check_series_order(groups)
     retired = archived_of(tutorials)
     written: list[Path] = []
     for tutorial in tutorials:
@@ -2426,7 +2488,7 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
             also=[page for page in mixed.get(tutorial.module, [])
                   if tutorial.slug in page.practice_across],
             registry=registry,
-            glossary=cumulative_glossary(tutorial, members, registry, groups),
+            glossary=cumulative_glossary(tutorial, registry, groups),
         )
         written.append(page_path)
         # 0.7MB against 19KB for the hosted page, so only the version students
