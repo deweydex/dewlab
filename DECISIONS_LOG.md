@@ -2060,3 +2060,89 @@ series-only with no file, stays series-only when left off an existing
 file, fails loudly on an unknown series name). Verified against a real
 build too: `grid-of-numbers`, the first matrices tutorial, now carries
 `working-with-tables`' 8 fundamentals entries ahead of its own 11.*
+
+**7.67 — A cell's control bar moved below the editor and output, and its
+hint stopped floating.** Two real usability problems, reported directly
+against the live site rather than found in review: the bar (slug, hint,
+reset, run) sat above the code, so a reader met controls for code they had
+not read yet; and the hint's "?" opened a hover popover
+(`position: absolute`) that could float over the editor or output beneath
+it, and gave a touch reader no way to open it at all.
+
+`render_cell()`'s markup order changed — bar now last inside `.dl-cell` —
+with no change to how `tutorial-runtime.js` binds to any of it, since
+every binding is a class lookup (`.dl-editor`, `.dl-output`,
+`.dl-btn-run`, `.dl-btn-reset`) rather than a DOM-position assumption. The
+hint became a real click toggle: `.dl-hint-icon` is a button with
+`aria-expanded`, `.dl-hint-text` is `hidden` by default and a plain block
+when open (not `position: absolute`), so opening it grows the cell and
+pushes whatever follows it down the page — the same "push down, cover
+nothing" shape the prose-level `<details class="dl-hint">` fold already
+had, reached by a different mechanism because `<details>` does not fit as
+one icon inside a horizontal bar. `[hidden]` gets the same explicit
+`.dl-hint-text[hidden] { display: none }` rule 7.64 already needed for the
+cheat sheet toggle, for the same specificity-tie reason.
+
+A second ask alongside this — the Run button becoming a Stop button while
+a cell runs — was investigated and not built: `planning/CELL_CONTROLS.md`
+§2 has the finding. Pyodide runs on the page's own main thread with no Web
+Worker anywhere in the codebase, so a genuinely blocking loop leaves no
+thread free to even handle a Stop click; the only real fix is a Worker
+plus `pyodide.setInterruptBuffer()`, which needs `SharedArrayBuffer`,
+which needs cross-origin-isolation response headers GitHub Pages does not
+let this project set without a service-worker shim. Raised in
+`QUESTIONS.md` as its own decision rather than folded into this PR.
+
+*Cost to change: small for what shipped — `tests/test_build.py` gained two
+tests (hint starts closed and is a toggle not `role="tooltip"`, bar comes
+after editor/output in the markup) and `tests/e2e/test_cell_hint.py` is new
+(starts closed, a click opens it in normal flow — asserted directly via
+`getComputedStyle(...).position === "static"` and a real bounding-box
+height rather than trusting the CSS — a second click closes it again),
+run against a real browser with no cell run and no Pyodide boot required,
+same reasoning `test_autocomplete.py`'s first class already established.
+The Stop button is not a cost deferred cheaply — see `QUESTIONS.md`, the
+Worker migration is real architecture work whenever it happens.*
+
+**7.68 — A new skill reviews a tutorial's own code for naming and comment
+quality, the same way `tutorial-glossary` reviews it for vocabulary.**
+`PEDAGOGICAL_STYLE_GUIDE.md` §5 had cell-length, boilerplate, and tool
+rules but nothing on variable naming or comment style — a real gap, since
+"clearer, semantic variable names" needs somewhere authoritative to check
+against, the same reason `tutorial-glossary` defers to `terms_of()`'s
+existing emphasis convention rather than deciding term-worthiness itself.
+§5 gained rules (semantic names over mathy single letters; comments that
+say why, not what; two named exceptions — a formula's own letters
+matching the prose above a cell, and "discover first, name afterwards"
+applying to a variable's specificity the same way it already applies to
+prose) before `.claude/skills/cell-code-review/SKILL.md` was written
+against them.
+
+The skill treats a rename as whole-tutorial, not per-cell — cells in one
+tutorial share a namespace in document order, so a name reused across
+cells has to be renamed everywhere it appears or the tutorial breaks
+rather than improves — and requires validating an edited cell still
+compiles and, where checkable, still produces the same output, before
+calling a rename done.
+
+Run once, by hand, across a handful of real tutorials rather than the
+whole curriculum, to prove the process before committing to a full pass
+(the same staged approach `tutorial-glossary` took, `CHEAT_SHEETS.md` §7):
+`multiplying-grids.md` and `grid-of-numbers.md` needed nothing — `a`/`b`
+in `dot(a, b)` and `A`/`B`/`C`/`D`/`S`/`M` for matrices both match names
+already established in the surrounding prose, `pixels`/`ramp` were
+already semantic. `how-we-got-here.md`'s `to_binary(n)` was left alone —
+a general-purpose numeric conversion function's single parameter, already
+explained by its own docstring, is the same shape as `dot(a, b)`'s
+generic arguments. One real change: `undoing-it.md`'s `polygon_area()`
+renamed its point-count variable from `n` to `point_count` (`i`/`j` left
+alone as loop indices, exempted by name); confirmed identical output
+(`area of the original square: 1.0`, before and after) and a clean
+rebuild.
+
+*Cost to change: small — the skill is a process document, no code of its
+own. The style-guide rules it depends on are new text in an existing
+section, not a new document. Running it across the rest of the curriculum
+is real, separate work — tracked as a follow-up rather than attempted in
+one pass, the same reasoning that kept `tutorial-glossary`'s own curriculum
+run as several PRs rather than one.*
