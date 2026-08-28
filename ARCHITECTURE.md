@@ -204,8 +204,11 @@ tutorial from `<slug>.glossary.yaml` files (one per tutorial, produced by
 `.claude/skills/tutorial-glossary/SKILL.md`), walking each series in
 `order.yaml` order so a tutorial's manifest only ever carries what it and
 everything before it actually taught. A tutorial with nothing accumulated
-yet shows no toggle at all, which is the normal state for most of the
-curriculum until the skill has been run across it.
+yet shows no toggle at all — the skill has now been run across every
+tutorial in both live modules (DECISIONS_LOG.md 7.65), so in practice this
+only affects a genuinely new tutorial before its own glossary file is
+written, or one whose glossary is deliberately empty (see 7.65 for why a
+few tutorials keep an explicit `entries: []` rather than no file).
 
 ---
 

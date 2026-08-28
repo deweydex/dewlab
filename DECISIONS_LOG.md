@@ -1962,3 +1962,54 @@ browser. The panel and toggle, small — CSS and markup mirroring
 about: actually running the skill across the curriculum, tutorial by
 tutorial, in series order, which is most of the remaining work and is
 tracked separately rather than bundled into this PR.*
+
+**7.65 — Every tutorial in both live modules now has a glossary file, so the
+cheat sheet described in 7.64 shows real content everywhere rather than only
+where a handful of hand-written examples put it.** Run per `.claude/skills/
+tutorial-glossary/SKILL.md`, series by series, in `order.yaml` order:
+`computational-methods`' `python-fundamentals` and `matrices` series (8
+tutorials), then `mit-pdp-maths-prog-integration`'s `maths-and-programming`
+series (all 31), then its `reflections-and-review` series (2). A handful of
+tutorials — `bringing-it-all-together`, `critique-and-reflection`,
+`the-team-project` — got an empty `entries: []` rather than no file at all,
+each with a comment saying why (a stated review with nothing new, or a
+project brief with no code), which keeps "this tutorial was deliberately
+considered and has nothing to add" distinguishable from "nobody has gotten
+to this one yet" (the latter still resolves to an empty list either way, by
+`own_glossary()`'s missing-file case in 7.64 — the file's only audience is a
+future reader of the repo, not the build).
+
+One same-word collision surfaced doing this: *tangent* already names the
+trig ratio (`the-unit-circle.glossary.yaml`), and `rates-of-change.md`
+introduces an unrelated *tangent line* for the derivative. Reusing the term
+string `tangent` there would have `cumulative_glossary()`'s
+first-definition-wins dedup silently keep the trig definition and drop the
+calculus one — caught only by writing the tangent-line entry and finding it
+missing from a rebuilt manifest. Fixed by using the distinct term string
+"tangent line" for the second meaning rather than teaching the dedup logic
+about senses of a word, with a comment at the top of the file recording why
+the two are separate entries on purpose. `making-decisions.glossary.yaml`
+already carries a related note from earlier in this rollout, about a
+tutorial's own prose citing the wrong predecessor for where N/Z/Q/R were
+first covered; the glossary there follows the real `order.yaml` sequence
+rather than the tutorial's own (incorrect) claim, and does not re-teach
+those names in `numbers-and-their-families.glossary.yaml` where the
+same content is genuinely first covered per the tutorial's prose — a
+content fix for the prose itself is tracked as a follow-up task rather than
+made part of this rollout.
+
+Practice-page resolution was verified against real builds rather than only
+unit tests, across both modules: every single-target practice page compared
+equal to its target tutorial's own manifest glossary, and all four
+`practice_across` "mixed" pages in `mit-pdp-maths-prog-integration`
+(`mixed-programming`, `mixed-algebra`, `mixed-data`, `mixed-trigonometry`)
+compared equal to the union of their named targets' manifest glossaries —
+confirming `cumulative_glossary()`'s practice-page branch, exercised so far
+mostly by hand-written fixtures in `tests/test_build.py`, holds up against
+the full, real curriculum.
+
+*Cost to change: none of this changes the mechanism from 7.64 — it is
+content, not code. Adding a glossary for a tutorial written after this
+entry, or correcting one, is exactly the workflow `.claude/skills/
+tutorial-glossary/SKILL.md` already describes: one tutorial, the cumulative
+glossary of what came before it in its series, one YAML file out.*
