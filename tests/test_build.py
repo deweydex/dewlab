@@ -181,6 +181,24 @@ class TestCells:
         assert "Mind the &lt;angles&gt; &amp; things" in page
         assert manifest(page)["cells"][0]["hint"] == "Mind the <angles> & things"
 
+    def test_a_hint_starts_closed_and_is_a_real_toggle_not_a_hover_popover(self, repo):
+        write(repo, '```python exec\nid: c\nhint: Try this.\n1\n```\n')
+        b.build()
+        page = built(repo)
+        # A block, hidden by default and opened by a click (aria-expanded),
+        # not role="tooltip" hover text — DECISIONS_LOG.md's account of why.
+        assert '<div class="dl-hint-text" id="dl-hint-c" hidden>Try this.</div>' in page
+        assert 'aria-controls="dl-hint-c"' in page
+        assert 'aria-expanded="false"' in page
+        assert 'role="tooltip"' not in page
+
+    def test_the_cell_bar_comes_after_the_editor_and_output_not_before(self, repo):
+        write(repo, CELL)
+        b.build()
+        page = built(repo)
+        assert page.index('<div class="dl-editor">') < page.index('class="dl-cell-bar"')
+        assert page.index('<div class="dl-output">') < page.index('class="dl-cell-bar"')
+
     def test_an_untagged_fence_stays_ordinary_code(self, repo):
         write(repo, "```python\nnot_a_cell = 1\n```\n")
         b.build()

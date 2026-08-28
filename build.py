@@ -419,18 +419,32 @@ def extract_math(body: str) -> tuple[str, list[Math]]:
 
 
 def render_cell(cell: Cell) -> str:
-    """The markup the runtime binds an editor, a Run button and an output area to."""
+    """The markup the runtime binds an editor, a Run button and an output area to.
+
+    The bar sits below the editor and output, not above them — a reader's
+    eye lands on the code first, the controls for it after, the same order
+    a notebook cell is actually used in. The hint, when open, is a normal
+    block after the bar rather than a floating popover: expanding it grows
+    the cell and pushes whatever comes after it down the page, rather than
+    covering the editor or output it might otherwise float over.
+    """
     safe_id = html.escape(cell.id, quote=True)
     hint_markup = ""
     if cell.hint:
         hint_markup = (
-            '<span class="dl-hint">'
-            f'<button type="button" class="dl-hint-icon" aria-label="Hint for {safe_id}">?</button>'
-            f'<span class="dl-hint-text" role="tooltip">{html.escape(cell.hint)}</span>'
-            "</span>"
+            f'<button type="button" class="dl-hint-icon" aria-expanded="false" '
+            f'aria-controls="dl-hint-{safe_id}" aria-label="Hint for {safe_id}">?</button>'
+        )
+    hint_text = ""
+    if cell.hint:
+        hint_text = (
+            f'<div class="dl-hint-text" id="dl-hint-{safe_id}" hidden>'
+            f"{html.escape(cell.hint)}</div>"
         )
     return (
         f'<div class="dl-cell" data-cell-id="{safe_id}">'
+        '<div class="dl-editor"></div>'
+        '<div class="dl-output"></div>'
         '<div class="dl-cell-bar">'
         f'<span class="dl-cell-id">{safe_id}</span>'
         '<span class="dl-cell-spacer"></span>'
@@ -438,8 +452,7 @@ def render_cell(cell: Cell) -> str:
         '<button type="button" class="dl-btn dl-btn-reset">reset</button>'
         '<button type="button" class="dl-btn dl-btn-run" disabled>…</button>'
         "</div>"
-        '<div class="dl-editor"></div>'
-        '<div class="dl-output"></div>'
+        f"{hint_text}"
         "</div>"
     )
 

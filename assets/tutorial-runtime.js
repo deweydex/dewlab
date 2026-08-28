@@ -420,6 +420,21 @@ function buildCells(manifest) {
       });
     }
 
+    /* A cell's own hint, if it has one: a plain click toggle, not hover — see
+     * the CSS comment on .dl-hint-icon for why. Opening it is a real state
+     * change (aria-expanded, the [hidden] attribute), not a display trick, so
+     * a screen reader announces it the same way any other disclosure widget
+     * would. */
+    const hintIcon = host.querySelector(".dl-hint-icon");
+    const hintText = host.querySelector(".dl-hint-text");
+    if (hintIcon && hintText) {
+      hintIcon.addEventListener("click", () => {
+        const open = hintIcon.getAttribute("aria-expanded") === "true";
+        hintIcon.setAttribute("aria-expanded", String(!open));
+        hintText.hidden = open;
+      });
+    }
+
     /* Ctrl/Cmd+Enter runs the cell, the shortcut every notebook user reaches
      * for first. Registered on the host rather than inside CodeMirror's keymap
      * so it also fires from the Run button's own focus. */

@@ -41,7 +41,7 @@ An exec cell can also carry an optional `hint:` field in its header, alongside `
     df[df["life_expectancy"] > 75]
     ```
 
-`hint` is plain author-written text, shown via a small hover affordance on the cell — not code, not evaluated, no effect on execution or the save schema. Omit it and the cell just has no hint.
+`hint` is plain author-written text, shown via a small "?" icon in the cell's control bar — click it to open, click again to close (DECISIONS_LOG.md 7.67 has the account of why this is a click toggle rather than the hover popover it started as). Not code, not evaluated, no effect on execution or the save schema. Omit it and the cell just has no hint.
 
 A tutorial with no `exec` cells at all — pure prose, or prose plus math notation with no runnable code — is a fully valid file in this same format, not a special case. It uses the same frontmatter, the same shell template, the same navigation as any other tutorial; the `exec` tag is what makes a cell executable, and a tutorial simply doesn't need to use it. This replaces the separate standalone style previously used for content like this — one format covers both cases. Math notation renders via KaTeX, in both the GUI editor's live view and the built page (see DECISIONS.md) — this doesn't change anything about the frontmatter or cell structure described above.
 

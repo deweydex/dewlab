@@ -242,7 +242,7 @@ p code, li code {
   align-items: center;
   gap: 0.5rem;
   padding: 0.35rem 0.5rem 0.35rem 0.75rem;
-  border-bottom: 1px solid var(--dl-cell-border);
+  border-top: 1px solid var(--dl-cell-border);
   font-family: var(--dl-mono);
   font-size: 0.72rem;
   color: var(--dl-muted);
@@ -272,10 +272,18 @@ p code, li code {
 }
 .dl-btn-run:hover:not(:disabled) { background: var(--dl-orange); border-color: var(--dl-orange); color: #fff; }
 
-/* Author-written hover hint (CONTENT_AND_FILE_ARCHITECTURE.md, `hint:`).
- * Static text only — this is not the live docstring-on-hover feature that
- * DECISIONS.md defers past v1. */
-.dl-hint { position: relative; display: inline-flex; }
+/* Author-written hint (CONTENT_AND_FILE_ARCHITECTURE.md, `hint:`). Static
+ * text only — this is not the live docstring-on-hover feature that
+ * DECISIONS.md defers past v1.
+ *
+ * Click-to-open, not hover: this used to be a hover popover positioned
+ * absolutely below the icon, which could float over the editor or output
+ * below it and gave a touch reader no way to open it at all. Now it is a
+ * plain block in normal flow, opened by a real click on the icon
+ * (initCellHints() in tutorial-runtime.js) — opening it grows the cell and
+ * pushes whatever follows the cell down the page, the same "push down, cover
+ * nothing" shape the prose-level <details class="dl-hint"> fold already
+ * has, rather than a floating card. */
 .dl-hint-icon {
   width: 1.15rem; height: 1.15rem;
   border-radius: 50%;
@@ -286,30 +294,25 @@ p code, li code {
   font-size: 0.7rem;
   line-height: 1.05rem;
   text-align: center;
-  cursor: help;
+  cursor: pointer;
   padding: 0;
 }
+.dl-hint-icon[aria-expanded="true"] {
+  background: var(--dl-navy);
+  border-color: var(--dl-navy);
+  color: #fff;
+}
 .dl-hint-text {
-  display: none;
-  position: absolute;
-  right: 0;
-  top: 1.6rem;
-  z-index: 5;
-  width: max-content;
-  max-width: min(24rem, 70vw);
-  padding: 0.5rem 0.7rem;
-  border: 1px solid var(--dl-cell-border);
-  border-radius: 4px;
+  padding: 0.6rem 0.75rem;
+  border-top: 1px solid var(--dl-cell-border);
   background: var(--dl-panel-bg);
-  box-shadow: 0 4px 14px var(--dl-shadow);
   font-family: var(--dl-font-family);
   font-size: 0.82rem;
   line-height: 1.45;
   color: var(--dl-fg);
   white-space: normal;
 }
-.dl-hint:hover .dl-hint-text,
-.dl-hint:focus-within .dl-hint-text { display: block; }
+.dl-hint-text[hidden] { display: none; }
 
 .dl-editor { background: var(--dl-panel-bg); }
 .dl-editor .cm-editor { font-size: 0.86rem; }
