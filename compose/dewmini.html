@@ -93,14 +93,17 @@
     <div class="dm-empty" id="dm-empty" hidden>
       <p>Nothing here yet.</p>
       <p class="dm-panel-note">
-        Add a Python cell to start writing code that runs in your browser, or a
-        text cell for notes beside it. Cells share one namespace top to bottom,
-        the way a notebook does — write something in the first cell and the
-        next one can use it.
+        Cells share one namespace top to bottom, the way a notebook does —
+        write something in the first cell and the next one can use it.
       </p>
-      <button type="button" class="dm-tool dm-tool-accent" id="dm-empty-add">
-        <span class="dm-tool-icon dm-tool-icon-python" aria-hidden="true"></span>Start with imports
-      </button>
+      <div class="dm-empty-actions">
+        <button type="button" class="dm-tool dm-tool-accent" id="dm-empty-example">
+          <span class="dm-tool-icon dm-tool-icon-run" aria-hidden="true"></span>See an example
+        </button>
+        <button type="button" class="dm-tool" id="dm-empty-add">
+          <span class="dm-tool-icon dm-tool-icon-python" aria-hidden="true"></span>Start with imports
+        </button>
+      </div>
     </div>
 
     <div id="cells-container" class="dm-cells"></div>
@@ -134,9 +137,14 @@
       click it again to edit the plain text underneath.
     </p>
     <p class="dm-panel-note">
-      Hover the seam between any two cells (or before the first, or after the
-      last) to insert exactly there — a blank Python cell, a text cell, or
-      one already carrying the common imports.
+      The seam between any two cells (or before the first, or after the
+      last) inserts exactly there — a blank Python cell, a text cell, or
+      one already carrying the common imports. It's faint until you hover
+      or tap it, not invisible; run a finger or a cursor down the page and
+      you'll find every seam.
+    </p>
+    <p class="dm-panel-note">
+      Cleared everything and want to see it work again? <a href="#" id="dm-help-example-link">Load the example</a>.
     </p>
   </section>
 
@@ -167,11 +175,14 @@
   <section class="dm-panel-section">
     <h3>Practice</h3>
     <p class="dm-panel-note">
-      <strong>Practice</strong> adds the next problem from dewlab's own
-      practice bank — a documentation cell with the problem number, and a
-      Python cell with the function stub to fill in. It works through the
-      bank in order and remembers where you left off; run the cell yourself
-      to check your work against the docstring's example.
+      <strong>Practice</strong> adds a problem from dewlab's own practice
+      bank — a documentation cell with the problem number, and a Python cell
+      with the function stub to fill in. Settings has an Order switch:
+      <strong>in order</strong> works through all 38 in sequence and
+      remembers where you left off; <strong>random</strong> deals them out
+      of order without repeating one until every problem has come up once.
+      Run the cell yourself to check your work against the docstring's
+      example.
     </p>
   </section>
 
@@ -225,6 +236,17 @@
       <button type="button" class="dl-btn" id="import-ipynb">Load a .ipynb</button>
     </div>
     <input type="file" id="import-ipynb-file" accept=".ipynb,application/json" hidden>
+  </section>
+
+  <section class="dl-settings-section" id="dl-settings-practice">
+    <h3>Practice</h3>
+    <div class="dl-texture-row">
+      <span>Order</span>
+      <div class="dl-seg" data-dm="practice-order">
+        <button type="button" data-value="sequential">in order</button>
+        <button type="button" data-value="random">random</button>
+      </div>
+    </div>
   </section>
 
   <section class="dl-settings-section" id="dl-settings-texture">

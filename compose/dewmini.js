@@ -78,6 +78,34 @@ function addCell(type, content = "") {
   insertCellAt(cells.length, type, content);
 }
 
+/* A small, real tour rather than placeholder text — print, an expression,
+ * numpy, a rendered documentation cell, a plot, and check() — run
+ * immediately on load so "see it work" actually shows it working rather
+ * than leaving a first-time reader to press Run themselves. */
+const EXAMPLE_CELLS = [
+  { type: CELL_TYPES.PYTHON, content: 'print("Hello from dewmini!")\nanswer = 6 * 7\nanswer' },
+  { type: CELL_TYPES.PYTHON, content: "import numpy as np\nreadings = np.array([4, 8, 15, 16, 23, 42])\nreadings.mean()" },
+  {
+    type: CELL_TYPES.TEXT,
+    content:
+      "## This is a documentation cell\n\nClick away and it **renders** — click it again to edit.\n\n- Great for notes beside your code\n- Supports `code`, *italic*, and headings",
+  },
+  {
+    type: CELL_TYPES.PYTHON,
+    content: 'import matplotlib.pyplot as plt\n\nplt.plot(readings)\nplt.title("Readings")\nplt.show()\n\ncheck(answer, 42)',
+  },
+];
+
+async function loadExampleCells() {
+  if (cells.length && !confirm("Replace the current cells with the example? This can't be undone.")) return;
+  cells.forEach((c) => c.editor?.destroy());
+  cells = EXAMPLE_CELLS.map((c) => ({ id: generateId(), type: c.type, content: c.content, output: "", error: false }));
+  saveState();
+  renderCells();
+  updateStatus("Example loaded — running it now…");
+  await runAllCells();
+}
+
 function deleteCell(id) {
   const idx = cells.findIndex((c) => c.id === id);
   if (idx === -1) return;
@@ -673,6 +701,8 @@ main();
 // ---------------------------------------------------------------- practice
 
 const PRACTICE_INDEX_KEY = "dewmini:practice-index";
+const PRACTICE_ORDER_KEY = "dewmini:practice-order";
+const PRACTICE_SHUFFLE_KEY = "dewmini:practice-shuffle";
 let practiceBank = null;
 
 async function loadPracticeBank() {
@@ -683,19 +713,58 @@ async function loadPracticeBank() {
   return practiceBank;
 }
 
+function loadPracticeOrder() {
+  try { return localStorage.getItem(PRACTICE_ORDER_KEY) === "random" ? "random" : "sequential"; } catch { return "sequential"; }
+}
+
+function shuffledRange(n) {
+  const arr = Array.from({ length: n }, (_, i) => i);
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+/* A shuffle bag rather than plain Math.random() each time — "random" should
+ * still mean every problem turns up once before any repeats, not the
+ * frustrating experience of the same one twice in a row. Reshuffles once
+ * the bag empties, nudging away an immediate repeat of the last problem
+ * served across the reshuffle boundary. */
+function nextRandomPracticeIndex(total, lastIdx) {
+  let bag = [];
+  try { bag = JSON.parse(localStorage.getItem(PRACTICE_SHUFFLE_KEY) || "[]"); } catch {}
+  if (!Array.isArray(bag) || !bag.length || bag.some((n) => !Number.isInteger(n) || n < 0 || n >= total)) {
+    bag = shuffledRange(total);
+  }
+  if (bag.length > 1 && bag[bag.length - 1] === lastIdx) {
+    [bag[bag.length - 1], bag[bag.length - 2]] = [bag[bag.length - 2], bag[bag.length - 1]];
+  }
+  const idx = bag.pop();
+  try { localStorage.setItem(PRACTICE_SHUFFLE_KEY, JSON.stringify(bag)); } catch {}
+  return idx;
+}
+
+function nextPracticeIndex(total) {
+  let lastIdx = -1;
+  try { lastIdx = parseInt(localStorage.getItem(PRACTICE_INDEX_KEY) || "-1", 10); } catch {}
+  if (loadPracticeOrder() === "random") return nextRandomPracticeIndex(total, lastIdx);
+  const idx = ((Math.max(lastIdx, -1) + 1) % total + total) % total;
+  return idx;
+}
+
 /* Adds one problem from dewlab's own practice bank — the doc cell states
  * which one, and the code cell is exactly the function stub from the
  * source bank (docstring, Args/Returns/Example and all), so there is
- * nothing to duplicate or drift out of sync with. Cycles through the bank
- * in the order it's numbered and remembers where a reader left off. */
+ * nothing to duplicate or drift out of sync with. Order (sequential or
+ * random, Settings → Practice) decides which comes next; either way it
+ * remembers where a reader left off. */
 async function addPracticeProblem() {
   try {
     const bank = await loadPracticeBank();
     if (!bank.length) { updateStatus("The practice bank is empty.", "error"); return; }
 
-    let idx = 0;
-    try { idx = parseInt(localStorage.getItem(PRACTICE_INDEX_KEY) || "0", 10) || 0; } catch {}
-    idx = ((idx % bank.length) + bank.length) % bank.length;
+    const idx = nextPracticeIndex(bank.length);
     const problem = bank[idx];
 
     const docCell = {
@@ -712,7 +781,7 @@ async function addPracticeProblem() {
     renderCells();
     focusCell(codeCell.id);
 
-    try { localStorage.setItem(PRACTICE_INDEX_KEY, String((idx + 1) % bank.length)); } catch {}
+    try { localStorage.setItem(PRACTICE_INDEX_KEY, String(idx)); } catch {}
     updateStatus(`Problem ${problem.number} of ${bank.length} added.`, "ok");
   } catch (err) {
     updateStatus(`Couldn't load the practice bank: ${err.message}`, "error");
@@ -1025,6 +1094,42 @@ function initNotes() {
   });
 }
 
+/* Pulses "See an example" on the very first time this page has ever loaded
+ * in this browser, then never again — an invitation, not a nag. Only spent
+ * when the button will actually be visible (the notebook is empty), so a
+ * reader who arrives with cells already in it (an imported .ipynb, say)
+ * doesn't burn the one first impression on a hidden button. */
+function maybeHighlightExample() {
+  if (cells.length) return;
+  const btn = document.getElementById("dm-empty-example");
+  if (!btn) return;
+  try {
+    if (localStorage.getItem("dewmini:visited") === "1") return;
+    localStorage.setItem("dewmini:visited", "1");
+  } catch {
+    return;
+  }
+  btn.classList.add("dm-pulse");
+  btn.addEventListener("animationend", () => btn.classList.remove("dm-pulse"), { once: true });
+}
+
+function initPracticeOrderSettings() {
+  const panel = document.getElementById("dl-settings-practice");
+  const group = panel?.querySelector('.dl-seg[data-dm="practice-order"]');
+  if (!group) return;
+  const sync = () => {
+    const mode = loadPracticeOrder();
+    for (const btn of group.querySelectorAll("button")) btn.setAttribute("aria-pressed", String(btn.dataset.value === mode));
+  };
+  group.addEventListener("click", (ev) => {
+    const btn = ev.target.closest("button");
+    if (!btn) return;
+    try { localStorage.setItem(PRACTICE_ORDER_KEY, btn.dataset.value); } catch {}
+    sync();
+  });
+  sync();
+}
+
 // -------------------------------------------------------------- chrome/misc
 
 function trackChromeHeight() {
@@ -1052,6 +1157,11 @@ function wireToolbar() {
   document.getElementById("add-text-cell")?.addEventListener("click", () => addCell(CELL_TYPES.TEXT));
   document.getElementById("add-practice")?.addEventListener("click", () => addPracticeProblem());
   document.getElementById("dm-empty-add")?.addEventListener("click", () => addCell(CELL_TYPES.PYTHON, IMPORTS_SNIPPET));
+  document.getElementById("dm-empty-example")?.addEventListener("click", () => loadExampleCells());
+  document.getElementById("dm-help-example-link")?.addEventListener("click", (e) => {
+    e.preventDefault();
+    loadExampleCells();
+  });
   document.getElementById("run-all")?.addEventListener("click", () => runAllCells());
   document.getElementById("clear-all")?.addEventListener("click", () => {
     if (!cells.length) return;
@@ -1091,9 +1201,11 @@ async function init() {
   initEditorSettings();
   initNotes();
   initFilename();
+  initPracticeOrderSettings();
   wireToolbar();
   setupDragAndDrop();
   renderCells();
+  maybeHighlightExample();
   trackChromeHeight();
   observeThemeChanges();
 }
