@@ -24,7 +24,7 @@
  * @module mini-ide
  */
 
-import { createCodeEditor, setEditorTheme } from "./assets/vendor/codemirror.bundle.js";
+import { createCodeEditor, setEditorTheme } from "./vendor/codemirror.bundle.js";
 
 // ============================================================================
 // Configuration Constants
