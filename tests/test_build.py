@@ -76,6 +76,28 @@ def write(repo: Path, body: str, slug: str = "sample",
     return path
 
 
+def write_in_series(repo: Path, body: str, slug: str, series: str,
+                     version: str = "2026.08.23.1") -> Path:
+    """Like write(), but for a series other than python-fundamentals — does
+    not touch that series' own order file, so the caller sets this one's
+    with set_order()."""
+    path = repo / "tutorials" / "computational-methods" / f"{slug}.md"
+    path.write_text(
+        FRONTMATTER.format(slug=slug, version=version).replace(
+            "series: python-fundamentals", f"series: {series}")
+        + body
+    )
+    return path
+
+
+def set_series_order(repo: Path, module: str, series_slugs: list[str]) -> Path:
+    """A module's series.yaml — the order its series accumulate a cheat
+    sheet in (build.py's series_chain())."""
+    path = repo / "tutorials" / module / "series.yaml"
+    path.write_text("order:\n" + "".join(f"  - {s}\n" for s in series_slugs))
+    return path
+
+
 def built(repo: Path, slug: str = "sample") -> str:
     return (repo / "site" / "tutorials" / "computational-methods" / f"{slug}.html").read_text()
 
@@ -2070,6 +2092,50 @@ class TestTheCheatSheet:
         page = (repo / "site" / "tutorials" / "computational-methods"
                 / "mixed.html").read_text()
         assert [e["term"] for e in manifest(page)["glossary"]] == ["x", "y"]
+
+
+class TestCrossSeriesGlossary:
+    """A module's series.yaml lets one series' cheat sheet inherit an
+    earlier series' too — planning/CHEAT_SHEETS.md's "cross series, not
+    modules" scope, settled in QUESTIONS.md."""
+
+    def test_a_later_series_inherits_an_earlier_ones_glossary(self, repo):
+        write(repo, "One.\n", slug="one")
+        glossary(repo, "one", [{"term": "x", "kind": "concept", "definition": "First."}])
+        write_in_series(repo, "Two.\n", slug="two", series="matrices")
+        set_order(repo, "computational-methods", "matrices", ["two"])
+        glossary(repo, "two", [{"term": "y", "kind": "concept", "definition": "Second."}])
+        set_series_order(repo, "computational-methods", ["python-fundamentals", "matrices"])
+        b.build()
+        assert [e["term"] for e in manifest(built(repo, "two"))["glossary"]] == ["x", "y"]
+
+    def test_without_series_yaml_a_second_series_stays_series_only(self, repo):
+        write(repo, "One.\n", slug="one")
+        glossary(repo, "one", [{"term": "x", "kind": "concept", "definition": "First."}])
+        write_in_series(repo, "Two.\n", slug="two", series="matrices")
+        set_order(repo, "computational-methods", "matrices", ["two"])
+        glossary(repo, "two", [{"term": "y", "kind": "concept", "definition": "Second."}])
+        b.build()
+        assert [e["term"] for e in manifest(built(repo, "two"))["glossary"]] == ["y"]
+
+    def test_a_series_left_off_series_yaml_stays_series_only(self, repo):
+        """The reflections-and-review case: series.yaml exists (for other
+        series in the module) but this one is deliberately not on it,
+        because it has no fixed position to inherit into."""
+        write(repo, "One.\n", slug="one")
+        glossary(repo, "one", [{"term": "x", "kind": "concept", "definition": "First."}])
+        write_in_series(repo, "Two.\n", slug="two", series="matrices")
+        set_order(repo, "computational-methods", "matrices", ["two"])
+        glossary(repo, "two", [{"term": "y", "kind": "concept", "definition": "Second."}])
+        set_series_order(repo, "computational-methods", ["python-fundamentals"])
+        b.build()
+        assert [e["term"] for e in manifest(built(repo, "two"))["glossary"]] == ["y"]
+
+    def test_series_yaml_naming_an_unknown_series_fails_the_build(self, repo):
+        write(repo, "One.\n", slug="one")
+        set_series_order(repo, "computational-methods", ["python-fundamentals", "no-such-series"])
+        with pytest.raises(b.BuildError, match="no-such-series"):
+            b.build()
 
 
 class TestFolds:

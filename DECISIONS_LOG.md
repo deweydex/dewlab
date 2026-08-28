@@ -2013,3 +2013,50 @@ content, not code. Adding a glossary for a tutorial written after this
 entry, or correcting one, is exactly the workflow `.claude/skills/
 tutorial-glossary/SKILL.md` already describes: one tutorial, the cumulative
 glossary of what came before it in its series, one YAML file out.*
+
+**7.66 — A cheat sheet may cross series within a module; it still never
+crosses modules.** Answers `QUESTIONS.md`'s open question from 7.64:
+matrices comes after Python fundamentals for a reader working through
+`computational-methods` in the obvious order, so a matrices tutorial's
+cheat sheet should carry fundamentals' vocabulary too, not stop at its own
+series' boundary the way 7.64 originally shipped.
+
+An optional `tutorials/<module>/series.yaml` (`order:`, a list of series
+slugs — the same shape `tutorials/modules.yaml` already uses for the
+module-display order it is modelled on) says the order a module's series
+accumulate in. `series_chain()` builds the walk: every tutorial in every
+series listed *before* this one, each in its own `order.yaml` order,
+followed by this series' own members in theirs. `cumulative_glossary()`
+now walks that chain instead of one series' `members` list, so its
+signature dropped `members` entirely — `series_chain()` already has
+everything it needs from `groups`, the same dict the function already
+took.
+
+The one thing this could not be allowed to break silently:
+`reflections-and-review`, in `mit-pdp-maths-prog-integration`, is not on
+any linear route through its module — its own `.order.yaml` comment
+already explains why: "it is not the last thing you do — it is the thing
+you come back to whenever you have finished something worth looking at
+again." A series left off `series.yaml` (or a module with no such file at
+all) keeps 7.64's original series-only accumulation unchanged, which is
+exactly what leaves `reflections-and-review` alone — nothing about it
+needed to change, because that module's `series.yaml` (if it had one)
+would simply never list it. `computational-methods/series.yaml` lists
+`[python-fundamentals, matrices]`; `mit-pdp-maths-prog-integration` gets no
+file at all, since it has only one series with a real position to begin
+with.
+
+`check_series_order()` fails the build if a `series.yaml` names a series
+that is not real in that module — the same reasoning `series_of()` already
+applies to a slug listed in an `order.yaml` with no tutorial behind it: a
+typo here would otherwise silently exclude a series from cross-series
+accumulation, with nothing else ever saying why a cheat sheet was missing
+content.
+
+*Cost to change: small. `series_chain()` and `check_series_order()` are
+each a short, pure function, covered by `tests/test_build.py`'s
+`TestCrossSeriesGlossary` (inherits across a listed order, stays
+series-only with no file, stays series-only when left off an existing
+file, fails loudly on an unknown series name). Verified against a real
+build too: `grid-of-numbers`, the first matrices tutorial, now carries
+`working-with-tables`' 8 fundamentals entries ahead of its own 11.*

@@ -1,0 +1,13 @@
+# The order this module's series accumulate a cheat sheet in.
+#
+# A reader working through computational-methods in the obvious way meets
+# Python fundamentals before matrices, so a matrices tutorial's cheat sheet
+# should carry fundamentals' vocabulary too, not just what matrices itself
+# has covered so far. Optional: a module with no file here gets series-only
+# accumulation, same as before this existed. A series left off this list
+# keeps that series-only behaviour even where the file does exist — see
+# reflections-and-review in mit-pdp-maths-prog-integration, which has no
+# fixed position in its module on purpose and so is never listed anywhere.
+order:
+  - python-fundamentals
+  - matrices

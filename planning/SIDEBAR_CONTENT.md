@@ -152,14 +152,39 @@ Two real options:
   at all — `renderCheatSheet()` already groups by kind; grouping by
   section is the same idea one level up.
 
-**Recommendation: extend the existing panel**, for the same reuse-over-
-invention reason as §3, and because it directly answers what was asked
-for ("in the other side bar") rather than substituting a design the
-request explicitly considered and set aside. The one thing this costs is
-conceptual: the panel stops being *only* "what has this reader been
-taught" and starts being "everything about this tutorial worth having to
-hand" — worth naming clearly in the UI (a heading per section) so a reader
-does not read a note as if it were a taught, examinable term.
+**Settled: extend the existing panel**, for the same reuse-over-invention
+reason as §3, and because it directly answers what was asked for ("in the
+other side bar") rather than substituting a design the request explicitly
+considered and set aside. The one thing this costs is conceptual: the
+panel stops being *only* "what has this reader been taught" and starts
+being "everything about this tutorial worth having to hand" — worth
+naming clearly in the UI (a heading per section) so a reader does not read
+a note as if it were a taught, examinable term.
+
+## 4b. A second panel after all — but for navigation, not notes
+
+Raised alongside the above: is a *left*-anchored panel worth having at
+all, for something other than notes/datasets? Settled: yes, for
+navigation — a different purpose from either side of §4's choice, and one
+that does not compete with it. §4's "everything about this tutorial worth
+having to hand" (cheat sheet, notes, datasets) answers "what do I need
+right now"; a left panel answering "where am I, and where can I go" is a
+genuinely different question, and conflating the two into one panel would
+make each harder to scan.
+
+Left panel contents: this tutorial's own table of contents (what
+`render_toc()` already builds inline, closed by default, at the top of a
+long page — moved into the panel instead of, or in addition to, that inline
+version) plus the series' contents — the same list `nav_for()`'s
+previous/next already implies a position within, made browsable rather
+than only steppable one tutorial at a time. Same toggle-top-left-corner,
+panel-anchored-to-its-side mechanics as the cheat sheet, mirrored to the
+left edge instead of the right — the cheat sheet's toggle already lives at
+top-left today (`CHEAT_SHEETS.md` §6), so this panel's own toggle sits
+beside it rather than displacing it, the same "stack two small buttons"
+option §4 already considered and set aside for a *third floating panel*,
+which is not what this is — the panel itself anchors left, where nothing
+currently is.
 
 ## 5. What this does not decide
 
