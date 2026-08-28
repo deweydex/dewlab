@@ -2103,3 +2103,46 @@ run against a real browser with no cell run and no Pyodide boot required,
 same reasoning `test_autocomplete.py`'s first class already established.
 The Stop button is not a cost deferred cheaply — see `QUESTIONS.md`, the
 Worker migration is real architecture work whenever it happens.*
+
+**7.68 — A new skill reviews a tutorial's own code for naming and comment
+quality, the same way `tutorial-glossary` reviews it for vocabulary.**
+`PEDAGOGICAL_STYLE_GUIDE.md` §5 had cell-length, boilerplate, and tool
+rules but nothing on variable naming or comment style — a real gap, since
+"clearer, semantic variable names" needs somewhere authoritative to check
+against, the same reason `tutorial-glossary` defers to `terms_of()`'s
+existing emphasis convention rather than deciding term-worthiness itself.
+§5 gained rules (semantic names over mathy single letters; comments that
+say why, not what; two named exceptions — a formula's own letters
+matching the prose above a cell, and "discover first, name afterwards"
+applying to a variable's specificity the same way it already applies to
+prose) before `.claude/skills/cell-code-review/SKILL.md` was written
+against them.
+
+The skill treats a rename as whole-tutorial, not per-cell — cells in one
+tutorial share a namespace in document order, so a name reused across
+cells has to be renamed everywhere it appears or the tutorial breaks
+rather than improves — and requires validating an edited cell still
+compiles and, where checkable, still produces the same output, before
+calling a rename done.
+
+Run once, by hand, across a handful of real tutorials rather than the
+whole curriculum, to prove the process before committing to a full pass
+(the same staged approach `tutorial-glossary` took, `CHEAT_SHEETS.md` §7):
+`multiplying-grids.md` and `grid-of-numbers.md` needed nothing — `a`/`b`
+in `dot(a, b)` and `A`/`B`/`C`/`D`/`S`/`M` for matrices both match names
+already established in the surrounding prose, `pixels`/`ramp` were
+already semantic. `how-we-got-here.md`'s `to_binary(n)` was left alone —
+a general-purpose numeric conversion function's single parameter, already
+explained by its own docstring, is the same shape as `dot(a, b)`'s
+generic arguments. One real change: `undoing-it.md`'s `polygon_area()`
+renamed its point-count variable from `n` to `point_count` (`i`/`j` left
+alone as loop indices, exempted by name); confirmed identical output
+(`area of the original square: 1.0`, before and after) and a clean
+rebuild.
+
+*Cost to change: small — the skill is a process document, no code of its
+own. The style-guide rules it depends on are new text in an existing
+section, not a new document. Running it across the rest of the curriculum
+is real, separate work — tracked as a follow-up rather than attempted in
+one pass, the same reasoning that kept `tutorial-glossary`'s own curriculum
+run as several PRs rather than one.*

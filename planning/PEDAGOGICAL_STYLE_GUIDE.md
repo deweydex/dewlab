@@ -152,6 +152,46 @@ tutorial about what happens when you divide by zero, is better than a paragraph
 saying it would. Say in the prose that it is meant to fail, so a reader does not
 think they broke it.
 
+**Variable names read as words, not as the symbols a textbook would use.**
+`count`, `total`, `midpoint`, `is_valid` — not `n`, `s`, `m`, `ok`, and not
+the single mathematical letter a formula happens to use for the same
+quantity (`a`, `b`, `c` for a quadratic's coefficients is the one common
+exception: it matches the formula on the page directly above the cell, and
+a reader translating between the two benefits from the names matching,
+not diverging). A name earns its length by what it prevents a reader from
+having to hold in their head — `row_total` over `t` in a cell with more
+than one running sum, `left` and `right` over `a` and `b` once a cell is
+about halves of something rather than about two arbitrary quantities.
+`i`/`j` for a loop index and `x`/`y` for a coordinate are established
+enough, in code and in the maths above it, to need no defence.
+
+**One real exception: "discover first, name afterwards" (§3) can apply to
+variable names too, not only to prose.** A cell exploring towards a
+stationary distribution before that term has been said out loud is not
+better for a variable called `stationary_distribution` — the generic
+`state` or `vector` is the honest name for what the reader has actually
+met so far, and the more specific name would spoil, in code, the exact
+thing the prose is about to reveal in words. Reading the surrounding
+prose, not just the cell in isolation, is what tells the two cases apart.
+
+**Comments explain why, in the tutorial's own voice, not what the code
+already says.** `# average the two coordinates` on `midpoint = (x1 + x2) /
+2` tells a reader nothing `midpoint`'s own name did not; a comment worth
+having says why this particular step matters or what a reader might
+mistake it for. Not every cell needs one — a cell that is itself the
+prose's worked example, walked through in the paragraphs around it, can
+be more clearly commented needs no repeated commentary inside the code.
+`hint:` (§ above) already carries this weight for a cell meant to make a
+reader think before being told; a comment inside the cell is for
+something worth knowing once you are already reading the code, not a
+second hint competing with the first.
+
+**Illustrative code and a "your turn" stub follow different rules from a
+worked cell.** An untagged fence showing what a *finished* version of
+something looks like earns the same naming and comment care as any other
+cell. A stub cell — `# Your code here.`, with nothing to name yet — needs
+none of this: there is no variable to rename in a cell that has none.
+
 ---
 
 ## 6. Practice pages
