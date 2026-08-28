@@ -1,9 +1,9 @@
 # Showing progress: the contents page, and inside a tutorial
 
-Design note, not yet built. Two related but separate features, both derived
-from data that already exists: how far a reader has gotten in each
-tutorial, shown on the page that lists them all, and a simple readout of
-where they are in the tutorial they have open.
+Design note, built as designed — DECISIONS_LOG.md 7.70. Two related but
+separate features, both derived from data that already exists: how far a
+reader has gotten in each tutorial, shown on the page that lists them all,
+and a simple readout of where they are in the tutorial they have open.
 
 ---
 
