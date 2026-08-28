@@ -87,6 +87,53 @@ class TestAutosave:
         assert "counting:" in page.inner_text(output_of("plain-python"))
 
 
+class TestStudentNotes:
+    """planning/STUDENT_NOTES.md — a student's own free-text notes, distinct
+    from SIDEBAR_CONTENT.md's author-written pedagogical notes, riding along
+    on the same saved-progress record as cell work."""
+
+    def test_typing_a_note_is_saved_without_being_asked(self, clean_storage):
+        page = clean_storage
+        page.click("#dl-settings-toggle")
+        page.fill("#dl-progress-notes", "the ISO date trick only works because...")
+        page.wait_for_function(
+            "globalThis.dewlab.readSaved() !== null", timeout=10_000
+        )
+        saved = page.evaluate("globalThis.dewlab.readSaved()")
+        assert saved["notes"] == "the ISO date trick only works because..."
+
+    def test_a_note_comes_back_after_a_reload(self, clean_storage):
+        page = clean_storage
+        page.click("#dl-settings-toggle")
+        page.fill("#dl-progress-notes", "remember this for later")
+        page.wait_for_function("globalThis.dewlab.readSaved() !== null", timeout=10_000)
+
+        reload_and_wait(page)
+        page.click("#dl-settings-toggle")
+        assert page.input_value("#dl-progress-notes") == "remember this for later"
+
+    def test_start_again_clears_the_note_too(self, clean_storage):
+        page = clean_storage
+        page.click("#dl-settings-toggle")
+        page.fill("#dl-progress-notes", "throwaway")
+        page.wait_for_function("globalThis.dewlab.readSaved() !== null", timeout=10_000)
+
+        page.once("dialog", lambda dialog: dialog.accept())
+        page.click("#dl-progress-clear")
+        assert page.input_value("#dl-progress-notes") == ""
+
+    def test_exporting_downloads_the_note_alongside_the_cells(self, clean_storage):
+        page = clean_storage
+        page.click("#dl-settings-toggle")
+        page.fill("#dl-progress-notes", "goes in the export too")
+        page.wait_for_function("globalThis.dewlab.readSaved() !== null", timeout=10_000)
+        with page.expect_download() as download_info:
+            page.click("#dl-progress-export")
+        download = download_info.value
+        content = download.path().read_text()
+        assert "goes in the export too" in content
+
+
 class TestTheAwkwardPaths:
     def test_an_edited_tutorial_restores_anyway_and_says_so(self, clean_storage):
         page = clean_storage
@@ -183,14 +230,19 @@ class TestStartingAgain:
 
 
 class TestAPageWithNothingToSave:
-    """A prose-only tutorial, and the contents page, have no cells at all."""
+    """A prose-only tutorial has no cells at all — but it is still a
+    tutorial, so "Your work" stays for its notes field
+    (planning/STUDENT_NOTES.md, DECISIONS_LOG.md 7.71). The contents page
+    is the one that truly has nothing here at all, since it is not a
+    tutorial in the first place."""
 
-    def test_it_does_not_offer_to_save_work_that_cannot_exist(self, browser, base_url):
+    def test_a_prose_only_tutorial_still_offers_the_notes_field(self, browser, base_url):
         context = browser.new_context()
         tab = context.new_page()
         tab.goto(f"{base_url}/tutorials/fixtures/prose-only.html")
         tab.wait_for_function("globalThis.dewlab !== undefined", timeout=30_000)
-        assert tab.query_selector("#dl-settings-work") is None
+        assert tab.query_selector("#dl-settings-work") is not None
+        assert tab.query_selector("#dl-progress-notes") is not None
         # The panel itself still belongs: a page with no cells is still a
         # reading surface, and the texture section is what makes it one.
         assert tab.query_selector("#dl-settings-toggle") is not None

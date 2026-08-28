@@ -43,6 +43,10 @@ const TEXTURE_KEY = "dewlab:texture";
 const PROGRESS_PREFIX = "dewlab:progress:";
 const PROGRESS_BADGES_KEY = "dewlab:progress-badges";
 const AUTOSAVE_DELAY = 500;
+/* The three build.py write_*_page() slugs that are not a tutorial at all —
+ * nothing here has "your work" to save, cells or notes alike, the way an
+ * actual tutorial page does. */
+const NON_TUTORIAL_PAGES = new Set(["index", "tree", "about"]);
 const TEXTURE_DEFAULTS = {
   theme: "system", font: "serif", size: 18, width: 34,
   link: "#d4692a", header: "full",
@@ -679,6 +683,9 @@ async function renderMaths(manifest) {
  */
 
 let saveTimer = null;
+/* Set by initProgressSection() when this page has one; read by saveNow()
+ * and restoreSaved() the same way `cells` already is. */
+let notesEl = null;
 
 function progressKey() {
   /* Module and slug, because a slug is only unique within its module — both
@@ -725,7 +732,11 @@ function describeMismatch(record) {
 function saveNow() {
   clearTimeout(saveTimer);
   saveTimer = null;
-  if (cells.length === 0) return;
+  /* Not "no cells": a prose-only tutorial has nothing executable to save
+   * but can still have notes worth keeping. Only a page that is not a
+   * tutorial at all — the contents page, the topic tree, about — truly has
+   * nothing here to save. */
+  if (NON_TUTORIAL_PAGES.has(currentManifest.slug)) return;
   const record = {
     "tutorial-slug": currentManifest.slug,
     /* The module too, because the slug alone does not say which tutorial this
@@ -734,6 +745,10 @@ function saveNow() {
     "tutorial-module": currentManifest.module,
     "tutorial-version": currentManifest.version,
     saved_at: new Date().toISOString(),
+    /* A student's own free-text notes (planning/STUDENT_NOTES.md) — distinct
+     * from SIDEBAR_CONTENT.md's author-written pedagogical notes, which are
+     * part of the tutorial itself and never travel in this record. */
+    notes: notesEl ? notesEl.value : "",
     cells: cells.map((cell) => ({
       task_id: cell.id,
       student_code: cell.getCode(),
@@ -767,6 +782,8 @@ function scheduleSave() {
 function restoreSaved() {
   const record = readSaved();
   if (!record || !Array.isArray(record.cells)) return null;
+
+  if (notesEl && typeof record.notes === "string") notesEl.value = record.notes;
 
   const byId = new Map(cells.map((cell) => [cell.id, cell]));
   const restored = [];
@@ -887,14 +904,17 @@ function initProgressSection() {
   const section = document.getElementById("dl-settings-work");
   if (!section) return;
 
-  /* A page with no cells has nothing to save — the contents page, or a
-   * tutorial that is all prose and mathematics. Offering to export a student's
-   * work from a page where they cannot do any is a button that can only
-   * disappoint, so the whole section goes rather than sitting there empty. */
-  if (cells.length === 0) {
+  /* Only a page that is not a tutorial at all has nothing here to save —
+   * not "no cells": a prose-only tutorial has no code to run but can still
+   * have notes worth keeping (planning/STUDENT_NOTES.md), so the section
+   * now stays for it. */
+  if (NON_TUTORIAL_PAGES.has(currentManifest.slug)) {
     section.remove();
     return;
   }
+
+  notesEl = document.getElementById("dl-progress-notes");
+  if (notesEl) notesEl.addEventListener("input", () => scheduleSave());
 
   document.getElementById("dl-progress-export").addEventListener("click", () => {
     saveNow();
@@ -948,6 +968,7 @@ function initProgressSection() {
       cell.editor.setValue(cell.starter);
       cell.outputEl.replaceChildren();
     }
+    if (notesEl) notesEl.value = "";
     for (const box of document.querySelectorAll(".dl-restored")) box.remove();
     showSaveState(null);
     updateProgressSummary();

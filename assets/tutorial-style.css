@@ -993,6 +993,31 @@ p code, li code {
   color: var(--dl-error-fg);
 }
 
+/* A student's own notes (planning/STUDENT_NOTES.md) — plain text, the same
+   font as the rest of the reading, not the mono cell font: this is prose a
+   reader writes, not code. */
+.dl-progress-notes-label {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--dl-heading);
+  margin-bottom: 0.3rem;
+}
+.dl-progress-notes {
+  display: block;
+  width: 100%;
+  padding: 0.5rem 0.6rem;
+  border: 1px solid var(--dl-cell-border);
+  border-radius: 4px;
+  background: var(--dl-panel-bg);
+  color: var(--dl-fg);
+  font: inherit;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  resize: vertical;
+}
+.dl-progress-notes-hint { margin-top: 0.35rem; }
+
 /* Saving, exporting and starting again — the "Your work" section of the
    settings panel. */
 .dl-progress-state { margin: 0 0 0.6rem; font-size: 0.9rem; }

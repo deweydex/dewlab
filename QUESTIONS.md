@@ -73,32 +73,31 @@ real, cross-cutting architecture work regardless of when it happens.
 **Blocks:** nothing today — cells run exactly as they did before this was
 raised.
 
-### Should student notes stay per-tutorial, and how insistent should the "download a copy" nudge be?
+### Should the export nudge get more insistent than a first-use hint line?
 
-`planning/STUDENT_NOTES.md` designs free-text notes a student writes
-themselves (distinct from `SIDEBAR_CONTENT.md`'s author-written
-pedagogical notes) — a `notes` field added to the same `dl-progress:
-<module>:<slug>` record `saveNow()` already writes, editable from a
-textarea in Settings' existing "Your work" section, riding along on the
-export/import button that already exists there.
+Student notes shipped per-tutorial, as `planning/STUDENT_NOTES.md`
+recommended (§5) — a `notes` field on the same saved-progress record
+`saveNow()` already writes, a textarea in Settings' "Your work" section,
+riding along on the export button already there. What shipped from §4's
+two proposals is the small one: a first-use hint line under the textarea
+("Notes are saved in this browser only. Download a copy below to keep
+them anywhere else."). The second, larger proposal — a small marker on
+the export button once meaningful new text has accumulated since the last
+export — was deliberately left for later, per the design doc's own
+staging ("once the plain version has shipped and it is clear whether it
+is still needed").
 
-**Assumed and built in the meantime:** nothing implemented yet — this was
-a design task. Recommended: per-tutorial scope rather than one course-wide
-notebook (§5 — ships on existing infrastructure, does not foreclose a
-course-wide version later), and a "never a block" nudge to export a copy —
-a first-use hint line plus a small, non-interrupting marker on the export
-button once meaningful new text has accumulated (§4) — rather than a
-dialog or anything that stops a student from typing.
+**Assumed and built in the meantime:** the hint line only. No staleness
+tracking, no marker on the export button — a student who has written
+notes and never exported sees the same quiet export button cell code
+always had, plus the one line of text explaining why to use it.
 
-**Cost to change later:** small for the nudge's exact heuristic (a UI
-detail, not a schema one). Larger for per-tutorial vs. course-wide scope
-once students actually have per-tutorial notes saved — moving to a single
-notebook later would mean either migrating existing per-tutorial notes
-into one record or leaving old ones stranded, so this is cheaper to get
-right before real notes exist than after.
+**Cost to change later:** small — the marker is UI layered on top of data
+already being saved (`saved_at` already exists per record); nothing about
+shipping the plain version first constrains how the marker gets built.
 
-**Blocks:** nothing — no notes field exists yet, so there is nothing to
-migrate if the answer changes.
+**Blocks:** nothing — the hint line already covers the "never a block"
+requirement that mattered most; the marker is a refinement, not a gap.
 
 ### Is pre-run tooltip coverage (Jedi in Pyodide) worth its cost, or do the free extensions cover enough?
 
