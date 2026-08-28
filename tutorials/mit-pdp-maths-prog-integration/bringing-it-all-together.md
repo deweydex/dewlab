@@ -25,7 +25,7 @@ This tutorial introduces no new material. Today we practise combining the tools 
 
 ## The Toolkit So Far
 
-Over Tutorials 13-16, we built:
+Over the last several tutorials, we built:
 
 **From *Numbers and Their Families*:** `classify_number`, `power`, `log_base`, geometry functions
 
