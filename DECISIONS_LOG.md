@@ -2222,7 +2222,70 @@ never boots Pyodide at all, the same reasoning `test_cheat_sheet.py`
 already established for anything that only ever needs `index.html`.
 `standalone.bundle.js` rebuilt for the `tutorial-runtime.js` change.*
 
-**7.71 — Students can write their own notes, distinct from a tutorial's
+**7.71 — The cell-code-review skill's curriculum pass, finished.** 7.68 proved
+the process on a handful of tutorials; this is the rest of it — the whole of
+`computational-methods` and both series of `mit-pdp-maths-prog-integration`
+(`maths-and-programming`'s 30 tutorials and `reflections-and-review`'s 2),
+every practice page, and the four `mixed-*` practice_across pages. Batched
+the same way `tutorial-glossary`'s own curriculum run was (`CHEAT_SHEETS.md`
+§7) — several commits, not one, with a full `build(clean=True)` after each.
+
+Three real changes, all renames or comments, none of them changing what a
+cell does:
+
+- `computational-methods/where-chains-lead.md` and its practice page: a
+  word-chain loop built a transition-count matrix with `for a, b in
+  zip(words, words[1:])`, reusing `dot(a, b)`'s generic-operand letters for
+  two concrete, temporally-ordered things (a word and the word after it)
+  that the same tutorial's own `generate()` already calls by a real name.
+  Renamed to `word, next_word`; confirmed identical counts before and after.
+- `computational-methods/undoing-it-practice.md` (twice) and
+  `solving-systems.md`: `inverse(M)` swaps in `e` for the formula's own `d`
+  — already taken by the determinant variable — with no explanation.
+  Added a one-line comment at the destructuring line saying why.
+- `mit-pdp-maths-prog-integration/storing-and-computing.md`: the "Type
+  Conversion" cell used bare `x, y, z, w` for four different results (a
+  string, an int, a float, a string built from an int) — directly
+  contradicting the tutorial's own stated rule one section earlier
+  (`temperature` is a good name; `t` is not). Renamed to `text_value`,
+  number_value, decimal_value, number_as_text.
+
+Everything else needed nothing — which, across roughly eighty documents,
+is itself worth recording rather than assumed. The pattern from 7.68 held
+at scale: single letters earn their place constantly (`a, b, c, d` matching
+a quadratic or a triangle's own notation on the page above; `i, j, k` as
+loop indices; `x, y` as coordinates; `f, g, h` as the standard names for
+"a function," used in dozens of cells across both modules; `p, q` for
+truth-table propositions; `n, r` matching `P(n, r)`/`C(n, r)` in *Counting
+Carefully*; `m, c` for a line's slope and intercept, which *Drawing
+Functions* names as conventional in its own prose). Two "discover first"
+names were confirmed rather than flagged: `where-chains-lead.md`'s `state`
+variable, used before the tutorial says "stationary distribution" out
+loud, is the same example the style guide itself gives. Several cells are
+deliberately bad code as the exercise itself — `when-it-goes-wrong.md`'s
+`largest = 0` and `>` -for-`>=` cells, `building-reusable-tools-practice.md`'s
+`def f(a, b): return (a + b) / 2` — and renaming any of those would erase
+the thing the reader is meant to find. `bringing-it-all-together.md` and
+`critique-and-reflection.md`/`the-team-project.md` have no code to review
+at all — the first is all stub cells, the other two are pure prose.
+
+One thing noticed and deliberately left alone, outside this skill's scope:
+`parabolas.md`'s second `every-quadratic-is-the-same-curve` cell contains a
+dead expression, `(x + 3) ** 2 - 4 + 4 - (x + 3) ** 2 + x ** 2`, which
+algebraically collapses to plain `x ** 2` and does nothing the next few
+lines don't already do properly on a second figure. That is a content bug,
+not a naming or comment problem, and the skill's own charter is explicit
+that restructuring logic is not its job — flagged here, and as a follow-up
+task, rather than touched.
+
+*Cost to change: small, same reasoning as 7.68 — this is a process applied
+to content, not new code. The one thing worth remembering for next time:
+running the skill this far confirms the proof-of-concept's finding scales
+— most existing naming in this curriculum was already good, and the real
+value was in the handful of places it wasn't, plus the confidence that
+comes from having actually looked at all of them instead of assuming.*
+
+**7.72 — Students can write their own notes, distinct from a tutorial's
 author-written pedagogical notes, saved on the same record as their cell
 work.** `planning/STUDENT_NOTES.md`'s plain version, shipped as designed:
 a `notes` field on the record `saveNow()` already writes, a `<textarea>`

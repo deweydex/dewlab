@@ -192,8 +192,8 @@ def build_chain(text):
     states = sorted(set(words))
     index = {w: i for i, w in enumerate(states)}
     counts = [[0] * len(states) for _ in states]
-    for a, b in zip(words, words[1:]):
-        counts[index[a]][index[b]] += 1
+    for word, next_word in zip(words, words[1:]):
+        counts[index[word]][index[next_word]] += 1
     P = [[c / sum(row) if sum(row) else 0 for c in row] for row in counts]
     return states, index, P
 ```

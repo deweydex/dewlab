@@ -41,7 +41,7 @@ def det2(M):
 def inverse(M):
     d = det2(M)
     a, b = M[0]
-    c, e = M[1]
+    c, e = M[1]  # e stands in for the formula's own d, already taken by the determinant above
     return [[e / d, -b / d], [-c / d, a / d]]
 
 def dot(a, b):
