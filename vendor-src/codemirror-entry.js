@@ -140,7 +140,7 @@ function pythonDocTooltip(getDoc) {
     while (end < text.length && /\w/.test(text[end])) end++;
     if (start === end) return null;
     const word = text.slice(start, end);
-    const doc = await getDoc(word, view.state.doc.toString(), number, end);
+    const doc = await getDoc(word, view.state.doc.toString(), number, start);
     if (!doc) return null;
     
     return {
