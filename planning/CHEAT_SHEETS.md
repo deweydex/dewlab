@@ -171,12 +171,12 @@ skill never has to re-derive "what came before," only receive it.
   series, before any glossaries exist) hides the toggle entirely — same
   reasoning `dl-settings-section`s with nothing in them already use elsewhere
   in this codebase.
-- **Mobile**: hidden under the same `max-width: 34rem` phone breakpoint the
-  rest of the page already collapses at. Not "later, maybe" so much as
-  "correct for now" — a fixed-position button and a floating panel are
-  exactly the two things that stop working on a screen that size, and
-  `QUESTIONS.md` has the question of what a phone-sized version should look
-  like instead.
+- **Mobile**: under the same `max-width: 34rem` phone breakpoint the rest
+  of the page already collapses at, the panel becomes a bottom sheet
+  (`top: auto; bottom: 0; left: 0; right: 0`) — the same treatment
+  `.dl-settings` already has, rather than hiding outright. The toggle stays
+  a small fixed corner button at this width; only the floating panel shape
+  stopped working, and that is what changes.
 
 ## 7. What ships in what order
 

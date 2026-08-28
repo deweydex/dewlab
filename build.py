@@ -419,18 +419,32 @@ def extract_math(body: str) -> tuple[str, list[Math]]:
 
 
 def render_cell(cell: Cell) -> str:
-    """The markup the runtime binds an editor, a Run button and an output area to."""
+    """The markup the runtime binds an editor, a Run button and an output area to.
+
+    The bar sits below the editor and output, not above them — a reader's
+    eye lands on the code first, the controls for it after, the same order
+    a notebook cell is actually used in. The hint, when open, is a normal
+    block after the bar rather than a floating popover: expanding it grows
+    the cell and pushes whatever comes after it down the page, rather than
+    covering the editor or output it might otherwise float over.
+    """
     safe_id = html.escape(cell.id, quote=True)
     hint_markup = ""
     if cell.hint:
         hint_markup = (
-            '<span class="dl-hint">'
-            f'<button type="button" class="dl-hint-icon" aria-label="Hint for {safe_id}">?</button>'
-            f'<span class="dl-hint-text" role="tooltip">{html.escape(cell.hint)}</span>'
-            "</span>"
+            f'<button type="button" class="dl-hint-icon" aria-expanded="false" '
+            f'aria-controls="dl-hint-{safe_id}" aria-label="Hint for {safe_id}">?</button>'
+        )
+    hint_text = ""
+    if cell.hint:
+        hint_text = (
+            f'<div class="dl-hint-text" id="dl-hint-{safe_id}" hidden>'
+            f"{html.escape(cell.hint)}</div>"
         )
     return (
         f'<div class="dl-cell" data-cell-id="{safe_id}">'
+        '<div class="dl-editor"></div>'
+        '<div class="dl-output"></div>'
         '<div class="dl-cell-bar">'
         f'<span class="dl-cell-id">{safe_id}</span>'
         '<span class="dl-cell-spacer"></span>'
@@ -438,8 +452,7 @@ def render_cell(cell: Cell) -> str:
         '<button type="button" class="dl-btn dl-btn-reset">reset</button>'
         '<button type="button" class="dl-btn dl-btn-run" disabled>…</button>'
         "</div>"
-        '<div class="dl-editor"></div>'
-        '<div class="dl-output"></div>'
+        f"{hint_text}"
         "</div>"
     )
 
@@ -1466,6 +1479,21 @@ def arrow_between(place: dict, a: str, b: str, css: str, fan: int = 0) -> str:
     )
 
 
+def progress_attrs(tutorial: Tutorial) -> str:
+    """`data-module`/`data-slug`/`data-cells` for a contents-page link, so
+    tutorial-runtime.js's progress indicator (planning/PROGRESS_INDICATORS.md)
+    can read a reader's saved-progress record for it with no fetch. A
+    prose-only tutorial has nothing to show progress for, so it gets no
+    attribute at all rather than a "0/0"."""
+    if not tutorial.cells:
+        return ""
+    return (
+        f' data-module="{html.escape(tutorial.module, quote=True)}"'
+        f' data-slug="{html.escape(tutorial.slug, quote=True)}"'
+        f' data-cells="{len(tutorial.cells)}"'
+    )
+
+
 def render_index(
     groups: dict[tuple[str, str], list[Tutorial]],
     archives: dict[tuple[str, str], Path] | None = None,
@@ -1548,7 +1576,8 @@ def render_index(
                     extra = (f' <a class="dl-contents-practice" href="{where}">'
                              "practice</a>")
                 out.append(
-                    f'<li><a href="{href}">{html.escape(member.title)}</a>{extra}</li>'
+                    f'<li><a href="{href}"{progress_attrs(member)}>'
+                    f"{html.escape(member.title)}</a>{extra}</li>"
                 )
             out.append("</ol>")
             archive = archives.get((owner, series))
@@ -1578,7 +1607,10 @@ def render_index(
                 )
                 out.append('<ul class="dl-contents dl-mixed">')
             href = member.out_path.relative_to(OUT).as_posix()
-            out.append(f'<li><a href="{href}">{html.escape(member.title)}</a></li>')
+            out.append(
+                f'<li><a href="{href}"{progress_attrs(member)}>'
+                f"{html.escape(member.title)}</a></li>"
+            )
             if member is mixed[module][-1]:
                 out.append("</ul>")
 
