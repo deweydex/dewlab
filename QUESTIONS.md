@@ -73,33 +73,6 @@ real, cross-cutting architecture work regardless of when it happens.
 **Blocks:** nothing today — cells run exactly as they did before this was
 raised.
 
-### Is pre-run tooltip coverage (Jedi in Pyodide) worth its cost, or do the free extensions cover enough?
-
-`planning/CELL_TOOLTIPS.md` surveys what is available for cell tooltips.
-Two pieces close real gaps for free — widening `docFor` to also answer for
-Python builtins, and a CodeMirror signature-help tooltip on typing `(`,
-both reusing data already available from the live interpreter (`inspect`)
-with no new dependency. A third piece, Jedi run inside Pyodide itself
-(pure Python, already in Pyodide's own package index, and the same
-combination JupyterLite's official Pyodide kernel uses in production),
-would additionally cover hover/completion for a name **before** its
-defining cell has run — but as a real new dependency downloaded on every
-page with a cell, running alongside `docFor`'s live introspection rather
-than replacing it.
-
-**Assumed and built in the meantime:** nothing implemented yet — this was
-a research task, not a build one. No cell today gets a tooltip it did not
-already have before this question was raised.
-
-**Cost to change later:** small either way. Building (a) and (b) first
-does not foreclose adding Jedi later — they answer different questions
-(live vs. static) and can coexist; nothing about building the free pieces
-first would need undoing to add Jedi afterward.
-
-**Blocks:** nothing — cells work exactly as before until this is answered
-and acted on.
-
-
 ---
 
 ## Answered
@@ -204,6 +177,17 @@ with "as of the last export" — but a small piece of per-tutorial state of
 its own, tracked the same way `rememberVersion()` already tracks a
 version pin. A Settings toggle turns it off entirely, the same shape the
 progress badges toggle above already has.
+
+### Is pre-run tooltip coverage (Jedi in Pyodide) worth its cost, or do the free extensions cover enough?
+
+**Settled and built: all three — DECISIONS_LOG.md 7.76.** `planning/
+CELL_TOOLTIPS.md`'s (a) and (b) shipped as planned (builtins in `docFor`,
+signature help on typing `(`), and (c) — Jedi — shipped alongside them
+rather than waiting, once prototyping it directly against dewlab's real
+pinned Pyodide showed a genuine yes: `.help()`/`.get_signatures()` resolve
+a function defined but never run, from source text alone, in low tens of
+milliseconds warm. Live answers still win whenever the interpreter already
+knows a name; Jedi only fills the gap live cannot reach.
 
 ### Coordinate geometry has no tutorial and no outline, and something already depends on it
 
