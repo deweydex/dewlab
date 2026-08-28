@@ -141,6 +141,33 @@ first would need undoing to add Jedi afterward.
 **Blocks:** nothing — cells work exactly as before until this is answered
 and acted on.
 
+### Do pedagogical notes and datasets belong in the cheat sheet panel, or in a panel of their own?
+
+`planning/SIDEBAR_CONTENT.md` designs a second sidebar's worth of content —
+pedagogical notes authored as `<aside class="dl-note">` (reusing the
+hint/answer fold's own already-proven pattern rather than a new fence tag),
+and datasets with attribution (`data/ATTRIBUTION.yaml` plus a `datasets:`
+frontmatter list; the runtime fetch mechanism, `load_csv()`, already
+exists and is simply unused so far). It recommends surfacing both as new
+sections inside the *existing* cheat-sheet panel — "or, better yet, in
+the other side bar," as floated when this was raised — rather than a
+third floating panel, since that reuses the toggle, the panel, and the
+open/close wiring 7.64/7.65 already shipped.
+
+**Assumed and built in the meantime:** nothing implemented — this was a
+design task. No note, dataset, or panel section exists yet.
+
+**Cost to change later:** small for the panel-vs-panel question (a CSS/JS
+change to the container, not to how notes or datasets are authored or
+extracted). Larger for the authoring-mechanism question (fence vs. HTML
+aside) once tutorials have actually been written using one — same shape
+as the YAML-vs-markdown glossary question above, cheaper the earlier it is
+settled.
+
+**Blocks:** nothing today — building §2's dataset pieces (frontmatter +
+attribution file) does not require the notes question to be settled
+first, since they are independent additions to the same panel either way.
+
 ### Does a mixed practice page's cheat sheet need curation, or is the raw union always right?
 
 `practice_across` lets one practice page test several tutorials at once
