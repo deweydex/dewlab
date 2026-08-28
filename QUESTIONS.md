@@ -186,10 +186,21 @@ not just visually).
 
 **Settled: notes and datasets extend the existing cheat-sheet panel, as
 `planning/SIDEBAR_CONTENT.md` §4 recommended** — no third panel for them.
-A left-anchored panel is worth having after all, but for a different
-purpose: navigation (this tutorial's table of contents, and the series'),
-not notes or datasets — `SIDEBAR_CONTENT.md` §4b. Neither is built yet;
-both are design settled, ready to implement.
+Not built yet.
+
+**The second, left-anchored panel is settled and built, but scaled down
+from §4b's original sketch: series navigation only, not a duplicate of
+the existing "Contents" table of contents.** `DECISIONS_LOG.md` 7.73. An
+external PR (#65) moved the cheat sheet panel itself from right-anchored
+to left-anchored while this was being designed, which took "left" off the
+table as free space for a spatially separate panel — the series nav panel
+instead shares that same anchor, stacked below the cheat sheet's toggle,
+and joined the Settings/cheat-sheet mutual-exclusion group as a third
+member. The per-page table of contents (`render_toc()`) was left where it
+already was — inline, at the top of the page — rather than duplicated
+into this panel: it already answers "where am I on this page," and
+duplicating it here would only add a second place to keep in sync for no
+reader benefit.
 
 ### What should the contents page and a tutorial's own page show about a reader's progress?
 

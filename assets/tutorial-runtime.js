@@ -110,13 +110,17 @@ function trackChromeHeight() {
 
 /* -------------------------------------------------------- settings panel */
 
-/* Settings and the cheat sheet (initCheatSheet(), below) are two open/close
- * behaviours on the page rather than one now — opening either one closes
- * the other, so a reader is never juggling both at once even though each
- * now anchors to its own corner (tutorial-style.css). Escape and a click
- * outside both close whichever is open: a panel that can only be dismissed
- * by finding the same small button again is the kind of thing that gets
- * left open. */
+/* Settings, the cheat sheet (initCheatSheet(), below), and the navigation
+ * panel (initSeriesNav()) are three open/close behaviours on the page
+ * rather than one — opening any one closes the other two, so a reader is
+ * never juggling more than one at a time. That matters most for the
+ * cheat sheet and the navigation panel, which anchor to the same left
+ * corner (tutorial-style.css) and would sit on top of each other
+ * otherwise; Settings keeps the right, but stays in the same
+ * mutual-exclusion group for one consistent rule rather than a special
+ * case. Escape and a click outside all three close whichever is open: a
+ * panel that can only be dismissed by finding the same small button
+ * again is the kind of thing that gets left open. */
 function closeCheatSheet() {
   const toggle = document.getElementById("dl-cheatsheet-toggle");
   const panel = document.getElementById("dl-cheatsheet");
@@ -133,6 +137,14 @@ function closeSettings() {
   if (toggle) toggle.setAttribute("aria-expanded", "false");
 }
 
+function closeSeriesNav() {
+  const toggle = document.getElementById("dl-seriesnav-toggle");
+  const panel = document.getElementById("dl-seriesnav");
+  if (!panel || panel.hasAttribute("hidden")) return;
+  panel.setAttribute("hidden", "");
+  if (toggle) toggle.setAttribute("aria-expanded", "false");
+}
+
 function initSettingsPanel() {
   const toggle = document.getElementById("dl-settings-toggle");
   const panel = document.getElementById("dl-settings");
@@ -141,7 +153,10 @@ function initSettingsPanel() {
   function setOpen(open) {
     panel.toggleAttribute("hidden", !open);
     toggle.setAttribute("aria-expanded", String(open));
-    if (open) closeCheatSheet();
+    if (open) {
+      closeCheatSheet();
+      closeSeriesNav();
+    }
   }
 
   toggle.addEventListener("click", () => setOpen(panel.hasAttribute("hidden")));
@@ -240,12 +255,62 @@ function initCheatSheet(manifest) {
   function setOpen(open) {
     panel.toggleAttribute("hidden", !open);
     toggle.setAttribute("aria-expanded", String(open));
-    if (open) closeSettings();
+    if (open) {
+      closeSettings();
+      closeSeriesNav();
+    }
   }
 
   toggle.addEventListener("click", () => setOpen(panel.hasAttribute("hidden")));
 
   const close = document.getElementById("dl-cheatsheet-close");
+  if (close) close.addEventListener("click", () => { setOpen(false); toggle.focus(); });
+
+  document.addEventListener("keydown", (ev) => {
+    if (ev.key !== "Escape" || panel.hasAttribute("hidden")) return;
+    setOpen(false);
+    toggle.focus();
+  });
+
+  document.addEventListener("click", (ev) => {
+    if (panel.hasAttribute("hidden")) return;
+    if (panel.contains(ev.target) || toggle.contains(ev.target)) return;
+    setOpen(false);
+  });
+}
+
+/* --------------------------------------------------------- navigation panel */
+
+/* Same open/close mechanics as initSettingsPanel()/initCheatSheet(), and
+ * all three stay in sync (closeCheatSheet()/closeSettings()/
+ * closeSeriesNav(), above) so only one is ever open at a time. Unlike the
+ * cheat sheet, this panel's content is static per page — build.py's
+ * render_series_nav() already rendered it server-side into {{SERIES_NAV}}
+ * — so there is nothing here to assemble from a manifest, only whether
+ * it ended up with anything in it. A tutorial with no series position
+ * (archived, or a practice page) gets an empty <nav>, the same "nothing
+ * to show, nothing to click" rule the cheat sheet's toggle already
+ * follows for a tutorial with nothing accumulated yet. */
+function initSeriesNav() {
+  const toggle = document.getElementById("dl-seriesnav-toggle");
+  const panel = document.getElementById("dl-seriesnav");
+  if (!toggle || !panel) return;
+  if (!panel.querySelector(".dl-seriesnav-series")) return;
+
+  toggle.hidden = false;
+
+  function setOpen(open) {
+    panel.toggleAttribute("hidden", !open);
+    toggle.setAttribute("aria-expanded", String(open));
+    if (open) {
+      closeSettings();
+      closeCheatSheet();
+    }
+  }
+
+  toggle.addEventListener("click", () => setOpen(panel.hasAttribute("hidden")));
+
+  const close = document.getElementById("dl-seriesnav-close");
   if (close) close.addEventListener("click", () => { setOpen(false); toggle.focus(); });
 
   document.addEventListener("keydown", (ev) => {
@@ -1471,6 +1536,7 @@ initVersionsSection();
 initVersionMarker();
 initSettingsPanel();
 initCheatSheet(currentManifest);
+initSeriesNav();
 initProgressBadgesToggle();
 initContentsProgress();
 trackChromeHeight();

@@ -613,6 +613,68 @@ class TestNavigation:
             b.build()
 
 
+class TestSeriesNav:
+    """render_series_nav() — the left-anchored series navigation panel
+    (planning/SIDEBAR_CONTENT.md §4b), listing every tutorial in the
+    current series in reading order."""
+
+    def series(self, repo, count: int = 3, series: str = "s", module: str = "computational-methods",
+               order: list[str] | None = None):
+        for n in range(1, count + 1):
+            path = repo / "tutorials" / module / f"t{n}.md"
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(
+                f'---\ntitle: "Tutorial {n}"\nslug: t{n}\nmodule: {module}\n'
+                f'year: "2026-2027"\nseries: {series}\nversion: 2026.08.23.1\n---\n\nProse.\n'
+            )
+        set_order(repo, module, series,
+                  order or [f"t{n}" for n in range(1, count + 1)])
+
+    def page(self, repo, slug, module="computational-methods"):
+        return (repo / "site" / "tutorials" / module / f"{slug}.html").read_text()
+
+    def test_it_lists_every_member_of_the_series_in_order(self, repo):
+        self.series(repo)
+        b.build()
+        page = self.page(repo, "t2")
+        panel = re.search(r'<ol class="dl-seriesnav-series">.*?</ol>', page, re.S).group(0)
+        assert panel.index("Tutorial 1") < panel.index("Tutorial 2") < panel.index("Tutorial 3")
+
+    def test_the_current_tutorial_is_marked_and_not_linked(self, repo):
+        self.series(repo)
+        b.build()
+        page = self.page(repo, "t2")
+        assert '<li class="dl-seriesnav-current" aria-current="page">2. Tutorial 2</li>' in page
+
+    def test_the_others_are_links_to_reach_them(self, repo):
+        self.series(repo)
+        b.build()
+        page = self.page(repo, "t2")
+        assert '<li><a href="t1.html">1. Tutorial 1</a></li>' in page
+        assert '<li><a href="t3.html">3. Tutorial 3</a></li>' in page
+
+    def test_the_order_file_decides_the_numbering_not_the_filename(self, repo):
+        self.series(repo, order=["t3", "t2", "t1"])
+        b.build()
+        page = self.page(repo, "t2")
+        assert '<li><a href="t3.html">1. Tutorial 3</a></li>' in page
+        assert '<li class="dl-seriesnav-current" aria-current="page">2. Tutorial 2</li>' in page
+        assert '<li><a href="t1.html">3. Tutorial 1</a></li>' in page
+
+    def test_a_tutorial_with_nowhere_in_a_series_to_sit_gets_no_panel_content(self, repo):
+        """An archived tutorial: the same honest empty shape nav_for() already
+        gives it, for the same reason — there is nowhere in the series to
+        place it."""
+        write(repo, "Prose.\n")
+        write(repo, "More prose.\n", slug="second")
+        path = repo / "tutorials" / "computational-methods" / "sample.md"
+        path.write_text(path.read_text().replace(
+            "version: 2026.08.23.1\n", "version: 2026.08.23.1\nstatus: archived\n"))
+        set_order(repo, "computational-methods", "python-fundamentals", ["second"])
+        b.build()
+        assert "dl-seriesnav-series" not in built(repo, "sample")
+
+
 class TestTheContentsPage:
     def test_it_is_written_at_the_site_root(self, repo):
         write(repo, "Prose.\n")

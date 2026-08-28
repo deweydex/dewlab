@@ -163,6 +163,23 @@ a note as if it were a taught, examinable term.
 
 ## 4b. A second panel after all — but for navigation, not notes
 
+**Shipped, in a narrower form than sketched below — see `DECISIONS_LOG.md`
+7.73.** Two things changed between this being written and being built:
+
+- An external change (PR #65, not part of this plan) moved the cheat
+  sheet panel itself from right-anchored to left-anchored. The paragraph
+  below assumes "the panel itself anchors left, where nothing currently
+  is" — that stopped being true. Rather than re-litigate placement, the
+  series nav panel shares the cheat sheet's left anchor, stacked below its
+  toggle, and joined the Settings/cheat-sheet mutual-exclusion group as a
+  third member.
+- The panel ships with series navigation only — this tutorial's own table
+  of contents was *not* duplicated into it. `render_toc()`'s inline
+  version already answers "where am I on this page"; duplicating it here
+  would only add a second place to keep in sync, for a question the panel
+  didn't need to also answer. If that changes, it's an additive change to
+  the same panel, not a redesign.
+
 Raised alongside the above: is a *left*-anchored panel worth having at
 all, for something other than notes/datasets? Settled: yes, for
 navigation — a different purpose from either side of §4's choice, and one

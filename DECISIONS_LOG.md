@@ -2322,3 +2322,62 @@ the zero-cell case specifically: the section is not removed, a note still
 autosaves with `cells: []`, and the contents page itself — which has no
 tutorial to have notes about — correctly gets no notes field at all.
 `standalone.bundle.js` rebuilt for the `tutorial-runtime.js` change.*
+
+**7.73 — A left-anchored panel lets a reader jump to any tutorial in the
+current series, not just the one immediately before or after it.**
+`planning/SIDEBAR_CONTENT.md` §4b, shipped in scaled-down form: a new
+`render_series_nav(tutorial, members)` in `build.py` server-renders an
+`<ol>` of every member of the series, in reading order, with the current
+one marked (`aria-current="page"`, not a link) and every other one a link
+via the existing `link_between()` helper. A tutorial with nowhere in a
+series to sit — archived, same as `nav_for()`'s own case — gets nothing,
+rather than a guess. `write()` and the four other shell-template writers
+(`write_index()`, `write_tree_page()`, `write_about_page()`, the editor
+page) all gained the `{{SERIES_NAV}}` token, since an unfilled token fails
+the build in any of them.
+
+Between writing the design doc and building this, an external PR (#65, not
+mine) moved the cheat sheet panel from right-anchored to left-anchored —
+which quietly invalidated §4b's assumption that "left" was open ground for
+a spatially separate nav panel. Rather than re-litigate that placement,
+the series nav panel joined the cheat sheet at the same left anchor,
+stacked below its toggle, and joined the existing Settings/cheat-sheet
+mutual-exclusion group as a third member (`closeSeriesNav()` alongside
+`closeSettings()`/`closeCheatSheet()`, each panel's open path now closing
+both of the others).
+
+Scope was cut down from §4b's original sketch: this ships series-listing
+only, not a duplicate of the inline "Contents" table of contents
+(`render_toc()`) that already exists on every page. Duplicating that here
+would have doubled the maintenance surface for no reader benefit — the TOC
+already answers "where am I on this page," and this panel only needed to
+answer "where am I in the series."
+
+Two failures surfaced building this, both from the standalone/downloadable
+export path (`standalone_html()`), which strips navigation-dependent
+markup that can't survive as a single downloaded file: the new toggle and
+panel weren't covered by the existing stripping rules, and after adding
+targeted ones, the inlined JS bundle's own string literals (element-ID
+lookups like `"dl-navpanel-toggle"`) tripped the test asserting no
+`dl-nav`-prefixed substring survives outside `<style>` blocks — a
+collision with the pre-existing `<nav class="dl-nav...">` prev/next
+element's own naming, not a real bug. Fixed by renaming
+`navpanel`→`seriesnav` throughout, rather than carving the test's
+assertion around script blocks: the collision was real evidence the
+original name was too close to an existing convention, and the new name
+is more specific regardless.
+
+*Cost to change: small-to-moderate. One new function in `build.py`, one
+new token threaded through five call sites, new shell markup and CSS
+mirroring the cheat sheet's own (including its mobile bottom-sheet
+treatment), and `initSeriesNav()`/`closeSeriesNav()` in
+`tutorial-runtime.js` following the same open/close/mutual-exclusion shape
+`initCheatSheet()` already established. Two new `re.sub` rules in
+`standalone_html()` for the stripping gap. New
+`tests/e2e/test_series_nav.py` (visibility, open/close, three-way mutual
+exclusion with the cheat sheet, series content and ordering, mobile sheet)
+and a `TestSeriesNav` class in `tests/test_build.py` for
+`render_series_nav()` itself (ordering, current-item marking, the
+order-file-decides-not-filename case, and the archived/no-series-position
+empty case). `standalone.bundle.js` rebuilt for the
+`tutorial-runtime.js` change.*

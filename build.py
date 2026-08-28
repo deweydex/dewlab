@@ -837,6 +837,33 @@ def nav_for(tutorial: Tutorial, members: list[Tutorial]) -> str:
     return "".join(parts)
 
 
+def render_series_nav(tutorial: Tutorial, members: list[Tutorial]) -> str:
+    """The whole series, in reading order, for the left-anchored navigation
+    panel (planning/SIDEBAR_CONTENT.md). `nav_for()` already gives a reader
+    the tutorial immediately before and after this one; this is what lets
+    them jump to any point in the series, not just the one next to them.
+
+    A tutorial with no series position — archived, or a practice page —
+    gets nothing here, the same honest shape `nav_for()` already uses for
+    that case: there is nowhere in the series to place it.
+    """
+    if tutorial not in members:
+        return ""
+    items = []
+    for index, member in enumerate(members, start=1):
+        if member is tutorial:
+            items.append(
+                f'<li class="dl-seriesnav-current" aria-current="page">'
+                f"{index}. {html.escape(member.title)}</li>"
+            )
+        else:
+            href = link_between(tutorial, member)
+            items.append(
+                f'<li><a href="{href}">{index}. {html.escape(member.title)}</a></li>'
+            )
+    return '<ol class="dl-seriesnav-series">' + "".join(items) + "</ol>"
+
+
 # --------------------------------------------------------------- cheat sheet
 #
 # planning/CHEAT_SHEETS.md has the full design. In short: a glossary file says
@@ -1936,7 +1963,8 @@ def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "",
           practice: Tutorial | None = None,
           registry: dict[tuple[str, str], Tutorial] | None = None,
           also: list[Tutorial] | None = None,
-          glossary: list[dict] | None = None) -> Path:
+          glossary: list[dict] | None = None,
+          series_nav: str = "") -> Path:
     up = "../" * tutorial.depth
     manifest: dict[str, object] = {
         "slug": tutorial.slug,
@@ -1987,6 +2015,7 @@ def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "",
         "{{PAGE_SCRIPT}}": "",
         "{{DOWNLOAD}}": download_section(tutorial),
         "{{TOC}}": render_toc(tutorial),
+        "{{SERIES_NAV}}": series_nav,
         "{{BODY}}": (
             page_notice(tutorial, default)
             + (practice_link(tutorial, practice, registry, also)
@@ -2112,6 +2141,20 @@ def standalone_html(tutorial: Tutorial, page: str) -> str:
         page,
         flags=re.DOTALL,
     )
+    # The series navigation panel is the same case: every link in it points
+    # at a sibling file that is not beside this one, so both the toggle and
+    # the panel go rather than open onto a page of broken links. Matched
+    # through to the end of the panel's own <nav>, not to the first </div>
+    # — the panel has a nested <div> (its head) that would otherwise end
+    # the match early.
+    page = re.sub(
+        r'<button type="button" class="dl-seriesnav-toggle".*?</button>\n?',
+        "", page, flags=re.DOTALL,
+    )
+    page = re.sub(
+        r'<div class="dl-seriesnav" id="dl-seriesnav".*?</nav>\s*</div>\n?',
+        "", page, flags=re.DOTALL,
+    )
     root = "../" * tutorial.depth
     page = page.replace(f'href="{root}index.html"', 'href="#" onclick="return false"')
     return page
@@ -2208,6 +2251,8 @@ def write_index(
         "{{DOWNLOAD}}": "",
         # The contents page is a contents page. It does not need one of its own.
         "{{TOC}}": "",
+        # Nor a series to navigate — it is the thing every series links back to.
+        "{{SERIES_NAV}}": "",
         "{{BODY}}": render_index(groups, archives, retired, practice, mixed),
         "{{MANIFEST_JSON}}": json.dumps(manifest).replace("<", "\\u003c"),
         "{{FOOTER}}": site_footer(),
@@ -2339,6 +2384,7 @@ def write_tree_page(shell: str, tutorials: list[Tutorial]) -> Path | None:
         "{{CANONICAL}}": "",
         "{{DOWNLOAD}}": "",
         "{{TOC}}": "",
+        "{{SERIES_NAV}}": "",
         "{{BODY}}": body,
         "{{MANIFEST_JSON}}": json.dumps(manifest).replace("<", "\\u003c"),
         "{{FOOTER}}": site_footer(),
@@ -2394,6 +2440,7 @@ def write_about_page(shell: str) -> Path:
         "{{CANONICAL}}": "",
         "{{DOWNLOAD}}": "",
         "{{TOC}}": "",
+        "{{SERIES_NAV}}": "",
         "{{BODY}}": body,
         "{{MANIFEST_JSON}}": json.dumps(manifest).replace("<", "\\u003c"),
         "{{FOOTER}}": site_footer(),
@@ -2453,6 +2500,7 @@ def write_editor_page(shell: str) -> Path:
         "{{CANONICAL}}": "",
         "{{DOWNLOAD}}": "",
         "{{TOC}}": "",
+        "{{SERIES_NAV}}": "",
         "{{BODY}}": body,
         "{{MANIFEST_JSON}}": json.dumps(manifest).replace("<", "\\u003c"),
         "{{FOOTER}}": site_footer(),
@@ -2521,6 +2569,7 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
                   if tutorial.slug in page.practice_across],
             registry=registry,
             glossary=cumulative_glossary(tutorial, registry, groups),
+            series_nav=render_series_nav(tutorial, members),
         )
         written.append(page_path)
         # 0.7MB against 19KB for the hosted page, so only the version students
