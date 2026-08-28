@@ -89,11 +89,13 @@
 
 </div>
 
-<!-- One panel, three sections. Everything a reader can change about the page
-     or do with their work lives here, so there is one place to look rather
-     than a row of small buttons to learn. Sections that do not apply to a page
-     are removed at load: the contents page saves no work, and a downloadable
-     copy is already the file you are reading. -->
+<!-- One panel, several sections. Everything a reader can change about the
+     page or do with their work lives here, so there is one place to look
+     rather than a row of small buttons to learn. A section that does not
+     apply to a page is removed at load: the contents page saves no work,
+     and a downloadable copy is already the file you are reading. Progress
+     is the one exception — its toggle also governs the contents page's own
+     badges, so it stays even on a page with no cells of its own. -->
 <div class="dl-settings" id="dl-settings" role="dialog" aria-modal="false"
      aria-labelledby="dl-settings-title" hidden>
   <div class="dl-settings-head">
@@ -119,6 +121,26 @@
       <button type="button" class="dl-btn dl-progress-clear" id="dl-progress-clear">Start again</button>
     </div>
     <input type="file" id="dl-progress-file" accept="application/json,.json" hidden>
+  </section>
+
+  <!-- Progress: how far a reader has gotten. Not removed on a page with no
+       cells the way "Your work" above is — the toggle here also governs
+       the contents page's own badges, and the contents page itself has no
+       cells at all, so this section has to survive there. The summary line
+       just stays hidden in that case (updateProgressSummary(),
+       tutorial-runtime.js). -->
+  <section class="dl-settings-section" id="dl-settings-progress">
+    <h3>Progress</h3>
+
+    <p class="dl-panel-note" id="dl-progress-summary" hidden></p>
+
+    <div class="dl-texture-row">
+      <span>Show progress on the tutorials list</span>
+      <div class="dl-seg" data-progress-badges>
+        <button type="button" data-value="on">on</button>
+        <button type="button" data-value="off">off</button>
+      </div>
+    </div>
   </section>
 
   <!-- Versions. Removed at load on the tutorials that have only one, which is

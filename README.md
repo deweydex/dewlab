@@ -108,6 +108,14 @@ shows no button at all rather than an empty panel. On a phone-sized screen
 the panel opens as a sheet across the bottom of the screen, the same
 treatment Settings already has.
 
+The contents page shows a small badge next to any tutorial a student has
+already opened — a fraction (`4/9`), turning red only if a cell's last run
+actually errored — read from this browser's own saved work, no server
+involved. A Settings switch turns it off entirely for a plainer list.
+Inside a tutorial, the same information — cells run, and how many failed —
+sits as a plain line in Settings' own "Progress" section rather than a
+persistent bar on the page (`planning/PROGRESS_INDICATORS.md`).
+
 **Download to keep** gives the student one HTML file — on a memory stick, in
 their downloads folder, anywhere — that they open by double-clicking. It
 carries the reading, the cells, the editor and the mathematics inside it, and

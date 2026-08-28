@@ -41,6 +41,7 @@ const DEFAULT_PACKAGES = ["numpy", "pandas", "matplotlib"];
 
 const TEXTURE_KEY = "dewlab:texture";
 const PROGRESS_PREFIX = "dewlab:progress:";
+const PROGRESS_BADGES_KEY = "dewlab:progress-badges";
 const AUTOSAVE_DELAY = 500;
 const TEXTURE_DEFAULTS = {
   theme: "system", font: "serif", size: 18, width: 34,
@@ -737,6 +738,13 @@ function saveNow() {
       task_id: cell.id,
       student_code: cell.getCode(),
       output_html: cell.outputEl.innerHTML,
+      /* Whether this cell's last run raised — tutorial_tools.py's stderr
+       * stream and show_error() both write class="dl-error", so this is
+       * already visible in output_html; captured once here as a plain
+       * boolean rather than every reader (the contents page's progress
+       * indicator, this page's own Settings summary) re-parsing HTML to
+       * ask the same question. */
+      errored: !!cell.outputEl.querySelector(".dl-error"),
     })),
   };
   try {
@@ -747,6 +755,7 @@ function saveNow() {
     /* Storage full or refused. Say so rather than pretending it saved. */
     showSaveState(null, "Your browser would not let this page save your work.");
   }
+  updateProgressSummary();
 }
 
 function scheduleSave() {
@@ -921,6 +930,7 @@ function initProgressSection() {
       localStorage.setItem(progressKey(), JSON.stringify(record));
       announceRestore(restoreSaved());
       showSaveState(record.saved_at);
+      updateProgressSummary();
     } catch (err) {
       showSaveState(null, "That file could not be read as saved dewlab work.");
     }
@@ -940,7 +950,138 @@ function initProgressSection() {
     }
     for (const box of document.querySelectorAll(".dl-restored")) box.remove();
     showSaveState(null);
+    updateProgressSummary();
   });
+}
+
+/* ------------------------------------------------------------- progress
+ *
+ * planning/PROGRESS_INDICATORS.md: how far a reader has gotten, read from
+ * the same saved-progress record saveNow() already writes, nothing new
+ * saved beyond the one `errored` boolean captured there. Two surfaces —
+ * a plain summary line on this page's own Settings panel, and a small
+ * badge next to each tutorial on the contents page, opt-out via a
+ * Settings toggle since that one is ambient rather than something a
+ * reader had to open a panel to see. */
+
+function progressCounts(entries) {
+  /* entries: [{started, errored}]. started means an output exists — run,
+   * or restored from a save — not merely that the cell was edited. */
+  let done = 0;
+  let errored = 0;
+  for (const entry of entries) {
+    if (!entry.started) continue;
+    if (entry.errored) errored++;
+    else done++;
+  }
+  return { total: entries.length, done, errored };
+}
+
+function liveProgressCounts() {
+  return progressCounts(
+    cells.map((cell) => ({
+      started: !!cell.outputEl.innerHTML,
+      errored: !!cell.outputEl.querySelector(".dl-error"),
+    }))
+  );
+}
+
+function updateProgressSummary() {
+  const el = document.getElementById("dl-progress-summary");
+  if (!el) return;
+  const { total, done, errored } = liveProgressCounts();
+  const ran = done + errored;
+  /* Nothing run yet is not different information from no cells at all, as
+   * far as a reader opening Settings is concerned — same reasoning the
+   * contents page's own badge uses (planning/PROGRESS_INDICATORS.md §2):
+   * a "0 of 8" reads as a judgment on a page nobody has touched yet. */
+  if (ran === 0) {
+    el.hidden = true;
+    return;
+  }
+  let text = `${ran} of ${total} cell${total === 1 ? "" : "s"} run`;
+  if (errored) text += ` · ${errored} with an error`;
+  el.textContent = text;
+  el.hidden = false;
+}
+
+function readProgressBadges() {
+  try {
+    return localStorage.getItem(PROGRESS_BADGES_KEY) !== "off";
+  } catch (err) {
+    return true;
+  }
+}
+
+function writeProgressBadges(mode) {
+  try {
+    localStorage.setItem(PROGRESS_BADGES_KEY, mode);
+  } catch (err) {
+    /* This page's own choice only; forgotten after it, same as the rest of
+     * this project's texture/follow settings when storage is refused. */
+  }
+}
+
+/* Every tutorial link on the contents page, each already carrying its own
+ * total cell count (render_index(), build.py) — read at build time so no
+ * fetch is needed to know it. A tutorial with no saved record, or one
+ * where no cell has been run yet, gets no badge at all rather than a
+ * "0/9" that reads as a judgment on a page nobody has opened. */
+function renderContentsProgress() {
+  for (const badge of document.querySelectorAll(".dl-progress-badge")) badge.remove();
+  if (!readProgressBadges()) return;
+  for (const link of document.querySelectorAll(".dl-contents a[data-cells]")) {
+    const total = parseInt(link.dataset.cells, 10);
+    if (!total) continue;
+    let record;
+    try {
+      const key = `${PROGRESS_PREFIX}${link.dataset.module}:${link.dataset.slug}`;
+      record = JSON.parse(localStorage.getItem(key) || "null");
+    } catch (err) {
+      record = null;
+    }
+    if (!record || !Array.isArray(record.cells)) continue;
+    const { done, errored } = progressCounts(
+      record.cells.map((cell) => ({ started: !!cell.output_html, errored: !!cell.errored }))
+    );
+    const ran = done + errored;
+    if (ran === 0) continue;
+    const badge = document.createElement("span");
+    badge.className = "dl-progress-badge" + (errored ? " dl-progress-badge-errored" : "");
+    badge.textContent = `${ran}/${total}`;
+    link.insertAdjacentElement("afterend", badge);
+  }
+}
+
+function initContentsProgress() {
+  /* Not the contents page, or a build with no live tutorials listed. */
+  if (!document.querySelector(".dl-contents a[data-cells]")) return;
+  renderContentsProgress();
+}
+
+/* Present on every page, contents page included — unlike the summary line
+ * above, this toggle is not gated on cells.length, since the page it
+ * changes the ambient behaviour of (the contents page) has none. */
+function initProgressBadgesToggle() {
+  const group = document.querySelector("[data-progress-badges]");
+  if (!group) return;
+
+  function sync() {
+    const on = readProgressBadges();
+    for (const btn of group.querySelectorAll("button")) {
+      btn.setAttribute("aria-pressed", String((btn.dataset.value === "on") === on));
+    }
+  }
+
+  group.addEventListener("click", (ev) => {
+    const btn = ev.target.closest("button");
+    if (!btn) return;
+    writeProgressBadges(btn.dataset.value);
+    sync();
+    renderContentsProgress();
+  });
+
+  sync();
 }
 
 /* -------------------------------------------------------------- versions */
@@ -1308,8 +1449,11 @@ initVersionsSection();
 initVersionMarker();
 initSettingsPanel();
 initCheatSheet(currentManifest);
+initProgressBadgesToggle();
+initContentsProgress();
 trackChromeHeight();
 announceRestore(restoreSaved());
+updateProgressSummary();
 annotateNotice();
 highlightIllustrativeCode();
 const mathsRendered = renderMaths(currentManifest);

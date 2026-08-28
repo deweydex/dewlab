@@ -648,6 +648,22 @@ class TestTheContentsPage:
         b.build()
         assert manifest((repo / "site" / "index.html").read_text())["cells"] == []
 
+    def test_a_tutorial_with_cells_carries_its_progress_data_attributes(self, repo):
+        """tutorial-runtime.js's contents-page progress indicator
+        (planning/PROGRESS_INDICATORS.md) reads these with no fetch."""
+        write(repo, CELL, slug="one")
+        b.build()
+        index = (repo / "site" / "index.html").read_text()
+        assert 'data-module="computational-methods"' in index
+        assert 'data-slug="one"' in index
+        assert 'data-cells="1"' in index
+
+    def test_a_prose_only_tutorial_carries_no_progress_data_attributes(self, repo):
+        write(repo, "Prose.\n", slug="one")
+        b.build()
+        index = (repo / "site" / "index.html").read_text()
+        assert "data-cells" not in index
+
     def module_headings(self, repo) -> list[str]:
         """The module headings in page order.
 

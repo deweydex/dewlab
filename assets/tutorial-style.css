@@ -974,6 +974,25 @@ p code, li code {
 .dl-series { margin: 0 0 2rem; }
 .dl-contents:has(+ .dl-series) { margin-bottom: 0.5rem; }
 
+/* How far a reader has gotten in one tutorial, read from this browser's own
+ * saved progress with no fetch (renderContentsProgress(),
+ * tutorial-runtime.js) — a fraction, not a bar, so it stays legible at the
+ * same size as the title beside it. Grey by default; the error colour is
+ * reserved for a cell that actually raised, not for "not finished yet". */
+.dl-progress-badge {
+  margin-left: 0.4rem;
+  padding: 0.05rem 0.4rem;
+  border-radius: 3px;
+  background: var(--dl-cell-bg);
+  color: var(--dl-muted);
+  font-family: var(--dl-mono);
+  font-size: 0.75rem;
+}
+.dl-progress-badge-errored {
+  background: var(--dl-error-bg);
+  color: var(--dl-error-fg);
+}
+
 /* Saving, exporting and starting again — the "Your work" section of the
    settings panel. */
 .dl-progress-state { margin: 0 0 0.6rem; font-size: 0.9rem; }

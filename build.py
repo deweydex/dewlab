@@ -1479,6 +1479,21 @@ def arrow_between(place: dict, a: str, b: str, css: str, fan: int = 0) -> str:
     )
 
 
+def progress_attrs(tutorial: Tutorial) -> str:
+    """`data-module`/`data-slug`/`data-cells` for a contents-page link, so
+    tutorial-runtime.js's progress indicator (planning/PROGRESS_INDICATORS.md)
+    can read a reader's saved-progress record for it with no fetch. A
+    prose-only tutorial has nothing to show progress for, so it gets no
+    attribute at all rather than a "0/0"."""
+    if not tutorial.cells:
+        return ""
+    return (
+        f' data-module="{html.escape(tutorial.module, quote=True)}"'
+        f' data-slug="{html.escape(tutorial.slug, quote=True)}"'
+        f' data-cells="{len(tutorial.cells)}"'
+    )
+
+
 def render_index(
     groups: dict[tuple[str, str], list[Tutorial]],
     archives: dict[tuple[str, str], Path] | None = None,
@@ -1561,7 +1576,8 @@ def render_index(
                     extra = (f' <a class="dl-contents-practice" href="{where}">'
                              "practice</a>")
                 out.append(
-                    f'<li><a href="{href}">{html.escape(member.title)}</a>{extra}</li>'
+                    f'<li><a href="{href}"{progress_attrs(member)}>'
+                    f"{html.escape(member.title)}</a>{extra}</li>"
                 )
             out.append("</ol>")
             archive = archives.get((owner, series))
@@ -1591,7 +1607,10 @@ def render_index(
                 )
                 out.append('<ul class="dl-contents dl-mixed">')
             href = member.out_path.relative_to(OUT).as_posix()
-            out.append(f'<li><a href="{href}">{html.escape(member.title)}</a></li>')
+            out.append(
+                f'<li><a href="{href}"{progress_attrs(member)}>'
+                f"{html.escape(member.title)}</a></li>"
+            )
             if member is mixed[module][-1]:
                 out.append("</ul>")
 

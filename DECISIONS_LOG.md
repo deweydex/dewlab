@@ -2168,3 +2168,56 @@ rather than trusted from the CSS alone.
 *Cost to change: small — CSS only, one selector list gained a second
 target, no JavaScript or markup changed. `tutorial-runtime.js` was
 untouched, so `standalone.bundle.js` did not need rebuilding this time.*
+
+**7.70 — Two progress indicators, both read from the saved-progress
+record `saveNow()` already writes.** `planning/PROGRESS_INDICATORS.md`
+designed both; this is what shipped, unchanged from that design in shape.
+
+`saveNow()` gained one field per cell — `errored: !!cell.outputEl.
+querySelector(".dl-error")` — captured once rather than re-parsing saved
+`output_html` wherever the question "did this cell's last run fail" comes
+up. `progressCounts()` is the one place that turns a list of
+`{started, errored}` into `{total, done, errored}`, shared by both
+surfaces below rather than two separate counting implementations.
+
+**The contents page** gets a small badge (`1/2`, red background only when
+at least one counted cell errored) next to a tutorial's title —
+`render_index()` already knows `len(member.cells)` at build time, so a new
+`progress_attrs()` helper writes it straight onto the link as
+`data-module`/`data-slug`/`data-cells`, no fetch needed for
+`renderContentsProgress()` to read that tutorial's own `localStorage`
+record client-side. A tutorial with no saved record, or one where nothing
+has been run yet, gets no badge — a `0/9` would read as a judgment on a
+page nobody has opened. A new Settings toggle ("Show progress on the
+tutorials list") governs this specifically, because it is the one
+*ambient* piece — visible on every visit to the contents page whether or
+not a reader wants a visible tally.
+
+**A tutorial's own page** gets a plain summary line — "4 of 9 cells run ·
+1 with an error" — folded into a new "Progress" section in Settings
+(`updateProgressSummary()`, called after every save) rather than a
+persistent bar competing with the cheat sheet's toggle for a screen edge,
+per the original framing's own reconsideration in the design doc. Hidden
+whenever nothing has been run yet, same reasoning as the contents page's
+badge. No second toggle: unlike the contents-page badge, this line is
+only ever seen by a reader who already opened Settings, which is opt-in
+by where it lives.
+
+One wrinkle the design doc called out and the implementation resolves the
+same way: `#dl-settings-progress`, unlike `#dl-settings-work`, is **not**
+removed on a page with zero cells — its toggle also governs the contents
+page's own badges, and the contents page itself has no cells at all, so
+the section has to survive there; only the summary line inside it stays
+hidden in that case.
+
+*Cost to change: small. `progressCounts()`/`liveProgressCounts()`/
+`renderContentsProgress()`/`updateProgressSummary()` are each short, pure
+or near-pure functions. Two new unit tests cover the build-time
+attributes (`TestTheContentsPage`), and two new e2e files cover the rest:
+`tests/e2e/test_progress_summary.py` runs real cells (a real traceback,
+not a seeded fake, is what proves the `errored` capture reads what
+`tutorial_tools.py` actually renders) against the shared Pyodide fixture,
+and `tests/e2e/test_progress_badges.py` seeds `localStorage` directly and
+never boots Pyodide at all, the same reasoning `test_cheat_sheet.py`
+already established for anything that only ever needs `index.html`.
+`standalone.bundle.js` rebuilt for the `tutorial-runtime.js` change.*

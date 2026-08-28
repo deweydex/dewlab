@@ -194,18 +194,16 @@ both are design settled, ready to implement.
 
 ### What should the contents page and a tutorial's own page show about a reader's progress?
 
-**Settled, and designed in `planning/PROGRESS_INDICATORS.md`:** both a
-per-tutorial completion indicator on the contents page (a build-time
-`data-cells` count plus a client-side read of the existing
-`dl-progress:<module>:<slug>` `localStorage` record — no new save format,
-just one new `errored` boolean captured alongside what `saveNow()` already
-writes) and, inside a tutorial, a plain summary line folded into the
-existing Settings panel rather than a new persistent bar. Colouring is
-grey (not started) / green (done) / red reserved specifically for a cell
-whose last run errored, not for "not attempted yet." Only the contents
-page's indicator gets a Settings toggle — the in-tutorial summary lives
-inside a panel a reader already chose to open, so it needs no toggle of
-its own. Not built yet; ready to implement.
+**Settled and built**, per `planning/PROGRESS_INDICATORS.md` and
+`DECISIONS_LOG.md` 7.70: a per-tutorial completion badge on the contents
+page (`data-cells` at build time, a client-side read of the existing
+saved-progress `localStorage` record, no new save format beyond one
+`errored` boolean `saveNow()` now captures), plus a plain summary line
+folded into the existing Settings panel on a tutorial's own page rather
+than a new persistent bar. Grey/green, red reserved for a cell whose last
+run actually errored. Only the contents-page badge has a Settings toggle
+— the in-tutorial summary lives inside a panel a reader already chose to
+open, so it needs no toggle of its own.
 
 ### Coordinate geometry has no tutorial and no outline, and something already depends on it
 
