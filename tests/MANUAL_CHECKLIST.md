@@ -12,7 +12,7 @@ for the phases that add them.
 
 ```sh
 pip install -r requirements-build.txt
-python3 dev/fetch_pyodide.py        # once, ~30 MB, for the e2e tests
+python3 dev/fetch_pyodide.py        # once, ~32 MB, for the e2e tests
 python3 build.py --clean
 python3 -m http.server -d site 8000
 ```
