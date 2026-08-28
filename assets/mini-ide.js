@@ -88,6 +88,12 @@ let sharedNamespace = { __builtins__: {} };
  */
 let cells = [];
 
+/**
+ * Whether the current cells are sample cells
+ * @type {boolean}
+ */
+let hasSampleCells = false;
+
 // ============================================================================
 // DOM Elements
 // ============================================================================
@@ -106,6 +112,8 @@ let downloadIpynbBtn;
 let helperEl;
 let helperCloseBtn;
 let statusEl;
+let sampleNoticeEl;
+let removeSampleBtn;
 
 // ============================================================================
 // Drag and Drop State
@@ -137,6 +145,244 @@ const CELL_TYPES = {
 };
 
 // ============================================================================
+// Settings Functions (from tutorial-runtime.js)
+// ============================================================================
+
+/**
+ * Check if dark mode is currently active
+ * @returns {boolean} True if dark mode is active
+ */
+function isDarkNow() {
+  const t = document.documentElement.getAttribute("data-theme");
+  return t === "dark" ? true : t === "light" ? false : window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+}
+
+/**
+ * Load texture preferences from localStorage
+ * @returns {Object} Texture state
+ */
+function loadTexture() {
+  try {
+    return { theme: "system", font: "serif", size: 18, width: 34, link: "#d4692a", header: "full", ...JSON.parse(localStorage.getItem("dewlab:texture") || "{}") };
+  } catch {
+    return { theme: "system", font: "serif", size: 18, width: 34, link: "#d4692a", header: "full" };
+  }
+}
+
+/**
+ * Save texture preferences to localStorage
+ * @param {Object} state - Texture state to save
+ */
+function saveTexture(state) {
+  try {
+    localStorage.setItem("dewlab:texture", JSON.stringify(state));
+  } catch {}
+}
+
+/**
+ * Apply texture preferences to the document
+ * @param {Object} state - Texture state
+ */
+function applyTexture(state) {
+  const root = document.documentElement;
+  if (state.theme === "system") root.removeAttribute("data-theme");
+  else root.setAttribute("data-theme", state.theme);
+  if (state.font === "serif") root.removeAttribute("data-font");
+  else root.setAttribute("data-font", state.font);
+  if (state.header === "full") root.removeAttribute("data-header");
+  else root.setAttribute("data-header", state.header);
+  root.style.setProperty("--dl-font-size", state.size + "px");
+  root.style.setProperty("--dl-line-width", state.width + "rem");
+  root.style.setProperty("--dl-link", state.link);
+}
+
+/**
+ * Initialize the Settings panel
+ */
+function initSettings() {
+  const state = loadTexture();
+  applyTexture(state);
+
+  const panel = document.getElementById("dl-settings");
+  if (!panel) return state;
+
+  const toggle = document.getElementById("dl-settings-toggle");
+  
+  // Toggle button
+  if (toggle) {
+    toggle.addEventListener("click", () => {
+      const isHidden = panel.hasAttribute("hidden");
+      panel.toggleAttribute("hidden", !isHidden);
+      toggle.setAttribute("aria-expanded", String(!isHidden));
+    });
+  }
+
+  // Close button
+  const closeBtn = document.getElementById("dl-settings-close");
+  if (closeBtn) {
+    closeBtn.addEventListener("click", () => {
+      panel.setAttribute("hidden", "");
+      if (toggle) {
+        toggle.setAttribute("aria-expanded", "false");
+        toggle.focus();
+      }
+    });
+  }
+
+  // Close on escape key
+  document.addEventListener("keydown", (e) => {
+    if (e.key !== "Escape") return;
+    if (!panel.hasAttribute("hidden")) {
+      panel.setAttribute("hidden", "");
+      if (toggle) {
+        toggle.setAttribute("aria-expanded", "false");
+        toggle.focus();
+      }
+    }
+  });
+
+  // Close on click outside
+  document.addEventListener("click", (e) => {
+    if (panel.hasAttribute("hidden")) return;
+    if (panel.contains(e.target) || toggle?.contains(e.target)) return;
+    panel.setAttribute("hidden", "");
+    if (toggle) toggle.setAttribute("aria-expanded", "false");
+  });
+
+  // Hide empty sections
+  for (const section of panel.querySelectorAll(".dl-settings-section")) {
+    if (section.textContent.trim() === "") {
+      section.hidden = true;
+    }
+  }
+
+  // Initialize texture controls
+  initTexture((isDark) => {
+    cells.forEach(cell => {
+      if (cell.editor) {
+        try {
+          setEditorTheme(cell.editor, isDark);
+        } catch (e) {}
+      }
+    });
+  });
+
+  return state;
+}
+
+/**
+ * Initialize texture controls
+ * @param {Function} onThemeChange - Callback when theme changes
+ * @returns {Object} Texture state
+ */
+function initTexture(onThemeChange) {
+  const state = loadTexture();
+  applyTexture(state);
+
+  const panel = document.getElementById("dl-settings-texture");
+  if (!panel) return state;
+
+  const sizeEl = document.getElementById("dl-texture-size");
+  const widthEl = document.getElementById("dl-texture-width");
+  const linkEl = document.getElementById("dl-texture-link");
+
+  function sync() {
+    for (const group of panel.querySelectorAll(".dl-seg")) {
+      const key = group.dataset.texture;
+      const current = group.hasAttribute("data-number") ? String(state[key]) : state[key];
+      for (const btn of group.querySelectorAll("button")) {
+        btn.setAttribute("aria-pressed", String(btn.dataset.value === current));
+      }
+    }
+    if (sizeEl) sizeEl.value = state.size;
+    if (widthEl) widthEl.value = state.width;
+    if (linkEl) linkEl.value = state.link;
+  }
+
+  function commit() {
+    applyTexture(state);
+    saveTexture(state);
+    sync();
+    onThemeChange(isDarkNow());
+  }
+
+  // Segment button groups
+  for (const group of panel.querySelectorAll(".dl-seg")) {
+    group.addEventListener("click", (ev) => {
+      const btn = ev.target.closest("button");
+      if (!btn) return;
+      state[group.dataset.texture] = group.hasAttribute("data-number")
+        ? Number(btn.dataset.value)
+        : btn.dataset.value;
+      commit();
+    });
+  }
+
+  // Range inputs
+  if (sizeEl) {
+    sizeEl.addEventListener("input", () => { 
+      state.size = Number(sizeEl.value); 
+      commit(); 
+    });
+  }
+  
+  if (widthEl) {
+    widthEl.addEventListener("input", () => { 
+      state.width = Number(widthEl.value); 
+      commit(); 
+    });
+  }
+  
+  if (linkEl) {
+    linkEl.addEventListener("input", () => { 
+      state.link = linkEl.value; 
+      commit(); 
+    });
+  }
+
+  // Reset button
+  const resetBtn = document.getElementById("dl-texture-reset");
+  if (resetBtn) {
+    resetBtn.addEventListener("click", () => {
+      Object.assign(state, { theme: "system", font: "serif", size: 18, width: 34, link: "#d4692a", header: "full" });
+      commit();
+    });
+  }
+
+  // System theme change
+  if (window.matchMedia) {
+    window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
+      if (state.theme === "system") onThemeChange(isDarkNow());
+    });
+  }
+
+  sync();
+  return state;
+}
+
+/**
+ * Track the chrome height for proper positioning
+ * Same as tutorial-runtime.js
+ */
+function trackChromeHeight() {
+  const chrome = document.getElementById("dl-chrome");
+  if (!chrome) return;
+
+  const publish = () => {
+    document.documentElement.style.setProperty(
+      "--dl-chrome-h", `${Math.round(chrome.getBoundingClientRect().height)}px`
+    );
+  };
+  publish();
+
+  if (typeof ResizeObserver === "function") {
+    new ResizeObserver(publish).observe(chrome);
+  } else {
+    window.addEventListener("resize", publish);
+  }
+}
+
+// ============================================================================
 // Initialization
 // ============================================================================
 
@@ -160,6 +406,8 @@ async function init() {
   helperEl = document.getElementById('mini-ide-helper');
   helperCloseBtn = document.getElementById('helper-close');
   statusEl = document.getElementById('mini-ide-status');
+  sampleNoticeEl = document.getElementById('sample-cells-notice');
+  removeSampleBtn = document.getElementById('remove-sample-cells');
 
   // Load saved state
   loadSavedState();
@@ -169,6 +417,15 @@ async function init() {
   if (helperEl && showHelper) {
     helperEl.style.display = 'block';
   }
+
+  // Check if we have sample cells
+  hasSampleCells = cells.length > 0 && cells.every(cell => cell.isSample);
+  if (hasSampleCells && sampleNoticeEl) {
+    sampleNoticeEl.hidden = false;
+  }
+
+  // Initialize Settings panel
+  initSettings();
 
   // Setup event listeners
   setupEventListeners();
@@ -181,6 +438,9 @@ async function init() {
 
   // Update status
   updateStatus('Ready. Add cells to begin.');
+  
+  // Track chrome height like tutorial pages
+  trackChromeHeight();
 }
 
 /**
@@ -207,13 +467,40 @@ function loadSavedState() {
     }
   }
   
-  // If no cells, create a default Python cell with helpful starter code
+  // If no cells, create sample cells
   if (cells.length === 0) {
-    cells.push(createNewCell(
-      CELL_TYPES.PYTHON, 
-      '# Start coding here\nprint("Hello, World!")'
-    ));
+    cells = createSampleCells();
+    hasSampleCells = true;
   }
+}
+
+/**
+ * Create sample cells to demonstrate the Mini IDE
+ * @returns {Array<Object>} Array of sample cell objects
+ */
+function createSampleCells() {
+  return [
+    createNewCell(
+      CELL_TYPES.PYTHON, 
+      '# Sample Cell 1: Basic Python\n# Click "Run" to execute this cell\nprint("Hello from dewlab Mini IDE!")\nx = 42\nprint(f"The answer is: {x}")',
+      true
+    ),
+    createNewCell(
+      CELL_TYPES.PYTHON,
+      '# Sample Cell 2: Using numpy\n# The Mini IDE has numpy, pandas, and matplotlib pre-loaded\nimport numpy as np\narr = np.array([1, 2, 3, 4, 5])\nprint(f"Sum: {arr.sum()}")\nprint(f"Mean: {arr.mean()}")',
+      true
+    ),
+    createNewCell(
+      CELL_TYPES.TEXT,
+      '# Sample Text Cell\n\nThis is a **text cell** for documentation.\n\n- You can write markdown-style text\n- Use it for comments, explanations, or notes\n- Text cells don\'t execute code',
+      true
+    ),
+    createNewCell(
+      CELL_TYPES.PYTHON,
+      '# Sample Cell 3: Visualization\n# Cells share a common namespace\n# So we can use the x variable from Cell 1\nimport matplotlib.pyplot as plt\nplt.plot([1, 2, 3, 4], [1, 4, 9, 16])\nplt.title("Sample Plot")\nplt.xlabel("X")\nplt.ylabel("Y")\nplt.show()',
+      true
+    )
+  ];
 }
 
 /**
@@ -239,18 +526,22 @@ function setupEventListeners() {
   // Add cell buttons
   addPythonBtn?.addEventListener('click', () => {
     cells.push(createNewCell(CELL_TYPES.PYTHON, ''));
+    hasSampleCells = false;
     saveState();
     renderCells();
     scrollToCell(cells.length - 1);
     updateStatus('Python cell added.');
+    if (sampleNoticeEl) sampleNoticeEl.hidden = true;
   });
 
   addTextBtn?.addEventListener('click', () => {
     cells.push(createNewCell(CELL_TYPES.TEXT, ''));
+    hasSampleCells = false;
     saveState();
     renderCells();
     scrollToCell(cells.length - 1);
     updateStatus('Text cell added.');
+    if (sampleNoticeEl) sampleNoticeEl.hidden = true;
   });
 
   // Run all cells
@@ -262,8 +553,10 @@ function setupEventListeners() {
   clearAllBtn?.addEventListener('click', () => {
     if (confirm('Are you sure you want to clear all cells? This cannot be undone.')) {
       cells = [];
+      hasSampleCells = false;
       saveState();
       renderCells();
+      if (sampleNoticeEl) sampleNoticeEl.hidden = true;
       updateStatus('All cells cleared.');
     }
   });
@@ -279,12 +572,28 @@ function setupEventListeners() {
     localStorage.setItem(HELPER_VISIBLE_KEY, 'false');
   });
 
-  // Observe theme changes from Settings panel (if it exists)
+  // Remove sample cells button
+  removeSampleBtn?.addEventListener('click', () => {
+    cells = [];
+    hasSampleCells = false;
+    saveState();
+    renderCells();
+    if (sampleNoticeEl) sampleNoticeEl.hidden = true;
+    updateStatus('Sample cells removed. Add your own cells to begin.');
+  });
+
+  // Observe theme changes from Settings panel
   const observer = new MutationObserver((mutations) => {
     mutations.forEach((mutation) => {
       if (mutation.attributeName === 'data-theme') {
         const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-        updateAllEditorThemes(isDark);
+        cells.forEach(cell => {
+          if (cell.editor) {
+            try {
+              setEditorTheme(cell.editor, isDark);
+            } catch (e) {}
+          }
+        });
       }
     });
   });
@@ -300,16 +609,18 @@ function setupEventListeners() {
  *
  * @param {string} type - Cell type (CELL_TYPES.PYTHON or CELL_TYPES.TEXT)
  * @param {string} [content=''] - Initial cell content
+ * @param {boolean} [isSample=false] - Whether this is a sample cell
  * @param {string} [id] - Unique cell ID (auto-generated if not provided)
  * @returns {Object} Cell object
  */
-function createNewCell(type, content = '', id = generateId()) {
+function createNewCell(type, content = '', isSample = false, id = generateId()) {
   return {
     id,
     type,
     content: content || getDefaultContent(type),
     output: '',
-    error: null
+    error: null,
+    isSample
   };
 }
 
@@ -357,6 +668,12 @@ function renderCells() {
     helperEl.style.display = 'none';
     localStorage.setItem(HELPER_VISIBLE_KEY, 'false');
   }
+  
+  // Show/hide sample notice based on whether we have sample cells
+  if (sampleNoticeEl) {
+    hasSampleCells = cells.length > 0 && cells.every(cell => cell.isSample);
+    sampleNoticeEl.hidden = !hasSampleCells;
+  }
 }
 
 /**
@@ -392,7 +709,7 @@ function createCellElement(cell, index) {
 
   // Run button (only for Python cells)
   const runBtn = document.createElement('button');
-  runBtn.className = 'dl-btn dl-btn-small';
+  runBtn.className = 'dl-btn';
   runBtn.innerHTML = '<span class="mini-ide-icon mini-ide-icon-run"></span>Run';
   runBtn.style.display = cell.type === CELL_TYPES.PYTHON ? 'inline-flex' : 'none';
   runBtn.addEventListener('click', (e) => {
@@ -402,7 +719,7 @@ function createCellElement(cell, index) {
 
   // Delete button
   const deleteBtn = document.createElement('button');
-  deleteBtn.className = 'dl-btn dl-btn-small dl-btn-secondary';
+  deleteBtn.className = 'dl-btn dl-btn-secondary';
   deleteBtn.innerHTML = '<span class="mini-ide-icon mini-ide-icon-clear"></span>Delete';
   deleteBtn.addEventListener('click', (e) => {
     e.stopPropagation();
@@ -411,7 +728,6 @@ function createCellElement(cell, index) {
 
   actions.appendChild(runBtn);
   actions.appendChild(deleteBtn);
-
   header.appendChild(typeLabel);
   header.appendChild(actions);
 
@@ -433,7 +749,10 @@ function createCellElement(cell, index) {
         const idx = cells.findIndex(c => c.id === cell.id);
         if (idx !== -1) {
           cells[idx].content = newContent;
+          cells[idx].isSample = false;
+          hasSampleCells = cells.length > 0 && cells.every(c => c.isSample);
           saveState();
+          if (sampleNoticeEl) sampleNoticeEl.hidden = !hasSampleCells;
         }
       },
       completeNames: () => Object.keys(sharedNamespace),
@@ -453,7 +772,10 @@ function createCellElement(cell, index) {
       const idx = cells.findIndex(c => c.id === cell.id);
       if (idx !== -1) {
         cells[idx].content = e.target.value;
+        cells[idx].isSample = false;
+        hasSampleCells = cells.length > 0 && cells.every(c => c.isSample);
         saveState();
+        if (sampleNoticeEl) sampleNoticeEl.hidden = !hasSampleCells;
       }
     });
     contentEl.appendChild(textarea);
@@ -488,10 +810,8 @@ function createCellElement(cell, index) {
 function deleteCell(cellId) {
   const index = cells.findIndex(c => c.id === cellId);
   if (index !== -1) {
-    // Clean up editor if it exists
     const cell = cells[index];
     if (cell.editor) {
-      // CodeMirror doesn't have a simple destroy method, but we can remove the DOM
       const editorEl = cell.editor.dom;
       if (editorEl && editorEl.parentNode) {
         editorEl.parentNode.removeChild(editorEl);
@@ -499,9 +819,11 @@ function deleteCell(cellId) {
     }
     
     cells.splice(index, 1);
+    hasSampleCells = cells.length > 0 && cells.every(c => c.isSample);
     saveState();
     renderCells();
     updateStatus('Cell deleted.');
+    if (sampleNoticeEl) sampleNoticeEl.hidden = !hasSampleCells;
   }
 }
 
@@ -514,8 +836,6 @@ function scrollToCell(index) {
   const cellEl = cellsContainer?.querySelector(`.mini-ide-cell[data-index="${index}"]`);
   if (cellEl) {
     cellEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    
-    // Visual feedback
     cellEl.classList.add('focused');
     setTimeout(() => cellEl.classList.remove('focused'), 1000);
   }
@@ -619,10 +939,10 @@ async function runAllCells() {
     }
   }
 
-  // Save state and re-render
+  // Re-render to show all outputs
   saveState();
   renderCells();
-  updateStatus(`All cells executed. ${cells.filter(c => c.error).length} errors.`);
+  updateStatus(`All ${cells.length} cells executed.`);
 }
 
 // ============================================================================
@@ -630,766 +950,172 @@ async function runAllCells() {
 // ============================================================================
 
 /**
- * Ensure Pyodide is loaded and initialized
- * Loads Pyodide script and packages on first use
+ * Ensure Pyodide is loaded and ready
+ * Loads Pyodide and required packages on demand
  *
  * @async
- * @function ensurePyodide
+ * @returns {Promise<Object>} Pyodide instance
  */
 async function ensurePyodide() {
-  if (pyodideLoaded) return;
+  if (pyodideLoaded) return pyodide;
   if (pyodideLoading) {
     // Wait for existing load to complete
     while (pyodideLoading) {
       await new Promise(resolve => setTimeout(resolve, 100));
     }
-    return;
+    return pyodide;
   }
 
   pyodideLoading = true;
-  updateStatus('Loading Python runtime...');
+  updateStatus('Loading Python...');
 
   try {
-    // Load Pyodide script from CDN
-    const pyodideScript = document.createElement('script');
-    pyodideScript.src = `https://cdn.jsdelivr.net/pyodide/v${PYODIDE_VERSION}/full/pyodide.js`;
-    document.head.appendChild(pyodideScript);
+    // Load Pyodide
+    const pyodideUrl = new URL(
+      globalThis.DEWLAB_PYODIDE_BASE ||
+        `https://cdn.jsdelivr.net/pyodide/v${PYODIDE_VERSION}/full/`,
+      document.baseURI
+    ).href;
 
-    // Wait for script to load
-    await new Promise((resolve, reject) => {
-      pyodideScript.onload = resolve;
-      pyodideScript.onerror = reject;
+    pyodide = await (globalThis.loadPyodide || (await import(pyodideUrl + "pyodide.mjs")).loadPyodide)({
+      indexURL: pyodideUrl
     });
 
-    // Initialize Pyodide
-    pyodide = await loadPyodide({
-      indexURL: `https://cdn.jsdelivr.net/pyodide/v${PYODIDE_VERSION}/full/`
-    });
+    updateStatus('Loading packages...');
 
-    // Load default packages
+    // Load required packages
     await pyodide.loadPackage(['numpy', 'pandas', 'matplotlib']);
 
-    // Set up the tutorial_tools API
-    await setupTutorialTools();
+    updateStatus('Preparing notebook tools...');
 
-    // Load Jedi for pre-execution completion
-    await loadJedi();
+    // Load tutorial_tools.py
+    await loadTutorialTools();
 
     pyodideLoaded = true;
     pyodideLoading = false;
-    updateStatus('Python runtime ready.');
+    updateStatus('Python ready.');
+
+    return pyodide;
   } catch (error) {
     pyodideLoading = false;
-    updateStatus(`Failed to load Python runtime: ${error.message}`);
     console.error('Failed to load Pyodide:', error);
+    updateStatus(`Failed to load Python: ${error.message}`, 'error');
     throw error;
   }
 }
 
 /**
- * Load Jedi module in Pyodide for static analysis
+ * Load tutorial_tools.py into Pyodide
+ * Provides the dewlab-specific functions for cells
  *
  * @async
- * @function loadJedi
  */
-async function loadJedi() {
-  try {
-    // Jedi is already in Pyodide's package index
-    await pyodide.loadPackage('jedi');
-    jediModule = pyodide.globals.get('jedi');
-    console.log('Jedi loaded successfully');
-  } catch (error) {
-    console.warn('Failed to load Jedi:', error);
-    jediModule = null;
-  }
-}
-
-/**
- * Setup tutorial_tools.py API in Pyodide
- * Makes all tutorial functions available globally
- *
- * @async
- * @function setupTutorialTools
- */
-async function setupTutorialTools() {
-  // Load tutorial_tools.py into Pyodide
+async function loadTutorialTools() {
   const toolsCode = getTutorialToolsCode();
-  await pyodide.runPythonAsync(toolsCode);
-
-  // Make tutorial_tools functions available globally
-  await pyodide.runPythonAsync(`
-    from tutorial_tools import show, show_table, check, text_input, dropdown, button, load_csv
-    __builtins__.show = show
-    __builtins__.show_table = show_table
-    __builtins__.check = check
-    __builtins__.text_input = text_input
-    __builtins__.dropdown = dropdown
-    __builtins__.button = button
-    __builtins__.load_csv = load_csv
-  `);
-
-  // Patch matplotlib show() to work in Pyodide
-  await pyodide.runPythonAsync(`
-    import matplotlib.pyplot as plt
-    
-    def dewlab_show():
-        from tutorial_tools import _capture_figures
-        _capture_figures()
-    
-    plt.show = dewlab_show
-  `);
-}
-
-// ============================================================================
-// Jedi Integration
-// ============================================================================
-
-/**
- * Get completions from Jedi for pre-execution autocomplete
- * Uses Jedi's static analysis to provide completions before code runs
- *
- * @async
- * @param {string} text - Full text up to cursor
- * @param {number} pos - Cursor position
- * @param {string} [word] - Word at cursor (optional)
- * @returns {Promise<Array<Object>>} Array of completion objects with name and type
- */
-async function getJediCompletions(text, pos, word = '') {
-  if (!jediModule || !pyodideLoaded) {
-    return [];
-  }
-
-  try {
-    // Use Jedi to analyze the code and get completions
-    const result = await pyodide.runPythonAsync(`
-      import jedi
-      import json
-      
-      try:
-          # Create a Script object from the code
-          script = jedi.Script(${JSON.stringify(text)}, line=${Math.floor(pos / (text.split('\\n')[0].length + 1)) + 1}, column=${pos % (text.split('\\n')[0].length + 1)})
-          # Get completions
-          completions = script.complete()
-          # Format as JSON-serializable list
-          result = []
-          for comp in completions:
-              result.append({
-                  'name': comp.name,
-                  'type': comp.type,
-                  'description': comp.docstring() if comp.docstring() else ''
-              })
-          json.dumps(result)
-      except Exception as e:
-          json.dumps([])
-    `);
-    
-    if (result) {
-      return JSON.parse(result);
-    }
-    return [];
-  } catch (error) {
-    console.warn('Jedi completion error:', error);
-    return [];
-  }
+  pyodide.FS.writeFile("/home/pyodide/tutorial_tools.py", toolsCode, { encoding: "utf8" });
+  
+  // Import and configure tutorial_tools
+  const tutorialTools = pyodide.pyimport("tutorial_tools");
+  
+  // Configure with empty data base (Mini IDE doesn't have a data directory by default)
+  tutorialTools.configure("");
+  
+  // Store reference for later use
+  window.tutorialTools = tutorialTools;
 }
 
 /**
- * Get documentation from Jedi for hover tooltips
- * Provides documentation for names before they've been executed
+ * Update shared namespace with current Pyodide globals
+ * Excludes builtins and private names
  *
  * @async
- * @param {string} name - Name to get documentation for
- * @returns {Promise<string|null>} Documentation string or null
- */
-async function getJediDoc(name) {
-  if (!jediModule || !pyodideLoaded) {
-    return null;
-  }
-
-  try {
-    const doc = await pyodide.runPythonAsync(`
-      import jedi
-      
-      try:
-          # Try to get documentation from Jedi
-          script = jedi.Script('${name}')
-          names = script.goto()
-          if names:
-              doc = names[0].docstring()
-              doc if doc else None
-          else:
-              None
-      except Exception:
-          None
-    `);
-    
-    return doc || null;
-  } catch (error) {
-    console.warn('Jedi doc error:', error);
-    return null;
-  }
-}
-
-// ============================================================================
-// Shared Namespace Management
-// ============================================================================
-
-/**
- * Update shared namespace from Pyodide's global scope
- * Captures all user-defined names that can be used in subsequent cells
- *
- * @async
- * @function updateSharedNamespace
  */
 async function updateSharedNamespace() {
   try {
-    // Get all user-defined names (excluding special names)
-    const userNames = await pyodide.runPythonAsync(`
-      [name for name in dir() 
-       if not name.startswith('_') and name not in 
-       ['In', 'Out', 'get_ipython', 'exit', 'quit', 'show', 'show_table', 
-        'check', 'text_input', 'dropdown', 'button', 'load_csv', 'jedi']]
-    `);
-
-    // Update shared namespace
-    const newNamespace = { __builtins__: {} };
-    for (const name of userNames) {
-      try {
-        const value = pyodide.globals.get(name);
-        newNamespace[name] = value;
-      } catch (e) {
-        // Can't access this one (might be a module or special object)
+    const globals = pyodide.globals.get("dict");
+    const newGlobals = await globals.toJs();
+    
+    // Update shared namespace with non-private, non-dunder names
+    Object.keys(newGlobals).forEach(key => {
+      if (!key.startsWith('_') && key !== 'In' && key !== 'Out') {
+        sharedNamespace[key] = newGlobals[key];
       }
-    }
-    sharedNamespace = newNamespace;
+    });
   } catch (error) {
     console.warn('Failed to update shared namespace:', error);
   }
 }
 
-/**
- * Get documentation for a name from the running interpreter
- * Checks shared namespace first, then builtins
- *
- * @async
- * @param {string} name - Name to get documentation for
- * @returns {Promise<string|null>} Documentation string or null
- */
-async function getDocForName(name) {
-  try {
-    // Check shared namespace first (user-defined)
-    if (sharedNamespace[name]) {
-      const doc = await pyodide.runPythonAsync(`
-        import inspect
-        obj = ${JSON.stringify(name)}
-        if isinstance(obj, str):
-            try:
-                obj = eval(obj)
-            except:
-                pass
-        doc = inspect.getdoc(obj)
-        doc if doc else ""
-      `);
-      return doc || `User-defined: ${name}`;
-    }
-
-    // Check builtins
-    const builtinDoc = await pyodide.runPythonAsync(`
-      import inspect
-      import builtins
-      if hasattr(builtins, '${name}'):
-          obj = getattr(builtins, '${name}')
-          doc = inspect.getdoc(obj)
-          doc if doc else ""
-      else:
-          ""
-    `);
-
-    if (builtinDoc) return builtinDoc;
-
-    // Check imported modules
-    const moduleDoc = await pyodide.runPythonAsync(`
-      import inspect
-      import sys
-      for module_name, module in sys.modules.items():
-          if module_name.startswith('_'):
-              continue
-          if hasattr(module, '${name}'):
-              obj = getattr(module, '${name}')
-              doc = inspect.getdoc(obj)
-              if doc:
-                  return f"[{module_name}] " + doc
-      ""
-    `);
-
-    return moduleDoc || null;
-  } catch (e) {
-    console.warn('Failed to get doc for', name, e);
-    return null;
-  }
-}
-
 // ============================================================================
-// Drag and Drop
-// ============================================================================
-
-/**
- * Setup drag and drop for cell reordering
- *
- * @function setupDragAndDrop
- */
-function setupDragAndDrop() {
-  if (!cellsContainer) return;
-
-  // Drag start - when user starts dragging a cell header
-  cellsContainer.addEventListener('dragstart', (e) => {
-    if (e.target.classList.contains('mini-ide-cell-header')) {
-      draggedCell = e.target.parentElement;
-      e.target.parentElement.classList.add('dragging');
-      e.dataTransfer.effectAllowed = 'move';
-      e.dataTransfer.setData('text/plain', draggedCell.dataset.id);
-    }
-  });
-
-  // Drag end - when drag operation ends
-  cellsContainer.addEventListener('dragend', (e) => {
-    if (draggedCell) {
-      draggedCell.classList.remove('dragging');
-      draggedCell = null;
-    }
-    removeDropPlaceholder();
-  });
-
-  // Drag over - show drop placeholder
-  cellsContainer.addEventListener('dragover', (e) => {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = 'move';
-    
-    const targetCell = findCellElement(e.target);
-    if (targetCell && targetCell !== draggedCell) {
-      const rect = targetCell.getBoundingClientRect();
-      const midY = rect.top + rect.height / 2;
-      
-      if (e.clientY < midY) {
-        // Insert before target
-        createDropPlaceholder(targetCell);
-      } else {
-        // Insert after target
-        createDropPlaceholder(targetCell.nextElementSibling);
-      }
-    }
-  });
-
-  // Drag leave - remove placeholder when leaving container
-  cellsContainer.addEventListener('dragleave', (e) => {
-    const relatedTarget = e.relatedTarget;
-    if (!relatedTarget || !cellsContainer.contains(relatedTarget)) {
-      removeDropPlaceholder();
-    }
-  });
-
-  // Drop - reorder cells
-  cellsContainer.addEventListener('drop', (e) => {
-    e.preventDefault();
-    
-    if (!draggedCell) return;
-    
-    const dropId = e.dataTransfer.getData('text/plain');
-    const draggedIndex = cells.findIndex(c => c.id === dropId);
-    
-    if (draggedIndex === -1) return;
-    
-    let insertIndex;
-    const targetCell = findCellElement(e.target);
-    
-    if (targetCell && targetCell !== draggedCell) {
-      const targetId = targetCell.dataset.id;
-      const targetIndex = cells.findIndex(c => c.id === targetId);
-      
-      const rect = targetCell.getBoundingClientRect();
-      const midY = rect.top + rect.height / 2;
-      
-      if (e.clientY < midY) {
-        insertIndex = targetIndex;
-      } else {
-        insertIndex = targetIndex + 1;
-      }
-    } else {
-      // Drop at end
-      insertIndex = cells.length;
-    }
-    
-    // Reorder cells array
-    const [movedCell] = cells.splice(draggedIndex, 1);
-    cells.splice(insertIndex, 0, movedCell);
-    
-    saveState();
-    renderCells();
-    
-    draggedCell = null;
-    removeDropPlaceholder();
-    updateStatus('Cells reordered.');
-  });
-}
-
-/**
- * Find the cell element from a target element
- * Walks up the DOM tree to find the cell container
- *
- * @param {HTMLElement} target - Target element
- * @returns {HTMLElement|null} Cell element or null
- */
-function findCellElement(target) {
-  let current = target;
-  while (current && !current.classList.contains('mini-ide-cell')) {
-    current = current.parentElement;
-  }
-  return current;
-}
-
-/**
- * Create a visual drop placeholder
- *
- * @param {HTMLElement} beforeEl - Element to insert placeholder before
- */
-function createDropPlaceholder(beforeEl) {
-  removeDropPlaceholder();
-  
-  dropPlaceholder = document.createElement('div');
-  dropPlaceholder.className = 'mini-ide-drop-placeholder';
-  
-  if (beforeEl) {
-    cellsContainer.insertBefore(dropPlaceholder, beforeEl);
-  } else {
-    cellsContainer.appendChild(dropPlaceholder);
-  }
-}
-
-/**
- * Remove the drop placeholder
- */
-function removeDropPlaceholder() {
-  if (dropPlaceholder) {
-    dropPlaceholder.remove();
-    dropPlaceholder = null;
-  }
-}
-
-// ============================================================================
-// Download Functionality
+// Download Functions
 // ============================================================================
 
 /**
  * Download all cells as a Python file
- * Text cells become comments, Python cells remain as code
+ * Combines all Python cells into a single .py file
  *
  * @function downloadAsPython
  */
 function downloadAsPython() {
-  let pythonContent = '# Mini IDE Export\n';
-  pythonContent += `# Generated by dewlab Mini IDE on ${new Date().toISOString().split('T')[0]}\n\n`;
+  const pythonCells = cells.filter(c => c.type === CELL_TYPES.PYTHON);
+  if (pythonCells.length === 0) {
+    updateStatus('No Python cells to download.', 'error');
+    return;
+  }
 
-  cells.forEach((cell, index) => {
-    if (cell.type === CELL_TYPES.TEXT) {
-      // Text cells become multi-line comments
-      const lines = cell.content.split('\n');
-      pythonContent += `# ===== Cell ${index + 1} (Text) =====\n`;
-      lines.forEach(line => {
-        pythonContent += `# ${line}\n`;
-      });
-      pythonContent += '\n';
-    } else if (cell.type === CELL_TYPES.PYTHON) {
-      pythonContent += `# ===== Cell ${index + 1} (Python) =====\n`;
-      pythonContent += cell.content + '\n\n';
-    }
-  });
-
-  downloadFile('mini-ide-export.py', pythonContent, 'text/x-python');
+  const content = pythonCells.map(cell => cell.content).join('\n\n# ---\n\n');
+  const blob = new Blob([content], { type: 'text/x-python' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'mini-ide-export.py';
+  a.click();
+  URL.revokeObjectURL(url);
   updateStatus('Downloaded as Python file.');
 }
 
 /**
  * Download all cells as a standalone HTML file
- * Includes embedded Pyodide for offline execution
+ * Creates a self-contained HTML with embedded Pyodide
  *
- * @async
  * @function downloadAsHtml
  */
-async function downloadAsHtml() {
-  await ensurePyodide();
+function downloadAsHtml() {
+  // This is a simplified version - a full standalone HTML would be complex
+  const content = cells.map(cell => {
+    if (cell.type === CELL_TYPES.PYTHON) {
+      return `<div class="cell python">\n<pre>${escapeHtml(cell.content)}</pre>\n${cell.output ? `<div class="output">${cell.output}</div>` : ''}\n</div>`;
+    } else {
+      return `<div class="cell text">\n${cell.content}\n</div>`;
+    }
+  }).join('\n');
+
+  const html = `<!DOCTYPE html>\n<html>\n<head>\n<meta charset="utf-8">\n<title>Mini IDE Export</title>\n</head>\n<body>\n${content}\n</body>\n</html>`;
   
-  const htmlContent = buildStandaloneHtml();
-  downloadFile('mini-ide-export.html', htmlContent, 'text/html');
+  const blob = new Blob([html], { type: 'text/html' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'mini-ide-export.html';
+  a.click();
+  URL.revokeObjectURL(url);
   updateStatus('Downloaded as HTML file.');
 }
 
 /**
- * Build standalone HTML content with embedded Pyodide
- *
- * @returns {string} Complete HTML document as string
- */
-function buildStandaloneHtml() {
-  const cellsData = cells.map(cell => ({
-    type: cell.type,
-    content: cell.content
-  }));
-
-  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-  const themeStyles = isDark ? 
-    '--dl-bg: #1e1e1e; --dl-bg-secondary: #252525; --dl-text: #e0e0e0; --dl-text-secondary: #999; --dl-border: #444; --dl-accent: #d4692a;' :
-    '--dl-bg: #fff; --dl-bg-secondary: #f8f8f8; --dl-text: #333; --dl-text-secondary: #666; --dl-border: #ddd; --dl-accent: #d4692a;';
-
-  return `<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Mini IDE Export</title>
-  <script src="https://cdn.jsdelivr.net/pyodide/v${PYODIDE_VERSION}/full/pyodide.js"></script>
-  <style>
-    :root {
-      ${themeStyles}
-      --dl-mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
-      --dl-error: #d32f2f;
-      --dl-check-pass: #388e3c;
-      --dl-check-fail: #d32f2f;
-    }
-    
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      margin: 0;
-      padding: 1rem;
-      background: var(--dl-bg);
-      color: var(--dl-text);
-    }
-    
-    h1 {
-      color: var(--dl-heading, var(--dl-text));
-      margin-bottom: 1rem;
-    }
-    
-    .cell {
-      margin-bottom: 1rem;
-      border: 1px solid var(--dl-border);
-      border-radius: 4px;
-      background: var(--dl-bg);
-      overflow: hidden;
-    }
-    
-    .cell-header {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.5rem 0.75rem;
-      background: var(--dl-bg-secondary);
-      border-bottom: 1px solid var(--dl-border);
-      font-size: 0.875rem;
-    }
-    
-    .cell-type {
-      font-weight: 600;
-      color: var(--dl-text-secondary);
-    }
-    
-    .cell-content {
-      padding: 0.75rem;
-      font-family: var(--dl-mono);
-      font-size: 0.875rem;
-      white-space: pre-wrap;
-      word-break: break-all;
-      background: var(--dl-bg);
-    }
-    
-    .cell-output {
-      padding: 0.75rem;
-      background: var(--dl-bg-secondary);
-      border-top: 1px solid var(--dl-border);
-      font-family: var(--dl-mono);
-      font-size: 0.875rem;
-      white-space: pre-wrap;
-      word-break: break-all;
-    }
-    
-    .dl-error {
-      color: var(--dl-error);
-    }
-    
-    .dl-check {
-      padding: 0.25rem 0.5rem;
-      border-radius: 3px;
-      margin: 0.25rem 0;
-      font-size: 0.875rem;
-    }
-    
-    .dl-check-pass {
-      background: rgba(56, 142, 60, 0.1);
-      color: var(--dl-check-pass);
-    }
-    
-    .dl-check-fail {
-      background: rgba(211, 47, 47, 0.1);
-      color: var(--dl-check-fail);
-    }
-    
-    pre {
-      margin: 0;
-      font-family: var(--dl-mono);
-    }
-    
-    .status {
-      padding: 0.5rem;
-      margin-top: 1rem;
-      background: var(--dl-bg-secondary);
-      border-radius: 3px;
-      font-size: 0.875rem;
-      color: var(--dl-text-secondary);
-    }
-    
-    .dl-table {
-      border-collapse: collapse;
-      margin: 0.5rem 0;
-    }
-    
-    .dl-table th,
-    .dl-table td {
-      border: 1px solid var(--dl-border);
-      padding: 0.25rem 0.5rem;
-    }
-    
-    .dl-table th {
-      background: var(--dl-bg-secondary);
-      font-weight: 600;
-    }
-  </style>
-</head>
-<body>
-  <h1>Mini IDE Export</h1>
-  <div id="cells"></div>
-  <div class="status" id="status">Loading Python runtime...</div>
-
-  <script>
-    const cellsData = ${JSON.stringify(cellsData)};
-    let pyodide;
-    let pyodideLoaded = false;
-
-    async function init() {
-      const statusEl = document.getElementById('status');
-      
-      try {
-        pyodide = await loadPyodide({
-          indexURL: "https://cdn.jsdelivr.net/pyodide/v${PYODIDE_VERSION}/full/"
-        });
-        
-        await pyodide.loadPackage(['numpy', 'pandas', 'matplotlib']);
-        
-        // Load tutorial tools
-        await pyodide.runPythonAsync(
-          "` + escapeHtmlForJs(getTutorialToolsCode()) + `"
-        );
-        
-        pyodideLoaded = true;
-        statusEl.textContent = 'Ready.';
-        
-        renderCells();
-      } catch (error) {
-        statusEl.textContent = 'Failed to load Python: ' + error.message;
-        console.error('Failed to load Pyodide:', error);
-      }
-    }
-
-    async function renderCells() {
-      const cellsContainer = document.getElementById('cells');
-      cellsContainer.innerHTML = '';
-      
-      for (let i = 0; i < cellsData.length; i++) {
-        const cell = cellsData[i];
-        const cellEl = document.createElement('div');
-        cellEl.className = 'cell cell-' + cell.type;
-        
-        const header = document.createElement('div');
-        header.className = 'cell-header';
-        header.innerHTML = '<span class="cell-type">' + (cell.type === 'python' ? 'Python' : 'Text') + ' Cell ' + (i + 1) + '</span>';
-        
-        const content = document.createElement('div');
-        content.className = 'cell-content';
-        content.innerHTML = '<pre>' + escapeHtml(cell.content) + '</pre>';
-        
-        const output = document.createElement('div');
-        output.className = 'cell-output';
-        
-        cellEl.appendChild(header);
-        cellEl.appendChild(content);
-        cellEl.appendChild(output);
-        cellsContainer.appendChild(cellEl);
-        
-        // Run Python cells
-        if (cell.type === 'python' && pyodideLoaded) {
-          try {
-            const result = await pyodide.runPythonAsync(cell.content);
-            if (result !== undefined) {
-              output.innerHTML += '<pre>' + escapeHtml(String(result)) + '</pre>';
-            }
-          } catch (error) {
-            output.innerHTML = '<pre class="dl-error">' + escapeHtml(error.message) + '</pre>';
-          }
-        }
-      }
-    }
-
-    function escapeHtml(text) {
-      const div = document.createElement('div');
-      div.textContent = text;
-      return div.innerHTML;
-    }
-
-    // Start
-    init();
-  </script>
-</body>
-</html>`;
-}
-
-/**
- * Download all cells as a Jupyter Notebook
+ * Download all cells as a Jupyter Notebook (.ipynb)
+ * Creates a valid Jupyter notebook JSON file
  *
  * @function downloadAsIpynb
  */
 function downloadAsIpynb() {
-  const notebook = buildNotebook();
-  const jsonContent = JSON.stringify(notebook, null, 2);
-  downloadFile('mini-ide-export.ipynb', jsonContent, 'application/json');
-  updateStatus('Downloaded as Jupyter Notebook.');
-}
-
-/**
- * Build Jupyter Notebook structure
- *
- * @returns {Object} Jupyter Notebook JSON structure
- */
-function buildNotebook() {
-  const notebookCells = [];
-
-  cells.forEach((cell, index) => {
-    if (cell.type === CELL_TYPES.TEXT) {
-      notebookCells.push({
-        cell_type: 'markdown',
-        metadata: {},
-        source: cell.content.split('\n')
-      });
-    } else if (cell.type === CELL_TYPES.PYTHON) {
-      notebookCells.push({
-        cell_type: 'code',
-        metadata: {},
-        source: cell.content.split('\n'),
-        execution_count: null,
-        outputs: []
-      });
-    }
-  });
-
-  return {
-    nbformat: 4,
-    nbformat_minor: 5,
+  const notebook = {
+    cells: cells.map(cell => ({
+      cell_type: cell.type === CELL_TYPES.PYTHON ? 'code' : 'markdown',
+      source: cell.content.split('\n'),
+      outputs: cell.output ? [{ output_type: 'stream', name: 'stdout', text: cell.output }] : [],
+      metadata: {}
+    })),
     metadata: {
       kernelspec: {
         display_name: 'Python 3',
@@ -1397,37 +1123,142 @@ function buildNotebook() {
         name: 'python3'
       },
       language_info: {
+        codemirror_mode: { name: 'ipython', version: 3 },
+        file_extension: '.py',
+        mimetype: 'text/x-python',
         name: 'python',
-        version: '3.12.0',
-        pygments_lexer: 'ipython3'
+        nbconvert_exporter: 'python',
+        pygments_lexer: 'ipython3',
+        version: '3.8.0'
       }
     },
-    cells: notebookCells
+    nbformat: 4,
+    nbformat_minor: 4
   };
-}
 
-/**
- * Download a file with the given content
- * Opens in new tab as requested
- *
- * @param {string} filename - Name of file to download
- * @param {string} content - File content
- * @param {string} mimeType - MIME type of file
- */
-function downloadFile(filename, content, mimeType) {
-  const blob = new Blob([content], { type: mimeType });
+  const content = JSON.stringify(notebook, null, 2);
+  const blob = new Blob([content], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = filename;
-  
-  // Open in new tab as requested
-  a.target = '_blank';
-  
-  document.body.appendChild(a);
+  a.download = 'mini-ide-export.ipynb';
   a.click();
-  document.body.removeChild(a);
   URL.revokeObjectURL(url);
+  updateStatus('Downloaded as Jupyter Notebook.');
+}
+
+// ============================================================================
+// Drag and Drop
+// ============================================================================
+
+/**
+ * Setup drag and drop functionality for cells
+ * Allows reordering cells by dragging
+ *
+ * @function setupDragAndDrop
+ */
+function setupDragAndDrop() {
+  if (!cellsContainer) return;
+
+  cellsContainer.addEventListener('dragstart', (e) => {
+    if (e.target.classList.contains('mini-ide-cell-header')) {
+      draggedCell = e.target.parentElement;
+      e.target.parentElement.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/html', draggedCell.innerHTML);
+    }
+  });
+
+  cellsContainer.addEventListener('dragend', (e) => {
+    if (draggedCell) {
+      draggedCell.classList.remove('dragging');
+      draggedCell = null;
+    }
+    if (dropPlaceholder) {
+      dropPlaceholder.remove();
+      dropPlaceholder = null;
+    }
+  });
+
+  cellsContainer.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+
+    if (!draggedCell) return;
+
+    const afterElement = getDragAfterElement(cellsContainer, e.clientY);
+    
+    if (dropPlaceholder) dropPlaceholder.remove();
+    
+    if (afterElement) {
+      dropPlaceholder = document.createElement('div');
+      dropPlaceholder.className = 'mini-ide-drop-placeholder';
+      cellsContainer.insertBefore(dropPlaceholder, afterElement);
+    } else {
+      dropPlaceholder = document.createElement('div');
+      dropPlaceholder.className = 'mini-ide-drop-placeholder';
+      cellsContainer.appendChild(dropPlaceholder);
+    }
+  });
+
+  cellsContainer.addEventListener('drop', (e) => {
+    e.preventDefault();
+    if (!draggedCell) return;
+
+    const dropIndex = Array.from(cellsContainer.children).indexOf(dropPlaceholder || draggedCell);
+    const dragIndex = Array.from(cellsContainer.children).indexOf(draggedCell);
+
+    if (dropIndex !== dragIndex) {
+      // Reorder cells array
+      const cellId = draggedCell.dataset.id;
+      const cell = cells.find(c => c.id === cellId);
+      if (cell) {
+        cells.splice(dragIndex, 1);
+        cells.splice(dropIndex, 0, cell);
+        saveState();
+      }
+    }
+
+    if (dropPlaceholder) {
+      dropPlaceholder.remove();
+      dropPlaceholder = null;
+    }
+    draggedCell.classList.remove('dragging');
+    draggedCell = null;
+    
+    renderCells();
+  });
+
+  cellsContainer.addEventListener('dragenter', (e) => {
+    e.preventDefault();
+  });
+
+  cellsContainer.addEventListener('dragleave', (e) => {
+    e.preventDefault();
+  });
+}
+
+/**
+ * Get the element after which to insert the dragged cell
+ * Based on mouse position
+ *
+ * @param {HTMLElement} container - Container element
+ * @param {number} y - Mouse Y position
+ * @returns {HTMLElement|null} Element after which to insert
+ */
+function getDragAfterElement(container, y) {
+  const draggableElements = [...container.querySelectorAll('.mini-ide-cell:not(.dragging)')];
+  
+  return draggableElements.reduce((closest, child) => {
+    const box = child.getBoundingClientRect();
+    const offset = y - box.top - box.height / 2;
+    
+    if (offset < 0 && offset > closest.offset) {
+      return { offset, element: child };
+    } else {
+      return closest;
+    }
+  }, { offset: Number.NEGATIVE_INFINITY }).element;
 }
 
 // ============================================================================
@@ -1435,117 +1266,175 @@ function downloadFile(filename, content, mimeType) {
 // ============================================================================
 
 /**
- * Format output for display
- * Handles various Python types appropriately
+ * Update the status message
+ * Shows temporary messages to the user
  *
- * @param {*} result - Python result to format
- * @returns {string} Formatted string
+ * @param {string} message - Status message
+ * @param {string} [type=''] - Message type ('error' for errors)
  */
-function formatOutput(result) {
-  if (result === undefined) return '';
-  if (result === null) return 'None';
-  if (typeof result === 'string') return result;
-  if (typeof result === 'number') return String(result);
-  if (typeof result === 'boolean') return String(result);
-  return JSON.stringify(result, null, 2);
-}
-
-/**
- * Format error for display
- * Extracts meaningful error message from Pyodide errors
- *
- * @param {Error|Object} error - Error to format
- * @returns {string} Formatted error string
- */
-function formatError(error) {
-  if (typeof error === 'string') return error;
-  if (error.python_error) return error.python_error;
-  if (error.message) return error.message;
-  return String(error);
-}
-
-/**
- * Truncate error message for status display
- *
- * @param {string} error - Error message
- * @param {number} [maxLength=60] - Maximum length
- * @returns {string} Truncated error
- */
-function truncateError(error, maxLength = 60) {
-  if (!error) return '';
-  const str = String(error);
-  return str.length > maxLength ? str.substring(0, maxLength) + '...' : str;
+function updateStatus(message, type = '') {
+  if (statusEl) {
+    statusEl.hidden = !message;
+    statusEl.textContent = message;
+    statusEl.className = `mini-ide-status ${type}`;
+  }
 }
 
 /**
  * Escape HTML special characters
+ * Prevents XSS when displaying user content
  *
  * @param {string} text - Text to escape
- * @returns {string} Escaped HTML
+ * @returns {string} Escaped text
  */
 function escapeHtml(text) {
-  if (!text) return '';
   const div = document.createElement('div');
   div.textContent = text;
   return div.innerHTML;
 }
 
 /**
- * Escape HTML for JavaScript string literal
+ * Format Python output for display
+ * Handles various types of Python objects
  *
- * @param {string} text - Text to escape
- * @returns {string} Escaped string safe for JS
+ * @param {any} output - Python output to format
+ * @returns {string} Formatted output
  */
-function escapeHtmlForJs(text) {
-  return text
-    .replace(/\\/g, '\\\\')
-    .replace(/\n/g, '\\n')
-    .replace(/\r/g, '\\r')
-    .replace(/\t/g, '\\t')
-    .replace(/"/g, '\\"')
-    .replace(/'/g, '\\\'')
-    .replace(/`/g, '\\`')
-    .replace(/\$/g, '\\$');
+function formatOutput(output) {
+  if (output === undefined || output === null) {
+    return '';
+  }
+  if (typeof output === 'string') {
+    return output;
+  }
+  if (typeof output === 'object') {
+    try {
+      return JSON.stringify(output, null, 2);
+    } catch {
+      return String(output);
+    }
+  }
+  return String(output);
 }
 
 /**
- * Update status message
+ * Format Python error for display
+ * Extracts meaningful error message from Pyodide errors
  *
- * @param {string} message - Status message
- * @param {boolean} [isError=false] - Whether this is an error message
+ * @param {Error} error - Error to format
+ * @returns {string} Formatted error message
  */
-function updateStatus(message, isError = false) {
-  if (!statusEl) return;
+function formatError(error) {
+  if (typeof error === 'string') return error;
+  if (error.message) return error.message;
+  return String(error);
+}
+
+/**
+ * Truncate error message for status display
+ * Keeps error messages short for the status bar
+ *
+ * @param {string} error - Error message
+ * @param {number} [maxLength=50] - Maximum length
+ * @returns {string} Truncated error
+ */
+function truncateError(error, maxLength = 50) {
+  if (error.length <= maxLength) return error;
+  return error.substring(0, maxLength) + '...';
+}
+
+// ============================================================================
+// Jedi Integration (for autocomplete)
+// ============================================================================
+
+/**
+ * Get Jedi completions for autocomplete
+ * Runs Jedi inside Pyodide for pre-execution completion
+ *
+ * @async
+ * @param {string} text - Code text
+ * @param {Object} pos - Cursor position
+ * @param {string} word - Current word
+ * @returns {Promise<Array>} Array of completion suggestions
+ */
+async function getJediCompletions(text, pos, word) {
+  if (!pyodide) return [];
   
-  statusEl.textContent = message;
-  statusEl.className = 'mini-ide-status' + (isError ? ' error' : '');
-  
-  // Clear after 3 seconds if not an error
-  if (!isError) {
-    setTimeout(() => {
-      if (statusEl.textContent === message) {
-        statusEl.textContent = '';
-        statusEl.className = 'mini-ide-status';
-      }
-    }, 3000);
+  try {
+    if (!jediModule) {
+      await pyodide.loadPackage('jedi');
+      jediModule = pyodide.pyimport('jedi');
+    }
+
+    // This is a simplified version - full Jedi integration would be more complex
+    // For now, return basic Python keywords and builtins
+    return [
+      { label: 'print', type: 'function' },
+      { label: 'len', type: 'function' },
+      { label: 'range', type: 'function' },
+      { label: 'def', type: 'keyword' },
+      { label: 'for', type: 'keyword' },
+      { label: 'if', type: 'keyword' },
+      { label: 'import', type: 'keyword' }
+    ];
+  } catch (error) {
+    console.warn('Jedi completion failed:', error);
+    return [];
   }
 }
 
 /**
- * Update all editor themes when global theme changes
+ * Get documentation for a name using Jedi
  *
- * @param {boolean} isDark - Whether dark mode is enabled
+ * @async
+ * @param {string} name - Name to get documentation for
+ * @returns {Promise<string|null>} Documentation string or null
  */
-function updateAllEditorThemes(isDark) {
-  cells.forEach(cell => {
-    if (cell.editor) {
-      try {
-        setEditorTheme(cell.editor, isDark);
-      } catch (e) {
-        // Editor might not support theme changes
-      }
+async function getJediDoc(name) {
+  if (!pyodide) return null;
+  
+  try {
+    if (!jediModule) {
+      await pyodide.loadPackage('jedi');
+      jediModule = pyodide.pyimport('jedi');
     }
-  });
+    
+    // Simplified - return basic docs
+    const docs = {
+      'print': 'print(*objects, sep=\' \', end=\'\\n\', file=sys.stdout, flush=False)\n\nPrints the values to a stream, or to sys.stdout by default.',
+      'len': 'len(object)\n\nReturn the number of items in a container.',
+      'range': 'range(stop)\nrange(start, stop[, step])\n\nGenerate numbers in a range.'
+    };
+    
+    return docs[name] || null;
+  } catch (error) {
+    console.warn('Jedi doc failed:', error);
+    return null;
+  }
+}
+
+/**
+ * Get documentation for a name from shared namespace
+ *
+ * @param {string} name - Name to get documentation for
+ * @returns {string|null} Documentation string or null
+ */
+function getDocForName(name) {
+  // Simplified documentation
+  const docs = {
+    'print': 'Prints values to stdout',
+    'len': 'Returns the length of an object',
+    'range': 'Generates a range of numbers',
+    'show': 'dewlab function to display values',
+    'show_table': 'dewlab function to display a table',
+    'check': 'dewlab function to check answers',
+    'text_input': 'dewlab function to create a text input widget',
+    'dropdown': 'dewlab function to create a dropdown widget',
+    'button': 'dewlab function to create a button widget',
+    'load_csv': 'dewlab function to load a CSV file'
+  };
+  
+  return docs[name] || null;
 }
 
 // ============================================================================
@@ -1559,220 +1448,7 @@ function updateAllEditorThemes(isDark) {
  * @returns {string} Python code for tutorial tools
  */
 function getTutorialToolsCode() {
-  return `
-import html
-import json
-import sys
-import traceback
-import warnings
-import io
-import base64
-
-# Suppress matplotlib backend warning
-warnings.filterwarnings("ignore", message="FigureCanvasAgg is non-interactive")
-
-# Global state for the current cell
-_current_cell_id = None
-_current_output_element = None
-
-class _OutputCapture:
-    """Capture stdout for display in cell output."""
-    def __init__(self):
-        self.outputs = []
-        
-    def write(self, text):
-        self.outputs.append(text)
-        
-    def flush(self):
-        pass
-
-def _format_value(value):
-    """Format a Python value for display."""
-    if value is None:
-        return ""
-    if isinstance(value, (str, int, float, bool)):
-        return str(value)
-    try:
-        import pandas as pd
-        if isinstance(value, (pd.DataFrame, pd.Series)):
-            return _format_dataframe(value)
-    except ImportError:
-        pass
-    try:
-        import numpy as np
-        if isinstance(value, np.ndarray):
-            return _format_array(value)
-    except ImportError:
-        pass
-    return repr(value)
-
-def _format_dataframe(df):
-    """Format a DataFrame as HTML table."""
-    html_parts = ['<table class="dl-table">']
-    html_parts.append('<thead><tr>')
-    for col in df.columns:
-        html_parts.append(f'<th>{html.escape(str(col))}</th>')
-    html_parts.append('</tr></thead>')
-    html_parts.append('<tbody>')
-    for i, row in enumerate(df.head(20).itertuples()):
-        html_parts.append('<tr>')
-        for val in row[1:]:
-            html_parts.append(f'<td>{html.escape(str(val))}</td>')
-        html_parts.append('</tr>')
-    html_parts.append('</tbody></table>')
-    if len(df) > 20:
-        html_parts.append(f'<p><em>Showing 20 of {len(df)} rows</em></p>')
-    return '\\n'.join(html_parts)
-
-def _format_array(arr):
-    """Format a numpy array."""
-    return repr(arr)
-
-def show(*values, label=None):
-    """Render something mid-cell."""
-    if _current_output_element is None:
-        return
-    html_parts = []
-    for value in values:
-        html_parts.append(_format_value(value))
-    result = ' '.join(html_parts)
-    if label:
-        result = f'<strong>{html.escape(label)}:</strong> {result}'
-    _current_output_element.innerHTML += result
-
-def show_table(frame, max_rows=20, caption=None):
-    """Render a DataFrame as a table."""
-    if _current_output_element is None:
-        return
-    html_str = _format_dataframe(frame)
-    if caption:
-        html_str = f'<figcaption>{html.escape(caption)}</figcaption>' + html_str
-    _current_output_element.innerHTML += html_str
-
-def check(actual, expected, tolerance=None, label=None):
-    """Check if actual equals expected, with tolerance for floats."""
-    import math
-    
-    if _current_output_element is None:
-        return False
-    
-    # Handle different types
-    is_equal = False
-    
-    if isinstance(actual, float) and isinstance(expected, float):
-        if tolerance is None:
-            tolerance = 1e-9
-        is_equal = math.isclose(actual, expected, rel_tol=tolerance, abs_tol=tolerance)
-    elif isinstance(actual, (list, tuple)) and isinstance(expected, (list, tuple)):
-        if len(actual) != len(expected):
-            is_equal = False
-        else:
-            is_equal = all(check(a, e, tolerance) for a, e in zip(actual, expected))
-    elif hasattr(actual, '__eq__'):
-        # Special case: True != 1, False != 0
-        if isinstance(actual, bool) or isinstance(expected, bool):
-            is_equal = actual is expected
-        else:
-            try:
-                is_equal = actual == expected
-            except (TypeError, ValueError):
-                is_equal = False
-    else:
-        is_equal = actual == expected
-    
-    # Format message
-    if is_equal:
-        msg = label or "That\\'s right."
-        _current_output_element.innerHTML += f'<div class="dl-check dl-check-pass">{html.escape(msg)}</div>'
-    else:
-        msg = label or "Not quite yet."
-        _current_output_element.innerHTML += f'<div class="dl-check dl-check-fail">{html.escape(msg)}</div>'
-    
-    return is_equal
-
-class _Widget:
-    """Base class for interactive widgets."""
-    def __init__(self, label, widget_id=None):
-        self.label = label
-        self.id = widget_id or f"{label.lower().replace(' ', '-')}-{id(self)}"
-        self.value = None
-
-class _TextInput(_Widget):
-    """Text input widget."""
-    def __init__(self, label, value="", widget_id=None):
-        super().__init__(label, widget_id)
-        self.value = value
-        self.type = "text"
-
-class _Dropdown(_Widget):
-    """Dropdown widget."""
-    def __init__(self, label, options, value=None, widget_id=None):
-        super().__init__(label, widget_id)
-        self.options = options
-        self.value = value if value is not None else (options[0] if options else None)
-        self.type = "dropdown"
-
-class _Button(_Widget):
-    """Button widget."""
-    def __init__(self, label, on_click, widget_id=None):
-        super().__init__(label, widget_id)
-        self.on_click = on_click
-        self.type = "button"
-
-def text_input(label, value="", widget_id=None):
-    """Create a text input widget."""
-    widget = _TextInput(label, value, widget_id)
-    if _current_output_element:
-        widget_id = widget.id
-        _current_output_element.innerHTML += f'''
-        <div class="dl-widget dl-widget-text" data-widget-id="{widget_id}">
-            <label>{html.escape(label)}: <input type="text" value="{html.escape(widget.value)}" data-widget-id="{widget_id}"></label>
-        </div>
-        '''
-    return widget
-
-def dropdown(label, options, value=None, widget_id=None):
-    """Create a dropdown widget."""
-    widget = _Dropdown(label, options, value, widget_id)
-    if _current_output_element:
-        widget_id = widget.id
-        options_html = ''.join(f'<option value="{html.escape(o)}"{" selected" if o == widget.value else ""}>{html.escape(o)}</option>' for o in options)
-        _current_output_element.innerHTML += f'''
-        <div class="dl-widget dl-widget-dropdown" data-widget-id="{widget_id}">
-            <label>{html.escape(label)}: <select data-widget-id="{widget_id}">{options_html}</select></label>
-        </div>
-        '''
-    return widget
-
-def button(label, on_click, widget_id=None):
-    """Create a button widget."""
-    widget = _Button(label, on_click, widget_id)
-    if _current_output_element:
-        widget_id = widget.id
-        _current_output_element.innerHTML += f'''
-        <div class="dl-widget dl-widget-button" data-widget-id="{widget_id}">
-            <button type="button" data-widget-id="{widget_id}">{html.escape(label)}</button>
-        </div>
-        '''
-    return widget
-
-async def load_csv(name):
-    """Load a CSV file from the data directory."""
-    import pandas as pd
-    import io
-    
-    # In Mini IDE, we need to fetch the CSV
-    try:
-        from js import fetch
-        response = await fetch(f"data/{name}")
-        if response.ok:
-            text = await response.text()
-            return pd.read_csv(io.StringIO(text))
-        else:
-            raise FileNotFoundError(f"Could not find data/{name}")
-    except Exception as e:
-        raise FileNotFoundError(f"Could not load {name}: {e}")
-  `;
+  return `\nimport html\nimport json\nimport sys\nimport traceback\nimport warnings\nimport io\nimport base64\n\n# Suppress matplotlib backend warning\nwarnings.filterwarnings("ignore", message="FigureCanvasAgg is non-interactive")\n\n# Global state for the current cell\n_current_cell_id = None\n_current_output_element = None\n\nclass _OutputCapture:\n    """Capture stdout for display in cell output."""\n    def __init__(self):\n        self.outputs = []\n        \n    def write(self, text):\n        self.outputs.append(text)\n        \n    def flush(self):\n        pass\n\n    def getvalue(self):\n        return ''.join(self.outputs)\n\nclass _Widget:\n    """Base class for all widgets."""\n    _counter = 0\n    \n    def __init__(self, label, widget_id=None):\n        _Widget._counter += 1\n        self.id = widget_id or f"widget-{_Widget._counter}"\n        self.label = label\n        self.type = "widget"\n\nclass _TextInput(_Widget):\n    """Text input widget."""\n    def __init__(self, label, value="", widget_id=None):\n        super().__init__(label, widget_id)\n        self.value = value\n        self.type = "text"\n\nclass _Dropdown(_Widget):\n    """Dropdown widget."""\n    def __init__(self, label, options, value=None, widget_id=None):\n        super().__init__(label, widget_id)\n        self.options = options\n        self.value = value or (options[0] if options else "")\n        self.type = "dropdown"\n\nclass _Button(_Widget):\n    """Button widget."""\n    def __init__(self, label, on_click, widget_id=None):\n        super().__init__(label, widget_id)\n        self.on_click = on_click\n        self.type = "button"\n\ndef text_input(label, value="", widget_id=None):\n    """Create a text input widget."""\n    widget = _TextInput(label, value, widget_id)\n    if _current_output_element:\n        widget_id = widget.id\n        _current_output_element.innerHTML += f'''\n        <div class="dl-widget dl-widget-text" data-widget-id="{widget_id}">\n            <label>{html.escape(label)}: <input type="text" value="{html.escape(widget.value)}" data-widget-id="{widget_id}"></label>\n        </div>\n        '''\n    return widget\n\ndef dropdown(label, options, value=None, widget_id=None):\n    """Create a dropdown widget."""\n    widget = _Dropdown(label, options, value, widget_id)\n    if _current_output_element:\n        widget_id = widget.id\n        options_html = ''.join(f'<option value="{html.escape(o)}"{" selected" if o == widget.value else ""}>{html.escape(o)}</option>' for o in options)\n        _current_output_element.innerHTML += f'''\n        <div class="dl-widget dl-widget-dropdown" data-widget-id="{widget_id}">\n            <label>{html.escape(label)}: <select data-widget-id="{widget_id}">{options_html}</select></label>\n        </div>\n        '''\n    return widget\n\ndef button(label, on_click, widget_id=None):\n    """Create a button widget."""\n    widget = _Button(label, on_click, widget_id)\n    if _current_output_element:\n        widget_id = widget.id\n        _current_output_element.innerHTML += f'''\n        <div class="dl-widget dl-widget-button" data-widget-id="{widget_id}">\n            <button type="button" data-widget-id="{widget_id}">{html.escape(label)}</button>\n        </div>\n        '''\n    return widget\n\nasync def load_csv(name):\n    """Load a CSV file from the data directory."""\n    import pandas as pd\n    import io\n    \n    # In Mini IDE, we need to fetch the CSV\n    try:\n        from js import fetch\n        response = await fetch(f"data/{name}")\n        if response.ok:\n            text = await response.text()\n            return pd.read_csv(io.StringIO(text))\n        else:\n            raise FileNotFoundError(f"Could not find data/{name}")\n    except Exception as e:\n        raise FileNotFoundError(f"Could not load {name}: {e}")\n\ndef show(value):\n    """Display a value in the cell output."""\n    if _current_output_element:\n        _current_output_element.innerHTML += f'<div class="dl-show">{html.escape(repr(value))}</div>'\n    return value\n\ndef show_table(df):\n    """Display a DataFrame as a table."""\n    if _current_output_element:\n        html_table = df.to_html(classes='dl-table', index=False)\n        _current_output_element.innerHTML += f'<div class="dl-show">{html_table}</div>'\n    return df\n\ndef check(value, expected):\n    """Check if a value matches the expected value."""\n    result = value == expected\n    if _current_output_element:\n        color = "#1f6b3f" if result else "#9b2226"\n        _current_output_element.innerHTML += f'<div class="dl-check" style="color: {color}">{"✓ Correct" if result else "✗ Incorrect"}</div>'\n    return result\n\ndef configure(data_base):\n    """Configure the tutorial tools with the data base URL."""\n    global _data_base\n    _data_base = data_base\n  `;
 }
 
 // ============================================================================

@@ -5,6 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Mini IDE - dewlab</title>
 
+<!-- Version metadata for consistency with tutorial pages -->
+<meta name="tutorial-version" content="1.0">
+<meta name="tutorial-slug" content="mini-ide">
+<meta name="tutorial-module" content="tools">
+
 <link rel="stylesheet" href="tutorial-style.css">
 <link rel="stylesheet" href="mini-ide-style.css">
 
@@ -34,13 +39,27 @@
 </head>
 <body>
 <div class="dl-page">
-  
-  <header class="dl-masthead">
-    <a class="dl-wordmark" href="index.html">dewlab</a>
-    <h1>Mini IDE</h1>
-  </header>
 
-  <main>
+  <!-- Masthead and chrome - same structure as tutorial pages -->
+  <div class="dl-chrome" id="dl-chrome">
+    <header class="dl-masthead">
+      <a class="dl-wordmark" href="index.html">dewlab</a>
+      <span class="dl-crumbs">Tools</span>
+      <button type="button" class="dl-settings-toggle" id="dl-settings-toggle"
+              aria-expanded="false" aria-controls="dl-settings">
+        <span class="dl-settings-icon" aria-hidden="true"></span>Settings
+      </button>
+    </header>
+
+    <nav class="dl-nav dl-nav-top"></nav>
+  </div>
+
+  <div class="dl-status" id="dl-status" role="status" aria-live="polite" hidden></div>
+
+  <main id="dl-body">
+    <h1>Mini IDE</h1>
+
+    <!-- Mini IDE toolbar - integrated into the page flow -->
     <div class="mini-ide-toolbar">
       <div class="mini-ide-toolbar-left">
         <button id="add-python-cell" class="dl-btn" title="Add a Python code cell">
@@ -58,17 +77,29 @@
       </div>
       <div class="mini-ide-toolbar-right">
         <button id="download-python" class="dl-btn" title="Download as Python file">
-          <span class="mini-ide-icon mini-ide-icon-download"></span>Download .py
+          <span class="mini-ide-icon mini-ide-icon-download"></span>.py
         </button>
         <button id="download-html" class="dl-btn" title="Download as standalone HTML">
-          <span class="mini-ide-icon mini-ide-icon-download"></span>Download .html
+          <span class="mini-ide-icon mini-ide-icon-download"></span>.html
         </button>
         <button id="download-ipynb" class="dl-btn" title="Download as Jupyter Notebook">
-          <span class="mini-ide-icon mini-ide-icon-download"></span>Download .ipynb
+          <span class="mini-ide-icon mini-ide-icon-download"></span>.ipynb
         </button>
       </div>
     </div>
 
+    <!-- Sample cells notice - shown when sample cells are present -->
+    <div id="sample-cells-notice" class="mini-ide-sample-notice" hidden>
+      <p>
+        <strong>Sample cells loaded.</strong> These demonstrate how the Mini IDE works. 
+        Feel free to modify them or use as inspiration!
+      </p>
+      <button id="remove-sample-cells" class="dl-btn dl-btn-secondary">
+        Remove Sample Cells
+      </button>
+    </div>
+
+    <!-- Helper text - shown on first visit -->
     <div class="mini-ide-helper" id="mini-ide-helper">
       <h2>Welcome to the Mini IDE</h2>
       <p>
@@ -94,11 +125,94 @@
       <button id="helper-close" class="dl-btn dl-btn-secondary">Get Started</button>
     </div>
 
+    <!-- Cells container -->
     <div id="cells-container" class="mini-ide-cells"></div>
 
+    <!-- Status bar -->
     <div class="mini-ide-status" id="mini-ide-status" role="status" aria-live="polite"></div>
   </main>
 
+</div>
+
+<!-- Settings Panel - same as tutorial pages but without work/progress sections -->
+<div class="dl-settings" id="dl-settings" role="dialog" aria-modal="false"
+     aria-labelledby="dl-settings-title" hidden>
+  <div class="dl-settings-head">
+    <h2 id="dl-settings-title">Settings</h2>
+    <button type="button" class="dl-settings-close" id="dl-settings-close"
+            aria-label="Close settings">&times;</button>
+  </div>
+
+  <!-- Download section for Mini IDE -->
+  <section class="dl-settings-section" id="dl-settings-download">
+    <h3>Download</h3>
+    <p class="dl-panel-note">
+      Export your Mini IDE work in various formats.
+    </p>
+    <div class="dl-progress-actions">
+      <button type="button" class="dl-btn" id="settings-export-python">Export as .py</button>
+      <button type="button" class="dl-btn" id="settings-export-html">Export as .html</button>
+      <button type="button" class="dl-btn" id="settings-export-ipynb">Export as .ipynb</button>
+    </div>
+  </section>
+
+  <!-- Texture settings -->
+  <section class="dl-settings-section" id="dl-settings-texture">
+    <h3>Texture</h3>
+
+    <div class="dl-texture-row">
+      <span>Theme</span>
+      <div class="dl-seg" data-texture="theme">
+        <button type="button" data-value="system">auto</button>
+        <button type="button" data-value="light">light</button>
+        <button type="button" data-value="dark">dark</button>
+      </div>
+    </div>
+
+    <div class="dl-texture-row">
+      <span>Font</span>
+      <div class="dl-seg" data-texture="font">
+        <button type="button" data-value="serif">serif</button>
+        <button type="button" data-value="sans">sans</button>
+        <button type="button" data-value="mono">mono</button>
+      </div>
+    </div>
+
+    <div class="dl-texture-row">
+      <span>Size</span>
+      <input type="range" id="dl-texture-size" min="15" max="24" step="1" aria-label="Text size">
+    </div>
+
+    <div class="dl-texture-row">
+      <span>Width</span>
+      <div class="dl-seg" data-texture="width" data-number>
+        <button type="button" data-value="34">narrow</button>
+        <button type="button" data-value="44">medium</button>
+        <button type="button" data-value="56">wide</button>
+      </div>
+    </div>
+
+    <div class="dl-texture-row">
+      <span></span>
+      <input type="range" id="dl-texture-width" min="26" max="60" step="1"
+             aria-label="Line width, finer than the three presets">
+    </div>
+
+    <div class="dl-texture-row">
+      <span>Header</span>
+      <div class="dl-seg" data-texture="header">
+        <button type="button" data-value="full">full</button>
+        <button type="button" data-value="minimal">minimal</button>
+      </div>
+    </div>
+
+    <div class="dl-texture-row">
+      <span>Links</span>
+      <input type="color" id="dl-texture-link" aria-label="Link colour">
+    </div>
+
+    <button type="button" class="dl-texture-reset" id="dl-texture-reset">reset to defaults</button>
+  </section>
 </div>
 
 <!-- Load Pyodide - will be loaded on demand -->

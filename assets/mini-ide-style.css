@@ -1,15 +1,22 @@
-/* Mini IDE specific styles */
+/* Mini IDE specific styles
+ *
+ * This file extends tutorial-style.css and uses its CSS custom properties.
+ * All colors, spacing, and typography should use dewlab's design tokens.
+ */
 
-/* Toolbar */
+/* ============================================================================
+ * Toolbar
+ * ============================================================================
+ */
 .mini-ide-toolbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 0.5rem;
   flex-wrap: wrap;
-  padding: 0.75rem 1rem;
-  background: var(--dl-bg-secondary, #f5f5f5);
-  border-bottom: 1px solid var(--dl-border, #ddd);
+  padding: 0.75rem 0;
+  margin: 1.5rem 0 1rem;
+  border-bottom: 1px solid var(--dl-rule);
 }
 
 .mini-ide-toolbar-left,
@@ -19,22 +26,29 @@
   flex-wrap: wrap;
 }
 
-/* Cells container */
+/* ============================================================================
+ * Cells container
+ * ============================================================================
+ */
 .mini-ide-cells {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
-  padding: 1rem;
+  gap: 1rem;
+  padding: 0.5rem 0;
   min-height: 200px;
 }
 
-/* Individual cell */
+/* ============================================================================
+ * Individual cell
+ * ============================================================================
+ */
 .mini-ide-cell {
-  border: 1px solid var(--dl-border, #ddd);
-  border-radius: 4px;
-  background: var(--dl-bg, #fff);
+  border: 1px solid var(--dl-cell-border);
+  border-radius: 5px;
+  background: var(--dl-cell-bg);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   transition: box-shadow 0.15s ease, border-color 0.15s ease;
+  overflow: hidden;
 }
 
 .mini-ide-cell:hover {
@@ -42,25 +56,40 @@
 }
 
 .mini-ide-cell.focused {
-  border-color: var(--dl-accent, #d4692a);
+  border-color: var(--dl-orange);
   box-shadow: 0 0 0 2px rgba(212, 105, 42, 0.2);
 }
 
 .mini-ide-cell.dragging {
   opacity: 0.5;
-  border: 2px dashed var(--dl-accent, #d4692a);
+  border: 2px dashed var(--dl-orange);
+  background: var(--dl-output-bg);
 }
 
-/* Cell header */
+.mini-ide-cell.error {
+  border-color: var(--dl-error-fg);
+}
+
+.mini-ide-cell.error .mini-ide-cell-header {
+  background: var(--dl-error-bg);
+}
+
+/* ============================================================================
+ * Cell header
+ * ============================================================================
+ */
 .mini-ide-cell-header {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.5rem 0.75rem;
-  background: var(--dl-bg-secondary, #f0f0f0);
-  border-bottom: 1px solid var(--dl-border, #ddd);
+  padding: 0.35rem 0.5rem 0.35rem 0.75rem;
+  background: var(--dl-cell-bg);
+  border-bottom: 1px solid var(--dl-cell-border);
   cursor: move;
   user-select: none;
+  font-family: var(--dl-mono);
+  font-size: 0.72rem;
+  color: var(--dl-muted);
 }
 
 .mini-ide-cell-header:active {
@@ -68,9 +97,12 @@
 }
 
 .mini-ide-cell-type {
+  flex: 0 0 auto;
   font-weight: 600;
-  color: var(--dl-text-secondary, #666);
-  font-size: 0.875rem;
+  color: var(--dl-muted);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 .mini-ide-cell-actions {
@@ -79,7 +111,10 @@
   margin-left: auto;
 }
 
-/* Cell content */
+/* ============================================================================
+ * Cell content
+ * ============================================================================
+ */
 .mini-ide-cell-content {
   padding: 0.75rem;
   min-height: 40px;
@@ -94,26 +129,29 @@
   width: 100%;
   min-height: 40px;
   padding: 0.5rem;
-  border: 1px solid var(--dl-border, #ddd);
+  border: 1px solid var(--dl-cell-border);
   border-radius: 4px;
-  font-family: var(--dl-mono, "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace);
+  font-family: var(--dl-mono);
   font-size: 0.875rem;
   resize: vertical;
-  background: var(--dl-bg, #fff);
-  color: var(--dl-text, #333);
+  background: var(--dl-bg);
+  color: var(--dl-fg);
 }
 
 .mini-ide-textarea:focus {
   outline: none;
-  border-color: var(--dl-accent, #d4692a);
+  border-color: var(--dl-orange);
 }
 
-/* Cell output */
+/* ============================================================================
+ * Cell output
+ * ============================================================================
+ */
 .mini-ide-cell-output {
   padding: 0.75rem;
-  background: var(--dl-bg-secondary, #f8f8f8);
-  border-top: 1px solid var(--dl-border, #ddd);
-  font-family: var(--dl-mono, "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace);
+  background: var(--dl-output-bg);
+  border-top: 1px solid var(--dl-cell-border);
+  font-family: var(--dl-mono);
   font-size: 0.875rem;
   white-space: pre-wrap;
   word-break: break-all;
@@ -124,69 +162,158 @@
   display: none;
 }
 
-/* Status bar */
+/* ============================================================================
+ * Status bar
+ * ============================================================================
+ */
 .mini-ide-status {
-  padding: 0.5rem 1rem;
-  background: var(--dl-bg-secondary, #f0f0f0);
-  border-top: 1px solid var(--dl-border, #ddd);
+  padding: 0.75rem 1rem;
+  margin-top: 1rem;
+  background: var(--dl-cell-bg);
+  border-top: 1px solid var(--dl-cell-border);
+  border-radius: 0 0 5px 5px;
   font-size: 0.875rem;
-  color: var(--dl-text-secondary, #666);
+  color: var(--dl-muted);
 }
 
 .mini-ide-status.error {
-  color: var(--dl-error, #d32f2f);
+  color: var(--dl-error-fg);
+  background: var(--dl-error-bg);
 }
 
 .mini-ide-status.success {
-  color: var(--dl-success, #388e3c);
+  color: var(--dl-pass-fg);
+  background: var(--dl-pass-bg);
 }
 
-/* Helper text */
+/* ============================================================================
+ * Helper text
+ * ============================================================================
+ */
 .mini-ide-helper {
   padding: 1.5rem;
-  margin: 1rem;
-  background: var(--dl-bg-secondary, #f8f8f8);
-  border: 1px solid var(--dl-border, #ddd);
-  border-radius: 4px;
+  margin: 1.5rem 0;
+  background: var(--dl-cell-bg);
+  border: 1px solid var(--dl-cell-border);
+  border-radius: 5px;
   max-width: 800px;
 }
 
 .mini-ide-helper h2 {
   margin-top: 0;
-  color: var(--dl-heading, #333);
+  color: var(--dl-heading);
 }
 
 .mini-ide-helper ul {
   padding-left: 1.5rem;
-  margin: 0.5rem 0;
+  margin: 0.75rem 0;
 }
 
 .mini-ide-helper li {
-  margin: 0.25rem 0;
+  margin: 0.5rem 0;
+  line-height: 1.5;
 }
 
 .mini-ide-helper code {
-  background: var(--dl-bg, #fff);
+  background: var(--dl-bg);
   padding: 0.125rem 0.375rem;
   border-radius: 3px;
-  font-family: var(--dl-mono, monospace);
+  font-family: var(--dl-mono);
   font-size: 0.875rem;
 }
 
 .mini-ide-helper p {
-  margin: 0.5rem 0;
+  margin: 0.75rem 0;
+  line-height: 1.6;
 }
 
 #helper-close {
   margin-top: 1rem;
 }
 
-/* Icons (simple CSS-based icons) */
+/* ============================================================================
+ * Sample cells notice
+ * ============================================================================
+ */
+.mini-ide-sample-notice {
+  padding: 1rem;
+  margin: 1rem 0;
+  background: var(--dl-output-bg);
+  border: 1px solid var(--dl-orange);
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.mini-ide-sample-notice p {
+  margin: 0;
+  color: var(--dl-heading);
+}
+
+.mini-ide-sample-notice[hidden] {
+  display: none;
+}
+
+/* ============================================================================
+ * Buttons
+ * ============================================================================
+ */
+/* Use dewlab's button styles */
+.dl-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.75rem;
+  border: 2px solid var(--dl-navy);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--dl-navy);
+  font-family: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+  text-decoration: none;
+}
+
+.dl-btn:hover,
+.dl-btn:focus {
+  background: var(--dl-navy);
+  color: var(--dl-bg);
+}
+
+.dl-btn:active {
+  background: var(--dl-navy);
+  color: var(--dl-bg);
+}
+
+.dl-btn-secondary {
+  border-color: var(--dl-muted);
+  color: var(--dl-muted);
+}
+
+.dl-btn-secondary:hover,
+.dl-btn-secondary:focus {
+  background: var(--dl-muted);
+  color: var(--dl-bg);
+}
+
+.dl-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ============================================================================
+ * Icons (simple CSS-based icons)
+ * ============================================================================
+ */
 .mini-ide-icon {
   display: inline-block;
   width: 16px;
   height: 16px;
-  margin-right: 0.5rem;
+  margin-right: 0.25rem;
   vertical-align: middle;
   background-size: contain;
   background-repeat: no-repeat;
@@ -194,15 +321,15 @@
 }
 
 .mini-ide-icon-python {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%233776ab'%3E%3Cpath d='M12 2L4 5v6.09c0 5.05 3.41 9.76 8 10.91 4.59-1.15 8-5.86 8-10.91V5l-8-3z'/%3E%3Cpath d='M12 12.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5zm0-5c-.83 0-1.5.67-1.5 1.5s.67 1.5 1.5 1.5 1.5-.67 1.5-1.5-.67-1.5-1.5-1.5z'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%231b2a4a'%3E%3Cpath d='M12 2L4 5v6.09c0 5.05 3.41 9.76 8 10.91 4.59-1.15 8-5.86 8-10.91V5l-8-3z'/%3E%3Cpath d='M12 12.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5zm0-5c-.83 0-1.5.67-1.5 1.5s.67 1.5 1.5 1.5 1.5-.67 1.5-1.5-.67-1.5-1.5-1.5z'/%3E%3C/svg%3E");
 }
 
 .mini-ide-icon-text {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23666'%3E%3Cpath d='M14 2H6c-1.1 0-1.99.9-1.99 2L2 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%231b2a4a'%3E%3Cpath d='M14 2H6c-1.1 0-1.99.9-1.99 2L2 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z'/%3E%3C/svg%3E");
 }
 
 .mini-ide-icon-run {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%234caf50'%3E%3Cpath d='M8 5v14l11-7z'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23d4692a'%3E%3Cpath d='M8 5v14l11-7z'/%3E%3C/svg%3E");
 }
 
 .mini-ide-icon-clear {
@@ -210,20 +337,26 @@
 }
 
 .mini-ide-icon-download {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23666'%3E%3Cpath d='M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%231b2a4a'%3E%3Cpath d='M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z'/%3E%3C/svg%3E");
 }
 
-/* Drag and drop placeholder */
+/* ============================================================================
+ * Drag and drop placeholder
+ * ============================================================================
+ */
 .mini-ide-drop-placeholder {
   height: 40px;
-  background: var(--dl-accent, #d4692a);
+  background: var(--dl-orange);
   opacity: 0.2;
-  border: 2px dashed var(--dl-accent, #d4692a);
+  border: 2px dashed var(--dl-orange);
   border-radius: 4px;
   margin: 0.5rem 0;
 }
 
-/* Loading indicator */
+/* ============================================================================
+ * Loading indicator
+ * ============================================================================
+ */
 .mini-ide-loading {
   position: relative;
 }
@@ -236,8 +369,8 @@
   width: 20px;
   height: 20px;
   margin: -10px 0 0 -10px;
-  border: 2px solid var(--dl-border, #ddd);
-  border-top-color: var(--dl-accent, #d4692a);
+  border: 2px solid var(--dl-cell-border);
+  border-top-color: var(--dl-orange);
   border-radius: 50%;
   animation: mini-ide-spin 0.6s linear infinite;
 }
@@ -246,57 +379,14 @@
   to { transform: rotate(360deg); }
 }
 
-/* Error state */
-.mini-ide-cell.error {
-  border-color: var(--dl-error, #d32f2f);
-}
-
-.mini-ide-cell.error .mini-ide-cell-header {
-  background: rgba(211, 47, 47, 0.1);
-}
-
-/* Dark mode support */
-[data-theme="dark"] .mini-ide-toolbar {
-  background: var(--dl-bg-secondary, #252525);
-  border-color: var(--dl-border, #444);
-}
-
-[data-theme="dark"] .mini-ide-cell {
-  background: var(--dl-bg, #1e1e1e);
-  border-color: var(--dl-border, #444);
-}
-
-[data-theme="dark"] .mini-ide-cell-header {
-  background: var(--dl-bg-secondary, #252525);
-  border-color: var(--dl-border, #444);
-}
-
-[data-theme="dark"] .mini-ide-cell-output {
-  background: var(--dl-bg-secondary, #252525);
-  border-color: var(--dl-border, #444);
-}
-
-[data-theme="dark"] .mini-ide-helper {
-  background: var(--dl-bg-secondary, #252525);
-  border-color: var(--dl-border, #444);
-}
-
-[data-theme="dark"] .mini-ide-textarea {
-  background: var(--dl-bg, #1e1e1e);
-  color: var(--dl-text, #e0e0e0);
-  border-color: var(--dl-border, #444);
-}
-
-[data-theme="dark"] .mini-ide-status {
-  background: var(--dl-bg-secondary, #252525);
-  border-color: var(--dl-border, #444);
-}
-
-/* Responsive adjustments */
+/* ============================================================================
+ * Responsive adjustments
+ * ============================================================================
+ */
 @media (max-width: 768px) {
   .mini-ide-toolbar {
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.75rem;
     align-items: stretch;
   }
 
@@ -306,7 +396,7 @@
   }
 
   .mini-ide-helper {
-    margin: 0.5rem;
+    margin: 0.75rem 0;
     padding: 1rem;
   }
 
@@ -314,22 +404,28 @@
     flex-wrap: wrap;
     justify-content: center;
   }
+
+  .mini-ide-sample-notice {
+    flex-direction: column;
+    text-align: center;
+  }
 }
 
-/* Print styles */
+/* ============================================================================
+ * Print styles
+ * ============================================================================
+ */
 @media print {
   .mini-ide-toolbar,
-  .mini-ide-status {
+  .mini-ide-status,
+  .mini-ide-helper,
+  .mini-ide-sample-notice {
     display: none !important;
   }
 
   .mini-ide-cell {
     break-inside: avoid;
     page-break-inside: avoid;
-    border: 1px solid #ccc;
-  }
-
-  .mini-ide-helper {
-    display: none !important;
+    border: 1px solid var(--dl-rule);
   }
 }
