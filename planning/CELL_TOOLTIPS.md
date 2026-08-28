@@ -1,8 +1,11 @@
 # Tooltips in a student's cell: what exists, what is missing, what is out there
 
-Research note, not a spec — written in response to "let's see what libraries
-exist to provide tooltips that we might use in the cells for students." No
-code changed for this; it is the survey the next PR would build from.
+Research note, built in full — DECISIONS_LOG.md 7.76: (a), (b), and (c) all
+shipped together rather than staged, once prototyping against the real
+pinned Pyodide showed (c)'s pre-run answer genuinely worked and removed the
+open question §4 left about whether it was worth its cost. Written in
+response to "let's see what libraries exist to provide tooltips that we
+might use in the cells for students."
 
 ---
 
@@ -132,16 +135,21 @@ closes without it.*
   for a benefit (c) already gets most of, more cheaply. Not evaluated
   further; changing editors is its own large decision, not a tooltip one.
 
-## 4. Recommendation
+## 4. Recommendation — and what actually shipped
 
-Do (a) and (b) first. Both extend the exact mechanism already built and
-tested (`docFor`, `pageNamesCompletion`, `hoverTooltip()`), need no new
-dependency, and close the two gaps most likely to matter to a beginner day
-to day: "what does this builtin do" and "what arguments does this thing
-take." Leave (c) — Jedi in Pyodide — documented here rather than built,
-since its main extra value (pre-run completion) is a real but narrower
-win once (a) has already closed the builtins gap, and it is a second
-mechanism running alongside `docFor` rather than a small extension of it.
+Written as: do (a) and (b) first, since both extend the exact mechanism
+already built and tested (`docFor`, `pageNamesCompletion`, `hoverTooltip()`)
+with no new dependency; leave (c) documented rather than built, since its
+main extra value — pre-run completion — was a real but narrower win once
+(a) had closed the builtins gap, and it is a second mechanism running
+alongside `docFor` rather than a small extension of it.
 
-Raised as an open question in `QUESTIONS.md`: whether pre-run completion is
-worth that cost, or whether (a) + (b) are enough for now.
+**Built: all three, together — DECISIONS_LOG.md 7.76.** The question this
+section raised for `QUESTIONS.md` — whether pre-run completion is worth
+Jedi's cost, or whether (a)+(b) are enough — was answered by prototyping
+(c) directly against dewlab's real pinned Pyodide before deciding: Jedi's
+`.help()`/`.get_signatures()` genuinely resolve a function defined but
+never run, from source text alone, in low tens of milliseconds warm. That
+made "worth it" a settled yes rather than an open cost/benefit call, so
+(c) was built alongside (a)/(b) rather than staged separately. Live
+answers still win over Jedi's whenever both have one — see 7.76 for how.

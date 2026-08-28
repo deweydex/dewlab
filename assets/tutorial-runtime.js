@@ -520,7 +520,8 @@ function buildCells(manifest) {
       dark,
       onChange: () => scheduleSave(),
       completeNames: pageNamesCompletion,
-      getDoc: docFor,
+      getDoc: hoverDoc,
+      getSignature: signatureHelp,
     });
 
     const cell = {
@@ -581,15 +582,26 @@ function setRunnable(enabled, label) {
 let pyodide = null;
 let tools = null;
 let inspectModule = null;
+let builtinsModule = null;
 let bootPromise = null;
+
+/* Set once loadJedi() finishes, in the background, well after boot() has
+ * already let the student run their first cell — pre-run tooltips are a
+ * nice-to-have, never something worth making anyone wait for. Both null
+ * until then; every Jedi call site checks this first and answers "nothing
+ * yet" rather than throwing. */
+let jediHoverFn = null;
+let jediSignatureFn = null;
 
 /* --------------------------------------------------- code intelligence
  *
- * Both wired into every cell's editor at buildCells() time, before Pyodide
- * exists — each checks for a live interpreter itself, at call time, rather
- * than needing anything reconfigured once boot() finishes. A page left open
- * through a boot just starts offering real completions and real docs; there
- * is no "not ready yet" state for a caller to manage.
+ * All three — completion, hover docs, signature help — wired into every
+ * cell's editor at buildCells() time, before Pyodide exists: each checks
+ * for a live interpreter (and, for docs/signatures, a loaded Jedi) itself,
+ * at call time, rather than needing anything reconfigured once boot() or
+ * loadJedi() finishes. A page left open through a boot just starts
+ * offering real completions and real docs; there is no "not ready yet"
+ * state for a caller to manage.
  */
 
 /* Every name currently defined in the shared page namespace — the same
@@ -607,21 +619,40 @@ function pageNamesCompletion(context) {
   return { from: word.from, options: names.map((label) => ({ label, type: "variable" })) };
 }
 
-/* A real docstring for a name the student defined or imported, read from the
- * interpreter actually running their code — accurate by construction, and
- * there is nothing bundled to fall out of date with it. Only ever looks an
- * existing name up in the page's own namespace; never evaluates anything a
- * student typed, and Python builtins (print, len, …) are deliberately out of
- * scope here — they are not in _page_globals, and reaching into __builtins__
- * as well was a bigger surface than this needed for a first pass. */
-function docFor(name) {
-  if (!tools || !inspectModule || !/^[A-Za-z_]\w*$/.test(name)) return null;
-  let obj;
+/* A name from the page's own live namespace — whatever an earlier cell or
+ * this tutorial's setup cell defined — checked first, since it is what a
+ * cell would actually resolve to right now; a Python builtin (print, len,
+ * …) is checked second, never shadowing a student's own name of the same
+ * spelling. Returns a PyProxy the caller is responsible for `.destroy()`ing,
+ * the same contract docFor already had. */
+function lookupLiveName(name) {
+  if (!tools || !/^[A-Za-z_]\w*$/.test(name)) return undefined;
   try {
-    obj = tools._page_globals.get(name);
+    const local = tools._page_globals.get(name);
+    if (local !== undefined) return local;
   } catch {
-    return null;
+    /* fall through to builtins */
   }
+  if (!builtinsModule) return undefined;
+  try {
+    return builtinsModule[name];
+  } catch {
+    return undefined;
+  }
+}
+
+/* A real docstring for a name the student defined or imported, or a Python
+ * builtin, read from the interpreter actually running their code — accurate
+ * by construction, and there is nothing bundled to fall out of date with it.
+ * Never evaluates anything a student typed; only looks an existing name up.
+ * Widened to cover `__builtins__` per planning/CELL_TOOLTIPS.md option (a) —
+ * `print`, `len` and the rest were deliberately out of scope in the first
+ * pass, on the reasoning that reaching into `__builtins__` was a bigger
+ * surface than that pass needed; the surface turned out to be one more
+ * lookup, not a redesign. */
+function docFor(name) {
+  if (!tools || !inspectModule) return null;
+  const obj = lookupLiveName(name);
   if (obj === undefined || obj === null) return null;
   try {
     return inspectModule.getdoc(obj) || null;
@@ -629,6 +660,116 @@ function docFor(name) {
     return null;
   } finally {
     if (obj && typeof obj.destroy === "function") obj.destroy();
+  }
+}
+
+/* A callable's signature, as `name(params)` — the live-interpreter half of
+ * planning/CELL_TOOLTIPS.md option (b). Same live-namespace-then-builtins
+ * lookup as docFor, since a name that has a docstring worth hovering has a
+ * signature worth showing while typing its call, and the two should never
+ * disagree about which name they mean. */
+function signatureFor(name) {
+  if (!tools || !inspectModule) return null;
+  const obj = lookupLiveName(name);
+  if (obj === undefined || obj === null) return null;
+  let sig;
+  try {
+    sig = inspectModule.signature(obj);
+    return name + sig.toString();
+  } catch {
+    return null;
+  } finally {
+    if (sig && typeof sig.destroy === "function") sig.destroy();
+    if (obj && typeof obj.destroy === "function") obj.destroy();
+  }
+}
+
+/* Pre-run fallback, for a name the live interpreter has never heard of
+ * because the cell that defines it has not been run yet — Jedi parses the
+ * source text itself rather than inspecting a live namespace, so it has an
+ * answer before execution the way docFor/signatureFor structurally cannot
+ * (planning/CELL_TOOLTIPS.md option (c)). `line`/`col` follow Jedi's own
+ * convention (1-indexed line, 0-indexed column), already computed that way
+ * by the CodeMirror extensions calling in. Both wrapped defensively: Jedi
+ * is asked to make sense of a Python beginner's mid-edit, possibly
+ * malformed source on every keystroke, and a parse failure there must never
+ * surface as anything worse than "no tooltip this time". */
+function jediDoc(source, line, col) {
+  if (!jediHoverFn) return null;
+  try {
+    return jediHoverFn(source, line, col) || null;
+  } catch {
+    return null;
+  }
+}
+
+function jediSignature(source, line, col) {
+  if (!jediSignatureFn) return null;
+  try {
+    return jediSignatureFn(source, line, col) || null;
+  } catch {
+    return null;
+  }
+}
+
+/* What vendor-src/codemirror-entry.js's hover extension actually calls: the
+ * live answer if there is one, Jedi's static one otherwise. A name the
+ * interpreter already knows about is always trusted over a static guess —
+ * live is authoritative, Jedi only fills the gap live cannot reach. */
+async function hoverDoc(name, source, line, col) {
+  return docFor(name) || jediDoc(source, line, col);
+}
+
+async function signatureHelp(name, source, line, col, argIndex) {
+  void argIndex; // not needed here — the CodeMirror side bolds the argument
+  return signatureFor(name) || jediSignature(source, line, col);
+}
+
+/* Defined in `pyodide.globals` — the interpreter's own top-level namespace,
+ * not `tutorial_tools._page_globals` a student's cell actually runs against
+ * (`run_cell()`'s `globals=_page_globals`, tutorial_tools.py) — so `jedi`
+ * and these two helpers are never visible to, or shadowable by, anything a
+ * student writes. Both wrapped in Python because the exception a malformed,
+ * mid-edit source string can raise is more varied than any single JS-side
+ * try/catch should have to enumerate; "no tooltip this time" is the only
+ * outcome that should ever reach the caller. */
+const JEDI_HELPER_SOURCE = `
+import jedi
+
+def _dewlab_hover_doc(source, line, col):
+    try:
+        for d in jedi.Script(source).help(line, col):
+            doc = d.docstring()
+            if doc:
+                return doc
+    except Exception:
+        pass
+    return None
+
+def _dewlab_signature(source, line, col):
+    try:
+        sigs = jedi.Script(source).get_signatures(line, col)
+        if sigs:
+            return sigs[0].to_string()
+    except Exception:
+        pass
+    return None
+`;
+
+/* Pre-run tooltips (planning/CELL_TOOLTIPS.md option c), loaded well after
+ * boot() has already let the student run their first cell — jedi+parso are
+ * a real download (roughly 1.6 MB combined) and nothing about a first Run
+ * click depends on them. A failure here (a blocked download, a browser
+ * that refused the package) leaves hoverDoc/signatureHelp exactly where
+ * they already were without this feature: live-interpreter answers only. */
+async function loadJedi() {
+  try {
+    await pyodide.loadPackage(["jedi", "parso"]);
+    await pyodide.runPythonAsync(JEDI_HELPER_SOURCE);
+    jediHoverFn = pyodide.globals.get("_dewlab_hover_doc");
+    jediSignatureFn = pyodide.globals.get("_dewlab_signature");
+  } catch (err) {
+    console.warn("dewlab: Jedi failed to load; pre-run tooltips stay live-only", err);
   }
 }
 
@@ -671,6 +812,7 @@ async function boot(manifest) {
   pyodide.FS.writeFile("/home/pyodide/tutorial_tools.py", source, { encoding: "utf8" });
   tools = pyodide.pyimport("tutorial_tools");
   inspectModule = pyodide.pyimport("inspect");
+  builtinsModule = pyodide.pyimport("builtins");
 
   /* Where a tutorial's `/data/` CSVs live, relative to this page. Setup cells
    * fetch through this rather than hard-coding a path per tutorial. */
@@ -695,6 +837,10 @@ tutorial_tools._page_globals["__name__"] = "__dewlab__"
 
   setStatus("");
   setRunnable(true, "Run");
+
+  /* Deliberately not awaited: a slower or blocked Jedi download must never
+   * delay the moment a student can click Run. */
+  loadJedi();
 }
 
 function ensureBooted(manifest) {
@@ -1729,4 +1875,7 @@ globalThis.dewlab = {
     if (!cell) throw new Error(`no cell "${id}"`);
     return runCell(cell);
   },
+  jediReady: () => jediHoverFn !== null,
+  hoverDoc,
+  signatureHelp,
 };
