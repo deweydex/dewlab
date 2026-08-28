@@ -2451,3 +2451,49 @@ from a note or dataset alone, per-section headings, a note pulled out of
 the page body, both a note and a glossary entry keeping their own separate
 headings). `standalone.bundle.js` rebuilt for the `tutorial-runtime.js`
 change.*
+
+**7.75 — The export button gets a small marker once notes have grown
+since the last export, opt-out in Settings.** `planning/STUDENT_NOTES.md`
+§4's second, larger proposal — left for later at 7.72 — is now built too:
+a `.dl-nudge` class on `#dl-progress-export` once the notes textarea has
+grown by `NOTES_NUDGE_THRESHOLD` (120) characters since the last export,
+rendered as a small coloured dot (`--dl-error-fg`, the same "something
+here wants your attention" language `.dl-status-error` already uses) via
+`::after` rather than any change to the button's own markup. Never a
+banner, never mid-sentence — it can only change on an edit to the notes
+field, an export, an import, or "Start again", none of which happen while
+a reader is mid-keystroke elsewhere on the page.
+
+The baseline it compares against is not a new field on the saved-progress
+record — that would conflate "as of the last autosave" with "as of the
+last export," which are different moments the whole feature exists to
+tell apart. It is one more number in its own per-tutorial key
+(`dewlab:notes-exported-len:<module>:<slug>`), tracked the same lightweight
+way `rememberVersion()`/`writePin()` already track a small piece of
+per-tutorial state outside the main record. An import counts as an export
+too — an imported file's notes already exist outside this browser by
+definition, which is the actual question the marker asks — so it resets
+the baseline exactly like clicking "Export a copy" does. "Start again"
+clears both the progress key and this one, so a fresh start does not carry
+over a stale baseline pointed at notes that no longer exist.
+
+The opt-out lives beside the existing progress-badges toggle in shape:
+`NOTES_NUDGE_KEY` (`dewlab:notes-nudge`), a `[data-notes-nudge]` segmented
+control in "Your work", `readNotesNudge()`/`writeNotesNudge()` mirroring
+`readProgressBadges()`/`writeProgressBadges()` exactly. Off means
+`updateNotesNudge()` always removes the class rather than skipping its own
+check — a reader who turns this off should never see the dot again until
+they turn it back on, not merely less often.
+
+*Cost to change: small. Five small functions in `tutorial-runtime.js`
+(`notesExportKey`, `readNotesNudge`/`writeNotesNudge`, `updateNotesNudge`,
+`markNotesExported`) plus one more toggle-init function following
+`initProgressBadgesToggle()`'s own shape exactly; one `.dl-texture-row` in
+`shell.html` and eight lines of CSS for the dot. Five new e2e tests in
+`tests/e2e/test_saved_progress.py` (`TestNotesNudge` — short notes get no
+marker, long notes do, exporting clears it and the clearing survives a
+reload, writing enough more after an export marks it again, and the
+Settings toggle turns it off and holds across a reload) against the
+shared Pyodide fixture, run alongside the full e2e suite and the full unit
+suite, both green. `standalone.bundle.js` rebuilt for the
+`tutorial-runtime.js` change.*

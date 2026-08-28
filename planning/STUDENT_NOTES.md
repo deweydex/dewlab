@@ -1,12 +1,11 @@
 # Student notes: a place of their own, and encouraging a copy that outlives the browser
 
-Design note. The plain version is built — DECISIONS_LOG.md 7.72: the
-`notes` field, the textarea in Settings, the first-use hint line from §4's
-smaller proposal. §4's second, larger proposal — a staleness marker on the
-export button — is still open; see `OPEN_QUESTIONS.md`. Kept below for the
-reasoning, not as an open task. Answers "does this make sense?" first, then
-designs it against the mechanism the codebase already has for exactly this
-kind of thing.
+Design note, built as designed — DECISIONS_LOG.md 7.72 (the plain version:
+the `notes` field, the textarea in Settings, the first-use hint line) and
+7.75 (§4's second, larger proposal: the staleness marker on the export
+button, opt-out in Settings). Kept below for the reasoning, not as an open
+task. Answers "does this make sense?" first, then designs it against the
+mechanism the codebase already has for exactly this kind of thing.
 
 ---
 

@@ -134,6 +134,81 @@ class TestStudentNotes:
         assert "goes in the export too" in content
 
 
+class TestNotesNudge:
+    """planning/STUDENT_NOTES.md §4's larger proposal: a small marker on
+    "Export a copy" once notes have grown a fair bit since the last export.
+    NOTES_NUDGE_THRESHOLD (tutorial-runtime.js) is 120 characters — every
+    string below uses that directly rather than a magic number of its own."""
+
+    SHORT = "a few words"
+    LONG = "x" * 130
+
+    def export_button_class(self, page) -> str:
+        return page.get_attribute("#dl-progress-export", "class") or ""
+
+    def test_a_short_note_gets_no_marker(self, clean_storage):
+        page = clean_storage
+        page.click("#dl-settings-toggle")
+        page.fill("#dl-progress-notes", self.SHORT)
+        page.wait_for_function("globalThis.dewlab.readSaved() !== null", timeout=10_000)
+        assert "dl-nudge" not in self.export_button_class(page)
+
+    def test_a_long_note_gets_a_marker(self, clean_storage):
+        page = clean_storage
+        page.click("#dl-settings-toggle")
+        page.fill("#dl-progress-notes", self.LONG)
+        page.wait_for_function("globalThis.dewlab.readSaved() !== null", timeout=10_000)
+        assert "dl-nudge" in self.export_button_class(page)
+
+    def test_exporting_clears_the_marker(self, clean_storage):
+        page = clean_storage
+        page.click("#dl-settings-toggle")
+        page.fill("#dl-progress-notes", self.LONG)
+        page.wait_for_function("globalThis.dewlab.readSaved() !== null", timeout=10_000)
+        assert "dl-nudge" in self.export_button_class(page)
+
+        with page.expect_download():
+            page.click("#dl-progress-export")
+        assert "dl-nudge" not in self.export_button_class(page)
+
+        # And it stays gone across a reload — the baseline is stored, not
+        # just the in-memory class.
+        reload_and_wait(page)
+        page.click("#dl-settings-toggle")
+        assert "dl-nudge" not in self.export_button_class(page)
+
+    def test_writing_more_after_export_marks_it_again(self, clean_storage):
+        page = clean_storage
+        page.click("#dl-settings-toggle")
+        page.fill("#dl-progress-notes", self.SHORT)
+        page.wait_for_function("globalThis.dewlab.readSaved() !== null", timeout=10_000)
+        with page.expect_download():
+            page.click("#dl-progress-export")
+        assert "dl-nudge" not in self.export_button_class(page)
+
+        page.fill("#dl-progress-notes", self.SHORT + self.LONG)
+        page.wait_for_function("globalThis.dewlab.readSaved() !== null", timeout=10_000)
+        assert "dl-nudge" in self.export_button_class(page)
+
+    def test_the_settings_toggle_turns_the_marker_off(self, clean_storage):
+        page = clean_storage
+        page.click("#dl-settings-toggle")
+        page.fill("#dl-progress-notes", self.LONG)
+        page.wait_for_function("globalThis.dewlab.readSaved() !== null", timeout=10_000)
+        assert "dl-nudge" in self.export_button_class(page)
+
+        page.click('[data-notes-nudge] button[data-value="off"]')
+        assert "dl-nudge" not in self.export_button_class(page)
+
+        # Holds across a reload — a real setting, not a one-off toggle.
+        reload_and_wait(page)
+        page.click("#dl-settings-toggle")
+        assert "dl-nudge" not in self.export_button_class(page)
+
+        page.click('[data-notes-nudge] button[data-value="on"]')
+        assert "dl-nudge" in self.export_button_class(page)
+
+
 class TestTheAwkwardPaths:
     def test_an_edited_tutorial_restores_anyway_and_says_so(self, clean_storage):
         page = clean_storage

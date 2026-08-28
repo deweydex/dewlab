@@ -73,32 +73,6 @@ real, cross-cutting architecture work regardless of when it happens.
 **Blocks:** nothing today — cells run exactly as they did before this was
 raised.
 
-### Should the export nudge get more insistent than a first-use hint line?
-
-Student notes shipped per-tutorial, as `planning/STUDENT_NOTES.md`
-recommended (§5) — a `notes` field on the same saved-progress record
-`saveNow()` already writes, a textarea in Settings' "Your work" section,
-riding along on the export button already there. What shipped from §4's
-two proposals is the small one: a first-use hint line under the textarea
-("Notes are saved in this browser only. Download a copy below to keep
-them anywhere else."). The second, larger proposal — a small marker on
-the export button once meaningful new text has accumulated since the last
-export — was deliberately left for later, per the design doc's own
-staging ("once the plain version has shipped and it is clear whether it
-is still needed").
-
-**Assumed and built in the meantime:** the hint line only. No staleness
-tracking, no marker on the export button — a student who has written
-notes and never exported sees the same quiet export button cell code
-always had, plus the one line of text explaining why to use it.
-
-**Cost to change later:** small — the marker is UI layered on top of data
-already being saved (`saved_at` already exists per record); nothing about
-shipping the plain version first constrains how the marker gets built.
-
-**Blocks:** nothing — the hint line already covers the "never a block"
-requirement that mattered most; the marker is a refinement, not a gap.
-
 ### Is pre-run tooltip coverage (Jedi in Pyodide) worth its cost, or do the free extensions cover enough?
 
 `planning/CELL_TOOLTIPS.md` surveys what is available for cell tooltips.
@@ -217,6 +191,19 @@ than a new persistent bar. Grey/green, red reserved for a cell whose last
 run actually errored. Only the contents-page badge has a Settings toggle
 — the in-tutorial summary lives inside a panel a reader already chose to
 open, so it needs no toggle of its own.
+
+### Should the export nudge get more insistent than a first-use hint line?
+
+**Settled and built**, per `planning/STUDENT_NOTES.md` §4's second, larger
+proposal and `DECISIONS_LOG.md` 7.75: a small marker on the export button
+once notes have grown by a rough threshold since the last export, rendered
+as a coloured dot rather than a banner, cleared by an export, an import,
+or "Start again." The baseline it compares against is not a new field on
+the saved-progress record — that would conflate "as of the last autosave"
+with "as of the last export" — but a small piece of per-tutorial state of
+its own, tracked the same way `rememberVersion()` already tracks a
+version pin. A Settings toggle turns it off entirely, the same shape the
+progress badges toggle above already has.
 
 ### Coordinate geometry has no tutorial and no outline, and something already depends on it
 
