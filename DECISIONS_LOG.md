@@ -2221,3 +2221,41 @@ and `tests/e2e/test_progress_badges.py` seeds `localStorage` directly and
 never boots Pyodide at all, the same reasoning `test_cheat_sheet.py`
 already established for anything that only ever needs `index.html`.
 `standalone.bundle.js` rebuilt for the `tutorial-runtime.js` change.*
+
+**7.71 — Students can write their own notes, distinct from a tutorial's
+author-written pedagogical notes, saved on the same record as their cell
+work.** `planning/STUDENT_NOTES.md`'s plain version, shipped as designed:
+a `notes` field on the record `saveNow()` already writes, a `<textarea>`
+in Settings' "Your work" section (`#dl-progress-notes`), riding along on
+the export/import button that already existed there — no new save path,
+no new file format.
+
+The one real design change this forced: `initProgressSection()` and
+`saveNow()` both used to bail out on `cells.length === 0`, on the
+reasoning that a page with no cells has nothing to save. That reasoning
+broke the moment notes existed — a prose-only tutorial has nothing
+*executable* to save but can still have something worth writing down. Both
+now check membership in a small `NON_TUTORIAL_PAGES` set (`index`, `tree`,
+`about` — `build.py`'s three non-tutorial `write_*_page()` slugs) instead,
+which is the actual question that matters: is this a tutorial at all, not
+whether it happens to have cells today.
+
+From §4's two nudge proposals, only the smaller one shipped: a first-use
+hint line under the textarea ("Notes are saved in this browser only.
+Download a copy below to keep them anywhere else."). The staleness marker
+on the export button was left for later per the design doc's own staging,
+and is now `QUESTIONS.md`'s open question on this feature.
+
+*Cost to change: small. `saveNow()`/`restoreSaved()` each gained a few
+lines; `notesEl` is one module-level reference set once, read from three
+places. Four new e2e tests in `tests/e2e/test_saved_progress.py`
+(`TestStudentNotes` — autosave, survives a reload, "Start again" clears
+it, and the export download actually contains it, checked via
+`page.expect_download()` rather than trusting the button click alone)
+against the shared Pyodide fixture, and a new
+`tests/e2e/test_student_notes_prose_only.py` (three tests, no Pyodide
+needed, same reasoning `test_cheat_sheet.py` already established) proving
+the zero-cell case specifically: the section is not removed, a note still
+autosaves with `cells: []`, and the contents page itself — which has no
+tutorial to have notes about — correctly gets no notes field at all.
+`standalone.bundle.js` rebuilt for the `tutorial-runtime.js` change.*

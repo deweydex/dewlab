@@ -107,6 +107,20 @@
   <section class="dl-settings-section" id="dl-settings-work">
     <h3>Your work</h3>
 
+    <!-- A student's own notes (planning/STUDENT_NOTES.md) — not the
+         author-written pedagogical notes in the cheat sheet panel, which
+         are part of the tutorial itself and the same for every reader.
+         These are one reader's own, saved in the same record as their
+         cells (notesEl, tutorial-runtime.js) and riding along on the same
+         export button below. -->
+    <label class="dl-progress-notes-label" for="dl-progress-notes">Your notes</label>
+    <textarea class="dl-progress-notes" id="dl-progress-notes" rows="4"
+              placeholder="Anything worth writing down as you go."></textarea>
+    <p class="dl-panel-note dl-progress-notes-hint">
+      Notes are saved in this browser only. Download a copy below to keep
+      them anywhere else.
+    </p>
+
     <p class="dl-progress-state" id="dl-progress-state">Saving as you go.</p>
 
     <p class="dl-panel-note">
