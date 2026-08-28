@@ -100,26 +100,6 @@ right before real notes exist than after.
 **Blocks:** nothing — no notes field exists yet, so there is nothing to
 migrate if the answer changes.
 
-### What should the cheat sheet become on a phone, later?
-
-`planning/CHEAT_SHEETS.md` §6 hides the toggle entirely under the existing
-34rem phone breakpoint, matching the request's own "we wouldn't have this
-option [on mobile], but maybe we can do that later." What "later" should
-look like is not decided: a bottom sheet like `.dl-settings` already becomes
-on a phone, a plain link to a standalone per-tutorial glossary page, or
-something else.
-
-**Assumed and built in the meantime:** nothing on mobile, matching the
-request exactly.
-
-**Cost to change later:** small — the panel's content and the data feeding
-it are unaffected either way; only its container needs a phone-specific
-layout, and `.dl-settings`'s own mobile CSS is a template already sitting in
-the codebase.
-
-**Blocks:** nothing — a phone reader today sees the page exactly as before
-this feature existed.
-
 ### Is pre-run tooltip coverage (Jedi in Pyodide) worth its cost, or do the free extensions cover enough?
 
 `planning/CELL_TOOLTIPS.md` surveys what is available for cell tooltips.
@@ -191,6 +171,17 @@ Revisit with `.claude/skills/tutorial-glossary/SKILL.md` if a real
 `practice_across` page's union ever looks too long in practice — the skill
 can be pointed at a mixed page's actual accumulated list to judge whether
 curation would visibly help, rather than deciding in the abstract.
+
+### What should the cheat sheet become on a phone?
+
+**Settled: a bottom sheet, mirroring `.dl-settings`' own existing mobile
+treatment**, rather than hiding the panel outright. The toggle stays a
+small fixed corner button at phone width; only the floating panel's shape
+changes — `top: auto; bottom: 0; left: 0; right: 0`, the same rule
+`.dl-settings` already had. `tests/e2e/test_cheat_sheet.py`'s `TestMobile`
+covers both: the toggle stays visible, and opening it produces a sheet
+actually anchored to the bottom edge (asserted via `getComputedStyle`,
+not just visually).
 
 ### Do pedagogical notes and datasets belong in the cheat sheet panel, or in a panel of their own? And is a second, left-anchored panel worth having?
 

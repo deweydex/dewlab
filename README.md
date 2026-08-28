@@ -104,8 +104,9 @@ it is ever something a student has not been taught yet: it is assembled per
 tutorial from `<slug>.glossary.yaml` files
 (`.claude/skills/tutorial-glossary/SKILL.md` writes these; the whole design
 is `planning/CHEAT_SHEETS.md`), and a tutorial with nothing accumulated yet
-shows no button at all rather than an empty panel. Not yet available on a
-phone-sized screen.
+shows no button at all rather than an empty panel. On a phone-sized screen
+the panel opens as a sheet across the bottom of the screen, the same
+treatment Settings already has.
 
 **Download to keep** gives the student one HTML file — on a memory stick, in
 their downloads folder, anywhere — that they open by double-clicking. It

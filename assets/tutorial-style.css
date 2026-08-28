@@ -1019,13 +1019,17 @@ p code, li code {
 /* ------------------------------------------------------------ small screens */
 
 /* A phone held in one hand, which is how a good deal of the reading will
-   actually happen. Three changes: the panel becomes a sheet across the foot of
-   the screen rather than a card floating off one corner; the navigation puts
-   previous and next on one line with the contents link beneath them, so two
-   long titles stop fighting for the same row; and the module name in the
-   masthead gives up its space to the Settings button. */
+   actually happen. Three changes: each floating panel — Settings, and the
+   cheat sheet — becomes a sheet across the foot of the screen rather than a
+   card floating off one corner (they were never both open at once even on
+   desktop, so becoming sheets at the same edge does not put them in each
+   other's way); the navigation puts previous and next on one line with the
+   contents link beneath them, so two long titles stop fighting for the same
+   row; and the module name in the masthead gives up its space to the
+   Settings button. */
 @media (max-width: 34rem) {
-  .dl-settings {
+  .dl-settings,
+  .dl-cheatsheet {
     top: auto;
     bottom: 0;
     left: 0;
@@ -1036,11 +1040,6 @@ p code, li code {
     border-bottom: none;
     padding-bottom: 1.4rem;
   }
-
-  /* Not yet on a phone — a fixed-position corner button and a floating
-     panel are exactly the two things that stop working at this width.
-     QUESTIONS.md has what a phone-sized version should look like instead. */
-  .dl-cheatsheet-toggle, .dl-cheatsheet { display: none; }
 
   .dl-nav {
     grid-template-columns: 1fr 1fr;

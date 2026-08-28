@@ -2146,3 +2146,25 @@ section, not a new document. Running it across the rest of the curriculum
 is real, separate work — tracked as a follow-up rather than attempted in
 one pass, the same reasoning that kept `tutorial-glossary`'s own curriculum
 run as several PRs rather than one.*
+
+**7.69 — The cheat sheet stopped hiding on a phone; it becomes a bottom
+sheet instead, the same treatment `.dl-settings` already had.** Settles
+`QUESTIONS.md`'s mobile question from 7.64. The `@media (max-width: 34rem)`
+rule that used to read `.dl-cheatsheet-toggle, .dl-cheatsheet { display:
+none; }` now gives `.dl-cheatsheet` the exact same `top: auto; bottom: 0;
+left: 0; right: 0; ...` block `.dl-settings` already had, rather than a
+separate, parallel rule — one selector list, one set of rules, for two
+panels that already behave identically at this width. The toggle needed no
+change at all: it was always a small fixed corner button, not a floating
+card, so it was never the thing that stopped working on a phone — only the
+panel's shape was.
+
+`tests/e2e/test_cheat_sheet.py`'s `TestMobile` — previously one test
+asserting the toggle was hidden — is now two: the toggle stays visible, and
+opening it produces a panel actually anchored to the bottom edge, checked
+with `getComputedStyle()` (`position: fixed`, `bottom/left/right: 0`)
+rather than trusted from the CSS alone.
+
+*Cost to change: small — CSS only, one selector list gained a second
+target, no JavaScript or markup changed. `tutorial-runtime.js` was
+untouched, so `standalone.bundle.js` did not need rebuilding this time.*
