@@ -2060,3 +2060,164 @@ series-only with no file, stays series-only when left off an existing
 file, fails loudly on an unknown series name). Verified against a real
 build too: `grid-of-numbers`, the first matrices tutorial, now carries
 `working-with-tables`' 8 fundamentals entries ahead of its own 11.*
+
+**7.67 — A cell's control bar moved below the editor and output, and its
+hint stopped floating.** Two real usability problems, reported directly
+against the live site rather than found in review: the bar (slug, hint,
+reset, run) sat above the code, so a reader met controls for code they had
+not read yet; and the hint's "?" opened a hover popover
+(`position: absolute`) that could float over the editor or output beneath
+it, and gave a touch reader no way to open it at all.
+
+`render_cell()`'s markup order changed — bar now last inside `.dl-cell` —
+with no change to how `tutorial-runtime.js` binds to any of it, since
+every binding is a class lookup (`.dl-editor`, `.dl-output`,
+`.dl-btn-run`, `.dl-btn-reset`) rather than a DOM-position assumption. The
+hint became a real click toggle: `.dl-hint-icon` is a button with
+`aria-expanded`, `.dl-hint-text` is `hidden` by default and a plain block
+when open (not `position: absolute`), so opening it grows the cell and
+pushes whatever follows it down the page — the same "push down, cover
+nothing" shape the prose-level `<details class="dl-hint">` fold already
+had, reached by a different mechanism because `<details>` does not fit as
+one icon inside a horizontal bar. `[hidden]` gets the same explicit
+`.dl-hint-text[hidden] { display: none }` rule 7.64 already needed for the
+cheat sheet toggle, for the same specificity-tie reason.
+
+A second ask alongside this — the Run button becoming a Stop button while
+a cell runs — was investigated and not built: `planning/CELL_CONTROLS.md`
+§2 has the finding. Pyodide runs on the page's own main thread with no Web
+Worker anywhere in the codebase, so a genuinely blocking loop leaves no
+thread free to even handle a Stop click; the only real fix is a Worker
+plus `pyodide.setInterruptBuffer()`, which needs `SharedArrayBuffer`,
+which needs cross-origin-isolation response headers GitHub Pages does not
+let this project set without a service-worker shim. Raised in
+`QUESTIONS.md` as its own decision rather than folded into this PR.
+
+*Cost to change: small for what shipped — `tests/test_build.py` gained two
+tests (hint starts closed and is a toggle not `role="tooltip"`, bar comes
+after editor/output in the markup) and `tests/e2e/test_cell_hint.py` is new
+(starts closed, a click opens it in normal flow — asserted directly via
+`getComputedStyle(...).position === "static"` and a real bounding-box
+height rather than trusting the CSS — a second click closes it again),
+run against a real browser with no cell run and no Pyodide boot required,
+same reasoning `test_autocomplete.py`'s first class already established.
+The Stop button is not a cost deferred cheaply — see `QUESTIONS.md`, the
+Worker migration is real architecture work whenever it happens.*
+
+**7.68 — A new skill reviews a tutorial's own code for naming and comment
+quality, the same way `tutorial-glossary` reviews it for vocabulary.**
+`PEDAGOGICAL_STYLE_GUIDE.md` §5 had cell-length, boilerplate, and tool
+rules but nothing on variable naming or comment style — a real gap, since
+"clearer, semantic variable names" needs somewhere authoritative to check
+against, the same reason `tutorial-glossary` defers to `terms_of()`'s
+existing emphasis convention rather than deciding term-worthiness itself.
+§5 gained rules (semantic names over mathy single letters; comments that
+say why, not what; two named exceptions — a formula's own letters
+matching the prose above a cell, and "discover first, name afterwards"
+applying to a variable's specificity the same way it already applies to
+prose) before `.claude/skills/cell-code-review/SKILL.md` was written
+against them.
+
+The skill treats a rename as whole-tutorial, not per-cell — cells in one
+tutorial share a namespace in document order, so a name reused across
+cells has to be renamed everywhere it appears or the tutorial breaks
+rather than improves — and requires validating an edited cell still
+compiles and, where checkable, still produces the same output, before
+calling a rename done.
+
+Run once, by hand, across a handful of real tutorials rather than the
+whole curriculum, to prove the process before committing to a full pass
+(the same staged approach `tutorial-glossary` took, `CHEAT_SHEETS.md` §7):
+`multiplying-grids.md` and `grid-of-numbers.md` needed nothing — `a`/`b`
+in `dot(a, b)` and `A`/`B`/`C`/`D`/`S`/`M` for matrices both match names
+already established in the surrounding prose, `pixels`/`ramp` were
+already semantic. `how-we-got-here.md`'s `to_binary(n)` was left alone —
+a general-purpose numeric conversion function's single parameter, already
+explained by its own docstring, is the same shape as `dot(a, b)`'s
+generic arguments. One real change: `undoing-it.md`'s `polygon_area()`
+renamed its point-count variable from `n` to `point_count` (`i`/`j` left
+alone as loop indices, exempted by name); confirmed identical output
+(`area of the original square: 1.0`, before and after) and a clean
+rebuild.
+
+*Cost to change: small — the skill is a process document, no code of its
+own. The style-guide rules it depends on are new text in an existing
+section, not a new document. Running it across the rest of the curriculum
+is real, separate work — tracked as a follow-up rather than attempted in
+one pass, the same reasoning that kept `tutorial-glossary`'s own curriculum
+run as several PRs rather than one.*
+
+**7.69 — The cheat sheet stopped hiding on a phone; it becomes a bottom
+sheet instead, the same treatment `.dl-settings` already had.** Settles
+`QUESTIONS.md`'s mobile question from 7.64. The `@media (max-width: 34rem)`
+rule that used to read `.dl-cheatsheet-toggle, .dl-cheatsheet { display:
+none; }` now gives `.dl-cheatsheet` the exact same `top: auto; bottom: 0;
+left: 0; right: 0; ...` block `.dl-settings` already had, rather than a
+separate, parallel rule — one selector list, one set of rules, for two
+panels that already behave identically at this width. The toggle needed no
+change at all: it was always a small fixed corner button, not a floating
+card, so it was never the thing that stopped working on a phone — only the
+panel's shape was.
+
+`tests/e2e/test_cheat_sheet.py`'s `TestMobile` — previously one test
+asserting the toggle was hidden — is now two: the toggle stays visible, and
+opening it produces a panel actually anchored to the bottom edge, checked
+with `getComputedStyle()` (`position: fixed`, `bottom/left/right: 0`)
+rather than trusted from the CSS alone.
+
+*Cost to change: small — CSS only, one selector list gained a second
+target, no JavaScript or markup changed. `tutorial-runtime.js` was
+untouched, so `standalone.bundle.js` did not need rebuilding this time.*
+
+**7.70 — Two progress indicators, both read from the saved-progress
+record `saveNow()` already writes.** `planning/PROGRESS_INDICATORS.md`
+designed both; this is what shipped, unchanged from that design in shape.
+
+`saveNow()` gained one field per cell — `errored: !!cell.outputEl.
+querySelector(".dl-error")` — captured once rather than re-parsing saved
+`output_html` wherever the question "did this cell's last run fail" comes
+up. `progressCounts()` is the one place that turns a list of
+`{started, errored}` into `{total, done, errored}`, shared by both
+surfaces below rather than two separate counting implementations.
+
+**The contents page** gets a small badge (`1/2`, red background only when
+at least one counted cell errored) next to a tutorial's title —
+`render_index()` already knows `len(member.cells)` at build time, so a new
+`progress_attrs()` helper writes it straight onto the link as
+`data-module`/`data-slug`/`data-cells`, no fetch needed for
+`renderContentsProgress()` to read that tutorial's own `localStorage`
+record client-side. A tutorial with no saved record, or one where nothing
+has been run yet, gets no badge — a `0/9` would read as a judgment on a
+page nobody has opened. A new Settings toggle ("Show progress on the
+tutorials list") governs this specifically, because it is the one
+*ambient* piece — visible on every visit to the contents page whether or
+not a reader wants a visible tally.
+
+**A tutorial's own page** gets a plain summary line — "4 of 9 cells run ·
+1 with an error" — folded into a new "Progress" section in Settings
+(`updateProgressSummary()`, called after every save) rather than a
+persistent bar competing with the cheat sheet's toggle for a screen edge,
+per the original framing's own reconsideration in the design doc. Hidden
+whenever nothing has been run yet, same reasoning as the contents page's
+badge. No second toggle: unlike the contents-page badge, this line is
+only ever seen by a reader who already opened Settings, which is opt-in
+by where it lives.
+
+One wrinkle the design doc called out and the implementation resolves the
+same way: `#dl-settings-progress`, unlike `#dl-settings-work`, is **not**
+removed on a page with zero cells — its toggle also governs the contents
+page's own badges, and the contents page itself has no cells at all, so
+the section has to survive there; only the summary line inside it stays
+hidden in that case.
+
+*Cost to change: small. `progressCounts()`/`liveProgressCounts()`/
+`renderContentsProgress()`/`updateProgressSummary()` are each short, pure
+or near-pure functions. Two new unit tests cover the build-time
+attributes (`TestTheContentsPage`), and two new e2e files cover the rest:
+`tests/e2e/test_progress_summary.py` runs real cells (a real traceback,
+not a seeded fake, is what proves the `errored` capture reads what
+`tutorial_tools.py` actually renders) against the shared Pyodide fixture,
+and `tests/e2e/test_progress_badges.py` seeds `localStorage` directly and
+never boots Pyodide at all, the same reasoning `test_cheat_sheet.py`
+already established for anything that only ever needs `index.html`.
+`standalone.bundle.js` rebuilt for the `tutorial-runtime.js` change.*

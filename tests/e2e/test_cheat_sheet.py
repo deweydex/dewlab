@@ -247,7 +247,12 @@ class TestContent:
 
 
 class TestMobile:
-    def test_the_toggle_is_hidden_on_a_phone_sized_viewport(self, site, browser, base_url):
+    """Planning/CHEAT_SHEETS.md's §6 mobile note, settled in
+    QUESTIONS.md/DECISIONS_LOG.md: the panel becomes a bottom sheet on a
+    phone, mirroring .dl-settings' own existing mobile treatment, rather
+    than staying hidden."""
+
+    def test_the_toggle_is_visible_on_a_phone_sized_viewport(self, site, browser, base_url):
         _tutorial(site, "one", "One")
         _glossary(site, "one", [CONCEPT])
         _set_order(site, ["one"])
@@ -255,5 +260,26 @@ class TestMobile:
         context = browser.new_context(viewport={"width": 375, "height": 700})
         page = context.new_page()
         page.goto(f"{base_url}/tutorials/{MODULE}/one.html")
-        assert page.is_hidden("#dl-cheatsheet-toggle")
+        assert page.is_visible("#dl-cheatsheet-toggle")
+        context.close()
+
+    def test_opening_it_shows_a_sheet_anchored_to_the_bottom_edge(self, site, browser, base_url):
+        _tutorial(site, "one", "One")
+        _glossary(site, "one", [CONCEPT])
+        _set_order(site, ["one"])
+        b.build()
+        context = browser.new_context(viewport={"width": 375, "height": 700})
+        page = context.new_page()
+        page.goto(f"{base_url}/tutorials/{MODULE}/one.html")
+        page.click("#dl-cheatsheet-toggle")
+        assert page.is_visible("#dl-cheatsheet")
+        style = page.eval_on_selector(
+            "#dl-cheatsheet",
+            "el => { const s = getComputedStyle(el); "
+            "return { position: s.position, bottom: s.bottom, left: s.left, right: s.right }; }",
+        )
+        assert style["position"] == "fixed"
+        assert style["bottom"] == "0px"
+        assert style["left"] == "0px"
+        assert style["right"] == "0px"
         context.close()

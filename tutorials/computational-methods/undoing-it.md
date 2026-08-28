@@ -34,10 +34,10 @@ corners, add them up, and halve the result.
 id: measuring-the-square-1
 def polygon_area(points):
     xs, ys = points
-    n = len(xs)
+    point_count = len(xs)
     total = 0
-    for i in range(n):
-        j = (i + 1) % n
+    for i in range(point_count):
+        j = (i + 1) % point_count
         total += xs[i] * ys[j] - xs[j] * ys[i]
     return abs(total) / 2
 

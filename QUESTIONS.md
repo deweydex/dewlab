@@ -49,25 +49,56 @@ A one-line answer is a complete answer.
 
 ## Open
 
-### What should the cheat sheet become on a phone, later?
+### Is moving Pyodide into a Web Worker worth it, to give a runaway cell a real Stop button?
 
-`planning/CHEAT_SHEETS.md` §6 hides the toggle entirely under the existing
-34rem phone breakpoint, matching the request's own "we wouldn't have this
-option [on mobile], but maybe we can do that later." What "later" should
-look like is not decided: a bottom sheet like `.dl-settings` already becomes
-on a phone, a plain link to a standalone per-tutorial glossary page, or
-something else.
+`planning/CELL_CONTROLS.md` §2 found that "Run becomes Stop while running"
+cannot be built as a small addition to the current main-thread Pyodide
+setup — a genuinely blocking loop leaves no thread free to handle the
+click. The only real mechanism, `pyodide.setInterruptBuffer()` from a Web
+Worker, needs `SharedArrayBuffer`, which needs `Cross-Origin-Opener-Policy`/
+`Cross-Origin-Embedder-Policy` response headers GitHub Pages does not let
+this project set directly — the common fix is a service-worker shim, a
+real piece of infrastructure — plus moving every place `tutorial-runtime.js`
+talks to Pyodide directly onto a postMessage boundary.
 
-**Assumed and built in the meantime:** nothing on mobile, matching the
-request exactly.
+**Assumed and built in the meantime:** nothing — a runaway cell still
+freezes the tab, exactly as before this question was raised, with the
+browser's own "Page Unresponsive" handling as the only recourse.
 
-**Cost to change later:** small — the panel's content and the data feeding
-it are unaffected either way; only its container needs a phone-specific
-layout, and `.dl-settings`'s own mobile CSS is a template already sitting in
-the codebase.
+**Cost to change later:** large, and this is the one place in this
+project's whole planning history where that is true of the *whole*
+feature, not just of getting it perfectly right — the Worker migration is
+real, cross-cutting architecture work regardless of when it happens.
 
-**Blocks:** nothing — a phone reader today sees the page exactly as before
-this feature existed.
+**Blocks:** nothing today — cells run exactly as they did before this was
+raised.
+
+### Should student notes stay per-tutorial, and how insistent should the "download a copy" nudge be?
+
+`planning/STUDENT_NOTES.md` designs free-text notes a student writes
+themselves (distinct from `SIDEBAR_CONTENT.md`'s author-written
+pedagogical notes) — a `notes` field added to the same `dl-progress:
+<module>:<slug>` record `saveNow()` already writes, editable from a
+textarea in Settings' existing "Your work" section, riding along on the
+export/import button that already exists there.
+
+**Assumed and built in the meantime:** nothing implemented yet — this was
+a design task. Recommended: per-tutorial scope rather than one course-wide
+notebook (§5 — ships on existing infrastructure, does not foreclose a
+course-wide version later), and a "never a block" nudge to export a copy —
+a first-use hint line plus a small, non-interrupting marker on the export
+button once meaningful new text has accumulated (§4) — rather than a
+dialog or anything that stops a student from typing.
+
+**Cost to change later:** small for the nudge's exact heuristic (a UI
+detail, not a schema one). Larger for per-tutorial vs. course-wide scope
+once students actually have per-tutorial notes saved — moving to a single
+notebook later would mean either migrating existing per-tutorial notes
+into one record or leaving old ones stranded, so this is cheaper to get
+right before real notes exist than after.
+
+**Blocks:** nothing — no notes field exists yet, so there is nothing to
+migrate if the answer changes.
 
 ### Is pre-run tooltip coverage (Jedi in Pyodide) worth its cost, or do the free extensions cover enough?
 
@@ -141,6 +172,17 @@ Revisit with `.claude/skills/tutorial-glossary/SKILL.md` if a real
 can be pointed at a mixed page's actual accumulated list to judge whether
 curation would visibly help, rather than deciding in the abstract.
 
+### What should the cheat sheet become on a phone?
+
+**Settled: a bottom sheet, mirroring `.dl-settings`' own existing mobile
+treatment**, rather than hiding the panel outright. The toggle stays a
+small fixed corner button at phone width; only the floating panel's shape
+changes — `top: auto; bottom: 0; left: 0; right: 0`, the same rule
+`.dl-settings` already had. `tests/e2e/test_cheat_sheet.py`'s `TestMobile`
+covers both: the toggle stays visible, and opening it produces a sheet
+actually anchored to the bottom edge (asserted via `getComputedStyle`,
+not just visually).
+
 ### Do pedagogical notes and datasets belong in the cheat sheet panel, or in a panel of their own? And is a second, left-anchored panel worth having?
 
 **Settled: notes and datasets extend the existing cheat-sheet panel, as
@@ -152,18 +194,16 @@ both are design settled, ready to implement.
 
 ### What should the contents page and a tutorial's own page show about a reader's progress?
 
-**Settled, and designed in `planning/PROGRESS_INDICATORS.md`:** both a
-per-tutorial completion indicator on the contents page (a build-time
-`data-cells` count plus a client-side read of the existing
-`dl-progress:<module>:<slug>` `localStorage` record — no new save format,
-just one new `errored` boolean captured alongside what `saveNow()` already
-writes) and, inside a tutorial, a plain summary line folded into the
-existing Settings panel rather than a new persistent bar. Colouring is
-grey (not started) / green (done) / red reserved specifically for a cell
-whose last run errored, not for "not attempted yet." Only the contents
-page's indicator gets a Settings toggle — the in-tutorial summary lives
-inside a panel a reader already chose to open, so it needs no toggle of
-its own. Not built yet; ready to implement.
+**Settled and built**, per `planning/PROGRESS_INDICATORS.md` and
+`DECISIONS_LOG.md` 7.70: a per-tutorial completion badge on the contents
+page (`data-cells` at build time, a client-side read of the existing
+saved-progress `localStorage` record, no new save format beyond one
+`errored` boolean `saveNow()` now captures), plus a plain summary line
+folded into the existing Settings panel on a tutorial's own page rather
+than a new persistent bar. Grey/green, red reserved for a cell whose last
+run actually errored. Only the contents-page badge has a Settings toggle
+— the in-tutorial summary lives inside a panel a reader already chose to
+open, so it needs no toggle of its own.
 
 ### Coordinate geometry has no tutorial and no outline, and something already depends on it
 
