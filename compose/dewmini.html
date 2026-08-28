@@ -75,7 +75,7 @@
         <button id="add-text-cell" class="dm-tool" title="Add a documentation cell">
           <span class="dm-tool-icon dm-tool-icon-text" aria-hidden="true"></span>Text
         </button>
-        <button id="add-practice" class="dm-tool" title="Add the next problem from dewlab's practice bank">
+        <button id="add-practice" class="dm-tool" title="Add a problem from dewlab's practice bank (order set in Settings)">
           <span class="dm-tool-icon dm-tool-icon-text" aria-hidden="true"></span>Practice
         </button>
       </div>
@@ -128,7 +128,7 @@
       <kbd>Shift</kbd>+<kbd>Enter</kbd> from inside it. <strong>Run all</strong>
       clears every cell's output and reruns them top to bottom, so what you
       see always matches what the code above it actually did. Drag a cell by
-      its left edge to move it.
+      its header — the row with its Python/Text pill — to move it.
     </p>
     <p class="dm-panel-note">
       A text cell is documentation — it never runs. Click away from it and it
@@ -168,7 +168,7 @@
       <div class="dm-help-entry"><dt><code>text_input(label)</code></dt><dd>A text box, read with <code>.value</code></dd></div>
       <div class="dm-help-entry"><dt><code>dropdown(label, options)</code></dt><dd>A menu, read with <code>.value</code></dd></div>
       <div class="dm-help-entry"><dt><code>button(label, on_click)</code></dt><dd>A button that calls a function</dd></div>
-      <div class="dm-help-entry"><dt><code>await load_csv(name)</code></dt><dd>Load one of dewlab's shared datasets</dd></div>
+      <div class="dm-help-entry"><dt><code>await load_csv(name)</code></dt><dd>Load a CSV from dewlab's shared data folder, if one's there</dd></div>
     </dl>
   </section>
 
