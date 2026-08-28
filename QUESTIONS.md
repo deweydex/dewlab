@@ -49,6 +49,33 @@ A one-line answer is a complete answer.
 
 ## Open
 
+### Should student notes stay per-tutorial, and how insistent should the "download a copy" nudge be?
+
+`planning/STUDENT_NOTES.md` designs free-text notes a student writes
+themselves (distinct from `SIDEBAR_CONTENT.md`'s author-written
+pedagogical notes) — a `notes` field added to the same `dl-progress:
+<module>:<slug>` record `saveNow()` already writes, editable from a
+textarea in Settings' existing "Your work" section, riding along on the
+export/import button that already exists there.
+
+**Assumed and built in the meantime:** nothing implemented yet — this was
+a design task. Recommended: per-tutorial scope rather than one course-wide
+notebook (§5 — ships on existing infrastructure, does not foreclose a
+course-wide version later), and a "never a block" nudge to export a copy —
+a first-use hint line plus a small, non-interrupting marker on the export
+button once meaningful new text has accumulated (§4) — rather than a
+dialog or anything that stops a student from typing.
+
+**Cost to change later:** small for the nudge's exact heuristic (a UI
+detail, not a schema one). Larger for per-tutorial vs. course-wide scope
+once students actually have per-tutorial notes saved — moving to a single
+notebook later would mean either migrating existing per-tutorial notes
+into one record or leaving old ones stranded, so this is cheaper to get
+right before real notes exist than after.
+
+**Blocks:** nothing — no notes field exists yet, so there is nothing to
+migrate if the answer changes.
+
 ### What should the cheat sheet become on a phone, later?
 
 `planning/CHEAT_SHEETS.md` §6 hides the toggle entirely under the existing
