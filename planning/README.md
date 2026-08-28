@@ -23,7 +23,7 @@ This directory contains foundational architecture specifications, design rationa
 ### Curriculum & Syllabus Planning
 - **[`CURRICULUM_MAP.md`](./CURRICULUM_MAP.md)** — Automated mapping of all curriculum learning outcomes across active tutorials (100% covered across MIT and PDP).
 - **[`CURRICULUM_NOTES.md`](./CURRICULUM_NOTES.md)** — Curricular structure notes, modularization analysis, and terminology rules.
-- **[`WHAT_IS_LEFT_TO_WRITE.md`](./WHAT_IS_LEFT_TO_WRITE.md)** — Curriculum writing roadmap and upcoming 5N0554 expansion.
+- **[`WHAT_IS_LEFT_TO_WRITE.md`](./WHAT_IS_LEFT_TO_WRITE.md)** — Retired: its own backlog is written. Points at `STATUS.md` and `CURRICULUM_MAP.md` for the current 5N0554 gap instead of duplicating it.
 - **[`OPEN_QUESTIONS.md`](./OPEN_QUESTIONS.md)** — Initial architectural questions, trade-off evaluations, and resolution records.
 - **[`curriculum/`](./curriculum/)** — Machine-readable outcome descriptors, scope limits, topic dependency graphs, and curriculum decisions.
 - **[`outlines/`](./outlines/)** — Structured outlines for all curriculum tutorial modules.

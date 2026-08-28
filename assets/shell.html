@@ -151,6 +151,19 @@
       <button type="button" class="dl-btn dl-progress-clear" id="dl-progress-clear">Start again</button>
     </div>
     <input type="file" id="dl-progress-file" accept="application/json,.json" hidden>
+
+    <!-- planning/STUDENT_NOTES.md §4's larger proposal: a small marker on
+         "Export a copy" once notes have grown a fair bit since the last
+         export (updateNotesNudge(), tutorial-runtime.js). Opt-out here for
+         the same reason the progress badges toggle below is one: ambient,
+         seen without asking for it, unlike the rest of this panel. -->
+    <div class="dl-texture-row">
+      <span>Remind me to export new notes</span>
+      <div class="dl-seg" data-notes-nudge>
+        <button type="button" data-value="on">on</button>
+        <button type="button" data-value="off">off</button>
+      </div>
+    </div>
   </section>
 
   <!-- Progress: how far a reader has gotten. Not removed on a page with no

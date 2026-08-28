@@ -1,6 +1,10 @@
 # Curriculum Module Outlines
 
-Pedagogical outlines and structural specifications for all proposed and outstanding tutorial modules.
+Pedagogical outlines and structural specifications each tutorial below was
+written from. Every one of them is now a published tutorial — see
+`planning/STATUS.md` §1 — kept here as the design record, not as a backlog.
+The actual gap left to outline is `planning/WHAT_IS_LEFT_TO_WRITE.md`'s:
+the CMPS strand-4/5 outcomes, none of which has an outline file yet.
 
 ---
 
@@ -15,17 +19,19 @@ Pedagogical outlines and structural specifications for all proposed and outstand
 
 | Outline Specification | Target Outcomes | Scope |
 |---|---|---|
-| [Rearranging Formulae](./rearranging-formulae.md) | `MIT-1.7` | Standard |
-| [When There Is No Answer](./complex-roots.md) | `MIT-1.10` | Standard |
-| [Drawing Functions](./drawing-functions.md) | `MIT-3.1`, `MIT-3.2` | Comprehensive |
-| [Parabolas](./parabolas.md) | `MIT-3.4` | Standard |
-| [Lines and Distances](./lines-and-distances.md) | `MIT-4.1`, `MIT-4.2`, `MIT-4.3`, `MIT-4.4` | Comprehensive |
-| [The Unit Circle](./the-unit-circle.md) | `MIT-4.5`, `MIT-4.6`, `MIT-4.7` | Comprehensive |
-| [Sine and Cosine Waves](./sine-and-cosine-waves.md) | `MIT-3.3` | Standard |
-| [Solving Triangles](./solving-triangles.md) | `MIT-4.8`, `MIT-4.9`, `MIT-4.10` | Comprehensive |
-| [Approaching a Limit](./approaching-a-limit.md) | `MIT-3.5` | Standard |
-| [Rates of Change](./rates-of-change.md) | `MIT-3.6`, `MIT-3.7` | Comprehensive |
-| [Logic and Truth](./logic-and-truth.md) | `MIT-2.4`, `MIT-2.5` | Standard |
-| [Drawing Sets](./venn-diagrams.md) | `MIT-2.3` | Standard |
-| [The Matrices Strand](./matrices.md) | `CMPS-LO4` (written); touches `CMPS-LO1`, `CMPS-LO2` | Multi-unit strand, six tutorials, written |
-| [The Team Project](./team-project.md) | `PDP-LO12` | Collaborative project specification |
+| Outline Specification | Target Outcomes | Scope | Status |
+|---|---|---|---|
+| [Rearranging Formulae](./rearranging-formulae.md) | `MIT-1.7` | Standard | Written |
+| [When There Is No Answer](./complex-roots.md) | `MIT-1.10` | Standard | Written |
+| [Drawing Functions](./drawing-functions.md) | `MIT-3.1`, `MIT-3.2` | Comprehensive | Written |
+| [Parabolas](./parabolas.md) | `MIT-3.4` | Standard | Written |
+| [Lines and Distances](./lines-and-distances.md) | `MIT-4.1`, `MIT-4.2`, `MIT-4.3`, `MIT-4.4` | Comprehensive | Written |
+| [The Unit Circle](./the-unit-circle.md) | `MIT-4.5`, `MIT-4.6`, `MIT-4.7` | Comprehensive | Written |
+| [Sine and Cosine Waves](./sine-and-cosine-waves.md) | `MIT-3.3` | Standard | Written |
+| [Solving Triangles](./solving-triangles.md) | `MIT-4.8`, `MIT-4.9`, `MIT-4.10` | Comprehensive | Written |
+| [Approaching a Limit](./approaching-a-limit.md) | `MIT-3.5` | Standard | Written |
+| [Rates of Change](./rates-of-change.md) | `MIT-3.6`, `MIT-3.7` | Comprehensive | Written |
+| [Logic and Truth](./logic-and-truth.md) | `MIT-2.4`, `MIT-2.5` | Standard | Written |
+| [Drawing Sets](./venn-diagrams.md) | `MIT-2.3` | Standard | Written |
+| [The Matrices Strand](./matrices.md) | `CMPS-LO4` (written); touches `CMPS-LO1`, `CMPS-LO2` | Multi-unit strand, six tutorials | Written |
+| [The Team Project](./team-project.md) | `PDP-LO12` | Collaborative project specification | Written |

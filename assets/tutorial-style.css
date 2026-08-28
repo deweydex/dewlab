@@ -1155,6 +1155,21 @@ p code, li code {
 .dl-progress-actions .dl-btn { flex: 1 1 auto; min-height: 2rem; }
 .dl-progress-clear { color: var(--dl-error-fg); }
 
+/* planning/STUDENT_NOTES.md §4: a dot, not a banner — the export button
+   wants a second look, nothing more insistent than that. Same colour
+   .dl-status-error already uses for "something here wants your attention". */
+.dl-nudge { position: relative; }
+.dl-nudge::after {
+  content: "";
+  position: absolute;
+  top: -0.2rem;
+  right: -0.2rem;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--dl-error-fg);
+}
+
 /* The restore notice: visible, and deliberately not a blocker. */
 .dl-restored {
   margin: 0 0 1.5rem;

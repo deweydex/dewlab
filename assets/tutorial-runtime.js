@@ -42,6 +42,12 @@ const DEFAULT_PACKAGES = ["numpy", "pandas", "matplotlib"];
 const TEXTURE_KEY = "dewlab:texture";
 const PROGRESS_PREFIX = "dewlab:progress:";
 const PROGRESS_BADGES_KEY = "dewlab:progress-badges";
+/* planning/STUDENT_NOTES.md §4's staleness marker: how many new characters
+ * of notes text, since the last export, before the export button gets a
+ * marker. Rough on purpose — a heuristic, not a promise. */
+const NOTES_EXPORT_PREFIX = "dewlab:notes-exported-len:";
+const NOTES_NUDGE_KEY = "dewlab:notes-nudge";
+const NOTES_NUDGE_THRESHOLD = 120;
 const AUTOSAVE_DELAY = 500;
 /* The three build.py write_*_page() slugs that are not a tutorial at all —
  * nothing here has "your work" to save, cells or notes alike, the way an
@@ -1011,6 +1017,66 @@ function showSaveState(savedAt, problem) {
     : "Saving as you go.";
 }
 
+function notesExportKey() {
+  const manifest = currentManifest || {};
+  return `${NOTES_EXPORT_PREFIX}${manifest.module || "unknown"}:${manifest.slug || "unknown"}`;
+}
+
+function readNotesNudge() {
+  try {
+    return localStorage.getItem(NOTES_NUDGE_KEY) !== "off";
+  } catch (err) {
+    return true;
+  }
+}
+
+function writeNotesNudge(mode) {
+  try {
+    localStorage.setItem(NOTES_NUDGE_KEY, mode);
+  } catch (err) {
+    /* This reader's own choice only; forgotten after it, same as the rest of
+     * this project's toggles when storage is refused. */
+  }
+}
+
+/* planning/STUDENT_NOTES.md §4's staleness marker, the plain version's
+ * larger proposal: a small dot on the export button once meaningful new
+ * note text has piled up since the last export, and not before. Tracked
+ * the same lightweight way rememberVersion()/writePin() track a small piece
+ * of per-tutorial state — one number in its own key, not a new field on the
+ * save record itself, since what matters here is "since the last export,"
+ * not "as of the last save," and those are different moments. */
+function updateNotesNudge() {
+  const btn = document.getElementById("dl-progress-export");
+  if (!btn) return;
+  if (!notesEl || !readNotesNudge()) {
+    btn.classList.remove("dl-nudge");
+    return;
+  }
+  let exportedLen = 0;
+  try {
+    exportedLen = parseInt(localStorage.getItem(notesExportKey()) || "0", 10);
+  } catch (err) {
+    exportedLen = 0;
+  }
+  const grown = notesEl.value.length - exportedLen;
+  btn.classList.toggle("dl-nudge", grown >= NOTES_NUDGE_THRESHOLD);
+}
+
+/* Called once notes are known to match what was just exported or imported —
+ * both are "this text now exists outside this browser," which is the actual
+ * question the marker asks. */
+function markNotesExported() {
+  if (!notesEl) return;
+  try {
+    localStorage.setItem(notesExportKey(), String(notesEl.value.length));
+  } catch (err) {
+    /* Nothing recorded; the marker may reappear sooner than it should — the
+     * same "forgotten after it" shape storage refusal already has
+     * everywhere else in this file. */
+  }
+}
+
 function initProgressSection() {
   const section = document.getElementById("dl-settings-work");
   if (!section) return;
@@ -1025,7 +1091,7 @@ function initProgressSection() {
   }
 
   notesEl = document.getElementById("dl-progress-notes");
-  if (notesEl) notesEl.addEventListener("input", () => scheduleSave());
+  if (notesEl) notesEl.addEventListener("input", () => { scheduleSave(); updateNotesNudge(); });
 
   document.getElementById("dl-progress-export").addEventListener("click", () => {
     saveNow();
@@ -1040,6 +1106,8 @@ function initProgressSection() {
     link.download = `${from || "dewlab"}-progress.json`;
     link.click();
     URL.revokeObjectURL(link.href);
+    markNotesExported();
+    updateNotesNudge();
   });
 
   const file = document.getElementById("dl-progress-file");
@@ -1062,6 +1130,11 @@ function initProgressSection() {
       announceRestore(restoreSaved());
       showSaveState(record.saved_at);
       updateProgressSummary();
+      /* An imported file's notes already exist outside this browser by
+       * definition — that is what "import" means here — so this counts as
+       * exported too, not as new unsaved text. */
+      markNotesExported();
+      updateNotesNudge();
     } catch (err) {
       showSaveState(null, "That file could not be read as saved dewlab work.");
     }
@@ -1072,6 +1145,7 @@ function initProgressSection() {
     if (!window.confirm("Clear your work on this tutorial and start again?")) return;
     try {
       localStorage.removeItem(progressKey());
+      localStorage.removeItem(notesExportKey());
     } catch (err) {
       /* Nothing to remove, or storage refused. Reset the page either way. */
     }
@@ -1083,6 +1157,7 @@ function initProgressSection() {
     for (const box of document.querySelectorAll(".dl-restored")) box.remove();
     showSaveState(null);
     updateProgressSummary();
+    updateNotesNudge();
   });
 }
 
@@ -1211,6 +1286,31 @@ function initProgressBadgesToggle() {
     writeProgressBadges(btn.dataset.value);
     sync();
     renderContentsProgress();
+  });
+
+  sync();
+}
+
+/* Only on a page with notes at all — unlike the badges toggle above, there
+ * is nothing here to switch off on the contents page, which has no notes
+ * field of its own. */
+function initNotesNudgeToggle() {
+  const group = document.querySelector("[data-notes-nudge]");
+  if (!group) return;
+
+  function sync() {
+    const on = readNotesNudge();
+    for (const btn of group.querySelectorAll("button")) {
+      btn.setAttribute("aria-pressed", String((btn.dataset.value === "on") === on));
+    }
+  }
+
+  group.addEventListener("click", (ev) => {
+    const btn = ev.target.closest("button");
+    if (!btn) return;
+    writeNotesNudge(btn.dataset.value);
+    sync();
+    updateNotesNudge();
   });
 
   sync();
@@ -1583,10 +1683,12 @@ initSettingsPanel();
 initCheatSheet(currentManifest);
 initSeriesNav();
 initProgressBadgesToggle();
+initNotesNudgeToggle();
 initContentsProgress();
 trackChromeHeight();
 announceRestore(restoreSaved());
 updateProgressSummary();
+updateNotesNudge();
 annotateNotice();
 highlightIllustrativeCode();
 const mathsRendered = renderMaths(currentManifest);
