@@ -10,7 +10,8 @@ Two uses:
     assets/ and pointed at with DEWLAB_PYODIDE_BASE.
 
 "Trimmed" means the core runtime plus only the wheels the baseline packages
-actually need, resolved from Pyodide's own lockfile. That is about 30 MB
+actually need, resolved from Pyodide's own lockfile — numpy/pandas/matplotlib
+plus jedi (which pulls in parso, for pre-run tooltips). That is about 32 MB
 against roughly 400 MB for the full distribution.
 
     python3 dev/fetch_pyodide.py
@@ -31,7 +32,7 @@ RELEASE = (
     "https://github.com/pyodide/pyodide/releases/download/"
     "{v}/pyodide-{v}.tar.bz2"
 )
-BASELINE = ["numpy", "pandas", "matplotlib"]
+BASELINE = ["numpy", "pandas", "matplotlib", "jedi"]  # parso comes along as jedi's own dependency
 CORE = [
     "pyodide.js",
     "pyodide.mjs",

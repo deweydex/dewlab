@@ -338,6 +338,24 @@ p code, li code {
   white-space: pre-wrap;
 }
 
+/* Signature help (vendor-src/codemirror-entry.js's pythonSignatureHelp),
+ * shown while typing a call rather than on hover — same popover shell as
+ * the doc tooltip above, code font since the content itself is code, and
+ * the argument under the cursor bolded by the caller rather than by CSS. */
+.cm-tooltip .cm-dewlab-signature-tooltip {
+  max-width: min(28rem, 80vw);
+  padding: 0.4rem 0.6rem;
+  border-radius: 4px;
+  background: var(--dl-panel-bg);
+  border: 1px solid var(--dl-cell-border);
+  box-shadow: 0 4px 14px var(--dl-shadow);
+  font-family: var(--dl-mono);
+  font-size: 0.78rem;
+  color: var(--dl-fg);
+  white-space: nowrap;
+}
+.cm-dewlab-signature-tooltip strong { color: var(--dl-orange); }
+
 /* --------------------------------------------------------------- output */
 
 .dl-output {

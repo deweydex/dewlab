@@ -2497,3 +2497,87 @@ Settings toggle turns it off and holds across a reload) against the
 shared Pyodide fixture, run alongside the full e2e suite and the full unit
 suite, both green. `standalone.bundle.js` rebuilt for the
 `tutorial-runtime.js` change.*
+
+**7.76 — All three tooltip options built together: builtins, signature
+help, and Jedi's pre-run answer for a name that has not been executed
+yet.** `planning/CELL_TOOLTIPS.md` recommended building (a) and (b) first
+and leaving (c) documented rather than built, on the reasoning that Jedi
+was a second, heavier mechanism whose main extra value — pre-run
+completion — was real but narrower once (a) had closed the builtins gap.
+Prototyped against the real pinned Pyodide (0.28.3) and the real self-hosted
+wheels before writing any of this: (a) confirmed the version cost nothing
+(a computed builtin's `inspect.getdoc()` behaves exactly like a
+`_page_globals` object's), and (c) confirmed Jedi's `.help()`/
+`.get_signatures()` genuinely resolve a function defined but never run in
+the same cell, from source text alone, in low tens of milliseconds warm.
+That removed the open question `(c)`'s own writeup left — whether pre-run
+completion was worth the second-mechanism cost — so all three were built
+as one feature rather than staged.
+
+**(a) Builtins.** `docFor`/the new `signatureFor` (`assets/tutorial-runtime.js`)
+both now check `__builtins__` — via a new `lookupLiveName()` shared by
+both, live-namespace first, builtins second, never shadowing a student's
+own name — after `tools._page_globals` comes up empty. `builtinsModule =
+pyodide.pyimport("builtins")`, set once at boot alongside `inspectModule`.
+
+**(b) Signature help.** New in `vendor-src/codemirror-entry.js`:
+`pythonSignatureHelp()`, a `StateField`/`ViewPlugin` pair rather than
+`hoverTooltip()` — nothing in CodeMirror triggers on typing a character
+the way `hoverTooltip` triggers on the pointer, so this needed its own
+mechanism. `callContextAt()` scans backward from the cursor for the
+nearest open, unclosed `(` and the identifier before it, counting
+top-level commas along the way for the argument index; `highlightParam()`
+bolds that argument in the returned signature string, splitting only
+between the matching parens so a default value's own brackets or commas
+are not mistaken for argument boundaries. `getDoc`'s calling convention
+changed to match: `(name, wholeSource, line, col)` instead of `(name)`,
+and it is now `async` — CodeMirror's hover source accepts a Promise of a
+Tooltip natively, so no new plumbing was needed for that, only `await`.
+
+**(c) Jedi.** Loaded in the background, well after `boot()` has already let
+a student click Run — `loadJedi()`, fired without an `await` at the end of
+`boot()` — since jedi+parso are a real ~1.6 MB download and nothing about
+a first cell running depends on them; `dewlab.jediReady()` is how a test
+(or a slower browser) knows the fallback has actually landed. Two Python
+helpers (`_dewlab_hover_doc`/`_dewlab_signature`) live in `pyodide.globals`
+— the interpreter's own top-level namespace, not
+`tutorial_tools._page_globals` a student's cell runs against
+(`run_cell()`'s `globals=`) — so `jedi` and both helpers are never visible
+to, or shadowable by, anything a student writes. Both wrapped in Python
+rather than left to a JS `try`/`catch`: the exception a malformed, mid-edit
+source string can raise is more varied than one JS-side catch should have
+to enumerate, and "no tooltip this time" is the only outcome that should
+ever reach the caller.
+
+**Live always wins.** `hoverDoc(name, source, line, col)` and
+`signatureHelp(name, source, line, col, argIndex)` — what the CodeMirror
+extensions actually call — try the live-interpreter answer first and only
+reach for Jedi if that comes back empty. A name the interpreter already
+knows about is authoritative; Jedi only fills the gap live cannot reach,
+never the reverse, so the two can never disagree about a name they both
+have an opinion on.
+
+**One false start, corrected before it shipped.** A first hand-check of
+Jedi's pre-run signature help against `average(numbers)` returned nothing
+and read, briefly, like a real limitation. It was an off-by-one in the
+column passed to `get_signatures()` — Jedi's own error message named the
+valid range once the column was pushed one past it, which is what caught
+it. Recorded because the same mistake would have been easy to carry
+straight into `callContextAt()` unnoticed.
+
+*Cost to change: moderate. `docFor`/`signatureFor`/`lookupLiveName`/
+`jediDoc`/`jediSignature`/`hoverDoc`/`signatureHelp`/`loadJedi` in
+`tutorial-runtime.js`; `pythonSignatureHelp`/`callContextAt`/
+`highlightParam` plus the `getDoc` signature change in
+`codemirror-entry.js`; a `.cm-dewlab-signature-tooltip` rule in
+`tutorial-style.css`; `dev/fetch_pyodide.py`'s baseline gained `jedi`
+(parso comes along as its own dependency), so the self-hosted mirror is
+now ~32 MB rather than ~30. Fifteen e2e tests in
+`tests/e2e/test_autocomplete.py` (`TestBuiltinTooltips`,
+`TestPreRunTooltips`, plus the reconciliation case), all against the real
+self-hosted Jedi rather than mocked — two needed `page.keyboard.insert_text()`
+in place of `type()` once multi-line typed source turned out to double up
+under CodeMirror's own auto-indent/auto-close handling, and hovering a
+bare builtin needed a `view.coordsAtPos()`-based helper since "len" inside
+"len([1, 2, 3])" gets no highlighting span of its own for a DOM text
+locator to find. `standalone.bundle.js`/`codemirror.bundle.js` rebuilt.*
