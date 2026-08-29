@@ -100,6 +100,18 @@ await build({
   if (cleaned !== css) await writeFile(cssPath, cleaned);
 }
 
+/* Unmodified, not bundled: it has no imports, and esbuild's minifier is not
+ * worth running on a 4 KB script that needs to stay readable enough for
+ * `Service-Worker-Allowed`-less debugging (OPEN_QUESTIONS.md, "the Web
+ * Worker migration"). build.py additionally copies this one file to the
+ * site root rather than assets/ -- a service worker's scope is the
+ * directory it is served from, and assets/ would be too narrow to cover
+ * every tutorial the reload needs to reach. */
+await cp(
+  join(here, "node_modules", "coi-serviceworker", "coi-serviceworker.js"),
+  join(outDir, "coi-serviceworker.js")
+);
+
 const katex = join(here, "node_modules", "katex", "dist");
 await cp(join(katex, "katex.min.css"), join(outDir, "katex.min.css"));
 
@@ -111,5 +123,5 @@ for (const file of fonts.filter((f) => f.endsWith(".woff2"))) {
 }
 
 console.log(`vendor/ rebuilt: codemirror.bundle.js, katex.bundle.js, standalone.bundle.js, ` +
-  `milkdown.bundle.js, milkdown.bundle.css, katex.min.css, ${
+  `milkdown.bundle.js, milkdown.bundle.css, katex.min.css, coi-serviceworker.js, ${
   fonts.filter((f) => f.endsWith(".woff2")).length} fonts`);

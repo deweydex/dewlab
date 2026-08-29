@@ -2203,8 +2203,10 @@ def replace_once(page: str, needle: str, replacement: str, what: str) -> str:
 
 def standalone_html(tutorial: Tutorial, page: str) -> str:
     """Turn a built page into one file that works from a student's disk."""
-    # The same prefix build.py wrote into the page's own asset references.
-    up = "../" * tutorial.depth + "assets/"
+    # The same prefixes build.py wrote into the page's own references: `up`
+    # for anything under assets/, `root` for the site root itself.
+    root = "../" * tutorial.depth
+    up = root + "assets/"
     style = (ASSETS / "tutorial-style.css").read_text()
     bundle = (ASSETS / "vendor" / "standalone.bundle.js").read_text()
     tools = (ASSETS / "tutorial_tools.py").read_text()
@@ -2231,6 +2233,14 @@ def standalone_html(tutorial: Tutorial, page: str) -> str:
         f'<script type="module" src="{versioned(up, "tutorial-runtime.js")}"></script>',
         PYODIDE_CLASSIC + "\n<script>" + bundle + "</script>",
         "the runtime",
+    )
+
+    # coi-serviceworker exists to let a Worker's SharedArrayBuffer through
+    # (DECISIONS_LOG.md 7.77) — this export runs Pyodide on the main thread
+    # instead, on purpose, so there is no Worker here for it to serve. Left
+    # in, it would just be a request a file:// page can never satisfy.
+    page = replace_once(
+        page, f'<script src="{root}coi-serviceworker.js"></script>\n', "", "the isolation shim"
     )
 
     # The Python tools, which cannot be fetched from a file.
@@ -2271,7 +2281,6 @@ def standalone_html(tutorial: Tutorial, page: str) -> str:
         r'<div class="dl-seriesnav" id="dl-seriesnav".*?</nav>\s*</div>\n?',
         "", page, flags=re.DOTALL,
     )
-    root = "../" * tutorial.depth
     page = page.replace(f'href="{root}index.html"', 'href="#" onclick="return false"')
     return page
 
@@ -2728,6 +2737,17 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
     if COMPOSE.is_dir():
         shutil.rmtree(OUT / "compose", ignore_errors=True)
         shutil.copytree(COMPOSE, OUT / "compose")
+
+    # coi-serviceworker.js (vendor-src/build-vendor.mjs) has to be served
+    # from the site root, not assets/vendor/ where every other vendored file
+    # lives: a service worker's scope defaults to the directory it is served
+    # from, and shell.html's {{ROOT_BASE}}coi-serviceworker.js tag registers
+    # it expecting root scope, wide enough to cover every tutorial. Guarded
+    # like the Mini IDE copy above it: a test's own minimal ASSETS fixture
+    # need not carry every vendored file for its build to succeed.
+    coi_src = ASSETS / "vendor" / "coi-serviceworker.js"
+    if coi_src.exists():
+        shutil.copy2(coi_src, OUT / "coi-serviceworker.js")
     return written
 
 

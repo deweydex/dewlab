@@ -578,7 +578,11 @@ assets/
   tutorial_tools.py   what a student's cell code can call
   tree.html, tree.js  the topic tree page
   editor.html, editor.js  the browser-based authoring editor
+  mini-ide.html, mini-ide.js, mini-ide-style.css  a cell-based scratch IDE, no tutorial attached
   vendor/             CodeMirror, KaTeX, and Milkdown, built from vendor-src/
+compose/
+  dewmini.html, dewmini.js, dewmini-style.css  a smaller, quieter cousin of the Mini IDE
+  practice-bank.json   the problem bank dewmini's Practice button draws from
 build.py              markdown in, site/ out
 dev/curriculum_map.py generates planning/CURRICULUM_MAP.md from outcomes.yaml, topics.yaml and the tutorials
 tests/                unit tests, browser tests, and a manual checklist
@@ -586,6 +590,8 @@ planning/
   PEDAGOGICAL_STYLE_GUIDE.md  how a tutorial is written, and why
   curriculum/          outcomes.yaml, topics.yaml, and the QQI descriptor PDFs coverage is measured against
   STATUS.md             what has actually been built, and what has not
+docs/
+  DEWMINI.md            what dewmini is and how to use it
 ARCHITECTURE.md       how the code works — build, runtime, and editor, for a technical reader
 DECISIONS_LOG.md      what was decided during the build, and what changing it costs
 QUESTIONS.md           decisions still open, waiting on Josh

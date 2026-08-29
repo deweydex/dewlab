@@ -189,33 +189,22 @@ def test_show_and_show_table_and_check_render(page):
     assert output.count("dl-check-pass") == 2, "0.1 + 0.2 should pass against 0.3"
 
 
-def test_widgets_render_and_the_button_calls_back(page):
+def test_widgets_give_a_clear_error_on_a_hosted_page(page):
+    """Every hosted page now runs Pyodide in a Worker (planning/CELL_CONTROLS.md
+    §2, DECISIONS_LOG.md 7.77), and a Worker has no DOM to hand a widget's
+    live element back through — text_input/dropdown/button raise rather
+    than silently rendering something that does nothing when clicked or
+    typed into. Widget-value persistence itself is still covered at the
+    unit level (tests/test_tutorial_tools.py's TestWidgetMarkup): the
+    _widget_values dict does not care which thread wrote to it, only that
+    a live page can no longer reach it. The standalone/offline export is
+    the one place text_input/dropdown/button still work, since it still
+    runs Pyodide on the main thread — not exercised here, since these e2e
+    fixtures only build hosted pages."""
     run(page, "tools-widgets")
     scope = output_selector("tools-widgets")
-
-    page.fill(f"{scope} input[type=text]", "Ada")
-    page.select_option(f"{scope} select", "imperial")
-    page.click(f"{scope} .dl-widget button")
-
-    page.wait_for_function(
-        f"document.querySelector({js_string(scope)}).innerText.includes('Hello Ada')",
-        timeout=15_000,
-    )
-    assert "using imperial units" in page.inner_text(scope)
-
-
-def test_rerunning_a_cell_keeps_what_the_student_typed(page):
-    """A re-run rebuilds the widgets. It must not silently discard the input."""
-    run(page, "tools-widgets")
-    scope = output_selector("tools-widgets")
-
-    page.fill(f"{scope} input[type=text]", "Grace")
-    page.select_option(f"{scope} select", "imperial")
-
-    run(page, "tools-widgets")
-
-    assert page.input_value(f"{scope} input[type=text]") == "Grace"
-    assert page.eval_on_selector(f"{scope} select", "el => el.value") == "imperial"
+    assert page.locator(f"{scope} input[type=text]").count() == 0
+    assert "text_input() needs a page running Pyodide on the main thread" in page.inner_text(scope)
 
 
 def test_rerunning_a_cell_replaces_its_output_rather_than_appending(page):

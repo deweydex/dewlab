@@ -89,13 +89,24 @@ def test_typing_a_partial_keyword_offers_it(page):
 def test_accepting_a_completion_inserts_it(page):
     """closeBrackets already auto-pairs the "(" typed below, so the buffer
     reads len(list) once the completion replaces "lis" with "list" —
-    checked as one string rather than "list(" for that reason."""
+    checked as one string rather than "list(" for that reason.
+
+    pageNamesCompletion is one of several override sources CodeMirror
+    merges together, and — since (DECISIONS_LOG.md 7.77) it is now a real
+    round trip to the Worker rather than a synchronous local lookup — the
+    merged list can still be settling by the moment "list" first appears
+    in it. Waiting for "list" specifically, not just for some tooltip to
+    exist, is what makes Enter deterministically accept it rather than
+    whatever was highlighted first."""
     cell = cell_content(page, "plain-python")
     cell.click()
     page.keyboard.press("Control+End")
     page.keyboard.type("\nlen(")
     page.keyboard.type("lis")
     page.wait_for_selector(".cm-tooltip-autocomplete")
+    page.wait_for_function(
+        "[...document.querySelectorAll('.cm-completionLabel')].some(e => e.textContent === 'list')"
+    )
     page.keyboard.press("Enter")
     assert "len(list)" in cell.inner_text()
 

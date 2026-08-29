@@ -272,6 +272,19 @@ p code, li code {
 }
 .dl-btn-run:hover:not(:disabled) { background: var(--dl-orange); border-color: var(--dl-orange); color: #fff; }
 
+/* Run becomes Stop while a cell is running, wherever a genuine interrupt is
+ * possible (planning/CELL_CONTROLS.md §2) — the same button, so there is
+ * nothing new to find, just a different label and colour while it means
+ * something different. Reuses the error ink rather than a colour of its
+ * own: this is the one button on the page whose whole point is "something
+ * is happening that you might want to stop". */
+.dl-btn-run.dl-btn-stop {
+  background: var(--dl-error-fg);
+  border-color: var(--dl-error-fg);
+  color: #fff;
+}
+.dl-btn-run.dl-btn-stop:hover:not(:disabled) { opacity: 0.85; }
+
 /* Author-written hint (CONTENT_AND_FILE_ARCHITECTURE.md, `hint:`). Static
  * text only — this is not the live docstring-on-hover feature that
  * DECISIONS.md defers past v1.
