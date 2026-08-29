@@ -4,6 +4,22 @@
  * All colors, spacing, and typography should use dewlab's design tokens.
  */
 
+/* Editor-appearance knobs the Settings "Editor" section writes (see
+ * initEditorSettings() in mini-ide.js) — the same idea as
+ * compose/dewmini-style.css's own --dm-* variables, under a --mini-ide-
+ * prefix so this file's variables never shadow dewmini's if both
+ * stylesheets ever end up loaded on the same page. */
+:root {
+  --mini-ide-code-size: 15px;
+  --mini-ide-cursor-w: 2px;
+  --mini-ide-cell-pad-y: 0.85rem;
+  --mini-ide-code-line: 1.55;
+}
+:root[data-mini-ide-density="compact"] { --mini-ide-cell-pad-y: 0.55rem; --mini-ide-code-line: 1.35; }
+:root[data-mini-ide-density="relaxed"] { --mini-ide-cell-pad-y: 1.25rem; --mini-ide-code-line: 1.8; }
+:root[data-mini-ide-cursor="thin"] { --mini-ide-cursor-w: 1px; }
+:root[data-mini-ide-cursor="thick"] { --mini-ide-cursor-w: 3px; }
+
 /* ============================================================================
  * Toolbar
  * ============================================================================
@@ -175,82 +191,165 @@
 .mini-ide-cells {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
   padding: 0.5rem 0;
   min-height: 200px;
 }
 
 /* ============================================================================
- * Individual cell
+ * The seam between cells — compose/dewmini-style.css's own .dm-insert,
+ * ported verbatim under mini-ide- naming. Always present, tappable at
+ * every gap (including before the first cell and after the last), a
+ * quiet line at rest that only grows into "+ Python"/"+ Text" on hover
+ * — see createInsertDivider() in mini-ide.js.
+ * ============================================================================
+ */
+.mini-ide-insert {
+  position: relative;
+  height: 0.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.mini-ide-insert-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1px;
+  background: var(--dl-rule);
+}
+.mini-ide-insert-actions {
+  position: relative;
+  display: flex;
+  gap: 0.3rem;
+  padding: 0 0.5rem;
+  background: var(--dl-bg);
+  opacity: 0.4;
+  transition: opacity 0.12s ease;
+}
+.mini-ide-insert:hover .mini-ide-insert-actions,
+.mini-ide-insert:focus-within .mini-ide-insert-actions { opacity: 1; }
+.mini-ide-insert:hover .mini-ide-insert-line { background: var(--dl-orange); }
+
+.mini-ide-insert-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-family: var(--dl-mono);
+  font-size: 0.68rem;
+  padding: 0.22rem 0.6rem;
+  border: 1px solid var(--dl-cell-border);
+  border-radius: 999px;
+  background: var(--dl-panel-bg);
+  color: var(--dl-muted);
+  cursor: pointer;
+}
+.mini-ide-insert-btn:hover { border-color: var(--dl-orange); color: var(--dl-orange); }
+
+/* A hover that can't happen on a touch screen would hide the only way
+ * in — so there, the seam gets real height and its buttons stay
+ * visible rather than waiting for a hover event that will never come. */
+@media (hover: none) {
+  .mini-ide-insert { height: 2.4rem; }
+  .mini-ide-insert-actions { opacity: 0.75; }
+}
+
+/* ============================================================================
+ * Individual cell — a quiet coloured rail rather than a boxed card,
+ * matching compose/dewmini-style.css's own .dm-cell/.dm-cell-rail. The
+ * rail alone says "python" / "text" / "this one errored" at a glance
+ * down the whole list, without a border around every single cell.
  * ============================================================================
  */
 .mini-ide-cell {
-  border: 1px solid var(--dl-cell-border);
-  border-radius: 5px;
-  background: var(--dl-cell-bg);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  transition: box-shadow 0.15s ease, border-color 0.15s ease;
-  overflow: hidden;
+  display: flex;
+  padding: var(--mini-ide-cell-pad-y) 0;
 }
 
-.mini-ide-cell:hover {
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+.mini-ide-cell-rail {
+  flex: none;
+  width: 3px;
+  border-radius: 2px;
+  margin-right: 0.9rem;
+  background: var(--dl-cell-border);
+  transition: background 0.15s ease;
 }
+.mini-ide-cell-python .mini-ide-cell-rail { background: var(--dl-navy); opacity: 0.35; }
+.mini-ide-cell-text .mini-ide-cell-rail { background: var(--dl-muted); opacity: 0.3; }
+.mini-ide-cell.focused .mini-ide-cell-rail { background: var(--dl-orange); opacity: 1; }
+.mini-ide-cell.error .mini-ide-cell-rail { background: var(--dl-error-fg); opacity: 1; }
+.mini-ide-cell.dragging { opacity: 0.45; }
+.mini-ide-cell.mini-ide-drop-before { box-shadow: inset 0 2px 0 var(--dl-orange); }
+.mini-ide-cell.mini-ide-drop-after { box-shadow: inset 0 -2px 0 var(--dl-orange); }
 
-.mini-ide-cell.focused {
-  border-color: var(--dl-orange);
-  box-shadow: 0 0 0 2px rgba(212, 105, 42, 0.2);
-}
-
-.mini-ide-cell.dragging {
-  opacity: 0.5;
-  border: 2px dashed var(--dl-orange);
-  background: var(--dl-output-bg);
-}
-
-.mini-ide-cell.error {
-  border-color: var(--dl-error-fg);
-}
-
-.mini-ide-cell.error .mini-ide-cell-header {
-  background: var(--dl-error-bg);
-}
+.mini-ide-cell-main { flex: 1; min-width: 0; }
 
 /* ============================================================================
  * Cell header
  * ============================================================================
  */
-.mini-ide-cell-header {
+.mini-ide-cell-head {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.35rem 0.5rem 0.35rem 0.75rem;
-  background: var(--dl-cell-bg);
-  border-bottom: 1px solid var(--dl-cell-border);
-  cursor: move;
+  margin-bottom: 0.5rem;
+  cursor: grab;
   user-select: none;
+}
+.mini-ide-cell-head:active { cursor: grabbing; }
+
+.mini-ide-cell-pill {
   font-family: var(--dl-mono);
-  font-size: 0.72rem;
-  color: var(--dl-muted);
-}
-
-.mini-ide-cell-header:active {
-  cursor: grabbing;
-}
-
-.mini-ide-cell-type {
-  flex: 0 0 auto;
-  font-weight: 600;
-  color: var(--dl-muted);
-  font-size: 0.8rem;
-  text-transform: uppercase;
+  font-size: 0.68rem;
   letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--dl-muted);
+  border: 1px solid var(--dl-cell-border);
+  border-radius: 999px;
+  padding: 0.1rem 0.55rem;
 }
+.mini-ide-cell-spacer { flex: 1; }
 
 .mini-ide-cell-actions {
   display: flex;
   gap: 0.25rem;
-  margin-left: auto;
+  opacity: 0.4;
+  transition: opacity 0.1s ease;
+}
+@media (hover: none) {
+  .mini-ide-cell-actions { opacity: 1; }
+}
+.mini-ide-cell:hover .mini-ide-cell-actions,
+.mini-ide-cell:focus-within .mini-ide-cell-actions { opacity: 1; }
+
+.mini-ide-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.7rem;
+  height: 1.7rem;
+  padding: 0;
+  border: 1px solid var(--dl-cell-border);
+  border-radius: 4px;
+  background: var(--dl-panel-bg);
+  color: var(--dl-muted);
+  cursor: pointer;
+  font-size: 0.85rem;
+  line-height: 1;
+}
+.mini-ide-icon-btn:hover { border-color: var(--dl-orange); color: var(--dl-orange); }
+.mini-ide-icon-run:hover { border-color: var(--dl-pass-fg); color: var(--dl-pass-fg); }
+.mini-ide-icon-run.mini-ide-running { border-color: var(--dl-orange); color: var(--dl-orange); }
+.mini-ide-icon-delete:hover { border-color: var(--dl-error-fg); color: var(--dl-error-fg); }
+.mini-ide-icon-btn:disabled { opacity: 0.4; cursor: default; }
+
+/* The one .mini-ide-icon-btn with a word on it rather than a glyph —
+ * "Edit"/"View" needs more room than the fixed icon square. */
+.mini-ide-icon-preview {
+  width: auto;
+  padding: 0 0.5rem;
+  font-family: var(--dl-mono);
+  font-size: 0.68rem;
 }
 
 /* ============================================================================
@@ -258,20 +357,29 @@
  * ============================================================================
  */
 .mini-ide-cell-content {
-  padding: 0.75rem;
   min-height: 40px;
 }
 
 .mini-ide-editor {
   height: auto;
   min-height: 40px;
+  border-radius: 4px;
+  background: var(--dl-cell-bg);
 }
+.mini-ide-editor .cm-editor { font-size: var(--mini-ide-code-size); }
+.mini-ide-editor .cm-editor.cm-focused { outline: none; }
+.mini-ide-editor .cm-scroller { font-family: var(--dl-mono); line-height: var(--mini-ide-code-line); }
+.mini-ide-editor .cm-content { padding: 0.5rem 0; }
+:root[data-mini-ide-gutter="off"] .mini-ide-editor .cm-gutters { display: none; }
+:root[data-mini-ide-gutter="off"] .mini-ide-editor .cm-content { padding-left: 0.9rem; }
+.mini-ide-editor .cm-cursor { border-left-width: var(--mini-ide-cursor-w); border-left-color: var(--dl-orange); }
+:root[data-mini-ide-activeline="off"] .mini-ide-editor .cm-activeLine,
+:root[data-mini-ide-activeline="off"] .mini-ide-editor .cm-activeLineGutter { background: transparent; }
 
-/* A text cell's textarea/rendered-view pair now uses tutorial-style.css's
+/* A text cell's textarea/rendered-view pair uses tutorial-style.css's
  * .dl-doc-editor/.dl-doc-render (both stylesheets are loaded here) —
  * the same shape and look compose/dewmini.js and tutorial-runtime.js's
- * own text cells already use, rather than the plain bordered textarea
- * this file used to draw on its own. */
+ * own text cells already use. */
 .mini-ide-cell-text .dl-doc-editor,
 .mini-ide-cell-text .dl-doc-render {
   min-height: 40px;
@@ -282,19 +390,43 @@
  * ============================================================================
  */
 .mini-ide-cell-output {
-  padding: 0.75rem;
-  background: var(--dl-output-bg);
-  border-top: 1px solid var(--dl-cell-border);
+  margin-top: 0.5rem;
   font-family: var(--dl-mono);
   font-size: 0.875rem;
   white-space: pre-wrap;
-  word-break: break-all;
-  overflow-x: auto;
+  word-break: break-word;
 }
 
-.mini-ide-cell-output.empty {
+.mini-ide-cell-output.empty,
+.mini-ide-cell-output:empty {
   display: none;
 }
+.mini-ide-cell-output img { max-width: 100%; border-radius: 3px; }
+
+/* ============================================================================
+ * Settings: filename input — matches compose/dewmini-style.css's own
+ * .dm-filename-label/.dm-filename-input.
+ * ============================================================================
+ */
+.mini-ide-filename-label {
+  display: block;
+  font-size: 0.78rem;
+  color: var(--dl-muted);
+  margin: 0 0 0.3rem;
+}
+.mini-ide-filename-input {
+  width: 100%;
+  padding: 0.5rem 0.65rem;
+  margin-bottom: 0.6rem;
+  border: 1px solid var(--dl-cell-border);
+  border-radius: 4px;
+  background: var(--dl-cell-bg);
+  color: var(--dl-fg);
+  font: inherit;
+  font-family: var(--dl-mono);
+  font-size: 0.85rem;
+}
+.mini-ide-filename-input:focus { outline: none; border-color: var(--dl-orange); }
 
 /* ============================================================================
  * Status bar
@@ -557,19 +689,6 @@
 }
 
 /* ============================================================================
- * Drag and drop placeholder
- * ============================================================================
- */
-.mini-ide-drop-placeholder {
-  height: 40px;
-  background: var(--dl-orange);
-  opacity: 0.2;
-  border: 2px dashed var(--dl-orange);
-  border-radius: 4px;
-  margin: 0.5rem 0;
-}
-
-/* ============================================================================
  * Loading indicator
  * ============================================================================
  */
@@ -608,11 +727,6 @@
 
   .mini-ide-toolbar-left,
   .mini-ide-toolbar-right {
-    justify-content: center;
-  }
-
-  .mini-ide-cell-header {
-    flex-wrap: wrap;
     justify-content: center;
   }
 
@@ -669,6 +783,7 @@
     border-radius: 8px 8px 0 0;
   }
   .mini-ide-help-label { display: none; }
+  .mini-ide-cell-rail { margin-right: 0.6rem; }
 }
 
 /* ============================================================================
@@ -676,16 +791,38 @@
  * ============================================================================
  */
 @media print {
+  .dl-chrome,
   .mini-ide-toolbar,
   .mini-ide-status,
   .mini-ide-panel,
-  .mini-ide-sample-notice {
+  .mini-ide-sample-notice,
+  .mini-ide-filetree,
+  #filetree-toggle,
+  .mini-ide-insert,
+  .mini-ide-cell-actions {
     display: none !important;
   }
+
+  body, .dl-page { background: #fff !important; color: #111 !important; }
+  h1 { color: #1b2a4a !important; }
 
   .mini-ide-cell {
     break-inside: avoid;
     page-break-inside: avoid;
-    border: 1px solid var(--dl-rule);
+    padding: 0.5rem 0;
   }
+  .mini-ide-cell-rail { background: #ccc !important; opacity: 1 !important; }
+  .mini-ide-cell-pill { color: #555 !important; border-color: #ccc !important; }
+  .mini-ide-editor .cm-editor,
+  .mini-ide-cell-output,
+  .dl-doc-editor,
+  .dl-doc-render:hover {
+    background: #f7f6f3 !important;
+    color: #111 !important;
+  }
+  .dl-doc-render { background: transparent !important; }
+  .mini-ide-editor .cm-activeLine,
+  .mini-ide-editor .cm-activeLineGutter,
+  .mini-ide-editor .cm-cursor { background: transparent !important; border: none !important; }
+  a { color: #1b2a4a !important; text-decoration: underline; }
 }

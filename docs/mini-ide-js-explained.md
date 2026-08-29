@@ -169,12 +169,26 @@ exact same reason.
   itself automatically.
 - **"How does a `.ipynb` file become cells?"** — `parseIpynb()` and
   `renderIpynbOutputs()`.
-- **"How does dragging actually work?"** — `setupDragAndDrop()` and
-  `getDragAfterElement()`; the inline comments on both walk through the
-  browser APIs involved in detail.
+- **"How does dragging actually work?"** — `setupDragAndDrop()`; the
+  inline comment above it walks through the four HTML5 Drag and Drop
+  events involved. Ported from `compose/dewmini.js`'s own id-based
+  approach (rather than the DOM-child-index approach this file used
+  before `renderCells()` started interleaving insert dividers between
+  cells — see the next entry).
+- **"How does inserting a cell between two others work?"** —
+  `insertCellAt()` is what both the toolbar's "Python Cell"/"Text Cell"
+  buttons and the seams between cells call, at `cells.length` for the
+  former and any other index for the latter; `createInsertDivider()`
+  builds one seam, and `renderCells()` puts one before the first cell,
+  between every pair, and after the last. All three ported from
+  `compose/dewmini.js`.
 - **"What actually gets saved, and when?"** — `saveState()` for the
   what, and the "Event Listeners" section's shared comment for the
-  when (short version: every time `cells` changes).
+  when (short version: every time `cells` changes). Settings' own
+  extras — notes, the editor-appearance section, the download file
+  name — each save themselves independently, on their own input events,
+  via `initMiniIdeNotes()`, `initMiniIdeEditorSettings()`, and
+  `initFilename()`.
 - **"Where's the Help panel wired up?"** — `initHelp()` and
   `closeHelpPanel()`, right after `initSettings()` since the two panels
   close each other on open. This replaced `mini-ide-helper`, the old

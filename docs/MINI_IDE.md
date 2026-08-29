@@ -91,6 +91,21 @@ one cell is already there for a later one to use.
 Drag a cell by its header to move it. The new order is used next time
 you click Run All.
 
+### Inserting a Cell Between Two Others
+
+Hover the thin seam between any two cells — or before the first, or
+after the last — and it grows into "+ Python" / "+ Text" buttons. This
+is the fast way to build a notebook: adding exactly where you're
+already looking, rather than always appending at the bottom and
+dragging it up. On a touch device the seam stays visible without a
+hover to reveal it.
+
+### Keeping a Note
+
+Settings has a "Your notes" box — free-text, saved alongside your
+cells but not part of them, for anything worth writing down that isn't
+code or a text cell of its own (a reminder, a link, a to-do).
+
 ### Using Files
 
 Click **"Files"** (or just look at the panel next to your cells if your
@@ -115,7 +130,11 @@ cells — see [Import](#import-ipynb--py).
   [Download Formats](#download-formats))
 - **Download .ipynb**: saves your work as a Jupyter Notebook
 
-All three save the file directly — nothing opens in a new tab.
+All three save the file directly — nothing opens in a new tab. All
+three, plus a **Print / Save as PDF** button, also live together in
+Settings under "Keep a copy," alongside a file name field — set it once
+and it's used for every download and shown in the browser tab, instead
+of the generic `mini-ide-notebook` default.
 
 ---
 
@@ -162,14 +181,18 @@ or Settings closes the other, since they share the same corner.
 
 ### Cell Header
 
-Each cell has a header with:
+Each cell has a small pill-shaped header with:
 - **A label**: "Python" or "Text"
-- **A Run/Stop button** (Python cells only)
+- **A Run/Stop button** (▶, Python cells only)
 - **An Edit/View button** (text cells only) — switches between the
   plain words and the formatted view
-- **A Delete button**
+- **A Delete button** (×)
 
-You can also drag a cell by its header to move it.
+The buttons are faint until you hover the cell (or, on a touch device,
+always visible) — a quiet coloured rail beside the cell, not a header
+full of labelled buttons, is what says "python" / "text" / "this one
+errored" at a glance down a long notebook. You can also drag a cell by
+its header to move it.
 
 ### Output Area
 
@@ -193,6 +216,17 @@ up from the bottom on a phone, opened with the **Files** button):
 - **×** next to a file deletes it (asks first)
 - Before Python has started, it just says so instead of showing an
   empty list — run any cell to get things going
+
+---
+
+## Editor Appearance
+
+Settings has an "Editor" section — code size, how much room a cell
+gives itself (compact, cozy, or relaxed), how heavy the cursor looks,
+and whether line numbers and the current line's highlight show at all.
+None of it changes how code runs, only how it looks; every open cell
+picks up a change immediately. The same idea [dewmini](DEWMINI.md) offers
+under its own "Editor" section in Settings.
 
 ---
 
@@ -415,6 +449,9 @@ and Clear All doesn't touch them.
 |-----|-----|
 | `mini-ide:cells:v1` | All your cell data |
 | `mini-ide:import-mode` | Whether Import replaces or adds to your cells |
+| `mini-ide:notes` | The free-text "Your notes" box in Settings |
+| `mini-ide:filename` | The file name Settings uses for downloads and the tab title |
+| `mini-ide:editor` | Code size, cell spacing, cursor width, and the line-number/active-line toggles |
 | `dewlab:texture` | Your theme/font/size choices (shared with the tutorials) |
 
 If you've chosen a real folder, permission to use it is remembered
@@ -458,6 +495,18 @@ A real Jupyter Notebook file:
 - Keeps your cell types and their order (text cells become Markdown,
   Python cells become Code)
 - Includes the usual Jupyter file details
+
+### Print / Save as PDF
+
+The **Print / Save as PDF** button in Settings ("Keep a copy") calls
+the browser's own print dialog, from which "Save as PDF" is a printer
+choice like any other. Chrome, the file manager, Settings, and the
+faint insert seams between cells are all hidden on the printed page —
+just the cells and their output remain, in light ink regardless of
+which theme you were reading in.
+
+All four — the three file downloads and the printed copy — use the
+file name set in Settings.
 
 ---
 

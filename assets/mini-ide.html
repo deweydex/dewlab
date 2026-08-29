@@ -258,6 +258,15 @@
             aria-label="Close settings">&times;</button>
   </div>
 
+  <!-- Free-text notes, saved alongside cells rather than as one more
+       cell — same shape as compose/dewmini.html's own #dl-settings-work. -->
+  <section class="dl-settings-section" id="dl-settings-work">
+    <h3>Your notes</h3>
+    <textarea class="dl-progress-notes" id="mini-ide-notes" rows="4"
+              placeholder="Anything worth writing down as you go."></textarea>
+    <p class="dl-panel-note">Saved in this browser only, alongside your cells.</p>
+  </section>
+
   <!-- Python engine status -->
   <section class="dl-settings-section" id="dl-settings-execution">
     <h3>Python</h3>
@@ -289,16 +298,26 @@
     </div>
   </section>
 
-  <!-- Download section for Mini IDE -->
+  <!-- Download section for Mini IDE — filename plus a printed/PDF copy
+       alongside the three file exports, matching compose/dewmini.html's
+       own "Keep a copy" section. -->
   <section class="dl-settings-section" id="dl-settings-download">
-    <h3>Download</h3>
+    <h3>Keep a copy</h3>
     <p class="dl-panel-note">
-      Export your Mini IDE work in various formats.
+      Everything below is saved here as you go. These take a copy with you.
     </p>
+
+    <label class="mini-ide-filename-label" for="mini-ide-filename">File name</label>
+    <input type="text" id="mini-ide-filename" class="mini-ide-filename-input" placeholder="mini-ide-notebook"
+           aria-label="File name for downloads">
+
     <div class="dl-progress-actions">
-      <button type="button" class="dl-btn" id="settings-export-python">Export as .py</button>
-      <button type="button" class="dl-btn" id="settings-export-html">Export as .html</button>
-      <button type="button" class="dl-btn" id="settings-export-ipynb">Export as .ipynb</button>
+      <button type="button" class="dl-btn" id="settings-export-python">.py</button>
+      <button type="button" class="dl-btn" id="settings-export-html">.html</button>
+      <button type="button" class="dl-btn" id="settings-export-ipynb">.ipynb</button>
+    </div>
+    <div class="dl-progress-actions">
+      <button type="button" class="dl-btn" id="settings-print-pdf">Print / Save as PDF</button>
     </div>
   </section>
 
@@ -358,6 +377,56 @@
     </div>
 
     <button type="button" class="dl-texture-reset" id="dl-texture-reset">reset to defaults</button>
+  </section>
+
+  <!-- Font, cursor, size, and the placement of the code itself — same
+       section compose/dewmini.html's own #dl-settings-editor offers,
+       now here too rather than Mini IDE having no way to adjust any of
+       it. Purely CSS: see the :root[data-mini-ide-*] rules in
+       mini-ide-style.css and initMiniIdeEditorSettings() in mini-ide.js. -->
+  <section class="dl-settings-section" id="dl-settings-editor">
+    <h3>Editor</h3>
+
+    <div class="dl-texture-row">
+      <span>Code size</span>
+      <input type="range" id="mini-ide-code-size" min="12" max="22" step="1" aria-label="Code text size">
+    </div>
+
+    <div class="dl-texture-row">
+      <span>Spacing</span>
+      <div class="dl-seg" data-mini-ide="density">
+        <button type="button" data-value="compact">compact</button>
+        <button type="button" data-value="cozy">cozy</button>
+        <button type="button" data-value="relaxed">relaxed</button>
+      </div>
+    </div>
+
+    <div class="dl-texture-row">
+      <span>Cursor</span>
+      <div class="dl-seg" data-mini-ide="cursor">
+        <button type="button" data-value="thin">thin</button>
+        <button type="button" data-value="medium">medium</button>
+        <button type="button" data-value="thick">thick</button>
+      </div>
+    </div>
+
+    <div class="dl-texture-row">
+      <span>Line numbers</span>
+      <div class="dl-seg" data-mini-ide="gutter">
+        <button type="button" data-value="on">on</button>
+        <button type="button" data-value="off">off</button>
+      </div>
+    </div>
+
+    <div class="dl-texture-row">
+      <span>Active line</span>
+      <div class="dl-seg" data-mini-ide="activeline">
+        <button type="button" data-value="on">on</button>
+        <button type="button" data-value="off">off</button>
+      </div>
+    </div>
+
+    <button type="button" class="dl-texture-reset" id="mini-ide-editor-reset">reset to defaults</button>
   </section>
 </div>
 
