@@ -915,7 +915,12 @@ function getDefaultContent(type) {
   if (type === CELL_TYPES.PYTHON) {
     return '# Start coding here\nprint("Hello, World!")';
   }
-  return '# Add your text here\n\nThis is a text cell for documentation or comments.';
+  // Genuinely blank, not a boilerplate placeholder: a text cell with
+  // content immediately renders (showRendered() in createCellElement()),
+  // and a freshly added cell whose first line has to be clicked away
+  // before typing is worse than an empty textarea with its own
+  // placeholder text doing the same explaining.
+  return '';
 }
 
 /**
@@ -1029,6 +1034,14 @@ function createCellElement(cell, index) {
     runCell(cell.id);
   });
 
+  // Edit/View toggle (only for text cells) — filled in by the text-cell
+  // branch below, once showEditor()/showRendered() exist to keep its
+  // label in sync. Built here, alongside Run, so it sits in the same
+  // header row regardless of which branch runs.
+  const previewBtn = document.createElement('button');
+  previewBtn.className = 'dl-btn';
+  previewBtn.style.display = cell.type === CELL_TYPES.TEXT ? 'inline-flex' : 'none';
+
   // Delete button
   const deleteBtn = document.createElement('button');
   deleteBtn.className = 'dl-btn dl-btn-secondary';
@@ -1039,6 +1052,7 @@ function createCellElement(cell, index) {
   });
 
   actions.appendChild(runBtn);
+  actions.appendChild(previewBtn);
   actions.appendChild(deleteBtn);
   header.appendChild(typeLabel);
   header.appendChild(actions);
@@ -1078,10 +1092,40 @@ function createCellElement(cell, index) {
     // Store editor reference on cell for later access
     cell.editor = editor;
   } else {
-    // Text cell: use textarea
+    // Text cell: a textarea that turns into rendered notes — the same
+    // .dl-doc-editor/.dl-doc-render shape and renderDocMarkdown() as
+    // compose/dewmini.js and tutorial-runtime.js's own text cells (both
+    // stylesheets are already loaded here), so a text cell looks and
+    // behaves the same no matter which of dewlab's three cell surfaces a
+    // reader happens to be using.
     const textarea = document.createElement('textarea');
-    textarea.className = 'mini-ide-textarea';
+    textarea.className = 'dl-doc-editor';
+    textarea.placeholder = 'Notes… (# heading, **bold**, - bullets)';
     textarea.value = cell.content;
+
+    const renderEl = document.createElement('div');
+    renderEl.className = 'dl-doc-render';
+    renderEl.tabIndex = 0;
+    renderEl.hidden = true;
+
+    const syncPreviewBtn = () => {
+      const editing = !textarea.hidden;
+      previewBtn.textContent = editing ? 'View' : 'Edit';
+      previewBtn.title = editing ? 'Show this note rendered' : 'Edit this note';
+    };
+    const showEditor = () => {
+      textarea.hidden = false;
+      renderEl.hidden = true;
+      syncPreviewBtn();
+    };
+    const showRendered = () => {
+      if (!textarea.value.trim()) return; // nothing to render — keep it open for typing
+      renderEl.innerHTML = renderDocMarkdown(textarea.value);
+      renderEl.hidden = false;
+      textarea.hidden = true;
+      syncPreviewBtn();
+    };
+
     textarea.addEventListener('input', (e) => {
       const idx = cells.findIndex(c => c.id === cell.id);
       if (idx !== -1) {
@@ -1092,8 +1136,26 @@ function createCellElement(cell, index) {
         if (sampleNoticeEl) sampleNoticeEl.hidden = !hasSampleCells;
       }
     });
-    contentEl.appendChild(textarea);
+    textarea.addEventListener('blur', showRendered);
+    renderEl.addEventListener('click', showEditor);
+    renderEl.addEventListener('keydown', (e) => { if (e.key === 'Enter') showEditor(); });
+    // mousedown, not click: a click while the textarea is focused blurs
+    // it first (firing showRendered() above), and only then reaches this
+    // handler — by which point textarea.hidden already flipped, so
+    // reading it here would toggle straight back to editing. preventing
+    // the blur on mousedown keeps the state this handler sees accurate.
+    previewBtn.addEventListener('mousedown', (e) => e.preventDefault());
+    previewBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (textarea.hidden) showEditor(); else showRendered();
+    });
+
+    contentEl.append(textarea, renderEl);
     cell.textarea = textarea;
+    cell.showTextEditor = showEditor;
+
+    if (cell.content.trim()) showRendered();
+    else syncPreviewBtn();
   }
 
   // Cell output area — repopulated from the last run's rendered markup,
@@ -1885,6 +1947,72 @@ function escapeHtml(text) {
   const div = document.createElement('div');
   div.textContent = text;
   return div.innerHTML;
+}
+
+/**
+ * Formatting inside one line of a text cell's rendered view: `code`,
+ * **bold**, and italic written with either asterisks or underscores.
+ * Ported from compose/dewmini.js's own renderDocInline() — each
+ * `.replace()` scans the whole string for one pattern, chained so code
+ * is handled before bold/italic (so something inside backticks is never
+ * misread as a bold marker).
+ *
+ * @param {string} text - Already-escaped text for one line
+ * @returns {string} That line with inline formatting applied
+ */
+function renderDocInline(text) {
+  return text
+    .replace(/`([^`]+)`/g, '<code>$1</code>')
+    .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+    .replace(/(^|[^*\w])\*([^*\n]+)\*(?!\*)/g, '$1<em>$2</em>')
+    .replace(/(^|[^\w])_([^_\n]+)_(?!\w)/g, '$1<em>$2</em>');
+}
+
+/**
+ * Turns a whole text cell's raw content into rendered HTML, line by
+ * line — a small, hand-written parser (ported from compose/dewmini.js's
+ * own renderDocMarkdown()) that walks the text once, tracking whether a
+ * bullet list or a paragraph is currently open, and decides what to do
+ * from what kind of line it just read: a heading, a bullet, a blank
+ * line, or plain text to add to the paragraph in progress.
+ *
+ * @param {string} text - A text cell's raw, unescaped content
+ * @returns {string} Rendered HTML for the .dl-doc-render element
+ */
+function renderDocMarkdown(text) {
+  const out = [];
+  let listOpen = false;
+  let para = [];
+  const closeList = () => { if (listOpen) { out.push('</ul>'); listOpen = false; } };
+  const flushPara = () => { if (para.length) { out.push(`<p>${renderDocInline(para.join(' '))}</p>`); para = []; } };
+
+  for (const raw of escapeHtml(text).split('\n')) {
+    const line = raw.trim();
+    const heading = line.match(/^(#{1,3})\s+(.*)$/);
+    if (heading) {
+      flushPara();
+      closeList();
+      const level = heading[1].length + 3; // # -> h4 .. ### -> h6
+      out.push(`<h${level}>${renderDocInline(heading[2])}</h${level}>`);
+      continue;
+    }
+    const bullet = line.match(/^[-*]\s+(.*)$/);
+    if (bullet) {
+      flushPara();
+      if (!listOpen) { out.push('<ul>'); listOpen = true; }
+      out.push(`<li>${renderDocInline(bullet[1])}</li>`);
+      continue;
+    }
+    if (!line) {
+      flushPara();
+      closeList();
+      continue;
+    }
+    para.push(line);
+  }
+  flushPara();
+  closeList();
+  return out.join('\n') || '<p class="dl-doc-empty">Empty note.</p>';
 }
 
 // ============================================================================

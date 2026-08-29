@@ -1255,6 +1255,7 @@ def download_section(tutorial: Tutorial) -> str:
 
 TOPIC_DATA = ROOT / "planning" / "curriculum" / "topics.yaml"
 SCOPE_DATA = ROOT / "planning" / "curriculum" / "out-of-scope.yaml"
+TOPIC_GROUPS_DATA = ROOT / "planning" / "curriculum" / "topic-groups.yaml"
 
 # One node is a comfortable tap target with room for a two-line name.
 TOPIC_W, TOPIC_H = 178, 66
@@ -1275,6 +1276,18 @@ def load_topics() -> dict:
     if not TOPIC_DATA.is_file():
         return {}
     return (load_yaml_no_duplicate_keys(TOPIC_DATA.read_text()) or {}).get("topics") or {}
+
+
+def load_topic_groups() -> list[dict]:
+    """Broader, cross-module groupings for the "browse by topic" page
+    (`write_topics_page()`) — see `planning/curriculum/topic-groups.yaml`'s
+    own header comment for what these are and why they're a separate file
+    from `topics.yaml` above. Optional, the same way the topic tree's own
+    data is: without the file, there's simply no topics page."""
+    if not TOPIC_GROUPS_DATA.is_file():
+        return []
+    data = load_yaml_no_duplicate_keys(TOPIC_GROUPS_DATA.read_text()) or {}
+    return data.get("groups") or []
 
 
 def load_out_of_scope() -> set[str]:
@@ -1729,13 +1742,34 @@ def render_index(
         "errors, and contribute directly on GitHub.</p>",
         '<p class="dl-intro-tree">New here, or not sure where a topic fits? '
         'The <a href="tree.html">topic tree</a> shows everything the course '
-        "covers and what has to come first.</p>",
-        '<p class="dl-intro-ide">Want to experiment with your own code, outside '
-        'a tutorial? The <a href="mini-ide.html" target="_blank">Mini IDE</a> '
-        "lets you write and run Python, work with your own files, and save your "
-        "work as a Python file or a notebook. Want something smaller and "
-        'quieter instead? Try <a href="compose/dewmini.html" target="_blank">'
-        "dewmini</a> — a simple notebook with the same Python underneath.</p>",
+        "covers and what has to come first. Already partway through, and "
+        'want to practice one topic — trigonometry, say — in whatever '
+        'order suits you rather than paging through the whole list? '
+        '<a href="topics.html">Browse by topic</a> gathers each one in '
+        "one place.</p>",
+        "</div>",
+        # A section of its own, not one more paragraph among the intro's —
+        # these two are not tutorials and don't belong on the numbered list
+        # below, but they're common enough a reason to visit ("I just want
+        # to try something") that a line buried in prose undersold them.
+        '<div class="dl-workspaces">',
+        # h3, not h2: every <h2> on this page is read as a module heading
+        # (module_headings() in tests/test_build.py, and this page's own
+        # <h2> loop below) — this section belongs to neither list.
+        "<h3>Want to experiment on your own, outside a tutorial?</h3>",
+        '<div class="dl-workspaces-grid">',
+        '<a class="dl-workspace-card" href="mini-ide.html" target="_blank">',
+        "<h3>Mini IDE</h3>",
+        "<p>The fuller of the two — a file manager, several files at once, "
+        "and every export option. Good for a project meant to stand on its "
+        "own.</p>",
+        "</a>",
+        '<a class="dl-workspace-card" href="compose/dewmini.html" target="_blank">',
+        "<h3>dewmini</h3>",
+        "<p>Smaller and quieter, the same Python underneath. Good for a "
+        "quick calculation or a single practice problem.</p>",
+        "</a>",
+        "</div>",
         "</div>",
     ]
 
@@ -2764,6 +2798,122 @@ def write_tree_page(shell: str, tutorials: list[Tutorial]) -> Path | None:
     return target
 
 
+def write_topics_page(
+    shell: str,
+    registry: dict[tuple[str, str], Tutorial],
+    practice: dict[tuple[str, str], Tutorial],
+) -> Path | None:
+    """"Browse by topic" — the topic tree's sibling, and a genuinely
+    different question. The tree says what a topic needs before it, for
+    a reader moving through the course in order; this page is for a
+    reader who already has some of it behind them and wants to jump
+    straight to, say, everything about trigonometry, in whatever order
+    suits them (planning/curriculum/topic-groups.yaml's own header
+    comment goes into more depth on the two files' different jobs).
+
+    A group naming a tutorial `registry` doesn't have (a typo, a rename,
+    or — same as `topics.yaml`'s own module-level path — simply a test
+    building a small, sandboxed set of tutorials that was never going to
+    contain dewlab's real ones) is skipped rather than fatal, with a note
+    on stderr. `tests/test_build.py`'s own
+    `TestTopicGroupsMatchRealTutorials` is what actually holds this file
+    accountable against the genuine tutorials on disk, the same way nothing
+    checks `topics.yaml` against a build's tutorials either.
+    """
+    groups = load_topic_groups()
+    if not groups:
+        return None
+
+    body = [
+        "<h1>Browse by topic</h1>",
+        '<p class="dl-topics-intro">The tutorials list reads top to bottom '
+        "in the order the course teaches them. This page cuts across that "
+        "— everything about one topic, gathered in one place, for "
+        "practicing in whatever order suits you rather than paging "
+        "through the whole course to find it. A tutorial that genuinely "
+        "spans two topics is listed under both.</p>",
+    ]
+    any_group_rendered = False
+    for group in groups:
+        items = []
+        for ref in group["tutorials"]:
+            key = (ref["module"], ref["slug"])
+            member = registry.get(key)
+            if member is None:
+                print(
+                    f'note: topic-groups.yaml group "{group["key"]}" names '
+                    f"{key[0]}/{key[1]}, which this build has no tutorial for",
+                    file=sys.stderr,
+                )
+                continue
+            href = member.out_path.relative_to(OUT).as_posix()
+            also = practice.get(key)
+            extra = ""
+            if also is not None:
+                where = also.out_path.relative_to(OUT).as_posix()
+                extra = f' <a class="dl-contents-practice" href="{where}">practice</a>'
+            items.append(
+                f'<li><a href="{href}"{progress_attrs(member)}>'
+                f"{html.escape(member.title)}</a>{extra}</li>"
+            )
+        # A group every one of whose tutorials this particular build
+        # doesn't have (a sandboxed test's tiny fixture set, most likely)
+        # gets no heading either — an empty list under a real-sounding
+        # heading would read as a broken page, not a partial build.
+        if not items:
+            continue
+        any_group_rendered = True
+        body.append(f'<h2 id="{html.escape(group["key"], quote=True)}">'
+                     f'{html.escape(group["name"])}</h2>')
+        body.append(f'<p class="dl-panel-note">{html.escape(group["intro"].strip())}</p>')
+        body.append('<ol class="dl-contents">')
+        body.extend(items)
+        body.append("</ol>")
+
+    # Every group came back empty (a sandboxed build whose tutorials this
+    # file's real refs simply don't match) — nothing here for a reader,
+    # so there's nothing to build a page around either.
+    if not any_group_rendered:
+        return None
+
+    manifest = {"slug": "topics", "version": 1, "assetBase": "assets/",
+                "dataBase": "data/", "cells": [], "assetVersions": {}}
+    tokens = {
+        "{{TITLE}}": "Browse by topic",
+        "{{VERSION}}": "1",
+        "{{SLUG}}": "topics",
+        "{{MODULE}}": "",
+        "{{YEAR}}": "",
+        "{{SERIES}}": "",
+        "{{CRUMBS}}": "browse by topic",
+        "{{ASSET_BASE}}": "assets/",
+        "{{STYLE_URL}}": versioned("assets/", "tutorial-style.css"),
+        "{{KATEX_CSS_URL}}": versioned("assets/", "vendor/katex.min.css"),
+        "{{RUNTIME_URL}}": versioned("assets/", "tutorial-runtime.js"),
+        "{{ROOT_BASE}}": "",
+        "{{NAV_PREV_NEXT}}": '<a class="dl-nav-up" href="index.html">All tutorials</a>',
+        "{{PAGE_SCRIPT}}": "",
+        "{{CANONICAL}}": "",
+        "{{DOWNLOAD}}": "",
+        "{{TOC}}": "",
+        "{{SERIES_NAV}}": "",
+        "{{BODY}}": "".join(body),
+        "{{MANIFEST_JSON}}": json.dumps(manifest).replace("<", "\\u003c"),
+        "{{FOOTER}}": site_footer(),
+    }
+    page = shell
+    for token, value in tokens.items():
+        page = page.replace(token, value)
+    if "{{" in page:
+        leftover = sorted({p.split("}}")[0] + "}}" for p in page.split("{{")[1:]})
+        raise BuildError(f"shell template has tokens the topics page does not fill: {leftover}")
+
+    OUT.mkdir(parents=True, exist_ok=True)
+    target = OUT / "topics.html"
+    target.write_text(page)
+    return target
+
+
 def write_about_page(shell: str) -> Path:
     """A short guide to what the project is and how to contribute to it."""
     body = (
@@ -2952,6 +3102,9 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
         tree = write_tree_page(shell, tutorials)
         if tree is not None:
             written.append(tree)
+        topics_page = write_topics_page(shell, registry, practice)
+        if topics_page is not None:
+            written.append(topics_page)
         written.append(write_about_page(shell))
         written.append(write_editor_page(shell))
 

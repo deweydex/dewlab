@@ -73,8 +73,12 @@ seem to be doing anything).
 ### Adding Notes
 
 1. Click **"Text Cell"** to add a text cell
-2. Type notes, comments, or explanations
-3. Text cells show as formatted text — they don't run any code
+2. Type notes, comments, or explanations — `# a heading`, `**bold**`,
+   `*italic*`, `` `code` ``, and `- a bullet list` all format themselves
+3. Click away and it turns into formatted text; click it again, or use
+   the **Edit**/**View** button in its header, to get the plain words
+   back and keep writing
+4. Text cells never run any code — they just display
 
 ### Running All Cells
 
@@ -144,7 +148,8 @@ All three save the file directly — nothing opens in a new tab.
 
 #### Text Cells
 
-- Plain notes — comments, explanations, headings
+- Notes, comments, or explanations — `# heading`, `**bold**`,
+  `*italic*`, `` `code` ``, and `- a bullet list` all format themselves
 - Never run any code, they just display
 
 ### Cell Header
@@ -152,6 +157,8 @@ All three save the file directly — nothing opens in a new tab.
 Each cell has a header with:
 - **A label**: "Python" or "Text"
 - **A Run/Stop button** (Python cells only)
+- **An Edit/View button** (text cells only) — switches between the
+  plain words and the formatted view
 - **A Delete button**
 
 You can also drag a cell by its header to move it.

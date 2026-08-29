@@ -49,10 +49,10 @@ const NOTES_EXPORT_PREFIX = "dewlab:notes-exported-len:";
 const NOTES_NUDGE_KEY = "dewlab:notes-nudge";
 const NOTES_NUDGE_THRESHOLD = 120;
 const AUTOSAVE_DELAY = 500;
-/* The three build.py write_*_page() slugs that are not a tutorial at all —
+/* The build.py write_*_page() slugs that are not a tutorial at all —
  * nothing here has "your work" to save, cells or notes alike, the way an
  * actual tutorial page does. */
-const NON_TUTORIAL_PAGES = new Set(["index", "tree", "about"]);
+const NON_TUTORIAL_PAGES = new Set(["index", "tree", "about", "topics"]);
 const TEXTURE_DEFAULTS = {
   theme: "system", font: "serif", size: 18, width: 34,
   link: "#d4692a", header: "full",
@@ -709,6 +709,12 @@ function escapeHtml(text) {
   return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
+/* The formatting that can appear inside one line of a text cell: `code`,
+ * **bold**, and italic written either with asterisks or underscores.
+ * Each `.replace()` scans the whole string for one pattern and swaps in
+ * the matching HTML, chained one after another — code before bold/
+ * italic, so something inside backticks is never misread as a bold
+ * marker. */
 function renderDocInline(text) {
   return text
     .replace(/`([^`]+)`/g, "<code>$1</code>")
@@ -717,6 +723,14 @@ function renderDocInline(text) {
     .replace(/(^|[^\w])_([^_\n]+)_(?!\w)/g, "$1<em>$2</em>");
 }
 
+/* Turns a whole text cell's raw content into rendered HTML, line by
+ * line: a small, hand-written parser that walks the text once, tracking
+ * whether a bullet list or a paragraph is currently open, and decides
+ * what to do from what kind of line it just read (a heading, a bullet, a
+ * blank line, or plain text to add to the paragraph in progress).
+ * `para` collects an in-progress paragraph's lines until something ends
+ * it, at which point `flushPara()` joins them into one `<p>`; `closeList()`
+ * does the same job for an open `<ul>`. */
 function renderDocMarkdown(text) {
   const out = [];
   let listOpen = false;
@@ -863,6 +877,7 @@ function createCustomCellElement(id, type) {
       + '<div class="dl-cell-bar">'
       + '<span class="dl-cell-id">your own note</span>'
       + '<span class="dl-cell-spacer"></span>'
+      + '<button type="button" class="dl-btn dl-btn-preview">view</button>'
       + '<button type="button" class="dl-btn dl-btn-share">share</button>'
       + '<button type="button" class="dl-btn dl-btn-delete">delete</button>'
       + "</div>"
@@ -966,19 +981,39 @@ function mountCustomCellAfter(afterNode, id, type, code, anchor) {
   if (type === "text") {
     const textarea = host.querySelector(".dl-doc-editor");
     const renderEl = host.querySelector(".dl-doc-render");
+    const previewBtn = host.querySelector(".dl-btn-preview");
     textarea.value = code || "";
 
-    const showEditor = () => { textarea.hidden = false; renderEl.hidden = true; };
+    // Clicking a rendered note to get back to editing it (renderEl's own
+    // click handler below) works with a mouse, but a touch device has no
+    // hover to hint that the note is clickable at all — previewBtn is the
+    // same toggle, explicit and always visible, so there is no gesture a
+    // reader has to already know about to find their way back in.
+    const syncPreviewBtn = () => {
+      const editing = !textarea.hidden;
+      previewBtn.textContent = editing ? "view" : "edit";
+      previewBtn.title = editing ? "Show this note rendered" : "Edit this note";
+    };
+    const showEditor = () => { textarea.hidden = false; renderEl.hidden = true; syncPreviewBtn(); };
     const showRendered = () => {
       if (!textarea.value.trim()) return; // nothing to render — keep it open for typing
       renderEl.innerHTML = renderDocMarkdown(textarea.value);
       renderEl.hidden = false;
       textarea.hidden = true;
+      syncPreviewBtn();
     };
     textarea.addEventListener("input", () => scheduleCustomSave());
     textarea.addEventListener("blur", showRendered);
     renderEl.addEventListener("click", showEditor);
     renderEl.addEventListener("keydown", (ev) => { if (ev.key === "Enter") showEditor(); });
+    // mousedown, not click: a click while the textarea is focused blurs
+    // it first (firing showRendered() above), and only then reaches this
+    // handler — by which point textarea.hidden already flipped, so
+    // reading it here would toggle straight back to editing. preventing
+    // the blur on mousedown keeps the state this handler sees accurate.
+    previewBtn.addEventListener("mousedown", (ev) => ev.preventDefault());
+    previewBtn.addEventListener("click", () => (textarea.hidden ? showEditor() : showRendered()));
+    syncPreviewBtn();
 
     cell = {
       id,
@@ -1039,13 +1074,13 @@ function insertCustomCell(afterNode, type, code, anchor) {
   return cell;
 }
 
-/* The Settings-panel equivalent of clicking a divider — used by the
- * global debug/test hook and by importCustomCell() below — always adds
- * to the very end of the general "Try something of your own" section
- * rather than needing a specific divider to click. */
-function addCustomCell(type = "python") {
+/* The "add one somewhere, no particular cell in mind" entry point —
+ * used by the global debug/test hook and by importCustomCell() below —
+ * always adds to the very end of the general "Try something of your
+ * own" section rather than needing a specific divider to click. */
+function addCustomCell(type = "python", code = "") {
   const afterNode = lastDividerFor(TRAILING_ANCHOR);
-  return afterNode ? insertCustomCell(afterNode, type, "", TRAILING_ANCHOR) : null;
+  return afterNode ? insertCustomCell(afterNode, type, code, TRAILING_ANCHOR) : null;
 }
 
 /* Removes one custom cell — no confirmation, matching how deleting a
@@ -1053,7 +1088,7 @@ function addCustomCell(type = "python") {
  * only a bulk "remove everything" action asks first (clearCustomCells()
  * below). A cell's own trailing divider (the one mountCustomCellAfter()
  * created alongside it) goes with it — leaving it behind would leave a
- * second, redundant "+ " seam sitting right next to whichever divider
+ * second, redundant insert seam sitting right next to whichever divider
  * used to precede this cell. */
 function deleteCustomCell(cell) {
   const divider = cell.element.nextElementSibling;
@@ -1086,15 +1121,18 @@ function exportCustomCell(cell) {
 
 /* "Load a shared cell": reads the chosen file, checks it at least looks
  * like one of exportCustomCell()'s own files, and mounts it at the end of
- * the general section — with a freshly generated id, never the id (if
- * any) the file happened to carry, so an imported cell can never
- * collide with, or be confused for, one of this reader's own. A file
- * from before Part A shipped has no `type` at all — that's still a valid
- * python cell, just an older one. Deliberately does not run the imported
- * code: the trust note in Settings says plainly that a loaded cell runs
- * like any other code on this page, and "plainly" means before anything
- * runs, not after — the reader still has to read it and press Run
- * themselves, the same as every other cell on the site.
+ * the general section (addCustomCell() above — this is exactly "add one,
+ * no particular cell in mind," just with the file's code instead of a
+ * blank cell) — with a freshly generated id, never the id (if any) the
+ * file happened to carry, so an imported cell can never collide with, or
+ * be confused for, one of this reader's own. A file shared before this
+ * feature had text cells has no `type` field at all — that's still read
+ * as a valid python cell, just an older kind of file. Deliberately does
+ * not run the imported code: the trust note in Settings says plainly
+ * that a loaded cell runs like any other code on this page, and
+ * "plainly" means before anything runs, not after — the reader still has
+ * to read it and press Run themselves, the same as every other cell on
+ * the site.
  */
 async function importCustomCell(file) {
   let payload;
@@ -1109,9 +1147,7 @@ async function importCustomCell(file) {
     return;
   }
   const type = payload.type === "text" ? "text" : "python";
-  const afterNode = lastDividerFor(TRAILING_ANCHOR);
-  if (!afterNode) return;
-  insertCustomCell(afterNode, type, payload.code, TRAILING_ANCHOR);
+  if (!addCustomCell(type, payload.code)) return;
   setStatus("Cell loaded — read it before you press Run.");
 }
 
@@ -1253,11 +1289,11 @@ function splitLines(text) {
  * page — the tutorial's own and a reader's own custom cells alike — in
  * the order they actually appear. Querying the DOM for that order, rather
  * than walking `cells` and `customCells` separately and trying to
- * interleave them by anchor, is simplest precisely because Part A already
- * put every custom cell in its real document position: one query, one
- * pass, and it can never disagree with what the reader is actually
- * looking at. A python cell becomes a "code" cell; a reader's own text
- * cell becomes "markdown".
+ * interleave them by anchor, is simplest precisely because a custom cell
+ * already lives at its real document position (mountCustomCellAfter()
+ * puts it there when it's added): one query, one pass, and it can never
+ * disagree with what the reader is actually looking at. A python cell
+ * becomes a "code" cell; a reader's own text cell becomes "markdown".
  *
  * This deliberately does not attempt to turn the tutorial's own *prose*
  * into markdown cells alongside the code — by the time this runs, the

@@ -42,6 +42,12 @@ current as things change — not a pitch.
   from `tutorials/modules.yaml`.
 - **The topic tree**: a visual map of outcomes, their prerequisites, and
   which tutorial teaches each one, with pan/zoom (`assets/tree.js`).
+- **Browse by topic** (`topics.html`): the tree's sibling for a different
+  question — not "what does this need first," but "everything about
+  trigonometry, gathered in one place, in whatever order suits me."
+  Curated groupings live in `planning/curriculum/topic-groups.yaml`,
+  separate from the tree's own `topics.yaml`; see `write_topics_page()`
+  in `build.py` for how the two differ.
 - **The authoring editor**: a browser-based tool that reads and writes
   tutorials through GitHub's API — series reordering, frontmatter
   editing, a warning before a cell-id change strands saved work,

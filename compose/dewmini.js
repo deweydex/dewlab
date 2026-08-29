@@ -385,6 +385,12 @@ function createCellElement(cell) {
   // button itself lives in the head, built here alongside Run/Delete so
   // all three sit in one row regardless of which branch runs.
   let insertDocImage = null;
+  // Same reasoning, for the explicit Edit/View button a text cell's
+  // header gets below: clicking a rendered note to get back to editing
+  // it works with a mouse, but has no equivalent affordance on a touch
+  // device, which has no hover to reveal that the note is clickable at
+  // all. Its label is kept in sync by showEditor()/showRendered().
+  let previewBtn = null;
 
   if (cell.type === CELL_TYPES.PYTHON) {
     const runBtn = document.createElement("button");
@@ -395,6 +401,14 @@ function createCellElement(cell) {
     runBtn.addEventListener("click", (e) => { e.stopPropagation(); runCell(cell.id); });
     actions.appendChild(runBtn);
   } else {
+    // Filled in below, once showEditor()/showRendered() exist to call —
+    // built here so it sits in the header row with the other buttons
+    // regardless of where in this function the text-cell branch runs.
+    previewBtn = document.createElement("button");
+    previewBtn.type = "button";
+    previewBtn.className = "dm-icon-btn dm-icon-preview";
+    actions.appendChild(previewBtn);
+
     const imgBtn = document.createElement("button");
     imgBtn.type = "button";
     imgBtn.className = "dm-icon-btn dm-icon-image";
@@ -445,21 +459,41 @@ function createCellElement(cell) {
     renderEl.tabIndex = 0;
     renderEl.hidden = true;
 
+    const syncPreviewBtn = () => {
+      const editing = !textarea.hidden;
+      previewBtn.textContent = editing ? "View" : "Edit";
+      previewBtn.title = editing ? "Show this note rendered" : "Edit this note";
+    };
     const showEditor = () => {
       textarea.hidden = false;
       renderEl.hidden = true;
       textarea.focus();
+      syncPreviewBtn();
     };
     const showRendered = () => {
       if (!cell.content.trim()) return; // nothing to render — keep it open for typing
       renderEl.innerHTML = renderDocMarkdown(cell.content);
       renderEl.hidden = false;
       textarea.hidden = true;
+      syncPreviewBtn();
     };
 
     textarea.addEventListener("input", (e) => { cell.content = e.target.value; saveState(); });
     textarea.addEventListener("blur", showRendered);
     renderEl.addEventListener("click", showEditor);
+    // mousedown, not click, is where this has to happen: a click on
+    // previewBtn while the textarea is focused blurs the textarea first
+    // (triggering showRendered() above) and only then reaches this
+    // handler — by which point textarea.hidden already flipped, so
+    // reading it here would toggle straight back to editing instead of
+    // landing on rendered. preventDefault() on mousedown stops the
+    // textarea from blurring at all, so this handler still sees the
+    // state as it was when the reader actually clicked.
+    previewBtn.addEventListener("mousedown", (e) => e.preventDefault());
+    previewBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      if (textarea.hidden) showEditor(); else showRendered();
+    });
 
     insertDocImage = () => pickImageFile((dataUrl) => {
       const sep = cell.content && !cell.content.endsWith("\n") ? "\n\n" : "";
@@ -477,6 +511,7 @@ function createCellElement(cell) {
     cell.showTextEditor = showEditor;
 
     if (cell.content.trim()) showRendered();
+    else syncPreviewBtn();
   }
 
   const outputEl = document.createElement("div");

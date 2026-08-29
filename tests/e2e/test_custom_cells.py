@@ -175,6 +175,25 @@ class TestAddingACustomCell:
         assert "<h4>Heading</h4>" in rendered
         assert "<strong>bold</strong>" in rendered
 
+    def test_the_view_edit_button_toggles_while_the_textarea_is_still_focused(self, clean_storage):
+        """A click on the button, not a blur-then-click, is the case worth
+        covering: clicking straight out of the textarea (rather than
+        tabbing or clicking elsewhere first) used to blur it — which
+        auto-rendered — and then the button's own handler saw the
+        already-flipped state and toggled straight back to editing."""
+        page = clean_storage
+        add_via_trailing_divider(page, "Text")
+        page.wait_for_selector(".dl-cell-text", timeout=5_000)
+        page.click(".dl-cell-text .dl-doc-editor")
+        page.keyboard.type("Some notes")
+        btn = page.locator(".dl-cell-text .dl-btn-preview")
+        assert btn.text_content() == "view"
+        btn.click()
+        assert page.eval_on_selector(".dl-cell-text .dl-doc-editor", "el => el.hidden") is True
+        assert btn.text_content() == "edit"
+        btn.click()
+        assert page.eval_on_selector(".dl-cell-text .dl-doc-editor", "el => el.hidden") is False
+
     def test_a_custom_cell_survives_a_reload_in_the_same_place(self, clean_storage):
         page = clean_storage
         second_real = page.locator(".dl-cell:not(.dl-cell-custom)").nth(1)

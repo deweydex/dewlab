@@ -324,6 +324,17 @@
 .dm-icon-delete:hover { border-color: var(--dl-error-fg); color: var(--dl-error-fg); }
 .dm-icon-btn:disabled { opacity: 0.4; cursor: default; }
 
+/* The one .dm-icon-btn with a word on it rather than a glyph — "Edit"/
+ * "View" needs more room than the fixed icon square, and there's no
+ * single symbol for "toggle between editing and reading this note" that
+ * reads clearly at a glance the way a pencil or an eye alone might not. */
+.dm-icon-preview {
+  width: auto;
+  padding: 0 0.5rem;
+  font-family: var(--dl-mono);
+  font-size: 0.68rem;
+}
+
 /* Code editor. Font/size/cursor/placement are exactly the affordances asked
  * for, so each is its own variable rather than a hard-coded value — the
  * Editor settings section below writes these, nothing else touches them. */

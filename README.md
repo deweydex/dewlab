@@ -580,6 +580,9 @@ assets/
   tutorial-runtime.js starts Python, mounts the editors, runs a cell
   tutorial_tools.py   what a student's cell code can call
   tree.html, tree.js  the topic tree page
+  topics.html         "browse by topic" — build.py's write_topics_page(),
+                      curated groupings in planning/curriculum/topic-groups.yaml;
+                      no separate JS, just shell.html plus a list of links
   editor.html, editor.js  the browser-based authoring editor
   mini-ide.html, mini-ide.js, mini-ide-engine.js, mini-ide-fs.js, mini-ide-style.css
                       a folder-based, file-manager-equipped Python workspace with
