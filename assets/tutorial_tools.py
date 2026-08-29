@@ -89,6 +89,17 @@ except ImportError:
 # --------------------------------------------------------------------------
 
 
+"""These three sink classes are a small example of "duck typing": they
+share no common base class, but each one defines the same four methods
+(`stream`, `close_stream`, `append_html`, `clear`) with the same meaning.
+Anything that calls `cell.sink.stream(...)` doesn't need to check which
+kind of sink it has — as long as it quacks like a sink (has those
+methods), it works. That's what lets the exact same rendering code
+further down this file (`_render_value`, `show`, `check`, and so on) work
+identically whether the cell is running in a browser tab, inside a Web
+Worker, or in a plain Python test with no browser at all."""
+
+
 class _RecordingSink:
     """Collects emitted markup instead of touching a DOM. Used by the tests."""
 
@@ -270,7 +281,19 @@ def _require_cell() -> _CellContext:
 
 
 class _StreamWriter(io.TextIOBase):
-    """Routes `print` into the running cell's output area as it happens."""
+    """Routes `print` into the running cell's output area as it happens.
+
+    `print(...)` doesn't know anything about cells or web pages — it just
+    writes text to whatever object is currently `sys.stdout` (Python's
+    built-in idea of "the output stream"). Normally that's the terminal;
+    here, `_begin()` further down swaps `sys.stdout` out for one of these
+    objects instead, for the duration of one cell's run. `io.TextIOBase`
+    is Python's own base class for "a thing text can be written to" — by
+    subclassing it and overriding `write()`, this becomes a valid
+    stand-in for stdout as far as `print` is concerned, even though
+    what it actually does with the text (append it into a cell's output
+    area) has nothing to do with files or terminals.
+    """
 
     def __init__(self, css_class: str):
         self._css_class = css_class
@@ -290,11 +313,21 @@ class _StreamWriter(io.TextIOBase):
 
 
 def _pandas():
-    """pandas, but only if the cell already imported it. Never forces it."""
+    """pandas, but only if the cell already imported it. Never forces it.
+
+    `sys.modules` is Python's own cache of every module that has been
+    imported anywhere so far in this program. Checking it with `.get(...)`
+    (which returns `None` instead of raising if the key isn't there) is
+    how this asks "has pandas been imported yet?" without importing it
+    itself — importing pandas here "just to check" would make it load on
+    every single cell run, whether or not the student's own code ever
+    uses it, which would slow things down for no reason.
+    """
     return sys.modules.get("pandas")
 
 
 def _numpy():
+    """Same idea as `_pandas` above, for numpy."""
     return sys.modules.get("numpy")
 
 
@@ -560,6 +593,19 @@ def _format_exception(exc: BaseException) -> str:
 
 
 def _chained(summary):
+    """Walks the chain of "this error happened while handling that other
+    error" back to its start.
+
+    In Python, raising an exception while already handling one (a `raise`
+    inside an `except` block, or even just a second error happening inside
+    that block) doesn't lose the original — Python remembers it on the new
+    exception's `__context__` attribute (or `__cause__`, if it was an
+    explicit `raise new_error from original_error`). `_format_exception`
+    above uses this to trim *every* traceback in the chain down to the
+    student's own code, not just the outermost one. `seen` guards against
+    looping forever in the (rare, but possible) case where two exceptions
+    somehow end up referencing each other.
+    """
     seen = []
     current = summary
     while True:
@@ -582,6 +628,15 @@ def render_error(message: str) -> None:
 
 
 def _begin(cell_id: str, sink, code: str = "") -> None:
+    """Everything that has to happen right before a cell's code runs:
+    clear its old output, make it the "current" cell (so the module-level
+    functions below like `show()` know which cell they belong to), teach
+    `linecache` about its source for tracebacks, and — this is the
+    important part — replace `sys.stdout`/`sys.stderr` with the
+    `_StreamWriter`s from above, so any `print()` the student's code does
+    lands in this cell's output area instead of vanishing into nowhere
+    (there's no terminal for it to go to in a browser).
+    """
     global _current
     sink.clear()
     _current = _CellContext(cell_id, sink)
@@ -592,6 +647,15 @@ def _begin(cell_id: str, sink, code: str = "") -> None:
 
 
 def _end(value) -> None:
+    """The matching cleanup for `_begin()`, always run once a cell finishes
+    (successfully or not — see `run_cell`'s `finally` below). Renders
+    whatever value the cell's last line produced, flushes any matplotlib
+    figures that were drawn but never shown, and — critically — puts
+    `sys.stdout`/`sys.stderr` back the way they were (`sys.__stdout__` is
+    Python's own untouched original, saved before anything could replace
+    it) so a later cell, or anything else in the interpreter, doesn't
+    keep writing into a cell that has already finished running.
+    """
     global _current
     try:
         _render_value(value)
@@ -864,6 +928,29 @@ def _require_dom_sink(kind: str) -> _CellContext:
 
 
 def _mount_widget(markup: str, cell_id: str, widget_id: str, kind: str) -> _Widget:
+    """Puts a widget's HTML on the page and wires it up to remember what
+    the student types into it.
+
+    The `on_change(_event, _cell=cell_id, _wid=widget_id, _control=control)`
+    line looks unusual, and it's worth understanding why it's written that
+    way rather than just using `cell_id`, `widget_id`, and `control`
+    directly inside the function. If several widgets get created (say, in
+    a loop, or just several `text_input()` calls in the same cell),
+    ordinary variables like `cell_id` would be *shared* by every one of
+    those inner functions — by the time a student actually clicks or
+    types, `cell_id` might have already changed to a later widget's value.
+    Giving each argument a default value captures the *current* value of
+    `cell_id`/`widget_id`/`control` at the moment `on_change` is defined,
+    once per widget, so each widget's own change handler always uses its
+    own values no matter what happens afterward. This is a common Python
+    idiom for exactly this problem, sometimes called "binding early."
+
+    `_create_proxy` matters too: this is Python code, but
+    `addEventListener` is a JavaScript API — Pyodide's `create_proxy`
+    wraps a Python function so JavaScript can call it back like a normal
+    JS callback. Skipped (via the `is not None` check) when this file is
+    running outside a browser at all, e.g. under the plain-Python tests.
+    """
     cell = _require_cell()
     root = cell.sink.append_html(markup)
     widget = _Widget(cell_id, widget_id, root, kind)
@@ -941,6 +1028,21 @@ def button(label: str = "Go", on_click=None, id: str | None = None) -> _Widget: 
         cell_id = cell.cell_id
 
         def handle(_event):
+            """Runs `on_click()` when the button is clicked — which can
+            happen long after the cell itself finished running, so this
+            can't just reuse `_begin()`/`_end()` (those assume a cell is
+            actively running via `run_cell`). Instead it does a smaller,
+            self-contained version of the same setup/teardown: remember
+            whatever cell was "current" before this click (`previous`,
+            which is normally `None`, since no cell is running while the
+            student is just clicking a button), temporarily make *this*
+            button's cell current and route stdout/stderr into it so
+            `print()` inside `on_click` works, run the callback, then put
+            everything back exactly as it was — including restoring
+            `previous` rather than always resetting to `None`, in case
+            this button's own callback somehow triggers another cell
+            while it runs.
+            """
             global _current
             previous = _current
             _current = _CellContext(cell_id, sink)
@@ -990,6 +1092,22 @@ def image_input(label: str = "Choose an image", id: str | None = None) -> _Widge
         cell_id = cell.cell_id
 
         def on_change(_event, _cell=cell_id, _wid=widget_id, _control=control):
+            """See `_mount_widget`'s comment above for why `_cell`/`_wid`/
+            `_control` are captured as default-argument values rather than
+            used directly.
+
+            Reading the picked file's bytes (`arrayBuffer()`) is itself
+            asynchronous — it has to wait for the browser to actually read
+            the file off disk — but a DOM `change` event handler can't be
+            declared `async` and awaited the normal way; JavaScript just
+            fires the event and moves on. So the actual reading happens in
+            a separate `async def read()` function, and
+            `asyncio.ensure_future(read())` schedules it to run in the
+            background without this outer function waiting for it. That's
+            why `image_input()`'s `.value` starts out as `None` and only
+            becomes the picked image sometime after the student picks a
+            file — there's no way to make picking a file instant.
+            """
             files = _control.files
             if files is None or files.length == 0:
                 return
