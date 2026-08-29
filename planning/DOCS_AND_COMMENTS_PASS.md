@@ -57,10 +57,10 @@ tracks it as a sequenced effort, same shape as the Mini IDE redesign.
 **Phase A — quick, high-visibility**
 - [x] Homepage: mention dewmini alongside Mini IDE (`build.py`'s
       `write_index()`)
-- [ ] `CONTRIBUTING.md` — the standing check
-- [ ] `docs/MINI_IDE.md` — language pass (already written for this
-      redesign; needs a friendlier pass, not a rewrite)
-- [ ] `docs/DEWMINI.md` — same pass; this file didn't exist when this plan
+- [x] `CONTRIBUTING.md` — the standing check
+- [x] `docs/MINI_IDE.md` — language pass, and restructured to drop
+      developer-facing sections that don't belong in a student-facing doc
+- [x] `docs/DEWMINI.md` — same pass; this file didn't exist when this plan
       was first written (it landed via PR #71, merged into `main` around
       the same time as this redesign) — same audience as
       `docs/MINI_IDE.md`, same treatment
@@ -69,51 +69,66 @@ Note: `main` also picked up dewmini's own feature work (sqlite3, Pillow,
 an `image_input` widget in `tutorial_tools.py`, doc-cell image attach —
 PR #69/#71) while this session was running. It merged cleanly with no
 conflicts; `tutorial_tools.py`'s pedagogical-comment pass (Phase C) and
-`compose/dewmini.js`'s (Phase D) both need to account for that code now,
-not just what this session originally wrote.
+`compose/dewmini.js`'s (Phase D) both accounted for that code, not just
+what this session originally wrote.
 
 **Phase B — this redesign's own code (freshest, most relevant)**
-- [ ] `assets/mini-ide.js` (1751 lines) — pedagogical comments +
+- [x] `assets/mini-ide.js` (1751 lines) — pedagogical comments +
       `docs/mini-ide-js-explained.md`
-- [ ] `assets/mini-ide-engine.js` (570 lines) — pedagogical comments +
+- [x] `assets/mini-ide-engine.js` (570 lines) — pedagogical comments +
       `docs/mini-ide-engine-explained.md`
-- [ ] `assets/mini-ide-fs.js` (281 lines) — pedagogical comments +
+- [x] `assets/mini-ide-fs.js` (281 lines) — pedagogical comments +
       `docs/mini-ide-fs-explained.md`
 
 **Phase C — the shared runtime this redesign builds on**
-- [ ] `assets/tutorial_tools.py` (1025 lines, incl. `run_query`) —
-      pedagogical comments + `docs/tutorial-tools-explained.md`
-- [ ] `assets/pyodide-worker.js` (348 lines) — pedagogical comments +
+- [x] `assets/tutorial_tools.py` (1025 lines, incl. `run_query` and
+      `image_input`) — pedagogical comments + `docs/tutorial-tools-explained.md`
+- [x] `assets/pyodide-worker.js` (348 lines) — pedagogical comments +
       `docs/pyodide-worker-explained.md`
 
 **Phase D — the rest of the codebase**
-- [ ] `assets/tutorial-runtime.js` (1967 lines) — pedagogical comments +
+- [x] `assets/tutorial-runtime.js` (1967 lines) — pedagogical comments +
       `docs/tutorial-runtime-explained.md`
-- [ ] `compose/dewmini.js` (1214 lines) — pedagogical comments +
+- [x] `compose/dewmini.js` (1214 lines) — pedagogical comments +
       `docs/dewmini-js-explained.md`
-- [ ] `build.py` (2891 lines) — pedagogical comments +
+- [x] `build.py` (2893 lines) — pedagogical comments +
       `docs/build-explained.md`
-- [ ] `dev/*.py` (fetch_pyodide.py, from_notebook.py,
+- [x] `dev/*.py` (fetch_pyodide.py, from_notebook.py,
       generate_doc_snippets.py, curriculum_map.py) — pedagogical comments
       + `docs/dev-scripts-explained.md`
 
 **Phase E — the "whole repo" language pass**
-- [ ] `README.md` (648 lines)
-- [ ] `ARCHITECTURE.md` (423 lines)
-- [ ] `planning/*.md` (roughly 20 files, mostly short) — including
-      `planning/PEDAGOGICAL_STYLE_GUIDE.md`, which already governs
-      *tutorial content's* voice and is the natural place to check this
-      pass against for consistency
-- [ ] `DECISIONS_LOG.md` (2664 lines) — a careful, low-priority pass; a
-      historical record, not something to simplify at the cost of
-      accuracy
+- [x] `README.md` — already in plain, direct language; fixed a real
+      staleness gap instead (the directory map and cross-references
+      hadn't caught up with everything Phases A-D added)
+- [x] `ARCHITECTURE.md` — same finding: already plain and direct, but
+      missing an entire section on Mini IDE's redesigned engine and
+      filesystem layer. Added §4, renumbered what followed it.
+- [x] `planning/*.md` — surveyed all ~25 files. Most were already in the
+      same plain, direct voice as the rest of the repo and needed
+      nothing. A distinct subset (`STATUS.md`, this file's own
+      `README.md`, `CURRICULUM_NOTES.md`, `VERSIONS.md`, `WINDOW_AUDIT.md`,
+      `EDITOR.md`, plus the intros of `CHEAT_SHEETS.md` and `PRACTICE.md`)
+      had drifted into a noticeably different, consulting-report register
+      ("Implementation Guarantee", "Technical Specification",
+      "Fundamental Requirements") — rewritten to match, with every fact,
+      number, and decision preserved. `STATUS.md` and `planning/README.md`
+      were also missing the Mini IDE redesign and this whole docs
+      initiative; both are folded in now.
+      `planning/Educational Content guide for LLMs.md` was left alone: it
+      references subdirectories (`by_content_type/`, etc.) that don't
+      exist in this repo, so it reads as an orphaned import from
+      elsewhere, not a document this repo's conventions actually govern.
+      `planning/curriculum/` and `planning/outlines/` (data files and
+      per-tutorial outlines) weren't surveyed individually — out of scope
+      for a repo-conventions language pass.
+- [x] `DECISIONS_LOG.md` (2712 lines) — spot-checked, left unchanged. It
+      was already in the same plain, direct voice as everywhere else;
+      rewriting a historical record for tone risks the accuracy
+      CONTRIBUTING.md asks it to keep.
 
 ## Status
 
-- [x] Phase A.1 — homepage dewmini mention
-- [ ] Phase A.2 — CONTRIBUTING.md
-- [ ] Phase A.3 — docs/MINI_IDE.md language pass
-- [ ] Phase B — Mini IDE's own JS files
-- [ ] Phase C — shared runtime (tutorial_tools.py, pyodide-worker.js)
-- [ ] Phase D — rest of the codebase
-- [ ] Phase E — whole-repo language pass
+Complete. Every phase above is checked off. Going forward, keeping this
+current is `CONTRIBUTING.md`'s job, not this file's — this document stays
+as the record of how the initial pass was scoped and sequenced.
