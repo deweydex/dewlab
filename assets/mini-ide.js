@@ -86,6 +86,11 @@ let helperCloseBtn;
 let statusEl;
 let sampleNoticeEl;
 let removeSampleBtn;
+let filetreeEl;
+let filetreeToggleBtn;
+let filetreeRefreshBtn;
+let filetreeListEl;
+let filetreeNoteEl;
 
 // ============================================================================
 // Drag and Drop State
@@ -120,6 +125,13 @@ let runningCellId = null;
  * @type {boolean}
  */
 let runningAll = false;
+
+/**
+ * Whether the filesystem (mini-ide-fs.js) has mounted successfully.
+ * The file tree pane stays a placeholder until this flips true.
+ * @type {boolean}
+ */
+let fsReady = false;
 
 // ============================================================================
 // Cell Types
@@ -398,6 +410,11 @@ async function init() {
   statusEl = document.getElementById('mini-ide-status');
   sampleNoticeEl = document.getElementById('sample-cells-notice');
   removeSampleBtn = document.getElementById('remove-sample-cells');
+  filetreeEl = document.getElementById('mini-ide-filetree');
+  filetreeToggleBtn = document.getElementById('filetree-toggle');
+  filetreeRefreshBtn = document.getElementById('filetree-refresh');
+  filetreeListEl = document.getElementById('filetree-list');
+  filetreeNoteEl = document.getElementById('filetree-note');
 
   // Wire the engine to this page's cells before anything can run
   engine.configure({
@@ -509,7 +526,21 @@ function createSampleCells() {
  * @function saveState
  */
 function saveState() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(cells));
+  // An explicit allow-list, not JSON.stringify(cells) directly: a rendered
+  // cell also carries .editor (CodeMirror), .textarea, .outputEl, and
+  // .runBtn — live DOM/editor references whose own property graphs contain
+  // real cycles (a DOM node's parentNode/childNodes, CodeMirror's internal
+  // extension bookkeeping), which JSON.stringify throws on rather than
+  // silently dropping.
+  const serializable = cells.map(cell => ({
+    id: cell.id,
+    type: cell.type,
+    content: cell.content,
+    output: cell.output || '',
+    hasError: Boolean(cell.hasError),
+    isSample: Boolean(cell.isSample)
+  }));
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(serializable));
 }
 
 // ============================================================================
@@ -559,6 +590,13 @@ function setupEventListeners() {
       updateStatus('All cells cleared.');
     }
   });
+
+  // File tree pane: mobile show/hide toggle + manual refresh
+  filetreeToggleBtn?.addEventListener('click', () => {
+    const open = filetreeEl?.classList.toggle('mini-ide-filetree-open');
+    filetreeToggleBtn.setAttribute('aria-expanded', String(Boolean(open)));
+  });
+  filetreeRefreshBtn?.addEventListener('click', () => renderFileTree());
 
   // Download buttons
   downloadPythonBtn?.addEventListener('click', () => downloadAsPython());
@@ -857,12 +895,16 @@ function scrollToCell(index) {
  */
 async function ensureEngineAndFsReady() {
   await engine.ensureBooted();
-  try {
-    await fs.init();
-  } catch (error) {
-    // Not fatal to running a cell — file upload/SQLite/file-manager
-    // features just won't have anywhere to persist to this session.
-    console.warn('mini-ide: filesystem mount failed; file features are unavailable this session', error);
+  if (!fsReady) {
+    try {
+      await fs.init();
+      fsReady = true;
+      renderFileTree();
+    } catch (error) {
+      // Not fatal to running a cell — file upload/SQLite/file-manager
+      // features just won't have anywhere to persist to this session.
+      console.warn('mini-ide: filesystem mount failed; file features are unavailable this session', error);
+    }
   }
 }
 
@@ -995,6 +1037,105 @@ async function runAllCells() {
   runningAll = false;
   saveState();
   updateStatus(`All ${cells.length} cells executed.`);
+}
+
+// ============================================================================
+// File Tree
+// ============================================================================
+
+/**
+ * Format a byte count for display in the file tree (e.g. "1.2 KB").
+ *
+ * @param {number} bytes
+ * @returns {string}
+ */
+function formatFileSize(bytes) {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+/**
+ * Re-list the mounted filesystem's root and redraw the file tree pane.
+ * A no-op-looking placeholder ("Files appear here once Python starts")
+ * stays up until fsReady flips true — see ensureEngineAndFsReady().
+ *
+ * @async
+ */
+async function renderFileTree() {
+  if (!filetreeListEl || !filetreeNoteEl) return;
+
+  if (!fsReady) {
+    filetreeListEl.hidden = true;
+    filetreeNoteEl.hidden = false;
+    filetreeNoteEl.textContent = 'Files appear here once Python starts — run any cell.';
+    return;
+  }
+
+  let entries;
+  try {
+    entries = await fs.listDir('');
+  } catch (error) {
+    filetreeListEl.hidden = true;
+    filetreeNoteEl.hidden = false;
+    filetreeNoteEl.textContent = `Couldn't list files: ${error.message}`;
+    return;
+  }
+
+  if (entries.length === 0) {
+    filetreeListEl.hidden = true;
+    filetreeNoteEl.hidden = false;
+    filetreeNoteEl.textContent = 'No files yet. Files a cell writes, or that you upload, will show up here.';
+    return;
+  }
+
+  filetreeNoteEl.hidden = true;
+  filetreeListEl.hidden = false;
+  filetreeListEl.innerHTML = '';
+
+  for (const entry of entries) {
+    const item = document.createElement('li');
+    item.className = 'mini-ide-filetree-item';
+
+    const nameEl = document.createElement('span');
+    nameEl.className = 'mini-ide-filetree-item-name';
+    nameEl.textContent = entry.isDir ? `${entry.name}/` : entry.name;
+    nameEl.title = entry.name;
+
+    const sizeEl = document.createElement('span');
+    sizeEl.className = 'mini-ide-filetree-item-size';
+    sizeEl.textContent = entry.isDir ? '' : formatFileSize(entry.size);
+
+    const deleteBtn = document.createElement('button');
+    deleteBtn.type = 'button';
+    deleteBtn.className = 'mini-ide-filetree-item-delete';
+    deleteBtn.textContent = '×';
+    deleteBtn.title = `Delete ${entry.name}`;
+    deleteBtn.setAttribute('aria-label', `Delete ${entry.name}`);
+    deleteBtn.addEventListener('click', () => deleteTreeFile(entry.name));
+
+    item.appendChild(nameEl);
+    item.appendChild(sizeEl);
+    item.appendChild(deleteBtn);
+    filetreeListEl.appendChild(item);
+  }
+}
+
+/**
+ * Delete a file from the mounted filesystem and refresh the tree.
+ *
+ * @async
+ * @param {string} name - entry name, relative to the mount's root
+ */
+async function deleteTreeFile(name) {
+  if (!confirm(`Delete "${name}"? This cannot be undone.`)) return;
+  try {
+    await fs.deleteFile(name);
+  } catch (error) {
+    updateStatus(`Couldn't delete ${name}: ${error.message}`, 'error');
+    return;
+  }
+  renderFileTree();
 }
 
 // ============================================================================
@@ -1248,10 +1389,20 @@ function escapeHtml(text) {
 // Start the Mini IDE
 // ============================================================================
 
-// Initialize when DOM is ready
-document.addEventListener('DOMContentLoaded', init);
-
-// Also handle cases where DOM is already loaded
-if (document.readyState !== 'loading') {
+// Initialize when DOM is ready. A module script runs after the document
+// has already been parsed, so document.readyState is frequently no longer
+// "loading" by the time this line executes — without the guard below, both
+// branches can fire (the immediate check here, then DOMContentLoaded a tick
+// later), double-registering every toolbar listener setupEventListeners()
+// attaches.
+let initialized = false;
+function initOnce() {
+  if (initialized) return;
+  initialized = true;
   init();
+}
+
+document.addEventListener('DOMContentLoaded', initOnce);
+if (document.readyState !== 'loading') {
+  initOnce();
 }

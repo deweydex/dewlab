@@ -75,6 +75,10 @@
     <!-- Mini IDE toolbar - integrated into the page flow -->
     <div class="mini-ide-toolbar">
       <div class="mini-ide-toolbar-left">
+        <button id="filetree-toggle" class="dl-btn dl-btn-secondary" title="Show or hide the file pane"
+                aria-expanded="false" aria-controls="mini-ide-filetree">
+          Files
+        </button>
         <button id="add-python-cell" class="dl-btn" title="Add a Python code cell">
           <span class="mini-ide-icon mini-ide-icon-python"></span>Python Cell
         </button>
@@ -138,8 +142,27 @@
       <button id="helper-close" class="dl-btn dl-btn-secondary">Get Started</button>
     </div>
 
-    <!-- Cells container -->
-    <div id="cells-container" class="mini-ide-cells"></div>
+    <!-- Two-pane workspace: file tree | editor and cells. Output stays
+         inline under each cell rather than a third shared pane, closer
+         to how a real Jupyter notebook actually reads. -->
+    <div class="mini-ide-workspace">
+      <aside class="mini-ide-filetree" id="mini-ide-filetree" aria-label="Files">
+        <div class="mini-ide-filetree-head">
+          <h2>Files</h2>
+          <button type="button" class="mini-ide-filetree-refresh" id="filetree-refresh"
+                  title="Refresh the file list" aria-label="Refresh the file list">&#8635;</button>
+        </div>
+        <p class="mini-ide-filetree-note" id="filetree-note">
+          Files appear here once Python starts — run any cell.
+        </p>
+        <ul class="mini-ide-filetree-list" id="filetree-list" hidden></ul>
+      </aside>
+
+      <div class="mini-ide-main">
+        <!-- Cells container -->
+        <div id="cells-container" class="mini-ide-cells"></div>
+      </div>
+    </div>
 
     <!-- Status bar -->
     <div class="mini-ide-status" id="mini-ide-status" role="status" aria-live="polite"></div>

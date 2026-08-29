@@ -27,6 +27,138 @@
 }
 
 /* ============================================================================
+ * Workspace: file tree | cells
+ *
+ * Same "escape the reading column" trick .dl-tree-layout uses
+ * (tutorial-style.css) — .dl-page caps everything at --dl-line-width for
+ * prose, which is far too narrow for a sidebar next to an editor, so this
+ * centers itself at its own width instead of inheriting the page's.
+ * ============================================================================
+ */
+.mini-ide-workspace {
+  display: grid;
+  grid-template-columns: 14rem 1fr;
+  gap: 1.2rem;
+  align-items: start;
+  width: min(64rem, calc(100vw - 3rem));
+  margin-left: 50%;
+  transform: translateX(-50%);
+}
+
+.mini-ide-main {
+  min-width: 0; /* a grid child must opt back into shrinking below its content */
+}
+
+.mini-ide-filetree {
+  position: sticky;
+  top: calc(var(--dl-chrome-h) + 0.5rem);
+  max-height: calc(100vh - var(--dl-chrome-h) - 2rem);
+  overflow-y: auto;
+  padding: 0.65rem 0.75rem 0.85rem;
+  border: 1px solid var(--dl-cell-border);
+  border-radius: 5px;
+  background: var(--dl-cell-bg);
+}
+
+.mini-ide-filetree-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.4rem;
+}
+
+.mini-ide-filetree-head h2 {
+  margin: 0;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--dl-muted);
+}
+
+.mini-ide-filetree-refresh {
+  border: none;
+  background: none;
+  color: var(--dl-muted);
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0.15rem 0.3rem;
+  border-radius: 3px;
+}
+
+.mini-ide-filetree-refresh:hover,
+.mini-ide-filetree-refresh:focus {
+  color: var(--dl-navy);
+  background: var(--dl-output-bg);
+}
+
+.mini-ide-filetree-note {
+  margin: 0;
+  font-size: 0.78rem;
+  line-height: 1.4;
+  color: var(--dl-muted);
+}
+
+.mini-ide-filetree-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.mini-ide-filetree-item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.15rem;
+  border-radius: 3px;
+  font-size: 0.82rem;
+}
+
+.mini-ide-filetree-item:hover {
+  background: var(--dl-output-bg);
+}
+
+.mini-ide-filetree-item-name {
+  flex: 1 1 auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--dl-mono);
+}
+
+.mini-ide-filetree-item-size {
+  flex: 0 0 auto;
+  color: var(--dl-muted);
+  font-family: var(--dl-mono);
+  font-size: 0.72rem;
+}
+
+.mini-ide-filetree-item-delete {
+  flex: 0 0 auto;
+  border: none;
+  background: none;
+  color: var(--dl-muted);
+  cursor: pointer;
+  font-size: 0.9rem;
+  line-height: 1;
+  padding: 0.1rem 0.25rem;
+  border-radius: 3px;
+}
+
+.mini-ide-filetree-item-delete:hover,
+.mini-ide-filetree-item-delete:focus {
+  color: var(--dl-error-fg);
+  background: var(--dl-error-bg);
+}
+
+/* Desktop keeps the file tree as a permanent sidebar; the toggle button
+ * only does something once the phone breakpoint turns it into a sheet. */
+#filetree-toggle {
+  display: none;
+}
+
+/* ============================================================================
  * Cells container
  * ============================================================================
  */
@@ -408,6 +540,40 @@
   .mini-ide-sample-notice {
     flex-direction: column;
     text-align: center;
+  }
+}
+
+/* Same cutoff .dl-settings/.dl-cheatsheet/.dl-seriesnav already use to
+ * become bottom sheets (tutorial-style.css) — the file tree follows the
+ * same convention rather than inventing a fourth panel pattern. */
+@media (max-width: 34rem) {
+  .mini-ide-workspace {
+    grid-template-columns: 1fr;
+    width: auto;
+    margin-left: 0;
+    transform: none;
+  }
+
+  #filetree-toggle {
+    display: inline-flex;
+  }
+
+  .mini-ide-filetree {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: auto;
+    z-index: 50;
+    max-height: 70vh;
+    border-radius: 8px 8px 0 0;
+    box-shadow: 0 -8px 28px var(--dl-shadow);
+    transform: translateY(100%);
+    transition: transform 0.2s ease;
+  }
+
+  .mini-ide-filetree.mini-ide-filetree-open {
+    transform: translateY(0);
   }
 }
 
