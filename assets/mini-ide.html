@@ -100,7 +100,7 @@
         <button id="download-python" class="dl-btn" title="Download as Python file">
           <span class="mini-ide-icon mini-ide-icon-download"></span>.py
         </button>
-        <button id="download-html" class="dl-btn" title="Download as standalone HTML">
+        <button id="download-html" class="dl-btn" title="Download a static HTML snapshot (not runnable)">
           <span class="mini-ide-icon mini-ide-icon-download"></span>.html
         </button>
         <button id="download-ipynb" class="dl-btn" title="Download as Jupyter Notebook">
@@ -129,19 +129,24 @@
         with nothing to install.
       </p>
       <ul>
-        <li><strong>Python Cells:</strong> Write and execute Python code. Cells share a common namespace, 
+        <li><strong>Python Cells:</strong> Write and execute Python code. Cells share a common namespace,
         so variables and functions defined in one cell are available in others.</li>
         <li><strong>Text Cells:</strong> Write documentation, comments, or explanations in plain text.</li>
-        <li><strong>Execution:</strong> Click <strong>Run</strong> on any cell to execute it, or <strong>Run All</strong> 
-        to execute all cells in order.</li>
+        <li><strong>Execution:</strong> Click <strong>Run</strong> on any cell to execute it, or <strong>Run All</strong>
+        to execute all cells in order. Run becomes <strong>Stop</strong> while a cell is running.</li>
         <li><strong>Reordering:</strong> Drag and drop cells to rearrange them.</li>
-        <li><strong>Persistence:</strong> Your work is automatically saved in your browser's local storage.</li>
-        <li><strong>Downloads:</strong> Export your work as a Python file, standalone HTML, or Jupyter Notebook.</li>
+        <li><strong>Files:</strong> Upload files or drag them onto the Files pane; a real folder on your
+        computer or private browser storage backs it, depending on what you choose in Settings.</li>
+        <li><strong>Persistence:</strong> Cells are automatically saved in your browser's local storage; files
+        live in whichever storage backs the Files pane.</li>
+        <li><strong>Import:</strong> Load a <code>.ipynb</code> or <code>.py</code> file as this notebook's cells.</li>
+        <li><strong>Downloads:</strong> Export your cells as a Python file, an HTML snapshot, or a Jupyter Notebook.</li>
       </ul>
       <p>
-        <strong>Available Functions:</strong> You can use <code>show()</code>, <code>show_table()</code>, 
-        <code>check()</code>, <code>text_input()</code>, <code>dropdown()</code>, <code>button()</code>, 
-        and <code>load_csv()</code> just like in the tutorials.
+        <strong>Available Functions:</strong> You can use <code>show()</code>, <code>show_table()</code>,
+        <code>run_query()</code>, <code>check()</code>, <code>text_input()</code>, <code>dropdown()</code>,
+        <code>button()</code>, and <code>load_csv()</code> just like in the tutorials — plus <code>sqlite3</code>
+        from Python's own standard library.
       </p>
       <button id="helper-close" class="dl-btn dl-btn-secondary">Get Started</button>
     </div>
