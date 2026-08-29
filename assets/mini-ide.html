@@ -54,10 +54,16 @@
     <header class="dl-masthead">
       <a class="dl-wordmark" href="index.html">dewlab</a>
       <span class="dl-crumbs">Tools</span>
-      <button type="button" class="dl-settings-toggle" id="dl-settings-toggle"
-              aria-expanded="false" aria-controls="dl-settings">
-        <span class="dl-settings-icon" aria-hidden="true"></span>Settings
-      </button>
+      <div class="mini-ide-masthead-actions">
+        <button type="button" class="mini-ide-help-toggle" id="mini-ide-help-toggle"
+                aria-expanded="false" aria-controls="mini-ide-help" title="Help">
+          <span aria-hidden="true">?</span><span class="mini-ide-help-label">Help</span>
+        </button>
+        <button type="button" class="dl-settings-toggle" id="dl-settings-toggle"
+                aria-expanded="false" aria-controls="dl-settings">
+          <span class="dl-settings-icon" aria-hidden="true"></span>Settings
+        </button>
+      </div>
     </header>
 
     <nav class="dl-nav dl-nav-top"></nav>
@@ -124,36 +130,6 @@
       </button>
     </div>
 
-    <!-- Helper text - shown on first visit -->
-    <div class="mini-ide-helper" id="mini-ide-helper">
-      <h2>Welcome to the Mini IDE</h2>
-      <p>
-        This is a simple development environment where you can create and run Python code 
-        cells, along with text cells for documentation. It works entirely in your browser 
-        with nothing to install.
-      </p>
-      <ul>
-        <li><strong>Python Cells:</strong> Write and execute Python code. Cells share a common namespace,
-        so variables and functions defined in one cell are available in others.</li>
-        <li><strong>Text Cells:</strong> Write documentation, comments, or explanations in plain text.</li>
-        <li><strong>Execution:</strong> Click <strong>Run</strong> on any cell to execute it, or <strong>Run All</strong>
-        to execute all cells in order. Run becomes <strong>Stop</strong> while a cell is running.</li>
-        <li><strong>Reordering:</strong> Drag and drop cells to rearrange them.</li>
-        <li><strong>Files:</strong> Upload files or drag them onto the Files pane; a real folder on your
-        computer or private browser storage backs it, depending on what you choose in Settings.</li>
-        <li><strong>Persistence:</strong> Cells are automatically saved in your browser's local storage; files
-        live in whichever storage backs the Files pane.</li>
-        <li><strong>Import:</strong> Load a <code>.ipynb</code> or <code>.py</code> file as this notebook's cells.</li>
-        <li><strong>Downloads:</strong> Export your cells as a Python file, an HTML snapshot, or a Jupyter Notebook.</li>
-      </ul>
-      <p>
-        <strong>Available Functions:</strong> You can use <code>show()</code>, <code>show_table()</code>,
-        <code>run_query()</code>, <code>check()</code>, <code>text_input()</code>, <code>dropdown()</code>,
-        <code>button()</code>, and <code>load_csv()</code> just like in the tutorials — plus <code>sqlite3</code>
-        from Python's own standard library.
-      </p>
-      <button id="helper-close" class="dl-btn dl-btn-secondary">Get Started</button>
-    </div>
 
     <!-- Two-pane workspace: file tree | editor and cells. Output stays
          inline under each cell rather than a third shared pane, closer
@@ -186,6 +162,91 @@
     <div class="mini-ide-status" id="mini-ide-status" role="status" aria-live="polite"></div>
   </main>
 
+</div>
+
+<!-- Help: the same reopenable "?" panel compose/dewmini.html uses, in place
+     of the old mini-ide-helper banner (shown once, dismissed for good, and
+     gone as soon as a reader had cells — worse than just letting someone
+     reopen it whenever they want). Same borderless dt/dd shape as dewmini's
+     own reference lists, recoloured the same way. -->
+<div class="mini-ide-panel mini-ide-help" id="mini-ide-help" role="dialog" aria-modal="false"
+     aria-labelledby="mini-ide-help-title" hidden>
+  <div class="mini-ide-panel-head">
+    <h2 id="mini-ide-help-title">Help</h2>
+    <button type="button" class="mini-ide-panel-close" id="mini-ide-help-close" aria-label="Close help">&times;</button>
+  </div>
+
+  <section class="mini-ide-panel-section">
+    <h3>Cells</h3>
+    <p class="dl-panel-note">
+      A Python cell runs when you press its <strong>Run</strong> button, or
+      <kbd>Shift</kbd>+<kbd>Enter</kbd> from inside it — it turns into
+      <strong>Stop</strong> while running. <strong>Run All</strong> runs
+      every cell in order. Drag a cell by its header (the row with its
+      Python/Text label) to move it.
+    </p>
+    <p class="dl-panel-note">
+      A text cell is documentation — it never runs. Click away from it and
+      it renders (<code># heading</code>, <code>**bold**</code>,
+      <code>*italic*</code>, <code>`code`</code>, <code>- bullets</code>);
+      click it again, or its <strong>Edit</strong> button, to get back to
+      the plain text underneath.
+    </p>
+  </section>
+
+  <section class="mini-ide-panel-section">
+    <h3>Keys</h3>
+    <dl class="mini-ide-help-list">
+      <div class="mini-ide-help-entry"><dt>Shift+Enter</dt><dd>Run this cell</dd></div>
+      <div class="mini-ide-help-entry"><dt>Tab</dt><dd>Indent, or accept a suggestion</dd></div>
+      <div class="mini-ide-help-entry"><dt>Shift+Tab</dt><dd>Outdent</dd></div>
+      <div class="mini-ide-help-entry"><dt>Esc</dt><dd>Close a suggestion list</dd></div>
+    </dl>
+  </section>
+
+  <section class="mini-ide-panel-section">
+    <h3>Files</h3>
+    <p class="dl-panel-note">
+      The <strong>Files</strong> pane is a real folder — upload into it,
+      drag files onto it, or (in Settings) point it at an actual folder on
+      your computer instead of this browser's own private storage. Load a
+      saved notebook back in with <strong>Import</strong>, either replacing
+      these cells or adding onto them (also set in Settings).
+    </p>
+  </section>
+
+  <section class="mini-ide-panel-section">
+    <h3>What a cell can call</h3>
+    <p class="dl-panel-note">
+      The same small API dewlab tutorials use — <code>numpy</code>,
+      <code>pandas</code> and <code>matplotlib</code> are already imported.
+      Mini IDE also loads <code>sqlite3</code> and <code>Pillow</code>,
+      beyond what a tutorial page carries by default, so
+      <code>import sqlite3</code> and image work are there when a cell
+      reaches for them.
+    </p>
+    <dl class="mini-ide-help-list">
+      <div class="mini-ide-help-entry"><dt><code>show(*values, label=)</code></dt><dd>Display something mid-cell</dd></div>
+      <div class="mini-ide-help-entry"><dt><code>show_table(frame)</code></dt><dd>Render a DataFrame as a table</dd></div>
+      <div class="mini-ide-help-entry"><dt><code>run_query(conn, sql)</code></dt><dd>Run SQL, shown as a table</dd></div>
+      <div class="mini-ide-help-entry"><dt><code>check(actual, expected)</code></dt><dd>A quick right / not-yet</dd></div>
+      <div class="mini-ide-help-entry"><dt><code>text_input(label)</code></dt><dd>A text box, read with <code>.value</code></dd></div>
+      <div class="mini-ide-help-entry"><dt><code>dropdown(label, options)</code></dt><dd>A menu, read with <code>.value</code></dd></div>
+      <div class="mini-ide-help-entry"><dt><code>button(label, on_click)</code></dt><dd>A button that calls a function</dd></div>
+      <div class="mini-ide-help-entry"><dt><code>image_input(label)</code></dt><dd>A file picker for an image, read with <code>.value</code></dd></div>
+      <div class="mini-ide-help-entry"><dt><code>await load_csv(name)</code></dt><dd>Load a CSV from dewlab's shared data folder, if one's there</dd></div>
+    </dl>
+  </section>
+
+  <section class="mini-ide-panel-section">
+    <h3>Keeping your work</h3>
+    <p class="dl-panel-note">
+      Cells are saved to this browser as you go; files live in whichever
+      storage backs the Files pane. Settings has ways to take a copy with
+      you: a Python file, a standalone HTML page, or a <code>.ipynb</code>
+      that opens in Jupyter or Colab.
+    </p>
+  </section>
 </div>
 
 <!-- Settings Panel - same as tutorial pages but without work/progress sections -->

@@ -97,7 +97,10 @@ how they're built.
   support (`sqlite3` against a mounted `.db` file), and file uploads all
   work the same way regardless of backend. `.ipynb`/`.py` import and a
   folder-based, offline-capable downloadable bundle
-  (`write_mini_ide_bundle()` in `build.py`) round it out.
+  (`write_mini_ide_bundle()` in `build.py`) round it out. A reopenable
+  "?" Help panel next to Settings, and Shift+Enter to run a cell, match
+  dewmini's own — both replaced a one-shot welcome banner that was gone
+  for good the moment a reader had cells.
 - **dewmini**: a smaller, quieter cousin — the same
   `tutorial_tools.py`, but Pyodide stays on the main thread always (no
   Worker, no Stop button), by design: dewmini is for something quick,

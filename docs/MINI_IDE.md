@@ -121,6 +121,14 @@ All three save the file directly — nothing opens in a new tab.
 
 ## User Interface
 
+### Masthead
+
+The **?** button next to Settings opens a Help panel covering cells,
+keyboard shortcuts, Files, the available functions, and how your work is
+kept — the same reference, reopenable any time, that
+[dewmini](DEWMINI.md) shows next to its own toolbar. Opening either Help
+or Settings closes the other, since they share the same corner.
+
 ### Toolbar
 
 | Button | What it does |
@@ -297,6 +305,7 @@ use:
 | `text_input(label, value="", id=None)` | A text box you can type into |
 | `dropdown(label, options, value=None, id=None)` | A menu you can pick from |
 | `button(label, on_click)` | A button you can click |
+| `image_input(label, id=None)` | A file picker for an image, read with `.value` |
 
 ### Loading Data
 
@@ -405,7 +414,6 @@ and Clear All doesn't touch them.
 | Key | What it's for |
 |-----|-----|
 | `mini-ide:cells:v1` | All your cell data |
-| `mini-ide:helper-visible` | Whether the welcome message is showing |
 | `mini-ide:import-mode` | Whether Import replaces or adds to your cells |
 | `dewlab:texture` | Your theme/font/size choices (shared with the tutorials) |
 
@@ -494,6 +502,7 @@ where to start.
 
 | Shortcut | What it does |
 |----------|--------|
+| Shift+Enter | Runs the cell |
 | Tab | Indents, or accepts a suggestion |
 | Shift+Tab | Un-indents |
 | Enter | Accepts a suggestion, or starts a new line |

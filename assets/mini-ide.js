@@ -53,12 +53,6 @@ import * as fs from "./mini-ide-fs.js";
  */
 const STORAGE_KEY = "mini-ide:cells:v1";
 
-/**
- * LocalStorage key for helper visibility state
- * @constant {string}
- */
-const HELPER_VISIBLE_KEY = "mini-ide:helper-visible";
-
 // ============================================================================
 // Global State
 //
@@ -108,8 +102,6 @@ let clearAllBtn;
 let downloadPythonBtn;
 let downloadHtmlBtn;
 let downloadIpynbBtn;
-let helperEl;
-let helperCloseBtn;
 let statusEl;
 let sampleNoticeEl;
 let removeSampleBtn;
@@ -267,6 +259,9 @@ function initSettings() {
         updateExecutionStatus();
         updateStorageStatus();
       }
+      // Settings and Help share one corner of the masthead; only one makes
+      // sense open at a time, so opening either closes the other.
+      closeHelpPanel();
     });
   }
 
@@ -321,6 +316,62 @@ function initSettings() {
   });
 
   return state;
+}
+
+// Module-level so initSettings()'s toggle handler can reach it without
+// initHelp() having to run first — both wire up during the same init()
+// call, in an order that shouldn't matter.
+let helpPanel;
+let helpToggle;
+
+/** Hides the Help panel, if it exists and is open — the reciprocal half
+ * of Settings/Help closing each other on open, called from both. */
+function closeHelpPanel() {
+  if (!helpPanel || helpPanel.hasAttribute("hidden")) return;
+  helpPanel.setAttribute("hidden", "");
+  helpToggle?.setAttribute("aria-expanded", "false");
+}
+
+/**
+ * Initialize the Help panel — the same "?" toggle, reopenable any time,
+ * that compose/dewmini.js uses, ported here in place of the old
+ * mini-ide-helper banner (shown once, dismissed permanently, and gone
+ * for good once a reader had cells). Wired the same way initSettings()
+ * wires #dl-settings, since the two panels share a corner and behave
+ * the same way otherwise.
+ */
+function initHelp() {
+  helpPanel = document.getElementById("mini-ide-help");
+  if (!helpPanel) return;
+  helpToggle = document.getElementById("mini-ide-help-toggle");
+
+  helpToggle?.addEventListener("click", () => {
+    const isHidden = helpPanel.hasAttribute("hidden");
+    helpPanel.toggleAttribute("hidden", !isHidden);
+    helpToggle.setAttribute("aria-expanded", String(!isHidden));
+    if (isHidden) {
+      document.getElementById("dl-settings")?.setAttribute("hidden", "");
+      document.getElementById("dl-settings-toggle")?.setAttribute("aria-expanded", "false");
+    }
+  });
+
+  const closeBtn = document.getElementById("mini-ide-help-close");
+  closeBtn?.addEventListener("click", () => {
+    closeHelpPanel();
+    helpToggle?.focus();
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && !helpPanel.hasAttribute("hidden")) {
+      closeHelpPanel();
+    }
+  });
+
+  document.addEventListener("click", (e) => {
+    if (helpPanel.hasAttribute("hidden")) return;
+    if (helpPanel.contains(e.target) || helpToggle?.contains(e.target)) return;
+    closeHelpPanel();
+  });
 }
 
 /**
@@ -602,8 +653,6 @@ async function init() {
   downloadPythonBtn = document.getElementById('download-python');
   downloadHtmlBtn = document.getElementById('download-html');
   downloadIpynbBtn = document.getElementById('download-ipynb');
-  helperEl = document.getElementById('mini-ide-helper');
-  helperCloseBtn = document.getElementById('helper-close');
   statusEl = document.getElementById('mini-ide-status');
   sampleNoticeEl = document.getElementById('sample-cells-notice');
   removeSampleBtn = document.getElementById('remove-sample-cells');
@@ -629,12 +678,6 @@ async function init() {
   // Load saved state
   loadSavedState();
 
-  // Check if helper should be shown
-  const showHelper = localStorage.getItem(HELPER_VISIBLE_KEY) !== 'false' && cells.length === 0;
-  if (helperEl && showHelper) {
-    helperEl.style.display = 'block';
-  }
-
   // Check if we have sample cells
   hasSampleCells = cells.length > 0 && cells.every(cell => cell.isSample);
   if (hasSampleCells && sampleNoticeEl) {
@@ -644,6 +687,7 @@ async function init() {
   // Initialize Settings panel
   initSettings();
   initMiniIdeSettings();
+  initHelp();
 
   // Setup event listeners
   setupEventListeners();
@@ -840,12 +884,6 @@ function setupEventListeners() {
   downloadHtmlBtn?.addEventListener('click', () => downloadAsHtml());
   downloadIpynbBtn?.addEventListener('click', () => downloadAsIpynb());
 
-  // Helper close button
-  helperCloseBtn?.addEventListener('click', () => {
-    if (helperEl) helperEl.style.display = 'none';
-    localStorage.setItem(HELPER_VISIBLE_KEY, 'false');
-  });
-
   // Remove sample cells button
   removeSampleBtn?.addEventListener('click', () => {
     cells = [];
@@ -962,13 +1000,7 @@ function renderCells() {
     const cellEl = createCellElement(cell, index);
     cellsContainer.appendChild(cellEl);
   });
-  
-  // Hide helper if there are cells
-  if (cells.length > 0 && helperEl) {
-    helperEl.style.display = 'none';
-    localStorage.setItem(HELPER_VISIBLE_KEY, 'false');
-  }
-  
+
   // Show/hide sample notice based on whether we have sample cells
   if (sampleNoticeEl) {
     hasSampleCells = cells.length > 0 && cells.every(cell => cell.isSample);
@@ -1028,6 +1060,7 @@ function createCellElement(cell, index) {
   const runBtn = document.createElement('button');
   runBtn.className = 'dl-btn';
   runBtn.innerHTML = '<span class="mini-ide-icon mini-ide-icon-run"></span>Run';
+  runBtn.title = 'Run this cell (Shift+Enter)';
   runBtn.style.display = cell.type === CELL_TYPES.PYTHON ? 'inline-flex' : 'none';
   runBtn.addEventListener('click', (e) => {
     e.stopPropagation();
@@ -1088,6 +1121,12 @@ function createCellElement(cell, index) {
       getDoc: engine.hoverDoc,
       getSignature: engine.signatureHelp
     });
+
+    // Capture phase: CodeMirror's own handler sees Enter first on bubble,
+    // so intercepting Shift+Enter has to happen before that, not after.
+    editorEl.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && e.shiftKey) { e.preventDefault(); e.stopPropagation(); runCell(cell.id); }
+    }, true);
 
     // Store editor reference on cell for later access
     cell.editor = editor;

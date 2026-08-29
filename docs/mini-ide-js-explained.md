@@ -148,6 +148,17 @@ placeholder boilerplate, precisely because a freshly added cell with
 non-empty starter text would immediately render — forcing an extra click
 before a reader could even start typing over it.
 
+**Shift+Enter has to intercept the keystroke before CodeMirror sees
+it.** The listener that runs a Python cell on Shift+Enter is attached to
+`editorEl` with a third argument of `true` — capture phase, not the
+default bubble phase. CodeMirror's own keymap handles Enter first if the
+event reaches it on the way down in the normal order, inserting a
+newline instead of running anything; attaching in capture phase means
+this file's handler sees the keydown before CodeMirror's editor does,
+so it can call `e.stopPropagation()` and run the cell instead. Ported
+from `compose/dewmini.js`, which needs the exact same ordering for the
+exact same reason.
+
 ---
 
 ## Where to look for something specific
@@ -164,3 +175,9 @@ before a reader could even start typing over it.
 - **"What actually gets saved, and when?"** — `saveState()` for the
   what, and the "Event Listeners" section's shared comment for the
   when (short version: every time `cells` changes).
+- **"Where's the Help panel wired up?"** — `initHelp()` and
+  `closeHelpPanel()`, right after `initSettings()` since the two panels
+  close each other on open. This replaced `mini-ide-helper`, the old
+  banner that showed once and was gone for good the moment a reader had
+  any cells — the same reopenable "?" panel `compose/dewmini.js` uses
+  instead.
