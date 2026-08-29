@@ -109,10 +109,72 @@ slowly — `setRunnable(true, "Run")` is what enables it later, once boot
 actually finishes. A custom cell has no such luxury of a fixed starting
 point: a reader might add one *before* boot finishes (one restored from
 storage while the page is still loading) or long *after* it already has
-(clicking "+ Add a cell" ten minutes into a session). That's what the
-small `pyodideReady` flag near the top of the Pyodide section is for —
+(adding one ten minutes into a session). That's what the small
+`pyodideReady` flag near the top of the Pyodide section is for —
 `createCustomCellElement()` reads it to decide whether a brand-new
 cell's Run button should start enabled or not, rather than assuming.
+
+**Two cell types, and a seam after every cell on the page.** A custom
+cell can be `"python"` (an editor, an output area, Run) or `"text"` (a
+textarea that turns into rendered notes on blur — a small, hand-written
+markdown, `renderDocMarkdown()`, ported from `compose/dewmini.js`'s own
+text cells rather than reinvented). And a reader isn't limited to one
+button at the bottom of the page: `initCustomCellsSection()` lays a
+divider (`createCustomInsertDivider()`, `.dl-insert` in
+`tutorial-style.css`) after *every* real cell, wherever it sits in the
+tutorial's own prose, as well as inside the trailing "Try something of
+your own" section — so a reader can try something immediately below
+whatever prompted the idea, not scroll away from it first.
+
+Each custom cell carries an `anchor`: the id of the real cell it was
+added after, or the sentinel `TRAILING_ANCHOR` for one added in the
+general section. Cells sharing an anchor stack in save order, each with
+its own trailing divider so that seam stays usable for another insert.
+`mountCustomCellAfter()` is the one function that actually places a cell
+in the DOM — `insertAdjacentElement("afterend", ...)` twice, divider then
+cell, so whichever divider was clicked stays exactly where it was and
+the new cell lands right after it, with a fresh divider of its own
+appended beyond that. Order is never tracked in a separate array that
+could drift out of sync with the page — `saveCustomCells()` reads it
+straight back out of the DOM (`document.querySelectorAll(".dl-cell-custom")`,
+in document order), and `lastDividerFor(anchor)` (used by
+`addCustomCell()` and `importCustomCell()`, which always append rather
+than insert at a specific clicked seam) is the last `.dl-insert` element
+carrying that anchor, also read straight from the DOM.
+
+If a saved cell's anchor no longer matches any real cell — the tutorial
+was updated and that particular cell is gone — `initCustomCellsSection()`
+falls back to `TRAILING_ANCHOR` rather than dropping the custom cell.
+This fallback is the concrete mechanics behind PRACTICE.md §3's "must
+survive a version change untouched": the cell and its code are never at
+risk, only its position can degrade to the general section.
+
+---
+
+## Export: Print/PDF and a Jupyter notebook, alongside Download to keep
+
+`#dl-settings-export` (`assets/shell.html`, wired by `initExportSection()`)
+sits right after the existing "Download to keep" section, but is
+deliberately its own section rather than folded into it: `build.py`'s
+standalone/offline export strips `#dl-settings-download`'s entire content
+out of the page it bakes (its own comment — "the offer to download it is
+already taken, this is the download"), and Print and Jupyter export are
+just as useful *inside* an already-downloaded copy, so they can't live
+somewhere that vanishes from it.
+
+Print calls nothing more than `window.print()` — the actual work is
+`tutorial-style.css`'s `@media print` block, which hides the chrome,
+panels, and insert seams and forces light ink on cells regardless of the
+reader's theme (ported from `compose/dewmini-style.css`'s own, longer-
+established print block). "Save as a Jupyter notebook"
+(`downloadAsIpynb()`) walks every `.dl-cell` on the page — real and
+custom alike — in document order (the same order printing shows them
+in), turning a python cell into a `"code"` cell and a custom text cell
+into `"markdown"`. It deliberately does not try to turn the tutorial's
+own *prose* into markdown cells: by the time this runs, the reading only
+exists as built HTML, not the original Markdown source, so a faithful
+conversion back is a separate, much larger job — Print and Download to
+keep already cover the full page, and the Settings panel note says so.
 
 ---
 

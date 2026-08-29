@@ -661,6 +661,7 @@ function buildCells(manifest) {
  * to run against. */
 function setRunnable(enabled, label) {
   for (const cell of [...cells, ...customCells]) {
+    if (!cell.runBtn) continue; // a text cell has no Run button at all
     cell.runBtn.disabled = !enabled;
     cell.runBtn.textContent = label || (enabled ? "Run" : "…");
   }
@@ -686,12 +687,71 @@ function setRunnable(enabled, label) {
 
 const CUSTOM_CELLS_PREFIX = "dewlab:custom-cells:";
 
-/* The "Try something of your own" section itself, and its "+ Add a cell"
- * button — set once, by initCustomCellsSection() below, and read by
- * mountCustomCell() every time a cell (saved, freshly added, or
- * imported) needs to be inserted just before that button. */
-let customCellsListEl = null;
-let customCellsAddBtn = null;
+/* The sentinel anchor for a custom cell that isn't attached to any
+ * particular real cell — one added in the general "Try something of your
+ * own" section at the end of the page, or one whose original anchor (a
+ * real cell's id) no longer exists because the tutorial was updated. Not
+ * the plain string "trailing": that's deliberately unlikely to ever equal
+ * a real cell's own id, the same margin of safety CUSTOM_CELLS_PREFIX's
+ * "custom-" already relies on for cell ids themselves. */
+const TRAILING_ANCHOR = "__trailing__";
+
+/* A small, deliberately shallow markdown for a reader's own text cells —
+ * headings, bold/italic, inline code, bullets, paragraphs. Ported from
+ * compose/dewmini.js's own escapeHtml()/renderDocInline()/
+ * renderDocMarkdown() (that file's own comments explain the reasoning in
+ * full); the one piece not ported is dewmini's "attach an image" button —
+ * genuinely useful there, but more machinery than this feature asked for
+ * here. Calling escapeHtml() on the whole text before anything else runs
+ * is what keeps a reader's own literal "<" or "&" from being misread as
+ * real HTML. */
+function escapeHtml(text) {
+  return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+function renderDocInline(text) {
+  return text
+    .replace(/`([^`]+)`/g, "<code>$1</code>")
+    .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+    .replace(/(^|[^*\w])\*([^*\n]+)\*(?!\*)/g, "$1<em>$2</em>")
+    .replace(/(^|[^\w])_([^_\n]+)_(?!\w)/g, "$1<em>$2</em>");
+}
+
+function renderDocMarkdown(text) {
+  const out = [];
+  let listOpen = false;
+  let para = [];
+  const closeList = () => { if (listOpen) { out.push("</ul>"); listOpen = false; } };
+  const flushPara = () => { if (para.length) { out.push(`<p>${renderDocInline(para.join(" "))}</p>`); para = []; } };
+
+  for (const raw of escapeHtml(text).split("\n")) {
+    const line = raw.trim();
+    const heading = line.match(/^(#{1,3})\s+(.*)$/);
+    if (heading) {
+      flushPara();
+      closeList();
+      const level = heading[1].length + 3; // # -> h4 .. ### -> h6
+      out.push(`<h${level}>${renderDocInline(heading[2])}</h${level}>`);
+      continue;
+    }
+    const bullet = line.match(/^[-*]\s+(.*)$/);
+    if (bullet) {
+      flushPara();
+      if (!listOpen) { out.push("<ul>"); listOpen = true; }
+      out.push(`<li>${renderDocInline(bullet[1])}</li>`);
+      continue;
+    }
+    if (!line) {
+      flushPara();
+      closeList();
+      continue;
+    }
+    para.push(line);
+  }
+  flushPara();
+  closeList();
+  return out.join("\n") || '<p class="dl-doc-empty">Empty note.</p>';
+}
 
 /* Same module+slug scoping as progressKey() above, and the same reason:
  * a slug is only unique within its module, so two modules' `first-steps`
@@ -725,17 +785,32 @@ function loadCustomCells() {
   }
 }
 
-/* Writes every current custom cell's id, code, and last output to
- * localStorage as one plain array — called after any change (typing,
- * running, adding, deleting, importing) via the debounced
+/* Writes every current custom cell's id, type, anchor, code, and last
+ * output to localStorage as one plain array — called after any change
+ * (typing, running, adding, deleting, importing) via the debounced
  * scheduleCustomSave() below, never called directly from an event
- * handler itself. */
+ * handler itself.
+ *
+ * Order and anchor come from the DOM itself (each cell's own host
+ * element carries data-anchor, set by mountCustomCellAfter()), not from
+ * customCells' own array order — a divider insert can place a new cell
+ * anywhere in the page, and re-deriving "where" from where it actually
+ * ended up is simpler and can't drift out of sync the way keeping a
+ * second, parallel ordering would. */
 function saveCustomCells() {
-  const record = customCells.map((cell) => ({
-    id: cell.id,
-    code: cell.getCode(),
-    output: cell.outputEl.innerHTML,
-  }));
+  const record = [...document.querySelectorAll(".dl-cell-custom")]
+    .map((host) => {
+      const cell = customCells.find((c) => c.id === host.dataset.cellId);
+      if (!cell) return null;
+      return {
+        id: cell.id,
+        type: cell.type,
+        anchor: host.dataset.anchor,
+        code: cell.getCode(),
+        output: cell.outputEl ? cell.outputEl.innerHTML : "",
+      };
+    })
+    .filter(Boolean);
   try {
     localStorage.setItem(customCellsKey(), JSON.stringify(record));
   } catch (err) {
@@ -754,113 +829,236 @@ function scheduleCustomSave() {
   customSaveTimer = setTimeout(saveCustomCells, AUTOSAVE_DELAY);
 }
 
-/* Builds one custom cell's DOM, in the same shape build.py's own
- * render_cell() gives a real cell (build.py) — `.dl-cell` >
- * `.dl-editor`/`.dl-output`/`.dl-cell-bar` — so a custom cell looks and
+/* Builds one custom cell's DOM. A python-type cell is in the same shape
+ * build.py's own render_cell() gives a real cell (build.py) —
+ * `.dl-cell` > `.dl-editor`/`.dl-output`/`.dl-cell-bar` — so it looks and
  * behaves exactly like an authored one, and picks up the exact same CSS
- * (including print styling) for free. The one extra class,
- * `dl-cell-custom`, is what lets a reader tell "mine" from "the
- * tutorial's" at a glance, and lets anything that ever needs to (a
- * future test, a future selector) tell the two apart without guessing
- * from an id. Unlike a real cell there is no reset button — a custom
+ * (including print styling) for free. A text-type cell swaps the
+ * editor/output pair for a textarea + rendered-preview pair
+ * (`.dl-doc-editor`/`.dl-doc-render`, compose/dewmini.js's own text-cell
+ * shape) and has no Run button — there's nothing to run. Either way the
+ * extra class, `dl-cell-custom`, is what lets a reader tell "mine" from
+ * "the tutorial's" at a glance, and there is no reset button — a custom
  * cell has no build-time "starter" to reset to — its bar instead offers
  * Share (export this one cell to a file) and Delete.
  *
- * The Run button's starting state depends on `pyodideReady`: a real
- * cell's button is always disabled at first because build.py always
+ * A python cell's Run button starting state depends on `pyodideReady`: a
+ * real cell's button is always disabled at first because build.py always
  * renders it that way, before this file has had any chance to know
  * whether Python is ready — but a custom cell is just as likely to be
- * created well *after* boot already finished (a reader clicking "+ Add a
- * cell" ten minutes into a session) as before it (one restored from
- * storage while the page is still loading), so this checks the real,
- * current state instead of assuming "not ready yet" the way the
- * server-rendered markup has to.
+ * created well *after* boot already finished (a reader adding one ten
+ * minutes into a session) as before it (one restored from storage while
+ * the page is still loading), so this checks the real, current state
+ * instead of assuming "not ready yet" the way the server-rendered markup
+ * has to.
  */
-function createCustomCellElement(id) {
+function createCustomCellElement(id, type) {
   const host = document.createElement("div");
-  host.className = "dl-cell dl-cell-custom";
+  host.className = type === "text" ? "dl-cell dl-cell-custom dl-cell-text" : "dl-cell dl-cell-custom";
   host.dataset.cellId = id;
-  const runAttrs = pyodideReady ? "" : "disabled";
-  const runLabel = pyodideReady ? "Run" : "…";
-  host.innerHTML = (
-    '<div class="dl-editor"></div>'
-    + '<div class="dl-output"></div>'
-    + '<div class="dl-cell-bar">'
-    + '<span class="dl-cell-id">your own cell</span>'
-    + '<span class="dl-cell-spacer"></span>'
-    + '<button type="button" class="dl-btn dl-btn-share">share</button>'
-    + '<button type="button" class="dl-btn dl-btn-delete">delete</button>'
-    + `<button type="button" class="dl-btn dl-btn-run" ${runAttrs}>${runLabel}</button>`
-    + "</div>"
-  );
+  if (type === "text") {
+    host.innerHTML = (
+      '<textarea class="dl-doc-editor" placeholder="Notes… (# heading, **bold**, - bullets)"></textarea>'
+      + '<div class="dl-doc-render" tabindex="0" hidden></div>'
+      + '<div class="dl-cell-bar">'
+      + '<span class="dl-cell-id">your own note</span>'
+      + '<span class="dl-cell-spacer"></span>'
+      + '<button type="button" class="dl-btn dl-btn-share">share</button>'
+      + '<button type="button" class="dl-btn dl-btn-delete">delete</button>'
+      + "</div>"
+    );
+  } else {
+    const runAttrs = pyodideReady ? "" : "disabled";
+    const runLabel = pyodideReady ? "Run" : "…";
+    host.innerHTML = (
+      '<div class="dl-editor"></div>'
+      + '<div class="dl-output"></div>'
+      + '<div class="dl-cell-bar">'
+      + '<span class="dl-cell-id">your own cell</span>'
+      + '<span class="dl-cell-spacer"></span>'
+      + '<button type="button" class="dl-btn dl-btn-share">share</button>'
+      + '<button type="button" class="dl-btn dl-btn-delete">delete</button>'
+      + `<button type="button" class="dl-btn dl-btn-run" ${runAttrs}>${runLabel}</button>`
+      + "</div>"
+    );
+  }
   return host;
 }
 
-/* Turns one saved-or-fresh {id, code} pair into a real, working cell:
- * builds its DOM (createCustomCellElement above), mounts it into the
- * "Try something of your own" section, creates a CodeMirror editor over
- * it exactly the way buildCells() does for a real cell, wires Run/Share/
- * Delete, and pushes the finished cell object onto `customCells`. Returns
- * that object, since addCustomCell()/importCustomCell() both want to
- * focus the cell they just created.
+/* A tappable seam — after every real cell, and after every custom cell —
+ * offering "+ Code" and "+ Text" right where a reader is already looking,
+ * rather than one button far below whatever prompted the idea. Ported
+ * from compose/dewmini.js's own createInsertDivider(): quiet at rest,
+ * grows into two real buttons on hover (always visible on a touch
+ * device, which has no hover to reveal them — see the CSS). `anchor` is
+ * either a real cell's id or TRAILING_ANCHOR — every cell mounted through
+ * this divider (see mountCustomCellAfter()) is tagged with the same
+ * anchor, which is what lets a reload put things back in the right
+ * place. `seed` marks a divider this function did not create on someone's
+ * click — one of the fixed, permanent seams initCustomCellsSection()
+ * lays down once, after every real cell and at the top of the trailing
+ * section — as opposed to one that only exists because a cell was
+ * inserted there; clearCustomCells() uses that distinction to know what
+ * it's allowed to remove.
  */
-function mountCustomCell(id, code) {
-  const host = createCustomCellElement(id);
-  customCellsListEl.insertBefore(host, customCellsAddBtn);
+function createCustomInsertDivider(anchor, seed = false) {
+  const row = document.createElement("div");
+  row.className = seed ? "dl-insert dl-insert-seed" : "dl-insert";
+  row.dataset.anchor = anchor;
 
-  const editorHost = host.querySelector(".dl-editor");
-  const outputEl = host.querySelector(".dl-output");
-  const runBtn = host.querySelector(".dl-btn-run");
+  const line = document.createElement("div");
+  line.className = "dl-insert-line";
+
+  const actions = document.createElement("div");
+  actions.className = "dl-insert-actions";
+
+  const addCode = document.createElement("button");
+  addCode.type = "button";
+  addCode.className = "dl-insert-btn";
+  addCode.title = "Add a code cell here";
+  addCode.textContent = "+ Code";
+  addCode.addEventListener("click", () => insertCustomCell(row, "python", "", anchor));
+
+  const addText = document.createElement("button");
+  addText.type = "button";
+  addText.className = "dl-insert-btn";
+  addText.title = "Add a text cell here";
+  addText.textContent = "+ Text";
+  addText.addEventListener("click", () => insertCustomCell(row, "text", "", anchor));
+
+  actions.append(addCode, addText);
+  row.append(line, actions);
+  return row;
+}
+
+/* The last divider currently carrying a given anchor, in document order —
+ * "the current end of that anchor's chain," and so the right place to
+ * append one more cell without disturbing whatever a reader has already
+ * built up there (addCustomCell(), importCustomCell()). Every divider
+ * this file ever creates carries its anchor in data-anchor, so this is
+ * just a DOM query rather than anything this file has to track by hand. */
+function lastDividerFor(anchor) {
+  const all = document.querySelectorAll(`.dl-insert[data-anchor="${CSS.escape(anchor)}"]`);
+  return all.length ? all[all.length - 1] : null;
+}
+
+/* Mounts one saved-or-fresh cell {id, type, code} immediately after
+ * `afterNode` (a divider already in the page) and gives it its own fresh
+ * trailing divider carrying the same anchor, so this exact seam stays
+ * usable for another insert right away. Wires Run/Share/Delete (python)
+ * or the edit/render toggle (text), pushes the finished cell object onto
+ * `customCells`, and returns both the cell and its new divider — a
+ * restore loop chains through several of these by re-using the divider
+ * each call returns as the next call's `afterNode`, which reproduces
+ * saved order exactly.
+ */
+function mountCustomCellAfter(afterNode, id, type, code, anchor) {
+  const host = createCustomCellElement(id, type);
+  host.dataset.anchor = anchor;
+  const divider = createCustomInsertDivider(anchor);
+  afterNode.insertAdjacentElement("afterend", divider);
+  afterNode.insertAdjacentElement("afterend", host);
+
   const shareBtn = host.querySelector(".dl-btn-share");
   const deleteBtn = host.querySelector(".dl-btn-delete");
+  let cell;
 
-  const editor = createCodeEditor(editorHost, code || "", {
-    dark: isDarkNow(),
-    onChange: () => scheduleCustomSave(),
-    completeNames: pageNamesCompletion,
-    getDoc: hoverDoc,
-    getSignature: signatureHelp,
-  });
+  if (type === "text") {
+    const textarea = host.querySelector(".dl-doc-editor");
+    const renderEl = host.querySelector(".dl-doc-render");
+    textarea.value = code || "";
 
-  const cell = {
-    id,
-    editor,
-    outputEl,
-    runBtn,
-    element: host,
-    getCode: () => editor.getValue(),
-  };
+    const showEditor = () => { textarea.hidden = false; renderEl.hidden = true; };
+    const showRendered = () => {
+      if (!textarea.value.trim()) return; // nothing to render — keep it open for typing
+      renderEl.innerHTML = renderDocMarkdown(textarea.value);
+      renderEl.hidden = false;
+      textarea.hidden = true;
+    };
+    textarea.addEventListener("input", () => scheduleCustomSave());
+    textarea.addEventListener("blur", showRendered);
+    renderEl.addEventListener("click", showEditor);
+    renderEl.addEventListener("keydown", (ev) => { if (ev.key === "Enter") showEditor(); });
+
+    cell = {
+      id,
+      type,
+      element: host,
+      getCode: () => textarea.value,
+      focus: () => { showEditor(); textarea.focus(); },
+    };
+    if (textarea.value.trim()) showRendered();
+  } else {
+    const editorHost = host.querySelector(".dl-editor");
+    const outputEl = host.querySelector(".dl-output");
+    const runBtn = host.querySelector(".dl-btn-run");
+    const editor = createCodeEditor(editorHost, code || "", {
+      dark: isDarkNow(),
+      onChange: () => scheduleCustomSave(),
+      completeNames: pageNamesCompletion,
+      getDoc: hoverDoc,
+      getSignature: signatureHelp,
+    });
+
+    cell = {
+      id,
+      type,
+      editor,
+      outputEl,
+      runBtn,
+      element: host,
+      getCode: () => editor.getValue(),
+      focus: () => editor.focus(),
+    };
+    runBtn.addEventListener("click", () => runCell(cell).then(scheduleCustomSave));
+    host.addEventListener("keydown", (ev) => {
+      if ((ev.ctrlKey || ev.metaKey) && ev.key === "Enter") {
+        ev.preventDefault();
+        runCell(cell).then(scheduleCustomSave);
+      }
+    });
+  }
+
   customCells.push(cell);
-
-  runBtn.addEventListener("click", () => runCell(cell).then(scheduleCustomSave));
   shareBtn.addEventListener("click", () => exportCustomCell(cell));
   deleteBtn.addEventListener("click", () => deleteCustomCell(cell));
-  host.addEventListener("keydown", (ev) => {
-    if ((ev.ctrlKey || ev.metaKey) && ev.key === "Enter") {
-      ev.preventDefault();
-      runCell(cell).then(scheduleCustomSave);
-    }
-  });
 
+  return { cell, divider };
+}
+
+/* A divider's own "+ Code"/"+ Text" handler, and addCustomCell()'s
+ * shared plumbing: mints a fresh id, mounts it right after `afterNode`,
+ * saves the (still-empty) list so a reload doesn't lose the fact that
+ * this cell exists even before its first keystroke, and scrolls/focuses
+ * it so a reader can start typing immediately. */
+function insertCustomCell(afterNode, type, code, anchor) {
+  const { cell } = mountCustomCellAfter(afterNode, generateCustomCellId(), type, code, anchor);
+  scheduleCustomSave();
+  cell.element.scrollIntoView({ behavior: "smooth", block: "center" });
+  cell.focus();
   return cell;
 }
 
-/* The "+ Add a cell" button's handler: mints a fresh id, mounts an empty
- * cell, saves the (still-empty) list so a reload doesn't lose the fact
- * that this cell exists even before its first keystroke, and focuses it
- * so a reader can start typing immediately. */
-function addCustomCell() {
-  const cell = mountCustomCell(generateCustomCellId(), "");
-  scheduleCustomSave();
-  cell.editor.focus();
+/* The Settings-panel equivalent of clicking a divider — used by the
+ * global debug/test hook and by importCustomCell() below — always adds
+ * to the very end of the general "Try something of your own" section
+ * rather than needing a specific divider to click. */
+function addCustomCell(type = "python") {
+  const afterNode = lastDividerFor(TRAILING_ANCHOR);
+  return afterNode ? insertCustomCell(afterNode, type, "", TRAILING_ANCHOR) : null;
 }
 
 /* Removes one custom cell — no confirmation, matching how deleting a
  * single cell already works in compose/dewmini.js and assets/mini-ide.js;
  * only a bulk "remove everything" action asks first (clearCustomCells()
- * below). */
+ * below). A cell's own trailing divider (the one mountCustomCellAfter()
+ * created alongside it) goes with it — leaving it behind would leave a
+ * second, redundant "+ " seam sitting right next to whichever divider
+ * used to precede this cell. */
 function deleteCustomCell(cell) {
-  cell.editor.destroy();
+  const divider = cell.element.nextElementSibling;
+  if (divider && divider.classList.contains("dl-insert")) divider.remove();
+  cell.editor?.destroy();
   cell.element.remove();
   const idx = customCells.indexOf(cell);
   if (idx !== -1) customCells.splice(idx, 1);
@@ -875,7 +1073,7 @@ function deleteCustomCell(cell) {
  * reason they already do on the progress export: two files both called
  * "custom-cell.json" in a downloads folder are indistinguishable. */
 function exportCustomCell(cell) {
-  const payload = { "dewlab-custom-cell": 1, code: cell.getCode() };
+  const payload = { "dewlab-custom-cell": 1, type: cell.type, code: cell.getCode() };
   const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
   const manifest = currentManifest || {};
   const from = [manifest.module, manifest.slug].filter(Boolean).join("-");
@@ -887,14 +1085,16 @@ function exportCustomCell(cell) {
 }
 
 /* "Load a shared cell": reads the chosen file, checks it at least looks
- * like one of exportCustomCell()'s own files, and mounts it as a brand
- * new cell — with a freshly generated id, never the id (if any) the file
- * happened to carry, so an imported cell can never collide with, or be
- * confused for, one of this reader's own. Deliberately does not run the
- * imported code: the trust note in Settings says plainly that a loaded
- * cell runs like any other code on this page, and "plainly" means before
- * anything runs, not after — the reader still has to read it and press
- * Run themselves, the same as every other cell on the site.
+ * like one of exportCustomCell()'s own files, and mounts it at the end of
+ * the general section — with a freshly generated id, never the id (if
+ * any) the file happened to carry, so an imported cell can never
+ * collide with, or be confused for, one of this reader's own. A file
+ * from before Part A shipped has no `type` at all — that's still a valid
+ * python cell, just an older one. Deliberately does not run the imported
+ * code: the trust note in Settings says plainly that a loaded cell runs
+ * like any other code on this page, and "plainly" means before anything
+ * runs, not after — the reader still has to read it and press Run
+ * themselves, the same as every other cell on the site.
  */
 async function importCustomCell(file) {
   let payload;
@@ -908,38 +1108,54 @@ async function importCustomCell(file) {
     setStatus("That file doesn't look like a shared dewlab cell.", "error");
     return;
   }
-  const cell = mountCustomCell(generateCustomCellId(), payload.code);
-  scheduleCustomSave();
-  cell.element.scrollIntoView({ behavior: "smooth", block: "center" });
+  const type = payload.type === "text" ? "text" : "python";
+  const afterNode = lastDividerFor(TRAILING_ANCHOR);
+  if (!afterNode) return;
+  insertCustomCell(afterNode, type, payload.code, TRAILING_ANCHOR);
   setStatus("Cell loaded — read it before you press Run.");
 }
 
 /* Wipes every one of this reader's own cells, asking first — the one
  * place in this whole feature a confirmation belongs, since unlike a
- * single delete this can't be undone by just clicking "add" again. */
+ * single delete this can't be undone by just clicking "add" again. Only
+ * the "seed" dividers (see createCustomInsertDivider()'s own comment) —
+ * one permanent seam after every real cell, one at the top of the
+ * trailing section — survive; every custom cell and every divider it
+ * grew for itself goes. */
 function clearCustomCells() {
   if (!window.confirm("Remove all your own cells? This can't be undone.")) return;
   for (const cell of customCells.splice(0)) {
-    cell.editor.destroy();
-    cell.element.remove();
+    cell.editor?.destroy();
+  }
+  for (const el of document.querySelectorAll(".dl-cell-custom, .dl-insert:not(.dl-insert-seed)")) {
+    el.remove();
   }
   saveCustomCells();
 }
 
-/* Builds the "Try something of your own" section at the end of the page,
- * restores any cells this reader already saved there, and wires the
- * Settings buttons (import, clear-all). Called once, unconditionally,
- * from the bottom of this file — like initProgressSection() above, it
- * decides for itself whether it applies to this page rather than being
- * gated at the call site. It doesn't: a prose-only tutorial, or one of
- * the three non-tutorial pages, has no real cells of its own
- * (`cells.length === 0`), and offering "add your own cell" there would
- * mean booting Pyodide just for this — the exact cost a page with no
- * cells is supposed to avoid paying (see the boot-avoidance check near
- * the bottom of this file). On such a page this removes both the
- * "Try something of your own" section (never created) and the matching
- * Settings section, the same way initProgressSection() removes
+/* Builds a divider after every real cell (wherever it sits in the
+ * tutorial's own prose) and the trailing "Try something of your own"
+ * section at the end of the page, restores any cells this reader already
+ * saved, and wires the Settings buttons (import, clear-all). Called
+ * once, unconditionally, from the bottom of this file — like
+ * initProgressSection() above, it decides for itself whether it applies
+ * to this page rather than being gated at the call site. It doesn't: a
+ * prose-only tutorial, or one of the three non-tutorial pages, has no
+ * real cells of its own (`cells.length === 0`), and offering "add your
+ * own cell" there would mean booting Pyodide just for this — the exact
+ * cost a page with no cells is supposed to avoid paying (see the
+ * boot-avoidance check near the bottom of this file). On such a page
+ * this removes both the trailing section (never created) and the
+ * matching Settings section, the same way initProgressSection() removes
  * "Your work" on a non-tutorial page.
+ *
+ * A saved cell's `anchor` is the id of the real cell it was added after —
+ * unless the tutorial has since been updated and that cell no longer
+ * exists, in which case it falls back to the trailing section rather
+ * than being dropped. That fallback is the concrete mechanics behind
+ * PRACTICE.md §3's "a custom cell must survive a version change
+ * untouched": the cell and its code always survive; only its position
+ * may degrade.
  */
 function initCustomCellsSection() {
   const settingsSection = document.getElementById("dl-settings-custom-cells");
@@ -948,32 +1164,46 @@ function initCustomCellsSection() {
     return;
   }
 
+  const realIds = new Set(cells.map((c) => c.id));
+  const byAnchor = new Map();
+  for (const saved of loadCustomCells()) {
+    if (!saved || typeof saved.id !== "string" || typeof saved.code !== "string") continue;
+    const type = saved.type === "text" ? "text" : "python";
+    const anchor = typeof saved.anchor === "string" && realIds.has(saved.anchor)
+      ? saved.anchor
+      : TRAILING_ANCHOR;
+    if (!byAnchor.has(anchor)) byAnchor.set(anchor, []);
+    byAnchor.get(anchor).push({ ...saved, type });
+  }
+
+  const restoreGroup = (seedDivider, anchor) => {
+    let point = seedDivider;
+    for (const saved of byAnchor.get(anchor) || []) {
+      const { cell, divider } = mountCustomCellAfter(point, saved.id, saved.type, saved.code, anchor);
+      if (typeof saved.output === "string" && cell.outputEl) cell.outputEl.innerHTML = saved.output;
+      point = divider;
+    }
+  };
+
+  for (const real of cells) {
+    const seed = createCustomInsertDivider(real.id, true);
+    real.element.insertAdjacentElement("afterend", seed);
+    restoreGroup(seed, real.id);
+  }
+
   const section = document.createElement("section");
   section.className = "dl-custom-cells";
   section.id = "dl-custom-cells";
   section.innerHTML = (
     "<h2>Try something of your own</h2>"
-    + '<p class="dl-panel-note">Add a cell below and write whatever Python '
-    + "you like — it's separate from the tutorial above, and it's still "
-    + "here next time you visit.</p>"
+    + '<p class="dl-panel-note">Add a cell below, or right under any cell '
+    + "above — it's separate from the tutorial itself, and it's still here "
+    + "next time you visit.</p>"
   );
   document.getElementById("dl-body").appendChild(section);
-
-  customCellsAddBtn = document.createElement("button");
-  customCellsAddBtn.type = "button";
-  customCellsAddBtn.className = "dl-btn dl-custom-cells-add";
-  customCellsAddBtn.textContent = "+ Add a cell";
-  customCellsAddBtn.addEventListener("click", addCustomCell);
-
-  customCellsListEl = section;
-  section.appendChild(customCellsAddBtn);
-
-  for (const saved of loadCustomCells()) {
-    if (saved && typeof saved.id === "string" && typeof saved.code === "string") {
-      const cell = mountCustomCell(saved.id, saved.code);
-      if (typeof saved.output === "string") cell.outputEl.innerHTML = saved.output;
-    }
-  }
+  const trailingSeed = createCustomInsertDivider(TRAILING_ANCHOR, true);
+  section.appendChild(trailingSeed);
+  restoreGroup(trailingSeed, TRAILING_ANCHOR);
 
   const importBtn = document.getElementById("dl-custom-cells-import");
   const file = document.getElementById("dl-custom-cells-file");
@@ -987,6 +1217,93 @@ function initCustomCellsSection() {
     });
   }
   if (clearBtn) clearBtn.addEventListener("click", clearCustomCells);
+}
+
+/* ------------------------------------------------------------------ export
+ *
+ * Two more ways to take a tutorial page away, alongside "Download to keep"
+ * in the section above: printing (or saving as PDF — every modern
+ * browser's own print dialog offers that as one of its destinations) uses
+ * the @media print rules in tutorial-style.css, and "Save as a Jupyter
+ * notebook" turns this page's cells into a real .ipynb file any of
+ * Jupyter, JupyterLab, or Colab can open. Both are wired here, in
+ * #dl-settings-export (assets/shell.html) rather than folded into
+ * #dl-settings-download — see that section's own comment for why it has
+ * to be a separate one.
+ */
+
+function initExportSection() {
+  document.getElementById("dl-print-pdf")?.addEventListener("click", () => window.print());
+  document.getElementById("dl-export-ipynb")?.addEventListener("click", downloadAsIpynb);
+}
+
+/* The Jupyter notebook format (.ipynb) stores a cell's source as a list of
+ * strings, one per line, where every line *except the last* keeps its own
+ * trailing "\n" — simply the convention real Jupyter itself uses when it
+ * saves a file. Ported unchanged from compose/dewmini.js's own
+ * splitLines(): split on newlines, then put the "\n" back on every line
+ * but the final one, so a file downloaded from here looks the same, byte
+ * for byte in this respect, as one saved by actual Jupyter. */
+function splitLines(text) {
+  const lines = text.split("\n");
+  return lines.map((line, i) => (i < lines.length - 1 ? `${line}\n` : line));
+}
+
+/* Builds a real Jupyter notebook (nbformat 4): every `.dl-cell` on the
+ * page — the tutorial's own and a reader's own custom cells alike — in
+ * the order they actually appear. Querying the DOM for that order, rather
+ * than walking `cells` and `customCells` separately and trying to
+ * interleave them by anchor, is simplest precisely because Part A already
+ * put every custom cell in its real document position: one query, one
+ * pass, and it can never disagree with what the reader is actually
+ * looking at. A python cell becomes a "code" cell; a reader's own text
+ * cell becomes "markdown".
+ *
+ * This deliberately does not attempt to turn the tutorial's own *prose*
+ * into markdown cells alongside the code — by the time this runs, the
+ * reading only exists as built HTML, not the original Markdown source, so
+ * a faithful conversion back is a separate, much larger job. "Print" and
+ * "Download to keep" already cover the full page; this is specifically
+ * "take the code with you in a format Jupyter/Colab can open," and the
+ * Settings panel note says so plainly.
+ */
+function downloadAsIpynb() {
+  const notebookCells = [];
+  for (const host of document.querySelectorAll(".dl-cell")) {
+    const id = host.dataset.cellId;
+    const cell = cells.find((c) => c.id === id) || customCells.find((c) => c.id === id);
+    if (!cell) continue;
+    const isText = cell.type === "text";
+    notebookCells.push({
+      cell_type: isText ? "markdown" : "code",
+      metadata: {},
+      source: splitLines(cell.getCode()),
+      ...(isText ? {} : { execution_count: null, outputs: [] }),
+    });
+  }
+  if (notebookCells.length === 0) {
+    setStatus("No cells to export yet.", "error");
+    return;
+  }
+  notebookCells.unshift({ cell_type: "markdown", metadata: {}, source: [`# ${document.title}`] });
+
+  const notebook = {
+    nbformat: 4,
+    nbformat_minor: 5,
+    metadata: {
+      kernelspec: { display_name: "Python 3", language: "python", name: "python3" },
+      language_info: { name: "python", pygments_lexer: "ipython3" },
+    },
+    cells: notebookCells,
+  };
+  const manifest = currentManifest || {};
+  const from = [manifest.module, manifest.slug].filter(Boolean).join("-");
+  const blob = new Blob([JSON.stringify(notebook, null, 2)], { type: "application/json" });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = `${from || "dewlab"}.ipynb`;
+  link.click();
+  URL.revokeObjectURL(link.href);
 }
 
 /* --------------------------------------------------------------- Pyodide
@@ -2449,13 +2766,14 @@ const currentManifest = readManifest();
 const leaving = followTheVersionYouLeftOff();
 
 initTexture((dark) => {
-  for (const cell of [...cells, ...customCells]) setEditorTheme(cell.editor, dark);
+  for (const cell of [...cells, ...customCells]) { if (cell.editor) setEditorTheme(cell.editor, dark); }
   for (const block of readOnlyBlocks) setEditorTheme(block, dark);
 });
 
 buildCells(currentManifest);
 initProgressSection();
 initCustomCellsSection();
+initExportSection();
 initVersionsSection();
 initVersionMarker();
 initSettingsPanel();
@@ -2518,6 +2836,7 @@ globalThis.dewlab = {
     return runCell(cell);
   },
   customCellsKey,
+  downloadAsIpynb,
   jediReady: () => (currentManifest.standalone ? jediHoverFnMT !== null : jediReadyWorker),
   hoverDoc,
   signatureHelp,

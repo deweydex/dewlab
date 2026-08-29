@@ -65,10 +65,16 @@ current as things change — not a pitch.
   standalone export keeps Pyodide on the main thread and has no Stop
   button, on purpose (`ARCHITECTURE.md` §4).
 - **A reader's own cells**: on any page that already has cells, a reader
-  can add their own — write Python, run it, and share it as a small file
+  can add their own — Python or a short text note — right below any cell
+  on the page, not just at the bottom, and share one as a small file
   someone else can load in. Kept fully separate from the tutorial's own
   saved work and version system, so it survives a tutorial update
   untouched (`PRACTICE.md` §3-5).
+- **Print/PDF and a Jupyter notebook**: alongside the existing "Download
+  to keep," a tutorial page's Settings offers "Print — or save as PDF"
+  and "Save as a Jupyter notebook" (a page's cells, real and a reader's
+  own alike — not the reading itself, which Print and Download to keep
+  already cover).
 
 ### Mini IDE and dewmini (`assets/mini-ide.*`, `compose/dewmini.*`)
 Two Python workspaces with no tutorial attached — see

@@ -249,6 +249,28 @@
 
   <section class="dl-settings-section" id="dl-settings-download">{{DOWNLOAD}}</section>
 
+  <!-- Two more ways to take this page with you, built entirely at runtime
+       (initExportSection(), tutorial-runtime.js) rather than server-rendered
+       like #dl-settings-download above — deliberately its own section
+       rather than folded into that one, since build.py strips that whole
+       section's contents out of the standalone/offline export (its own
+       comment: "the offer to download it is already taken — this is the
+       download"), and these two stay just as useful *inside* an
+       already-downloaded copy. -->
+  <section class="dl-settings-section" id="dl-settings-export">
+    <h3>Export</h3>
+    <p class="dl-panel-note">Two more ways to take this page with you.</p>
+    <div class="dl-progress-actions">
+      <button type="button" class="dl-btn" id="dl-print-pdf">Print — or save as PDF</button>
+      <button type="button" class="dl-btn" id="dl-export-ipynb">Save as a Jupyter notebook</button>
+    </div>
+    <p class="dl-panel-note">
+      The notebook file holds this page's code — the tutorial's own cells
+      and anything you've added yourself — not the reading. Print (or
+      "Download to keep" above) for the whole page.
+    </p>
+  </section>
+
   <section class="dl-settings-section" id="dl-settings-texture">
     <h3>Texture</h3>
 

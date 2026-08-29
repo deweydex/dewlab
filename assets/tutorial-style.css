@@ -363,6 +363,49 @@ p code, li code {
  * furniture and looks odd on an actual sentence. */
 .dl-cell-custom .dl-cell-id { font-family: var(--dl-font-family); letter-spacing: normal; }
 
+/* A custom cell holding notes instead of code (dl-cell-text) — no editor,
+ * no output, just a textarea that turns into rendered text on blur. Same
+ * click-to-edit/blur-to-render shape as compose/dewmini.js's own text
+ * cells (.dm-textarea/.dm-doc-render), ported here rather than reinvented. */
+.dl-doc-editor {
+  display: block;
+  width: 100%;
+  min-height: 3.4rem;
+  padding: 0.6rem 0.75rem;
+  border: none;
+  background: var(--dl-panel-bg);
+  color: var(--dl-fg);
+  font-family: var(--dl-font-family);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  resize: vertical;
+}
+.dl-doc-editor:focus { outline: none; }
+.dl-doc-editor::placeholder { color: var(--dl-muted); }
+.dl-doc-editor[hidden] { display: none; }
+
+.dl-doc-render {
+  padding: 0.6rem 0.75rem;
+  cursor: text;
+  font-family: var(--dl-font-family);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+.dl-doc-render:hover { background: var(--dl-cell-bg); }
+.dl-doc-render[hidden] { display: none; }
+.dl-doc-render h4, .dl-doc-render h5, .dl-doc-render h6 {
+  margin: 0.2rem 0 0.4rem;
+  color: var(--dl-heading);
+  font-size: 1.05em;
+}
+.dl-doc-render p { margin: 0 0 0.6rem; }
+.dl-doc-render p:last-child { margin-bottom: 0; }
+.dl-doc-render ul { margin: 0 0 0.6rem 1.1rem; padding: 0; }
+.dl-doc-render li { margin-bottom: 0.2rem; }
+.dl-doc-render code { font-family: var(--dl-mono); font-size: 0.85em; background: var(--dl-cell-bg); padding: 0.1em 0.35em; border-radius: 3px; }
+.dl-doc-render em { color: var(--dl-muted); }
+.dl-doc-empty { color: var(--dl-muted); font-style: italic; margin: 0; }
+
 /* The "Try something of your own" section: set off from the tutorial's
  * own content with a top border, the same way a reader would expect a
  * genuinely new part of the page to announce itself. */
@@ -372,16 +415,57 @@ p code, li code {
   border-top: 1px solid var(--dl-cell-border);
 }
 
-.dl-custom-cells-add {
-  display: block;
-  width: 100%;
-  padding: 0.6rem 1rem;
-  font-size: 0.82rem;
-  text-align: center;
-  border-style: dashed;
-  color: var(--dl-muted);
+/* A tappable seam between cells — after every real cell and every custom
+ * cell, not only inside the trailing section — so a reader can try
+ * something right below whatever prompted the idea, without scrolling
+ * away from it first. Ported from compose/dewmini-style.css's own
+ * .dm-insert: a quiet line at rest that grows into "+ Code"/"+ Text"
+ * buttons on hover, and stays open (no hover to wait for) on a touch
+ * device. */
+.dl-insert {
+  position: relative;
+  height: 0.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-.dl-custom-cells-add:hover { color: var(--dl-orange); }
+.dl-insert-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1px;
+  background: var(--dl-rule);
+}
+.dl-insert-actions {
+  position: relative;
+  display: flex;
+  gap: 0.3rem;
+  padding: 0 0.5rem;
+  background: var(--dl-bg);
+  opacity: 0.4;
+  transition: opacity 0.12s ease;
+}
+.dl-insert:hover .dl-insert-actions,
+.dl-insert:focus-within .dl-insert-actions { opacity: 1; }
+.dl-insert:hover .dl-insert-line { background: var(--dl-orange); }
+
+.dl-insert-btn {
+  font-family: var(--dl-mono);
+  font-size: 0.68rem;
+  padding: 0.22rem 0.6rem;
+  border: 1px solid var(--dl-cell-border);
+  border-radius: 999px;
+  background: var(--dl-panel-bg);
+  color: var(--dl-muted);
+  cursor: pointer;
+}
+.dl-insert-btn:hover { border-color: var(--dl-orange); color: var(--dl-orange); }
+
+@media (hover: none) {
+  .dl-insert { height: 2.4rem; }
+  .dl-insert-actions { opacity: 0.75; }
+}
 
 /* Signature help (vendor-src/codemirror-entry.js's pythonSignatureHelp),
  * shown while typing a call rather than on hover — same popover shell as
@@ -2130,3 +2214,34 @@ p code, li code {
 
 .dl-footer a { color: inherit; }
 .dl-footer a:hover { color: var(--dl-fg); }
+
+/* ------------------------------------------------------------------ print
+ *
+ * "Print — or save as PDF" in Settings calls window.print() — this is what a
+ * reader actually sees, ported from compose/dewmini-style.css's own print
+ * block. Chrome, panels, and the insert seams have no place on a printed
+ * page; the reading and its cells are the whole point, so they get real ink
+ * regardless of which theme was on screen. */
+
+@media print {
+  .dl-chrome, .dl-cheatsheet-toggle, .dl-seriesnav-toggle,
+  .dl-settings, .dl-cheatsheet, .dl-seriesnav, .dl-status, .dl-nav,
+  .dl-insert, .dl-hint-icon, .dl-cell-bar .dl-btn {
+    display: none !important;
+  }
+  body, .dl-page { background: #fff !important; color: #111 !important; }
+  h1, h2, h3, h4, h5, h6 { color: #1b2a4a !important; }
+  .dl-cell { break-inside: avoid; border-color: #ddd !important; }
+  .dl-editor .cm-editor, .dl-output, .dl-doc-editor, .dl-doc-render:hover {
+    background: #f7f6f3 !important;
+    color: #111 !important;
+  }
+  .dl-doc-render { background: transparent !important; }
+  .dl-output { border: 1px solid #ddd; }
+  /* The cursor's last position has no meaning once nothing is interactive. */
+  .dl-editor .cm-activeLine, .dl-editor .cm-activeLineGutter, .dl-editor .cm-cursor {
+    background: transparent !important;
+    border: none !important;
+  }
+  a { color: #1b2a4a !important; text-decoration: underline; }
+}
