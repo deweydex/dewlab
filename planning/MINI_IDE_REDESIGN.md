@@ -275,6 +275,6 @@ kind.
 - [x] Phase 3 — Pane layout + file manager UI (commit 3cb899b; also fixed two pre-existing bugs: a circular-JSON crash in saveState() and a double-init listener bug)
 - [x] Phase 4 — SQLite/SQL support (run_query() in tutorial_tools.py, commit cb7f504)
 - [x] Phase 5 — Upload + Jupyter/.py import (commit bb13cf2)
-- [ ] Phase 6 — Settings panel expansion
+- [x] Phase 6 — Settings panel expansion (commit b7a471f)
 - [ ] Phase 7 — Vendored Pyodide + folder-based distribution
 - [ ] Phase 8 — Docs cleanup
