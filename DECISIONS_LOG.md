@@ -2662,3 +2662,51 @@ recovers, a stopped cell runs again afterward), one rewritten in
 `test_phase0_golden_path.py` replacing two widget tests that exercised
 behavior this migration deliberately removed on the hosted path. The full
 unit and e2e suites both green. `standalone.bundle.js` rebuilt.*
+
+**7.78 — dewmini gained `sqlite3`, Pillow, and a fourth widget,
+`image_input`, plus a way to attach an image to a documentation cell — none
+of it touching a tutorial page's own defaults.** DECISIONS.md's "Core
+libraries" row dropped sqlite deliberately, as the one library that needed
+unvendoring beyond numpy/pandas/matplotlib's single `loadPackage()` call —
+a real cost for curriculum content shipped to every published tutorial.
+dewmini is not curriculum content; it is a general notebook a reader opens
+for one session's worth of Python, so that cost buys something there it
+would not buy on a tutorial page. `DM_PACKAGES` in `compose/dewmini.js`
+(`numpy`, `pandas`, `matplotlib`, `sqlite3`, `Pillow`) is dewmini's own
+wider default, used by both its live Pyodide boot and the standalone
+`.html` export's embedded copy; `tutorial-runtime.js`'s `DEFAULT_PACKAGES`
+for tutorial pages is untouched.
+
+**`image_input(label="Choose an image", id=None)` joins `text_input`,
+`dropdown`, and `button` in `tutorial_tools.py`** — beyond the six named
+functions, the same way `load_csv` was (0.9). A file input limited to
+`accept="image/*"`; picking a file reads it with the JS File API's
+`arrayBuffer()`, decodes it through Pillow when Pillow is loaded and falls
+back to raw bytes when it is not (`ImportError` caught, not assumed away),
+and lands the result in `_widget_values` the same out-of-band dict
+`text_input`/`dropdown` already use for a value a plain `.value` read on
+the DOM element cannot supply — a file input's own `.value` is only ever
+the filename string. `_Widget.value` gained one `self._kind ==
+"image_input"` branch to read from there instead of `querySelector`.
+Nothing published uses this widget either, same as the three before it, so
+`_require_dom_sink`'s docstring gained a fourth name and nothing else
+changed about the gap it already described.
+
+**A documentation cell's own image attachment is unrelated to
+`image_input` and lives entirely in `compose/dewmini.js` — a reader
+illustrating a note, not a cell's code reading a file.** Its picture-frame
+button (next to Delete in the cell head) opens a native file picker, reads
+the pick as a data URL via `FileReader`, and appends `![image](data:...)`
+to the cell's own markdown-lite source — one more inline pattern in
+`renderDocInline`, deliberately restricted to a `data:` URL and nothing
+else, since a `data:` URL is the one thing this button ever writes and a
+remote image would need a loading and trust story this cell type has no
+reason to take on. Capped at 3 MB of raw file size before the read even
+starts (`MAX_DOC_IMAGE_BYTES`) — base64 inflates that by roughly a third
+once it lands in `localStorage` alongside every other cell, and a reader
+should see why a pick was refused rather than watch a save silently stop
+taking effect later.
+*Cost to change: small. `image_input` and the doc-cell attachment are
+independent and either can be dropped without the other; `DM_PACKAGES` is
+one array read by both the live boot and the standalone template (the
+latter via `JSON.stringify`), so the two never drift apart on their own.*

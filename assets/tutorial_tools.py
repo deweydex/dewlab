@@ -25,6 +25,7 @@ browser; it is not a supported way to run tutorials.
 
 from __future__ import annotations
 
+import asyncio
 import base64
 import html
 import io
@@ -53,6 +54,7 @@ __all__ = [
     "text_input",
     "dropdown",
     "button",
+    "image_input",
     "show",
     "show_table",
     "check",
@@ -821,7 +823,10 @@ class _Widget:
 
     @property
     def value(self):
-        if self._element is None:
+        # An `image_input` keeps its picked value out of band in
+        # `_widget_values` (see `image_input` below) rather than in the file
+        # input's own `.value`, which is only ever the filename string.
+        if self._kind == "image_input" or self._element is None:
             return _widget_values.get((self._cell_id, self._widget_id))
         control = self._element.querySelector("input, select")
         if control is None:
@@ -841,9 +846,9 @@ def _require_dom_sink(kind: str) -> _CellContext:
     `_MessageSink` (a Worker-run page) cannot hand back, since there is no
     DOM on that side of the postMessage boundary to hand back a reference
     into (DECISIONS_LOG.md 7.77). Nothing published uses `text_input`,
-    `dropdown` or `button` today, so this is a real gap with no live
-    tutorial behind it — and a clear error a reader can see beats the
-    silent one this would otherwise be: markup that renders but does
+    `dropdown`, `button` or `image_input` today, so this is a real gap with
+    no live tutorial behind it — and a clear error a reader can see beats
+    the silent one this would otherwise be: markup that renders but does
     nothing when clicked or typed into."""
     cell = _require_cell()
     if isinstance(cell.sink, _MessageSink):
@@ -951,6 +956,57 @@ def button(label: str = "Go", on_click=None, id: str | None = None) -> _Widget: 
                 _current = previous
 
         root.querySelector("button").addEventListener("click", _create_proxy(handle))
+
+    return widget
+
+
+def image_input(label: str = "Choose an image", id: str | None = None) -> _Widget:  # noqa: A002
+    """A file picker limited to image files.
+
+    `.value` is `None` until a reader picks one, then a Pillow `Image` once
+    Pillow is loaded on this page, or the file's raw bytes if it is not —
+    decoding is a convenience this offers when it can, not a requirement, so
+    a page that never asked for Pillow still gets the file rather than an
+    import error.
+    """
+    cell = _require_dom_sink("image_input")
+    widget_id = _widget_id(id, label or "image")
+    dom_id = f"dl-w-{html.escape(cell.cell_id)}-{html.escape(widget_id)}"
+    markup = (
+        '<div class="dl-widget">'
+        + (f'<label for="{dom_id}">{html.escape(str(label))}</label>' if label else "")
+        + f'<input type="file" accept="image/*" id="{dom_id}">'
+        + "</div>"
+    )
+    sink = cell.sink
+    root = sink.append_html(markup)
+    widget = _Widget(cell.cell_id, widget_id, root, "image_input")
+
+    if root is not None and _create_proxy is not None:
+        control = root.querySelector("input")
+        cell_id = cell.cell_id
+
+        def on_change(_event, _cell=cell_id, _wid=widget_id, _control=control):
+            files = _control.files
+            if files is None or files.length == 0:
+                return
+            picked = files.item(0)
+
+            async def read():
+                buf = await picked.arrayBuffer()
+                data = buf.to_bytes()
+                try:
+                    from PIL import Image  # noqa: PLC0415 - deliberately lazy, optional
+
+                    image = Image.open(io.BytesIO(data))
+                    image.load()
+                except ImportError:
+                    image = data
+                _remember(_cell, _wid, image)
+
+            asyncio.ensure_future(read())
+
+        control.addEventListener("change", _create_proxy(on_change))
 
     return widget
 

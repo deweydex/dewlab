@@ -15,6 +15,14 @@ const PYODIDE_VERSION = "0.28.3";
 const STORAGE_KEY = "dewmini:cells:v1";
 const NOTES_KEY = "dewmini:notes";
 
+// Beyond the curriculum's numpy/pandas/matplotlib baseline (DECISIONS.md
+// "Core libraries"), dewmini also loads sqlite3 (an unvendored stdlib
+// module in Pyodide, one extra loadPackage() entry — DECISIONS_LOG.md 7.78)
+// and Pillow (what image_input() decodes a picked file into). A tutorial
+// page stays on the narrower curriculum baseline; dewmini is a general
+// notebook, not curriculum content, so it can afford the wider default.
+const DM_PACKAGES = ["numpy", "pandas", "matplotlib", "sqlite3", "Pillow"];
+
 const CELL_TYPES = { PYTHON: "python", TEXT: "text" };
 const IMPORTS_SNIPPET = "import numpy as np\nimport pandas as pd\nimport matplotlib.pyplot as plt\n";
 
@@ -92,7 +100,7 @@ const EXAMPLE_CELLS = [
   },
   {
     type: CELL_TYPES.PYTHON,
-    content: 'import matplotlib.pyplot as plt\n\nplt.plot(readings)\nplt.title("Readings")\nplt.show()\n\ncheck(answer, 42)',
+    content: 'import matplotlib.pyplot as plt\n\nplt.plot(readings)\nplt.title("Readings")\n\ncheck(answer, 42)',
   },
 ];
 
@@ -140,9 +148,41 @@ function escapeHtml(text) {
 function renderDocInline(text) {
   return text
     .replace(/`([^`]+)`/g, "<code>$1</code>")
+    // Only a data: URL — the one thing the "insert image" button ever
+    // writes — not an arbitrary remote image, which would need its own
+    // loading and trust story this cell type has no reason to take on.
+    .replace(/!\[([^\]]*)\]\((data:[^)\s]+)\)/g, '<img alt="$1" src="$2" loading="lazy">')
     .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
     .replace(/(^|[^*\w])\*([^*\n]+)\*(?!\*)/g, "$1<em>$2</em>")
     .replace(/(^|[^\w])_([^_\n]+)_(?!\w)/g, "$1<em>$2</em>");
+}
+
+// A modest cap on an attached image's raw file size — comfortably inside a
+// browser's localStorage quota even after base64 inflates it by a third,
+// since cells (images included) save to localStorage on every change.
+const MAX_DOC_IMAGE_BYTES = 3 * 1024 * 1024;
+
+/* Opens a native file picker limited to images, reads the pick as a data
+ * URL, and hands it to `onDataUrl` — used by a documentation cell's
+ * "insert image" button. A fresh, unattached `<input>` per call rather
+ * than one kept around, so nothing lingers referencing a stale cell. */
+function pickImageFile(onDataUrl) {
+  const input = document.createElement("input");
+  input.type = "file";
+  input.accept = "image/*";
+  input.addEventListener("change", () => {
+    const file = input.files && input.files[0];
+    if (!file) return;
+    if (file.size > MAX_DOC_IMAGE_BYTES) {
+      updateStatus(`That image is too large to attach (max ${Math.round(MAX_DOC_IMAGE_BYTES / (1024 * 1024))} MB).`, "error");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => onDataUrl(String(reader.result));
+    reader.onerror = () => updateStatus("Couldn't read that image.", "error");
+    reader.readAsDataURL(file);
+  });
+  input.click();
 }
 
 function renderDocMarkdown(text) {
@@ -225,14 +265,7 @@ function createInsertDivider(index) {
   addTxt.innerHTML = '<span class="dm-tool-icon dm-tool-icon-text" aria-hidden="true"></span>Text';
   addTxt.addEventListener("click", () => insertCellAt(index, CELL_TYPES.TEXT));
 
-  const addImports = document.createElement("button");
-  addImports.type = "button";
-  addImports.className = "dm-insert-btn";
-  addImports.title = "Insert a Python cell with the common imports";
-  addImports.innerHTML = '<span class="dm-tool-icon dm-tool-icon-python" aria-hidden="true"></span>Imports';
-  addImports.addEventListener("click", () => insertCellAt(index, CELL_TYPES.PYTHON, IMPORTS_SNIPPET));
-
-  actions.append(addPy, addTxt, addImports);
+  actions.append(addPy, addTxt);
   row.append(line, actions);
   return row;
 }
@@ -270,6 +303,12 @@ function createCellElement(cell) {
   const actions = document.createElement("div");
   actions.className = "dm-cell-actions";
 
+  // Filled in by the text-cell branch below, since attaching an image
+  // needs the textarea/showEditor closures that only exist there. The
+  // button itself lives in the head, built here alongside Run/Delete so
+  // all three sit in one row regardless of which branch runs.
+  let insertDocImage = null;
+
   if (cell.type === CELL_TYPES.PYTHON) {
     const runBtn = document.createElement("button");
     runBtn.type = "button";
@@ -278,6 +317,14 @@ function createCellElement(cell) {
     runBtn.textContent = "▶";
     runBtn.addEventListener("click", (e) => { e.stopPropagation(); runCell(cell.id); });
     actions.appendChild(runBtn);
+  } else {
+    const imgBtn = document.createElement("button");
+    imgBtn.type = "button";
+    imgBtn.className = "dm-icon-btn dm-icon-image";
+    imgBtn.title = "Attach an image from your device";
+    imgBtn.innerHTML = '<span class="dm-tool-icon dm-tool-icon-image" aria-hidden="true"></span>';
+    imgBtn.addEventListener("click", (e) => { e.stopPropagation(); insertDocImage?.(); });
+    actions.appendChild(imgBtn);
   }
 
   const delBtn = document.createElement("button");
@@ -336,6 +383,16 @@ function createCellElement(cell) {
     textarea.addEventListener("input", (e) => { cell.content = e.target.value; saveState(); });
     textarea.addEventListener("blur", showRendered);
     renderEl.addEventListener("click", showEditor);
+
+    insertDocImage = () => pickImageFile((dataUrl) => {
+      const sep = cell.content && !cell.content.endsWith("\n") ? "\n\n" : "";
+      cell.content = `${cell.content}${sep}![image](${dataUrl})\n`;
+      textarea.value = cell.content;
+      saveState();
+      showEditor();
+      textarea.setSelectionRange(textarea.value.length, textarea.value.length);
+      updateStatus("Image attached.", "ok");
+    });
     renderEl.addEventListener("keydown", (e) => { if (e.key === "Enter") showEditor(); });
 
     content.append(textarea, renderEl);
@@ -384,7 +441,7 @@ async function ensurePyodide() {
     pyodide = await loader({ indexURL: pyodideUrl });
 
     updateStatus("Loading packages…");
-    await pyodide.loadPackage(["numpy", "pandas", "matplotlib"]);
+    await pyodide.loadPackage(DM_PACKAGES);
 
     updateStatus("Preparing notebook tools…");
     const source = await getToolsSource();
@@ -642,6 +699,7 @@ function buildStandaloneHtml(toolsSource, cellsData, dark, title) {
 const CELLS = ${JSON.stringify(cellsData)};
 const TOOLS_SRC = ${JSON.stringify(toolsSource)};
 const SEED = ${JSON.stringify(SEED_GLOBALS_CODE)};
+const PACKAGES = ${JSON.stringify(DM_PACKAGES)};
 
 async function main() {
   const statusEl = document.getElementById("status");
@@ -676,7 +734,7 @@ async function main() {
 
   try {
     const pyodide = await loadPyodide();
-    await pyodide.loadPackage(["numpy", "pandas", "matplotlib"]);
+    await pyodide.loadPackage(PACKAGES);
     pyodide.FS.writeFile("/home/pyodide/tutorial_tools.py", TOOLS_SRC, { encoding: "utf8" });
     const tools = pyodide.pyimport("tutorial_tools");
     tools.configure("");
