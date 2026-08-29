@@ -115,7 +115,7 @@
 
 .mini-ide-filetree-refresh:hover,
 .mini-ide-filetree-refresh:focus {
-  color: var(--dl-navy);
+  color: var(--dl-orange);
   background: var(--dl-output-bg);
 }
 
@@ -609,34 +609,18 @@
  * Buttons
  * ============================================================================
  */
-/* Use dewlab's button styles */
-.dl-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  padding: 0.35rem 0.75rem;
-  border: 2px solid var(--dl-navy);
-  border-radius: 4px;
-  background: transparent;
-  color: var(--dl-navy);
-  font-family: inherit;
-  font-size: 0.85rem;
-  cursor: pointer;
-  transition: background 0.15s ease, color 0.15s ease;
-  text-decoration: none;
-}
-
-.dl-btn:hover,
-.dl-btn:focus {
-  background: var(--dl-navy);
-  color: var(--dl-bg);
-}
-
-.dl-btn:active {
-  background: var(--dl-navy);
-  color: var(--dl-bg);
-}
-
+/* No local .dl-btn base rule here on purpose — this used to redefine one
+ * with `border: 2px solid var(--dl-navy); color: var(--dl-navy)`, which
+ * looked fine in light mode purely by accident: --dl-navy (tutorial-
+ * style.css) is a fixed dark blue with no dark-theme redefinition at
+ * all, unlike every other token this file uses, since it was only ever
+ * meant for things sitting on a light surface (the wordmark, headings).
+ * On the near-black dark background that made every plain .dl-btn —
+ * Python Cell, Text Cell, Run All, every download button — read as dark
+ * navy text on near-black, barely legible. compose/dewmini.html never
+ * had this problem because it never overrode .dl-btn to begin with, so
+ * this file now does the same: inherit tutorial-style.css's own .dl-btn,
+ * already correct in both themes. */
 .dl-btn-secondary {
   border-color: var(--dl-muted);
   color: var(--dl-muted);
@@ -648,13 +632,18 @@
   color: var(--dl-bg);
 }
 
-.dl-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
 /* ============================================================================
- * Icons (simple CSS-based icons)
+ * Icons — a mask shape filled with currentColor, not a background-image
+ * with a colour baked into the SVG itself. That's what compose/dewmini-
+ * style.css's own .dm-tool-icon* already does, and the reason: a colour
+ * inside the SVG (as these used to have — navy for Python/Text/
+ * Download, a fixed grey for Clear) can never respond to the reader's
+ * theme, however the surrounding button's own `color` changes. Navy in
+ * particular has no dark-theme redefinition at all (it's only ever
+ * meant for a light surface), so every one of those icons was
+ * effectively invisible in dark mode. A mask has no colour of its own
+ * to get stuck — currentColor means it always matches whatever text
+ * colour the button already has, correct in both themes for free.
  * ============================================================================
  */
 .mini-ide-icon {
@@ -663,29 +652,32 @@
   height: 16px;
   margin-right: 0.25rem;
   vertical-align: middle;
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center;
+  background: currentColor;
 }
 
 .mini-ide-icon-python {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%231b2a4a'%3E%3Cpath d='M12 2L4 5v6.09c0 5.05 3.41 9.76 8 10.91 4.59-1.15 8-5.86 8-10.91V5l-8-3z'/%3E%3Cpath d='M12 12.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5zm0-5c-.83 0-1.5.67-1.5 1.5s.67 1.5 1.5 1.5 1.5-.67 1.5-1.5-.67-1.5-1.5-1.5z'/%3E%3C/svg%3E");
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2L4 5v6.09c0 5.05 3.41 9.76 8 10.91 4.59-1.15 8-5.86 8-10.91V5l-8-3z'/%3E%3Cpath d='M12 12.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5zm0-5c-.83 0-1.5.67-1.5 1.5s.67 1.5 1.5 1.5 1.5-.67 1.5-1.5-.67-1.5-1.5-1.5z'/%3E%3C/svg%3E") center/contain no-repeat;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2L4 5v6.09c0 5.05 3.41 9.76 8 10.91 4.59-1.15 8-5.86 8-10.91V5l-8-3z'/%3E%3Cpath d='M12 12.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5zm0-5c-.83 0-1.5.67-1.5 1.5s.67 1.5 1.5 1.5 1.5-.67 1.5-1.5-.67-1.5-1.5-1.5z'/%3E%3C/svg%3E") center/contain no-repeat;
 }
 
 .mini-ide-icon-text {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%231b2a4a'%3E%3Cpath d='M14 2H6c-1.1 0-1.99.9-1.99 2L2 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z'/%3E%3C/svg%3E");
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M14 2H6c-1.1 0-1.99.9-1.99 2L2 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z'/%3E%3C/svg%3E") center/contain no-repeat;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M14 2H6c-1.1 0-1.99.9-1.99 2L2 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z'/%3E%3C/svg%3E") center/contain no-repeat;
 }
 
 .mini-ide-icon-run {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23d4692a'%3E%3Cpath d='M8 5v14l11-7z'/%3E%3C/svg%3E");
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M8 5v14l11-7z'/%3E%3C/svg%3E") center/contain no-repeat;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M8 5v14l11-7z'/%3E%3C/svg%3E") center/contain no-repeat;
 }
 
 .mini-ide-icon-clear {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23666'%3E%3Cpath d='M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z'/%3E%3C/svg%3E");
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z'/%3E%3C/svg%3E") center/contain no-repeat;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z'/%3E%3C/svg%3E") center/contain no-repeat;
 }
 
 .mini-ide-icon-download {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%231b2a4a'%3E%3Cpath d='M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z'/%3E%3C/svg%3E");
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z'/%3E%3C/svg%3E") center/contain no-repeat;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z'/%3E%3C/svg%3E") center/contain no-repeat;
 }
 
 /* ============================================================================
