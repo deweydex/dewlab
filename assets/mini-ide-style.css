@@ -76,6 +76,16 @@
   color: var(--dl-muted);
 }
 
+.mini-ide-filetree-head-actions {
+  display: flex;
+  gap: 0.15rem;
+}
+
+.mini-ide-filetree.mini-ide-filetree-dragover {
+  border-color: var(--dl-orange);
+  box-shadow: 0 0 0 2px rgba(212, 105, 42, 0.2);
+}
+
 .mini-ide-filetree-refresh {
   border: none;
   background: none;

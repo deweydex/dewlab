@@ -93,6 +93,10 @@
         </button>
       </div>
       <div class="mini-ide-toolbar-right">
+        <button id="import-notebook" class="dl-btn dl-btn-secondary" title="Load a .ipynb or .py file as cells (replaces the current notebook)">
+          Import
+        </button>
+        <input type="file" id="import-notebook-file" accept=".ipynb,.py,application/json,text/x-python" hidden>
         <button id="download-python" class="dl-btn" title="Download as Python file">
           <span class="mini-ide-icon mini-ide-icon-download"></span>.py
         </button>
@@ -149,9 +153,14 @@
       <aside class="mini-ide-filetree" id="mini-ide-filetree" aria-label="Files">
         <div class="mini-ide-filetree-head">
           <h2>Files</h2>
-          <button type="button" class="mini-ide-filetree-refresh" id="filetree-refresh"
-                  title="Refresh the file list" aria-label="Refresh the file list">&#8635;</button>
+          <div class="mini-ide-filetree-head-actions">
+            <button type="button" class="mini-ide-filetree-refresh" id="filetree-upload"
+                    title="Upload files" aria-label="Upload files">+</button>
+            <button type="button" class="mini-ide-filetree-refresh" id="filetree-refresh"
+                    title="Refresh the file list" aria-label="Refresh the file list">&#8635;</button>
+          </div>
         </div>
+        <input type="file" id="filetree-upload-file" multiple hidden>
         <p class="mini-ide-filetree-note" id="filetree-note">
           Files appear here once Python starts — run any cell.
         </p>

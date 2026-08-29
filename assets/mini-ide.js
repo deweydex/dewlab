@@ -91,6 +91,10 @@ let filetreeToggleBtn;
 let filetreeRefreshBtn;
 let filetreeListEl;
 let filetreeNoteEl;
+let filetreeUploadBtn;
+let filetreeUploadInput;
+let importNotebookBtn;
+let importNotebookInput;
 
 // ============================================================================
 // Drag and Drop State
@@ -415,6 +419,10 @@ async function init() {
   filetreeRefreshBtn = document.getElementById('filetree-refresh');
   filetreeListEl = document.getElementById('filetree-list');
   filetreeNoteEl = document.getElementById('filetree-note');
+  filetreeUploadBtn = document.getElementById('filetree-upload');
+  filetreeUploadInput = document.getElementById('filetree-upload-file');
+  importNotebookBtn = document.getElementById('import-notebook');
+  importNotebookInput = document.getElementById('import-notebook-file');
 
   // Wire the engine to this page's cells before anything can run
   engine.configure({
@@ -597,6 +605,31 @@ function setupEventListeners() {
     filetreeToggleBtn.setAttribute('aria-expanded', String(Boolean(open)));
   });
   filetreeRefreshBtn?.addEventListener('click', () => renderFileTree());
+
+  // File tree pane: upload via button or drag-and-drop
+  filetreeUploadBtn?.addEventListener('click', () => filetreeUploadInput?.click());
+  filetreeUploadInput?.addEventListener('change', (e) => {
+    uploadFiles(e.target.files);
+    e.target.value = '';
+  });
+  if (filetreeEl) {
+    filetreeEl.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      filetreeEl.classList.add('mini-ide-filetree-dragover');
+    });
+    filetreeEl.addEventListener('dragleave', () => {
+      filetreeEl.classList.remove('mini-ide-filetree-dragover');
+    });
+    filetreeEl.addEventListener('drop', (e) => {
+      e.preventDefault();
+      filetreeEl.classList.remove('mini-ide-filetree-dragover');
+      uploadFiles(e.dataTransfer?.files);
+    });
+  }
+
+  // Import a .ipynb or .py file as this notebook's cells
+  importNotebookBtn?.addEventListener('click', () => importNotebookInput?.click());
+  importNotebookInput?.addEventListener('change', handleImportNotebookFile);
 
   // Download buttons
   downloadPythonBtn?.addEventListener('click', () => downloadAsPython());
@@ -1138,6 +1171,159 @@ async function deleteTreeFile(name) {
   renderFileTree();
 }
 
+/**
+ * Write one or more dropped/selected files into the mounted filesystem's
+ * root, then refresh the tree. Requires Python to have already started
+ * (fsReady) — the button/dropzone work either way, but nothing is
+ * written until then.
+ *
+ * @async
+ * @param {FileList|File[]|null|undefined} fileList
+ */
+async function uploadFiles(fileList) {
+  const files = fileList ? Array.from(fileList) : [];
+  if (files.length === 0) return;
+
+  if (!fsReady) {
+    updateStatus('Run a cell first to start Python, then upload files.', 'error');
+    return;
+  }
+
+  let uploaded = 0;
+  for (const file of files) {
+    try {
+      const bytes = new Uint8Array(await file.arrayBuffer());
+      await fs.writeFile(file.name, bytes);
+      uploaded++;
+    } catch (error) {
+      updateStatus(`Couldn't upload ${file.name}: ${error.message}`, 'error');
+    }
+  }
+
+  renderFileTree();
+  if (uploaded > 0) {
+    updateStatus(`Uploaded ${uploaded} file${uploaded === 1 ? '' : 's'}.`);
+  }
+}
+
+// ============================================================================
+// Notebook Import (.ipynb / .py)
+// ============================================================================
+
+/**
+ * Import a .ipynb or .py file, replacing the current notebook's cells.
+ * Routed from the toolbar's "Import" button.
+ *
+ * @async
+ * @param {Event} e - the file input's change event
+ */
+async function handleImportNotebookFile(e) {
+  const input = e.target;
+  const file = input.files && input.files[0];
+  input.value = '';
+  if (!file) return;
+
+  let imported;
+  try {
+    const text = await file.text();
+    imported = file.name.toLowerCase().endsWith('.ipynb') ? parseIpynb(text) : parsePy(text);
+  } catch (error) {
+    updateStatus(`Couldn't read ${file.name}: ${error.message}`, 'error');
+    return;
+  }
+
+  if (imported.length === 0) {
+    updateStatus('That file has no cells to import.', 'error');
+    return;
+  }
+
+  cells = imported;
+  hasSampleCells = false;
+  saveState();
+  renderCells();
+  if (sampleNoticeEl) sampleNoticeEl.hidden = true;
+  updateStatus(`Loaded ${imported.length} cell${imported.length === 1 ? '' : 's'} from ${file.name}.`);
+}
+
+/**
+ * Parse a Jupyter notebook's JSON into Mini IDE cells. Best-effort on rich
+ * outputs — image/png, text/html, and text/plain or a stream — everything
+ * else (widgets, other MIME types) is silently skipped rather than
+ * attempting a full nbformat renderer.
+ *
+ * @param {string} text - raw .ipynb file contents
+ * @returns {Array<Object>} new cell objects (not yet added to `cells`)
+ */
+function parseIpynb(text) {
+  const notebook = JSON.parse(text);
+  if (!Array.isArray(notebook.cells)) {
+    throw new Error('that file has no cells array');
+  }
+  return notebook.cells.map((nbCell) => {
+    const isCode = nbCell.cell_type === 'code';
+    const source = Array.isArray(nbCell.source) ? nbCell.source.join('') : (nbCell.source || '');
+    const cell = createNewCell(isCode ? CELL_TYPES.PYTHON : CELL_TYPES.TEXT, source, false);
+    if (isCode && Array.isArray(nbCell.outputs) && nbCell.outputs.length > 0) {
+      cell.output = renderIpynbOutputs(nbCell.outputs);
+    }
+    return cell;
+  });
+}
+
+/**
+ * Render a code cell's `outputs` array (nbformat 4) as the same HTML
+ * string shape cell.output already holds for a freshly-run cell.
+ *
+ * @param {Array<Object>} outputs
+ * @returns {string}
+ */
+function renderIpynbOutputs(outputs) {
+  const joinText = (value) => (Array.isArray(value) ? value.join('') : (value || ''));
+  const parts = [];
+
+  for (const out of outputs) {
+    const data = out.data || {};
+    if (data['image/png']) {
+      const encoded = joinText(data['image/png']);
+      parts.push(`<div class="dl-figure"><img alt="Figure from imported notebook" src="data:image/png;base64,${encoded}"></div>`);
+    } else if (data['text/html']) {
+      // Trusted: this is markup the notebook's own renderer produced
+      // (e.g. a DataFrame's own to_html()), not user-entered text.
+      parts.push(joinText(data['text/html']));
+    } else if (data['text/plain']) {
+      parts.push(`<pre>${escapeHtml(joinText(data['text/plain']))}</pre>`);
+    } else if (out.output_type === 'stream' && out.text !== undefined) {
+      const cssClass = out.name === 'stderr' ? 'dl-error' : 'dl-stdout';
+      parts.push(`<pre class="${cssClass}">${escapeHtml(joinText(out.text))}</pre>`);
+    }
+    // Anything else (widgets, other MIME types) is dropped — best-effort,
+    // not a full nbformat renderer.
+  }
+
+  return parts.join('');
+}
+
+/**
+ * Split a .py file into cells on "# %%" markers (the Jupytext/VS Code/
+ * Spyder convention) — the same marker downloadAsPython() now exports
+ * with, so a round trip lands back where it started. A file with no
+ * markers imports as a single cell.
+ *
+ * @param {string} text - raw .py file contents
+ * @returns {Array<Object>} new cell objects (not yet added to `cells`)
+ */
+function parsePy(text) {
+  const marker = /^#\s*%%.*$/m;
+  if (!marker.test(text)) {
+    return text.trim() ? [createNewCell(CELL_TYPES.PYTHON, text, false)] : [];
+  }
+  return text
+    .split(/^#\s*%%.*$/m)
+    .map((chunk) => chunk.replace(/^\s+|\s+$/g, ''))
+    .filter((chunk) => chunk.length > 0)
+    .map((chunk) => createNewCell(CELL_TYPES.PYTHON, chunk, false));
+}
+
 // ============================================================================
 // Download Functions
 // ============================================================================
@@ -1155,7 +1341,10 @@ function downloadAsPython() {
     return;
   }
 
-  const content = pythonCells.map(cell => cell.content).join('\n\n# ---\n\n');
+  // "# %%" (the Jupytext/VS Code/Spyder convention) rather than an
+  // arbitrary separator, so a downloaded .py round-trips back through
+  // "Import" (parsePy()) into the same cells it came from.
+  const content = pythonCells.map(cell => cell.content).join('\n\n# %%\n\n');
   const blob = new Blob([content], { type: 'text/x-python' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
