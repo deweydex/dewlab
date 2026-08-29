@@ -272,7 +272,7 @@ kind.
 
 - [x] Phase 1 — Engine migration (assets/mini-ide-engine.js, commit 22c474a)
 - [x] Phase 2 — Filesystem layer (assets/mini-ide-fs.js, commit 1415227)
-- [ ] Phase 3 — Pane layout + file manager UI
+- [x] Phase 3 — Pane layout + file manager UI (commit 3cb899b; also fixed two pre-existing bugs: a circular-JSON crash in saveState() and a double-init listener bug)
 - [ ] Phase 4 — SQLite/SQL support
 - [ ] Phase 5 — Upload + Jupyter/.py import
 - [ ] Phase 6 — Settings panel expansion
