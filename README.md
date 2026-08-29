@@ -23,7 +23,10 @@ next — it governs how a tutorial is written, and this document governs how it
 is built. If you're here to read or change the *code* rather than write a
 tutorial, [`ARCHITECTURE.md`](ARCHITECTURE.md) is the door in: what runs
 where, how a tutorial's markdown becomes a running page, and how the
-authoring editor talks to GitHub.
+authoring editor talks to GitHub. Before you open a pull request that
+touches code, read [`CONTRIBUTING.md`](CONTRIBUTING.md) — it covers what
+every code change is expected to keep current: comments and the matching
+`docs/<file>-explained.md` file.
 
 ---
 
@@ -578,21 +581,32 @@ assets/
   tutorial_tools.py   what a student's cell code can call
   tree.html, tree.js  the topic tree page
   editor.html, editor.js  the browser-based authoring editor
-  mini-ide.html, mini-ide.js, mini-ide-style.css  a cell-based scratch IDE, no tutorial attached — the larger of the two Python workspaces, for a project meant to stand on its own
+  mini-ide.html, mini-ide.js, mini-ide-engine.js, mini-ide-fs.js, mini-ide-style.css
+                      a folder-based, file-manager-equipped Python workspace with
+                      no tutorial attached — the larger of the two Python
+                      workspaces, for a project meant to stand on its own
+  pyodide-worker.js   runs Pyodide off the main thread; shared by tutorial pages and Mini IDE
+  tutorial_tools.py   what a student's cell code can call, shared by every Python surface on the site
   vendor/             CodeMirror, KaTeX, and Milkdown, built from vendor-src/
 compose/
   dewmini.html, dewmini.js, dewmini-style.css  a smaller, quieter cousin of the Mini IDE — a quick notebook, not a project
   practice-bank.json   the problem bank dewmini's Practice button draws from
 build.py              markdown in, site/ out
 dev/curriculum_map.py generates planning/CURRICULUM_MAP.md from outcomes.yaml, topics.yaml and the tutorials
+dev/fetch_pyodide.py, dev/from_notebook.py, dev/generate_doc_snippets.py
+                      other maintainer scripts — see docs/dev-scripts-explained.md
 tests/                unit tests, browser tests, and a manual checklist
 planning/
   PEDAGOGICAL_STYLE_GUIDE.md  how a tutorial is written, and why
   curriculum/          outcomes.yaml, topics.yaml, and the QQI descriptor PDFs coverage is measured against
   STATUS.md             what has actually been built, and what has not
 docs/
+  MINI_IDE.md            what Mini IDE is and how to use it
   DEWMINI.md            what dewmini is and how to use it
+  <file>-explained.md   one per substantial code file, walking through how it's built —
+                        see CONTRIBUTING.md
 ARCHITECTURE.md       how the code works — build, runtime, and editor, for a technical reader
+CONTRIBUTING.md       keeping documentation and comments current as the code changes
 DECISIONS_LOG.md      what was decided during the build, and what changing it costs
 QUESTIONS.md           decisions still open, waiting on Josh
 LICENSE.md             terms for reusing this material

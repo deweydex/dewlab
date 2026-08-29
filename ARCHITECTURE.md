@@ -124,12 +124,14 @@ installed at all for the ordinary case.
 
 ## 2. The runtime: what a student's browser actually does
 
-`assets/tutorial-runtime.js` is the only JavaScript a *student* loads, and it
-owns exactly three things, stated in its own opening comment: the settings
-panel, the CodeMirror editors for cells, and booting Pyodide to run one.
-Deliberately thin on rendering — everything a cell's *output* looks like is
-decided in `assets/tutorial_tools.py`, in Python, so those rules are
-unit-testable without a browser and only have to be right in one place.
+`assets/tutorial-runtime.js` is the JavaScript a student loads on every
+*tutorial* page (Mini IDE and dewmini are separate pages with their own
+JavaScript — see §4), and it owns exactly three things, stated in its
+own opening comment: the settings panel, the CodeMirror editors for
+cells, and booting Pyodide to run one. Deliberately thin on rendering —
+everything a cell's *output* looks like is decided in
+`assets/tutorial_tools.py`, in Python, so those rules are unit-testable
+without a browser and only have to be right in one place.
 
 What happens when a page loads:
 
@@ -345,7 +347,53 @@ first attempt at this fix silently do nothing.
 
 ---
 
-## 4. Two build systems, on purpose
+## 4. Mini IDE and dewmini: two Python workspaces outside any tutorial
+
+`assets/mini-ide.html` and `compose/dewmini.html` are not tutorials — no
+markdown source, nothing `build.py` generates from `tutorials/`. Both are
+plain pages built directly, giving a student a place to write and run
+Python that isn't tied to one lesson. They share `tutorial_tools.py` with
+every tutorial page (§2), so `show`/`show_table`/`check`/widgets all
+behave identically everywhere — but they differ from each other, and from
+a tutorial page, in one important way: how Python actually runs.
+
+**Mini IDE** (`assets/mini-ide.js`) is the larger of the two, and its
+execution engine (`assets/mini-ide-engine.js`) is a client of
+`assets/pyodide-worker.js` — the same Worker-based runtime a tutorial
+page's own `tutorial-runtime.js` boots (§2), reused rather than
+duplicated. That's what gives Mini IDE a genuine Stop button: a runaway
+cell blocks the Worker, not the page. `assets/mini-ide-fs.js` sits
+between Mini IDE and the actual filesystem, choosing among three
+backends — a real local folder via the File System Access API, OPFS, or
+IDBFS — so the file manager, SQL support (`sqlite3` against a mounted
+`.db` file), and uploads all work without knowing which backend is
+active. Opened from `file://` (the downloadable, folder-based
+distribution — see `write_mini_ide_bundle()` in `build.py`), a module
+Worker isn't reliably available, so `mini-ide-engine.js` falls back to
+running Pyodide on the main thread instead — same interpreter, same
+`tutorial_tools.py`, just without a genuine Stop button.
+
+Each of these files has its own `docs/<file>-explained.md` walking
+through its internal structure in more depth than belongs here — start
+with [`docs/mini-ide-engine-explained.md`](docs/mini-ide-engine-explained.md)
+for the worker/main-thread split specifically, or
+[`docs/mini-ide-fs-explained.md`](docs/mini-ide-fs-explained.md) for the
+three-backend filesystem layer.
+
+**dewmini** (`compose/dewmini.js`) stays deliberately smaller: no file
+manager, no SQL beyond what plain `import sqlite3` gives for free, and —
+the real architectural difference — Pyodide runs directly on the main
+thread always, the simpler and older approach, with no Worker and
+therefore no Stop button. That's a genuine tradeoff, not an oversight:
+dewmini is meant for something quick, and Mini IDE is where a project
+that's outgrown "quick" belongs. See
+[`docs/dewmini-js-explained.md`](docs/dewmini-js-explained.md) for how
+the rest of dewmini (cell CRUD, drag reorder, the standalone HTML export
+that builds an entire second page as a string) fits together.
+
+---
+
+## 5. Two build systems, on purpose
 
 There are two separate `package.json`s in this repository, and that split is
 deliberate rather than an accident of history:
@@ -368,7 +416,7 @@ not a dependency of the project.
 
 ---
 
-## 5. Tests: what each suite actually checks
+## 6. Tests: what each suite actually checks
 
 ```
 python3 -m pytest                    everything
@@ -409,6 +457,10 @@ runtime or the editor.
 | What a tutorial's markdown can express (a new frontmatter field, a new fence convention) | `build.py` |
 | What a cell can do (a new tutorial-facing function) | `assets/tutorial_tools.py` |
 | What a cell *looks like*, or the settings panel, save/restore behaviour | `assets/tutorial-runtime.js` |
+| Mini IDE's file manager, uploads, or storage backend | `assets/mini-ide-fs.js` |
+| Mini IDE's Python engine (boot, run a cell, hover/autocomplete, Stop) | `assets/mini-ide-engine.js` |
+| Mini IDE's cells, toolbar, or downloads | `assets/mini-ide.js` |
+| dewmini's cells, toolbar, or downloads | `compose/dewmini.js` |
 | The topic tree or knowledge map's layout | `assets/tree.js` and `build.py`'s `tree_data()`/`render_knowledge_map()` |
 | The authoring editor's structural checks, release logic, GitHub calls | `assets/editor.js` |
 | The authoring editor's prose-editing surface itself | `vendor-src/milkdown-entry.js` |
