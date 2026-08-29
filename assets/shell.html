@@ -181,6 +181,33 @@
     </div>
   </section>
 
+  <!-- Cells a reader writes for themselves — planning/PRACTICE.md §3 — kept
+       completely separate from the tutorial's own saved-work record above:
+       not tied to this tutorial's version, and not counted in the Progress
+       section below. Removed at load on a page with no cells at all, same
+       as "Your work" above (initCustomCellsSection(), tutorial-runtime.js).
+       The cells themselves live on the page, in a "Try something of your
+       own" section after the tutorial's own content — this panel only
+       holds the actions that don't belong on any one cell: loading one
+       someone else shared, and clearing all of them at once. -->
+  <section class="dl-settings-section" id="dl-settings-custom-cells">
+    <h3>Your own cells</h3>
+
+    <p class="dl-panel-note">
+      Cells you add yourself are separate from the tutorial above — they
+      stay even if the tutorial is later updated, and they are not part of
+      what gets saved and restored with the tutorial's own answers. A cell
+      you load from someone else's file runs like any other code on this
+      page, so it's worth reading before you press Run.
+    </p>
+
+    <div class="dl-progress-actions">
+      <button type="button" class="dl-btn" id="dl-custom-cells-import">Load a shared cell</button>
+      <button type="button" class="dl-btn dl-progress-clear" id="dl-custom-cells-clear">Remove all of mine</button>
+    </div>
+    <input type="file" id="dl-custom-cells-file" accept="application/json,.json" hidden>
+  </section>
+
   <!-- Progress: how far a reader has gotten. Not removed on a page with no
        cells the way "Your work" above is — the toggle here also governs
        the contents page's own badges, and the contents page itself has no
@@ -221,6 +248,28 @@
   </section>
 
   <section class="dl-settings-section" id="dl-settings-download">{{DOWNLOAD}}</section>
+
+  <!-- Two more ways to take this page with you, built entirely at runtime
+       (initExportSection(), tutorial-runtime.js) rather than server-rendered
+       like #dl-settings-download above — deliberately its own section
+       rather than folded into that one, since build.py strips that whole
+       section's contents out of the standalone/offline export (its own
+       comment: "the offer to download it is already taken — this is the
+       download"), and these two stay just as useful *inside* an
+       already-downloaded copy. -->
+  <section class="dl-settings-section" id="dl-settings-export">
+    <h3>Export</h3>
+    <p class="dl-panel-note">Two more ways to take this page with you.</p>
+    <div class="dl-progress-actions">
+      <button type="button" class="dl-btn" id="dl-print-pdf">Print — or save as PDF</button>
+      <button type="button" class="dl-btn" id="dl-export-ipynb">Save as a Jupyter notebook</button>
+    </div>
+    <p class="dl-panel-note">
+      The notebook file holds this page's code — the tutorial's own cells
+      and anything you've added yourself — not the reading. Print (or
+      "Download to keep" above) for the whole page.
+    </p>
+  </section>
 
   <section class="dl-settings-section" id="dl-settings-texture">
     <h3>Texture</h3>

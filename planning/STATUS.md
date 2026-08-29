@@ -64,6 +64,17 @@ current as things change — not a pitch.
   `CELL_CONTROLS.md` §2 and DECISIONS_LOG.md 7.77. The offline
   standalone export keeps Pyodide on the main thread and has no Stop
   button, on purpose (`ARCHITECTURE.md` §4).
+- **A reader's own cells**: on any page that already has cells, a reader
+  can add their own — Python or a short text note — right below any cell
+  on the page, not just at the bottom, and share one as a small file
+  someone else can load in. Kept fully separate from the tutorial's own
+  saved work and version system, so it survives a tutorial update
+  untouched (`PRACTICE.md` §3-5).
+- **Print/PDF and a Jupyter notebook**: alongside the existing "Download
+  to keep," a tutorial page's Settings offers "Print — or save as PDF"
+  and "Save as a Jupyter notebook" (a page's cells, real and a reader's
+  own alike — not the reading itself, which Print and Download to keep
+  already cover).
 
 ### Mini IDE and dewmini (`assets/mini-ide.*`, `compose/dewmini.*`)
 Two Python workspaces with no tutorial attached — see
@@ -181,12 +192,6 @@ taught have already been converted by hand; the ones that remain
 material no tutorial teaches yet, and six of those carry their answer
 keys only as PDFs. There's nothing for the converter to convert until
 that material is written.
-
-### Student-authored practice cells (`PRACTICE.md`)
-Client-side dynamic cell insertion in `assets/tutorial-runtime.js`, so a
-student could write their own practice challenge, write a verification
-test for it, and export the pair as a JSON snippet to share with
-someone else. Not started.
 
 ### CI/CD deployment
 **Done.** `.github/workflows/deploy.yml` builds and publishes the
