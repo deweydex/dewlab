@@ -2336,6 +2336,108 @@ def write_series_zip(module: str, series: str, members: list[Tutorial]) -> Path:
     return target
 
 
+def zip_directory(source_dir: Path, target_zip: Path) -> Path:
+    """Every file under `source_dir`, archived under its own name at the
+    zip's root — so unzipping drops one `source_dir.name` folder next to
+    wherever the student put the zip, not its contents loose."""
+    target_zip.parent.mkdir(parents=True, exist_ok=True)
+    with zipfile.ZipFile(target_zip, "w", zipfile.ZIP_DEFLATED) as archive:
+        for path in sorted(source_dir.rglob("*")):
+            if path.is_file():
+                archive.write(path, path.relative_to(source_dir.parent))
+    return target_zip
+
+
+# The subset of assets/ mini-ide.html actually needs on its own, outside the
+# hosted site — tutorial-runtime.js, every tutorial-only vendor bundle, and
+# the rest of assets/ mini-ide.html never loads would just be dead weight in
+# a download meant to be as small as it can be.
+MINI_IDE_ASSET_FILES = (
+    "mini-ide.js",
+    "mini-ide-engine.js",
+    "mini-ide-fs.js",
+    "mini-ide-style.css",
+    "tutorial-style.css",
+    "tutorial_tools.py",
+    "pyodide-worker.js",
+    "vendor/katex.min.css",
+    "vendor/codemirror.bundle.js",
+)
+
+
+def write_mini_ide_bundle() -> Path | None:
+    """The downloadable Mini IDE: a folder a student can save locally and
+    reopen without a server — Pyodide included, so the first run doesn't
+    need a live connection either, once assets/vendor/pyodide/ exists.
+    Replaces the loose mini-ide.html/js/css copy at the site root, which
+    only ever worked hosted — see planning/MINI_IDE_REDESIGN.md Phase 7.
+
+    assets/vendor/pyodide/ is not committed (gitignored, like /dev/pyodide/
+    a few lines up in .gitignore) — populate it with dev/fetch_pyodide.py,
+    the same trimmed-Pyodide fetcher the e2e tests already use for their
+    own local copy, just pointed at a different --out and asked for one
+    extra package Mini IDE needs that the e2e baseline doesn't:
+
+        python3 dev/fetch_pyodide.py --out assets/vendor/pyodide \\
+            --packages numpy pandas matplotlib sqlite3 jedi
+
+    A build run without that first still produces a working bundle, just
+    one that falls back to the CDN on first run, same as the hosted page
+    does.
+    """
+    mini_ide_html = ASSETS / "mini-ide.html"
+    if not mini_ide_html.exists():
+        return None
+
+    target = OUT / "download" / "mini-ide"
+    shutil.rmtree(target, ignore_errors=True)
+    (target / "assets" / "vendor").mkdir(parents=True, exist_ok=True)
+
+    pyodide_vendored = (ASSETS / "vendor" / "pyodide").is_dir()
+
+    html = mini_ide_html.read_text()
+    if pyodide_vendored:
+        # The same override mini-ide-engine.js's pyodideBase() already
+        # honors (mirroring tutorial-runtime.js's own PYODIDE_BASE) — no
+        # engine change needed, just telling this one copy of the page to
+        # use it instead of the CDN default.
+        html = html.replace(
+            "<head>",
+            '<head>\n<script>window.DEWLAB_PYODIDE_BASE = "assets/vendor/pyodide/";</script>',
+            1,
+        )
+    (target / "mini-ide.html").write_text(html)
+
+    for rel in MINI_IDE_ASSET_FILES:
+        src = ASSETS / rel
+        if not src.exists():
+            print(f"note: mini-ide bundle is missing {src.relative_to(ROOT)}", file=sys.stderr)
+            continue
+        dest = target / "assets" / rel
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(src, dest)
+
+    if pyodide_vendored:
+        shutil.copytree(ASSETS / "vendor" / "pyodide", target / "assets" / "vendor" / "pyodide")
+    else:
+        print(
+            "note: assets/vendor/pyodide/ not found (see "
+            "write_mini_ide_bundle()'s docstring for the fetch command) — "
+            "the Mini IDE bundle will still boot Python from the CDN on "
+            "first run rather than fully offline",
+            file=sys.stderr,
+        )
+
+    # coi-serviceworker.js needs root scope to cover mini-ide.html, the same
+    # reason build() copies it to the hosted site's own root rather than
+    # leaving it under assets/vendor/ alone — see that copy's own comment.
+    coi_src = ASSETS / "vendor" / "coi-serviceworker.js"
+    if coi_src.exists():
+        shutil.copy2(coi_src, target / "coi-serviceworker.js")
+
+    return target
+
+
 def readable_size(path: Path) -> str:
     """A size a person can act on, rather than a byte count."""
     size = path.stat().st_size
@@ -2725,12 +2827,23 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
         shutil.rmtree(OUT / "data", ignore_errors=True)
         shutil.copytree(DATA, OUT / "data")
     
-    # Copy Mini IDE files to site root
-    mini_ide_files = ["mini-ide.html", "mini-ide.js", "mini-ide-style.css"]
-    for filename in mini_ide_files:
-        src = ASSETS / filename
-        if src.exists():
-            shutil.copy2(src, OUT / filename)
+    # Mini IDE's hosted copy — assets/mini-ide.html's own <script>/<link>
+    # tags are already root-relative ("assets/mini-ide.js" etc.), which is
+    # what the wholesale assets/ copy just above puts them at, so the
+    # hosted page just needs to exist at the site root; nothing else about
+    # it is hosted-specific the way the downloadable bundle below is.
+    # Guarded like the coi-serviceworker.js copy below: a test's own
+    # minimal ASSETS fixture need not carry it for that test's build to
+    # succeed.
+    mini_ide_src = ASSETS / "mini-ide.html"
+    if mini_ide_src.exists():
+        shutil.copy2(mini_ide_src, OUT / "mini-ide.html")
+
+    if standalone:
+        bundle_dir = write_mini_ide_bundle()
+        if bundle_dir is not None:
+            written.append(bundle_dir)
+            written.append(zip_directory(bundle_dir, OUT / "download" / "mini-ide.zip"))
 
     # dewmini (compose/) is its own small folder rather than more root-level
     # files, so it copies wholesale like assets/ does.
