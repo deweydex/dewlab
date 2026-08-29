@@ -22,14 +22,26 @@
  * here.
  */
 
-let pyodide = null;
-let tools = null;
-let inspectModule = null;
-let builtinsModule = null;
+/* This whole file runs inside a Web Worker, not on the page itself — a
+ * separate thread with its own memory, created by `new Worker(...)` on
+ * the page side (see mini-ide-engine.js's ensureWorker(), or
+ * tutorial-runtime.js's own equivalent). That's what makes a genuine
+ * Stop button possible: even if Python code here runs forever, the page
+ * itself stays responsive, since it's a different thread entirely. The
+ * only way in or out is postMessage()/onmessage — there's no shared
+ * memory to just reach into (SharedArrayBuffer, used for Stop further
+ * down, is the one deliberate exception). */
 
-let jediHoverFn = null;
-let jediSignatureFn = null;
+let pyodide = null; // the Pyodide interpreter, once boot() finishes
+let tools = null; // the imported tutorial_tools Python module
+let inspectModule = null; // Python's `inspect` module, for hover docs
+let builtinsModule = null; // Python's `builtins` module, for e.g. `len`
 
+let jediHoverFn = null; // the _dewlab_hover_doc Python function, defined below
+let jediSignatureFn = null; // the _dewlab_signature Python function, defined below
+
+/* A tiny wrapper around the Worker's own global postMessage() — just
+ * gives the rest of this file one consistent name to call. */
 function post(message) {
   postMessage(message);
 }
@@ -39,6 +51,10 @@ function post(message) {
  * unchanged from the pre-Worker tutorial-runtime.js (DECISIONS_LOG.md
  * 7.76); only where it runs has moved. */
 function lookupLiveName(name) {
+  /* The regex check guards against handing an arbitrary string straight
+   * into a dict/attribute lookup below — only something that could
+   * actually be a Python identifier (letters, digits, underscores, not
+   * starting with a digit) is worth looking up at all. */
   if (!tools || !/^[A-Za-z_]\w*$/.test(name)) return undefined;
   try {
     const local = tools._page_globals.get(name);
@@ -54,6 +70,13 @@ function lookupLiveName(name) {
   }
 }
 
+/* Gets the docstring for a name that has already run (e.g. hovering over
+ * "numpy" once `import numpy` has actually executed), using Python's own
+ * inspect.getdoc — the same thing behind Python's built-in help(). The
+ * `finally` block's `.destroy()` calls matter: Pyodide hands JavaScript a
+ * *proxy* standing in for the real Python object, and a proxy has to be
+ * destroyed explicitly once it's no longer needed, or Pyodide has no way
+ * to know it can free the memory — otherwise a small leak on every hover. */
 function docFor(name) {
   if (!tools || !inspectModule) return null;
   const obj = lookupLiveName(name);
@@ -67,6 +90,8 @@ function docFor(name) {
   }
 }
 
+/* Same idea as docFor, but for a function's signature (its name and
+ * parameter list) rather than its docstring. */
 function signatureFor(name) {
   if (!tools || !inspectModule) return null;
   const obj = lookupLiveName(name);
@@ -83,6 +108,10 @@ function signatureFor(name) {
   }
 }
 
+/* The Jedi counterpart to docFor: works on code that hasn't run yet, by
+ * reading the source text itself (via the _dewlab_hover_doc Python
+ * helper defined in JEDI_HELPER_SOURCE below) rather than looking up a
+ * live object. */
 function jediDoc(source, line, col) {
   if (!jediHoverFn) return null;
   try {
@@ -92,6 +121,7 @@ function jediDoc(source, line, col) {
   }
 }
 
+/* The Jedi counterpart to signatureFor. */
 function jediSignature(source, line, col) {
   if (!jediSignatureFn) return null;
   try {
@@ -114,6 +144,10 @@ function signatureHelp(name, source, line, col) {
   return signatureFor(name) || jediSignature(source, line, col);
 }
 
+/* Lists every name currently defined in the shared page namespace, for
+ * autocomplete — names starting with "_" (Python's own convention for
+ * "private, internal") are filtered out so autocomplete only offers
+ * things a student would actually want to type. */
 function pageNames() {
   if (!tools) return [];
   try {
@@ -123,6 +157,12 @@ function pageNames() {
   }
 }
 
+/* Real Python source code, defining two small helper functions on top of
+ * Jedi — the library that does static analysis of Python source (working
+ * out what a name probably refers to by reading the code, without
+ * running it). This string gets run once, in loadJedi() below, and the
+ * two functions it defines are then grabbed and kept in jediHoverFn/
+ * jediSignatureFn so JavaScript can call them directly afterward. */
 const JEDI_HELPER_SOURCE = `
 import jedi
 
@@ -146,6 +186,13 @@ def _dewlab_signature(source, line, col):
     return None
 `;
 
+/* Loads Jedi and parso (the parser Jedi depends on) and runs the helper
+ * source above. Called from boot() below, but deliberately not awaited
+ * there — Jedi is only needed for tooltips on code that hasn't run yet,
+ * so a student shouldn't have to wait for it before running their first
+ * cell. If it fails, autocomplete simply falls back to only offering
+ * names that already exist in the live namespace (lookupLiveName above),
+ * rather than breaking anything. */
 async function loadJedi() {
   try {
     await pyodide.loadPackage(["jedi", "parso"]);
@@ -158,6 +205,13 @@ async function loadJedi() {
   }
 }
 
+/* Starts Python from scratch: downloads and initializes Pyodide, loads
+ * the requested packages, loads tutorial_tools.py (giving cells access to
+ * show()/show_table()/check()/etc.), and sets up the shared page
+ * namespace every cell in this worker will run against. `msg` is the
+ * "boot" message from the page — see the fields it reads below for what
+ * the page side has to provide. Status updates are posted along the way
+ * so the page can show real progress rather than one long silent wait. */
 async function boot(msg) {
   post({ type: "status", text: "Starting Python…" });
   const { loadPyodide } = await import(/* @vite-ignore */ msg.pyodideBase + "pyodide.mjs");
@@ -193,6 +247,12 @@ tutorial_tools._page_globals["__name__"] = "__dewlab__"
   loadJedi();
 }
 
+/* Runs one cell's Python code. `emit` is the callback tutorial_tools.py's
+ * run_cell() calls every time the cell produces something (printed text,
+ * a table, an image) — each call here turns straight into an "output"
+ * message posted back to the page, which is what makes output appear
+ * *as the cell runs*, one piece at a time, rather than only after it
+ * finishes. */
 async function runCell(cellId, code) {
   const emit = (kind, cssClass, text, markup) => {
     post({ type: "output", cellId, kind, cssClass, text, markup });
@@ -221,19 +281,35 @@ async function runCell(cellId, code) {
  * available inside a Worker. IDBFS is the last-resort fallback for a
  * browser with neither. Whichever one is mounted, `mountedFs` holds the
  * `{syncfs}` handle fs-sync needs to flush pending writes back out. */
-let mountedFs = null;
+let mountedFs = null; // whatever mount object the active backend gave back, for fsSync() to use
 
+/* Connects a real folder on the student's computer (its handle was
+ * obtained on the main thread, via the folder picker, then sent here
+ * over postMessage — see the big comment above) to Pyodide's virtual
+ * filesystem at `mountpoint`. mkdirTree creates the mount point itself
+ * first, since Pyodide can't mount onto a path that doesn't exist yet. */
 async function fsMountNative(mountpoint, handle) {
   pyodide.FS.mkdirTree(mountpoint);
   mountedFs = await pyodide.mountNativeFS(mountpoint, handle);
 }
 
+/* The fallback for browsers without real-folder support: OPFS (Origin
+ * Private File System), storage the browser manages for this site alone.
+ * Unlike the native-folder handle, this worker can get OPFS's root
+ * directly for itself — no permission prompt, no main-thread round trip
+ * needed. */
 async function fsMountOpfs(mountpoint) {
   const opfsRoot = await navigator.storage.getDirectory();
   pyodide.FS.mkdirTree(mountpoint);
   mountedFs = await pyodide.mountNativeFS(mountpoint, opfsRoot);
 }
 
+/* The last-resort fallback: IDBFS, Pyodide's own filesystem backed by
+ * IndexedDB. Unlike the two mounts above, it needs an explicit two-way
+ * sync (FS.syncfs) rather than writing straight through — this mounts
+ * and does one immediate sync to pull in anything already saved, then
+ * hands back a matching syncfs function so fsSync() below knows how to
+ * push future changes back out. */
 async function fsMountIdbfs(mountpoint) {
   pyodide.FS.mkdirTree(mountpoint);
   pyodide.FS.mount(pyodide.FS.filesystems.IDBFS, {}, mountpoint);
@@ -251,6 +327,10 @@ async function fsMountIdbfs(mountpoint) {
   };
 }
 
+/* Flushes any pending filesystem changes out to real storage. A no-op
+ * for native-folder and OPFS backends (they write through immediately);
+ * essential for IDBFS, where a write only exists in Pyodide's in-memory
+ * copy until this actually runs. */
 async function fsSync() {
   if (mountedFs) await mountedFs.syncfs();
 }
@@ -263,6 +343,10 @@ function fsUnmount(path) {
   mountedFs = null;
 }
 
+/* Lists a directory's contents for the file-tree UI: name, whether it's
+ * a folder, and its size in bytes. "." and ".." (the filesystem's own
+ * self/parent entries) are filtered out first — the file tree has no use
+ * for them. */
 function fsList(path) {
   const names = pyodide.FS.readdir(path).filter((n) => n !== "." && n !== "..");
   return names.map((name) => {
@@ -271,20 +355,31 @@ function fsList(path) {
   });
 }
 
+/* Reads one file. Passing `encoding` (e.g. "utf8") gets a string back;
+ * omitting it gets raw bytes as a Uint8Array — what a binary/image file
+ * needs, and also what's needed here specifically because a Uint8Array
+ * is structured-cloneable, so it can travel back across postMessage to
+ * the page without any extra encoding step. */
 function fsRead(path, encoding) {
   return pyodide.FS.readFile(path, encoding ? { encoding } : undefined);
 }
 
+/* Writes (or overwrites) one file with `data` — a string or raw bytes. */
 function fsWrite(path, data) {
   pyodide.FS.writeFile(path, data);
 }
 
+/* Deletes a file or empty directory — checking which one first, since
+ * Pyodide's FS (like most filesystems) uses a different call for each,
+ * and using the wrong one raises an error instead of working. */
 function fsDelete(path) {
   const stat = pyodide.FS.stat(path);
   if (pyodide.FS.isDir(stat.mode)) pyodide.FS.rmdir(path);
   else pyodide.FS.unlink(path);
 }
 
+/* Creates a directory, including any missing parent directories along
+ * the way. */
 function fsMkdir(path) {
   pyodide.FS.mkdirTree(path);
 }
@@ -304,6 +399,12 @@ self.onmessage = async (ev) => {
       await boot(msg);
       respond("ok");
     } else if (msg.type === "set-interrupt-buffer") {
+      /* Hands Pyodide the shared memory the page will write into to
+       * request a Stop (see mini-ide-engine.js's requestInterrupt() for
+       * the page-side half of this). Pyodide checks this buffer
+       * periodically while Python code runs, so this one call is what
+       * makes the Stop button able to interrupt even a runaway loop —
+       * no response needed, since there's nothing to report back yet. */
       pyodide.setInterruptBuffer(new Int32Array(msg.buffer));
     } else if (msg.type === "run-cell") {
       respond(await runCell(msg.cellId, msg.code));

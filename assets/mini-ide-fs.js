@@ -42,6 +42,13 @@ const HANDLE_KEY = "native-dir-handle";
  * exists elsewhere in this codebase (dewlab has never needed one before
  * this), so this is a small purpose-built one, not a shared utility. */
 
+/* Opens (and, the very first time, creates) this module's own small
+ * IndexedDB database. IndexedDB's API is entirely callback-based —
+ * req.onsuccess/req.onerror rather than returning a Promise directly —
+ * so every function in this section wraps a request in `new Promise(...)`
+ * to make it awaitable like the rest of this codebase. onupgradeneeded
+ * only fires the very first time (or when DB_VERSION goes up), and is
+ * where the "table" (an IndexedDB "object store") actually gets created. */
 function idbOpen() {
   return new Promise((resolve, reject) => {
     const req = indexedDB.open(DB_NAME, DB_VERSION);
@@ -53,6 +60,9 @@ function idbOpen() {
   });
 }
 
+/* Reads one value by key, or null if nothing's stored under that key yet
+ * (`?? null` turns IndexedDB's own `undefined` for "not found" into an
+ * explicit null, easier to check for at the call site). */
 async function idbGet(key) {
   const db = await idbOpen();
   return new Promise((resolve, reject) => {
@@ -63,6 +73,11 @@ async function idbGet(key) {
   });
 }
 
+/* Stores (or overwrites) one value by key. Note this stores `value`
+ * directly — for this module's one real use (HANDLE_KEY), `value` is a
+ * FileSystemDirectoryHandle, which IndexedDB can store as-is because it's
+ * "structured-cloneable" (the same rule that decides what postMessage can
+ * send between a page and a worker). */
 async function idbSet(key, value) {
   const db = await idbOpen();
   return new Promise((resolve, reject) => {
@@ -73,6 +88,7 @@ async function idbSet(key, value) {
   });
 }
 
+/* Removes one stored value by key. */
 async function idbDelete(key) {
   const db = await idbOpen();
   return new Promise((resolve, reject) => {
@@ -89,6 +105,12 @@ async function idbDelete(key) {
 let backend = null;
 let onBackendChange = () => {};
 
+/* The one place `backend` is ever changed — kept as a single small
+ * function, rather than assigning the variable directly everywhere,
+ * specifically so onBackendChange always fires whenever it does. Anything
+ * that wants to react to the storage backend switching (Settings'
+ * storage-status section, for instance) only has to hook configure()
+ * once, rather than every function in this file remembering to notify. */
 function setBackend(name) {
   backend = name;
   onBackendChange(name);
@@ -108,6 +130,12 @@ export function configure(options = {}) {
   onBackendChange = options.onBackendChange || (() => {});
 }
 
+/* Tries the OPFS backend (second choice, after a real folder) and reports
+ * back with true/false rather than throwing, so doInit() below can just
+ * ask "did that work?" and fall through to IDBFS if not — OPFS support
+ * varies enough across browsers and browser versions that treating "not
+ * available" as a normal, expected outcome (not an error) keeps this
+ * simple. */
 async function mountOpfsIfSupported() {
   if (!("storage" in navigator) || typeof navigator.storage.getDirectory !== "function") return false;
   try {
@@ -136,12 +164,22 @@ export function init() {
   return initPromise;
 }
 
+/* The real body of init() — split into its own function so init() itself
+ * can stay a one-line "only ever do this once" guard (see below). Tries
+ * each backend in order of preference, stopping as soon as one works:
+ * a previously granted real folder, then OPFS, then IDBFS as the
+ * fallback of last resort. */
 async function doInit() {
   await engine.ensureBooted();
 
   const storedHandle = await idbGet(HANDLE_KEY).catch(() => null);
   if (storedHandle) {
     try {
+      /* queryPermission (unlike requestPermission) never shows a prompt —
+       * it only checks whether permission is *already* granted, which is
+       * safe to do without a user gesture. That's what makes it possible
+       * to silently reconnect a folder on page load, when the browser
+       * still remembers granting it. */
       const permission = await storedHandle.queryPermission({ mode: "readwrite" });
       if (permission === "granted") {
         await engine.mountNative(MOUNT_POINT, storedHandle);
@@ -219,11 +257,24 @@ export function reset() {
 
 /* --------------------------------------------------------- file access */
 
+/* Turns a path the rest of the app thinks in ("notes.txt", "data/x.csv",
+ * or even "" for the root) into the real, absolute path inside Pyodide's
+ * filesystem (e.g. "/mnt/mini-ide/data/x.csv"). Stripping leading and
+ * trailing slashes first means callers don't have to be careful about
+ * whether they pass "data/x.csv" or "/data/x.csv" or "data/x.csv/" — they
+ * all resolve the same way. Every exported function below runs its path
+ * through this before calling into mini-ide-engine.js, which is what lets
+ * the rest of the app work in terms of "files in my project" without
+ * knowing the mount point exists at all. */
 function resolvePath(relativePath) {
   const clean = String(relativePath || "").replace(/^\/+/, "").replace(/\/+$/, "");
   return clean ? `${MOUNT_POINT}/${clean}` : MOUNT_POINT;
 }
 
+/* Lists one directory's contents, sorted the way a file tree should look:
+ * folders before files, and alphabetically within each group — rather
+ * than in whatever order the underlying filesystem happens to return
+ * them, which isn't guaranteed to be any particular order at all. */
 export async function listDir(relativePath = "") {
   const entries = await engine.listDir(resolvePath(relativePath));
   return entries.sort((a, b) => {
@@ -240,16 +291,23 @@ export async function readFile(relativePath, encoding) {
   return engine.readFile(resolvePath(relativePath), encoding);
 }
 
+/* Writes a file, then schedules a debounced sync so the write actually
+ * reaches real storage (see the syncing section below — not every
+ * backend needs this, but every backend is safe to call it on). */
 export async function writeFile(relativePath, data) {
   await engine.writeFile(resolvePath(relativePath), data);
   scheduleSync();
 }
 
+/* Deletes a file (or empty folder), then schedules a sync — same reason
+ * as writeFile above: a delete is a change that needs to be persisted
+ * too. */
 export async function deleteFile(relativePath) {
   await engine.deleteFile(resolvePath(relativePath));
   scheduleSync();
 }
 
+/* Creates a folder, then schedules a sync. */
 export async function mkdir(relativePath) {
   await engine.mkdir(resolvePath(relativePath));
   scheduleSync();
@@ -263,6 +321,12 @@ export async function mkdir(relativePath) {
 
 let syncTimer = null;
 
+/* "Debouncing" means: if this gets called again before the timer fires,
+ * cancel the old timer and start a new one — so a burst of many calls in
+ * quick succession (a cell writing a hundred lines to a file in a loop)
+ * only actually syncs once, SYNC_DEBOUNCE_MS after the *last* one, rather
+ * than once per call. That keeps a busy cell from constantly stalling on
+ * filesystem syncs while it's still writing. */
 function scheduleSync() {
   clearTimeout(syncTimer);
   syncTimer = setTimeout(() => {
@@ -270,11 +334,21 @@ function scheduleSync() {
   }, SYNC_DEBOUNCE_MS);
 }
 
+/* Skips the debounce delay and syncs immediately — used when the page is
+ * about to go away (see the event listeners below) and there might not
+ * be SYNC_DEBOUNCE_MS of time left to wait for the normal scheduled sync
+ * to fire. */
 function flushSyncNow() {
   clearTimeout(syncTimer);
   engine.syncFs().catch(() => {}); // best-effort; nothing to do if it's too late
 }
 
+/* Two different "the student might be leaving" signals, covered together
+ * because neither one alone is reliable: beforeunload only fires for an
+ * actual close/navigate-away, not for switching tabs or minimizing the
+ * window (especially on mobile, where a backgrounded tab can be killed
+ * by the OS without beforeunload ever firing) — visibilitychange catches
+ * that case instead. Both just call the same best-effort flush. */
 window.addEventListener("beforeunload", flushSyncNow);
 document.addEventListener("visibilitychange", () => {
   if (document.visibilityState === "hidden") flushSyncNow();

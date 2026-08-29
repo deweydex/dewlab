@@ -50,10 +50,21 @@ let draggedId = null;
 
 // ---------------------------------------------------------------- storage
 
+/* A unique id for a new cell: the current time in base 36 (so ids sort
+ * roughly by creation order) plus a few random base-36 characters (so two
+ * cells created in the same millisecond still don't collide). Nothing
+ * here needs to be a "real" globally-unique id like a UUID — it only has
+ * to be unique among this one notebook's own cells. */
 function generateId() {
   return `cell-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
 }
 
+/* Reads the notebook back out of localStorage on page load. The
+ * `.filter(...)` step matters: it drops anything that doesn't look like
+ * a real cell (a corrupted entry, or one from some future version of
+ * this file with a cell type this version doesn't know about) rather
+ * than trusting whatever was stored — a cheap defense against a stray
+ * bad value crashing the whole notebook on load. */
 function loadSavedState() {
   try {
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
@@ -65,6 +76,16 @@ function loadSavedState() {
   }
 }
 
+/* Saves the notebook to localStorage. Note the `.map(({ id, type,
+ * content, output, error }) => ({...}))` step: by the time a cell has
+ * been rendered, it also carries live things like `.editor` (a CodeMirror
+ * instance) and `.outputEl` (a DOM element) — objects that
+ * `JSON.stringify` can't handle (they contain circular references back
+ * to themselves) and that don't belong in storage anyway, since they get
+ * rebuilt fresh every time the notebook renders. This picks out only the
+ * five plain-data fields worth keeping, the same "build a fresh plain
+ * object rather than serializing the live one directly" fix
+ * `assets/mini-ide.js`'s own `saveState()` needed for the same reason. */
 function saveState() {
   const plain = cells.map(({ id, type, content, output, error }) => ({ id, type, content, output: output || "", error: !!error }));
   try {
@@ -74,6 +95,11 @@ function saveState() {
 
 // ------------------------------------------------------------------- cells
 
+/* Inserts a new, empty cell at a specific position in the notebook (used
+ * by the "insert here" dividers between cells) and follows the pattern
+ * used everywhere in this file that changes `cells`: update the array,
+ * save it, re-render the page to match, then focus the thing that
+ * changed. */
 function insertCellAt(index, type, content = "") {
   const cell = { id: generateId(), type, content, output: "", error: false };
   cells.splice(index, 0, cell);
@@ -82,6 +108,9 @@ function insertCellAt(index, type, content = "") {
   focusCell(cell.id);
 }
 
+/* Adds a cell at the very end — what the toolbar's own "+ Python"/"+ Text"
+ * buttons call, as opposed to insertCellAt() directly for an in-between
+ * insert. */
 function addCell(type, content = "") {
   insertCellAt(cells.length, type, content);
 }
@@ -114,6 +143,10 @@ async function loadExampleCells() {
   await runAllCells();
 }
 
+/* Removes a cell. `.editor?.destroy()` matters: CodeMirror editors hold
+ * their own internal state and DOM listeners, and simply removing the
+ * wrapping element from the page wouldn't clean those up on its own —
+ * calling `.destroy()` first releases them properly. */
 function deleteCell(id) {
   const idx = cells.findIndex((c) => c.id === id);
   if (idx === -1) return;
@@ -124,6 +157,14 @@ function deleteCell(id) {
   updateStatus("Cell deleted.");
 }
 
+/* Scrolls to a cell, briefly highlights it (the `dm-focused` class, added
+ * then removed after 900ms), and puts the cursor in it — used after
+ * creating or restoring a cell so a student's eye is drawn to the thing
+ * that just changed. Which "put the cursor in it" call happens depends on
+ * the cell's current state: a live CodeMirror editor, a live text-cell
+ * textarea, or (if the text cell is currently showing its *rendered*
+ * form rather than the raw textarea) `showTextEditor()`, which switches
+ * it back to editable first. */
 function focusCell(id) {
   const el = cellsContainer?.querySelector(`.dm-cell[data-id="${id}"]`);
   const cell = cells.find((c) => c.id === id);
@@ -145,6 +186,17 @@ function escapeHtml(text) {
   return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
+/* Handles the "inline" formatting that can appear inside one line of
+ * text: `code`, **bold**, *italic*, and an attached image. Each
+ * `.replace(regex, ...)` call scans the whole string for one pattern and
+ * swaps in the matching HTML — chained one after another, so by the time
+ * this returns, every recognized pattern has been turned into markup.
+ * Order matters a little here (code before bold/italic, so something
+ * inside backticks isn't accidentally read as bold markers), but this
+ * function is deliberately simple: it's regex substitution, not a real
+ * parser, which is exactly right for the small, fixed set of things a
+ * documentation cell needs to format (see this section's own comment on
+ * why a full Markdown implementation isn't the goal here). */
 function renderDocInline(text) {
   return text
     .replace(/`([^`]+)`/g, "<code>$1</code>")
@@ -185,6 +237,18 @@ function pickImageFile(onDataUrl) {
   input.click();
 }
 
+/* Turns a whole text cell's raw content into rendered HTML, line by
+ * line. This is a small hand-written line-based parser: it walks the
+ * text one line at a time, keeping track of whether a bullet list or a
+ * paragraph is currently "open," and decides what to do based on what
+ * kind of line it just read (a heading, a bullet, a blank line, or plain
+ * text to add to the current paragraph). `para` collects the lines of an
+ * in-progress paragraph until something ends it (a blank line, a heading,
+ * a bullet, or the end of the text), at which point `flushPara()` joins
+ * them into one `<p>` and starts fresh. `closeList()` does the same job
+ * for a `<ul>` that's currently open. Calling `escapeHtml()` on the whole
+ * text *before* any of this runs is what keeps a student's literal `<` or
+ * `&` in their notes from being misread as real HTML. */
 function renderDocMarkdown(text) {
   const out = [];
   let listOpen = false;
@@ -270,12 +334,25 @@ function createInsertDivider(index) {
   return row;
 }
 
+/* Updates a cell's on-page "chrome" (right now, just whether it shows the
+ * error styling) to match its data, without a full re-render of the
+ * whole notebook — called after running a cell, when only that one
+ * cell's error state could possibly have changed. */
 function updateCellChrome(id) {
   const el = cellsContainer?.querySelector(`.dm-cell[data-id="${id}"]`);
   const cell = cells.find((c) => c.id === id);
   if (el && cell) el.classList.toggle("dm-error", !!cell.error);
 }
 
+/* Builds one cell's entire DOM tree from a plain `cell` data object —
+ * the header row (type pill, Run/Delete/image buttons), the editable
+ * area (a CodeMirror editor for a Python cell, a textarea plus a
+ * rendered-preview div for a text cell), and the output area. This is
+ * the one function that turns "data" into "pixels"; nothing else in the
+ * file builds a cell's markup directly. Everything it builds is wired
+ * with real event listeners right here too, so a fresh call to this
+ * function is enough to produce a fully working cell, ready to be
+ * dropped into the page by renderCells(). */
 function createCellElement(cell) {
   const wrap = document.createElement("div");
   wrap.className = `dm-cell dm-cell-${cell.type}`;
@@ -415,6 +492,10 @@ function createCellElement(cell) {
 
 // -------------------------------------------------------------- execution
 
+/* Whether the page currently reads as dark, taking the reader's explicit
+ * theme choice first and falling back to their operating system's own
+ * light/dark preference only when they've chosen "system" (no explicit
+ * `data-theme` attribute at all). */
 function isDarkNow() {
   const t = document.documentElement.getAttribute("data-theme");
   if (t === "dark") return true;
@@ -422,6 +503,10 @@ function isDarkNow() {
   return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
 }
 
+/* Fetches tutorial_tools.py's source once and keeps it in
+ * `toolsSourceCache` — needed twice (booting Pyodide, and building a
+ * standalone HTML export), and there's no reason to fetch the same file
+ * over the network a second time within one page visit. */
 async function getToolsSource() {
   if (toolsSourceCache) return toolsSourceCache;
   const res = await fetch("../assets/tutorial_tools.py");
@@ -430,6 +515,14 @@ async function getToolsSource() {
   return toolsSourceCache;
 }
 
+/* Starts Pyodide the first time it's actually needed (the first Run
+ * click), not when the page loads — downloading and starting a whole
+ * Python interpreter is slow, and a student reading or writing notes
+ * shouldn't have to wait for it if they never run a cell. `bootPromise`
+ * caches the boot *in progress*: a second call while still booting
+ * returns that same Promise rather than starting a second, wasted boot;
+ * once boot fails, the catch handler resets everything back to null so a
+ * later retry (a later Run click) gets a fresh attempt. */
 async function ensurePyodide() {
   if (pyodide && tools) return pyodide;
   if (bootPromise) return bootPromise;
@@ -479,6 +572,16 @@ function pageNamesCompletion(context) {
   return { from: word.from, options: names.map((label) => ({ label, type: "variable" })) };
 }
 
+/* Gets the docstring for a name that's already run, for CodeMirror's
+ * hover tooltip — using Python's own `inspect.getdoc`, the same thing
+ * behind Python's built-in `help()`. Unlike Mini IDE and the tutorial
+ * pages, dewmini runs Python directly on the main thread with no Worker,
+ * so there's no Jedi-based static-analysis fallback for code that hasn't
+ * run yet — only this live lookup (see this file's own "What's different
+ * from a tutorial page" note in docs/DEWMINI.md for why). The `finally`
+ * block's `.destroy()` call matters: Pyodide hands JavaScript a *proxy*
+ * standing in for the real Python object, and it has to be destroyed
+ * explicitly once no longer needed, or Pyodide can't free the memory. */
 function getDocForName(name) {
   if (!tools || !inspectModule || !/^[A-Za-z_]\w*$/.test(name)) return null;
   let obj;
@@ -497,6 +600,11 @@ function getDocForName(name) {
   }
 }
 
+/* Runs one cell's code through tutorial_tools.py's own run_cell() (the
+ * same function every dewlab tutorial cell runs through) and records
+ * what happened: the rendered output HTML (so it can be saved and shown
+ * again without re-running), and whether it errored. Returns whether the
+ * run succeeded, the same true/false run_cell() itself returns. */
 async function executeCell(cell) {
   await ensurePyodide();
   const outputEl = cell.outputEl;
@@ -512,6 +620,11 @@ async function executeCell(cell) {
   return ok;
 }
 
+/* Runs a single cell by id, in response to its own Run button or
+ * Shift+Enter. `running` is a simple flag guarding against overlapping
+ * runs — dewmini has one Python interpreter, so only one cell can
+ * actually be executing at a time; a click while something else is
+ * already running is just ignored rather than queued. */
 async function runCell(id) {
   if (running) return;
   const cell = cells.find((c) => c.id === id);
@@ -527,6 +640,14 @@ async function runCell(id) {
   }
 }
 
+/* Runs every Python cell in order, top to bottom — "Run all." Unlike
+ * runCell() for a single cell, this first calls
+ * `tools.reset_page_state()` and re-seeds the shared namespace: running
+ * every cell again from a clean slate is what makes "what's on screen
+ * matches what the code actually did" true even if, say, a variable a
+ * cell used to define got deleted from the notebook — without the
+ * reset, a stale value from a previous run could linger and mask that
+ * kind of mistake. */
 async function runAllCells() {
   if (running) return;
   const pythonCells = cells.filter((c) => c.type === CELL_TYPES.PYTHON);
@@ -561,6 +682,12 @@ async function runAllCells() {
 
 // -------------------------------------------------------------- downloads
 
+/* Reads the reader's chosen filename from Settings, cleaned up for use
+ * as an actual filename: any extension they typed is stripped (each
+ * download function adds its own), and characters that aren't valid in
+ * a filename on at least one common operating system (`\ / : * ? " < >
+ * |`) are replaced with a dash, so the same name works whether the
+ * download lands on Windows, macOS, or Linux. */
 function getFilenameBase() {
   const el = document.getElementById("dm-filename");
   let name = (el?.value || "").trim();
@@ -570,6 +697,10 @@ function getFilenameBase() {
   return name || "dewmini-notebook";
 }
 
+/* Restores a previously chosen filename (and keeps the browser tab title
+ * in sync with it as the reader types) — cosmetic, but it's what makes
+ * "print to PDF" and the download buttons suggest something more useful
+ * than a generic default name. */
 function initFilename() {
   const el = document.getElementById("dm-filename");
   if (!el) return;
@@ -583,6 +714,14 @@ function initFilename() {
   });
 }
 
+/* The standard trick for making the browser download a file that only
+ * ever existed in memory: a Blob wraps the content as an in-memory
+ * file-like object, `URL.createObjectURL` gives it a temporary URL the
+ * browser treats as a real download link, and a plain `<a download>`
+ * clicked programmatically triggers the download exactly as a real click
+ * would. `URL.revokeObjectURL` at the end releases that temporary URL
+ * once it's no longer needed. Every download function below (Python,
+ * ipynb, HTML) funnels through this one function. */
 function triggerDownload(filename, content, mime) {
   const blob = new Blob([content], { type: mime });
   const url = URL.createObjectURL(blob);
@@ -595,6 +734,10 @@ function triggerDownload(filename, content, mime) {
   URL.revokeObjectURL(url);
 }
 
+/* Joins every cell into one plain .py file: a Python cell's code goes in
+ * as-is, and a text cell's content gets turned into `#`-prefixed comment
+ * lines, so the whole notebook reads as one ordinary, runnable Python
+ * script — no special notebook format needed to open it. */
 function downloadAsPython() {
   if (!cells.length) { updateStatus("No cells to export.", "error"); return; }
   const parts = [`# dewmini export — ${new Date().toISOString().slice(0, 10)}`, ""];
@@ -611,11 +754,23 @@ function downloadAsPython() {
   updateStatus("Downloaded as Python.", "ok");
 }
 
+/* The Jupyter notebook format (.ipynb) stores a cell's source as a list
+ * of strings, one per line, where every line *except the last* keeps its
+ * own trailing "\n" — that's simply the convention real Jupyter itself
+ * uses when it saves a file. This function reproduces that exact shape:
+ * split on newlines, then put the "\n" back on every line except the
+ * final one, so a file downloaded from here looks the same, byte for
+ * byte in this respect, as one saved by actual Jupyter. */
 function splitLines(text) {
   const lines = text.split("\n");
   return lines.map((line, i) => (i < lines.length - 1 ? `${line}\n` : line));
 }
 
+/* Builds a real Jupyter notebook (nbformat 4) file: a Python cell becomes
+ * a "code" cell, a text cell becomes a "markdown" cell, in the exact JSON
+ * shape Jupyter, JupyterLab, and Colab all expect — so the file this
+ * produces opens correctly in any of them, and the same file loads back
+ * into dewmini via handleImportFile() below. */
 function downloadAsIpynb() {
   if (!cells.length) { updateStatus("No cells to export.", "error"); return; }
   const notebook = {
@@ -636,6 +791,12 @@ function downloadAsIpynb() {
   updateStatus("Downloaded as Jupyter Notebook.", "ok");
 }
 
+/* A small, self-contained stylesheet for the standalone HTML export
+ * below — deliberately not reusing dewlab's own site CSS, since the
+ * whole point of this export is one file that works completely on its
+ * own, with nothing else to fetch. `dark` picks one of two small colour
+ * palettes at build time, baking the reader's current theme choice into
+ * the exported file rather than making the export theme-aware itself. */
 function standaloneCss(dark) {
   const bg = dark ? "#14181f" : "#fdfcfa";
   const fg = dark ? "#e6e3dd" : "#1a1a1a";
@@ -665,6 +826,9 @@ function standaloneCss(dark) {
   `;
 }
 
+/* Builds and downloads a single .html file that can run this notebook
+ * completely on its own, without dewmini itself — see buildStandaloneHtml
+ * below for how that file actually works. */
 async function downloadAsHtml() {
   if (!cells.length) { updateStatus("No cells to export.", "error"); return; }
   updateStatus("Building the standalone file…");
@@ -680,6 +844,24 @@ async function downloadAsHtml() {
   }
 }
 
+/* Returns one complete HTML page, as a single big string, that can open
+ * by itself (double-click, no server needed) and run this notebook's
+ * cells the moment it opens. The trick that makes this possible: rather
+ * than the downloaded page fetching tutorial_tools.py or the cell data
+ * from anywhere, both are serialized with `JSON.stringify(...)` and
+ * embedded directly into the page's own `<script>` tag as JavaScript
+ * constants (`TOOLS_SRC`, `CELLS`). That's also why this needed
+ * `toolsSource` fetched ahead of time by the caller (downloadAsHtml,
+ * above) rather than fetched from inside this function — the exported
+ * page has no access back to dewlab's own files once it's been saved
+ * somewhere else on the reader's computer. Read this as a small, separate
+ * standalone program: everything inside the outer template literal's own
+ * `<script>...</script>` runs *in the downloaded file*, in the reader's
+ * browser, at some point in the future — not here, not now. It boots its
+ * own copy of Pyodide (the reason it needs an internet connection the
+ * first time it opens, even though it needs none after that) and runs
+ * every cell once, top to bottom, then stays exactly as it rendered —
+ * this is a read-only snapshot, not an editable copy of dewmini. */
 function buildStandaloneHtml(toolsSource, cellsData, dark, title) {
   const safeTitle = escapeHtml(title || "dewmini notebook");
   return `<!doctype html>
@@ -763,6 +945,9 @@ const PRACTICE_ORDER_KEY = "dewmini:practice-order";
 const PRACTICE_SHUFFLE_KEY = "dewmini:practice-shuffle";
 let practiceBank = null;
 
+/* Fetches dewlab's shared practice-problem bank once and caches it in
+ * `practiceBank`, the same "fetch once, reuse" shape as getToolsSource()
+ * above. */
 async function loadPracticeBank() {
   if (practiceBank) return practiceBank;
   const res = await fetch("practice-bank.json");
@@ -771,10 +956,18 @@ async function loadPracticeBank() {
   return practiceBank;
 }
 
+/* Which order Settings has this reader on: "sequential" (work through the
+ * bank one problem at a time) or "random." */
 function loadPracticeOrder() {
   try { return localStorage.getItem(PRACTICE_ORDER_KEY) === "random" ? "random" : "sequential"; } catch { return "sequential"; }
 }
 
+/* Builds an array [0, 1, 2, ..., n-1] and shuffles it into a random order
+ * using the Fisher–Yates shuffle: walk backward from the end, and at each
+ * position swap in a uniformly random earlier-or-equal element. This is
+ * the standard way to shuffle an array with every possible ordering
+ * equally likely — a naive "sort by Math.random()" approach, which might
+ * seem simpler, doesn't actually produce a fair shuffle. */
 function shuffledRange(n) {
   const arr = Array.from({ length: n }, (_, i) => i);
   for (let i = arr.length - 1; i > 0; i--) {
@@ -803,6 +996,13 @@ function nextRandomPracticeIndex(total, lastIdx) {
   return idx;
 }
 
+/* Picks the next practice problem's index, in whichever order Settings
+ * has chosen. The sequential branch's `((x % total) + total) % total` is
+ * a common trick for "modulo that's always non-negative": JavaScript's
+ * `%` operator can return a negative result for a negative input (unlike
+ * the mathematical definition of modulo), so this adds `total` back and
+ * takes `% total` a second time to guarantee a valid, non-negative index
+ * even if `lastIdx` were somehow negative. */
 function nextPracticeIndex(total) {
   let lastIdx = -1;
   try { lastIdx = parseInt(localStorage.getItem(PRACTICE_INDEX_KEY) || "-1", 10); } catch {}
@@ -846,6 +1046,14 @@ async function addPracticeProblem() {
   }
 }
 
+/* Reads a chosen .ipynb file and replaces the whole notebook with its
+ * cells — a Jupyter "code" cell becomes a Python cell, anything else
+ * (Jupyter's "markdown" cells) becomes a text cell. `Array.isArray(c.source)
+ * ? c.source.join("") : c.source || ""` handles the fact that nbformat
+ * allows a cell's source to be stored either as one string or as an
+ * array of line-strings (see splitLines() above for why Jupyter itself
+ * writes the array form) — this accepts either, so a file from any
+ * real Jupyter tool imports correctly either way. */
 async function handleImportFile(e) {
   const input = e.target;
   const file = input.files && input.files[0];
@@ -875,10 +1083,36 @@ async function handleImportFile(e) {
 
 // ------------------------------------------------------------- drag reorder
 
+/* Removes the "drop indicator" styling (a highlighted top/bottom edge)
+ * from whichever cell currently has it, before adding it to a new one —
+ * called on every dragover so only one cell ever shows the indicator at
+ * once. */
 function clearDropMarkers() {
   cellsContainer?.querySelectorAll(".dm-drop-before,.dm-drop-after").forEach((el) => el.classList.remove("dm-drop-before", "dm-drop-after"));
 }
 
+/* Wires up reordering cells by dragging their header. This uses the
+ * browser's built-in HTML5 Drag and Drop API, which works through four
+ * events fired in sequence as a drag happens:
+ *   - "dragstart" (on the thing being dragged): remembers which cell's
+ *     id is being dragged, in the module-level `draggedId` variable.
+ *   - "dragover" (fired repeatedly, on whatever the mouse is currently
+ *     over): must call `e.preventDefault()` — the browser's default
+ *     behavior is to *refuse* a drop unless something explicitly opts
+ *     in, so this is what makes dropping onto a cell allowed at all.
+ *     Also decides, from the mouse's vertical position within the
+ *     hovered cell, whether to show the drop indicator above or below
+ *     it (`before`, comparing the cursor's Y position to the cell's own
+ *     vertical midpoint).
+ *   - "dragend" (on the thing that was dragged, once the drag is over
+ *     however it ended): cleanup, whether or not a drop actually
+ *     happened.
+ *   - "drop" (on whatever the mouse was over when released): does the
+ *     actual reordering — removes the dragged cell from its old array
+ *     position and re-inserts it at the new one, using the exact same
+ *     "before or after the hovered cell" calculation dragover already
+ *     made.
+ */
 function setupDragAndDrop() {
   if (!cellsContainer) return;
 
@@ -939,6 +1173,13 @@ function setupDragAndDrop() {
 
 // ------------------------------------------------------------------ status
 
+/* Shows a short status message ("Ran.", "Cell deleted.", an error) in the
+ * small status line, and — unless it's an error, which stays until
+ * something else happens — clears it again after 3.5 seconds. The
+ * `if (statusEl.textContent === message)` check inside the timeout
+ * guards against a subtle bug: if a second status message arrives before
+ * the first one's timer fires, the first timer would otherwise clear the
+ * *second* message instead of leaving it alone. */
 function updateStatus(message, kind = "") {
   if (!statusEl) return;
   statusEl.textContent = message;
@@ -953,6 +1194,10 @@ function updateStatus(message, kind = "") {
 
 // ------------------------------------------------------------------ panels
 
+/* A small reusable version of the "toggle open/closed, and close the
+ * other one" pattern tutorial-runtime.js's Settings/cheat-sheet/nav
+ * panels use — generalized into one function here since dewmini only has
+ * the two panels (Settings and Help) to coordinate, rather than three. */
 function wireSimplePanel(panel, toggle, closeBtn, otherPanel) {
   if (!panel) return;
   toggle?.addEventListener("click", () => {
@@ -998,6 +1243,15 @@ function initPanels() {
 
 // ----------------------------------------------------------- shared texture
 
+/* This whole section — loadTexture/saveTexture/applyTexture/initTexture —
+ * is dewmini's own copy of the reading-preference settings (theme, font,
+ * size, and so on) shared with every other dewlab page, reading and
+ * writing the same "dewlab:texture" localStorage key so a choice made
+ * here follows a reader to a tutorial page and back. See
+ * docs/tutorial-runtime-explained.md's own notes on the identical
+ * functions there (the try/catch-around-localStorage convention, the
+ * `{...a, ...b}` merge-with-defaults pattern) for more detail than
+ * repeated here — the code is close to line-for-line the same. */
 const TEXTURE_DEFAULTS = { theme: "system", font: "serif", size: 18, width: 34, link: "#d4692a" };
 
 function loadTexture() {
@@ -1075,6 +1329,14 @@ function initTexture(onThemeChange) {
 
 // ------------------------------------------------------------ editor prefs
 
+/* Same load/save/apply/init shape as the texture section above, for a
+ * different set of preferences: how code itself is displayed (its own
+ * size, how roomy a cell feels, cursor thickness, gutter/current-line
+ * visibility) rather than how the page's reading text looks. These are
+ * dewmini/Mini-IDE-specific — a plain tutorial page has no code editor
+ * settings of its own, since a tutorial's cells are meant to look
+ * consistent between students, not customized per reader the way a
+ * personal notebook's editor reasonably can be. */
 const EDITOR_DEFAULTS = { codeSize: 15, density: "cozy", cursor: "medium", gutter: "on", activeLine: "on" };
 const EDITOR_KEY_MAP = { density: "density", cursor: "cursor", gutter: "gutter", activeline: "activeLine" };
 
@@ -1171,6 +1433,8 @@ function maybeHighlightExample() {
   btn.addEventListener("animationend", () => btn.classList.remove("dm-pulse"), { once: true });
 }
 
+/* Wires up the Settings → Practice "in order / random" switch — the UI
+ * counterpart of loadPracticeOrder()/nextPracticeIndex() above. */
 function initPracticeOrderSettings() {
   const panel = document.getElementById("dl-settings-practice");
   const group = panel?.querySelector('.dl-seg[data-dm="practice-order"]');
@@ -1190,6 +1454,12 @@ function initPracticeOrderSettings() {
 
 // -------------------------------------------------------------- chrome/misc
 
+/* Measures the header's real on-screen height and publishes it as a CSS
+ * custom property, so other elements can reliably sit below it — same
+ * function, same reasoning, as tutorial-runtime.js's own
+ * trackChromeHeight() (see that file's explanation doc for the longer
+ * version of why this is measured rather than assumed to be a fixed
+ * number). */
 function trackChromeHeight() {
   const chrome = document.getElementById("dl-chrome");
   if (!chrome) return;
@@ -1201,6 +1471,16 @@ function trackChromeHeight() {
   else window.addEventListener("resize", publish);
 }
 
+/* Keeps every CodeMirror editor's own colour theme in sync with the
+ * page's theme, even when the theme changes for a reason this file
+ * didn't cause directly — a MutationObserver is a browser API that calls
+ * a function whenever something about a specific element changes (here,
+ * any attribute on `<html>`); this only reacts when the change was
+ * specifically to `data-theme`, and re-applies the right editor theme to
+ * every cell's editor when it was. This is a belt-and-braces safety net
+ * on top of initTexture()'s own onThemeChange callback — that callback
+ * already handles the normal case of a reader clicking a theme button in
+ * Settings; this one exists in case the theme changes some other way. */
 function observeThemeChanges() {
   const observer = new MutationObserver((mutations) => {
     if (!mutations.some((m) => m.attributeName === "data-theme")) return;
@@ -1210,6 +1490,9 @@ function observeThemeChanges() {
   observer.observe(document.documentElement, { attributes: true });
 }
 
+/* Wires up every toolbar and Settings button that doesn't already have
+ * its own dedicated init*() function above — one line per button, each
+ * just calling the one function that actually does the work. */
 function wireToolbar() {
   document.getElementById("add-python-cell")?.addEventListener("click", () => addCell(CELL_TYPES.PYTHON));
   document.getElementById("add-text-cell")?.addEventListener("click", () => addCell(CELL_TYPES.TEXT));

@@ -47,6 +47,14 @@ MAIN_SERIES = "maths-and-programming"
 
 
 def in_the_main_series(tutorial) -> bool:
+    """Whether a tutorial belongs on the main sequence diagram — the
+    module and series this whole report is really about (see
+    `MAIN_MODULE`/`MAIN_SERIES` above), and has a real position in it
+    (`tutorial.order` is 0, falsy, for anything a series' `.order.yaml`
+    file doesn't list). Used to filter out reflections, practice pages,
+    and anything from a different module before drawing the sequence
+    graph, so it only ever shows the one series it's meant to describe.
+    """
     return bool(
         tutorial.order
         and tutorial.module == MAIN_MODULE
@@ -64,6 +72,13 @@ class MapError(Exception):
 
 
 def anchor_for(heading: str) -> str:
+    """Turns a heading's text into the same anchor id build.py's own
+    Markdown-to-HTML conversion would give it (lowercase, punctuation
+    stripped, spaces turned to hyphens) — so a link this script generates
+    to `#some-heading` actually lands on the right place in the real
+    built page. This has to match `build.py`'s own slugify behaviour
+    exactly, or the links this file generates would be silently wrong.
+    """
     slug = PUNCTUATION_RE.sub("", heading).strip().lower()
     return re.sub(r"[-\s]+", "-", slug)
 
@@ -87,6 +102,10 @@ class Tutorial:
 
     @property
     def url(self) -> str:
+        """The tutorial's real, live URL on the hosted site — every link
+        this script generates (in a table, in a diagram node) points
+        here, which is what makes the curriculum map into a real way of
+        finding where something is taught, not just a report about it."""
         return f"{SITE}/tutorials/{self.module}/{self.slug}.html"
 
 
@@ -98,6 +117,13 @@ class Outcome:
 
 
 def load_outcomes() -> tuple[dict[str, Outcome], dict]:
+    """Reads `planning/curriculum/outcomes.yaml` — every learning outcome
+    the two QQI module descriptors define — into a lookup dict keyed by
+    outcome code, plus the raw per-module metadata (titles, section
+    names) the report also needs. Raises `MapError` if the same outcome
+    code appears twice, since that would silently make one of the two
+    invisible to the rest of this script.
+    """
     data = yaml.safe_load(OUTCOMES.read_text())
     outcomes = {}
     for entry in data["outcomes"]:
@@ -142,6 +168,16 @@ def newest_live(paths: list[Path]) -> set[Path]:
 
 
 def load_tutorials(known: dict[str, Outcome]) -> list[Tutorial]:
+    """Reads every current tutorial's frontmatter and `covers:` claims
+    into a list of `Tutorial` objects — this script's own equivalent of
+    `build.py`'s `load()`, but reading only what the curriculum map
+    needs (not the full HTML rendering pipeline) and validating an
+    additional thing build.py doesn't check: that every anchor and
+    outcome code a tutorial claims to cover actually exists. Skips
+    frozen old releases (`newest_live()` decides which file answers for
+    each tutorial), practice-only pages, and archived tutorials — none
+    of those should appear as "where this outcome is taught."
+    """
     tutorials = []
     sources = sorted(TUTORIALS.rglob("*.md"))
     current = newest_live(sources)
@@ -299,10 +335,17 @@ def status_of(entry: dict, code: str = "", scope: dict | None = None) -> str:
 
 
 def section_link(tutorial: Tutorial, section: Section) -> str:
+    """One Markdown link straight to a specific section of a specific
+    tutorial — the small building block behind every "where is this
+    taught" cell in the generated tables."""
     return f"[{tutorial.title} — {section.heading}]({tutorial.url}#{section.anchor})"
 
 
 def strand_table(outcomes, found, scope) -> str:
+    """Builds the "By strand" summary table: one row per strand (a
+    grouping of related outcomes), counting how many of its outcomes
+    fall into each status (taught, partial, touched, absent, excluded).
+    """
     strands: dict[str, list[str]] = {}
     for code, outcome in outcomes.items():
         strands.setdefault(outcome.strand, []).append(code)
@@ -533,6 +576,12 @@ PROPOSED = ROOT / "planning" / "curriculum" / "proposed.yaml"
 
 
 def load_proposals() -> list[dict]:
+    """Reads `planning/curriculum/proposed.yaml` — tutorials that don't
+    exist yet but are planned, and which outcomes they'd cover — or an
+    empty list if that file doesn't exist yet at all (a repository with
+    no proposals written down is a perfectly normal state, not an
+    error).
+    """
     if not PROPOSED.is_file():
         return []
     return (yaml.safe_load(PROPOSED.read_text()) or {}).get("proposed") or []
@@ -616,6 +665,9 @@ def proposal_graph(tutorials: list[Tutorial], proposals: list[dict]) -> str:
 
 
 def proposal_table(proposals: list[dict], outcomes) -> str:
+    """Builds the "What is missing, and where it would go" table listing
+    every proposed-but-not-yet-written tutorial: what it would go after,
+    which outcome codes it would close, and its rough size."""
     rows = ["| Proposed | Goes after | Closes | Size |", "|---|---|---|---|"]
     for proposal in proposals:
         codes = ", ".join(f"`{c}`" for c in proposal.get("covers") or [])
@@ -632,6 +684,16 @@ def proposal_table(proposals: list[dict], outcomes) -> str:
 # ------------------------------------------------------------------ document
 
 def render() -> str:
+    """Builds the entire `planning/CURRICULUM_MAP.md` document, as one
+    big string, by calling essentially every other function in this file
+    in turn and assembling their output into `parts` (a list of text
+    chunks, joined with newlines at the very end — building a big string
+    this way, by appending pieces to a list and joining once, is more
+    efficient than repeatedly concatenating strings with `+`). This is
+    the one function that decides the document's actual structure and
+    section order; every function above it computes one piece of content,
+    and this is where those pieces get assembled into the final report.
+    """
     outcomes, modules = load_outcomes()
     tutorials = load_tutorials(outcomes)
     found = coverage(outcomes, tutorials)
@@ -799,6 +861,13 @@ def render() -> str:
 
 
 def main() -> int:
+    """The command-line entry point. In its normal mode, generates the
+    map and writes it to `planning/CURRICULUM_MAP.md`. In `--check` mode
+    (what CI actually runs), it generates the map in memory and compares
+    it against what's currently committed — failing loudly if they don't
+    match, which is what keeps the committed file from silently drifting
+    out of sync with the tutorials it's supposed to describe.
+    """
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "--check", action="store_true",

@@ -1,126 +1,220 @@
-# Project Implementation Status & Technical Roadmap
+# Status
 
-This document provides a factual record of completed implementations, active development items, roadmap milestones, and complex architectural considerations in dewlab.
+What's actually built, what's still open, and the trickier design
+decisions behind the parts that are done. This is a factual record, kept
+current as things change — not a pitch.
 
 ---
 
-## 1. What Has Been Built (Completed)
+## 1. What's built
 
-The following components, runtime engines, and curriculum modules are fully implemented, tested, and verifiable in the repository:
+### Core runtime (`assets/`, `setup/`, `data/`)
+- **Pyodide in the browser**: real Python, running client-side, with
+  `numpy`, `pandas`, `matplotlib`, and `sympy` available (`assets/tutorial-runtime.js`).
+- **The tools bridge**: `show`, `show_table`, `check`, `text_input`,
+  `dropdown`, `button`, and `load_csv`, all defined once in
+  `assets/tutorial_tools.py`.
+- **Trimmed tracebacks**: an error a student causes is trimmed down to
+  their own line, not buried under dewlab's own plumbing.
+- **Saved work**: a student's code and its last output persist in the
+  browser, keyed to `(module, slug)` — no server, no tracking.
+- **Saved work across versions**: a tutorial with more than one release
+  restores a student's answers by matching cell id, so an edit that
+  doesn't touch a cell's id never loses what was written there.
 
-### Core Runtime & Client Architecture (`assets/`, `setup/`, `data/`)
-- **Pyodide Browser-Side Python Runtime**: Zero-install local Python execution in the browser tab with built-in support for `numpy`, `pandas`, `matplotlib`, and `sympy` (`assets/tutorial-runtime.js`).
-- **Interactive Tools & Widget Bridge**: Python-side helper library providing `show`, `show_table`, `check`, `text_input`, `dropdown`, `button`, and `load_csv` (`assets/tutorial_tools.py`).
-- **Clean Exception Traceback Formatting**: Exception handler in runtime tools that trims internal framework frames, presenting students with clear, unintimidating syntax errors and line-accurate tracebacks.
-- **Client-Side Progress Persistence**: Local storage state persistence strictly scoped by `(module, slug)` pair, saving student code and execution outputs across browser sessions without central servers or tracking.
-- **Deterministic Multi-Version State Restoration**: Version-aware progress restoration matching stable per-cell IDs, preserving student work across tutorial releases.
+### The build (`build.py`, `dev/`)
+- **Frontmatter and cell parsing**: `python exec` fences, `hint:`,
+  `{{include: ...}}`.
+- **Maths pulled out before Markdown sees it**, so `$a_i$` never comes
+  back with the subscript read as emphasis.
+- **Link validation**: a `tutorial:slug#anchor` link that doesn't
+  resolve fails the build — never a dead link on a live page.
+- **Multiple releases**: the newest live release serves the plain URL;
+  every past release stays reachable, frozen, at its own dated address.
+- **Downloadable copies**: a standalone single-file HTML per tutorial,
+  and a zip per series, both in `site/download/`.
 
-### Static Site Generator & Build Pipeline (`build.py`, `dev/`)
-- **Markdown & Frontmatter Engine**: Robust parsing of tutorial frontmatter, executable code fences (`python exec`), hints (`hint:`), and include directives (`{{include: ...}}`).
-- **LaTeX Math Pre-Processing**: Extraction of LaTeX math blocks before Markdown parsing to prevent character collisions, rendering in the browser via KaTeX.
-- **Cross-Tutorial & Conceptual Link Validation**: Build-time resolution of `tutorial:<slug>#<anchor>` and `topic:<outcome-code>` links with automated build failure on dead references.
-- **Multi-Version Static Generation**: Build pipeline generating canonical unversioned pages for the latest live release, alongside timestamped historical release pages (`<slug>/v<version>.html`) with search engine canonical tags.
-- **Offline Standalone Bundles**: Automated compilation of standalone, single-file HTML tutorials and per-series ZIP archives (`site/download/`).
+### UI and navigation (`assets/`, `shell.html`, `tree.html`, `editor.html`)
+- **The reading surface**: serif prose, generous margins, and reader
+  controls for theme, font, size, and line width.
+- **Contents and navigation**: an auto-built table of contents (with
+  repeated sub-headings filtered out), a sticky masthead, module order
+  from `tutorials/modules.yaml`.
+- **The topic tree**: a visual map of outcomes, their prerequisites, and
+  which tutorial teaches each one, with pan/zoom (`assets/tree.js`).
+- **The authoring editor**: a browser-based tool that reads and writes
+  tutorials through GitHub's API — series reordering, frontmatter
+  editing, a warning before a cell-id change strands saved work,
+  structural checks, and opening a pull request. Its prose surface is a
+  Milkdown (Crepe preset) block editor, vendored the same way CodeMirror
+  and KaTeX are — see `REPO_AND_EDITOR.md` and `ARCHITECTURE.md` §3.
+- **Progress indicators**: a contents-page badge per tutorial, and a
+  plain summary line in a tutorial's own Settings (`PROGRESS_INDICATORS.md`,
+  DECISIONS_LOG.md 7.70).
+- **Student notes**: a free-text field saved alongside a tutorial's
+  cells, distinct from the author-written pedagogical notes described in
+  `SIDEBAR_CONTENT.md` (`STUDENT_NOTES.md`, DECISIONS_LOG.md 7.72/7.75).
+- **Cell tooltips**: hover docs and signature help that cover Python
+  builtins, not just a student's own names, falling back to Jedi's
+  static analysis for code that hasn't run yet — live always wins when
+  both have an answer (`CELL_TOOLTIPS.md`, DECISIONS_LOG.md 7.76).
+- **A genuine Stop button**: on the hosted site, Pyodide runs inside a
+  Web Worker (`assets/pyodide-worker.js`), so a truly stuck loop can
+  still be interrupted via a real `SharedArrayBuffer` — see
+  `CELL_CONTROLS.md` §2 and DECISIONS_LOG.md 7.77. The offline
+  standalone export keeps Pyodide on the main thread and has no Stop
+  button, on purpose (`ARCHITECTURE.md` §4).
 
-### User Interface & Navigation System (`assets/`, `shell.html`, `tree.html`, `editor.html`)
-- **Responsive Reading Surface**: Accessible typography, serif prose base, distraction-free margins, and custom reader texture controls (light/dark/auto themes, font families, line-width scaling, minimal header mode).
-- **Table of Contents & Navigation**: Dynamic table of contents with automatic filtering of repetitive prompts, sticky mastheads, and declared module ordering (`tutorials/modules.yaml`).
-- **Interactive Curriculum Dependency Tree**: Visual graph viewer displaying learning outcome strands, prerequisite dependencies, zoom/pan navigation, and direct tutorial links (`assets/tree.js`, `assets/tree.html`).
-- **GitHub API-Backed Visual Authoring Editor**: Browser-based management interface supporting series reordering, tutorial creation, frontmatter editing, cell-ID mutation warnings, structural linting, and release publishing via GitHub API pull requests (`assets/editor.js`, `assets/editor.html`). The prose-editing surface itself is a Milkdown (Crepe preset) block editor, vendored via `vendor-src/` the same way CodeMirror and KaTeX are — the design `REPO_AND_EDITOR.md` specified for editor v1, in place of the plain `<textarea>` it shipped with until this was built.
-- **Progress Indicators**: A contents-page badge per tutorial (done/errored/not-started, read from the same saved-progress record autosave already writes) and a plain summary line in a tutorial's own Settings panel, both built as `planning/PROGRESS_INDICATORS.md` designed them (DECISIONS_LOG.md 7.70).
-- **Student Notes**: A free-text notes field riding on the same per-tutorial saved-progress record and export/import path as cell code, distinct from a tutorial's own author-written pedagogical notes (`planning/SIDEBAR_CONTENT.md`). Built per `planning/STUDENT_NOTES.md` in full: the plain version (DECISIONS_LOG.md 7.72) and the export-button staleness marker (7.75), opt-out via a Settings toggle.
-- **Cell Tooltips**: Hover docs and signature help now cover Python builtins (not just a student's own defined names), signature help appears while typing a call with the current argument bolded, and both fall back to Jedi's static analysis for a name that has never been executed — live-interpreter answers always take priority when both have one. Built per `planning/CELL_TOOLTIPS.md` in full — options (a), (b), and (c) together (DECISIONS_LOG.md 7.76).
-- **Genuine Stop Button**: On the hosted site, Pyodide runs inside a module Web Worker (`assets/pyodide-worker.js`) rather than the main thread, so a truly blocking Python loop can still be interrupted — `pyodide.setInterruptBuffer()` against a real `SharedArrayBuffer`, enabled via a vendored `coi-serviceworker` shim supplying the cross-origin-isolation headers GitHub Pages cannot set directly. The Run button becomes Stop only when `dewlab.canStop()` confirms isolation has actually landed for the page. The offline standalone export keeps the prior main-thread path and has no Stop button. Built per `planning/CELL_CONTROLS.md` §2 (DECISIONS_LOG.md 7.77).
+### Mini IDE and dewmini (`assets/mini-ide.*`, `compose/dewmini.*`)
+Two Python workspaces with no tutorial attached — see
+`MINI_IDE_REDESIGN.md` for the full plan and `ARCHITECTURE.md` §4 for
+how they're built.
 
-### Comprehensive Curriculum Modules (`tutorials/`)
-- **71 Published Tutorial & Practice Pages** — 35 tutorials, 32 practice pages
-  (one per tutorial, except the three that are already problems or reflection),
-  and 4 mixed sets drawing on several tutorials at once. See
-  `planning/EXERCISES.md` for where the problems came from.
-  - `computational-methods` (2 tutorials, 2 practice pages): `first-steps.md`,
-    `working-with-tables.md`.
+- **Mini IDE**: rebuilt on the same Worker-based engine tutorial pages
+  use (`assets/mini-ide-engine.js`, a client of
+  `assets/pyodide-worker.js`), giving it a genuine Stop button and real
+  Jedi-backed autocomplete in place of the hardcoded stub it shipped
+  with originally. A filesystem layer (`assets/mini-ide-fs.js`) mounts a
+  real local folder (File System Access API), OPFS, or IDBFS — whichever
+  the browser supports — behind one interface, so the file manager, SQL
+  support (`sqlite3` against a mounted `.db` file), and file uploads all
+  work the same way regardless of backend. `.ipynb`/`.py` import and a
+  folder-based, offline-capable downloadable bundle
+  (`write_mini_ide_bundle()` in `build.py`) round it out.
+- **dewmini**: a smaller, quieter cousin — the same
+  `tutorial_tools.py`, but Pyodide stays on the main thread always (no
+  Worker, no Stop button), by design: dewmini is for something quick,
+  and a project that outgrows that moves to Mini IDE.
+
+### Documentation and code comments
+Every substantial code file has detailed, teaching-oriented inline
+comments and a matching `docs/<file>-explained.md` walking through its
+structure — `CONTRIBUTING.md` makes keeping both current a standing
+requirement for future changes, the same way the build already enforces
+that links and folds can't go stale.
+
+### Curriculum modules (`tutorials/`)
+- **71 published tutorial and practice pages** — 35 tutorials, 32
+  practice pages (one per tutorial, except the three that are already
+  problems or reflection), and 4 mixed sets drawing on several tutorials
+  at once. See `EXERCISES.md` for where the problems came from.
+  - `computational-methods` (2 tutorials, 2 practice pages):
+    `first-steps.md`, `working-with-tables.md`.
   - `mit-pdp-maths-prog-integration` (67 tutorial and practice files):
-    - *Foundations & Programming Spine*: `first-steps.md`, `storing-and-computing.md`, `making-decisions.md`, `repeating-yourself.md`, `lists-and-sequences.md`, `finding-things.md`, `putting-things-in-order.md`, `building-reusable-tools.md`, `how-we-got-here.md`, `when-it-goes-wrong.md`, `the-team-project.md`.
-    - *Discrete Math & Statistics*: `counting-carefully.md`, `what-are-the-chances.md`, `making-sense-of-data.md`, `pictures-worth-numbers.md`, `numbers-and-their-families.md`, `sets-as-sorted-lists.md`, `logic-and-truth.md`, `venn-diagrams.md`.
-    - *Algebra, Functions & Calculus*: `expressions-come-alive.md`, `cracking-equations.md`, `rearranging-formulae.md`, `complex-roots.md`, `drawing-functions.md`, `parabolas.md`, `approaching-a-limit.md`, `rates-of-change.md`.
-    - *Geometry & Trigonometry*: `lines-and-distances.md`, `the-unit-circle.md`, `sine-and-cosine-waves.md`, `solving-triangles.md`.
-    - *Synthesis & Review*: `bringing-it-all-together.md`, `critique-and-reflection.md`.
-    - *Interactive Practice Companions*: one `<slug>-practice.md` beside every
-      tutorial above except `bringing-it-all-together`, `critique-and-reflection`
-      and `the-team-project`.
+    - *Foundations & Programming Spine*: `first-steps.md`,
+      `storing-and-computing.md`, `making-decisions.md`,
+      `repeating-yourself.md`, `lists-and-sequences.md`,
+      `finding-things.md`, `putting-things-in-order.md`,
+      `building-reusable-tools.md`, `how-we-got-here.md`,
+      `when-it-goes-wrong.md`, `the-team-project.md`.
+    - *Discrete Math & Statistics*: `counting-carefully.md`,
+      `what-are-the-chances.md`, `making-sense-of-data.md`,
+      `pictures-worth-numbers.md`, `numbers-and-their-families.md`,
+      `sets-as-sorted-lists.md`, `logic-and-truth.md`,
+      `venn-diagrams.md`.
+    - *Algebra, Functions & Calculus*: `expressions-come-alive.md`,
+      `cracking-equations.md`, `rearranging-formulae.md`,
+      `complex-roots.md`, `drawing-functions.md`, `parabolas.md`,
+      `approaching-a-limit.md`, `rates-of-change.md`.
+    - *Geometry & Trigonometry*: `lines-and-distances.md`,
+      `the-unit-circle.md`, `sine-and-cosine-waves.md`,
+      `solving-triangles.md`.
+    - *Synthesis & Review*: `bringing-it-all-together.md`,
+      `critique-and-reflection.md`.
+    - *Interactive Practice Companions*: one `<slug>-practice.md` beside
+      every tutorial above except `bringing-it-all-together`,
+      `critique-and-reflection`, and `the-team-project`.
     - *Mixed Problem Sets*: `mixed-programming.md`, `mixed-algebra.md`,
-      `mixed-trigonometry.md`, `mixed-data.md` — problems that draw on several
-      tutorials at once, declared with `practice_across:` and listed on the
-      contents page under their module.
+      `mixed-trigonometry.md`, `mixed-data.md`.
 
-### Curriculum Coverage Status (`planning/CURRICULUM_MAP.md`)
-- **100% of Descriptor Outcomes Covered**: All 67 learning outcomes across *Mathematics for IT (5N18396)* and *Programming and Design Principles (5N2927)* are fully authored, mapped, and tested with zero gaps.
-
----
-
-## 2. Active Roadmap & Next Phases
-
-### Phase 7: Computational Methods (5N0554) Curriculum Expansion
-- **Objective**: Full curriculum specification, mapping, and authoring for *Computational Methods and Problem Solving 5N0554* (15 credits, 13 learning outcomes across 7 sections).
-- **Status, as of the run that closed the first strand**: all 13 outcomes are
-  transcribed into `outcomes.yaml` under a new `CMPS` module, with the
-  descriptor's own "e.g." examples moved to `topics.yaml`'s `uses:` rather than
-  folded into what coverage is measured against (DECISIONS_LOG 7.55). The
-  first target strand is written and released; the other four are not.
-- **Target Strands**:
-  1. *Linear Algebra & Matrix Operations*: **done.** Six tutorials —
-     *A Grid of Numbers*, *Multiplying Grids*, *What a Matrix Does to a
-     Picture*, *Undoing It*, *Solving Systems*, *Where Chains Lead* — under
-     `tutorials/computational-methods/`, series `matrices`, each with a
-     practice page. `Where Chains Lead` folds in Markov chains, word-level
-     text generation, and a worked small-scale PageRank, closing what were
-     planned as strands 1 and 2 (and part of 3) into one series — see
-     `planning/outlines/matrices.md`'s resolved open question and
-     DECISIONS_LOG 7.56. `CMPS-LO4` is fully taught; `CMPS-LO1` and `CMPS-LO2`
-     are touched but not taught, since only the data-structures half of LO1
-     and the randomness half of LO2 came up along the way.
-  2. *Markov Chains & Text Generation*: **folded into strand 1** — see above,
-     rather than written as a separate strand.
-  3. *Link Graph Analysis & PageRank*: **partly done**, as the closing section
-     of *Where Chains Lead* — a hand-checkable three-page example rather than
-     a dedicated tutorial on crawling or a real link graph, which remains
-     unwritten.
-  4. *Discrete Simulation & Monte Carlo Methods*: **not started.** Estimation
-     of $\pi$, queuing models, randomness in computing — this is `CMPS-LO3`,
-     `CMPS-LO6`, and touches `CMPS-LO2`'s randomness half.
-  5. *Algorithmic Complexity & Systems Modeling*: **not started.** Complexity
-     bounds, cache prediction, thermal simulation — `CMPS-LO5`, `CMPS-LO7`
-     through `CMPS-LO13`, all still red on the curriculum map.
-
-### Phase 8: Automated Worksheet Practice Converter (`dev/from_worksheet.py`)
-- **Status**: on hold, and possibly not needed. The worksheets whose material is
-  taught have already been converted by hand; the ones that remain (`07a`–`08b`,
-  matrices, Markov chains, Bayes, distributions) cover material no tutorial
-  teaches yet, and six of those carry their answer keys only as PDFs. The
-  converter has nothing to convert until Phase 7 is written.
-
-### Phase 9: Dynamic Student-Authored Runtime Cells (`planning/PRACTICE.md`)
-- **Objective**: Implement client-side dynamic cell insertion in `assets/tutorial-runtime.js`, allowing students to author custom practice challenges, write verification tests, and export them as JSON snippets for peer exchange.
-
-### Phase 10: Automated CI/CD Deployment
-- **Status**: done. `.github/workflows/deploy.yml` builds and publishes the
-  148-page site to GitHub Pages on every push to `main`, and has since Phase 5.
-  Two further workflows guard it: `tests` runs the unit suite, and
-  `standalone-bundle-is-current` fails if the vendored bundle has drifted from
-  `vendor-src/`.
+### Curriculum coverage (`CURRICULUM_MAP.md`)
+All 67 learning outcomes across *Mathematics for IT (5N18396)* and
+*Programming and Design Principles (5N2927)* are written, mapped, and
+tested — no gaps in either descriptor.
 
 ---
 
-## 3. Pedagogical & Technical Complexities
+## 2. What's still open
 
-### 1. Data Contracts on Live Cohort Launch
-- **Pedagogical Rationale**: Students returning to a tutorial over a multi-month course must never experience lost work or broken progress indicators.
-- **Implementation Guarantee**: Storage keys are strictly scoped to `dewlab:progress:<module>:<slug>`, and all cell IDs are immutable once published. The authoring editor actively intercepts and warns against cell ID modifications.
+### Computational Methods (5N0554) curriculum
+Full curriculum specification, mapping, and authoring for
+*Computational Methods and Problem Solving 5N0554* (15 credits, 13
+learning outcomes across 7 sections).
 
-### 2. Multi-Version Isolation
-- **Pedagogical Rationale**: Cohorts working in an earlier version (e.g. `2026.08.20.1`) should experience an undisturbed, stable environment throughout their term, even as new revisions are released.
-- **Implementation Guarantee**: Canonical unversioned URLs serve the latest release, while returning students are automatically pinned to their last active working release with clear, deterministic carryover counts.
+As of the run that closed the first strand: all 13 outcomes are
+transcribed into `outcomes.yaml` under a new `CMPS` module, with the
+descriptor's own "e.g." examples moved to `topics.yaml`'s `uses:` rather
+than folded into what coverage is measured against (DECISIONS_LOG.md
+7.55). The first target strand is written and released; the other four
+are not.
 
-### 3. Student-Authored Code Sandboxing
-- **Pedagogical Rationale**: Peer code sharing must be approachable and friction-free, yet safe for shared classroom machines.
-- **Implementation Guarantee**: Pyodide executes entirely inside the browser tab WebAssembly sandbox without local OS filesystem access.
+1. **Linear Algebra & Matrix Operations** — **done.** Six tutorials —
+   *A Grid of Numbers*, *Multiplying Grids*, *What a Matrix Does to a
+   Picture*, *Undoing It*, *Solving Systems*, *Where Chains Lead* —
+   under `tutorials/computational-methods/`, series `matrices`, each
+   with a practice page. *Where Chains Lead* folds in Markov chains,
+   word-level text generation, and a worked small-scale PageRank,
+   closing what were planned as strands 1 and 2 (and part of 3) into one
+   series — see `outlines/matrices.md`'s resolved open question and
+   DECISIONS_LOG.md 7.56. `CMPS-LO4` is fully taught; `CMPS-LO1` and
+   `CMPS-LO2` are touched but not taught, since only the
+   data-structures half of LO1 and the randomness half of LO2 came up
+   along the way.
+2. **Markov Chains & Text Generation** — **folded into strand 1**, above,
+   rather than written as its own strand.
+3. **Link Graph Analysis & PageRank** — **partly done**, as the closing
+   section of *Where Chains Lead* — a hand-checkable three-page example
+   rather than a dedicated tutorial on crawling or a real link graph,
+   which remains unwritten.
+4. **Discrete Simulation & Monte Carlo Methods** — **not started.**
+   Estimating $\pi$, queuing models, randomness in computing —
+   `CMPS-LO3`, `CMPS-LO6`, and touches `CMPS-LO2`'s randomness half.
+5. **Algorithmic Complexity & Systems Modeling** — **not started.**
+   Complexity bounds, cache prediction, thermal simulation —
+   `CMPS-LO5`, `CMPS-LO7` through `CMPS-LO13`, all still red on the
+   curriculum map.
+
+### Automated worksheet-to-practice converter (`dev/from_worksheet.py`)
+On hold, and possibly not needed. The worksheets whose material is
+taught have already been converted by hand; the ones that remain
+(`07a`–`08b`, matrices, Markov chains, Bayes, distributions) cover
+material no tutorial teaches yet, and six of those carry their answer
+keys only as PDFs. There's nothing for the converter to convert until
+that material is written.
+
+### Student-authored practice cells (`PRACTICE.md`)
+Client-side dynamic cell insertion in `assets/tutorial-runtime.js`, so a
+student could write their own practice challenge, write a verification
+test for it, and export the pair as a JSON snippet to share with
+someone else. Not started.
+
+### CI/CD deployment
+**Done.** `.github/workflows/deploy.yml` builds and publishes the
+148-page site to GitHub Pages on every push to `main`. Two more
+workflows guard it: `tests` runs the unit suite, and
+`standalone-bundle-is-current` fails if the vendored bundle has drifted
+from `vendor-src/`.
+
+---
+
+## 3. Trickier decisions, briefly
+
+**Saved work has to survive a live cohort.** A student working through a
+multi-month course must never lose their progress or see a broken
+indicator. Storage keys are scoped exactly to
+`dewlab:progress:<module>:<slug>`, cell ids are treated as immutable
+once published, and the authoring editor actively warns before a change
+that would rename one.
+
+**Two students, two versions, no interference.** A cohort working in an
+earlier release (say `2026.08.20.1`) should have a stable, undisturbed
+experience for the rest of their term, even as new releases ship. The
+plain unversioned URL always serves the newest release; a returning
+student is automatically kept on the release they were already working
+in, with an honest count of how many of their answers carry over.
+
+**Sharing code between students has to be safe on a shared machine.**
+Pyodide runs entirely inside the browser tab's WebAssembly sandbox, with
+no access to the local filesystem or operating system — so a student
+running code someone else wrote can't do anything to the machine it's
+running on.

@@ -69,11 +69,24 @@ class Result:
 
 
 def slugify(text: str) -> str:
+    """Turns arbitrary text into a URL/filename-safe slug: lowercase,
+    punctuation removed, and runs of spaces or underscores collapsed into
+    a single hyphen. `"My Cool Title!"` becomes `"my-cool-title"`. Falls
+    back to `"untitled"` if that leaves nothing at all (an empty or
+    entirely-punctuation title).
+    """
     text = re.sub(r"[^\w\s-]", "", text.lower())
     return re.sub(r"[\s_]+", "-", text).strip("-") or "untitled"
 
 
 def source_of(cell: dict) -> str:
+    """Reads one notebook cell's source, handling nbformat's own choice
+    of representation: a cell's `source` can be stored as either one
+    plain string or a list of individual line-strings (see
+    `docs/dewmini-js-explained.md`'s note on `handleImportFile` for the
+    same ambiguity, handled the same way, on the JavaScript side). This
+    accepts either and always returns one plain string either way.
+    """
     source = cell.get("source", "")
     return source if isinstance(source, str) else "".join(source)
 
@@ -90,6 +103,13 @@ def strip_magics(code: str, notes: list[str]) -> str:
 
 
 def title_of(cells: list[dict], fallback: str) -> str:
+    """Finds the notebook's title by looking for its first Markdown
+    heading (`#`, `##`, and so on) among the cells, in order — a notebook
+    conventionally opens with a `# Title` cell, the same way a dewlab
+    tutorial does. If nothing looks like a heading anywhere, `fallback`
+    (the notebook's own filename, cleaned up) is used instead, so every
+    converted tutorial gets *some* title rather than a build failure.
+    """
     for cell in cells:
         if cell.get("cell_type") != "markdown":
             continue
@@ -100,6 +120,12 @@ def title_of(cells: list[dict], fallback: str) -> str:
 
 
 def order_of(stem: str, default: int) -> int:
+    """Reads a leading number out of a notebook's filename (e.g.
+    `"03_loops.ipynb"` -> 3) to use as its reading-order position, since
+    many notebook collections are already numbered that way by
+    convention. Falls back to `default` (the notebook's position in the
+    command-line arguments, 1-indexed) when the filename doesn't have one.
+    """
     match = LEADING_NUMBER_RE.search(stem)
     return int(match.group(1)) if match else default
 
@@ -125,6 +151,17 @@ def convert(
     year: str,
     default_order: int = 1,
 ) -> tuple[str, Result]:
+    """Converts one notebook file into a dewlab tutorial's Markdown text,
+    and a `Result` summarizing what happened (for the report `main()`
+    prints). This is the heart of the whole script: it walks the
+    notebook's cells in order, turning a Markdown cell into prose and a
+    code cell into an `exec` fence (dropping IPython magics/shell
+    escapes along the way, via `strip_magics`), and builds up the
+    tutorial's frontmatter and body as it goes. Raises `ConversionError`
+    for anything this script genuinely can't handle on its own — not a
+    bug to fix here, but a case that needs a person's judgment (see the
+    module's own top docstring for what those cases are).
+    """
     try:
         data = json.loads(notebook.read_text())
     except json.JSONDecodeError as exc:
@@ -222,6 +259,14 @@ def shown(path: Path) -> str:
 
 
 def main() -> int:
+    """The command-line entry point: parses arguments, converts every
+    notebook given on the command line (via `convert()` above), and
+    writes each result to a `.md` file under `tutorials/<module>/` — one
+    tutorial per notebook — printing a short report of what was written,
+    what was skipped, and why. A notebook that fails to convert doesn't
+    stop the whole run; it's reported and the rest continue, so one bad
+    file in a batch of many doesn't block all the others.
+    """
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("notebooks", nargs="+", type=Path)
     parser.add_argument("--module", required=True, help="module slug, and the folder name")

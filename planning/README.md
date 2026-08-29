@@ -1,36 +1,72 @@
-# Planning and Architecture Specifications
+# Planning and architecture
 
-This directory contains foundational architecture specifications, design rationale, pedagogical style guides, and curriculum planning documents for dewlab.
+Design documents, decision records, and curriculum planning for dewlab —
+mostly written before or during building something, kept afterward as
+the record of why it works the way it does.
 
-## Document Index
+## Document index
 
-### Pedagogical & Authoring Guidelines
-- **[`PEDAGOGICAL_STYLE_GUIDE.md`](./PEDAGOGICAL_STYLE_GUIDE.md)** — Core teaching philosophy ("Discover first, name afterwards"), anatomy of an ideal tutorial, concrete code-and-math integration examples, cognitive load principles, and author checklist.
-- **[`EXERCISES.md`](./EXERCISES.md)** — Specification for practice problem sets, fold-hidden solutions, and automated worksheet conversion from [`deweydex/Mathematics`](https://github.com/deweydex/Mathematics).
-- **[`PRACTICE.md`](./PRACTICE.md)** — Interactive practice architecture and student-authored runtime cell sandboxing.
+### Writing tutorials
+- **[`PEDAGOGICAL_STYLE_GUIDE.md`](./PEDAGOGICAL_STYLE_GUIDE.md)** — the
+  teaching philosophy ("discover first, name afterwards"), what a good
+  tutorial looks like, code-and-maths examples, and the author checklist.
+- **[`EXERCISES.md`](./EXERCISES.md)** — how practice pages and
+  fold-hidden answers work, and where worksheet conversion draws from
+  ([`deweydex/Mathematics`](https://github.com/deweydex/Mathematics)).
+- **[`PRACTICE.md`](./PRACTICE.md)** — student-authored practice cells:
+  planned, not yet built.
 
-### Architecture & Engine Specifications
-- **[`STATUS.md`](./STATUS.md)** — Comprehensive record of completed systems, active 100% curriculum coverage status, and upcoming roadmap phases.
-- **[`DECISIONS.md`](./DECISIONS.md)** — Architectural decision matrix (libraries, visual style, hosting, versioning, editor, mathematics).
-- **[`BUILD_PLAN.md`](./BUILD_PLAN.md)** — Staged implementation phases from runtime foundations to curriculum rollout.
-- **[`CONTENT_AND_FILE_ARCHITECTURE.md`](./CONTENT_AND_FILE_ARCHITECTURE.md)** — Specification for tutorial Markdown source format, executable code blocks, setup inclusions, and dataset references.
-- **[`VERSIONING_AND_PROGRESS.md`](./VERSIONING_AND_PROGRESS.md)** — Specification for client-side state storage, progress restoration, and schema compatibility.
-- **[`VERSIONS.md`](./VERSIONS.md)** — Multi-version release lifecycle, release date versioning, canonical URLs, and archive design.
-- **[`WINDOW_AUDIT.md`](./WINDOW_AUDIT.md)** — Pre-release contract audit (URL slugs, cell IDs, local storage schema, version types).
-- **[`REPO_AND_EDITOR.md`](./REPO_AND_EDITOR.md)** — Repository layout, GitHub Actions deployment workflow, and authoring architecture.
-- **[`EDITOR.md`](./EDITOR.md)** — Specification for the GitHub-integrated visual tutorial editor and release management interface.
+### Architecture
+- **[`STATUS.md`](./STATUS.md)** — what's built, what's still open, and
+  the trickier decisions behind the parts that are done.
+- **[`DECISIONS.md`](./DECISIONS.md)** — the early choices (libraries,
+  visual style, hosting, versioning, editor, maths) and why.
+- **[`BUILD_PLAN.md`](./BUILD_PLAN.md)** — the staged plan this was
+  actually built in, runtime first through curriculum last.
+- **[`CONTENT_AND_FILE_ARCHITECTURE.md`](./CONTENT_AND_FILE_ARCHITECTURE.md)**
+  — the tutorial Markdown format: executable code blocks, setup
+  includes, dataset references.
+- **[`VERSIONING_AND_PROGRESS.md`](./VERSIONING_AND_PROGRESS.md)** — how
+  saved work is stored in the browser and restored across versions.
+- **[`VERSIONS.md`](./VERSIONS.md)** — how a tutorial gets more than one
+  release: dated versions, canonical URLs, frozen archives.
+- **[`WINDOW_AUDIT.md`](./WINDOW_AUDIT.md)** — a pre-release check of
+  every contract this project can't change its mind about later (URL
+  slugs, cell ids, the saved-work schema, version format).
+- **[`REPO_AND_EDITOR.md`](./REPO_AND_EDITOR.md)** — how the repository
+  is laid out, how GitHub Actions deploys it, and the authoring editor's
+  design.
+- **[`EDITOR.md`](./EDITOR.md)** — the GitHub-integrated visual editor:
+  what it does and how releases work through it.
 
-### Curriculum & Syllabus Planning
-- **[`CURRICULUM_MAP.md`](./CURRICULUM_MAP.md)** — Automated mapping of all curriculum learning outcomes across active tutorials (100% covered across MIT and PDP).
-- **[`CURRICULUM_NOTES.md`](./CURRICULUM_NOTES.md)** — Curricular structure notes, modularization analysis, and terminology rules.
-- **[`WHAT_IS_LEFT_TO_WRITE.md`](./WHAT_IS_LEFT_TO_WRITE.md)** — Retired: its own backlog is written. Points at `STATUS.md` and `CURRICULUM_MAP.md` for the current 5N0554 gap instead of duplicating it.
-- **[`OPEN_QUESTIONS.md`](./OPEN_QUESTIONS.md)** — Initial architectural questions, trade-off evaluations, and resolution records.
-- **[`curriculum/`](./curriculum/)** — Machine-readable outcome descriptors, scope limits, topic dependency graphs, and curriculum decisions.
-- **[`outlines/`](./outlines/)** — Structured outlines for all curriculum tutorial modules.
+### Curriculum
+- **[`CURRICULUM_MAP.md`](./CURRICULUM_MAP.md)** — generated; every
+  learning outcome, mapped to where (or whether) it's actually taught.
+  Don't edit by hand — run `python3 dev/curriculum_map.py`.
+- **[`CURRICULUM_NOTES.md`](./CURRICULUM_NOTES.md)** — notes on how the
+  curriculum is structured and named.
+- **[`WHAT_IS_LEFT_TO_WRITE.md`](./WHAT_IS_LEFT_TO_WRITE.md)** — retired:
+  its own backlog is written. Points at `STATUS.md` and
+  `CURRICULUM_MAP.md` for the current 5N0554 gap instead of duplicating
+  it.
+- **[`OPEN_QUESTIONS.md`](./OPEN_QUESTIONS.md)** — early architectural
+  questions, the tradeoffs weighed, and how each was resolved.
+- **[`curriculum/`](./curriculum/)** — the machine-readable outcome
+  descriptors, scope limits, and topic dependency graph.
+- **[`outlines/`](./outlines/)** — an outline for each curriculum
+  module.
 
-## Architectural & Educational Principles
+## The principles behind it
 
-1. **Integrated Computation & Mathematics**: Computing acts as an interactive laboratory for building mathematical intuition, while mathematics provides the analytical structure for computational modeling.
-2. **Deterministic, Zero-Install Execution**: Real Python execution runs locally in the browser tab via Pyodide without server-side execution, data harvesting, or tracking.
-3. **Explicit Dependency & Scope Accounting**: Curriculum coverage and scope limits are tracked in machine-readable files (`outcomes.yaml`, `out-of-scope.yaml`, `proposed.yaml`) and validated via automated CI tests.
-4. **Decisions with Explicit Costs & Pedagogical Rationale**: Major technical and pedagogical choices are documented alongside their educational rationale and cost-to-change accounting.
+1. **Computing and maths teach each other.** Code is a lab for building
+   mathematical intuition; maths gives the code something real to model.
+2. **Real Python, running locally, with nothing tracked.** Pyodide runs
+   in the student's own browser tab — no server executes their code, no
+   data leaves their machine.
+3. **Scope is written down, not assumed.** What's covered and what's
+   deliberately left out both live in machine-readable files
+   (`outcomes.yaml`, `out-of-scope.yaml`, `proposed.yaml`), checked by
+   CI so they can't quietly drift from the tutorials.
+4. **A real decision gets a reason and a cost.** A choice that could
+   reasonably have gone another way is written down in
+   `DECISIONS_LOG.md`, with what it would cost to change later.

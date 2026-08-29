@@ -1,4 +1,4 @@
-# Curriculum Writing Backlog & Coverage Roadmap
+# What's left to write (retired — see below)
 
 This file tracked the twenty-six outcomes proposed after the survey
 correction on 23 August. All twenty-six are now written and released — see

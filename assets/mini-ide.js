@@ -36,6 +36,15 @@ import * as fs from "./mini-ide-fs.js";
 
 // ============================================================================
 // Configuration Constants
+//
+// These are the localStorage keys this file itself reads and writes.
+// (mini-ide-fs.js and mini-ide-engine.js have their own storage keys,
+// defined in those files, not here — each module owns the keys it
+// actually uses, rather than collecting them all in one shared list.)
+// A version suffix like ":v1" on STORAGE_KEY means that if the saved
+// shape of a cell ever needs to change in a way old saved data wouldn't
+// match, a future ":v2" key can be introduced without old localStorage
+// data being silently misread as the new shape.
 // ============================================================================
 
 /**
@@ -52,6 +61,14 @@ const HELPER_VISIBLE_KEY = "mini-ide:helper-visible";
 
 // ============================================================================
 // Global State
+//
+// This file uses plain module-level `let` variables for state, rather
+// than a class or a state-management library — the whole page is one
+// Mini IDE instance, never more than one at a time, so there's nothing
+// to keep separate copies of. `cells` is the one that matters most:
+// almost every function in this file either reads it, changes it, or
+// both. A cell is a plain JavaScript object (see createNewCell() further
+// down); this array holds them in the order they're shown on the page.
 // ============================================================================
 
 /**
@@ -68,6 +85,16 @@ let hasSampleCells = false;
 
 // ============================================================================
 // DOM Elements
+//
+// Every element the rest of this file needs to read from or write to
+// gets looked up once, in init() (further down), and stored in one of
+// these module-level variables — rather than calling
+// `document.getElementById(...)` again each time a function needs that
+// same element. That's partly for speed (looking an element up by ID is
+// not free, even if it's fast), but mainly for clarity: a function like
+// `setupEventListeners()` can just write `addPythonBtn.addEventListener(...)`
+// and trust the variable already points at the right element, instead
+// of re-deriving "which element is this" every time.
 // ============================================================================
 
 /**
@@ -152,6 +179,19 @@ const CELL_TYPES = {
 
 // ============================================================================
 // Settings Functions (from tutorial-runtime.js)
+//
+// This block (through initTexture()) is a line-for-line port of the same
+// "texture" settings tutorial pages already have — theme, font, text
+// size, page width, and link color — copied here rather than imported
+// as a shared module, following this codebase's convention that each
+// page owns a thin copy of logic it needs rather than sharing one
+// runtime file between pages that otherwise have little in common. The
+// pattern repeats for every setting: `load*()` reads a saved value from
+// localStorage (or a sensible default if there isn't one yet), `apply*()`
+// makes the page actually look/behave that way, `save*()` writes the
+// current value back to localStorage, and a `commit()` helper calls
+// apply-then-save-then-resync in one step so a click handler never has
+// to remember the right order itself.
 // ============================================================================
 
 /**
@@ -707,6 +747,16 @@ function saveState() {
 
 // ============================================================================
 // Event Listeners
+//
+// Most of the click handlers below share the same small pattern: change
+// `cells` (add, remove, or clear entries), mark `hasSampleCells` as
+// false if the change means the notebook is no longer "just the
+// starter samples," call `saveState()` so localStorage matches the new
+// `cells` array, then call `renderCells()` so the page's DOM matches
+// `cells` too. Keeping those two calls right next to every change (never
+// changing `cells` without also calling both) is what keeps "what's on
+// screen," "what's in memory," and "what's saved" from ever quietly
+// drifting apart from each other.
 // ============================================================================
 
 /**
@@ -826,6 +876,13 @@ function setupEventListeners() {
 
 // ============================================================================
 // Cell Management
+//
+// Functions in this section deal with cells as plain data: creating one,
+// giving it an ID, choosing default starter content, and rendering the
+// whole `cells` array into DOM elements a person can actually see and
+// click. Running a cell's code is a separate concern, handled by the
+// next section ("Cell Execution") — a cell can exist, be edited, and be
+// reordered without Python ever being involved.
 // ============================================================================
 
 /**
@@ -862,8 +919,22 @@ function getDefaultContent(type) {
 }
 
 /**
- * Generate a unique cell ID
- * Uses timestamp and random string for uniqueness
+ * Generate a unique cell ID.
+ *
+ * Combines the current time (`Date.now()`, milliseconds since 1970) with
+ * a short random string, so two cells created in the same session never
+ * collide — even one created in the very same millisecond as another
+ * still gets a different random suffix.
+ * `Math.random().toString(36)` turns a random 0-1 number into a
+ * base-36 string (digits 0-9 plus letters a-z), which packs more
+ * randomness into fewer characters than a decimal string would;
+ * `.substr(2, 9)` drops the leading "0." that toString() always
+ * produces and keeps 9 of the remaining characters.
+ *
+ * This ID isn't shown to a student anywhere — it only exists so code in
+ * this file can find "the cell with this exact ID" again later (in
+ * `cells.find(c => c.id === cellId)`, used throughout this file), even
+ * after the array has been reordered by dragging.
  *
  * @returns {string} Unique cell ID
  */
@@ -902,6 +973,23 @@ function renderCells() {
 
 /**
  * Create a cell DOM element with editor and controls
+ *
+ * A learning note on a real bug this exact function used to cause: it
+ * attaches live references — `cell.runBtn`, `cell.editor`,
+ * `cell.textarea`, `cell.outputEl` — directly onto the plain `cell`
+ * object that also lives in the `cells` array. That's convenient (any
+ * code holding a `cell` can reach its own DOM elements straight away),
+ * but it means `cell` is no longer *just* data — it's data mixed with
+ * live browser objects. Those DOM/editor objects contain their own
+ * circular references internally (a DOM node's `parentNode` points back
+ * up the tree it's already part of), which broke `JSON.stringify(cells)`
+ * with a "Converting circular structure to JSON" error the moment any
+ * cell had actually been rendered — see `saveState()`'s own comment for
+ * how that got fixed (an explicit list of only the plain-data fields to
+ * save, instead of saving `cells` directly). The general lesson: mixing
+ * "data you want to serialize" with "live objects you don't" on the same
+ * object works until the moment you try to serialize it, and the bug it
+ * causes then can look unrelated to where the mixing happened.
  *
  * @param {Object} cell - Cell object
  * @param {number} index - Cell index
@@ -1068,6 +1156,16 @@ function scrollToCell(index) {
 
 // ============================================================================
 // Cell Execution
+//
+// Where "Cell Management" (above) deals with cells as data and DOM
+// elements, this section is about actually running Python. This file
+// never talks to Pyodide directly — it delegates everything to
+// mini-ide-engine.js (imported at the top of this file as `engine`),
+// which in turn talks to assets/pyodide-worker.js. That layering means
+// this file doesn't need to know or care whether Python is running in a
+// background Worker or, as a fallback, directly on the page — it just
+// calls engine.runCell() and engine.ensureBooted() and lets the engine
+// module decide how.
 // ============================================================================
 
 /**
@@ -1362,6 +1460,17 @@ async function uploadFiles(fileList) {
 
 // ============================================================================
 // Notebook Import (.ipynb / .py)
+//
+// Two file formats, two parsers (parseIpynb and parsePy further down),
+// one shared entry point (handleImportNotebookFile). Both parsers do the
+// same basic job — turn raw file text into an array of plain cell
+// objects, the same shape createNewCell() produces — without touching
+// the page's actual `cells` array themselves; handleImportNotebookFile
+// is the only place that assigns the result into `cells`, `saveState()`s
+// it, and re-renders. That split (parse text -> plain data, versus
+// apply that data to the page) is what makes each parser independently
+// testable and easy to reason about: neither one needs to know about
+// the DOM, localStorage, or the replace/append setting at all.
 // ============================================================================
 
 /**
@@ -1480,6 +1589,19 @@ function parsePy(text) {
 
 // ============================================================================
 // Download Functions
+//
+// All three functions here follow the same four steps: build the file's
+// text content as a JavaScript string, wrap it in a Blob (the browser's
+// representation of raw file-like data), turn that Blob into a
+// temporary object URL with `URL.createObjectURL()`, then create an
+// invisible `<a download>` link pointing at that URL and click it in
+// code — the same as if a person had clicked a real download link
+// themselves. `URL.revokeObjectURL()` afterwards frees the browser's
+// memory for that temporary URL, since nothing else needs it once the
+// download has started. downloadAsPython() and the "Import" feature
+// (see the Notebook Import section above) are a matched pair: the "# %%"
+// separator this file writes is exactly what parsePy() looks for, so a
+// downloaded .py file can be loaded straight back in as the same cells.
 // ============================================================================
 
 /**
@@ -1510,13 +1632,19 @@ function downloadAsPython() {
 }
 
 /**
- * Download all cells as a standalone HTML file
- * Creates a self-contained HTML with embedded Pyodide
+ * Download all cells as a static HTML snapshot.
+ *
+ * This is deliberately NOT a runnable page — it has no embedded Pyodide
+ * and nothing in the downloaded file executes. It's just each cell's
+ * source code and its last output, saved as plain markup, for showing
+ * someone what a notebook looked like. If you're looking for a copy of
+ * Mini IDE a reader could actually run, that's a different feature —
+ * see docs/MINI_IDE.md's "The Downloadable Mini IDE" section, which
+ * `build.py`'s `write_mini_ide_bundle()` produces, not this function.
  *
  * @function downloadAsHtml
  */
 function downloadAsHtml() {
-  // This is a simplified version - a full standalone HTML would be complex
   const content = cells.map(cell => {
     if (cell.type === CELL_TYPES.PYTHON) {
       return `<div class="cell python">\n<pre>${escapeHtml(cell.content)}</pre>\n${cell.output ? `<div class="output">${cell.output}</div>` : ''}\n</div>`;
@@ -1584,6 +1712,16 @@ function downloadAsIpynb() {
 
 // ============================================================================
 // Drag and Drop
+//
+// This uses the browser's built-in HTML5 Drag and Drop API rather than
+// tracking mouse movements by hand. The five events wired up below —
+// dragstart, dragend, dragover, drop, and the dragenter/dragleave pair —
+// are standard DOM events the browser fires automatically while a
+// draggable element is being dragged; this file just reacts to them.
+// `e.preventDefault()` inside `dragover` looks backwards at first, but
+// it's required: a drop target's default behavior is to refuse the
+// drop entirely unless something explicitly cancels that default on
+// every dragover event, not just once.
 // ============================================================================
 
 /**
@@ -1674,8 +1812,29 @@ function setupDragAndDrop() {
 }
 
 /**
- * Get the element after which to insert the dragged cell
- * Based on mouse position
+ * Get the element after which to insert the dragged cell, based on
+ * where the mouse currently is.
+ *
+ * The idea: for every cell still on the page (excluding the one being
+ * dragged, which has the `.dragging` class), find the vertical distance
+ * from the mouse to that cell's own vertical midpoint
+ * (`box.top + box.height / 2`, so `offset` is negative when the mouse
+ * is above a cell's middle and positive when it's below). Among cells
+ * where the mouse is still above the middle (`offset < 0`), the one
+ * with the offset closest to zero is the nearest cell below the mouse —
+ * that's the cell the placeholder should be inserted just before.
+ *
+ * `reduce()` walks the list once, keeping track of the best answer
+ * found so far (`closest`), the same way you might keep a running
+ * "best so far" variable in a hand-written loop — it starts from
+ * negative infinity so the very first real cell always looks closer
+ * than nothing, then only replaces `closest` when it finds an offset
+ * that's negative (mouse above that cell's middle) and larger than the
+ * current best (closer to zero, i.e. closer to the mouse). If the
+ * mouse is below every cell's middle, nothing ever replaces the
+ * starting value, `.element` comes back `undefined`, and the caller
+ * (`setupDragAndDrop`'s `dragover` handler) treats that as "insert at
+ * the end of the list."
  *
  * @param {HTMLElement} container - Container element
  * @param {number} y - Mouse Y position
@@ -1683,11 +1842,11 @@ function setupDragAndDrop() {
  */
 function getDragAfterElement(container, y) {
   const draggableElements = [...container.querySelectorAll('.mini-ide-cell:not(.dragging)')];
-  
+
   return draggableElements.reduce((closest, child) => {
     const box = child.getBoundingClientRect();
     const offset = y - box.top - box.height / 2;
-    
+
     if (offset < 0 && offset > closest.offset) {
       return { offset, element: child };
     } else {

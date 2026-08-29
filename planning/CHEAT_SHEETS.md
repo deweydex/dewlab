@@ -1,8 +1,7 @@
 # A per-tutorial cheat sheet, closed by default
 
-Technical specification for a reader-facing sidebar of definitions, functions,
-and formulas — scoped so that a tutorial's cheat sheet never shows something
-the reader has not met yet.
+A reader-facing sidebar of definitions, functions, and formulas — scoped so
+that a tutorial's cheat sheet never shows something the reader hasn't met yet.
 
 ---
 
