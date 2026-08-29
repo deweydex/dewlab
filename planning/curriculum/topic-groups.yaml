@@ -1,0 +1,164 @@
+# Broader topic groups for the "browse by topic" page (tree.html's own
+# sibling — see write_topics_page() in build.py), one level up from
+# `topics.yaml`'s per-outcome entries and cutting across module/series
+# boundaries entirely.
+#
+# `topics.yaml` answers "what does MIT-3.4 mean and what does it need
+# first" for the prerequisite map. This file answers a different
+# question: "I want to practice trigonometry today, in whatever order —
+# what's there?" A reader following the strict module order never needs
+# this file at all; it exists for the one who already has some of the
+# course behind them and wants to jump to a topic rather than page
+# through thirty-odd tutorials in series order to find it.
+#
+# Each group is:
+#   name    — the heading on the topics page.
+#   intro   — one or two plain-English sentences, written for the reader
+#             deciding whether to open this group, not a dictionary
+#             definition. No unexplained jargon.
+#   tutorials — a list of {module, slug} pairs, in a sensible reading
+#             order for that group specifically (not the course's own
+#             series order). A tutorial can appear in more than one
+#             group when it genuinely spans two — that's the point of
+#             this being separate from the strict, one-place-only series
+#             structure.
+#
+# A {module, slug} naming a tutorial that doesn't exist (a typo, or one
+# renamed) is a build error (see topics_page_data() in build.py) rather
+# than a silently broken link.
+
+groups:
+  - key: numbers-and-algebra
+    name: Numbers, expressions, and equations
+    intro: >
+      Where algebra starts: turning a problem into symbols, and getting
+      symbols back into a single number. What an expression is, how to
+      rearrange one without changing what it means, and what to do when
+      an equation has no ordinary answer at all.
+    tutorials:
+      - { module: mit-pdp-maths-prog-integration, slug: numbers-and-their-families }
+      - { module: mit-pdp-maths-prog-integration, slug: expressions-come-alive }
+      - { module: mit-pdp-maths-prog-integration, slug: rearranging-formulae }
+      - { module: mit-pdp-maths-prog-integration, slug: cracking-equations }
+      - { module: mit-pdp-maths-prog-integration, slug: complex-roots }
+      - { module: mit-pdp-maths-prog-integration, slug: mixed-algebra }
+
+  - key: polynomials-and-graphs
+    name: Quadratics, polynomials, and graphing functions
+    intro: >
+      A polynomial is built from just adding, multiplying, and raising to
+      a power — and that simplicity is exactly why they show up
+      everywhere a computer models a curve. Graphing them, reading what
+      the graph says, and the one shape (the parabola) worth knowing by
+      sight.
+    tutorials:
+      - { module: mit-pdp-maths-prog-integration, slug: expressions-come-alive }
+      - { module: mit-pdp-maths-prog-integration, slug: drawing-functions }
+      - { module: mit-pdp-maths-prog-integration, slug: parabolas }
+      - { module: mit-pdp-maths-prog-integration, slug: cracking-equations }
+      - { module: mit-pdp-maths-prog-integration, slug: lines-and-distances }
+
+  - key: trigonometry
+    name: Trigonometry — triangles, circles, and waves
+    intro: >
+      Right-triangle ratios, the circle they all secretly come from, and
+      the repeating wave that falls out once you let the angle keep
+      turning. The same handful of numbers describe a rooftop's pitch, a
+      game character's aim, and a sound wave.
+    tutorials:
+      - { module: mit-pdp-maths-prog-integration, slug: the-unit-circle }
+      - { module: mit-pdp-maths-prog-integration, slug: solving-triangles }
+      - { module: mit-pdp-maths-prog-integration, slug: sine-and-cosine-waves }
+      - { module: mit-pdp-maths-prog-integration, slug: mixed-trigonometry }
+
+  - key: rates-of-change
+    name: Rates of change and limits
+    intro: >
+      How fast something is changing, right now, not on average — the
+      question that started calculus. What it means to get closer and
+      closer to a value without ever quite naming it.
+    tutorials:
+      - { module: mit-pdp-maths-prog-integration, slug: rates-of-change }
+      - { module: mit-pdp-maths-prog-integration, slug: approaching-a-limit }
+
+  - key: counting-and-chance
+    name: Counting, probability, and chance
+    intro: >
+      How many ways can this happen, and how likely is it? The
+      arithmetic behind everything from a shuffled deck to a spam
+      filter's confidence score.
+    tutorials:
+      - { module: mit-pdp-maths-prog-integration, slug: counting-carefully }
+      - { module: mit-pdp-maths-prog-integration, slug: what-are-the-chances }
+
+  - key: logic-and-sets
+    name: Logic, sets, and decisions
+    intro: >
+      True, false, and nothing in between — the rules for combining
+      them, the way a group of things can itself be treated as one
+      object, and how both turn into a program that actually chooses
+      between paths.
+    tutorials:
+      - { module: mit-pdp-maths-prog-integration, slug: logic-and-truth }
+      - { module: mit-pdp-maths-prog-integration, slug: venn-diagrams }
+      - { module: mit-pdp-maths-prog-integration, slug: sets-as-sorted-lists }
+      - { module: mit-pdp-maths-prog-integration, slug: making-decisions }
+
+  - key: data-and-pictures
+    name: Working with data, and picturing it
+    intro: >
+      A table of numbers doesn't explain itself — summarising it, and
+      choosing a chart that tells the truth about it rather than just
+      looking impressive, are their own skill.
+    tutorials:
+      - { module: computational-methods, slug: working-with-tables }
+      - { module: mit-pdp-maths-prog-integration, slug: making-sense-of-data }
+      - { module: mit-pdp-maths-prog-integration, slug: pictures-worth-numbers }
+      - { module: mit-pdp-maths-prog-integration, slug: mixed-data }
+
+  - key: matrices
+    name: Matrices and linear algebra
+    intro: >
+      A grid of numbers that can be added, multiplied, and undone like a
+      single quantity — the same idea underneath a 3D game's camera, a
+      photo filter, and a system of equations solved all at once instead
+      of one at a time.
+    tutorials:
+      - { module: computational-methods, slug: grid-of-numbers }
+      - { module: computational-methods, slug: multiplying-grids }
+      - { module: computational-methods, slug: what-a-matrix-does-to-a-picture }
+      - { module: computational-methods, slug: solving-systems }
+      - { module: computational-methods, slug: undoing-it }
+      - { module: computational-methods, slug: where-chains-lead }
+
+  - key: programming-foundations
+    name: Programming foundations
+    intro: >
+      Names for values, doing something more than once, choosing between
+      paths, and finding the one thing you need in a pile of others — the
+      handful of ideas every program is built from, whatever language
+      it's written in.
+    tutorials:
+      - { module: mit-pdp-maths-prog-integration, slug: first-steps }
+      - { module: computational-methods, slug: first-steps }
+      - { module: mit-pdp-maths-prog-integration, slug: storing-and-computing }
+      - { module: mit-pdp-maths-prog-integration, slug: lists-and-sequences }
+      - { module: mit-pdp-maths-prog-integration, slug: repeating-yourself }
+      - { module: mit-pdp-maths-prog-integration, slug: making-decisions }
+      - { module: mit-pdp-maths-prog-integration, slug: finding-things }
+      - { module: mit-pdp-maths-prog-integration, slug: putting-things-in-order }
+      - { module: mit-pdp-maths-prog-integration, slug: building-reusable-tools }
+      - { module: mit-pdp-maths-prog-integration, slug: when-it-goes-wrong }
+      - { module: mit-pdp-maths-prog-integration, slug: mixed-programming }
+
+  - key: big-picture
+    name: How it all fits together
+    intro: >
+      Where the course started, what it looked like added up, and the
+      one project that asks for maths and programming at the same time
+      rather than one after the other.
+    tutorials:
+      - { module: mit-pdp-maths-prog-integration, slug: how-we-got-here }
+      - { module: mit-pdp-maths-prog-integration, slug: bringing-it-all-together }
+      - { module: mit-pdp-maths-prog-integration, slug: the-team-project }
+      - { module: mit-pdp-maths-prog-integration, slug: critique-and-reflection }

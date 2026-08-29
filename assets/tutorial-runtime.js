@@ -49,10 +49,10 @@ const NOTES_EXPORT_PREFIX = "dewlab:notes-exported-len:";
 const NOTES_NUDGE_KEY = "dewlab:notes-nudge";
 const NOTES_NUDGE_THRESHOLD = 120;
 const AUTOSAVE_DELAY = 500;
-/* The three build.py write_*_page() slugs that are not a tutorial at all —
+/* The build.py write_*_page() slugs that are not a tutorial at all —
  * nothing here has "your work" to save, cells or notes alike, the way an
  * actual tutorial page does. */
-const NON_TUTORIAL_PAGES = new Set(["index", "tree", "about"]);
+const NON_TUTORIAL_PAGES = new Set(["index", "tree", "about", "topics"]);
 const TEXTURE_DEFAULTS = {
   theme: "system", font: "serif", size: 18, width: 34,
   link: "#d4692a", header: "full",

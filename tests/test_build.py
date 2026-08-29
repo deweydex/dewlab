@@ -1898,6 +1898,108 @@ class TestTheTopicTree:
         assert 'href="tree.html"' in index
 
 
+class TestTopicGroupsMatchRealTutorials:
+    """planning/curriculum/topic-groups.yaml, checked directly against the
+    real tutorials on disk — the same reason TestTheTopicTree's own tests
+    read topics.yaml directly rather than trusting a sandboxed build() to
+    exercise it: dewlab's actual tutorials only exist outside any test's
+    own throwaway repo, so a direct comparison is the one place this file's
+    accuracy is actually held to account (write_topics_page() in build.py
+    itself only warns and skips a mismatch, precisely so a sandboxed
+    build's tiny fixture set never fails a build for not being dewlab's
+    real course)."""
+
+    def real_tutorial_keys(self) -> set[tuple[str, str]]:
+        """Every real, non-practice tutorial's own (module, slug) — a
+        practice page is reached from its parent via the "practice" link
+        (practice_pairs(), reused here from build.py), not listed as a
+        topic-group entry of its own, the same as the contents page."""
+        seen = set()
+        for path in (DEWLAB / "tutorials").rglob("*.md"):
+            if path.stem.endswith("-practice"):
+                continue
+            front = path.read_text().split("---", 2)[1]
+            meta = yaml.safe_load(front)
+            seen.add((meta["module"], meta["slug"]))
+        return seen
+
+    def groups(self) -> list[dict]:
+        data = yaml.safe_load(
+            (DEWLAB / "planning" / "curriculum" / "topic-groups.yaml").read_text()
+        )
+        return data["groups"]
+
+    def test_every_real_tutorial_is_reachable_from_some_group(self):
+        referenced = {
+            (ref["module"], ref["slug"])
+            for group in self.groups()
+            for ref in group["tutorials"]
+        }
+        missing = self.real_tutorial_keys() - referenced
+        assert not missing, f"not reachable from the topics page: {sorted(missing)}"
+
+    def test_every_reference_names_a_tutorial_that_actually_exists(self):
+        real = self.real_tutorial_keys()
+        for group in self.groups():
+            for ref in group["tutorials"]:
+                key = (ref["module"], ref["slug"])
+                assert key in real, f'{group["key"]!r} names {key}, which is not a tutorial'
+
+    def test_every_group_has_a_key_a_name_an_intro_and_something_in_it(self):
+        seen_keys = set()
+        for group in self.groups():
+            assert group.get("key"), "a group with no key can't be linked to"
+            assert group["key"] not in seen_keys, f'duplicate group key {group["key"]!r}'
+            seen_keys.add(group["key"])
+            assert group.get("name"), f'{group["key"]}: no heading'
+            assert group.get("intro", "").strip(), f'{group["key"]}: no intro'
+            assert group.get("tutorials"), f'{group["key"]}: lists nothing'
+
+
+class TestBrowseByTopicPage:
+    """"Browse by topic" itself — write_topics_page() in build.py — built
+    against a small, sandboxed set of tutorials (like every other test in
+    this file), which is exactly why a mismatch against the real
+    topic-groups.yaml is expected here and not a failure: see
+    TestTopicGroupsMatchRealTutorials above for what actually holds that
+    file to account, and write_topics_page()'s own comment for why."""
+
+    def page(self, repo) -> str:
+        path = repo / "site" / "topics.html"
+        return path.read_text() if path.is_file() else ""
+
+    def test_no_topics_page_when_nothing_in_it_matches_this_build(self, repo):
+        """The common case for every other test in this file: a throwaway
+        tutorial or two, none of which topic-groups.yaml has ever heard
+        of. A page that's just a heading and an intro paragraph, with
+        nothing underneath, is worse than no page."""
+        write(repo, "Some prose.\n")
+        b.build()
+        assert self.page(repo) == ""
+
+    def test_a_group_appears_once_its_own_tutorial_is_in_this_build(self, repo):
+        """Point one real topic-groups.yaml entry at a fixture tutorial
+        with a matching slug, and that group's heading, intro, and link
+        should all show up — everything else in the real file still
+        won't match, and stays absent. write() only writes into the
+        `repo` fixture's own computational-methods module, so this needs
+        a real group entry that's actually in that module."""
+        groups = yaml.safe_load(
+            (DEWLAB / "planning" / "curriculum" / "topic-groups.yaml").read_text()
+        )["groups"]
+        group, ref = next(
+            (g, ref)
+            for g in groups
+            for ref in g["tutorials"]
+            if ref["module"] == "computational-methods"
+        )
+        write(repo, "Some prose.\n", slug=ref["slug"])
+        b.build()
+        page = self.page(repo)
+        assert group["name"] in page
+        assert group["intro"].strip()[:20] in page
+
+
 class TestDownloadsDoNotCollide:
     """Slugs are unique within a module, not across the site — so a flat
     download folder would let two modules' `first-steps` overwrite each other.
