@@ -1632,10 +1632,12 @@ def render_index(
         '<p class="dl-intro-tree">New here, or not sure where a topic fits? '
         'The <a href="tree.html">topic tree</a> shows everything the course '
         "covers and what has to come first.</p>",
-        '<p class="dl-intro-ide">Want to experiment with your own code? '
-        'The <a href="mini-ide.html" target="_blank">Mini IDE</a> lets you create '
-        'and run Python and text cells, then download your work as a Python file, '
-        'HTML, or Jupyter Notebook.</p>',
+        '<p class="dl-intro-ide">Want to experiment with your own code, outside '
+        'a tutorial? The <a href="mini-ide.html" target="_blank">Mini IDE</a> '
+        "lets you write and run Python, work with your own files, and save your "
+        "work as a Python file or a notebook. Want something smaller and "
+        'quieter instead? Try <a href="compose/dewmini.html" target="_blank">'
+        "dewmini</a> — a simple notebook with the same Python underneath.</p>",
         "</div>",
     ]
 
