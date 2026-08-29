@@ -206,6 +206,89 @@ async function runCell(cellId, code) {
   return { ok };
 }
 
+/* ---------------------------------------------------------------------
+ * Filesystem — Mini IDE only (planning/MINI_IDE_REDESIGN.md Phase 2).
+ * Tutorial pages never send these message types, so this section is
+ * purely additive: nothing here changes what boot()/runCell() above do.
+ *
+ * `pyodide.mountNativeFS(mountpoint, handle)` is the one Pyodide API that
+ * covers both real tiers a mini-ide-fs.js caller can ask for — a real
+ * FileSystemDirectoryHandle from window.showDirectoryPicker() (obtained
+ * on the main thread, since that API needs a window and a user gesture,
+ * then handed to this worker over postMessage — a FileSystemHandle is
+ * structured-cloneable) and OPFS's own root handle, which this worker can
+ * get for itself via navigator.storage.getDirectory() since OPFS is fully
+ * available inside a Worker. IDBFS is the last-resort fallback for a
+ * browser with neither. Whichever one is mounted, `mountedFs` holds the
+ * `{syncfs}` handle fs-sync needs to flush pending writes back out. */
+let mountedFs = null;
+
+async function fsMountNative(mountpoint, handle) {
+  pyodide.FS.mkdirTree(mountpoint);
+  mountedFs = await pyodide.mountNativeFS(mountpoint, handle);
+}
+
+async function fsMountOpfs(mountpoint) {
+  const opfsRoot = await navigator.storage.getDirectory();
+  pyodide.FS.mkdirTree(mountpoint);
+  mountedFs = await pyodide.mountNativeFS(mountpoint, opfsRoot);
+}
+
+async function fsMountIdbfs(mountpoint) {
+  pyodide.FS.mkdirTree(mountpoint);
+  pyodide.FS.mount(pyodide.FS.filesystems.IDBFS, {}, mountpoint);
+  /* populate=true pulls whatever this origin already saved into the
+   * in-memory FS; the mount is otherwise empty. */
+  await new Promise((resolve, reject) => {
+    pyodide.FS.syncfs(true, (err) => (err ? reject(err) : resolve()));
+  });
+  mountedFs = {
+    syncfs: () =>
+      new Promise((resolve, reject) => {
+        /* populate=false: write the in-memory FS out to IndexedDB. */
+        pyodide.FS.syncfs(false, (err) => (err ? reject(err) : resolve()));
+      }),
+  };
+}
+
+async function fsSync() {
+  if (mountedFs) await mountedFs.syncfs();
+}
+
+/* Required before mounting a different backend at the same mountpoint —
+ * Emscripten's FS refuses to mount over an already-mounted path (e.g.
+ * upgrading from the OPFS default to a student's chosen real folder). */
+function fsUnmount(path) {
+  pyodide.FS.unmount(path);
+  mountedFs = null;
+}
+
+function fsList(path) {
+  const names = pyodide.FS.readdir(path).filter((n) => n !== "." && n !== "..");
+  return names.map((name) => {
+    const stat = pyodide.FS.stat(`${path.replace(/\/$/, "")}/${name}`);
+    return { name, isDir: pyodide.FS.isDir(stat.mode), size: stat.size };
+  });
+}
+
+function fsRead(path, encoding) {
+  return pyodide.FS.readFile(path, encoding ? { encoding } : undefined);
+}
+
+function fsWrite(path, data) {
+  pyodide.FS.writeFile(path, data);
+}
+
+function fsDelete(path) {
+  const stat = pyodide.FS.stat(path);
+  if (pyodide.FS.isDir(stat.mode)) pyodide.FS.rmdir(path);
+  else pyodide.FS.unlink(path);
+}
+
+function fsMkdir(path) {
+  pyodide.FS.mkdirTree(path);
+}
+
 /* One uniform request/response shape for everything that needs an answer:
  * `{type, id, ...}` in, `{type: "response", id, result}` or
  * `{type: "response", id, error}` back. `status`/`jedi-ready`/`output` are
@@ -230,6 +313,34 @@ self.onmessage = async (ev) => {
       respond(signatureHelp(msg.name, msg.source, msg.line, msg.col));
     } else if (msg.type === "page-names") {
       respond(pageNames());
+    } else if (msg.type === "fs-mount-native") {
+      await fsMountNative(msg.mountpoint, msg.handle);
+      respond("ok");
+    } else if (msg.type === "fs-mount-opfs") {
+      await fsMountOpfs(msg.mountpoint);
+      respond("ok");
+    } else if (msg.type === "fs-mount-idbfs") {
+      await fsMountIdbfs(msg.mountpoint);
+      respond("ok");
+    } else if (msg.type === "fs-sync") {
+      await fsSync();
+      respond("ok");
+    } else if (msg.type === "fs-unmount") {
+      fsUnmount(msg.mountpoint);
+      respond("ok");
+    } else if (msg.type === "fs-list") {
+      respond(fsList(msg.path));
+    } else if (msg.type === "fs-read") {
+      respond(fsRead(msg.path, msg.encoding));
+    } else if (msg.type === "fs-write") {
+      fsWrite(msg.path, msg.data);
+      respond("ok");
+    } else if (msg.type === "fs-delete") {
+      fsDelete(msg.path);
+      respond("ok");
+    } else if (msg.type === "fs-mkdir") {
+      fsMkdir(msg.path);
+      respond("ok");
     }
   } catch (err) {
     fail(err);

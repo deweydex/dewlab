@@ -22,13 +22,17 @@
  *     assets/tutorial_tools.py, falling back to the main thread if a
  *     module Worker isn't available (e.g. a file:// download).
  *   - Cells share one persistent Pyodide interpreter (like Jupyter)
- *   - State persisted to localStorage
+ *   - A mounted filesystem (mini-ide-fs.js) — a real local folder if a
+ *     student opts in, else OPFS, else IndexedDB — backs uploads,
+ *     SQLite .db files, and notebook import/export.
+ *   - Cell state persisted to localStorage
  *
  * @module mini-ide
  */
 
 import { createCodeEditor, setEditorTheme } from "./vendor/codemirror.bundle.js";
 import * as engine from "./mini-ide-engine.js";
+import * as fs from "./mini-ide-fs.js";
 
 // ============================================================================
 // Configuration Constants
@@ -842,6 +846,27 @@ function scrollToCell(index) {
 // ============================================================================
 
 /**
+ * Boots Pyodide if needed, then mounts the filesystem (a previously
+ * chosen real folder, else OPFS, else IndexedDB — see mini-ide-fs.js) if
+ * it isn't mounted yet. Deferred until here, alongside the first Python
+ * boot, rather than run eagerly on page load — booting Pyodide costs a
+ * CDN fetch, and nothing should trigger that before a student actually
+ * runs a cell.
+ *
+ * @async
+ */
+async function ensureEngineAndFsReady() {
+  await engine.ensureBooted();
+  try {
+    await fs.init();
+  } catch (error) {
+    // Not fatal to running a cell — file upload/SQLite/file-manager
+    // features just won't have anywhere to persist to this session.
+    console.warn('mini-ide: filesystem mount failed; file features are unavailable this session', error);
+  }
+}
+
+/**
  * Run a single cell by ID
  * Boots the engine if needed, then executes the cell's Python code.
  * A second click on the cell that is already running sends a Stop
@@ -863,7 +888,7 @@ async function runCell(cellId) {
   const index = cells.findIndex(c => c.id === cellId);
 
   try {
-    await engine.ensureBooted();
+    await ensureEngineAndFsReady();
   } catch (error) {
     updateStatus(`Python failed to start: ${error.message}. Reloading the page usually fixes it.`, 'error');
     return;
@@ -942,7 +967,7 @@ async function runAllCells() {
   if (runningCellId || runningAll) return;
 
   try {
-    await engine.ensureBooted();
+    await ensureEngineAndFsReady();
   } catch (error) {
     updateStatus(`Python failed to start: ${error.message}. Reloading the page usually fixes it.`, 'error');
     return;

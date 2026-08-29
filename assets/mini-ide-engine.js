@@ -323,6 +323,71 @@ async function runCellMainThread(cellId, code) {
   return { ok };
 }
 
+/* Filesystem, main-thread mirror of the worker's fs-* handlers in
+ * pyodide-worker.js — same Pyodide FS calls, just made directly since
+ * pyodideMT lives right here instead of across a postMessage boundary. */
+let mountedFsMT = null;
+
+async function fsMountNativeMT(mountpoint, handle) {
+  pyodideMT.FS.mkdirTree(mountpoint);
+  mountedFsMT = await pyodideMT.mountNativeFS(mountpoint, handle);
+}
+
+async function fsMountOpfsMT(mountpoint) {
+  const opfsRoot = await navigator.storage.getDirectory();
+  pyodideMT.FS.mkdirTree(mountpoint);
+  mountedFsMT = await pyodideMT.mountNativeFS(mountpoint, opfsRoot);
+}
+
+async function fsMountIdbfsMT(mountpoint) {
+  pyodideMT.FS.mkdirTree(mountpoint);
+  pyodideMT.FS.mount(pyodideMT.FS.filesystems.IDBFS, {}, mountpoint);
+  await new Promise((resolve, reject) => {
+    pyodideMT.FS.syncfs(true, (err) => (err ? reject(err) : resolve()));
+  });
+  mountedFsMT = {
+    syncfs: () =>
+      new Promise((resolve, reject) => {
+        pyodideMT.FS.syncfs(false, (err) => (err ? reject(err) : resolve()));
+      }),
+  };
+}
+
+async function fsSyncMT() {
+  if (mountedFsMT) await mountedFsMT.syncfs();
+}
+
+function fsUnmountMT(path) {
+  pyodideMT.FS.unmount(path);
+  mountedFsMT = null;
+}
+
+function fsListMT(path) {
+  const names = pyodideMT.FS.readdir(path).filter((n) => n !== "." && n !== "..");
+  return names.map((name) => {
+    const stat = pyodideMT.FS.stat(`${path.replace(/\/$/, "")}/${name}`);
+    return { name, isDir: pyodideMT.FS.isDir(stat.mode), size: stat.size };
+  });
+}
+
+function fsReadMT(path, encoding) {
+  return pyodideMT.FS.readFile(path, encoding ? { encoding } : undefined);
+}
+
+function fsWriteMT(path, data) {
+  pyodideMT.FS.writeFile(path, data);
+}
+
+function fsDeleteMT(path) {
+  const stat = pyodideMT.FS.stat(path);
+  if (pyodideMT.FS.isDir(stat.mode)) pyodideMT.FS.rmdir(path);
+  else pyodideMT.FS.unlink(path);
+}
+
+function fsMkdirMT(path) {
+  pyodideMT.FS.mkdirTree(path);
+}
+
 /* ------------------------------------------------------- the dispatcher */
 
 let mode = null; // "worker" | "main-thread", set once boot() resolves
@@ -400,4 +465,68 @@ export async function pageNamesCompletion(context) {
       : [];
   if (!names.length) return null;
   return { from: word.from, options: names.map((label) => ({ label, type: "variable" })) };
+}
+
+/* ------------------------------------------------------------- filesystem
+ *
+ * mini-ide-fs.js is the only caller of everything below: it owns backend
+ * selection (native folder vs. OPFS vs. IDBFS) and calls these once it has
+ * decided. Every function here assumes ensureBooted() has already
+ * resolved — Pyodide's FS doesn't exist before that. */
+
+export async function mountNative(mountpoint, handle) {
+  if (mode === "main-thread") return fsMountNativeMT(mountpoint, handle);
+  return workerRequest("fs-mount-native", { mountpoint, handle });
+}
+
+export async function mountOpfs(mountpoint) {
+  if (mode === "main-thread") return fsMountOpfsMT(mountpoint);
+  return workerRequest("fs-mount-opfs", { mountpoint });
+}
+
+export async function mountIdbfs(mountpoint) {
+  if (mode === "main-thread") return fsMountIdbfsMT(mountpoint);
+  return workerRequest("fs-mount-idbfs", { mountpoint });
+}
+
+export async function syncFs() {
+  if (mode === "main-thread") return fsSyncMT();
+  return workerRequest("fs-sync", {});
+}
+
+/* Required before mounting a different backend at the same mountpoint. */
+export async function unmount(mountpoint) {
+  if (mode === "main-thread") return fsUnmountMT(mountpoint);
+  return workerRequest("fs-unmount", { mountpoint });
+}
+
+export async function listDir(path) {
+  if (mode === "main-thread") return fsListMT(path);
+  return workerRequest("fs-list", { path });
+}
+
+/**
+ * @param {string} path
+ * @param {"utf8"} [encoding] - omit for raw bytes (a Uint8Array comes
+ *   back either way; Uint8Array is structured-cloneable, so the worker
+ *   path needs no extra encoding step for binary files).
+ */
+export async function readFile(path, encoding) {
+  if (mode === "main-thread") return fsReadMT(path, encoding);
+  return workerRequest("fs-read", { path, encoding });
+}
+
+export async function writeFile(path, data) {
+  if (mode === "main-thread") return fsWriteMT(path, data);
+  return workerRequest("fs-write", { path, data });
+}
+
+export async function deleteFile(path) {
+  if (mode === "main-thread") return fsDeleteMT(path);
+  return workerRequest("fs-delete", { path });
+}
+
+export async function mkdir(path) {
+  if (mode === "main-thread") return fsMkdirMT(path);
+  return workerRequest("fs-mkdir", { path });
 }
