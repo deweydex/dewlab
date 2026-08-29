@@ -1730,12 +1730,29 @@ def render_index(
         '<p class="dl-intro-tree">New here, or not sure where a topic fits? '
         'The <a href="tree.html">topic tree</a> shows everything the course '
         "covers and what has to come first.</p>",
-        '<p class="dl-intro-ide">Want to experiment with your own code, outside '
-        'a tutorial? The <a href="mini-ide.html" target="_blank">Mini IDE</a> '
-        "lets you write and run Python, work with your own files, and save your "
-        "work as a Python file or a notebook. Want something smaller and "
-        'quieter instead? Try <a href="compose/dewmini.html" target="_blank">'
-        "dewmini</a> — a simple notebook with the same Python underneath.</p>",
+        "</div>",
+        # A section of its own, not one more paragraph among the intro's —
+        # these two are not tutorials and don't belong on the numbered list
+        # below, but they're common enough a reason to visit ("I just want
+        # to try something") that a line buried in prose undersold them.
+        '<div class="dl-workspaces">',
+        # h3, not h2: every <h2> on this page is read as a module heading
+        # (module_headings() in tests/test_build.py, and this page's own
+        # <h2> loop below) — this section belongs to neither list.
+        "<h3>Want to experiment on your own, outside a tutorial?</h3>",
+        '<div class="dl-workspaces-grid">',
+        '<a class="dl-workspace-card" href="mini-ide.html" target="_blank">',
+        "<h3>Mini IDE</h3>",
+        "<p>The fuller of the two — a file manager, several files at once, "
+        "and every export option. Good for a project meant to stand on its "
+        "own.</p>",
+        "</a>",
+        '<a class="dl-workspace-card" href="compose/dewmini.html" target="_blank">',
+        "<h3>dewmini</h3>",
+        "<p>Smaller and quieter, the same Python underneath. Good for a "
+        "quick calculation or a single practice problem.</p>",
+        "</a>",
+        "</div>",
         "</div>",
     ]
 
