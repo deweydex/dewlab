@@ -277,4 +277,4 @@ kind.
 - [x] Phase 5 — Upload + Jupyter/.py import (commit bb13cf2)
 - [x] Phase 6 — Settings panel expansion (commit b7a471f)
 - [x] Phase 7 — Vendored Pyodide + folder-based distribution (commit e7f7808; reuses dev/fetch_pyodide.py rather than a new fetcher)
-- [ ] Phase 8 — Docs cleanup
+- [x] Phase 8 — Docs cleanup (full docs/MINI_IDE.md rewrite, commit db9f4b2) — all 8 phases complete
