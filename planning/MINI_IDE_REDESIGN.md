@@ -271,7 +271,7 @@ kind.
 ## Status
 
 - [x] Phase 1 — Engine migration (assets/mini-ide-engine.js, commit 22c474a)
-- [ ] Phase 2 — Filesystem layer
+- [x] Phase 2 — Filesystem layer (assets/mini-ide-fs.js, commit 1415227)
 - [ ] Phase 3 — Pane layout + file manager UI
 - [ ] Phase 4 — SQLite/SQL support
 - [ ] Phase 5 — Upload + Jupyter/.py import
