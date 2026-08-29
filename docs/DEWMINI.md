@@ -43,7 +43,9 @@ A text cell is for notes next to your code — a heading, a reminder of
 what a section does, or notes on what you tried. Click away from it and
 it turns into formatted text: `# a heading`, `**bold**`, `*italic*`,
 `` `code` ``, and `- a bullet list` all format themselves. Click back
-into the formatted text to edit the plain words underneath. Its
+into the formatted text to edit the plain words underneath, or use the
+**Edit**/**View** button in its header — the same switch, worth having
+if clicking the rendered text isn't an option you'd think to try. Its
 picture-frame icon attaches an image from your device — the image stays
 with the cell, and is never uploaded anywhere.
 

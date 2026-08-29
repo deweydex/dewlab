@@ -127,6 +127,27 @@ functions working together: `runCell()` checks which case it's in,
 not) — all three exist as separate functions specifically so `runCell`
 itself stays readable, rather than having all of that logic inline.
 
+**Text cells render, and a button — not just a gesture — is what gets
+you back to editing.** A text cell used to be a plain `<textarea>`; it's
+now a `.dl-doc-editor`/`.dl-doc-render` pair (the same shape and the same
+`renderDocMarkdown()` `compose/dewmini.js` and
+`assets/tutorial-runtime.js`'s own text cells use — this file ported
+rather than reinvented it), so a short note reads as formatted text
+instead of raw markdown syntax. Blurring the textarea renders it;
+clicking the rendered view edits it again — but the cell's header also
+carries an explicit Edit/View button (`previewBtn` in
+`createCellElement()`), because neither gesture has an equivalent
+affordance on a touch device with no hover to reveal that the rendered
+text is clickable at all. That button listens on `mousedown` with
+`preventDefault()`, not `click` — a click while the textarea is still
+focused would blur it first (auto-rendering it), so by the time a
+`click` handler ran it would see the already-flipped state and toggle
+straight back to editing instead of landing on rendered. One consequence
+worth knowing: `getDefaultContent()`'s text case is genuinely empty, not
+placeholder boilerplate, precisely because a freshly added cell with
+non-empty starter text would immediately render — forcing an extra click
+before a reader could even start typing over it.
+
 ---
 
 ## Where to look for something specific

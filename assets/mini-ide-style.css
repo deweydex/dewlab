@@ -267,22 +267,14 @@
   min-height: 40px;
 }
 
-.mini-ide-textarea {
-  width: 100%;
+/* A text cell's textarea/rendered-view pair now uses tutorial-style.css's
+ * .dl-doc-editor/.dl-doc-render (both stylesheets are loaded here) —
+ * the same shape and look compose/dewmini.js and tutorial-runtime.js's
+ * own text cells already use, rather than the plain bordered textarea
+ * this file used to draw on its own. */
+.mini-ide-cell-text .dl-doc-editor,
+.mini-ide-cell-text .dl-doc-render {
   min-height: 40px;
-  padding: 0.5rem;
-  border: 1px solid var(--dl-cell-border);
-  border-radius: 4px;
-  font-family: var(--dl-mono);
-  font-size: 0.875rem;
-  resize: vertical;
-  background: var(--dl-bg);
-  color: var(--dl-fg);
-}
-
-.mini-ide-textarea:focus {
-  outline: none;
-  border-color: var(--dl-orange);
 }
 
 /* ============================================================================

@@ -877,6 +877,7 @@ function createCustomCellElement(id, type) {
       + '<div class="dl-cell-bar">'
       + '<span class="dl-cell-id">your own note</span>'
       + '<span class="dl-cell-spacer"></span>'
+      + '<button type="button" class="dl-btn dl-btn-preview">view</button>'
       + '<button type="button" class="dl-btn dl-btn-share">share</button>'
       + '<button type="button" class="dl-btn dl-btn-delete">delete</button>'
       + "</div>"
@@ -980,19 +981,39 @@ function mountCustomCellAfter(afterNode, id, type, code, anchor) {
   if (type === "text") {
     const textarea = host.querySelector(".dl-doc-editor");
     const renderEl = host.querySelector(".dl-doc-render");
+    const previewBtn = host.querySelector(".dl-btn-preview");
     textarea.value = code || "";
 
-    const showEditor = () => { textarea.hidden = false; renderEl.hidden = true; };
+    // Clicking a rendered note to get back to editing it (renderEl's own
+    // click handler below) works with a mouse, but a touch device has no
+    // hover to hint that the note is clickable at all — previewBtn is the
+    // same toggle, explicit and always visible, so there is no gesture a
+    // reader has to already know about to find their way back in.
+    const syncPreviewBtn = () => {
+      const editing = !textarea.hidden;
+      previewBtn.textContent = editing ? "view" : "edit";
+      previewBtn.title = editing ? "Show this note rendered" : "Edit this note";
+    };
+    const showEditor = () => { textarea.hidden = false; renderEl.hidden = true; syncPreviewBtn(); };
     const showRendered = () => {
       if (!textarea.value.trim()) return; // nothing to render — keep it open for typing
       renderEl.innerHTML = renderDocMarkdown(textarea.value);
       renderEl.hidden = false;
       textarea.hidden = true;
+      syncPreviewBtn();
     };
     textarea.addEventListener("input", () => scheduleCustomSave());
     textarea.addEventListener("blur", showRendered);
     renderEl.addEventListener("click", showEditor);
     renderEl.addEventListener("keydown", (ev) => { if (ev.key === "Enter") showEditor(); });
+    // mousedown, not click: a click while the textarea is focused blurs
+    // it first (firing showRendered() above), and only then reaches this
+    // handler — by which point textarea.hidden already flipped, so
+    // reading it here would toggle straight back to editing. preventing
+    // the blur on mousedown keeps the state this handler sees accurate.
+    previewBtn.addEventListener("mousedown", (ev) => ev.preventDefault());
+    previewBtn.addEventListener("click", () => (textarea.hidden ? showEditor() : showRendered()));
+    syncPreviewBtn();
 
     cell = {
       id,

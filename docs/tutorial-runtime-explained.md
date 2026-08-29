@@ -121,10 +121,25 @@ cell's Run button should start enabled or not, rather than assuming.
 
 **Two cell types, and a seam after every cell on the page.** A custom
 cell can be `"python"` (an editor, an output area, Run) or `"text"` (a
-textarea that turns into rendered notes on blur — a small, hand-written
-markdown, `renderDocMarkdown()`, ported from `compose/dewmini.js`'s own
-text cells rather than reinvented). And a reader isn't limited to one
-button at the bottom of the page: `initCustomCellsSection()` lays a
+textarea that turns into rendered notes — a small, hand-written markdown,
+`renderDocMarkdown()`, ported from `compose/dewmini.js`'s own text cells
+rather than reinvented). Blurring the textarea renders it, and clicking
+the rendered view edits it again — both still work, but neither is the
+*only* way in: a text cell's bar also carries an explicit "view"/"edit"
+button, because a mouse gesture (click away, click back) has no
+equivalent affordance on a touch device with no hover to reveal that the
+rendered text is clickable at all. One easy-to-miss detail in
+`mountCustomCellAfter()`'s wiring: the button listens on `mousedown`
+with `preventDefault()`, not `click` — clicking it while the textarea is
+still focused would otherwise blur the textarea *first* (which
+auto-renders), so by the time the button's own click handler ran it
+would see the already-rendered state and toggle straight back to
+editing instead of landing on rendered. Every dewlab surface with a text
+cell (this file, `compose/dewmini.js`, `assets/mini-ide.js`) uses the
+same fix, for the same reason.
+
+And a reader isn't limited to one button at the bottom of the page:
+`initCustomCellsSection()` lays a
 divider (`createCustomInsertDivider()`, `.dl-insert` in
 `tutorial-style.css`) after *every* real cell, wherever it sits in the
 tutorial's own prose, as well as inside the trailing "Try something of

@@ -84,6 +84,22 @@ decides what to output based on what kind of line it just saw. This is a
 good small example of how a simple parser can be built without a parsing
 library, for a format simple enough not to need one.
 
+**A button that has to listen on `mousedown`, not `click`.** A text
+cell's header carries an explicit Edit/View button (`previewBtn` in
+`createCellElement`) alongside the older gestures — blur the textarea to
+render it, click the rendered view to edit it again — because neither
+gesture has an equivalent on a touch device with no hover to reveal that
+the rendered text is even clickable. The button can't just listen for
+`click`, though: clicking it while the textarea is still focused blurs
+the textarea *first* (which renders it), and only then reaches the
+button's own handler — by which point the state it would read has
+already flipped, so it would toggle straight back to editing instead of
+landing on rendered. `previewBtn.addEventListener("mousedown", (e) =>
+e.preventDefault())` is what stops that blur from happening at all,
+so the click handler underneath still sees the state as it was when the
+reader actually clicked. `assets/mini-ide.js` and
+`assets/tutorial-runtime.js`'s own text cells use the identical fix.
+
 **A downloadable file that builds another whole HTML page.**
 `buildStandaloneHtml` is worth slowing down on: it returns a giant
 template-literal string that *is* a complete HTML page, with its own
