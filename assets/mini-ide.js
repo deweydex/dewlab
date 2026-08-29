@@ -53,12 +53,6 @@ import * as fs from "./mini-ide-fs.js";
  */
 const STORAGE_KEY = "mini-ide:cells:v1";
 
-/**
- * LocalStorage key for helper visibility state
- * @constant {string}
- */
-const HELPER_VISIBLE_KEY = "mini-ide:helper-visible";
-
 // ============================================================================
 // Global State
 //
@@ -108,8 +102,6 @@ let clearAllBtn;
 let downloadPythonBtn;
 let downloadHtmlBtn;
 let downloadIpynbBtn;
-let helperEl;
-let helperCloseBtn;
 let statusEl;
 let sampleNoticeEl;
 let removeSampleBtn;
@@ -128,16 +120,14 @@ let importNotebookInput;
 // ============================================================================
 
 /**
- * Currently dragged cell element
- * @type {HTMLElement|null}
+ * The id of the cell currently being dragged, or null when nothing is.
+ * Tracked by id rather than a DOM reference — the same reason
+ * runCell()/deleteCell() look cells up by id — because the id survives
+ * the re-render a drop triggers, where a captured element reference
+ * wouldn't.
+ * @type {string|null}
  */
-let draggedCell = null;
-
-/**
- * Drop placeholder element
- * @type {HTMLElement|null}
- */
-let dropPlaceholder = null;
+let draggedId = null;
 
 // ============================================================================
 // Execution State
@@ -267,6 +257,9 @@ function initSettings() {
         updateExecutionStatus();
         updateStorageStatus();
       }
+      // Settings and Help share one corner of the masthead; only one makes
+      // sense open at a time, so opening either closes the other.
+      closeHelpPanel();
     });
   }
 
@@ -321,6 +314,62 @@ function initSettings() {
   });
 
   return state;
+}
+
+// Module-level so initSettings()'s toggle handler can reach it without
+// initHelp() having to run first — both wire up during the same init()
+// call, in an order that shouldn't matter.
+let helpPanel;
+let helpToggle;
+
+/** Hides the Help panel, if it exists and is open — the reciprocal half
+ * of Settings/Help closing each other on open, called from both. */
+function closeHelpPanel() {
+  if (!helpPanel || helpPanel.hasAttribute("hidden")) return;
+  helpPanel.setAttribute("hidden", "");
+  helpToggle?.setAttribute("aria-expanded", "false");
+}
+
+/**
+ * Initialize the Help panel — the same "?" toggle, reopenable any time,
+ * that compose/dewmini.js uses, ported here in place of the old
+ * mini-ide-helper banner (shown once, dismissed permanently, and gone
+ * for good once a reader had cells). Wired the same way initSettings()
+ * wires #dl-settings, since the two panels share a corner and behave
+ * the same way otherwise.
+ */
+function initHelp() {
+  helpPanel = document.getElementById("mini-ide-help");
+  if (!helpPanel) return;
+  helpToggle = document.getElementById("mini-ide-help-toggle");
+
+  helpToggle?.addEventListener("click", () => {
+    const isHidden = helpPanel.hasAttribute("hidden");
+    helpPanel.toggleAttribute("hidden", !isHidden);
+    helpToggle.setAttribute("aria-expanded", String(!isHidden));
+    if (isHidden) {
+      document.getElementById("dl-settings")?.setAttribute("hidden", "");
+      document.getElementById("dl-settings-toggle")?.setAttribute("aria-expanded", "false");
+    }
+  });
+
+  const closeBtn = document.getElementById("mini-ide-help-close");
+  closeBtn?.addEventListener("click", () => {
+    closeHelpPanel();
+    helpToggle?.focus();
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && !helpPanel.hasAttribute("hidden")) {
+      closeHelpPanel();
+    }
+  });
+
+  document.addEventListener("click", (e) => {
+    if (helpPanel.hasAttribute("hidden")) return;
+    if (helpPanel.contains(e.target) || helpToggle?.contains(e.target)) return;
+    closeHelpPanel();
+  });
 }
 
 /**
@@ -555,8 +604,143 @@ function initMiniIdeSettings() {
   document.getElementById('settings-export-python')?.addEventListener('click', () => downloadAsPython());
   document.getElementById('settings-export-html')?.addEventListener('click', () => downloadAsHtml());
   document.getElementById('settings-export-ipynb')?.addEventListener('click', () => downloadAsIpynb());
+  document.getElementById('settings-print-pdf')?.addEventListener('click', () => window.print());
 
   fs.configure({ onBackendChange: () => updateStorageStatus() });
+}
+
+// ---------------------------------------------------------- filename
+
+/**
+ * Reads the reader's chosen filename from Settings, cleaned up for use
+ * as an actual filename: any extension they typed is stripped (each
+ * download function adds its own), and characters that aren't valid in
+ * a filename on at least one common operating system (\ / : * ? " < >
+ * |) are replaced with a dash — ported from compose/dewmini.js's own
+ * getFilenameBase(), so the same input produces the same safe name on
+ * both pages.
+ *
+ * @returns {string}
+ */
+function getFilenameBase() {
+  const el = document.getElementById('mini-ide-filename');
+  let name = (el?.value || '').trim();
+  if (!name) name = 'mini-ide-notebook';
+  name = name.replace(/\.(py|html?|ipynb)$/i, '');
+  name = name.replace(/[\\/:*?"<>|]+/g, '-').trim();
+  return name || 'mini-ide-notebook';
+}
+
+/**
+ * Restores a previously chosen filename and keeps the browser tab
+ * title in sync with it as the reader types — ported from
+ * compose/dewmini.js's own initFilename().
+ */
+function initFilename() {
+  const el = document.getElementById('mini-ide-filename');
+  if (!el) return;
+  let saved = 'mini-ide-notebook';
+  try { saved = localStorage.getItem('mini-ide:filename') || saved; } catch {}
+  el.value = saved;
+  document.title = `${saved} — Mini IDE`;
+  el.addEventListener('input', () => {
+    try { localStorage.setItem('mini-ide:filename', el.value); } catch {}
+    document.title = `${getFilenameBase()} — Mini IDE`;
+  });
+}
+
+// ------------------------------------------------------------- notes
+
+/**
+ * Wires the Settings "Your notes" textarea — free-text notes saved
+ * alongside cells rather than as one more cell, so clearing all cells
+ * or restoring a version never touches them. Ported from
+ * compose/dewmini.js's own initNotes(). Saved on every keystroke
+ * rather than debounced: a note is short enough that the write is
+ * free, and a debounce risks losing the last few characters if the
+ * panel closes or the page navigates before it fires.
+ */
+function initMiniIdeNotes() {
+  const notesEl = document.getElementById('mini-ide-notes');
+  if (!notesEl) return;
+  try { notesEl.value = localStorage.getItem('mini-ide:notes') || ''; } catch {}
+  notesEl.addEventListener('input', () => {
+    try { localStorage.setItem('mini-ide:notes', notesEl.value); } catch {}
+  });
+}
+
+// -------------------------------------------------- editor appearance
+
+const MINI_IDE_EDITOR_DEFAULTS = { codeSize: 15, density: 'cozy', cursor: 'medium', gutter: 'on', activeLine: 'on' };
+const MINI_IDE_EDITOR_KEY_MAP = { density: 'density', cursor: 'cursor', gutter: 'gutter', activeline: 'activeLine' };
+
+function loadMiniIdeEditorPrefs() {
+  try {
+    return { ...MINI_IDE_EDITOR_DEFAULTS, ...JSON.parse(localStorage.getItem('mini-ide:editor') || '{}') };
+  } catch {
+    return { ...MINI_IDE_EDITOR_DEFAULTS };
+  }
+}
+
+function saveMiniIdeEditorPrefs(state) {
+  try { localStorage.setItem('mini-ide:editor', JSON.stringify(state)); } catch {}
+}
+
+function applyMiniIdeEditorPrefs(state) {
+  const root = document.documentElement;
+  root.style.setProperty('--mini-ide-code-size', `${state.codeSize}px`);
+  root.setAttribute('data-mini-ide-density', state.density);
+  root.setAttribute('data-mini-ide-cursor', state.cursor);
+  if (state.gutter === 'off') root.setAttribute('data-mini-ide-gutter', 'off'); else root.removeAttribute('data-mini-ide-gutter');
+  if (state.activeLine === 'off') root.setAttribute('data-mini-ide-activeline', 'off'); else root.removeAttribute('data-mini-ide-activeline');
+}
+
+/**
+ * Wires the Settings "Editor" section — code size, cell spacing, cursor
+ * width, line numbers, and active-line highlight. Ported from
+ * compose/dewmini.js's own initEditorSettings(): purely a CSS-variable
+ * and data-attribute affair (see the :root[data-mini-ide-*] rules in
+ * mini-ide-style.css), so nothing here touches createCodeEditor()'s own
+ * options — every open cell picks up a change immediately because
+ * they're all reading the same handful of :root-scoped values.
+ */
+function initMiniIdeEditorSettings() {
+  const state = loadMiniIdeEditorPrefs();
+  applyMiniIdeEditorPrefs(state);
+
+  const panel = document.getElementById('dl-settings-editor');
+  if (!panel) return state;
+
+  const sizeEl = document.getElementById('mini-ide-code-size');
+
+  function sync() {
+    for (const group of panel.querySelectorAll('.dl-seg')) {
+      const stateKey = MINI_IDE_EDITOR_KEY_MAP[group.dataset.miniIde];
+      const current = state[stateKey];
+      for (const btn of group.querySelectorAll('button')) btn.setAttribute('aria-pressed', String(btn.dataset.value === current));
+    }
+    if (sizeEl) sizeEl.value = state.codeSize;
+  }
+
+  function commit() {
+    applyMiniIdeEditorPrefs(state);
+    saveMiniIdeEditorPrefs(state);
+    sync();
+  }
+
+  for (const group of panel.querySelectorAll('.dl-seg')) {
+    group.addEventListener('click', (ev) => {
+      const btn = ev.target.closest('button');
+      if (!btn) return;
+      state[MINI_IDE_EDITOR_KEY_MAP[group.dataset.miniIde]] = btn.dataset.value;
+      commit();
+    });
+  }
+  sizeEl?.addEventListener('input', () => { state.codeSize = Number(sizeEl.value); commit(); });
+  document.getElementById('mini-ide-editor-reset')?.addEventListener('click', () => { Object.assign(state, MINI_IDE_EDITOR_DEFAULTS); commit(); });
+
+  sync();
+  return state;
 }
 
 /**
@@ -602,8 +786,6 @@ async function init() {
   downloadPythonBtn = document.getElementById('download-python');
   downloadHtmlBtn = document.getElementById('download-html');
   downloadIpynbBtn = document.getElementById('download-ipynb');
-  helperEl = document.getElementById('mini-ide-helper');
-  helperCloseBtn = document.getElementById('helper-close');
   statusEl = document.getElementById('mini-ide-status');
   sampleNoticeEl = document.getElementById('sample-cells-notice');
   removeSampleBtn = document.getElementById('remove-sample-cells');
@@ -629,12 +811,6 @@ async function init() {
   // Load saved state
   loadSavedState();
 
-  // Check if helper should be shown
-  const showHelper = localStorage.getItem(HELPER_VISIBLE_KEY) !== 'false' && cells.length === 0;
-  if (helperEl && showHelper) {
-    helperEl.style.display = 'block';
-  }
-
   // Check if we have sample cells
   hasSampleCells = cells.length > 0 && cells.every(cell => cell.isSample);
   if (hasSampleCells && sampleNoticeEl) {
@@ -644,6 +820,10 @@ async function init() {
   // Initialize Settings panel
   initSettings();
   initMiniIdeSettings();
+  initMiniIdeEditorSettings();
+  initMiniIdeNotes();
+  initFilename();
+  initHelp();
 
   // Setup event listeners
   setupEventListeners();
@@ -765,26 +945,10 @@ function saveState() {
  * @function setupEventListeners
  */
 function setupEventListeners() {
-  // Add cell buttons
-  addPythonBtn?.addEventListener('click', () => {
-    cells.push(createNewCell(CELL_TYPES.PYTHON, ''));
-    hasSampleCells = false;
-    saveState();
-    renderCells();
-    scrollToCell(cells.length - 1);
-    updateStatus('Python cell added.');
-    if (sampleNoticeEl) sampleNoticeEl.hidden = true;
-  });
-
-  addTextBtn?.addEventListener('click', () => {
-    cells.push(createNewCell(CELL_TYPES.TEXT, ''));
-    hasSampleCells = false;
-    saveState();
-    renderCells();
-    scrollToCell(cells.length - 1);
-    updateStatus('Text cell added.');
-    if (sampleNoticeEl) sampleNoticeEl.hidden = true;
-  });
+  // Add cell buttons — append at the very end, via the same
+  // insertCellAt() the in-between dividers use.
+  addPythonBtn?.addEventListener('click', () => insertCellAt(cells.length, CELL_TYPES.PYTHON));
+  addTextBtn?.addEventListener('click', () => insertCellAt(cells.length, CELL_TYPES.TEXT));
 
   // Run all cells
   runAllBtn?.addEventListener('click', () => {
@@ -839,12 +1003,6 @@ function setupEventListeners() {
   downloadPythonBtn?.addEventListener('click', () => downloadAsPython());
   downloadHtmlBtn?.addEventListener('click', () => downloadAsHtml());
   downloadIpynbBtn?.addEventListener('click', () => downloadAsIpynb());
-
-  // Helper close button
-  helperCloseBtn?.addEventListener('click', () => {
-    if (helperEl) helperEl.style.display = 'none';
-    localStorage.setItem(HELPER_VISIBLE_KEY, 'false');
-  });
 
   // Remove sample cells button
   removeSampleBtn?.addEventListener('click', () => {
@@ -906,6 +1064,29 @@ function createNewCell(type, content = '', isSample = false, id = generateId()) 
 }
 
 /**
+ * Inserts a new, empty cell at a specific position — what both the
+ * toolbar's "Python Cell"/"Text Cell" buttons (index = cells.length,
+ * an append) and the insert-here dividers between cells (any other
+ * index) call. Ported from compose/dewmini.js's own insertCellAt(),
+ * which follows the same update-array/save/re-render/focus pattern
+ * every function in this file that changes `cells` already uses.
+ *
+ * @param {number} index - Position in `cells` to insert at
+ * @param {string} type - Cell type (CELL_TYPES.PYTHON or CELL_TYPES.TEXT)
+ * @param {string} [content=''] - Initial cell content
+ */
+function insertCellAt(index, type, content = '') {
+  const cell = createNewCell(type, content);
+  cells.splice(index, 0, cell);
+  hasSampleCells = false;
+  saveState();
+  renderCells();
+  focusCell(cell.id);
+  updateStatus(`${type === CELL_TYPES.PYTHON ? 'Python' : 'Text'} cell added.`);
+  if (sampleNoticeEl) sampleNoticeEl.hidden = true;
+}
+
+/**
  * Get default content for a cell type
  *
  * @param {string} type - Cell type
@@ -948,32 +1129,73 @@ function generateId() {
 }
 
 /**
- * Render all cells into the DOM
- * Creates or updates cell elements based on current state
+ * Render all cells into the DOM, with an insert-here divider before the
+ * first cell, between every pair, and after the last — ported from
+ * compose/dewmini.js's own renderCells(). No dividers over an empty
+ * notebook: the toolbar's own "Python Cell"/"Text Cell" buttons are the
+ * one way in until there's at least one cell to insert around.
  *
  * @function renderCells
  */
 function renderCells() {
   if (!cellsContainer) return;
-  
+
   cellsContainer.innerHTML = '';
-  
-  cells.forEach((cell, index) => {
-    const cellEl = createCellElement(cell, index);
-    cellsContainer.appendChild(cellEl);
-  });
-  
-  // Hide helper if there are cells
-  if (cells.length > 0 && helperEl) {
-    helperEl.style.display = 'none';
-    localStorage.setItem(HELPER_VISIBLE_KEY, 'false');
+
+  if (cells.length) {
+    cellsContainer.appendChild(createInsertDivider(0));
+    cells.forEach((cell, index) => {
+      cellsContainer.appendChild(createCellElement(cell, index));
+      cellsContainer.appendChild(createInsertDivider(index + 1));
+    });
   }
-  
+
   // Show/hide sample notice based on whether we have sample cells
   if (sampleNoticeEl) {
     hasSampleCells = cells.length > 0 && cells.every(cell => cell.isSample);
     sampleNoticeEl.hidden = !hasSampleCells;
   }
+}
+
+/**
+ * A tappable seam between cells (and before the first, after the last)
+ * rather than only a toolbar at the top — the fast way to build a
+ * notebook is inserting where you're already looking, not scrolling
+ * back up after appending at the end. Ported from compose/dewmini.js's
+ * own createInsertDivider(): full-height and always visible without
+ * hover on a touch device, since hover isn't a thing to reveal it with
+ * there (see the `@media (hover: none)` rule in mini-ide-style.css).
+ *
+ * @param {number} index - Position `insertCellAt()` should insert at
+ * @returns {HTMLElement} The divider element
+ */
+function createInsertDivider(index) {
+  const row = document.createElement('div');
+  row.className = 'mini-ide-insert';
+
+  const line = document.createElement('div');
+  line.className = 'mini-ide-insert-line';
+
+  const actions = document.createElement('div');
+  actions.className = 'mini-ide-insert-actions';
+
+  const addPy = document.createElement('button');
+  addPy.type = 'button';
+  addPy.className = 'mini-ide-insert-btn';
+  addPy.title = 'Insert a Python cell here';
+  addPy.innerHTML = '<span class="mini-ide-icon mini-ide-icon-python" aria-hidden="true"></span>Python';
+  addPy.addEventListener('click', () => insertCellAt(index, CELL_TYPES.PYTHON));
+
+  const addTxt = document.createElement('button');
+  addTxt.type = 'button';
+  addTxt.className = 'mini-ide-insert-btn';
+  addTxt.title = 'Insert a text cell here';
+  addTxt.innerHTML = '<span class="mini-ide-icon mini-ide-icon-text" aria-hidden="true"></span>Text';
+  addTxt.addEventListener('click', () => insertCellAt(index, CELL_TYPES.TEXT));
+
+  actions.append(addPy, addTxt);
+  row.append(line, actions);
+  return row;
 }
 
 /**
@@ -1005,29 +1227,49 @@ function createCellElement(cell, index) {
   cellEl.className = `mini-ide-cell mini-ide-cell-${cell.type}`;
   cellEl.dataset.index = index;
   cellEl.dataset.id = cell.id;
-  
+
   // Add error class if the cell's last run raised
   if (cell.hasError) {
     cellEl.classList.add('error');
   }
 
-  // Cell header with type label and action buttons
-  const header = document.createElement('div');
-  header.className = 'mini-ide-cell-header';
-  header.draggable = true;
-  header.dataset.id = cell.id;
+  // A quiet coloured rail beside the cell rather than a boxed card —
+  // ported from compose/dewmini.js's own dm-cell-rail — plus a "main"
+  // column holding the header, editor, and output. The rail is a
+  // sibling of main, not a child, so mini-ide-style.css can lay them
+  // out side by side with plain flexbox.
+  const rail = document.createElement('div');
+  rail.className = 'mini-ide-cell-rail';
 
-  const typeLabel = document.createElement('span');
-  typeLabel.className = 'mini-ide-cell-type';
-  typeLabel.textContent = cell.type === CELL_TYPES.PYTHON ? 'Python' : 'Text';
+  const main = document.createElement('div');
+  main.className = 'mini-ide-cell-main';
+
+  // Cell head: a small pill naming the type, a spacer, and icon-only
+  // actions — dragging the head (not the whole cell) reorders it.
+  const head = document.createElement('div');
+  head.className = 'mini-ide-cell-head';
+  head.draggable = true;
+  head.dataset.id = cell.id;
+
+  const pill = document.createElement('span');
+  pill.className = 'mini-ide-cell-pill';
+  pill.textContent = cell.type === CELL_TYPES.PYTHON ? 'Python' : 'Text';
+
+  const spacer = document.createElement('span');
+  spacer.className = 'mini-ide-cell-spacer';
 
   const actions = document.createElement('div');
   actions.className = 'mini-ide-cell-actions';
 
-  // Run button (only for Python cells)
+  // Run button (only for Python cells) — an icon-only ▶, matching
+  // compose/dewmini.js's own dm-icon-run. setRunButtonRunning()/
+  // resetRunButton() swap its glyph and title between idle and
+  // running/stoppable states.
   const runBtn = document.createElement('button');
-  runBtn.className = 'dl-btn';
-  runBtn.innerHTML = '<span class="mini-ide-icon mini-ide-icon-run"></span>Run';
+  runBtn.type = 'button';
+  runBtn.className = 'mini-ide-icon-btn mini-ide-icon-run';
+  runBtn.title = 'Run this cell (Shift+Enter)';
+  runBtn.textContent = '▶';
   runBtn.style.display = cell.type === CELL_TYPES.PYTHON ? 'inline-flex' : 'none';
   runBtn.addEventListener('click', (e) => {
     e.stopPropagation();
@@ -1039,13 +1281,16 @@ function createCellElement(cell, index) {
   // label in sync. Built here, alongside Run, so it sits in the same
   // header row regardless of which branch runs.
   const previewBtn = document.createElement('button');
-  previewBtn.className = 'dl-btn';
+  previewBtn.type = 'button';
+  previewBtn.className = 'mini-ide-icon-btn mini-ide-icon-preview';
   previewBtn.style.display = cell.type === CELL_TYPES.TEXT ? 'inline-flex' : 'none';
 
-  // Delete button
+  // Delete button — an icon-only ×, matching dm-icon-delete.
   const deleteBtn = document.createElement('button');
-  deleteBtn.className = 'dl-btn dl-btn-secondary';
-  deleteBtn.innerHTML = '<span class="mini-ide-icon mini-ide-icon-clear"></span>Delete';
+  deleteBtn.type = 'button';
+  deleteBtn.className = 'mini-ide-icon-btn mini-ide-icon-delete';
+  deleteBtn.title = 'Delete this cell';
+  deleteBtn.textContent = '×';
   deleteBtn.addEventListener('click', (e) => {
     e.stopPropagation();
     deleteCell(cell.id);
@@ -1054,8 +1299,7 @@ function createCellElement(cell, index) {
   actions.appendChild(runBtn);
   actions.appendChild(previewBtn);
   actions.appendChild(deleteBtn);
-  header.appendChild(typeLabel);
-  header.appendChild(actions);
+  head.append(pill, spacer, actions);
 
   // Store the Run button reference so runCell() can toggle it to Stop
   cell.runBtn = runBtn;
@@ -1088,6 +1332,12 @@ function createCellElement(cell, index) {
       getDoc: engine.hoverDoc,
       getSignature: engine.signatureHelp
     });
+
+    // Capture phase: CodeMirror's own handler sees Enter first on bubble,
+    // so intercepting Shift+Enter has to happen before that, not after.
+    editorEl.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && e.shiftKey) { e.preventDefault(); e.stopPropagation(); runCell(cell.id); }
+    }, true);
 
     // Store editor reference on cell for later access
     cell.editor = editor;
@@ -1169,9 +1419,8 @@ function createCellElement(cell, index) {
   }
   cell.outputEl = outputEl;
 
-  cellEl.appendChild(header);
-  cellEl.appendChild(contentEl);
-  cellEl.appendChild(outputEl);
+  main.append(head, contentEl, outputEl);
+  cellEl.append(rail, main);
 
   return cellEl;
 }
@@ -1203,17 +1452,26 @@ function deleteCell(cellId) {
 }
 
 /**
- * Scroll to a specific cell
+ * Scrolls to a cell, briefly highlights it, and puts the cursor in it —
+ * used after inserting a cell so a student's eye (and typing) lands on
+ * the thing that just appeared, rather than wherever the page happened
+ * to be scrolled. Ported from compose/dewmini.js's own focusCell(),
+ * looked up by id rather than index since an in-between insert shifts
+ * every later cell's index but not its id.
  *
- * @param {number} index - Cell index to scroll to
+ * @param {string} id - Cell id to focus
  */
-function scrollToCell(index) {
-  const cellEl = cellsContainer?.querySelector(`.mini-ide-cell[data-index="${index}"]`);
-  if (cellEl) {
-    cellEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    cellEl.classList.add('focused');
-    setTimeout(() => cellEl.classList.remove('focused'), 1000);
+function focusCell(id) {
+  const el = cellsContainer?.querySelector(`.mini-ide-cell[data-id="${id}"]`);
+  const cell = cells.find(c => c.id === id);
+  if (el) {
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    el.classList.add('focused');
+    setTimeout(() => el.classList.remove('focused'), 1000);
   }
+  if (cell?.editor) cell.editor.focus();
+  else if (cell?.showTextEditor) cell.showTextEditor();
+  else if (cell?.textarea) cell.textarea.focus();
 }
 
 // ============================================================================
@@ -1285,7 +1543,7 @@ async function runCell(cellId) {
 
   runningCellId = cellId;
   const runBtn = cell.runBtn;
-  const previousLabel = runBtn ? runBtn.textContent : 'Run';
+  const previousLabel = runBtn ? runBtn.textContent : '▶';
   setRunButtonRunning(runBtn);
 
   try {
@@ -1318,11 +1576,13 @@ function setRunButtonRunning(runBtn) {
   if (!runBtn) return;
   if (engine.canStop()) {
     runBtn.disabled = false;
-    runBtn.textContent = 'Stop';
-    runBtn.classList.add('dl-btn-stop');
+    runBtn.textContent = '■';
+    runBtn.title = 'Stop this cell';
+    runBtn.classList.add('mini-ide-running');
   } else {
     runBtn.disabled = true;
-    runBtn.textContent = 'Running…';
+    runBtn.textContent = '…';
+    runBtn.title = 'Running…';
   }
 }
 
@@ -1335,8 +1595,9 @@ function setRunButtonRunning(runBtn) {
 function resetRunButton(runBtn, previousLabel) {
   if (!runBtn) return;
   runBtn.disabled = false;
-  runBtn.classList.remove('dl-btn-stop');
-  runBtn.textContent = previousLabel === 'Running…' || previousLabel === 'Stop' ? 'Run' : previousLabel;
+  runBtn.classList.remove('mini-ide-running');
+  runBtn.title = 'Run this cell (Shift+Enter)';
+  runBtn.textContent = previousLabel === '…' || previousLabel === '■' ? '▶' : previousLabel;
 }
 
 /**
@@ -1687,7 +1948,7 @@ function downloadAsPython() {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = 'mini-ide-export.py';
+  a.download = `${getFilenameBase()}.py`;
   a.click();
   URL.revokeObjectURL(url);
   updateStatus('Downloaded as Python file.');
@@ -1721,7 +1982,7 @@ function downloadAsHtml() {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = 'mini-ide-export.html';
+  a.download = `${getFilenameBase()}.html`;
   a.click();
   URL.revokeObjectURL(url);
   updateStatus('Downloaded as HTML file.');
@@ -1766,7 +2027,7 @@ function downloadAsIpynb() {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = 'mini-ide-export.ipynb';
+  a.download = `${getFilenameBase()}.ipynb`;
   a.click();
   URL.revokeObjectURL(url);
   updateStatus('Downloaded as Jupyter Notebook.');
@@ -1775,20 +2036,43 @@ function downloadAsIpynb() {
 // ============================================================================
 // Drag and Drop
 //
-// This uses the browser's built-in HTML5 Drag and Drop API rather than
-// tracking mouse movements by hand. The five events wired up below —
-// dragstart, dragend, dragover, drop, and the dragenter/dragleave pair —
-// are standard DOM events the browser fires automatically while a
-// draggable element is being dragged; this file just reacts to them.
-// `e.preventDefault()` inside `dragover` looks backwards at first, but
-// it's required: a drop target's default behavior is to refuse the
-// drop entirely unless something explicitly cancels that default on
-// every dragover event, not just once.
+// Ported from compose/dewmini.js's own setupDragAndDrop() — its id-based
+// approach (rather than the DOM-child-index approach this file used
+// before) is what makes reordering work correctly now that renderCells()
+// interleaves an insert divider between every cell: cellsContainer's
+// direct children are no longer one-cell-per-index the way a plain list
+// of cells would be, so an index read off `cellsContainer.children`
+// would count dividers as if they were cells. Working entirely in terms
+// of `cells.findIndex(...)` by id sidesteps that — a divider never has
+// an id to find.
+//
+// Four HTML5 Drag and Drop API events, fired automatically by the
+// browser while a draggable element is being dragged:
+//   - "dragstart" (on the thing being dragged): remembers which cell's
+//     id is being dragged, in the module-level `draggedId`.
+//   - "dragover" (fired repeatedly, on whatever the mouse is currently
+//     over): must call `e.preventDefault()` — a drop target's default
+//     behavior is to refuse the drop entirely unless something
+//     explicitly opts in every time, not just once. Also decides, from
+//     the mouse's vertical position within the hovered cell, whether to
+//     mark the drop as landing above or below it.
+//   - "dragend" (on the thing that was dragged, once the drag is over
+//     however it ended): cleanup, whether or not a drop happened.
+//   - "drop" (on whatever the mouse was over when released): the actual
+//     reordering — removes the dragged cell from its old array position
+//     and re-inserts it at the new one, using the same before/after
+//     calculation dragover already made.
 // ============================================================================
+
+/** Removes the drop-position highlight from wherever it currently is. */
+function clearDropMarkers() {
+  cellsContainer?.querySelectorAll('.mini-ide-drop-before,.mini-ide-drop-after')
+    .forEach(el => el.classList.remove('mini-ide-drop-before', 'mini-ide-drop-after'));
+}
 
 /**
  * Setup drag and drop functionality for cells
- * Allows reordering cells by dragging
+ * Allows reordering cells by dragging their head
  *
  * @function setupDragAndDrop
  */
@@ -1796,72 +2080,57 @@ function setupDragAndDrop() {
   if (!cellsContainer) return;
 
   cellsContainer.addEventListener('dragstart', (e) => {
-    if (e.target.classList.contains('mini-ide-cell-header')) {
-      draggedCell = e.target.parentElement;
-      e.target.parentElement.classList.add('dragging');
-      e.dataTransfer.effectAllowed = 'move';
-      e.dataTransfer.setData('text/html', draggedCell.innerHTML);
-    }
+    const head = e.target.closest('.mini-ide-cell-head');
+    if (!head) return;
+    draggedId = head.dataset.id;
+    head.closest('.mini-ide-cell')?.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', draggedId);
   });
 
-  cellsContainer.addEventListener('dragend', (e) => {
-    if (draggedCell) {
-      draggedCell.classList.remove('dragging');
-      draggedCell = null;
-    }
-    if (dropPlaceholder) {
-      dropPlaceholder.remove();
-      dropPlaceholder = null;
-    }
+  cellsContainer.addEventListener('dragend', () => {
+    cellsContainer.querySelectorAll('.dragging').forEach(el => el.classList.remove('dragging'));
+    clearDropMarkers();
+    draggedId = null;
   });
 
   cellsContainer.addEventListener('dragover', (e) => {
     e.preventDefault();
     e.dataTransfer.dropEffect = 'move';
-
-    if (!draggedCell) return;
-
-    const afterElement = getDragAfterElement(cellsContainer, e.clientY);
-    
-    if (dropPlaceholder) dropPlaceholder.remove();
-    
-    if (afterElement) {
-      dropPlaceholder = document.createElement('div');
-      dropPlaceholder.className = 'mini-ide-drop-placeholder';
-      cellsContainer.insertBefore(dropPlaceholder, afterElement);
-    } else {
-      dropPlaceholder = document.createElement('div');
-      dropPlaceholder.className = 'mini-ide-drop-placeholder';
-      cellsContainer.appendChild(dropPlaceholder);
-    }
+    if (!draggedId) return;
+    clearDropMarkers();
+    const target = e.target.closest('.mini-ide-cell');
+    if (!target || target.dataset.id === draggedId) return;
+    const rect = target.getBoundingClientRect();
+    const before = e.clientY < rect.top + rect.height / 2;
+    target.classList.add(before ? 'mini-ide-drop-before' : 'mini-ide-drop-after');
   });
 
   cellsContainer.addEventListener('drop', (e) => {
     e.preventDefault();
-    if (!draggedCell) return;
+    if (!draggedId) return;
+    const target = e.target.closest('.mini-ide-cell');
+    clearDropMarkers();
 
-    const dropIndex = Array.from(cellsContainer.children).indexOf(dropPlaceholder || draggedCell);
-    const dragIndex = Array.from(cellsContainer.children).indexOf(draggedCell);
+    const fromIdx = cells.findIndex(c => c.id === draggedId);
+    if (fromIdx === -1) { draggedId = null; return; }
 
-    if (dropIndex !== dragIndex) {
-      // Reorder cells array
-      const cellId = draggedCell.dataset.id;
-      const cell = cells.find(c => c.id === cellId);
-      if (cell) {
-        cells.splice(dragIndex, 1);
-        cells.splice(dropIndex, 0, cell);
-        saveState();
-      }
+    let toIdx = cells.length;
+    if (target && target.dataset.id !== draggedId) {
+      const rect = target.getBoundingClientRect();
+      const before = e.clientY < rect.top + rect.height / 2;
+      toIdx = cells.findIndex(c => c.id === target.dataset.id);
+      if (!before) toIdx += 1;
     }
 
-    if (dropPlaceholder) {
-      dropPlaceholder.remove();
-      dropPlaceholder = null;
-    }
-    draggedCell.classList.remove('dragging');
-    draggedCell = null;
-    
+    const [moved] = cells.splice(fromIdx, 1);
+    if (toIdx > fromIdx) toIdx -= 1;
+    cells.splice(toIdx, 0, moved);
+
+    saveState();
     renderCells();
+    draggedId = null;
+    updateStatus('Reordered.');
   });
 
   cellsContainer.addEventListener('dragenter', (e) => {
@@ -1871,50 +2140,6 @@ function setupDragAndDrop() {
   cellsContainer.addEventListener('dragleave', (e) => {
     e.preventDefault();
   });
-}
-
-/**
- * Get the element after which to insert the dragged cell, based on
- * where the mouse currently is.
- *
- * The idea: for every cell still on the page (excluding the one being
- * dragged, which has the `.dragging` class), find the vertical distance
- * from the mouse to that cell's own vertical midpoint
- * (`box.top + box.height / 2`, so `offset` is negative when the mouse
- * is above a cell's middle and positive when it's below). Among cells
- * where the mouse is still above the middle (`offset < 0`), the one
- * with the offset closest to zero is the nearest cell below the mouse —
- * that's the cell the placeholder should be inserted just before.
- *
- * `reduce()` walks the list once, keeping track of the best answer
- * found so far (`closest`), the same way you might keep a running
- * "best so far" variable in a hand-written loop — it starts from
- * negative infinity so the very first real cell always looks closer
- * than nothing, then only replaces `closest` when it finds an offset
- * that's negative (mouse above that cell's middle) and larger than the
- * current best (closer to zero, i.e. closer to the mouse). If the
- * mouse is below every cell's middle, nothing ever replaces the
- * starting value, `.element` comes back `undefined`, and the caller
- * (`setupDragAndDrop`'s `dragover` handler) treats that as "insert at
- * the end of the list."
- *
- * @param {HTMLElement} container - Container element
- * @param {number} y - Mouse Y position
- * @returns {HTMLElement|null} Element after which to insert
- */
-function getDragAfterElement(container, y) {
-  const draggableElements = [...container.querySelectorAll('.mini-ide-cell:not(.dragging)')];
-
-  return draggableElements.reduce((closest, child) => {
-    const box = child.getBoundingClientRect();
-    const offset = y - box.top - box.height / 2;
-
-    if (offset < 0 && offset > closest.offset) {
-      return { offset, element: child };
-    } else {
-      return closest;
-    }
-  }, { offset: Number.NEGATIVE_INFINITY }).element;
 }
 
 // ============================================================================

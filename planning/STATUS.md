@@ -97,7 +97,18 @@ how they're built.
   support (`sqlite3` against a mounted `.db` file), and file uploads all
   work the same way regardless of backend. `.ipynb`/`.py` import and a
   folder-based, offline-capable downloadable bundle
-  (`write_mini_ide_bundle()` in `build.py`) round it out.
+  (`write_mini_ide_bundle()` in `build.py`) round it out. A reopenable
+  "?" Help panel next to Settings, and Shift+Enter to run a cell, match
+  dewmini's own — both replaced a one-shot welcome banner that was gone
+  for good the moment a reader had cells. Cells themselves match
+  dewmini's look too now (a quiet coloured rail and icon-only actions
+  rather than a bordered header full of labelled buttons), reorderable
+  by dragging and insertable at any seam between cells — not just
+  appended at the end — via the same hover-to-reveal dividers dewmini
+  uses. Settings gained dewmini's own "Your notes" free-text box, an
+  "Editor" section (code size, spacing, cursor, gutter, active line),
+  and a file name field shared by every download and a Print/PDF
+  button.
 - **dewmini**: a smaller, quieter cousin — the same
   `tutorial_tools.py`, but Pyodide stays on the main thread always (no
   Worker, no Stop button), by design: dewmini is for something quick,

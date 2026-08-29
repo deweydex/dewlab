@@ -2921,6 +2921,22 @@ def write_about_page(shell: str) -> Path:
         "<p>dewlab is an open educational project: tutorials that mix prose, "
         "mathematics and runnable Python in one page so students can read and "
         "experiment at the same time.</p>"
+        "<h2>What's here</h2>"
+        "<p>Tutorials read in the order the course teaches things, but two "
+        'other pages cut across that order: the <a href="tree.html">topic '
+        "tree</a> shows what a tutorial needs before it, for a reader moving "
+        'through in sequence, and <a href="topics.html">Browse by topic</a> '
+        "gathers everything about one subject — trigonometry, say — in one "
+        "place, for practicing out of order once some of it is already behind "
+        "you. Most tutorials end with a practice page of further problems on "
+        "the same idea. And when nothing about a particular tutorial fits — "
+        'just an idea to try — there\'s a <a href="mini-ide.html">Mini IDE</a> '
+        'and a smaller, quieter <a href="compose/dewmini.html">dewmini</a>, '
+        "both open-ended Python workspaces with no tutorial attached.</p>"
+        "<p>A tutorial page keeps a reader's edits and any cells they add of "
+        "their own in this browser as they go, and offers several ways to "
+        "take a copy with them: a single downloadable HTML file, a printed or "
+        "PDF copy, or their cells saved as a Jupyter notebook.</p>"
         "<p>If you would like to improve the material, you are very welcome to "
         "contribute. You can open an issue for ideas, requests, suggestions or "
         "comments, or send a pull request with a direct edit.</p>"

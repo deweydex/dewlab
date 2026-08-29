@@ -148,6 +148,17 @@ placeholder boilerplate, precisely because a freshly added cell with
 non-empty starter text would immediately render — forcing an extra click
 before a reader could even start typing over it.
 
+**Shift+Enter has to intercept the keystroke before CodeMirror sees
+it.** The listener that runs a Python cell on Shift+Enter is attached to
+`editorEl` with a third argument of `true` — capture phase, not the
+default bubble phase. CodeMirror's own keymap handles Enter first if the
+event reaches it on the way down in the normal order, inserting a
+newline instead of running anything; attaching in capture phase means
+this file's handler sees the keydown before CodeMirror's editor does,
+so it can call `e.stopPropagation()` and run the cell instead. Ported
+from `compose/dewmini.js`, which needs the exact same ordering for the
+exact same reason.
+
 ---
 
 ## Where to look for something specific
@@ -158,9 +169,29 @@ before a reader could even start typing over it.
   itself automatically.
 - **"How does a `.ipynb` file become cells?"** — `parseIpynb()` and
   `renderIpynbOutputs()`.
-- **"How does dragging actually work?"** — `setupDragAndDrop()` and
-  `getDragAfterElement()`; the inline comments on both walk through the
-  browser APIs involved in detail.
+- **"How does dragging actually work?"** — `setupDragAndDrop()`; the
+  inline comment above it walks through the four HTML5 Drag and Drop
+  events involved. Ported from `compose/dewmini.js`'s own id-based
+  approach (rather than the DOM-child-index approach this file used
+  before `renderCells()` started interleaving insert dividers between
+  cells — see the next entry).
+- **"How does inserting a cell between two others work?"** —
+  `insertCellAt()` is what both the toolbar's "Python Cell"/"Text Cell"
+  buttons and the seams between cells call, at `cells.length` for the
+  former and any other index for the latter; `createInsertDivider()`
+  builds one seam, and `renderCells()` puts one before the first cell,
+  between every pair, and after the last. All three ported from
+  `compose/dewmini.js`.
 - **"What actually gets saved, and when?"** — `saveState()` for the
   what, and the "Event Listeners" section's shared comment for the
-  when (short version: every time `cells` changes).
+  when (short version: every time `cells` changes). Settings' own
+  extras — notes, the editor-appearance section, the download file
+  name — each save themselves independently, on their own input events,
+  via `initMiniIdeNotes()`, `initMiniIdeEditorSettings()`, and
+  `initFilename()`.
+- **"Where's the Help panel wired up?"** — `initHelp()` and
+  `closeHelpPanel()`, right after `initSettings()` since the two panels
+  close each other on open. This replaced `mini-ide-helper`, the old
+  banner that showed once and was gone for good the moment a reader had
+  any cells — the same reopenable "?" panel `compose/dewmini.js` uses
+  instead.
