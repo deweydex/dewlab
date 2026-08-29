@@ -21,7 +21,11 @@
  * tutorial pages' own standalone export (DECISIONS_LOG.md 7.77).
  */
 
-const DEFAULT_PACKAGES = ["numpy", "pandas", "matplotlib"];
+/* sqlite3 was unvendored from Pyodide's default stdlib bundle as of
+ * Pyodide 0.28 (planning/MINI_IDE_REDESIGN.md Phase 4) — it's now just
+ * another entry in loadPackage's list, not the vendoring problem
+ * planning/DECISIONS.md's older "core libraries" note was about. */
+const DEFAULT_PACKAGES = ["numpy", "pandas", "matplotlib", "sqlite3"];
 
 /* Resolved against the *page*, not this module: a relative fetch from
  * inside the worker resolves against the worker script's own location,
