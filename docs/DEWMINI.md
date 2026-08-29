@@ -22,9 +22,8 @@ a thin coloured line down the left rather than a bordered box — navy for a
 Python cell, muted grey for a documentation cell, orange for whichever one
 you last touched. Between every pair of cells, and before the first and
 after the last, a seam sits ready to insert exactly there: a blank Python
-cell, a documentation cell, or one already carrying the imports most
-sessions start with. The seam is faint until you rest a cursor or a finger on
-it, not invisible — run down the page and you'll find every one.
+cell or a documentation cell. The seam is faint until you rest a cursor or a
+finger on it, not invisible — run down the page and you'll find every one.
 
 A Python cell runs when you press its **Run** arrow, or press
 **Shift+Enter** from inside it. Cells share one namespace top to bottom, the

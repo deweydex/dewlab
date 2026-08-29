@@ -225,14 +225,7 @@ function createInsertDivider(index) {
   addTxt.innerHTML = '<span class="dm-tool-icon dm-tool-icon-text" aria-hidden="true"></span>Text';
   addTxt.addEventListener("click", () => insertCellAt(index, CELL_TYPES.TEXT));
 
-  const addImports = document.createElement("button");
-  addImports.type = "button";
-  addImports.className = "dm-insert-btn";
-  addImports.title = "Insert a Python cell with the common imports";
-  addImports.innerHTML = '<span class="dm-tool-icon dm-tool-icon-python" aria-hidden="true"></span>Imports';
-  addImports.addEventListener("click", () => insertCellAt(index, CELL_TYPES.PYTHON, IMPORTS_SNIPPET));
-
-  actions.append(addPy, addTxt, addImports);
+  actions.append(addPy, addTxt);
   row.append(line, actions);
   return row;
 }
