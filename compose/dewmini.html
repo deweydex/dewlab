@@ -59,6 +59,11 @@
     <div class="dm-title-row">
       <h1>dewmini</h1>
       <p class="dm-subtitle">A small, quiet notebook. Write Python, run it, keep notes — nothing to install.</p>
+      <p class="dm-subtitle-note">
+        Outgrowing a quick notebook — a project meant to stand on its own,
+        outside the browser? The <a href="../mini-ide.html">Mini IDE</a> is
+        the larger tool built for that.
+      </p>
     </div>
 
     <div class="dm-toolbar">
@@ -128,7 +133,9 @@
       A text cell is documentation — it never runs. Click away from it and it
       renders (<code># heading</code>, <code>**bold**</code>,
       <code>*italic*</code>, <code>`code`</code>, <code>- bullets</code>);
-      click it again to edit the plain text underneath.
+      click it again to edit the plain text underneath. Its picture-frame
+      icon attaches an image from your device — it's kept with the cell, not
+      uploaded anywhere.
     </p>
     <p class="dm-panel-note">
       The seam between any two cells (or before the first, or after the
@@ -153,7 +160,13 @@
 
   <section class="dm-panel-section">
     <h3>What a cell can call</h3>
-    <p class="dm-panel-note">The same small API dewlab tutorials use — <code>numpy</code>, <code>pandas</code> and <code>matplotlib</code> are already imported.</p>
+    <p class="dm-panel-note">
+      The same small API dewlab tutorials use — <code>numpy</code>,
+      <code>pandas</code> and <code>matplotlib</code> are already imported.
+      dewmini also loads <code>sqlite3</code> and <code>Pillow</code>, beyond
+      what a tutorial page carries by default, so <code>import sqlite3</code>
+      and image work are there when a cell reaches for them.
+    </p>
     <dl class="dm-help-list">
       <div class="dm-help-entry"><dt><code>show(*values, label=)</code></dt><dd>Display something mid-cell</dd></div>
       <div class="dm-help-entry"><dt><code>show_table(frame)</code></dt><dd>Render a DataFrame as a table</dd></div>
@@ -161,6 +174,7 @@
       <div class="dm-help-entry"><dt><code>text_input(label)</code></dt><dd>A text box, read with <code>.value</code></dd></div>
       <div class="dm-help-entry"><dt><code>dropdown(label, options)</code></dt><dd>A menu, read with <code>.value</code></dd></div>
       <div class="dm-help-entry"><dt><code>button(label, on_click)</code></dt><dd>A button that calls a function</dd></div>
+      <div class="dm-help-entry"><dt><code>image_input(label)</code></dt><dd>A file picker for an image, read with <code>.value</code></dd></div>
       <div class="dm-help-entry"><dt><code>await load_csv(name)</code></dt><dd>Load a CSV from dewlab's shared data folder, if one's there</dd></div>
     </dl>
   </section>

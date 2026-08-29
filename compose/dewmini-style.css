@@ -72,6 +72,7 @@
 .dm-title-row { margin: 0.4rem 0 1.6rem; }
 .dm-title-row h1 { margin-bottom: 0.3rem; }
 .dm-subtitle { color: var(--dl-muted); margin: 0; font-size: 0.95rem; }
+.dm-subtitle-note { color: var(--dl-muted); margin: 0.5rem 0 0; font-size: 0.85rem; }
 
 /* ---------------------------------------------------------------- toolbar */
 
@@ -141,6 +142,11 @@
   background: currentColor;
   mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M8 5v14l11-7z'/%3E%3C/svg%3E") center/contain no-repeat;
   -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M8 5v14l11-7z'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+.dm-tool-icon-image {
+  background: currentColor;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z'/%3E%3C/svg%3E") center/contain no-repeat;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z'/%3E%3C/svg%3E") center/contain no-repeat;
 }
 
 /* ------------------------------------------------------------- empty state */
@@ -381,6 +387,7 @@
 .dm-doc-render li { margin-bottom: 0.2rem; }
 .dm-doc-render code { font-family: var(--dl-mono); font-size: 0.85em; background: var(--dl-cell-bg); padding: 0.1em 0.35em; border-radius: 3px; }
 .dm-doc-render em { color: var(--dl-muted); }
+.dm-doc-render img { display: block; max-width: 100%; height: auto; border-radius: 6px; margin: 0.4rem 0; }
 .dm-doc-empty { color: var(--dl-muted); font-style: italic; margin: 0; }
 
 .dm-cell-output {
@@ -594,7 +601,7 @@ kbd {
  * they get real ink regardless of which theme was on screen. */
 
 @media print {
-  .dl-chrome, .dm-toolbar, .dm-status, .dm-panel, .dm-insert, .dm-cell-actions, .dm-subtitle {
+  .dl-chrome, .dm-toolbar, .dm-status, .dm-panel, .dm-insert, .dm-cell-actions, .dm-subtitle, .dm-subtitle-note {
     display: none !important;
   }
   body, .dl-page { background: #fff !important; color: #111 !important; }

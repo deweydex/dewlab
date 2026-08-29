@@ -13,6 +13,12 @@ run a few lines of Python that isn't tied to any one topic. Where a tutorial
 page is a reading with code inside it, dewmini is closer to the reverse — a
 sheet of code with room for notes beside it.
 
+dewlab's other Python workspace, the [Mini IDE](../assets/mini-ide.html), is
+the larger tool of the two — a fuller toolbar and export set for a project
+meant to stand on its own outside any one tutorial. dewmini stays deliberately
+smaller: reach for it for the quick, disposable session; reach for the Mini
+IDE once a project outgrows one.
+
 ---
 
 ## What you see
@@ -36,7 +42,8 @@ A documentation cell is for notes beside the code — a heading, a reminder of
 what a section is doing, a place to write down what you tried. Click away
 from it and it renders: `# a heading`, `**bold**`, `*italic*`, `` `code` ``,
 and `- a bullet list` all format themselves. Click back into the rendered
-text to return to plain words underneath.
+text to return to plain words underneath. Its picture-frame icon attaches an
+image from your device — kept with the cell itself, never uploaded anywhere.
 
 ---
 
@@ -56,7 +63,7 @@ and every seam between cells once there are some — add more.
 
 ## What a cell can call
 
-A Python cell has the same seven functions a tutorial's cells do, because it
+A Python cell has the same eight functions a tutorial's cells do, because it
 runs the same underlying module a tutorial page runs, fetched fresh rather
 than reimplemented:
 
@@ -68,14 +75,20 @@ than reimplemented:
 | `text_input(label="", value="", id=None)` | A text box; read what was typed with `.value` |
 | `dropdown(label="", options=(), value=None, id=None)` | A menu; read the choice with `.value` |
 | `button(label="Go", on_click=None, id=None)` | A button that calls a function when pressed |
+| `image_input(label="Choose an image", id=None)` | A file picker for an image; read the picked file with `.value` |
 | `await load_csv(name, **read_csv_kwargs)` | Load a CSV from dewlab's shared data folder, if one is there |
 
 `numpy`, `pandas`, and `matplotlib` are available without importing them,
 though a cell is free to `import` them anyway — dewmini keeps that import
 visible rather than hiding it, since a cell copied out to somewhere else
-should still make sense on its own. A cell that raises an error shows the
-traceback trimmed to its own line, the same trimming a tutorial page's cell
-gets, so what's left on screen is the mistake actually worth reading.
+should still make sense on its own. Two more sit a step beyond a tutorial
+page's own defaults: `sqlite3`, a genuine Python database on the page with
+nothing to install (`import sqlite3` and go), and Pillow, what
+`image_input()` decodes a picked file into — a Pillow `Image` when Pillow
+has loaded, the file's raw bytes on the rare page where it hasn't. A cell
+that raises an error shows the traceback trimmed to its own line, the same
+trimming a tutorial page's cell gets, so what's left on screen is the
+mistake actually worth reading.
 
 ---
 
@@ -155,6 +168,6 @@ of the two approaches, which means a cell that never finishes has to be
 waited out or the page reloaded rather than interrupted. The shared data
 folder `load_csv` reads from is real, but currently empty, so a name that
 isn't there yet will say so rather than pretend otherwise. Widgets —
-`text_input`, `dropdown`, `button` — work here exactly as they do on a
-tutorial page, since dewmini keeps Python on the main thread precisely where
-that live DOM connection is available.
+`text_input`, `dropdown`, `button`, `image_input` — work here exactly as
+they do on a tutorial page, since dewmini keeps Python on the main thread
+precisely where that live DOM connection is available.

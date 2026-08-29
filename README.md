@@ -578,10 +578,10 @@ assets/
   tutorial_tools.py   what a student's cell code can call
   tree.html, tree.js  the topic tree page
   editor.html, editor.js  the browser-based authoring editor
-  mini-ide.html, mini-ide.js, mini-ide-style.css  a cell-based scratch IDE, no tutorial attached
+  mini-ide.html, mini-ide.js, mini-ide-style.css  a cell-based scratch IDE, no tutorial attached — the larger of the two Python workspaces, for a project meant to stand on its own
   vendor/             CodeMirror, KaTeX, and Milkdown, built from vendor-src/
 compose/
-  dewmini.html, dewmini.js, dewmini-style.css  a smaller, quieter cousin of the Mini IDE
+  dewmini.html, dewmini.js, dewmini-style.css  a smaller, quieter cousin of the Mini IDE — a quick notebook, not a project
   practice-bank.json   the problem bank dewmini's Practice button draws from
 build.py              markdown in, site/ out
 dev/curriculum_map.py generates planning/CURRICULUM_MAP.md from outcomes.yaml, topics.yaml and the tutorials
