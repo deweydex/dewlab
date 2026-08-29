@@ -16,25 +16,23 @@
  *   - Hover documentation for builtins and user-defined names
  *
  * Architecture:
- *   - Uses shared Pyodide instance (same as tutorials)
- *   - Cells share a common namespace (like Jupyter)
+ *   - Cell array (this file) + Pyodide engine (mini-ide-engine.js), which
+ *     boots the same assets/pyodide-worker.js the tutorial pages use — a
+ *     real Worker with real Jedi, a genuine Stop button, and the real
+ *     assets/tutorial_tools.py, falling back to the main thread if a
+ *     module Worker isn't available (e.g. a file:// download).
+ *   - Cells share one persistent Pyodide interpreter (like Jupyter)
  *   - State persisted to localStorage
- *   - Jedi runs inside Pyodide for pre-execution completion
  *
  * @module mini-ide
  */
 
 import { createCodeEditor, setEditorTheme } from "./vendor/codemirror.bundle.js";
+import * as engine from "./mini-ide-engine.js";
 
 // ============================================================================
 // Configuration Constants
 // ============================================================================
-
-/**
- * Pyodide version to use (must match what tutorials use)
- * @constant {string}
- */
-const PYODIDE_VERSION = "0.28.3";
 
 /**
  * LocalStorage key for cells state
@@ -51,36 +49,6 @@ const HELPER_VISIBLE_KEY = "mini-ide:helper-visible";
 // ============================================================================
 // Global State
 // ============================================================================
-
-/**
- * Pyodide instance (loaded on demand, shared across all cells)
- * @type {Object|null}
- */
-let pyodide = null;
-
-/**
- * Whether Pyodide has finished loading
- * @type {boolean}
- */
-let pyodideLoaded = false;
-
-/**
- * Whether Pyodide is currently loading
- * @type {boolean}
- */
-let pyodideLoading = false;
-
-/**
- * Jedi module (loaded on demand for pre-execution completion)
- * @type {Object|null}
- */
-let jediModule = null;
-
-/**
- * Shared namespace for all cells (like Jupyter's global namespace)
- * @type {Object}
- */
-let sharedNamespace = { __builtins__: {} };
 
 /**
  * Array of cell objects
@@ -130,6 +98,24 @@ let draggedCell = null;
  * @type {HTMLElement|null}
  */
 let dropPlaceholder = null;
+
+// ============================================================================
+// Execution State
+// ============================================================================
+
+/**
+ * ID of the cell currently running, or null. A second click on that same
+ * cell's Run button sends a Stop (interrupt) request instead of starting
+ * a new run; clicks on any other cell are ignored while one is running.
+ * @type {string|null}
+ */
+let runningCellId = null;
+
+/**
+ * Whether "Run All" is in progress.
+ * @type {boolean}
+ */
+let runningAll = false;
 
 // ============================================================================
 // Cell Types
@@ -409,6 +395,15 @@ async function init() {
   sampleNoticeEl = document.getElementById('sample-cells-notice');
   removeSampleBtn = document.getElementById('remove-sample-cells');
 
+  // Wire the engine to this page's cells before anything can run
+  engine.configure({
+    getOutputEl: (cellId) => {
+      const cell = cells.find(c => c.id === cellId);
+      return cell ? cell.outputEl : null;
+    },
+    onStatus: (text, kind) => updateStatus(text, kind)
+  });
+
   // Load saved state
   loadSavedState();
 
@@ -619,7 +614,7 @@ function createNewCell(type, content = '', isSample = false, id = generateId()) 
     type,
     content: content || getDefaultContent(type),
     output: '',
-    error: null,
+    hasError: false,
     isSample
   };
 }
@@ -689,8 +684,8 @@ function createCellElement(cell, index) {
   cellEl.dataset.index = index;
   cellEl.dataset.id = cell.id;
   
-  // Add error class if cell has error
-  if (cell.error) {
+  // Add error class if the cell's last run raised
+  if (cell.hasError) {
     cellEl.classList.add('error');
   }
 
@@ -731,6 +726,9 @@ function createCellElement(cell, index) {
   header.appendChild(typeLabel);
   header.appendChild(actions);
 
+  // Store the Run button reference so runCell() can toggle it to Stop
+  cell.runBtn = runBtn;
+
   // Cell content area
   const contentEl = document.createElement('div');
   contentEl.className = 'mini-ide-cell-content';
@@ -755,10 +753,9 @@ function createCellElement(cell, index) {
           if (sampleNoticeEl) sampleNoticeEl.hidden = !hasSampleCells;
         }
       },
-      completeNames: () => Object.keys(sharedNamespace),
-      getDoc: (name) => getDocForName(name),
-      getJediCompletions: (text, pos, word) => getJediCompletions(text, pos, word),
-      getJediDoc: (name) => getJediDoc(name)
+      completeNames: engine.pageNamesCompletion,
+      getDoc: engine.hoverDoc,
+      getSignature: engine.signatureHelp
     });
 
     // Store editor reference on cell for later access
@@ -782,13 +779,12 @@ function createCellElement(cell, index) {
     cell.textarea = textarea;
   }
 
-  // Cell output area
+  // Cell output area — repopulated from the last run's rendered markup,
+  // which already includes any traceback tutorial_tools.py produced.
   const outputEl = document.createElement('div');
   outputEl.className = 'mini-ide-cell-output';
   if (cell.output) {
     outputEl.innerHTML = cell.output;
-  } else if (cell.error) {
-    outputEl.innerHTML = `<pre class="dl-error">${escapeHtml(cell.error)}</pre>`;
   } else {
     outputEl.className += ' empty';
   }
@@ -847,7 +843,9 @@ function scrollToCell(index) {
 
 /**
  * Run a single cell by ID
- * Executes the Python code and captures output/errors
+ * Boots the engine if needed, then executes the cell's Python code.
+ * A second click on the cell that is already running sends a Stop
+ * (interrupt) request instead of starting a new run.
  *
  * @async
  * @param {string} cellId - ID of cell to run
@@ -856,50 +854,82 @@ async function runCell(cellId) {
   const cell = cells.find(c => c.id === cellId);
   if (!cell || cell.type !== CELL_TYPES.PYTHON) return;
 
-  await ensurePyodide();
+  if (runningCellId === cellId) {
+    engine.requestInterrupt();
+    return;
+  }
+  if (runningCellId || runningAll) return;
 
   const index = cells.findIndex(c => c.id === cellId);
-  const outputEl = cell.outputEl;
-  
-  if (outputEl) {
-    outputEl.className = 'mini-ide-cell-output';
-    outputEl.innerHTML = '<em>Running...</em>';
-  }
 
   try {
-    // Clear previous output
-    cell.output = '';
-    cell.error = null;
-
-    // Execute the code
-    const result = await pyodide.runPythonAsync(cell.content);
-
-    // Capture stdout (Pyodide captures this automatically)
-    // For expressions, get the result
-    if (result !== undefined) {
-      cell.output = formatOutput(result);
-    }
-
-    // Update shared namespace with any new definitions
-    await updateSharedNamespace();
-
-    // Update status
-    updateStatus(`Cell ${index + 1} executed successfully.`);
-
+    await engine.ensureBooted();
   } catch (error) {
-    cell.error = formatError(error);
-    cell.output = '';
-    updateStatus(`Cell ${index + 1} error: ${truncateError(cell.error)}`);
+    updateStatus(`Python failed to start: ${error.message}. Reloading the page usually fixes it.`, 'error');
+    return;
   }
 
-  // Re-render to show output
+  runningCellId = cellId;
+  const runBtn = cell.runBtn;
+  const previousLabel = runBtn ? runBtn.textContent : 'Run';
+  setRunButtonRunning(runBtn);
+
+  try {
+    const { ok } = await engine.runCell(cellId, cell.content);
+    cell.hasError = !ok;
+    cell.output = cell.outputEl ? cell.outputEl.innerHTML : '';
+    updateStatus(
+      ok ? `Cell ${index + 1} executed successfully.` : `Cell ${index + 1} raised an error.`,
+      ok ? '' : 'error'
+    );
+  } catch (error) {
+    updateStatus(`Cell ${index + 1} failed to run: ${error.message}`, 'error');
+  } finally {
+    runningCellId = null;
+    resetRunButton(runBtn, previousLabel);
+  }
+
   saveState();
-  renderCells();
+}
+
+/**
+ * Toggle a cell's Run button into its running/Stop state.
+ * When a genuine interrupt buffer is available (worker mode, cross-origin
+ * isolated) the button becomes a real Stop; otherwise it just shows the
+ * cell is busy, since there is nothing to interrupt.
+ *
+ * @param {HTMLButtonElement|undefined} runBtn
+ */
+function setRunButtonRunning(runBtn) {
+  if (!runBtn) return;
+  if (engine.canStop()) {
+    runBtn.disabled = false;
+    runBtn.textContent = 'Stop';
+    runBtn.classList.add('dl-btn-stop');
+  } else {
+    runBtn.disabled = true;
+    runBtn.textContent = 'Running…';
+  }
+}
+
+/**
+ * Restore a cell's Run button after it finishes (or fails to) run.
+ *
+ * @param {HTMLButtonElement|undefined} runBtn
+ * @param {string} previousLabel
+ */
+function resetRunButton(runBtn, previousLabel) {
+  if (!runBtn) return;
+  runBtn.disabled = false;
+  runBtn.classList.remove('dl-btn-stop');
+  runBtn.textContent = previousLabel === 'Running…' || previousLabel === 'Stop' ? 'Run' : previousLabel;
 }
 
 /**
  * Run all cells in order
- * Executes each Python cell sequentially, maintaining shared namespace
+ * Executes each Python cell sequentially. Cells share one persistent
+ * Pyodide interpreter, so a name defined in an earlier cell is already
+ * visible to a later one without any extra bookkeeping here.
  *
  * @async
  * @function runAllCells
@@ -909,141 +939,37 @@ async function runAllCells() {
     updateStatus('No cells to run.');
     return;
   }
+  if (runningCellId || runningAll) return;
 
-  await ensurePyodide();
+  try {
+    await engine.ensureBooted();
+  } catch (error) {
+    updateStatus(`Python failed to start: ${error.message}. Reloading the page usually fixes it.`, 'error');
+    return;
+  }
 
-  // Clear all outputs first
-  cells.forEach(cell => {
-    cell.output = '';
-    cell.error = null;
-  });
-
-  // Reset shared namespace
-  sharedNamespace = { __builtins__: {} };
-
+  runningAll = true;
   updateStatus(`Running ${cells.length} cells...`);
 
-  // Run each cell in order
   for (let i = 0; i < cells.length; i++) {
     const cell = cells[i];
     if (cell.type === CELL_TYPES.PYTHON && cell.content.trim()) {
+      runningCellId = cell.id;
       try {
-        await pyodide.runPythonAsync(cell.content);
-        await updateSharedNamespace();
+        const { ok } = await engine.runCell(cell.id, cell.content);
+        cell.hasError = !ok;
+        cell.output = cell.outputEl ? cell.outputEl.innerHTML : '';
+        if (!ok) updateStatus(`Error in cell ${i + 1}.`, 'error');
       } catch (error) {
-        cell.error = formatError(error);
-        cell.output = '';
-        updateStatus(`Error in cell ${i + 1}: ${truncateError(cell.error)}`);
-        // Continue to next cell even if this one fails
+        updateStatus(`Cell ${i + 1} failed to run: ${error.message}`, 'error');
       }
     }
   }
 
-  // Re-render to show all outputs
+  runningCellId = null;
+  runningAll = false;
   saveState();
-  renderCells();
   updateStatus(`All ${cells.length} cells executed.`);
-}
-
-// ============================================================================
-// Pyodide Management
-// ============================================================================
-
-/**
- * Ensure Pyodide is loaded and ready
- * Loads Pyodide and required packages on demand
- *
- * @async
- * @returns {Promise<Object>} Pyodide instance
- */
-async function ensurePyodide() {
-  if (pyodideLoaded) return pyodide;
-  if (pyodideLoading) {
-    // Wait for existing load to complete
-    while (pyodideLoading) {
-      await new Promise(resolve => setTimeout(resolve, 100));
-    }
-    return pyodide;
-  }
-
-  pyodideLoading = true;
-  updateStatus('Loading Python...');
-
-  try {
-    // Load Pyodide
-    const pyodideUrl = new URL(
-      globalThis.DEWLAB_PYODIDE_BASE ||
-        `https://cdn.jsdelivr.net/pyodide/v${PYODIDE_VERSION}/full/`,
-      document.baseURI
-    ).href;
-
-    pyodide = await (globalThis.loadPyodide || (await import(pyodideUrl + "pyodide.mjs")).loadPyodide)({
-      indexURL: pyodideUrl
-    });
-
-    updateStatus('Loading packages...');
-
-    // Load required packages
-    await pyodide.loadPackage(['numpy', 'pandas', 'matplotlib']);
-
-    updateStatus('Preparing notebook tools...');
-
-    // Load tutorial_tools.py
-    await loadTutorialTools();
-
-    pyodideLoaded = true;
-    pyodideLoading = false;
-    updateStatus('Python ready.');
-
-    return pyodide;
-  } catch (error) {
-    pyodideLoading = false;
-    console.error('Failed to load Pyodide:', error);
-    updateStatus(`Failed to load Python: ${error.message}`, 'error');
-    throw error;
-  }
-}
-
-/**
- * Load tutorial_tools.py into Pyodide
- * Provides the dewlab-specific functions for cells
- *
- * @async
- */
-async function loadTutorialTools() {
-  const toolsCode = getTutorialToolsCode();
-  pyodide.FS.writeFile("/home/pyodide/tutorial_tools.py", toolsCode, { encoding: "utf8" });
-  
-  // Import and configure tutorial_tools
-  const tutorialTools = pyodide.pyimport("tutorial_tools");
-  
-  // Configure with empty data base (Mini IDE doesn't have a data directory by default)
-  tutorialTools.configure("");
-  
-  // Store reference for later use
-  window.tutorialTools = tutorialTools;
-}
-
-/**
- * Update shared namespace with current Pyodide globals
- * Excludes builtins and private names
- *
- * @async
- */
-async function updateSharedNamespace() {
-  try {
-    const globals = pyodide.globals.get("dict");
-    const newGlobals = await globals.toJs();
-    
-    // Update shared namespace with non-private, non-dunder names
-    Object.keys(newGlobals).forEach(key => {
-      if (!key.startsWith('_') && key !== 'In' && key !== 'Out') {
-        sharedNamespace[key] = newGlobals[key];
-      }
-    });
-  } catch (error) {
-    console.warn('Failed to update shared namespace:', error);
-  }
 }
 
 // ============================================================================
@@ -1291,164 +1217,6 @@ function escapeHtml(text) {
   const div = document.createElement('div');
   div.textContent = text;
   return div.innerHTML;
-}
-
-/**
- * Format Python output for display
- * Handles various types of Python objects
- *
- * @param {any} output - Python output to format
- * @returns {string} Formatted output
- */
-function formatOutput(output) {
-  if (output === undefined || output === null) {
-    return '';
-  }
-  if (typeof output === 'string') {
-    return output;
-  }
-  if (typeof output === 'object') {
-    try {
-      return JSON.stringify(output, null, 2);
-    } catch {
-      return String(output);
-    }
-  }
-  return String(output);
-}
-
-/**
- * Format Python error for display
- * Extracts meaningful error message from Pyodide errors
- *
- * @param {Error} error - Error to format
- * @returns {string} Formatted error message
- */
-function formatError(error) {
-  if (typeof error === 'string') return error;
-  if (error.message) return error.message;
-  return String(error);
-}
-
-/**
- * Truncate error message for status display
- * Keeps error messages short for the status bar
- *
- * @param {string} error - Error message
- * @param {number} [maxLength=50] - Maximum length
- * @returns {string} Truncated error
- */
-function truncateError(error, maxLength = 50) {
-  if (error.length <= maxLength) return error;
-  return error.substring(0, maxLength) + '...';
-}
-
-// ============================================================================
-// Jedi Integration (for autocomplete)
-// ============================================================================
-
-/**
- * Get Jedi completions for autocomplete
- * Runs Jedi inside Pyodide for pre-execution completion
- *
- * @async
- * @param {string} text - Code text
- * @param {Object} pos - Cursor position
- * @param {string} word - Current word
- * @returns {Promise<Array>} Array of completion suggestions
- */
-async function getJediCompletions(text, pos, word) {
-  if (!pyodide) return [];
-  
-  try {
-    if (!jediModule) {
-      await pyodide.loadPackage('jedi');
-      jediModule = pyodide.pyimport('jedi');
-    }
-
-    // This is a simplified version - full Jedi integration would be more complex
-    // For now, return basic Python keywords and builtins
-    return [
-      { label: 'print', type: 'function' },
-      { label: 'len', type: 'function' },
-      { label: 'range', type: 'function' },
-      { label: 'def', type: 'keyword' },
-      { label: 'for', type: 'keyword' },
-      { label: 'if', type: 'keyword' },
-      { label: 'import', type: 'keyword' }
-    ];
-  } catch (error) {
-    console.warn('Jedi completion failed:', error);
-    return [];
-  }
-}
-
-/**
- * Get documentation for a name using Jedi
- *
- * @async
- * @param {string} name - Name to get documentation for
- * @returns {Promise<string|null>} Documentation string or null
- */
-async function getJediDoc(name) {
-  if (!pyodide) return null;
-  
-  try {
-    if (!jediModule) {
-      await pyodide.loadPackage('jedi');
-      jediModule = pyodide.pyimport('jedi');
-    }
-    
-    // Simplified - return basic docs
-    const docs = {
-      'print': 'print(*objects, sep=\' \', end=\'\\n\', file=sys.stdout, flush=False)\n\nPrints the values to a stream, or to sys.stdout by default.',
-      'len': 'len(object)\n\nReturn the number of items in a container.',
-      'range': 'range(stop)\nrange(start, stop[, step])\n\nGenerate numbers in a range.'
-    };
-    
-    return docs[name] || null;
-  } catch (error) {
-    console.warn('Jedi doc failed:', error);
-    return null;
-  }
-}
-
-/**
- * Get documentation for a name from shared namespace
- *
- * @param {string} name - Name to get documentation for
- * @returns {string|null} Documentation string or null
- */
-function getDocForName(name) {
-  // Simplified documentation
-  const docs = {
-    'print': 'Prints values to stdout',
-    'len': 'Returns the length of an object',
-    'range': 'Generates a range of numbers',
-    'show': 'dewlab function to display values',
-    'show_table': 'dewlab function to display a table',
-    'check': 'dewlab function to check answers',
-    'text_input': 'dewlab function to create a text input widget',
-    'dropdown': 'dewlab function to create a dropdown widget',
-    'button': 'dewlab function to create a button widget',
-    'load_csv': 'dewlab function to load a CSV file'
-  };
-  
-  return docs[name] || null;
-}
-
-// ============================================================================
-// Tutorial Tools Code
-// ============================================================================
-
-/**
- * Get the tutorial_tools.py code as a string
- * This is a simplified version adapted for the Mini IDE
- *
- * @returns {string} Python code for tutorial tools
- */
-function getTutorialToolsCode() {
-  return `\nimport html\nimport json\nimport sys\nimport traceback\nimport warnings\nimport io\nimport base64\n\n# Suppress matplotlib backend warning\nwarnings.filterwarnings("ignore", message="FigureCanvasAgg is non-interactive")\n\n# Global state for the current cell\n_current_cell_id = None\n_current_output_element = None\n\nclass _OutputCapture:\n    """Capture stdout for display in cell output."""\n    def __init__(self):\n        self.outputs = []\n        \n    def write(self, text):\n        self.outputs.append(text)\n        \n    def flush(self):\n        pass\n\n    def getvalue(self):\n        return ''.join(self.outputs)\n\nclass _Widget:\n    """Base class for all widgets."""\n    _counter = 0\n    \n    def __init__(self, label, widget_id=None):\n        _Widget._counter += 1\n        self.id = widget_id or f"widget-{_Widget._counter}"\n        self.label = label\n        self.type = "widget"\n\nclass _TextInput(_Widget):\n    """Text input widget."""\n    def __init__(self, label, value="", widget_id=None):\n        super().__init__(label, widget_id)\n        self.value = value\n        self.type = "text"\n\nclass _Dropdown(_Widget):\n    """Dropdown widget."""\n    def __init__(self, label, options, value=None, widget_id=None):\n        super().__init__(label, widget_id)\n        self.options = options\n        self.value = value or (options[0] if options else "")\n        self.type = "dropdown"\n\nclass _Button(_Widget):\n    """Button widget."""\n    def __init__(self, label, on_click, widget_id=None):\n        super().__init__(label, widget_id)\n        self.on_click = on_click\n        self.type = "button"\n\ndef text_input(label, value="", widget_id=None):\n    """Create a text input widget."""\n    widget = _TextInput(label, value, widget_id)\n    if _current_output_element:\n        widget_id = widget.id\n        _current_output_element.innerHTML += f'''\n        <div class="dl-widget dl-widget-text" data-widget-id="{widget_id}">\n            <label>{html.escape(label)}: <input type="text" value="{html.escape(widget.value)}" data-widget-id="{widget_id}"></label>\n        </div>\n        '''\n    return widget\n\ndef dropdown(label, options, value=None, widget_id=None):\n    """Create a dropdown widget."""\n    widget = _Dropdown(label, options, value, widget_id)\n    if _current_output_element:\n        widget_id = widget.id\n        options_html = ''.join(f'<option value="{html.escape(o)}"{" selected" if o == widget.value else ""}>{html.escape(o)}</option>' for o in options)\n        _current_output_element.innerHTML += f'''\n        <div class="dl-widget dl-widget-dropdown" data-widget-id="{widget_id}">\n            <label>{html.escape(label)}: <select data-widget-id="{widget_id}">{options_html}</select></label>\n        </div>\n        '''\n    return widget\n\ndef button(label, on_click, widget_id=None):\n    """Create a button widget."""\n    widget = _Button(label, on_click, widget_id)\n    if _current_output_element:\n        widget_id = widget.id\n        _current_output_element.innerHTML += f'''\n        <div class="dl-widget dl-widget-button" data-widget-id="{widget_id}">\n            <button type="button" data-widget-id="{widget_id}">{html.escape(label)}</button>\n        </div>\n        '''\n    return widget\n\nasync def load_csv(name):\n    """Load a CSV file from the data directory."""\n    import pandas as pd\n    import io\n    \n    # In Mini IDE, we need to fetch the CSV\n    try:\n        from js import fetch\n        response = await fetch(f"data/{name}")\n        if response.ok:\n            text = await response.text()\n            return pd.read_csv(io.StringIO(text))\n        else:\n            raise FileNotFoundError(f"Could not find data/{name}")\n    except Exception as e:\n        raise FileNotFoundError(f"Could not load {name}: {e}")\n\ndef show(value):\n    """Display a value in the cell output."""\n    if _current_output_element:\n        _current_output_element.innerHTML += f'<div class="dl-show">{html.escape(repr(value))}</div>'\n    return value\n\ndef show_table(df):\n    """Display a DataFrame as a table."""\n    if _current_output_element:\n        html_table = df.to_html(classes='dl-table', index=False)\n        _current_output_element.innerHTML += f'<div class="dl-show">{html_table}</div>'\n    return df\n\ndef check(value, expected):\n    """Check if a value matches the expected value."""\n    result = value == expected\n    if _current_output_element:\n        color = "#1f6b3f" if result else "#9b2226"\n        _current_output_element.innerHTML += f'<div class="dl-check" style="color: {color}">{"✓ Correct" if result else "✗ Incorrect"}</div>'\n    return result\n\ndef configure(data_base):\n    """Configure the tutorial tools with the data base URL."""\n    global _data_base\n    _data_base = data_base\n  `;
 }
 
 // ============================================================================

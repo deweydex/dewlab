@@ -5,6 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Mini IDE - dewlab</title>
 
+<!-- Cross-origin isolation, as early as this page can ask for it — a
+     genuine Stop button needs the SharedArrayBuffer interrupt path, which
+     needs crossOriginIsolated. Same shim shell.html registers for tutorial
+     pages (see its own comment); Mini IDE never picked this up before,
+     because it's a standalone page a student can reach without ever
+     visiting a tutorial page first, so it registers it for itself too. -->
+<script src="coi-serviceworker.js"></script>
+
 <!-- Version metadata for consistency with tutorial pages -->
 <meta name="tutorial-version" content="1.0">
 <meta name="tutorial-slug" content="mini-ide">
