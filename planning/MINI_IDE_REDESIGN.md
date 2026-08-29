@@ -270,7 +270,7 @@ kind.
 
 ## Status
 
-- [ ] Phase 1 — Engine migration (in progress)
+- [x] Phase 1 — Engine migration (assets/mini-ide-engine.js, commit 22c474a)
 - [ ] Phase 2 — Filesystem layer
 - [ ] Phase 3 — Pane layout + file manager UI
 - [ ] Phase 4 — SQLite/SQL support
