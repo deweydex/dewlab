@@ -60,6 +60,17 @@ tracks it as a sequenced effort, same shape as the Mini IDE redesign.
 - [ ] `CONTRIBUTING.md` — the standing check
 - [ ] `docs/MINI_IDE.md` — language pass (already written for this
       redesign; needs a friendlier pass, not a rewrite)
+- [ ] `docs/DEWMINI.md` — same pass; this file didn't exist when this plan
+      was first written (it landed via PR #71, merged into `main` around
+      the same time as this redesign) — same audience as
+      `docs/MINI_IDE.md`, same treatment
+
+Note: `main` also picked up dewmini's own feature work (sqlite3, Pillow,
+an `image_input` widget in `tutorial_tools.py`, doc-cell image attach —
+PR #69/#71) while this session was running. It merged cleanly with no
+conflicts; `tutorial_tools.py`'s pedagogical-comment pass (Phase C) and
+`compose/dewmini.js`'s (Phase D) both need to account for that code now,
+not just what this session originally wrote.
 
 **Phase B — this redesign's own code (freshest, most relevant)**
 - [ ] `assets/mini-ide.js` (1751 lines) — pedagogical comments +
