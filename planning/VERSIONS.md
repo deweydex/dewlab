@@ -1,95 +1,144 @@
-# Tutorial Multi-Version Release Architecture
+# Tutorial versions
 
-Technical specification for tutorial multi-version release lifecycles, dated semantic versioning, archive retention, and client-side progress compatibility in dewlab.
-
----
-
-## 1. Core Architecture & Objectives
-
-dewlab tutorials evolve over academic terms. The versioning system satisfies three fundamental requirements:
-1. **Student Progress Continuity**: Updating or revising a tutorial must not disrupt an active student's session or invalidate saved cell answers.
-2. **Deterministic Version History**: Prior releases remain accessible via persistent URLs, enabling cohorts to reference exact course snapshots.
-3. **Draft & Staged Previews**: Authors can develop and stage new tutorials or releases (`draft`, `beta`) without prematurely replacing the default curriculum route.
-
-A **version** represents a formal, published release of a tutorial rather than an incremental commit. Minor prose or typo fixes occur in-place; structural revisions (modifying exercises, re-architecting sections) warrant a timestamped release.
+How a tutorial gets more than one release: dated versions, archive
+retention, and how saved progress survives a student moving between
+them.
 
 ---
 
-## 2. Release Identification & Lifecycle States
+## 1. What versioning has to do
 
-### Version Identifier Format
-Versions are identified by a human-readable release timestamp: `YYYY.MM.DD.N` (e.g. `2026.09.15.1`), indicating year, month, day, and the sequence number for that day.
+Tutorials change over academic terms, and the versioning system exists
+to satisfy three things at once:
 
-- **Identity & URLs**: Used in versioned URLs (`<slug>/v2026.09.15.1.html`) and manifest metadata.
-- **Sorting**: Parsed numerically as four integers to ensure correct chronological sorting (`2026.08.20.10` sorts after `2026.08.20.9`).
-- **Reader UI Presentation**: Rendered as standard date prose (e.g. "15 September 2026") in browser selection menus.
+1. **A student's saved work has to survive a revision.** Updating a
+   tutorial must never disrupt a session already in progress or
+   invalidate answers a student already saved.
+2. **A past release has to stay reachable.** A cohort that worked
+   through an earlier version can still get back to exactly the page
+   they used, at a permanent URL.
+3. **A new tutorial or release can be staged before it's live.** An
+   author can write and preview a `draft` or `beta` tutorial without it
+   replacing the default route students actually land on.
 
-### Lifecycle Status Matrix
+A **version** is a formal, published release — not every commit. A
+typo fix or a prose clarification happens in place, no version bump
+needed; a structural change (different exercises, a rewritten section)
+gets a new, timestamped release instead.
 
-| Status | Static Page Built? | Listed in Reading Order? | Description & Access |
+---
+
+## 2. Version identifiers and lifecycle states
+
+### Format
+A version is a human-readable release timestamp: `YYYY.MM.DD.N` (e.g.
+`2026.09.15.1`) — year, month, day, and which release of that day it
+was.
+
+- **Identity and URLs**: used in versioned URLs
+  (`<slug>/v2026.09.15.1.html`) and in the page's own manifest.
+- **Sorting**: parsed as four separate integers, so `2026.08.20.10`
+  correctly sorts after `2026.08.20.9` — sorting the raw string would
+  get that wrong.
+- **Shown to a reader**: rendered as an ordinary date ("15 September
+  2026") anywhere a student picks between releases.
+
+### Status
+
+| Status | Built as a page? | In the reading order? | What it means |
 |---|---|---|---|
-| **`draft`** | **No** | No | Internal repository work-in-progress; visible only in local development builds and the authoring editor. |
-| **`beta`** | Yes | No | Publicly accessible via direct URL for testing/preview; marked with a prominent preview banner; never serves as default route. |
-| **`live`** | Yes | Yes | Active canonical release; candidate for default unversioned route. |
-| **`archived`** | Yes | No | Retired curriculum module; remains built at historical URL to preserve past student work; excluded from active reading order. |
+| `draft` | No | No | Work in progress — visible only in a local build or the authoring editor. |
+| `beta` | Yes | No | Reachable by direct URL, for testing or preview — never the default route. |
+| `live` | Yes | Yes | The active, canonical release — the one a plain URL serves. |
+| `archived` | Yes | No | Retired — still built, at its old URL, so past students' saved work still has somewhere to land — but out of the reading order. |
 
 ---
 
-## 3. Directory Layout & Build Resolution
+## 3. Where the files live
 
-Tutorials exist either as a single Markdown file (when only one release exists) or as a versioned directory (once a second release is published):
+A tutorial is either a single Markdown file (while it only has one
+release) or a folder (once a second release is published):
 
 ```
 tutorials/mit-pdp-maths-prog-integration/
-  first-steps.md                  # Single-version tutorial (standard form)
-  cracking-equations/             # Multi-version tutorial directory
-    cracking-equations.md         # Active working release
-    v2026.06.02.1.md              # Historical frozen release
-    v2026.09.15.1.md              # Historical frozen release
+  first-steps.md                  # single-version tutorial (the normal case)
+  cracking-equations/             # a tutorial with more than one release
+    cracking-equations.md         # the current, working release
+    v2026.06.02.1.md              # a frozen past release
+    v2026.09.15.1.md              # a frozen past release
 ```
 
-### Static Routing & SEO Structure
-- **Canonical Default**: `tutorials/<module>/<slug>.html` serves the newest `live` release.
-- **Historical Releases**: Built to `tutorials/<module>/<slug>/v<version>.html`.
-- **Search Engine Canonicalization**: Historical release pages carry `<link rel="canonical" href=".../<slug>.html">` pointing to the canonical default URL.
-- **Standalone Offline Bundles**: To maintain reasonable archive sizes, only the default `live` release is compiled into single-file offline HTML and included in series download ZIPs.
+- **The plain URL** (`tutorials/<module>/<slug>.html`) always serves the
+  newest `live` release.
+- **Past releases** build to `tutorials/<module>/<slug>/v<version>.html`.
+- **Search engines** are pointed at the canonical page: every archived
+  release carries `<link rel="canonical" href=".../<slug>.html">` back
+  to the current one.
+- **Downloadable copies**: only the current `live` release gets a
+  standalone offline HTML file or a place in a series' zip — an offline
+  copy of a superseded release isn't worth the size.
 
 ---
 
-## 4. Client-Side Progress & State Resolution
+## 4. How saved work survives a version change
 
-### State Restoration Matching
-Student cell state is keyed by `task_id` rather than tutorial version string. When a student opens a tutorial:
-1. `localStorage` progress is retrieved using the scoped `dewlab:progress:<module>:<slug>` key.
-2. The runtime matches saved cell records against active cell IDs on the page.
-3. If an answer belongs to a cell ID absent from the current release, the data remains safely preserved in local storage and re-appears if the student navigates to a release containing that cell.
+### Matching a student's answers back up
+A student's cells are saved by `task_id`, never by version string. When
+a tutorial page loads:
 
-### Version Transition Feedback
-When switching versions via the UI picker, dewlab analyzes cell ID sets in the manifest and provides exact deterministic counts:
-> **15 September 2026** — 6 of your 8 answers carry over. 2 cells are not present in that version (data remains preserved in storage).
+1. Saved progress is read from `localStorage`, under the scoped key
+   `dewlab:progress:<module>:<slug>`.
+2. Each saved cell is matched against the cells actually on the current
+   page, by id.
+3. An answer whose cell id isn't on this release just stays saved —
+   nothing is lost — and reappears the moment the student is on a
+   release that has that cell again.
 
-### Cohort Pinning & User Preference
-- **First-time Visitors**: Default to the newest `live` release built at the unversioned URL.
-- **Returning Students**: The runtime detects the release the student last saved work in and automatically maintains continuity on that version.
-- **Reader Settings**: Readers can configure global preferences in the settings panel (*Stay on version last worked in* vs. *Always navigate to latest live*).
+### What the version picker tells a student
+Switching versions through the UI compares the cell-id sets of both
+releases and gives an honest, exact count, not a vague warning:
+
+> **15 September 2026** — 6 of your 8 answers carry over. 2 cells
+> aren't in that version (they're still saved, and come back if you
+> return to a version that has them).
+
+### Which release a student actually lands on
+- **A first-time visitor** gets the newest `live` release, at the plain
+  URL.
+- **A returning student** is kept on the release they were already
+  working in — the runtime remembers, and doesn't move them without
+  asking.
+- **Settings** lets a reader choose which of those two behaviours they
+  want going forward: stay on the version they left off in, or always
+  jump to the newest.
 
 ---
 
-## 5. Editor Release Workflow (`assets/editor.js`)
+## 5. How a release actually happens (`assets/editor.js`)
 
-1. **Working Copy vs. Original**: The editor maintains `state.original` (the fetched baseline) and the working buffer.
-2. **Release Execution**: Freezes `state.original` into a new timestamped file (`v<previous-version>.md`) and publishes the working buffer under today's timestamp (`YYYY.MM.DD.1`).
-3. **Change Analysis**: The editor inspects cell IDs between working and baseline text, actively prompting the author to release a new version when cell IDs have been added, removed, or mutated.
+1. The editor keeps two copies in memory: `state.original` (what was
+   fetched) and the working buffer (what's being edited).
+2. Releasing freezes `state.original` as a new file named for its own
+   old version (`v<previous-version>.md`), and publishes the working
+   buffer under today's date as the new current version.
+3. Before that, the editor compares cell ids between the working buffer
+   and the original, and prompts the author to release a new version if
+   any were added, removed, or renamed — the signal that this edit is
+   structural, not just a wording fix.
 
 ---
 
-## 6. Semantic Cross-Referencing
+## 6. Linking to a topic, not just a tutorial
 
-In addition to static `tutorial:<slug>#<anchor>` links, dewlab supports conceptual outcome links:
+Beyond a plain `tutorial:<slug>#<anchor>` link, a tutorial can link to a
+learning outcome directly:
 
 ```markdown
 As introduced in [Linear Functions](topic:MIT-3.2) ...
 ```
 
-- **Build Resolution**: `build.py` maps outcome codes (`MIT-X.Y`) to the active tutorial currently teaching that outcome via `taught_where()`.
-- **Integrity Guarantee**: If an outcome is removed or archived without a successor, `build.py` raises a build failure, preventing broken pedagogical references across the curriculum.
+- `build.py` resolves `MIT-X.Y` to whichever tutorial currently teaches
+  that outcome (`taught_where()`).
+- If an outcome is removed or archived with nothing left to take its
+  place, the build fails rather than shipping a link that points at
+  nothing.
