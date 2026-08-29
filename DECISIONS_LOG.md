@@ -2581,3 +2581,84 @@ under CodeMirror's own auto-indent/auto-close handling, and hovering a
 bare builtin needed a `view.coordsAtPos()`-based helper since "len" inside
 "len([1, 2, 3])" gets no highlighting span of its own for a DOM text
 locator to find. `standalone.bundle.js`/`codemirror.bundle.js` rebuilt.*
+
+**7.77 — The Worker migration `QUESTIONS.md` left open was built: Pyodide
+now runs off the main thread on the hosted site, and "Run" genuinely
+becomes "Stop."** `planning/CELL_CONTROLS.md` §2 found the previous,
+main-thread setup could not support this at all — a blocking Python loop
+leaves no thread free to handle a click — and `QUESTIONS.md` recorded the
+open question rather than guessing at an answer. This is that answer:
+built, not merely re-weighed.
+
+**Two execution paths, chosen by `currentManifest.standalone`.** The
+offline, downloadable export (`build.py`'s `standalone_html()`) keeps
+running Pyodide on the main thread exactly as before — a `file://` page
+cannot use a module Worker, and the export has no Stop button to justify
+the cost anyway. Every function that used to talk to Pyodide directly now
+exists twice in `tutorial-runtime.js`: unchanged under an `MT` suffix for
+that path, and behind a `workerRequest()` postMessage round-trip for the
+hosted path. `boot(manifest)` picks the path once; nothing downstream
+re-checks it per call.
+
+**`assets/pyodide-worker.js`**, new, is a module Worker running the same
+`tutorial_tools.py`, the same `docFor`/`signatureFor`/Jedi machinery moved
+over verbatim, behind one uniform request/response protocol
+(`{type, id, ...}` in, `{type:"response", id, result|error}` out, plus
+one-way `status`/`jedi-ready`/`output` pushes). Every URL it fetches
+(Pyodide's own base, `tutorial_tools.py`, the CSV data base) has to be
+resolved to an absolute URL before being handed to the Worker — a relative
+fetch inside a Worker resolves against the worker script's own location,
+not the page's, which is not obvious until it silently 404s.
+
+**The interrupt itself is `pyodide.setInterruptBuffer()`**, exactly as
+`CELL_CONTROLS.md` §2 described: a `SharedArrayBuffer` the main thread
+writes `2` (SIGINT) into on a Stop click, checked by the Worker's own
+Python between bytecode steps regardless of what the running code is
+doing. `SharedArrayBuffer` only exists when the page is cross-origin
+isolated, which needs `Cross-Origin-Opener-Policy`/
+`Cross-Origin-Embedder-Policy` response headers GitHub Pages will not let
+this project set — `coi-serviceworker` (vendored, `assets/vendor/`,
+registered from `shell.html`, excluded from the standalone export by
+`build.py`) is the same-origin service-worker shim that adds them anyway.
+`dewlab.canStop()` reports the real state — cross-origin isolation
+achieved and a `SharedArrayBuffer` actually allocated — rather than
+`interrupt buffer requested`, since `coi-serviceworker`'s own first
+registration on a given browser needs one reload before headers apply,
+and a run started before that reload should not show a Stop button it
+cannot honor.
+
+**Cell output crosses the postMessage boundary through a message-based
+sink**, `_MessageSink` in `tutorial_tools.py`, parallel to the existing
+`_DomSink` rather than replacing it — `run_cell(cell_id, output_target,
+code)` picks one by whether `output_target` is callable. The Worker side
+posts `{kind, cssClass, text, markup}` events; `applyOutputEvent()` on the
+main thread replays `_DomSink`'s own stream/append/clear semantics against
+the real DOM, so a reader sees byte-for-byte the same output shape either
+way. `KeyboardInterrupt` — what a Stop click actually raises inside the
+running Python — is caught ahead of the general exception handler and
+renders as a plain "Stopped.", not a traceback.
+
+**The widget bridge (`text_input`/`dropdown`/`button`) cannot work in a
+Worker and now says so.** All three hand a live DOM element back to the
+caller for `.value` reads and event listeners; a Worker has no DOM to hand
+one back from. Rather than degrade silently into inert markup,
+`_require_dom_sink()` raises a clear `RuntimeError` naming the reason
+whenever a cell's sink is a `_MessageSink`. Checked before writing this:
+zero published tutorials use any of the three, so nothing live breaks —
+this closes a real gap the Worker migration would otherwise have left
+open rather than trading one gap for another.
+
+**Cost to change: large, matching `QUESTIONS.md`'s own estimate.**
+`assets/pyodide-worker.js` (new); `tutorial-runtime.js`'s `MT`-suffixed
+split plus `workerRequest`/`ensureWorker`/`bootWorker`/`applyOutputEvent`/
+`requestInterrupt`; `_MessageSink`/`_require_dom_sink`/the
+`KeyboardInterrupt` branch in `tutorial_tools.py`; `coi-serviceworker`
+vendored via `vendor-src/package.json`/`build-vendor.mjs`, wired into
+`shell.html`, copied and then stripped back out for the standalone export
+in `build.py`; a `.dl-btn-stop` rule in `tutorial-style.css`. Eighteen e2e
+tests: three new in `tests/e2e/test_stop_button.py` (cross-origin
+isolation actually landed, a genuine infinite loop stopped and the button
+recovers, a stopped cell runs again afterward), one rewritten in
+`test_phase0_golden_path.py` replacing two widget tests that exercised
+behavior this migration deliberately removed on the hosted path. The full
+unit and e2e suites both green. `standalone.bundle.js` rebuilt.*

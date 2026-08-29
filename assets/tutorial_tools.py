@@ -175,6 +175,46 @@ class _DomSink:
         self._el.replaceChildren()
 
 
+class _MessageSink:
+    """The Worker-side counterpart to `_DomSink`: nothing here has a `document`
+    to touch — a Worker has none — so instead of appending real elements, each
+    call posts one event to the main thread, which does the actual DOM write
+    (`assets/pyodide-worker.js`'s `run-cell` handler, `applyOutputEvent()` in
+    tutorial-runtime.js). `emit` is a plain JS function called with four
+    positional, always-primitive arguments — `(kind, css_class, text,
+    markup)`, unused ones `None` — rather than a dict, so nothing here ever
+    crosses the postMessage boundary as a PyProxy needing `.toJs()`.
+
+    `append_html()` always returns `None`: there is no live element for a
+    widget to find itself again through. That is a real, deliberate gap, not
+    an oversight — see `text_input`/`dropdown`/`button`'s own guard below and
+    DECISIONS_LOG.md 7.77."""
+
+    def __init__(self, emit):
+        self._emit = emit
+        self.count = 0
+        self._stream_class: str | None = None
+
+    def stream(self, css_class: str, text: str) -> None:
+        if self._stream_class != css_class:
+            self.count += 1
+        self._stream_class = css_class
+        self._emit("stream", css_class, text, None)
+
+    def close_stream(self) -> None:
+        self._stream_class = None
+
+    def append_html(self, markup: str):
+        self.close_stream()
+        self.count += 1
+        self._emit("append", None, None, markup)
+        return None
+
+    def clear(self) -> None:
+        self.close_stream()
+        self._emit("clear", None, None, None)
+
+
 # --------------------------------------------------------------------------
 # Cell state
 # --------------------------------------------------------------------------
@@ -558,22 +598,37 @@ def _end(value) -> None:
         _current = None
 
 
-async def run_cell(cell_id: str, output_element, code: str) -> bool:
+async def run_cell(cell_id: str, output_target, code: str) -> bool:
     """Run one cell's code and render everything it produced.
 
     Returns True if the code completed without raising. The whole lifecycle
     lives here, in Python, rather than being split across the JS runtime, so
     output ordering and traceback formatting have exactly one implementation.
+
+    `output_target` is either a real `.dl-output` element (the main-thread
+    path the standalone export still uses — DECISIONS_LOG.md 7.77 keeps that
+    export on the pre-Worker runtime) or the `emit` callable
+    `assets/pyodide-worker.js` passes for a page running Pyodide in a Worker.
+    A callable can never be mistaken for an element, so which sink to build
+    is exactly that check.
     """
     from pyodide.code import eval_code_async  # pragma: no cover - browser only
 
-    _begin(cell_id, _DomSink(output_element), code)
+    sink = _MessageSink(output_target) if callable(output_target) else _DomSink(output_target)
+    _begin(cell_id, sink, code)
     ok = True
     value = None
     try:
         value = await eval_code_async(
             code, globals=_page_globals, filename=_current.filename
         )
+    except KeyboardInterrupt:
+        # A reader's own Stop click (planning/CELL_CONTROLS.md), not a bug in
+        # their code — a full traceback would say so anyway, but "Stopped."
+        # is the honest, unintimidating version of the same fact.
+        ok = False
+        _current.sink.close_stream()
+        render_error("Stopped.")
     except BaseException as exc:  # noqa: BLE001 - a student's error is normal traffic
         ok = False
         _current.sink.close_stream()
@@ -781,6 +836,25 @@ def _remember(cell_id: str, widget_id: str, value) -> None:
     _widget_values[(cell_id, widget_id)] = value
 
 
+def _require_dom_sink(kind: str) -> _CellContext:
+    """Widgets need a live element to attach a listener to — one
+    `_MessageSink` (a Worker-run page) cannot hand back, since there is no
+    DOM on that side of the postMessage boundary to hand back a reference
+    into (DECISIONS_LOG.md 7.77). Nothing published uses `text_input`,
+    `dropdown` or `button` today, so this is a real gap with no live
+    tutorial behind it — and a clear error a reader can see beats the
+    silent one this would otherwise be: markup that renders but does
+    nothing when clicked or typed into."""
+    cell = _require_cell()
+    if isinstance(cell.sink, _MessageSink):
+        raise RuntimeError(
+            f"{kind}() needs a page running Pyodide on the main thread — this "
+            "tutorial page runs it in a background Worker, and Worker code has "
+            "no direct access to the page to attach the widget to."
+        )
+    return cell
+
+
 def _mount_widget(markup: str, cell_id: str, widget_id: str, kind: str) -> _Widget:
     cell = _require_cell()
     root = cell.sink.append_html(markup)
@@ -798,7 +872,7 @@ def _mount_widget(markup: str, cell_id: str, widget_id: str, kind: str) -> _Widg
 
 def text_input(label: str = "", value: str = "", id: str | None = None) -> _Widget:  # noqa: A002
     """A single-line text box. Read what the reader typed with `.value`."""
-    cell = _require_cell()
+    cell = _require_dom_sink("text_input")
     widget_id = _widget_id(id, label or "text")
     current = _widget_values.get((cell.cell_id, widget_id), value)
     dom_id = f"dl-w-{html.escape(cell.cell_id)}-{html.escape(widget_id)}"
@@ -813,7 +887,7 @@ def text_input(label: str = "", value: str = "", id: str | None = None) -> _Widg
 
 def dropdown(label: str = "", options=(), value=None, id: str | None = None) -> _Widget:  # noqa: A002
     """A select box over `options`. Read the chosen option with `.value`."""
-    cell = _require_cell()
+    cell = _require_dom_sink("dropdown")
     widget_id = _widget_id(id, label or "choice")
     options = list(options)
     current = _widget_values.get((cell.cell_id, widget_id), value)
@@ -842,7 +916,7 @@ def button(label: str = "Go", on_click=None, id: str | None = None) -> _Widget: 
     The callback runs with this cell's output area still current, so anything
     it prints or `show`s appends beneath the button rather than vanishing.
     """
-    cell = _require_cell()
+    cell = _require_dom_sink("button")
     widget_id = _widget_id(id, label or "button")
     dom_id = f"dl-w-{html.escape(cell.cell_id)}-{html.escape(widget_id)}"
     markup = (

@@ -577,85 +577,52 @@ function setRunnable(enabled, label) {
   }
 }
 
-/* --------------------------------------------------------------- Pyodide */
-
-let pyodide = null;
-let tools = null;
-let inspectModule = null;
-let builtinsModule = null;
-let bootPromise = null;
-
-/* Set once loadJedi() finishes, in the background, well after boot() has
- * already let the student run their first cell — pre-run tooltips are a
- * nice-to-have, never something worth making anyone wait for. Both null
- * until then; every Jedi call site checks this first and answers "nothing
- * yet" rather than throwing. */
-let jediHoverFn = null;
-let jediSignatureFn = null;
-
-/* --------------------------------------------------- code intelligence
+/* --------------------------------------------------------------- Pyodide
  *
- * All three — completion, hover docs, signature help — wired into every
- * cell's editor at buildCells() time, before Pyodide exists: each checks
- * for a live interpreter (and, for docs/signatures, a loaded Jedi) itself,
- * at call time, rather than needing anything reconfigured once boot() or
- * loadJedi() finishes. A page left open through a boot just starts
- * offering real completions and real docs; there is no "not ready yet"
- * state for a caller to manage.
- */
+ * Two execution paths from here down. The hosted site runs Pyodide inside
+ * assets/pyodide-worker.js, off the main thread, so a genuine Stop button
+ * is possible (planning/CELL_CONTROLS.md §2). The standalone/offline
+ * export keeps Pyodide on the main thread exactly as this file always ran
+ * it, unchanged below beyond a name — DECISIONS_LOG.md 7.77: a `file://`
+ * page can hit real restrictions loading a module Worker at all, and the
+ * offline story does not also need a genuine Stop button to be worth
+ * having. `currentManifest.standalone` decides which; nothing past
+ * ensureBooted()/runCell() needs to know or care which one is live. */
 
-/* Every name currently defined in the shared page namespace — the same
- * dict every cell actually runs against, tutorial_tools._page_globals
- * (run_cell's `globals=`) — so what is offered is exactly what a cell could
- * reference right now: a name from an earlier cell, or from this tutorial's
- * own setup cell, not a generic Python index. `__name__` and anything else
- * tutorial_tools itself seeds with a leading underscore are filtered out. */
-function pageNamesCompletion(context) {
-  if (!tools) return null;
-  const word = context.matchBefore(/\w+/);
-  if (!word || (word.from === word.to && !context.explicit)) return null;
-  const names = [...tools._page_globals.keys()].filter((name) => !name.startsWith("_"));
-  if (!names.length) return null;
-  return { from: word.from, options: names.map((label) => ({ label, type: "variable" })) };
-}
+let bootPromise = null;
+let running = null; // null, or the cell object currently running
 
-/* A name from the page's own live namespace — whatever an earlier cell or
- * this tutorial's setup cell defined — checked first, since it is what a
- * cell would actually resolve to right now; a Python builtin (print, len,
- * …) is checked second, never shadowing a student's own name of the same
- * spelling. Returns a PyProxy the caller is responsible for `.destroy()`ing,
- * the same contract docFor already had. */
-function lookupLiveName(name) {
-  if (!tools || !/^[A-Za-z_]\w*$/.test(name)) return undefined;
+/* ---- standalone / main-thread path — pre-Worker, unchanged below ---- */
+
+let pyodideMT = null;
+let toolsMT = null;
+let inspectModuleMT = null;
+let builtinsModuleMT = null;
+let jediHoverFnMT = null;
+let jediSignatureFnMT = null;
+
+function lookupLiveNameMT(name) {
+  if (!toolsMT || !/^[A-Za-z_]\w*$/.test(name)) return undefined;
   try {
-    const local = tools._page_globals.get(name);
+    const local = toolsMT._page_globals.get(name);
     if (local !== undefined) return local;
   } catch {
     /* fall through to builtins */
   }
-  if (!builtinsModule) return undefined;
+  if (!builtinsModuleMT) return undefined;
   try {
-    return builtinsModule[name];
+    return builtinsModuleMT[name];
   } catch {
     return undefined;
   }
 }
 
-/* A real docstring for a name the student defined or imported, or a Python
- * builtin, read from the interpreter actually running their code — accurate
- * by construction, and there is nothing bundled to fall out of date with it.
- * Never evaluates anything a student typed; only looks an existing name up.
- * Widened to cover `__builtins__` per planning/CELL_TOOLTIPS.md option (a) —
- * `print`, `len` and the rest were deliberately out of scope in the first
- * pass, on the reasoning that reaching into `__builtins__` was a bigger
- * surface than that pass needed; the surface turned out to be one more
- * lookup, not a redesign. */
-function docFor(name) {
-  if (!tools || !inspectModule) return null;
-  const obj = lookupLiveName(name);
+function docForMT(name) {
+  if (!toolsMT || !inspectModuleMT) return null;
+  const obj = lookupLiveNameMT(name);
   if (obj === undefined || obj === null) return null;
   try {
-    return inspectModule.getdoc(obj) || null;
+    return inspectModuleMT.getdoc(obj) || null;
   } catch {
     return null;
   } finally {
@@ -663,18 +630,13 @@ function docFor(name) {
   }
 }
 
-/* A callable's signature, as `name(params)` — the live-interpreter half of
- * planning/CELL_TOOLTIPS.md option (b). Same live-namespace-then-builtins
- * lookup as docFor, since a name that has a docstring worth hovering has a
- * signature worth showing while typing its call, and the two should never
- * disagree about which name they mean. */
-function signatureFor(name) {
-  if (!tools || !inspectModule) return null;
-  const obj = lookupLiveName(name);
+function signatureForMT(name) {
+  if (!toolsMT || !inspectModuleMT) return null;
+  const obj = lookupLiveNameMT(name);
   if (obj === undefined || obj === null) return null;
   let sig;
   try {
-    sig = inspectModule.signature(obj);
+    sig = inspectModuleMT.signature(obj);
     return name + sig.toString();
   } catch {
     return null;
@@ -684,55 +646,28 @@ function signatureFor(name) {
   }
 }
 
-/* Pre-run fallback, for a name the live interpreter has never heard of
- * because the cell that defines it has not been run yet — Jedi parses the
- * source text itself rather than inspecting a live namespace, so it has an
- * answer before execution the way docFor/signatureFor structurally cannot
- * (planning/CELL_TOOLTIPS.md option (c)). `line`/`col` follow Jedi's own
- * convention (1-indexed line, 0-indexed column), already computed that way
- * by the CodeMirror extensions calling in. Both wrapped defensively: Jedi
- * is asked to make sense of a Python beginner's mid-edit, possibly
- * malformed source on every keystroke, and a parse failure there must never
- * surface as anything worse than "no tooltip this time". */
-function jediDoc(source, line, col) {
-  if (!jediHoverFn) return null;
+function jediDocMT(source, line, col) {
+  if (!jediHoverFnMT) return null;
   try {
-    return jediHoverFn(source, line, col) || null;
+    return jediHoverFnMT(source, line, col) || null;
   } catch {
     return null;
   }
 }
 
-function jediSignature(source, line, col) {
-  if (!jediSignatureFn) return null;
+function jediSignatureMT(source, line, col) {
+  if (!jediSignatureFnMT) return null;
   try {
-    return jediSignatureFn(source, line, col) || null;
+    return jediSignatureFnMT(source, line, col) || null;
   } catch {
     return null;
   }
 }
 
-/* What vendor-src/codemirror-entry.js's hover extension actually calls: the
- * live answer if there is one, Jedi's static one otherwise. A name the
- * interpreter already knows about is always trusted over a static guess —
- * live is authoritative, Jedi only fills the gap live cannot reach. */
-async function hoverDoc(name, source, line, col) {
-  return docFor(name) || jediDoc(source, line, col);
-}
-
-async function signatureHelp(name, source, line, col, argIndex) {
-  void argIndex; // not needed here — the CodeMirror side bolds the argument
-  return signatureFor(name) || jediSignature(source, line, col);
-}
-
-/* Defined in `pyodide.globals` — the interpreter's own top-level namespace,
- * not `tutorial_tools._page_globals` a student's cell actually runs against
- * (`run_cell()`'s `globals=_page_globals`, tutorial_tools.py) — so `jedi`
- * and these two helpers are never visible to, or shadowable by, anything a
- * student writes. Both wrapped in Python because the exception a malformed,
- * mid-edit source string can raise is more varied than any single JS-side
- * try/catch should have to enumerate; "no tooltip this time" is the only
- * outcome that should ever reach the caller. */
+/* Shared with assets/pyodide-worker.js's own copy — genuinely two separate
+ * JS execution contexts (a page never runs both), so this is the one place
+ * a small duplication was cheaper than a shared-module import neither
+ * bundle target (ESM here, IIFE for the standalone bundle) makes free. */
 const JEDI_HELPER_SOURCE = `
 import jedi
 
@@ -756,34 +691,24 @@ def _dewlab_signature(source, line, col):
     return None
 `;
 
-/* Pre-run tooltips (planning/CELL_TOOLTIPS.md option c), loaded well after
- * boot() has already let the student run their first cell — jedi+parso are
- * a real download (roughly 1.6 MB combined) and nothing about a first Run
- * click depends on them. A failure here (a blocked download, a browser
- * that refused the package) leaves hoverDoc/signatureHelp exactly where
- * they already were without this feature: live-interpreter answers only. */
-async function loadJedi() {
+async function loadJediMT() {
   try {
-    await pyodide.loadPackage(["jedi", "parso"]);
-    await pyodide.runPythonAsync(JEDI_HELPER_SOURCE);
-    jediHoverFn = pyodide.globals.get("_dewlab_hover_doc");
-    jediSignatureFn = pyodide.globals.get("_dewlab_signature");
+    await pyodideMT.loadPackage(["jedi", "parso"]);
+    await pyodideMT.runPythonAsync(JEDI_HELPER_SOURCE);
+    jediHoverFnMT = pyodideMT.globals.get("_dewlab_hover_doc");
+    jediSignatureFnMT = pyodideMT.globals.get("_dewlab_signature");
   } catch (err) {
     console.warn("dewlab: Jedi failed to load; pre-run tooltips stay live-only", err);
   }
 }
 
-async function boot(manifest) {
+async function bootMainThread(manifest) {
   setStatus("Starting Python…");
 
-  /* Two ways in, because a page opened from a file cannot import a module.
-   * A standalone export loads Pyodide's classic script first, which leaves
-   * loadPyodide on the global; a hosted page has no such script and imports
-   * the module instead. */
-  if (manifest.standalone && !globalThis.loadPyodide) {
-    /* The classic script this file depends on did not load. Falling through to
-     * the module import cannot work from a file either, and would report the
-     * wrong thing — so say what actually happened. */
+  /* A page opened from a file cannot import a module. The standalone export
+   * loads Pyodide's classic script first, which leaves loadPyodide on the
+   * global. */
+  if (!globalThis.loadPyodide) {
     const offline = new Error(
       "Python could not be downloaded. This file needs an internet connection " +
         "the first time you open it — the reading works without one."
@@ -791,42 +716,22 @@ async function boot(manifest) {
     offline.dewlabFinal = true; // already says everything useful; do not dress it up
     throw offline;
   }
-  const loadPyodide =
-    globalThis.loadPyodide ||
-    (await import(/* @vite-ignore */ PYODIDE_BASE + "pyodide.mjs")).loadPyodide;
-  pyodide = await loadPyodide({ indexURL: PYODIDE_BASE });
+  pyodideMT = await globalThis.loadPyodide({ indexURL: PYODIDE_BASE });
 
   setStatus(`Loading ${manifest.packages.join(", ")}…`);
-  /* One call, no micropip: every package here ships with Pyodide. */
-  await pyodide.loadPackage(manifest.packages);
+  await pyodideMT.loadPackage(manifest.packages);
 
   setStatus("Preparing the notebook tools…");
-  /* A standalone export carries this source inside the page, because fetch
-   * cannot read a neighbouring file from disk either. */
-  const source =
-    manifest.toolsSource ||
-    (await fetch(assetUrl(manifest, "tutorial_tools.py")).then((r) => {
-      if (!r.ok) throw new Error(`tutorial_tools.py: HTTP ${r.status}`);
-      return r.text();
-    }));
-  pyodide.FS.writeFile("/home/pyodide/tutorial_tools.py", source, { encoding: "utf8" });
-  tools = pyodide.pyimport("tutorial_tools");
-  inspectModule = pyodide.pyimport("inspect");
-  builtinsModule = pyodide.pyimport("builtins");
+  /* The standalone export carries this source inside the page, because
+   * fetch cannot read a neighbouring file from disk either. */
+  const source = manifest.toolsSource;
+  pyodideMT.FS.writeFile("/home/pyodide/tutorial_tools.py", source, { encoding: "utf8" });
+  toolsMT = pyodideMT.pyimport("tutorial_tools");
+  inspectModuleMT = pyodideMT.pyimport("inspect");
+  builtinsModuleMT = pyodideMT.pyimport("builtins");
+  toolsMT.configure(manifest.dataBase);
 
-  /* Where a tutorial's `/data/` CSVs live, relative to this page. Setup cells
-   * fetch through this rather than hard-coding a path per tutorial. */
-  tools.configure(manifest.dataBase);
-
-  /* tutorial_tools owns the page namespace and the whole cell lifecycle, so
-   * output ordering and traceback formatting have one implementation rather
-   * than being split across two languages. All this side does is start it.
-   *
-   * Every cell on a page shares that namespace, in document order — the
-   * notebook model. Pages do not share state with each other: each is its own
-   * Pyodide instance, so a setup cell re-runs on every page load
-   * (CONTENT_AND_FILE_ARCHITECTURE.md, "Shared setup code"). */
-  await pyodide.runPythonAsync(`
+  await pyodideMT.runPythonAsync(`
 import tutorial_tools
 tutorial_tools._page_globals.update({
     name: getattr(tutorial_tools, name)
@@ -837,10 +742,150 @@ tutorial_tools._page_globals["__name__"] = "__dewlab__"
 
   setStatus("");
   setRunnable(true, "Run");
+  loadJediMT();
+}
 
-  /* Deliberately not awaited: a slower or blocked Jedi download must never
-   * delay the moment a student can click Run. */
-  loadJedi();
+function pageNamesMT() {
+  if (!toolsMT) return [];
+  return [...toolsMT._page_globals.keys()].filter((name) => !name.startsWith("_"));
+}
+
+async function runCellMainThread(cell) {
+  await toolsMT.run_cell(cell.id, cell.outputEl, cell.getCode());
+}
+
+/* ---- hosted / Worker path (planning/CELL_CONTROLS.md §2) ---- */
+
+let worker = null;
+/* A SharedArrayBuffer once cross-origin isolation is up, null wherever it
+ * is not — a blocked service worker, a browser that refuses one, private
+ * browsing. Every caller checks this rather than assuming: a page without
+ * it still runs cells in the Worker (still off the main thread, so the
+ * rest of the page stays responsive through a runaway loop), it just
+ * cannot offer a real Stop for one. */
+let interruptBuffer = null;
+let jediReadyWorker = false;
+let nextRequestId = 1;
+const pendingRequests = new Map(); // id -> resolve
+
+function workerRequest(type, payload) {
+  const id = nextRequestId++;
+  return new Promise((resolve, reject) => {
+    pendingRequests.set(id, { resolve, reject });
+    worker.postMessage({ type, id, ...payload });
+  });
+}
+
+/* Mirrors _DomSink's own create-or-append logic (assets/tutorial_tools.py)
+ * exactly — one open <pre> per contiguous run of the same stream class —
+ * relocated here because a Worker has no DOM to run that logic against. */
+const openStreams = new Map(); // cellId -> {el, cssClass}
+
+function applyOutputEvent(cellId, kind, cssClass, text, markup) {
+  const cell = cells.find((c) => c.id === cellId);
+  if (!cell) return;
+  const el = cell.outputEl;
+  if (kind === "stream") {
+    let open = openStreams.get(cellId);
+    if (!open || open.cssClass !== cssClass) {
+      const pre = document.createElement("pre");
+      pre.className = cssClass;
+      el.appendChild(pre);
+      open = { el: pre, cssClass };
+      openStreams.set(cellId, open);
+    }
+    /* textContent, never innerHTML: printed output is data, not markup —
+     * the same rule _DomSink itself always followed. */
+    open.el.textContent += text;
+  } else if (kind === "append") {
+    openStreams.delete(cellId);
+    const template = document.createElement("template");
+    template.innerHTML = markup;
+    el.appendChild(template.content);
+  } else if (kind === "clear") {
+    openStreams.delete(cellId);
+    el.replaceChildren();
+  }
+}
+
+function ensureWorker(manifest) {
+  if (worker) return;
+  worker = new Worker(new URL(assetUrl(manifest, "pyodide-worker.js"), document.baseURI), {
+    type: "module",
+  });
+  worker.onmessage = (ev) => {
+    const msg = ev.data;
+    if (msg.type === "status") {
+      setStatus(msg.text);
+    } else if (msg.type === "jedi-ready") {
+      jediReadyWorker = true;
+    } else if (msg.type === "output") {
+      applyOutputEvent(msg.cellId, msg.kind, msg.cssClass, msg.text, msg.markup);
+    } else if (msg.type === "response") {
+      const pending = pendingRequests.get(msg.id);
+      if (!pending) return;
+      pendingRequests.delete(msg.id);
+      if ("error" in msg) pending.reject(new Error(msg.error));
+      else pending.resolve(msg.result);
+    }
+  };
+}
+
+async function bootWorker(manifest) {
+  ensureWorker(manifest);
+  await workerRequest("boot", {
+    pyodideBase: PYODIDE_BASE,
+    packages: manifest.packages,
+    /* Absolute: a relative fetch from inside the worker resolves against
+     * the worker script's own location, not this page's. */
+    toolsSourceUrl: new URL(assetUrl(manifest, "tutorial_tools.py"), document.baseURI).href,
+    dataBase: new URL(manifest.dataBase, document.baseURI).href,
+  });
+
+  if (globalThis.crossOriginIsolated && typeof SharedArrayBuffer !== "undefined") {
+    interruptBuffer = new SharedArrayBuffer(4);
+    worker.postMessage({ type: "set-interrupt-buffer", buffer: interruptBuffer });
+  }
+
+  setRunnable(true, "Run");
+}
+
+function requestInterrupt() {
+  if (!interruptBuffer) return;
+  /* 2 is SIGINT in Pyodide's own interrupt-buffer convention. */
+  new Int32Array(interruptBuffer)[0] = 2;
+}
+
+async function runCellWorker(cell) {
+  await workerRequest("run-cell", { cellId: cell.id, code: cell.getCode() });
+}
+
+/* ---- code intelligence: what vendor-src/codemirror-entry.js actually calls ---- */
+
+/* The live answer if there is one, Jedi's static one otherwise — live
+ * always wins, Jedi only fills the gap live cannot reach
+ * (planning/CELL_TOOLTIPS.md). On the standalone path both live entirely
+ * on this thread; on the hosted path both live entirely in the Worker, so
+ * one request there does the same live-then-Jedi composition
+ * assets/pyodide-worker.js's own hoverDoc()/signatureHelp() already do,
+ * rather than two round trips from here. */
+async function hoverDoc(name, source, line, col) {
+  if (currentManifest.standalone) return docForMT(name) || jediDocMT(source, line, col);
+  if (!worker) return null;
+  return workerRequest("hover-doc", { name, source, line, col });
+}
+
+async function signatureHelp(name, source, line, col, argIndex) {
+  void argIndex; // not needed here — the CodeMirror side bolds the argument
+  if (currentManifest.standalone) return signatureForMT(name) || jediSignatureMT(source, line, col);
+  if (!worker) return null;
+  return workerRequest("signature-help", { name, source, line, col });
+}
+
+/* ---- the one dispatcher everything else calls ---- */
+
+function boot(manifest) {
+  return manifest.standalone ? bootMainThread(manifest) : bootWorker(manifest);
 }
 
 function ensureBooted(manifest) {
@@ -860,25 +905,63 @@ function ensureBooted(manifest) {
   return bootPromise;
 }
 
+/* Every name currently defined in the shared page namespace — the same
+ * dict every cell actually runs against, tutorial_tools._page_globals
+ * (run_cell's `globals=`) — so what is offered is exactly what a cell
+ * could reference right now: a name from an earlier cell, or from this
+ * tutorial's own setup cell, not a generic Python index. `__name__` and
+ * anything else tutorial_tools itself seeds with a leading underscore are
+ * filtered out. Async because the Worker path is a real round trip;
+ * CodeMirror's autocomplete sources accept a Promise natively, the same
+ * way its hover and signature-help sources do. */
+async function pageNamesCompletion(context) {
+  const word = context.matchBefore(/\w+/);
+  if (!word || (word.from === word.to && !context.explicit)) return null;
+  const names = currentManifest.standalone
+    ? pageNamesMT()
+    : worker
+      ? await workerRequest("page-names", {})
+      : [];
+  if (!names.length) return null;
+  return { from: word.from, options: names.map((label) => ({ label, type: "variable" })) };
+}
+
 /* ------------------------------------------------------------ running a cell */
 
-let running = false;
-
 async function runCell(cell) {
+  /* A second click on the cell that is already running is a Stop request,
+   * not a second Run — the same button does both, per
+   * planning/CELL_CONTROLS.md §2. A click on any *other* cell while one is
+   * running is ignored, same as it always was: one Pyodide, one thing
+   * running in it at a time. */
+  if (running === cell) {
+    requestInterrupt();
+    return;
+  }
   if (running) return;
-  running = true;
+  running = cell;
+
   const previousLabel = cell.runBtn.textContent;
-  cell.runBtn.disabled = true;
-  cell.runBtn.textContent = "Running…";
+  const canStop = !currentManifest.standalone && interruptBuffer !== null;
+  if (canStop) {
+    cell.runBtn.disabled = false;
+    cell.runBtn.textContent = "Stop";
+    cell.runBtn.classList.add("dl-btn-stop");
+  } else {
+    cell.runBtn.disabled = true;
+    cell.runBtn.textContent = "Running…";
+  }
 
   try {
     await ensureBooted(currentManifest);
 
     /* Python owns the output area for the duration of the cell: stdout,
      * widgets, tables, figures and tracebacks all land through tutorial_tools,
-     * so they appear in the order the code produced them. A student's error is
-     * normal traffic and is rendered in the cell, not thrown up here. */
-    await tools.run_cell(cell.id, cell.outputEl, cell.getCode());
+     * so they appear in the order the code produced them. A student's error —
+     * a Stop click included — is normal traffic and is rendered in the cell,
+     * not thrown up here. */
+    if (currentManifest.standalone) await runCellMainThread(cell);
+    else await runCellWorker(cell);
     /* Saved after the run rather than during it, so what is stored is the
      * output the student actually ended up looking at. */
     saveNow();
@@ -886,9 +969,11 @@ async function runCell(cell) {
     /* Boot failure. Already surfaced in the status bar; nothing useful to add
      * inside the cell. */
   } finally {
-    running = false;
+    running = null;
     cell.runBtn.disabled = false;
-    cell.runBtn.textContent = previousLabel === "Running…" ? "Run" : previousLabel;
+    cell.runBtn.classList.remove("dl-btn-stop");
+    cell.runBtn.textContent =
+      previousLabel === "Running…" || previousLabel === "Stop" ? "Run" : previousLabel;
   }
 }
 
@@ -1875,7 +1960,8 @@ globalThis.dewlab = {
     if (!cell) throw new Error(`no cell "${id}"`);
     return runCell(cell);
   },
-  jediReady: () => jediHoverFn !== null,
+  jediReady: () => (currentManifest.standalone ? jediHoverFnMT !== null : jediReadyWorker),
   hoverDoc,
   signatureHelp,
+  canStop: () => !currentManifest.standalone && interruptBuffer !== null,
 };
