@@ -16,25 +16,27 @@
  *   - Hover documentation for builtins and user-defined names
  *
  * Architecture:
- *   - Uses shared Pyodide instance (same as tutorials)
- *   - Cells share a common namespace (like Jupyter)
- *   - State persisted to localStorage
- *   - Jedi runs inside Pyodide for pre-execution completion
+ *   - Cell array (this file) + Pyodide engine (mini-ide-engine.js), which
+ *     boots the same assets/pyodide-worker.js the tutorial pages use — a
+ *     real Worker with real Jedi, a genuine Stop button, and the real
+ *     assets/tutorial_tools.py, falling back to the main thread if a
+ *     module Worker isn't available (e.g. a file:// download).
+ *   - Cells share one persistent Pyodide interpreter (like Jupyter)
+ *   - A mounted filesystem (mini-ide-fs.js) — a real local folder if a
+ *     student opts in, else OPFS, else IndexedDB — backs uploads,
+ *     SQLite .db files, and notebook import/export.
+ *   - Cell state persisted to localStorage
  *
  * @module mini-ide
  */
 
 import { createCodeEditor, setEditorTheme } from "./vendor/codemirror.bundle.js";
+import * as engine from "./mini-ide-engine.js";
+import * as fs from "./mini-ide-fs.js";
 
 // ============================================================================
 // Configuration Constants
 // ============================================================================
-
-/**
- * Pyodide version to use (must match what tutorials use)
- * @constant {string}
- */
-const PYODIDE_VERSION = "0.28.3";
 
 /**
  * LocalStorage key for cells state
@@ -51,36 +53,6 @@ const HELPER_VISIBLE_KEY = "mini-ide:helper-visible";
 // ============================================================================
 // Global State
 // ============================================================================
-
-/**
- * Pyodide instance (loaded on demand, shared across all cells)
- * @type {Object|null}
- */
-let pyodide = null;
-
-/**
- * Whether Pyodide has finished loading
- * @type {boolean}
- */
-let pyodideLoaded = false;
-
-/**
- * Whether Pyodide is currently loading
- * @type {boolean}
- */
-let pyodideLoading = false;
-
-/**
- * Jedi module (loaded on demand for pre-execution completion)
- * @type {Object|null}
- */
-let jediModule = null;
-
-/**
- * Shared namespace for all cells (like Jupyter's global namespace)
- * @type {Object}
- */
-let sharedNamespace = { __builtins__: {} };
 
 /**
  * Array of cell objects
@@ -114,6 +86,15 @@ let helperCloseBtn;
 let statusEl;
 let sampleNoticeEl;
 let removeSampleBtn;
+let filetreeEl;
+let filetreeToggleBtn;
+let filetreeRefreshBtn;
+let filetreeListEl;
+let filetreeNoteEl;
+let filetreeUploadBtn;
+let filetreeUploadInput;
+let importNotebookBtn;
+let importNotebookInput;
 
 // ============================================================================
 // Drag and Drop State
@@ -130,6 +111,31 @@ let draggedCell = null;
  * @type {HTMLElement|null}
  */
 let dropPlaceholder = null;
+
+// ============================================================================
+// Execution State
+// ============================================================================
+
+/**
+ * ID of the cell currently running, or null. A second click on that same
+ * cell's Run button sends a Stop (interrupt) request instead of starting
+ * a new run; clicks on any other cell are ignored while one is running.
+ * @type {string|null}
+ */
+let runningCellId = null;
+
+/**
+ * Whether "Run All" is in progress.
+ * @type {boolean}
+ */
+let runningAll = false;
+
+/**
+ * Whether the filesystem (mini-ide-fs.js) has mounted successfully.
+ * The file tree pane stays a placeholder until this flips true.
+ * @type {boolean}
+ */
+let fsReady = false;
 
 // ============================================================================
 // Cell Types
@@ -214,6 +220,13 @@ function initSettings() {
       const isHidden = panel.hasAttribute("hidden");
       panel.toggleAttribute("hidden", !isHidden);
       toggle.setAttribute("aria-expanded", String(!isHidden));
+      // Opening the panel is exactly when the engine/storage status lines
+      // (Phase 6) are worth a fresh read — both are otherwise updated only
+      // on state transitions, not continuously.
+      if (isHidden) {
+        updateExecutionStatus();
+        updateStorageStatus();
+      }
     });
   }
 
@@ -360,6 +373,152 @@ function initTexture(onThemeChange) {
   return state;
 }
 
+// ============================================================================
+// Mini-IDE-specific Settings Sections
+// ============================================================================
+
+/**
+ * Refresh the "Python" settings section — engine mode (worker vs.
+ * main-thread fallback) and whether a genuine Stop is available. Called
+ * on settings-panel open and after boot/restart, not continuously.
+ */
+function updateExecutionStatus() {
+  const el = document.getElementById('settings-execution-status');
+  if (!el) return;
+  const mode = engine.engineMode();
+  if (!mode) {
+    el.textContent = 'Not started yet — run a cell to start Python.';
+    return;
+  }
+  const where = mode === 'worker'
+    ? 'a background worker, so the page stays responsive'
+    : "the main thread (no background worker available here) — a runaway cell will freeze the page until it finishes";
+  const stop = engine.canStop()
+    ? 'Stop can genuinely interrupt a running cell.'
+    : "Stop can't interrupt a running cell in this mode.";
+  el.textContent = `Running in ${where}. ${stop}`;
+}
+
+/**
+ * Refresh the "Files" settings section — active storage backend, and the
+ * choose/reconnect-folder button's label and visibility.
+ *
+ * @async
+ */
+async function updateStorageStatus() {
+  const statusEl = document.getElementById('settings-storage-status');
+  const chooseBtn = document.getElementById('settings-choose-folder');
+  const forgetBtn = document.getElementById('settings-forget-folder');
+  if (!statusEl) return;
+
+  const backend = fs.getBackend();
+  const labels = {
+    native: 'Using a real folder on your computer.',
+    opfs: "Using this browser's private storage (fast; not visible in your file browser).",
+    idbfs: "Using this browser's private storage (compatibility mode)."
+  };
+  statusEl.textContent = backend ? labels[backend] : 'Not started yet — run a cell to start Python.';
+
+  if (chooseBtn) {
+    const supported = typeof window.showDirectoryPicker === 'function';
+    if (!supported || backend === 'native') {
+      chooseBtn.hidden = true;
+    } else {
+      chooseBtn.hidden = false;
+      const hasStored = await fs.hasStoredFolder();
+      chooseBtn.textContent = hasStored ? 'Reconnect my folder' : 'Use a folder on my computer';
+      chooseBtn.dataset.action = hasStored ? 'reconnect' : 'choose';
+    }
+  }
+  if (forgetBtn) forgetBtn.hidden = backend !== 'native';
+}
+
+const IMPORT_MODE_KEY = 'mini-ide:import-mode';
+
+/**
+ * @returns {"replace"|"append"} what handleImportNotebookFile() should do
+ *   with a newly imported notebook's cells relative to the current ones.
+ */
+function loadImportMode() {
+  return localStorage.getItem(IMPORT_MODE_KEY) === 'append' ? 'append' : 'replace';
+}
+
+/** Wires the "On import" replace/append segmented control. */
+function initImportModeSetting() {
+  const group = document.querySelector('[data-import-mode]');
+  if (!group) return;
+  const buttons = Array.from(group.querySelectorAll('button'));
+
+  function sync() {
+    const mode = loadImportMode();
+    buttons.forEach((btn) => btn.setAttribute('aria-pressed', String(btn.dataset.value === mode)));
+  }
+
+  buttons.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      localStorage.setItem(IMPORT_MODE_KEY, btn.dataset.value);
+      sync();
+    });
+  });
+
+  sync();
+}
+
+/**
+ * Wires the Python/Files/Import/Download settings sections added on top
+ * of the shared #dl-settings panel (mini-ide.js:202-374's texture code is
+ * the shared part; everything here is Mini-IDE-only).
+ */
+function initMiniIdeSettings() {
+  initImportModeSetting();
+
+  document.getElementById('settings-restart-python')?.addEventListener('click', async () => {
+    if (!confirm('Restart Python? Anything defined in the current session will be lost.')) return;
+    engine.restart();
+    fs.reset();
+    fsReady = false;
+    updateStatus('Restarting Python…');
+    updateExecutionStatus();
+    updateStorageStatus();
+    try {
+      await ensureEngineAndFsReady();
+      updateStatus('Python restarted.');
+    } catch (error) {
+      updateStatus(`Python failed to restart: ${error.message}`, 'error');
+    }
+    updateExecutionStatus();
+    updateStorageStatus();
+    renderFileTree();
+  });
+
+  document.getElementById('settings-choose-folder')?.addEventListener('click', async (e) => {
+    const action = e.currentTarget.dataset.action || 'choose';
+    try {
+      if (action === 'reconnect') await fs.reconnectFolder();
+      else await fs.chooseFolder();
+      updateStatus('Now using a folder on your computer for files.');
+    } catch (error) {
+      updateStatus(`Couldn't use that folder: ${error.message}`, 'error');
+    }
+    updateStorageStatus();
+    renderFileTree();
+  });
+
+  document.getElementById('settings-forget-folder')?.addEventListener('click', async () => {
+    if (!confirm("Stop using that folder? Mini IDE switches back to this browser's private storage — nothing in the folder itself is deleted.")) return;
+    await fs.forgetFolder();
+    updateStatus('Stopped using that folder. Restart Python to switch storage.');
+    updateStorageStatus();
+  });
+
+  // Fix: these three buttons existed in the markup with no listener.
+  document.getElementById('settings-export-python')?.addEventListener('click', () => downloadAsPython());
+  document.getElementById('settings-export-html')?.addEventListener('click', () => downloadAsHtml());
+  document.getElementById('settings-export-ipynb')?.addEventListener('click', () => downloadAsIpynb());
+
+  fs.configure({ onBackendChange: () => updateStorageStatus() });
+}
+
 /**
  * Track the chrome height for proper positioning
  * Same as tutorial-runtime.js
@@ -408,6 +567,24 @@ async function init() {
   statusEl = document.getElementById('mini-ide-status');
   sampleNoticeEl = document.getElementById('sample-cells-notice');
   removeSampleBtn = document.getElementById('remove-sample-cells');
+  filetreeEl = document.getElementById('mini-ide-filetree');
+  filetreeToggleBtn = document.getElementById('filetree-toggle');
+  filetreeRefreshBtn = document.getElementById('filetree-refresh');
+  filetreeListEl = document.getElementById('filetree-list');
+  filetreeNoteEl = document.getElementById('filetree-note');
+  filetreeUploadBtn = document.getElementById('filetree-upload');
+  filetreeUploadInput = document.getElementById('filetree-upload-file');
+  importNotebookBtn = document.getElementById('import-notebook');
+  importNotebookInput = document.getElementById('import-notebook-file');
+
+  // Wire the engine to this page's cells before anything can run
+  engine.configure({
+    getOutputEl: (cellId) => {
+      const cell = cells.find(c => c.id === cellId);
+      return cell ? cell.outputEl : null;
+    },
+    onStatus: (text, kind) => updateStatus(text, kind)
+  });
 
   // Load saved state
   loadSavedState();
@@ -426,6 +603,7 @@ async function init() {
 
   // Initialize Settings panel
   initSettings();
+  initMiniIdeSettings();
 
   // Setup event listeners
   setupEventListeners();
@@ -510,7 +688,21 @@ function createSampleCells() {
  * @function saveState
  */
 function saveState() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(cells));
+  // An explicit allow-list, not JSON.stringify(cells) directly: a rendered
+  // cell also carries .editor (CodeMirror), .textarea, .outputEl, and
+  // .runBtn — live DOM/editor references whose own property graphs contain
+  // real cycles (a DOM node's parentNode/childNodes, CodeMirror's internal
+  // extension bookkeeping), which JSON.stringify throws on rather than
+  // silently dropping.
+  const serializable = cells.map(cell => ({
+    id: cell.id,
+    type: cell.type,
+    content: cell.content,
+    output: cell.output || '',
+    hasError: Boolean(cell.hasError),
+    isSample: Boolean(cell.isSample)
+  }));
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(serializable));
 }
 
 // ============================================================================
@@ -560,6 +752,38 @@ function setupEventListeners() {
       updateStatus('All cells cleared.');
     }
   });
+
+  // File tree pane: mobile show/hide toggle + manual refresh
+  filetreeToggleBtn?.addEventListener('click', () => {
+    const open = filetreeEl?.classList.toggle('mini-ide-filetree-open');
+    filetreeToggleBtn.setAttribute('aria-expanded', String(Boolean(open)));
+  });
+  filetreeRefreshBtn?.addEventListener('click', () => renderFileTree());
+
+  // File tree pane: upload via button or drag-and-drop
+  filetreeUploadBtn?.addEventListener('click', () => filetreeUploadInput?.click());
+  filetreeUploadInput?.addEventListener('change', (e) => {
+    uploadFiles(e.target.files);
+    e.target.value = '';
+  });
+  if (filetreeEl) {
+    filetreeEl.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      filetreeEl.classList.add('mini-ide-filetree-dragover');
+    });
+    filetreeEl.addEventListener('dragleave', () => {
+      filetreeEl.classList.remove('mini-ide-filetree-dragover');
+    });
+    filetreeEl.addEventListener('drop', (e) => {
+      e.preventDefault();
+      filetreeEl.classList.remove('mini-ide-filetree-dragover');
+      uploadFiles(e.dataTransfer?.files);
+    });
+  }
+
+  // Import a .ipynb or .py file as this notebook's cells
+  importNotebookBtn?.addEventListener('click', () => importNotebookInput?.click());
+  importNotebookInput?.addEventListener('change', handleImportNotebookFile);
 
   // Download buttons
   downloadPythonBtn?.addEventListener('click', () => downloadAsPython());
@@ -619,7 +843,7 @@ function createNewCell(type, content = '', isSample = false, id = generateId()) 
     type,
     content: content || getDefaultContent(type),
     output: '',
-    error: null,
+    hasError: false,
     isSample
   };
 }
@@ -689,8 +913,8 @@ function createCellElement(cell, index) {
   cellEl.dataset.index = index;
   cellEl.dataset.id = cell.id;
   
-  // Add error class if cell has error
-  if (cell.error) {
+  // Add error class if the cell's last run raised
+  if (cell.hasError) {
     cellEl.classList.add('error');
   }
 
@@ -731,6 +955,9 @@ function createCellElement(cell, index) {
   header.appendChild(typeLabel);
   header.appendChild(actions);
 
+  // Store the Run button reference so runCell() can toggle it to Stop
+  cell.runBtn = runBtn;
+
   // Cell content area
   const contentEl = document.createElement('div');
   contentEl.className = 'mini-ide-cell-content';
@@ -755,10 +982,9 @@ function createCellElement(cell, index) {
           if (sampleNoticeEl) sampleNoticeEl.hidden = !hasSampleCells;
         }
       },
-      completeNames: () => Object.keys(sharedNamespace),
-      getDoc: (name) => getDocForName(name),
-      getJediCompletions: (text, pos, word) => getJediCompletions(text, pos, word),
-      getJediDoc: (name) => getJediDoc(name)
+      completeNames: engine.pageNamesCompletion,
+      getDoc: engine.hoverDoc,
+      getSignature: engine.signatureHelp
     });
 
     // Store editor reference on cell for later access
@@ -782,13 +1008,12 @@ function createCellElement(cell, index) {
     cell.textarea = textarea;
   }
 
-  // Cell output area
+  // Cell output area — repopulated from the last run's rendered markup,
+  // which already includes any traceback tutorial_tools.py produced.
   const outputEl = document.createElement('div');
   outputEl.className = 'mini-ide-cell-output';
   if (cell.output) {
     outputEl.innerHTML = cell.output;
-  } else if (cell.error) {
-    outputEl.innerHTML = `<pre class="dl-error">${escapeHtml(cell.error)}</pre>`;
   } else {
     outputEl.className += ' empty';
   }
@@ -846,8 +1071,35 @@ function scrollToCell(index) {
 // ============================================================================
 
 /**
+ * Boots Pyodide if needed, then mounts the filesystem (a previously
+ * chosen real folder, else OPFS, else IndexedDB — see mini-ide-fs.js) if
+ * it isn't mounted yet. Deferred until here, alongside the first Python
+ * boot, rather than run eagerly on page load — booting Pyodide costs a
+ * CDN fetch, and nothing should trigger that before a student actually
+ * runs a cell.
+ *
+ * @async
+ */
+async function ensureEngineAndFsReady() {
+  await engine.ensureBooted();
+  if (!fsReady) {
+    try {
+      await fs.init();
+      fsReady = true;
+      renderFileTree();
+    } catch (error) {
+      // Not fatal to running a cell — file upload/SQLite/file-manager
+      // features just won't have anywhere to persist to this session.
+      console.warn('mini-ide: filesystem mount failed; file features are unavailable this session', error);
+    }
+  }
+}
+
+/**
  * Run a single cell by ID
- * Executes the Python code and captures output/errors
+ * Boots the engine if needed, then executes the cell's Python code.
+ * A second click on the cell that is already running sends a Stop
+ * (interrupt) request instead of starting a new run.
  *
  * @async
  * @param {string} cellId - ID of cell to run
@@ -856,50 +1108,82 @@ async function runCell(cellId) {
   const cell = cells.find(c => c.id === cellId);
   if (!cell || cell.type !== CELL_TYPES.PYTHON) return;
 
-  await ensurePyodide();
+  if (runningCellId === cellId) {
+    engine.requestInterrupt();
+    return;
+  }
+  if (runningCellId || runningAll) return;
 
   const index = cells.findIndex(c => c.id === cellId);
-  const outputEl = cell.outputEl;
-  
-  if (outputEl) {
-    outputEl.className = 'mini-ide-cell-output';
-    outputEl.innerHTML = '<em>Running...</em>';
-  }
 
   try {
-    // Clear previous output
-    cell.output = '';
-    cell.error = null;
-
-    // Execute the code
-    const result = await pyodide.runPythonAsync(cell.content);
-
-    // Capture stdout (Pyodide captures this automatically)
-    // For expressions, get the result
-    if (result !== undefined) {
-      cell.output = formatOutput(result);
-    }
-
-    // Update shared namespace with any new definitions
-    await updateSharedNamespace();
-
-    // Update status
-    updateStatus(`Cell ${index + 1} executed successfully.`);
-
+    await ensureEngineAndFsReady();
   } catch (error) {
-    cell.error = formatError(error);
-    cell.output = '';
-    updateStatus(`Cell ${index + 1} error: ${truncateError(cell.error)}`);
+    updateStatus(`Python failed to start: ${error.message}. Reloading the page usually fixes it.`, 'error');
+    return;
   }
 
-  // Re-render to show output
+  runningCellId = cellId;
+  const runBtn = cell.runBtn;
+  const previousLabel = runBtn ? runBtn.textContent : 'Run';
+  setRunButtonRunning(runBtn);
+
+  try {
+    const { ok } = await engine.runCell(cellId, cell.content);
+    cell.hasError = !ok;
+    cell.output = cell.outputEl ? cell.outputEl.innerHTML : '';
+    updateStatus(
+      ok ? `Cell ${index + 1} executed successfully.` : `Cell ${index + 1} raised an error.`,
+      ok ? '' : 'error'
+    );
+  } catch (error) {
+    updateStatus(`Cell ${index + 1} failed to run: ${error.message}`, 'error');
+  } finally {
+    runningCellId = null;
+    resetRunButton(runBtn, previousLabel);
+  }
+
   saveState();
-  renderCells();
+}
+
+/**
+ * Toggle a cell's Run button into its running/Stop state.
+ * When a genuine interrupt buffer is available (worker mode, cross-origin
+ * isolated) the button becomes a real Stop; otherwise it just shows the
+ * cell is busy, since there is nothing to interrupt.
+ *
+ * @param {HTMLButtonElement|undefined} runBtn
+ */
+function setRunButtonRunning(runBtn) {
+  if (!runBtn) return;
+  if (engine.canStop()) {
+    runBtn.disabled = false;
+    runBtn.textContent = 'Stop';
+    runBtn.classList.add('dl-btn-stop');
+  } else {
+    runBtn.disabled = true;
+    runBtn.textContent = 'Running…';
+  }
+}
+
+/**
+ * Restore a cell's Run button after it finishes (or fails to) run.
+ *
+ * @param {HTMLButtonElement|undefined} runBtn
+ * @param {string} previousLabel
+ */
+function resetRunButton(runBtn, previousLabel) {
+  if (!runBtn) return;
+  runBtn.disabled = false;
+  runBtn.classList.remove('dl-btn-stop');
+  runBtn.textContent = previousLabel === 'Running…' || previousLabel === 'Stop' ? 'Run' : previousLabel;
 }
 
 /**
  * Run all cells in order
- * Executes each Python cell sequentially, maintaining shared namespace
+ * Executes each Python cell sequentially. Cells share one persistent
+ * Pyodide interpreter, so a name defined in an earlier cell is already
+ * visible to a later one without any extra bookkeeping here.
  *
  * @async
  * @function runAllCells
@@ -909,141 +1193,289 @@ async function runAllCells() {
     updateStatus('No cells to run.');
     return;
   }
+  if (runningCellId || runningAll) return;
 
-  await ensurePyodide();
+  try {
+    await ensureEngineAndFsReady();
+  } catch (error) {
+    updateStatus(`Python failed to start: ${error.message}. Reloading the page usually fixes it.`, 'error');
+    return;
+  }
 
-  // Clear all outputs first
-  cells.forEach(cell => {
-    cell.output = '';
-    cell.error = null;
-  });
-
-  // Reset shared namespace
-  sharedNamespace = { __builtins__: {} };
-
+  runningAll = true;
   updateStatus(`Running ${cells.length} cells...`);
 
-  // Run each cell in order
   for (let i = 0; i < cells.length; i++) {
     const cell = cells[i];
     if (cell.type === CELL_TYPES.PYTHON && cell.content.trim()) {
+      runningCellId = cell.id;
       try {
-        await pyodide.runPythonAsync(cell.content);
-        await updateSharedNamespace();
+        const { ok } = await engine.runCell(cell.id, cell.content);
+        cell.hasError = !ok;
+        cell.output = cell.outputEl ? cell.outputEl.innerHTML : '';
+        if (!ok) updateStatus(`Error in cell ${i + 1}.`, 'error');
       } catch (error) {
-        cell.error = formatError(error);
-        cell.output = '';
-        updateStatus(`Error in cell ${i + 1}: ${truncateError(cell.error)}`);
-        // Continue to next cell even if this one fails
+        updateStatus(`Cell ${i + 1} failed to run: ${error.message}`, 'error');
       }
     }
   }
 
-  // Re-render to show all outputs
+  runningCellId = null;
+  runningAll = false;
   saveState();
-  renderCells();
   updateStatus(`All ${cells.length} cells executed.`);
 }
 
 // ============================================================================
-// Pyodide Management
+// File Tree
 // ============================================================================
 
 /**
- * Ensure Pyodide is loaded and ready
- * Loads Pyodide and required packages on demand
+ * Format a byte count for display in the file tree (e.g. "1.2 KB").
+ *
+ * @param {number} bytes
+ * @returns {string}
+ */
+function formatFileSize(bytes) {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+/**
+ * Re-list the mounted filesystem's root and redraw the file tree pane.
+ * A no-op-looking placeholder ("Files appear here once Python starts")
+ * stays up until fsReady flips true — see ensureEngineAndFsReady().
  *
  * @async
- * @returns {Promise<Object>} Pyodide instance
  */
-async function ensurePyodide() {
-  if (pyodideLoaded) return pyodide;
-  if (pyodideLoading) {
-    // Wait for existing load to complete
-    while (pyodideLoading) {
-      await new Promise(resolve => setTimeout(resolve, 100));
+async function renderFileTree() {
+  if (!filetreeListEl || !filetreeNoteEl) return;
+
+  if (!fsReady) {
+    filetreeListEl.hidden = true;
+    filetreeNoteEl.hidden = false;
+    filetreeNoteEl.textContent = 'Files appear here once Python starts — run any cell.';
+    return;
+  }
+
+  let entries;
+  try {
+    entries = await fs.listDir('');
+  } catch (error) {
+    filetreeListEl.hidden = true;
+    filetreeNoteEl.hidden = false;
+    filetreeNoteEl.textContent = `Couldn't list files: ${error.message}`;
+    return;
+  }
+
+  if (entries.length === 0) {
+    filetreeListEl.hidden = true;
+    filetreeNoteEl.hidden = false;
+    filetreeNoteEl.textContent = 'No files yet. Files a cell writes, or that you upload, will show up here.';
+    return;
+  }
+
+  filetreeNoteEl.hidden = true;
+  filetreeListEl.hidden = false;
+  filetreeListEl.innerHTML = '';
+
+  for (const entry of entries) {
+    const item = document.createElement('li');
+    item.className = 'mini-ide-filetree-item';
+
+    const nameEl = document.createElement('span');
+    nameEl.className = 'mini-ide-filetree-item-name';
+    nameEl.textContent = entry.isDir ? `${entry.name}/` : entry.name;
+    nameEl.title = entry.name;
+
+    const sizeEl = document.createElement('span');
+    sizeEl.className = 'mini-ide-filetree-item-size';
+    sizeEl.textContent = entry.isDir ? '' : formatFileSize(entry.size);
+
+    const deleteBtn = document.createElement('button');
+    deleteBtn.type = 'button';
+    deleteBtn.className = 'mini-ide-filetree-item-delete';
+    deleteBtn.textContent = '×';
+    deleteBtn.title = `Delete ${entry.name}`;
+    deleteBtn.setAttribute('aria-label', `Delete ${entry.name}`);
+    deleteBtn.addEventListener('click', () => deleteTreeFile(entry.name));
+
+    item.appendChild(nameEl);
+    item.appendChild(sizeEl);
+    item.appendChild(deleteBtn);
+    filetreeListEl.appendChild(item);
+  }
+}
+
+/**
+ * Delete a file from the mounted filesystem and refresh the tree.
+ *
+ * @async
+ * @param {string} name - entry name, relative to the mount's root
+ */
+async function deleteTreeFile(name) {
+  if (!confirm(`Delete "${name}"? This cannot be undone.`)) return;
+  try {
+    await fs.deleteFile(name);
+  } catch (error) {
+    updateStatus(`Couldn't delete ${name}: ${error.message}`, 'error');
+    return;
+  }
+  renderFileTree();
+}
+
+/**
+ * Write one or more dropped/selected files into the mounted filesystem's
+ * root, then refresh the tree. Requires Python to have already started
+ * (fsReady) — the button/dropzone work either way, but nothing is
+ * written until then.
+ *
+ * @async
+ * @param {FileList|File[]|null|undefined} fileList
+ */
+async function uploadFiles(fileList) {
+  const files = fileList ? Array.from(fileList) : [];
+  if (files.length === 0) return;
+
+  if (!fsReady) {
+    updateStatus('Run a cell first to start Python, then upload files.', 'error');
+    return;
+  }
+
+  let uploaded = 0;
+  for (const file of files) {
+    try {
+      const bytes = new Uint8Array(await file.arrayBuffer());
+      await fs.writeFile(file.name, bytes);
+      uploaded++;
+    } catch (error) {
+      updateStatus(`Couldn't upload ${file.name}: ${error.message}`, 'error');
     }
-    return pyodide;
   }
 
-  pyodideLoading = true;
-  updateStatus('Loading Python...');
-
-  try {
-    // Load Pyodide
-    const pyodideUrl = new URL(
-      globalThis.DEWLAB_PYODIDE_BASE ||
-        `https://cdn.jsdelivr.net/pyodide/v${PYODIDE_VERSION}/full/`,
-      document.baseURI
-    ).href;
-
-    pyodide = await (globalThis.loadPyodide || (await import(pyodideUrl + "pyodide.mjs")).loadPyodide)({
-      indexURL: pyodideUrl
-    });
-
-    updateStatus('Loading packages...');
-
-    // Load required packages
-    await pyodide.loadPackage(['numpy', 'pandas', 'matplotlib']);
-
-    updateStatus('Preparing notebook tools...');
-
-    // Load tutorial_tools.py
-    await loadTutorialTools();
-
-    pyodideLoaded = true;
-    pyodideLoading = false;
-    updateStatus('Python ready.');
-
-    return pyodide;
-  } catch (error) {
-    pyodideLoading = false;
-    console.error('Failed to load Pyodide:', error);
-    updateStatus(`Failed to load Python: ${error.message}`, 'error');
-    throw error;
+  renderFileTree();
+  if (uploaded > 0) {
+    updateStatus(`Uploaded ${uploaded} file${uploaded === 1 ? '' : 's'}.`);
   }
 }
 
+// ============================================================================
+// Notebook Import (.ipynb / .py)
+// ============================================================================
+
 /**
- * Load tutorial_tools.py into Pyodide
- * Provides the dewlab-specific functions for cells
+ * Import a .ipynb or .py file, replacing the current notebook's cells.
+ * Routed from the toolbar's "Import" button.
  *
  * @async
+ * @param {Event} e - the file input's change event
  */
-async function loadTutorialTools() {
-  const toolsCode = getTutorialToolsCode();
-  pyodide.FS.writeFile("/home/pyodide/tutorial_tools.py", toolsCode, { encoding: "utf8" });
-  
-  // Import and configure tutorial_tools
-  const tutorialTools = pyodide.pyimport("tutorial_tools");
-  
-  // Configure with empty data base (Mini IDE doesn't have a data directory by default)
-  tutorialTools.configure("");
-  
-  // Store reference for later use
-  window.tutorialTools = tutorialTools;
+async function handleImportNotebookFile(e) {
+  const input = e.target;
+  const file = input.files && input.files[0];
+  input.value = '';
+  if (!file) return;
+
+  let imported;
+  try {
+    const text = await file.text();
+    imported = file.name.toLowerCase().endsWith('.ipynb') ? parseIpynb(text) : parsePy(text);
+  } catch (error) {
+    updateStatus(`Couldn't read ${file.name}: ${error.message}`, 'error');
+    return;
+  }
+
+  if (imported.length === 0) {
+    updateStatus('That file has no cells to import.', 'error');
+    return;
+  }
+
+  cells = loadImportMode() === 'append' ? cells.concat(imported) : imported;
+  hasSampleCells = false;
+  saveState();
+  renderCells();
+  if (sampleNoticeEl) sampleNoticeEl.hidden = true;
+  updateStatus(`Loaded ${imported.length} cell${imported.length === 1 ? '' : 's'} from ${file.name}.`);
 }
 
 /**
- * Update shared namespace with current Pyodide globals
- * Excludes builtins and private names
+ * Parse a Jupyter notebook's JSON into Mini IDE cells. Best-effort on rich
+ * outputs — image/png, text/html, and text/plain or a stream — everything
+ * else (widgets, other MIME types) is silently skipped rather than
+ * attempting a full nbformat renderer.
  *
- * @async
+ * @param {string} text - raw .ipynb file contents
+ * @returns {Array<Object>} new cell objects (not yet added to `cells`)
  */
-async function updateSharedNamespace() {
-  try {
-    const globals = pyodide.globals.get("dict");
-    const newGlobals = await globals.toJs();
-    
-    // Update shared namespace with non-private, non-dunder names
-    Object.keys(newGlobals).forEach(key => {
-      if (!key.startsWith('_') && key !== 'In' && key !== 'Out') {
-        sharedNamespace[key] = newGlobals[key];
-      }
-    });
-  } catch (error) {
-    console.warn('Failed to update shared namespace:', error);
+function parseIpynb(text) {
+  const notebook = JSON.parse(text);
+  if (!Array.isArray(notebook.cells)) {
+    throw new Error('that file has no cells array');
   }
+  return notebook.cells.map((nbCell) => {
+    const isCode = nbCell.cell_type === 'code';
+    const source = Array.isArray(nbCell.source) ? nbCell.source.join('') : (nbCell.source || '');
+    const cell = createNewCell(isCode ? CELL_TYPES.PYTHON : CELL_TYPES.TEXT, source, false);
+    if (isCode && Array.isArray(nbCell.outputs) && nbCell.outputs.length > 0) {
+      cell.output = renderIpynbOutputs(nbCell.outputs);
+    }
+    return cell;
+  });
+}
+
+/**
+ * Render a code cell's `outputs` array (nbformat 4) as the same HTML
+ * string shape cell.output already holds for a freshly-run cell.
+ *
+ * @param {Array<Object>} outputs
+ * @returns {string}
+ */
+function renderIpynbOutputs(outputs) {
+  const joinText = (value) => (Array.isArray(value) ? value.join('') : (value || ''));
+  const parts = [];
+
+  for (const out of outputs) {
+    const data = out.data || {};
+    if (data['image/png']) {
+      const encoded = joinText(data['image/png']);
+      parts.push(`<div class="dl-figure"><img alt="Figure from imported notebook" src="data:image/png;base64,${encoded}"></div>`);
+    } else if (data['text/html']) {
+      // Trusted: this is markup the notebook's own renderer produced
+      // (e.g. a DataFrame's own to_html()), not user-entered text.
+      parts.push(joinText(data['text/html']));
+    } else if (data['text/plain']) {
+      parts.push(`<pre>${escapeHtml(joinText(data['text/plain']))}</pre>`);
+    } else if (out.output_type === 'stream' && out.text !== undefined) {
+      const cssClass = out.name === 'stderr' ? 'dl-error' : 'dl-stdout';
+      parts.push(`<pre class="${cssClass}">${escapeHtml(joinText(out.text))}</pre>`);
+    }
+    // Anything else (widgets, other MIME types) is dropped — best-effort,
+    // not a full nbformat renderer.
+  }
+
+  return parts.join('');
+}
+
+/**
+ * Split a .py file into cells on "# %%" markers (the Jupytext/VS Code/
+ * Spyder convention) — the same marker downloadAsPython() now exports
+ * with, so a round trip lands back where it started. A file with no
+ * markers imports as a single cell.
+ *
+ * @param {string} text - raw .py file contents
+ * @returns {Array<Object>} new cell objects (not yet added to `cells`)
+ */
+function parsePy(text) {
+  const marker = /^#\s*%%.*$/m;
+  if (!marker.test(text)) {
+    return text.trim() ? [createNewCell(CELL_TYPES.PYTHON, text, false)] : [];
+  }
+  return text
+    .split(/^#\s*%%.*$/m)
+    .map((chunk) => chunk.replace(/^\s+|\s+$/g, ''))
+    .filter((chunk) => chunk.length > 0)
+    .map((chunk) => createNewCell(CELL_TYPES.PYTHON, chunk, false));
 }
 
 // ============================================================================
@@ -1063,7 +1495,10 @@ function downloadAsPython() {
     return;
   }
 
-  const content = pythonCells.map(cell => cell.content).join('\n\n# ---\n\n');
+  // "# %%" (the Jupytext/VS Code/Spyder convention) rather than an
+  // arbitrary separator, so a downloaded .py round-trips back through
+  // "Import" (parsePy()) into the same cells it came from.
+  const content = pythonCells.map(cell => cell.content).join('\n\n# %%\n\n');
   const blob = new Blob([content], { type: 'text/x-python' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
@@ -1293,172 +1728,24 @@ function escapeHtml(text) {
   return div.innerHTML;
 }
 
-/**
- * Format Python output for display
- * Handles various types of Python objects
- *
- * @param {any} output - Python output to format
- * @returns {string} Formatted output
- */
-function formatOutput(output) {
-  if (output === undefined || output === null) {
-    return '';
-  }
-  if (typeof output === 'string') {
-    return output;
-  }
-  if (typeof output === 'object') {
-    try {
-      return JSON.stringify(output, null, 2);
-    } catch {
-      return String(output);
-    }
-  }
-  return String(output);
-}
-
-/**
- * Format Python error for display
- * Extracts meaningful error message from Pyodide errors
- *
- * @param {Error} error - Error to format
- * @returns {string} Formatted error message
- */
-function formatError(error) {
-  if (typeof error === 'string') return error;
-  if (error.message) return error.message;
-  return String(error);
-}
-
-/**
- * Truncate error message for status display
- * Keeps error messages short for the status bar
- *
- * @param {string} error - Error message
- * @param {number} [maxLength=50] - Maximum length
- * @returns {string} Truncated error
- */
-function truncateError(error, maxLength = 50) {
-  if (error.length <= maxLength) return error;
-  return error.substring(0, maxLength) + '...';
-}
-
-// ============================================================================
-// Jedi Integration (for autocomplete)
-// ============================================================================
-
-/**
- * Get Jedi completions for autocomplete
- * Runs Jedi inside Pyodide for pre-execution completion
- *
- * @async
- * @param {string} text - Code text
- * @param {Object} pos - Cursor position
- * @param {string} word - Current word
- * @returns {Promise<Array>} Array of completion suggestions
- */
-async function getJediCompletions(text, pos, word) {
-  if (!pyodide) return [];
-  
-  try {
-    if (!jediModule) {
-      await pyodide.loadPackage('jedi');
-      jediModule = pyodide.pyimport('jedi');
-    }
-
-    // This is a simplified version - full Jedi integration would be more complex
-    // For now, return basic Python keywords and builtins
-    return [
-      { label: 'print', type: 'function' },
-      { label: 'len', type: 'function' },
-      { label: 'range', type: 'function' },
-      { label: 'def', type: 'keyword' },
-      { label: 'for', type: 'keyword' },
-      { label: 'if', type: 'keyword' },
-      { label: 'import', type: 'keyword' }
-    ];
-  } catch (error) {
-    console.warn('Jedi completion failed:', error);
-    return [];
-  }
-}
-
-/**
- * Get documentation for a name using Jedi
- *
- * @async
- * @param {string} name - Name to get documentation for
- * @returns {Promise<string|null>} Documentation string or null
- */
-async function getJediDoc(name) {
-  if (!pyodide) return null;
-  
-  try {
-    if (!jediModule) {
-      await pyodide.loadPackage('jedi');
-      jediModule = pyodide.pyimport('jedi');
-    }
-    
-    // Simplified - return basic docs
-    const docs = {
-      'print': 'print(*objects, sep=\' \', end=\'\\n\', file=sys.stdout, flush=False)\n\nPrints the values to a stream, or to sys.stdout by default.',
-      'len': 'len(object)\n\nReturn the number of items in a container.',
-      'range': 'range(stop)\nrange(start, stop[, step])\n\nGenerate numbers in a range.'
-    };
-    
-    return docs[name] || null;
-  } catch (error) {
-    console.warn('Jedi doc failed:', error);
-    return null;
-  }
-}
-
-/**
- * Get documentation for a name from shared namespace
- *
- * @param {string} name - Name to get documentation for
- * @returns {string|null} Documentation string or null
- */
-function getDocForName(name) {
-  // Simplified documentation
-  const docs = {
-    'print': 'Prints values to stdout',
-    'len': 'Returns the length of an object',
-    'range': 'Generates a range of numbers',
-    'show': 'dewlab function to display values',
-    'show_table': 'dewlab function to display a table',
-    'check': 'dewlab function to check answers',
-    'text_input': 'dewlab function to create a text input widget',
-    'dropdown': 'dewlab function to create a dropdown widget',
-    'button': 'dewlab function to create a button widget',
-    'load_csv': 'dewlab function to load a CSV file'
-  };
-  
-  return docs[name] || null;
-}
-
-// ============================================================================
-// Tutorial Tools Code
-// ============================================================================
-
-/**
- * Get the tutorial_tools.py code as a string
- * This is a simplified version adapted for the Mini IDE
- *
- * @returns {string} Python code for tutorial tools
- */
-function getTutorialToolsCode() {
-  return `\nimport html\nimport json\nimport sys\nimport traceback\nimport warnings\nimport io\nimport base64\n\n# Suppress matplotlib backend warning\nwarnings.filterwarnings("ignore", message="FigureCanvasAgg is non-interactive")\n\n# Global state for the current cell\n_current_cell_id = None\n_current_output_element = None\n\nclass _OutputCapture:\n    """Capture stdout for display in cell output."""\n    def __init__(self):\n        self.outputs = []\n        \n    def write(self, text):\n        self.outputs.append(text)\n        \n    def flush(self):\n        pass\n\n    def getvalue(self):\n        return ''.join(self.outputs)\n\nclass _Widget:\n    """Base class for all widgets."""\n    _counter = 0\n    \n    def __init__(self, label, widget_id=None):\n        _Widget._counter += 1\n        self.id = widget_id or f"widget-{_Widget._counter}"\n        self.label = label\n        self.type = "widget"\n\nclass _TextInput(_Widget):\n    """Text input widget."""\n    def __init__(self, label, value="", widget_id=None):\n        super().__init__(label, widget_id)\n        self.value = value\n        self.type = "text"\n\nclass _Dropdown(_Widget):\n    """Dropdown widget."""\n    def __init__(self, label, options, value=None, widget_id=None):\n        super().__init__(label, widget_id)\n        self.options = options\n        self.value = value or (options[0] if options else "")\n        self.type = "dropdown"\n\nclass _Button(_Widget):\n    """Button widget."""\n    def __init__(self, label, on_click, widget_id=None):\n        super().__init__(label, widget_id)\n        self.on_click = on_click\n        self.type = "button"\n\ndef text_input(label, value="", widget_id=None):\n    """Create a text input widget."""\n    widget = _TextInput(label, value, widget_id)\n    if _current_output_element:\n        widget_id = widget.id\n        _current_output_element.innerHTML += f'''\n        <div class="dl-widget dl-widget-text" data-widget-id="{widget_id}">\n            <label>{html.escape(label)}: <input type="text" value="{html.escape(widget.value)}" data-widget-id="{widget_id}"></label>\n        </div>\n        '''\n    return widget\n\ndef dropdown(label, options, value=None, widget_id=None):\n    """Create a dropdown widget."""\n    widget = _Dropdown(label, options, value, widget_id)\n    if _current_output_element:\n        widget_id = widget.id\n        options_html = ''.join(f'<option value="{html.escape(o)}"{" selected" if o == widget.value else ""}>{html.escape(o)}</option>' for o in options)\n        _current_output_element.innerHTML += f'''\n        <div class="dl-widget dl-widget-dropdown" data-widget-id="{widget_id}">\n            <label>{html.escape(label)}: <select data-widget-id="{widget_id}">{options_html}</select></label>\n        </div>\n        '''\n    return widget\n\ndef button(label, on_click, widget_id=None):\n    """Create a button widget."""\n    widget = _Button(label, on_click, widget_id)\n    if _current_output_element:\n        widget_id = widget.id\n        _current_output_element.innerHTML += f'''\n        <div class="dl-widget dl-widget-button" data-widget-id="{widget_id}">\n            <button type="button" data-widget-id="{widget_id}">{html.escape(label)}</button>\n        </div>\n        '''\n    return widget\n\nasync def load_csv(name):\n    """Load a CSV file from the data directory."""\n    import pandas as pd\n    import io\n    \n    # In Mini IDE, we need to fetch the CSV\n    try:\n        from js import fetch\n        response = await fetch(f"data/{name}")\n        if response.ok:\n            text = await response.text()\n            return pd.read_csv(io.StringIO(text))\n        else:\n            raise FileNotFoundError(f"Could not find data/{name}")\n    except Exception as e:\n        raise FileNotFoundError(f"Could not load {name}: {e}")\n\ndef show(value):\n    """Display a value in the cell output."""\n    if _current_output_element:\n        _current_output_element.innerHTML += f'<div class="dl-show">{html.escape(repr(value))}</div>'\n    return value\n\ndef show_table(df):\n    """Display a DataFrame as a table."""\n    if _current_output_element:\n        html_table = df.to_html(classes='dl-table', index=False)\n        _current_output_element.innerHTML += f'<div class="dl-show">{html_table}</div>'\n    return df\n\ndef check(value, expected):\n    """Check if a value matches the expected value."""\n    result = value == expected\n    if _current_output_element:\n        color = "#1f6b3f" if result else "#9b2226"\n        _current_output_element.innerHTML += f'<div class="dl-check" style="color: {color}">{"✓ Correct" if result else "✗ Incorrect"}</div>'\n    return result\n\ndef configure(data_base):\n    """Configure the tutorial tools with the data base URL."""\n    global _data_base\n    _data_base = data_base\n  `;
-}
-
 // ============================================================================
 // Start the Mini IDE
 // ============================================================================
 
-// Initialize when DOM is ready
-document.addEventListener('DOMContentLoaded', init);
-
-// Also handle cases where DOM is already loaded
-if (document.readyState !== 'loading') {
+// Initialize when DOM is ready. A module script runs after the document
+// has already been parsed, so document.readyState is frequently no longer
+// "loading" by the time this line executes — without the guard below, both
+// branches can fire (the immediate check here, then DOMContentLoaded a tick
+// later), double-registering every toolbar listener setupEventListeners()
+// attaches.
+let initialized = false;
+function initOnce() {
+  if (initialized) return;
+  initialized = true;
   init();
+}
+
+document.addEventListener('DOMContentLoaded', initOnce);
+if (document.readyState !== 'loading') {
+  initOnce();
 }

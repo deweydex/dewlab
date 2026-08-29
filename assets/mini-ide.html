@@ -5,6 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Mini IDE - dewlab</title>
 
+<!-- Cross-origin isolation, as early as this page can ask for it — a
+     genuine Stop button needs the SharedArrayBuffer interrupt path, which
+     needs crossOriginIsolated. Same shim shell.html registers for tutorial
+     pages (see its own comment); Mini IDE never picked this up before,
+     because it's a standalone page a student can reach without ever
+     visiting a tutorial page first, so it registers it for itself too. -->
+<script src="coi-serviceworker.js"></script>
+
 <!-- Version metadata for consistency with tutorial pages -->
 <meta name="tutorial-version" content="1.0">
 <meta name="tutorial-slug" content="mini-ide">
@@ -71,6 +79,10 @@
     <!-- Mini IDE toolbar - integrated into the page flow -->
     <div class="mini-ide-toolbar">
       <div class="mini-ide-toolbar-left">
+        <button id="filetree-toggle" class="dl-btn dl-btn-secondary" title="Show or hide the file pane"
+                aria-expanded="false" aria-controls="mini-ide-filetree">
+          Files
+        </button>
         <button id="add-python-cell" class="dl-btn" title="Add a Python code cell">
           <span class="mini-ide-icon mini-ide-icon-python"></span>Python Cell
         </button>
@@ -85,10 +97,14 @@
         </button>
       </div>
       <div class="mini-ide-toolbar-right">
+        <button id="import-notebook" class="dl-btn dl-btn-secondary" title="Load a .ipynb or .py file as cells (replaces the current notebook)">
+          Import
+        </button>
+        <input type="file" id="import-notebook-file" accept=".ipynb,.py,application/json,text/x-python" hidden>
         <button id="download-python" class="dl-btn" title="Download as Python file">
           <span class="mini-ide-icon mini-ide-icon-download"></span>.py
         </button>
-        <button id="download-html" class="dl-btn" title="Download as standalone HTML">
+        <button id="download-html" class="dl-btn" title="Download a static HTML snapshot (not runnable)">
           <span class="mini-ide-icon mini-ide-icon-download"></span>.html
         </button>
         <button id="download-ipynb" class="dl-btn" title="Download as Jupyter Notebook">
@@ -117,25 +133,54 @@
         with nothing to install.
       </p>
       <ul>
-        <li><strong>Python Cells:</strong> Write and execute Python code. Cells share a common namespace, 
+        <li><strong>Python Cells:</strong> Write and execute Python code. Cells share a common namespace,
         so variables and functions defined in one cell are available in others.</li>
         <li><strong>Text Cells:</strong> Write documentation, comments, or explanations in plain text.</li>
-        <li><strong>Execution:</strong> Click <strong>Run</strong> on any cell to execute it, or <strong>Run All</strong> 
-        to execute all cells in order.</li>
+        <li><strong>Execution:</strong> Click <strong>Run</strong> on any cell to execute it, or <strong>Run All</strong>
+        to execute all cells in order. Run becomes <strong>Stop</strong> while a cell is running.</li>
         <li><strong>Reordering:</strong> Drag and drop cells to rearrange them.</li>
-        <li><strong>Persistence:</strong> Your work is automatically saved in your browser's local storage.</li>
-        <li><strong>Downloads:</strong> Export your work as a Python file, standalone HTML, or Jupyter Notebook.</li>
+        <li><strong>Files:</strong> Upload files or drag them onto the Files pane; a real folder on your
+        computer or private browser storage backs it, depending on what you choose in Settings.</li>
+        <li><strong>Persistence:</strong> Cells are automatically saved in your browser's local storage; files
+        live in whichever storage backs the Files pane.</li>
+        <li><strong>Import:</strong> Load a <code>.ipynb</code> or <code>.py</code> file as this notebook's cells.</li>
+        <li><strong>Downloads:</strong> Export your cells as a Python file, an HTML snapshot, or a Jupyter Notebook.</li>
       </ul>
       <p>
-        <strong>Available Functions:</strong> You can use <code>show()</code>, <code>show_table()</code>, 
-        <code>check()</code>, <code>text_input()</code>, <code>dropdown()</code>, <code>button()</code>, 
-        and <code>load_csv()</code> just like in the tutorials.
+        <strong>Available Functions:</strong> You can use <code>show()</code>, <code>show_table()</code>,
+        <code>run_query()</code>, <code>check()</code>, <code>text_input()</code>, <code>dropdown()</code>,
+        <code>button()</code>, and <code>load_csv()</code> just like in the tutorials — plus <code>sqlite3</code>
+        from Python's own standard library.
       </p>
       <button id="helper-close" class="dl-btn dl-btn-secondary">Get Started</button>
     </div>
 
-    <!-- Cells container -->
-    <div id="cells-container" class="mini-ide-cells"></div>
+    <!-- Two-pane workspace: file tree | editor and cells. Output stays
+         inline under each cell rather than a third shared pane, closer
+         to how a real Jupyter notebook actually reads. -->
+    <div class="mini-ide-workspace">
+      <aside class="mini-ide-filetree" id="mini-ide-filetree" aria-label="Files">
+        <div class="mini-ide-filetree-head">
+          <h2>Files</h2>
+          <div class="mini-ide-filetree-head-actions">
+            <button type="button" class="mini-ide-filetree-refresh" id="filetree-upload"
+                    title="Upload files" aria-label="Upload files">+</button>
+            <button type="button" class="mini-ide-filetree-refresh" id="filetree-refresh"
+                    title="Refresh the file list" aria-label="Refresh the file list">&#8635;</button>
+          </div>
+        </div>
+        <input type="file" id="filetree-upload-file" multiple hidden>
+        <p class="mini-ide-filetree-note" id="filetree-note">
+          Files appear here once Python starts — run any cell.
+        </p>
+        <ul class="mini-ide-filetree-list" id="filetree-list" hidden></ul>
+      </aside>
+
+      <div class="mini-ide-main">
+        <!-- Cells container -->
+        <div id="cells-container" class="mini-ide-cells"></div>
+      </div>
+    </div>
 
     <!-- Status bar -->
     <div class="mini-ide-status" id="mini-ide-status" role="status" aria-live="polite"></div>
@@ -151,6 +196,37 @@
     <button type="button" class="dl-settings-close" id="dl-settings-close"
             aria-label="Close settings">&times;</button>
   </div>
+
+  <!-- Python engine status -->
+  <section class="dl-settings-section" id="dl-settings-execution">
+    <h3>Python</h3>
+    <p class="dl-panel-note" id="settings-execution-status">Not started yet — run a cell to start Python.</p>
+    <div class="dl-progress-actions">
+      <button type="button" class="dl-btn dl-btn-secondary" id="settings-restart-python">Restart Python</button>
+    </div>
+  </section>
+
+  <!-- Storage / filesystem backend status -->
+  <section class="dl-settings-section" id="dl-settings-storage">
+    <h3>Files</h3>
+    <p class="dl-panel-note" id="settings-storage-status">Not started yet.</p>
+    <div class="dl-progress-actions">
+      <button type="button" class="dl-btn" id="settings-choose-folder">Use a folder on my computer</button>
+      <button type="button" class="dl-btn dl-btn-secondary" id="settings-forget-folder" hidden>Stop using that folder</button>
+    </div>
+  </section>
+
+  <!-- Notebook import behavior -->
+  <section class="dl-settings-section" id="dl-settings-import">
+    <h3>Import</h3>
+    <div class="dl-texture-row">
+      <span>On import</span>
+      <div class="dl-seg" data-import-mode>
+        <button type="button" data-value="replace">replace</button>
+        <button type="button" data-value="append">append</button>
+      </div>
+    </div>
+  </section>
 
   <!-- Download section for Mini IDE -->
   <section class="dl-settings-section" id="dl-settings-download">

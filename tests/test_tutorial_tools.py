@@ -10,6 +10,7 @@ handlers — is covered by the e2e test instead.
 
 from __future__ import annotations
 
+import sqlite3
 import sys
 from contextlib import contextmanager
 from pathlib import Path
@@ -289,6 +290,61 @@ class TestTables:
         passed, detail = tt._compare(frame, [1, 2, 3], None)
         assert not passed
         assert "DataFrame" in detail
+
+
+@needs_pandas
+class TestRunQuery:
+    """run_query — planning/MINI_IDE_REDESIGN.md Phase 4, sqlite3 is stdlib
+    so this runs under plain CPython same as everything else here; no
+    Pyodide-only behaviour to defer to the e2e test."""
+
+    @pytest.fixture()
+    def seeded_db(self, tmp_path):
+        db_path = tmp_path / "students.db"
+        conn = sqlite3.connect(db_path)
+        conn.execute("create table grades (name text, score integer)")
+        conn.executemany(
+            "insert into grades values (?, ?)",
+            [("Ana", 92), ("Bo", 78), ("Cy", 85)],
+        )
+        conn.commit()
+        conn.close()
+        return db_path
+
+    def test_select_renders_a_table_and_returns_a_frame(self, cell, seeded_db):
+        result = tt.run_query(str(seeded_db), "select * from grades order by name")
+        assert list(result["name"]) == ["Ana", "Bo", "Cy"]
+        assert "<table" in cell.html
+        assert "Ana" in cell.html
+
+    def test_params_are_bound_not_interpolated(self, cell, seeded_db):
+        result = tt.run_query(
+            str(seeded_db), "select name from grades where score > ?", (80,)
+        )
+        assert set(result["name"]) == {"Ana", "Cy"}
+
+    def test_a_statement_with_nothing_to_fetch_still_commits_and_renders_nothing(
+        self, cell, seeded_db
+    ):
+        tt.run_query(str(seeded_db), "insert into grades values ('Dee', 60)")
+        assert cell.html == ""
+        conn = sqlite3.connect(seeded_db)
+        assert conn.execute("select count(*) from grades").fetchone()[0] == 4
+        conn.close()
+
+    def test_an_open_connection_is_reused_not_closed(self, cell, seeded_db):
+        conn = sqlite3.connect(seeded_db)
+        try:
+            tt.run_query(conn, "select 1")
+            # Still usable — run_query only closes a connection it opened itself.
+            assert conn.execute("select 2").fetchone() == (2,)
+        finally:
+            conn.close()
+
+    def test_a_bad_query_raises_rather_than_rendering_anything(self, cell, seeded_db):
+        with pytest.raises(sqlite3.OperationalError):
+            tt.run_query(str(seeded_db), "select * from a_table_that_does_not_exist")
+        assert cell.html == ""
 
 
 try:

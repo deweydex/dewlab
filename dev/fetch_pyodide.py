@@ -1,13 +1,17 @@
 #!/usr/bin/env python3
 """Download a trimmed, self-hosted Pyodide into dev/pyodide/.
 
-Two uses:
+Three uses:
 
   * the e2e tests serve it, so they never depend on a CDN being reachable from
     wherever they run;
   * it is the escape hatch for OPEN_QUESTIONS.md 32 — if a school network turns
     out to block the CDN, this same directory is what gets committed under
-    assets/ and pointed at with DEWLAB_PYODIDE_BASE.
+    assets/ and pointed at with DEWLAB_PYODIDE_BASE;
+  * build.py's write_mini_ide_bundle() (planning/MINI_IDE_REDESIGN.md Phase 7)
+    points --out at assets/vendor/pyodide/ instead, with --packages widened to
+    include sqlite3, to make the downloadable Mini IDE bundle work offline
+    after its first run.
 
 "Trimmed" means the core runtime plus only the wheels the baseline packages
 actually need, resolved from Pyodide's own lockfile — numpy/pandas/matplotlib

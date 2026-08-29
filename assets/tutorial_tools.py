@@ -8,7 +8,9 @@ This is the module a student's cell code sees. It does two jobs:
 
   * it provides the small bridge a cell uses to put something on the page and
     read something back: `text_input`, `dropdown`, `button`, `show`,
-    `show_table`, and `check`.
+    `show_table`, and `check` — plus `load_csv` and `run_query` for pulling
+    in data, the latter usable wherever sqlite3 is loaded (Mini IDE today;
+    planning/MINI_IDE_REDESIGN.md Phase 4).
 
 Built from the specification in planning/DECISIONS.md, which names those six
 functions and pins down one signature, `check(actual, expected)`. Everything
@@ -59,6 +61,7 @@ __all__ = [
     "show_table",
     "check",
     "load_csv",
+    "run_query",
 ]
 
 # --------------------------------------------------------------------------
@@ -1036,3 +1039,43 @@ async def load_csv(name: str, **read_csv_kwargs):
             f"{name} is not in the shared data folder (HTTP {response.status})"
         )
     return pd.read_csv(io.BytesIO(await response.bytes()), **read_csv_kwargs)
+
+
+def run_query(conn_or_path, sql: str, params=None, max_rows: int = 20, caption: str | None = None):
+    """Run a SQL query and render the results as a table.
+
+    `conn_or_path` is either an already-open `sqlite3.Connection`, or a path
+    (or `":memory:"`) passed straight to `sqlite3.connect()` — a short-lived
+    connection is opened and closed around this one query in that case, so a
+    one-off query doesn't need its own connect/close boilerplate:
+
+        run_query("students.db", "select * from grades where score > ?", (80,))
+
+    Every query commits, including a `CREATE TABLE`/`INSERT`/`UPDATE` — the
+    friendlier default for a student who doesn't yet know sqlite3 needs an
+    explicit commit(); reach for sqlite3 directly for real transaction
+    control. A statement with nothing to fetch (anything but a `SELECT`)
+    still runs and commits, it just renders nothing. Either way, the result
+    comes back as a DataFrame — table rendering here is the display, not the
+    only way to use what came back.
+    """
+    import sqlite3  # noqa: PLC0415 - deliberately lazy, mirrors load_csv's pandas import
+    import pandas as pd  # noqa: PLC0415
+
+    cell = _require_cell()
+
+    owns_connection = isinstance(conn_or_path, str)
+    conn = sqlite3.connect(conn_or_path) if owns_connection else conn_or_path
+    try:
+        cursor = conn.execute(sql, params or ())
+        columns = [description[0] for description in cursor.description or []]
+        rows = cursor.fetchall()
+        conn.commit()
+    finally:
+        if owns_connection:
+            conn.close()
+
+    frame = pd.DataFrame(rows, columns=columns)
+    if columns:
+        cell.sink.append_html(_table_html(frame, max_rows=max_rows, caption=caption))
+    return frame

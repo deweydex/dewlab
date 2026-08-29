@@ -1921,7 +1921,14 @@ class TestDownloadsDoNotCollide:
         self.two_modules(repo_with_assets)
         b.build(standalone=True)
         pages = list((repo_with_assets / "site" / "tutorials").rglob("*.html"))
-        copies = list((repo_with_assets / "site" / "download").rglob("*.html"))
+        # mini-ide/mini-ide.html (write_mini_ide_bundle()) is a real file
+        # under site/download/ too, but it is not a tutorial's downloadable
+        # copy — repo_with_assets carries the real assets/, so a real
+        # assets/mini-ide.html is always in the mix here.
+        copies = [
+            p for p in (repo_with_assets / "site" / "download").rglob("*.html")
+            if "mini-ide" not in p.parts
+        ]
         assert len(copies) == len(pages) == 2
 
     def test_a_copy_sits_under_the_module_its_page_does(self, repo_with_assets):
