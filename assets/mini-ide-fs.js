@@ -206,6 +206,17 @@ export async function forgetFolder() {
   await idbDelete(HANDLE_KEY).catch(() => {});
 }
 
+/**
+ * Forgets that init() ever ran, so the next call re-mounts from scratch —
+ * for pairing with engine.restart(), whose fresh interpreter has nothing
+ * mounted into it yet. Doesn't touch the stored folder handle (or any
+ * file) itself, just this module's own "already initialized" memo.
+ */
+export function reset() {
+  initPromise = null;
+  backend = null;
+}
+
 /* --------------------------------------------------------- file access */
 
 function resolvePath(relativePath) {

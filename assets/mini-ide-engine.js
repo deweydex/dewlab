@@ -421,6 +421,40 @@ export function ensureBooted() {
   return bootPromise;
 }
 
+/**
+ * Tears down whatever's running — the Worker if one exists, or just the
+ * main-thread references — so the next ensureBooted() starts a genuinely
+ * fresh interpreter. For recovering from a corrupted namespace or a
+ * runaway loop the Stop button couldn't reach. Anything mounted into the
+ * old interpreter's filesystem (mini-ide-fs.js) goes with it — the
+ * caller is responsible for re-mounting after the restart resolves.
+ */
+export function restart() {
+  if (worker) {
+    try {
+      worker.terminate();
+    } catch {
+      // already gone
+    }
+  }
+  worker = null;
+  interruptBuffer = null;
+  jediReadyWorker = false;
+  pendingRequests.clear();
+  openStreams.clear();
+
+  mountedFsMT = null;
+  pyodideMT = null;
+  toolsMT = null;
+  inspectModuleMT = null;
+  builtinsModuleMT = null;
+  jediHoverFnMT = null;
+  jediSignatureFnMT = null;
+
+  mode = null;
+  bootPromise = null;
+}
+
 export function engineMode() {
   return mode;
 }

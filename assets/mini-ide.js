@@ -220,6 +220,13 @@ function initSettings() {
       const isHidden = panel.hasAttribute("hidden");
       panel.toggleAttribute("hidden", !isHidden);
       toggle.setAttribute("aria-expanded", String(!isHidden));
+      // Opening the panel is exactly when the engine/storage status lines
+      // (Phase 6) are worth a fresh read — both are otherwise updated only
+      // on state transitions, not continuously.
+      if (isHidden) {
+        updateExecutionStatus();
+        updateStorageStatus();
+      }
     });
   }
 
@@ -366,6 +373,152 @@ function initTexture(onThemeChange) {
   return state;
 }
 
+// ============================================================================
+// Mini-IDE-specific Settings Sections
+// ============================================================================
+
+/**
+ * Refresh the "Python" settings section — engine mode (worker vs.
+ * main-thread fallback) and whether a genuine Stop is available. Called
+ * on settings-panel open and after boot/restart, not continuously.
+ */
+function updateExecutionStatus() {
+  const el = document.getElementById('settings-execution-status');
+  if (!el) return;
+  const mode = engine.engineMode();
+  if (!mode) {
+    el.textContent = 'Not started yet — run a cell to start Python.';
+    return;
+  }
+  const where = mode === 'worker'
+    ? 'a background worker, so the page stays responsive'
+    : "the main thread (no background worker available here) — a runaway cell will freeze the page until it finishes";
+  const stop = engine.canStop()
+    ? 'Stop can genuinely interrupt a running cell.'
+    : "Stop can't interrupt a running cell in this mode.";
+  el.textContent = `Running in ${where}. ${stop}`;
+}
+
+/**
+ * Refresh the "Files" settings section — active storage backend, and the
+ * choose/reconnect-folder button's label and visibility.
+ *
+ * @async
+ */
+async function updateStorageStatus() {
+  const statusEl = document.getElementById('settings-storage-status');
+  const chooseBtn = document.getElementById('settings-choose-folder');
+  const forgetBtn = document.getElementById('settings-forget-folder');
+  if (!statusEl) return;
+
+  const backend = fs.getBackend();
+  const labels = {
+    native: 'Using a real folder on your computer.',
+    opfs: "Using this browser's private storage (fast; not visible in your file browser).",
+    idbfs: "Using this browser's private storage (compatibility mode)."
+  };
+  statusEl.textContent = backend ? labels[backend] : 'Not started yet — run a cell to start Python.';
+
+  if (chooseBtn) {
+    const supported = typeof window.showDirectoryPicker === 'function';
+    if (!supported || backend === 'native') {
+      chooseBtn.hidden = true;
+    } else {
+      chooseBtn.hidden = false;
+      const hasStored = await fs.hasStoredFolder();
+      chooseBtn.textContent = hasStored ? 'Reconnect my folder' : 'Use a folder on my computer';
+      chooseBtn.dataset.action = hasStored ? 'reconnect' : 'choose';
+    }
+  }
+  if (forgetBtn) forgetBtn.hidden = backend !== 'native';
+}
+
+const IMPORT_MODE_KEY = 'mini-ide:import-mode';
+
+/**
+ * @returns {"replace"|"append"} what handleImportNotebookFile() should do
+ *   with a newly imported notebook's cells relative to the current ones.
+ */
+function loadImportMode() {
+  return localStorage.getItem(IMPORT_MODE_KEY) === 'append' ? 'append' : 'replace';
+}
+
+/** Wires the "On import" replace/append segmented control. */
+function initImportModeSetting() {
+  const group = document.querySelector('[data-import-mode]');
+  if (!group) return;
+  const buttons = Array.from(group.querySelectorAll('button'));
+
+  function sync() {
+    const mode = loadImportMode();
+    buttons.forEach((btn) => btn.setAttribute('aria-pressed', String(btn.dataset.value === mode)));
+  }
+
+  buttons.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      localStorage.setItem(IMPORT_MODE_KEY, btn.dataset.value);
+      sync();
+    });
+  });
+
+  sync();
+}
+
+/**
+ * Wires the Python/Files/Import/Download settings sections added on top
+ * of the shared #dl-settings panel (mini-ide.js:202-374's texture code is
+ * the shared part; everything here is Mini-IDE-only).
+ */
+function initMiniIdeSettings() {
+  initImportModeSetting();
+
+  document.getElementById('settings-restart-python')?.addEventListener('click', async () => {
+    if (!confirm('Restart Python? Anything defined in the current session will be lost.')) return;
+    engine.restart();
+    fs.reset();
+    fsReady = false;
+    updateStatus('Restarting Python…');
+    updateExecutionStatus();
+    updateStorageStatus();
+    try {
+      await ensureEngineAndFsReady();
+      updateStatus('Python restarted.');
+    } catch (error) {
+      updateStatus(`Python failed to restart: ${error.message}`, 'error');
+    }
+    updateExecutionStatus();
+    updateStorageStatus();
+    renderFileTree();
+  });
+
+  document.getElementById('settings-choose-folder')?.addEventListener('click', async (e) => {
+    const action = e.currentTarget.dataset.action || 'choose';
+    try {
+      if (action === 'reconnect') await fs.reconnectFolder();
+      else await fs.chooseFolder();
+      updateStatus('Now using a folder on your computer for files.');
+    } catch (error) {
+      updateStatus(`Couldn't use that folder: ${error.message}`, 'error');
+    }
+    updateStorageStatus();
+    renderFileTree();
+  });
+
+  document.getElementById('settings-forget-folder')?.addEventListener('click', async () => {
+    if (!confirm("Stop using that folder? Mini IDE switches back to this browser's private storage — nothing in the folder itself is deleted.")) return;
+    await fs.forgetFolder();
+    updateStatus('Stopped using that folder. Restart Python to switch storage.');
+    updateStorageStatus();
+  });
+
+  // Fix: these three buttons existed in the markup with no listener.
+  document.getElementById('settings-export-python')?.addEventListener('click', () => downloadAsPython());
+  document.getElementById('settings-export-html')?.addEventListener('click', () => downloadAsHtml());
+  document.getElementById('settings-export-ipynb')?.addEventListener('click', () => downloadAsIpynb());
+
+  fs.configure({ onBackendChange: () => updateStorageStatus() });
+}
+
 /**
  * Track the chrome height for proper positioning
  * Same as tutorial-runtime.js
@@ -450,6 +603,7 @@ async function init() {
 
   // Initialize Settings panel
   initSettings();
+  initMiniIdeSettings();
 
   // Setup event listeners
   setupEventListeners();
@@ -1237,7 +1391,7 @@ async function handleImportNotebookFile(e) {
     return;
   }
 
-  cells = imported;
+  cells = loadImportMode() === 'append' ? cells.concat(imported) : imported;
   hasSampleCells = false;
   saveState();
   renderCells();

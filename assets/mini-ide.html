@@ -188,6 +188,37 @@
             aria-label="Close settings">&times;</button>
   </div>
 
+  <!-- Python engine status -->
+  <section class="dl-settings-section" id="dl-settings-execution">
+    <h3>Python</h3>
+    <p class="dl-panel-note" id="settings-execution-status">Not started yet — run a cell to start Python.</p>
+    <div class="dl-progress-actions">
+      <button type="button" class="dl-btn dl-btn-secondary" id="settings-restart-python">Restart Python</button>
+    </div>
+  </section>
+
+  <!-- Storage / filesystem backend status -->
+  <section class="dl-settings-section" id="dl-settings-storage">
+    <h3>Files</h3>
+    <p class="dl-panel-note" id="settings-storage-status">Not started yet.</p>
+    <div class="dl-progress-actions">
+      <button type="button" class="dl-btn" id="settings-choose-folder">Use a folder on my computer</button>
+      <button type="button" class="dl-btn dl-btn-secondary" id="settings-forget-folder" hidden>Stop using that folder</button>
+    </div>
+  </section>
+
+  <!-- Notebook import behavior -->
+  <section class="dl-settings-section" id="dl-settings-import">
+    <h3>Import</h3>
+    <div class="dl-texture-row">
+      <span>On import</span>
+      <div class="dl-seg" data-import-mode>
+        <button type="button" data-value="replace">replace</button>
+        <button type="button" data-value="append">append</button>
+      </div>
+    </div>
+  </section>
+
   <!-- Download section for Mini IDE -->
   <section class="dl-settings-section" id="dl-settings-download">
     <h3>Download</h3>
