@@ -60,6 +60,14 @@ const TEXTURE_DEFAULTS = {
 
 /* -------------------------------------------------------------- manifest */
 
+/* Every tutorial page build.py generates carries a <script id="dewlab-manifest">
+ * tag holding one JSON object describing that specific page: its cells'
+ * starter code, which Python packages it needs, where its data files
+ * live, and so on. This function is how that JSON gets from "text on the
+ * page" into a real JavaScript object the rest of this file can use —
+ * with sensible defaults filled in if the tag is missing or somehow not
+ * valid JSON, so a broken manifest degrades gracefully (an empty page
+ * with no cells) instead of crashing this entire script. */
 function readManifest() {
   const el = document.getElementById("dewlab-manifest");
   if (!el) return { cells: [], assetBase: "", dataBase: "", packages: DEFAULT_PACKAGES };
@@ -99,6 +107,11 @@ function trackChromeHeight() {
   const chrome = document.getElementById("dl-chrome");
   if (!chrome) return;
 
+  /* Measures the header's actual on-screen height right now and writes it
+   * into a CSS custom property (--dl-chrome-h), which tutorial-style.css
+   * then uses wherever something needs to sit below the header. This is
+   * "measure, don't guess": the header's height genuinely isn't a fixed
+   * number, since it depends on how the neighbouring tutorial titles wrap. */
   const publish = () => {
     document.documentElement.style.setProperty(
       "--dl-chrome-h", `${Math.round(chrome.getBoundingClientRect().height)}px`
@@ -106,6 +119,13 @@ function trackChromeHeight() {
   };
   publish();
 
+  /* ResizeObserver is a browser API that calls a function whenever a
+   * specific element's size changes, for any reason — not just a window
+   * resize, but also (for instance) the header wrapping differently
+   * because its content changed. It's the more precise tool for "watch
+   * this one element," and is preferred here over listening for the
+   * window's own resize event, which only catches one of the ways the
+   * header's height can actually change. */
   if (typeof ResizeObserver === "function") {
     new ResizeObserver(publish).observe(chrome);
   } else {
@@ -127,6 +147,17 @@ function trackChromeHeight() {
  * case. Escape and a click outside all three close whichever is open: a
  * panel that can only be dismissed by finding the same small button
  * again is the kind of thing that gets left open. */
+/* The three functions below (closeCheatSheet, closeSettings,
+ * closeSeriesNav) and the three init*() functions further down that use
+ * them all share one repeated shape: a toggle button, a panel, and a
+ * setOpen(open) function that shows/hides the panel and calls the *other
+ * two* close functions whenever it opens. That's the actual mechanism
+ * behind "opening any one panel closes the other two" — there's no
+ * central manager keeping track of which panel is open; each panel just
+ * closes its two siblings the moment it opens itself. `aria-expanded` is
+ * set alongside the plain `hidden` attribute so a screen reader also
+ * knows the toggle button's current state, not just a sighted reader
+ * looking at whether the panel is visible. */
 function closeCheatSheet() {
   const toggle = document.getElementById("dl-cheatsheet-toggle");
   const panel = document.getElementById("dl-cheatsheet");
@@ -202,6 +233,12 @@ const GLOSSARY_GROUP_LABELS = {
   keyword: "Keywords",
 };
 
+/* Builds the cheat sheet's content from scratch out of the manifest's
+ * glossary/notes/dataset entries, using document.createElement rather
+ * than building an HTML string — safer by construction, since
+ * `.textContent = entry.term` can never accidentally turn a term's text
+ * into markup, the way concatenating it into an HTML string could if the
+ * term ever contained something like "<" without careful escaping. */
 function renderCheatSheet(manifest) {
   const container = document.getElementById("dl-cheatsheet-groups");
   if (!container) return;
@@ -386,6 +423,18 @@ function isDarkNow() {
   return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
 }
 
+/* Reads whatever reading-preference choices this reader has made before
+ * (theme, font, text size, and so on) out of localStorage, layered on
+ * top of TEXTURE_DEFAULTS. The `{ ...a, ...b }` spread syntax merges two
+ * objects, with `b`'s keys overriding `a`'s — so a reader's stored
+ * choices override the defaults, but any key they've never set (or that
+ * didn't exist yet when they last saved) still falls back to the
+ * default. This is a pattern repeated throughout this file for every
+ * piece of per-reader state (progress, notes, version pins): wrap the
+ * read in try/catch, because localStorage can throw (private browsing,
+ * a browser setting that blocks it entirely) rather than just returning
+ * nothing, and a broken preference should never be able to crash the
+ * whole page. */
 function loadTexture() {
   try {
     return { ...TEXTURE_DEFAULTS, ...JSON.parse(localStorage.getItem(TEXTURE_KEY) || "{}") };
@@ -394,6 +443,9 @@ function loadTexture() {
   }
 }
 
+/* The write side of loadTexture — same try/catch-and-shrug shape, since a
+ * reader whose browser refuses to store this should still get to read
+ * the page, just without a preference that survives the page closing. */
 function saveTexture(state) {
   try {
     localStorage.setItem(TEXTURE_KEY, JSON.stringify(state));
@@ -403,6 +455,14 @@ function saveTexture(state) {
   }
 }
 
+/* Turns a texture state object into the actual visual change: setting
+ * (or removing) a `data-*` attribute on `<html>` for theme/font/header —
+ * the CSS in tutorial-style.css keys off of exactly these attributes —
+ * and setting CSS custom properties directly for the numeric/free-form
+ * ones (size, width, link colour). Removing an attribute rather than
+ * setting it to a "default" value, when the choice is the default, keeps
+ * the CSS simpler: it can assume "no attribute" means default, rather
+ * than needing an explicit rule for every possible default value too. */
 function applyTexture(state) {
   const root = document.documentElement;
   if (state.theme === "system") root.removeAttribute("data-theme");
@@ -416,6 +476,17 @@ function applyTexture(state) {
   root.style.setProperty("--dl-link", state.link);
 }
 
+/* Wires up every control in the Texture settings section: the segmented
+ * button groups (theme/font/width presets), the two sliders (size,
+ * width), the colour picker (link), and the reset button. `state` is
+ * plain mutable object shared by every one of these listeners through
+ * closures — each listener just changes the one property it's
+ * responsible for and calls commit(), which re-applies, re-saves, and
+ * re-syncs every control's own displayed state to match. `onThemeChange`
+ * is a callback the caller (the bottom of this file) provides, since this
+ * function doesn't know about CodeMirror editors itself — it just reports
+ * "the effective theme changed" and lets the caller decide what to do
+ * with that. */
 function initTexture(onThemeChange) {
   const state = loadTexture();
   applyTexture(state);
@@ -501,6 +572,15 @@ function setStatus(text, kind) {
 /* One entry per `exec` cell on the page, in document order. */
 const cells = [];
 
+/* Turns the manifest's plain-data cell descriptions into real, working
+ * cells on the page: finds each cell's DOM elements (already present in
+ * the HTML build.py generated — this doesn't create the cell's markup,
+ * only makes it interactive), creates a CodeMirror editor inside it, and
+ * wires up its Run button, Reset button, hint toggle, and keyboard
+ * shortcut. Each cell's info (its editor, output element, starter code)
+ * is collected into a plain object and pushed onto the shared `cells`
+ * array, which is what every other function in this file (runCell,
+ * saveNow, restoreSaved, and so on) iterates over or looks a cell up in. */
 function buildCells(manifest) {
   const dark = isDarkNow();
 
@@ -570,6 +650,10 @@ function buildCells(manifest) {
   }
 }
 
+/* Enables or disables every cell's Run button at once, with a shared
+ * label — used while Python is still booting ("…") or has failed
+ * ("unavailable"), so a student can't click Run before there's anything
+ * to run against. */
 function setRunnable(enabled, label) {
   for (const cell of cells) {
     cell.runBtn.disabled = !enabled;
@@ -594,6 +678,16 @@ let running = null; // null, or the cell object currently running
 
 /* ---- standalone / main-thread path — pre-Worker, unchanged below ---- */
 
+/* Everything with an "MT" suffix from here down belongs to the
+ * main-thread path: Pyodide running directly in this script, rather than
+ * inside a Worker. This is a near-exact twin of mini-ide-engine.js's own
+ * main-thread fallback (that file's own comments go into more line-by-line
+ * detail on the same functions, if this section moves too fast) — the
+ * pattern is: `lookupLiveNameMT`/`docForMT`/`signatureForMT` answer
+ * questions about names that have already run, by asking Python's own
+ * `inspect` module; `jediDocMT`/`jediSignatureMT` answer the same
+ * questions for code that *hasn't* run yet, using the Jedi static-analysis
+ * library instead. */
 let pyodideMT = null;
 let toolsMT = null;
 let inspectModuleMT = null;
@@ -702,6 +796,12 @@ async function loadJediMT() {
   }
 }
 
+/* Downloads and starts Pyodide directly in this script, loads the
+ * tutorial's packages, loads tutorial_tools.py, and sets up the shared
+ * page namespace every cell runs against — the main-thread twin of
+ * bootWorker() further down, used only for the standalone/offline
+ * export (see this file's own module-level comment on "Two execution
+ * paths" above for why the two exist at all). */
 async function bootMainThread(manifest) {
   setStatus("Starting Python…");
 
@@ -745,11 +845,18 @@ tutorial_tools._page_globals["__name__"] = "__dewlab__"
   loadJediMT();
 }
 
+/* Every name currently defined in the shared namespace, for autocomplete
+ * — names starting with "_" (Python's convention for "internal, not for
+ * outside use") are filtered out. */
 function pageNamesMT() {
   if (!toolsMT) return [];
   return [...toolsMT._page_globals.keys()].filter((name) => !name.startsWith("_"));
 }
 
+/* Runs one cell directly on the main thread. tutorial_tools.py's own
+ * run_cell() does essentially everything — running the code, capturing
+ * output, rendering it into the cell's output element — so this is
+ * mostly just "hand off to Python." */
 async function runCellMainThread(cell) {
   await toolsMT.run_cell(cell.id, cell.outputEl, cell.getCode());
 }
@@ -768,6 +875,14 @@ let jediReadyWorker = false;
 let nextRequestId = 1;
 const pendingRequests = new Map(); // id -> resolve
 
+/* Sends one message to the Worker and returns a Promise for its reply.
+ * A Worker only talks over postMessage — there's no built-in "send this
+ * and wait for the answer" — so this builds that: invent a unique `id`,
+ * remember a {resolve, reject} pair for it, send the message, and let
+ * `ensureWorker`'s onmessage handler resolve the matching pair once a
+ * "response" message with the same id comes back. Every request this
+ * script sends to `assets/pyodide-worker.js` goes through this one
+ * function. */
 function workerRequest(type, payload) {
   const id = nextRequestId++;
   return new Promise((resolve, reject) => {
@@ -781,6 +896,14 @@ function workerRequest(type, payload) {
  * relocated here because a Worker has no DOM to run that logic against. */
 const openStreams = new Map(); // cellId -> {el, cssClass}
 
+/* Turns one "something happened in Python" event — more printed text, a
+ * finished block of markup (a table, an image), or "clear this cell's
+ * output" — into the matching DOM change, for whichever cell it belongs
+ * to. Called both from the Worker's onmessage handler below (for the
+ * hosted path) and would be the same shape a main-thread DOM sink uses,
+ * though the main-thread path here instead lets tutorial_tools.py write
+ * straight into the DOM itself, since there's no postMessage boundary in
+ * the way on that path. */
 function applyOutputEvent(cellId, kind, cssClass, text, markup) {
   const cell = cells.find((c) => c.id === cellId);
   if (!cell) return;
@@ -808,6 +931,13 @@ function applyOutputEvent(cellId, kind, cssClass, text, markup) {
   }
 }
 
+/* Creates the Worker the first time it's needed (later calls do nothing
+ * — that's the "ensure" in the name), and sets up the one place this
+ * file listens for messages coming back from it: progress text
+ * ("status"), the autocomplete library finishing its background load
+ * ("jedi-ready"), a cell producing output ("output", handed to
+ * applyOutputEvent above), and the reply to a specific workerRequest()
+ * call ("response", matched up by id). */
 function ensureWorker(manifest) {
   if (worker) return;
   worker = new Worker(new URL(assetUrl(manifest, "pyodide-worker.js"), document.baseURI), {
@@ -831,6 +961,10 @@ function ensureWorker(manifest) {
   };
 }
 
+/* Creates the worker (if needed) and asks it to actually boot Python,
+ * then — if the browser supports it — sets up the SharedArrayBuffer that
+ * makes a genuine Stop button possible (see requestInterrupt() just
+ * below for what that buffer is for). */
 async function bootWorker(manifest) {
   ensureWorker(manifest);
   await workerRequest("boot", {
@@ -850,12 +984,27 @@ async function bootWorker(manifest) {
   setRunnable(true, "Run");
 }
 
+/* How the Stop button actually stops a running cell. Two threads
+ * normally can only talk by sending whole messages — but Python running
+ * a tight loop isn't checking for new messages, it's just running.
+ * SharedArrayBuffer is special: it's memory both threads can see and
+ * write to instantly, and Pyodide checks it periodically while code
+ * runs. Writing the number Pyodide treats as "this means Ctrl-C" into
+ * that shared memory is enough to stop even a `while True: pass` cell.
+ * If the browser never granted a SharedArrayBuffer (interruptBuffer
+ * stays null), this just does nothing — Stop simply isn't offered in
+ * that case; see `canStop` in the `globalThis.dewlab` block at the
+ * bottom of this file. */
 function requestInterrupt() {
   if (!interruptBuffer) return;
   /* 2 is SIGINT in Pyodide's own interrupt-buffer convention. */
   new Int32Array(interruptBuffer)[0] = 2;
 }
 
+/* Asks the worker to run one cell and waits for it to finish. The
+ * cell's actual output arrives separately, as "output" messages handled
+ * in ensureWorker's onmessage above, as the cell runs — not bundled into
+ * this Promise's result. */
 async function runCellWorker(cell) {
   await workerRequest("run-cell", { cellId: cell.id, code: cell.getCode() });
 }
@@ -884,10 +1033,20 @@ async function signatureHelp(name, source, line, col, argIndex) {
 
 /* ---- the one dispatcher everything else calls ---- */
 
+/* Picks which of the two boot paths this page actually gets:
+ * `manifest.standalone` is true only for the offline/downloadable export
+ * (see this file's own top comment), everything else uses the Worker. */
 function boot(manifest) {
   return manifest.standalone ? bootMainThread(manifest) : bootWorker(manifest);
 }
 
+/* The one function everything else calls to make sure Python is running
+ * before doing anything that needs it. Booting is slow and must only
+ * ever happen once per page, so the *Promise* itself is cached in
+ * bootPromise — a second call while still booting gets back that same
+ * Promise and just waits for the same boot, rather than starting a
+ * second one. If booting fails, bootPromise resets to null so a later
+ * retry gets a fresh attempt instead of replaying the same failure. */
 function ensureBooted(manifest) {
   if (!bootPromise) {
     bootPromise = boot(manifest).catch((err) => {
@@ -1047,6 +1206,10 @@ function progressKey() {
   return `${PROGRESS_PREFIX}${manifest.module || "unknown"}:${manifest.slug || "unknown"}`;
 }
 
+/* Reads this tutorial's saved-work record back out of localStorage, or
+ * null if there isn't one (a first visit, private browsing, or storage
+ * that refuses to cooperate — all treated the same way: nothing to
+ * restore, not an error to show). */
 function readSaved() {
   try {
     const raw = localStorage.getItem(progressKey());
@@ -1121,6 +1284,11 @@ function saveNow() {
   updateProgressSummary();
 }
 
+/* "Debouncing": every call to this resets the timer, so a rapid burst of
+ * calls (every keystroke while typing in a cell or the notes box) only
+ * results in one real save, AUTOSAVE_DELAY milliseconds after the *last*
+ * keystroke — not one save per keystroke, which would be wasteful and
+ * would make typing feel laggy if saving is at all slow. */
 function scheduleSave() {
   clearTimeout(saveTimer);
   saveTimer = setTimeout(saveNow, AUTOSAVE_DELAY);
@@ -1133,6 +1301,12 @@ function restoreSaved() {
 
   if (notesEl && typeof record.notes === "string") notesEl.value = record.notes;
 
+  /* new Map(cells.map(cell => [cell.id, cell])) builds a lookup table from
+   * the `cells` array in one line: each cell becomes a [key, value] pair
+   * keyed by its id, and Map takes an array of such pairs directly. This
+   * turns "find the cell with this id" from a linear search through
+   * `cells` (fine for one lookup, wasteful for one per saved cell) into a
+   * single fast byId.get(id) call. */
   const byId = new Map(cells.map((cell) => [cell.id, cell]));
   const restored = [];
   const dropped = [];
@@ -1164,6 +1338,12 @@ function restoreSaved() {
   };
 }
 
+/* Shows a small notice box at the top of the page summarizing what
+ * restoreSaved() above just did — but only if there's actually something
+ * worth telling the reader about (some cells were restored, or some
+ * couldn't be). Builds its own dismiss button rather than relying on any
+ * shared "closeable box" component, since this is the only place in the
+ * file that needs one. */
 function announceRestore(summary) {
   if (!summary || (summary.restored.length === 0 && summary.dropped.length === 0)) return;
 
@@ -1327,6 +1507,14 @@ function initProgressSection() {
   document.getElementById("dl-progress-export").addEventListener("click", () => {
     saveNow();
     const record = readSaved() || {};
+    /* The standard trick for making the browser download a file that was
+     * only ever built in memory, never fetched from a server: a Blob is
+     * an in-memory file-like object, URL.createObjectURL gives it a
+     * temporary URL the browser will treat as a real download link, and
+     * a plain <a download> element with that URL, clicked
+     * programmatically, triggers the download exactly as if a person had
+     * clicked a real link. URL.revokeObjectURL below cleans up that
+     * temporary URL once it's no longer needed. */
     const blob = new Blob([JSON.stringify(record, null, 2)], { type: "application/json" });
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
@@ -1683,6 +1871,14 @@ function answeredCells() {
   });
 }
 
+/* How many of the reader's real answers (from answeredCells() above)
+ * would still show up if they moved to a different release (`entry`).
+ * `there` is built as a Set (rather than just using `entry.cells`, an
+ * array, directly) specifically so `.has()` is a fast lookup rather than
+ * a linear scan through the array for every single answer being checked
+ * — the same reasoning as `byId` in restoreSaved() above, just with a
+ * Set instead of a Map since only membership matters here, not an
+ * associated value. */
 function carryOver(entry) {
   const answers = answeredCells();
   if (answers.length === 0) return null;
@@ -1891,7 +2087,19 @@ function initVersionsSection() {
   sync();
 }
 
-/* ------------------------------------------------------------------ start */
+/* ------------------------------------------------------------------ start
+ *
+ * Everything above this point was just defining functions — nothing
+ * actually happened on the page yet. This section is where the file
+ * really *runs*: top-level code in a JavaScript module executes
+ * immediately, in order, the moment the module loads, so the sequence of
+ * calls below is the real, literal order things happen in when a
+ * tutorial page opens. This file is loaded as a module (`<script
+ * type="module">` in the page's own HTML), which is what lets it use
+ * `import` at the very top and guarantees it doesn't run until the page's
+ * HTML has already been parsed — so every element these functions look
+ * up with `document.getElementById(...)` is guaranteed to already exist.
+ */
 
 const currentManifest = readManifest();
 
@@ -1936,7 +2144,14 @@ if (cells.length === 0 || leaving) {
   ensureBooted(currentManifest).catch(() => {});
 }
 
-/* Exposed for the e2e tests to await, and for debugging from the console. */
+/* Exposed for the e2e tests to await, and for debugging from the console.
+ * `globalThis` is JavaScript's name for "the global object" in whatever
+ * environment the code is running (the same thing `window` refers to in
+ * a browser) — assigning to `globalThis.dewlab` makes this object
+ * reachable from the browser's developer console as `dewlab.something`,
+ * and from Playwright's end-to-end tests the same way, without either of
+ * those needing to import anything from this file (which they couldn't
+ * — this is a page script, not a library). */
 globalThis.dewlab = {
   version: PYODIDE_VERSION,
   cells,
