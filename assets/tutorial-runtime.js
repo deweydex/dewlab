@@ -572,6 +572,11 @@ function setStatus(text, kind) {
 /* One entry per `exec` cell on the page, in document order. */
 const cells = [];
 
+/* One entry per cell a reader has added themselves — see the "custom
+ * cells" section further down for what these are and why they're kept
+ * apart from `cells` above rather than merged into it. */
+const customCells = [];
+
 /* Turns the manifest's plain-data cell descriptions into real, working
  * cells on the page: finds each cell's DOM elements (already present in
  * the HTML build.py generated — this doesn't create the cell's markup,
@@ -655,10 +660,333 @@ function buildCells(manifest) {
  * ("unavailable"), so a student can't click Run before there's anything
  * to run against. */
 function setRunnable(enabled, label) {
-  for (const cell of cells) {
+  for (const cell of [...cells, ...customCells]) {
     cell.runBtn.disabled = !enabled;
     cell.runBtn.textContent = label || (enabled ? "Run" : "…");
   }
+}
+
+/* ------------------------------------------------------------ custom cells
+ *
+ * A student's own cells — planning/PRACTICE.md §3. A tutorial's own cells
+ * are authored once, at build time, and identical for every reader; these
+ * are the opposite: created at runtime, by one particular reader, and never
+ * shared with anyone unless that reader explicitly exports one. They are
+ * kept in their own array (`customCells`, declared with `cells` above) and
+ * their own storage key, entirely separate from the tutorial's own
+ * saved-work record — not because the two systems couldn't be merged, but
+ * because keeping them apart is what makes "a custom cell survives a
+ * tutorial version change untouched" true by construction, rather than
+ * something a version-matching function has to get right. The one thing
+ * they do share with a real cell is the shared runCell() function further
+ * down this file: a custom cell object has the same shape a real cell does
+ * ({id, editor, outputEl, runBtn, getCode, element}), so runCell() runs one
+ * without ever needing to know it isn't a "real" cell.
+ */
+
+const CUSTOM_CELLS_PREFIX = "dewlab:custom-cells:";
+
+/* The "Try something of your own" section itself, and its "+ Add a cell"
+ * button — set once, by initCustomCellsSection() below, and read by
+ * mountCustomCell() every time a cell (saved, freshly added, or
+ * imported) needs to be inserted just before that button. */
+let customCellsListEl = null;
+let customCellsAddBtn = null;
+
+/* Same module+slug scoping as progressKey() above, and the same reason:
+ * a slug is only unique within its module, so two modules' `first-steps`
+ * need two different keys or a student's own cells on one would show up
+ * on the other. */
+function customCellsKey() {
+  const manifest = currentManifest || {};
+  return `${CUSTOM_CELLS_PREFIX}${manifest.module || "unknown"}:${manifest.slug || "unknown"}`;
+}
+
+/* A short, locally-unique id — never sent anywhere, so it only has to
+ * avoid colliding with this one reader's own other custom cells and with
+ * every real cell id a tutorial could ever use. The "custom-" prefix
+ * alone already guarantees the second part, since a tutorial's own cell
+ * ids are ordinary words (planning/CONTENT_AND_FILE_ARCHITECTURE.md),
+ * never anything starting with "custom-". */
+function generateCustomCellId() {
+  return `custom-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
+}
+
+/* Reads this reader's saved custom cells back out of localStorage — an
+ * array of {id, code, output}, or [] if there aren't any (a first visit,
+ * or storage that refuses to cooperate; both treated the same way,
+ * exactly like readSaved() above does for the tutorial's own record). */
+function loadCustomCells() {
+  try {
+    const raw = JSON.parse(localStorage.getItem(customCellsKey()) || "[]");
+    return Array.isArray(raw) ? raw : [];
+  } catch (err) {
+    return [];
+  }
+}
+
+/* Writes every current custom cell's id, code, and last output to
+ * localStorage as one plain array — called after any change (typing,
+ * running, adding, deleting, importing) via the debounced
+ * scheduleCustomSave() below, never called directly from an event
+ * handler itself. */
+function saveCustomCells() {
+  const record = customCells.map((cell) => ({
+    id: cell.id,
+    code: cell.getCode(),
+    output: cell.outputEl.innerHTML,
+  }));
+  try {
+    localStorage.setItem(customCellsKey(), JSON.stringify(record));
+  } catch (err) {
+    /* Storage full or refused. The reader keeps working; their custom
+     * cells just will not be there next time they open this page. */
+  }
+}
+
+let customSaveTimer = null;
+
+/* Debounced the same way scheduleSave() is for the tutorial's own cells
+ * — a burst of keystrokes while typing in a custom cell should cost one
+ * write, AUTOSAVE_DELAY after the last one, not one write per keystroke. */
+function scheduleCustomSave() {
+  clearTimeout(customSaveTimer);
+  customSaveTimer = setTimeout(saveCustomCells, AUTOSAVE_DELAY);
+}
+
+/* Builds one custom cell's DOM, in the same shape build.py's own
+ * render_cell() gives a real cell (build.py) — `.dl-cell` >
+ * `.dl-editor`/`.dl-output`/`.dl-cell-bar` — so a custom cell looks and
+ * behaves exactly like an authored one, and picks up the exact same CSS
+ * (including print styling) for free. The one extra class,
+ * `dl-cell-custom`, is what lets a reader tell "mine" from "the
+ * tutorial's" at a glance, and lets anything that ever needs to (a
+ * future test, a future selector) tell the two apart without guessing
+ * from an id. Unlike a real cell there is no reset button — a custom
+ * cell has no build-time "starter" to reset to — its bar instead offers
+ * Share (export this one cell to a file) and Delete.
+ *
+ * The Run button's starting state depends on `pyodideReady`: a real
+ * cell's button is always disabled at first because build.py always
+ * renders it that way, before this file has had any chance to know
+ * whether Python is ready — but a custom cell is just as likely to be
+ * created well *after* boot already finished (a reader clicking "+ Add a
+ * cell" ten minutes into a session) as before it (one restored from
+ * storage while the page is still loading), so this checks the real,
+ * current state instead of assuming "not ready yet" the way the
+ * server-rendered markup has to.
+ */
+function createCustomCellElement(id) {
+  const host = document.createElement("div");
+  host.className = "dl-cell dl-cell-custom";
+  host.dataset.cellId = id;
+  const runAttrs = pyodideReady ? "" : "disabled";
+  const runLabel = pyodideReady ? "Run" : "…";
+  host.innerHTML = (
+    '<div class="dl-editor"></div>'
+    + '<div class="dl-output"></div>'
+    + '<div class="dl-cell-bar">'
+    + '<span class="dl-cell-id">your own cell</span>'
+    + '<span class="dl-cell-spacer"></span>'
+    + '<button type="button" class="dl-btn dl-btn-share">share</button>'
+    + '<button type="button" class="dl-btn dl-btn-delete">delete</button>'
+    + `<button type="button" class="dl-btn dl-btn-run" ${runAttrs}>${runLabel}</button>`
+    + "</div>"
+  );
+  return host;
+}
+
+/* Turns one saved-or-fresh {id, code} pair into a real, working cell:
+ * builds its DOM (createCustomCellElement above), mounts it into the
+ * "Try something of your own" section, creates a CodeMirror editor over
+ * it exactly the way buildCells() does for a real cell, wires Run/Share/
+ * Delete, and pushes the finished cell object onto `customCells`. Returns
+ * that object, since addCustomCell()/importCustomCell() both want to
+ * focus the cell they just created.
+ */
+function mountCustomCell(id, code) {
+  const host = createCustomCellElement(id);
+  customCellsListEl.insertBefore(host, customCellsAddBtn);
+
+  const editorHost = host.querySelector(".dl-editor");
+  const outputEl = host.querySelector(".dl-output");
+  const runBtn = host.querySelector(".dl-btn-run");
+  const shareBtn = host.querySelector(".dl-btn-share");
+  const deleteBtn = host.querySelector(".dl-btn-delete");
+
+  const editor = createCodeEditor(editorHost, code || "", {
+    dark: isDarkNow(),
+    onChange: () => scheduleCustomSave(),
+    completeNames: pageNamesCompletion,
+    getDoc: hoverDoc,
+    getSignature: signatureHelp,
+  });
+
+  const cell = {
+    id,
+    editor,
+    outputEl,
+    runBtn,
+    element: host,
+    getCode: () => editor.getValue(),
+  };
+  customCells.push(cell);
+
+  runBtn.addEventListener("click", () => runCell(cell).then(scheduleCustomSave));
+  shareBtn.addEventListener("click", () => exportCustomCell(cell));
+  deleteBtn.addEventListener("click", () => deleteCustomCell(cell));
+  host.addEventListener("keydown", (ev) => {
+    if ((ev.ctrlKey || ev.metaKey) && ev.key === "Enter") {
+      ev.preventDefault();
+      runCell(cell).then(scheduleCustomSave);
+    }
+  });
+
+  return cell;
+}
+
+/* The "+ Add a cell" button's handler: mints a fresh id, mounts an empty
+ * cell, saves the (still-empty) list so a reload doesn't lose the fact
+ * that this cell exists even before its first keystroke, and focuses it
+ * so a reader can start typing immediately. */
+function addCustomCell() {
+  const cell = mountCustomCell(generateCustomCellId(), "");
+  scheduleCustomSave();
+  cell.editor.focus();
+}
+
+/* Removes one custom cell — no confirmation, matching how deleting a
+ * single cell already works in compose/dewmini.js and assets/mini-ide.js;
+ * only a bulk "remove everything" action asks first (clearCustomCells()
+ * below). */
+function deleteCustomCell(cell) {
+  cell.editor.destroy();
+  cell.element.remove();
+  const idx = customCells.indexOf(cell);
+  if (idx !== -1) customCells.splice(idx, 1);
+  saveCustomCells();
+}
+
+/* Downloads one custom cell as a small JSON file another reader can load
+ * back in via "Load a shared cell" in Settings — the same Blob +
+ * URL.createObjectURL + <a> trick initProgressSection()'s own "Export a
+ * copy" button uses below, just for one cell's code instead of a whole
+ * saved-work record. The module and slug go in the filename for the same
+ * reason they already do on the progress export: two files both called
+ * "custom-cell.json" in a downloads folder are indistinguishable. */
+function exportCustomCell(cell) {
+  const payload = { "dewlab-custom-cell": 1, code: cell.getCode() };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+  const manifest = currentManifest || {};
+  const from = [manifest.module, manifest.slug].filter(Boolean).join("-");
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = `${from || "dewlab"}-custom-cell.json`;
+  link.click();
+  URL.revokeObjectURL(link.href);
+}
+
+/* "Load a shared cell": reads the chosen file, checks it at least looks
+ * like one of exportCustomCell()'s own files, and mounts it as a brand
+ * new cell — with a freshly generated id, never the id (if any) the file
+ * happened to carry, so an imported cell can never collide with, or be
+ * confused for, one of this reader's own. Deliberately does not run the
+ * imported code: the trust note in Settings says plainly that a loaded
+ * cell runs like any other code on this page, and "plainly" means before
+ * anything runs, not after — the reader still has to read it and press
+ * Run themselves, the same as every other cell on the site.
+ */
+async function importCustomCell(file) {
+  let payload;
+  try {
+    payload = JSON.parse(await file.text());
+  } catch (err) {
+    setStatus("That file isn't valid JSON.", "error");
+    return;
+  }
+  if (typeof payload.code !== "string") {
+    setStatus("That file doesn't look like a shared dewlab cell.", "error");
+    return;
+  }
+  const cell = mountCustomCell(generateCustomCellId(), payload.code);
+  scheduleCustomSave();
+  cell.element.scrollIntoView({ behavior: "smooth", block: "center" });
+  setStatus("Cell loaded — read it before you press Run.");
+}
+
+/* Wipes every one of this reader's own cells, asking first — the one
+ * place in this whole feature a confirmation belongs, since unlike a
+ * single delete this can't be undone by just clicking "add" again. */
+function clearCustomCells() {
+  if (!window.confirm("Remove all your own cells? This can't be undone.")) return;
+  for (const cell of customCells.splice(0)) {
+    cell.editor.destroy();
+    cell.element.remove();
+  }
+  saveCustomCells();
+}
+
+/* Builds the "Try something of your own" section at the end of the page,
+ * restores any cells this reader already saved there, and wires the
+ * Settings buttons (import, clear-all). Called once, unconditionally,
+ * from the bottom of this file — like initProgressSection() above, it
+ * decides for itself whether it applies to this page rather than being
+ * gated at the call site. It doesn't: a prose-only tutorial, or one of
+ * the three non-tutorial pages, has no real cells of its own
+ * (`cells.length === 0`), and offering "add your own cell" there would
+ * mean booting Pyodide just for this — the exact cost a page with no
+ * cells is supposed to avoid paying (see the boot-avoidance check near
+ * the bottom of this file). On such a page this removes both the
+ * "Try something of your own" section (never created) and the matching
+ * Settings section, the same way initProgressSection() removes
+ * "Your work" on a non-tutorial page.
+ */
+function initCustomCellsSection() {
+  const settingsSection = document.getElementById("dl-settings-custom-cells");
+  if (cells.length === 0) {
+    if (settingsSection) settingsSection.remove();
+    return;
+  }
+
+  const section = document.createElement("section");
+  section.className = "dl-custom-cells";
+  section.id = "dl-custom-cells";
+  section.innerHTML = (
+    "<h2>Try something of your own</h2>"
+    + '<p class="dl-panel-note">Add a cell below and write whatever Python '
+    + "you like — it's separate from the tutorial above, and it's still "
+    + "here next time you visit.</p>"
+  );
+  document.getElementById("dl-body").appendChild(section);
+
+  customCellsAddBtn = document.createElement("button");
+  customCellsAddBtn.type = "button";
+  customCellsAddBtn.className = "dl-btn dl-custom-cells-add";
+  customCellsAddBtn.textContent = "+ Add a cell";
+  customCellsAddBtn.addEventListener("click", addCustomCell);
+
+  customCellsListEl = section;
+  section.appendChild(customCellsAddBtn);
+
+  for (const saved of loadCustomCells()) {
+    if (saved && typeof saved.id === "string" && typeof saved.code === "string") {
+      const cell = mountCustomCell(saved.id, saved.code);
+      if (typeof saved.output === "string") cell.outputEl.innerHTML = saved.output;
+    }
+  }
+
+  const importBtn = document.getElementById("dl-custom-cells-import");
+  const file = document.getElementById("dl-custom-cells-file");
+  const clearBtn = document.getElementById("dl-custom-cells-clear");
+  if (importBtn && file) {
+    importBtn.addEventListener("click", () => file.click());
+    file.addEventListener("change", async () => {
+      const chosen = file.files && file.files[0];
+      file.value = "";
+      if (chosen) await importCustomCell(chosen);
+    });
+  }
+  if (clearBtn) clearBtn.addEventListener("click", clearCustomCells);
 }
 
 /* --------------------------------------------------------------- Pyodide
@@ -675,6 +1003,15 @@ function setRunnable(enabled, label) {
 
 let bootPromise = null;
 let running = null; // null, or the cell object currently running
+
+/* Whether Python has actually finished starting — set true at the end of
+ * bootMainThread()/bootWorker() below, wherever they call
+ * setRunnable(true, "Run"). A real cell only ever needs this indirectly,
+ * through setRunnable() itself; a custom cell created *after* boot has
+ * already finished needs it directly, since createCustomCellElement()
+ * has no other way to know whether to start its own Run button enabled
+ * or disabled — see that function's own comment. */
+let pyodideReady = false;
 
 /* ---- standalone / main-thread path — pre-Worker, unchanged below ---- */
 
@@ -841,6 +1178,7 @@ tutorial_tools._page_globals["__name__"] = "__dewlab__"
 `);
 
   setStatus("");
+  pyodideReady = true;
   setRunnable(true, "Run");
   loadJediMT();
 }
@@ -981,6 +1319,7 @@ async function bootWorker(manifest) {
     worker.postMessage({ type: "set-interrupt-buffer", buffer: interruptBuffer });
   }
 
+  pyodideReady = true;
   setRunnable(true, "Run");
 }
 
@@ -2110,12 +2449,13 @@ const currentManifest = readManifest();
 const leaving = followTheVersionYouLeftOff();
 
 initTexture((dark) => {
-  for (const cell of cells) setEditorTheme(cell.editor, dark);
+  for (const cell of [...cells, ...customCells]) setEditorTheme(cell.editor, dark);
   for (const block of readOnlyBlocks) setEditorTheme(block, dark);
 });
 
 buildCells(currentManifest);
 initProgressSection();
+initCustomCellsSection();
 initVersionsSection();
 initVersionMarker();
 initSettingsPanel();
@@ -2155,6 +2495,8 @@ if (cells.length === 0 || leaving) {
 globalThis.dewlab = {
   version: PYODIDE_VERSION,
   cells,
+  customCells,
+  addCustomCell,
   saveNow,
   readSaved,
   progressKey,
@@ -2175,6 +2517,7 @@ globalThis.dewlab = {
     if (!cell) throw new Error(`no cell "${id}"`);
     return runCell(cell);
   },
+  customCellsKey,
   jediReady: () => (currentManifest.standalone ? jediHoverFnMT !== null : jediReadyWorker),
   hoverDoc,
   signatureHelp,

@@ -351,6 +351,38 @@ p code, li code {
   white-space: pre-wrap;
 }
 
+/* A reader's own cell (planning/PRACTICE.md §3, initCustomCellsSection()
+ * in tutorial-runtime.js) — same box as an authored .dl-cell, plus a
+ * left accent so it reads as "yours" at a glance rather than something
+ * the tutorial itself wrote. Reuses the orange accent .dl-restored
+ * already uses for "something about your own state," not a new colour. */
+.dl-cell-custom { border-left: 3px solid var(--dl-orange); }
+
+/* "your own cell" is a plain-English label, not a slug — the mono,
+ * letter-spaced treatment .dl-cell-id normally gets reads as code-ish
+ * furniture and looks odd on an actual sentence. */
+.dl-cell-custom .dl-cell-id { font-family: var(--dl-font-family); letter-spacing: normal; }
+
+/* The "Try something of your own" section: set off from the tutorial's
+ * own content with a top border, the same way a reader would expect a
+ * genuinely new part of the page to announce itself. */
+.dl-custom-cells {
+  margin-top: 2.5rem;
+  padding-top: 1.8rem;
+  border-top: 1px solid var(--dl-cell-border);
+}
+
+.dl-custom-cells-add {
+  display: block;
+  width: 100%;
+  padding: 0.6rem 1rem;
+  font-size: 0.82rem;
+  text-align: center;
+  border-style: dashed;
+  color: var(--dl-muted);
+}
+.dl-custom-cells-add:hover { color: var(--dl-orange); }
+
 /* Signature help (vendor-src/codemirror-entry.js's pythonSignatureHelp),
  * shown while typing a call rather than on hover — same popover shell as
  * the doc tooltip above, code font since the content itself is code, and

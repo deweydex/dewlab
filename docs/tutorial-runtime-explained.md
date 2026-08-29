@@ -29,6 +29,9 @@ close to self-contained:
 - **Texture** — the reader's theme/font/size preferences, shared across
   every dewlab page via `localStorage`.
 - **Cells** — building each cell's editor and wiring up its buttons.
+- **Custom cells** — a reader's own cells, created at runtime rather than
+  authored in the tutorial's Markdown, kept deliberately separate from
+  everything above.
 - **Pyodide** — booting Python and running a cell's code, with the same
   worker/main-thread split Mini IDE's engine file uses.
 - **Illustrative code and maths** — syntax highlighting for read-only code
@@ -62,6 +65,54 @@ specifically:
    begins. Everything above it is function definitions; nothing happens
    on the page until this section runs, top to bottom, in the order
    written.
+
+---
+
+## Custom cells: a second, deliberately separate cell system
+
+`planning/PRACTICE.md` §3 asks for a way a reader can add their own
+Python cell to a page — not one the tutorial's author wrote, one the
+reader typed themselves, for trying something out or writing a practice
+problem of their own. The whole "custom cells" section (roughly
+`CUSTOM_CELLS_PREFIX` through `initCustomCellsSection()`) exists to do
+that, and its central design choice is worth stating plainly: **a custom
+cell is never added to `cells`, and never touches `saveNow()`,
+`restoreSaved()`, or the progress summary.** It gets its own array
+(`customCells`), its own `localStorage` key
+(`dewlab:custom-cells:<module>:<slug>`), and its own save/restore
+functions (`loadCustomCells()`/`saveCustomCells()`/
+`scheduleCustomSave()`) that mirror the real ones in shape but never call
+them or get called by them.
+
+That separation isn't laziness — it's the simplest way to guarantee two
+things `PRACTICE.md` explicitly requires: a custom cell can't collide
+with a real cell's id (its id always starts with `custom-`, which no
+tutorial author would ever write), and a custom cell survives a tutorial
+version change completely untouched (it was never part of the versioned
+record to begin with, so there's nothing for a version-mismatch check to
+even notice). The one thing custom cells *do* share with real cells is
+the shared `runCell()` function: a custom cell object has the exact same
+shape a real cell does (`{id, editor, outputEl, runBtn, getCode,
+element}`), so `runCell()` runs one without any special-casing —
+`mountCustomCell()`'s own comment points this out.
+
+The whole feature only appears on a page that already has real cells
+(`cells.length > 0`) — see `initCustomCellsSection()`'s own comment for
+why: a prose-only tutorial never boots Pyodide at all, and offering "add
+your own cell" there would force it to, which is exactly the cost that
+page is supposed to avoid.
+
+One easy-to-miss detail: a real cell's Run button always starts
+`disabled` in the HTML `build.py` generates, because at the moment that
+markup is written nothing yet knows whether Python will boot quickly or
+slowly — `setRunnable(true, "Run")` is what enables it later, once boot
+actually finishes. A custom cell has no such luxury of a fixed starting
+point: a reader might add one *before* boot finishes (one restored from
+storage while the page is still loading) or long *after* it already has
+(clicking "+ Add a cell" ten minutes into a session). That's what the
+small `pyodideReady` flag near the top of the Pyodide section is for —
+`createCustomCellElement()` reads it to decide whether a brand-new
+cell's Run button should start enabled or not, rather than assuming.
 
 ---
 
@@ -107,3 +158,8 @@ two near-identical implementations of the same lookup functions
   than anything precise.
 - **"What's actually exposed to the browser console / end-to-end tests?"**
   — the `globalThis.dewlab = {...}` object at the very end of the file.
+- **"Why doesn't a shared custom cell run itself when I load it?"** —
+  `importCustomCell()`'s own comment: a loaded cell is deliberately never
+  auto-run, so the Settings trust note (`assets/shell.html`,
+  `#dl-settings-custom-cells`) is read before anything from someone
+  else's file actually executes, not after.

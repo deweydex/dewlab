@@ -1,8 +1,7 @@
 # Practice pages and student-created problems
 
-What a practice page is, what it's built on, and the one part of this
-plan — runtime-created cells and peer-shared problems — that's still
-just a plan.
+What a practice page is, what it's built on, and — now that all of it is
+built — how the runtime-created-cell piece actually works.
 
 ---
 
@@ -12,8 +11,8 @@ A practice module is a practice document paired with a tutorial. It
 gives a student three things:
 1. Real problems, checked instantly, client-side (`check()`).
 2. A reflection prompt before and after the problem set.
-3. (Not built yet) the ability to create their own problem at runtime
-   and share it with someone else.
+3. The ability to create their own cell at runtime and share it with
+   someone else — see §5.
 
 ## 2. What already exists to build this on
 
@@ -26,27 +25,31 @@ gives a student three things:
   code by cell id, and JSON export/import already gives a way to back up
   or hand off work.
 
-## 3. What a runtime cell would need
+## 3. What a runtime cell needed (now built — see §5)
 
 An ordinary dewlab cell is static — defined once, at build time, in the
-tutorial's own Markdown. Letting a student create their *own* problem
-means cells that don't exist until runtime, and that's a different
-thing to build:
+tutorial's own Markdown. Letting a student create their *own* cell means
+cells that don't exist until runtime, and that turned out to need four
+things, each now real:
 
-- **Somewhere to store them.** A dynamically created cell needs to live
-  in local storage alongside the cells the build-time manifest already
-  knows about.
-- **Ids that can't collide.** A cell created this way needs its own id
-  scheme (`custom-<uuid>` or `custom-<timestamp>`) so it can never clash
-  with a real manifest cell or with a problem someone else shares.
-- **No tie to a version.** A student-created cell doesn't belong to any
-  tutorial release — it has to survive a version change untouched,
-  since there's no version it was ever "written for."
-- **A clear line around trust.** A problem a student imports from a
-  peer still runs inside Pyodide's WebAssembly sandbox — isolated from
-  the operating system, but still running within the browser tab's own
-  origin. The page has to say plainly when it's about to run someone
-  else's code.
+- **Somewhere to store them.** Built as its own, separate `localStorage`
+  key (`dewlab:custom-cells:<module>:<slug>`) rather than folded into the
+  tutorial's own saved-work record — a deliberate choice, not an
+  implementation detail: keeping the two apart is what makes the next
+  point true without a version-matching function having to get it right.
+- **Ids that can't collide.** `custom-<timestamp>-<random>`, so it can
+  never clash with a real manifest cell (a tutorial author would never
+  write an id starting with `custom-`) or with a cell someone else
+  shares (a fresh id is always minted on import, never trusted from the
+  file).
+- **No tie to a version.** True by construction, since a custom cell was
+  never part of the versioned record to begin with — there's nothing for
+  a version comparison to even notice.
+- **A clear line around trust.** A cell loaded from a shared file is
+  never auto-run — Settings says plainly, before anything runs, that a
+  loaded cell behaves like any other code on the page. Running still
+  needs the reader's own explicit click, the same as every cell on the
+  site already requires.
 
 ## 4. What a practice page looks like
 
@@ -68,17 +71,23 @@ Three parts, in order:
    to its tutorial both ways; `practice_across:` covers a set with no
    single owner. Both are checked at build time and covered by fourteen
    tests.
-3. **A runtime cell engine** — not built. Would mean dynamic cell
-   insertion and mounting a CodeMirror editor for it, in
-   `assets/tutorial-runtime.js`.
-4. **Sharing a problem with someone else** — not built. Would extend the
-   export/import tools to package a student-authored problem as a
-   portable JSON snippet.
+3. ~~**A runtime cell engine**~~ — done. A reader can add their own cell
+   at runtime, on any page that already has cells of its own — see
+   `docs/tutorial-runtime-explained.md`'s "Custom cells" section for how
+   it's built and, especially, how it stays deliberately separate from
+   the tutorial's own saved-work and version system.
+4. ~~**Sharing a problem with someone else**~~ — done. Each custom cell
+   has its own "share" button (downloads it as a small JSON file) and
+   Settings has a matching "Load a shared cell" — file-based, the same
+   trust model the existing progress export/import already uses. A
+   loaded cell is never auto-run.
 
-Steps 3 and 4 are the two still open, and they're the two that actually
-need runtime code rather than more content. Nothing written so far
-depends on them — every practice page in the repository today is
-static, which was the point of building them in that order.
+Everything in this section is now built. What's still open is a
+structured problem-authoring UI (a title, an expected answer, a rating or
+discovery system for shared cells) — deliberately not attempted here: a
+custom cell is plain Python, and a reader's own `check(...)` call inside
+it already serves as their "verification test." That's a larger, separate
+feature if it's ever wanted, not a gap in what was planned above.
 
 One thing the static pages settled, that this document originally
 assumed would need code to solve: **a practice page doesn't need
