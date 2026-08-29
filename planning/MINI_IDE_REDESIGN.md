@@ -276,5 +276,5 @@ kind.
 - [x] Phase 4 — SQLite/SQL support (run_query() in tutorial_tools.py, commit cb7f504)
 - [x] Phase 5 — Upload + Jupyter/.py import (commit bb13cf2)
 - [x] Phase 6 — Settings panel expansion (commit b7a471f)
-- [ ] Phase 7 — Vendored Pyodide + folder-based distribution
+- [x] Phase 7 — Vendored Pyodide + folder-based distribution (commit e7f7808; reuses dev/fetch_pyodide.py rather than a new fetcher)
 - [ ] Phase 8 — Docs cleanup
