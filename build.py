@@ -53,6 +53,13 @@ class _NoDuplicateKeysLoader(yaml.SafeLoader):
     """
 
     def construct_mapping(self, node, deep=False):
+        """Overrides PyYAML's own mapping-building step to add one extra
+        check before it does its normal work: walk the raw key/value pairs
+        first, and raise if any key appears twice. `super().construct_mapping(...)`
+        at the end is the actual, unmodified PyYAML behaviour — this method
+        only adds a guard in front of it, rather than reimplementing YAML
+        parsing itself.
+        """
         seen = set()
         for key_node, _ in node.value:
             key = self.construct_object(key_node, deep=True)
@@ -63,6 +70,12 @@ class _NoDuplicateKeysLoader(yaml.SafeLoader):
 
 
 def load_yaml_no_duplicate_keys(text: str):
+    """Parses YAML text using the stricter loader above, in place of a
+    plain `yaml.safe_load(text)` call — every place in this file that
+    reads a `.yaml` file (topics, curriculum data, series ordering) goes
+    through this function rather than PyYAML directly, so the whole
+    codebase gets the duplicate-key protection consistently.
+    """
     return yaml.load(text, Loader=_NoDuplicateKeysLoader)
 
 ROOT = Path(__file__).resolve().parent
@@ -179,6 +192,21 @@ class Note:
 
 @dataclass
 class Tutorial:
+    """One tutorial page, fully parsed and ready to render — everything
+    `load()` further down builds and everything the rest of this file
+    reads to write out the finished HTML.
+
+    Most of what's declared below the raw fields is a `@property` —
+    Python's way of writing a method (`def slug(self): ...`) that gets
+    *read* like a plain attribute (`tutorial.slug`, no parentheses)
+    rather than called like a function. A lot of these properties are one
+    line pulling a value out of `self.meta` (the tutorial's own
+    frontmatter dictionary) and converting it to the right type — those
+    stay uncommented individually where the name already says everything
+    (`slug` returns the slug); a property gets its own docstring here
+    only where there's a real "why" behind what it does, not just "what."
+    """
+
     path: Path
     meta: dict
     cells: list[Cell]
@@ -314,6 +342,13 @@ class Tutorial:
 
 
 def fail(path: Path, message: str) -> None:
+    """Raises a `BuildError` naming which file the problem is in, using a
+    path relative to the repository root rather than a full absolute path
+    — shorter, and the same no matter whose computer the build runs on.
+    Every validation check throughout this file calls this instead of
+    raising directly, so every build failure reads in the same
+    "file: what's wrong" shape.
+    """
     raise BuildError(f"{path.relative_to(ROOT)}: {message}")
 
 
@@ -321,6 +356,15 @@ def fail(path: Path, message: str) -> None:
 
 
 def split_frontmatter(text: str, path: Path) -> tuple[dict, str]:
+    """Splits one tutorial's raw file into its frontmatter (the YAML
+    block between the two `---` lines, holding title/slug/module/version
+    and so on) and its body (everything after). Also does the up-front
+    validation for that frontmatter — every required field is present,
+    nothing that moved elsewhere still lingers, the status and version
+    are both recognizable — so a broken tutorial file fails loudly right
+    here, with a specific reason, rather than causing a stranger error
+    somewhere deep in rendering.
+    """
     if not text.startswith("---"):
         fail(path, "no YAML frontmatter — the file must open with a --- line")
     end = text.find("\n---", 3)
@@ -366,6 +410,10 @@ def expand_includes(code: str, path: Path) -> str:
     on every page load (CONTENT_AND_FILE_ARCHITECTURE.md).
     """
 
+    # Same re.sub-callback pattern as extract_blocks()'s own `one` — see
+    # its comment for the general shape. Here, each match is one
+    # `{{include: ...}}` directive, and the returned string is the
+    # named file's actual contents, read fresh for every match.
     def one(match: re.Match) -> str:
         rel = match.group("path").strip()
         target = (ROOT / rel).resolve()
@@ -404,6 +452,14 @@ def extract_blocks(body: str, path: Path) -> tuple[str, list[Cell], list[CodeBlo
     cells: list[Cell] = []
     blocks: list[CodeBlock] = []
 
+    # re.sub's second argument can be a function instead of a plain
+    # replacement string — when it is, that function is called once per
+    # match, with the match object, and whatever string it returns takes
+    # the match's place. `one` is that function here: for every fenced
+    # code block FENCE_RE finds, it either records a new Cell or a new
+    # CodeBlock (appending to the `cells`/`blocks` lists this closure can
+    # see because it's defined right here, inside extract_blocks), and
+    # returns a placeholder comment in its place.
     def one(match: re.Match) -> str:
         info = match.group("info").strip().split()
         indent = match.group("indent")
@@ -433,6 +489,13 @@ def extract_math(body: str) -> tuple[str, list[Math]]:
     found: list[Math] = []
     body = body.replace("\\$", ESCAPED_DOLLAR)
 
+    # Same re.sub-callback pattern as extract_blocks()'s own `one` above,
+    # but with an extra wrinkle: this needs *two* near-identical
+    # callbacks (one for $$display$$ maths, one for $inline$ maths), which
+    # only differ in what `display` value they record. `take(display)`
+    # returns a fresh `one` function that already "remembers" its own
+    # `display` value — a small factory, rather than writing the same
+    # callback twice with one boolean hardcoded differently in each copy.
     def take(display: bool):
         def one(match: re.Match) -> str:
             found.append(Math(tex=match.group("tex").strip(), display=display))
@@ -526,6 +589,17 @@ def to_html(body: str) -> tuple[str, list]:
 def place_blocks(
     page_html: str, cells: list[Cell], blocks: list[CodeBlock], maths: list[Math]
 ) -> str:
+    """Puts cells, illustrative code blocks, and maths back into the page
+    after the Markdown converter has run. `extract_blocks`/`extract_math`
+    earlier in the pipeline replaced each of these with a plain
+    placeholder string before handing the body to the Markdown library —
+    this is the matching second half, swapping each placeholder back out
+    for its real rendered HTML. Doing it this way (rather than rendering
+    cells and maths inline, before Markdown sees them) is what protects
+    their content from Markdown's own text-formatting rules — see
+    `extract_math`'s own comment for a concrete example of what goes
+    wrong otherwise.
+    """
     for index, cell in enumerate(cells):
         placeholder = f"<!--dewlab-cell-{index}-->"
         if placeholder not in page_html:
@@ -549,6 +623,9 @@ def extract_notes(body_html: str, path: Path) -> tuple[str, list[Note]]:
     notes: list[Note] = []
     seen: set[str] = set()
 
+    # The same re.sub-callback pattern used in extract_blocks()/extract_math()
+    # above — see extract_blocks()'s own comment on `one` for what this
+    # pattern is doing.
     def one(match: re.Match) -> str:
         note_id = match.group("id")
         if note_id in seen:
@@ -864,6 +941,14 @@ def series_of(tutorials: list[Tutorial]) -> dict[tuple[str, str], list[Tutorial]
 
 
 def link_between(here: Tutorial, there: Tutorial) -> str:
+    """Works out the relative link (`../other-tutorial.html`, not an
+    absolute one like `/module/other-tutorial.html`) from one built page
+    to another. Relative links are what let the whole site, and every
+    tutorial's own downloadable standalone copy, work the same way
+    whether it's opened from a real web server or straight off disk.
+    `os.path.relpath` is the standard-library function that does the
+    actual "how do I get from this folder to that file" math.
+    """
     return os.path.relpath(there.out_path, here.out_path.parent)
 
 
@@ -1115,6 +1200,12 @@ def render_toc(tutorial: Tutorial) -> str:
     names = [str(s.get("name", "")) for s in at_level(tutorial.toc, 3)]
     ambiguous = {name for name in names if names.count(name) > 1}
 
+    # A recursive function: it builds one heading's own <li>...</li>, and
+    # for any sub-headings under it, calls *itself* again (`item(child,
+    # depth + 1)`) to build each of those the same way, one level deeper.
+    # `depth` is what stops it from recursing forever and what limits how
+    # many levels of nesting the contents list actually shows (`depth ==
+    # 0` below only nests one level of children, not the whole tree).
     def item(entry: dict, depth: int) -> list[str]:
         text = html.escape(str(entry.get("name", "")))
         out = [f'<li><a href="#{html.escape(str(entry["id"]), quote=True)}">{text}</a>']
@@ -1229,6 +1320,13 @@ def topic_tiers(topics: dict) -> dict[str, int]:
     """
     tier: dict[str, int] = {}
 
+    # Recursive, with memoization: a topic's tier is 1 + the deepest tier
+    # among the things it needs, computed by calling this same function on
+    # each prerequisite. `if code in tier: return tier[code]` is the
+    # memoization — once a topic's tier has been worked out, it's cached
+    # in `tier` so a topic needed by several others is never recomputed,
+    # which matters since the topic graph can have a lot of shared
+    # prerequisites.
     def depth(code: str) -> int:
         if code in tier:
             return tier[code]
@@ -1802,6 +1900,9 @@ def resolve_links(tutorial: Tutorial, registry: dict[tuple[str, str], Tutorial])
     ambiguous and stops the build rather than guessing.
     """
 
+    # Same re.sub-callback pattern as extract_blocks()'s own `one` — each
+    # match is one `tutorial:slug#anchor` reference, and this resolves it
+    # to a real relative link before returning it as the replacement text.
     def one(match: re.Match) -> str:
         slug, anchor = match.group("slug"), match.group("anchor")
         target = registry.get((tutorial.module, slug))
@@ -1834,6 +1935,14 @@ def resolve_links(tutorial: Tutorial, registry: dict[tuple[str, str], Tutorial])
 
 
 def load(path: Path) -> Tutorial:
+    """Turns one tutorial's source file into a fully-parsed `Tutorial`
+    object — this is the one function that runs the whole parsing
+    pipeline described at the top of this file, in order: split off the
+    frontmatter, pull out cells/code-blocks/maths so Markdown can't
+    mangle them, convert the remaining prose to HTML, put the cells and
+    blocks back in, then pull out pedagogical notes. Every tutorial page
+    build.py builds starts here.
+    """
     meta, body = split_frontmatter(path.read_text(), path)
     stripped, cells, blocks = extract_blocks(body, path)
     stripped, maths = extract_math(stripped)
@@ -1885,6 +1994,9 @@ def asset_version(name: str) -> str:
 
 
 def versioned(base: str, name: str) -> str:
+    """Builds a full asset URL with its cache-busting `?v=...` hash
+    appended — the thing every `<link>`/`<script>` tag for a CSS or JS
+    file in the built pages actually uses, rather than a plain URL. """
     return f"{base}{name}?v={asset_version(name)}"
 
 
@@ -2076,6 +2188,15 @@ def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "",
           series_nav: str = "",
           notes: list[dict] | None = None,
           datasets: list[dict] | None = None) -> Path:
+    """Assembles and writes one finished tutorial page to disk: builds
+    the JSON manifest that `assets/tutorial-runtime.js` reads on the
+    page (`docs/tutorial-runtime-explained.md` covers what that file
+    does with it), fills the page shell template with the tutorial's own
+    content and navigation, and writes the result under `site/`. This is
+    the one function that turns a parsed `Tutorial` object plus all its
+    surrounding context (its series, its glossary, its notes) into an
+    actual HTML file a browser can open.
+    """
     up = "../" * tutorial.depth
     manifest: dict[str, object] = {
         "slug": tutorial.slug,
@@ -2177,6 +2298,10 @@ def inline_katex_css() -> str:
     """
     css = (ASSETS / "vendor" / "katex.min.css").read_text()
 
+    # Same re.sub-callback pattern as extract_blocks()'s own `one` — each
+    # match is one `url(fonts/....woff2)` reference in the stylesheet,
+    # replaced with a base64 data: URL so the standalone export needs no
+    # separate font files alongside it.
     def one(match: re.Match) -> str:
         font = ASSETS / "vendor" / "fonts" / match.group("name")
         if not font.is_file():
@@ -2288,6 +2413,14 @@ def standalone_html(tutorial: Tutorial, page: str) -> str:
 
 
 def write_standalone(tutorial: Tutorial, page: str) -> Path:
+    """Writes one tutorial's downloadable, self-contained copy (the
+    single-file version a student can save and reopen offline) into the
+    `site/download/` folder. `page` is the already-built standalone HTML
+    string from `standalone_html()` — this function's own job is just
+    figuring out where that string should be saved and doing a couple of
+    build-time sanity checks (like the load_csv warning right below) that
+    only make sense for this particular kind of output.
+    """
     # A standalone file carries the page but not the /data/ folder beside it, so
     # a tutorial that loads a dataset at runtime will read fine and fail at that
     # cell. Better said at build time than discovered by a student.
@@ -2867,6 +3000,15 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
 
 
 def main() -> int:
+    """The command-line entry point — what actually runs when someone
+    types `python3 build.py`. Parses the command-line flags, calls
+    `build()` to do the real work, and translates the result into a
+    process exit code: 0 for success, 1 if a `BuildError` was raised
+    somewhere along the way (returning 1 rather than letting the
+    exception crash with a Python traceback is what keeps the error
+    message clean and readable, per `fail()`'s own comment above, instead
+    of also showing an unrelated stack trace).
+    """
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--clean", action="store_true", help="remove site/ before building")
     parser.add_argument(
