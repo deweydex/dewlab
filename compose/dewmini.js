@@ -92,7 +92,7 @@ const EXAMPLE_CELLS = [
   },
   {
     type: CELL_TYPES.PYTHON,
-    content: 'import matplotlib.pyplot as plt\n\nplt.plot(readings)\nplt.title("Readings")\nplt.show()\n\ncheck(answer, 42)',
+    content: 'import matplotlib.pyplot as plt\n\nplt.plot(readings)\nplt.title("Readings")\n\ncheck(answer, 42)',
   },
 ];
 

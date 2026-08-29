@@ -34,12 +34,6 @@
   } catch (e) { /* private mode, blocked storage */ }
 })();
 </script>
-
-<script type="module">
-  import { createCodeEditor, setEditorTheme } from '../assets/vendor/codemirror.bundle.js';
-  window.createCodeEditor = createCodeEditor;
-  window.setEditorTheme = setEditorTheme;
-</script>
 </head>
 <body>
 <div class="dl-page dm-page">
@@ -61,7 +55,7 @@
     </header>
   </div>
 
-  <main id="dm-body">
+  <main>
     <div class="dm-title-row">
       <h1>dewmini</h1>
       <p class="dm-subtitle">A small, quiet notebook. Write Python, run it, keep notes — nothing to install.</p>

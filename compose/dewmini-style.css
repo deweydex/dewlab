@@ -573,14 +573,6 @@ kbd {
 }
 .dm-filename-input:focus { outline: none; border-color: var(--dl-orange); }
 
-/* --------------------------------------------------------------- drop zone */
-
-.dm-drop-placeholder {
-  height: 2px;
-  background: var(--dl-orange);
-  margin: -1px 0 -1px calc(3px + 0.9rem);
-}
-
 /* ---------------------------------------------------------------- loading */
 
 .dm-cell-output .dm-running { color: var(--dl-muted); font-style: italic; }
