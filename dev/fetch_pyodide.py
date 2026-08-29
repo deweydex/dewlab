@@ -48,7 +48,19 @@ CORE = [
 
 
 def resolve(lock: dict, roots: list[str]) -> set[str]:
-    """Every package needed to load `roots`, following Pyodide's own depends."""
+    """Every package needed to load `roots`, following Pyodide's own depends.
+
+    This is a breadth-first graph walk, written iteratively with a plain
+    list (`pending`) as a stack rather than recursively: start with the
+    packages the caller actually asked for (`roots`), and repeatedly take
+    one out of `pending`, record it as `found`, and add whatever *it*
+    depends on back onto `pending` to be processed in turn. `if name in
+    found: continue` is what stops the same package being processed twice
+    when two different packages both depend on it (numpy, say, needed by
+    both pandas and matplotlib) — without that check, a package with many
+    dependents could be re-walked many times, or the loop could even run
+    forever if two packages depended on each other.
+    """
     packages = lock["packages"]
     found: set[str] = set()
     pending = list(roots)
@@ -62,6 +74,14 @@ def resolve(lock: dict, roots: list[str]) -> set[str]:
 
 
 def main() -> None:
+    """The command-line entry point. Downloads the official Pyodide
+    release archive to a temporary directory, works out exactly which
+    package wheels are actually needed (via `resolve()` above), and
+    copies only the core runtime files plus those wheels into `--out` —
+    leaving the much larger full distribution behind in the temporary
+    directory, which is cleaned up automatically once the `with
+    tempfile.TemporaryDirectory()` block ends.
+    """
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--version", default=PYODIDE_VERSION)
     parser.add_argument(

@@ -67,6 +67,14 @@ def _summary(doc: str | None) -> str | None:
 
 
 def main() -> None:
+    """The command-line entry point. Spins up a tiny local web server
+    serving the self-hosted Pyodide files (`_QuietHandler` below, on a
+    randomly assigned free port — `("127.0.0.1", 0)`'s `0` port asks the
+    OS to pick one), uses a real headless browser to boot Pyodide and
+    read the real docstrings off it (`_collect`), then writes the result
+    out as a small generated JavaScript file the authoring editor can
+    load directly, with no Pyodide of its own needed.
+    """
     if not (PYODIDE / "pyodide.mjs").exists():
         raise SystemExit("no self-hosted Pyodide — run `python3 dev/fetch_pyodide.py` first")
 
@@ -102,6 +110,13 @@ def main() -> None:
 
 
 def _chromium_path() -> str | None:
+    """Looks for a pre-installed Chromium browser in the well-known path
+    this project's own dev/CI environment uses, so `_collect()` below can
+    reuse it directly instead of triggering Playwright's own (slow,
+    network-dependent) browser download. Returns `None` when there isn't
+    one there, in which case Playwright falls back to its own default
+    behaviour.
+    """
     root = Path("/opt/pw-browsers")
     if not root.exists():
         return None
@@ -111,6 +126,21 @@ def _chromium_path() -> str | None:
 
 
 def _collect(base_url: str) -> dict[str, dict[str, str]]:
+    """Does the actual work of asking a real Pyodide for real docstrings:
+    opens a headless browser tab pointed at the local server serving the
+    Pyodide files, then runs JavaScript in that page (via
+    `page.evaluate`) that boots Pyodide, imports the modules NAMES cares
+    about, and asks Python's own `inspect.getdoc()` for each requested
+    name's docstring — the exact same function
+    `assets/tutorial-runtime.js`'s own `docFor` uses for a student's live
+    hover tooltips, just run once here at build time instead of live in a
+    student's browser. The big triple-quoted string passed to
+    `page.evaluate` is real JavaScript, which itself contains a
+    triple-backtick Python string passed to `pyodide.runPython(...)` —
+    worth reading slowly, since it's genuinely three languages nested
+    inside each other (Python calling into JavaScript calling into
+    Python).
+    """
     from playwright.sync_api import sync_playwright
 
     with sync_playwright() as p:
@@ -156,6 +186,13 @@ json.dumps({
 
 
 class _QuietHandler(http.server.SimpleHTTPRequestHandler):
+    """A plain file-serving HTTP handler with logging silenced.
+    `log_message` is a hook the base class calls for every request to
+    print an access-log line; overriding it to do nothing keeps this
+    script's own output limited to what it actually chooses to print,
+    instead of being interleaved with a stream of GET-request logs for
+    every Pyodide file the browser fetches."""
+
     def log_message(self, *args):
         pass
 
