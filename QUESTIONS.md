@@ -49,33 +49,22 @@ A one-line answer is a complete answer.
 
 ## Open
 
-### Is moving Pyodide into a Web Worker worth it, to give a runaway cell a real Stop button?
-
-`planning/CELL_CONTROLS.md` §2 found that "Run becomes Stop while running"
-cannot be built as a small addition to the current main-thread Pyodide
-setup — a genuinely blocking loop leaves no thread free to handle the
-click. The only real mechanism, `pyodide.setInterruptBuffer()` from a Web
-Worker, needs `SharedArrayBuffer`, which needs `Cross-Origin-Opener-Policy`/
-`Cross-Origin-Embedder-Policy` response headers GitHub Pages does not let
-this project set directly — the common fix is a service-worker shim, a
-real piece of infrastructure — plus moving every place `tutorial-runtime.js`
-talks to Pyodide directly onto a postMessage boundary.
-
-**Assumed and built in the meantime:** nothing — a runaway cell still
-freezes the tab, exactly as before this question was raised, with the
-browser's own "Page Unresponsive" handling as the only recourse.
-
-**Cost to change later:** large, and this is the one place in this
-project's whole planning history where that is true of the *whole*
-feature, not just of getting it perfectly right — the Worker migration is
-real, cross-cutting architecture work regardless of when it happens.
-
-**Blocks:** nothing today — cells run exactly as they did before this was
-raised.
-
 ---
 
 ## Answered
+
+### Is moving Pyodide into a Web Worker worth it, to give a runaway cell a real Stop button?
+
+**Settled and built: yes — DECISIONS_LOG.md 7.77.** Pyodide now runs off
+the main thread on the hosted site (`assets/pyodide-worker.js`), with
+`pyodide.setInterruptBuffer()` against a real `SharedArrayBuffer`, and
+`coi-serviceworker` vendored to add the `Cross-Origin-Opener-Policy`/
+`Cross-Origin-Embedder-Policy` headers GitHub Pages will not set directly.
+Every place `tutorial-runtime.js` used to talk to Pyodide directly now has
+a Worker-side counterpart behind a postMessage RPC, exactly as this
+question anticipated. The offline standalone export keeps the old
+main-thread path — it has no Stop button to justify the cost, and a
+`file://` page cannot use a module Worker anyway.
 
 ### Should a module's series carry an explicit reading order, and should the cheat sheet cross series within one module?
 

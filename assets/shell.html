@@ -5,6 +5,21 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{{TITLE}} — dewlab</title>
 
+<!-- Cross-origin isolation, as early as this page can ask for it. GitHub
+     Pages will not let this repo set the Cross-Origin-Opener-Policy/
+     Cross-Origin-Embedder-Policy response headers a genuine Stop button
+     needs (OPEN_QUESTIONS.md, "the Web Worker migration"), so this same-
+     origin service worker adds them itself. Registered from its own script
+     tag rather than dynamically, since it reads its own URL off
+     document.currentScript to know where to register with root scope --
+     {{ROOT_BASE}} is the same relative-path-to-root every other site-wide
+     link already uses. A browser's very first visit to any page of this
+     site reloads once, right here, to pick the headers up; every page
+     after that is already covered, tutorials and Mini IDE alike, since a
+     service worker's scope is the origin path it registered at, not the
+     one page that happened to load this script. -->
+<script src="{{ROOT_BASE}}coi-serviceworker.js"></script>
+
 <!-- Version metadata the Phase 2 loader compares saved progress against
      (VERSIONING_AND_PROGRESS.md). Written here by build.py from frontmatter. -->
 <meta name="tutorial-version" content="{{VERSION}}">
