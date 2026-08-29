@@ -32,6 +32,9 @@ close to self-contained:
 - **Custom cells** — a reader's own cells, created at runtime rather than
   authored in the tutorial's Markdown, kept deliberately separate from
   everything above.
+- **Export** — printing (or saving as PDF) and saving the page's cells as
+  a Jupyter notebook, alongside the "Download to keep" section
+  `build.py` writes.
 - **Pyodide** — booting Python and running a cell's code, with the same
   worker/main-thread split Mini IDE's engine file uses.
 - **Illustrative code and maths** — syntax highlighting for read-only code
@@ -90,11 +93,13 @@ with a real cell's id (its id always starts with `custom-`, which no
 tutorial author would ever write), and a custom cell survives a tutorial
 version change completely untouched (it was never part of the versioned
 record to begin with, so there's nothing for a version-mismatch check to
-even notice). The one thing custom cells *do* share with real cells is
-the shared `runCell()` function: a custom cell object has the exact same
-shape a real cell does (`{id, editor, outputEl, runBtn, getCode,
-element}`), so `runCell()` runs one without any special-casing —
-`mountCustomCell()`'s own comment points this out.
+even notice). The one thing a *python*-type custom cell shares with a
+real cell is the shared `runCell()` function: its cell object has the
+exact same shape a real cell's does (`{id, editor, outputEl, runBtn,
+getCode, element}`), so `runCell()` runs one without any special-casing
+— `mountCustomCellAfter()`'s own comment points this out. A *text*-type
+custom cell has no run step at all, so its object is smaller
+(`{id, type, element, getCode, focus}`) and never reaches `runCell()`.
 
 The whole feature only appears on a page that already has real cells
 (`cells.length > 0`) — see `initCustomCellsSection()`'s own comment for
@@ -225,3 +230,12 @@ two near-identical implementations of the same lookup functions
   auto-run, so the Settings trust note (`assets/shell.html`,
   `#dl-settings-custom-cells`) is read before anything from someone
   else's file actually executes, not after.
+- **"A tutorial update removed a cell — what happens to a custom cell
+  that was added right after it?"** — `initCustomCellsSection()`'s own
+  comment on the anchor fallback: it moves to the trailing "Try
+  something of your own" section rather than disappearing.
+- **"Why doesn't 'Save as a Jupyter notebook' include the tutorial's own
+  reading, only the cells?"** — `downloadAsIpynb()`'s own comment: the
+  reading only exists as built HTML by the time that function runs, not
+  the original Markdown, so turning it back into notebook markdown
+  faithfully is out of scope here on purpose.
