@@ -56,10 +56,12 @@ This one does not need an authoring-mechanism decision, because a dataset
 is not prose bound to a point in a tutorial's flow — it is a fact about a
 file. Two small additions, neither touching the fence/cell machinery:
 
-- **`data/ATTRIBUTION.yaml`** (or one `.yaml` per dataset, `data/<name>.yaml`
-  beside `data/<name>.csv` — same beside-the-file pattern
-  `<slug>.glossary.yaml` already established for tutorials): source, license,
-  and a one-line description per file. One place attribution lives once,
+- **One `.yaml` per dataset** — `data/<name>.yaml` beside `data/<name>.csv`,
+  the same beside-the-file pattern `<slug>.glossary.yaml` already
+  established for tutorials: source, license, and a one-line description
+  per file. (One shared attribution file listing every dataset was the
+  other option weighed here; the per-dataset file is what shipped, in
+  `dataset_attribution()`.) One place attribution lives once,
   however many tutorials end up using that file.
 - **A `datasets:` frontmatter list** on a tutorial (`datasets: [life-expectancy]`),
   the same shape `covers:`/`practice_for` already are — explicit and
@@ -245,7 +247,7 @@ corner-popover or docked-sidebar shape either panel takes.
 
 ## 6. Rollout sketch, if this goes ahead
 
-Roughly: `data/ATTRIBUTION.yaml` schema + one real dataset file, proving the
+Roughly: the `data/<name>.yaml` schema + one real dataset file, proving the
 shape → `datasets:` frontmatter + build.py cross-reference + first tutorial
 actually calling `load_csv` → the `<aside class="dl-note">` scan +
 `Tutorial.notes` + tests, same shape as `check_folds()` → the panel's new

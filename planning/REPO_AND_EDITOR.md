@@ -4,10 +4,14 @@
 
 ```
 /tutorials/
-    computational-methods/     one subfolder per module
-    mathematics-for-it/
-    programming-design-principles/
-    database-methods/
+    computational-methods/         one folder per module
+        grid-of-numbers/           one folder per tutorial
+            grid-of-numbers.md         the current release
+            grid-of-numbers-practice.md
+            grid-of-numbers.glossary.yaml
+        matrices.order.yaml        reading order, one per series
+        series.yaml                how series accumulate a reference
+    mit-pdp-maths-prog-integration/
 /setup/                    shared setup snippets, pulled in via {{include:}}
 /data/                     shared CSV datasets
 /assets/
@@ -18,7 +22,11 @@ build.py
 .github/workflows/deploy.yml
 ```
 
-Subfolders under `/tutorials/` are one per module, named by the same slug that goes in a tutorial's `module` frontmatter field (see CONTENT_AND_FILE_ARCHITECTURE.md). A new module is a new folder — nothing in `build.py` needs to know the set of modules in advance. The four above are the confirmed year-one set; a `foundations-oop-lv5` folder will likely join as a pilot for a colleague's module.
+Folders under `/tutorials/` are one per module, named by the same slug that goes in a tutorial's `module` frontmatter field (see CONTENT_AND_FILE_ARCHITECTURE.md). A new module is a new folder — nothing in `build.py` needs to know the set of modules in advance.
+
+Inside a module, each tutorial is a folder of its own, holding its markdown, its practice page, its glossary, any frozen past releases and any pictures it uses. A module's order files and `series.yaml` stay at module level, because they describe a series rather than any one tutorial.
+
+Written when the year-one plan was four modules — `mathematics-for-it` and `programming-design-principles` were since taught together and their tutorials live in `mit-pdp-maths-prog-integration/`; `database-methods` has no outcomes written. `planning/STATUS.md` has the current picture.
 
 Generated HTML doesn't live in the repo as committed files — it's a build artifact, produced fresh on every push and deployed straight to Pages. That avoids the failure mode where a tutorial's markdown gets edited, the rebuild is forgotten, and source and output ship out of sync.
 

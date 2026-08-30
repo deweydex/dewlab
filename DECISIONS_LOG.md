@@ -3444,3 +3444,71 @@ an actual end-to-end Playwright test — upload-and-read, write-reload-
 readback, delete-and-recount — run against a real, locally-vendored
 Pyodide instance, not inferred from reading the ported code and trusting
 it matched its source.*
+
+---
+
+**7.89 — Every tutorial is a folder, from the moment it is created.** A
+tutorial was a lone markdown file at `tutorials/<module>/<slug>.md` that
+grew a folder only when a second release was published — and when it did,
+its practice page and its glossary stayed behind at module level. Four
+tutorials were already in that state, so `ls` on a module showed a
+`first-steps.glossary.yaml` and a `first-steps-practice.md` with no
+`first-steps.md` anywhere near them, and every future release added
+another. A tutorial is now `tutorials/<module>/<slug>/`, holding its
+markdown at `<slug>.md`, its practice page, its glossary, its frozen past
+releases as `v<version>.md`, and any pictures or recordings it uses.
+
+**The migration cost nothing a reader could detect, and that was checkable
+rather than hoped for.** Where a page is written and what a student's saved
+work is keyed to are both computed from frontmatter — `Tutorial.out_path`
+reads `module` and `slug`, never `self.path` — so moving source files could
+not move a URL or orphan a storage key. Building the site before and after
+and diffing the two trees produced no differences at all, which is the
+strongest form the claim can take: not "the tests still pass" but "every
+byte of all 87 pages is identical."
+
+`glossary_path()` now reads `tutorial.path.parent` rather than rebuilding a
+flat path from `(module, slug)`. That is a smaller change than it looks and
+a more correct one: every release of a tutorial sits in the same folder, so
+each one finds the same glossary without the function needing to know
+anything about releases.
+
+**Assets were the point of the folder, not a side effect.** There was
+nowhere for a tutorial's own picture to live and no way to refer to one.
+The obstacle was never storage, it was the reference: the current release
+is served at `tutorials/<module>/<slug>.html`, one level *above* its own
+folder, while a frozen release sits *inside* it at `v<version>.html`, so
+any path an author wrote by hand would be correct for one and broken for
+the other. `resolve_assets()` rewrites a plain `src="picture.png"` per
+page, so the author writes the file name they can see beside the markdown
+and never thinks about depth. A reference naming a file the folder does not
+hold fails the build, on the same reasoning as a dead `tutorial:` link:
+the alternative is a page that looks finished to everyone except the
+student who opens it.
+
+**The editor had two release shapes and now has one.** Its release path
+branched on whether a tutorial was already a folder, and the two branches
+disagreed about where the current release lives — one deleted `<slug>.md`
+and left two `v<version>.md` files, the other kept `<slug>.md` holding the
+*old* release while the new one became a `v` file. Neither matched what the
+repository's own hand-made forks contained. Now `<slug>.md` is always the
+current release and `v<version>.md` is always a past one, so "open the
+tutorial" means the same file however many releases accumulate, and
+releasing adds a file rather than moving any. `releasesOf()` had to start
+naming release files exactly instead of taking every markdown file in the
+folder — with the practice page now living there too, the old rule would
+have offered a page of problems as a version students could be sent back
+to. Two e2e expectations changed with it and one guard needed widening: the
+report that warns "the cells have changed since the last release" compared
+the buffer against whatever was committed at that path, which was right
+only while a fresh release always landed at a fresh path. It now also
+treats a version that differs from the committed one as a release rather
+than an edit, which is what it always meant.
+
+*Cost to change: low to reverse the layout mechanically — the moves are
+scripted and nothing published depends on them — but rising, and that is
+the reason for doing it now rather than later. The expensive half is not
+the files, it is the two conventions that were quietly diverging: every
+release published under the old editor added another folder in a shape no
+document described. Reverting would also mean giving up assets entirely, or
+rebuilding somewhere else for them to live.*

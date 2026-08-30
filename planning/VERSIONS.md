@@ -56,17 +56,26 @@ was.
 
 ## 3. Where the files live
 
-A tutorial is either a single Markdown file (while it only has one
-release) or a folder (once a second release is published):
+A tutorial is a folder, from the moment it is created. A second release
+adds a file to it and moves nothing:
 
 ```
 tutorials/mit-pdp-maths-prog-integration/
-  first-steps.md                  # single-version tutorial (the normal case)
+  first-steps/                    # a tutorial with one release (the normal case)
+    first-steps.md                # the current release
+    first-steps-practice.md       # its page of problems
+    first-steps.glossary.yaml     # what it teaches, for the reference
   cracking-equations/             # a tutorial with more than one release
-    cracking-equations.md         # the current, working release
+    cracking-equations.md         # the current release, always this name
+    cracking-equations-practice.md
+    cracking-equations.glossary.yaml
     v2026.06.02.1.md              # a frozen past release
     v2026.09.15.1.md              # a frozen past release
 ```
+
+`<slug>.md` is always the current release and `v<version>.md` is always a
+past one, so "open the tutorial" means the same file however many releases
+it accumulates.
 
 - **The plain URL** (`tutorials/<module>/<slug>.html`) always serves the
   newest `live` release.

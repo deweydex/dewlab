@@ -23,7 +23,7 @@ from that:
 2. Something has to say what order tutorials are met in, so "introduces" can
    be turned into "has introduced, up to and including this one."
 
-(2) already exists: `order.yaml`'s `order:` list, the same one `nav_for()`
+(2) already exists: `<series>.order.yaml`'s `order:` list, the same one `nav_for()`
 uses for previous/next navigation. (1) does not, and is most of this spec.
 
 ## 2. Scope: series order, not the topic dependency graph
@@ -34,7 +34,7 @@ student can skip around and a teacher can slot in whatever fits a spare week.
 That is the right model for the topic tree; it is the wrong model for "what
 has this specific reader already seen," which needs an actual sequence.
 
-`order.yaml` gives exactly that, but only within one series. Series within a
+`<series>.order.yaml` gives exactly that, but only within one series. Series within a
 module have no defined order relative to each other by default
 (`write_index` lists them `sorted()` by name — alphabetical, not curricular,
 and that display order is unrelated to this one) — but a module may add
@@ -44,7 +44,7 @@ what its own curricular order is, purely for reference purposes.
 **A reference draws from the current series, up to and including the
 current tutorial's own position, plus every earlier series `series.yaml`
 lists before this one** (`series_chain()`, `DECISIONS_LOG.md` 7.66) — never
-from another module. `computational-methods/series.yaml` lists
+from another module. `tutorials/computational-methods/series.yaml` lists
 `python-fundamentals` before `matrices`, so matrices' reference does
 include what fundamentals introduced. A series left off the list — or a
 module with no `series.yaml` at all — gets series-only accumulation, which
@@ -56,7 +56,7 @@ and nothing about it changed when this shipped.
 
 A **practice page** does not have its own coverage — `practice_for`/
 `practice_across` name the tutorial(s) it tests instead of appearing in
-`order.yaml`'s narrative position. Its reference is therefore not computed
+`<series>.order.yaml`'s narrative position. Its reference is therefore not computed
 from its own series position at all: it is the union of the named
 tutorial(s)' own cumulative references, unpacked through the same
 `practice_for`/`practice_across` build.py already validates.
@@ -140,7 +140,7 @@ skill never has to re-derive "what came before," only receive it.
 
 ## 5. Build integration
 
-`build.py`, per series, in `order.yaml` order:
+`build.py`, per series, in `<series>.order.yaml` order:
 
 1. Load each member's glossary file (if any).
 2. Accumulate: `cumulative[i] = cumulative[i-1] + member[i].own_entries`.

@@ -10,7 +10,9 @@ current as things change — not a pitch.
 
 ### Core runtime (`assets/`, `setup/`, `data/`)
 - **Pyodide in the browser**: real Python, running client-side, with
-  `numpy`, `pandas`, `matplotlib`, and `sympy` available (`assets/tutorial-runtime.js`).
+  `numpy`, `pandas` and `matplotlib` available by default, and `sympy`
+  and others on request via a tutorial's `packages:` frontmatter
+  (`assets/tutorial-runtime.js`).
 - **The tools bridge**: `show`, `show_table`, `check`, `text_input`,
   `dropdown`, `button`, and `load_csv`, all defined once in
   `assets/tutorial_tools.py`.
@@ -216,7 +218,7 @@ are not.
    `CMPS-LO5`, `CMPS-LO7` through `CMPS-LO13`, all still red on the
    curriculum map.
 
-### Automated worksheet-to-practice converter (`dev/from_worksheet.py`)
+### Automated worksheet-to-practice converter (unwritten)
 On hold, and possibly not needed. The worksheets whose material is
 taught have already been converted by hand; the ones that remain
 (`07a`–`08b`, matrices, Markov chains, Bayes, distributions) cover

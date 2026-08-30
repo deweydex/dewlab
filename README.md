@@ -100,7 +100,7 @@ Everything a student's code can call beyond ordinary Python is defined in
 `assets/tutorial_tools.py`.
 
 ```text
-tutorials/       the markdown, one folder per module
+tutorials/       one folder per module, then one folder per tutorial
 setup/           setup snippets tutorials pull in with {{include: ...}}
 data/            shared CSV datasets
 assets/          the page template, styles, runtime, editors, and vendored libraries
