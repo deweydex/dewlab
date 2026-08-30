@@ -214,6 +214,22 @@ option §4 already considered and set aside for a *third floating panel*,
 which is not what this is — the panel itself anchors left, where nothing
 currently is.
 
+**§4b describes both panels as fixed-position corner buttons with
+floating-card panels, mutually exclusive by virtue of sharing a corner.
+Both became full-height docked sidebars instead — see
+`DECISIONS_LOG.md` 7.83.** The reference and series nav's toggles moved
+into the masthead's own action row alongside Settings' (rather than
+being fixed-position buttons stacked in the page's top-left corner),
+and all three panels dock flush to their edge, full viewport height,
+rather than floating as inset cards. The reference/series-nav mutual
+exclusion described below is unchanged in behaviour — they still dock
+to the same left edge and still close one another on open — only the
+mechanism (a shared corner) changed to "a shared edge." Not revisited:
+whether they should merge into one panel with two sections, same as
+this section originally considered and set aside for the "different
+question" reasoning below — that reasoning does not depend on which of
+corner-popover or docked-sidebar shape either panel takes.
+
 ## 5. What this does not decide
 
 - Exact wording/heading for the panel once it holds more than a cumulative

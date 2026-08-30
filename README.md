@@ -47,9 +47,12 @@ keyed to the tutorial and its version. Close the tab, come back next week, and
 the code and its last output are still there. Nothing is scored and nothing
 leaves the machine.
 
-**A reading surface a student can adjust.** One Settings button per page holds
-theme, typeface, text size, line width and link colour, plus the buttons to
-export or reload their work. The choices follow them from page to page.
+**A reading surface a student can adjust.** Three buttons in every page's
+masthead open docked, resizable sidebars: Reference, the whole series, and
+Settings — theme, typeface, text size, line width and link colour, plus the
+buttons to export or reload work. A sidebar is meant to be left open and worked
+beside, and stays open while a reader pages through a series. The choices follow
+them from page to page.
 
 **Practice beside every tutorial.** Each tutorial has a practice page of
 problems, with hints and answers behind folds so a stuck student gets a route

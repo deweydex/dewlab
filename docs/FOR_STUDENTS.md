@@ -61,9 +61,13 @@ without being asked.
 
 ## Settings
 
-Every page has a **Settings** button in the bar at the top, and that bar
-follows you down the page, so it is always one tap away. What is behind it is
-grouped in three parts.
+Every page has a **Settings** button in the bar at the top, and that bar follows
+you down the page, so it is always one tap away. It opens as a panel docked down
+the right-hand side of the screen, full height, and it stays open while you read
+and run cells — you do not have to close it to get back to the page. Drag its
+left edge to make it wider or narrower.
+
+What is behind it is grouped in three parts.
 
 **Your work** — whether the page is saving, and buttons to export a copy of
 your work, load one back in, or start the tutorial over.
@@ -82,16 +86,36 @@ default is uncomfortable to read, change it — that is what it is for.
 
 ## Finding your way around
 
-The **previous / All tutorials / next** row sits with the bar at the top, so
-moving on never means scrolling to find the link.
+The bar at the top carries three buttons: **Reference**, **Series** and
+**Settings**. Each opens a panel docked down one side of the screen, full
+height, meant to be left open beside what you are reading rather than closed
+again straight away. On a narrow screen the labels drop away and you get the
+icons alone, so they still fit one row.
 
-Any tutorial with more than one section has a **Contents** list, closed until
-you open it, showing the page's headings with sub-headings nested underneath.
+**Reference** is the definitions, functions and formulas this tutorial — and
+everything before it in its series — has covered. Nothing appears in it that you
+have not been taught yet. If a tutorial has nothing to show there, the button
+does not appear at all.
 
-A **Reference** button sits in the page's top-left corner. It opens a panel of
-the definitions, functions and formulas this tutorial — and everything before it
-in its series — has covered. Nothing appears in it that you have not been taught
-yet. On a phone it opens as a sheet across the bottom of the screen.
+**Series** is every tutorial in this one's series, so you can jump to any of
+them from wherever you are, not only to the one immediately before or after.
+
+Reference and Series both dock to the left, so opening one closes the other.
+Settings docks to the right and is independent of both. Whichever you leave
+open stays open as you page through a series, so opening the Reference once is
+enough — you do not have to reopen it on every tutorial.
+
+All three can be made wider or narrower: Settings by dragging its left edge,
+Reference and Series by the grip in their bottom corner. The page moves over to
+make room rather than being covered up.
+
+On a phone, all three open as a sheet across the bottom of the screen instead,
+and they close as you move on rather than following you from page to page.
+
+Underneath the bar, the **previous / All tutorials / next** row sits with it, so
+moving on never means scrolling to find the link. Any tutorial with more than
+one section also has a **Contents** list, closed until you open it, showing the
+page's headings with sub-headings nested underneath.
 
 The contents page lists everything in teaching order and has a search box. Two
 other pages cut across that order. The **topic tree** shows every topic in the

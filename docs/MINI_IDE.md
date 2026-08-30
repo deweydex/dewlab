@@ -145,8 +145,13 @@ of the generic `mini-ide-notebook` default.
 The **?** button next to Settings opens a Help panel covering cells,
 keyboard shortcuts, Files, the available functions, and how your work is
 kept — the same reference, reopenable any time, that
-[dewmini](DEWMINI.md) shows next to its own toolbar. Opening either Help
-or Settings closes the other, since they share the same corner.
+[dewmini](DEWMINI.md) shows next to its own toolbar.
+
+Both open as a panel docked down the right-hand side of the screen, full
+height, and they shrink the working area rather than covering it, so your
+cells stay usable with one open. They share that edge, so opening either
+closes the other. Drag a panel's left edge to make it wider or narrower,
+and whichever you leave open is still open when you come back.
 
 ### Toolbar
 

@@ -65,33 +65,38 @@
   min-width: 0; /* a grid child must opt back into shrinking below its content */
 }
 
-/* Settings and Help are fixed-position panels (tutorial-style.css's own
- * .dl-settings, and .mini-ide-panel above) that float over the page
- * rather than push it — fine on a page with generous margins either
- * side of its reading column, not fine here: at ordinary laptop widths
- * (1280-1440px) the centered .mini-ide-workspace reaches close enough to
- * the right edge that an open panel covers a cell's own run/reset/delete
- * buttons, and sometimes its output. Shrinking the workspace while a
- * panel is open (data-dl-panel-open, set by watchPanelOverlap() in
- * mini-ide.js) keeps the working area fully visible instead — the panel
- * behaves like a real side pane, the way a student would expect from a
- * desktop IDE, rather than a popover sitting on top of their code.
- * Skipped below 34rem, where a panel is already a full-width bottom
- * sheet rather than a right-anchored overlay (see the media query
- * further down) and there is nothing to reserve room from. */
+/* Settings and Help are docked sidebars now (tutorial-style.css's own
+ * .dl-settings, and .mini-ide-panel below — the same full-height, edge-
+ * flush shape tutorial pages' Reference/Settings/series nav got, see
+ * DECISIONS_LOG.md 7.83/7.84), not floating cards — which on a page with
+ * generous margins either side of its reading column would be fine to
+ * ignore, but not here: at ordinary laptop widths (1280-1440px) the
+ * centered .mini-ide-workspace reaches close enough to the right edge
+ * that an open panel covers a cell's own run/reset/delete buttons, and
+ * sometimes its output. Shrinking the workspace while a panel is open
+ * (data-dl-panel-open, set by watchPanelOverlap() in mini-ide.js) keeps
+ * the working area fully visible instead — the panel behaves like a
+ * real side pane, the way a student would expect from a desktop IDE,
+ * rather than a popover sitting on top of their code. Skipped below
+ * 34rem, where a panel is already a full-width bottom sheet rather than
+ * a right-docked sidebar (see the media query further down) and there
+ * is nothing to reserve room from. */
 @media (min-width: 34rem) {
   html[data-dl-panel-open] .mini-ide-workspace {
     /* Left-anchored, not centered, while a panel is open: centering
      * this box would waste half of whatever width it gives up as a
      * matching left margin nobody asked for, when all of it needs to
-     * go to the right, clear of the panel. margin-right (26rem: the
-     * wider of the two panels, 24rem, plus its own 1rem offset and a
-     * 1rem gap) is intentionally more than max-width ever needs on a
-     * wide screen — the box is over-constrained then, and a browser
-     * resolves that by giving the surplus back to margin-right, not by
-     * shrinking margin-left, so the left edge stays put either way. */
+     * go to the right, clear of the panel. --dl-panel-w (set by
+     * watchPanelOverlap()'s own ResizeObserver, tracking whichever of
+     * Settings/Help is actually open) is the panel's *real* rendered
+     * width, not a guess — a docked sidebar can be dragged wider or
+     * narrower via its own resize handle, and a flat guess would let a
+     * reader drag one wide enough to cover their own code again, the
+     * exact problem this whole mechanism exists to prevent. The 26rem
+     * fallback only matters for the one frame before that observer's
+     * first callback lands. */
     margin-left: 1.5rem;
-    margin-right: 26rem;
+    margin-right: var(--dl-panel-w, 26rem);
     transform: none;
     width: auto;
     max-width: 64rem;
@@ -106,7 +111,7 @@
    * fix, same reasoning, as .mini-ide-workspace above. */
   html[data-dl-panel-open] .dl-page {
     margin-left: 0;
-    margin-right: 26rem;
+    margin-right: var(--dl-panel-w, 26rem);
     max-width: var(--dl-line-width);
   }
 }
@@ -603,25 +608,36 @@
 }
 
 /* ============================================================================
- * Help panel — reuses #dl-settings' geometry (same corner, same width,
- * same shadow) but is its own class so opening it never fights the real
- * #dl-settings panel for the same DOM node, matching compose/dewmini-style.css's
- * own .dm-panel/.dm-help.
+ * Help panel — reuses #dl-settings' geometry (same edge, same width) but
+ * is its own class so opening it never fights the real #dl-settings
+ * panel for the same DOM node, matching compose/dewmini-style.css's own
+ * .dm-panel/.dm-help. A docked sidebar, full height, flush to the right
+ * edge — the same shape tutorial-style.css's own .dl-settings got in
+ * DECISIONS_LOG.md 7.83, ported here in 7.84 rather than left as the
+ * older floating-card shape now that .dl-settings next to it looks
+ * different.
  * ============================================================================
  */
 .mini-ide-panel {
   position: fixed;
-  right: 1rem;
-  top: calc(var(--dl-chrome-h) + 0.5rem);
+  right: 0;
+  top: var(--dl-chrome-h);
+  bottom: 0;
   z-index: 50;
-  width: min(24rem, calc(100vw - 2rem));
-  max-height: calc(100vh - var(--dl-chrome-h) - 1.5rem);
+  width: min(24rem, 100vw);
+  min-width: 16rem;
+  max-width: min(40rem, 100vw);
   overflow-y: auto;
+  overflow-x: hidden;
+  /* No native `resize: horizontal` — its handle would sit exactly on
+     the browser window's own right edge here (flush right, no `left`),
+     with no room on a real screen to drag further right and grow it.
+     makeRightEdgeResizable() (mini-ide.js) replaces it with a plain
+     pointer-drag on .dl-panel-resize-handle instead, same fix as
+     .dl-settings' own in tutorial-style.css (DECISIONS_LOG.md 7.84). */
   padding: 1rem 1.1rem 1.1rem;
-  border: 1px solid var(--dl-cell-border);
-  border-radius: 6px;
+  border-left: 1px solid var(--dl-cell-border);
   background: var(--dl-panel-bg);
-  box-shadow: 0 8px 28px var(--dl-shadow);
   font-family: var(--dl-font-family);
   font-size: 0.88rem;
 }
@@ -888,15 +904,29 @@
   /* Same bottom-sheet treatment compose/dewmini-style.css's own .dm-panel
    * gets at this cutoff; .mini-ide-help-label hides so the masthead has
    * room, leaving just the "?" icon (dewmini's .dm-help-label does the
-   * same for its own toggle). */
+   * same for its own toggle). Border and shadow come back here — the
+   * docked desktop shape above drops both in favour of a single
+   * border-left, but a bottom sheet still floats over content below it
+   * and reads better with one, same as .dl-settings' own phone
+   * breakpoint in tutorial-style.css. */
   .mini-ide-panel {
     top: auto;
     bottom: 0;
     left: 0;
     right: 0;
-    width: auto;
+    /* !important: makeRightEdgeResizable() (mini-ide.js) sets this
+       panel's width as an inline style when dragged on a wider screen,
+       which otherwise beats this media query — same guard .dl-settings'
+       own phone breakpoint uses in tutorial-style.css. */
+    width: auto !important;
+    max-width: none;
     max-height: 78vh;
+    border: 1px solid var(--dl-cell-border);
+    border-bottom: none;
     border-radius: 8px 8px 0 0;
+    box-shadow: 0 -4px 16px var(--dl-shadow);
+    /* A full-width bottom sheet has no meaningful "width" to resize. */
+    resize: none;
   }
   .mini-ide-help-label { display: none; }
   .mini-ide-cell-rail { margin-right: 0.6rem; }

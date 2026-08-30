@@ -235,6 +235,45 @@ function applyTexture(state) {
 }
 
 /**
+ * The replacement for native CSS `resize: horizontal` on a right-docked
+ * panel — ported from tutorial-runtime.js's own copy (DECISIONS_LOG.md
+ * 7.84). Native resize draws its handle at a box's own bottom-right
+ * corner, which for a panel flush to the browser window's own right
+ * edge sits exactly on that edge with no room to drag further right and
+ * grow it. Adds a thin strip along `panel`'s left edge instead and
+ * tracks a plain pointer drag on it directly.
+ */
+function makeRightEdgeResizable(panel, min = 256, max = 640) {
+  if (!panel || panel.querySelector(".dl-panel-resize-handle")) return;
+  const handle = document.createElement("div");
+  handle.className = "dl-panel-resize-handle";
+  handle.setAttribute("aria-hidden", "true");
+  panel.prepend(handle);
+
+  let startX = 0;
+  let startWidth = 0;
+
+  function onMove(ev) {
+    const dx = startX - ev.clientX;
+    const next = Math.max(min, Math.min(startWidth + dx, Math.min(max, window.innerWidth)));
+    panel.style.width = `${next}px`;
+  }
+  function onUp() {
+    handle.classList.remove("dl-panel-resize-active");
+    document.removeEventListener("pointermove", onMove);
+    document.removeEventListener("pointerup", onUp);
+  }
+  handle.addEventListener("pointerdown", (ev) => {
+    startX = ev.clientX;
+    startWidth = panel.getBoundingClientRect().width;
+    handle.classList.add("dl-panel-resize-active");
+    document.addEventListener("pointermove", onMove);
+    document.addEventListener("pointerup", onUp);
+    ev.preventDefault();
+  });
+}
+
+/**
  * Initialize the Settings panel
  */
 function initSettings() {
@@ -243,6 +282,8 @@ function initSettings() {
 
   const panel = document.getElementById("dl-settings");
   if (!panel) return state;
+
+  makeRightEdgeResizable(panel, 256, 640); // matches .dl-settings' own min/max-width
 
   const toggle = document.getElementById("dl-settings-toggle");
   
@@ -344,6 +385,8 @@ function initHelp() {
   helpPanel = document.getElementById("mini-ide-help");
   if (!helpPanel) return;
   helpToggle = document.getElementById("mini-ide-help-toggle");
+
+  makeRightEdgeResizable(helpPanel, 256, 640); // matches .mini-ide-panel's own min/max-width
 
   helpToggle?.addEventListener("click", () => {
     const isHidden = helpPanel.hasAttribute("hidden");
@@ -790,6 +833,47 @@ function initMiniIdeEditorSettings() {
 }
 
 /**
+ * Remembers which of Settings/Help a reader left open, the same
+ * localStorage-persisted-sidebar mechanism tutorial pages use (see
+ * saveSidebarState()/restoreSidebarState() in tutorial-runtime.js,
+ * DECISIONS_LOG.md 7.83) — a returning reader's panel comes back open
+ * rather than needing to be reopened, since it's meant to be a
+ * permanent pane, not a popover that happens to be open right now.
+ * Mini IDE only ever has one of the two open at a time (both dock to
+ * the same right edge), so this stores a single value rather than the
+ * tutorial pages' {left, right} pair.
+ */
+function saveSidebarState() {
+  const settingsPanel = document.getElementById('dl-settings');
+  const helpPanel = document.getElementById('mini-ide-help');
+  const open = settingsPanel && !settingsPanel.hasAttribute('hidden') ? 'settings'
+    : helpPanel && !helpPanel.hasAttribute('hidden') ? 'help'
+    : null;
+  try {
+    localStorage.setItem('dewlab:mini-ide:sidebar', JSON.stringify({ open }));
+  } catch (e) { /* private mode, blocked storage: nothing to remember */ }
+}
+
+/** The other half of saveSidebarState() — reopens whatever was left open
+ * last time by clicking its toggle, reusing that toggle's own open logic
+ * rather than duplicating it. Skipped below the phone breakpoint, where
+ * a panel is a bottom sheet covering most of the screen rather than a
+ * sidebar worth leaving open by default. */
+function restoreSidebarState() {
+  if (!window.matchMedia('(min-width: 34rem)').matches) return;
+  let state;
+  try {
+    state = JSON.parse(localStorage.getItem('dewlab:mini-ide:sidebar') || '{}');
+  } catch (e) {
+    return;
+  }
+  const toggleId = state.open === 'settings' ? 'dl-settings-toggle'
+    : state.open === 'help' ? 'mini-ide-help-toggle'
+    : null;
+  if (toggleId) document.getElementById(toggleId)?.click();
+}
+
+/**
  * Keeps `<html data-dl-panel-open>` in sync with whether the Settings or
  * Help panel is currently visible, regardless of which of their several
  * open/close paths (toggle click, close button, Escape, click-outside)
@@ -800,6 +884,12 @@ function initMiniIdeEditorSettings() {
  * while a panel is open, so its fixed position (tutorial-style.css's
  * `.dl-settings`/`.mini-ide-panel`) never ends up covering a cell's own
  * run/reset/delete buttons or its output.
+ *
+ * A ResizeObserver on the same panels keeps --dl-panel-w in step with
+ * whichever one is actually open's *real* rendered width, not a guess —
+ * a docked sidebar can be dragged wider or narrower via its own resize
+ * handle at any time, the same reasoning tutorial-runtime.js's own
+ * watchPanelOverlap() ResizeObserver has (DECISIONS_LOG.md 7.83).
  */
 function watchPanelOverlap() {
   const panels = [document.getElementById('dl-settings'), document.getElementById('mini-ide-help')]
@@ -808,11 +898,29 @@ function watchPanelOverlap() {
   const sync = () => {
     const anyOpen = panels.some(p => !p.hasAttribute('hidden'));
     document.documentElement.toggleAttribute('data-dl-panel-open', anyOpen);
+    saveSidebarState();
   };
   for (const panel of panels) {
     new MutationObserver(sync).observe(panel, { attributes: true, attributeFilter: ['hidden'] });
   }
-  sync();
+  // Only the DOM attribute, not a persisted-state write: every panel is
+  // still hidden at this point in startup, before restoreSidebarState()
+  // (called right after this) has had a chance to reopen whatever was
+  // actually saved last time — persisting here would overwrite a real
+  // saved preference with "everything closed" on every single load.
+  document.documentElement.toggleAttribute('data-dl-panel-open', panels.some(p => !p.hasAttribute('hidden')));
+
+  const widthObserver = new ResizeObserver((entries) => {
+    for (const entry of entries) {
+      const panel = entry.target;
+      if (panel.hasAttribute('hidden')) continue;
+      // offsetWidth, not the observer's own contentRect: the margin
+      // needs to clear the panel's full border box (border + padding),
+      // plus a small gutter so text doesn't sit flush against its edge.
+      document.documentElement.style.setProperty('--dl-panel-w', `${panel.offsetWidth + 16}px`);
+    }
+  });
+  for (const panel of panels) widthObserver.observe(panel);
 }
 
 /**
@@ -903,6 +1011,7 @@ async function init() {
   initFilename();
   initHelp();
   watchPanelOverlap();
+  restoreSidebarState();
 
   // Setup event listeners
   setupEventListeners();
