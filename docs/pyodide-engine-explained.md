@@ -9,13 +9,13 @@ name mean," without the caller needing to know *how* Python is actually
 running underneath.
 
 It's a *shared* file rather than dewmini's own: this was originally Mini
-IDE's own `mini-ide-engine.js`, written when this codebase's convention
+IDE's own *mini-ide-engine.js*, written when this codebase's convention
 was "each page owns a thin copy rather than a shared runtime module." It
 was generalized into this shared module once dewmini needed the same
 Worker/Stop capability — 700 lines of genuinely tricky Worker/interrupt/
 postMessage logic was judged too large and too risky to duplicate a
 second time, particularly with Mini IDE's own retirement already planned.
-Mini IDE has since retired (`DECISIONS_LOG.md` 7.90); its old, offline-
+Mini IDE has since retired (`DECISIONS_LOG.md` 7.91); its old, offline-
 only copy (`assets/mini-ide.js` and `assets/mini-ide-fs.js`, packaged by
 `write_mini_ide_bundle()` in `build.py`) still imports this same file, so
 it stays a shared module in fact even though only one of its two callers

@@ -14,8 +14,25 @@ it is written.
 
 ## The file and its frontmatter
 
-A tutorial lives at `tutorials/<module>/<slug>.md` and opens with frontmatter,
-then ordinary prose and code.
+A tutorial is a folder, at `tutorials/<module>/<slug>/`, holding everything
+that belongs to it:
+
+```text
+tutorials/computational-methods/working-with-tables/
+    working-with-tables.md              the tutorial
+    working-with-tables-practice.md     its page of problems
+    working-with-tables.glossary.yaml   what it teaches, for the reference
+    v2026.08.24.1.md                    a frozen past release, if any
+    a-sorted-table.png                  any picture or recording it uses
+```
+
+The tutorial itself is `<slug>.md`, and it opens with frontmatter, then
+ordinary prose and code.
+
+Only the first of those is required. A tutorial with no practice page, no
+glossary, one release and no pictures is a folder with a single file in it,
+and that is the normal case rather than an awkward one — it means a tutorial
+never has to be rearranged later to make room for its own material.
 
 ```markdown
 ---
@@ -175,7 +192,23 @@ find. Headings and cell ids both count as anchors.
 
 ---
 
-## Images
+## Images, and other files a tutorial uses
+
+Put the file in the tutorial's own folder and refer to it by its plain name:
+
+```markdown
+![A table sorted by date](a-sorted-table.png)
+```
+
+The build copies it to the site and makes that name resolve, from the current
+release and from every frozen one. You never write a path — which matters,
+because the current release and a frozen one are served from different depths,
+so any path you wrote by hand would be right for one and wrong for the other.
+
+The same holds for anything else a page loads by `src`: a recording, a short
+video. A reference to a file that is not in the folder stops the build, for the
+same reason a dead `tutorial:` link does — the alternative is a page that looks
+finished to everyone except the student who opens it.
 
 Every `<img>` needs an `alt` attribute or the build stops. An explicit `alt=""`
 is accepted, and is how you mark an image as decorative.
@@ -347,7 +380,9 @@ Beyond ordinary Python, a cell can use:
 | `text_input(label, value="", id=None)` | A text box. Read what was typed with `.value`. |
 | `dropdown(label, options, value=None, id=None)` | A menu. Also read with `.value`. |
 | `button(label, on_click)` | A button that calls your function, appending output below itself. |
+| `image_input(label="Choose an image", id=None)` | A picker limited to image files. `.value` is a Pillow `Image`, or the raw bytes where Pillow is not loaded. |
 | `await load_csv(name)` | Load a CSV from `data/` into a DataFrame. |
+| `run_query(conn_or_path, sql, params=None, max_rows=20, caption=None)` | Run a SQL query and render the result as a table. Takes an open `sqlite3` connection or a path to pass to `sqlite3.connect()`. |
 
 Widgets keep their values when a cell is re-run, so a student can type an answer,
 press Run, and still see what they typed.
@@ -368,10 +403,13 @@ old version deserve to keep working in it undisturbed — a rewritten explanatio
 cells replaced rather than tweaked — publish it as a release instead of editing
 in place:
 
-1. Turn the tutorial into a folder: `tutorials/<module>/<slug>/`.
-2. Freeze the old file as `v<old-version>.md` inside it, unchanged.
-3. Write the new version as `<slug>.md` in the same folder, with `version:`
-   bumped.
+1. Copy the current `<slug>.md` to `v<old-version>.md` in the same folder,
+   unchanged. That is the release students keep working in.
+2. Bump `version:` in `<slug>.md` and write the new material there.
+
+Nothing moves and nothing is renamed: `<slug>.md` is always the current
+release, and a past one is always `v<version>.md` beside it. The authoring
+editor's **Release** button does exactly these two steps.
 
 The build serves the newest release under the tutorial's plain, unversioned
 address, and every past release stays reachable at its own

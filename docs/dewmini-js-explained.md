@@ -20,7 +20,7 @@ dewmini used to be the smaller of two Python workspaces, running Pyodide
 directly on the main thread with no Stop button, while Mini IDE ran it
 in a Worker. dewmini absorbed Mini IDE's Worker/Stop capability
 (`DECISIONS_LOG.md` 7.89) before Mini IDE itself retired
-(`DECISIONS_LOG.md` 7.90); this doc describes dewmini as it is now, with
+(`DECISIONS_LOG.md` 7.91); this doc describes dewmini as it is now, with
 that capability built in, not as a smaller alternative to something
 else.
 

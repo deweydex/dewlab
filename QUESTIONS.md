@@ -53,6 +53,59 @@ A one-line answer is a complete answer.
 
 ## Answered
 
+### What is the right layout for a tutorial and the files that belong to it?
+
+**Settled and built: every tutorial is a folder, from the moment it is
+created — `DECISIONS_LOG.md` 7.90.**
+
+A tutorial was a lone markdown file that grew a folder only on its second
+release, and its practice page and glossary stayed behind at module level
+when it did. Four tutorials already had their files split across two
+directory levels, and every new release added another.
+
+A tutorial is now `tutorials/<module>/<slug>/`, holding its markdown at
+`<slug>.md`, its practice page, its glossary, any frozen past releases as
+`v<version>.md`, and any pictures or recordings it uses. A tutorial with
+one release and nothing else is a folder with a single file in it, which is
+the normal case rather than an awkward one: nothing has to be rearranged
+later to make room for a tutorial's own material.
+
+Three things follow from it, and each was worth having on its own:
+
+- **Versioning stops moving files.** `<slug>.md` is always the current
+  release and `v<version>.md` is always a past one, so releasing adds a
+  file and renames nothing. The authoring editor used to produce two
+  different shapes depending on whether a tutorial had been released
+  before; now there is one.
+- **Assets have somewhere to live.** A file in the folder is copied to the
+  site beside the tutorial, and a plain `src="picture.png"` resolves from
+  the current release and every frozen one — which a hand-written path
+  could not do, since the two are served from different depths. A
+  reference to a file that is not there fails the build, as a dead
+  `tutorial:` link already does.
+- **A tutorial is one thing to move, freeze or delete.** It was several
+  files in two places.
+
+Nothing a student receives changed: page URLs and saved-work storage keys
+are built from frontmatter, never from source paths, and the built site
+came out byte-identical to the one before the migration.
+
+### Is the build being rewritten in JavaScript?
+
+**Settled: no, and the question is closed by events rather than by
+argument.** `DECISIONS_LOG.md` 1.10 left this open deliberately, to be
+decided "before the editor is built, and not by accident before then." The
+editor has since been built, and needed none of it: `assets/editor.js`
+reads and writes markdown through GitHub's API and never runs the build at
+all. The one thing a JavaScript build would have added — a preview inside
+the browser-based editor — the editor does without, by rendering prose
+live in Milkdown and leaving the structural checks to `problems()`, which
+reproduces the build's own rules client-side.
+
+The cost of revisiting rises with everything built on the current script,
+which is the reason the question had a deadline. Reopening it now would
+need a reason the editor did not supply.
+
 ### Is moving Pyodide into a Web Worker worth it, to give a runaway cell a real Stop button?
 
 **Settled and built: yes — DECISIONS_LOG.md 7.77.** Pyodide now runs off

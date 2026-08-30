@@ -29,13 +29,13 @@ order:
 ```
 
 - **One place to reorder.** Moving or inserting a tutorial is a
-  one-line change to `order.yaml`, nothing else.
+  one-line change to `<series>.order.yaml`, nothing else.
 - **Checked at build time.** The build confirms every slug in
-  `order.yaml` actually has a real tutorial behind it, and that no
+  `<series>.order.yaml` actually has a real tutorial behind it, and that no
   tutorial is quietly missing from the file and left off the reading
   path.
 
-## 3. What the editor actually is (`assets/editor.html`, `assets/editor.js`)
+## 3. What the editor actually is (`assets/editor.js`, on a page `build.py`'s `write_editor_page()` writes)
 
 A standalone page inside the built site (`editor.html`) that talks
 directly to the GitHub REST API — nothing dewlab hosts sits between the
@@ -44,7 +44,7 @@ editor and GitHub.
 ### What it can do
 - **Reorder a series** — drag-and-drop, or accessible keyboard controls,
   to reorder the cards in a series. Saving writes the updated
-  `order.yaml` as a commit on a branch.
+  `<series>.order.yaml` as a commit on a branch.
 - **Insert or create a tutorial** — a card can be inserted anywhere in a
   series, or at the end. Giving it a title generates its slug, sets up
   its frontmatter, and creates a starting file with the standard
@@ -77,7 +77,7 @@ Every operation is grouped by what it could do to a student's saved
 progress.
 
 ### Safe — fully reversible
-- **Reorder a series** — only touches `order.yaml`, never a tutorial's
+- **Reorder a series** — only touches `<series>.order.yaml`, never a tutorial's
   own content.
 - **Insert or create a tutorial** — adds new files from the standard
   template.

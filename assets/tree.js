@@ -1,4 +1,5 @@
-/* The topic tree: 67 topics, what needs what, and what each one is for.
+/* The topic tree: every topic in planning/curriculum/topics.yaml, what
+ * needs what, and what each one is for.
  *
  * Nodes and edges are positioned by build.py and arrive as data in the page —
  * there is no layout to do here and nothing to fetch. What this file adds is

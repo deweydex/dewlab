@@ -8,7 +8,7 @@ button, alongside dewmini's smaller, quieter version of the same idea.
 Mini IDE did, in dewmini's own smaller shape, so there is one Python
 workspace now rather than two — see the addendum in
 `planning/MINI_IDE_AND_DEWMINI_NEXT.md` for how that decision was made,
-and `DECISIONS_LOG.md` 7.90 for how it was carried out. The hosted
+and `DECISIONS_LOG.md` 7.91 for how it was carried out. The hosted
 `mini-ide.html` now briefly explains that and sends a visitor on to
 `compose/dewmini.html`; a real, working, offline copy of the original
 app is still available from the site's download page for anyone who

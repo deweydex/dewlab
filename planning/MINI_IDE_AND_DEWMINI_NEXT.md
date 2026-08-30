@@ -176,7 +176,7 @@ menu a first-time visitor has to parse.
 **What genuinely is worth doing, and is a real form of "merging," is
 sharing more of the code underneath the two pages than they share
 today.** The codebase's own stated convention — "each page owns a thin
-copy rather than a shared runtime module," per `mini-ide-engine.js`'s
+copy rather than a shared runtime module," per `pyodide-engine.js`'s
 own comment — was a reasonable call when there was one page (tutorial
 pages) and Mini IDE was new. With three surfaces now genuinely running
 overlapping logic (tutorial pages, Mini IDE, dewmini), and this session
@@ -295,7 +295,7 @@ The work is being staged, not done in one pass:
    actually reached persistent storage. **Done: the Worker/Stop
    migration** (`DECISIONS_LOG.md` 7.89) — the largest and most
    structurally invasive of the four, and the last one, since it was the
-   one nothing else on this list actually depended on. `mini-ide-engine.js`
+   one nothing else on this list actually depended on. `pyodide-engine.js`
    became the shared `assets/pyodide-engine.js`, both tools now import
    from; dewmini's Python runs in a Worker with a genuine Stop button,
    matching Mini IDE's own since `MINI_IDE_REDESIGN.md`; two real bugs
@@ -303,7 +303,7 @@ The work is being staged, not done in one pass:
    button never appearing on a page's first-ever run) were caught by
    testing and fixed, not left as known gaps. **Feature parity is
    complete** — all four items on this list are done.
-3. **Done: Mini IDE's retirement** (`DECISIONS_LOG.md` 7.90), now that
+3. **Done: Mini IDE's retirement** (`DECISIONS_LOG.md` 7.91), now that
    parity was real — per an explicit instruction that this was a given,
    not a further decision point. `assets/mini-ide.html` (the hosted
    URL) redirected to dewmini rather than being removed outright, so a

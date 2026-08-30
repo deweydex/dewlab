@@ -11,9 +11,6 @@
  * markup by tutorial_tools.py, inside Python, so the output rules live in one
  * place and stay unit-testable without a browser. This file starts the work
  * and gets out of the way.
- *
- * Phase 0 scope. Save/load and version-compare (Phase 2) and the series
- * navigation (Phase 3) are not here yet.
  */
 
 import { createCodeEditor, createReadOnlyCode, setEditorTheme } from "./vendor/codemirror.bundle.js";

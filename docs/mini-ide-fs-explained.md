@@ -1,6 +1,6 @@
 # `assets/mini-ide-fs.js`, explained
 
-**Mini IDE has retired** (`DECISIONS_LOG.md` 7.90) — dewmini's own
+**Mini IDE has retired** (`DECISIONS_LOG.md` 7.91) — dewmini's own
 `compose/dewmini-fs.js` now does what this file describes, for the one
 Python workspace a student actually reaches. This file still exists,
 and this doc still describes it accurately, only because

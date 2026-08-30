@@ -1,6 +1,6 @@
 # `assets/mini-ide.js`, explained
 
-**Mini IDE has retired** (`DECISIONS_LOG.md` 7.90) — dewmini
+**Mini IDE has retired** (`DECISIONS_LOG.md` 7.91) — dewmini
 (`compose/dewmini.js`, [its own explained doc](dewmini-js-explained.md))
 absorbed everything this file did, and no page a student reaches links
 to this file any more. It still exists, and this doc still describes it

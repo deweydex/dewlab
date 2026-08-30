@@ -44,7 +44,36 @@ the record of why it works the way it does.
   what it does and how releases work through it.
 - **[`MINI_IDE_AND_DEWMINI_NEXT.md`](./MINI_IDE_AND_DEWMINI_NEXT.md)** —
   what's still worth building on each of dewlab's two Python workspaces,
-  and why merging them into one tool isn't the answer.
+  and why merging them into one tool isn't the answer. Its addendum
+  records the decision that went the other way.
+- **[`MINI_IDE_REDESIGN.md`](./MINI_IDE_REDESIGN.md)** — the phased plan
+  Mini IDE was rebuilt to: Worker engine, file manager, SQLite,
+  notebook import, offline bundle. All phases shipped.
+
+### The reading surface
+Each of these designs one part of what a reader sees, and each was
+written before the thing it describes was built.
+
+- **[`REFERENCE_PANEL.md`](./REFERENCE_PANEL.md)** — the per-tutorial
+  reference, assembled from glossary files, and the rule it exists to
+  keep: never show a reader a term they have not met.
+- **[`SIDEBAR_CONTENT.md`](./SIDEBAR_CONTENT.md)** — datasets,
+  author-written pedagogical notes, and what earns a panel of its own.
+- **[`STUDENT_NOTES.md`](./STUDENT_NOTES.md)** — a reader's own free-text
+  notes, and encouraging a copy that outlives the browser. Not the same
+  "notes" as the pedagogical ones above; §0 says why.
+- **[`PROGRESS_INDICATORS.md`](./PROGRESS_INDICATORS.md)** — completion
+  badges on the contents page and a summary in Settings, both read from
+  saved work that was already there.
+- **[`CELL_CONTROLS.md`](./CELL_CONTROLS.md)** — where a cell's controls
+  sit, and the Worker migration that made a real Stop button possible.
+- **[`CELL_TOOLTIPS.md`](./CELL_TOOLTIPS.md)** — hover docs and signature
+  help, including what Jedi in Pyodide costs and covers.
+
+### The documentation itself
+- **[`DOCS_AND_COMMENTS_PASS.md`](./DOCS_AND_COMMENTS_PASS.md)** — the
+  repo-wide pass that gave every substantial code file teaching-oriented
+  comments and a matching `docs/<file>-explained.md`.
 
 ### Curriculum
 - **[`CURRICULUM_MAP.md`](./CURRICULUM_MAP.md)** — generated; every

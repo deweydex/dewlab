@@ -3,8 +3,10 @@
 Pedagogical outlines and structural specifications each tutorial below was
 written from. Every one of them is now a published tutorial — see
 `planning/STATUS.md` §1 — kept here as the design record, not as a backlog.
-The actual gap left to outline is `planning/WHAT_IS_LEFT_TO_WRITE.md`'s:
-the CMPS strand-4/5 outcomes, none of which has an outline file yet.
+The gap left to outline is the CMPS strand-4 and strand-5 outcomes — Monte
+Carlo methods, algorithmic complexity and systems modelling — none of which
+has an outline file yet. `planning/STATUS.md` §2 has what is unwritten and
+`planning/ROADMAP.md` Phase 2 has the order it is planned in.
 
 ---
 

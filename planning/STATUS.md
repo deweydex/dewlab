@@ -10,7 +10,9 @@ current as things change — not a pitch.
 
 ### Core runtime (`assets/`, `setup/`, `data/`)
 - **Pyodide in the browser**: real Python, running client-side, with
-  `numpy`, `pandas`, `matplotlib`, and `sympy` available (`assets/tutorial-runtime.js`).
+  `numpy`, `pandas` and `matplotlib` available by default, and `sympy`
+  and others on request via a tutorial's `packages:` frontmatter
+  (`assets/tutorial-runtime.js`).
 - **The tools bridge**: `show`, `show_table`, `check`, `text_input`,
   `dropdown`, `button`, and `load_csv`, all defined once in
   `assets/tutorial_tools.py`.
@@ -89,7 +91,7 @@ The one Python workspace with no tutorial attached — see
 dewmini used to be the smaller of two such workspaces; Mini IDE was the
 larger, until dewmini absorbed everything it did
 (`DECISIONS_LOG.md` 7.87–7.89) and Mini IDE retired
-(`DECISIONS_LOG.md` 7.90, addendum in
+(`DECISIONS_LOG.md` 7.91, addendum in
 `planning/MINI_IDE_AND_DEWMINI_NEXT.md`; full history of Mini IDE's own
 build in `MINI_IDE_REDESIGN.md`, kept as a record of work rather than a
 description of what's live). dewmini runs Python through
@@ -198,7 +200,7 @@ are not.
    `CMPS-LO5`, `CMPS-LO7` through `CMPS-LO13`, all still red on the
    curriculum map.
 
-### Automated worksheet-to-practice converter (`dev/from_worksheet.py`)
+### Automated worksheet-to-practice converter (unwritten)
 On hold, and possibly not needed. The worksheets whose material is
 taught have already been converted by hand; the ones that remain
 (`07a`–`08b`, matrices, Markov chains, Bayes, distributions) cover
