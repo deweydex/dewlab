@@ -130,11 +130,11 @@ body {
   padding: 0 1.25rem 6rem;
 }
 
-/* Settings (right-anchored) and the reference/series nav (left-
- * anchored — see .dl-reference/.dl-seriesnav further down) are fixed-
- * position panels that float over the page rather than push it, which
- * is fine right up until an open panel reaches far enough in to cover
- * a reader's own text — a wide Texture "Width" setting, or simply an
+/* Settings (docked right) and the reference/series nav (docked left —
+ * see .dl-reference/.dl-seriesnav further down) are fixed-position,
+ * full-height sidebars rather than part of the document flow, which is
+ * fine right up until an open one reaches far enough in to cover a
+ * reader's own text — a wide Texture "Width" setting, or simply an
  * ordinary laptop screen, both make that reachable. data-dl-panel-left/
  * -right (set by watchPanelOverlap() in tutorial-runtime.js, tracking
  * each side independently since both panels can now be open at once —
@@ -143,11 +143,16 @@ body {
  * ordinary `margin: 0 auto` centering above in favour of a fixed
  * margin on the occupied side: centering would split the reclaimed
  * width evenly, wasting half of it as a matching margin on the side
- * with nothing to avoid. Skipped below 34rem, where a panel is already
- * a full-width bottom sheet rather than a corner-anchored overlay. */
+ * with nothing to avoid. --dl-panel-left-w/--dl-panel-right-w are kept
+ * in sync with each panel's own *actual* rendered width by the same
+ * runtime function (a ResizeObserver, since a reader can drag either
+ * panel's resize handle wider or narrower at any time) — the 25rem
+ * fallback only matters for the one frame before that observer's first
+ * callback lands. Skipped below 34rem, where a panel is already a
+ * full-width bottom sheet rather than a docked sidebar. */
 @media (min-width: 34rem) {
-  html[data-dl-panel-left] .dl-page { margin-left: 25rem; }
-  html[data-dl-panel-right] .dl-page { margin-right: 25rem; }
+  html[data-dl-panel-left] .dl-page { margin-left: var(--dl-panel-left-w, 25rem); }
+  html[data-dl-panel-right] .dl-page { margin-right: var(--dl-panel-right-w, 25rem); }
 }
 
 /* Wide things — tables, plots, code — may exceed the reading measure. They
@@ -206,13 +211,27 @@ body {
   letter-spacing: 0.04em;
   text-transform: uppercase;
   /* On a narrow screen the module name is the first thing to go: the wordmark
-     and the way into Settings both matter more than knowing which course you
-     are in while you are reading it. */
+     and the way into the panel toggles both matter more than knowing which
+     course you are in while you are reading it. Grows to fill whatever
+     space the wordmark and the action row don't need, so it's the one
+     thing in the masthead that truncates rather than wraps or shrinks the
+     tap targets either side of it. */
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  flex: 0 1 auto;
+  flex: 1 1 auto;
   min-width: 0;
+}
+
+/* One action row, right-aligned, holding every panel's toggle — the
+   Reference/Series/Settings order matches their docking order, left pair
+   then right, so a reader scanning left to right meets a toggle in the
+   same order its panel would appear. */
+.dl-masthead-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: none;
 }
 
 /* ------------------------------------------------------------ prose blocks */
@@ -682,27 +701,30 @@ p code, li code {
   border-top: 2px solid currentColor;
 }
 
+/* A docked sidebar, not a floating card: flush to the right edge, full
+   height from below the sticky masthead to the foot of the viewport, so
+   it reads as a permanent pane a reader can leave open and work beside —
+   the "typical offline IDE" shape — rather than a popover that happens to
+   be open right now. */
 .dl-settings {
   position: fixed;
-  right: 1rem;
-  top: calc(var(--dl-chrome-h) + 0.5rem);
+  right: 0;
+  top: var(--dl-chrome-h);
+  bottom: 0;
   z-index: 50;
-  width: min(21rem, calc(100vw - 2rem));
+  width: min(21rem, 100vw);
   min-width: 16rem;
-  max-width: min(40rem, calc(100vw - 2rem));
-  max-height: calc(100vh - var(--dl-chrome-h) - 1.5rem);
+  max-width: min(40rem, 100vw);
   overflow-y: auto;
   overflow-x: hidden;
-  /* Right-anchored (`right: 1rem`, no `left`), so growing width extends
+  /* Right-anchored (`right: 0`, no `left`), so growing width extends
      the box leftward, away from the edge already pinned — dragging the
      handle wider makes more of the panel visible without it ever
      drifting off the right edge of the screen. */
   resize: horizontal;
   padding: 1rem 1.1rem 1.1rem;
-  border: 1px solid var(--dl-cell-border);
-  border-radius: 6px;
+  border-left: 1px solid var(--dl-cell-border);
   background: var(--dl-panel-bg);
-  box-shadow: 0 8px 28px var(--dl-shadow);
   font-family: var(--dl-font-family);
   font-size: 0.85rem;
 }
@@ -755,12 +777,14 @@ p code, li code {
   color: var(--dl-muted);
 }
 
-/* The reference toggle (planning/REFERENCE_PANEL.md §6) — pinned to the
-   page's own top-left corner rather than sharing the masthead row, which
-   already gives that side to the wordmark. Closed by default and revealed
-   only by tutorial-runtime.js, when this page's manifest actually carries
+/* The reference toggle (planning/REFERENCE_PANEL.md §6) — lives in
+   .dl-masthead-actions now, alongside Series and Settings, rather than a
+   fixed corner button of its own; the masthead already sticks, so being
+   an ordinary flex item there keeps it reachable without a second
+   positioning scheme. Closed by default and revealed only by
+   tutorial-runtime.js, when this page's manifest actually carries
    something (an empty toggle that opens onto nothing is worse than no
-   toggle), and hidden outright on a phone below. */
+   toggle). */
 /* [hidden] first and separately: an unconditional `display: inline-flex`
    below has the same specificity as the UA stylesheet's own
    `[hidden] { display: none }` and would win the tie by loading later,
@@ -769,22 +793,19 @@ p code, li code {
    rather than by re-reading this rule and assuming it was fine. */
 .dl-reference-toggle[hidden] { display: none; }
 .dl-reference-toggle {
-  position: fixed;
-  top: 0.9rem;
-  left: 0.9rem;
-  z-index: 51;
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
+  flex: none;
   font-family: var(--dl-mono);
   font-size: 0.78rem;
-  background: var(--dl-panel-bg);
+  background: none;
   border: 1px solid var(--dl-navy);
   border-radius: 4px;
   color: var(--dl-heading);
   padding: 0.38rem 0.7rem;
   cursor: pointer;
-  box-shadow: 0 2px 8px var(--dl-shadow);
+  min-height: 2rem;
 }
 .dl-reference-toggle:hover,
 .dl-reference-toggle:focus-visible {
@@ -815,21 +836,21 @@ p code, li code {
   border-top: 1px solid currentColor;
 }
 
-/* Anchored to the same corner as its own toggle button (top-left) rather
-   than .dl-settings' corner (top-right) — it used to share the right side
-   with Settings, which read as if the reference belonged to the Settings
-   button rather than the one above it. Still mutually exclusive at runtime
-   (initReference() in tutorial-runtime.js) so only one panel is ever open
-   at a time. */
+/* Docked to the left edge, the mirror of .dl-settings — a permanent
+   sidebar, full height, not a floating card. Still mutually exclusive
+   with the series nav panel at runtime (initReference() in
+   tutorial-runtime.js), since both dock to this same edge and would sit
+   on top of one another otherwise; Settings docks to the right and does
+   not conflict with this one. */
 .dl-reference {
   position: fixed;
-  left: 1rem;
-  top: calc(var(--dl-chrome-h) + 0.5rem);
+  left: 0;
+  top: var(--dl-chrome-h);
+  bottom: 0;
   z-index: 50;
-  width: min(22rem, calc(100vw - 2rem));
+  width: min(22rem, 100vw);
   min-width: 16rem;
-  max-width: min(40rem, calc(100vw - 2rem));
-  max-height: calc(100vh - var(--dl-chrome-h) - 1.5rem);
+  max-width: min(40rem, 100vw);
   overflow-y: auto;
   overflow-x: hidden;
   /* Left-anchored, the mirror image of .dl-settings' own resize note:
@@ -837,10 +858,8 @@ p code, li code {
      already pinned. */
   resize: horizontal;
   padding: 1rem 1.1rem 1.1rem;
-  border: 1px solid var(--dl-cell-border);
-  border-radius: 6px;
+  border-right: 1px solid var(--dl-cell-border);
   background: var(--dl-panel-bg);
-  box-shadow: 0 8px 28px var(--dl-shadow);
   font-family: var(--dl-font-family);
   font-size: 0.85rem;
 }
@@ -934,27 +953,24 @@ p code, li code {
 .dl-note > :first-child { margin-top: 0; }
 .dl-note > :last-child { margin-bottom: 0; }
 
-/* The navigation panel's own toggle, stacked below the reference's
-   rather than beside it — two fixed-position buttons of varying text
-   width sit more predictably stacked than side by side. */
+/* The navigation panel's own toggle — same masthead action row as the
+   reference's, beside it rather than stacked below it now that both are
+   ordinary flex items instead of fixed-position corner buttons. */
 .dl-seriesnav-toggle[hidden] { display: none; }
 .dl-seriesnav-toggle {
-  position: fixed;
-  top: 3rem;
-  left: 0.9rem;
-  z-index: 51;
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
+  flex: none;
   font-family: var(--dl-mono);
   font-size: 0.78rem;
-  background: var(--dl-panel-bg);
+  background: none;
   border: 1px solid var(--dl-navy);
   border-radius: 4px;
   color: var(--dl-heading);
   padding: 0.38rem 0.7rem;
   cursor: pointer;
-  box-shadow: 0 2px 8px var(--dl-shadow);
+  min-height: 2rem;
 }
 .dl-seriesnav-toggle:hover,
 .dl-seriesnav-toggle:focus-visible {
@@ -984,27 +1000,25 @@ p code, li code {
 .dl-seriesnav-icon::before { top: 0; }
 .dl-seriesnav-icon::after { bottom: 0; }
 
-/* Anchored the same way the reference is — left, next to its own
-   toggle — and mutually exclusive with both it and Settings at runtime
-   (initSeriesNav() in tutorial-runtime.js), since two left-anchored
-   panels open together would sit on top of each other. */
+/* Docked the same edge the reference is — left — and mutually exclusive
+   with it at runtime (initSeriesNav() in tutorial-runtime.js), since two
+   panels docked to the same edge at once would sit on top of each other.
+   Settings docks right and does not conflict with this one. */
 .dl-seriesnav {
   position: fixed;
-  left: 1rem;
-  top: calc(var(--dl-chrome-h) + 0.5rem);
+  left: 0;
+  top: var(--dl-chrome-h);
+  bottom: 0;
   z-index: 50;
-  width: min(22rem, calc(100vw - 2rem));
+  width: min(22rem, 100vw);
   min-width: 16rem;
-  max-width: min(40rem, calc(100vw - 2rem));
-  max-height: calc(100vh - var(--dl-chrome-h) - 1.5rem);
+  max-width: min(40rem, 100vw);
   overflow-y: auto;
   overflow-x: hidden;
   resize: horizontal;
   padding: 1rem 1.1rem 1.1rem;
-  border: 1px solid var(--dl-cell-border);
-  border-radius: 6px;
+  border-right: 1px solid var(--dl-cell-border);
   background: var(--dl-panel-bg);
-  box-shadow: 0 8px 28px var(--dl-shadow);
   font-family: var(--dl-font-family);
   font-size: 0.85rem;
 }
@@ -1524,14 +1538,17 @@ p code, li code {
 /* ------------------------------------------------------------ small screens */
 
 /* A phone held in one hand, which is how a good deal of the reading will
-   actually happen. Three changes: each floating panel — Settings, the
-   reference, and the navigation panel — becomes a sheet across the foot
-   of the screen rather than a card floating off one corner (no two of the
-   three are ever open at once even on desktop, so becoming sheets at the
-   same edge does not put them in each other's way); the navigation puts
-   previous and next on one line with the contents link beneath them, so
-   two long titles stop fighting for the same row; and the module name in
-   the masthead gives up its space to the Settings button. */
+   actually happen. Three changes: each panel — Settings, the reference,
+   and the navigation panel — becomes a sheet across the foot of the
+   screen rather than a full-height docked sidebar (a sidebar down the
+   side of a phone screen would leave almost nothing to read); the
+   navigation puts previous and next on one line with the contents link
+   beneath them, so two long titles stop fighting for the same row; and
+   the module name in the masthead gives up its space to the action row's
+   three toggles. Sidebar open state is not restored on this width even
+   if it was saved on a wider screen (restoreSidebarState(),
+   tutorial-runtime.js) — a bottom sheet covering most of the screen is a
+   deliberate, momentary action here, not a permanent pane to leave open. */
 @media (max-width: 34rem) {
   .dl-settings,
   .dl-reference,
@@ -1543,8 +1560,10 @@ p code, li code {
     width: auto;
     max-width: none;
     max-height: 78vh;
-    border-radius: 8px 8px 0 0;
+    border: 1px solid var(--dl-cell-border);
     border-bottom: none;
+    border-radius: 8px 8px 0 0;
+    box-shadow: 0 -4px 16px var(--dl-shadow);
     padding-bottom: 1.4rem;
     /* A full-width bottom sheet has no meaningful "width" to resize. */
     resize: none;
@@ -1562,6 +1581,19 @@ p code, li code {
   .dl-crumbs { display: none; }
   .dl-page { padding-left: 1rem; padding-right: 1rem; }
   .dl-chrome { margin-inline: -1rem; padding-inline: 1rem; }
+
+  /* Three full-text toggles ("Reference", "Series", "Settings") plus the
+     wordmark don't fit one row at phone width even with the crumbs gone
+     above — icon-only from here down, same meaning conveyed by shape
+     alone (each icon is already distinct) and by the button's own
+     aria-label (shell.html) rather than its now-hidden visible text. */
+  .dl-masthead-actions { gap: 0.35rem; }
+  .dl-toggle-label { display: none; }
+  .dl-reference-toggle,
+  .dl-seriesnav-toggle,
+  .dl-settings-toggle {
+    padding: 0.38rem 0.55rem;
+  }
 
   /* Minimal keeps the top row a single line even here, which is the whole
      reason to choose it on a phone. The bottom navigation is not sticky and

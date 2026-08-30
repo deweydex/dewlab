@@ -3001,3 +3001,90 @@ rather than any real complexity — a mechanical find-and-replace plus a
 handful of files a first sweep missed (comments wrapped across two
 source lines, a couple of test docstrings naming the old test file by
 name), not a design decision to revisit.*
+
+**7.83 — Reference, Settings, and the series nav became docked sidebars,
+toggled from the masthead instead of the page's corners.** Reported
+directly: "is there a way to make the reference document more useful as
+a permanent sidebar that can be toggled? I think settings would be the
+same... maybe those things would be sticky in the header as opposed to
+in the upper corner?" — the panels themselves had already been proven
+(7.73–7.82), so this is a placement and shape change, not a new feature.
+
+**Toggle placement**: all three toggle buttons moved into
+`.dl-masthead-actions` (new, `shell.html`), a right-aligned action row
+in the sticky masthead alongside the wordmark and crumbs, replacing the
+reference's and series nav's own fixed-position corner buttons (the
+Settings toggle was already there). `.dl-crumbs` grew from `flex: 0 1
+auto` to `flex: 1 1 auto` to make room. Below the phone breakpoint,
+where three full-text buttons plus the wordmark no longer fit one row,
+each toggle's label text is wrapped in a new `.dl-toggle-label` span and
+hidden, leaving icon-only buttons — found by an actual screenshot at
+390px width during this work, not assumed to be fine; `aria-label`
+carries the accessible name once the visible text is hidden, since
+`display: none` content does not contribute to a button's computed
+accessible name.
+
+**Panel shape**: `.dl-settings`/`.dl-reference`/`.dl-seriesnav` went
+from floating cards (`top`/`left`/`right` inset by `1rem`, rounded
+corners, `box-shadow`, height capped by `max-height`) to full-height
+docked sidebars (`top: var(--dl-chrome-h); bottom: 0`, flush to their
+edge, a single `border-left`/`border-right` in place of the shadow) —
+the "typical offline IDE" shape asked for, where a panel is a permanent
+pane a reader can work beside rather than a popover that happens to be
+open. The reference and series nav still force-close each other on
+open (both dock to the left edge and would overlap otherwise); Settings
+still docks right and stays independent, unchanged from 7.82.
+
+**The margin-push mechanism (7.x, `data-dl-panel-left`/`-right`) had a
+latent bug this surfaced**: it pushed `.dl-page` clear by a flat 25rem
+regardless of a panel's actual width, which was never wrong before
+because a floating card's `max-width` kept it well under that — but a
+genuine sidebar, resized wider by a reader dragging its own handle, has
+no reason to stay under 25rem. `watchPanelOverlap()` now also runs a
+`ResizeObserver` on each panel, writing its live `offsetWidth` (plus a
+small gutter) into `--dl-panel-left-w`/`--dl-panel-right-w`, which the
+margin rule reads with the old flat value only as a one-frame fallback.
+Verified with an actual drag-the-resize-handle Playwright test, not
+just read as correct from the CSS.
+
+**Open state now survives navigating to the next tutorial in a series**
+(`saveSidebarState()`/`restoreSidebarState()`, new) — a reader who opens
+the reference once and pages through Prev/Next keeps it open, rather
+than reopening it on every page, matching "permanent" in the request.
+Stored in `localStorage["dewlab:sidebars"]` as `{left, right}` — `left`
+is `"reference"`, `"seriesnav"`, or `null` rather than two independent
+booleans, since only one can ever be open at a time. Restored by
+clicking the matching toggle at startup rather than duplicating each
+panel's own open logic, so the reference/series-nav exclusion and the
+"toggle hidden on a page with nothing to show" checks are reused rather
+than re-implemented. Deliberately not restored below the phone
+breakpoint (checked with `matchMedia`, not the deprecated
+`window.innerWidth` snapshot) — a bottom sheet covering most of a phone
+screen is a deliberate, momentary action, not a pane to leave open by
+default. A genuine ordering bug was caught and fixed before this
+shipped: the existing `sync()` inside `watchPanelOverlap()` ran once,
+synchronously, at startup, before `restoreSidebarState()` had a chance
+to run — persisting "everything closed" over whatever a reader had
+actually saved, every single page load. Split into an `updateAttrs()`
+that runs unconditionally and a `sync()` (which also persists) that
+only runs from the `MutationObserver` path, so the one startup call
+updates the CSS attributes without also clobbering the stored
+preference.
+
+`assets/vendor/standalone.bundle.js` was rebuilt (`npm run build` in
+`vendor-src/`) after the `tutorial-runtime.js` changes, same reason
+7.82 needed it. `planning/REFERENCE_PANEL.md` §6 and
+`planning/SIDEBAR_CONTENT.md` §4b describe the old corner-button/
+floating-card shape; both got a short addendum pointing here rather
+than being rewritten, matching this project's own convention for a
+living design doc superseded by what actually shipped.
+
+*Cost to change: moderate — three coordinated CSS rewrites (toggle,
+panel, phone breakpoint) plus two genuinely new runtime mechanisms
+(width-tracking, state persistence), each independently small and
+tested (a resize-drag Playwright check, a narrow-viewport screenshot, a
+reload-preserves-state check), but real work rather than a rename.
+Reusing the existing `data-dl-panel-left/right` attribute mechanism and
+each panel's own open/close functions kept this from being a rewrite of
+working code — the sidebar concept was proven in 7.73, this changed its
+shape and location, not its logic.*

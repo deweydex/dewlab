@@ -137,19 +137,23 @@ function trackChromeHeight() {
 /* -------------------------------------------------------- settings panel */
 
 /* Settings, the reference (initReference(), below), and the navigation
- * panel (initSeriesNav()) are three open/close behaviours on the page
- * rather than one. Only two of them actually conflict: the reference
- * and the navigation panel anchor to the same left corner
+ * panel (initSeriesNav()) are three docked sidebars, toggled from the
+ * masthead's own action row (shell.html) — three open/close behaviours
+ * on the page rather than one. Only two of them actually conflict: the
+ * reference and the navigation panel dock to the same left edge
  * (tutorial-style.css) and would sit directly on top of each other if
  * both opened, so opening either one still closes the other. Settings
- * anchors to the right instead — genuinely a different part of the
+ * docks to the right instead — genuinely a different part of the
  * screen — and reader and content stay clear of whichever panel(s) are
- * open via the min-width panel-open rules further down in
- * tutorial-style.css, so Settings can now stay open alongside either of
- * the other two rather than being force-closed by them. Escape and a
- * click outside a given panel still close that one panel: dismissible
- * without hunting for the same small button again, whichever panel it
- * is. */
+ * open via the panel-open margin rules further down in
+ * tutorial-style.css, so Settings can stay open alongside either of the
+ * other two rather than being force-closed by them. Escape and a click
+ * outside a given panel still close that one panel: dismissible without
+ * hunting for the same small button again, whichever panel it is. Each
+ * panel's open state also survives a Prev/Next page navigation
+ * (saveSidebarState()/restoreSidebarState(), further down) on anything
+ * wider than the phone breakpoint, so leaving one open reads as choosing
+ * to work with it open rather than something to reopen on every page. */
 /* The three functions below (closeReference, closeSettings,
  * closeSeriesNav) and the three init*() functions further down that use
  * them share one repeated shape: a toggle button, a panel, and a
@@ -184,31 +188,121 @@ function closeSeriesNav() {
 }
 
 /**
+ * Remembers which docked sidebar(s) a reader left open, so a series read
+ * end to end (Prev/Next) keeps the reference or Settings open across
+ * pages the way a permanent pane in a real IDE would, rather than
+ * re-closing itself on every navigation. Read once at startup by
+ * restoreSidebarState(); written here on every change so it stays
+ * correct regardless of which of a panel's several open/close paths
+ * (toggle click, close button, Escape, click-outside) did it.
+ */
+function saveSidebarState() {
+  const referencePanel = document.getElementById("dl-reference");
+  const seriesnavPanel = document.getElementById("dl-seriesnav");
+  const settingsPanel = document.getElementById("dl-settings");
+  const left = referencePanel && !referencePanel.hasAttribute("hidden") ? "reference"
+    : seriesnavPanel && !seriesnavPanel.hasAttribute("hidden") ? "seriesnav"
+    : null;
+  const right = !!(settingsPanel && !settingsPanel.hasAttribute("hidden"));
+  try {
+    localStorage.setItem("dewlab:sidebars", JSON.stringify({ left, right }));
+  } catch (e) { /* private mode, blocked storage: nothing to remember */ }
+}
+
+/**
+ * The other half of saveSidebarState() — opens whatever was left open
+ * last time, by clicking the same toggle a reader would have clicked,
+ * so this reuses each panel's own open logic (including the reference/
+ * series-nav mutual exclusion) rather than duplicating it. Skipped
+ * below the phone breakpoint, where a panel is a bottom sheet covering
+ * most of the screen rather than a sidebar worth leaving open by
+ * default, and skipped for a panel whose toggle this page never
+ * revealed (no glossary/notes/datasets for the reference, no series
+ * position for the nav) — clicking a hidden toggle would do nothing
+ * harmful, but there is nothing to restore either.
+ */
+function restoreSidebarState() {
+  if (!window.matchMedia("(min-width: 34rem)").matches) return;
+  let state;
+  try {
+    state = JSON.parse(localStorage.getItem("dewlab:sidebars") || "{}");
+  } catch (e) {
+    return;
+  }
+
+  const leftToggleId = state.left === "reference" ? "dl-reference-toggle"
+    : state.left === "seriesnav" ? "dl-seriesnav-toggle"
+    : null;
+  if (leftToggleId) {
+    const toggle = document.getElementById(leftToggleId);
+    if (toggle && !toggle.hidden) toggle.click();
+  }
+
+  if (state.right) {
+    const toggle = document.getElementById("dl-settings-toggle");
+    if (toggle) toggle.click();
+  }
+}
+
+/**
  * Keeps `<html data-dl-panel-left>`/`<html data-dl-panel-right>` in sync
- * with whether a left-anchored panel (reference or series nav) and/or
- * the right-anchored Settings panel is currently visible — a
- * MutationObserver on each panel's `hidden` attribute, rather than
- * hooking every one of their several open/close paths (toggle click,
- * close button, Escape, click-outside), so this stays correct
- * regardless of which path closed a given panel. tutorial-style.css
- * reads these two attributes to push `.dl-page` clear of whichever
- * side(s) currently have a panel open, on desktop widths, so neither
- * ever ends up covering a reader's own text or a cell's controls —
- * both panels can be open at once now (see the comment above
- * initSettingsPanel()), so this tracks the two sides independently
- * rather than a single "something is open" flag.
+ * with whether a left-docked panel (reference or series nav) and/or the
+ * right-docked Settings panel is currently visible — a MutationObserver
+ * on each panel's `hidden` attribute, rather than hooking every one of
+ * their several open/close paths (toggle click, close button, Escape,
+ * click-outside), so this stays correct regardless of which path closed
+ * a given panel. tutorial-style.css reads these two attributes to push
+ * `.dl-page` clear of whichever side(s) currently have a panel open, on
+ * desktop widths, so neither ever ends up covering a reader's own text
+ * or a cell's controls — both panels can be open at once now (see the
+ * comment above initSettingsPanel()), so this tracks the two sides
+ * independently rather than a single "something is open" flag.
+ *
+ * A ResizeObserver on the same panels keeps --dl-panel-left-w/
+ * --dl-panel-right-w in step with each panel's own *actual* rendered
+ * width, not a guess — a docked sidebar can be dragged wider or
+ * narrower at any time via its own resize handle, and the margin
+ * pushing the page clear of it has to track that or a reader who drags
+ * one wide enough would end up right back where this whole mechanism
+ * started: a panel covering their own text.
  */
 function watchPanelOverlap() {
   const rightPanels = [document.getElementById("dl-settings")].filter(Boolean);
   const leftPanels = [document.getElementById("dl-reference"), document.getElementById("dl-seriesnav")].filter(Boolean);
-  const sync = () => {
-    document.documentElement.toggleAttribute("data-dl-panel-right", rightPanels.some(p => !p.hasAttribute("hidden")));
-    document.documentElement.toggleAttribute("data-dl-panel-left", leftPanels.some(p => !p.hasAttribute("hidden")));
+  const root = document.documentElement;
+
+  const updateAttrs = () => {
+    root.toggleAttribute("data-dl-panel-right", rightPanels.some(p => !p.hasAttribute("hidden")));
+    root.toggleAttribute("data-dl-panel-left", leftPanels.some(p => !p.hasAttribute("hidden")));
   };
+  // Persisting is split from updateAttrs() rather than done unconditionally
+  // on every sync: this function runs once synchronously below, before
+  // restoreSidebarState() (tutorial-runtime.js's own init sequence) has had
+  // a chance to reopen whatever was saved last time — every panel is still
+  // hidden at that point, and persisting here would overwrite a real saved
+  // preference with "everything closed" before it was ever read back.
+  // restoreSidebarState()'s own toggle.click() re-triggers this same
+  // MutationObserver-driven path, which does persist, so the saved state
+  // ends up correct once the actual open/closed panels are known.
+  const sync = () => { updateAttrs(); saveSidebarState(); };
   for (const panel of [...rightPanels, ...leftPanels]) {
     new MutationObserver(sync).observe(panel, { attributes: true, attributeFilter: ["hidden"] });
   }
-  sync();
+  updateAttrs();
+
+  const widthObserver = new ResizeObserver((entries) => {
+    for (const entry of entries) {
+      const panel = entry.target;
+      if (panel.hasAttribute("hidden")) continue;
+      const varName = rightPanels.includes(panel) ? "--dl-panel-right-w" : "--dl-panel-left-w";
+      // offsetWidth, not the observer's own contentRect, since the
+      // margin needs to clear the panel's full border box (it has both
+      // a border and padding), plus a small gutter so text doesn't sit
+      // flush against the panel's edge.
+      root.style.setProperty(varName, `${panel.offsetWidth + 16}px`);
+    }
+  });
+  for (const panel of [...rightPanels, ...leftPanels]) widthObserver.observe(panel);
 }
 
 /**
@@ -2933,6 +3027,7 @@ initSettingsPanel();
 initReference(currentManifest);
 initSeriesNav();
 watchPanelOverlap();
+restoreSidebarState();
 initProgressBadgesToggle();
 initNotesNudgeToggle();
 initContentsProgress();
