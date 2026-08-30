@@ -449,3 +449,118 @@ class TestMobile:
         assert style["left"] == "0px"
         assert style["right"] == "0px"
         context.close()
+
+
+# --------------------------------------------- highlight-to-look-up
+
+LOOKUP_TERM = {"term": "gradient", "kind": "concept",
+               "definition": "How steeply something changes."}
+
+LOOKUP_PROSE = """---
+title: "Lookup"
+slug: lookup
+module: reference-fixtures
+module_title: "Reference Fixtures"
+year: "2026-2027"
+series: sample-series
+version: 2026.08.23.1
+---
+
+# Lookup
+
+The gradient of a line is one thing, and serendipity is quite another.
+"""
+
+# Selecting text from a test script: walk the reading for the word, put a
+# Range over it, and make that the document's selection — which is what a
+# reader's own drag produces, and what fires the selectionchange this
+# feature listens on.
+SELECT = """(word) => {
+  const walk = document.createTreeWalker(
+    document.getElementById('dl-body'), NodeFilter.SHOW_TEXT);
+  let node;
+  while ((node = walk.nextNode())) {
+    const at = node.textContent.indexOf(word);
+    if (at >= 0 && !node.parentElement.closest('.dl-editor')) {
+      const range = document.createRange();
+      range.setStart(node, at);
+      range.setEnd(node, at + word.length);
+      const selection = getSelection();
+      selection.removeAllRanges();
+      selection.addRange(range);
+      return true;
+    }
+  }
+  return false;
+}"""
+
+
+class TestHighlightToLookUp:
+    """Selecting a word the reference knows offers to look it up —
+    planning/ROADMAP.md Phase 5, DECISIONS_LOG.md 7.91.
+
+    The property worth protecting is not that the button appears; it is that
+    it *stays away* for every selection that is not a term, which is most of
+    them.
+    """
+
+    def open_page(self, site, browser, base_url):
+        # Flat, matching _tutorial()/_glossary() above rather than the
+        # folder-per-tutorial layout the real tutorials/ uses: the build reads
+        # a glossary from beside its own markdown wherever that sits, so these
+        # fixtures work either way, and staying consistent with the rest of
+        # this file keeps one convention per file.
+        path = site / "tutorials" / MODULE / "lookup.md"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(LOOKUP_PROSE)
+        _glossary(site, "lookup", [LOOKUP_TERM])
+        _set_order(site, ["lookup"])
+        b.build()
+        context = browser.new_context()
+        page = context.new_page()
+        page.goto(f"{base_url}/tutorials/{MODULE}/lookup.html")
+        page.wait_for_selector("#dl-body")
+        return context, page
+
+    def test_nothing_is_offered_until_something_is_selected(self, site, browser, base_url):
+        context, page = self.open_page(site, browser, base_url)
+        assert page.is_hidden(".dl-lookup")
+        context.close()
+
+    def test_selecting_a_term_offers_to_look_it_up(self, site, browser, base_url):
+        context, page = self.open_page(site, browser, base_url)
+        assert page.evaluate(SELECT, "gradient")
+        page.wait_for_selector(".dl-lookup:not([hidden])")
+        assert "gradient" in page.inner_text(".dl-lookup")
+        context.close()
+
+    def test_selecting_a_word_the_reference_does_not_know_offers_nothing(
+            self, site, browser, base_url):
+        """The whole reason this is not annoying. A reader selecting a
+        sentence to copy must not be interrupted."""
+        context, page = self.open_page(site, browser, base_url)
+        assert page.evaluate(SELECT, "serendipity")
+        page.wait_for_timeout(200)
+        assert page.is_hidden(".dl-lookup")
+        context.close()
+
+    def test_using_it_opens_the_panel_filtered_to_that_term(self, site, browser, base_url):
+        context, page = self.open_page(site, browser, base_url)
+        page.evaluate(SELECT, "gradient")
+        page.wait_for_selector(".dl-lookup:not([hidden])")
+        page.click(".dl-lookup")
+        page.wait_for_selector("#dl-reference:not([hidden])")
+        shown = page.eval_on_selector_all(
+            "#dl-reference-groups dt:not([hidden])", "els => els.map(e => e.textContent)")
+        assert shown == ["gradient"]
+        context.close()
+
+    def test_the_offer_goes_away_once_it_has_been_used(self, site, browser, base_url):
+        """Otherwise it sits over the reading offering the same lookup again."""
+        context, page = self.open_page(site, browser, base_url)
+        page.evaluate(SELECT, "gradient")
+        page.wait_for_selector(".dl-lookup:not([hidden])")
+        page.click(".dl-lookup")
+        page.wait_for_selector("#dl-reference:not([hidden])")
+        assert page.is_hidden(".dl-lookup")
+        context.close()

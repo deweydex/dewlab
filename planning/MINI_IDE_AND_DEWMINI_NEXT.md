@@ -332,3 +332,22 @@ The work is being staged, not done in one pass:
 next was accurate at the time, and most of it (the file manager, SQLite,
 `.ipynb` import/export, Worker-based Pyodide) is exactly what step 2
 went on to actually port, not work that stopped mattering.
+
+---
+
+## Addendum 3 — what the shared engine taught
+
+The parity checklist this document carried while the retirement was
+still ahead is gone: it planned work that has since been done, and its
+table recorded two gaps — Jedi autocomplete and a downloadable bundle —
+that dewmini now has.
+
+One paragraph of it is worth keeping, because the lesson outlasts the
+plan. Reviewing the Worker migration *after* it merged turned up six
+defects (`DECISIONS_LOG.md` 7.97), and the worst of them — a "Restart
+Python" that permanently wedged the tool it exists to unwedge — sat in
+`assets/pyodide-engine.js`, so it affected both workspaces at once.
+
+Now that one engine is the only engine, that is not a historical note.
+A change to it is a change to every surface that runs Python, and worth
+reviewing as such rather than as a change to whichever one prompted it.

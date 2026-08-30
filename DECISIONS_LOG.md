@@ -3788,3 +3788,269 @@ ever shipped, not just the new one, and would have shipped a second time
 same bug its own docstring claimed not to have) had "does the folder
 have the right files in it" been treated as the same question as "does
 opening the folder actually work."*
+
+---
+
+**7.93 — Highlight a word, and the reference offers to look it up — but
+only when it actually knows the word.** The reference panel could already
+be searched, once a reader thought to open it and type. The gap this
+closes is the moment a reader is *already* looking at a term they half
+remember, in the middle of a paragraph, and would have to leave the
+sentence to go and ask about it.
+
+**The design decision that matters is the silence.** The obvious version
+of this feature reacts to every selection — filtering the panel live as a
+reader drags across text. That version is unusable: most selections are
+someone copying a sentence, and having a panel lurch about in response is
+exactly the kind of interruption `planning/VERSIONING_AND_PROGRESS.md`'s
+"a notice, never a block" instinct exists to rule out. So the offer
+appears only when the selected text matches a term this page's reference
+has actually taught. Select an ordinary word and nothing happens at all,
+which is the common case and the one worth optimising.
+
+Matching is against term *names* only, never definitions, for the same
+reason: matching definitions would fire on ordinary words like "number"
+that happen to appear inside some entry's prose, and the feature would
+become noise. A selection matches when it contains a term or a term
+contains it, so "matrix" selected inside a sentence about a
+transformation matrix finds the entry, and so does the whole phrase.
+
+Three things were found by driving it in a real browser rather than by
+reading the code, and each was a genuine defect rather than a polish item:
+
+- **The manifest's glossary is a flat list of entries, not entries grouped
+  by kind** — `renderReference()` does the grouping for display. The first
+  draft read it as grouped, which produced an empty term list and a
+  feature that silently never appeared.
+- **`initReference()`'s click-outside handler closed the panel the button
+  had just opened.** The button lives outside the panel and outside its
+  toggle, so it looked like a click elsewhere. It is now named there as a
+  way in, beside the existing exemption for Settings.
+- **A selection can be off-screen**, restored on load or left behind by a
+  scroll, and placing the button at its coordinates put the button
+  off-screen too — invisible but still reachable by keyboard. It now
+  declines to appear for a selection nobody can see, and clamps to the
+  viewport otherwise, flipping above the selection where there is no room
+  below.
+
+The button releases the selection when used, which is what stops it
+re-offering the same lookup a second time: the `mousedown` handler
+deliberately preserves the selection long enough to read the term off it,
+and the click is where that ends.
+
+*Cost to change: low. One function in `assets/tutorial-runtime.js`, one
+CSS block, one line of exemption inside `initReference()`, and no new
+storage, no manifest change, no build change at all — it reads the
+glossary the manifest already carries and calls the filter the panel's own
+search box already uses. Removing it would leave no trace.*
+
+---
+
+**7.94 — "Where did I meet this?" answered in the reference panel, after
+the prose-linking version was built, measured and withdrawn.**
+`planning/ROADMAP.md` Phase 5 proposed linking every later occurrence of a
+taught term in the prose back to the tutorial that introduced it. That was
+built — a tag-walking rewrite of the rendered HTML, skipping code,
+headings and existing links, linking the first occurrence per section, with
+the anchor taken from the term's emphasised first use. It worked, produced
+347 links across the site at about ten a page, and was structurally sound:
+no nested anchors, nothing rewritten inside a cell.
+
+**It was withdrawn because the links were wrong too often to ship.** The
+glossary's terms include ordinary English words — *set*, *shape*, *limit*,
+*function*, *list* — and a regex cannot tell which sense a sentence means.
+Sampling the eight uses of *shape* on one page: six were the everyday word
+("the shape of that improvement", "whatever shape a problem needs", "a
+flattened shape"), and two were a matrix's shape. A majority of the matches
+for that term pointed a reader at the wrong tutorial with complete
+confidence.
+
+That is worse than not linking at all, and specifically worse for the
+readers this project exists for. `PEDAGOGICAL_STYLE_GUIDE.md` §1 describes
+adult learners returning to education, many expecting to be bad at
+mathematics; sending one of them to a tutorial on set theory because the
+prose said "set a seed" costs confidence, not just a click. A false
+positive here is not a small defect in a useful feature.
+
+**The goal survives; the mechanism does not.** Each reference entry a
+reader inherited from an earlier tutorial now carries "Introduced in
+*Title*", linking to the section that teaches it (`origin_of()`,
+`origin_anchor()` in build.py; the render in `renderReference()`). A
+tutorial's own new terms carry no origin, since "you met this here" on the
+page teaching it says nothing. There is no way for this to be wrong about a
+sense, because it never guesses at one: the entry a reader is already
+looking at *is* the term, so naming where it came from is a fact rather
+than a match. It also composes with 7.91 — select a word, get the panel,
+see where you met it — which is the whole journey the prose links were
+trying to shortcut.
+
+Worth recording for anyone who reaches for the prose-linking idea again:
+the obstacle is sense disambiguation, not matching. Stemming, a `forms:`
+list, or longest-match-first — all of which the roadmap anticipated — solve
+a different problem than the one that actually bit.
+
+*Cost to change: low. `origin_of()` adds one optional key to a manifest
+entry and nothing reads it but the panel; the prose-rewriting code is gone
+rather than disabled, and this entry is what remains of it.*
+
+---
+
+**7.95 — The edges audit: the offline bundle proved, two phone-width
+failures fixed, one heading-order break corrected.**
+`planning/EDGES_AUDIT.md` has the full account. Three things had been
+asserted and never tested, and testing them found two real defects.
+
+**The offline bundle works, and now that is a measurement rather than a
+belief.** `planning/MINI_IDE_AND_DEWMINI_NEXT.md` §2 had said plainly that
+nothing proved the downloaded folder boots without a network. It was built
+with a vendored Pyodide, served from loopback, and loaded with every
+non-loopback request aborted: zero blocked requests, and a cell printing
+`42` under Python 3.13.2 with the network still off.
+
+**At 375px the page scrolled sideways, for two separate reasons, both
+URLs.** A bibliography DOI took a tutorial to 381px against a 375px
+viewport — and every tutorial ends with a bibliography. Worse, a Pyodide
+failure message names the URL that failed, and that took the page to
+**511px**. The failures compound: the reader who sees that message is by
+definition the reader on a poor connection, and the message itself then
+made the page unreadable on their screen. `#dl-body` now breaks inside a
+word where a word cannot fit, `.dl-status` wraps anywhere, and every page
+fits 375px exactly.
+
+`tests/e2e/test_narrow_screen.py` was checked against the un-fixed
+stylesheet before being trusted — two of its three tests fail without the
+fix. A regression test that passes either way is worse than none, because
+it reports safety it is not providing.
+
+**The contents page jumped `h1` to `h3`**, which a screen reader
+navigating by heading level hears as a missing section. It was deliberate:
+a comment explained that every `h2` on that page was read as a module
+heading, by the markup and by a test helper. That is a convenience for
+people reading the code, paid for by everyone navigating the page by ear.
+Module headings carry `.dl-module-heading` now, so telling them apart no
+longer depends on the level.
+
+**What this audit is not.** The structural checks — every control named,
+no missing `alt`, one `h1`, landmarks, `lang` — all pass, and they say
+nothing about whether a tutorial page is usable with a screen reader.
+Reading order, whether a sidebar announces itself, whether running a cell
+says anything to someone who cannot see the output: all still need a
+person. That is stated at the end of `EDGES_AUDIT.md` rather than left for
+someone to infer from a green checklist.
+
+*Cost to change: nil to reverse — two CSS declarations and a class name.
+The value is not in the code, which is trivial, but in the three claims
+that are now tested and the one that is honestly still open.*
+
+---
+
+**7.96 — Five defects in 7.91 and 7.92, found by reviewing my own work
+before it merged.** Recorded because four of them were invisible to the
+tests that were meant to cover them, and one is the same mistake 7.92 was
+written about.
+
+**The lookup offered ordinary words.** `termFor()` matched a selection
+against a term by plain substring, either way round — so selecting "and"
+offered *pandas*, and "excellent" offered *cell*. That is precisely the
+false-positive class that got prose-linking withdrawn one entry ago,
+arriving by a different door: 7.92 removed a feature for guessing wrong
+about ordinary words while 7.91 shipped one doing the same thing. Matching
+is now whole-word in both directions, with an exact match preferred, so
+selecting "running estimate" offers that rather than *estimate*.
+
+**A page with few entries stayed filtered.** `renderReference()` hides the
+search box below six entries, and the lookup skipped setting its value in
+that case. `initReference()`'s observer clears the filter on close by
+reading that value, so such a page reopened still filtered to one term,
+with no visible box to clear it. The value goes in whether or not the box
+is shown.
+
+**The origin anchor could land in the bibliography.** `origin_anchor()`
+fell back to a term's first plain occurrence, searched over raw HTML —
+which matched the Metropolis and Ulam citation title and sent a reader
+looking for "Monte Carlo method" to *Where to Read More*, the one section
+that does not teach it. It now searches per `h2` section, over each
+section's text rather than its markup (a raw search also matches inside an
+`href`), and skips the bibliography outright.
+
+**A practice page resolved origins from the wrong directory.**
+`cumulative_glossary()` recursed with the *target* tutorial, so hrefs were
+computed relative to that tutorial's folder rather than the page the reader
+is on. Identical for a default practice page and its default tutorial, and
+one level short — a 404 — the moment either has a frozen release. The page
+being rendered is now passed down explicitly. A practice page's own
+tutorial's terms gained an origin as a side effect, which is right: on a
+practice page every term came from somewhere else.
+
+**A regression test that tested nothing.** 7.93's narrow-screen test built
+its own `.dl-status` element and appended it *inside* `#dl-body`, where it
+inherited that element's `overflow-wrap` and passed with the `.dl-status`
+rule deleted. The real `#dl-status` is a sibling of `#dl-body` and inherits
+nothing from it. Worse, the check that "proved" the test caught a
+regression had reverted both rules at once, so the passing half was never
+isolated. The test now drives the real element and asserts it is outside
+`#dl-body`, so the day that stops being true the test says so rather than
+quietly going hollow.
+
+*Cost to change: nil — this is the fix, not a decision. Worth an entry
+because the pattern is the point: two of the five were found only by
+running the thing in a browser and reading the values it produced, and one
+was a test agreeing with itself.*
+
+---
+
+**7.97 — Six defects the Worker migration (7.89) left behind, found by
+reviewing it after it merged.** Reviewing a merged PR is not the usual
+order, and it earned its place: the first of these makes both workspaces
+unusable until the page is reloaded.
+
+**"Restart Python" wedged the tool it exists to unwedge.**
+`pyodide-engine.js`'s `restart()` terminated the worker and called
+`pendingRequests.clear()` — dropping the in-flight promises rather than
+rejecting them. No reply was ever coming, so an awaited `run-cell` never
+settled, the caller's `finally` never ran, and dewmini's `running` guard
+stayed set. Every later Run was ignored. Reproduced in a real browser
+against a locally served Pyodide: without the fix, Run All is left visibly
+`disabled` after a restart and nothing recovers it short of a reload; with
+it, a later cell runs. `restart()` now rejects what it drops. The engine is
+shared, so Mini IDE was exposed to the same path.
+
+**Two follow-ons that only became reachable once it rejected.**
+`runAllCells()` reset each cell's Run button *after* its await with no
+per-cell `try`, so a rejection mid-batch unwound past that cell and left
+its button showing "running" — Mini IDE's own loop already had the guard.
+And `uploadFsFiles()` returned silently on a boot failure with a comment
+saying `ensurePyodide()` had reported it; the rewritten `ensurePyodide()`
+catches only the filesystem mount and lets a boot failure out, so an upload
+after one did nothing and said nothing.
+
+**An open output stream survived a re-render it should not have.**
+`applyOutputEvent()` looks the output element up fresh each event but
+caches the open `<pre>`. Reordering or inserting a cell mid-run replaces
+the output area underneath, and text then appended to the detached node
+vanished. Reachable precisely because the worker keeps the page responsive
+while a cell runs. A cached `<pre>` no longer inside the current output
+area is now treated as no open stream, and a fresh one is started.
+
+**Two documentation claims the migration falsified.** dewmini's Help panel
+listed `text_input`, `dropdown`, `button` and `image_input`, and
+`docs/DEWMINI.md` said they "work here exactly as they do on a tutorial
+page, since dewmini keeps Python in the main page" — which stopped being
+true the moment it did not. All four raise `RuntimeError` off the main
+thread (7.77's accepted gap, inherited here). That same document also still
+said a runaway cell had to be waited out, describing the absence of the
+button the PR added, and called the shared data folder empty when it holds
+three datasets. `docs/WRITING_TUTORIALS.md` was wrong the same way and is
+now explicit that the widgets error on the hosted site and work in a
+downloaded copy.
+
+**And `__name__` disagreed with itself.** The live page is seeded by the
+shared engine (`__dewlab__`); dewmini's standalone export carries its own
+seed and still said `__dewmini__`, so one notebook answered differently in
+the page and in the file downloaded from it. The export now matches.
+
+*Cost to change: nil — these are fixes. Recorded because of what the set
+has in common: every one of them was created by moving execution off the
+main thread, and none was caught by a test. Three needed a browser to see
+at all, and two were documentation that quietly became false while the code
+around it was correct.*

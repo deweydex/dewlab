@@ -5,8 +5,9 @@ the e2e test drives one headless Chromium on the build machine; neither says
 anything about how this behaves on a student's actual laptop, on a school
 network, or under a screen reader.
 
-Run the Phase 0 section before calling Phase 0 done. Later sections are stubs
-for the phases that add them.
+Every section below is live — the build phases this was originally written
+against are all shipped (`planning/BUILD_PLAN.md`). Run what applies to what
+you changed, and run "Before a release" in full before publishing one.
 
 ## Setup
 
@@ -85,3 +86,50 @@ machine that is not the one this was built on.
 - [ ] Data-file fetches work against the live Pages URL, not just localhost.
 - [ ] Assets resolve from a tutorial nested in a module subfolder, not only from
       the site root.
+
+---
+
+## Before a release
+
+### The offline bundle actually boots offline
+
+The one check nothing in CI can do, because CI never builds the bundle with
+a vendored Pyodide in it — and the one most likely to break silently, since
+a bundle that quietly falls back to the CDN looks perfect on a machine with
+a connection.
+
+```sh
+python3 dev/fetch_pyodide.py --out assets/vendor/pyodide \
+    --packages numpy pandas matplotlib sqlite3 jedi
+python3 build.py --clean
+python3 -m http.server -d site/download/mini-ide 8200
+```
+
+Then, on a machine with the network off (or with everything but
+`127.0.0.1` blocked), open `http://127.0.0.1:8200/mini-ide.html` and:
+
+- [ ] the page loads with no failed requests
+- [ ] adding a Python cell and running `print(6 * 7)` prints `42`
+- [ ] the Stop button interrupts a `while True: pass`
+
+Last verified: 2026-08-30 — loaded and ran Python 3.13.2 with every
+non-loopback request aborted, zero blocked requests recorded.
+`planning/EDGES_AUDIT.md` §1.
+
+### A phone
+
+At 375px wide, on a tutorial and a practice page:
+
+- [ ] nothing scrolls sideways (`tests/e2e/test_narrow_screen.py` covers the
+      two known causes; this is for anything new)
+- [ ] the Reference, Series and Settings panels open as bottom sheets
+- [ ] a cell's code is readable and editable without pinching
+
+### A screen reader
+
+Not covered by anything automated — `planning/EDGES_AUDIT.md` §3 explains
+what the structural checks do and do not tell you.
+
+- [ ] a tutorial page reads in a sensible order from the top
+- [ ] opening the Reference panel announces itself
+- [ ] running a cell announces that output arrived

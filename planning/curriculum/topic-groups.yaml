@@ -162,3 +162,14 @@ groups:
       - { module: mit-pdp-maths-prog-integration, slug: bringing-it-all-together }
       - { module: mit-pdp-maths-prog-integration, slug: the-team-project }
       - { module: mit-pdp-maths-prog-integration, slug: critique-and-reflection }
+
+  - key: chance-and-simulation
+    name: Chance and simulation
+    intro: >
+      Asking a machine for a number nobody could predict, and what becomes
+      possible once you can: answering a question by running something
+      thousands of times and counting, rather than by solving it.
+    tutorials:
+      - { module: mit-pdp-maths-prog-integration, slug: what-are-the-chances }
+      - { module: computational-methods, slug: leaving-it-to-chance }
+      - { module: computational-methods, slug: counting-darts }

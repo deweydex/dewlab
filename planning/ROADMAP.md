@@ -73,11 +73,17 @@ student receives changed — the built site was byte-identical afterwards.
   phases that have all shipped.
 - The three empty module folders under `tutorials/` are still there.
 
-## Phase 2 — Write the remaining tutorials
+## Phase 2 — Write the remaining tutorials — **in progress**
 
 The bulk of the term's effort. Three of the five Computational Methods
-strands are unwritten, and every planned platform feature is worth less
+strands were unwritten, and every planned platform feature is worth less
 than these pages existing.
+
+**Done so far:** the simulation strand is half written —
+*Leaving It to Chance* and *Counting Darts*, released as the `simulation`
+series, taking `CMPS-LO2` and `CMPS-LO3` green on the curriculum map.
+`planning/outlines/monte-carlo.md` has the plan for the two that remain,
+and `planning/STATUS.md` §2 tracks where it stands.
 
 **The work:**
 
@@ -210,13 +216,21 @@ next.
 
 **The work:**
 
-1. Highlight-to-search: select text on the page, filter the reference
-   panel to it. No persistence, no new storage — selection in,
-   `filterReferenceContent()` out.
-2. Build-time term links: every later occurrence of a taught term links
-   quietly back to its introduction, so "where did I meet this?" is
-   answerable from anywhere. For returners after a break, re-finding is
-   the need.
+1. Highlight-to-search — **built**, `DECISIONS_LOG.md` 7.93. Select text
+   on the page and, when the reference knows the term, a small button
+   offers to open the panel filtered to it. No persistence, no new
+   storage — selection in, `filterReferenceContent()` out. The design
+   decision worth knowing is the silence: it stays away for every
+   selection that is not a term, which is most of them.
+2. "Where did I meet this?" — **built, but not as specified.**
+   `DECISIONS_LOG.md` 7.94. Linking every later occurrence in the *prose*
+   was built, measured and withdrawn: ordinary English words are also
+   glossary terms, and a majority of the matches for *shape* on one page
+   were the everyday sense rather than the matrix one. A confidently wrong
+   link costs a returning learner more than no link. Each inherited
+   reference entry now says "Introduced in *Title*" and links to the
+   section instead — same question answered, no way to be wrong about a
+   sense.
 3. Only after both have lived for a while: gentle retrieval prompts —
    the reference surfacing terms met some tutorials ago, phrased
    invitationally, never as a score.
@@ -245,7 +259,31 @@ next.
 
 ---
 
-## Phase 6 — One workspace, and the edges
+## Phase 6 — One workspace, and the edges — **done**
+
+**The edges audit is done** — `planning/EDGES_AUDIT.md`,
+`DECISIONS_LOG.md` 7.95. The offline bundle was proven to boot and run
+Python with every non-loopback request blocked; two causes of sideways
+scrolling on a 375px phone were found and fixed, one of which made a
+connection failure compound into an unreadable page; and a heading-order
+break on the contents page was corrected. A real screen-reader pass still
+needs a person, and tap-target sizes are a design decision rather than a
+patch — both are named at the end of that document.
+
+**The merge is done too, and not by this branch.** Mini IDE has retired
+(`DECISIONS_LOG.md` 7.91) and dewmini has its own downloadable,
+offline-capable copy (7.92) — the two gaps a parity checklist here had
+measured and left open. That checklist has been dropped rather than
+updated, since it planned work that has happened;
+`MINI_IDE_AND_DEWMINI_NEXT.md`'s third addendum keeps the one part of it
+that outlasts the plan.
+
+**One thing this phase leaves behind.** Reviewing the Worker migration
+after it merged found six defects (`DECISIONS_LOG.md` 7.97), the worst of
+them in the now-single shared engine. With one engine serving every
+surface that runs Python, a change to it is a change to all of them.
+
+## Phase 6 — the original plan
 
 The addendum in `MINI_IDE_AND_DEWMINI_NEXT.md` records the decision:
 dewmini absorbs Mini IDE's capabilities and keeps its own smaller style;

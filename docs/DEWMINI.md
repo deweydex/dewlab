@@ -98,11 +98,21 @@ rather than copied:
 | `show(*values, label=None)` | Show one or more values in the middle of a cell, not just at the end |
 | `show_table(frame, max_rows=20, caption=None)` | Show a DataFrame or Series as a table |
 | `check(actual, expected, tolerance=None, label=None)` | A quick right / not-yet check; floats are compared within a small tolerance |
-| `text_input(label="", value="", id=None)` | A text box — read what was typed with `.value` |
-| `dropdown(label="", options=(), value=None, id=None)` | A menu — read the choice with `.value` |
-| `button(label="Go", on_click=None, id=None)` | A button that calls a function when pressed |
-| `image_input(label="Choose an image", id=None)` | A file picker for an image — read the picked file with `.value` |
+| `text_input(label="", value="", id=None)` | A text box — read what was typed with `.value`. **See the note below.** |
+| `dropdown(label="", options=(), value=None, id=None)` | A menu — read the choice with `.value`. **See the note below.** |
+| `button(label="Go", on_click=None, id=None)` | A button that calls a function when pressed. **See the note below.** |
+| `image_input(label="Choose an image", id=None)` | A file picker for an image — read the picked file with `.value`. **See the note below.** |
 | `await load_csv(name, **read_csv_kwargs)` | Load a CSV from dewlab's shared data folder, if one is there |
+
+**The four widgets do not work here at the moment, and say so when you
+call one.** A widget attaches a listener to a live element on the page,
+and dewmini runs Python in a background worker — off the page's own
+thread, which is exactly what lets the Stop button interrupt a runaway
+cell. There is no page on the far side of that boundary to attach a
+listener to, so calling one raises a clear error rather than drawing
+something that quietly does nothing. A tutorial page makes the same trade
+(`DECISIONS_LOG.md` 7.77). They work in a downloaded copy, which runs
+Python on the page's own thread.
 
 `numpy`, `pandas`, and `matplotlib` are available without importing
 them, though you can still `import` them if you want — dewmini keeps

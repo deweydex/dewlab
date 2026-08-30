@@ -1116,6 +1116,7 @@ def cumulative_glossary(
     tutorial: Tutorial,
     registry: dict[tuple[str, str], Tutorial],
     groups: dict[tuple[str, str], list[Tutorial]],
+    reader_at: Tutorial | None = None,
 ) -> list[dict]:
     """Everything a reader has met by this point: this tutorial's own
     glossary, everything earlier in its own series, and — where
@@ -1129,6 +1130,8 @@ def cumulative_glossary(
     sits — so its reference is the union of the tutorial(s) it names, each
     resolved the same way, rather than its own (nonexistent) coverage.
     """
+    reader_at = reader_at or tutorial
+
     if tutorial.is_practice:
         targets = (
             [tutorial.practice_for] if tutorial.practice_for
@@ -1140,7 +1143,7 @@ def cumulative_glossary(
             target = registry.get((tutorial.module, slug))
             if target is None:
                 continue
-            for entry in cumulative_glossary(target, registry, groups):
+            for entry in cumulative_glossary(target, registry, groups, reader_at):
                 key = (entry["term"], entry["kind"])
                 if key in seen:
                     continue
@@ -1162,8 +1165,24 @@ def cumulative_glossary(
             if key in seen:
                 continue
             seen.add(key)
-            found.append(entry)
+            # Where a reader met this, for everything inherited from an
+            # earlier tutorial. Not for the tutorial's own entries: "you met
+            # this here" is unhelpful on the page that is teaching it.
+            found.append(entry if member is reader_at
+                         else {**entry, "origin": origin_of(reader_at, member, entry["term"])})
     return found
+
+
+def origin_of(reader_at: Tutorial, introduced_by: Tutorial, term: str) -> dict:
+    """The tutorial a term was introduced in, as something the reference panel
+    can render: a title to name it and an href to reach it from the page the
+    reader is on."""
+    href = os.path.relpath(introduced_by.out_path, reader_at.out_path.parent)
+    anchor = origin_anchor(introduced_by, term)
+    return {
+        "title": introduced_by.title,
+        "href": f"{href}#{anchor}" if anchor else href,
+    }
 
 
 def render_toc(tutorial: Tutorial) -> str:
@@ -1783,10 +1802,14 @@ def render_index(
         # Used to offer a choice between this and Mini IDE, retired once
         # dewmini absorbed everything Mini IDE did (DECISIONS_LOG.md 7.90).
         '<div class="dl-workspaces">',
-        # h3, not h2: every <h2> on this page is read as a module heading
-        # (module_headings() in tests/test_build.py, and this page's own
-        # <h2> loop below) — this section belongs to neither list.
-        "<h3>Want to experiment on your own, outside a tutorial?</h3>",
+        # h2, because it is a top-level section of this page like the
+        # modules are. It used to be h3 to keep "every <h2> is a module"
+        # true for readers of this markup, at the cost of an h1 -> h3 jump
+        # that a screen reader navigating by heading level reads as a
+        # missing section (planning/EDGES_AUDIT.md). Module headings carry
+        # .dl-module-heading now, so telling them apart no longer depends
+        # on the level.
+        "<h2>Want to experiment on your own, outside a tutorial?</h2>",
         '<div class="dl-workspaces-grid">',
         '<a class="dl-workspace-card" href="compose/dewmini.html" target="_blank">',
         "<h3>dewmini</h3>",
@@ -1807,7 +1830,8 @@ def render_index(
     # adding a module lands it at the end rather than breaking the page.
     ordered = [m for m in listed if m in everywhere] + sorted(everywhere - set(listed))
     for module in ordered:
-        out.append(f"<h2>{html.escape(names.get(module, module))}</h2>")
+        out.append(
+            f'<h2 class="dl-module-heading">{html.escape(names.get(module, module))}</h2>')
         for (owner, series), members in sorted(groups.items()):
             if owner != module:
                 continue
@@ -1990,6 +2014,76 @@ def resolve_links(tutorial: Tutorial, registry: dict[tuple[str, str], Tutorial])
         return f'href="{href}#{anchor}"' if anchor else f'href="{href}"'
 
     return TUTORIAL_HREF_RE.sub(one, tutorial.body_html)
+
+
+# --------------------------------------------------------- where a term came from
+#
+# A reader meets *stationary distribution* in one tutorial and again, three
+# tutorials later, as though they were expected to remember. The reference
+# panel answers "what does this mean"; this answers the other question a
+# returning learner actually asks — "where did I meet this?" — by giving each
+# borrowed entry a link back to the tutorial that introduced it.
+#
+# planning/ROADMAP.md Phase 5 originally proposed linking every later
+# *occurrence in the prose* instead. That was built, measured and withdrawn:
+# see DECISIONS_LOG.md 7.92. Ordinary English words are also glossary terms —
+# set, shape, limit, function — and matching them in prose linked "set a
+# seed" to set theory and "the shape of that improvement" to a matrix's
+# shape. A majority of the matches for some terms were the wrong sense, and a
+# confidently wrong link is worse for a reader than no link at all. Putting
+# the origin in the panel instead answers the same question with no way to be
+# wrong about it.
+
+
+# The heading every tutorial closes with. A term's name very often appears
+# in a citation title there — "The Monte Carlo Method" is a paper as well as
+# a concept — and a reader sent to the bibliography to find out where
+# something was taught has been sent to the one section that does not teach
+# it.
+BIBLIOGRAPHY_RE = re.compile(r"read more", re.I)
+
+TAG_RE = re.compile(r"<[^>]+>")
+
+
+def origin_anchor(tutorial: Tutorial, term: str) -> str:
+    """The section of `tutorial` a reader should land on for `term`, or "".
+
+    Prefers the term's emphasised first use, since
+    PEDAGOGICAL_STYLE_GUIDE.md §4 asks an author to italicise exactly that,
+    and falls back to its first plain occurrence — a term introduced through
+    a code cell rather than a sentence may never be italicised at all, and
+    landing on the right section still beats landing on the page.
+
+    Searched per `h2` section, against each section's *text* rather than its
+    markup, which matters for both halves of that: a raw search over the HTML
+    matches inside an `href` or a class name, and the nearest preceding
+    heading of any level is usually "Your turn", which every tutorial has
+    several of and none of which tells a reader where they are.
+    """
+    body = tutorial.body_html
+    headings = list(re.finditer(r'<h2[^>]*\sid="([^"]+)"[^>]*>(.*?)</h2>', body, re.S))
+    if not headings:
+        return ""
+
+    sections = []
+    for index, heading in enumerate(headings):
+        end = headings[index + 1].start() if index + 1 < len(headings) else len(body)
+        title = TAG_RE.sub("", heading.group(2))
+        if BIBLIOGRAPHY_RE.search(title):
+            continue
+        sections.append((heading.group(1), body[heading.end():end]))
+
+    emphasised = re.compile(rf"<em>{re.escape(term)}</em>", re.I)
+    plain = re.compile(rf"\b{re.escape(term)}\b", re.I)
+
+    # Two passes rather than one, so an emphasised use anywhere in the
+    # tutorial beats a passing mention in an earlier section.
+    for pattern, over_markup in ((emphasised, True), (plain, False)):
+        for anchor, section in sections:
+            haystack = section if over_markup else TAG_RE.sub(" ", section)
+            if pattern.search(haystack):
+                return anchor
+    return ""
 
 
 # ---------------------------------------------------------- tutorial assets

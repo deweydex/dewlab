@@ -62,6 +62,13 @@ current as things change — not a pitch.
 - **Student notes**: a free-text field saved alongside a tutorial's
   cells, distinct from the author-written pedagogical notes described in
   `SIDEBAR_CONTENT.md` (`STUDENT_NOTES.md`, DECISIONS_LOG.md 7.72/7.75).
+- **Highlight to look up**: selecting a word the reference knows offers
+  a small button that opens the panel filtered to it; selecting anything
+  else does nothing at all (`REFERENCE_PANEL.md` §6b, DECISIONS_LOG.md
+  7.93).
+- **Where a term came from**: an inherited reference entry says which
+  tutorial introduced it and links to that section (`REFERENCE_PANEL.md`
+  §6c, DECISIONS_LOG.md 7.94).
 - **Cell tooltips**: hover docs and signature help that cover Python
   builtins, not just a student's own names, falling back to Jedi's
   static analysis for code that hasn't run yet — live always wins when
@@ -192,9 +199,21 @@ are not.
    section of *Where Chains Lead* — a hand-checkable three-page example
    rather than a dedicated tutorial on crawling or a real link graph,
    which remains unwritten.
-4. **Discrete Simulation & Monte Carlo Methods** — **not started.**
-   Estimating $\pi$, queuing models, randomness in computing —
-   `CMPS-LO3`, `CMPS-LO6`, and touches `CMPS-LO2`'s randomness half.
+4. **Discrete Simulation & Monte Carlo Methods** — **half written.**
+   Two of the four tutorials in `planning/outlines/monte-carlo.md` are
+   released, as the `simulation` series under
+   `tutorials/computational-methods/`: *Leaving It to Chance* (randomness,
+   seeds and reproducibility) and *Counting Darts* (Monte Carlo estimation
+   of $\pi$, and why more samples is not reliably better). `CMPS-LO3` and
+   `CMPS-LO2` are both fully taught and green on the curriculum map.
+
+   Still to write: *How Wrong Are We?* (the $1/\sqrt{n}$ law, and bootstrap
+   resampling on `life-expectancy.csv` — the first use of a real dataset
+   anywhere in dewlab, which needs `data/life-expectancy.yaml` written
+   first) and *The Queue* (discrete-event simulation, and what happens to
+   waiting time as utilisation approaches one). `CMPS-LO6` stays red until
+   *The Queue* lands, and even then only half of it is reachable without
+   the complexity strand — see the outline's own note.
 5. **Algorithmic Complexity & Systems Modeling** — **not started.**
    Complexity bounds, cache prediction, thermal simulation —
    `CMPS-LO5`, `CMPS-LO7` through `CMPS-LO13`, all still red on the

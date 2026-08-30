@@ -648,6 +648,19 @@ p code, li code {
   font-family: var(--dl-mono);
   font-size: 0.76rem;
 }
+/* Every tutorial's bibliography carries URLs, and a URL has no spaces to
+   break at, so on a narrow screen one long DOI pushes the whole page
+   sideways. break-word rather than anywhere: ordinary prose keeps wrapping
+   between words, and only a token that cannot fit on a line by itself is
+   broken. */
+#dl-body { overflow-wrap: break-word; }
+
+/* A failure message often carries a URL, and a URL has no spaces to break
+   at. Left to wrap normally it runs off the side of a phone and takes the
+   whole page with it — which is how a bad connection turns one problem into
+   two, exactly when a reader can least afford it. */
+.dl-status { overflow-wrap: anywhere; }
+
 .dl-status[hidden] { display: none; }
 .dl-status-error { color: var(--dl-error-fg); background: var(--dl-error-bg); border-color: var(--dl-error-fg); }
 
@@ -2490,4 +2503,55 @@ p code, li code {
     border: none !important;
   }
   a { color: #1b2a4a !important; text-decoration: underline; }
+}
+
+/* Highlight-to-look-up (initReferenceLookup() in tutorial-runtime.js).
+   A small button that appears under a selection, but only when the
+   reference actually knows the selected term — so most selections, a
+   reader copying a sentence included, never see it at all.
+
+   Fixed rather than absolute because it is positioned from the
+   selection's viewport rectangle; a scroll dismisses it rather than
+   dragging it along. z-index sits above the reading and below the
+   panels, which is the order it needs: it opens a panel and gets out
+   of the way. */
+.dl-lookup {
+  position: fixed;
+  z-index: 45;
+  font: inherit;
+  font-size: 0.85rem;
+  line-height: 1;
+  padding: 0.4rem 0.7rem;
+  border: 1px solid var(--dl-panel-border, var(--dl-muted));
+  border-radius: 0.35rem;
+  background: var(--dl-panel-bg);
+  color: var(--dl-fg);
+  box-shadow: 0 2px 8px var(--dl-shadow);
+  cursor: pointer;
+  max-width: 18rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dl-lookup:hover,
+.dl-lookup:focus-visible {
+  color: var(--dl-orange);
+  border-color: var(--dl-orange);
+}
+
+/* Printing a page should not print a transient button, and a reader who
+   has turned motion or chrome down does not need it either. */
+@media print {
+  .dl-lookup { display: none !important; }
+}
+
+/* "Introduced in …" under a reference entry a reader inherited from an
+   earlier tutorial (renderReference() in tutorial-runtime.js, origin_of()
+   in build.py). Quiet: it is a way back for someone who wants one, not a
+   thing to read past on every entry. */
+.dl-term-origin {
+  margin: 0.35rem 0 0;
+  font-size: 0.85em;
+  color: var(--dl-muted);
 }

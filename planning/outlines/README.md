@@ -36,4 +36,5 @@ has an outline file yet. `planning/STATUS.md` §2 has what is unwritten and
 | [Logic and Truth](./logic-and-truth.md) | `MIT-2.4`, `MIT-2.5` | Standard | Written |
 | [Drawing Sets](./venn-diagrams.md) | `MIT-2.3` | Standard | Written |
 | [The Matrices Strand](./matrices.md) | `CMPS-LO4` (written); touches `CMPS-LO1`, `CMPS-LO2` | Multi-unit strand, six tutorials | Written |
+| [The Simulation Strand](./monte-carlo.md) | `CMPS-LO3`, the randomness half of `CMPS-LO2`; partly `CMPS-LO6` | Multi-unit strand, four tutorials | In progress |
 | [The Team Project](./team-project.md) | `PDP-LO12` | Collaborative project specification | Written |
