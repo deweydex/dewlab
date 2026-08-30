@@ -1,0 +1,16 @@
+# Attribution for data/life-expectancy.csv — planning/SIDEBAR_CONTENT.md §2.
+# Shown in the reference sidebar of any tutorial that declares this dataset,
+# so a reader can trace the numbers they are working with back to their source.
+
+source: >
+  Our World in Data, "Life Expectancy" — their compilation of the Gapminder,
+  UN World Population Prospects and IHME Global Burden of Disease series.
+  https://ourworldindata.org/life-expectancy
+
+license: >
+  CC BY 4.0. https://creativecommons.org/licenses/by/4.0/
+
+description: >
+  Life expectancy at birth, in years, by country and year from 1950 to 2016.
+  Three columns — country, year, life_expectancy — trimmed from the fuller
+  Our World in Data release to the countries and years worth teaching with.

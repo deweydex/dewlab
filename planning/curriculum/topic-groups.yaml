@@ -172,3 +172,4 @@ groups:
     tutorials:
       - { module: mit-pdp-maths-prog-integration, slug: what-are-the-chances }
       - { module: computational-methods, slug: leaving-it-to-chance }
+      - { module: computational-methods, slug: counting-darts }

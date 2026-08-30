@@ -73,11 +73,17 @@ student receives changed — the built site was byte-identical afterwards.
   phases that have all shipped.
 - The three empty module folders under `tutorials/` are still there.
 
-## Phase 2 — Write the remaining tutorials
+## Phase 2 — Write the remaining tutorials — **in progress**
 
 The bulk of the term's effort. Three of the five Computational Methods
-strands are unwritten, and every planned platform feature is worth less
+strands were unwritten, and every planned platform feature is worth less
 than these pages existing.
+
+**Done so far:** the simulation strand is half written —
+*Leaving It to Chance* and *Counting Darts*, released as the `simulation`
+series, taking `CMPS-LO2` and `CMPS-LO3` green on the curriculum map.
+`planning/outlines/monte-carlo.md` has the plan for the two that remain,
+and `planning/STATUS.md` §2 tracks where it stands.
 
 **The work:**
 
