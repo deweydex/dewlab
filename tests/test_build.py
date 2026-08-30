@@ -64,13 +64,22 @@ def set_order(repo: Path, module: str, series: str, slugs: list[str]) -> Path:
     return path
 
 
+def tutorial_path(repo: Path, slug: str, module: str = "computational-methods") -> Path:
+    """Where a tutorial's markdown lives: a folder per tutorial, named for its
+    slug, holding the tutorial and everything that belongs to it."""
+    path = repo / "tutorials" / module / slug / f"{slug}.md"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    return path
+
+
 def write(repo: Path, body: str, slug: str = "sample",
           version: str = "2026.08.23.1") -> Path:
-    path = repo / "tutorials" / "computational-methods" / f"{slug}.md"
+    path = tutorial_path(repo, slug)
     path.write_text(FRONTMATTER.format(slug=slug, version=version) + body)
     # Keep the series' order file listing whatever has been written so far.
     existing = sorted(
-        p.stem for p in path.parent.glob("*.md")
+        folder.name for folder in path.parent.parent.iterdir()
+        if folder.is_dir() and (folder / f"{folder.name}.md").is_file()
     )
     set_order(repo, "computational-methods", "python-fundamentals", existing)
     return path
@@ -81,7 +90,7 @@ def write_in_series(repo: Path, body: str, slug: str, series: str,
     """Like write(), but for a series other than python-fundamentals — does
     not touch that series' own order file, so the caller sets this one's
     with set_order()."""
-    path = repo / "tutorials" / "computational-methods" / f"{slug}.md"
+    path = tutorial_path(repo, slug)
     path.write_text(
         FRONTMATTER.format(slug=slug, version=version).replace(
             "series: python-fundamentals", f"series: {series}")
@@ -102,9 +111,21 @@ def built(repo: Path, slug: str = "sample") -> str:
 
 
 def glossary(repo: Path, slug: str, entries: list[dict]) -> Path:
-    """A tutorial's own glossary file — planning/REFERENCE_PANEL.md §3."""
-    path = repo / "tutorials" / "computational-methods" / f"{slug}.glossary.yaml"
+    """A tutorial's own glossary file — planning/REFERENCE_PANEL.md §3. It sits
+    in the tutorial's own folder, beside the markdown it describes."""
+    path = repo / "tutorials" / "computational-methods" / slug / f"{slug}.glossary.yaml"
+    path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(yaml.dump({"entries": entries}))
+    return path
+
+
+def asset(repo: Path, slug: str, name: str, content: bytes = b"x",
+          module: str = "computational-methods") -> Path:
+    """A file a tutorial uses — a picture, a recording — in the tutorial's own
+    folder, which is where the markdown's plain reference to it points."""
+    path = repo / "tutorials" / module / slug / name
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_bytes(content)
     return path
 
 
@@ -306,7 +327,7 @@ class TestCrossLinks:
         the collision that matters is the version: two releases cannot share a
         date and a number, because nothing could then say which is which."""
         write(repo, "One.\n", slug="same")
-        path = repo / "tutorials" / "computational-methods" / "second.md"
+        path = tutorial_path(repo, "second", "computational-methods")
         path.write_text(FRONTMATTER.format(slug="same", version="2026.08.23.1") + "Two.\n")
         set_order(repo, "computational-methods", "python-fundamentals", ["same"])
         with pytest.raises(b.BuildError, match="cannot share a date"):
@@ -317,8 +338,8 @@ class TestCrossLinks:
         forcing them apart would mean naming tutorials around a constraint that
         does not exist."""
         write(repo, "One.\n", slug="first-steps")
-        other = repo / "tutorials" / "other-module" / "first-steps.md"
-        other.parent.mkdir(parents=True)
+        other = tutorial_path(repo, "first-steps", "other-module")
+        other.parent.mkdir(parents=True, exist_ok=True)
         other.write_text(
             '---\ntitle: "First Steps"\nslug: first-steps\nmodule: other-module\n'
             'year: "2026-2027"\nseries: intro\nversion: 2026.08.23.1\n---\n\nProse.\n'
@@ -332,8 +353,8 @@ class TestCrossLinks:
     def test_a_link_prefers_a_slug_in_its_own_module(self, repo):
         write(repo, "See [it](tutorial:twin).\n", slug="here")
         write(repo, "Mine.\n", slug="twin")
-        other = repo / "tutorials" / "other-module" / "twin.md"
-        other.parent.mkdir(parents=True)
+        other = tutorial_path(repo, "twin", "other-module")
+        other.parent.mkdir(parents=True, exist_ok=True)
         other.write_text(
             '---\ntitle: "Twin"\nslug: twin\nmodule: other-module\n'
             'year: "2026-2027"\nseries: intro\nversion: 2026.08.23.1\n---\n\nProse.\n'
@@ -351,18 +372,73 @@ class TestCrossLinks:
 class TestAltText:
     def test_an_image_without_alt_fails_the_build(self, repo):
         write(repo, 'A diagram:\n\n<img src="d.png">\n')
+        asset(repo, "sample", "d.png")
         with pytest.raises(b.BuildError, match="no alt attribute"):
             b.build()
 
     def test_an_explicitly_empty_alt_is_allowed_as_decorative(self, repo):
         write(repo, 'A flourish:\n\n<img src="d.png" alt="">\n')
+        asset(repo, "sample", "d.png")
         b.build()
-        assert 'src="d.png"' in built(repo)
+        assert 'src="sample/d.png"' in built(repo)
 
     def test_markdown_image_syntax_carries_its_alt_through(self, repo):
         write(repo, "![A labelled diagram](d.png)\n")
+        asset(repo, "sample", "d.png")
         b.build()
         assert 'alt="A labelled diagram"' in built(repo)
+
+
+class TestTutorialAssets:
+    """A tutorial is a folder, so a picture it uses sits in that folder and is
+    referred to by its plain name — planning/ROADMAP.md Phase 1."""
+
+    def test_an_asset_is_copied_beside_the_tutorial(self, repo):
+        write(repo, '<img src="d.png" alt="A diagram">\n')
+        asset(repo, "sample", "d.png", b"PNG-BYTES")
+        b.build()
+        copied = repo / "site" / "tutorials" / "computational-methods" / "sample" / "d.png"
+        assert copied.read_bytes() == b"PNG-BYTES"
+
+    def test_the_current_release_reaches_into_the_tutorials_folder(self, repo):
+        """The current release is served one level above its own folder, so a
+        plain name has to gain the folder to still resolve."""
+        write(repo, '<img src="d.png" alt="A diagram">\n')
+        asset(repo, "sample", "d.png")
+        b.build()
+        assert 'src="sample/d.png"' in built(repo)
+
+    def test_a_frozen_release_is_already_inside_it(self, repo):
+        """A frozen release sits in the folder, so the plain name is already
+        right and must be left alone."""
+        write(repo, '<img src="d.png" alt="A diagram">\n', version="2026.09.01.1")
+        old = tutorial_path(repo, "sample").parent / "v2026.08.23.1.md"
+        old.write_text(FRONTMATTER.format(slug="sample", version="2026.08.23.1")
+                       + '<img src="d.png" alt="A diagram">\n')
+        asset(repo, "sample", "d.png")
+        b.build()
+        frozen = (repo / "site" / "tutorials" / "computational-methods"
+                  / "sample" / "v2026.08.23.1.html").read_text()
+        assert 'src="d.png"' in frozen
+
+    def test_an_image_naming_a_file_that_is_not_there_fails_the_build(self, repo):
+        """The same stance the build already takes on a dead tutorial: link —
+        a page that looks finished to everyone but the student who loads it."""
+        write(repo, '<img src="missing.png" alt="A diagram">\n')
+        with pytest.raises(b.BuildError, match="not a file in this tutorial's folder"):
+            b.build()
+
+    def test_an_external_image_is_left_alone(self, repo):
+        write(repo, '<img src="https://example.org/d.png" alt="A diagram">\n')
+        b.build()
+        assert 'src="https://example.org/d.png"' in built(repo)
+
+    def test_the_glossary_is_not_treated_as_an_asset(self, repo):
+        write(repo, "Prose.\n")
+        glossary(repo, "sample", [{"term": "x", "kind": "concept", "definition": "y"}])
+        b.build()
+        assert not (repo / "site" / "tutorials" / "computational-methods"
+                    / "sample" / "sample.glossary.yaml").exists()
 
 
 class TestFrontmatter:
@@ -373,12 +449,12 @@ class TestFrontmatter:
             b.build()
 
     def test_a_file_without_frontmatter_fails_the_build(self, repo):
-        (repo / "tutorials" / "computational-methods" / "bare.md").write_text("Just prose.\n")
+        (tutorial_path(repo, "bare", "computational-methods")).write_text("Just prose.\n")
         with pytest.raises(b.BuildError, match="no YAML frontmatter"):
             b.build()
 
     def test_unclosed_frontmatter_fails_the_build(self, repo):
-        (repo / "tutorials" / "computational-methods" / "bad.md").write_text("---\ntitle: x\n")
+        (tutorial_path(repo, "bad", "computational-methods")).write_text("---\ntitle: x\n")
         with pytest.raises(b.BuildError, match="never closed"):
             b.build()
 
@@ -546,7 +622,7 @@ class TestNavigation:
     def series(self, repo, count: int = 3, series: str = "s", module: str = "computational-methods",
                order: list[str] | None = None):
         for n in range(1, count + 1):
-            path = repo / "tutorials" / module / f"t{n}.md"
+            path = tutorial_path(repo, f"t{n}", module)
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_text(
                 f'---\ntitle: "Tutorial {n}"\nslug: t{n}\nmodule: {module}\n'
@@ -588,7 +664,7 @@ class TestNavigation:
 
     def test_two_series_do_not_link_into_each_other(self, repo):
         self.series(repo, count=2, series="one")
-        path = repo / "tutorials" / "computational-methods" / "other.md"
+        path = tutorial_path(repo, "other", "computational-methods")
         path.write_text(
             '---\ntitle: "Other"\nslug: other\nmodule: computational-methods\n'
             'year: "2026-2027"\nseries: two\nversion: 2026.08.23.1\n---\n\nProse.\n'
@@ -626,7 +702,7 @@ class TestNavigation:
         """Half-migrated is worse than either state: the field would be ignored
         in silence, and it is exactly the field somebody would edit."""
         self.series(repo, count=1)
-        path = repo / "tutorials" / "computational-methods" / "t1.md"
+        path = tutorial_path(repo, "t1", "computational-methods")
         path.write_text(path.read_text().replace("version: 2026.08.23.1", "order: 1\nversion: 2026.08.23.1"))
         with pytest.raises(b.BuildError, match="no longer belongs in frontmatter"):
             b.build()
@@ -640,7 +716,7 @@ class TestSeriesNav:
     def series(self, repo, count: int = 3, series: str = "s", module: str = "computational-methods",
                order: list[str] | None = None):
         for n in range(1, count + 1):
-            path = repo / "tutorials" / module / f"t{n}.md"
+            path = tutorial_path(repo, f"t{n}", module)
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_text(
                 f'---\ntitle: "Tutorial {n}"\nslug: t{n}\nmodule: {module}\n'
@@ -686,7 +762,7 @@ class TestSeriesNav:
         place it."""
         write(repo, "Prose.\n")
         write(repo, "More prose.\n", slug="second")
-        path = repo / "tutorials" / "computational-methods" / "sample.md"
+        path = tutorial_path(repo, "sample", "computational-methods")
         path.write_text(path.read_text().replace(
             "version: 2026.08.23.1\n", "version: 2026.08.23.1\nstatus: archived\n"))
         set_order(repo, "computational-methods", "python-fundamentals", ["second"])
@@ -707,7 +783,7 @@ class TestTheContentsPage:
 
     def test_it_lists_every_tutorial_in_order(self, repo):
         for n in (1, 2):
-            path = repo / "tutorials" / "computational-methods" / f"t{n}.md"
+            path = tutorial_path(repo, f"t{n}", "computational-methods")
             path.write_text(
                 f'---\ntitle: "Tutorial {n}"\nslug: t{n}\nmodule: computational-methods\n'
                 f'year: "2026-2027"\nseries: s\nversion: 2026.08.23.1\n---\n\nProse.\n'
@@ -800,7 +876,7 @@ class TestTheContentsPage:
         """A module with two series shows a heading per series, and until one
         had two nobody saw that the heading was the slug."""
         write(repo, "Prose.\n")
-        second = repo / "tutorials" / "computational-methods" / "looking-back.md"
+        second = tutorial_path(repo, "looking-back", "computational-methods")
         second.write_text(
             '---\ntitle: "Looking Back"\nslug: looking-back\n'
             "module: computational-methods\n"
@@ -820,7 +896,7 @@ class TestTheContentsPage:
     def test_a_series_without_a_name_falls_back_to_its_filename(self, repo):
         """Optional, because a heading nobody sees is not worth a build error."""
         write(repo, "Prose.\n")
-        second = repo / "tutorials" / "computational-methods" / "looking-back.md"
+        second = tutorial_path(repo, "looking-back", "computational-methods")
         second.write_text(
             '---\ntitle: "Looking Back"\nslug: looking-back\n'
             "module: computational-methods\n"
@@ -968,7 +1044,7 @@ class TestTheDownloadableCopy:
 class TestTheSeriesArchive:
     def two_tutorials(self, repo):
         for n in (1, 2):
-            path = repo / "tutorials" / "computational-methods" / f"t{n}.md"
+            path = tutorial_path(repo, f"t{n}", "computational-methods")
             path.write_text(
                 f'---\ntitle: "T{n}"\nslug: t{n}\nmodule: computational-methods\n'
                 f'year: "2026-2027"\nseries: Core skills\nversion: 2026.08.23.1\n---\n\nProse.\n'
@@ -1213,7 +1289,7 @@ class TestTheKnowledgeMap:
             block = ""
             if covers:
                 block = f"covers:\n  a-section:\n    covers: [{codes[(n - 1) % 4]}]\n"
-            (repo / "tutorials" / "computational-methods" / f"t{n}.md").write_text(
+            (tutorial_path(repo, f"t{n}", "computational-methods")).write_text(
                 f'---\ntitle: "Tutorial {n}"\nslug: t{n}\nmodule: computational-methods\n'
                 f'year: "2026-2027"\nseries: s\nversion: 2026.08.23.1\n{block}'
                 f"---\n\n# Tutorial {n}\n\n## A section\n\nProse.\n"
@@ -1263,7 +1339,7 @@ class TestTheKnowledgeMap:
 
     def test_naming_an_earlier_tutorial_draws_an_arrow_back_to_it(self, repo):
         self.series(repo)
-        path = repo / "tutorials" / "computational-methods" / "t4.md"
+        path = tutorial_path(repo, "t4", "computational-methods")
         path.write_text(path.read_text() + "\nWe used this in Tutorial 1.\n")
         b.build()
         assert 'class="dl-map-back"' in self.svg(repo)
@@ -1271,7 +1347,7 @@ class TestTheKnowledgeMap:
     def test_the_tutorial_just_before_does_not_get_a_second_arrow(self, repo):
         """The reading-order arrow already says that one."""
         self.series(repo)
-        path = repo / "tutorials" / "computational-methods" / "t4.md"
+        path = tutorial_path(repo, "t4", "computational-methods")
         path.write_text(path.read_text() + "\nAs in Tutorial 3.\n")
         b.build()
         assert 'class="dl-map-back"' not in self.svg(repo)
@@ -1624,11 +1700,11 @@ class TestArchivedTutorials:
 
     def archive(self, repo, slug: str = "sample") -> Path:
         """Mark a tutorial archived and take it out of the reading order."""
-        path = repo / "tutorials" / "computational-methods" / f"{slug}.md"
+        path = tutorial_path(repo, f"{slug}", "computational-methods")
         path.write_text(path.read_text().replace(
             "version: 2026.08.23.1\n", "version: 2026.08.23.1\nstatus: archived\n"))
         remaining = sorted(
-            p.stem for p in path.parent.glob("*.md")
+            p.stem for p in path.parent.parent.glob("*/*.md")
             if "status: archived" not in p.read_text()
         )
         set_order(repo, "computational-methods", "python-fundamentals", remaining)
@@ -1693,7 +1769,7 @@ class TestArchivedTutorials:
         order file saying one thing and the site doing another."""
         write(repo, "Prose.\n")
         write(repo, "More prose.\n", slug="second")
-        path = repo / "tutorials" / "computational-methods" / "sample.md"
+        path = tutorial_path(repo, "sample", "computational-methods")
         path.write_text(path.read_text().replace(
             "version: 2026.08.23.1\n", "version: 2026.08.23.1\nstatus: archived\n"))
         # `write` re-listed everything, including the one just archived.
@@ -1890,7 +1966,7 @@ class TestTheTopicTree:
 
     def test_the_tutorial_map_moved_here_from_the_contents_page(self, repo):
         for n in (1, 2, 3):
-            (repo / "tutorials" / "computational-methods" / f"t{n}.md").write_text(
+            (tutorial_path(repo, f"t{n}", "computational-methods")).write_text(
                 f'---\ntitle: "T{n}"\nslug: t{n}\nmodule: computational-methods\n'
                 f'year: "2026-2027"\nseries: python-fundamentals\n'
                 f"version: 2026.08.23.1\n---\n\n# T{n}\n\nProse.\n"
@@ -2023,8 +2099,8 @@ class TestDownloadsDoNotCollide:
 
     def two_modules(self, repo):
         write(repo, "One.\n", slug="first-steps")
-        other = repo / "tutorials" / "other-module" / "first-steps.md"
-        other.parent.mkdir(parents=True)
+        other = tutorial_path(repo, "first-steps", "other-module")
+        other.parent.mkdir(parents=True, exist_ok=True)
         other.write_text(
             '---\ntitle: "First Steps"\nslug: first-steps\nmodule: other-module\n'
             'year: "2026-2027"\nseries: intro\nversion: 2026.08.23.1\n---\n\nProse.\n'
@@ -2077,7 +2153,7 @@ class TestPagesOfProblems:
 
     def practice(self, repo, slug: str, **frontmatter) -> Path:
         """Write a page of problems, and keep it out of the order file."""
-        path = repo / "tutorials" / "computational-methods" / f"{slug}.md"
+        path = tutorial_path(repo, f"{slug}", "computational-methods")
         extra = "".join(
             f"{key}: {value}\n" if not isinstance(value, list)
             else f"{key}:\n" + "".join(f"  - {v}\n" for v in value)
@@ -2089,7 +2165,7 @@ class TestPagesOfProblems:
             + "**1.** A question.\n"
         )
         listed = sorted(
-            p.stem for p in path.parent.glob("*.md")
+            p.stem for p in path.parent.parent.glob("*/*.md")
             if "practice_for" not in p.read_text()
             and "practice_across" not in p.read_text()
         )
@@ -2233,7 +2309,7 @@ class TestTheReference:
     def practice(self, repo, slug: str, **frontmatter) -> Path:
         """Same shape as TestPagesOfProblems' own helper — a page of
         problems, kept out of the order file."""
-        path = repo / "tutorials" / "computational-methods" / f"{slug}.md"
+        path = tutorial_path(repo, f"{slug}", "computational-methods")
         extra = "".join(
             f"{key}: {value}\n" if not isinstance(value, list)
             else f"{key}:\n" + "".join(f"  - {v}\n" for v in value)
@@ -2245,7 +2321,7 @@ class TestTheReference:
             + "**1.** A question.\n"
         )
         listed = sorted(
-            p.stem for p in path.parent.glob("*.md")
+            p.stem for p in path.parent.parent.glob("*/*.md")
             if "practice_for" not in p.read_text()
             and "practice_across" not in p.read_text()
         )

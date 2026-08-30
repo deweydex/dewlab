@@ -33,9 +33,9 @@ Every exported function in the second half of this file — `listDir()`,
 `readFile()`, `writeFile()`, `deleteFile()`, `mkdir()` — works exactly the
 same regardless of which of the three is active. They just turn a
 friendly relative path like `"data/scores.csv"` into the real mount-point
-path and hand off to `mini-ide-engine.js`, which is the layer that
+path and hand off to `pyodide-engine.js`, which is the layer that
 actually knows how to reach whichever backend booted (see
-[`docs/mini-ide-engine-explained.md`](mini-ide-engine-explained.md)).
+[`docs/pyodide-engine-explained.md`](pyodide-engine-explained.md)).
 
 ---
 
@@ -56,7 +56,7 @@ actually knows how to reach whichever backend booted (see
    `chooseFolder()`, `reconnectFolder()`, `forgetFolder()`: the functions
    behind Settings' "Choose folder" / "Reconnect" buttons (Phase 6 of the
    redesign).
-5. **`reset()`** — for pairing with `mini-ide-engine.js`'s `restart()`:
+5. **`reset()`** — for pairing with `pyodide-engine.js`'s `restart()`:
    after the Python interpreter restarts fresh, this file's own memory of
    "I already mounted something" has to be forgotten too.
 6. **File access** (`resolvePath`, `listDir`, `readFile`, `writeFile`,

@@ -1,4 +1,4 @@
-# `assets/mini-ide-engine.js`, explained
+# `assets/pyodide-engine.js`, explained
 
 This file is Mini IDE's connection to Python. It doesn't draw anything on
 the page — that's [`assets/mini-ide.js`](mini-ide-js-explained.md)'s job —

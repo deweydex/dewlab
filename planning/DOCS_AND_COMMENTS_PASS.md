@@ -116,10 +116,12 @@ what this session originally wrote.
       number, and decision preserved. `STATUS.md` and `planning/README.md`
       were also missing the Mini IDE redesign and this whole docs
       initiative; both are folded in now.
-      `planning/Educational Content guide for LLMs.md` was left alone: it
-      references subdirectories (`by_content_type/`, etc.) that don't
-      exist in this repo, so it reads as an orphaned import from
+      `planning/Educational Content guide for LLMs.md` was left alone at
+      the time: it referenced subdirectories (`by_content_type/`, etc.)
+      that don't exist in this repo, so it read as an orphaned import from
       elsewhere, not a document this repo's conventions actually govern.
+      It has since been deleted for exactly that reason — see
+      `planning/ROADMAP.md` Phase 1.
       `planning/curriculum/` and `planning/outlines/` (data files and
       per-tutorial outlines) weren't surveyed individually — out of scope
       for a repo-conventions language pass.

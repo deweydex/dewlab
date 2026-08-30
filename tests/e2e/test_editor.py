@@ -20,18 +20,18 @@ import pytest
 REPO = {
     "tutorials/fixtures/maths.order.yaml":
         "series: Maths and programming\norder:\n  - first-steps\n  - next-steps\n",
-    "tutorials/fixtures/first-steps.md":
+    "tutorials/fixtures/first-steps/first-steps.md":
         '---\ntitle: "First Steps"\nslug: first-steps\nmodule: fixtures\n'
         'module_title: "Fixtures"\nyear: "2026-2027"\nseries: maths\nversion: 2026.08.23.1\n---\n\n'
         "# First Steps\n\nProse.\n\n## Adding up\n\n```python exec\nid: adding-up-1\n"
         "print(1 + 1)\n```\n",
-    "tutorials/fixtures/next-steps.md":
+    "tutorials/fixtures/next-steps/next-steps.md":
         '---\ntitle: "Next Steps"\nslug: next-steps\nmodule: fixtures\n'
         'module_title: "Fixtures"\nyear: "2026-2027"\nseries: maths\nversion: 2026.08.23.1\n---\n\n'
         "# Next Steps\n\nMore prose.\n",
     "tutorials/fixtures/looking-back.order.yaml":
         "series: Reflections and review\norder:\n  - looking-back\n",
-    "tutorials/fixtures/looking-back.md":
+    "tutorials/fixtures/looking-back/looking-back.md":
         '---\ntitle: "Looking Back"\nslug: looking-back\nmodule: fixtures\n'
         'module_title: "Fixtures"\nyear: "2026-2027"\nseries: looking-back\nversion: 2026.08.23.1\n---\n\n'
         "# Looking Back\n\nProse.\n",
@@ -70,7 +70,7 @@ def _cell(cell_id: str) -> str:
 VERSIONED = {
     "tutorials/fixtures/maths.order.yaml":
         "series: Maths and programming\norder:\n  - first-steps\n  - two-takes\n",
-    "tutorials/fixtures/first-steps.md":
+    "tutorials/fixtures/first-steps/first-steps.md":
         '---\ntitle: "First Steps"\nslug: first-steps\nmodule: fixtures\n'
         'module_title: "Fixtures"\nyear: "2026-2027"\nseries: maths\n'
         "version: 2026.06.02.1\nstatus: live\n---\n\n# First Steps\n\nProse.\n\n"
@@ -148,7 +148,7 @@ def _big_repo(count: int) -> dict:
             "series: Big\norder:\n" + "".join(f"  - {slug}\n" for slug in order),
     }
     for i, slug in enumerate(order):
-        files[f"tutorials/fixtures/{slug}.md"] = (
+        files[f"tutorials/fixtures/{slug}/{slug}.md"] = (
             f'---\ntitle: "Tutorial number {i}"\nslug: {slug}\nmodule: fixtures\n'
             f'module_title: "Fixtures"\nyear: "2026-2027"\nseries: big\n'
             f"version: 2026.08.23.1\n---\n\n# Tutorial number {i}\n\nProse.\n"
@@ -243,7 +243,7 @@ class TestInsertingAndCreating:
         editor.once("dialog", lambda d: d.accept("Halfway There"))
         editor.click(".dl-editor-series:first-of-type .dl-editor-new")
         written = editor.evaluate(
-            "globalThis.dewlabEditor.state.files.get('tutorials/fixtures/halfway-there.md')")
+            "globalThis.dewlabEditor.state.files.get('tutorials/fixtures/halfway-there/halfway-there.md')")
         assert 'title: "Halfway There"' in written
         assert "slug: halfway-there" in written
         # The template carries the house conventions, which is most of its point.
@@ -254,7 +254,7 @@ class TestInsertingAndCreating:
         editor.once("dialog", lambda d: d.accept("Halfway There"))
         editor.click(".dl-editor-series:first-of-type .dl-editor-new")
         written = editor.evaluate(
-            "globalThis.dewlabEditor.state.files.get('tutorials/fixtures/halfway-there.md')")
+            "globalThis.dewlabEditor.state.files.get('tutorials/fixtures/halfway-there/halfway-there.md')")
         assert 'module_title: "Fixtures"' in written
         assert 'year: "2026-2027"' in written
         assert "series: maths" in written
@@ -338,14 +338,14 @@ class TestEditingWhatIsInside:
 LINKS = {
     "tutorials/fixtures/maths.order.yaml":
         "series: Maths and programming\norder:\n  - first-steps\n",
-    "tutorials/fixtures/first-steps.md":
+    "tutorials/fixtures/first-steps/first-steps.md":
         '---\ntitle: "First Steps"\nslug: first-steps\nmodule: fixtures\n'
         'module_title: "Fixtures"\nyear: "2026-2027"\nseries: maths\nversion: 2026.08.23.1\n---\n\n'
         "# First Steps\n\n## A Grid of Numbers\n\n"
         "```python exec\nid: adding-up-1\n# not a heading\nprint(1)\n```\n",
     "tutorials/other/next-steps.order.yaml":
         "series: Other\norder:\n  - next-steps\n",
-    "tutorials/other/next-steps.md":
+    "tutorials/other/next-steps/next-steps.md":
         '---\ntitle: "Next Steps"\nslug: next-steps\nmodule: other\n'
         'module_title: "Other"\nyear: "2026-2027"\nseries: other\nversion: 2026.08.23.1\n---\n\n'
         "# Next Steps\n\nProse.\n",
@@ -354,13 +354,13 @@ LINKS = {
     # rather than guessed at.
     "tutorials/third/shared-name.order.yaml":
         "series: Third\norder:\n  - shared-name\n",
-    "tutorials/third/shared-name.md":
+    "tutorials/third/shared-name/shared-name.md":
         '---\ntitle: "Shared Name (Third)"\nslug: shared-name\nmodule: third\n'
         'module_title: "Third"\nyear: "2026-2027"\nseries: third\nversion: 2026.08.23.1\n---\n\n'
         "# Shared Name\n\nProse.\n",
     "tutorials/fourth/shared-name.order.yaml":
         "series: Fourth\norder:\n  - shared-name\n",
-    "tutorials/fourth/shared-name.md":
+    "tutorials/fourth/shared-name/shared-name.md":
         '---\ntitle: "Shared Name (Fourth)"\nslug: shared-name\nmodule: fourth\n'
         'module_title: "Fourth"\nyear: "2026-2027"\nseries: fourth\nversion: 2026.08.23.1\n---\n\n'
         "# Shared Name\n\nProse.\n",
@@ -642,7 +642,7 @@ class TestCommitting:
         editor.wait_for_function("globalThis.__committed !== undefined")
         paths = sorted(f["path"] for f in editor.evaluate("globalThis.__committed.files"))
         assert paths == [
-            "tutorials/fixtures/halfway-there.md",
+            "tutorials/fixtures/halfway-there/halfway-there.md",
             "tutorials/fixtures/maths.order.yaml",
         ]
 
@@ -667,7 +667,7 @@ class TestStatus:
         return editor.evaluate(
             """(slug) => {
                  const text = globalThis.dewlabEditor.state.files.get(
-                   `tutorials/fixtures/${slug}.md`);
+                   `tutorials/fixtures/${slug}/${slug}.md`);
                  const m = /^status:\\s*(\\S+)/m.exec(text);
                  return m ? m[1] : "live";
                }""", slug)
@@ -726,7 +726,7 @@ class TestStatus:
         editor.wait_for_function("globalThis.__committed !== undefined")
         paths = sorted(f["path"] for f in editor.evaluate("globalThis.__committed.files"))
         assert paths == [
-            "tutorials/fixtures/first-steps.md",
+            "tutorials/fixtures/first-steps/first-steps.md",
             "tutorials/fixtures/maths.order.yaml",
         ]
         written = next(f for f in editor.evaluate("globalThis.__committed.files")
@@ -859,16 +859,18 @@ class TestReleasing:
         tab.click("#dl-editor-save")
         tab.wait_for_function("globalThis.__committed !== undefined")
 
-    def test_a_single_file_tutorial_becomes_a_folder_of_releases(self, versioned):
-        """A tutorial becomes a folder the moment it has a second release, and
-        not before. Most never do."""
+    def test_releasing_adds_a_frozen_copy_and_keeps_the_tutorials_own_name(self, versioned):
+        """A tutorial is already a folder, so a second release only adds a file
+        to it: the past release is frozen under its version number, and the
+        current one keeps the tutorial's own name."""
         self.edit(versioned, "first-steps", "# First Steps\n\nRewritten.\n")
         self.release(versioned)
         self.commit(versioned)
         files = self.files(versioned)
 
-        assert files["tutorials/fixtures/first-steps.md"] is None
+        current = "tutorials/fixtures/first-steps/first-steps.md"
         frozen = "tutorials/fixtures/first-steps/v2026.06.02.1.md"
+        assert files[current] is not None
         assert frozen in files
         assert len([p for p in files if p.startswith("tutorials/fixtures/first-steps/")]) == 2
 

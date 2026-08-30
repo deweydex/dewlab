@@ -120,7 +120,8 @@ asserts on prose. See `DECISIONS_LOG.md` 7.50.
 
 ## 4. What is left
 
-- **`dev/from_worksheet.py`.** A converter for the Mathematics worksheets. The
+- **A worksheet converter**, which would live in `dev/` and does not exist
+  yet. It would convert the Mathematics worksheets. The
   two conditions for writing it are now met: the build supports practice pages,
   and several have been done by hand so the shape is known. Whether it is worth
   writing at all is a fair question — the remaining worksheets are the ones for

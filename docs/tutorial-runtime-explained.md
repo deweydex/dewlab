@@ -6,7 +6,7 @@ into an actually-working page: the settings panel, the reference, the
 series navigation, saving a student's work, version switching, and
 booting and running Python. If you've read
 [`docs/mini-ide-js-explained.md`](mini-ide-js-explained.md) or
-[`docs/mini-ide-engine-explained.md`](mini-ide-engine-explained.md), a
+[`docs/pyodide-engine-explained.md`](pyodide-engine-explained.md), a
 good chunk of this file will look familiar — Mini IDE's own engine file
 was ported from this one's Pyodide-handling code, and both files solve
 the same "worker vs. main thread" problem the same way.
@@ -61,7 +61,7 @@ specifically:
    and so on) — the constants nearly every other section depends on.
 2. **Pyodide** — the largest section, and the one with the most going on.
    It has the exact same worker/main-thread split as
-   `mini-ide-engine.js`; if a function here (`bootWorker`, `docForMT`,
+   `pyodide-engine.js`; if a function here (`bootWorker`, `docForMT`,
    `workerRequest`, etc.) moves too fast, that file's own explanation
    goes into more detail on the identical pattern.
 3. **Start**, at the very bottom — this is genuinely where execution

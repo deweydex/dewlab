@@ -20,71 +20,58 @@ where it matters.
 
 ---
 
-## Phase 1 — Put the record straight
+## Phase 1 — Put the record straight — **done**
 
-Small pieces, mostly independent, all cheap. The point is to restore the
+Small pieces, mostly independent, all cheap. The point was to restore the
 property the build already enforces for tutorials — that documentation
 cannot quietly drift from what it describes — to the documentation
 itself.
 
-**The work:**
+**What was done:**
 
-1. Extend link checking to the repository's own markdown. The build
-   already treats a dead `tutorial:` link as a failure; a dead relative
-   link in `planning/` or `docs/` should fail CI the same way. Roughly
-   forty stale "cheat sheet" references, two dead file paths in
-   `QUESTIONS.md`, and the retired-doc citations would all have been
-   caught by this.
-2. Repair `planning/README.md`'s index — nine documents are unlisted,
-   including `REFERENCE_PANEL.md`, which `ARCHITECTURE.md` treats as a
-   spec. Remove `Educational Content guide for LLMs.md` (an orphaned
-   import with fifteen dead links, already acknowledged as such in
-   `DOCS_AND_COMMENTS_PASS.md`).
-3. Correct the stale facts: `ARCHITECTURE.md`'s line count for
-   `build.py`, `STATUS.md`'s claim that sympy is a default package,
-   `tutorial-runtime.js`'s header comment saying save/load "are not here
-   yet," the missing `*-explained.md` files (`editor.js`, `tree.js`,
-   `search.js`) or an honest note that they are not covered.
-4. Stop recording line counts and phase states in prose anywhere — they
-   go stale within a month. Cite file paths and function names, which
-   the link check can then hold to account.
-5. Close or reopen the build-language question. `QUESTIONS.md` records
-   that whether the build should be rewritten in JavaScript "should be
-   decided before the editor is built." The editor has been built.
-6. Decide the version-fork layout (see the question below) while the
-   migration is eight files.
+1. **`dev/check_doc_links.py`**, run by CI, holds every document that
+   describes the present to the present: a markdown link or a backticked
+   path naming a file that is not in the repository fails the build.
+   Records of what was decided *then* — `DECISIONS_LOG.md`,
+   `QUESTIONS.md`, the superseded and retired planning docs — are exempt
+   on purpose: an entry naming the reference panel's design doc by the
+   name it had before it was renamed is not stale — that was its name when
+   the entry was written, and rewriting it would make the record say
+   something that was never true.
+2. It found 99 references on its first run. All are now either fixed or
+   deliberately exempt, and the fixes were real rather than cosmetic:
+   attribution documented as the shape that shipped rather than the one
+   the design rejected, a worksheet converter no longer named as a file
+   that exists, `<series>.order.yaml` written as its real name.
+3. `planning/README.md` indexes every planning document again — nine were
+   missing, `REFERENCE_PANEL.md` among them, which `ARCHITECTURE.md`
+   treats as a spec. `Educational Content guide for LLMs.md` is gone.
+4. Stale facts corrected: `build.py`'s line count removed rather than
+   updated, sympy described as opt-in because that is what the code does,
+   the runtime's "not here yet" header dropped for three things that
+   shipped years of entries ago, `image_input` and `run_query` added to
+   the table of what a cell can call.
+5. The build-language question is closed — see `QUESTIONS.md`.
+6. Every tutorial is a folder. See below.
 
-**Open questions:**
+**The layout, answered.** A tutorial is now
+`tutorials/<module>/<slug>/`, holding its markdown at `<slug>.md`, its
+practice page, its glossary, its frozen past releases as `v<version>.md`,
+and any pictures or recordings it uses. `DECISIONS_LOG.md` 7.90 has the
+full account and `QUESTIONS.md` the reasoning. Three things came with it:
+releasing adds a file instead of moving one, assets have somewhere to live
+and a reference that resolves from every release, and a tutorial is one
+thing to move or freeze rather than several files in two places. Nothing a
+student receives changed — the built site was byte-identical afterwards.
 
-- **Where does the doc link check live?** In `build.py`, or a separate
-  `dev/` script run by `tests.yml`? *Assumed:* a separate script —
-  `build.py`'s job is the site, and the planning docs are not inputs to
-  it. *Cost to change:* trivial, it is a script either way. *Blocks:*
-  nothing.
-- **What is the right version-fork layout?** Today a tutorial's second
-  release moves `<slug>.md` into `<slug>/<slug>.md` while its glossary
-  and practice sidecars stay at module level (`glossary_path()` is
-  hardcoded flat), so four tutorials have files split across two
-  directory levels. Either the sidecars follow the tutorial into its
-  directory, or version files move somewhere that leaves the flat layout
-  intact. *Assumed:* sidecars follow the tutorial. *Cost to change:*
-  grows with every new release of a forked tutorial; today it is a small
-  mechanical migration plus a few path functions in `build.py`. *Blocks:*
-  nothing, but it is the one item here that gets dearer with delay.
-- **Is the build staying Python?** *Assumed:* yes — the editor was built
-  without needing the rewrite, which answers the question the way events
-  usually do. Needs a closing entry, not a debate.
-- **Do retired planning docs stay as tombstones or get deleted?**
-  `VERSIONING_AND_PROGRESS.md` and `WHAT_IS_LEFT_TO_WRITE.md` are both
-  kept but still cited as live elsewhere. *Assumed:* keep them, with
-  unmistakable superseded-by headers, because other documents cite them
-  by name; fix the citing documents instead. *Cost:* nil either way.
+**Still worth doing, and not done here:**
 
-Alongside all of this, a standing decision rather than a task: no new
-panels, features, or polish on the reading surface until Phase 3. The
-platform is ahead of the content.
-
----
+- The `*-explained.md` files `README.md` promises "one per code file" do
+  not exist for `editor.js`, `tree.js` or `search.js`. Either write them
+  or correct the promise.
+- `tests/MANUAL_CHECKLIST.md` still says later sections are stubs for
+  phases that have all shipped.
+- The three empty module folders under `tutorials/` are still there.
 
 ## Phase 2 — Write the remaining tutorials
 
@@ -122,7 +109,8 @@ than these pages existing.
   format says "this cell takes ten seconds, that is normal." *Assumed:*
   a sentence of prose suffices until proven otherwise. *Cost:* a
   convention added later touches only new tutorials.
-- **Does `dev/from_worksheet.py` revive?** The unconverted worksheets
+- **Does the worksheet converter revive?** It was never written. The
+  unconverted worksheets
   (Bayes, distributions, the matrices set) cover material these strands
   will teach. *Assumed:* still on hold; convert by hand as before, and
   revisit only if hand conversion is the bottleneck in practice.
@@ -284,7 +272,7 @@ Mini IDE between now and convergence.
   dewmini's stated identity is main-thread simplicity. *Assumed:* yes,
   it takes the Worker; the identity worth keeping is the smaller
   surface, not the older plumbing. *Cost to change:* the engine is
-  already a separable client (`mini-ide-engine.js`), so this is
+  already a separable client (`pyodide-engine.js`), so this is
   adoption, not a rewrite.
 - **What happens to Mini IDE's URLs and downloaded bundles?**
   *Assumed:* the hosted page becomes a short redirect-with-explanation;

@@ -44,6 +44,13 @@ jobs:
       - name: Fail if the curriculum map is out of date
         run: python3 dev/curriculum_map.py --check
 
+      # The build already refuses to publish a tutorial whose `tutorial:` link
+      # goes nowhere. This holds the documentation about the project to the same
+      # standard, which it had drifted from: renamed files still cited by their
+      # old paths, an index that had fallen behind the directory it indexes.
+      - name: Fail if a document points at a file that is not there
+        run: python3 dev/check_doc_links.py
+
   # The standalone bundle is the runtime rebuilt in the older script format and
   # committed, so that build.py needs no Node. That means it can go stale the
   # moment anyone edits the runtime — and a stale copy would make downloaded

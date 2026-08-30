@@ -37,13 +37,20 @@ editor never needs either of the other two to be running.
 
 ## 1. The build: markdown in, static site out
 
-`build.py` is a single script (~2,400 lines, one file on purpose — see
-DECISIONS_LOG for why it was never split) that reads `tutorials/**/*.md` and
-writes `site/`. It runs locally when an author previews their work, and it
-runs again, identically, in `.github/workflows/deploy.yml` on every push to
-`main`. `site/` itself is never committed — it is gitignored, rebuilt from
-scratch every time, which is what stops the published pages from ever
-drifting out of sync with the markdown that describes them.
+`build.py` is a single script (one file on purpose — see DECISIONS_LOG for why
+it was never split) that reads `tutorials/**/*.md` and writes `site/`. It runs
+locally when an author previews their work, and it runs again, identically, in
+`.github/workflows/deploy.yml` on every push to `main`. `site/` itself is never
+committed — it is gitignored, rebuilt from scratch every time, which is what
+stops the published pages from ever drifting out of sync with the markdown that
+describes them.
+
+A tutorial is a folder, `tutorials/<module>/<slug>/`, holding its markdown at
+`<slug>.md`, its practice page, its glossary, any frozen past releases as
+`v<version>.md`, and any pictures or recordings it uses. Where a page ends up
+is decided by its frontmatter's `module` and `slug`, never by where its source
+file sits — which is what let that layout change without moving a single
+published URL or storage key.
 
 The pipeline, roughly in the order the code runs it:
 
@@ -164,13 +171,12 @@ CPython with no browser at all. When the call returns, the runtime saves the
 cell's code and output to `localStorage` — after the run, not during it, so
 what's persisted is what the student actually finished looking at.
 
-Everything a Pyodide-backed cell can call beyond ordinary Python —
-`show`, `show_table`, `check`, `text_input`, `dropdown`, `button`,
-`load_csv` — is defined once, in `tutorial_tools.py`, and the README's "What
-your cells can call" table is the reader-facing description of the same six
-functions. If you are changing what a cell can do, that file is where you
-start; if you are changing what a cell *looks like*, `tutorial-runtime.js`
-is.
+Everything a Pyodide-backed cell can call beyond ordinary Python is defined
+once, in `tutorial_tools.py`, and listed there in `__all__`.
+`docs/WRITING_TUTORIALS.md`'s "What your cells can call" table is the
+reader-facing description of the same set. If you are changing what a cell can
+do, that file is where you start; if you are changing what a cell *looks
+like*, `tutorial-runtime.js` is.
 
 Two more pieces worth knowing where they live: `assets/tree.js` draws the
 topic-tree and knowledge-map SVGs from data `build.py` computes and embeds
@@ -204,7 +210,7 @@ runtime because both anchor to the same corner. Its content is not
 hand-written — `build.py`'s `cumulative_glossary()` assembles it per
 tutorial from `<slug>.glossary.yaml` files (one per tutorial, produced by
 `.claude/skills/tutorial-glossary/SKILL.md`), walking each series in
-`order.yaml` order — and, where a module's `series.yaml` says so
+`<series>.order.yaml` order — and, where a module's `series.yaml` says so
 (`series_chain()`, DECISIONS_LOG.md 7.66), every earlier series in that
 module too — so a tutorial's manifest only ever carries what it and
 everything before it actually taught, never anything from another module. A
@@ -358,7 +364,7 @@ behave identically everywhere — but they differ from each other, and from
 a tutorial page, in one important way: how Python actually runs.
 
 **Mini IDE** (`assets/mini-ide.js`) is the larger of the two, and its
-execution engine (`assets/mini-ide-engine.js`) is a client of
+execution engine (`assets/pyodide-engine.js`) is a client of
 `assets/pyodide-worker.js` — the same Worker-based runtime a tutorial
 page's own `tutorial-runtime.js` boots (§2), reused rather than
 duplicated. That's what gives Mini IDE a genuine Stop button: a runaway
@@ -369,13 +375,13 @@ IDBFS — so the file manager, SQL support (`sqlite3` against a mounted
 `.db` file), and uploads all work without knowing which backend is
 active. Opened from `file://` (the downloadable, folder-based
 distribution — see `write_mini_ide_bundle()` in `build.py`), a module
-Worker isn't reliably available, so `mini-ide-engine.js` falls back to
+Worker isn't reliably available, so `pyodide-engine.js` falls back to
 running Pyodide on the main thread instead — same interpreter, same
 `tutorial_tools.py`, just without a genuine Stop button.
 
 Each of these files has its own `docs/<file>-explained.md` walking
 through its internal structure in more depth than belongs here — start
-with [`docs/mini-ide-engine-explained.md`](docs/mini-ide-engine-explained.md)
+with [`docs/pyodide-engine-explained.md`](docs/pyodide-engine-explained.md)
 for the worker/main-thread split specifically, or
 [`docs/mini-ide-fs-explained.md`](docs/mini-ide-fs-explained.md) for the
 three-backend filesystem layer.
@@ -437,7 +443,7 @@ python3 -m pytest tests --ignore=tests/e2e   the fast ones, no browser
   documented at their definitions in `editor.js`, which is what a script
   drives instead.
 - **`tests/e2e/test_*.py`** (the rest) — a real Chromium against a real,
-  self-hosted Pyodide, built from `fixture/rendering-tour.md` by an actual
+  self-hosted Pyodide, built from `tests/e2e/fixture/rendering-tour.md` by an actual
   `build.py` run rather than a stand-in for one, so a change that breaks
   the markup a student receives fails here specifically. Needs
   `pip install playwright && playwright install chromium` and
@@ -458,7 +464,7 @@ runtime or the editor.
 | What a cell can do (a new tutorial-facing function) | `assets/tutorial_tools.py` |
 | What a cell *looks like*, or the settings panel, save/restore behaviour | `assets/tutorial-runtime.js` |
 | Mini IDE's file manager, uploads, or storage backend | `assets/mini-ide-fs.js` |
-| Mini IDE's Python engine (boot, run a cell, hover/autocomplete, Stop) | `assets/mini-ide-engine.js` |
+| Mini IDE's Python engine (boot, run a cell, hover/autocomplete, Stop) | `assets/pyodide-engine.js` |
 | Mini IDE's cells, toolbar, or downloads | `assets/mini-ide.js` |
 | dewmini's cells, toolbar, or downloads | `compose/dewmini.js` |
 | The topic tree or knowledge map's layout | `assets/tree.js` and `build.py`'s `tree_data()`/`render_knowledge_map()` |

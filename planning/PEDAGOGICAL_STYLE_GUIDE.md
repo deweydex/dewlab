@@ -273,7 +273,8 @@ question again.
 **Whether "let's" is allowed.** The two versions of Josh's general guide differ
 on this, and it is the only substantive difference between them. The earlier one
 bans command language and names *"Let's do this!"* and *"Now we'll…"* as
-examples. The revised one — `Josh_Educational_Reference_Document.md` — drops
+examples. The revised one — Josh's own educational reference document, kept outside
+this repository — drops
 those examples, narrows the ban to imperatives aimed at the student (*"Solve
 this problem!"*, *"Complete this"*), and adds a positive requirement to use
 "welcoming and invitational or reflective language, like 'let's try' or 'what

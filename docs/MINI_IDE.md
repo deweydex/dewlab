@@ -584,7 +584,7 @@ share, not something you set up yourself.
 ## How It's Built
 
 Mini IDE is made of a few pieces that work together: `mini-ide.js`
-manages your cells and the page itself; `mini-ide-engine.js` starts
+manages your cells and the page itself; `pyodide-engine.js` starts
 Python and talks to it; `mini-ide-fs.js` handles your files. If you
 want to understand how the code actually works, each of those files has
 its own explanation doc in `docs/` (for example,
