@@ -5,6 +5,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>dewmini — dewlab</title>
 
+<!-- Cross-origin isolation, as early as this page can ask for it — a
+     genuine Stop button needs the SharedArrayBuffer interrupt path, which
+     needs crossOriginIsolated. Same shim shell.html registers for tutorial
+     pages, and assets/mini-ide.html registers for itself; dewmini needs
+     it for the same reason Mini IDE does now that both share
+     assets/pyodide-engine.js (DECISIONS_LOG.md 7.89) — a standalone page
+     a student can reach without ever visiting a tutorial page first, so
+     it can't rely on one of those having registered it already. One
+     level up from this page's own folder: build.py copies the real file
+     to the site's root once for the whole site, not once per page. -->
+<script src="../coi-serviceworker.js"></script>
+
 <link rel="stylesheet" href="../assets/tutorial-style.css">
 <link rel="stylesheet" href="dewmini-style.css">
 
@@ -227,9 +239,13 @@
   </div>
 
   <section class="dl-settings-section" id="dl-settings-execution">
-    <h3>Run time</h3>
+    <h3>Python</h3>
+    <p class="dl-panel-note" id="settings-execution-status">Not started yet — run a cell to start Python.</p>
+    <div class="dl-progress-actions">
+      <button type="button" class="dl-btn" id="settings-restart-python">Restart Python</button>
+    </div>
     <div class="dl-texture-row">
-      <span>Show under a cell</span>
+      <span>Run time</span>
       <div class="dl-seg" data-dm="runstats">
         <button type="button" data-value="on">on</button>
         <button type="button" data-value="off">off</button>

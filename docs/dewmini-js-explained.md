@@ -3,7 +3,7 @@
 This file is everything that makes dewmini work: creating and deleting
 cells, running Python, drag-to-reorder, downloads, Settings, and the
 practice-problem picker. Unlike Mini IDE (split across
-`mini-ide.js`/`mini-ide-engine.js`/`mini-ide-fs.js`), dewmini keeps
+`mini-ide.js`/`pyodide-engine.js`/`mini-ide-fs.js`), dewmini keeps
 everything in one file — it's a smaller tool with a smaller scope (no
 file manager, no SQL support beyond what `import sqlite3` gives for
 free, no filesystem to mount), so one file stays manageable where Mini

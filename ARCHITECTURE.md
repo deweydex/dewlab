@@ -40,16 +40,17 @@ editor never needs either of the other two to be running.
 `build.py` is a single script (one file on purpose — see DECISIONS_LOG for why
 it was never split) that reads `tutorials/**/*.md` and writes `site/`. It runs
 locally when an author previews their work, and it runs again, identically, in
-`.github/workflows/deploy.yml` on every push to `main`.
+`.github/workflows/deploy.yml` on every push to `main`. `site/` itself is never
+committed — it is gitignored, rebuilt from scratch every time, which is what
+stops the published pages from ever drifting out of sync with the markdown that
+describes them.
 
 A tutorial is a folder, `tutorials/<module>/<slug>/`, holding its markdown at
 `<slug>.md`, its practice page, its glossary, any frozen past releases as
 `v<version>.md`, and any pictures or recordings it uses. Where a page ends up
 is decided by its frontmatter's `module` and `slug`, never by where its source
 file sits — which is what let that layout change without moving a single
-published URL or storage key. `site/` itself is never committed — it is gitignored, rebuilt from
-scratch every time, which is what stops the published pages from ever
-drifting out of sync with the markdown that describes them.
+published URL or storage key.
 
 The pipeline, roughly in the order the code runs it:
 
@@ -363,7 +364,7 @@ behave identically everywhere — but they differ from each other, and from
 a tutorial page, in one important way: how Python actually runs.
 
 **Mini IDE** (`assets/mini-ide.js`) is the larger of the two, and its
-execution engine (`assets/mini-ide-engine.js`) is a client of
+execution engine (`assets/pyodide-engine.js`) is a client of
 `assets/pyodide-worker.js` — the same Worker-based runtime a tutorial
 page's own `tutorial-runtime.js` boots (§2), reused rather than
 duplicated. That's what gives Mini IDE a genuine Stop button: a runaway
@@ -374,13 +375,13 @@ IDBFS — so the file manager, SQL support (`sqlite3` against a mounted
 `.db` file), and uploads all work without knowing which backend is
 active. Opened from `file://` (the downloadable, folder-based
 distribution — see `write_mini_ide_bundle()` in `build.py`), a module
-Worker isn't reliably available, so `mini-ide-engine.js` falls back to
+Worker isn't reliably available, so `pyodide-engine.js` falls back to
 running Pyodide on the main thread instead — same interpreter, same
 `tutorial_tools.py`, just without a genuine Stop button.
 
 Each of these files has its own `docs/<file>-explained.md` walking
 through its internal structure in more depth than belongs here — start
-with [`docs/mini-ide-engine-explained.md`](docs/mini-ide-engine-explained.md)
+with [`docs/pyodide-engine-explained.md`](docs/pyodide-engine-explained.md)
 for the worker/main-thread split specifically, or
 [`docs/mini-ide-fs-explained.md`](docs/mini-ide-fs-explained.md) for the
 three-backend filesystem layer.
@@ -463,7 +464,7 @@ runtime or the editor.
 | What a cell can do (a new tutorial-facing function) | `assets/tutorial_tools.py` |
 | What a cell *looks like*, or the settings panel, save/restore behaviour | `assets/tutorial-runtime.js` |
 | Mini IDE's file manager, uploads, or storage backend | `assets/mini-ide-fs.js` |
-| Mini IDE's Python engine (boot, run a cell, hover/autocomplete, Stop) | `assets/mini-ide-engine.js` |
+| Mini IDE's Python engine (boot, run a cell, hover/autocomplete, Stop) | `assets/pyodide-engine.js` |
 | Mini IDE's cells, toolbar, or downloads | `assets/mini-ide.js` |
 | dewmini's cells, toolbar, or downloads | `compose/dewmini.js` |
 | The topic tree or knowledge map's layout | `assets/tree.js` and `build.py`'s `tree_data()`/`render_knowledge_map()` |

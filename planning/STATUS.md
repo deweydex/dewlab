@@ -90,7 +90,7 @@ Two Python workspaces with no tutorial attached — see
 how they're built.
 
 - **Mini IDE**: rebuilt on the same Worker-based engine tutorial pages
-  use (`assets/mini-ide-engine.js`, a client of
+  use (`assets/pyodide-engine.js`, a client of
   `assets/pyodide-worker.js`), giving it a genuine Stop button and real
   Jedi-backed autocomplete in place of the hardcoded stub it shipped
   with originally. A filesystem layer (`assets/mini-ide-fs.js`) mounts a

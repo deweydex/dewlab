@@ -57,7 +57,7 @@ itself.
 **The layout, answered.** A tutorial is now
 `tutorials/<module>/<slug>/`, holding its markdown at `<slug>.md`, its
 practice page, its glossary, its frozen past releases as `v<version>.md`,
-and any pictures or recordings it uses. `DECISIONS_LOG.md` 7.89 has the
+and any pictures or recordings it uses. `DECISIONS_LOG.md` 7.90 has the
 full account and `QUESTIONS.md` the reasoning. Three things came with it:
 releasing adds a file instead of moving one, assets have somewhere to live
 and a reference that resolves from every release, and a tutorial is one
@@ -272,7 +272,7 @@ Mini IDE between now and convergence.
   dewmini's stated identity is main-thread simplicity. *Assumed:* yes,
   it takes the Worker; the identity worth keeping is the smaller
   surface, not the older plumbing. *Cost to change:* the engine is
-  already a separable client (`mini-ide-engine.js`), so this is
+  already a separable client (`pyodide-engine.js`), so this is
   adoption, not a rewrite.
 - **What happens to Mini IDE's URLs and downloaded bundles?**
   *Assumed:* the hosted page becomes a short redirect-with-explanation;

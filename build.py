@@ -2646,7 +2646,7 @@ def zip_directory(source_dir: Path, target_zip: Path) -> Path:
 # a download meant to be as small as it can be.
 MINI_IDE_ASSET_FILES = (
     "mini-ide.js",
-    "mini-ide-engine.js",
+    "pyodide-engine.js",
     "mini-ide-fs.js",
     "mini-ide-style.css",
     "tutorial-style.css",
@@ -2689,7 +2689,7 @@ def write_mini_ide_bundle() -> Path | None:
 
     html = mini_ide_html.read_text()
     if pyodide_vendored:
-        # The same override mini-ide-engine.js's pyodideBase() already
+        # The same override pyodide-engine.js's pyodideBase() already
         # honors (mirroring tutorial-runtime.js's own PYODIDE_BASE) — no
         # engine change needed, just telling this one copy of the page to
         # use it instead of the CDN default.

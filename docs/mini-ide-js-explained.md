@@ -3,7 +3,7 @@
 This file is the heart of Mini IDE. It owns the array of cells, draws
 them on the page, wires up every button, and handles saving your work.
 It does **not** run Python itself — that's a different file's job (see
-[`docs/mini-ide-engine-explained.md`](mini-ide-engine-explained.md)) —
+[`docs/pyodide-engine-explained.md`](pyodide-engine-explained.md)) —
 and it does **not** know how files are actually stored (that's
 [`docs/mini-ide-fs-explained.md`](mini-ide-fs-explained.md)). This file
 is the "glue": it owns the page, and asks those other two files to do
@@ -89,7 +89,7 @@ read it:
    `createCellElement()`). This is "cells as data and as pixels," not
    "cells as running code."
 7. **Cell Execution** — running cells as code. This is where
-   `mini-ide-engine.js` gets called. `runCell()` handles one cell,
+   `pyodide-engine.js` gets called. `runCell()` handles one cell,
    `runAllCells()` loops over all of them.
 8. **File Tree** — the file manager panel: listing what's in the
    mounted filesystem, uploading, and deleting. All of this talks to

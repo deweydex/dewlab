@@ -56,7 +56,7 @@ A one-line answer is a complete answer.
 ### What is the right layout for a tutorial and the files that belong to it?
 
 **Settled and built: every tutorial is a folder, from the moment it is
-created — `DECISIONS_LOG.md` 7.89.**
+created — `DECISIONS_LOG.md` 7.90.**
 
 A tutorial was a lone markdown file that grew a folder only on its second
 release, and its practice page and glossary stayed behind at module level

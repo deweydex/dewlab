@@ -3445,9 +3445,96 @@ readback, delete-and-recount — run against a real, locally-vendored
 Pyodide instance, not inferred from reading the ported code and trusting
 it matched its source.*
 
+**7.89 — dewmini's Python now runs in a Worker, with a genuine Stop
+button, closing out `planning/MINI_IDE_AND_DEWMINI_NEXT.md` §6's parity
+list.** The last of the four parity items, and deliberately last — every
+earlier item (`.py` import, the file manager) could be built and tested
+against dewmini's original main-thread-only interpreter; this one
+replaces that interpreter itself.
+
+Rather than duplicate Mini IDE's own ~700-line
+worker/interrupt/postMessage engine a second time, `mini-ide-engine.js`
+was renamed to `assets/pyodide-engine.js` and generalized into a shared
+module both tools import — a deliberate, explicit exception to this
+codebase's usual "each page owns a thin copy" convention (the same
+convention `tutorial-runtime.js`'s own worker-communication block still
+follows). Asked directly, sharing was preferred over a second copy for
+two reasons specific to this file: its size makes duplication a real
+maintenance cost, not a cosmetic one, and Mini IDE's own retirement is
+now planned (`planning/MINI_IDE_AND_DEWMINI_NEXT.md` §6 step 3), at
+which point this file simply keeps existing under dewmini alone rather
+than needing to be merged back together. `dewmini-fs.js` was rewritten
+to match — it now delegates every filesystem primitive to the shared
+engine (`engine.mountNative`/`listDir`/`readFile`/`writeFile`/etc.)
+instead of calling `pyodide.FS` directly, since a Worker-hosted Pyodide
+isn't reachable from the main thread at all anymore. The OPFS
+namespacing 7.88 already added (dewmini's own `"dewmini"` subdirectory,
+kept separate from Mini IDE's un-namespaced root mount) needed no change
+— mounting a named subdirectory handle and mounting a real folder handle
+are the same operation from the engine's point of view.
+
+Two genuine bugs turned up in testing, both specific to dewmini being a
+second, differently-located page sharing a module written for one:
+
+- **`tutorial_tools.py` 404'd on every dewmini boot.** The engine's
+  internal `pageUrl()` helper resolved `"assets/tutorial_tools.py"`
+  against `document.baseURI` — the *page's* URL. That's correct for
+  Mini IDE, which lives at the site root, but dewmini lives one
+  directory down (`compose/dewmini.html`), so the same relative path
+  resolved to the nonexistent `compose/assets/tutorial_tools.py`
+  instead. Fixed by resolving against `import.meta.url` (this module's
+  own location, `assets/pyodide-engine.js`) rather than the page —
+  correct for either page, since both import the same file from the
+  same place. Renamed the helper `pageUrl()` → `assetUrl()` to match.
+- **The Stop button never appeared on a cell's first-ever run.**
+  dewmini's `runCell()` called `setRunButtonRunning()` — which reads
+  `engine.canStop()` to decide whether the button becomes a real Stop or
+  just a disabled "busy" indicator — *before* awaiting the engine's own
+  boot. On a fresh page, `canStop()` reads its pre-boot default (false)
+  at that point, so the button rendered as permanently non-stoppable, a
+  busy-and-disabled "…", even after the worker finished booting and a
+  Stop would have worked. Mini IDE's own `runCell()` avoids this by
+  awaiting its own `ensureEngineAndFsReady()` *before* calling
+  `setRunButtonRunning()`; dewmini's port had the two calls in the wrong
+  order. Fixed by moving `ensurePyodide()` ahead of
+  `setRunButtonRunning()` in dewmini's `runCell()`, matching Mini IDE's
+  own sequencing. (`runAllCells()` already awaited the boot first and
+  didn't have this bug.)
+
+Also gave dewmini genuinely new capability dewmini's previous
+live-namespace-only implementation had no way to offer: Jedi-backed
+hover docs and signature help (`engine.hoverDoc`/`signatureHelp`, wired
+into `createCodeEditor()` the same way Mini IDE's own already were) work
+on code that hasn't run yet, not just on names already defined in the
+running interpreter.
+
+Verified end-to-end against a real, locally-vendored Pyodide, on both
+pages sharing the now-common engine: cross-origin isolation actually
+lands (`window.crossOriginIsolated === true`, `SharedArrayBuffer`
+available) on each; a tight `while True` loop with no yield points is
+genuinely interrupted by Stop, on the first click, on the first-ever run
+of a page's very first cell; the interpreter survives an interrupt and
+runs further cells afterward; Mini IDE's own Run/Stop, file manager, and
+autocomplete were re-verified unchanged, confirming the rename and
+generalization didn't regress the page this file originally belonged
+to; dewmini's file manager and a write-reload-readback SQLite round trip
+(7.88's own tests) still pass now that they run through the shared
+engine instead of direct `pyodide.FS` calls; "Restart Python" (new in
+Settings alongside the existing execution-mode status line) actually
+produces a fresh interpreter, confirmed by a variable defined before
+restart raising `NameError` after it rather than silently surviving.
+
+*Cost to change: high — not the line count (most of it is generalizing
+an existing, already-working file rather than writing new logic), but
+the risk: this is the one item of the four that replaces dewmini's
+actual execution engine, touches the file both tools now depend on, and
+both bugs above were exactly the kind that only show up when a real
+browser actually runs the thing — neither would have been caught by
+reading the ported code and confirming it matched its source.*
+
 ---
 
-**7.89 — Every tutorial is a folder, from the moment it is created.** A
+**7.90 — Every tutorial is a folder, from the moment it is created.** A
 tutorial was a lone markdown file at `tutorials/<module>/<slug>.md` that
 grew a folder only when a second release was published — and when it did,
 its practice page and its glossary stayed behind at module level. Four
