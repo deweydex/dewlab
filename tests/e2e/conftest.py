@@ -65,8 +65,12 @@ def site_dir(tmp_path_factory) -> Path:
         into = root / "tutorials" / MODULE / source.relative_to(FIXTURE_DIR)
         into.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy(source, into)
-    # The series' reading order, which lives beside the tutorials now.
+    # The series' reading order, which lives beside the tutorials now, and
+    # the glossary files build.py assembles the Reference panels from —
+    # both live beside a tutorial rather than in a directory of their own.
     for source in sorted(FIXTURE_DIR.glob("*.order.yaml")):
+        shutil.copy(source, root / "tutorials" / MODULE / source.name)
+    for source in sorted(FIXTURE_DIR.glob("*.glossary.yaml")):
         shutil.copy(source, root / "tutorials" / MODULE / source.name)
     shutil.copytree(DEWLAB / "assets", root / "assets")
     shutil.copytree(DEWLAB / "data", root / "data")

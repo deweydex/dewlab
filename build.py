@@ -2901,6 +2901,8 @@ def write_dewmini_bundle() -> Path | None:
     if coi_src.exists():
         shutil.copy2(coi_src, target / "coi-serviceworker.js")
 
+    _reference_index_for_bundle(target)
+
     # serve.py — see SERVE_SCRIPT's own docstring for why a bundle needs it.
     (target / "serve.py").write_text(SERVE_SCRIPT)
 
@@ -3301,6 +3303,62 @@ def write_search_index(
     return target
 
 
+def write_reference_index(tutorials: list[Tutorial]) -> Path:
+    """One JSON file, `assets/reference-index.json`: every term every
+    tutorial introduces, in one list, for dewmini's Library rail.
+
+    **This deliberately drops the rule the tutorial pages' own Reference
+    panel is built around.** `planning/REFERENCE_PANEL.md` §1 is
+    emphatic that a reader must never be shown something they have not
+    been taught yet — a reference that spoils next week's function names
+    is worse than no reference — which is why `cumulative_glossary()`
+    exists and why it is assembled per page, per position in a series.
+
+    dewmini has no position in a series. It is the workspace a reader
+    opens *outside* the curriculum, to try an idea that may belong to no
+    tutorial at all, and a reference that hid two-thirds of itself on the
+    grounds that they had not reached tutorial 31 yet would be actively
+    unhelpful to the person looking at it. So this one is the union, and
+    the constraint is dropped on purpose rather than by forgetting it —
+    see `planning/DEWMINI_WORKBENCH.md` §4.
+
+    Built from `own_glossary()` so each entry can name the tutorial that
+    introduced it: that provenance is what keeps the union honest, since
+    a reader meeting an unfamiliar term can see where it is actually
+    taught. Deduplicated on `(term, kind)`, first definition winning,
+    the same key `cumulative_glossary()` dedupes on.
+
+    The tutorial's *title*, deliberately, and not a link to it. This file
+    ships inside dewmini's offline bundle, which carries no tutorials at
+    all — a link would resolve on the hosted site and 404 for every
+    offline reader, and a reference that sends a student somewhere
+    broken is worse than one that simply tells them where to look.
+    """
+    seen: dict[tuple[str, str], dict] = {}
+    for tutorial in sorted(tutorials, key=lambda t: (t.module, t.slug)):
+        if tutorial.archived or not tutorial.is_default or tutorial.is_practice:
+            continue
+        for entry in own_glossary(tutorial):
+            key = (entry["term"], entry["kind"])
+            if key in seen:
+                continue
+            record = {
+                "term": entry["term"],
+                "kind": entry["kind"],
+                "definition": entry["definition"],
+                "origin": tutorial.title,
+            }
+            if entry.get("example"):
+                record["example"] = entry["example"]
+            seen[key] = record
+
+    entries = sorted(seen.values(), key=lambda e: e["term"].lower())
+    target = OUT / "assets" / "reference-index.json"
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text(json.dumps(entries, ensure_ascii=False))
+    return target
+
+
 def write_about_page(shell: str) -> Path:
     """A short guide to what the project is and how to contribute to it."""
     body = (
@@ -3519,6 +3577,13 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
         shutil.rmtree(OUT / "data", ignore_errors=True)
         shutil.copytree(DATA, OUT / "data")
 
+    # Before the dewmini bundle below, which copies this file out of OUT
+    # rather than out of the source assets/ (it is generated, not checked
+    # in — see _reference_index_for_bundle()). After the assets/ copytree
+    # above, whose rmtree would otherwise delete it.
+    if tutorials:
+        written.append(write_reference_index(tutorials))
+
     # dewmini (compose/) is its own small folder rather than more root-level
     # files, so it copies wholesale like assets/ does.
     if COMPOSE.is_dir():
@@ -3554,6 +3619,22 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
     if tutorials:
         written.append(write_search_index(tutorials, registry, groups))
     return written
+
+
+def _reference_index_for_bundle(target: Path) -> None:
+    """Copies the generated reference index into an offline bundle.
+
+    It needs its own step because it is *generated* rather than checked
+    in: DEWMINI_ASSET_FILES names files copied out of the source
+    `assets/`, and this one only exists under `OUT` once
+    write_reference_index() has run. Silently skipped when it isn't
+    there — a build with no tutorials in it writes no index, and that
+    should still produce a working bundle (just one whose Library says
+    the reference is unavailable rather than showing an empty list).
+    """
+    source = OUT / "assets" / "reference-index.json"
+    if source.exists():
+        shutil.copy2(source, target / "assets" / "reference-index.json")
 
 
 def main() -> int:

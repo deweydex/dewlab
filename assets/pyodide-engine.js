@@ -523,6 +523,17 @@ function pageNamesMT() {
   return [...toolsMT._page_globals.keys()].filter((name) => !name.startsWith("_"));
 }
 
+/* The main-thread counterpart of the worker's "describe-globals" — see
+ * that handler's own comment for why the proxy needs converting and
+ * destroying. */
+function describeGlobalsMT() {
+  if (!toolsMT) return [];
+  const proxy = toolsMT.describe_globals();
+  const described = proxy.toJs({ dict_converter: Object.fromEntries });
+  proxy.destroy();
+  return described;
+}
+
 /* Runs one cell's code directly, on the main thread. tutorial_tools.py's
  * own run_cell() does essentially everything here — running the code,
  * capturing output, rendering it into `el` — so this function is mostly
@@ -827,6 +838,20 @@ export async function pageNamesCompletion(context) {
       : [];
   if (!names.length) return null;
   return { from: word.from, options: names.map((label) => ({ label, type: "variable" })) };
+}
+
+/* What is currently defined in the shared namespace, each with its type and
+ * a one-line summary of its value — what dewmini's Workbench shows, so a
+ * reader can see what their code actually made rather than only what they
+ * remembered to print.
+ *
+ * Returns `[]` rather than throwing when Python has not booted: the panel
+ * asking before the first run is an ordinary thing to happen, not an
+ * error worth a message. */
+export async function describeGlobals() {
+  if (mode === "main-thread") return describeGlobalsMT();
+  if (!worker) return [];
+  return workerRequest("describe-globals", {});
 }
 
 /* ------------------------------------------------------------- filesystem

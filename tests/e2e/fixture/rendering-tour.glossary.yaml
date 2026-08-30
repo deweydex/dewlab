@@ -1,0 +1,36 @@
+# A glossary for the e2e fixture tutorial, so the build has real entries to
+# assemble into assets/reference-index.json and dewmini's Library rail has
+# something to search. Deliberately spans several kinds — the panel groups by
+# kind and offers one filter button per kind, and neither is exercised by a
+# glossary that is all concepts.
+entries:
+  - term: cell
+    kind: concept
+    definition: >
+      A small piece of Python you can edit and run, with whatever it produces
+      appearing directly underneath it.
+  - term: variable
+    kind: concept
+    definition: >
+      A name for a value, so the rest of your code can refer to it by that
+      name rather than repeating the value itself.
+    example: "answer = 42"
+  - term: print
+    kind: function
+    definition: >
+      Writes whatever you give it into the cell's output, as text.
+    example: "print('hello')"
+  - term: len
+    kind: function
+    definition: >
+      How many items are in a list, or how many characters are in a piece of
+      text.
+    example: "len([1, 2, 3])"
+  - term: "+"
+    kind: operator
+    definition: >
+      Adds two numbers, or joins two pieces of text end to end.
+  - term: for
+    kind: keyword
+    definition: >
+      Starts a loop that works through a list one item at a time.

@@ -1,0 +1,56 @@
+[
+  {
+    "id": "co2-emissions",
+    "title": "CO₂ emissions",
+    "description": "Annual carbon dioxide emissions by country and year — a large, real table, good for grouping, filtering and plotting a trend over time.",
+    "source": "Our World in Data",
+    "license": "CC BY 4.0",
+    "remote": false,
+    "code": "df = await load_csv(\"co2-emissions.csv\")\nshow_table(df.head())"
+  },
+  {
+    "id": "life-expectancy",
+    "title": "Life expectancy",
+    "description": "Life expectancy at birth, in years, by country and year from 1950 to 2016. Three columns, so it is an easy first dataset to reason about.",
+    "source": "Our World in Data, compiling Gapminder, the UN World Population Prospects and IHME",
+    "license": "CC BY 4.0",
+    "remote": false,
+    "code": "df = await load_csv(\"life-expectancy.csv\")\nshow_table(df.head())"
+  },
+  {
+    "id": "pride-and-prejudice",
+    "title": "Pride and Prejudice (full text)",
+    "description": "The whole novel as plain text — for counting words, measuring sentence length, or any other question you can ask of a large piece of writing.",
+    "source": "Project Gutenberg",
+    "license": "Public domain",
+    "remote": false,
+    "code": "from pyodide.http import pyfetch\n\nresponse = await pyfetch(\"../data/pride-and-prejudice.txt\")\ntext = await response.string()\nprint(f\"{len(text.split()):,} words\")"
+  },
+  {
+    "id": "owid-co2-per-capita",
+    "title": "CO₂ per person, by country",
+    "description": "Emissions divided by population, so large and small countries can be compared fairly — the same measure, per person, everywhere.",
+    "source": "Our World in Data",
+    "license": "CC BY 4.0",
+    "remote": true,
+    "code": "df = await load_csv(\"https://ourworldindata.org/grapher/co-emissions-per-capita.csv?v=1&csvType=full&useColumnShortNames=true\")\nshow_table(df.head())"
+  },
+  {
+    "id": "owid-energy-share",
+    "title": "Share of electricity from renewables",
+    "description": "The percentage of each country's electricity that came from renewable sources, year by year — a good dataset for asking who changed fastest.",
+    "source": "Our World in Data",
+    "license": "CC BY 4.0",
+    "remote": true,
+    "code": "df = await load_csv(\"https://ourworldindata.org/grapher/share-electricity-renewables.csv?v=1&csvType=full&useColumnShortNames=true\")\nshow_table(df.head())"
+  },
+  {
+    "id": "owid-population",
+    "title": "Population, by country and year",
+    "description": "How many people lived in each country, year by year — most useful joined onto another dataset, to turn a total into a rate.",
+    "source": "Our World in Data",
+    "license": "CC BY 4.0",
+    "remote": true,
+    "code": "df = await load_csv(\"https://ourworldindata.org/grapher/population.csv?v=1&csvType=full&useColumnShortNames=true\")\nshow_table(df.head())"
+  }
+]

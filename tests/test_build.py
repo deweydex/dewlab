@@ -2827,3 +2827,124 @@ class TestNoDuplicateKeysInCurriculumData:
         path = DEWLAB / "planning" / "curriculum" / "out-of-scope.yaml"
         if path.is_file():
             b.load_yaml_no_duplicate_keys(path.read_text())
+
+
+class TestTheCrossTutorialReference:
+    """`write_reference_index()` — the union of every tutorial's glossary,
+    for dewmini's Library rail.
+
+    The interesting property is the one it *breaks*: `TestTheReference`
+    above protects the rule that a reader is never shown a term they have
+    not reached yet, and this deliberately drops it, because dewmini has no
+    position in a series to protect (planning/DEWMINI_WORKBENCH.md §4).
+    Both behaviours are tested, so neither can be changed by accident.
+    """
+
+    def index(self, repo: Path):
+        return json.loads((repo / "site" / "assets" / "reference-index.json").read_text())
+
+    def test_it_carries_terms_from_every_tutorial_at_once(self, repo):
+        """The union — including a term from a *later* tutorial, which is
+        exactly what a tutorial page's own panel would hide."""
+        write(repo, "One.\n", slug="one")
+        write(repo, "Two.\n", slug="two")
+        set_order(repo, "computational-methods", "python-fundamentals", ["one", "two"])
+        glossary(repo, "one", [
+            {"term": "early", "kind": "concept", "definition": "Taught first."},
+        ])
+        glossary(repo, "two", [
+            {"term": "late", "kind": "function", "definition": "Taught later."},
+        ])
+        b.build()
+
+        terms = {entry["term"] for entry in self.index(repo)}
+        assert terms == {"early", "late"}
+
+    def test_each_entry_names_the_tutorial_that_introduced_it(self, repo):
+        write(repo, "One.\n", slug="one")
+        glossary(repo, "one", [
+            {"term": "x", "kind": "concept", "definition": "A thing."},
+        ])
+        b.build()
+
+        entry = self.index(repo)[0]
+        assert entry["origin"] == "A Title"
+
+    def test_it_carries_no_link_to_that_tutorial(self, repo):
+        """A title, not an href, on purpose: this file ships inside
+        dewmini's offline bundle, which has no tutorials in it, so a link
+        would 404 for every offline reader."""
+        write(repo, "One.\n", slug="one")
+        glossary(repo, "one", [
+            {"term": "x", "kind": "concept", "definition": "A thing."},
+        ])
+        b.build()
+
+        assert "href" not in json.dumps(self.index(repo))
+
+    def test_a_term_defined_twice_appears_once(self, repo):
+        """Deduplicated on (term, kind), first definition winning — the same
+        key cumulative_glossary() uses."""
+        write(repo, "One.\n", slug="one")
+        write(repo, "Two.\n", slug="two")
+        set_order(repo, "computational-methods", "python-fundamentals", ["one", "two"])
+        glossary(repo, "one", [
+            {"term": "shared", "kind": "concept", "definition": "The first definition."},
+        ])
+        glossary(repo, "two", [
+            {"term": "shared", "kind": "concept", "definition": "A later one."},
+        ])
+        b.build()
+
+        entries = [e for e in self.index(repo) if e["term"] == "shared"]
+        assert len(entries) == 1
+        assert entries[0]["definition"] == "The first definition."
+
+    def test_the_same_term_of_a_different_kind_is_kept(self, repo):
+        """`kind` is part of the key: a word can be both a concept and a
+        function, and collapsing those would lose one."""
+        write(repo, "One.\n", slug="one")
+        glossary(repo, "one", [
+            {"term": "print", "kind": "concept", "definition": "The idea."},
+            {"term": "print", "kind": "function", "definition": "The call."},
+        ])
+        b.build()
+
+        assert len([e for e in self.index(repo) if e["term"] == "print"]) == 2
+
+    def test_an_example_is_carried_through_when_there_is_one(self, repo):
+        write(repo, "One.\n", slug="one")
+        glossary(repo, "one", [
+            {"term": "x", "kind": "concept", "definition": "A thing.", "example": "x = 1"},
+            {"term": "y", "kind": "concept", "definition": "Another."},
+        ])
+        b.build()
+
+        by_term = {e["term"]: e for e in self.index(repo)}
+        assert by_term["x"]["example"] == "x = 1"
+        assert "example" not in by_term["y"]
+
+    def test_entries_are_sorted_by_term(self, repo):
+        write(repo, "One.\n", slug="one")
+        glossary(repo, "one", [
+            {"term": "zebra", "kind": "concept", "definition": "Last."},
+            {"term": "apple", "kind": "concept", "definition": "First."},
+        ])
+        b.build()
+
+        assert [e["term"] for e in self.index(repo)] == ["apple", "zebra"]
+
+    def test_the_offline_bundle_carries_the_index(self, repo_with_assets):
+        """Generated rather than checked in, so it needs its own copy step
+        (_reference_index_for_bundle) — without which dewmini's Library
+        would be empty in every downloaded copy."""
+        write(repo_with_assets, "One.\n", slug="one")
+        glossary(repo_with_assets, "one", [
+            {"term": "x", "kind": "concept", "definition": "A thing."},
+        ])
+        b.build(standalone=True)
+
+        bundled = (repo_with_assets / "site" / "download" / "dewmini"
+                   / "assets" / "reference-index.json")
+        assert bundled.is_file()
+        assert json.loads(bundled.read_text())[0]["term"] == "x"

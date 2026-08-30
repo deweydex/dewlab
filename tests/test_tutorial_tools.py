@@ -554,3 +554,127 @@ class TestPltShow:
     def test_nothing_happens_when_matplotlib_was_never_imported(self, cell):
         sys.modules.pop("matplotlib.pyplot", None)
         tt._patch_pyplot_show()  # must not raise
+
+
+class TestDescribeGlobals:
+    """describe_globals() — what dewmini's variable inspector reads.
+
+    Worth unit-testing rather than leaving to the browser precisely because
+    it *can* be: it takes a dict and returns plain data, so every branch is
+    reachable under CPython, and the e2e test can then be about the panel
+    rather than about the summaries.
+    """
+
+    @pytest.fixture(autouse=True)
+    def clean_namespace(self):
+        """Each test gets the shared namespace to itself."""
+        tt._page_globals.clear()
+        yield
+        tt._page_globals.clear()
+
+    def described(self):
+        return {entry["name"]: entry for entry in tt.describe_globals()}
+
+    def test_a_number_shows_its_value(self):
+        tt._page_globals["answer"] = 42
+        entry = self.described()["answer"]
+        assert entry["type"] == "int"
+        assert entry["summary"] == "42"
+        assert entry["kind"] == "data"
+
+    def test_containers_are_counted_rather_than_printed(self):
+        """A thousand-item list should say "1000 items", not print itself."""
+        tt._page_globals.update({
+            "names": ["ada", "alan"],
+            "empty": [],
+            "one": [1],
+            "lookup": {"a": 1, "b": 2},
+        })
+        described = self.described()
+        assert described["names"]["summary"] == "2 items"
+        assert described["empty"]["summary"] == "0 items"
+        assert described["one"]["summary"] == "1 item"
+        assert described["lookup"]["summary"] == "2 keys"
+
+    def test_a_long_string_is_truncated(self):
+        tt._page_globals["essay"] = "x" * 500
+        summary = self.described()["essay"]["summary"]
+        assert summary.endswith("…")
+        assert len(summary) <= tt._SUMMARY_LIMIT
+
+    def test_a_short_string_keeps_its_quotes(self):
+        """Quoted, so a reader can tell the string "42" from the number 42."""
+        tt._page_globals["greeting"] = "hello"
+        assert self.described()["greeting"]["summary"] == "'hello'"
+
+    def test_private_names_are_left_out(self):
+        """The same convention autocomplete follows — these are bookkeeping,
+        not anything a reader put there."""
+        tt._page_globals.update({"_internal": 1, "visible": 2})
+        assert "_internal" not in self.described()
+        assert "visible" in self.described()
+
+    def test_functions_and_modules_are_separated_from_data(self):
+        """What the panel folds away, so a student's own variables stay at
+        the top rather than being buried under the seeded names."""
+        import math
+
+        def helper():
+            return None
+
+        tt._page_globals.update({"math": math, "helper": helper, "mine": 1})
+        described = self.described()
+        assert described["math"]["kind"] == "module"
+        assert described["helper"]["kind"] == "callable"
+        assert described["mine"]["kind"] == "data"
+
+    def test_a_class_counts_as_callable(self):
+        tt._page_globals["Thing"] = type("Thing", (), {})
+        assert self.described()["Thing"]["kind"] == "callable"
+
+    def test_a_value_whose_repr_raises_does_not_break_the_panel(self):
+        """A student's own broken __repr__ is a bug in their object, not a
+        reason for every other variable to disappear."""
+        class Hostile:
+            def __repr__(self):
+                raise RuntimeError("no")
+
+        tt._page_globals.update({"hostile": Hostile(), "fine": 1})
+        described = self.described()
+        assert described["hostile"]["summary"] == "(cannot be displayed)"
+        assert described["fine"]["summary"] == "1"
+
+    def test_entries_come_back_sorted_by_name(self):
+        tt._page_globals.update({"zebra": 1, "apple": 2, "Mango": 3})
+        assert [e["name"] for e in tt.describe_globals()] == ["apple", "Mango", "zebra"]
+
+    def test_everything_is_a_string(self):
+        """The reason this returns plain data: it crosses a postMessage
+        boundary, where a Pyodide proxy would not survive."""
+        tt._page_globals.update({"n": 1, "text": "x", "items": [1, 2]})
+        for entry in tt.describe_globals():
+            assert set(entry) == {"name", "type", "summary", "kind"}
+            assert all(isinstance(value, str) for value in entry.values())
+
+
+@needs_pandas
+class TestDescribeGlobalsWithPandas:
+    """The shape summaries, which are the point of the inspector for anyone
+    working with data: a DataFrame should say how big it is, not print
+    itself into a sidebar."""
+
+    @pytest.fixture(autouse=True)
+    def clean_namespace(self):
+        tt._page_globals.clear()
+        yield
+        tt._page_globals.clear()
+
+    def test_a_dataframe_shows_its_shape(self):
+        tt._page_globals["df"] = pd.DataFrame({"a": [1, 2, 3], "b": [4, 5, 6]})
+        entry = next(e for e in tt.describe_globals() if e["name"] == "df")
+        assert entry["summary"] == "3 rows x 2 columns"
+
+    def test_a_series_shows_its_length(self):
+        tt._page_globals["column"] = pd.Series([1, 2, 3, 4])
+        entry = next(e for e in tt.describe_globals() if e["name"] == "column")
+        assert entry["summary"] == "4 values"

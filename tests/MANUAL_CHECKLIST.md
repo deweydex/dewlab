@@ -116,6 +116,31 @@ Last verified: 2026-08-30 — loaded and ran Python 3.13.2 with every
 non-loopback request aborted, zero blocked requests recorded.
 `planning/EDGES_AUDIT.md` §1.
 
+### A remote dataset actually loads
+
+The one check the sandbox this was built in could not run at all: its
+network policy blocks `ourworldindata.org`, so whether a browser is
+allowed to fetch those CSVs was never observed, only expected
+(`DECISIONS_LOG.md` 7.99). Everything else about the Data catalogue —
+the cards, the code it writes, the local datasets — is covered by
+`tests/e2e/test_dewmini_workbench.py`; this is the half that needs a
+real network.
+
+On a machine with an ordinary connection, open dewmini, open the
+**Library** rail, and in **Data** pick one of the entries marked *from
+the web*. Run the cell it adds.
+
+- [ ] the table renders, or
+- [ ] it fails with the CORS explanation from `load_csv()` — naming the
+      other site's permission and pointing at Files — rather than a bare
+      network error
+
+Either outcome is a pass for the *code*; the second means the catalogue's
+remote entries should be reconsidered, since a student should not be
+offered a dataset that reliably fails.
+
+Last verified: never.
+
 ### A phone
 
 At 375px wide, on a tutorial and a practice page:

@@ -21,6 +21,28 @@ once it's actually drawn on the page, a few DOM-referencing properties
 (`.outputEl`, `.runBtn`) — the rule is: change the data, then make the
 page match it, never the other way around.
 
+### …and `cells` belongs to a notebook
+
+Since tabs, `cells` is not the only notebook — it is the *active* one.
+`notebooks` holds `{ id, name, cells }` for each open tab, and `cells`
+points at whichever is active.
+
+The important word is *points*: `cells` is the same array object the
+active notebook holds, not a copy. That is what let tabs arrive without
+rewriting every function in this file — they all still work on `cells`
+and neither know nor care that there are others. Switching tabs
+re-points one variable and re-renders.
+
+The cost of that trick is one hazard worth knowing about, and it is why
+`setCells()` exists. Assigning `cells = something` on its own would
+leave the notebook still holding the *old* array, so edits would land in
+an array attached to nothing — visible on screen, and silently gone the
+moment you switched tabs and back. Any code replacing a notebook's cells
+wholesale (loading the example, clearing, importing) has to go through
+`setCells()`. `tests/e2e/test_dewmini_workbench.py` covers exactly that
+round trip, because it is the kind of mistake that looks fine until it
+doesn't.
+
 Cell *execution* and cell *filesystem access* both go through
 `assets/pyodide-engine.js` and `compose/dewmini-fs.js` respectively,
 imported at the top of this file (`import * as engine ...`, `import *

@@ -157,6 +157,30 @@ function pageNames() {
   }
 }
 
+/* What is defined in the shared namespace, with each value's type and a
+ * one-line summary — dewmini's variable inspector. The work happens in
+ * Python (tutorial_tools.describe_globals(), which is where _page_globals
+ * lives and which is unit-testable under plain CPython); this only
+ * converts the result across the language boundary.
+ *
+ * `.toJs()` with a Map converter, because Pyodide hands back a list of
+ * Python dicts, and a dict becomes a JS Map by default rather than a
+ * plain object — which structured-clones fine but reads as empty from
+ * the other side of postMessage once JSON-shaped code expects `.name`.
+ * `destroy()` releases the proxy: a describe on every run would
+ * otherwise leak one proxy per call for the life of the worker. */
+function describeGlobals() {
+  if (!tools) return [];
+  try {
+    const proxy = tools.describe_globals();
+    const described = proxy.toJs({ dict_converter: Object.fromEntries });
+    proxy.destroy();
+    return described;
+  } catch {
+    return [];
+  }
+}
+
 /* Real Python source code, defining two small helper functions on top of
  * Jedi — the library that does static analysis of Python source (working
  * out what a name probably refers to by reading the code, without
@@ -433,6 +457,8 @@ self.onmessage = async (ev) => {
       respond(signatureHelp(msg.name, msg.source, msg.line, msg.col));
     } else if (msg.type === "page-names") {
       respond(pageNames());
+    } else if (msg.type === "describe-globals") {
+      respond(describeGlobals());
     } else if (msg.type === "fs-mount-native") {
       await fsMountNative(msg.mountpoint, msg.handle);
       respond("ok");

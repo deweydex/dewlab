@@ -78,10 +78,11 @@ PATH_SUFFIXES = {".md", ".py", ".js", ".css", ".html", ".yaml", ".yml",
 GENERATED = ("site/", "dev/pyodide/", "assets/vendor/pyodide/",
              "node_modules/", "__pycache__/")
 
-# Pages build.py writes rather than files anyone edits. A document naming one
-# is describing the built site, which is exactly where they do exist.
+# Pages and data files build.py writes rather than files anyone edits. A
+# document naming one is describing the built site, which is exactly where
+# they do exist.
 GENERATED_PAGES = {"index.html", "tree.html", "topics.html", "about.html",
-                   "editor.html"}
+                   "editor.html", "search-index.json", "reference-index.json"}
 
 # Documents whose subject is material in another repository: the QQI module
 # descriptors in `deweydex/everlearning` and the worksheets in

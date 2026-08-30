@@ -4109,3 +4109,126 @@ and which were descriptions of the present (reworded). With the site
 never deployed, nothing removed here was ever in anyone's hands: no
 bookmark breaks and no downloaded bundle exists outside this
 repository.*
+
+---
+
+**7.99 — dewmini becomes a workbench: tabs, two rails, and tools for
+looking at your own work.** Asked for directly: tabs, sidebars on both
+sides carrying file imports and "variable inspectors and other
+pedagogical tools", a fuller reference with search and category
+navigation on the left, data import from somewhere like Our World in
+Data, and a right-hand side moved away from settings and towards notes
+and pedagogy. Widgets — the one real capability gap — were explicitly
+deferred. `planning/DEWMINI_WORKBENCH.md` is the design; this entry is
+what was decided along the way.
+
+**The smallness rule is not abandoned, it is restated.** Every planning
+document dewmini has says it is the small one, and §3 of
+`MINI_IDE_AND_DEWMINI_NEXT.md` made "nothing that makes it bigger" its
+whole finding. That rule existed because dewmini had a larger sibling to
+be small *against*. 7.91 removed the sibling. A tool with no alternative
+cannot also refuse to grow, so the discipline becomes **quiet by
+default, everything one press away**: nothing new opens on a first
+visit, the notebook keeps the full width until a rail is asked for, and
+someone who came to check `6 * 7` sees exactly what they saw before.
+Every decision below was checked against that sentence.
+
+**Three panels across two edges, and the layout was already built.**
+Library (left) is what you look up; Workbench (right) is your own work;
+Settings keeps the right edge with the Workbench and stops being the
+headline — Notes and Files moved out of it, which is the substance of
+"make the right bar more into notes and pedagogical ideas". Help stopped
+being a panel and became Library sections, on `SIDEBAR_CONTENT.md` §4's
+own reasoning that extending a panel beats adding one. The mechanism
+needed almost nothing new: `tutorial-style.css` has carried
+`data-dl-panel-left`/`-right` with independent width variables since
+7.83, and dewmini had overridden it with a single attribute and one
+width — a fair simplification while both its panels docked right (7.84),
+and exactly wrong with a rail on each side. Deleting that override *is*
+the two-rail layout. Two smaller corrections fell out of it: a
+left-docked panel resizes with native CSS (it grows away from its own
+edge, which is why the right-docked ones need the JS handle), and a
+docked rail must not close on an outside click — dismiss-on-outside is
+right for a popover and wrong for a pane the page has made room for,
+where every click on your own code would shut the reference you opened
+to read while writing it.
+
+**Tabs re-point one variable rather than rewriting the file.**
+`notebooks[]` holds `{id, name, cells}`; the module-level `cells` is not
+a copy of the active notebook's array but *is* that array, so every
+existing function kept working untouched. The cost is one real hazard —
+assigning `cells` alone detaches it, leaving edits landing in an array
+attached to nothing, visible until a tab switch silently reverts them —
+so `setCells()` is the only sanctioned way to swap them, and the e2e
+test covers exactly that round trip. Storage moved to
+`dewmini:notebooks:v1` with a one-way migration from the old bare array,
+tested, and the old key deliberately left in place rather than deleted:
+if the migration is ever wrong, the original is still there.
+
+**One Python session shared by every tab, made visible rather than
+silent.** Real Jupyter gives each notebook its own kernel. Doing that
+here means threading a namespace identifier through every engine call
+and across the worker boundary — a change to the shared engine, which
+7.97 established is a change to every surface that runs Python, and a
+poor trade to make overnight without the person it is for available.
+Instead the sharing is *shown*: the Workbench's Variables list is one
+session, and says so in plain words whenever a second tab exists. A
+student who defines `data` in one tab and finds it in another has been
+told and can see why. If it turns out to confuse people, the per-tab
+namespace is the fix and this paragraph is the brief for it.
+
+**The reference drops the one rule the tutorial pages' own is built
+around, on purpose.** `REFERENCE_PANEL.md` §1 is emphatic that a reader
+must never be shown a term they have not been taught — a reference that
+spoils next week's function names is worse than none. That rule protects
+a reader's position in a sequence. dewmini's readers have no position in
+a sequence; that is what a workspace *is*. So
+`write_reference_index()` emits the union — 248 terms today, deduplicated
+on `(term, kind)`, grouped by the five kinds the schema already defines,
+searchable across terms and definitions, with category filters — from
+the same `own_glossary()` the tutorial pages use, so neither can drift.
+Each entry names the tutorial that introduced it but does **not** link
+to it: this file ships inside the offline bundle, which carries no
+tutorials, and a link that 404s for every offline reader is worse than a
+title that tells them where to look.
+
+**The variable inspector is Python, not JavaScript.**
+`describe_globals()` walks `_page_globals` and returns plain
+`{name, type, summary, kind}` strings: it belongs where the namespace
+lives, nothing crosses the worker boundary as a proxy, and — the reason
+that matters most here — it is unit-testable under plain CPython, which
+the JavaScript half is not. Eleven unit tests cover it, including a
+value whose `__repr__` raises, because that is a bug in a student's own
+object and not a reason for every other variable to vanish from the
+panel.
+
+**Data: one claim this environment could not test, so it is not made.**
+The catalogue lists local and remote datasets with real source and
+licence, and writes working code into the notebook when picked. Remote
+fetching depends on the other site permitting it (CORS), and the sandbox
+this was built in blocks `ourworldindata.org` outright — the fetch could
+not be tried once. Twice already this repository has shipped an untested
+claim (7.92: two offline bundles that could not be opened at all), so
+`load_csv()` was extended to take a URL *and* to fail informatively —
+naming CORS, and pointing at the reliable route of downloading the file
+and adding it through Files — and `tests/MANUAL_CHECKLIST.md` carries
+the check nobody here could run.
+
+**dewmini has e2e coverage for the first time.** Twelve tests driving
+real Chromium against a self-hosted Pyodide: tabs keeping their own
+cells across a switch, the migration from pre-tabs storage, both rails
+open at once, same-edge panels excluding each other, a rail surviving a
+click on your own code, reference search and kind filters, a dataset
+writing its own cell, and the inspector reading variables out of live
+Python. 7.96 and 7.97 were both rounds of defects in code that looked
+right and had no browser test; this is the answer to that, and it found
+one thing immediately — an empty cell container has zero height, so
+"visible" is not what a test should wait on.
+
+*Cost to change: substantial and mostly additive — ~900 lines across
+dewmini's three files, one build step, one shared-engine message, and a
+vendored CodeMirror addition for find-and-replace. The risk concentrates
+in two places: the `cells` aliasing above, and the shared engine, where
+`describeGlobals()` follows the existing `page-names` path exactly
+rather than inventing a second shape. Everything else is a panel that
+either renders or does not.*
