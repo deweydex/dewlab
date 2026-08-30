@@ -20,6 +20,9 @@ the record of why it works the way it does.
 ### Architecture
 - **[`STATUS.md`](./STATUS.md)** — what's built, what's still open, and
   the trickier decisions behind the parts that are done.
+- **[`ROADMAP.md`](./ROADMAP.md)** — what comes next, in phases, with
+  the questions each phase leaves open and what will be assumed if
+  nobody answers them.
 - **[`DECISIONS.md`](./DECISIONS.md)** — the early choices (libraries,
   visual style, hosting, versioning, editor, maths) and why.
 - **[`BUILD_PLAN.md`](./BUILD_PLAN.md)** — the staged plan this was
