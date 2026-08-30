@@ -599,6 +599,10 @@ function initReference(manifest) {
     if (panel.hasAttribute("hidden")) return;
     if (panel.contains(ev.target) || toggle.contains(ev.target)) return;
     if (clickIsInsidePanels(ev.target, ["dl-settings-toggle", "dl-settings"])) return;
+    // The highlight-to-look-up button (initReferenceLookup()) opens this
+    // panel, so it is a way in rather than a click outside — without this it
+    // would close the panel its own click had just opened.
+    if (ev.target.closest && ev.target.closest(".dl-lookup")) return;
     setOpen(false);
   });
 
@@ -620,6 +624,141 @@ function initReference(manifest) {
       }
     }).observe(panel, { attributes: true, attributeFilter: ["hidden"] });
   }
+}
+
+/**
+ * Highlight-to-look-up: select a word in the reading, and if the reference
+ * actually knows it, a small button appears offering to look it up.
+ *
+ * The rule that keeps this from being annoying is that it stays silent
+ * unless it has something to say. A reader selecting text to copy, or
+ * dragging across a sentence, sees nothing at all — the button only appears
+ * when the selection matches a term this page's reference has actually
+ * taught, which is exactly when a reader might have been about to go
+ * looking for it anyway.
+ *
+ * Matching is against term *names* only, not definitions. Matching
+ * definitions too would fire on ordinary words like "number" that happen to
+ * appear in some entry's prose, which is the noisy version of this feature
+ * and the reason it is not that.
+ *
+ * Nothing is stored and nothing is remembered: selection in, the panel's
+ * existing filter out (filterReferenceContent(), the same one the panel's
+ * own search box drives).
+ */
+function initReferenceLookup(manifest) {
+  const body = document.getElementById("dl-body");
+  const panel = document.getElementById("dl-reference");
+  const toggle = document.getElementById("dl-reference-toggle");
+  if (!body || !panel || !toggle) return;
+
+  // manifest.glossary is a flat list of entries, the same one
+  // renderReference() groups by kind for display.
+  const terms = (manifest.glossary || [])
+    .map((entry) => String(entry.term || "").toLowerCase())
+    .filter(Boolean);
+  if (!terms.length) return;
+
+  // A selection worth offering a lookup for: long enough not to be a stray
+  // character, short enough to be a term rather than a dragged paragraph.
+  const SHORTEST = 2;
+  const LONGEST = 40;
+
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "dl-lookup";
+  button.hidden = true;
+  document.body.append(button);
+
+  function hide() { button.hidden = true; }
+
+  /* The term this selection is asking about, or null. A selection matches
+   * when it contains a term or a term contains it, so both "matrix" selected
+   * inside "transformation matrix" and the whole phrase find the entry. */
+  function termFor(text) {
+    const needle = text.trim().toLowerCase();
+    if (needle.length < SHORTEST || needle.length > LONGEST) return null;
+    return terms.find((term) => term.includes(needle) || needle.includes(term)) || null;
+  }
+
+  document.addEventListener("selectionchange", () => {
+    const selection = document.getSelection();
+    if (!selection || selection.isCollapsed) { hide(); return; }
+
+    // Only the reading. A selection inside a cell's editor belongs to
+    // CodeMirror, and one inside the panel itself would be circular.
+    const anchor = selection.anchorNode;
+    const within = anchor && anchor.nodeType === Node.TEXT_NODE ? anchor.parentElement : anchor;
+    if (!within || !body.contains(within) || within.closest(".dl-editor, .dl-output")) {
+      hide();
+      return;
+    }
+
+    const text = selection.toString();
+    const term = termFor(text);
+    if (!term) { hide(); return; }
+
+    const rect = selection.getRangeAt(0).getBoundingClientRect();
+    if (!rect.width && !rect.height) { hide(); return; }
+
+    // A selection can be off-screen — restored by the browser on load, or
+    // left behind by a scroll. Placing a button at its coordinates would put
+    // the button off-screen too, where it is unreachable but still focusable
+    // by keyboard. Nothing to offer for a selection nobody can see.
+    const withinViewport = rect.bottom > 0 && rect.top < window.innerHeight;
+    if (!withinViewport) { hide(); return; }
+
+    button.textContent = `Look up "${term}"`;
+    button.dataset.term = term;
+    button.hidden = false;
+    // Positioned against the viewport, so the button is fixed rather than
+    // absolutely placed — no need to account for the page's own scroll, and
+    // a scroll simply dismisses it.
+    //
+    // Measured after unhiding, because a hidden element has no width to
+    // clamp against. Both edges are kept inside the viewport so a selection
+    // near the right margin or the last line of the page still gets a
+    // button a reader can actually reach.
+    const margin = 8;
+    const width = button.offsetWidth;
+    const height = button.offsetHeight;
+    const left = Math.min(Math.max(margin, rect.left),
+                          window.innerWidth - width - margin);
+    const below = rect.bottom + 6;
+    const top = below + height + margin > window.innerHeight
+      ? Math.max(margin, rect.top - height - 6)   // above the selection instead
+      : below;
+    button.style.left = `${Math.max(margin, left)}px`;
+    button.style.top = `${top}px`;
+  });
+
+  button.addEventListener("mousedown", (ev) => {
+    // Before the click, or the selection is gone by the time we read it.
+    ev.preventDefault();
+  });
+
+  button.addEventListener("click", () => {
+    const term = button.dataset.term || "";
+    // Let the selection go. The reader has what they asked for, and keeping
+    // it would leave this button offering the same lookup a second time —
+    // the mousedown above deliberately preserved the selection long enough
+    // to read the term off it, and this is where that ends.
+    const selection = document.getSelection();
+    if (selection) selection.removeAllRanges();
+    hide();
+    panel.removeAttribute("hidden");
+    toggle.setAttribute("aria-expanded", "true");
+    closeSeriesNav();
+    const searchInput = document.getElementById("dl-reference-search");
+    if (searchInput && !searchInput.hidden) {
+      searchInput.value = term;
+      filterReferenceContent(term);
+    } else {
+      filterReferenceContent(term);
+    }
+  });
+
+  document.addEventListener("scroll", hide, { passive: true });
 }
 
 /* --------------------------------------------------------- navigation panel */
@@ -3068,6 +3207,7 @@ initVersionsSection();
 initVersionMarker();
 initSettingsPanel();
 initReference(currentManifest);
+initReferenceLookup(currentManifest);
 initSeriesNav();
 watchPanelOverlap();
 restoreSidebarState();

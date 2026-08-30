@@ -3599,3 +3599,58 @@ the files, it is the two conventions that were quietly diverging: every
 release published under the old editor added another folder in a shape no
 document described. Reverting would also mean giving up assets entirely, or
 rebuilding somewhere else for them to live.*
+
+---
+
+**7.91 — Highlight a word, and the reference offers to look it up — but
+only when it actually knows the word.** The reference panel could already
+be searched, once a reader thought to open it and type. The gap this
+closes is the moment a reader is *already* looking at a term they half
+remember, in the middle of a paragraph, and would have to leave the
+sentence to go and ask about it.
+
+**The design decision that matters is the silence.** The obvious version
+of this feature reacts to every selection — filtering the panel live as a
+reader drags across text. That version is unusable: most selections are
+someone copying a sentence, and having a panel lurch about in response is
+exactly the kind of interruption `planning/VERSIONING_AND_PROGRESS.md`'s
+"a notice, never a block" instinct exists to rule out. So the offer
+appears only when the selected text matches a term this page's reference
+has actually taught. Select an ordinary word and nothing happens at all,
+which is the common case and the one worth optimising.
+
+Matching is against term *names* only, never definitions, for the same
+reason: matching definitions would fire on ordinary words like "number"
+that happen to appear inside some entry's prose, and the feature would
+become noise. A selection matches when it contains a term or a term
+contains it, so "matrix" selected inside a sentence about a
+transformation matrix finds the entry, and so does the whole phrase.
+
+Three things were found by driving it in a real browser rather than by
+reading the code, and each was a genuine defect rather than a polish item:
+
+- **The manifest's glossary is a flat list of entries, not entries grouped
+  by kind** — `renderReference()` does the grouping for display. The first
+  draft read it as grouped, which produced an empty term list and a
+  feature that silently never appeared.
+- **`initReference()`'s click-outside handler closed the panel the button
+  had just opened.** The button lives outside the panel and outside its
+  toggle, so it looked like a click elsewhere. It is now named there as a
+  way in, beside the existing exemption for Settings.
+- **A selection can be off-screen**, restored on load or left behind by a
+  scroll, and placing the button at its coordinates put the button
+  off-screen too — invisible but still reachable by keyboard. It now
+  declines to appear for a selection nobody can see, and clamps to the
+  viewport otherwise, flipping above the selection where there is no room
+  below.
+
+The button releases the selection when used, which is what stops it
+re-offering the same lookup a second time: the `mousedown` handler
+deliberately preserves the selection long enough to read the term off it,
+and the click is where that ends.
+
+*Cost to change: low. One function in `assets/tutorial-runtime.js`, one
+CSS block, one line of exemption inside `initReference()`, and no new
+storage, no manifest change, no build change at all — it reads the
+glossary the manifest already carries and calls the filter the panel's own
+search box already uses. Removing it would leave no trace.*

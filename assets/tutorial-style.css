@@ -2487,3 +2487,44 @@ p code, li code {
   }
   a { color: #1b2a4a !important; text-decoration: underline; }
 }
+
+/* Highlight-to-look-up (initReferenceLookup() in tutorial-runtime.js).
+   A small button that appears under a selection, but only when the
+   reference actually knows the selected term — so most selections, a
+   reader copying a sentence included, never see it at all.
+
+   Fixed rather than absolute because it is positioned from the
+   selection's viewport rectangle; a scroll dismisses it rather than
+   dragging it along. z-index sits above the reading and below the
+   panels, which is the order it needs: it opens a panel and gets out
+   of the way. */
+.dl-lookup {
+  position: fixed;
+  z-index: 45;
+  font: inherit;
+  font-size: 0.85rem;
+  line-height: 1;
+  padding: 0.4rem 0.7rem;
+  border: 1px solid var(--dl-panel-border, var(--dl-muted));
+  border-radius: 0.35rem;
+  background: var(--dl-panel-bg);
+  color: var(--dl-fg);
+  box-shadow: 0 2px 8px var(--dl-shadow);
+  cursor: pointer;
+  max-width: 18rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dl-lookup:hover,
+.dl-lookup:focus-visible {
+  color: var(--dl-orange);
+  border-color: var(--dl-orange);
+}
+
+/* Printing a page should not print a transient button, and a reader who
+   has turned motion or chrome down does not need it either. */
+@media print {
+  .dl-lookup { display: none !important; }
+}

@@ -62,6 +62,10 @@ current as things change — not a pitch.
 - **Student notes**: a free-text field saved alongside a tutorial's
   cells, distinct from the author-written pedagogical notes described in
   `SIDEBAR_CONTENT.md` (`STUDENT_NOTES.md`, DECISIONS_LOG.md 7.72/7.75).
+- **Highlight to look up**: selecting a word the reference knows offers
+  a small button that opens the panel filtered to it; selecting anything
+  else does nothing at all (`REFERENCE_PANEL.md` §6b, DECISIONS_LOG.md
+  7.91).
 - **Cell tooltips**: hover docs and signature help that cover Python
   builtins, not just a student's own names, falling back to Jedi's
   static analysis for code that hasn't run yet — live always wins when

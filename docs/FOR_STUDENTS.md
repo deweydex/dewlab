@@ -59,6 +59,19 @@ without being asked.
 
 ---
 
+## Looking a word up
+
+If a word in the reading is one the Reference knows, selecting it offers a
+small **Look up** button. Press it and the Reference opens, already filtered
+to that word, so you do not have to leave the sentence you were reading to go
+and find it.
+
+Selecting anything else — a phrase you are copying, a line you are just
+following with the cursor — does nothing at all. The button only appears when
+there is genuinely something to show you.
+
+---
+
 ## Settings
 
 Every page has a **Settings** button in the bar at the top, and that bar follows

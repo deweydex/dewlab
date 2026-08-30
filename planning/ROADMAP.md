@@ -216,9 +216,12 @@ next.
 
 **The work:**
 
-1. Highlight-to-search: select text on the page, filter the reference
-   panel to it. No persistence, no new storage — selection in,
-   `filterReferenceContent()` out.
+1. Highlight-to-search — **built**, `DECISIONS_LOG.md` 7.91. Select text
+   on the page and, when the reference knows the term, a small button
+   offers to open the panel filtered to it. No persistence, no new
+   storage — selection in, `filterReferenceContent()` out. The design
+   decision worth knowing is the silence: it stays away for every
+   selection that is not a term, which is most of them.
 2. Build-time term links: every later occurrence of a taught term links
    quietly back to its introduction, so "where did I meet this?" is
    answerable from anywhere. For returners after a break, re-finding is

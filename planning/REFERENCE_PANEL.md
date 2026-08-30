@@ -187,6 +187,25 @@ restored below the phone breakpoint, where it stays a bottom sheet a
 reader opens on purpose each time). §6's placement details are kept
 here as the record of the shape this shipped in first, not rewritten.
 
+## 6b. Highlight to look up
+
+Built — `DECISIONS_LOG.md` 7.91, `initReferenceLookup()` in
+`assets/tutorial-runtime.js`.
+
+Selecting text in the reading offers a **Look up** button, which opens this
+panel filtered to the selected term. It reuses `filterReferenceContent()`
+rather than matching anything itself, so the panel's search box and this
+share one behaviour by construction.
+
+**The rule this lives or dies by: it stays silent unless the reference
+actually knows the selection.** Reacting to every selection would put a
+moving panel in front of a reader who was only copying a sentence. The offer
+is therefore gated on matching a *term name* in the manifest's glossary —
+never a definition, which would fire on ordinary words appearing in some
+entry's prose.
+
+Nothing is stored. Selection in, the existing filter out.
+
 ## 7. What ships in what order
 
 Roughly: schema + a couple of hand-written example glossaries to prove the
