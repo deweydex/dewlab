@@ -227,3 +227,24 @@ a file a cell wrote, not the notebook itself.
   cells, text cells become markdown cells, and it opens in Jupyter,
   JupyterLab, or Colab. The same file loads back into dewmini from
   Settings.
+
+---
+
+## The downloadable dewmini
+
+Beyond saving your work, the link under dewmini's own title —
+"downloadable copy of dewmini itself" — gets you the whole tool as a
+zip: unzip it, and it works the same as it does online, with no internet
+needed at all once you've unzipped it, once the copy you downloaded
+already includes Python. Good for a classroom with no reliable
+connection, or for keeping a copy that works the same next year
+regardless of what the hosted site looks like by then.
+
+It needs one extra step the online version doesn't: after unzipping,
+run `python3 serve.py` from inside the folder (open a terminal there
+first) rather than double-clicking `index.html` directly. A modern
+browser won't let a page opened straight off disk load its own
+JavaScript the way dewmini needs to — *serve.py* starts a small local
+server and opens the right page for you, and needs nothing installed
+beyond the Python already running it. Leave that terminal window open
+while you use dewmini; closing it stops the server.

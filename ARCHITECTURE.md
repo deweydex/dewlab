@@ -387,12 +387,13 @@ subdirectory (kept separate from Mini IDE's own old, un-namespaced OPFS
 mount, still used by the retired app's offline copy), or IDBFS — so the
 file manager, SQL support (`sqlite3` against a mounted `.db` file), and
 uploads all work without knowing which backend is active. Opened from
-`file://` (a downloadable, offline distribution, not yet built for
-dewmini the way one already exists for Mini IDE's own offline copy — see
-§ below), a module Worker isn't reliably available, so
-`pyodide-engine.js` falls back to running Pyodide on the main thread
-instead — same interpreter, same `tutorial_tools.py`, just without a
-genuine Stop button.
+`file://` — which dewmini's own downloadable copy (see below) avoids
+by serving itself from `http://localhost` instead, since a browser
+blocks the page's own `import` statements from a bare file entirely,
+not just the Worker specifically — a module Worker isn't reliably
+available either, so `pyodide-engine.js` falls back to running Pyodide
+on the main thread when it is reachable at all: same interpreter, same
+`tutorial_tools.py`, just without a genuine Stop button.
 
 Each of these files has its own `docs/<file>-explained.md` walking
 through its internal structure in more depth than belongs here — start
@@ -409,8 +410,22 @@ nothing hosted links to them any more, but `build.py`'s
 the original app (`assets/mini-ide-offline-app.html`), into a
 self-contained offline download. That download was kept rather than
 retired along with the hosted page because it's a working, harmless
-artifact and dewmini has no offline distribution of its own yet to
-replace it with — see `write_mini_ide_bundle()`'s own docstring.
+artifact — see `write_mini_ide_bundle()`'s own docstring.
+
+**dewmini has its own downloadable, offline-capable copy too**
+(`write_dewmini_bundle()`, `build.py`; `DECISIONS_LOG.md` 7.92) —
+mirrors the hosted site's own `compose/`/`assets/`/`data/` folder shape
+rather than flattening, since `compose/dewmini.html`'s own relative
+paths already assume that shape and rewriting them was exactly the risk
+7.89's real bug came from. Both offline bundles ship a *serve.py*
+(`write_offline_serve_script()`): a browser blocks the `import`
+statements this codebase's JavaScript is built from when a page is
+opened straight off disk (no origin for a CORS check to approve), so
+neither bundle can just be double-clicked — *serve.py* is a
+zero-dependency wrapper around `http.server` that serves the unzipped
+folder to `localhost` instead, found necessary (and, for Mini IDE's own
+already-shipped bundle, previously unnoticed) by actually opening a
+built bundle the way a downloader would, not assumed from the code.
 
 ---
 
@@ -482,6 +497,7 @@ runtime or the editor.
 | The shared Python engine (boot, run a cell, hover/autocomplete, Stop) — used by dewmini and by Mini IDE's retired, offline-only copy alike | `assets/pyodide-engine.js` |
 | dewmini's cells, toolbar, or downloads | `compose/dewmini.js` |
 | The retired Mini IDE's offline-only copy (cells, file manager, toolbar) | `assets/mini-ide.js`, `assets/mini-ide-fs.js` |
+| Either offline, downloadable bundle (what's included, the local-server workaround) | `write_mini_ide_bundle()`/`write_dewmini_bundle()`/`write_offline_serve_script()` in `build.py` |
 | The topic tree or knowledge map's layout | `assets/tree.js` and `build.py`'s `tree_data()`/`render_knowledge_map()` |
 | The authoring editor's structural checks, release logic, GitHub calls | `assets/editor.js` |
 | The authoring editor's prose-editing surface itself | `vendor-src/milkdown-entry.js` |

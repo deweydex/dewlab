@@ -257,7 +257,14 @@ Mini IDE between now and convergence.
 
 1. **Done.** A written parity checklist (files, uploads, SQLite,
    notebook import, Stop), then dewmini gained each item in its own
-   style (`DECISIONS_LOG.md` 7.87–7.89).
+   style (`DECISIONS_LOG.md` 7.87–7.89). The one item left off that
+   original checklist — an offline, downloadable copy of the tool
+   itself, not just a student's own notebook — landed separately once
+   Mini IDE's retirement made it stop being optional
+   (`DECISIONS_LOG.md` 7.92), and surfaced a real bug in *both* offline
+   bundles' core promise along the way: neither could actually be
+   opened by double-clicking, only served locally, something nothing
+   had tested until building dewmini's own bundle did.
 2. **Done.** Mini IDE retired (`DECISIONS_LOG.md` 7.91) — its hosted
    URL redirects to dewmini; its app survives, unlinked, only as the
    source for a still-offered offline download. Collapsing toward one
@@ -285,9 +292,17 @@ Mini IDE between now and convergence.
   a short redirect-with-explanation; the offline download keeps working
   as a self-contained artifact, produced from a renamed copy of the
   original app kept for exactly that purpose.
-- **Offline proof: manual or CI?** *Assumed:* a `MANUAL_CHECKLIST.md`
-  entry per release first; a CI job that serves the bundle with
-  outbound network blocked if the manual check ever gets skipped.
+- **Offline proof: manual or CI?** *Partly answered:* a manual pass
+  (`DECISIONS_LOG.md` 7.92) served both bundles with *serve.py* and ran
+  a real interrupt-a-`while True`-loop Stop-button test against each,
+  plus a `load_csv()` call against dewmini's own bundled `data/` — real
+  proof the *served* bundle works, not yet proof it works with the
+  network fully off (both tests still reached a locally-vendored Pyodide
+  over HTTP, not the bundle's own `assets/vendor/pyodide/`, which
+  neither test environment had populated). *Still assumed:* a
+  `MANUAL_CHECKLIST.md` entry per release for the fully-offline case
+  specifically; a CI job that serves a bundle with outbound network
+  blocked if the manual check ever gets skipped.
 - **What is the screen-reader baseline?** Which reader and browser
   pairs count as "tested"? *Assumed:* VoiceOver/Safari and NVDA/Firefox,
   as the pair a Dublin classroom is most likely to contain. Worth a

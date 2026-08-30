@@ -3689,3 +3689,102 @@ or `assets/mini-ide-offline-app.html` the packaged app) needed care in
 `build.py` specifically, verified by testing the actual downloadable
 bundle's Stop button, not just the redirect page and dewmini's own
 already-covered behavior.*
+
+---
+
+**7.92 — dewmini has its own downloadable, offline-capable copy now, and
+a real bug in *both* offline bundles' core promise got found and fixed
+along the way.** The one item of the original four-item parity list
+(`planning/MINI_IDE_AND_DEWMINI_NEXT.md` §6) never brought over —
+explicitly out of scope for 7.87–7.91, on the reasoning that Mini IDE's
+own offline bundle already covered "a workspace exists for a
+no-connection classroom" well enough that dewmini going without one had
+no visible cost. That reasoning stopped holding the moment Mini IDE
+retired (7.91): dewmini is the only Python workspace there is now, so
+its own offline bundle stopped being optional the same way its own Stop
+button did in 7.89.
+
+**`write_dewmini_bundle()` (`build.py`) mirrors `write_mini_ide_bundle()`
+in shape, not in structure.** Mini IDE's own hosted page already sat at
+the site root, so its bundle just flattens straight in. dewmini's hosted
+page sits one directory down (`compose/`), with `../assets/...`,
+`../data/`, and `../coi-serviceworker.js` references baked into
+`dewmini.html`/`dewmini.js` themselves — so rather than rewriting any of
+that (the path 7.89's own real bug came from, taken as a lesson rather
+than repeated), the bundle instead mirrors the *hosted site's actual
+folder shape*: `compose/`, `assets/`, and `data/` as untouched siblings,
+exactly what those already-working relative paths already assume. Zero
+rewriting of dewmini's own app code, at the cost of the real page sitting
+one level down in the unzipped folder — solved with a tiny top-level
+`index.html`, not by touching the real page.
+
+**The offline promise both bundles made — "reopen it, no server needed"
+— was never actually true, and nothing had tested it until this pass
+did.** dewmini.js imports pyodide-engine.js and dewmini-fs.js with real
+`import`/`export` statements, the same way any modern web app is built;
+a browser only permits that kind of cross-file import from `http://` or
+`https://`, never from a file opened by double-clicking off disk — a
+`file://` page has no origin a CORS check can approve, so the browser
+silently blocks the import and the page's own JavaScript never runs at
+all, no visible error, just a blank toolbar. Building this bundle and
+actually opening the result the way a downloader would — not assuming a
+folder of files just works because the code inside it is correct — is
+what surfaced this; it was checked, immediately, against Mini IDE's own
+already-shipped bundle too, which turned out to carry the identical,
+equally untested "reopen it, no server needed" claim in its own
+docstring and hits the identical failure.
+
+**Fixed with `serve.py`, not by restructuring either app to avoid ES
+modules.** Rewriting dewmini.js/pyodide-engine.js/pyodide-worker.js into
+non-module classic scripts just to satisfy `file://`'s CORS rule would
+mean forking the exact shared engine 7.89 and 7.91 both went out of
+their way to keep as one file, maintained twice from then on for every
+future change — hugely disproportionate to what the actual problem
+needs. `serve.py`, dropped into both bundles by the new shared
+`write_offline_serve_script()`, is a zero-dependency wrapper around
+`http.server` (the same module README.md's own "Running it on your own
+machine" section already has a contributor run for the site itself) that
+serves the unzipped folder to `localhost` and opens a browser tab there
+— satisfying the CORS rule with nothing beyond what a machine able to
+run the script at all already has. dewmini's own `index.html` goes
+further and checks `location.protocol` itself: served, it forwards
+straight to `compose/dewmini.html`; opened bare as a file, it explains
+`serve.py` right there instead of forwarding into a page that would just
+come up blank with no visible reason why. Mini IDE's own bundle gets the
+same `serve.py` plus a plain `README.txt` beside it, rather than a
+matching in-page check — editing that legacy, offline-only file for a
+nicer error message was judged not worth the touch; a README a
+downloader sees the moment they unzip says the same thing without it.
+
+**What's actually in the dewmini bundle:** `compose/` copied wholesale
+(no rewriting), the shared engine and worker, `tutorial_tools.py`, the
+CodeMirror bundle, and — found missing from `MINI_IDE_ASSET_FILES` while
+building this bundle's own equivalent list, and left that way there,
+per the same "not this pass's tool to fix" reasoning as everywhere else
+in 7.90–7.91 — the four worked-example `.ipynb` files Settings' "Keep a
+copy" section offers, and the whole `data/` folder those examples (and
+any `load_csv()` call) read from. `assets/vendor/pyodide/` is included
+when a build has fetched it (same `dev/fetch_pyodide.py` mechanism
+7.90/7.91 already use, asked for dewmini's own package list — Pillow in
+particular, which Mini IDE's own bundle has never needed).
+
+**Verified end-to-end, served the way a downloader actually would run
+it** (`python3 serve.py`, not the hosted site): the same real-interrupt
+Stop-button test 7.89/7.91 used elsewhere passes against the served
+bundle specifically; a worked example loads correctly (the
+`assets/examples/*.ipynb` fetch); `await load_csv("co2-emissions.csv")`
+reaches the bundled `data/` folder and returns the real row count; the
+`file://`-opened case shows the new instructions instead of a blank
+page; and the existing hosted dewmini, the existing Mini IDE offline
+bundle, the full unit suite, and `dev/check_doc_links.py` were all
+re-run afterward to confirm none of this touched anything that used to
+work.
+
+*Cost to change: moderate — the bundle itself is a fairly mechanical
+port of `write_mini_ide_bundle()`'s own shape, but the real cost was the
+`file://` finding: it applies to both offline bundles this codebase has
+ever shipped, not just the new one, and would have shipped a second time
+(this pass's own bundle, freshly written, would have carried the exact
+same bug its own docstring claimed not to have) had "does the folder
+have the right files in it" been treated as the same question as "does
+opening the folder actually work."*

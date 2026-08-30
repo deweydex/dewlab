@@ -310,13 +310,23 @@ The work is being staged, not done in one pass:
    bookmark or an old link still lands somewhere useful; the app itself
    was renamed to `assets/mini-ide-offline-app.html` and kept, unlinked,
    as the source `write_mini_ide_bundle()` in `build.py` still packages
-   into a working, self-contained offline download — dewmini has no
-   offline distribution of its own yet to replace it with, and the
-   download costs nothing to keep working. Every link, doc
-   (`docs/DEWMINI.md`, `docs/MINI_IDE.md`, `docs/FOR_STUDENTS.md`,
-   `README.md`, `ARCHITECTURE.md`, the explainer docs under `docs/`),
-   and this document's own §4 recommendation were updated to match — one
-   Python workspace now, not two.
+   into a working, self-contained offline download, kept because it
+   costs nothing to keep working. Every link, doc (`docs/DEWMINI.md`,
+   `docs/MINI_IDE.md`, `docs/FOR_STUDENTS.md`, `README.md`,
+   `ARCHITECTURE.md`, the explainer docs under `docs/`), and this
+   document's own §4 recommendation were updated to match — one Python
+   workspace now, not two.
+4. **Done: dewmini's own offline, downloadable copy**
+   (`DECISIONS_LOG.md` 7.92) — the one item this list's own step 2
+   never covered, out of scope while Mini IDE's own offline bundle
+   still met the "an offline workspace exists" need on its own. Stopped
+   being optional the moment step 3 retired Mini IDE. Found and fixed a
+   real bug shared by both offline bundles while building it: neither
+   could actually be opened by double-clicking (a browser blocks the
+   `import` statements this codebase's JavaScript is built from, from a
+   file opened straight off disk) — both now ship a small *serve.py*
+   that serves the unzipped folder locally instead, the fix, not
+   documentation of a workaround.
 
 §1–§5 above are kept as written: the accounting of what each tool needed
 next was accurate at the time, and most of it (the file manager, SQLite,
