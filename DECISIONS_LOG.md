@@ -3250,20 +3250,32 @@ first one meant, so only the filename was wrong. A settled entry's own
 wording reads correctly as history, but a file path is a signpost, and a
 signpost to a file nobody has is just broken.
 
-**Then the term itself, asked for directly once the paths were fixed:**
-seven mentions across four headings and three paragraphs became
-"reference panel". This reverses 7.82's decision for `QUESTIONS.md`
-specifically, on the reasoning that `QUESTIONS.md` is not really a
-historical record the way `DECISIONS_LOG.md` is — it is a live document
-a reader consults to find out where a question landed, and a reader who
-has only ever seen the panel called "Reference" should not have to work
-out that the two names are the same thing. `DECISIONS_LOG.md` keeps the
-old term throughout, including in 7.82's own account of the rename,
-where it is the subject of the entry rather than incidental to it.
-`planning/DOCS_AND_COMMENTS_PASS.md` also keeps it, in the one place the
-old name carries the meaning: a list of the files a completed pass
-rewrote, under the names they had then, with the current name added
-beside it so the entry can still be followed.
+**Then the term itself, asked for directly once the paths were fixed**,
+and in two passes. First `QUESTIONS.md`: seven mentions across four
+headings and three paragraphs became "reference panel", on the
+reasoning that `QUESTIONS.md` is not a historical record the way
+`DECISIONS_LOG.md` is — it is a live document a reader consults to find
+out where a question landed, and a reader who has only ever seen the
+panel called "Reference" should not have to work out that the two names
+are the same thing.
+
+Then the last two mentions anywhere outside the log, asked for once it
+was clear how few were left.
+`planning/MINI_IDE_AND_DEWMINI_NEXT.md`'s closing list had a bullet
+announcing the rename in both names; it now names only the panel's
+settled name and says where the older one survives.
+`planning/DOCS_AND_COMMENTS_PASS.md` listed `CHEAT_SHEETS.md` among the
+files one pass rewrote, and now names `REFERENCE_PANEL.md` — the same
+file, under the name it has.
+
+**`DECISIONS_LOG.md` is the sole exception, and stays that way.** It
+keeps the old term throughout its own entries, 7.82's account of the
+rename included, where the word is the subject rather than incidental.
+A decision record edited to match later decisions stops being evidence
+of anything: 7.82 would become an entry about renaming a thing to the
+name it apparently always had. That is the line — every document that
+describes how dewlab works now says "Reference"; the one document that
+records what was decided when keeps the words used at the time.
 
 A sweep for the same class of mistake across every markdown file except
 `DECISIONS_LOG.md` turned up two more, both left alone as somebody
@@ -3273,6 +3285,7 @@ and `planning/EDITOR.md` §3 is titled for `assets/editor.html`, which
 does not exist — the editor page's body is built in `build.py`'s
 `write_editor_page()` and rendered into `shell.html`.
 
-*Cost to change: none worth naming. Ten string edits across three files,
-no code and no behaviour. The headings that changed carry anchors, but
-nothing in the repository links to a `QUESTIONS.md` anchor.*
+*Cost to change: none worth naming. Twelve string edits across four
+files, no code and no behaviour. The headings that changed carry
+anchors, but nothing in the repository links to a `QUESTIONS.md`
+anchor.*
