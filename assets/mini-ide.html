@@ -82,7 +82,11 @@
       minimal notebook built on the same Python runtime.
     </p>
 
-    <!-- Mini IDE toolbar - integrated into the page flow -->
+    <!-- Mini IDE toolbar — just the things done often enough to be worth
+         one click from anywhere on the page. Import and every download
+         used to duplicate buttons here and in Settings; they now live
+         only in Settings ("Workspace" and "Your work"), the same place
+         dewmini keeps them and the only place either page needs them. -->
     <div class="mini-ide-toolbar">
       <div class="mini-ide-toolbar-left">
         <button id="filetree-toggle" class="dl-btn dl-btn-secondary" title="Show or hide the file pane"
@@ -95,26 +99,16 @@
         <button id="add-text-cell" class="dl-btn" title="Add a text/markdown cell">
           <span class="mini-ide-icon mini-ide-icon-text"></span>Text Cell
         </button>
+        <button id="load-example-cells" class="dl-btn" title="Replace these cells with a short worked example">
+          Load example
+        </button>
+      </div>
+      <div class="mini-ide-toolbar-right">
         <button id="run-all" class="dl-btn" title="Run all cells in order">
           <span class="mini-ide-icon mini-ide-icon-run"></span>Run All
         </button>
         <button id="clear-all" class="dl-btn dl-btn-secondary" title="Clear all cells">
           <span class="mini-ide-icon mini-ide-icon-clear"></span>Clear All
-        </button>
-      </div>
-      <div class="mini-ide-toolbar-right">
-        <button id="import-notebook" class="dl-btn dl-btn-secondary" title="Load a .ipynb or .py file as cells (replaces the current notebook)">
-          Import
-        </button>
-        <input type="file" id="import-notebook-file" accept=".ipynb,.py,application/json,text/x-python" hidden>
-        <button id="download-python" class="dl-btn" title="Download as Python file">
-          <span class="mini-ide-icon mini-ide-icon-download"></span>.py
-        </button>
-        <button id="download-html" class="dl-btn" title="Download a static HTML snapshot (not runnable)">
-          <span class="mini-ide-icon mini-ide-icon-download"></span>.html
-        </button>
-        <button id="download-ipynb" class="dl-btn" title="Download as Jupyter Notebook">
-          <span class="mini-ide-icon mini-ide-icon-download"></span>.ipynb
         </button>
       </div>
     </div>
@@ -258,134 +252,159 @@
             aria-label="Close settings">&times;</button>
   </div>
 
-  <!-- Free-text notes, saved alongside cells rather than as one more
-       cell — same shape as compose/dewmini.html's own #dl-settings-work. -->
-  <section class="dl-settings-section" id="dl-settings-work">
-    <h3>Your notes</h3>
-    <textarea class="dl-progress-notes" id="mini-ide-notes" rows="4"
-              placeholder="Anything worth writing down as you go."></textarea>
-    <p class="dl-panel-note">Saved in this browser only, alongside your cells.</p>
-  </section>
+  <!-- Three collapsible groups rather than one long scroll of sections —
+       <details>/<summary>, the same disclosure pattern .dl-toc already
+       uses elsewhere on the site, needing no JS of its own to open or
+       close. Workspace and Your work start open (day-to-day); Appearance
+       starts closed, since texture and editor settings are the ones set
+       once and rarely revisited. -->
+  <details class="mini-ide-settings-group" open>
+    <summary>Workspace</summary>
 
-  <!-- Python engine status -->
-  <section class="dl-settings-section" id="dl-settings-execution">
-    <h3>Python</h3>
-    <p class="dl-panel-note" id="settings-execution-status">Not started yet — run a cell to start Python.</p>
-    <div class="dl-progress-actions">
-      <button type="button" class="dl-btn dl-btn-secondary" id="settings-restart-python">Restart Python</button>
-    </div>
-  </section>
-
-  <!-- Storage / filesystem backend status -->
-  <section class="dl-settings-section" id="dl-settings-storage">
-    <h3>Files</h3>
-    <p class="dl-panel-note" id="settings-storage-status">Not started yet.</p>
-    <div class="dl-progress-actions">
-      <button type="button" class="dl-btn" id="settings-choose-folder">Use a folder on my computer</button>
-      <button type="button" class="dl-btn dl-btn-secondary" id="settings-forget-folder" hidden>Stop using that folder</button>
-    </div>
-  </section>
-
-  <!-- Notebook import behavior -->
-  <section class="dl-settings-section" id="dl-settings-import">
-    <h3>Import</h3>
-    <div class="dl-texture-row">
-      <span>On import</span>
-      <div class="dl-seg" data-import-mode>
-        <button type="button" data-value="replace">replace</button>
-        <button type="button" data-value="append">append</button>
+    <!-- Python engine status -->
+    <section class="dl-settings-section" id="dl-settings-execution">
+      <h3>Python</h3>
+      <p class="dl-panel-note" id="settings-execution-status">Not started yet — run a cell to start Python.</p>
+      <div class="dl-progress-actions">
+        <button type="button" class="dl-btn dl-btn-secondary" id="settings-restart-python">Restart Python</button>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- Download section for Mini IDE — filename plus a printed/PDF copy
-       alongside the three file exports, matching compose/dewmini.html's
-       own "Keep a copy" section. -->
-  <section class="dl-settings-section" id="dl-settings-download">
-    <h3>Keep a copy</h3>
-    <p class="dl-panel-note">
-      Everything below is saved here as you go. These take a copy with you.
-    </p>
-
-    <label class="mini-ide-filename-label" for="mini-ide-filename">File name</label>
-    <input type="text" id="mini-ide-filename" class="mini-ide-filename-input" placeholder="mini-ide-notebook"
-           aria-label="File name for downloads">
-
-    <div class="dl-progress-actions">
-      <button type="button" class="dl-btn" id="settings-export-python">.py</button>
-      <button type="button" class="dl-btn" id="settings-export-html">.html</button>
-      <button type="button" class="dl-btn" id="settings-export-ipynb">.ipynb</button>
-    </div>
-    <div class="dl-progress-actions">
-      <button type="button" class="dl-btn" id="settings-print-pdf">Print / Save as PDF</button>
-    </div>
-  </section>
-
-  <!-- Texture settings -->
-  <section class="dl-settings-section" id="dl-settings-texture">
-    <h3>Texture</h3>
-
-    <div class="dl-texture-row">
-      <span>Theme</span>
-      <div class="dl-seg" data-texture="theme">
-        <button type="button" data-value="system">auto</button>
-        <button type="button" data-value="light">light</button>
-        <button type="button" data-value="dark">dark</button>
+    <!-- Storage / filesystem backend status -->
+    <section class="dl-settings-section" id="dl-settings-storage">
+      <h3>Files</h3>
+      <p class="dl-panel-note" id="settings-storage-status">Not started yet.</p>
+      <div class="dl-progress-actions">
+        <button type="button" class="dl-btn" id="settings-choose-folder">Use a folder on my computer</button>
+        <button type="button" class="dl-btn dl-btn-secondary" id="settings-forget-folder" hidden>Stop using that folder</button>
       </div>
-    </div>
+    </section>
 
-    <div class="dl-texture-row">
-      <span>Font</span>
-      <div class="dl-seg" data-texture="font">
-        <button type="button" data-value="serif">serif</button>
-        <button type="button" data-value="sans">sans</button>
-        <button type="button" data-value="mono">mono</button>
+    <!-- Loading a saved notebook back in — the button (and its hidden
+         file input) used to sit on the toolbar, its own top-level
+         button; it lives here now, next to the setting that actually
+         governs what it does, the same way every other action on this
+         page already lives in Settings rather than the toolbar. -->
+    <section class="dl-settings-section" id="dl-settings-import">
+      <h3>Import</h3>
+      <div class="dl-progress-actions">
+        <button type="button" class="dl-btn" id="import-notebook">Load a .ipynb or .py file</button>
       </div>
-    </div>
-
-    <div class="dl-texture-row">
-      <span>Size</span>
-      <input type="range" id="dl-texture-size" min="15" max="24" step="1" aria-label="Text size">
-    </div>
-
-    <div class="dl-texture-row">
-      <span>Width</span>
-      <div class="dl-seg" data-texture="width" data-number>
-        <button type="button" data-value="34">narrow</button>
-        <button type="button" data-value="44">medium</button>
-        <button type="button" data-value="56">wide</button>
+      <input type="file" id="import-notebook-file" accept=".ipynb,.py,application/json,text/x-python" hidden>
+      <div class="dl-texture-row">
+        <span>On import</span>
+        <div class="dl-seg" data-import-mode>
+          <button type="button" data-value="replace">replace</button>
+          <button type="button" data-value="append">append</button>
+        </div>
       </div>
-    </div>
+    </section>
+  </details>
 
-    <div class="dl-texture-row">
-      <span></span>
-      <input type="range" id="dl-texture-width" min="26" max="60" step="1"
-             aria-label="Line width, finer than the three presets">
-    </div>
+  <details class="mini-ide-settings-group" open>
+    <summary>Your work</summary>
 
-    <div class="dl-texture-row">
-      <span>Header</span>
-      <div class="dl-seg" data-texture="header">
-        <button type="button" data-value="full">full</button>
-        <button type="button" data-value="minimal">minimal</button>
+    <!-- Free-text notes, saved alongside cells rather than as one more
+         cell — same shape as compose/dewmini.html's own #dl-settings-work. -->
+    <section class="dl-settings-section" id="dl-settings-work">
+      <h3>Your notes</h3>
+      <textarea class="dl-progress-notes" id="mini-ide-notes" rows="4"
+                placeholder="Anything worth writing down as you go."></textarea>
+      <p class="dl-panel-note">Saved in this browser only, alongside your cells.</p>
+    </section>
+
+    <!-- Download section for Mini IDE — filename plus a printed/PDF copy
+         alongside the three file exports, matching compose/dewmini.html's
+         own "Keep a copy" section. -->
+    <section class="dl-settings-section" id="dl-settings-download">
+      <h3>Keep a copy</h3>
+      <p class="dl-panel-note">
+        Everything below is saved here as you go. These take a copy with you.
+      </p>
+
+      <label class="mini-ide-filename-label" for="mini-ide-filename">File name</label>
+      <input type="text" id="mini-ide-filename" class="mini-ide-filename-input" placeholder="mini-ide-notebook"
+             aria-label="File name for downloads">
+
+      <div class="dl-progress-actions">
+        <button type="button" class="dl-btn" id="settings-export-python">.py</button>
+        <button type="button" class="dl-btn" id="settings-export-html">.html</button>
+        <button type="button" class="dl-btn" id="settings-export-ipynb">.ipynb</button>
       </div>
-    </div>
+      <div class="dl-progress-actions">
+        <button type="button" class="dl-btn" id="settings-print-pdf">Print / Save as PDF</button>
+      </div>
+    </section>
+  </details>
 
-    <div class="dl-texture-row">
-      <span>Links</span>
-      <input type="color" id="dl-texture-link" aria-label="Link colour">
-    </div>
+  <details class="mini-ide-settings-group">
+    <summary>Appearance</summary>
 
-    <button type="button" class="dl-texture-reset" id="dl-texture-reset">reset to defaults</button>
-  </section>
+    <!-- Texture settings -->
+    <section class="dl-settings-section" id="dl-settings-texture">
+      <h3>Texture</h3>
 
-  <!-- Font, cursor, size, and the placement of the code itself — same
-       section compose/dewmini.html's own #dl-settings-editor offers,
-       now here too rather than Mini IDE having no way to adjust any of
-       it. Purely CSS: see the :root[data-mini-ide-*] rules in
-       mini-ide-style.css and initMiniIdeEditorSettings() in mini-ide.js. -->
-  <section class="dl-settings-section" id="dl-settings-editor">
-    <h3>Editor</h3>
+      <div class="dl-texture-row">
+        <span>Theme</span>
+        <div class="dl-seg" data-texture="theme">
+          <button type="button" data-value="system">auto</button>
+          <button type="button" data-value="light">light</button>
+          <button type="button" data-value="dark">dark</button>
+        </div>
+      </div>
+
+      <div class="dl-texture-row">
+        <span>Font</span>
+        <div class="dl-seg" data-texture="font">
+          <button type="button" data-value="serif">serif</button>
+          <button type="button" data-value="sans">sans</button>
+          <button type="button" data-value="mono">mono</button>
+        </div>
+      </div>
+
+      <div class="dl-texture-row">
+        <span>Size</span>
+        <input type="range" id="dl-texture-size" min="15" max="24" step="1" aria-label="Text size">
+      </div>
+
+      <div class="dl-texture-row">
+        <span>Width</span>
+        <div class="dl-seg" data-texture="width" data-number>
+          <button type="button" data-value="34">narrow</button>
+          <button type="button" data-value="44">medium</button>
+          <button type="button" data-value="56">wide</button>
+        </div>
+      </div>
+
+      <div class="dl-texture-row">
+        <span></span>
+        <input type="range" id="dl-texture-width" min="26" max="60" step="1"
+               aria-label="Line width, finer than the three presets">
+      </div>
+
+      <div class="dl-texture-row">
+        <span>Header</span>
+        <div class="dl-seg" data-texture="header">
+          <button type="button" data-value="full">full</button>
+          <button type="button" data-value="minimal">minimal</button>
+        </div>
+      </div>
+
+      <div class="dl-texture-row">
+        <span>Links</span>
+        <input type="color" id="dl-texture-link" aria-label="Link colour">
+      </div>
+
+      <button type="button" class="dl-texture-reset" id="dl-texture-reset">reset to defaults</button>
+    </section>
+
+    <!-- Font, cursor, size, and the placement of the code itself — same
+         section compose/dewmini.html's own #dl-settings-editor offers,
+         now here too rather than Mini IDE having no way to adjust any of
+         it. Purely CSS: see the :root[data-mini-ide-*] rules in
+         mini-ide-style.css and initMiniIdeEditorSettings() in mini-ide.js. -->
+    <section class="dl-settings-section" id="dl-settings-editor">
+      <h3>Editor</h3>
 
     <div class="dl-texture-row">
       <span>Code size</span>
@@ -427,7 +446,8 @@
     </div>
 
     <button type="button" class="dl-texture-reset" id="mini-ide-editor-reset">reset to defaults</button>
-  </section>
+    </section>
+  </details>
 </div>
 
 <!-- Load Pyodide - will be loaded on demand -->

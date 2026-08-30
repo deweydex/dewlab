@@ -77,9 +77,9 @@ read it:
    sections (Python engine status, file storage status, import
    behavior) added on top of the same settings panel.
 4. **Initialization** (`init()`) — runs once, when the page loads. Wires
-   up the engine, loads saved cells (or creates sample ones if there
-   aren't any), and calls all the `setup*()`/`init*()` functions that
-   make the rest of the page interactive.
+   up the engine, loads saved cells (a genuinely empty notebook stays
+   empty — nothing auto-seeds it), and calls all the `setup*()`/`init*()`
+   functions that make the rest of the page interactive.
 5. **Event Listeners** (`setupEventListeners()`) — one big function that
    attaches a click handler to every toolbar button, upload input, and
    so on. It's long, but each handler follows the same

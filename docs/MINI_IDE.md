@@ -155,12 +155,20 @@ or Settings closes the other, since they share the same corner.
 | Files | Shows or hides the file manager (only matters on a narrow screen — it's always visible otherwise) |
 | Python Cell | Adds a new Python code cell |
 | Text Cell | Adds a new text cell |
+| Load example | Replaces your cells with a short worked example (asks first, unless the notebook is already empty) |
 | Run All | Runs every cell in order |
 | Clear All | Removes all cells (asks first) |
-| Import | Loads a `.ipynb` or `.py` file as this notebook's cells |
-| Download .py | Saves your work as a Python file |
-| Download .html | Saves a snapshot as HTML |
-| Download .ipynb | Saves your work as a Jupyter Notebook |
+
+Importing a file and downloading your work live in Settings now, not the
+toolbar — see below. A fresh notebook starts genuinely empty; nothing
+auto-loads sample cells for you, which is what "Load example" is for.
+
+### Settings Groups
+
+Settings is organized into three collapsible groups so you're not
+scrolling past everything at once: **Workspace** (Python status, Files
+status, Import) and **Your work** (notes, Keep a copy/download) open by
+default, and **Appearance** (texture, editor) collapsed until you need it.
 
 ### Cell Types
 
