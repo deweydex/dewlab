@@ -65,10 +65,10 @@ current as things change — not a pitch.
 - **Highlight to look up**: selecting a word the reference knows offers
   a small button that opens the panel filtered to it; selecting anything
   else does nothing at all (`REFERENCE_PANEL.md` §6b, DECISIONS_LOG.md
-  7.91).
+  7.93).
 - **Where a term came from**: an inherited reference entry says which
   tutorial introduced it and links to that section (`REFERENCE_PANEL.md`
-  §6c, DECISIONS_LOG.md 7.92).
+  §6c, DECISIONS_LOG.md 7.94).
 - **Cell tooltips**: hover docs and signature help that cover Python
   builtins, not just a student's own names, falling back to Jedi's
   static analysis for code that hasn't run yet — live always wins when
@@ -91,48 +91,30 @@ current as things change — not a pitch.
   own alike — not the reading itself, which Print and Download to keep
   already cover).
 
-### Mini IDE and dewmini (`assets/mini-ide.*`, `compose/dewmini.*`)
-Two Python workspaces with no tutorial attached — see
-`MINI_IDE_REDESIGN.md` for the full plan and `ARCHITECTURE.md` §4 for
-how they're built.
+### dewmini (`compose/dewmini.*`)
+The one Python workspace with no tutorial attached — see
+`ARCHITECTURE.md` §4 for how it's built.
 
-- **Mini IDE**: rebuilt on the same Worker-based engine tutorial pages
-  use (`assets/pyodide-engine.js`, a client of
-  `assets/pyodide-worker.js`), giving it a genuine Stop button and real
-  Jedi-backed autocomplete in place of the hardcoded stub it shipped
-  with originally. A filesystem layer (`assets/mini-ide-fs.js`) mounts a
-  real local folder (File System Access API), OPFS, or IDBFS — whichever
-  the browser supports — behind one interface, so the file manager, SQL
-  support (`sqlite3` against a mounted `.db` file), and file uploads all
-  work the same way regardless of backend. `.ipynb`/`.py` import and a
-  folder-based, offline-capable downloadable bundle
-  (`write_mini_ide_bundle()` in `build.py`) round it out. A reopenable
-  "?" Help panel next to Settings, and Shift+Enter to run a cell, match
-  dewmini's own — both replaced a one-shot welcome banner that was gone
-  for good the moment a reader had cells. Cells themselves match
-  dewmini's look too now (a quiet coloured rail and icon-only actions
-  rather than a bordered header full of labelled buttons), reorderable
-  by dragging and insertable at any seam between cells — not just
-  appended at the end — via the same hover-to-reveal dividers dewmini
-  uses. Settings gained dewmini's own "Your notes" free-text box, an
-  "Editor" section (code size, spacing, cursor, gutter, active line),
-  and a file name field shared by every download and a Print/PDF
-  button. Dark mode had its own bug: a local `.dl-btn` override hardcoded
-  a fixed-dark navy for both toolbar and Settings buttons (invisible on a
-  near-black background), and toolbar icons baked their fill color
-  straight into the SVG data URI instead of using `currentColor` — both
-  fixed, the icons now using the same `mask`/`background: currentColor`
-  technique dewmini's own toolbar icons use. The toolbar was also trimmed
-  down: Import and the `.py`/`.html`/`.ipynb` download buttons moved into
-  Settings (which already had them), replaced by a "Load example" button
-  that loads the same sample cells the notebook used to auto-seed on
-  every load of an empty notebook — now a notebook you've cleared stays
-  cleared. Settings itself is grouped into three collapsible sections
-  (Workspace, Your work, Appearance) instead of one long scroll.
-- **dewmini**: a smaller, quieter cousin — the same
-  `tutorial_tools.py`, but Pyodide stays on the main thread always (no
-  Worker, no Stop button), by design: dewmini is for something quick,
-  and a project that outgrows that moves to Mini IDE.
+dewmini used to be the smaller of two such workspaces; Mini IDE was the
+larger, until dewmini absorbed everything it did
+(`DECISIONS_LOG.md` 7.87–7.89) and Mini IDE retired
+(`DECISIONS_LOG.md` 7.91, addendum in
+`planning/MINI_IDE_AND_DEWMINI_NEXT.md`; full history of Mini IDE's own
+build in `MINI_IDE_REDESIGN.md`, kept as a record of work rather than a
+description of what's live). dewmini runs Python through
+`assets/pyodide-engine.js`, a shared Worker-based engine (a client of
+`assets/pyodide-worker.js`, the same runtime tutorial pages use) — a
+genuine Stop button, and real Jedi-backed autocomplete and signature
+help. `compose/dewmini-fs.js` mounts a real local folder (File System
+Access API), its own named OPFS subdirectory, or IDBFS — whichever the
+browser supports — behind one interface, so the Files section in
+Settings, SQL support (`sqlite3` against a mounted `.db` file), and file
+uploads all work the same way regardless of backend. `.ipynb`/`.py`
+import and export round it out. The hosted `mini-ide.html` is now a
+short redirect notice pointing here; a working, offline-only copy of
+the original Mini IDE app still exists as a download
+(`write_mini_ide_bundle()` in `build.py`), kept for continuity rather
+than retired along with the hosted page.
 
 ### Documentation and code comments
 Every substantial code file has detailed, teaching-oriented inline

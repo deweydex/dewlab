@@ -1,4 +1,8 @@
-/* dewmini — a minimal, notebook-shaped cousin of the Mini IDE.
+/* dewmini — dewlab's minimal, notebook-shaped Python workspace. Used to
+ * be the smaller cousin of a second, larger workspace (Mini IDE); dewmini
+ * absorbed everything that one did and Mini IDE retired (DECISIONS_LOG.md
+ * 7.87-7.90), so this is now the one Python workspace's own stylesheet,
+ * not a smaller alternative to another.
  *
  * Built on tutorial-style.css's own tokens (navy/orange, Georgia, the light
  * and dark palettes) rather than a palette of its own — the borderless,

@@ -1,70 +1,98 @@
 # `compose/dewmini.js`, explained
 
 This file is everything that makes dewmini work: creating and deleting
-cells, running Python, drag-to-reorder, downloads, Settings, and the
-practice-problem picker. Unlike Mini IDE (split across
-`mini-ide.js`/`pyodide-engine.js`/`mini-ide-fs.js`), dewmini keeps
-everything in one file — it's a smaller tool with a smaller scope (no
-file manager, no SQL support beyond what `import sqlite3` gives for
-free, no filesystem to mount), so one file stays manageable where Mini
-IDE's would not have.
+cells, running Python, the file manager, drag-to-reorder, downloads and
+notebook import, Settings, and the practice-problem picker. It does
+**not** run Python itself — that's
+[`assets/pyodide-engine.js`](pyodide-engine-explained.md)'s job, a
+module shared with the retired Mini IDE's own offline copy — and it does
+**not** decide where files are stored — that's `compose/dewmini-fs.js`'s
+job. This file is the "glue," the same shape
+[`docs/mini-ide-js-explained.md`](mini-ide-js-explained.md) describes
+for Mini IDE's own offline copy: dewmini and that file share the same
+basic structure (a `cells` array as the source of truth, the same
+save-then-render pattern, the same drag-and-drop mechanics, the same
+Run-becomes-Stop button pattern) even though neither imports code from
+the other — `pyodide-engine.js` is the one piece the two genuinely
+share.
 
-If you've already read
-[`docs/mini-ide-js-explained.md`](mini-ide-js-explained.md), quite a lot
-of this will feel familiar — dewmini and Mini IDE share the same basic
-shape (a `cells` array as the source of truth, the same save-then-render
-pattern, the same drag-and-drop mechanics) even though neither file
-imports code from the other.
+dewmini used to be the smaller of two Python workspaces, running Pyodide
+directly on the main thread with no Stop button, while Mini IDE ran it
+in a Worker. dewmini absorbed Mini IDE's Worker/Stop capability
+(`DECISIONS_LOG.md` 7.89) before Mini IDE itself retired
+(`DECISIONS_LOG.md` 7.91); this doc describes dewmini as it is now, with
+that capability built in, not as a smaller alternative to something
+else.
 
 ---
 
-## The big idea: `cells` is the source of truth, same as Mini IDE
+## The big idea: `cells` is the source of truth
 
-Exactly like `mini-ide.js`, almost everything in this file changes the
-module-level `cells` array first, then calls `saveState()` and
-`renderCells()` to catch the page up. A cell object here is simpler than
-Mini IDE's — no filesystem-backed properties, just `{ id, type, content,
-output, error }` — but the rule is identical: change the data, then make
-the page match it, never the other way around.
+Almost everything in this file changes the module-level `cells` array
+first, then calls `saveState()` and `renderCells()` to catch the page
+up. A cell object here is `{ id, type, content, output, error }` plus,
+once it's actually drawn on the page, a few DOM-referencing properties
+(`.outputEl`, `.runBtn`) — the rule is: change the data, then make the
+page match it, never the other way around.
 
-Where dewmini genuinely differs from Mini IDE is how it runs Python:
-dewmini runs Pyodide directly on the main thread (`ensurePyodide()`),
-with **no Web Worker** and **no Stop button** — the simpler, older
-approach. `docs/DEWMINI.md`'s own "What's different from a tutorial page"
-section explains the tradeoff in plain language; the short technical
-version is that a runaway cell here has to be waited out or the page
-reloaded, since nothing is running on a separate thread that could be
-interrupted.
+Cell *execution* and cell *filesystem access* both go through
+`assets/pyodide-engine.js` and `compose/dewmini-fs.js` respectively,
+imported at the top of this file (`import * as engine ...`, `import *
+as dfs ...`) — this file never talks to Pyodide or the filesystem
+directly. `engine.configure({...})`, called once near the top, is what
+wires the shared engine up to this specific page: how to find a cell's
+output element, where to show status text, which Pyodide packages to
+load, and `dataBase` (dewmini lives one directory deeper than Mini IDE
+ever did, so it needs a different base path to reach the shared `data/`
+folder for `load_csv()`).
 
 ---
 
 ## Reading order
 
-1. **Config and state** at the top — `DM_PACKAGES` (dewmini's wider
-   package list — it adds `sqlite3` and `Pillow` beyond a tutorial page's
-   baseline, since it isn't tied to one curriculum), and the module-level
-   variables that hold the whole notebook's state.
+1. **Config and state** at the top — the `engine`/`dfs` imports,
+   `DM_PACKAGES` (dewmini's wider package list — it adds `sqlite3` and
+   `Pillow` beyond a tutorial page's baseline, since it isn't tied to
+   one curriculum), the `engine.configure({...})` call, and the
+   module-level variables that hold the whole notebook's state
+   (`cells`, `running`, `runningCellId`).
 2. **Storage** — `generateId`, `loadSavedState`, `saveState`.
 3. **Cells** — `insertCellAt`/`addCell`/`deleteCell`/`focusCell`, the
    text-cell markdown renderer (`escapeHtml`/`renderDocInline`/
    `renderDocMarkdown`), the image-attachment picker, `renderCells`, and
-   `createCellElement` (the big one — builds a cell's entire DOM tree).
-4. **Execution** — `ensurePyodide` (boot-lazily, same pattern as Mini
-   IDE's engine), `getDocForName` (hover tooltips), `executeCell`/
-   `runCell`/`runAllCells`.
+   `createCellElement` (the big one — builds a cell's entire DOM tree,
+   and wires `completeNames`/`getDoc`/`getSignature` straight to the
+   shared engine's own `pageNamesCompletion`/`hoverDoc`/`signatureHelp`).
+4. **Execution** — `ensurePyodide` (boots the shared engine, then mounts
+   the filesystem — `dfs.init()` — once it has), `executeCell` (runs one
+   cell through `engine.runCell()` and syncs the filesystem afterward,
+   in case the cell wrote to it directly), `setRunButtonRunning`/
+   `resetRunButton` (the Run-becomes-Stop button), `runCell` (a second
+   click on the currently-running cell sends `engine.requestInterrupt()`
+   instead of starting a new run), `runAllCells` (calls
+   `engine.resetPageState()` first — see below).
 5. **Downloads** — `triggerDownload` (the shared Blob-download trick),
    then `downloadAsPython`/`downloadAsIpynb`/`downloadAsHtml`, the last
-   of which builds an entire second, self-contained HTML page as a string
-   (`buildStandaloneHtml`) — worth reading closely if you haven't seen
-   this pattern before.
-6. **Practice** — the practice-bank fetch, the sequential/random ordering
-   logic (`shuffledRange`'s Fisher–Yates shuffle is a nice small example
-   of a well-known algorithm), and `addPracticeProblem`.
-7. **Import** — `handleImportFile`, reading a `.ipynb` back in.
-8. **Drag reorder** — `setupDragAndDrop`, using the browser's native HTML5
-   Drag and Drop API.
-9. **Status, panels, texture, editor prefs, notes** — smaller UI pieces,
-   several of them close cousins of functions in
+   of which builds an entire second, self-contained HTML page as a
+   string (`buildStandaloneHtml`) — worth reading closely if you haven't
+   seen this pattern before.
+6. **Practice** — the practice-bank fetch, the sequential/random
+   ordering logic (`shuffledRange`'s Fisher–Yates shuffle is a nice
+   small example of a well-known algorithm), and `addPracticeProblem`.
+7. **Import** — `handleImportFile`, `parseIpynbCells`/`parsePyCells`
+   (a `.py` dewmini itself exported comes back cell-for-cell; an
+   unmarked script becomes one cell), `scanPyodideCompatibility`
+   (flagging things Pyodide's Python can't run before they cause a
+   confusing error).
+8. **Drag reorder** — `setupDragAndDrop`, using the browser's native
+   HTML5 Drag and Drop API.
+9. **Status, panels, execution status, storage, texture, editor prefs,
+   notes** — `updateExecutionStatus`/`initExecutionSection` (the
+   Settings "Python" section: which mode booted, and Restart Python);
+   `updateStorageStatus`/`renderFileList`/`deleteFsFile`/
+   `uploadFsFiles`/`initStorageSection` (the Settings "Files" section,
+   all going through `dfs`, never touching a filesystem directly);
+   several smaller pieces close cousins of functions in
    [`tutorial-runtime.js`](tutorial-runtime-explained.md) doing the same
    job for the shared reading-preference settings.
 10. **Start**, at the bottom — `init()` and the
@@ -111,17 +139,39 @@ file to fetch anything from dewlab once it's been saved somewhere else on
 a reader's computer, so everything it needs (the tools' Python source,
 the cells' content) has to travel inside the file itself.
 
+**Boot the engine before deciding what the Run button looks like.**
+`runCell()` awaits `ensurePyodide()` *before* calling
+`setRunButtonRunning()`, not after — `setRunButtonRunning()` reads
+`engine.canStop()` to decide whether the button becomes a genuine Stop
+or just a disabled "busy" indicator, and `canStop()` only knows worker-
+vs-main-thread once `ensureBooted()` has actually resolved. Calling
+`ensurePyodide()` after `setRunButtonRunning()` instead — reading
+`canStop()`'s pre-boot default — was a real bug this file's own Worker
+migration introduced and testing caught: the button never offered a
+genuine Stop on a page's first-ever cell run, even in worker mode, since
+the boot hadn't happened yet at the moment the button's state was
+decided.
+
 ---
 
 ## Where to look for something specific
 
-- **"Why can't I stop a cell that's stuck?"** — dewmini has no Worker and
-  no interrupt mechanism; see `ensurePyodide()`'s comment and
-  `docs/DEWMINI.md`.
+- **"Why doesn't Stop do anything?"** — `engine.canStop()`, read inside
+  `setRunButtonRunning()`; it's only true on the Worker path with a real
+  interrupt buffer (see [`docs/pyodide-engine-explained.md`](pyodide-engine-explained.md)).
+  A page opened over `file://` where a module Worker can't be created
+  falls back to the main thread, where nothing can interrupt a running
+  cell.
+- **"How does a file a cell writes actually get saved?"** —
+  `executeCell()` calls `dfs.sync()` (fire-and-forget) after every run,
+  independent of `dewmini-fs.js`'s own debounced sync — a cell writing
+  straight to the mounted path with `open()` or `sqlite3.connect()`
+  never touches `dfs.writeFile()` at all, so nothing else would
+  otherwise know a write happened.
 - **"How does drag-and-drop actually work?"** — `setupDragAndDrop()`'s own
   comment walks through all four Drag and Drop events in order.
 - **"Why does Run All reset everything first?"** — `runAllCells()`'s own
-  comment: it calls `tools.reset_page_state()` so a stale value from a
+  comment: it calls `engine.resetPageState()` so a stale value from a
   previous run can never mask a genuine mistake.
 - **"How does an imported `.ipynb`'s source turn into a string?"** —
   `handleImportFile()`'s comment on why source can arrive as either a

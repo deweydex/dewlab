@@ -1,6 +1,14 @@
 # `assets/mini-ide-fs.js`, explained
 
-This file answers one question for the rest of Mini IDE: "where do files
+**Mini IDE has retired** (`DECISIONS_LOG.md` 7.91) — dewmini's own
+`compose/dewmini-fs.js` now does what this file describes, for the one
+Python workspace a student actually reaches. This file still exists,
+and this doc still describes it accurately, only because
+`write_mini_ide_bundle()` in `build.py` still packages it into a self-
+contained offline download for anyone who already relies on one.
+
+This file answers one question for the rest of Mini IDE's offline copy:
+"where do files
 actually live, and how do I read and write them?" Nothing else in the
 codebase — the file-tree UI, uploads, SQLite, notebook import — talks to
 a filesystem directly. They all go through this file instead, so none of
@@ -33,8 +41,9 @@ Every exported function in the second half of this file — `listDir()`,
 `readFile()`, `writeFile()`, `deleteFile()`, `mkdir()` — works exactly the
 same regardless of which of the three is active. They just turn a
 friendly relative path like `"data/scores.csv"` into the real mount-point
-path and hand off to `pyodide-engine.js`, which is the layer that
-actually knows how to reach whichever backend booted (see
+path and hand off to `pyodide-engine.js` (a module shared with dewmini's
+own filesystem module), which is the layer that actually knows how to
+reach whichever backend booted (see
 [`docs/pyodide-engine-explained.md`](pyodide-engine-explained.md)).
 
 ---

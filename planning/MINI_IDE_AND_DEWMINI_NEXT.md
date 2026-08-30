@@ -303,67 +303,51 @@ The work is being staged, not done in one pass:
    button never appearing on a page's first-ever run) were caught by
    testing and fixed, not left as known gaps. **Feature parity is
    complete** — all four items on this list are done.
-3. **Mini IDE's retirement**, now that parity is real (per an explicit
-   instruction that this is a given, not a further decision point):
-   `mini-ide.html` redirected to dewmini or removed, and every link, doc,
-   and this document's own §4 recommendation updated to match.
+3. **Done: Mini IDE's retirement** (`DECISIONS_LOG.md` 7.91), now that
+   parity was real — per an explicit instruction that this was a given,
+   not a further decision point. `assets/mini-ide.html` (the hosted
+   URL) redirected to dewmini rather than being removed outright, so a
+   bookmark or an old link still lands somewhere useful; the app itself
+   was renamed to `assets/mini-ide-offline-app.html` and kept, unlinked,
+   as the source `write_mini_ide_bundle()` in `build.py` still packages
+   into a working, self-contained offline download, kept because it
+   costs nothing to keep working. Every link, doc (`docs/DEWMINI.md`,
+   `docs/MINI_IDE.md`, `docs/FOR_STUDENTS.md`, `README.md`,
+   `ARCHITECTURE.md`, the explainer docs under `docs/`), and this
+   document's own §4 recommendation were updated to match — one Python
+   workspace now, not two.
+4. **Done: dewmini's own offline, downloadable copy**
+   (`DECISIONS_LOG.md` 7.92) — the one item this list's own step 2
+   never covered, out of scope while Mini IDE's own offline bundle
+   still met the "an offline workspace exists" need on its own. Stopped
+   being optional the moment step 3 retired Mini IDE. Found and fixed a
+   real bug shared by both offline bundles while building it: neither
+   could actually be opened by double-clicking (a browser blocks the
+   `import` statements this codebase's JavaScript is built from, from a
+   file opened straight off disk) — both now ship a small *serve.py*
+   that serves the unzipped folder locally instead, the fix, not
+   documentation of a workaround.
 
 §1–§5 above are kept as written: the accounting of what each tool needed
 next was accurate at the time, and most of it (the file manager, SQLite,
-`.ipynb` import/export, Worker-based Pyodide) is exactly the list step 2
-now has to actually port, not work that stopped mattering.
+`.ipynb` import/export, Worker-based Pyodide) is exactly what step 2
+went on to actually port, not work that stopped mattering.
 
 ---
 
-## Addendum 2 — the parity checklist, measured
+## Addendum 3 — what the shared engine taught
 
-`planning/ROADMAP.md` Phase 6 asked for a written parity checklist before
-retiring Mini IDE. Here it is, taken by reading both codebases rather than
-from memory, after `DECISIONS_LOG.md` 7.89's dewmini Worker migration
-landed.
+The parity checklist this document carried while the retirement was
+still ahead is gone: it planned work that has since been done, and its
+table recorded two gaps — Jedi autocomplete and a downloadable bundle —
+that dewmini now has.
 
-**dewmini has reached parity on almost everything.** The addendum above
-anticipated a long list; most of it is already done.
+One paragraph of it is worth keeping, because the lesson outlasts the
+plan. Reviewing the Worker migration *after* it merged turned up six
+defects (`DECISIONS_LOG.md` 7.97), and the worst of them — a "Restart
+Python" that permanently wedged the tool it exists to unwedge — sat in
+`assets/pyodide-engine.js`, so it affected both workspaces at once.
 
-| Capability | Mini IDE | dewmini |
-|---|---|---|
-| Worker engine (`assets/pyodide-engine.js`) | yes | yes |
-| A genuine Stop button | yes | yes |
-| Filesystem layer (local folder / OPFS / IDBFS) | yes | yes |
-| SQLite via `run_query()` | via `tutorial_tools` | yes, plus `sqlite3` in its defaults |
-| `.ipynb` / `.py` import | yes | yes |
-| Jedi-backed autocomplete | **yes** | **no** |
-| A downloadable offline bundle | **yes** (`write_mini_ide_bundle()`) | **no** |
-
-**Two gaps, and neither is architectural.** Autocomplete is a
-`vendor-src/codemirror-entry.js` extension already written and wired into two
-surfaces; dewmini needs it wired into a third. The offline bundle is a
-`build.py` function that assembles a folder from one HTML file, its
-JavaScript, and the vendored Pyodide — pointing it at `compose/` instead of
-`assets/` is the shape of the work, not a rewrite.
-
-**Then the retirement**, in this order, so nothing is deleted while anyone
-could still be relying on it:
-
-1. Close both gaps above, so dewmini can do everything Mini IDE can.
-2. Turn `mini-ide.html` into a short page explaining the move and linking to
-   dewmini. Downloaded folders keep working, unsupported — they are a
-   student's own copy and breaking one would be gratuitous.
-3. Delete `assets/mini-ide.js`, `assets/mini-ide-fs.js`,
-   `assets/mini-ide-style.css` and their `docs/*-explained.md`, and fold
-   whatever `mini-ide-style.css` holds that dewmini does not into one
-   stylesheet.
-4. Only then, the three-chromes problem this document opened with becomes
-   two, which is as far as it can go: `shell.html` is a template and
-   `dewmini.html` is a hand-written page, and they are different things.
-
-**One thing the parity table does not say, and should.** Reviewing the
-Worker migration after it merged turned up six defects, one of which — a
-"Restart Python" that permanently wedged the tool — sat in the shared
-engine and so affected both workspaces. `DECISIONS_LOG.md` 7.95 has them.
-The lesson for the retirement above is that the shared engine is where a
-mistake costs twice, and it is worth reviewing changes to it as changes to
-both tools rather than to whichever one prompted them.
-
-**Until step 1 is done, no polish work on Mini IDE.** Every hour spent on a
-tool that is leaving is an hour spent twice.
+Now that one engine is the only engine, that is not a historical note.
+A change to it is a change to every surface that runs Python, and worth
+reviewing as such rather than as a change to whichever one prompted it.

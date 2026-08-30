@@ -203,16 +203,12 @@ stick or taking a set of tutorials home.
 
 ## When you want Python without a tutorial
 
-Two workspaces come with dewlab for when you just want somewhere to write code.
-
-**[dewmini](DEWMINI.md)** is the small, quiet one: a blank page, add a cell,
-run it. Good for testing an idea or working a problem away from the tutorial it
-came from.
-
-**[Mini IDE](MINI_IDE.md)** is the larger one: a file manager, uploading your
-own files, a real SQL database, importing a notebook or a `.py` file, and a Stop
-button that can interrupt code that has got stuck. Reach for it when something
-grows past a few cells.
+**[dewmini](DEWMINI.md)** comes with dewlab for when you just want somewhere
+to write code: a blank page, add a cell, run it. Good for testing an idea,
+working a problem away from the tutorial it came from, or a project that
+grows past a few cells — a file manager, a real SQL database, importing a
+notebook or a `.py` file, and a Stop button that can interrupt code that has
+got stuck all come with it too.
 
 ---
 

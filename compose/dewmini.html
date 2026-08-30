@@ -72,9 +72,9 @@
       <h1>dewmini</h1>
       <p class="dm-subtitle">A small, quiet notebook. Write Python, run it, keep notes — nothing to install.</p>
       <p class="dm-subtitle-note">
-        Outgrowing a quick notebook — a project meant to stand on its own,
-        outside the browser? The <a href="../mini-ide.html">Mini IDE</a> is
-        the larger tool built for that.
+        Setting a classroom up somewhere with no reliable connection? A
+        <a href="../download/dewmini.zip">downloadable copy of dewmini
+        itself</a> runs the same way, offline, once unzipped.
       </p>
     </div>
 
@@ -178,7 +178,6 @@
       <div class="dm-help-entry"><dt>Shift+Tab</dt><dd>Outdent</dd></div>
       <div class="dm-help-entry"><dt>Esc</dt><dd>Close a suggestion list</dd></div>
     </dl>
-      <p class="dm-help-note">Python runs off the page's own thread here, which is what gives you a Stop button — and what stops <code>text_input</code>, <code>dropdown</code>, <code>button</code> and <code>image_input</code> working, since a widget needs a live element to listen on. Calling one tells you so.</p>
   </section>
 
   <section class="dm-panel-section">
@@ -194,12 +193,13 @@
       <div class="dm-help-entry"><dt><code>show(*values, label=)</code></dt><dd>Display something mid-cell</dd></div>
       <div class="dm-help-entry"><dt><code>show_table(frame)</code></dt><dd>Render a DataFrame as a table</dd></div>
       <div class="dm-help-entry"><dt><code>check(actual, expected)</code></dt><dd>A quick right / not-yet</dd></div>
-      
-      
-      
-      
       <div class="dm-help-entry"><dt><code>await load_csv(name)</code></dt><dd>Load a CSV from dewlab's shared data folder, if one's there</dd></div>
     </dl>
+    <p class="dm-help-note">Python runs off the page's own thread here, which is
+      what gives you the Stop button — and what stops <code>text_input</code>,
+      <code>dropdown</code>, <code>button</code> and <code>image_input</code>
+      working, since a widget needs a live element on the page to listen on.
+      Calling one tells you so. They work in a downloaded copy.</p>
   </section>
 
   <section class="dm-panel-section">

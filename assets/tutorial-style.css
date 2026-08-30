@@ -1285,12 +1285,15 @@ p code, li code {
   color: var(--dl-muted);
 }
 
-/* Mini IDE and dewmini, on the contents page: a small area of their own
-   rather than a line buried in the intro prose above, since "I just want
-   to try something, no tutorial attached" is common enough a reason to
-   visit to deserve its own stop. Two plain cards, not three stacked
-   panels or anything busier — the whole point is that there are exactly
-   two of these and picking between them should take one glance. */
+/* dewmini, on the contents page: a small area of its own rather than a
+   line buried in the intro prose above, since "I just want to try
+   something, no tutorial attached" is common enough a reason to visit
+   to deserve its own stop. Used to hold two cards (dewmini and the now-
+   retired Mini IDE, DECISIONS_LOG.md 7.90) side by side in a two-column
+   grid — .dl-workspaces-grid keeps its old name and structure since a
+   second workspace is a real possibility again someday, but with one
+   card in it today, max-width keeps that single card from stretching
+   into a lopsided full-width bar. */
 .dl-workspaces {
   margin: 0 0 2.5rem;
   padding-top: 0.8rem;
@@ -1305,6 +1308,7 @@ p code, li code {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 0.9rem;
+  max-width: 22rem;
 }
 @media (max-width: 34rem) {
   .dl-workspaces-grid { grid-template-columns: 1fr; }

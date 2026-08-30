@@ -132,8 +132,8 @@ installed at all for the ordinary case.
 ## 2. The runtime: what a student's browser actually does
 
 `assets/tutorial-runtime.js` is the JavaScript a student loads on every
-*tutorial* page (Mini IDE and dewmini are separate pages with their own
-JavaScript — see §4), and it owns exactly three things, stated in its
+*tutorial* page (dewmini is a separate page with its own JavaScript —
+see §4), and it owns exactly three things, stated in its
 own opening comment: the settings panel, the CodeMirror editors for
 cells, and booting Pyodide to run one. Deliberately thin on rendering —
 everything a cell's *output* looks like is decided in
@@ -353,49 +353,79 @@ first attempt at this fix silently do nothing.
 
 ---
 
-## 4. Mini IDE and dewmini: two Python workspaces outside any tutorial
+## 4. dewmini: a Python workspace outside any tutorial
 
-`assets/mini-ide.html` and `compose/dewmini.html` are not tutorials — no
-markdown source, nothing `build.py` generates from `tutorials/`. Both are
-plain pages built directly, giving a student a place to write and run
-Python that isn't tied to one lesson. They share `tutorial_tools.py` with
-every tutorial page (§2), so `show`/`show_table`/`check`/widgets all
-behave identically everywhere — but they differ from each other, and from
-a tutorial page, in one important way: how Python actually runs.
+`compose/dewmini.html` is not a tutorial — no markdown source, nothing
+`build.py` generates from `tutorials/`. It's a plain page built
+directly, giving a student a place to write and run Python that isn't
+tied to one lesson. It shares `tutorial_tools.py` with every tutorial
+page (§2), so `show`/`show_table`/`check`/widgets all behave identically
+everywhere.
 
-**Mini IDE** (`assets/mini-ide.js`) is the larger of the two, and its
-execution engine (`assets/pyodide-engine.js`) is a client of
-`assets/pyodide-worker.js` — the same Worker-based runtime a tutorial
-page's own `tutorial-runtime.js` boots (§2), reused rather than
-duplicated. That's what gives Mini IDE a genuine Stop button: a runaway
-cell blocks the Worker, not the page. `assets/mini-ide-fs.js` sits
-between Mini IDE and the actual filesystem, choosing among three
-backends — a real local folder via the File System Access API, OPFS, or
-IDBFS — so the file manager, SQL support (`sqlite3` against a mounted
-`.db` file), and uploads all work without knowing which backend is
-active. Opened from `file://` (the downloadable, folder-based
-distribution — see `write_mini_ide_bundle()` in `build.py`), a module
-Worker isn't reliably available, so `pyodide-engine.js` falls back to
-running Pyodide on the main thread instead — same interpreter, same
+dewmini used to be the smaller of *two* such workspaces — Mini IDE was
+the larger, with its own file manager and a genuine Stop button dewmini
+didn't have. dewmini has since absorbed everything Mini IDE did
+(`DECISIONS_LOG.md` 7.87–7.89) and Mini IDE has retired
+(`DECISIONS_LOG.md` 7.91) — `assets/mini-ide.html` is now a short
+redirect notice, not the app. There is one Python workspace now, and
+this section describes it.
+
+`compose/dewmini.js` runs Python through `assets/pyodide-engine.js`, a
+shared client of `assets/pyodide-worker.js` — the same Worker-based
+runtime a tutorial page's own `tutorial-runtime.js` boots (§2), reused
+rather than duplicated. That's what gives dewmini a genuine Stop button:
+a runaway cell blocks the Worker, not the page. `pyodide-engine.js` was
+originally Mini IDE's own file (named *mini-ide-engine.js*, written when this
+codebase's convention was "each page owns a thin copy"), generalized
+into a shared module once dewmini needed the same Worker/Stop capability
+— see that file's own top comment for why sharing won out over a second
+duplicate this time. `compose/dewmini-fs.js` sits between dewmini and
+the actual filesystem, delegating every primitive (mount, list, read,
+write, delete) to the shared engine and choosing among three backends —
+a real local folder via the File System Access API, its own named OPFS
+subdirectory (kept separate from Mini IDE's own old, un-namespaced OPFS
+mount, still used by the retired app's offline copy), or IDBFS — so the
+file manager, SQL support (`sqlite3` against a mounted `.db` file), and
+uploads all work without knowing which backend is active. Opened from
+`file://` — which dewmini's own downloadable copy (see below) avoids
+by serving itself from `http://localhost` instead, since a browser
+blocks the page's own `import` statements from a bare file entirely,
+not just the Worker specifically — a module Worker isn't reliably
+available either, so `pyodide-engine.js` falls back to running Pyodide
+on the main thread when it is reachable at all: same interpreter, same
 `tutorial_tools.py`, just without a genuine Stop button.
 
 Each of these files has its own `docs/<file>-explained.md` walking
 through its internal structure in more depth than belongs here — start
 with [`docs/pyodide-engine-explained.md`](docs/pyodide-engine-explained.md)
 for the worker/main-thread split specifically, or
-[`docs/mini-ide-fs-explained.md`](docs/mini-ide-fs-explained.md) for the
-three-backend filesystem layer.
+[`docs/dewmini-js-explained.md`](docs/dewmini-js-explained.md) for the
+rest of dewmini (cell CRUD, drag reorder, the standalone HTML export
+that builds an entire second page as a string).
 
-**dewmini** (`compose/dewmini.js`) stays deliberately smaller: no file
-manager, no SQL beyond what plain `import sqlite3` gives for free, and —
-the real architectural difference — Pyodide runs directly on the main
-thread always, the simpler and older approach, with no Worker and
-therefore no Stop button. That's a genuine tradeoff, not an oversight:
-dewmini is meant for something quick, and Mini IDE is where a project
-that's outgrown "quick" belongs. See
-[`docs/dewmini-js-explained.md`](docs/dewmini-js-explained.md) for how
-the rest of dewmini (cell CRUD, drag reorder, the standalone HTML export
-that builds an entire second page as a string) fits together.
+**Mini IDE's retirement kept its code, not its URL.** `assets/mini-ide.js`,
+`assets/mini-ide-fs.js`, and `assets/mini-ide-style.css` still exist —
+nothing hosted links to them any more, but `build.py`'s
+`write_mini_ide_bundle()` still packages them, plus a renamed copy of
+the original app (`assets/mini-ide-offline-app.html`), into a
+self-contained offline download. That download was kept rather than
+retired along with the hosted page because it's a working, harmless
+artifact — see `write_mini_ide_bundle()`'s own docstring.
+
+**dewmini has its own downloadable, offline-capable copy too**
+(`write_dewmini_bundle()`, `build.py`; `DECISIONS_LOG.md` 7.92) —
+mirrors the hosted site's own `compose/`/`assets/`/`data/` folder shape
+rather than flattening, since `compose/dewmini.html`'s own relative
+paths already assume that shape and rewriting them was exactly the risk
+7.89's real bug came from. Both offline bundles ship a *serve.py*
+(`write_offline_serve_script()`): a browser blocks the `import`
+statements this codebase's JavaScript is built from when a page is
+opened straight off disk (no origin for a CORS check to approve), so
+neither bundle can just be double-clicked — *serve.py* is a
+zero-dependency wrapper around `http.server` that serves the unzipped
+folder to `localhost` instead, found necessary (and, for Mini IDE's own
+already-shipped bundle, previously unnoticed) by actually opening a
+built bundle the way a downloader would, not assumed from the code.
 
 ---
 
@@ -463,10 +493,11 @@ runtime or the editor.
 | What a tutorial's markdown can express (a new frontmatter field, a new fence convention) | `build.py` |
 | What a cell can do (a new tutorial-facing function) | `assets/tutorial_tools.py` |
 | What a cell *looks like*, or the settings panel, save/restore behaviour | `assets/tutorial-runtime.js` |
-| Mini IDE's file manager, uploads, or storage backend | `assets/mini-ide-fs.js` |
-| Mini IDE's Python engine (boot, run a cell, hover/autocomplete, Stop) | `assets/pyodide-engine.js` |
-| Mini IDE's cells, toolbar, or downloads | `assets/mini-ide.js` |
+| dewmini's file manager, uploads, or storage backend | `compose/dewmini-fs.js` |
+| The shared Python engine (boot, run a cell, hover/autocomplete, Stop) — used by dewmini and by Mini IDE's retired, offline-only copy alike | `assets/pyodide-engine.js` |
 | dewmini's cells, toolbar, or downloads | `compose/dewmini.js` |
+| The retired Mini IDE's offline-only copy (cells, file manager, toolbar) | `assets/mini-ide.js`, `assets/mini-ide-fs.js` |
+| Either offline, downloadable bundle (what's included, the local-server workaround) | `write_mini_ide_bundle()`/`write_dewmini_bundle()`/`write_offline_serve_script()` in `build.py` |
 | The topic tree or knowledge map's layout | `assets/tree.js` and `build.py`'s `tree_data()`/`render_knowledge_map()` |
 | The authoring editor's structural checks, release logic, GitHub calls | `assets/editor.js` |
 | The authoring editor's prose-editing surface itself | `vendor-src/milkdown-entry.js` |

@@ -189,7 +189,7 @@ here as the record of the shape this shipped in first, not rewritten.
 
 ## 6b. Highlight to look up
 
-Built — `DECISIONS_LOG.md` 7.91, `initReferenceLookup()` in
+Built — `DECISIONS_LOG.md` 7.93, `initReferenceLookup()` in
 `assets/tutorial-runtime.js`.
 
 Selecting text in the reading offers a **Look up** button, which opens this
@@ -207,13 +207,13 @@ entry's prose.
 Matching is whole-word in both directions with an exact match preferred —
 plain substring matching offered *pandas* for "and" and *cell* for
 "excellent", which is the same false-positive problem §6c describes, reached
-by a different route (`DECISIONS_LOG.md` 7.94).
+by a different route (`DECISIONS_LOG.md` 7.96).
 
 Nothing is stored. Selection in, the existing filter out.
 
 ## 6c. Where a term came from
 
-Built — `DECISIONS_LOG.md` 7.92, `origin_of()`/`origin_anchor()` in
+Built — `DECISIONS_LOG.md` 7.94, `origin_of()`/`origin_anchor()` in
 `build.py`, rendered by `renderReference()`.
 
 Every entry a reader inherited from an earlier tutorial carries **Introduced
@@ -222,7 +222,7 @@ terms carry none: "you met this here" on the page teaching it says nothing.
 
 This replaced a version that linked every later occurrence of a term **in
 the prose**. That was built and withdrawn — ordinary English words are also
-glossary terms, and a regex cannot tell "set a seed" from set theory. 7.92
+glossary terms, and a regex cannot tell "set a seed" from set theory. 7.94
 has the measurement and the reasoning. The obstacle was sense
 disambiguation, not matching, so a stemmer or a `forms:` list would not have
 helped.

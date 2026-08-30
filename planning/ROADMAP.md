@@ -216,14 +216,14 @@ next.
 
 **The work:**
 
-1. Highlight-to-search — **built**, `DECISIONS_LOG.md` 7.91. Select text
+1. Highlight-to-search — **built**, `DECISIONS_LOG.md` 7.93. Select text
    on the page and, when the reference knows the term, a small button
    offers to open the panel filtered to it. No persistence, no new
    storage — selection in, `filterReferenceContent()` out. The design
    decision worth knowing is the silence: it stays away for every
    selection that is not a term, which is most of them.
 2. "Where did I meet this?" — **built, but not as specified.**
-   `DECISIONS_LOG.md` 7.92. Linking every later occurrence in the *prose*
+   `DECISIONS_LOG.md` 7.94. Linking every later occurrence in the *prose*
    was built, measured and withdrawn: ordinary English words are also
    glossary terms, and a majority of the matches for *shape* on one page
    were the everyday sense rather than the matrix one. A confidently wrong
@@ -259,10 +259,10 @@ next.
 
 ---
 
-## Phase 6 — One workspace, and the edges — **the edges done, the merge scoped**
+## Phase 6 — One workspace, and the edges — **done**
 
 **The edges audit is done** — `planning/EDGES_AUDIT.md`,
-`DECISIONS_LOG.md` 7.93. The offline bundle was proven to boot and run
+`DECISIONS_LOG.md` 7.95. The offline bundle was proven to boot and run
 Python with every non-loopback request blocked; two causes of sideways
 scrolling on a 375px phone were found and fixed, one of which made a
 connection failure compound into an unreadable page; and a heading-order
@@ -270,10 +270,18 @@ break on the contents page was corrected. A real screen-reader pass still
 needs a person, and tap-target sizes are a design decision rather than a
 patch — both are named at the end of that document.
 
-**The merge is measured but not executed.** `MINI_IDE_AND_DEWMINI_NEXT.md`'s
-second addendum has the parity table: dewmini already matches Mini IDE on
-everything except Jedi autocomplete and a downloadable offline bundle, and
-the retirement sequence is written down. Neither gap is architectural.
+**The merge is done too, and not by this branch.** Mini IDE has retired
+(`DECISIONS_LOG.md` 7.91) and dewmini has its own downloadable,
+offline-capable copy (7.92) — the two gaps a parity checklist here had
+measured and left open. That checklist has been dropped rather than
+updated, since it planned work that has happened;
+`MINI_IDE_AND_DEWMINI_NEXT.md`'s third addendum keeps the one part of it
+that outlasts the plan.
+
+**One thing this phase leaves behind.** Reviewing the Worker migration
+after it merged found six defects (`DECISIONS_LOG.md` 7.97), the worst of
+them in the now-single shared engine. With one engine serving every
+surface that runs Python, a change to it is a change to all of them.
 
 ## Phase 6 — the original plan
 
@@ -285,11 +293,26 @@ Mini IDE between now and convergence.
 
 **The work:**
 
-1. A written parity checklist (files, uploads, SQLite, notebook import,
-   Stop, offline bundle), then dewmini gains each item in its own
-   style.
-2. Retire Mini IDE; collapse toward one stylesheet for the shared
-   chrome.
+1. **Done.** A written parity checklist (files, uploads, SQLite,
+   notebook import, Stop), then dewmini gained each item in its own
+   style (`DECISIONS_LOG.md` 7.87–7.89). The one item left off that
+   original checklist — an offline, downloadable copy of the tool
+   itself, not just a student's own notebook — landed separately once
+   Mini IDE's retirement made it stop being optional
+   (`DECISIONS_LOG.md` 7.92), and surfaced a real bug in *both* offline
+   bundles' core promise along the way: neither could actually be
+   opened by double-clicking, only served locally, something nothing
+   had tested until building dewmini's own bundle did.
+2. **Done.** Mini IDE retired (`DECISIONS_LOG.md` 7.91) — its hosted
+   URL redirects to dewmini; its app survives, unlinked, only as the
+   source for a still-offered offline download. Collapsing toward one
+   stylesheet for the shared chrome did not turn out to be part of
+   this step: dewmini and the tutorial pages already shared
+   `tutorial-style.css`'s own tokens and `.dl-*` classes before
+   retirement, and Mini IDE's own stylesheet (`assets/mini-ide-style.css`)
+   only needs to keep working for its offline-only copy now, not to
+   converge with anything live — nothing forces that collapse to
+   happen at all unless a real reason to touch that file shows up.
 3. The edges audit, which is the equity work: the site on a phone
    end-to-end, a screen-reader pass, and a proof that the offline
    bundle boots with the network off on a fresh machine — currently
@@ -297,19 +320,27 @@ Mini IDE between now and convergence.
 
 **Open questions:**
 
-- **Does dewmini take the Worker engine?** Absorbing Mini IDE's
-  capabilities implies the Stop button, which implies the Worker — but
-  dewmini's stated identity is main-thread simplicity. *Assumed:* yes,
-  it takes the Worker; the identity worth keeping is the smaller
-  surface, not the older plumbing. *Cost to change:* the engine is
-  already a separable client (`pyodide-engine.js`), so this is
-  adoption, not a rewrite.
+- **Does dewmini take the Worker engine?** *Decided, and done*
+  (`DECISIONS_LOG.md` 7.89): yes — the identity worth keeping was the
+  smaller surface, not the older plumbing. The separable client became
+  `assets/pyodide-engine.js`, shared rather than duplicated, exactly as
+  this entry's *cost to change* anticipated.
 - **What happens to Mini IDE's URLs and downloaded bundles?**
-  *Assumed:* the hosted page becomes a short redirect-with-explanation;
-  downloaded folders keep working as-is, unsupported. *Cost:* nil.
-- **Offline proof: manual or CI?** *Assumed:* a `MANUAL_CHECKLIST.md`
-  entry per release first; a CI job that serves the bundle with
-  outbound network blocked if the manual check ever gets skipped.
+  *Decided, and done* (`DECISIONS_LOG.md` 7.91): the hosted page is now
+  a short redirect-with-explanation; the offline download keeps working
+  as a self-contained artifact, produced from a renamed copy of the
+  original app kept for exactly that purpose.
+- **Offline proof: manual or CI?** *Partly answered:* a manual pass
+  (`DECISIONS_LOG.md` 7.92) served both bundles with *serve.py* and ran
+  a real interrupt-a-`while True`-loop Stop-button test against each,
+  plus a `load_csv()` call against dewmini's own bundled `data/` — real
+  proof the *served* bundle works, not yet proof it works with the
+  network fully off (both tests still reached a locally-vendored Pyodide
+  over HTTP, not the bundle's own `assets/vendor/pyodide/`, which
+  neither test environment had populated). *Still assumed:* a
+  `MANUAL_CHECKLIST.md` entry per release for the fully-offline case
+  specifically; a CI job that serves a bundle with outbound network
+  blocked if the manual check ever gets skipped.
 - **What is the screen-reader baseline?** Which reader and browser
   pairs count as "tested"? *Assumed:* VoiceOver/Safari and NVDA/Firefox,
   as the pair a Dublin classroom is most likely to contain. Worth a
