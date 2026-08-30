@@ -345,6 +345,22 @@
   border-color: var(--dl-error-fg);
   color: #fff;
 }
+
+/* Run becomes Stop while a cell is running, wherever a genuine interrupt
+ * is possible (engine.canStop(), DECISIONS_LOG.md 7.89) — the same
+ * button, so there is nothing new to find, just a different label and
+ * colour while it means something different. Reuses the error ink
+ * rather than a colour of its own, the same convention .dl-btn-run's own
+ * .dl-btn-stop state uses site-wide (tutorial-style.css): this is the
+ * one button on the page whose whole point is "something is happening
+ * that you might want to stop". */
+.dm-icon-run.dm-icon-run-stop {
+  background: var(--dl-error-fg);
+  border-color: var(--dl-error-fg);
+  color: #fff;
+}
+.dm-icon-run.dm-icon-run-stop:hover { opacity: 0.85; }
+
 .dm-icon-btn:disabled { opacity: 0.4; cursor: default; }
 
 /* The one .dm-icon-btn with a word on it rather than a glyph — "Edit"/

@@ -24,7 +24,7 @@
 
 /* This whole file runs inside a Web Worker, not on the page itself — a
  * separate thread with its own memory, created by `new Worker(...)` on
- * the page side (see mini-ide-engine.js's ensureWorker(), or
+ * the page side (see pyodide-engine.js's ensureWorker(), or
  * tutorial-runtime.js's own equivalent). That's what makes a genuine
  * Stop button possible: even if Python code here runs forever, the page
  * itself stays responsive, since it's a different thread entirely. The
@@ -205,6 +205,20 @@ async function loadJedi() {
   }
 }
 
+/* Puts every name in tutorial_tools.__all__ into the shared namespace,
+ * plus __name__ — run once at the end of boot() below, and again by
+ * resetPageState() further down after tools.reset_page_state() clears
+ * that namespace out, so the always-available names come right back
+ * without needing a full re-boot. */
+const RESEED_GLOBALS_SOURCE = `
+import tutorial_tools
+tutorial_tools._page_globals.update({
+    name: getattr(tutorial_tools, name)
+    for name in tutorial_tools.__all__
+})
+tutorial_tools._page_globals["__name__"] = "__dewlab__"
+`;
+
 /* Starts Python from scratch: downloads and initializes Pyodide, loads
  * the requested packages, loads tutorial_tools.py (giving cells access to
  * show()/show_table()/check()/etc.), and sets up the shared page
@@ -231,14 +245,7 @@ async function boot(msg) {
   builtinsModule = pyodide.pyimport("builtins");
   tools.configure(msg.dataBase);
 
-  await pyodide.runPythonAsync(`
-import tutorial_tools
-tutorial_tools._page_globals.update({
-    name: getattr(tutorial_tools, name)
-    for name in tutorial_tools.__all__
-})
-tutorial_tools._page_globals["__name__"] = "__dewlab__"
-`);
+  await pyodide.runPythonAsync(RESEED_GLOBALS_SOURCE);
 
   post({ type: "status", text: "" });
 
@@ -264,6 +271,15 @@ async function runCell(cellId, code) {
    * onmessage below rather than caught twice. */
   const ok = await tools.run_cell(cellId, emit, code);
   return { ok };
+}
+
+/* Clears the shared namespace and re-seeds it with the always-available
+ * names — the worker half of pyodide-engine.js's resetPageState(),
+ * needed for a page's own "Run all" wanting every cell to run against
+ * the same clean slate a fresh page load would give it. */
+async function resetPageState() {
+  tools.reset_page_state();
+  await pyodide.runPythonAsync(RESEED_GLOBALS_SOURCE);
 }
 
 /* ---------------------------------------------------------------------
@@ -400,7 +416,7 @@ self.onmessage = async (ev) => {
       respond("ok");
     } else if (msg.type === "set-interrupt-buffer") {
       /* Hands Pyodide the shared memory the page will write into to
-       * request a Stop (see mini-ide-engine.js's requestInterrupt() for
+       * request a Stop (see pyodide-engine.js's requestInterrupt() for
        * the page-side half of this). Pyodide checks this buffer
        * periodically while Python code runs, so this one call is what
        * makes the Stop button able to interrupt even a runaway loop —
@@ -408,6 +424,9 @@ self.onmessage = async (ev) => {
       pyodide.setInterruptBuffer(new Int32Array(msg.buffer));
     } else if (msg.type === "run-cell") {
       respond(await runCell(msg.cellId, msg.code));
+    } else if (msg.type === "reset-page-state") {
+      await resetPageState();
+      respond("ok");
     } else if (msg.type === "hover-doc") {
       respond(hoverDoc(msg.name, msg.source, msg.line, msg.col));
     } else if (msg.type === "signature-help") {

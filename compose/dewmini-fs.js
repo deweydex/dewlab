@@ -1,11 +1,11 @@
 /* dewmini's filesystem — ported from assets/mini-ide-fs.js
- * (planning/MINI_IDE_REDESIGN.md Phase 2, DECISIONS_LOG.md 7.88), trimmed
- * to match dewmini's own single-threaded engine: Mini IDE's version sits
- * behind mini-ide-engine.js's Worker/main-thread dispatch, since Pyodide
- * there might be running in either place; dewmini only ever runs Pyodide
- * on the main thread, so the filesystem calls below talk to `pyodide.FS`
- * directly rather than through a second dispatching layer that would
- * only ever have one path to dispatch to.
+ * (planning/MINI_IDE_REDESIGN.md Phase 2, DECISIONS_LOG.md 7.88), now
+ * routing through the same shared assets/pyodide-engine.js Mini IDE's
+ * own copy already does (DECISIONS_LOG.md 7.89), rather than talking to
+ * `pyodide.FS` directly the way this file's first version did — once
+ * dewmini's own Pyodide could run inside a Worker, `pyodide.FS` stopped
+ * being something this module (running on the main thread) could touch
+ * directly at all.
  *
  * One small interface (init, listDir, readFile, writeFile, deleteFile,
  * mkdir) sitting between a mounted Pyodide filesystem and dewmini's own
@@ -17,15 +17,9 @@
  *   2. OPFS — persistent, no picker, no permission prompt, broadly
  *      supported. What init() mounts by default.
  *   3. IDBFS — the universal fallback.
- *
- * getPyodide() is injected via configure() rather than imported directly
- * from dewmini.js: dewmini.js needs to call *into* this module (to mount
- * a filesystem once Pyodide boots) and this module needs to call *into*
- * dewmini.js (to get the live Pyodide instance, booting it if it hasn't
- * started yet) — a genuine two-way dependency between the two files, and
- * dependency injection avoids the circular-import tangle that having
- * each file `import` the other by name would create.
  */
+
+import * as engine from "../assets/pyodide-engine.js";
 
 const MOUNT_POINT = "/mnt/dewmini";
 const SYNC_DEBOUNCE_MS = 1500;
@@ -35,17 +29,20 @@ const DB_VERSION = 1;
 const STORE_NAME = "kv";
 const HANDLE_KEY = "native-dir-handle";
 
-// The subdirectory name mini-ide-fs.js's own OPFS mount does *not* use —
-// it mounts navigator.storage.getDirectory() itself directly at its own
-// mount point, which maps Pyodide's mounted view straight onto the
-// origin's one shared OPFS root. Two tools doing that on the same origin
-// would see and could overwrite each other's files, invisibly, the
-// moment both existed — not a problem when Mini IDE was the only one
-// mounting OPFS, but a real one now that dewmini does too. dewmini gets
-// its own named subdirectory of that shared root instead (see
-// mountOpfs() below), so its files stay separate from Mini IDE's
-// (whose own mount is left as-is here — retiring it, not fixing it in
-// place, is the plan per planning/MINI_IDE_AND_DEWMINI_NEXT.md §6).
+// mini-ide-fs.js's own OPFS mount hands navigator.storage.getDirectory()
+// straight to engine.mountNative() — mapping Pyodide's mounted view
+// directly onto the origin's one shared OPFS root. Two tools doing that
+// on the same origin would see and could overwrite each other's files,
+// invisibly, the moment both existed — not a problem when Mini IDE was
+// the only one mounting OPFS, but a real one now that dewmini does too.
+// dewmini gets its own named subdirectory of that shared root instead
+// (see mountOpfs() below) before handing *that* handle to the same
+// engine.mountNative() Mini IDE's own real-folder mounting already uses
+// — OPFS mounting and real-folder mounting are the same operation as far
+// as the engine is concerned, just with a different handle source, so
+// this needs no engine change at all. (Mini IDE's own un-namespaced
+// mount is left as-is here — retiring it, not fixing it in place, is the
+// plan per planning/MINI_IDE_AND_DEWMINI_NEXT.md §6.)
 const OPFS_SUBDIR = "dewmini";
 
 /* ------------------------------------------------------------- IndexedDB
@@ -98,87 +95,6 @@ async function idbDelete(key) {
   });
 }
 
-/* --------------------------------------------------------- FS primitives
- * The direct pyodide.FS calls mini-ide-engine.js's own fs*MT() functions
- * wrap — copied here in the same shape, since dewmini's Pyodide instance
- * lives on the main thread the same way theirs does when a Worker isn't
- * available. `getPyodide` (set by configure()) is called fresh each
- * time rather than cached, since the instance can change across a page
- * reload (nothing else here persists it either). */
-
-let getPyodide = null;
-let mountedFs = null;
-
-async function fsMountNative(mountpoint, handle) {
-  const pyodide = await getPyodide();
-  pyodide.FS.mkdirTree(mountpoint);
-  mountedFs = await pyodide.mountNativeFS(mountpoint, handle);
-}
-
-async function fsMountOpfs(mountpoint) {
-  const pyodide = await getPyodide();
-  const opfsRoot = await navigator.storage.getDirectory();
-  const dewminiDir = await opfsRoot.getDirectoryHandle(OPFS_SUBDIR, { create: true });
-  pyodide.FS.mkdirTree(mountpoint);
-  mountedFs = await pyodide.mountNativeFS(mountpoint, dewminiDir);
-}
-
-async function fsMountIdbfs(mountpoint) {
-  const pyodide = await getPyodide();
-  pyodide.FS.mkdirTree(mountpoint);
-  pyodide.FS.mount(pyodide.FS.filesystems.IDBFS, {}, mountpoint);
-  await new Promise((resolve, reject) => {
-    pyodide.FS.syncfs(true, (err) => (err ? reject(err) : resolve()));
-  });
-  mountedFs = {
-    syncfs: () =>
-      new Promise((resolve, reject) => {
-        pyodide.FS.syncfs(false, (err) => (err ? reject(err) : resolve()));
-      }),
-  };
-}
-
-async function fsSync() {
-  if (mountedFs) await mountedFs.syncfs();
-}
-
-async function fsUnmount(path) {
-  const pyodide = await getPyodide();
-  pyodide.FS.unmount(path);
-  mountedFs = null;
-}
-
-async function fsList(path) {
-  const pyodide = await getPyodide();
-  const names = pyodide.FS.readdir(path).filter((n) => n !== "." && n !== "..");
-  return names.map((name) => {
-    const stat = pyodide.FS.stat(`${path.replace(/\/$/, "")}/${name}`);
-    return { name, isDir: pyodide.FS.isDir(stat.mode), size: stat.size };
-  });
-}
-
-async function fsRead(path, encoding) {
-  const pyodide = await getPyodide();
-  return pyodide.FS.readFile(path, encoding ? { encoding } : undefined);
-}
-
-async function fsWrite(path, data) {
-  const pyodide = await getPyodide();
-  pyodide.FS.writeFile(path, data);
-}
-
-async function fsDelete(path) {
-  const pyodide = await getPyodide();
-  const stat = pyodide.FS.stat(path);
-  if (pyodide.FS.isDir(stat.mode)) pyodide.FS.rmdir(path);
-  else pyodide.FS.unlink(path);
-}
-
-async function fsMkdir(path) {
-  const pyodide = await getPyodide();
-  pyodide.FS.mkdirTree(path);
-}
-
 /* ------------------------------------------------------------- backend */
 
 let backend = null;
@@ -195,22 +111,20 @@ export function getBackend() {
 }
 
 /**
- * @param {Object} options
- * @param {() => Promise<Object>} options.getPyodide - resolves to the
- *   live Pyodide instance, booting it first if it hasn't started (the
- *   same function dewmini.js's own Run button calls).
+ * @param {Object} [options]
  * @param {(backend: string) => void} [options.onBackendChange] - called
  *   whenever the active backend changes.
  */
-export function configure(options) {
-  getPyodide = options.getPyodide;
+export function configure(options = {}) {
   onBackendChange = options.onBackendChange || (() => {});
 }
 
 async function mountOpfsIfSupported() {
   if (!("storage" in navigator) || typeof navigator.storage.getDirectory !== "function") return false;
   try {
-    await fsMountOpfs(MOUNT_POINT);
+    const opfsRoot = await navigator.storage.getDirectory();
+    const dewminiDir = await opfsRoot.getDirectoryHandle(OPFS_SUBDIR, { create: true });
+    await engine.mountNative(MOUNT_POINT, dewminiDir);
     setBackend("opfs");
     return true;
   } catch (err) {
@@ -224,11 +138,11 @@ let initPromise = null;
 /**
  * Mounts a filesystem: a previously chosen and still-permitted real
  * folder if one is on file, otherwise OPFS, otherwise IDBFS. Requires
- * Pyodide to already be starting (getPyodide() drives that) — called
- * from dewmini.js right after Pyodide itself finishes booting, so
- * "Files" in Settings only ever shows real status once Python has
- * actually started, the same lazy-boot rule the rest of dewmini follows.
- * Idempotent: a second call returns the same in-flight/completed mount.
+ * Pyodide to already be starting — engine.ensureBooted() drives that,
+ * same as mini-ide-fs.js's own init() calls it — so "Files" in Settings
+ * only ever shows real status once Python has actually started, the same
+ * lazy-boot rule the rest of dewmini follows. Idempotent: a second call
+ * returns the same in-flight/completed mount rather than mounting twice.
  */
 export function init() {
   if (!initPromise) initPromise = doInit();
@@ -236,12 +150,14 @@ export function init() {
 }
 
 async function doInit() {
+  await engine.ensureBooted();
+
   const storedHandle = await idbGet(HANDLE_KEY).catch(() => null);
   if (storedHandle) {
     try {
       const permission = await storedHandle.queryPermission({ mode: "readwrite" });
       if (permission === "granted") {
-        await fsMountNative(MOUNT_POINT, storedHandle);
+        await engine.mountNative(MOUNT_POINT, storedHandle);
         setBackend("native");
         return;
       }
@@ -252,8 +168,19 @@ async function doInit() {
   }
 
   if (await mountOpfsIfSupported()) return;
-  await fsMountIdbfs(MOUNT_POINT);
+  await engine.mountIdbfs(MOUNT_POINT);
   setBackend("idbfs");
+}
+
+/**
+ * Forgets that init() ever ran, so the next call re-mounts from scratch —
+ * for pairing with engine.restart(), whose fresh interpreter has nothing
+ * mounted into it yet. Doesn't touch the stored folder handle (or any
+ * file) itself, just this module's own "already initialized" memo.
+ */
+export function reset() {
+  initPromise = null;
+  backend = null;
 }
 
 /** Whether a real folder was chosen before, so Settings can offer
@@ -270,8 +197,8 @@ export async function chooseFolder() {
     throw new Error("This browser can't grant access to a real folder — try Chrome or Edge.");
   }
   const handle = await window.showDirectoryPicker({ mode: "readwrite" });
-  if (backend) await fsUnmount(MOUNT_POINT);
-  await fsMountNative(MOUNT_POINT, handle);
+  if (backend) await engine.unmount(MOUNT_POINT);
+  await engine.mountNative(MOUNT_POINT, handle);
   await idbSet(HANDLE_KEY, handle);
   setBackend("native");
   return handle;
@@ -284,8 +211,8 @@ export async function reconnectFolder() {
   if (!storedHandle) throw new Error("No previously chosen folder to reconnect.");
   const permission = await storedHandle.requestPermission({ mode: "readwrite" });
   if (permission !== "granted") throw new Error("Folder access wasn't granted.");
-  if (backend) await fsUnmount(MOUNT_POINT);
-  await fsMountNative(MOUNT_POINT, storedHandle);
+  if (backend) await engine.unmount(MOUNT_POINT);
+  await engine.mountNative(MOUNT_POINT, storedHandle);
   setBackend("native");
 }
 
@@ -307,7 +234,7 @@ function resolvePath(relativePath) {
  * full tree — see DECISIONS_LOG.md 7.88) but this itself stays general,
  * the same as mini-ide-fs.js's own listDir(). */
 export async function listDir(relativePath = "") {
-  const entries = await fsList(resolvePath(relativePath));
+  const entries = await engine.listDir(resolvePath(relativePath));
   return entries.sort((a, b) => {
     if (a.isDir !== b.isDir) return a.isDir ? -1 : 1;
     return a.name.localeCompare(b.name);
@@ -315,21 +242,21 @@ export async function listDir(relativePath = "") {
 }
 
 export async function readFile(relativePath, encoding) {
-  return fsRead(resolvePath(relativePath), encoding);
+  return engine.readFile(resolvePath(relativePath), encoding);
 }
 
 export async function writeFile(relativePath, data) {
-  await fsWrite(resolvePath(relativePath), data);
+  await engine.writeFile(resolvePath(relativePath), data);
   scheduleSync();
 }
 
 export async function deleteFile(relativePath) {
-  await fsDelete(resolvePath(relativePath));
+  await engine.deleteFile(resolvePath(relativePath));
   scheduleSync();
 }
 
 export async function mkdir(relativePath) {
-  await fsMkdir(resolvePath(relativePath));
+  await engine.mkdir(resolvePath(relativePath));
   scheduleSync();
 }
 
@@ -348,7 +275,7 @@ export async function mkdir(relativePath) {
  * goes away.
  */
 export async function sync() {
-  if (backend) await fsSync();
+  if (backend) await engine.syncFs();
 }
 
 /* ------------------------------------------------------------ syncing */
@@ -358,13 +285,13 @@ let syncTimer = null;
 function scheduleSync() {
   clearTimeout(syncTimer);
   syncTimer = setTimeout(() => {
-    fsSync().catch((err) => console.warn("dewmini: filesystem sync failed", err));
+    engine.syncFs().catch((err) => console.warn("dewmini: filesystem sync failed", err));
   }, SYNC_DEBOUNCE_MS);
 }
 
 function flushSyncNow() {
   clearTimeout(syncTimer);
-  fsSync().catch(() => {}); // best-effort; nothing to do if it's too late
+  engine.syncFs().catch(() => {}); // best-effort; nothing to do if it's too late
 }
 
 window.addEventListener("beforeunload", flushSyncNow);

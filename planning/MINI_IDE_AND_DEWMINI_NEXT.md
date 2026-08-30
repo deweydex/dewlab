@@ -292,16 +292,21 @@ The work is being staged, not done in one pass:
    explicit choice against Mini IDE's own heavier shape) plus a
    `sync()`-after-every-cell-run fix neither this port nor Mini IDE's
    own original had, without which a `.db` file's own writes never
-   actually reached persistent storage. **Still open: the Worker/Stop
-   migration** — the largest and most structurally invasive of the
-   four, and — per §3 above — the one nothing else on this list actually
-   depends on, so it was correctly left for last.
-3. **Mini IDE's retirement**, once parity is real: `mini-ide.html`
-   redirected to dewmini or removed, and every link, doc, and this
-   document's own §4 recommendation updated to match — not before, since
-   retiring the fuller tool before its replacement can actually do
-   everything it does would be a real regression for any student using
-   the features that hadn't landed yet.
+   actually reached persistent storage. **Done: the Worker/Stop
+   migration** (`DECISIONS_LOG.md` 7.89) — the largest and most
+   structurally invasive of the four, and the last one, since it was the
+   one nothing else on this list actually depended on. `mini-ide-engine.js`
+   became the shared `assets/pyodide-engine.js`, both tools now import
+   from; dewmini's Python runs in a Worker with a genuine Stop button,
+   matching Mini IDE's own since `MINI_IDE_REDESIGN.md`; two real bugs
+   (`tutorial_tools.py` 404ing from dewmini's own deeper path, the Stop
+   button never appearing on a page's first-ever run) were caught by
+   testing and fixed, not left as known gaps. **Feature parity is
+   complete** — all four items on this list are done.
+3. **Mini IDE's retirement**, now that parity is real (per an explicit
+   instruction that this is a given, not a further decision point):
+   `mini-ide.html` redirected to dewmini or removed, and every link, doc,
+   and this document's own §4 recommendation updated to match.
 
 §1–§5 above are kept as written: the accounting of what each tool needed
 next was accurate at the time, and most of it (the file manager, SQLite,

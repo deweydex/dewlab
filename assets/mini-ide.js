@@ -16,8 +16,9 @@
  *   - Hover documentation for builtins and user-defined names
  *
  * Architecture:
- *   - Cell array (this file) + Pyodide engine (mini-ide-engine.js), which
- *     boots the same assets/pyodide-worker.js the tutorial pages use — a
+ *   - Cell array (this file) + Pyodide engine (assets/pyodide-engine.js,
+ *     shared with dewmini — DECISIONS_LOG.md 7.89), which boots the same
+ *     assets/pyodide-worker.js the tutorial pages use — a
  *     real Worker with real Jedi, a genuine Stop button, and the real
  *     assets/tutorial_tools.py, falling back to the main thread if a
  *     module Worker isn't available (e.g. a file:// download).
@@ -31,14 +32,14 @@
  */
 
 import { createCodeEditor, setEditorTheme } from "./vendor/codemirror.bundle.js";
-import * as engine from "./mini-ide-engine.js";
+import * as engine from "./pyodide-engine.js";
 import * as fs from "./mini-ide-fs.js";
 
 // ============================================================================
 // Configuration Constants
 //
 // These are the localStorage keys this file itself reads and writes.
-// (mini-ide-fs.js and mini-ide-engine.js have their own storage keys,
+// (mini-ide-fs.js and pyodide-engine.js have their own storage keys,
 // defined in those files, not here — each module owns the keys it
 // actually uses, rather than collecting them all in one shared list.)
 // A version suffix like ":v1" on STORAGE_KEY means that if the saved
@@ -1759,7 +1760,7 @@ function focusCell(id) {
 // Where "Cell Management" (above) deals with cells as data and DOM
 // elements, this section is about actually running Python. This file
 // never talks to Pyodide directly — it delegates everything to
-// mini-ide-engine.js (imported at the top of this file as `engine`),
+// pyodide-engine.js (imported at the top of this file as `engine`),
 // which in turn talks to assets/pyodide-worker.js. That layering means
 // this file doesn't need to know or care whether Python is running in a
 // background Worker or, as a fallback, directly on the page — it just

@@ -1,23 +1,33 @@
-/* Mini IDE's Pyodide engine.
+/* dewlab's shared Pyodide engine — Mini IDE's and dewmini's worker
+ * *client* alike (DECISIONS_LOG.md 7.89).
  *
  * Runs Pyodide off the main thread by reusing assets/pyodide-worker.js —
  * the same file the hosted tutorial pages already boot through
- * (assets/tutorial-runtime.js). This module is mini-ide.js's worker
- * *client*: booting, running a cell, hover/signature-help lookups, Stop
- * support, and streaming a cell's output back into its own output
- * element. mini-ide.js owns the cell array and the DOM; this module never
- * touches either directly, only through the accessor passed to configure().
+ * (assets/tutorial-runtime.js). This module handles booting, running a
+ * cell, hover/signature-help lookups, Stop support, filesystem mounting,
+ * and streaming a cell's output back into its own output element. The
+ * page that configures it owns the cell array and the DOM; this module
+ * never touches either directly, only through the accessors passed to
+ * configure() — which is what makes sharing it between two otherwise
+ * independent pages possible at all.
  *
- * Ported from tutorial-runtime.js's own worker-communication block rather
- * than imported from it — this codebase's existing convention (mini-ide.js
- * already duplicates tutorial-runtime.js's texture code rather than
- * sharing it) is that each page owns a thin copy rather than a shared
- * runtime module.
+ * Originally Mini IDE's own file (mini-ide-engine.js), written when this
+ * codebase's convention was "each page owns a thin copy rather than a
+ * shared runtime module" (tutorial-runtime.js's own worker-communication
+ * block is still duplicated, not imported, for exactly that reason).
+ * Extracted into a shared module once dewmini needed the same
+ * capability: 700 lines of genuinely tricky Worker/interrupt/postMessage
+ * logic, already cleanly decoupled from Mini IDE's own DOM via this
+ * same configure() pattern, was judged too large and too risky to
+ * duplicate a second time — particularly with Mini IDE's own eventual
+ * retirement already planned (planning/MINI_IDE_AND_DEWMINI_NEXT.md §6),
+ * at which point this file simply keeps existing under dewmini alone
+ * rather than needing to be merged back together.
  *
- * A page opened over file:// (the downloadable, offline Mini IDE) can run
- * into real restrictions constructing a module Worker at all, so boot()
- * falls back to running Pyodide on the main thread — same interpreter,
- * same tutorial_tools.py, just no genuine Stop button, exactly like the
+ * A page opened over file:// (a downloadable, offline copy) can run into
+ * real restrictions constructing a module Worker at all, so boot() falls
+ * back to running Pyodide on the main thread — same interpreter, same
+ * tutorial_tools.py, just no genuine Stop button, exactly like the
  * tutorial pages' own standalone export (DECISIONS_LOG.md 7.77).
  */
 
@@ -27,24 +37,50 @@
  * planning/DECISIONS.md's older "core libraries" note was about. */
 const DEFAULT_PACKAGES = ["numpy", "pandas", "matplotlib", "sqlite3"];
 
-/* Resolved against the *page*, not this module: a relative fetch from
- * inside the worker resolves against the worker script's own location,
- * not the page's, so every URL handed to the worker (or read by the
- * main-thread fallback) has to be absolute first. */
-function pageUrl(relativePath) {
-  return new URL(relativePath, document.baseURI).href;
+/* Puts every name in tutorial_tools.__all__ into the shared namespace,
+ * plus __name__ — run once at the end of boot, and again by
+ * resetPageStateMT()/the worker's own "reset-page-state" handler after
+ * reset_page_state() clears that namespace out, so the always-available
+ * names come right back without needing a full re-boot. */
+const RESEED_GLOBALS_SOURCE = `
+import tutorial_tools
+tutorial_tools._page_globals.update({
+    name: getattr(tutorial_tools, name)
+    for name in tutorial_tools.__all__
+})
+tutorial_tools._page_globals["__name__"] = "__dewlab__"
+`;
+
+/* Resolved against *this module's own location* (assets/pyodide-engine.js),
+ * not the page importing it: a relative fetch from inside the worker
+ * resolves against the worker script's own location, not the page's, so
+ * every URL handed to the worker (or read by the main-thread fallback) has
+ * to be absolute first — and resolving against this module rather than
+ * document.baseURI is what makes that absolute URL come out right no
+ * matter how deep the importing page sits (dewmini's own compose/dewmini.html
+ * one directory below Mini IDE's, in particular). */
+function assetUrl(relativePath) {
+  return new URL(relativePath, import.meta.url).href;
 }
 
-/* These three variables are this module's entire "connection" to the page
- * that's using it. They start out empty and get filled in by configure()
- * below, once, when mini-ide.js first sets things up. Keeping them as
- * plain module-level variables (rather than passing them around as
- * arguments to every function) is a deliberate simplification: everything
- * in this file needs getOutputEl and setStatus, so it's less noisy to set
- * them once than to thread them through every function signature. */
+/* These variables are this module's entire "connection" to the page
+ * that's using it. They start out empty (or default) and get filled in
+ * by configure() below, once, when the page first sets things up.
+ * Keeping them as plain module-level variables (rather than passing them
+ * around as arguments to every function) is a deliberate simplification:
+ * everything in this file needs getOutputEl and setStatus, so it's less
+ * noisy to set them once than to thread them through every function
+ * signature. */
 let getOutputEl = null; // (cellId) => that cell's output <div>, or null
 let onStatus = null; // (text, kind?) => show a status message on the page
 let packages = DEFAULT_PACKAGES; // which Pyodide packages to load at boot
+// The base URL tutorial_tools.py's own load_csv() resolves a dataset name
+// against — empty by default (Mini IDE's own long-standing value; no page
+// currently reachable from assets/ needs anything else), overridable per
+// page since dewmini lives one directory deeper (compose/) and needs
+// "../data/" to reach the same repo-root data/ folder Mini IDE and the
+// tutorial pages already share.
+let dataBase = "";
 
 /**
  * Wire the engine up to the page that owns it.
@@ -56,11 +92,14 @@ let packages = DEFAULT_PACKAGES; // which Pyodide packages to load at boot
  * @param {(text: string, kind?: string) => void} [options.onStatus] -
  *   forwarded boot/package-loading progress text.
  * @param {string[]} [options.packages] - Pyodide packages to load at boot.
+ * @param {string} [options.dataBase] - base URL load_csv() resolves a
+ *   dataset name against; empty (Mini IDE's own value) unless overridden.
  */
 export function configure(options) {
   getOutputEl = options.getOutputEl;
   onStatus = options.onStatus || (() => {});
   if (options.packages && options.packages.length) packages = options.packages;
+  if (typeof options.dataBase === "string") dataBase = options.dataBase;
 }
 
 /* A tiny wrapper so the rest of this file can just call setStatus(...)
@@ -211,12 +250,8 @@ async function bootWorker() {
   await workerRequest("boot", {
     pyodideBase: pyodideBase(),
     packages,
-    toolsSourceUrl: pageUrl("assets/tutorial_tools.py"),
-    /* No data directory of its own yet (planning/MINI_IDE_REDESIGN.md
-     * Phase 2 gives it a real mounted filesystem) — empty, matching the
-     * pre-Worker implementation, so load_csv() fails informatively rather
-     * than resolving against a folder that doesn't exist. */
-    dataBase: "",
+    toolsSourceUrl: assetUrl("tutorial_tools.py"),
+    dataBase,
   });
 
   if (globalThis.crossOriginIsolated && typeof SharedArrayBuffer !== "undefined") {
@@ -251,6 +286,14 @@ function requestInterrupt() {
  * way tutorial_tools.py's run_cell always does. */
 async function runCellWorker(cellId, code) {
   return workerRequest("run-cell", { cellId, code });
+}
+
+/* The worker counterpart of resetPageStateMT() — asks pyodide-worker.js's
+ * own "reset-page-state" handler to clear and re-seed the shared
+ * namespace inside the worker, the same two steps done there since the
+ * worker owns Pyodide entirely on this path. */
+async function resetPageStateWorker() {
+  await workerRequest("reset-page-state", {});
 }
 
 /* -------------------------------------------------- Main-thread fallback */
@@ -316,7 +359,7 @@ async function loadJediMT() {
     jediHoverFnMT = pyodideMT.globals.get("_dewlab_hover_doc");
     jediSignatureFnMT = pyodideMT.globals.get("_dewlab_signature");
   } catch (err) {
-    console.warn("mini-ide: Jedi failed to load; pre-run tooltips stay live-only", err);
+    console.warn("pyodide-engine: Jedi failed to load; pre-run tooltips stay live-only", err);
   }
 }
 
@@ -441,7 +484,7 @@ async function bootMainThread() {
   await pyodideMT.loadPackage(packages);
 
   setStatus("Preparing the notebook tools…");
-  const source = await fetch(pageUrl("assets/tutorial_tools.py")).then((r) => {
+  const source = await fetch(assetUrl("tutorial_tools.py")).then((r) => {
     if (!r.ok) throw new Error(`tutorial_tools.py: HTTP ${r.status}`);
     return r.text();
   });
@@ -449,19 +492,23 @@ async function bootMainThread() {
   toolsMT = pyodideMT.pyimport("tutorial_tools");
   inspectModuleMT = pyodideMT.pyimport("inspect");
   builtinsModuleMT = pyodideMT.pyimport("builtins");
-  toolsMT.configure(""); // see the matching note in bootWorker() above
+  toolsMT.configure(dataBase);
 
-  await pyodideMT.runPythonAsync(`
-import tutorial_tools
-tutorial_tools._page_globals.update({
-    name: getattr(tutorial_tools, name)
-    for name in tutorial_tools.__all__
-})
-tutorial_tools._page_globals["__name__"] = "__dewlab__"
-`);
+  await pyodideMT.runPythonAsync(RESEED_GLOBALS_SOURCE);
 
   setStatus("");
   loadJediMT(); // deliberately not awaited — must not delay the first Run
+}
+
+/* Re-seeds the shared namespace exactly the way boot's own first pass
+ * does — every name in tutorial_tools.__all__, plus __name__ — without
+ * re-running the rest of boot(). Used by resetPageState() below, which
+ * clears _page_globals first (reset_page_state() itself) and then needs
+ * this to put the always-available names right back, the same as they
+ * were right after boot but with none of a reader's own leftover state. */
+async function resetPageStateMT() {
+  toolsMT.reset_page_state();
+  await pyodideMT.runPythonAsync(RESEED_GLOBALS_SOURCE);
 }
 
 /* Lists every name currently defined in the shared namespace, for
@@ -494,11 +541,12 @@ async function runCellMainThread(cellId, code) {
 let mountedFsMT = null; // whatever mount object the active backend gave back, so fsSyncMT knows how to sync it
 
 /* Connects a real folder on the student's own computer (chosen through
- * the browser's folder picker, handled in mini-ide-fs.js) to Pyodide's
- * virtual filesystem at `mountpoint`. mkdirTree makes sure the mount
- * point itself exists first — Pyodide can't mount onto a path that isn't
- * there. After this, Python code doing e.g. open('/mnt/mini-ide/x.csv')
- * is reading and writing the real file on disk. */
+ * the browser's folder picker, handled by the page's own fs module — see
+ * assets/mini-ide-fs.js or compose/dewmini-fs.js) to Pyodide's virtual
+ * filesystem at `mountpoint`. mkdirTree makes sure the mount point itself
+ * exists first — Pyodide can't mount onto a path that isn't there. After
+ * this, Python code doing e.g. open(f'{mountpoint}/x.csv') is reading and
+ * writing the real file on disk. */
 async function fsMountNativeMT(mountpoint, handle) {
   pyodideMT.FS.mkdirTree(mountpoint);
   mountedFsMT = await pyodideMT.mountNativeFS(mountpoint, handle);
@@ -617,7 +665,7 @@ async function boot() {
       mode = "worker";
       return;
     } catch (err) {
-      console.warn("mini-ide: Worker boot failed, falling back to the main thread", err);
+      console.warn("pyodide-engine: Worker boot failed, falling back to the main thread", err);
     }
   }
   await bootMainThread();
@@ -625,7 +673,7 @@ async function boot() {
 }
 
 /**
- * The single entry point mini-ide.js calls to make sure Python is
+ * The single entry point a page calls to make sure Python is
  * running, before doing anything that needs it (running a cell, mounting
  * a filesystem). Booting is slow and should only ever happen once, so
  * this caches the *Promise* from the first call in bootPromise — a second
@@ -651,8 +699,8 @@ export function ensureBooted() {
  * main-thread references — so the next ensureBooted() starts a genuinely
  * fresh interpreter. For recovering from a corrupted namespace or a
  * runaway loop the Stop button couldn't reach. Anything mounted into the
- * old interpreter's filesystem (mini-ide-fs.js) goes with it — the
- * caller is responsible for re-mounting after the restart resolves.
+ * old interpreter's filesystem (the page's own fs module) goes with it —
+ * the caller is responsible for re-mounting after the restart resolves.
  */
 export function restart() {
   if (worker) {
@@ -700,7 +748,7 @@ export function canStop() {
 
 export { requestInterrupt };
 
-/* The one function mini-ide.js actually calls to run a cell — it doesn't
+/* The one function a page actually calls to run a cell — it doesn't
  * need to know or care whether Python is running in a worker or on the
  * main thread. Output from the *previous* run is cleared first so a
  * re-run doesn't show old results mixed in with new ones, then execution
@@ -709,6 +757,19 @@ export async function runCell(cellId, code) {
   clearOutput(cellId);
   if (mode === "main-thread") return runCellMainThread(cellId, code);
   return runCellWorker(cellId, code);
+}
+
+/* Clears the shared namespace and re-seeds it with the always-available
+ * names, without a full restart()+re-boot — for a page's own "Run all"
+ * wanting every cell to run against the same clean slate a reader would
+ * get from a fresh page load, so a name an earlier cell defined and a
+ * later cell still depends on (even though it's no longer in the
+ * notebook) can't silently mask that kind of mistake. Cheaper than
+ * restart(): the interpreter itself, and anything mounted into its
+ * filesystem, stay exactly as they were. */
+export async function resetPageState() {
+  if (mode === "main-thread") return resetPageStateMT();
+  return resetPageStateWorker();
 }
 
 /* ---- code intelligence: what vendor-src/codemirror-entry.js calls ---- */
@@ -758,10 +819,11 @@ export async function pageNamesCompletion(context) {
 
 /* ------------------------------------------------------------- filesystem
  *
- * mini-ide-fs.js is the only caller of everything below: it owns backend
- * selection (native folder vs. OPFS vs. IDBFS) and calls these once it has
- * decided. Every function here assumes ensureBooted() has already
- * resolved — Pyodide's FS doesn't exist before that. */
+ * Each page's own fs module (assets/mini-ide-fs.js, compose/dewmini-fs.js)
+ * is the only caller of everything below: it owns backend selection
+ * (native folder vs. OPFS vs. IDBFS) and calls these once it has decided.
+ * Every function here assumes ensureBooted() has already resolved —
+ * Pyodide's FS doesn't exist before that. */
 
 /* Every exported function from here down follows the exact same shape:
  * if the main-thread path is active, call the matching *MT function
@@ -769,8 +831,9 @@ export async function pageNamesCompletion(context) {
  * a matching request across to the worker and wait for its reply. This
  * mirrors runCell()'s dispatch above, and it's why every fs*MT function
  * earlier in this file and every "fs-*" message pyodide-worker.js
- * understands come in matching pairs — mini-ide-fs.js (the module that
- * actually calls these) never needs to know which path is active. */
+ * understands come in matching pairs — the page's own fs module (the
+ * only caller of any of these) never needs to know which path is
+ * active. */
 
 /* Mounts a real folder the student picked (via the browser's folder
  * picker) at `mountpoint`. */

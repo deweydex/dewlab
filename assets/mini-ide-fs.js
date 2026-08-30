@@ -4,7 +4,7 @@
  * mkdir, sync) sitting between a mounted Pyodide filesystem and every
  * feature that touches files (the file manager UI, uploads, SQLite,
  * notebook import) — none of those need to know which backend is active.
- * All calls go through mini-ide-engine.js, since the mounted filesystem
+ * All calls go through pyodide-engine.js, since the mounted filesystem
  * lives wherever Pyodide itself lives (inside the Worker in worker mode).
  *
  * Three backends, tried in this order:
@@ -25,7 +25,7 @@
  * the picker itself: no unprompted permission dialogs on page load.
  */
 
-import * as engine from "./mini-ide-engine.js";
+import * as engine from "./pyodide-engine.js";
 
 const MOUNT_POINT = "/mnt/mini-ide";
 const SYNC_DEBOUNCE_MS = 1500;
@@ -263,7 +263,7 @@ export function reset() {
  * trailing slashes first means callers don't have to be careful about
  * whether they pass "data/x.csv" or "/data/x.csv" or "data/x.csv/" — they
  * all resolve the same way. Every exported function below runs its path
- * through this before calling into mini-ide-engine.js, which is what lets
+ * through this before calling into pyodide-engine.js, which is what lets
  * the rest of the app work in terms of "files in my project" without
  * knowing the mount point exists at all. */
 function resolvePath(relativePath) {
