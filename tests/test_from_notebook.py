@@ -244,8 +244,9 @@ class TestTheOutputActuallyBuilds:
             monkeypatch.setattr(b, name, value)
 
         written = b.build()
-        # The tutorial, minus the pages the build always writes alongside it.
-        alongside = {"index.html", "tree.html", "about.html", "editor.html"}
+        # The tutorial, minus the pages (and the search index, not a page at
+        # all) the build always writes alongside it.
+        alongside = {"index.html", "tree.html", "about.html", "editor.html", "search-index.json"}
         pages = [path for path in written if path.name not in alongside]
         assert len(pages) == 1, [path.name for path in pages]
         page = pages[0].read_text()

@@ -2,7 +2,7 @@
 
 This is the biggest single file in dewlab's frontend, and it's the one
 loaded on every tutorial page. It's what turns build.py's static HTML
-into an actually-working page: the settings panel, the cheat sheet, the
+into an actually-working page: the settings panel, the reference, the
 series navigation, saving a student's work, version switching, and
 booting and running Python. If you've read
 [`docs/mini-ide-js-explained.md`](mini-ide-js-explained.md) or
@@ -24,7 +24,7 @@ much. Instead, this file is organized into clearly labeled sections (look
 for the `/* ---- section name ---- */` comments), and each section is
 close to self-contained:
 
-- **Settings, cheat sheet, and series navigation** — three panels that
+- **Settings, reference, and series navigation** — three panels that
   open and close, coordinated so only one is ever open at once.
 - **Texture** — the reader's theme/font/size preferences, shared across
   every dewlab page via `localStorage`.
@@ -200,7 +200,7 @@ keep already cover the full page, and the Settings panel note says so.
 
 ## Two patterns worth understanding on their own
 
-**Three panels, one rule.** Settings, the cheat sheet, and the series
+**Three panels, one rule.** Settings, the reference, and the series
 navigation panel are three separate, independent UI components — but
 opening any one of them always closes the other two. There's no shared
 "panel manager" object making that happen; each panel's own `setOpen(true)`

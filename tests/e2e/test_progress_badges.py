@@ -1,7 +1,7 @@
 """The contents page's per-tutorial progress badge, in a real browser —
 planning/PROGRESS_INDICATORS.md.
 
-Same shape as test_cheat_sheet.py: a dedicated, tiny site build, and no
+Same shape as test_reference.py: a dedicated, tiny site build, and no
 self-hosted Pyodide needed — every test here only ever navigates to
 index.html, which always has zero cells of its own (write_index()'s own
 manifest) regardless of what the tutorials it links to contain. Progress is

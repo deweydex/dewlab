@@ -169,6 +169,20 @@
   margin-top: 1rem;
 }
 
+/* A distinct, more serious accent than the plain dashed .dm-empty
+ * border it otherwise reuses — this is naming things that will
+ * actually raise an error if run as-is, not just an empty-state hint —
+ * and left-aligned, since it holds a list rather than one centered
+ * line. */
+.dm-import-notice {
+  text-align: left;
+  border: 1px solid var(--dl-error-fg);
+}
+.dm-import-notice p:first-child { margin: 0 0 0.4rem; }
+.dm-import-notice ul { margin: 0 0 0.75rem; padding-left: 1.2rem; }
+.dm-import-notice li { margin: 0.3rem 0; }
+.dm-import-notice li code { font-family: var(--dl-mono); }
+
 /* A gentle, finite pulse on "See an example" the very first time this page
  * ever loads — the show-it-working affordance Mini IDE gets for free from
  * its sample cells, done here as an invitation rather than pre-filled
@@ -249,19 +263,19 @@
   padding: var(--dm-cell-pad-y) 0;
 }
 
-/* A quiet coloured rail rather than a boxed card — the cell reads as part of
- * the page, and the rail alone says "python" / "text" / "this one errored"
- * at a glance down the whole list. */
+/* Transparent at rest — reserves the same gutter space so nothing shifts
+ * when a rail lights up, but shows no line for an ordinary idle cell. A
+ * cell's type is already legible from its pill and its content, so the
+ * rail now only earns attention for the two states worth flagging at a
+ * glance down a long list of cells: focus and error. */
 .dm-cell-rail {
   flex: none;
   width: 3px;
   border-radius: 2px;
   margin-right: 0.9rem;
-  background: var(--dl-cell-border);
+  background: transparent;
   transition: background 0.15s ease;
 }
-.dm-cell-python .dm-cell-rail { background: var(--dl-navy); opacity: 0.35; }
-.dm-cell-text .dm-cell-rail { background: var(--dl-muted); opacity: 0.3; }
 .dm-cell.dm-focused .dm-cell-rail { background: var(--dl-orange); opacity: 1; }
 .dm-cell.dm-error .dm-cell-rail { background: var(--dl-error-fg); opacity: 1; }
 .dm-cell.dm-dragging { opacity: 0.45; }
@@ -322,6 +336,15 @@
 .dm-icon-btn:hover { border-color: var(--dl-orange); color: var(--dl-orange); }
 .dm-icon-run:hover { border-color: var(--dl-pass-fg); color: var(--dl-pass-fg); }
 .dm-icon-delete:hover { border-color: var(--dl-error-fg); color: var(--dl-error-fg); }
+
+/* Armed state (one click away from actually deleting the cell) — solid
+ * red, not just the hover outline above, so an armed button reads as
+ * unmistakably different from a merely-hovered one. */
+.dm-icon-delete.dm-armed {
+  background: var(--dl-error-fg);
+  border-color: var(--dl-error-fg);
+  color: #fff;
+}
 .dm-icon-btn:disabled { opacity: 0.4; cursor: default; }
 
 /* The one .dm-icon-btn with a word on it rather than a glyph — "Edit"/
@@ -456,6 +479,50 @@
   color: var(--dl-fg);
 }
 .dm-cell-output img { max-width: 100%; border-radius: 3px; }
+
+/* Run time, under the output — small and muted on purpose: a nice-to-know,
+ * not something that should compete with the output itself. Empty
+ * (nothing to show yet, or the Settings toggle is off) collapses to
+ * nothing via :empty, same trick .dm-cell-output uses. */
+.dm-cell-stats {
+  margin-top: 0.3rem;
+  font-family: var(--dl-mono);
+  font-size: 0.72rem;
+  color: var(--dl-muted);
+}
+.dm-cell-stats:empty { display: none; }
+
+/* Settings and Help are fixed-position panels (tutorial-style.css's own
+ * .dl-settings and .dm-panel) that float over the page rather than push
+ * it — fine on an ordinary reading page with generous margins either
+ * side of its column, not fine once a reader picks a wide line width in
+ * Texture: the panel can then cover a cell's own run/reset/delete
+ * buttons, or its output. Shrinking .dl-page's effective max-width while
+ * a panel is open (data-dl-panel-open, set by watchPanelOverlap() in
+ * dewmini.js) keeps the working area fully visible instead — the panel
+ * behaves like a real side pane, the way a student would expect from a
+ * desktop IDE, rather than a popover sitting on top of their code. A
+ * more specific selector than tutorial-style.css's own plain `.dl-page`
+ * rule, so this wins without needing !important. Skipped below 34rem,
+ * where a panel is already a full-width bottom sheet rather than a
+ * right-anchored overlay, and there is nothing to reserve room from. */
+@media (min-width: 34rem) {
+  html[data-dl-panel-open] .dl-page {
+    /* Left-anchored, not centered (tutorial-style.css's own .dl-page
+     * normally centers via `margin: 0 auto`), while a panel is open:
+     * centering would waste half of whatever width it gives up as a
+     * matching left margin nobody asked for, when all of it needs to
+     * go to the right, clear of the panel. margin-right (26rem: the
+     * wider of the two panels, 24rem, plus its own 1rem offset and a
+     * 1rem gap) is intentionally more than max-width ever needs on a
+     * wide screen — the box is over-constrained then, and a browser
+     * gives the surplus back to margin-right, not margin-left, so the
+     * left edge stays put either way. */
+    margin-left: 0;
+    margin-right: 26rem;
+    max-width: var(--dl-line-width);
+  }
+}
 
 /* -------------------------------------------------------------- panels
  *

@@ -140,7 +140,7 @@ kind of thing for the next person reading `build.py` to learn.
 
 **Recommendation: (b), the HTML aside**, for that reason — reuse over
 invention, matching how this codebase has generally chosen to grow (the
-cheat sheet panel reusing `.dl-settings`'s CSS rather than inventing a
+reference panel reusing `.dl-settings`'s CSS rather than inventing a
 second panel language is the same instinct, one PR ago).
 
 ## 4. Where notes (and datasets) surface
@@ -149,19 +149,19 @@ The user's own phrasing floated this directly: pedagogical notes "or,
 better yet, in the other side bar" — i.e. not necessarily a *third* panel.
 Two real options:
 
-- **A third panel**, its own toggle, mirroring `.dl-cheatsheet`/`.dl-settings`.
-  Consistent with how the cheat sheet was built, but a third fixed-position
-  toggle competing for the same top-left corner the cheat sheet's toggle
+- **A third panel**, its own toggle, mirroring `.dl-reference`/`.dl-settings`.
+  Consistent with how the reference was built, but a third fixed-position
+  toggle competing for the same top-left corner the reference's toggle
   already claimed — needs its own spot (stacking two small buttons is fine
   visually; three floating panels all mutually closing each other is more
   moving parts than either alone).
-- **A second section inside the existing cheat-sheet panel** — "This
-  tutorial's cheat sheet" (what 7.64/7.65 already ships, cumulative across
+- **A second section inside the existing reference panel** — "This
+  tutorial's reference" (what 7.64/7.65 already ships, cumulative across
   the series) plus a "Notes" section and a "Datasets used here" section
   (both **not** cumulative — a note is tied to this specific tutorial, not
   something every later tutorial keeps carrying, the way a glossary term
   does). Same toggle, same panel, no new open/close/mutual-exclusion wiring
-  at all — `renderCheatSheet()` already groups by kind; grouping by
+  at all — `renderReference()` already groups by kind; grouping by
   section is the same idea one level up.
 
 **Settled: extend the existing panel**, for the same reuse-over-invention
@@ -178,12 +178,11 @@ a note as if it were a taught, examinable term.
 **Shipped, in a narrower form than sketched below — see `DECISIONS_LOG.md`
 7.73.** Two things changed between this being written and being built:
 
-- An external change (PR #65, not part of this plan) moved the cheat
-  sheet panel itself from right-anchored to left-anchored. The paragraph
+- An external change (PR #65, not part of this plan) moved the reference panel itself from right-anchored to left-anchored. The paragraph
   below assumes "the panel itself anchors left, where nothing currently
   is" — that stopped being true. Rather than re-litigate placement, the
-  series nav panel shares the cheat sheet's left anchor, stacked below its
-  toggle, and joined the Settings/cheat-sheet mutual-exclusion group as a
+  series nav panel shares the reference's left anchor, stacked below its
+  toggle, and joined the Settings/reference mutual-exclusion group as a
   third member.
 - The panel ships with series navigation only — this tutorial's own table
   of contents was *not* duplicated into it. `render_toc()`'s inline
@@ -196,7 +195,7 @@ Raised alongside the above: is a *left*-anchored panel worth having at
 all, for something other than notes/datasets? Settled: yes, for
 navigation — a different purpose from either side of §4's choice, and one
 that does not compete with it. §4's "everything about this tutorial worth
-having to hand" (cheat sheet, notes, datasets) answers "what do I need
+having to hand" (reference, notes, datasets) answers "what do I need
 right now"; a left panel answering "where am I, and where can I go" is a
 genuinely different question, and conflating the two into one panel would
 make each harder to scan.
@@ -207,9 +206,9 @@ long page — moved into the panel instead of, or in addition to, that inline
 version) plus the series' contents — the same list `nav_for()`'s
 previous/next already implies a position within, made browsable rather
 than only steppable one tutorial at a time. Same toggle-top-left-corner,
-panel-anchored-to-its-side mechanics as the cheat sheet, mirrored to the
-left edge instead of the right — the cheat sheet's toggle already lives at
-top-left today (`CHEAT_SHEETS.md` §6), so this panel's own toggle sits
+panel-anchored-to-its-side mechanics as the reference, mirrored to the
+left edge instead of the right — the reference's toggle already lives at
+top-left today (`REFERENCE_PANEL.md` §6), so this panel's own toggle sits
 beside it rather than displacing it, the same "stack two small buttons"
 option §4 already considered and set aside for a *third floating panel*,
 which is not what this is — the panel itself anchors left, where nothing
@@ -218,11 +217,10 @@ currently is.
 ## 5. What this does not decide
 
 - Exact wording/heading for the panel once it holds more than a cumulative
-  glossary (still called "Cheat sheet"? Something broader?) — a naming
+  glossary (still called "Reference"? Something broader?) — a naming
   question, not an architecture one, and cheap to change later either way.
 - Whether every tutorial needs a note, or whether most will have none —
-  same "a missing file/field means empty, not an error" shape the cheat
-  sheet already established, so this costs nothing to leave unanswered:
+  same "a missing file/field means empty, not an error" shape the reference already established, so this costs nothing to leave unanswered:
   an empty `notes:`/no `<aside>` tags is simply nothing added to the panel.
 - The `.glossary.yaml`-writing skill's counterpart for notes and datasets —
   out of scope here on purpose. Notes are authorial judgment about what
@@ -236,4 +234,4 @@ shape → `datasets:` frontmatter + build.py cross-reference + first tutorial
 actually calling `load_csv` → the `<aside class="dl-note">` scan +
 `Tutorial.notes` + tests, same shape as `check_folds()` → the panel's new
 sections in `tutorial-runtime.js`/CSS → docs. Each a PR of its own, same
-reasoning `CHEAT_SHEETS.md` §7 gave for staging that feature the same way.
+reasoning `REFERENCE_PANEL.md` §7 gave for staging that feature the same way.

@@ -91,8 +91,7 @@ def write_in_series(repo: Path, body: str, slug: str, series: str,
 
 
 def set_series_order(repo: Path, module: str, series_slugs: list[str]) -> Path:
-    """A module's series.yaml — the order its series accumulate a cheat
-    sheet in (build.py's series_chain())."""
+    """A module's series.yaml — the order its series accumulate a reference in (build.py's series_chain())."""
     path = repo / "tutorials" / module / "series.yaml"
     path.write_text("order:\n" + "".join(f"  - {s}\n" for s in series_slugs))
     return path
@@ -103,7 +102,7 @@ def built(repo: Path, slug: str = "sample") -> str:
 
 
 def glossary(repo: Path, slug: str, entries: list[dict]) -> Path:
-    """A tutorial's own glossary file — planning/CHEAT_SHEETS.md §3."""
+    """A tutorial's own glossary file — planning/REFERENCE_PANEL.md §3."""
     path = repo / "tutorials" / "computational-methods" / f"{slug}.glossary.yaml"
     path.write_text(yaml.dump({"entries": entries}))
     return path
@@ -2212,8 +2211,8 @@ class TestPagesOfProblems:
             b.build()
 
 
-class TestTheCheatSheet:
-    """planning/CHEAT_SHEETS.md's cumulative glossary: a tutorial's manifest
+class TestTheReference:
+    """planning/REFERENCE_PANEL.md's cumulative glossary: a tutorial's manifest
     carries its own glossary entries plus every earlier series member's, so
     the reader-facing panel never shows a term this specific reader has not
     been taught yet."""
@@ -2266,7 +2265,7 @@ class TestTheCheatSheet:
 
     def test_an_earlier_tutorial_never_shows_a_later_ones_terms(self, repo):
         """The one guarantee that matters more than any other in this
-        feature (planning/CHEAT_SHEETS.md §1): nothing forward-looking."""
+        feature (planning/REFERENCE_PANEL.md §1): nothing forward-looking."""
         write(repo, "One.\n", slug="one")
         write(repo, "Two.\n", slug="two")
         set_order(repo, "computational-methods", "python-fundamentals", ["one", "two"])
@@ -2320,8 +2319,8 @@ class TestTheCheatSheet:
 
 
 class TestCrossSeriesGlossary:
-    """A module's series.yaml lets one series' cheat sheet inherit an
-    earlier series' too — planning/CHEAT_SHEETS.md's "cross series, not
+    """A module's series.yaml lets one series' reference inherit an
+    earlier series' too — planning/REFERENCE_PANEL.md's "cross series, not
     modules" scope, settled in QUESTIONS.md."""
 
     def test_a_later_series_inherits_an_earlier_ones_glossary(self, repo):
@@ -2365,7 +2364,7 @@ class TestCrossSeriesGlossary:
 
 class TestNotes:
     """Pedagogical notes — planning/SIDEBAR_CONTENT.md §3/§4: an HTML aside
-    in the body, pulled out and surfaced in the cheat sheet panel instead
+    in the body, pulled out and surfaced in the reference panel instead
     of staying inline, and never cumulative across a series — a note
     belongs to the specific tutorial that wrote it."""
 

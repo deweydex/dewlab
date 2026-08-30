@@ -1,7 +1,7 @@
-# A per-tutorial cheat sheet, closed by default
+# A per-tutorial reference, closed by default
 
 A reader-facing sidebar of definitions, functions, and formulas — scoped so
-that a tutorial's cheat sheet never shows something the reader hasn't met yet.
+that a tutorial's reference never shows something the reader hasn't met yet.
 
 ---
 
@@ -10,8 +10,7 @@ that a tutorial's cheat sheet never shows something the reader hasn't met yet.
 A collapsible panel, closed by default, that a reader opens to see short
 definitions of the terms, functions, and formulas relevant to the tutorial
 they are on. The one requirement that matters more than the content itself:
-**it must never show something the reader has not been taught yet.** A cheat
-sheet that spoils next week's function names is worse than no cheat sheet.
+**it must never show something the reader has not been taught yet.** A reference that spoils next week's function names is worse than no reference.
 
 That constraint means the content cannot be written once, globally — it has
 to be assembled per tutorial, from whatever came before it. Two pieces follow
@@ -40,13 +39,13 @@ module have no defined order relative to each other by default
 (`write_index` lists them `sorted()` by name — alphabetical, not curricular,
 and that display order is unrelated to this one) — but a module may add
 `tutorials/<module>/series.yaml` (`order:`, a list of series slugs) to say
-what its own curricular order is, purely for cheat-sheet purposes.
+what its own curricular order is, purely for reference purposes.
 
-**A cheat sheet draws from the current series, up to and including the
+**A reference draws from the current series, up to and including the
 current tutorial's own position, plus every earlier series `series.yaml`
 lists before this one** (`series_chain()`, `DECISIONS_LOG.md` 7.66) — never
 from another module. `computational-methods/series.yaml` lists
-`python-fundamentals` before `matrices`, so matrices' cheat sheet does
+`python-fundamentals` before `matrices`, so matrices' reference does
 include what fundamentals introduced. A series left off the list — or a
 module with no `series.yaml` at all — gets series-only accumulation, which
 is what a series with no fixed curricular position needs:
@@ -57,9 +56,9 @@ and nothing about it changed when this shipped.
 
 A **practice page** does not have its own coverage — `practice_for`/
 `practice_across` name the tutorial(s) it tests instead of appearing in
-`order.yaml`'s narrative position. Its cheat sheet is therefore not computed
+`order.yaml`'s narrative position. Its reference is therefore not computed
 from its own series position at all: it is the union of the named
-tutorial(s)' own cumulative cheat sheets, unpacked through the same
+tutorial(s)' own cumulative references, unpacked through the same
 `practice_for`/`practice_across` build.py already validates.
 
 ## 3. The glossary file: one per (module, slug), not per release
@@ -87,7 +86,7 @@ entries:
 `kind` is one of `concept | function | operator | formula | keyword` —
 enough to group the panel without inventing a taxonomy nobody will maintain.
 A missing glossary file is not an error: the tutorial's own contribution is
-empty, and its cheat sheet is whatever came before it in the series. This is
+empty, and its reference is whatever came before it in the series. This is
 what lets the feature ship before every tutorial has one, and why generating
 them is deliberately its own batch of work rather than a blocker on the UI.
 
@@ -161,7 +160,7 @@ skill never has to re-derive "what came before," only receive it.
 - **Panel**: anchored top-right, reusing `.dl-settings`'s own floating-card
   positioning (`position: fixed; right: 1rem; top: calc(chrome-height +
   ...)`, scrollable, same shadow/border/radius) rather than inventing a
-  second panel language. Opening the cheat sheet closes Settings if it is
+  second panel language. Opening the reference closes Settings if it is
   open, and vice versa — both anchored to the same corner, so showing both
   at once would overlap.
 - **Content**: entries grouped by `kind`, term + definition (+ example where

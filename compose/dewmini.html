@@ -82,11 +82,21 @@
         <button id="run-all" class="dm-tool dm-tool-accent" title="Run every cell in order">
           <span class="dm-tool-icon dm-tool-icon-run" aria-hidden="true"></span>Run all
         </button>
+        <button id="clear-output" class="dm-tool dm-tool-quiet" title="Clear every cell's output, keeping the code">Clear output</button>
         <button id="clear-all" class="dm-tool dm-tool-quiet" title="Remove every cell">Clear</button>
       </div>
       <div class="dm-toolbar-group dm-toolbar-group-end">
         <span class="dm-status" id="dm-status" role="status" aria-live="polite"></span>
       </div>
+    </div>
+
+    <!-- Import compatibility notice — shown after importing a .ipynb
+         that scanPyodideCompatibility() flagged something in. Warns and
+         gets out of the way; it never blocks the import itself. -->
+    <div id="import-compat-notice" class="dm-empty dm-import-notice" hidden>
+      <p><strong>Heads up.</strong> This notebook uses some things that won't work as-is in dewmini's Python:</p>
+      <ul id="import-compat-list"></ul>
+      <button type="button" class="dm-tool" id="dismiss-import-compat">Dismiss</button>
     </div>
 
     <div class="dm-empty" id="dm-empty" hidden>
@@ -216,6 +226,17 @@
     <button type="button" class="dl-settings-close" id="dl-settings-close" aria-label="Close settings">&times;</button>
   </div>
 
+  <section class="dl-settings-section" id="dl-settings-execution">
+    <h3>Run time</h3>
+    <div class="dl-texture-row">
+      <span>Show under a cell</span>
+      <div class="dl-seg" data-dm="runstats">
+        <button type="button" data-value="on">on</button>
+        <button type="button" data-value="off">off</button>
+      </div>
+    </div>
+  </section>
+
   <section class="dl-settings-section" id="dl-settings-work">
     <h3>Your notes</h3>
     <textarea class="dl-progress-notes" id="dm-notes" rows="4"
@@ -243,6 +264,16 @@
       <button type="button" class="dl-btn" id="import-ipynb">Load a .ipynb</button>
     </div>
     <input type="file" id="import-ipynb-file" accept=".ipynb,application/json" hidden>
+
+    <p class="dl-panel-note">Worked examples, real data included — loading one replaces the current notebook:</p>
+    <div class="dl-progress-actions">
+      <button type="button" class="dl-btn dl-btn-secondary" data-example="../assets/examples/sql-owid.ipynb">SQL &amp; Our World in Data</button>
+      <button type="button" class="dl-btn dl-btn-secondary" data-example="../assets/examples/data-investigation.ipynb">A mini data investigation</button>
+    </div>
+    <div class="dl-progress-actions">
+      <button type="button" class="dl-btn dl-btn-secondary" data-example="../assets/examples/math-and-charts.ipynb">A fun math problem</button>
+      <button type="button" class="dl-btn dl-btn-secondary" data-example="../assets/examples/word-frequency.ipynb">Word frequency: usual or unusual?</button>
+    </div>
   </section>
 
   <section class="dl-settings-section" id="dl-settings-practice">

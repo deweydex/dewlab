@@ -1,4 +1,4 @@
-"""The cheat sheet panel, in a real browser — planning/CHEAT_SHEETS.md.
+"""The reference panel, in a real browser — planning/REFERENCE_PANEL.md.
 
 A dedicated, tiny site build rather than the shared rendering-tour fixture
 the rest of tests/e2e/ uses: this needs its own glossary files and series
@@ -8,7 +8,7 @@ tutorial-runtime.js's own boot() skips loading Pyodide entirely when a page
 has no cells (CONTENT_AND_FILE_ARCHITECTURE.md) — so unlike most of this
 directory, this file runs without `python3 dev/fetch_pyodide.py` first.
 
-    python3 -m pytest tests/e2e/test_cheat_sheet.py -q
+    python3 -m pytest tests/e2e/test_reference.py -q
 """
 
 from __future__ import annotations
@@ -28,13 +28,13 @@ sys.path.insert(0, str(DEWLAB))
 
 import build as b  # noqa: E402
 
-MODULE = "cheatsheet-fixtures"
+MODULE = "reference-fixtures"
 
 FRONTMATTER = """---
 title: "{title}"
 slug: {slug}
-module: cheatsheet-fixtures
-module_title: "Cheat Sheet Fixtures"
+module: reference-fixtures
+module_title: "Reference Fixtures"
 year: "2026-2027"
 series: sample-series
 version: 2026.08.23.1
@@ -61,8 +61,8 @@ def _glossary(root: Path, slug: str, entries: list[dict]) -> None:
 NOTE_FRONTMATTER = """---
 title: "{title}"
 slug: {slug}
-module: cheatsheet-fixtures
-module_title: "Cheat Sheet Fixtures"
+module: reference-fixtures
+module_title: "Reference Fixtures"
 year: "2026-2027"
 series: sample-series
 version: 2026.08.23.1
@@ -91,8 +91,8 @@ def _tutorial_with_note(root: Path, slug: str, note_id: str, note_body: str,
 DATASET_FRONTMATTER = """---
 title: "{title}"
 slug: {slug}
-module: cheatsheet-fixtures
-module_title: "Cheat Sheet Fixtures"
+module: reference-fixtures
+module_title: "Reference Fixtures"
 year: "2026-2027"
 series: sample-series
 version: 2026.08.23.1
@@ -181,7 +181,7 @@ class TestVisibility:
         context = browser.new_context()
         page = context.new_page()
         page.goto(f"{base_url}/tutorials/{MODULE}/one.html")
-        assert page.is_hidden("#dl-cheatsheet-toggle")
+        assert page.is_hidden("#dl-reference-toggle")
         context.close()
 
     def test_a_tutorial_with_something_accumulated_shows_the_toggle(self, site, browser, base_url):
@@ -192,7 +192,7 @@ class TestVisibility:
         context = browser.new_context()
         page = context.new_page()
         page.goto(f"{base_url}/tutorials/{MODULE}/one.html")
-        assert page.is_visible("#dl-cheatsheet-toggle")
+        assert page.is_visible("#dl-reference-toggle")
         context.close()
 
 
@@ -211,52 +211,55 @@ class TestOpeningAndClosing:
 
     def test_the_panel_is_closed_by_default(self, site, browser, base_url):
         context, page = self.open_page(site, browser, base_url)
-        assert page.is_hidden("#dl-cheatsheet")
+        assert page.is_hidden("#dl-reference")
         context.close()
 
     def test_clicking_the_toggle_opens_it(self, site, browser, base_url):
         context, page = self.open_page(site, browser, base_url)
-        page.click("#dl-cheatsheet-toggle")
-        assert page.is_visible("#dl-cheatsheet")
+        page.click("#dl-reference-toggle")
+        assert page.is_visible("#dl-reference")
         context.close()
 
     def test_escape_closes_it(self, site, browser, base_url):
         context, page = self.open_page(site, browser, base_url)
-        page.click("#dl-cheatsheet-toggle")
+        page.click("#dl-reference-toggle")
         page.keyboard.press("Escape")
-        assert page.is_hidden("#dl-cheatsheet")
+        assert page.is_hidden("#dl-reference")
         context.close()
 
     def test_the_close_button_closes_it(self, site, browser, base_url):
         context, page = self.open_page(site, browser, base_url)
-        page.click("#dl-cheatsheet-toggle")
-        page.click("#dl-cheatsheet-close")
-        assert page.is_hidden("#dl-cheatsheet")
+        page.click("#dl-reference-toggle")
+        page.click("#dl-reference-close")
+        assert page.is_hidden("#dl-reference")
         context.close()
 
     def test_clicking_outside_closes_it(self, site, browser, base_url):
         context, page = self.open_page(site, browser, base_url)
-        page.click("#dl-cheatsheet-toggle")
+        page.click("#dl-reference-toggle")
         page.click("main#dl-body")
-        assert page.is_hidden("#dl-cheatsheet")
+        assert page.is_hidden("#dl-reference")
         context.close()
 
-    def test_opening_the_cheat_sheet_closes_settings(self, site, browser, base_url):
+    def test_opening_the_reference_does_not_close_settings(self, site, browser, base_url):
+        # Settings is right-anchored; the reference panel is left-anchored
+        # (tutorial-style.css) — genuinely different corners, so a reader
+        # can have both open together (see DECISIONS_LOG.md on this).
         context, page = self.open_page(site, browser, base_url)
         page.click("#dl-settings-toggle")
         assert page.is_visible("#dl-settings")
-        page.click("#dl-cheatsheet-toggle")
-        assert page.is_visible("#dl-cheatsheet")
-        assert page.is_hidden("#dl-settings")
+        page.click("#dl-reference-toggle")
+        assert page.is_visible("#dl-reference")
+        assert page.is_visible("#dl-settings")
         context.close()
 
-    def test_opening_settings_closes_the_cheat_sheet(self, site, browser, base_url):
+    def test_opening_settings_does_not_close_the_reference(self, site, browser, base_url):
         context, page = self.open_page(site, browser, base_url)
-        page.click("#dl-cheatsheet-toggle")
-        assert page.is_visible("#dl-cheatsheet")
+        page.click("#dl-reference-toggle")
+        assert page.is_visible("#dl-reference")
         page.click("#dl-settings-toggle")
         assert page.is_visible("#dl-settings")
-        assert page.is_hidden("#dl-cheatsheet")
+        assert page.is_visible("#dl-reference")
         context.close()
 
 
@@ -271,8 +274,8 @@ class TestContent:
         context = browser.new_context()
         page = context.new_page()
         page.goto(f"{base_url}/tutorials/{MODULE}/two.html")
-        page.click("#dl-cheatsheet-toggle")
-        text = page.inner_text("#dl-cheatsheet-groups")
+        page.click("#dl-reference-toggle")
+        text = page.inner_text("#dl-reference-groups")
         assert "x" in text and "The first thing." in text
         assert "f()" in text and "Does a thing." in text
         assert "f(1)" in text
@@ -280,7 +283,7 @@ class TestContent:
 
     def test_a_tutorial_never_shows_a_later_ones_entries(self, site, browser, base_url):
         """The one guarantee that matters more than any other in this
-        feature (planning/CHEAT_SHEETS.md §1)."""
+        feature (planning/REFERENCE_PANEL.md §1)."""
         _tutorial(site, "one", "One")
         _tutorial(site, "two", "Two")
         _glossary(site, "one", [CONCEPT])
@@ -290,8 +293,8 @@ class TestContent:
         context = browser.new_context()
         page = context.new_page()
         page.goto(f"{base_url}/tutorials/{MODULE}/one.html")
-        page.click("#dl-cheatsheet-toggle")
-        text = page.inner_text("#dl-cheatsheet-groups")
+        page.click("#dl-reference-toggle")
+        text = page.inner_text("#dl-reference-groups")
         assert "x" in text
         assert "f()" not in text
         context.close()
@@ -304,15 +307,15 @@ class TestContent:
         context = browser.new_context()
         page = context.new_page()
         page.goto(f"{base_url}/tutorials/{MODULE}/one.html")
-        page.click("#dl-cheatsheet-toggle")
+        page.click("#dl-reference-toggle")
         headings = page.eval_on_selector_all(
-            "#dl-cheatsheet-groups h3", "els => els.map(e => e.textContent)")
+            "#dl-reference-groups h3", "els => els.map(e => e.textContent)")
         assert headings == ["Concepts", "Functions"]
         context.close()
 
 
 class TestNotes:
-    """Pedagogical notes surfacing in the cheat sheet panel —
+    """Pedagogical notes surfacing in the reference panel —
     planning/SIDEBAR_CONTENT.md §3/§4."""
 
     def test_a_note_alone_shows_the_toggle(self, site, browser, base_url):
@@ -324,7 +327,7 @@ class TestNotes:
         context = browser.new_context()
         page = context.new_page()
         page.goto(f"{base_url}/tutorials/{MODULE}/one.html")
-        assert page.is_visible("#dl-cheatsheet-toggle")
+        assert page.is_visible("#dl-reference-toggle")
         context.close()
 
     def test_opening_the_panel_shows_the_notes_heading_and_content(self, site, browser, base_url):
@@ -334,11 +337,11 @@ class TestNotes:
         context = browser.new_context()
         page = context.new_page()
         page.goto(f"{base_url}/tutorials/{MODULE}/one.html")
-        page.click("#dl-cheatsheet-toggle")
+        page.click("#dl-reference-toggle")
         headings = page.eval_on_selector_all(
-            "#dl-cheatsheet-groups h3", "els => els.map(e => e.textContent)")
+            "#dl-reference-groups h3", "els => els.map(e => e.textContent)")
         assert "Notes" in headings
-        assert "Because reasons." in page.inner_text("#dl-cheatsheet-groups")
+        assert "Because reasons." in page.inner_text("#dl-reference-groups")
         context.close()
 
     def test_the_note_is_not_in_the_page_body(self, site, browser, base_url):
@@ -361,15 +364,15 @@ class TestNotes:
         context = browser.new_context()
         page = context.new_page()
         page.goto(f"{base_url}/tutorials/{MODULE}/one.html")
-        page.click("#dl-cheatsheet-toggle")
+        page.click("#dl-reference-toggle")
         headings = page.eval_on_selector_all(
-            "#dl-cheatsheet-groups h3", "els => els.map(e => e.textContent)")
+            "#dl-reference-groups h3", "els => els.map(e => e.textContent)")
         assert headings == ["Concepts", "Notes"]
         context.close()
 
 
 class TestDatasets:
-    """Dataset attribution surfacing in the cheat sheet panel —
+    """Dataset attribution surfacing in the reference panel —
     planning/SIDEBAR_CONTENT.md §2/§4."""
 
     def test_a_dataset_alone_shows_the_toggle(self, site, browser, base_url, monkeypatch):
@@ -382,7 +385,7 @@ class TestDatasets:
         context = browser.new_context()
         page = context.new_page()
         page.goto(f"{base_url}/tutorials/{MODULE}/one.html")
-        assert page.is_visible("#dl-cheatsheet-toggle")
+        assert page.is_visible("#dl-reference-toggle")
         context.close()
 
     def test_opening_the_panel_shows_the_datasets_heading_and_attribution(
@@ -397,11 +400,11 @@ class TestDatasets:
         context = browser.new_context()
         page = context.new_page()
         page.goto(f"{base_url}/tutorials/{MODULE}/one.html")
-        page.click("#dl-cheatsheet-toggle")
+        page.click("#dl-reference-toggle")
         headings = page.eval_on_selector_all(
-            "#dl-cheatsheet-groups h3", "els => els.map(e => e.textContent)")
+            "#dl-reference-groups h3", "els => els.map(e => e.textContent)")
         assert "Datasets used here" in headings
-        text = page.inner_text("#dl-cheatsheet-groups")
+        text = page.inner_text("#dl-reference-groups")
         assert "life-expectancy" in text
         assert "World Bank" in text
         assert "CC-BY-4.0" in text
@@ -410,7 +413,7 @@ class TestDatasets:
 
 
 class TestMobile:
-    """Planning/CHEAT_SHEETS.md's §6 mobile note, settled in
+    """Planning/REFERENCE_PANEL.md's §6 mobile note, settled in
     QUESTIONS.md/DECISIONS_LOG.md: the panel becomes a bottom sheet on a
     phone, mirroring .dl-settings' own existing mobile treatment, rather
     than staying hidden."""
@@ -423,7 +426,7 @@ class TestMobile:
         context = browser.new_context(viewport={"width": 375, "height": 700})
         page = context.new_page()
         page.goto(f"{base_url}/tutorials/{MODULE}/one.html")
-        assert page.is_visible("#dl-cheatsheet-toggle")
+        assert page.is_visible("#dl-reference-toggle")
         context.close()
 
     def test_opening_it_shows_a_sheet_anchored_to_the_bottom_edge(self, site, browser, base_url):
@@ -434,10 +437,10 @@ class TestMobile:
         context = browser.new_context(viewport={"width": 375, "height": 700})
         page = context.new_page()
         page.goto(f"{base_url}/tutorials/{MODULE}/one.html")
-        page.click("#dl-cheatsheet-toggle")
-        assert page.is_visible("#dl-cheatsheet")
+        page.click("#dl-reference-toggle")
+        assert page.is_visible("#dl-reference")
         style = page.eval_on_selector(
-            "#dl-cheatsheet",
+            "#dl-reference",
             "el => { const s = getComputedStyle(el); "
             "return { position: s.position, bottom: s.bottom, left: s.left, right: s.right }; }",
         )

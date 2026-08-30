@@ -136,31 +136,32 @@ function trackChromeHeight() {
 
 /* -------------------------------------------------------- settings panel */
 
-/* Settings, the cheat sheet (initCheatSheet(), below), and the navigation
+/* Settings, the reference (initReference(), below), and the navigation
  * panel (initSeriesNav()) are three open/close behaviours on the page
- * rather than one — opening any one closes the other two, so a reader is
- * never juggling more than one at a time. That matters most for the
- * cheat sheet and the navigation panel, which anchor to the same left
- * corner (tutorial-style.css) and would sit on top of each other
- * otherwise; Settings keeps the right, but stays in the same
- * mutual-exclusion group for one consistent rule rather than a special
- * case. Escape and a click outside all three close whichever is open: a
- * panel that can only be dismissed by finding the same small button
- * again is the kind of thing that gets left open. */
-/* The three functions below (closeCheatSheet, closeSettings,
+ * rather than one. Only two of them actually conflict: the reference
+ * and the navigation panel anchor to the same left corner
+ * (tutorial-style.css) and would sit directly on top of each other if
+ * both opened, so opening either one still closes the other. Settings
+ * anchors to the right instead — genuinely a different part of the
+ * screen — and reader and content stay clear of whichever panel(s) are
+ * open via the min-width panel-open rules further down in
+ * tutorial-style.css, so Settings can now stay open alongside either of
+ * the other two rather than being force-closed by them. Escape and a
+ * click outside a given panel still close that one panel: dismissible
+ * without hunting for the same small button again, whichever panel it
+ * is. */
+/* The three functions below (closeReference, closeSettings,
  * closeSeriesNav) and the three init*() functions further down that use
- * them all share one repeated shape: a toggle button, a panel, and a
- * setOpen(open) function that shows/hides the panel and calls the *other
- * two* close functions whenever it opens. That's the actual mechanism
- * behind "opening any one panel closes the other two" — there's no
- * central manager keeping track of which panel is open; each panel just
- * closes its two siblings the moment it opens itself. `aria-expanded` is
- * set alongside the plain `hidden` attribute so a screen reader also
- * knows the toggle button's current state, not just a sighted reader
- * looking at whether the panel is visible. */
-function closeCheatSheet() {
-  const toggle = document.getElementById("dl-cheatsheet-toggle");
-  const panel = document.getElementById("dl-cheatsheet");
+ * them share one repeated shape: a toggle button, a panel, and a
+ * setOpen(open) function that shows/hides the panel — and, for the
+ * reference and navigation panel specifically, closes the other of
+ * that pair, since those two are the ones that actually conflict.
+ * `aria-expanded` is set alongside the plain `hidden` attribute so a
+ * screen reader also knows the toggle button's current state, not just
+ * a sighted reader looking at whether the panel is visible. */
+function closeReference() {
+  const toggle = document.getElementById("dl-reference-toggle");
+  const panel = document.getElementById("dl-reference");
   if (!panel || panel.hasAttribute("hidden")) return;
   panel.setAttribute("hidden", "");
   if (toggle) toggle.setAttribute("aria-expanded", "false");
@@ -182,6 +183,54 @@ function closeSeriesNav() {
   if (toggle) toggle.setAttribute("aria-expanded", "false");
 }
 
+/**
+ * Keeps `<html data-dl-panel-left>`/`<html data-dl-panel-right>` in sync
+ * with whether a left-anchored panel (reference or series nav) and/or
+ * the right-anchored Settings panel is currently visible — a
+ * MutationObserver on each panel's `hidden` attribute, rather than
+ * hooking every one of their several open/close paths (toggle click,
+ * close button, Escape, click-outside), so this stays correct
+ * regardless of which path closed a given panel. tutorial-style.css
+ * reads these two attributes to push `.dl-page` clear of whichever
+ * side(s) currently have a panel open, on desktop widths, so neither
+ * ever ends up covering a reader's own text or a cell's controls —
+ * both panels can be open at once now (see the comment above
+ * initSettingsPanel()), so this tracks the two sides independently
+ * rather than a single "something is open" flag.
+ */
+function watchPanelOverlap() {
+  const rightPanels = [document.getElementById("dl-settings")].filter(Boolean);
+  const leftPanels = [document.getElementById("dl-reference"), document.getElementById("dl-seriesnav")].filter(Boolean);
+  const sync = () => {
+    document.documentElement.toggleAttribute("data-dl-panel-right", rightPanels.some(p => !p.hasAttribute("hidden")));
+    document.documentElement.toggleAttribute("data-dl-panel-left", leftPanels.some(p => !p.hasAttribute("hidden")));
+  };
+  for (const panel of [...rightPanels, ...leftPanels]) {
+    new MutationObserver(sync).observe(panel, { attributes: true, attributeFilter: ["hidden"] });
+  }
+  sync();
+}
+
+/**
+ * Whether `target` sits inside any of the named panels/toggles — used
+ * by each of the three panels' own "click outside closes this" handler
+ * so that clicking a *compatible* panel's toggle (Settings, from the
+ * reference's or series nav's own listener; either of those two, from
+ * Settings' own listener) never reads as "outside" and closes a panel
+ * that is allowed to stay open alongside it. A genuine click elsewhere
+ * on the page still closes whatever's open, same as before.
+ *
+ * @param {EventTarget} target
+ * @param {string[]} ids - element ids to treat as "inside"
+ * @returns {boolean}
+ */
+function clickIsInsidePanels(target, ids) {
+  return ids.some((id) => {
+    const el = document.getElementById(id);
+    return el ? el.contains(target) : false;
+  });
+}
+
 function initSettingsPanel() {
   const toggle = document.getElementById("dl-settings-toggle");
   const panel = document.getElementById("dl-settings");
@@ -190,10 +239,10 @@ function initSettingsPanel() {
   function setOpen(open) {
     panel.toggleAttribute("hidden", !open);
     toggle.setAttribute("aria-expanded", String(open));
-    if (open) {
-      closeCheatSheet();
-      closeSeriesNav();
-    }
+    // Settings is right-anchored; the reference and series nav share
+    // the left corner instead (see .dl-reference/.dl-seriesnav in
+    // tutorial-style.css), so only those two actually conflict with
+    // each other — Settings can stay open alongside either.
   }
 
   toggle.addEventListener("click", () => setOpen(panel.hasAttribute("hidden")));
@@ -210,6 +259,7 @@ function initSettingsPanel() {
   document.addEventListener("click", (ev) => {
     if (panel.hasAttribute("hidden")) return;
     if (panel.contains(ev.target) || toggle.contains(ev.target)) return;
+    if (clickIsInsidePanels(ev.target, ["dl-reference-toggle", "dl-reference", "dl-seriesnav-toggle", "dl-seriesnav"])) return;
     setOpen(false);
   });
 
@@ -221,7 +271,7 @@ function initSettingsPanel() {
   }
 }
 
-/* -------------------------------------------------------- cheat sheet */
+/* -------------------------------------------------------- reference */
 
 /* build.py's own kind list — GLOSSARY_KINDS — in the order a reader would
  * find most useful to scan: what a thing *is* before what you *do* with it. */
@@ -233,14 +283,14 @@ const GLOSSARY_GROUP_LABELS = {
   keyword: "Keywords",
 };
 
-/* Builds the cheat sheet's content from scratch out of the manifest's
+/* Builds the reference's content from scratch out of the manifest's
  * glossary/notes/dataset entries, using document.createElement rather
  * than building an HTML string — safer by construction, since
  * `.textContent = entry.term` can never accidentally turn a term's text
  * into markup, the way concatenating it into an HTML string could if the
  * term ever contained something like "<" without careful escaping. */
-function renderCheatSheet(manifest) {
-  const container = document.getElementById("dl-cheatsheet-groups");
+function renderReference(manifest) {
+  const container = document.getElementById("dl-reference-groups");
   if (!container) return;
   container.replaceChildren();
 
@@ -255,7 +305,7 @@ function renderCheatSheet(manifest) {
     if (!group || !group.length) continue;
 
     const section = document.createElement("div");
-    section.className = "dl-cheatsheet-group";
+    section.className = "dl-reference-group";
     const heading = document.createElement("h3");
     heading.textContent = label;
     section.append(heading);
@@ -280,7 +330,7 @@ function renderCheatSheet(manifest) {
   const notes = manifest.notes || [];
   if (notes.length) {
     const section = document.createElement("div");
-    section.className = "dl-cheatsheet-group";
+    section.className = "dl-reference-group";
     const heading = document.createElement("h3");
     heading.textContent = "Notes";
     section.append(heading);
@@ -300,7 +350,7 @@ function renderCheatSheet(manifest) {
   const datasets = manifest.datasets || [];
   if (datasets.length) {
     const section = document.createElement("div");
-    section.className = "dl-cheatsheet-group";
+    section.className = "dl-reference-group";
     const heading = document.createElement("h3");
     heading.textContent = "Datasets used here";
     section.append(heading);
@@ -317,41 +367,89 @@ function renderCheatSheet(manifest) {
     section.append(dl);
     container.append(section);
   }
+
+  // A page with only a handful of terms doesn't need searching; one with
+  // a whole series accumulated behind it does. Shown once there's
+  // actually more than one group's worth of entries to search through,
+  // rather than unconditionally the moment the panel has anything at all.
+  const searchInput = document.getElementById("dl-reference-search");
+  if (searchInput) searchInput.hidden = container.querySelectorAll("dt, .dl-note").length < 6;
 }
 
-/* Same open/close mechanics as initSettingsPanel(), and the two stay in sync
- * (closeCheatSheet()/closeSettings(), above) so only one is ever open at a
- * time. The one real difference: this toggle starts `hidden` in
- * shell.html, and stays that way — offering nothing at all — unless this
- * page's own manifest actually carries a glossary, a note, or a dataset
- * (planning/SIDEBAR_CONTENT.md §4 — none of the three is cumulative the
- * same way, but all three share this one panel). A tutorial with nothing
- * accumulated yet (planning/CHEAT_SHEETS.md §6) is not a rare case early on:
- * it is every tutorial before the skill has been run on anything ahead of
- * it in its series. */
-function initCheatSheet(manifest) {
-  const toggle = document.getElementById("dl-cheatsheet-toggle");
-  const panel = document.getElementById("dl-cheatsheet");
+/**
+ * Filters an already-rendered reference panel down to entries matching
+ * `query` — a plain substring match over each term's own name and
+ * definition (and a note's own text), not the cross-page index
+ * assets/search.js uses for the contents/topics pages: this panel's
+ * whole content is already sitting in the DOM for one page, so there is
+ * nothing to fetch and no reason for anything fancier than hiding what
+ * doesn't match. A `dt`/`dd` pair hides or shows together, since a
+ * definition split from its own term would be meaningless either way.
+ */
+function filterReferenceContent(query) {
+  const container = document.getElementById("dl-reference-groups");
+  const emptyMessage = document.getElementById("dl-reference-empty");
+  if (!container) return;
+  const needle = query.trim().toLowerCase();
+  let anyGroupVisible = false;
+
+  for (const group of container.querySelectorAll(".dl-reference-group")) {
+    let groupHasMatch = false;
+    for (const dt of group.querySelectorAll(":scope > dl > dt")) {
+      const dd = dt.nextElementSibling;
+      const text = `${dt.textContent} ${dd ? dd.textContent : ""}`.toLowerCase();
+      const matches = !needle || text.includes(needle);
+      dt.hidden = !matches;
+      if (dd) dd.hidden = !matches;
+      if (matches) groupHasMatch = true;
+    }
+    for (const note of group.querySelectorAll(":scope > .dl-note")) {
+      const matches = !needle || note.textContent.toLowerCase().includes(needle);
+      note.hidden = !matches;
+      if (matches) groupHasMatch = true;
+    }
+    group.hidden = !groupHasMatch;
+    if (groupHasMatch) anyGroupVisible = true;
+  }
+
+  if (emptyMessage) emptyMessage.hidden = anyGroupVisible || !needle;
+}
+
+/* Same open/close mechanics as initSettingsPanel(), staying in sync with
+ * initSeriesNav() only — the two share a corner and genuinely conflict
+ * (see setOpen() below); Settings does not. This toggle starts `hidden`
+ * in shell.html, and stays that way — offering nothing at all — unless
+ * this page's own manifest actually carries a glossary, a note, or a
+ * dataset (planning/SIDEBAR_CONTENT.md §4 — none of the three is
+ * cumulative the same way, but all three share this one panel). A
+ * tutorial with nothing accumulated yet (planning/REFERENCE_PANEL.md §6)
+ * is not a rare case early on: it is every tutorial before the skill has
+ * been run on anything ahead of it in its series. */
+function initReference(manifest) {
+  const toggle = document.getElementById("dl-reference-toggle");
+  const panel = document.getElementById("dl-reference");
   const hasContent = (manifest.glossary && manifest.glossary.length)
     || (manifest.notes && manifest.notes.length)
     || (manifest.datasets && manifest.datasets.length);
   if (!toggle || !panel || !hasContent) return;
 
-  renderCheatSheet(manifest);
+  renderReference(manifest);
   toggle.hidden = false;
 
   function setOpen(open) {
     panel.toggleAttribute("hidden", !open);
     toggle.setAttribute("aria-expanded", String(open));
-    if (open) {
-      closeSettings();
-      closeSeriesNav();
-    }
+    // The reference and series nav share the same left-anchored
+    // corner (.dl-reference/.dl-seriesnav in tutorial-style.css) and
+    // would sit directly on top of each other if both opened — that
+    // conflict is real, so only that one still closes the other.
+    // Settings is right-anchored and does not conflict with either.
+    if (open) closeSeriesNav();
   }
 
   toggle.addEventListener("click", () => setOpen(panel.hasAttribute("hidden")));
 
-  const close = document.getElementById("dl-cheatsheet-close");
+  const close = document.getElementById("dl-reference-close");
   if (close) close.addEventListener("click", () => { setOpen(false); toggle.focus(); });
 
   document.addEventListener("keydown", (ev) => {
@@ -363,21 +461,39 @@ function initCheatSheet(manifest) {
   document.addEventListener("click", (ev) => {
     if (panel.hasAttribute("hidden")) return;
     if (panel.contains(ev.target) || toggle.contains(ev.target)) return;
+    if (clickIsInsidePanels(ev.target, ["dl-settings-toggle", "dl-settings"])) return;
     setOpen(false);
   });
+
+  // Search, only once the panel actually has enough in it to search
+  // (renderReference() decides that and hides the input otherwise).
+  // Cleared whenever the panel closes — a MutationObserver on `hidden`
+  // rather than hooking every one of this panel's several close paths
+  // (toggle click, close button, Escape, click-outside, or being force-
+  // closed by the series nav opening), so reopening it later never
+  // starts on a stale filter from the last time it was open regardless
+  // of which path closed it.
+  const searchInput = document.getElementById("dl-reference-search");
+  if (searchInput) {
+    searchInput.addEventListener("input", () => filterReferenceContent(searchInput.value));
+    new MutationObserver(() => {
+      if (panel.hasAttribute("hidden") && searchInput.value) {
+        searchInput.value = "";
+        filterReferenceContent("");
+      }
+    }).observe(panel, { attributes: true, attributeFilter: ["hidden"] });
+  }
 }
 
 /* --------------------------------------------------------- navigation panel */
 
-/* Same open/close mechanics as initSettingsPanel()/initCheatSheet(), and
- * all three stay in sync (closeCheatSheet()/closeSettings()/
- * closeSeriesNav(), above) so only one is ever open at a time. Unlike the
- * cheat sheet, this panel's content is static per page — build.py's
+/* Same open/close mechanics as initSettingsPanel()/initReference(). Unlike
+ * the reference, this panel's content is static per page — build.py's
  * render_series_nav() already rendered it server-side into {{SERIES_NAV}}
  * — so there is nothing here to assemble from a manifest, only whether
  * it ended up with anything in it. A tutorial with no series position
  * (archived, or a practice page) gets an empty <nav>, the same "nothing
- * to show, nothing to click" rule the cheat sheet's toggle already
+ * to show, nothing to click" rule the reference's toggle already
  * follows for a tutorial with nothing accumulated yet. */
 function initSeriesNav() {
   const toggle = document.getElementById("dl-seriesnav-toggle");
@@ -390,10 +506,10 @@ function initSeriesNav() {
   function setOpen(open) {
     panel.toggleAttribute("hidden", !open);
     toggle.setAttribute("aria-expanded", String(open));
-    if (open) {
-      closeSettings();
-      closeCheatSheet();
-    }
+    // Shares its corner with the reference (see initReference()'s
+    // own comment) — that conflict is real. Settings does not conflict
+    // with this one either.
+    if (open) closeReference();
   }
 
   toggle.addEventListener("click", () => setOpen(panel.hasAttribute("hidden")));
@@ -410,6 +526,7 @@ function initSeriesNav() {
   document.addEventListener("click", (ev) => {
     if (panel.hasAttribute("hidden")) return;
     if (panel.contains(ev.target) || toggle.contains(ev.target)) return;
+    if (clickIsInsidePanels(ev.target, ["dl-settings-toggle", "dl-settings"])) return;
     setOpen(false);
   });
 }
@@ -2813,8 +2930,9 @@ initExportSection();
 initVersionsSection();
 initVersionMarker();
 initSettingsPanel();
-initCheatSheet(currentManifest);
+initReference(currentManifest);
 initSeriesNav();
+watchPanelOverlap();
 initProgressBadgesToggle();
 initNotesNudgeToggle();
 initContentsProgress();

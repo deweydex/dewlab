@@ -38,6 +38,9 @@ the record of why it works the way it does.
   design.
 - **[`EDITOR.md`](./EDITOR.md)** — the GitHub-integrated visual editor:
   what it does and how releases work through it.
+- **[`MINI_IDE_AND_DEWMINI_NEXT.md`](./MINI_IDE_AND_DEWMINI_NEXT.md)** —
+  what's still worth building on each of dewlab's two Python workspaces,
+  and why merging them into one tool isn't the answer.
 
 ### Curriculum
 - **[`CURRICULUM_MAP.md`](./CURRICULUM_MAP.md)** — generated; every

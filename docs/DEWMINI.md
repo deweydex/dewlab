@@ -25,8 +25,10 @@ IDE once a project grows past that.
 
 dewmini is a plain page, not a busy app. Cells sit directly on the
 background with a thin colored line down the left instead of a bordered
-box — navy for a Python cell, gray for a text cell, orange for whichever
-cell you touched last. Between any two cells — and before the first one,
+box — invisible for an ordinary cell, and only showing up (orange for
+whichever cell you touched last, red if its last run errored) when
+there's actually something worth flagging. Between any two cells — and
+before the first one,
 and after the last one — you can add a new cell right there: a blank
 Python cell or a text cell. That spot is easy to miss until you hover
 over it or tap it, but it's there between every pair of cells if you
@@ -38,6 +40,18 @@ bottom, notebook-style: something an earlier cell defines, a later cell
 can use. **Run all** clears every cell's output and reruns the whole
 page in order, so what's on screen always matches what the code actually
 did. Drag a cell by its header to move it anywhere on the page.
+
+Each Python cell also has a small **↺** button next to Run — it clears
+just that cell's own output, keeping its code, for when you want a clean
+slate on one cell without rerunning (or losing) everything else. The
+toolbar's own **Clear output** does the same for every cell at once,
+still keeping every cell and its code — a different, non-destructive
+button from **Clear**, which deletes the cells themselves. A small line
+under a cell's output shows how long it took to run; turn that off in
+Settings if you'd rather not see it. A cell's own **×** needs two clicks
+to actually delete it — the first arms it (it turns solid red); the
+second, right after, deletes. Click anything else, or wait a few
+seconds, and it quietly disarms instead.
 
 A text cell is for notes next to your code — a heading, a reminder of
 what a section does, or notes on what you tried. Click away from it and
@@ -114,7 +128,13 @@ to, just the docstring's own example to check your result against.
 ## Settings
 
 One button in the header opens everything you can change or take with
-you, in sections:
+you, in sections. On a screen wide enough for both, opening Settings or
+Help shrinks the working area rather than covering it, so your cells
+stay fully visible and usable with a panel open.
+
+**Run time** — on by default: the small "ran in…" line under a cell's
+output, described above. Switch it off here if you'd rather your output
+not have anything below it.
 
 **Your notes** — a place to jot down anything worth remembering as you
 work, saved along with your cells.
@@ -125,7 +145,20 @@ suggest something more useful than a default name. Below it: download
 as a Python file, a standalone HTML page, or a Jupyter notebook; print —
 or save as PDF — with just the code and its output, none of the page's
 own header and buttons; and load a `.ipynb` file back in, from here or
-anywhere else, to keep working on it.
+anywhere else, to keep working on it — replacing the current notebook.
+A notebook written outside dewmini can bring along things Pyodide's
+Python genuinely can't run (a `tkinter` window, a Jupyter "magic"
+command, a `!pip install` shell line); a warning banner names exactly
+which imported cell each one is in, right after the import.
+
+Four ready-made examples sit right below that import button — real
+data included, loaded the same way a picked file would be: **SQL & Our
+World in Data** (`sqlite3` and `run_query()` against real CO₂ emissions
+data), **a mini data investigation** (has life expectancy converged
+worldwide since 1950?), **a fun math problem** (estimating π by
+throwing random darts), and **word frequency: usual or unusual?**
+(checking a real novel against Zipf's law). Each is a real, runnable
+dewlab tutorial in miniature.
 
 **Practice** — the order switch described above.
 

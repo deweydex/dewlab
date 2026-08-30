@@ -99,6 +99,7 @@ let addPythonBtn;
 let addTextBtn;
 let loadExampleBtn;
 let runAllBtn;
+let clearOutputBtn;
 let clearAllBtn;
 let statusEl;
 let sampleNoticeEl;
@@ -112,6 +113,9 @@ let filetreeUploadBtn;
 let filetreeUploadInput;
 let importNotebookBtn;
 let importNotebookInput;
+let importCompatNoticeEl;
+let importCompatListEl;
+let dismissImportCompatBtn;
 
 // ============================================================================
 // Drag and Drop State
@@ -605,6 +609,13 @@ function initMiniIdeSettings() {
   document.getElementById('settings-print-pdf')?.addEventListener('click', () => window.print());
 
   fs.configure({ onBackendChange: () => updateStorageStatus() });
+
+  // Built-in worked examples — one listener for all four buttons, keyed
+  // off the path/label already sitting in each button's own markup
+  // rather than one hardcoded handler per example.
+  for (const btn of document.querySelectorAll('#dl-settings-import [data-example]')) {
+    btn.addEventListener('click', () => loadBuiltInExample(btn.dataset.example, btn.textContent.trim()));
+  }
 }
 
 // ---------------------------------------------------------- filename
@@ -665,6 +676,43 @@ function initMiniIdeNotes() {
   notesEl.addEventListener('input', () => {
     try { localStorage.setItem('mini-ide:notes', notesEl.value); } catch {}
   });
+}
+
+// ---------------------------------------------------------- run stats
+
+/**
+ * Wires the Settings "Run time" on/off toggle in #dl-settings-execution.
+ * Same minimal load→apply→sync pattern as the texture/editor settings,
+ * scaled down to one setting: applied as a data-mini-ide-runstats
+ * attribute on <html> (read by renderCellRunStats()), and re-painted on
+ * every already-rendered cell immediately on toggle, not just future runs.
+ */
+function initRunStatsSetting() {
+  let show = true;
+  try { show = localStorage.getItem('mini-ide:show-run-stats') !== 'off'; } catch {}
+
+  function apply() {
+    document.documentElement.setAttribute('data-mini-ide-runstats', show ? 'on' : 'off');
+    cells.forEach(renderCellRunStats);
+  }
+  apply();
+
+  const group = document.querySelector('#dl-settings-execution .dl-seg[data-mini-ide="runstats"]');
+  if (!group) return;
+  const sync = () => {
+    for (const btn of group.querySelectorAll('button')) {
+      btn.setAttribute('aria-pressed', String(btn.dataset.value === (show ? 'on' : 'off')));
+    }
+  };
+  group.addEventListener('click', (ev) => {
+    const btn = ev.target.closest('button');
+    if (!btn) return;
+    show = btn.dataset.value === 'on';
+    try { localStorage.setItem('mini-ide:show-run-stats', show ? 'on' : 'off'); } catch {}
+    apply();
+    sync();
+  });
+  sync();
 }
 
 // -------------------------------------------------- editor appearance
@@ -742,6 +790,32 @@ function initMiniIdeEditorSettings() {
 }
 
 /**
+ * Keeps `<html data-dl-panel-open>` in sync with whether the Settings or
+ * Help panel is currently visible, regardless of which of their several
+ * open/close paths (toggle click, close button, Escape, click-outside)
+ * fired — a MutationObserver on each panel's `hidden` attribute, rather
+ * than hooking every call site, so this stays correct even if a future
+ * change adds another way to close one. mini-ide-style.css reads the
+ * attribute to shrink `.mini-ide-workspace` on wide-enough viewports
+ * while a panel is open, so its fixed position (tutorial-style.css's
+ * `.dl-settings`/`.mini-ide-panel`) never ends up covering a cell's own
+ * run/reset/delete buttons or its output.
+ */
+function watchPanelOverlap() {
+  const panels = [document.getElementById('dl-settings'), document.getElementById('mini-ide-help')]
+    .filter(Boolean);
+  if (!panels.length) return;
+  const sync = () => {
+    const anyOpen = panels.some(p => !p.hasAttribute('hidden'));
+    document.documentElement.toggleAttribute('data-dl-panel-open', anyOpen);
+  };
+  for (const panel of panels) {
+    new MutationObserver(sync).observe(panel, { attributes: true, attributeFilter: ['hidden'] });
+  }
+  sync();
+}
+
+/**
  * Track the chrome height for proper positioning
  * Same as tutorial-runtime.js
  */
@@ -781,6 +855,7 @@ async function init() {
   addTextBtn = document.getElementById('add-text-cell');
   loadExampleBtn = document.getElementById('load-example-cells');
   runAllBtn = document.getElementById('run-all');
+  clearOutputBtn = document.getElementById('clear-output');
   clearAllBtn = document.getElementById('clear-all');
   statusEl = document.getElementById('mini-ide-status');
   sampleNoticeEl = document.getElementById('sample-cells-notice');
@@ -794,6 +869,12 @@ async function init() {
   filetreeUploadInput = document.getElementById('filetree-upload-file');
   importNotebookBtn = document.getElementById('import-notebook');
   importNotebookInput = document.getElementById('import-notebook-file');
+  importCompatNoticeEl = document.getElementById('import-compat-notice');
+  importCompatListEl = document.getElementById('import-compat-list');
+  dismissImportCompatBtn = document.getElementById('dismiss-import-compat');
+  dismissImportCompatBtn?.addEventListener('click', () => {
+    if (importCompatNoticeEl) importCompatNoticeEl.hidden = true;
+  });
 
   // Wire the engine to this page's cells before anything can run
   engine.configure({
@@ -817,9 +898,11 @@ async function init() {
   initSettings();
   initMiniIdeSettings();
   initMiniIdeEditorSettings();
+  initRunStatsSetting();
   initMiniIdeNotes();
   initFilename();
   initHelp();
+  watchPanelOverlap();
 
   // Setup event listeners
   setupEventListeners();
@@ -936,7 +1019,8 @@ function saveState() {
     content: cell.content,
     output: cell.output || '',
     hasError: Boolean(cell.hasError),
-    isSample: Boolean(cell.isSample)
+    isSample: Boolean(cell.isSample),
+    lastRunMs: typeof cell.lastRunMs === 'number' ? cell.lastRunMs : undefined
   }));
   localStorage.setItem(STORAGE_KEY, JSON.stringify(serializable));
 }
@@ -971,6 +1055,10 @@ function setupEventListeners() {
   runAllBtn?.addEventListener('click', () => {
     runAllCells();
   });
+
+  // Clear every cell's output, keeping the cells and their code —
+  // non-destructive, so no confirmation dialog (unlike Clear All below).
+  clearOutputBtn?.addEventListener('click', clearAllOutputs);
 
   // Clear all cells with confirmation
   clearAllBtn?.addEventListener('click', () => {
@@ -1297,7 +1385,24 @@ function createCellElement(cell, index) {
   previewBtn.className = 'mini-ide-icon-btn mini-ide-icon-preview';
   previewBtn.style.display = cell.type === CELL_TYPES.TEXT ? 'inline-flex' : 'none';
 
-  // Delete button — an icon-only ×, matching dm-icon-delete.
+  // Reset-output button (only for Python cells) — clears this cell's
+  // own output without touching its code, distinct from the toolbar's
+  // destructive "Clear All" (which deletes every cell outright).
+  const resetOutputBtn = document.createElement('button');
+  resetOutputBtn.type = 'button';
+  resetOutputBtn.className = 'mini-ide-icon-btn mini-ide-icon-reset-output';
+  resetOutputBtn.title = "Clear this cell's output";
+  resetOutputBtn.textContent = '↺';
+  resetOutputBtn.style.display = cell.type === CELL_TYPES.PYTHON ? 'inline-flex' : 'none';
+  resetOutputBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    resetCellOutput(cell.id);
+  });
+
+  // Delete button — an icon-only ×, matching dm-icon-delete. Arm-then-
+  // confirm rather than a native confirm() dialog: a dialog stops the
+  // whole page and needs a mouse trip to its own button, where this
+  // just needs a second, deliberate press of the same one.
   const deleteBtn = document.createElement('button');
   deleteBtn.type = 'button';
   deleteBtn.className = 'mini-ide-icon-btn mini-ide-icon-delete';
@@ -1305,10 +1410,11 @@ function createCellElement(cell, index) {
   deleteBtn.textContent = '×';
   deleteBtn.addEventListener('click', (e) => {
     e.stopPropagation();
-    deleteCell(cell.id);
+    armDeleteButton(deleteBtn, () => deleteCell(cell.id));
   });
 
   actions.appendChild(runBtn);
+  actions.appendChild(resetOutputBtn);
   actions.appendChild(previewBtn);
   actions.appendChild(deleteBtn);
   head.append(pill, spacer, actions);
@@ -1424,17 +1530,69 @@ function createCellElement(cell, index) {
   // which already includes any traceback tutorial_tools.py produced.
   const outputEl = document.createElement('div');
   outputEl.className = 'mini-ide-cell-output';
+  // Left empty (rather than tagged with a static "empty" class) on
+  // purpose: the CSS hides it via :empty, which keeps working after a
+  // later run appends real output — a class set once here and never
+  // cleared would hide every cell's output forever after its first run.
   if (cell.output) {
     outputEl.innerHTML = cell.output;
-  } else {
-    outputEl.className += ' empty';
   }
   cell.outputEl = outputEl;
 
-  main.append(head, contentEl, outputEl);
+  // Run stats — how long the last run took. Hidden by both a Settings
+  // toggle (data-mini-ide-runstats="off" on the root) and, same as the
+  // output area above, actual emptiness: nothing is written here until
+  // a cell has actually run once. Text only, never a live timer — a
+  // cell already shows it's running via its Run→Stop button.
+  const statsEl = document.createElement('div');
+  statsEl.className = 'mini-ide-cell-stats';
+  cell.statsEl = statsEl;
+  renderCellRunStats(cell);
+
+  main.append(head, contentEl, outputEl, statsEl);
   cellEl.append(rail, main);
 
   return cellEl;
+}
+
+/**
+ * Turns a delete button's click into "press once to arm, press again to
+ * actually delete" — a lighter-weight guard against an errant click than
+ * a native confirm() dialog, since it needs a second deliberate press of
+ * the same button rather than a mouse trip to a dialog's own button. An
+ * armed button auto-disarms after a few seconds (a stale "one more click
+ * deletes this" state, sitting there from an earlier click a reader has
+ * since forgotten about, is exactly the trap this feature exists to
+ * avoid), on blur, or the moment anything else on the page is clicked.
+ *
+ * @param {HTMLButtonElement} btn
+ * @param {() => void} onConfirm - called on the second, confirming click
+ */
+function armDeleteButton(btn, onConfirm) {
+  if (btn.classList.contains('mini-ide-armed')) {
+    clearTimeout(btn._disarmTimer);
+    disarmDeleteButton(btn);
+    onConfirm();
+    return;
+  }
+  btn.classList.add('mini-ide-armed');
+  btn.title = 'Click again to delete this cell';
+  btn._disarmTimer = setTimeout(() => disarmDeleteButton(btn), 3000);
+  const disarmOnOutsideClick = (e) => {
+    if (e.target !== btn) disarmDeleteButton(btn);
+  };
+  // Capture phase, and added after this very click has already finished
+  // bubbling — otherwise the same click that arms the button would
+  // immediately reach this listener and disarm it again.
+  setTimeout(() => document.addEventListener('click', disarmOnOutsideClick, { capture: true, once: true }), 0);
+  btn.addEventListener('blur', () => disarmDeleteButton(btn), { once: true });
+}
+
+/** Restores a delete button to its normal, unarmed state. */
+function disarmDeleteButton(btn) {
+  clearTimeout(btn._disarmTimer);
+  btn.classList.remove('mini-ide-armed');
+  btn.title = 'Delete this cell';
 }
 
 /**
@@ -1558,15 +1716,18 @@ async function runCell(cellId) {
   const previousLabel = runBtn ? runBtn.textContent : '▶';
   setRunButtonRunning(runBtn);
 
+  const startedAt = performance.now();
   try {
     const { ok } = await engine.runCell(cellId, cell.content);
     cell.hasError = !ok;
     cell.output = cell.outputEl ? cell.outputEl.innerHTML : '';
+    setCellRunStats(cell, performance.now() - startedAt);
     updateStatus(
       ok ? `Cell ${index + 1} executed successfully.` : `Cell ${index + 1} raised an error.`,
       ok ? '' : 'error'
     );
   } catch (error) {
+    setCellRunStats(cell, performance.now() - startedAt);
     updateStatus(`Cell ${index + 1} failed to run: ${error.message}`, 'error');
   } finally {
     runningCellId = null;
@@ -1574,6 +1735,70 @@ async function runCell(cellId) {
   }
 
   saveState();
+}
+
+/**
+ * Formats how long a cell's last run took, human-scale rather than raw
+ * milliseconds: "340 ms" under a second, "2.4 s" at or above it.
+ *
+ * @param {number} ms
+ * @returns {string}
+ */
+function formatRunDuration(ms) {
+  return ms < 1000 ? `${Math.round(ms)} ms` : `${(ms / 1000).toFixed(1)} s`;
+}
+
+/**
+ * Records and (when the "Show run time" setting is on) displays how long
+ * a cell's most recent run took. The duration is always kept on the cell
+ * object — cheap to compute, and worth saving even while the setting is
+ * off, in case a reader turns it on later without re-running everything.
+ *
+ * @param {Object} cell
+ * @param {number} ms - elapsed wall-clock time for the run, in milliseconds
+ */
+function setCellRunStats(cell, ms) {
+  cell.lastRunMs = ms;
+  renderCellRunStats(cell);
+}
+
+/** Paints (or clears) one cell's stats line from its stored lastRunMs. */
+function renderCellRunStats(cell) {
+  if (!cell.statsEl) return;
+  const showStats = document.documentElement.getAttribute('data-mini-ide-runstats') !== 'off';
+  cell.statsEl.textContent = (showStats && typeof cell.lastRunMs === 'number')
+    ? `Ran in ${formatRunDuration(cell.lastRunMs)}`
+    : '';
+}
+
+/**
+ * Clears one cell's output (and its run-time stat) without touching its
+ * code — the non-destructive counterpart to deleting the cell outright.
+ * A no-op on a cell that has never run or is currently running, since
+ * there is nothing to clear (and clearing mid-run would fight the output
+ * the running cell is actively writing).
+ *
+ * @param {string} cellId
+ */
+function resetCellOutput(cellId) {
+  const cell = cells.find(c => c.id === cellId);
+  if (!cell || cell.type !== CELL_TYPES.PYTHON || cellId === runningCellId) return;
+  engine.clearOutput(cellId);
+  cell.output = '';
+  cell.hasError = false;
+  delete cell.lastRunMs;
+  renderCellRunStats(cell);
+  saveState();
+}
+
+/** Resets every Python cell's output — the toolbar-level, non-destructive
+ * "Clear Output" action. Distinct from the existing "Clear All" button,
+ * which deletes every cell; this only ever touches output, never code. */
+function clearAllOutputs() {
+  cells.forEach(cell => {
+    if (cell.type === CELL_TYPES.PYTHON) resetCellOutput(cell.id);
+  });
+  updateStatus('Output cleared.');
 }
 
 /**
@@ -1642,12 +1867,15 @@ async function runAllCells() {
     const cell = cells[i];
     if (cell.type === CELL_TYPES.PYTHON && cell.content.trim()) {
       runningCellId = cell.id;
+      const startedAt = performance.now();
       try {
         const { ok } = await engine.runCell(cell.id, cell.content);
         cell.hasError = !ok;
         cell.output = cell.outputEl ? cell.outputEl.innerHTML : '';
+        setCellRunStats(cell, performance.now() - startedAt);
         if (!ok) updateStatus(`Error in cell ${i + 1}.`, 'error');
       } catch (error) {
+        setCellRunStats(cell, performance.now() - startedAt);
         updateStatus(`Cell ${i + 1} failed to run: ${error.message}`, 'error');
       }
     }
@@ -1809,6 +2037,50 @@ async function uploadFiles(fileList) {
 // ============================================================================
 
 /**
+ * Shared tail end of every import path (a picked file, or a built-in
+ * example fetched by URL): run the compatibility scan, replace/append
+ * per the Settings choice, save, and re-render. Split out so
+ * loadBuiltInExample() below doesn't have to duplicate any of it — the
+ * only thing that differs between a picked file and a built-in example
+ * is where `imported` came from.
+ *
+ * @param {Array<Object>} imported - freshly parsed cells, not yet in `cells`
+ * @param {string} sourceLabel - shown in the status line, e.g. a filename
+ */
+function applyImportedCells(imported, sourceLabel) {
+  if (imported.length === 0) {
+    updateStatus('That file has no cells to import.', 'error');
+    return;
+  }
+
+  // Checked before the cells ever land in the notebook — the warning,
+  // if any, should be the first thing a reader sees about this import,
+  // not something they stumble into three cells later as a confusing
+  // error with no obvious cause.
+  const compatWarnings = scanPyodideCompatibility(imported);
+  if (importCompatNoticeEl && importCompatListEl) {
+    if (compatWarnings.length) {
+      // Every warning is built entirely from this file's own hardcoded
+      // strings and plain integers (scanPyodideCompatibility() never
+      // inserts anything from the imported file's actual text) — safe
+      // to turn `backticks` into <code> and drop straight into innerHTML.
+      const toHtml = (w) => `<li>${w.replace(/`([^`]+)`/g, '<code>$1</code>')}</li>`;
+      importCompatListEl.innerHTML = compatWarnings.map(toHtml).join('');
+      importCompatNoticeEl.hidden = false;
+    } else {
+      importCompatNoticeEl.hidden = true;
+    }
+  }
+
+  cells = loadImportMode() === 'append' ? cells.concat(imported) : imported;
+  hasSampleCells = false;
+  saveState();
+  renderCells();
+  if (sampleNoticeEl) sampleNoticeEl.hidden = true;
+  updateStatus(`Loaded ${imported.length} cell${imported.length === 1 ? '' : 's'} from ${sourceLabel}.`);
+}
+
+/**
  * Import a .ipynb or .py file, replacing the current notebook's cells.
  * Routed from the toolbar's "Import" button.
  *
@@ -1830,17 +2102,34 @@ async function handleImportNotebookFile(e) {
     return;
   }
 
-  if (imported.length === 0) {
-    updateStatus('That file has no cells to import.', 'error');
+  applyImportedCells(imported, file.name);
+}
+
+/**
+ * Loads one of dewlab's own worked examples (assets/examples/*.ipynb) —
+ * a real, runnable walkthrough (SQL over a real dataset, a data
+ * investigation, a math simulation, text analysis), not the short
+ * "Load example" starter. Goes through the exact same
+ * parseIpynb()/applyImportedCells() path a reader's own uploaded file
+ * would, so a compatibility warning would show up here too if one of
+ * these examples ever needed something Pyodide can't do — the same
+ * honesty the examples ask of anyone else's notebook.
+ *
+ * @async
+ * @param {string} path - relative to this page, e.g. "assets/examples/sql-owid.ipynb"
+ * @param {string} label - shown in the status line
+ */
+async function loadBuiltInExample(path, label) {
+  let imported;
+  try {
+    const response = await fetch(path);
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    imported = parseIpynb(await response.text());
+  } catch (error) {
+    updateStatus(`Couldn't load "${label}": ${error.message}`, 'error');
     return;
   }
-
-  cells = loadImportMode() === 'append' ? cells.concat(imported) : imported;
-  hasSampleCells = false;
-  saveState();
-  renderCells();
-  if (sampleNoticeEl) sampleNoticeEl.hidden = true;
-  updateStatus(`Loaded ${imported.length} cell${imported.length === 1 ? '' : 's'} from ${file.name}.`);
+  applyImportedCells(imported, label);
 }
 
 /**
@@ -1899,6 +2188,106 @@ function renderIpynbOutputs(outputs) {
   }
 
   return parts.join('');
+}
+
+/**
+ * Modules with no Pyodide build at all, or that need something a
+ * browser tab fundamentally cannot offer (a display to draw a GUI
+ * window in, a separate OS process, a raw network socket, a real
+ * terminal) — not every package Pyodide happens to lack (that list
+ * changes with every Pyodide release, and Mini IDE has no reliable way
+ * to check it from here), just the common, *structurally* impossible
+ * ones worth telling a student about before they spend time debugging a
+ * cryptic ImportError. Checked against a cell's own top-level import
+ * name, so `import tkinter as tk` and `from tkinter import ttk` both
+ * match on `tkinter`.
+ */
+const PYODIDE_INCOMPATIBLE_MODULES = {
+  tkinter: 'opens a GUI window — there is no display here to draw one on',
+  turtle: 'opens a GUI window — there is no display here to draw one on',
+  pygame: 'needs a real display and audio device Pyodide cannot offer',
+  PyQt5: 'opens a GUI window — there is no display here to draw one on',
+  PyQt6: 'opens a GUI window — there is no display here to draw one on',
+  PySide2: 'opens a GUI window — there is no display here to draw one on',
+  PySide6: 'opens a GUI window — there is no display here to draw one on',
+  wx: 'opens a GUI window — there is no display here to draw one on',
+  kivy: 'opens a GUI window — there is no display here to draw one on',
+  cv2: 'OpenCV has no Pyodide build',
+  torch: 'not available in Pyodide — too large, and needs native GPU code',
+  tensorflow: 'not available in Pyodide — too large, and needs native GPU code',
+  keras: 'not available in Pyodide — too large, and needs native GPU code',
+  multiprocessing: 'Pyodide runs on a single thread — there is no separate process to start',
+  subprocess: 'there is no operating system underneath to run a command in',
+  socket: 'the browser has no raw network socket access',
+  ctypes: 'there are no native shared libraries here to load',
+  serial: 'the browser has no serial port access',
+  pyaudio: 'the browser has no direct audio device access',
+  sounddevice: 'the browser has no direct audio device access',
+  selenium: 'there is no separate browser process for it to drive',
+  pty: 'this needs a real terminal, which the browser has none of',
+  curses: 'this needs a real terminal, which the browser has none of',
+  termios: 'this needs a real terminal, which the browser has none of',
+};
+
+/**
+ * Best-effort scan of imported Python cells for things that will not
+ * work once they actually run here — not a full Python parser, just the
+ * regexes worth the trouble for the mistakes a notebook written outside
+ * Mini IDE actually tends to make: a magic command or shell escape (only
+ * valid inside a real Jupyter/IPython kernel, a plain SyntaxError
+ * anywhere else), and an import Pyodide cannot satisfy no matter what
+ * packages get loaded. Returns one short message per distinct problem,
+ * each naming which imported cell(s) it showed up in — good enough to
+ * flag before a student goes looking for a bug in their own logic that
+ * was never there.
+ *
+ * @param {Array<Object>} importedCells - freshly parsed, not yet in `cells`
+ * @returns {Array<string>} human-readable warnings, empty if none found
+ */
+function scanPyodideCompatibility(importedCells) {
+  const magicCells = [];
+  const shellCells = [];
+  const moduleCells = new Map(); // module name -> Set of 1-based cell numbers
+
+  importedCells.forEach((cell, index) => {
+    if (cell.type !== CELL_TYPES.PYTHON) return;
+    const cellNumber = index + 1;
+    const lines = cell.content.split('\n');
+
+    for (const rawLine of lines) {
+      const line = rawLine.trim();
+      // A line-or-cell magic ("%time", "%%bash") or a shell escape ("!pip
+      // install x") is only meaningful inside a real IPython kernel —
+      // Pyodide's Python sees plain "%" or "!" as a syntax error, not a
+      // special command, so these never work as-is once run here.
+      if (/^%{1,2}\S/.test(line)) magicCells.push(cellNumber);
+      else if (/^!\S/.test(line)) shellCells.push(cellNumber);
+
+      const importMatch = line.match(/^(?:import|from)\s+([A-Za-z_][\w.]*)/);
+      if (importMatch) {
+        const topLevelModule = importMatch[1].split('.')[0];
+        if (Object.prototype.hasOwnProperty.call(PYODIDE_INCOMPATIBLE_MODULES, topLevelModule)) {
+          if (!moduleCells.has(topLevelModule)) moduleCells.set(topLevelModule, new Set());
+          moduleCells.get(topLevelModule).add(cellNumber);
+        }
+      }
+    }
+  });
+
+  const describeCells = (numbers) => `cell${numbers.length === 1 ? '' : 's'} ${numbers.join(', ')}`;
+  const warnings = [];
+  for (const [moduleName, cellNumbers] of moduleCells) {
+    warnings.push(
+      `\`${moduleName}\` (${describeCells([...cellNumbers].sort((a, b) => a - b))}) ${PYODIDE_INCOMPATIBLE_MODULES[moduleName]}.`
+    );
+  }
+  if (magicCells.length) {
+    warnings.push(`Jupyter "magic" commands like \`%matplotlib\` or \`%%time\` (${describeCells(magicCells)}) aren't valid Python here and will raise an error if run as-is.`);
+  }
+  if (shellCells.length) {
+    warnings.push(`Lines starting with \`!\` (${describeCells(shellCells)}) run a shell command in Jupyter — there's no shell here, and Mini IDE's packages are already loaded, so these aren't needed anyway.`);
+  }
+  return warnings;
 }
 
 /**

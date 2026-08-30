@@ -54,7 +54,7 @@ table of contents; this groups them into a few bigger phases:
    `series_of`, `nav_for`, `render_series_nav`. How tutorials relate to
    each other: which series they're in, which version is current, what
    comes before and after.
-4. **Cheat sheet** — `cumulative_glossary`, `render_toc`,
+4. **Reference** — `cumulative_glossary`, `render_toc`,
    `download_section`. The per-tutorial glossary/table-of-contents/
    download panel.
 5. **Topic tree and knowledge map** — `topic_tiers`, `topic_layout`,

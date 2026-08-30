@@ -236,7 +236,7 @@ Materials following these guides should:
 These guides are based on one year of collaborative educational material development (January 2025 - January 2026). They represent patterns that emerged from:
 
 - **18 mathematics worksheets** (fractions through calculus)
-- **7 SQL/database tools** (interactive quizzes, cheatsheets)
+- **7 SQL/database tools** (interactive quizzes, references)
 - **5 neural network tutorials** (multiple complexity levels)
 - **9 teacher PD handouts** (LLM workshops)
 - **5 PPD case studies** (mission-driven organizations)
