@@ -142,7 +142,14 @@ function applyOutputEvent(cellId, kind, cssClass, text, markup) {
   if (!el) return;
   if (kind === "stream") {
     let open = openStreams.get(cellId);
-    if (!open || open.cssClass !== cssClass) {
+    /* `el` is looked up fresh above, but the open <pre> is cached — and a
+     * re-render mid-run (reordering cells, inserting one) replaces the
+     * output area under it, leaving this node detached. Appending to a
+     * detached node loses the rest of the cell's output silently, so a <pre>
+     * that is no longer inside the current output area is treated as no open
+     * stream at all and a fresh one is started. Reachable since Python moved
+     * off the main thread: the page stays responsive while a cell runs. */
+    if (!open || open.cssClass !== cssClass || !el.contains(open.el)) {
       const pre = document.createElement("pre");
       pre.className = cssClass;
       el.appendChild(pre);
@@ -713,6 +720,17 @@ export function restart() {
   worker = null;
   interruptBuffer = null;
   jediReadyWorker = false;
+
+  /* Reject what was in flight before dropping it. Terminating the worker
+   * means no reply is ever coming for these, and a promise that neither
+   * resolves nor rejects is not "cancelled" — it hangs forever, and so does
+   * whatever awaited it. A caller's `finally` never runs, so a "running"
+   * guard set before the await stays set, and every later Run is silently
+   * ignored until the page is reloaded. That is precisely the state this
+   * button exists to get someone out of. */
+  for (const { reject } of pendingRequests.values()) {
+    reject(new Error("Python was restarted before this finished."));
+  }
   pendingRequests.clear();
   openStreams.clear();
 

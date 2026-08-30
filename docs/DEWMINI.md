@@ -202,14 +202,21 @@ it somewhere else, use one of the downloads in Settings.
 
 ## What's different from a tutorial page
 
-A tutorial page can genuinely stop a cell that's run away — say, an
-accidental infinite loop — because it runs Python in a background
-worker built to allow that. dewmini runs Python directly in the page
-instead, the simpler and older of the two approaches, so a cell that
-never finishes has to be waited out, or the page reloaded, rather than
-stopped with a button. The shared data folder `load_csv` reads from is
-real but currently empty, so asking for a file that isn't there yet
-tells you so rather than pretending it worked. Widgets — `text_input`,
-`dropdown`, `button`, `image_input` — work here exactly as they do on a
-tutorial page, since dewmini keeps Python in the main page, right where
-that direct connection to the page is available.
+Less than there used to be. dewmini now runs Python in a background
+worker, the same way a tutorial page does, which is what lets the Stop
+button genuinely interrupt a cell that has run away — an accidental
+infinite loop, say — rather than leaving you to wait it out or reload the
+page.
+
+That worker costs one thing, and it costs it here exactly as it does on a
+tutorial page (`DECISIONS_LOG.md` 7.77). Widgets — `text_input`,
+`dropdown`, `button`, `image_input` — attach a listener to a live
+element, and there is no page on the far side of the worker boundary to
+attach one to. Calling any of the four raises a clear error saying so
+rather than drawing something that quietly does nothing. A downloaded
+copy runs Python on the page's own thread, where they work.
+
+`load_csv` reads from dewlab's shared data folder, which holds a handful
+of real datasets — emissions, life expectancy, and the text of *Pride and
+Prejudice*. Asking for a file that isn't there tells you so rather than
+pretending it worked.

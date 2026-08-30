@@ -28,13 +28,22 @@ const DM_PACKAGES = ["numpy", "pandas", "matplotlib", "sqlite3", "Pillow"];
 const CELL_TYPES = { PYTHON: "python", TEXT: "text" };
 const IMPORTS_SNIPPET = "import numpy as np\nimport pandas as pd\nimport matplotlib.pyplot as plt\n";
 
+/* Seeds the namespace for the *standalone export* only — a downloaded copy
+ * carries its own tiny runtime rather than pyodide-engine.js, which is what
+ * seeds the live page (its own copy of this, assets/pyodide-engine.js).
+ *
+ * __dewlab__ rather than __dewmini__ so that the same notebook answers
+ * `__name__` the same way in the page and in the file a reader downloaded
+ * from it. They disagreed once the live page moved onto the shared engine,
+ * which is the kind of difference nobody finds until a cell behaves
+ * differently after a download and there is no obvious reason why. */
 const SEED_GLOBALS_CODE = `
 import tutorial_tools
 tutorial_tools._page_globals.update({
     name: getattr(tutorial_tools, name)
     for name in tutorial_tools.__all__
 })
-tutorial_tools._page_globals["__name__"] = "__dewmini__"
+tutorial_tools._page_globals["__name__"] = "__dewlab__"
 `;
 
 let cells = [];
@@ -858,9 +867,17 @@ async function runAllCells() {
     for (const cell of pythonCells) {
       runningCellId = cell.id;
       setRunButtonRunning(cell.runBtn);
-      const ok = await executeCell(cell);
-      resetRunButton(cell.runBtn);
-      if (!ok) errors += 1;
+      /* try/finally per cell, matching Mini IDE's own runAllCells(): if a
+       * run rejects rather than returning false — which is exactly what
+       * restarting Python mid-batch now does, since restart() rejects what
+       * was in flight — this cell's button would otherwise be left showing
+       * "running" forever while the batch unwound past it. */
+      try {
+        const ok = await executeCell(cell);
+        if (!ok) errors += 1;
+      } finally {
+        resetRunButton(cell.runBtn);
+      }
     }
     updateStatus(
       errors ? `Done — ${errors} cell${errors === 1 ? "" : "s"} errored.` : "All cells ran cleanly.",
@@ -1772,8 +1789,15 @@ async function uploadFsFiles(fileList) {
 
   try {
     await ensurePyodide();
-  } catch {
-    return; // ensurePyodide() already reported the failure via updateStatus()
+  } catch (err) {
+    /* Says so, rather than returning quietly. ensurePyodide() used to report
+     * a boot failure itself and this comment used to say so; it now lets the
+     * error out (only the filesystem mount inside it is caught), so without
+     * this an upload after a failed boot did nothing at all and explained
+     * nothing either. */
+    updateStatus(`Python isn't available, so the upload can't go anywhere: ${err.message}`,
+                 "error");
+    return;
   }
 
   let uploaded = 0;

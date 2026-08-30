@@ -3807,3 +3807,61 @@ quietly going hollow.
 because the pattern is the point: two of the five were found only by
 running the thing in a browser and reading the values it produced, and one
 was a test agreeing with itself.*
+
+---
+
+**7.95 — Six defects the Worker migration (7.89) left behind, found by
+reviewing it after it merged.** Reviewing a merged PR is not the usual
+order, and it earned its place: the first of these makes both workspaces
+unusable until the page is reloaded.
+
+**"Restart Python" wedged the tool it exists to unwedge.**
+`pyodide-engine.js`'s `restart()` terminated the worker and called
+`pendingRequests.clear()` — dropping the in-flight promises rather than
+rejecting them. No reply was ever coming, so an awaited `run-cell` never
+settled, the caller's `finally` never ran, and dewmini's `running` guard
+stayed set. Every later Run was ignored. Reproduced in a real browser
+against a locally served Pyodide: without the fix, Run All is left visibly
+`disabled` after a restart and nothing recovers it short of a reload; with
+it, a later cell runs. `restart()` now rejects what it drops. The engine is
+shared, so Mini IDE was exposed to the same path.
+
+**Two follow-ons that only became reachable once it rejected.**
+`runAllCells()` reset each cell's Run button *after* its await with no
+per-cell `try`, so a rejection mid-batch unwound past that cell and left
+its button showing "running" — Mini IDE's own loop already had the guard.
+And `uploadFsFiles()` returned silently on a boot failure with a comment
+saying `ensurePyodide()` had reported it; the rewritten `ensurePyodide()`
+catches only the filesystem mount and lets a boot failure out, so an upload
+after one did nothing and said nothing.
+
+**An open output stream survived a re-render it should not have.**
+`applyOutputEvent()` looks the output element up fresh each event but
+caches the open `<pre>`. Reordering or inserting a cell mid-run replaces
+the output area underneath, and text then appended to the detached node
+vanished. Reachable precisely because the worker keeps the page responsive
+while a cell runs. A cached `<pre>` no longer inside the current output
+area is now treated as no open stream, and a fresh one is started.
+
+**Two documentation claims the migration falsified.** dewmini's Help panel
+listed `text_input`, `dropdown`, `button` and `image_input`, and
+`docs/DEWMINI.md` said they "work here exactly as they do on a tutorial
+page, since dewmini keeps Python in the main page" — which stopped being
+true the moment it did not. All four raise `RuntimeError` off the main
+thread (7.77's accepted gap, inherited here). That same document also still
+said a runaway cell had to be waited out, describing the absence of the
+button the PR added, and called the shared data folder empty when it holds
+three datasets. `docs/WRITING_TUTORIALS.md` was wrong the same way and is
+now explicit that the widgets error on the hosted site and work in a
+downloaded copy.
+
+**And `__name__` disagreed with itself.** The live page is seeded by the
+shared engine (`__dewlab__`); dewmini's standalone export carries its own
+seed and still said `__dewmini__`, so one notebook answered differently in
+the page and in the file downloaded from it. The export now matches.
+
+*Cost to change: nil — these are fixes. Recorded because of what the set
+has in common: every one of them was created by moving execution off the
+main thread, and none was caught by a test. Three needed a browser to see
+at all, and two were documentation that quietly became false while the code
+around it was correct.*

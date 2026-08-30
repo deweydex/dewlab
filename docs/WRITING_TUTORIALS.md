@@ -387,6 +387,15 @@ Beyond ordinary Python, a cell can use:
 Widgets keep their values when a cell is re-run, so a student can type an answer,
 press Run, and still see what they typed.
 
+**The four widgets need Python on the page's own thread, and the hosted site
+runs it in a Worker** (`DECISIONS_LOG.md` 7.77 — that Worker is what makes a
+real Stop button possible). A widget attaches a listener to a live element,
+and there is no DOM on the far side of a `postMessage` boundary to hand one
+back. So `text_input`, `dropdown`, `button` and `image_input` raise a clear
+`RuntimeError` on a hosted page today, and work in a downloaded **Download to
+keep** copy, which runs on the main thread. Nothing published uses them; if
+you are reaching for one, that is the constraint to know about first.
+
 `numpy`, `pandas` and `matplotlib` are available in every tutorial without
 importing anything special — they load with the page.
 

@@ -357,5 +357,13 @@ could still be relying on it:
    two, which is as far as it can go: `shell.html` is a template and
    `dewmini.html` is a hand-written page, and they are different things.
 
+**One thing the parity table does not say, and should.** Reviewing the
+Worker migration after it merged turned up six defects, one of which — a
+"Restart Python" that permanently wedged the tool — sat in the shared
+engine and so affected both workspaces. `DECISIONS_LOG.md` 7.95 has them.
+The lesson for the retirement above is that the shared engine is where a
+mistake costs twice, and it is worth reviewing changes to it as changes to
+both tools rather than to whichever one prompted them.
+
 **Until step 1 is done, no polish work on Mini IDE.** Every hour spent on a
 tool that is leaving is an hour spent twice.
