@@ -3001,3 +3001,51 @@ rather than any real complexity — a mechanical find-and-replace plus a
 handful of files a first sweep missed (comments wrapped across two
 source lines, a couple of test docstrings naming the old test file by
 name), not a design decision to revisit.*
+
+**7.83 — The README was split by audience: a short overview at the root,
+and one document each for students, tutorial writers, code contributors,
+and anyone reporting a problem.** The README had grown to 671 lines and
+was addressing four readers at once — a student wondering what the
+Settings button does, an author looking up frontmatter fields, a
+developer setting up a build, and somebody who had found a wrong answer
+in a practice page. Each of them had to scroll past the other three.
+Read straight through, it was also a walkthrough of a project rather
+than a way into one, which asks a new reader to learn the history before
+they can do anything.
+
+The split follows who is reading rather than what the subject is.
+`docs/FOR_STUDENTS.md` takes everything a reader of a tutorial needs —
+cells, saved work, Settings, the Reference panel, practice, their own
+cells, the download and export options, and the two Python workspaces.
+`docs/WRITING_TUTORIALS.md` takes the whole authoring format:
+frontmatter, `order.yaml`, cells, mathematics, `check()`, includes,
+links, practice pages, glossary files, curriculum coverage, releases,
+and the pre-pull-request checks. `docs/REPORTING_A_PROBLEM.md` is new
+rather than moved — there was nowhere to send somebody who had found a
+mistake, and "open an issue" alone does not tell them what is useful to
+include. `CONTRIBUTING.md` absorbed the setup, test and CI material the
+README used to carry, so a code contributor now has one door rather than
+two half-doors.
+
+What stayed on the README is what a reader who does not yet know what
+dewlab is needs: what it does, a table pointing each reader at their own
+document, a tour of the features, how the site is put together, how to
+run it locally, and where the project stands. It is 161 lines.
+
+The pass also closed real staleness. The README described none of the
+work of the last several sessions — Mini IDE, dewmini, reader-added
+cells, PDF and Jupyter export, the site search, "Browse by topic" —
+except as filenames in a directory listing. `planning/STATUS.md` still
+said 71 pages and two `computational-methods` tutorials when the
+matrices strand it describes further down the same file had brought
+those to 83 and eight. `planning/README.md` still called reader-added
+practice cells unbuilt. `ARCHITECTURE.md` and `QUESTIONS.md` pointed
+tutorial writers at `README.md` for a format it no longer documents.
+
+*Cost to change: small. Nothing here is code, and no built page links to
+any of these files; reversing it is a `git revert` plus deciding what to
+do about the staleness fixes, which are worth keeping either way. The
+ongoing cost is the opposite of the usual one — four documents can drift
+apart where one could not, so `CONTRIBUTING.md`'s "who reads what"
+section now names each of them explicitly rather than describing
+categories.*

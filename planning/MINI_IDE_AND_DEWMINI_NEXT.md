@@ -135,8 +135,8 @@ Could Mini IDE and dewmini become one tool? Mechanically, yes — nothing
 stops it. Whether it's better for a student is a different question, and
 the answer is no, for a reason that's already written down elsewhere in
 this repository and worth restating plainly: **dewmini's whole design
-point is not being Mini IDE.** `README.md`'s own description of it —
-"good for a quick calculation or a single practice problem," reachable
+point is not being Mini IDE.** What `docs/DEWMINI.md` describes —
+somewhere to run a few lines that isn't tied to one topic, reachable
 in effectively no clicks, nothing to configure before typing code — is a
 real, different use case from "a project meant to stand on its own,"
 not a smaller version of the same use case. A student who wants to check

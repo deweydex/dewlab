@@ -1,12 +1,12 @@
 # Architecture
 
 This is the other door in — for someone reading the code rather than writing
-a tutorial. If you want to write a tutorial, read `README.md` instead; it
-covers the markdown format, cells, practice pages, versioning, and the
-authoring editor from a tutorial writer's side. This document assumes you
-have read that, and goes underneath it: how a tutorial's markdown actually
-becomes a page a student can run Python in, what runs where, and how the
-pieces talk to each other. `DECISIONS_LOG.md` is the record of *why* a given
+a tutorial. If you want to write a tutorial, read `docs/WRITING_TUTORIALS.md`
+instead; it covers the markdown format, cells, practice pages, versioning, and
+the authoring editor from a tutorial writer's side. This document assumes you
+have read that, and goes underneath it: how a tutorial's markdown becomes a
+page a student can run Python in, what runs where, and how the pieces talk to
+each other. `DECISIONS_LOG.md` is the record of *why* a given
 piece works the way it does, entry by entry; this document is the map of
 *what the pieces are*, so you know where to go looking.
 
