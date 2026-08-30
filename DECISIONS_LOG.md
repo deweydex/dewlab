@@ -3171,3 +3171,55 @@ pass's two new panels), and needed a genuine new mechanism
 (`makeRightEdgeResizable()`) rather than a CSS tweak — cheap to have
 caught now, before 7.83 merged, rather than as a separate bug report
 later.*
+
+**7.85 — dewmini can import a `.py` file now, closing out one of the
+five items on `planning/MINI_IDE_AND_DEWMINI_NEXT.md` §6's parity list —
+and turned out to already be most of the way there.** A gap analysis
+run before starting this work (per §6's own staged plan) found dewmini
+already had `.ipynb`/`.py`/`.html` *export* and the Jupyter-compatibility
+scanner — both had already been ported in an earlier session — and only
+`.ipynb` *import* worked; `.py` was accepted nowhere. `run_query()` (the
+other half of the SQLite item on that same list) turned out to need no
+work at all: it already lives in the shared `assets/tutorial_tools.py`,
+which dewmini's `SEED_GLOBALS_CODE` (`compose/dewmini.js`) already
+exposes every name in `__all__` from — it was reachable in a dewmini
+cell before this session started, just never mentioned as such.
+
+**`parsePyCells()` (`compose/dewmini.js`) is the counterpart to
+`downloadAsPython()`, not to Mini IDE's own `.py` parser.** Mini IDE's
+own import/export pair uses a plain `# %%` marker and only ever carries
+Python cells, since Mini IDE has no note/text-cell concept to preserve.
+dewmini's own `.py` export already predates this port and already
+handles both cell types, via its own `# ---- cell N ----`/
+`# ---- note ----` markers (a text cell's content gets `#`-prefixed line
+by line) — so the new parser recognizes *that* format, reversing the
+exact prefixing `downloadAsPython()` applies, rather than adopting Mini
+IDE's narrower one and losing note-cell round-tripping dewmini already
+had on the export side. A file with none of those markers — a plain
+script, or one from anywhere else — imports as a single Python cell,
+the same fallback Mini IDE's own parser uses for an unmarked file.
+`handleImportFile()` now dispatches on the picked file's extension
+(`.py` vs `.ipynb`), and `#import-ipynb-file`'s `accept` attribute and
+button label (`compose/dewmini.html`) were widened to match — the
+`.ipynb`-suggestive element ids were left alone rather than renamed, to
+avoid touching working wiring for a cosmetic-only change.
+
+Verified with an actual export-then-reimport Playwright round trip
+(three cells — Python, a text note with a blank line inside it, Python
+— confirmed to come back identical, not just "some cells appeared") and
+a separate plain-script-import check, alongside a re-run of the existing
+`.ipynb` import path to confirm it still works unchanged.
+
+Deliberately not done here: recognizing Mini IDE's own `# %%` marker
+convention too, for cross-tool import. Nothing today produces a
+Mini-IDE-format `.py` file that needs reopening in dewmini specifically
+— worth adding if that becomes a real need (most likely once Mini IDE's
+own retirement, `planning/MINI_IDE_AND_DEWMINI_NEXT.md` §6 step 3, means
+someone's old exports are all that's left of it), not before.
+
+*Cost to change: small — the parser is genuinely new code (there was no
+existing `.py`-shaped parsing anywhere in dewmini to extend), but
+self-contained: one new function, a two-line dispatch change, and an
+`accept`/label update, with no engine or filesystem dependency the way
+the next two items on §6's list (the file manager, and the Worker/Stop
+migration) both have.*

@@ -884,7 +884,10 @@ function triggerDownload(filename, content, mime) {
 /* Joins every cell into one plain .py file: a Python cell's code goes in
  * as-is, and a text cell's content gets turned into `#`-prefixed comment
  * lines, so the whole notebook reads as one ordinary, runnable Python
- * script — no special notebook format needed to open it. */
+ * script — no special notebook format needed to open it. The
+ * "# ---- cell N ----"/"# ---- note ----" markers are also exactly what
+ * parsePyCells() looks for on the way back in, so a downloaded .py loads
+ * straight back into the same cells, notes included. */
 function downloadAsPython() {
   if (!cells.length) { updateStatus("No cells to export.", "error"); return; }
   const parts = [`# dewmini export — ${new Date().toISOString().slice(0, 10)}`, ""];
@@ -1289,21 +1292,25 @@ function showImportCompatNotice(warnings) {
   notice.hidden = false;
 }
 
-/* Reads a chosen .ipynb file and replaces the whole notebook with its
- * cells — a Jupyter "code" cell becomes a Python cell, anything else
+/* Reads a chosen .ipynb or .py file and replaces the whole notebook with
+ * its cells — a Jupyter "code" cell becomes a Python cell, anything else
  * (Jupyter's "markdown" cells) becomes a text cell. `Array.isArray(c.source)
  * ? c.source.join("") : c.source || ""` handles the fact that nbformat
  * allows a cell's source to be stored either as one string or as an
  * array of line-strings (see splitLines() above for why Jupyter itself
  * writes the array form) — this accepts either, so a file from any
- * real Jupyter tool imports correctly either way. */
+ * real Jupyter tool imports correctly either way. Dispatches on the
+ * file's own extension, the same way Mini IDE's own import does
+ * (mini-ide.js), rather than sniffing content. */
 async function handleImportFile(e) {
   const input = e.target;
   const file = input.files && input.files[0];
   input.value = "";
   if (!file) return;
   try {
-    applyImportedCells(parseIpynbCells(await file.text()), file.name);
+    const text = await file.text();
+    const imported = file.name.toLowerCase().endsWith(".py") ? parsePyCells(text) : parseIpynbCells(text);
+    applyImportedCells(imported, file.name);
   } catch (err) {
     updateStatus(`Couldn't read that file: ${err.message}`, "error");
   }
@@ -1335,6 +1342,69 @@ function parseIpynbCells(text) {
     output: "",
     error: false,
   }));
+}
+
+/* Parses a .py file into dewmini's cell shape — the counterpart to
+ * downloadAsPython() below, recognizing that same function's own
+ * "# ---- cell N ----" / "# ---- note ----" markers so a file downloaded
+ * from dewmini and reopened here round-trips back into the same cells,
+ * notes included (Mini IDE's own .py export/import pair only ever
+ * carries Python cells, since it has no note-cell concept to preserve —
+ * dewmini's own format predates this port and already handles both, so
+ * it's kept rather than switched to Mini IDE's plain "# %%" marker,
+ * which cannot tell a note from a cell apart on its own).
+ *
+ * A file with none of dewmini's own markers — a plain script, or one
+ * exported from somewhere else entirely — imports as a single Python
+ * cell instead, the same fallback Mini IDE's own parsePy() uses for an
+ * unmarked file (mini-ide.js).
+ *
+ * @param {string} text - raw .py file contents
+ * @returns {Array<Object>} new cell objects, same shape parseIpynbCells() returns
+ */
+function parsePyCells(text) {
+  const markerRe = /^# ---- (cell \d+|note) ----$/;
+  const lines = text.split("\n");
+  if (!lines.some((line) => markerRe.test(line))) {
+    const trimmed = text.trim();
+    return trimmed ? [{ id: generateId(), type: CELL_TYPES.PYTHON, content: trimmed, output: "", error: false }] : [];
+  }
+
+  // downloadAsPython() prefixes every note line with "# " (or a bare "#"
+  // for a line that was empty) — this reverses exactly that, not a
+  // general "#" comment stripper, so a genuine Python comment inside a
+  // *code* cell is left alone (this only ever runs on a "note" block's
+  // own lines).
+  const unescapeNoteLine = (line) => {
+    if (line === "#") return "";
+    if (line.startsWith("# ")) return line.slice(2);
+    if (line.startsWith("#")) return line.slice(1);
+    return line;
+  };
+
+  const cells = [];
+  let currentType = null;
+  let buffer = [];
+  const flush = () => {
+    // Content before the first marker is downloadAsPython()'s own
+    // header line ("# dewmini export — <date>") — not a cell.
+    if (currentType === null) { buffer = []; return; }
+    const raw = currentType === CELL_TYPES.TEXT ? buffer.map(unescapeNoteLine).join("\n") : buffer.join("\n");
+    const content = raw.replace(/\n+$/, "");
+    if (content.trim()) cells.push({ id: generateId(), type: currentType, content, output: "", error: false });
+    buffer = [];
+  };
+  for (const line of lines) {
+    const marker = line.match(markerRe);
+    if (marker) {
+      flush();
+      currentType = marker[1] === "note" ? CELL_TYPES.TEXT : CELL_TYPES.PYTHON;
+      continue;
+    }
+    buffer.push(line);
+  }
+  flush();
+  return cells;
 }
 
 /* Loads one of dewlab's own worked examples (assets/examples/*.ipynb) —
