@@ -63,9 +63,10 @@ This session's own work, in one pass:
   because the CSS variable was set on `body` where `rem` units don't
   read from) and the desktop side-panel-covers-content problem, on the
   IDEs and on ordinary tutorial pages both.
-- Renamed the "cheat sheet" to "Reference" everywhere — code, tests,
-  docs, planning history excepted — and gave it its own in-panel search,
-  alongside a new cross-tutorial search on the contents and topic pages.
+- Settled on **Reference** as the panel's name across code, tests and
+  docs — only `DECISIONS_LOG.md` keeps the older name, in its own
+  entries — and gave it its own in-panel search, alongside a new
+  cross-tutorial search on the contents and topic pages.
 
 None of that is a foundation problem anymore. What's left is real, but
 it's feature and polish work, not architecture repair.
