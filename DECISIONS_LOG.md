@@ -3289,3 +3289,158 @@ does not exist — the editor page's body is built in `build.py`'s
 files, no code and no behaviour. The headings that changed carry
 anchors, but nothing in the repository links to a `QUESTIONS.md`
 anchor.*
+**7.87 — dewmini can import a `.py` file now, closing out one of the
+five items on `planning/MINI_IDE_AND_DEWMINI_NEXT.md` §6's parity list —
+and turned out to already be most of the way there.** A gap analysis
+run before starting this work (per §6's own staged plan) found dewmini
+already had `.ipynb`/`.py`/`.html` *export* and the Jupyter-compatibility
+scanner — both had already been ported in an earlier session — and only
+`.ipynb` *import* worked; `.py` was accepted nowhere. `run_query()` (the
+other half of the SQLite item on that same list) turned out to need no
+work at all: it already lives in the shared `assets/tutorial_tools.py`,
+which dewmini's `SEED_GLOBALS_CODE` (`compose/dewmini.js`) already
+exposes every name in `__all__` from — it was reachable in a dewmini
+cell before this session started, just never mentioned as such.
+
+**`parsePyCells()` (`compose/dewmini.js`) is the counterpart to
+`downloadAsPython()`, not to Mini IDE's own `.py` parser.** Mini IDE's
+own import/export pair uses a plain `# %%` marker and only ever carries
+Python cells, since Mini IDE has no note/text-cell concept to preserve.
+dewmini's own `.py` export already predates this port and already
+handles both cell types, via its own `# ---- cell N ----`/
+`# ---- note ----` markers (a text cell's content gets `#`-prefixed line
+by line) — so the new parser recognizes *that* format, reversing the
+exact prefixing `downloadAsPython()` applies, rather than adopting Mini
+IDE's narrower one and losing note-cell round-tripping dewmini already
+had on the export side. A file with none of those markers — a plain
+script, or one from anywhere else — imports as a single Python cell,
+the same fallback Mini IDE's own parser uses for an unmarked file.
+`handleImportFile()` now dispatches on the picked file's extension
+(`.py` vs `.ipynb`), and `#import-ipynb-file`'s `accept` attribute and
+button label (`compose/dewmini.html`) were widened to match — the
+`.ipynb`-suggestive element ids were left alone rather than renamed, to
+avoid touching working wiring for a cosmetic-only change.
+
+Verified with an actual export-then-reimport Playwright round trip
+(three cells — Python, a text note with a blank line inside it, Python
+— confirmed to come back identical, not just "some cells appeared") and
+a separate plain-script-import check, alongside a re-run of the existing
+`.ipynb` import path to confirm it still works unchanged.
+
+Deliberately not done here: recognizing Mini IDE's own `# %%` marker
+convention too, for cross-tool import. Nothing today produces a
+Mini-IDE-format `.py` file that needs reopening in dewmini specifically
+— worth adding if that becomes a real need (most likely once Mini IDE's
+own retirement, `planning/MINI_IDE_AND_DEWMINI_NEXT.md` §6 step 3, means
+someone's old exports are all that's left of it), not before.
+
+*Cost to change: small — the parser is genuinely new code (there was no
+existing `.py`-shaped parsing anywhere in dewmini to extend), but
+self-contained: one new function, a two-line dispatch change, and an
+`accept`/label update, with no engine or filesystem dependency the way
+the next two items on §6's list (the file manager, and the Worker/Stop
+migration) both have.*
+
+**7.88 — dewmini can mount a persistent filesystem now: a real folder, OPFS,
+or IDBFS, the same three backends Mini IDE already had, tucked into
+Settings' own "Files" section rather than a sidebar tree.** The second
+item on `planning/MINI_IDE_AND_DEWMINI_NEXT.md` §6's parity list. Asked
+directly which shape this should take, since Mini IDE's own file-tree
+sidebar is exactly the kind of visual weight dewmini is meant to avoid:
+offered a compact Settings section, a fourth docked sidebar, or the
+mounted filesystem alone with no browsing UI yet — a Settings section
+was picked, matching dewmini's "nothing to configure before typing
+code" ethos and adding no new permanent chrome to the page itself.
+
+**`compose/dewmini-fs.js`** is a close port of `assets/mini-ide-fs.js`,
+trimmed for the one real architectural difference: Mini IDE's version
+sits behind `mini-ide-engine.js`'s Worker/main-thread dispatch, since
+its Pyodide might be running in either place, while dewmini's only ever
+runs on the main thread — so the FS primitives (mount/list/read/write/
+delete/mkdir) call `pyodide.FS` directly, with no second dispatching
+layer that would only ever have one path to dispatch to. `getPyodide`
+is injected via `configure()` rather than imported directly, since
+`dewmini.js` needs to call into this module (to mount once Pyodide
+boots) and this module needs to call back into `dewmini.js` (to get the
+live instance) — a genuine two-way dependency, which dependency
+injection avoids turning into a circular-import tangle.
+
+**A real collision this port had to design around, not just copy past:**
+`mini-ide-fs.js`'s own OPFS backend mounts `navigator.storage.getDirectory()`
+— the origin's one shared root — directly at its Pyodide-side mount
+point. That was never a problem while Mini IDE was the only thing
+mounting OPFS on this origin; it would be the moment dewmini did the
+same thing unmodified, since both would be looking at the identical
+underlying files, invisibly. dewmini's own OPFS mount gets a named
+`"dewmini"` subdirectory of that shared root instead (`getDirectoryHandle`
+with `create: true`), keeping its files separate from Mini IDE's own
+un-namespaced mount — noted as a fix for the new arrival, not a
+retrofit onto Mini IDE's already-shipped, soon-to-retire code. The
+native-folder backend's own IndexedDB handle storage got the same
+treatment for the same reason (a separate database name), so choosing a
+folder in one tool never silently reconnects it in the other.
+
+**A real gap this pass's own testing surfaced, not assumed safe from
+reading the code: neither this port nor Mini IDE's own original synced
+the filesystem after a cell's Python code writes to the mount directly.**
+`writeFile()`/`deleteFile()`/`mkdir()` each schedule a debounced sync —
+but only when *this JS module* makes the write. A cell running
+`sqlite3.connect('/mnt/dewmini/x.db')` or plain `open(...).write(...)`
+touches the mounted path entirely through Pyodide's own `FS`, never
+through this module's functions, so nothing here ever knew to sync —
+found by an actual write-then-reload test coming back empty, not a
+theoretical review. The `beforeunload`/`visibilitychange` flush both
+this file and Mini IDE's own copy already had doesn't cover this either,
+by design of the web platform: a `beforeunload` handler that kicks off
+async work has no guarantee the browser waits for it to finish. Fixed
+with a new exported `sync()`, called (fire-and-forget, so a slow sync
+never makes a fast cell feel slower) once after every cell finishes
+running in `dewmini.js`'s `executeCell()` — covers a cell's own writes
+regardless of what API it used, and doesn't require Mini IDE's own
+already-shipped, soon-to-retire code to be touched to fix the same gap
+there. Verified with an actual write-reload-readback round trip, first
+with a plain text file, then with a real `sqlite3` `.db` file (the
+motivating use case for this whole item) — both survive a page reload,
+not just a same-session read.
+
+**A second real bug this pass's testing caught, also present in Mini
+IDE's own original: the empty-file-list branch never cleared the list
+it was hiding.** `renderFileList()`'s "no files yet" branch set the
+`<ul>` to `hidden` but never cleared its children, so deleting a mount's
+only file left a stale `<li>` sitting in the (invisible) list — found by
+an actual delete-then-recount test, where the count stayed unchanged
+instead of dropping to zero. Fixed here by clearing the list
+unconditionally at the top of the function rather than in each
+individual branch, so no future branch can reintroduce the same gap.
+
+**`DEWLAB_PYODIDE_BASE` — the self-hosted-Pyodide override
+`tutorial-runtime.js` and `mini-ide-engine.js` both already carry — was
+missing from dewmini entirely until this pass**, added on its own merits
+(parity with the other two runtimes, and the standing answer if a school
+network ever blocks the CDN, `OPEN_QUESTIONS.md` 32) rather than only
+because this pass's own testing needed a way to point dewmini at a
+locally-vendored Pyodide in a network-restricted environment — though it
+did need exactly that, and its absence was the reason no automated
+end-to-end verification of dewmini's actual filesystem behavior had ever
+been possible before.
+
+Deliberately smaller than Mini IDE's own file manager: the "Files" list
+browses the mount's root only, not a full recursive tree — a flat list
+fits a compact Settings section; a browsable tree does not, and Mini
+IDE's own tree only ever browses one mount's root well anyway (per
+`planning/MINI_IDE_AND_DEWMINI_NEXT.md`'s own §2, it was never true
+multi-file *editing*, just browse/upload/delete). Real SQLite
+persistence — the other half of §6's list, alongside this — needed no
+separate work: `run_query()` was already reachable in a cell before this
+session (`DECISIONS_LOG.md` 7.87's own finding), and a `.db` file under
+the mount now simply persists the way any other file under it does.
+
+*Cost to change: moderate — the FS module itself is a faithful, largely
+mechanical port, but two of the three things worth naming here (the OPFS
+namespace collision, the missing post-run sync) were genuine design
+decisions this port had to make that Mini IDE's own code never had to
+face or never got right, not just translation work. Each was caught by
+an actual end-to-end Playwright test — upload-and-read, write-reload-
+readback, delete-and-recount — run against a real, locally-vendored
+Pyodide instance, not inferred from reading the ported code and trusting
+it matched its source.*

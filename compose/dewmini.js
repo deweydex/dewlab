@@ -10,6 +10,7 @@
  */
 
 import { createCodeEditor, setEditorTheme } from "../assets/vendor/codemirror.bundle.js";
+import * as dfs from "./dewmini-fs.js";
 
 const PYODIDE_VERSION = "0.28.3";
 const STORAGE_KEY = "dewmini:cells:v1";
@@ -621,7 +622,18 @@ async function ensurePyodide() {
 
   bootPromise = (async () => {
     updateStatus("Loading Python…");
-    const pyodideUrl = new URL(`https://cdn.jsdelivr.net/pyodide/v${PYODIDE_VERSION}/full/`, document.baseURI).href;
+    // Pyodide is loaded from the public CDN by default. DEWLAB_PYODIDE_BASE
+    // lets a page point at a self-hosted copy instead — the same escape
+    // hatch tutorial-runtime.js and mini-ide-engine.js already carry, used
+    // by the e2e tests and as the standing answer if a school network ever
+    // blocks the CDN (OPEN_QUESTIONS.md 32). dewmini had no such override
+    // until now — worth adding on its own merits (parity with the other two
+    // runtimes, DECISIONS_LOG.md 7.88), not just because this pass's own
+    // testing needed it.
+    const pyodideUrl = new URL(
+      globalThis.DEWLAB_PYODIDE_BASE || `https://cdn.jsdelivr.net/pyodide/v${PYODIDE_VERSION}/full/`,
+      document.baseURI,
+    ).href;
     const loader = globalThis.loadPyodide || (await import(/* @vite-ignore */ pyodideUrl + "pyodide.mjs")).loadPyodide;
     pyodide = await loader({ indexURL: pyodideUrl });
 
@@ -635,6 +647,21 @@ async function ensurePyodide() {
     inspectModule = pyodide.pyimport("inspect");
     tools.configure("../data/");
     await pyodide.runPythonAsync(SEED_GLOBALS_CODE);
+
+    // Mounting a filesystem is a nice-to-have (persistence for a chosen
+    // folder, OPFS, or IDBFS), not something Python readiness should ever
+    // hinge on — a mount failure here (blocked storage, an unsupported
+    // browser, running from file://) is caught and surfaced through the
+    // Files section in Settings on its own, never re-thrown, so it can
+    // never turn into "Python failed to start" for an unrelated reason.
+    // dfs.init()'s own getPyodide() calls back into this function — safe
+    // re-entry, since pyodide/tools are both already set by this point,
+    // so that inner call resolves immediately rather than booting twice.
+    try {
+      await dfs.init();
+    } catch (err) {
+      console.warn("dewmini: filesystem mount failed", err);
+    }
 
     updateStatus("Python ready.", "ok");
     return pyodide;
@@ -711,6 +738,12 @@ async function executeCell(cell) {
   if (!outputEl.innerHTML.trim()) outputEl.classList.add("dm-empty");
   updateCellChrome(cell.id);
   saveState();
+  // Fire-and-forget: a cell's own code may have written straight to the
+  // mounted filesystem (dfs.sync()'s own docstring explains why that
+  // needs this rather than relying on writeFile()'s debounced sync or
+  // the best-effort unload flush alone) — not awaited, so a slow sync
+  // never makes a fast cell feel slower than it is.
+  dfs.sync().catch((err) => console.warn("dewmini: filesystem sync after cell run failed", err));
   return ok;
 }
 
@@ -884,7 +917,10 @@ function triggerDownload(filename, content, mime) {
 /* Joins every cell into one plain .py file: a Python cell's code goes in
  * as-is, and a text cell's content gets turned into `#`-prefixed comment
  * lines, so the whole notebook reads as one ordinary, runnable Python
- * script — no special notebook format needed to open it. */
+ * script — no special notebook format needed to open it. The
+ * "# ---- cell N ----"/"# ---- note ----" markers are also exactly what
+ * parsePyCells() looks for on the way back in, so a downloaded .py loads
+ * straight back into the same cells, notes included. */
 function downloadAsPython() {
   if (!cells.length) { updateStatus("No cells to export.", "error"); return; }
   const parts = [`# dewmini export — ${new Date().toISOString().slice(0, 10)}`, ""];
@@ -1289,21 +1325,25 @@ function showImportCompatNotice(warnings) {
   notice.hidden = false;
 }
 
-/* Reads a chosen .ipynb file and replaces the whole notebook with its
- * cells — a Jupyter "code" cell becomes a Python cell, anything else
+/* Reads a chosen .ipynb or .py file and replaces the whole notebook with
+ * its cells — a Jupyter "code" cell becomes a Python cell, anything else
  * (Jupyter's "markdown" cells) becomes a text cell. `Array.isArray(c.source)
  * ? c.source.join("") : c.source || ""` handles the fact that nbformat
  * allows a cell's source to be stored either as one string or as an
  * array of line-strings (see splitLines() above for why Jupyter itself
  * writes the array form) — this accepts either, so a file from any
- * real Jupyter tool imports correctly either way. */
+ * real Jupyter tool imports correctly either way. Dispatches on the
+ * file's own extension, the same way Mini IDE's own import does
+ * (mini-ide.js), rather than sniffing content. */
 async function handleImportFile(e) {
   const input = e.target;
   const file = input.files && input.files[0];
   input.value = "";
   if (!file) return;
   try {
-    applyImportedCells(parseIpynbCells(await file.text()), file.name);
+    const text = await file.text();
+    const imported = file.name.toLowerCase().endsWith(".py") ? parsePyCells(text) : parseIpynbCells(text);
+    applyImportedCells(imported, file.name);
   } catch (err) {
     updateStatus(`Couldn't read that file: ${err.message}`, "error");
   }
@@ -1335,6 +1375,69 @@ function parseIpynbCells(text) {
     output: "",
     error: false,
   }));
+}
+
+/* Parses a .py file into dewmini's cell shape — the counterpart to
+ * downloadAsPython() below, recognizing that same function's own
+ * "# ---- cell N ----" / "# ---- note ----" markers so a file downloaded
+ * from dewmini and reopened here round-trips back into the same cells,
+ * notes included (Mini IDE's own .py export/import pair only ever
+ * carries Python cells, since it has no note-cell concept to preserve —
+ * dewmini's own format predates this port and already handles both, so
+ * it's kept rather than switched to Mini IDE's plain "# %%" marker,
+ * which cannot tell a note from a cell apart on its own).
+ *
+ * A file with none of dewmini's own markers — a plain script, or one
+ * exported from somewhere else entirely — imports as a single Python
+ * cell instead, the same fallback Mini IDE's own parsePy() uses for an
+ * unmarked file (mini-ide.js).
+ *
+ * @param {string} text - raw .py file contents
+ * @returns {Array<Object>} new cell objects, same shape parseIpynbCells() returns
+ */
+function parsePyCells(text) {
+  const markerRe = /^# ---- (cell \d+|note) ----$/;
+  const lines = text.split("\n");
+  if (!lines.some((line) => markerRe.test(line))) {
+    const trimmed = text.trim();
+    return trimmed ? [{ id: generateId(), type: CELL_TYPES.PYTHON, content: trimmed, output: "", error: false }] : [];
+  }
+
+  // downloadAsPython() prefixes every note line with "# " (or a bare "#"
+  // for a line that was empty) — this reverses exactly that, not a
+  // general "#" comment stripper, so a genuine Python comment inside a
+  // *code* cell is left alone (this only ever runs on a "note" block's
+  // own lines).
+  const unescapeNoteLine = (line) => {
+    if (line === "#") return "";
+    if (line.startsWith("# ")) return line.slice(2);
+    if (line.startsWith("#")) return line.slice(1);
+    return line;
+  };
+
+  const cells = [];
+  let currentType = null;
+  let buffer = [];
+  const flush = () => {
+    // Content before the first marker is downloadAsPython()'s own
+    // header line ("# dewmini export — <date>") — not a cell.
+    if (currentType === null) { buffer = []; return; }
+    const raw = currentType === CELL_TYPES.TEXT ? buffer.map(unescapeNoteLine).join("\n") : buffer.join("\n");
+    const content = raw.replace(/\n+$/, "");
+    if (content.trim()) cells.push({ id: generateId(), type: currentType, content, output: "", error: false });
+    buffer = [];
+  };
+  for (const line of lines) {
+    const marker = line.match(markerRe);
+    if (marker) {
+      flush();
+      currentType = marker[1] === "note" ? CELL_TYPES.TEXT : CELL_TYPES.PYTHON;
+      continue;
+    }
+    buffer.push(line);
+  }
+  flush();
+  return cells;
 }
 
 /* Loads one of dewlab's own worked examples (assets/examples/*.ipynb) —
@@ -1464,6 +1567,196 @@ function updateStatus(message, kind = "") {
       if (statusEl.textContent === message) { statusEl.textContent = ""; statusEl.className = "dm-status"; }
     }, 3500);
   }
+}
+
+// -------------------------------------------------------------- storage
+
+/* Human-sized file size, the same three-tier rounding Mini IDE's own
+ * formatFileSize() uses (assets/mini-ide.js). */
+function formatFileSize(bytes) {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+/* Reflects dfs.getBackend() into Settings' "Files" section: the status
+ * line, and the choose/reconnect/forget buttons' own visibility and
+ * label — the same three-way message Mini IDE's own updateStorageStatus()
+ * shows (assets/mini-ide.js), since it's the same three backends behind
+ * the same choice. Also re-renders the file list, since a backend change
+ * always means "what's actually in the mount" just changed too. */
+async function updateStorageStatus() {
+  const statusEl = document.getElementById("settings-storage-status");
+  const chooseBtn = document.getElementById("settings-choose-folder");
+  const forgetBtn = document.getElementById("settings-forget-folder");
+
+  const backend = dfs.getBackend();
+  const labels = {
+    native: "Using a real folder on your computer.",
+    opfs: "Using this browser's private storage (fast; not visible in your file browser).",
+    idbfs: "Using this browser's private storage (compatibility mode).",
+  };
+  if (statusEl) statusEl.textContent = backend ? labels[backend] : "Not started yet — run a cell to start Python.";
+
+  if (chooseBtn) {
+    const supported = typeof window.showDirectoryPicker === "function";
+    if (!supported || backend === "native") {
+      chooseBtn.hidden = true;
+    } else {
+      chooseBtn.hidden = false;
+      const hasStored = await dfs.hasStoredFolder();
+      chooseBtn.textContent = hasStored ? "Reconnect my folder" : "Use a folder on my computer";
+      chooseBtn.dataset.action = hasStored ? "reconnect" : "choose";
+    }
+  }
+  if (forgetBtn) forgetBtn.hidden = backend !== "native";
+
+  renderFileList();
+}
+
+/* Re-lists the mounted filesystem's root and redraws the "Files" list —
+ * root only, not a full recursive tree the way Mini IDE's own file pane
+ * browses subfolders: a compact Settings section is the wrong place for
+ * that (DECISIONS_LOG.md 7.88), and dewmini's own use of the mount
+ * (a saved .db file, a dataset a cell downloaded) rarely goes more than
+ * one level deep in practice. */
+async function renderFileList() {
+  const listEl = document.getElementById("settings-file-list");
+  const noteEl = document.getElementById("settings-file-note");
+  if (!listEl || !noteEl) return;
+
+  // Cleared unconditionally, not just in the loop below that repopulates
+  // it: every early-return branch below also hides this list, but
+  // "hidden" only means invisible, not empty — without this, a file
+  // deleted down to zero would leave its own stale <li> sitting in the
+  // (hidden) list, found by an actual delete-then-recount test, not
+  // assumed fine from reading the branches alone.
+  listEl.replaceChildren();
+
+  if (!dfs.getBackend()) {
+    listEl.hidden = true;
+    noteEl.hidden = false;
+    noteEl.textContent = "Files appear here once Python starts — run any cell.";
+    return;
+  }
+
+  let entries;
+  try {
+    entries = await dfs.listDir("");
+  } catch (err) {
+    listEl.hidden = true;
+    noteEl.hidden = false;
+    noteEl.textContent = `Couldn't list files: ${err.message}`;
+    return;
+  }
+
+  if (entries.length === 0) {
+    listEl.hidden = true;
+    noteEl.hidden = false;
+    noteEl.textContent = "No files yet. Files a cell writes, or that you upload, will show up here.";
+    return;
+  }
+
+  noteEl.hidden = true;
+  listEl.hidden = false;
+
+  for (const entry of entries) {
+    const item = document.createElement("li");
+    item.className = "dm-filelist-item";
+
+    const nameEl = document.createElement("span");
+    nameEl.className = "dm-filelist-item-name";
+    nameEl.textContent = entry.isDir ? `${entry.name}/` : entry.name;
+    nameEl.title = entry.name;
+
+    const sizeEl = document.createElement("span");
+    sizeEl.className = "dm-filelist-item-size";
+    sizeEl.textContent = entry.isDir ? "" : formatFileSize(entry.size);
+
+    const deleteBtn = document.createElement("button");
+    deleteBtn.type = "button";
+    deleteBtn.className = "dm-filelist-item-delete";
+    deleteBtn.textContent = "×";
+    deleteBtn.title = `Delete ${entry.name}`;
+    deleteBtn.setAttribute("aria-label", `Delete ${entry.name}`);
+    deleteBtn.addEventListener("click", () => deleteFsFile(entry.name));
+
+    item.append(nameEl, sizeEl, deleteBtn);
+    listEl.append(item);
+  }
+}
+
+async function deleteFsFile(name) {
+  if (!confirm(`Delete "${name}"? This cannot be undone.`)) return;
+  try {
+    await dfs.deleteFile(name);
+  } catch (err) {
+    updateStatus(`Couldn't delete ${name}: ${err.message}`, "error");
+    return;
+  }
+  renderFileList();
+}
+
+/* Writes one or more picked files into the mounted filesystem's root.
+ * Starts Python first if it hasn't already — unlike Mini IDE's own
+ * uploadFiles() (which requires a cell to have already been run),
+ * uploading a file is itself a reasonable first action for a student to
+ * take, so it boots Python the same way clicking Run does rather than
+ * just refusing. */
+async function uploadFsFiles(fileList) {
+  const files = fileList ? Array.from(fileList) : [];
+  if (!files.length) return;
+
+  try {
+    await ensurePyodide();
+  } catch {
+    return; // ensurePyodide() already reported the failure via updateStatus()
+  }
+
+  let uploaded = 0;
+  for (const file of files) {
+    try {
+      const bytes = new Uint8Array(await file.arrayBuffer());
+      await dfs.writeFile(file.name, bytes);
+      uploaded++;
+    } catch (err) {
+      updateStatus(`Couldn't upload ${file.name}: ${err.message}`, "error");
+    }
+  }
+
+  renderFileList();
+  if (uploaded > 0) updateStatus(`Uploaded ${uploaded} file${uploaded === 1 ? "" : "s"}.`, "ok");
+}
+
+function initStorageSection() {
+  dfs.configure({ getPyodide: ensurePyodide, onBackendChange: () => updateStorageStatus() });
+
+  document.getElementById("settings-choose-folder")?.addEventListener("click", async (e) => {
+    const action = e.currentTarget.dataset.action || "choose";
+    try {
+      if (action === "reconnect") await dfs.reconnectFolder();
+      else await dfs.chooseFolder();
+      updateStatus("Now using a folder on your computer for files.");
+    } catch (err) {
+      updateStatus(`Couldn't use that folder: ${err.message}`, "error");
+    }
+    updateStorageStatus();
+  });
+
+  document.getElementById("settings-forget-folder")?.addEventListener("click", async () => {
+    if (!confirm("Stop using that folder? dewmini switches back to this browser's private storage — nothing in the folder itself is deleted.")) return;
+    await dfs.forgetFolder();
+    updateStatus("Stopped using that folder. Reload the page to switch storage.");
+    updateStorageStatus();
+  });
+
+  document.getElementById("settings-upload-file")?.addEventListener("click", () => document.getElementById("settings-upload-file-input")?.click());
+  document.getElementById("settings-upload-file-input")?.addEventListener("change", (e) => {
+    uploadFsFiles(e.target.files);
+    e.target.value = "";
+  });
+
+  updateStorageStatus();
 }
 
 // ------------------------------------------------------------------ panels
@@ -1987,6 +2280,7 @@ async function init() {
   initFilename();
   initPracticeOrderSettings();
   initRunStatsSetting();
+  initStorageSection();
   wireToolbar();
   setupDragAndDrop();
   renderCells();
