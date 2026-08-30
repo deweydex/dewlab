@@ -88,7 +88,7 @@ right edge, filling as you progress) — reconsidered in favour of something
 smaller: **fold a plain summary into the Settings panel**, the surface that
 already exists for exactly this kind of "how is this page configured /
 how am I doing" information, rather than adding new fixed-position chrome
-competing with the cheat sheet's own toggle for a screen edge.
+competing with the reference's own toggle for a screen edge.
 
 A new section in `#dl-settings`, alongside its existing sections:
 
@@ -129,7 +129,7 @@ states (`tutorial-runtime.js`) → the contents-page indicator (build-time
 `data-cells` attribute, client-side render, Settings toggle) → the
 in-tutorial Settings section → tests (a unit test on the build-time
 attribute, e2e tests seeding `localStorage` directly the way
-`tests/e2e/test_cheat_sheet.py` seeds fixture content, to check all three
+`tests/e2e/test_reference.py` seeds fixture content, to check all three
 states render distinctly) → docs. Each a PR of its own, same reasoning
-`CHEAT_SHEETS.md` §7 and `SIDEBAR_CONTENT.md` §6 gave for staging those
+`REFERENCE_PANEL.md` §7 and `SIDEBAR_CONTENT.md` §6 gave for staging those
 features the same way.

@@ -1,6 +1,6 @@
 ---
 name: tutorial-glossary
-description: Generate or update a dewlab tutorial's <slug>.glossary.yaml — the terms, functions, operators, and formulas that specific tutorial introduces, for the reader-facing cheat sheet (planning/CHEAT_SHEETS.md). Use when asked to write, regenerate, or check a glossary file for one or more tutorials in tutorials/, or after editing a tutorial's content in a way that could add or remove what it introduces.
+description: Generate or update a dewlab tutorial's <slug>.glossary.yaml — the terms, functions, operators, and formulas that specific tutorial introduces, for the reader-facing reference (planning/REFERENCE_PANEL.md). Use when asked to write, regenerate, or check a glossary file for one or more tutorials in tutorials/, or after editing a tutorial's content in a way that could add or remove what it introduces.
 ---
 
 # Writing one tutorial's glossary
@@ -8,11 +8,11 @@ description: Generate or update a dewlab tutorial's <slug>.glossary.yaml — the
 A glossary file says what **this specific tutorial** introduces — not what
 it covers overall (`covers:` in its frontmatter already names broad
 curriculum outcomes), not everything a reader now knows (that is the
-*cumulative* cheat sheet build.py assembles from every glossary file in a
+*cumulative* reference build.py assembles from every glossary file in a
 series, in `order.yaml` order) — only the terms, functions, operators, and
 formulas that show up here for the first time in this tutorial's series.
 
-Read `planning/CHEAT_SHEETS.md` first if you have not already; it has the
+Read `planning/REFERENCE_PANEL.md` first if you have not already; it has the
 full design and the reasoning behind every rule below. This file is the
 step-by-step for running that design on one tutorial.
 
@@ -33,7 +33,7 @@ step-by-step for running that design on one tutorial.
    member's glossary file fresh rather than trusting a stale list.
 4. If the tutorial's `frontmatter` sets `practice_for:` or
    `practice_across:` — **stop**. A practice page gets no glossary file of
-   its own; its cheat sheet is the union of the tutorial(s) it names, which
+   its own; its reference is the union of the tutorial(s) it names, which
    build.py resolves automatically. Do not write one.
 
 ## Finding candidates
@@ -81,9 +81,9 @@ For each candidate from either source:
   did not.
 - **Something a *later* tutorial in this series actually explains, used
   here only as a black box (a function called but not taught)?** Leave it
-  out. This is the one mistake that matters most — a cheat sheet that
+  out. This is the one mistake that matters most — a reference that
   shows a reader something they have not been taught yet is worse than no
-  cheat sheet at all (`planning/CHEAT_SHEETS.md` §1). When genuinely
+  reference at all (`planning/REFERENCE_PANEL.md` §1). When genuinely
   unsure whether a term belongs to this tutorial or a later one, leave it
   for the later one; it costs nothing to pick it up there, and showing it
   early cannot be undone by a reader who already saw it.
@@ -113,7 +113,7 @@ entries:
   though it is also a concept).
 - `definition` — one to three sentences, dewlab's own voice
   (`PEDAGOGICAL_STYLE_GUIDE.md` §4: plain, warm, no condescension, no
-  emoji). This is a cheat sheet entry, not the tutorial's own explanation
+  emoji). This is a reference entry, not the tutorial's own explanation
   restated — shorter, and written to jog a reader's memory of something
   they already met, not to teach it fresh.
 - `example` — optional. Include it when a short code fragment says more

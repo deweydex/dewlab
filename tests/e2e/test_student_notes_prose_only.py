@@ -2,7 +2,7 @@
 tutorial too, not just one with cells — the "Your work" section used to be
 removed entirely wherever cells.length === 0, which included this case.
 
-Self-contained, no Pyodide needed, same reasoning test_cheat_sheet.py
+Self-contained, no Pyodide needed, same reasoning test_reference.py
 already established: a prose-only tutorial's own boot() never loads
 Pyodide at all.
 

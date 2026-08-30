@@ -183,7 +183,7 @@ class Math:
 class Note:
     """A pedagogical note — planning/SIDEBAR_CONTENT.md §3/§4. Authored
     inline as an HTML aside, the same trick the hint/answer fold already
-    uses, but surfaced in the cheat sheet panel rather than staying inline
+    uses, but surfaced in the reference panel rather than staying inline
     — see extract_notes()."""
 
     id: str
@@ -617,7 +617,7 @@ def extract_notes(body_html: str, path: Path) -> tuple[str, list[Note]]:
     list — planning/SIDEBAR_CONTENT.md §3/§4. A note is authored as an HTML
     aside (`NOTE_RE`), the same reuse-over-invention trick the hint/answer
     fold already established, but unlike a fold it does not stay inline: it
-    surfaces in the cheat sheet panel instead, so the aside is removed from
+    surfaces in the reference panel instead, so the aside is removed from
     the body once its id and content are captured.
     """
     notes: list[Note] = []
@@ -1008,10 +1008,10 @@ def render_series_nav(tutorial: Tutorial, members: list[Tutorial]) -> str:
     return '<ol class="dl-seriesnav-series">' + "".join(items) + "</ol>"
 
 
-# --------------------------------------------------------------- cheat sheet
+# --------------------------------------------------------------- reference
 #
-# planning/CHEAT_SHEETS.md has the full design. In short: a glossary file says
-# what one specific tutorial introduces; a page's cheat sheet is the
+# planning/REFERENCE_PANEL.md has the full design. In short: a glossary file says
+# what one specific tutorial introduces; a page's reference is the
 # accumulation of every earlier series member's glossary plus its own, so a
 # tutorial never shows a reader something they have not been taught yet.
 
@@ -1049,7 +1049,7 @@ SERIES_ORDER_FILE = "series.yaml"
 
 
 def module_series_order(module: str) -> list[str]:
-    """The order this module's series accumulate a cheat sheet in, from
+    """The order this module's series accumulate a reference in, from
     `tutorials/<module>/series.yaml`.
 
     Optional, and deliberately so: a series with no fixed position in its
@@ -1072,7 +1072,7 @@ def check_series_order(groups: dict[tuple[str, str], list[Tutorial]]) -> None:
     """A module's series.yaml, if it has one, may only list series that
     actually exist in that module — a typo here would otherwise silently
     exclude a series from cross-series accumulation, with nothing else ever
-    saying why a cheat sheet was missing content."""
+    saying why a reference was missing content."""
     modules = {module for module, _ in groups}
     for module in modules:
         real = {series for m, series in groups if m == module}
@@ -1087,7 +1087,7 @@ def check_series_order(groups: dict[tuple[str, str], list[Tutorial]]) -> None:
 def series_chain(
     module: str, series: str, groups: dict[tuple[str, str], list[Tutorial]]
 ) -> list[Tutorial]:
-    """Every tutorial one series' cheat sheet accumulates from: every
+    """Every tutorial one series' reference accumulates from: every
     earlier series `series.yaml` lists before this one, each in its own
     `order.yaml` order, followed by this series' own members in theirs. A
     series `series.yaml` does not mention — or a module with no
@@ -1121,7 +1121,7 @@ def cumulative_glossary(
 
     A practice page has no series position that means anything —
     `practice_for`/`practice_across` name what it tests instead of where it
-    sits — so its cheat sheet is the union of the tutorial(s) it names, each
+    sits — so its reference is the union of the tutorial(s) it names, each
     resolved the same way, rather than its own (nonexistent) coverage.
     """
     if tutorial.is_practice:
@@ -1691,6 +1691,29 @@ def progress_attrs(tutorial: Tutorial) -> str:
     )
 
 
+def render_search_box(placeholder: str) -> str:
+    """The search box markup shared by the contents page and "Browse by
+    topic" — identical on both, so `assets/search.js` (loaded by
+    `shell.html` on every page, a no-op where the box isn't in the DOM)
+    only has to know one shape to wire up. `data-search-hint` matches
+    the id `aria-describedby` points at, since both are generated
+    together here rather than risking one getting out of step with the
+    other by hand on some future edit.
+    """
+    return (
+        '<div class="dl-search" id="dl-search">'
+        '<label for="dl-search-input" class="dl-search-label">Search tutorials</label>'
+        f'<input type="search" id="dl-search-input" class="dl-search-input" '
+        f'placeholder="{html.escape(placeholder, quote=True)}" autocomplete="off" '
+        'aria-describedby="dl-search-hint">'
+        '<p class="dl-panel-note" id="dl-search-hint">Matches titles and the '
+        "terms each tutorial actually teaches — close counts too "
+        '("loop" also finds "iteration").</p>'
+        '<ul class="dl-search-results" id="dl-search-results" hidden></ul>'
+        "</div>"
+    )
+
+
 def render_index(
     groups: dict[tuple[str, str], list[Tutorial]],
     archives: dict[tuple[str, str], Path] | None = None,
@@ -1771,6 +1794,7 @@ def render_index(
         "</a>",
         "</div>",
         "</div>",
+        render_search_box("Search by topic — e.g. loops, probability, sorting…"),
     ]
 
     titles = series_titles()
@@ -2258,7 +2282,7 @@ def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "",
     if packages:
         manifest["packages"] = list(packages)
     # Absent rather than an empty list when there is nothing accumulated yet —
-    # the runtime hides the cheat sheet toggle entirely on that signal, same
+    # the runtime hides the reference toggle entirely on that signal, same
     # as an empty dl-settings-section elsewhere on this page.
     if glossary:
         manifest["glossary"] = glossary
@@ -2640,7 +2664,7 @@ def write_index(
         "{{RUNTIME_URL}}": versioned("assets/", "tutorial-runtime.js"),
         "{{ROOT_BASE}}": "",
         "{{NAV_PREV_NEXT}}": "",
-        "{{PAGE_SCRIPT}}": "",
+        "{{PAGE_SCRIPT}}": f'<script type="module" src="{versioned("assets/", "search.js")}"></script>',
         # The contents page is not a tutorial and has nothing to download; the
         # runtime hides the empty section rather than showing a bare heading.
         "{{CANONICAL}}": "",
@@ -2832,6 +2856,7 @@ def write_topics_page(
         "practicing in whatever order suits you rather than paging "
         "through the whole course to find it. A tutorial that genuinely "
         "spans two topics is listed under both.</p>",
+        render_search_box("Search — e.g. loops, probability, sorting…"),
     ]
     any_group_rendered = False
     for group in groups:
@@ -2892,7 +2917,7 @@ def write_topics_page(
         "{{RUNTIME_URL}}": versioned("assets/", "tutorial-runtime.js"),
         "{{ROOT_BASE}}": "",
         "{{NAV_PREV_NEXT}}": '<a class="dl-nav-up" href="index.html">All tutorials</a>',
-        "{{PAGE_SCRIPT}}": "",
+        "{{PAGE_SCRIPT}}": f'<script type="module" src="{versioned("assets/", "search.js")}"></script>',
         "{{CANONICAL}}": "",
         "{{DOWNLOAD}}": "",
         "{{TOC}}": "",
@@ -2911,6 +2936,46 @@ def write_topics_page(
     OUT.mkdir(parents=True, exist_ok=True)
     target = OUT / "topics.html"
     target.write_text(page)
+    return target
+
+
+def write_search_index(
+    tutorials: list[Tutorial],
+    registry: dict[tuple[str, str], Tutorial],
+    groups: dict[tuple[str, str], list[Tutorial]],
+) -> Path:
+    """One JSON file, `assets/search-index.json`, listing every live
+    tutorial with what a reader might actually search for: its title,
+    which module and series it belongs to, and — this is the part that
+    makes it more than a title search — the terms its own glossary
+    entry says it *introduces* (`own_glossary()`, not the cumulative
+    one: a later tutorial in the same series has already inherited an
+    earlier term, and searching for it should point at where it was
+    actually taught, not at every page downstream of that).
+
+    `assets/search.js` loads this once and does the actual matching
+    client-side — nothing server-side to run, consistent with the rest
+    of a site that is just static files. Archived and practice-only
+    pages are left out: a search result should be something worth
+    sending a reader to first, and both already sit off the main
+    reading order for the same reason.
+    """
+    documents = []
+    for tutorial in tutorials:
+        if tutorial.archived or not tutorial.is_default or tutorial.is_practice:
+            continue
+        terms = sorted({entry["term"] for entry in own_glossary(tutorial) if entry.get("term")})
+        documents.append({
+            "title": tutorial.title,
+            "module": tutorial.module,
+            "moduleTitle": tutorial.module_title,
+            "series": tutorial.series,
+            "url": "tutorials/" + str(tutorial.out_path.relative_to(OUT / "tutorials")).replace("\\", "/"),
+            "terms": terms,
+        })
+    target = OUT / "assets" / "search-index.json"
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text(json.dumps(documents, ensure_ascii=False))
     return target
 
 
@@ -3165,6 +3230,12 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
     coi_src = ASSETS / "vendor" / "coi-serviceworker.js"
     if coi_src.exists():
         shutil.copy2(coi_src, OUT / "coi-serviceworker.js")
+
+    # After the assets/ copytree above, not before — that copytree starts
+    # with an rmtree of OUT / "assets", which would delete this file if it
+    # were written any earlier in this function.
+    if tutorials:
+        written.append(write_search_index(tutorials, registry, groups))
     return written
 
 

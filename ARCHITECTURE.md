@@ -197,7 +197,7 @@ DECISIONS_LOG.md 7.60 for what this looked like to build and what it does
 and does not cover (Python builtins are deliberately out of scope for
 `docFor` — see that entry for why).
 
-**The cheat sheet** (`planning/CHEAT_SHEETS.md`, DECISIONS_LOG.md 7.64) is
+**The reference** (`planning/REFERENCE_PANEL.md`, DECISIONS_LOG.md 7.64) is
 the settings panel's sibling, not a separate subsystem: same floating-card
 positioning, same open/close mechanics, mutually exclusive with it at
 runtime because both anchor to the same corner. Its content is not
@@ -469,7 +469,7 @@ runtime or the editor.
 | The curated names the editor's future hover docs would cover | `dev/generate_doc_snippets.py`, then re-run it |
 | The tutorial link picker (search-and-insert `tutorial:` links) | `matchTutorials()`/the picker UI in `assets/editor.js`; `insertLink()` in `vendor-src/milkdown-entry.js` |
 | House styling, both reading pages and the editor | `assets/tutorial-style.css` |
-| The cheat sheet's assembly logic (what counts as "already covered") | `cumulative_glossary()`/`own_glossary()` in `build.py` |
-| What one tutorial's cheat sheet actually says | `<slug>.glossary.yaml` beside it, or run `.claude/skills/tutorial-glossary/SKILL.md` on it |
-| The cheat sheet panel or toggle's look and behaviour | `assets/shell.html`, `assets/tutorial-style.css`, `initCheatSheet()`/`renderCheatSheet()` in `assets/tutorial-runtime.js` |
+| The reference's assembly logic (what counts as "already covered") | `cumulative_glossary()`/`own_glossary()` in `build.py` |
+| What one tutorial's reference actually says | `<slug>.glossary.yaml` beside it, or run `.claude/skills/tutorial-glossary/SKILL.md` on it |
+| The reference panel or toggle's look and behaviour | `assets/shell.html`, `assets/tutorial-style.css`, `initReference()`/`renderReference()` in `assets/tutorial-runtime.js` |
 | *Why* something works the way it does, before you change it | `DECISIONS_LOG.md` (numbered, searchable) |

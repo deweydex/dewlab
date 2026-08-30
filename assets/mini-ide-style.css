@@ -65,6 +65,52 @@
   min-width: 0; /* a grid child must opt back into shrinking below its content */
 }
 
+/* Settings and Help are fixed-position panels (tutorial-style.css's own
+ * .dl-settings, and .mini-ide-panel above) that float over the page
+ * rather than push it — fine on a page with generous margins either
+ * side of its reading column, not fine here: at ordinary laptop widths
+ * (1280-1440px) the centered .mini-ide-workspace reaches close enough to
+ * the right edge that an open panel covers a cell's own run/reset/delete
+ * buttons, and sometimes its output. Shrinking the workspace while a
+ * panel is open (data-dl-panel-open, set by watchPanelOverlap() in
+ * mini-ide.js) keeps the working area fully visible instead — the panel
+ * behaves like a real side pane, the way a student would expect from a
+ * desktop IDE, rather than a popover sitting on top of their code.
+ * Skipped below 34rem, where a panel is already a full-width bottom
+ * sheet rather than a right-anchored overlay (see the media query
+ * further down) and there is nothing to reserve room from. */
+@media (min-width: 34rem) {
+  html[data-dl-panel-open] .mini-ide-workspace {
+    /* Left-anchored, not centered, while a panel is open: centering
+     * this box would waste half of whatever width it gives up as a
+     * matching left margin nobody asked for, when all of it needs to
+     * go to the right, clear of the panel. margin-right (26rem: the
+     * wider of the two panels, 24rem, plus its own 1rem offset and a
+     * 1rem gap) is intentionally more than max-width ever needs on a
+     * wide screen — the box is over-constrained then, and a browser
+     * resolves that by giving the surplus back to margin-right, not by
+     * shrinking margin-left, so the left edge stays put either way. */
+    margin-left: 1.5rem;
+    margin-right: 26rem;
+    transform: none;
+    width: auto;
+    max-width: 64rem;
+  }
+
+  /* The h1/intro/toolbar/sample-notice above .mini-ide-workspace live in
+   * the ordinary .dl-page column instead (tutorial-style.css), which
+   * normally stays well clear of a panel at its default 34rem measure —
+   * but that measure is `--dl-line-width` in rem, so a reader who has
+   * turned Texture's Size slider up widens it right along with
+   * everything else on the page, and it can reach the panel too. Same
+   * fix, same reasoning, as .mini-ide-workspace above. */
+  html[data-dl-panel-open] .dl-page {
+    margin-left: 0;
+    margin-right: 26rem;
+    max-width: var(--dl-line-width);
+  }
+}
+
 .mini-ide-filetree {
   position: sticky;
   top: calc(var(--dl-chrome-h) + 0.5rem);
@@ -266,16 +312,19 @@
   padding: var(--mini-ide-cell-pad-y) 0;
 }
 
+/* Transparent at rest — reserves the same gutter space so nothing shifts
+ * when a rail lights up, but shows no line for an ordinary idle cell. A
+ * cell's type is already legible from its pill and its content, so the
+ * rail now only earns attention for the two states worth flagging at a
+ * glance down a long list of cells: focus and error. */
 .mini-ide-cell-rail {
   flex: none;
   width: 3px;
   border-radius: 2px;
   margin-right: 0.9rem;
-  background: var(--dl-cell-border);
+  background: transparent;
   transition: background 0.15s ease;
 }
-.mini-ide-cell-python .mini-ide-cell-rail { background: var(--dl-navy); opacity: 0.35; }
-.mini-ide-cell-text .mini-ide-cell-rail { background: var(--dl-muted); opacity: 0.3; }
 .mini-ide-cell.focused .mini-ide-cell-rail { background: var(--dl-orange); opacity: 1; }
 .mini-ide-cell.error .mini-ide-cell-rail { background: var(--dl-error-fg); opacity: 1; }
 .mini-ide-cell.dragging { opacity: 0.45; }
@@ -341,6 +390,15 @@
 .mini-ide-icon-run:hover { border-color: var(--dl-pass-fg); color: var(--dl-pass-fg); }
 .mini-ide-icon-run.mini-ide-running { border-color: var(--dl-orange); color: var(--dl-orange); }
 .mini-ide-icon-delete:hover { border-color: var(--dl-error-fg); color: var(--dl-error-fg); }
+
+/* Armed state (one click away from actually deleting the cell) — solid
+ * red, not just the hover outline above, so an armed button reads as
+ * unmistakably different from a merely-hovered one. */
+.mini-ide-icon-delete.mini-ide-armed {
+  background: var(--dl-error-fg);
+  border-color: var(--dl-error-fg);
+  color: #fff;
+}
 .mini-ide-icon-btn:disabled { opacity: 0.4; cursor: default; }
 
 /* The one .mini-ide-icon-btn with a word on it rather than a glyph —
@@ -397,11 +455,22 @@
   word-break: break-word;
 }
 
-.mini-ide-cell-output.empty,
 .mini-ide-cell-output:empty {
   display: none;
 }
 .mini-ide-cell-output img { max-width: 100%; border-radius: 3px; }
+
+/* Run time, under the output — small and muted on purpose: it's a nice-
+ * to-know, not something that should compete with the output itself.
+ * Empty (nothing to show yet, or the Settings toggle is off) collapses
+ * to nothing via :empty, the same trick .mini-ide-cell-output uses. */
+.mini-ide-cell-stats {
+  margin-top: 0.3rem;
+  font-family: var(--dl-mono);
+  font-size: 0.72rem;
+  color: var(--dl-muted);
+}
+.mini-ide-cell-stats:empty { display: none; }
 
 /* ============================================================================
  * Settings: collapsible groups — the same <details>/<summary> disclosure
@@ -640,6 +709,26 @@
   display: none;
 }
 
+/* A distinct, slightly more serious accent than the friendly orange
+ * "sample cells loaded" notice above — this one is naming things that
+ * will actually raise an error if run as-is, not just an FYI — while
+ * still reusing the same block shape rather than inventing a second
+ * notice component. Stacked (list included), not the space-between row
+ * .mini-ide-sample-notice uses for its single line of text. */
+.mini-ide-import-notice {
+  display: block;
+  border-color: var(--dl-error-fg);
+}
+.mini-ide-import-notice ul {
+  margin: 0.5rem 0 0.75rem;
+  padding-left: 1.2rem;
+}
+.mini-ide-import-notice li {
+  margin: 0.3rem 0;
+  color: var(--dl-fg);
+}
+.mini-ide-import-notice li code { font-family: var(--dl-mono); }
+
 /* ============================================================================
  * Buttons
  * ============================================================================
@@ -763,7 +852,7 @@
   }
 }
 
-/* Same cutoff .dl-settings/.dl-cheatsheet/.dl-seriesnav already use to
+/* Same cutoff .dl-settings/.dl-reference/.dl-seriesnav already use to
  * become bottom sheets (tutorial-style.css) — the file tree follows the
  * same convention rather than inventing a fourth panel pattern. */
 @media (max-width: 34rem) {

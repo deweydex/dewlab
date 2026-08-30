@@ -2710,3 +2710,294 @@ taking effect later.
 independent and either can be dropped without the other; `DM_PACKAGES` is
 one array read by both the live boot and the standalone template (the
 latter via `JSON.stringify`), so the two never drift apart on their own.*
+
+**7.79 — Mini IDE's output never actually rendered: a stale CSS class,
+not the Worker migration, was hiding it — fixed, alongside a
+non-destructive per-cell/toolbar output reset, a run-time stat, a
+quieter idle rail, and side panels that no longer cover a wide cell.**
+Reported directly: clicking Run in Mini IDE produced no visible output
+at all. `assets/mini-ide-engine.js`'s worker path was writing real output
+into the DOM correctly the whole time — the bug was one CSS rule,
+`.mini-ide-cell-output.empty, .mini-ide-cell-output:empty { display:
+none; }` in `assets/mini-ide-style.css`, next to the matching JS at
+`mini-ide.js` that set a literal `.empty` class on a cell's output `<div>`
+once, at creation, and never removed it. Every tutorial page's own
+`.dl-output` avoids exactly this by hiding on `:empty` alone — a
+pseudo-class that re-evaluates on every DOM change, unlike a class a
+script has to remember to clear — and Mini IDE's own implementation had
+quietly drifted from that pattern. Fixed by dropping the static class
+entirely and hiding on `:empty` only, matching `.dl-output`.
+
+**Reset/clear output, non-destructive, joins the existing (destructive)
+Clear All in both Mini IDE and dewmini.** Neither page had a way to clear
+a cell's output without deleting the cell — "Clear All" only ever meant
+"delete everything." Each Python cell gained a small ↺ button next to
+Run (`resetCellOutput()`/`engine.clearOutput()` in Mini IDE,
+`resetCellOutput()` in dewmini, mirroring `executeCell()`'s own
+remove/re-add of dewmini's `dm-empty` class — the one place dewmini
+already had the correct pattern Mini IDE's bug above shows it lacked),
+and a toolbar-level **Clear Output** button runs it across every cell at
+once. Both need no confirmation dialog, unlike Clear All: nothing is
+lost, since the code stays untouched and a cell can simply be re-run.
+
+**A cell now shows how long its last run took, `Ran in <duration>`
+under its output, gated by a new Settings → Workspace → Python → **Run
+time** on/off switch (`#dl-settings-execution` in Mini IDE, a new
+`#dl-settings-execution` section in dewmini, following the existing
+`.dl-seg` on/off pattern rather than a bare checkbox — no checkbox
+appears anywhere else on either page).** Timed with `performance.now()`
+around the existing `engine.runCell()`/`tools.run_cell()` call in both
+`runCell()` and `runAllCells()`/`executeCell()`; the duration is kept on
+the cell (and persisted through `saveState()`, alongside `output` and
+`hasError`) even while the setting is off, so turning it on later doesn't
+need a re-run to have something to show.
+
+**The idle-state coloured rail (navy for Python, muted grey for text) is
+gone from both pages; the rail itself stays, now transparent until a
+cell is focused (orange) or its last run errored (red).** Reported
+directly: "get rid of the grey line on the left of every cell." The rail
+kept its reserved width and margin rather than collapsing to zero, so
+nothing shifts when it lights up for the two states actually worth
+flagging at a glance down a long notebook — only its at-rest colour
+changed, from a low-opacity type indicator to nothing at all, since a
+cell's type is already legible from its pill and its content.
+
+**Settings and Help, both fixed-position overlays
+(`tutorial-style.css`'s `.dl-settings` and `.mini-ide-panel`/`.dm-panel`),
+covered a cell's own run/reset/delete buttons — sometimes its output —
+at ordinary laptop widths (1280-1440px), because the workspace column
+they float over reaches close enough to the screen's right edge for the
+two to collide.** Confirmed by measuring: at 1280px, Mini IDE's
+`.mini-ide-workspace` and dewmini's `.dl-page` (at a reader's own chosen
+"wide" line width) both genuinely overlapped the open panel's horizontal
+range, not just visually crowded it. A new `watchPanelOverlap()` in each
+page's JS (a `MutationObserver` on each panel's `hidden` attribute/
+property, rather than hooking every one of Settings/Help's several
+open/close paths — toggle click, close button, Escape, click-outside)
+keeps `<html data-dl-panel-open>` in sync; each page's own stylesheet
+reads that attribute to left-anchor its workspace, with `margin-right`
+reserving space for the wider of the two panels, instead of the usual
+`margin: 0 auto`/`translateX(-50%)` centering trick — centering would
+have split the reclaimed width evenly, wasting half of it as a matching
+left margin nobody asked for. Scoped to `min-width: 34rem`, where a panel
+is a right-anchored overlay at all rather than the phone-width bottom
+sheet it already becomes below that. Deliberately scoped to Mini IDE and
+dewmini's own stylesheets rather than changing `.dl-settings`/
+`.mini-ide-panel` in `tutorial-style.css` directly, which would have
+touched the panel's behaviour on every one of the site's 100+ tutorial
+pages for a problem confirmed only on these two, wider-workspace pages.
+*Cost to change: small for the output-visibility fix and the rail (both
+CSS-only, one class each); small-to-moderate for reset/stats/panel-reach,
+spread across `assets/mini-ide.js`, `assets/mini-ide-engine.js`,
+`assets/mini-ide-style.css`, `compose/dewmini.js`,
+`compose/dewmini-style.css`, and both HTML files, but each of the four
+features is independent of the others and any one could be reverted on
+its own without touching the rest.*
+
+**7.80 — Two more reported directly, both fixed: a cell's × now needs two
+clicks, and the Texture "Size" slider now actually resizes Settings,
+Help, and every other control, not just reading prose.** A single
+accidental click on × deleted a cell outright, with no way back short of
+undoing whatever the reader was about to do next. Both Mini IDE and
+dewmini's delete buttons now arm on a first click (turning solid red,
+title changing to "Click again to delete this cell") and only delete on
+a second — `armDeleteButton()`/`disarmDeleteButton()` in each page's own
+JS, auto-disarming after three seconds, on blur, or the moment anything
+else on the page is clicked, so a stale armed state from a click a
+reader has since forgotten about can never cause the same accidental
+delete a click straight through it was supposed to prevent. Deliberately
+not a native `confirm()` dialog: that stops the whole page and needs a
+mouse trip to a button elsewhere, where this needs only a second,
+deliberate press of the button already under the pointer.
+
+**The size slider bug was a one-line root cause, in a rule every page on
+the site shares.** `tutorial-style.css` set `--dl-font-size` on `body`,
+but nearly everything on any dewlab page — Settings, Help, buttons, cell
+chrome, both IDEs' own workspace math — is sized in `rem`, relative to
+the *root* element's font-size, not body's. Setting it on `body` only
+ever resized the handful of things that inherit a font-size directly
+rather than stating one in `rem`, which is why the slider visibly grew
+reading prose but left every panel, button, and control exactly the size
+it started at — not a Mini-IDE-or-dewmini-specific bug, since the
+`.dl-settings`/`.mini-ide-panel`/`.dm-panel` panels the report named are
+shared components rendered on every tutorial page too. Fixed by moving
+the declaration to `html`, where `rem` actually resolves from. A `rem`
+inside a media query is unaffected either way — the specification
+defines it there as always relative to the root element's *initial*
+size, never an author override — so no responsive breakpoint site-wide
+shifts as a result.
+
+**That fix exposed a second, narrower one it made visible: Mini IDE's own
+h1/intro/toolbar/sample-notice, sized through the ordinary `--dl-line-width`-
+constrained `.dl-page` column rather than through `.mini-ide-workspace`'s
+own wider override, now widens along with the rest of the page at a
+larger Size setting — enough, at the high end of the slider, to reach
+under an open Settings/Help panel the same way `.mini-ide-workspace`
+itself did in 7.79.** Same fix, same reasoning, extended to `.dl-page`
+alongside the existing `.mini-ide-workspace` rule in
+`assets/mini-ide-style.css`.
+*Cost to change: small. The delete confirmation and the font-size fix
+are unrelated and either could be reverted independently; the root-cause
+`html`/`body` fix is one shared declaration, so reverting it reverts the
+behavior everywhere it applies, all at once, by design.*
+
+**7.81 — A Jupyter-import compatibility warning, three real shared
+datasets (the first ever committed to `data/`, which had been empty
+since launch), and four worked-example notebooks reachable from both
+IDEs' own Import section.** Three separate requests, landed together
+since each depended on groundwork the last one built.
+
+**The compatibility scan** (`scanPyodideCompatibility()`, ported
+identically into both `assets/mini-ide.js` and `compose/dewmini.js`)
+checks an imported notebook's Python source, before its cells ever land
+in the page, for the two mistakes an outside notebook actually tends to
+carry: an import Pyodide cannot satisfy no matter what loads
+(`PYODIDE_INCOMPATIBLE_MODULES` — `tkinter`, `torch`, `subprocess`,
+`socket`, and similar, each with why), and a Jupyter magic (`%.../%%...`)
+or shell escape (`!...`) — valid only inside a real IPython kernel, a
+plain `SyntaxError` anywhere else. Not a full Python parser, just the
+regexes worth the trouble for what an outside notebook realistically
+contains. A new `#import-compat-notice` banner (styled off each page's
+existing "empty state"/"sample loaded" notice, given a more serious red
+accent since this one names things that will actually error) lists what
+it found, naming which imported cell each one is in; dismissible, never
+blocking the import itself.
+
+**Three real datasets now live in `data/`**, `.gitkeep`'s own note ("delete
+once this holds real content") finally acted on: `co2-emissions.csv`
+(national CO₂ and greenhouse-gas emissions, 1950–2023, trimmed from
+[Our World in Data's `owid-co2-data.csv`](https://github.com/owid/co2-data)
+to real ISO-3 countries and fourteen columns worth teaching with,
+~1.3 MB from an original ~14 MB), `life-expectancy.csv` (1950–2016,
+trimmed from OWID's Gapminder/UN/IHME compilation), and
+`pride-and-prejudice.txt` (Jane Austen, 1813, the standard Project
+Gutenberg plain-text release, kept byte-for-byte including its licence
+header/footer — Gutenberg's own terms ask for that, and the first
+worked example that uses it strips the boilerplate back out itself as
+a real data-cleaning step, not a hidden preprocessing step this project
+did on the student's behalf). All three CC BY 4.0 (CO₂, life expectancy)
+or US public domain (the novel); cited by name and licence in the
+notebook that uses each one. `load_csv()`'s own docstring had said
+`load_csv("life-expectancy.csv")` as its example since before any file
+by that name existed — it now does.
+
+**Four worked-example notebooks in `assets/examples/`** — real nbformat
+4 `.ipynb` files, not hardcoded cell arrays, so they import through the
+exact same `parseIpynb()` path (and the compatibility scan above) a
+reader's own file would: **`sql-owid.ipynb`** (`sqlite3`, `run_query()`,
+the CO₂ data), **`data-investigation.ipynb`** (has life expectancy
+converged across countries since 1950? — a real, verified finding: the
+country-average spread fell from a standard deviation of 12.0 years in
+1950 to 7.3 in 2016 while the mean rose from 49.0 to 72.4), **`math-and-
+charts.ipynb`** (estimating π by Monte Carlo — throwing random points at
+a quarter-circle), and **`word-frequency.ipynb`** (counting words in the
+novel and checking the result against Zipf's law — real, verified:
+rank × frequency stays in roughly the same range across the first
+hundred ranks). Every number any of the four states as a finding was
+actually computed, against the actual shipped data, before being
+written down — not reasoned about — and every code cell in all four was
+run end-to-end against real Pyodide (self-hosted, `dev/fetch_pyodide.py
+--packages numpy pandas matplotlib sqlite3`) with zero cells erroring,
+not just checked for syntax.
+
+**Reachable from Settings → Import (Mini IDE) / Settings → Keep a copy
+(dewmini) as four buttons below the existing file picker**, each calling
+a new `loadBuiltInExample(path, label)` — `fetch()` the `.ipynb`,
+`parseIpynb()` it, hand the result to the same `applyImportedCells()`
+(newly factored out of `handleImportNotebookFile()`/`handleImportFile()`,
+so a built-in example and a reader's own file now share every step
+after parsing rather than the built-in path skipping the compatibility
+scan or the replace/append setting). dewmini has no replace/append
+choice for import at all — its own `handleImportFile()` always replaced
+the notebook outright already — so a built-in example does the same
+there, stated plainly in its own button's neighbouring copy.
+*Cost to change: small-to-moderate. The compatibility scan, the
+datasets, and the worked-examples UI are three independent pieces —
+any one could be reverted alone — but the worked examples depend on the
+datasets existing, and would need rewriting (not just deleting) if the
+datasets were ever removed.*
+
+**7.82 — A search box on the contents page and "Browse by topic"; the
+cheat sheet renamed to "Reference" everywhere, with its own search
+added inside it.** Two related but separately reported requests.
+
+**Search** (`assets/search.js`, new) matches a query against every live
+tutorial's title, module, series, and — the part that makes it more
+than a title search — the terms its own glossary entry says it
+*specifically introduces*. `write_search_index()` in `build.py` writes
+one `assets/search-index.json` after every build (archived and
+practice-only pages excluded, the same "not a first thing to send a
+reader to" reasoning those already have elsewhere), using
+`own_glossary()` rather than `cumulative_glossary()` — a later tutorial
+in a series has already inherited an earlier term, and searching for it
+should point at where it was actually taught, not at every page
+downstream of that. Matching runs client-side: lower-case, a
+conservative rule-based stemmer (`sorting`/`sorted`/`sorts` all reduce
+to `sort`, not Porter's full algorithm, just the common English
+suffixes worth stripping), and a small curated synonym table (`loop` →
+the same normalized form as `iterate`, and so on) — good enough for a
+few hundred tutorials, not attempting to be good enough for the open
+web. Scored by field — a title hit counts for more than a glossary-term
+hit, which counts for more than a module/series-name hit — so a search
+for "loop" ranks a tutorial titled "Loops" above one that merely lives
+in a module called "Repeating Yourself." `render_search_box()` in
+`build.py` generates identical markup on both pages so `search.js` only
+has to know one shape; it is a no-op anywhere else, including every
+tutorial page, since it only ever does anything once it finds
+`#dl-search` in the page.
+
+**The cheat sheet is "Reference" now, top to bottom** — `dl-cheatsheet`
+→ `dl-reference`, `initCheatSheet()`/`closeCheatSheet()`/
+`renderCheatSheet()` → `initReference()`/`closeReference()`/
+`renderReference()`, `planning/CHEAT_SHEETS.md` →
+`planning/REFERENCE_PANEL.md`, `tests/e2e/test_cheat_sheet.py` →
+`tests/e2e/test_reference.py`, and every comment, docstring, and
+student-facing string that named it, across `assets/shell.html`,
+`assets/tutorial-runtime.js`, `assets/tutorial-style.css`, `build.py`,
+`README.md`, `ARCHITECTURE.md`, both `docs/*-explained.md` files, and
+several `planning/*.md` files. Reported directly, on the reasoning that
+"cheat sheet" reads as something a student should feel a little bad
+about needing, when the entire point of the panel is the opposite: nothing
+in it is ahead of where the reader actually is. `DECISIONS_LOG.md` and
+`QUESTIONS.md` keep the old name in their own already-written entries,
+deliberately — this project's own convention is to not rewrite finished
+history, and both files already explain the reasoning behind decisions
+made under the old name; a glossary entry's own file
+(`tutorials/*/*.glossary.yaml`) and `series.yaml` comments picked up the
+same rename since they are live content, not a historical record.
+
+**The reference panel got a search of its own**
+(`filterReferenceContent()` in `tutorial-runtime.js`), separate from
+`search.js` above and deliberately simpler: this panel's whole content
+for one page is already sitting in the DOM, so filtering is a plain
+substring match over each term's own name, definition, and any note's
+text — hiding what doesn't match, no fetch, no cross-page index, no
+stemming. Shown only once a page has more than a handful of entries to
+search through (`renderReference()` decides that), and cleared via a
+`MutationObserver` on the panel's own `hidden` attribute whenever it
+closes — regardless of which of its several close paths did the
+closing — so reopening it later never starts on a stale filter left
+over from the last time it was open.
+
+**This also folded in an unrelated but adjacent request: Settings can
+now stay open alongside the reference or the series nav, instead of
+force-closing whichever of them was open.** Settings anchors to the
+page's right corner; the reference and series nav share the left one
+and still genuinely conflict with each other (they would sit directly
+on top of one another), so that pair still closes on open — only the
+stale three-way exclusion involving Settings, a carryover from before
+the reference panel moved to the left corner (PR #65), was removed.
+Each panel's own "click outside closes this" handler needed a matching
+fix (`clickIsInsidePanels()`, new): without it, opening a *compatible*
+panel's toggle still read as "outside" the first one and closed it
+anyway, even after the explicit force-close calls between them were
+removed. `assets/vendor/standalone.bundle.js` was rebuilt
+(`npm run build` in `vendor-src/`) after these `tutorial-runtime.js`
+changes, since it's compiled from that file and the
+`standalone-bundle-is-current` CI check would otherwise catch the drift.
+*Cost to change: small for search (two independent, self-contained
+features); moderate for the rename, purely because of its breadth
+rather than any real complexity — a mechanical find-and-replace plus a
+handful of files a first sweep missed (comments wrapped across two
+source lines, a couple of test docstrings naming the old test file by
+name), not a design decision to revisit.*

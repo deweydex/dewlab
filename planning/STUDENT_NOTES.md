@@ -14,7 +14,7 @@ mechanism the codebase already has for exactly this kind of thing.
 Worth saying plainly, because the word is already spoken for: `planning/
 SIDEBAR_CONTENT.md` designs **pedagogical notes** — short, author-written
 asides (`<aside class="dl-note">`) that are part of a tutorial's own
-content, the same for every reader, extending the cheat-sheet panel.
+content, the same for every reader, extending the reference panel.
 
 This is the opposite kind of thing: **a student's own free-text notes**,
 written by that one reader, different for every reader, and not part of

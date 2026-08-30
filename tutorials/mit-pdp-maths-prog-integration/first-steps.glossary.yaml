@@ -1,7 +1,7 @@
 # Hand-written, not skill-generated — the first two glossaries in the series
 # exist to prove out the schema and the judgment rules in
 # .claude/skills/tutorial-glossary/SKILL.md before trusting the skill to run
-# unattended over the rest of the curriculum. See planning/CHEAT_SHEETS.md.
+# unattended over the rest of the curriculum. See planning/REFERENCE_PANEL.md.
 #
 # "variables" is emphasised in this tutorial's own closing paragraph
 # ("In the next tutorial we will learn about *variables*") but is left out

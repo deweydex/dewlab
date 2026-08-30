@@ -173,31 +173,35 @@ class TestOpeningAndClosing:
         assert page.is_hidden("#dl-seriesnav")
         context.close()
 
-    def test_opening_the_series_nav_closes_settings(self, site, browser, base_url):
+    def test_opening_the_series_nav_does_not_close_settings(self, site, browser, base_url):
+        # Settings is right-anchored; the series nav is left-anchored
+        # (tutorial-style.css) — genuinely different corners, so a reader
+        # can have both open together (see DECISIONS_LOG.md on this).
         context, page = self.open_page(site, browser, base_url)
         page.click("#dl-settings-toggle")
         assert page.is_visible("#dl-settings")
         page.click("#dl-seriesnav-toggle")
         assert page.is_visible("#dl-seriesnav")
-        assert page.is_hidden("#dl-settings")
+        assert page.is_visible("#dl-settings")
         context.close()
 
-    def test_opening_settings_closes_the_series_nav(self, site, browser, base_url):
+    def test_opening_settings_does_not_close_the_series_nav(self, site, browser, base_url):
         context, page = self.open_page(site, browser, base_url)
         page.click("#dl-seriesnav-toggle")
         assert page.is_visible("#dl-seriesnav")
         page.click("#dl-settings-toggle")
         assert page.is_visible("#dl-settings")
-        assert page.is_hidden("#dl-seriesnav")
+        assert page.is_visible("#dl-seriesnav")
         context.close()
 
 
-class TestMutualExclusionWithCheatSheet:
-    """The cheat sheet, settings, and series nav are a three-way mutual
-    exclusion group sharing the same left-anchored corner (PR #65 moved
-    the cheat sheet there; the series nav panel joined it)."""
+class TestMutualExclusionWithReference:
+    """The reference and series nav are the one pair that still conflicts —
+    they share the same left-anchored corner (PR #65 moved the reference
+    there; the series nav panel joined it). Settings anchors to the right
+    and no longer force-closes (or gets force-closed by) either one."""
 
-    def test_opening_the_series_nav_closes_the_cheat_sheet(self, site, browser, base_url):
+    def test_opening_the_series_nav_closes_the_reference(self, site, browser, base_url):
         _tutorial(site, "one", "One")
         _tutorial(site, "two", "Two")
         (site / "tutorials" / MODULE / "one.glossary.yaml").write_text(
@@ -208,14 +212,14 @@ class TestMutualExclusionWithCheatSheet:
         context = browser.new_context()
         page = context.new_page()
         page.goto(f"{base_url}/tutorials/{MODULE}/one.html")
-        page.click("#dl-cheatsheet-toggle")
-        assert page.is_visible("#dl-cheatsheet")
+        page.click("#dl-reference-toggle")
+        assert page.is_visible("#dl-reference")
         page.click("#dl-seriesnav-toggle")
         assert page.is_visible("#dl-seriesnav")
-        assert page.is_hidden("#dl-cheatsheet")
+        assert page.is_hidden("#dl-reference")
         context.close()
 
-    def test_opening_the_cheat_sheet_closes_the_series_nav(self, site, browser, base_url):
+    def test_opening_the_reference_closes_the_series_nav(self, site, browser, base_url):
         _tutorial(site, "one", "One")
         _tutorial(site, "two", "Two")
         (site / "tutorials" / MODULE / "one.glossary.yaml").write_text(
@@ -228,8 +232,8 @@ class TestMutualExclusionWithCheatSheet:
         page.goto(f"{base_url}/tutorials/{MODULE}/one.html")
         page.click("#dl-seriesnav-toggle")
         assert page.is_visible("#dl-seriesnav")
-        page.click("#dl-cheatsheet-toggle")
-        assert page.is_visible("#dl-cheatsheet")
+        page.click("#dl-reference-toggle")
+        assert page.is_visible("#dl-reference")
         assert page.is_hidden("#dl-seriesnav")
         context.close()
 

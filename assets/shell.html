@@ -59,30 +59,30 @@
 <body>
 <div class="dl-page">
 
-  <!-- The cheat sheet toggle: pinned to the page's own top-left corner
+  <!-- The reference toggle: pinned to the page's own top-left corner
        rather than sharing the masthead row with the wordmark, which already
        owns that side. Starts hidden; tutorial-runtime.js reveals it only
        when this page's manifest actually carries a glossary — a tutorial
-       with nothing accumulated yet (planning/CHEAT_SHEETS.md §6) shows no
+       with nothing accumulated yet (planning/REFERENCE_PANEL.md §6) shows no
        button at all, the same "nothing to show, nothing to click" rule the
        Settings panel already applies to its own empty sections below.
        Under the phone breakpoint its panel becomes a bottom sheet
        (tutorial-style.css) rather than hiding outright. -->
-  <button type="button" class="dl-cheatsheet-toggle" id="dl-cheatsheet-toggle"
-          aria-expanded="false" aria-controls="dl-cheatsheet" hidden>
-    <span class="dl-cheatsheet-icon" aria-hidden="true"></span>Cheat sheet
+  <button type="button" class="dl-reference-toggle" id="dl-reference-toggle"
+          aria-expanded="false" aria-controls="dl-reference" hidden>
+    <span class="dl-reference-icon" aria-hidden="true"></span>Reference
   </button>
 
   <!-- The navigation panel: this tutorial's whole series, browsable from
        any point in it, not just the tutorial immediately before and after
        (planning/SIDEBAR_CONTENT.md §4b — the "where can I go" question,
-       distinct from the cheat sheet's "what do I need right now"). Stacked
-       below the cheat sheet's own toggle rather than beside it, since both
+       distinct from the reference's "what do I need right now"). Stacked
+       below the reference's own toggle rather than beside it, since both
        are fixed-position corner buttons of varying width. Starts hidden;
        a tutorial with no series position (archived, or a practice page)
        has nothing to show here — build.py's render_series_nav() returns
        an empty string, and the runtime hides the button the same way it
-       hides the cheat sheet's when there is nothing to show. -->
+       hides the reference's when there is nothing to show. -->
   <button type="button" class="dl-seriesnav-toggle" id="dl-seriesnav-toggle"
           aria-expanded="false" aria-controls="dl-seriesnav" hidden>
     <span class="dl-seriesnav-icon" aria-hidden="true"></span>Series
@@ -139,7 +139,7 @@
     <h3>Your work</h3>
 
     <!-- A student's own notes (planning/STUDENT_NOTES.md) — not the
-         author-written pedagogical notes in the cheat sheet panel, which
+         author-written pedagogical notes in the reference panel, which
          are part of the tutorial itself and the same for every reader.
          These are one reader's own, saved in the same record as their
          cells (notesEl, tutorial-runtime.js) and riding along on the same
@@ -331,21 +331,21 @@
   </section>
 </div>
 
-<!-- The cheat sheet: definitions, functions, formulas, notes, and datasets
-     this specific page carries (planning/CHEAT_SHEETS.md,
+<!-- The reference: definitions, functions, formulas, notes, and datasets
+     this specific page carries (planning/REFERENCE_PANEL.md,
      planning/SIDEBAR_CONTENT.md §4), rendered by tutorial-runtime.js from
      this page's own manifest — there is no server round trip, and a page
      with nothing to show never reveals the toggle that would open this.
      Anchored to the left, next to its own toggle (tutorial-style.css) —
-     mutually exclusive at runtime with both Settings and the navigation
-     panel below, since opening any of the three closes whichever of the
-     other two was open. -->
-<div class="dl-cheatsheet" id="dl-cheatsheet" role="dialog" aria-modal="false"
-     aria-labelledby="dl-cheatsheet-title" hidden>
-  <div class="dl-cheatsheet-head">
-    <h2 id="dl-cheatsheet-title">Cheat sheet</h2>
-    <button type="button" class="dl-cheatsheet-close" id="dl-cheatsheet-close"
-            aria-label="Close cheat sheet">&times;</button>
+     shares that corner with the navigation panel below, which genuinely
+     conflicts with it (opening either closes the other); Settings anchors
+     to the right instead and can stay open alongside this one. -->
+<div class="dl-reference" id="dl-reference" role="dialog" aria-modal="false"
+     aria-labelledby="dl-reference-title" hidden>
+  <div class="dl-reference-head">
+    <h2 id="dl-reference-title">Reference</h2>
+    <button type="button" class="dl-reference-close" id="dl-reference-close"
+            aria-label="Close reference">&times;</button>
   </div>
   <p class="dl-panel-note">
     The glossary below is what this page — and everything before it in the
@@ -353,14 +353,18 @@
     been taught yet. Notes and datasets, where this page has any, belong to
     this page alone.
   </p>
-  <div class="dl-cheatsheet-groups" id="dl-cheatsheet-groups"></div>
+  <input type="search" class="dl-reference-search-input" id="dl-reference-search"
+         placeholder="Search this page's terms…" aria-label="Search this page's reference"
+         autocomplete="off" hidden>
+  <div class="dl-reference-groups" id="dl-reference-groups"></div>
+  <p class="dl-panel-note dl-reference-empty" id="dl-reference-empty" hidden>Nothing matches that.</p>
 </div>
 
 <!-- The navigation panel: this tutorial's whole series (planning/
      SIDEBAR_CONTENT.md §4b), rendered server-side by build.py's
-     render_series_nav() — static per page, so unlike the cheat sheet there
+     render_series_nav() — static per page, so unlike the reference there
      is nothing here for the runtime to assemble from a manifest. Anchored
-     to the left, the same as the cheat sheet, and mutually exclusive with
+     to the left, the same as the reference, and mutually exclusive with
      both it and Settings for exactly that reason: two left-anchored panels
      open at once would sit on top of each other. -->
 <div class="dl-seriesnav" id="dl-seriesnav" role="dialog" aria-modal="false"

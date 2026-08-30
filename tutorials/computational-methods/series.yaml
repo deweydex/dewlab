@@ -1,7 +1,7 @@
-# The order this module's series accumulate a cheat sheet in.
+# The order this module's series accumulate a reference in.
 #
 # A reader working through computational-methods in the obvious way meets
-# Python fundamentals before matrices, so a matrices tutorial's cheat sheet
+# Python fundamentals before matrices, so a matrices tutorial's reference
 # should carry fundamentals' vocabulary too, not just what matrices itself
 # has covered so far. Optional: a module with no file here gets series-only
 # accumulation, same as before this existed. A series left off this list

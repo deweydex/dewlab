@@ -157,6 +157,7 @@ or Settings closes the other, since they share the same corner.
 | Text Cell | Adds a new text cell |
 | Load example | Replaces your cells with a short worked example (asks first, unless the notebook is already empty) |
 | Run All | Runs every cell in order |
+| Clear Output | Clears every cell's output, keeping the cells and their code (no confirmation — nothing is lost) |
 | Clear All | Removes all cells (asks first) |
 
 Importing a file and downloading your work live in Settings now, not the
@@ -166,9 +167,13 @@ auto-loads sample cells for you, which is what "Load example" is for.
 ### Settings Groups
 
 Settings is organized into three collapsible groups so you're not
-scrolling past everything at once: **Workspace** (Python status, Files
-status, Import) and **Your work** (notes, Keep a copy/download) open by
-default, and **Appearance** (texture, editor) collapsed until you need it.
+scrolling past everything at once: **Workspace** (Python status and a
+Run time on/off switch, Files status, Import) and **Your work** (notes,
+Keep a copy/download) open by default, and **Appearance** (texture,
+editor) collapsed until you need it. Opening Settings or Help while your
+screen is wide enough for both to fit shrinks the working area rather
+than covering it — your cells stay fully visible and usable with a panel
+open, the way a desktop code editor's side panels behave.
 
 ### Cell Types
 
@@ -192,15 +197,20 @@ default, and **Appearance** (texture, editor) collapsed until you need it.
 Each cell has a small pill-shaped header with:
 - **A label**: "Python" or "Text"
 - **A Run/Stop button** (▶, Python cells only)
+- **A Reset-output button** (↺, Python cells only) — clears just this
+  cell's own output, keeping its code, for when you want a clean slate
+  on one cell without touching the rest of the notebook
 - **An Edit/View button** (text cells only) — switches between the
   plain words and the formatted view
-- **A Delete button** (×)
+- **A Delete button** (×) — the first click arms it (it turns solid red);
+  a second click actually deletes. Click anything else, or wait a few
+  seconds, and it quietly disarms itself instead
 
 The buttons are faint until you hover the cell (or, on a touch device,
-always visible) — a quiet coloured rail beside the cell, not a header
-full of labelled buttons, is what says "python" / "text" / "this one
-errored" at a glance down a long notebook. You can also drag a cell by
-its header to move it.
+always visible). The coloured rail beside a cell is quiet by design too
+— invisible for an ordinary cell, and only lighting up (orange while
+focused, red if its last run errored) when there's actually something
+worth flagging at a glance down a long notebook.
 
 ### Output Area
 
@@ -210,6 +220,9 @@ its header to move it.
 - DataFrames shown as tables (including `run_query()` results)
 - Matplotlib plots
 - A readable error message if something goes wrong
+- How long the run took, in small text under the output — turn this off
+  in Settings → Workspace → Python → **Run time**, if you'd rather not
+  see it
 
 ### File Manager Panel
 
@@ -313,6 +326,30 @@ either replaces your current cells or adds to them.
   cell. If there are no `# %%` markers, the whole file becomes one
   cell. `Download .py` uses the same `# %%` marker, so a file you
   download can be loaded straight back in as the same cells.
+
+Importing a notebook written outside Mini IDE can bring along things
+Pyodide's Python genuinely can't run — a `tkinter` window, a Jupyter
+"magic" command like `%matplotlib inline`, a `!pip install` shell line.
+A warning banner names exactly which imported cell each one is in,
+right after the import, rather than leaving you to work out later why a
+cell you didn't even write yourself raised an error.
+
+## Worked examples
+
+Settings → **Import** also offers four ready-made notebooks, real data
+included — the same import path as loading your own file, just fetched
+from dewlab instead of picked from your device:
+
+| Example | What it covers |
+|---|---|
+| SQL & Our World in Data | `sqlite3`, `run_query()`, and real national CO₂ emissions data |
+| A mini data investigation | pandas, `groupby`, and whether life expectancy has converged worldwide since 1950 |
+| A fun math problem | estimating π by throwing random darts — Monte Carlo simulation |
+| Word frequency: usual or unusual? | counting words in a real novel and checking it against Zipf's law |
+
+Each is a real, runnable dewlab tutorial in miniature — narration in
+text cells, code that actually works in Python cells, and a "your turn"
+prompt near the end rather than just something to read.
 
 ---
 

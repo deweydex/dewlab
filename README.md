@@ -100,13 +100,13 @@ half-remembers. Sub-headings that repeat, like the several *Your turn* prompts i
 a long tutorial, are left out of the listing: a contents entry a reader cannot
 choose between is noise.
 
-A **Cheat sheet** button, pinned to the page's own top-left corner, opens a
+A **Reference** button, pinned to the page's own top-left corner, opens a
 panel of the definitions, functions, and formulas this specific tutorial —
 and everything before it in its series — has actually covered. Nothing in
 it is ever something a student has not been taught yet: it is assembled per
 tutorial from `<slug>.glossary.yaml` files
 (`.claude/skills/tutorial-glossary/SKILL.md` writes these; the whole design
-is `planning/CHEAT_SHEETS.md`), and a tutorial with nothing accumulated yet
+is `planning/REFERENCE_PANEL.md`), and a tutorial with nothing accumulated yet
 shows no button at all rather than an empty panel. On a phone-sized screen
 the panel opens as a sheet across the bottom of the screen, the same
 treatment Settings already has.

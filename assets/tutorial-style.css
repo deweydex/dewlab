@@ -99,15 +99,27 @@
 * { box-sizing: border-box; }
 
 /* An anchored jump has to clear the sticky masthead, or the heading it lands
-   on ends up hidden behind it. */
-html { scroll-padding-top: calc(var(--dl-chrome-h) + 1rem); }
+   on ends up hidden behind it.
+   The Texture "Size" slider's --dl-font-size belongs here, not on body:
+   nearly everything on the page — Settings, Help, buttons, cell chrome —
+   is sized in rem, which is relative to *this* element's font-size, not
+   body's. Setting it on body only ever changed the handful of things
+   that inherit a font-size directly rather than stating one in rem, which
+   is why the slider visibly resized reading prose but left every panel,
+   button, and control exactly the size it started at. A rem in a media
+   query is unaffected either way — the spec defines it there as always
+   relative to the root element's *initial* size, not this one, so moving
+   this doesn't shift any responsive breakpoint. */
+html {
+  scroll-padding-top: calc(var(--dl-chrome-h) + 1rem);
+  font-size: var(--dl-font-size);
+}
 
 body {
   margin: 0;
   background: var(--dl-bg);
   color: var(--dl-fg);
   font-family: var(--dl-font-family);
-  font-size: var(--dl-font-size);
   line-height: 1.62;
   -webkit-text-size-adjust: 100%;
 }
@@ -116,6 +128,26 @@ body {
   max-width: var(--dl-line-width);
   margin: 0 auto;
   padding: 0 1.25rem 6rem;
+}
+
+/* Settings (right-anchored) and the reference/series nav (left-
+ * anchored — see .dl-reference/.dl-seriesnav further down) are fixed-
+ * position panels that float over the page rather than push it, which
+ * is fine right up until an open panel reaches far enough in to cover
+ * a reader's own text — a wide Texture "Width" setting, or simply an
+ * ordinary laptop screen, both make that reachable. data-dl-panel-left/
+ * -right (set by watchPanelOverlap() in tutorial-runtime.js, tracking
+ * each side independently since both panels can now be open at once —
+ * see initSettingsPanel()'s own comment) push .dl-page clear of
+ * whichever side(s) currently have a panel open, abandoning the
+ * ordinary `margin: 0 auto` centering above in favour of a fixed
+ * margin on the occupied side: centering would split the reclaimed
+ * width evenly, wasting half of it as a matching margin on the side
+ * with nothing to avoid. Skipped below 34rem, where a panel is already
+ * a full-width bottom sheet rather than a corner-anchored overlay. */
+@media (min-width: 34rem) {
+  html[data-dl-panel-left] .dl-page { margin-left: 25rem; }
+  html[data-dl-panel-right] .dl-page { margin-right: 25rem; }
 }
 
 /* Wide things — tables, plots, code — may exceed the reading measure. They
@@ -656,8 +688,16 @@ p code, li code {
   top: calc(var(--dl-chrome-h) + 0.5rem);
   z-index: 50;
   width: min(21rem, calc(100vw - 2rem));
+  min-width: 16rem;
+  max-width: min(40rem, calc(100vw - 2rem));
   max-height: calc(100vh - var(--dl-chrome-h) - 1.5rem);
   overflow-y: auto;
+  overflow-x: hidden;
+  /* Right-anchored (`right: 1rem`, no `left`), so growing width extends
+     the box leftward, away from the edge already pinned — dragging the
+     handle wider makes more of the panel visible without it ever
+     drifting off the right edge of the screen. */
+  resize: horizontal;
   padding: 1rem 1.1rem 1.1rem;
   border: 1px solid var(--dl-cell-border);
   border-radius: 6px;
@@ -715,7 +755,7 @@ p code, li code {
   color: var(--dl-muted);
 }
 
-/* The cheat sheet toggle (planning/CHEAT_SHEETS.md §6) — pinned to the
+/* The reference toggle (planning/REFERENCE_PANEL.md §6) — pinned to the
    page's own top-left corner rather than sharing the masthead row, which
    already gives that side to the wordmark. Closed by default and revealed
    only by tutorial-runtime.js, when this page's manifest actually carries
@@ -725,10 +765,10 @@ p code, li code {
    below has the same specificity as the UA stylesheet's own
    `[hidden] { display: none }` and would win the tie by loading later,
    showing the button regardless of the attribute JS uses to hide it —
-   found by a real test (TestVisibility in tests/e2e/test_cheat_sheet.py)
+   found by a real test (TestVisibility in tests/e2e/test_reference.py)
    rather than by re-reading this rule and assuming it was fine. */
-.dl-cheatsheet-toggle[hidden] { display: none; }
-.dl-cheatsheet-toggle {
+.dl-reference-toggle[hidden] { display: none; }
+.dl-reference-toggle {
   position: fixed;
   top: 0.9rem;
   left: 0.9rem;
@@ -746,12 +786,12 @@ p code, li code {
   cursor: pointer;
   box-shadow: 0 2px 8px var(--dl-shadow);
 }
-.dl-cheatsheet-toggle:hover,
-.dl-cheatsheet-toggle:focus-visible {
+.dl-reference-toggle:hover,
+.dl-reference-toggle:focus-visible {
   border-color: var(--dl-orange);
   color: var(--dl-orange);
 }
-.dl-cheatsheet-toggle[aria-expanded="true"] {
+.dl-reference-toggle[aria-expanded="true"] {
   background: var(--dl-navy);
   border-color: var(--dl-navy);
   color: #fff;
@@ -759,14 +799,14 @@ p code, li code {
 /* A small card with a fold, drawn rather than typed for the same reason
    .dl-settings-icon's bars are: it should not depend on a glyph the
    reader's font may not carry. */
-.dl-cheatsheet-icon {
+.dl-reference-icon {
   width: 0.75em;
   height: 0.95em;
   border: 2px solid currentColor;
   border-radius: 1px;
   position: relative;
 }
-.dl-cheatsheet-icon::after {
+.dl-reference-icon::after {
   content: "";
   position: absolute;
   left: 0.12em;
@@ -777,18 +817,25 @@ p code, li code {
 
 /* Anchored to the same corner as its own toggle button (top-left) rather
    than .dl-settings' corner (top-right) — it used to share the right side
-   with Settings, which read as if the cheat sheet belonged to the Settings
+   with Settings, which read as if the reference belonged to the Settings
    button rather than the one above it. Still mutually exclusive at runtime
-   (initCheatSheet() in tutorial-runtime.js) so only one panel is ever open
+   (initReference() in tutorial-runtime.js) so only one panel is ever open
    at a time. */
-.dl-cheatsheet {
+.dl-reference {
   position: fixed;
   left: 1rem;
   top: calc(var(--dl-chrome-h) + 0.5rem);
   z-index: 50;
   width: min(22rem, calc(100vw - 2rem));
+  min-width: 16rem;
+  max-width: min(40rem, calc(100vw - 2rem));
   max-height: calc(100vh - var(--dl-chrome-h) - 1.5rem);
   overflow-y: auto;
+  overflow-x: hidden;
+  /* Left-anchored, the mirror image of .dl-settings' own resize note:
+     growing width extends the box rightward, away from the edge
+     already pinned. */
+  resize: horizontal;
   padding: 1rem 1.1rem 1.1rem;
   border: 1px solid var(--dl-cell-border);
   border-radius: 6px;
@@ -797,22 +844,22 @@ p code, li code {
   font-family: var(--dl-font-family);
   font-size: 0.85rem;
 }
-.dl-cheatsheet[hidden] { display: none; }
-.dl-cheatsheet-head {
+.dl-reference[hidden] { display: none; }
+.dl-reference-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
   margin-bottom: 0.6rem;
 }
-.dl-cheatsheet h2 {
+.dl-reference h2 {
   font-size: 0.72rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: var(--dl-muted);
   margin: 0;
 }
-.dl-cheatsheet-close {
+.dl-reference-close {
   font-size: 1.3rem;
   line-height: 1;
   background: none;
@@ -821,32 +868,48 @@ p code, li code {
   cursor: pointer;
   padding: 0 0.2rem;
 }
-.dl-cheatsheet-close:hover { color: var(--dl-orange); }
+.dl-reference-close:hover { color: var(--dl-orange); }
 
-.dl-cheatsheet-group + .dl-cheatsheet-group {
+.dl-reference-search-input {
+  display: block;
+  width: 100%;
+  margin: 0 0 0.8rem;
+  padding: 0.45rem 0.6rem;
+  font: inherit;
+  font-size: 0.85rem;
+  color: var(--dl-fg);
+  background: var(--dl-cell-bg);
+  border: 1px solid var(--dl-cell-border);
+  border-radius: 5px;
+}
+.dl-reference-search-input:focus { outline: none; border-color: var(--dl-orange); }
+.dl-reference-search-input[hidden] { display: none; }
+.dl-reference-empty { font-style: italic; }
+
+.dl-reference-group + .dl-reference-group {
   margin-top: 0.9rem;
   padding-top: 0.9rem;
   border-top: 1px solid var(--dl-rule);
 }
-.dl-cheatsheet-group h3 {
+.dl-reference-group h3 {
   font-size: 0.72rem;
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: var(--dl-muted);
   margin: 0 0 0.5rem;
 }
-.dl-cheatsheet-group dl { margin: 0; }
-.dl-cheatsheet-group dt {
+.dl-reference-group dl { margin: 0; }
+.dl-reference-group dt {
   font-weight: 700;
   color: var(--dl-heading);
   font-family: var(--dl-mono);
   font-size: 0.82rem;
 }
-.dl-cheatsheet-group dd {
+.dl-reference-group dd {
   margin: 0.15rem 0 0.7rem;
   line-height: 1.5;
 }
-.dl-cheatsheet-group dd code {
+.dl-reference-group dd code {
   display: block;
   margin-top: 0.3rem;
   font-family: var(--dl-mono);
@@ -856,8 +919,7 @@ p code, li code {
   padding: 0.2rem 0.4rem;
 }
 
-/* A pedagogical note (planning/SIDEBAR_CONTENT.md §3), inside the cheat
-   sheet panel's "Notes" section — its own accent, distinct from both the
+/* A pedagogical note (planning/SIDEBAR_CONTENT.md §3), inside the reference panel's "Notes" section — its own accent, distinct from both the
    hint/answer folds (which sit inline in the body, not here) and the
    glossary's dl/dt/dd list above it, so it reads as prose to look at
    rather than a term to recall. */
@@ -872,7 +934,7 @@ p code, li code {
 .dl-note > :first-child { margin-top: 0; }
 .dl-note > :last-child { margin-bottom: 0; }
 
-/* The navigation panel's own toggle, stacked below the cheat sheet's
+/* The navigation panel's own toggle, stacked below the reference's
    rather than beside it — two fixed-position buttons of varying text
    width sit more predictably stacked than side by side. */
 .dl-seriesnav-toggle[hidden] { display: none; }
@@ -904,8 +966,7 @@ p code, li code {
   border-color: var(--dl-navy);
   color: #fff;
 }
-/* Three rungs, drawn rather than typed for the same reason the cheat
-   sheet's own icon is — a small ladder reads as "steps in a sequence"
+/* Three rungs, drawn rather than typed for the same reason the reference's own icon is — a small ladder reads as "steps in a sequence"
    without depending on a glyph the reader's font may not carry. */
 .dl-seriesnav-icon {
   width: 0.75em;
@@ -923,7 +984,7 @@ p code, li code {
 .dl-seriesnav-icon::before { top: 0; }
 .dl-seriesnav-icon::after { bottom: 0; }
 
-/* Anchored the same way the cheat sheet is — left, next to its own
+/* Anchored the same way the reference is — left, next to its own
    toggle — and mutually exclusive with both it and Settings at runtime
    (initSeriesNav() in tutorial-runtime.js), since two left-anchored
    panels open together would sit on top of each other. */
@@ -933,8 +994,12 @@ p code, li code {
   top: calc(var(--dl-chrome-h) + 0.5rem);
   z-index: 50;
   width: min(22rem, calc(100vw - 2rem));
+  min-width: 16rem;
+  max-width: min(40rem, calc(100vw - 2rem));
   max-height: calc(100vh - var(--dl-chrome-h) - 1.5rem);
   overflow-y: auto;
+  overflow-x: hidden;
+  resize: horizontal;
   padding: 1rem 1.1rem 1.1rem;
   border: 1px solid var(--dl-cell-border);
   border-radius: 6px;
@@ -972,6 +1037,10 @@ p code, li code {
 .dl-seriesnav-series {
   margin: 0;
   padding-left: 1.4rem;
+  /* Every item's own number ("1. First Steps") is already baked into
+   * its text, not added by CSS — without this, the <ol>'s own default
+   * marker doubled up on top of it ("1. 1. First Steps"). */
+  list-style: none;
 }
 .dl-seriesnav-series li { margin: 0.35rem 0; }
 .dl-seriesnav-series a { text-decoration: none; }
@@ -1201,6 +1270,68 @@ p code, li code {
 .dl-workspace-card h3 { margin: 0 0 0.4rem; font-size: 0.98rem; }
 .dl-workspace-card p { margin: 0; font-size: 0.86rem; color: var(--dl-muted); }
 
+/* ---------------------------------------------------------------- search
+ * assets/search.js's box, on the contents page and "Browse by topic".
+ * position: relative on the wrapper is what lets the results list
+ * (position: absolute) drop below the input without pushing the rest
+ * of the page down while it's open. */
+.dl-search { position: relative; margin: 0 0 2.5rem; }
+.dl-search-label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--dl-heading);
+  margin-bottom: 0.35rem;
+}
+.dl-search-input {
+  width: 100%;
+  padding: 0.6rem 0.8rem;
+  font: inherit;
+  font-size: 0.95rem;
+  color: var(--dl-fg);
+  background: var(--dl-cell-bg);
+  border: 1px solid var(--dl-cell-border);
+  border-radius: 6px;
+}
+.dl-search-input:focus { outline: none; border-color: var(--dl-orange); }
+.dl-search #dl-search-hint { margin: 0.35rem 0 0; font-size: 0.78rem; }
+
+.dl-search-results {
+  position: absolute;
+  z-index: 20;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin: 0.3rem 0 0;
+  padding: 0.3rem;
+  list-style: none;
+  max-height: 60vh;
+  overflow-y: auto;
+  background: var(--dl-panel-bg);
+  border: 1px solid var(--dl-cell-border);
+  border-radius: 6px;
+  box-shadow: 0 8px 28px var(--dl-shadow);
+}
+.dl-search-results a {
+  display: block;
+  padding: 0.5rem 0.6rem;
+  border-radius: 4px;
+  color: inherit;
+  text-decoration: none;
+}
+.dl-search-results a:hover,
+.dl-search-results a:focus { background: var(--dl-cell-bg); }
+.dl-search-title { display: block; font-weight: 600; }
+.dl-search-subtitle { display: block; font-size: 0.78rem; color: var(--dl-muted); }
+.dl-search-match {
+  display: block;
+  margin-top: 0.15rem;
+  font-size: 0.75rem;
+  font-family: var(--dl-mono);
+  color: var(--dl-orange);
+}
+.dl-search-empty { padding: 0.5rem 0.6rem; color: var(--dl-muted); font-size: 0.85rem; }
+
 /* ------------------------------------------------------------ knowledge map
 
    The series as nodes and arrows on the contents page. A list says what order
@@ -1394,7 +1525,7 @@ p code, li code {
 
 /* A phone held in one hand, which is how a good deal of the reading will
    actually happen. Three changes: each floating panel — Settings, the
-   cheat sheet, and the navigation panel — becomes a sheet across the foot
+   reference, and the navigation panel — becomes a sheet across the foot
    of the screen rather than a card floating off one corner (no two of the
    three are ever open at once even on desktop, so becoming sheets at the
    same edge does not put them in each other's way); the navigation puts
@@ -1403,17 +1534,20 @@ p code, li code {
    the masthead gives up its space to the Settings button. */
 @media (max-width: 34rem) {
   .dl-settings,
-  .dl-cheatsheet,
+  .dl-reference,
   .dl-seriesnav {
     top: auto;
     bottom: 0;
     left: 0;
     right: 0;
     width: auto;
+    max-width: none;
     max-height: 78vh;
     border-radius: 8px 8px 0 0;
     border-bottom: none;
     padding-bottom: 1.4rem;
+    /* A full-width bottom sheet has no meaningful "width" to resize. */
+    resize: none;
   }
 
   .dl-nav {
@@ -2262,8 +2396,8 @@ p code, li code {
  * regardless of which theme was on screen. */
 
 @media print {
-  .dl-chrome, .dl-cheatsheet-toggle, .dl-seriesnav-toggle,
-  .dl-settings, .dl-cheatsheet, .dl-seriesnav, .dl-status, .dl-nav,
+  .dl-chrome, .dl-reference-toggle, .dl-seriesnav-toggle,
+  .dl-settings, .dl-reference, .dl-seriesnav, .dl-status, .dl-nav,
   .dl-insert, .dl-hint-icon, .dl-cell-bar .dl-btn {
     display: none !important;
   }

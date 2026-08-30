@@ -107,7 +107,10 @@
         <button id="run-all" class="dl-btn" title="Run all cells in order">
           <span class="mini-ide-icon mini-ide-icon-run"></span>Run All
         </button>
-        <button id="clear-all" class="dl-btn dl-btn-secondary" title="Clear all cells">
+        <button id="clear-output" class="dl-btn dl-btn-secondary" title="Clear every cell's output, keeping the code">
+          Clear Output
+        </button>
+        <button id="clear-all" class="dl-btn dl-btn-secondary" title="Delete all cells">
           <span class="mini-ide-icon mini-ide-icon-clear"></span>Clear All
         </button>
       </div>
@@ -121,6 +124,19 @@
       </p>
       <button id="remove-sample-cells" class="dl-btn dl-btn-secondary">
         Remove Sample Cells
+      </button>
+    </div>
+
+    <!-- Import compatibility notice — shown after importing a .ipynb/.py
+         file that scanPyodideCompatibility() flagged something in.
+         Warns and gets out of the way; it never blocks the import
+         itself, since a flagged cell may not even be one the reader
+         plans to run. -->
+    <div id="import-compat-notice" class="mini-ide-sample-notice mini-ide-import-notice" hidden>
+      <p><strong>Heads up.</strong> This notebook uses some things that won't work as-is in Mini IDE's Python:</p>
+      <ul id="import-compat-list"></ul>
+      <button id="dismiss-import-compat" class="dl-btn dl-btn-secondary">
+        Dismiss
       </button>
     </div>
 
@@ -268,6 +284,13 @@
       <div class="dl-progress-actions">
         <button type="button" class="dl-btn dl-btn-secondary" id="settings-restart-python">Restart Python</button>
       </div>
+      <div class="dl-texture-row">
+        <span>Run time</span>
+        <div class="dl-seg" data-mini-ide="runstats">
+          <button type="button" data-value="on">on</button>
+          <button type="button" data-value="off">off</button>
+        </div>
+      </div>
     </section>
 
     <!-- Storage / filesystem backend status -->
@@ -297,6 +320,16 @@
           <button type="button" data-value="replace">replace</button>
           <button type="button" data-value="append">append</button>
         </div>
+      </div>
+
+      <p class="dl-panel-note">Worked examples, real data included — the same "on import" choice above applies:</p>
+      <div class="dl-progress-actions">
+        <button type="button" class="dl-btn dl-btn-secondary" data-example="assets/examples/sql-owid.ipynb">SQL &amp; Our World in Data</button>
+        <button type="button" class="dl-btn dl-btn-secondary" data-example="assets/examples/data-investigation.ipynb">A mini data investigation</button>
+      </div>
+      <div class="dl-progress-actions">
+        <button type="button" class="dl-btn dl-btn-secondary" data-example="assets/examples/math-and-charts.ipynb">A fun math problem</button>
+        <button type="button" class="dl-btn dl-btn-secondary" data-example="assets/examples/word-frequency.ipynb">Word frequency: usual or unusual?</button>
       </div>
     </section>
   </details>
