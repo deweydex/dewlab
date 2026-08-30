@@ -1019,11 +1019,16 @@ GLOSSARY_KINDS = ("concept", "function", "operator", "formula", "keyword")
 
 
 def glossary_path(tutorial: Tutorial) -> Path:
-    """Where a tutorial's own glossary file lives — keyed by (module, slug),
-    beside the tutorial rather than inside a release folder, because what a
-    tutorial teaches does not change release to release the way its prose
-    might."""
-    return TUTORIALS / tutorial.module / f"{tutorial.slug}.glossary.yaml"
+    """Where a tutorial's own glossary file lives — beside the tutorial's own
+    markdown, in the tutorial's folder.
+
+    Derived from the source file's own location rather than rebuilt from
+    (module, slug), which is what makes it right for every version of a
+    tutorial at once: each release sits in the same folder, so each finds the
+    one glossary. What a tutorial teaches does not change release to release
+    the way its prose might, and one file per tutorial is what says so.
+    """
+    return tutorial.path.parent / f"{tutorial.slug}.glossary.yaml"
 
 
 def own_glossary(tutorial: Tutorial) -> list[dict]:
@@ -1987,6 +1992,100 @@ def resolve_links(tutorial: Tutorial, registry: dict[tuple[str, str], Tutorial])
         return f'href="{href}#{anchor}"' if anchor else f'href="{href}"'
 
     return TUTORIAL_HREF_RE.sub(one, tutorial.body_html)
+
+
+# ---------------------------------------------------------- tutorial assets
+#
+# A tutorial is a folder, not a lone markdown file: its practice page, its
+# glossary and any pictures or recordings it needs all sit together in it.
+# planning/ROADMAP.md Phase 1 has the reasoning; the short version is that a
+# tutorial's own material should move, freeze and be found as one thing.
+#
+# Everything in that folder which is not itself a page or a data file the
+# build already understands is an *asset* — an image, a recording, a small
+# file a reader downloads — copied to the site beside the tutorial and
+# referred to by its plain name in the markdown.
+
+# The files a tutorial's folder holds that are the build's own business, not
+# assets: the pages themselves and the glossary that describes them.
+NON_ASSET_SUFFIXES = {".md", ".yaml", ".yml"}
+
+# src="..." on any element — img, audio, video, source. Assets are referenced
+# the same way whatever the medium, so one pattern covers all of them.
+SRC_RE = re.compile(r'src="(?P<url>[^"]*)"')
+
+# A reference that points somewhere other than this tutorial's own folder:
+# an absolute URL, a root-relative path, a data: URI, or a page anchor.
+EXTERNAL_URL_RE = re.compile(r"^(?:[a-z][a-z0-9+.-]*:|//|/|#)", re.I)
+
+
+def tutorial_assets(tutorial: Tutorial) -> list[Path]:
+    """Every asset file sitting in this tutorial's folder.
+
+    Read from the folder rather than declared in frontmatter: a picture a
+    tutorial uses is already named in the markdown that shows it, and asking
+    an author to list it a second time only creates a way for the two lists
+    to disagree.
+    """
+    return sorted(
+        path for path in tutorial.path.parent.iterdir()
+        if path.is_file() and path.suffix.lower() not in NON_ASSET_SUFFIXES
+    )
+
+
+def resolve_assets(tutorial: Tutorial, body_html: str) -> str:
+    """Point every `src="picture.png"` at the copy this build will write, and
+    fail on one naming a file the tutorial's folder does not hold.
+
+    An author writes the plain file name, the same one they see beside the
+    markdown, and it resolves from whichever URL the page ends up at. That
+    matters because the two are not the same shape: the current release is
+    served at `tutorials/<module>/<slug>.html`, one level *above* its own
+    folder, while a frozen release sits at
+    `tutorials/<module>/<slug>/v<version>.html`, inside it. So the reference
+    a reader's browser needs differs by version, and neither is what the
+    author typed.
+
+    A missing file stops the build for the same reason a dead
+    `tutorial:` link does: the alternative is a page that looks finished to
+    everyone except the student who loads it.
+    """
+    folder = tutorial.path.parent
+    # Where the page will sit, relative to the folder its assets are copied
+    # into — the same relpath calculation resolve_links() uses for pages.
+    prefix = "" if not tutorial.is_default else f"{tutorial.slug}/"
+
+    def one(match: re.Match) -> str:
+        url = match.group("url")
+        if not url or EXTERNAL_URL_RE.match(url):
+            return match.group(0)
+        if not (folder / url).is_file():
+            fail(
+                tutorial.path,
+                f"references {url!r}, which is not a file in this tutorial's "
+                f"folder ({folder.relative_to(ROOT)}).",
+            )
+        return f'src="{prefix}{url}"'
+
+    return SRC_RE.sub(one, body_html)
+
+
+def copy_tutorial_assets(tutorial: Tutorial) -> None:
+    """Copy a tutorial's assets to the site, into a folder named for the
+    tutorial — which is where `resolve_assets()` has just pointed every
+    reference, from the current release and every frozen one alike.
+
+    Every version of a tutorial copies the same folder to the same place, so
+    this runs more than once per tutorial and has to be safe to repeat. It is:
+    the same bytes are written to the same path.
+    """
+    assets = tutorial_assets(tutorial)
+    if not assets:
+        return
+    target = OUT / "tutorials" / tutorial.module / tutorial.slug
+    target.mkdir(parents=True, exist_ok=True)
+    for asset in assets:
+        shutil.copy2(asset, target / asset.name)
 
 
 # -------------------------------------------------------------------- build
@@ -3153,8 +3252,10 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
         # An archived tutorial belongs to no reading order, so there is no
         # previous and no next — only the way back.
         members = groups.get((tutorial.module, tutorial.series), [])
+        body_html = resolve_assets(tutorial, resolve_links(tutorial, registry))
+        copy_tutorial_assets(tutorial)
         page_path = write(
-            tutorial, shell, resolve_links(tutorial, registry), nav_for(tutorial, members),
+            tutorial, shell, body_html, nav_for(tutorial, members),
             default=registry.get((tutorial.module, tutorial.slug)),
             family=families.get((tutorial.module, tutorial.slug)),
             practice=practice.get((tutorial.module, tutorial.slug)),

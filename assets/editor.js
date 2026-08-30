@@ -598,22 +598,27 @@ export function start(root, client, { onStatus = () => {} } = {}) {
   }
 
   function newPathOf(module, slug) {
-    /* Where a tutorial is created. Always a single file: a folder is what a
-     * tutorial becomes when it has a second release, and most never do. */
-    return `tutorials/${module}/${slug}.md`;
+    /* Where a tutorial is created: its own folder, holding its markdown. Every
+     * tutorial is a folder from the start, so its practice page, its glossary
+     * and any picture it uses have somewhere to sit together, and a second
+     * release changes nothing about where anything lives. */
+    return `tutorials/${module}/${slug}/${slug}.md`;
   }
 
   function releasesOf(module, slug) {
-    /* Every file that is a release of this tutorial, newest first. One while
-     * it is a single file, several once it is a folder. */
-    const single = `tutorials/${module}/${slug}.md`;
+    /* Every file that is a release of this tutorial, newest first: the current
+     * one at <slug>.md, and a frozen one per past release at v<version>.md.
+     *
+     * Named exactly rather than taken as "every markdown file in the folder",
+     * because the folder holds the tutorial's practice page too — and a
+     * practice page read as a release would be offered as a version students
+     * could be sent back to. */
     const folder = `tutorials/${module}/${slug}/`;
     const paths = [];
     for (const path of state.files.keys()) {
-      if (!path.endsWith(".md")) continue;
-      if (path === single || (path.startsWith(folder) && !path.slice(folder.length).includes("/"))) {
-        paths.push(path);
-      }
+      if (!path.endsWith(".md") || !path.startsWith(folder)) continue;
+      const name = path.slice(folder.length);
+      if (name === `${slug}.md` || /^v\d[^/]*\.md$/.test(name)) paths.push(path);
     }
     return paths.sort((a, b) =>
       isNewer(versionOf(state.files.get(b)), versionOf(state.files.get(a))) ? 1 : -1);
@@ -782,25 +787,34 @@ export function start(root, client, { onStatus = () => {} } = {}) {
      * replaced. */
     bumped = setFrontmatterField(bumped, "supersedes", was);
 
-    if (current === `${folder}.md`) {
-      /* A tutorial becomes a folder the moment it has a second release, and
-       * not before. Most never do. */
-      state.files.delete(current);
-      state.dirty.delete(current);
-      state.removing.add(current);
-      state.files.set(`${folder}/v${was}.md`, frozen);
-      state.dirty.add(`${folder}/v${was}.md`);
-    } else {
-      /* Already a folder. The file being edited is the release students have,
-       * so it goes back to exactly that — the edits are the new release, not a
-       * revision of the old one. Without this the frozen copy would carry the
-       * changes it exists to let them go back from. */
-      state.files.set(current, frozen);
-      state.dirty.delete(current);
+    /* Freeze what students have under its own version number, and let the new
+     * release take the tutorial's own name. `<slug>.md` is always the current
+     * release and `v<version>.md` is always a past one, so "open the tutorial"
+     * means the same file forever, however many releases it accumulates.
+     *
+     * Nothing moves and nothing is deleted: a tutorial is a folder from the
+     * moment it is created, so a second release only adds a file to it.
+     *
+     * First, the release that was being edited goes back to exactly what
+     * students have. The edits are the *new* release, not a revision of the old
+     * one — without this the frozen copy would carry the changes it exists to
+     * let a reader go back from. */
+    state.files.set(current, frozen);
+    state.dirty.delete(current);
+
+    /* Then make sure that release is frozen under its own version number.
+     * Skipped when it already is one: an older tutorial may have been edited
+     * through its v<version>.md directly, and rewriting that file with its own
+     * unchanged contents would commit a file nothing has changed. */
+    const frozenPath = `${folder}/v${was}.md`;
+    if (frozenPath !== current) {
+      state.files.set(frozenPath, frozen);
+      state.dirty.add(frozenPath);
     }
 
-    state.files.set(`${folder}/v${next}.md`, `---\n${bumped}\n---\n\n${body}`);
-    state.dirty.add(`${folder}/v${next}.md`);
+    const currentPath = `${folder}/${slug}.md`;
+    state.files.set(currentPath, `---\n${bumped}\n---\n\n${body}`);
+    state.dirty.add(currentPath);
     render();
     status(`Released as ${next}. The ${was} release is frozen where it is, and a `
            + "reader who worked in it stays there until they choose otherwise. "
@@ -978,12 +992,17 @@ export function start(root, client, { onStatus = () => {} } = {}) {
        * save is the thing the whole design rejects. When only prose moved it
        * stays quiet — that is an edit and it needs no ceremony.
        *
-       * A file with nothing committed behind it has no last release to compare
-       * with. That is a tutorial just created, or the release just made — and
-       * without this guard the release you have this second announces that
-       * every cell in it is new. */
+       * Two cases have no last release to compare with, and without the guard
+       * each announces that every cell in it is new. A file with nothing
+       * committed behind it is a tutorial just created. A file whose version no
+       * longer matches the committed one is the release just made: the cells
+       * "changed" only in the sense that this is a different release from the
+       * one on disk, which is precisely what a release is and needs no
+       * warning. */
       const committed = state.original.get(path);
-      const moved = committed === undefined
+      const released = committed !== undefined
+        && versionOf(state.files.get(path)) !== versionOf(committed);
+      const moved = committed === undefined || released
         ? { added: [], removed: [] }
         : cellsChanged(splitFrontmatter(committed).body, next);
       if (moved.added.length || moved.removed.length) {
