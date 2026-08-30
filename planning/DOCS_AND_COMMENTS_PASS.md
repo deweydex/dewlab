@@ -108,7 +108,8 @@ what this session originally wrote.
       same plain, direct voice as the rest of the repo and needed
       nothing. A distinct subset (`STATUS.md`, this file's own
       `README.md`, `CURRICULUM_NOTES.md`, `VERSIONS.md`, `WINDOW_AUDIT.md`,
-      `EDITOR.md`, plus the intros of `CHEAT_SHEETS.md` and `PRACTICE.md`)
+      `EDITOR.md`, plus the intros of `REFERENCE_PANEL.md` and
+      `PRACTICE.md`)
       had drifted into a noticeably different, consulting-report register
       ("Implementation Guarantee", "Technical Specification",
       "Fundamental Requirements") — rewritten to match, with every fact,

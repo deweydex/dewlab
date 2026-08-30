@@ -63,9 +63,10 @@ This session's own work, in one pass:
   because the CSS variable was set on `body` where `rem` units don't
   read from) and the desktop side-panel-covers-content problem, on the
   IDEs and on ordinary tutorial pages both.
-- Renamed the "cheat sheet" to "Reference" everywhere — code, tests,
-  docs, planning history excepted — and gave it its own in-panel search,
-  alongside a new cross-tutorial search on the contents and topic pages.
+- Settled on **Reference** as the panel's name across code, tests and
+  docs — only `DECISIONS_LOG.md` keeps the older name, in its own
+  entries — and gave it its own in-panel search, alongside a new
+  cross-tutorial search on the contents and topic pages.
 
 None of that is a foundation problem anymore. What's left is real, but
 it's feature and polish work, not architecture repair.
@@ -147,8 +148,8 @@ Could Mini IDE and dewmini become one tool? Mechanically, yes — nothing
 stops it. Whether it's better for a student is a different question, and
 the answer is no, for a reason that's already written down elsewhere in
 this repository and worth restating plainly: **dewmini's whole design
-point is not being Mini IDE.** `README.md`'s own description of it —
-"good for a quick calculation or a single practice problem," reachable
+point is not being Mini IDE.** What `docs/DEWMINI.md` describes —
+somewhere to run a few lines that isn't tied to one topic, reachable
 in effectively no clicks, nothing to configure before typing code — is a
 real, different use case from "a project meant to stand on its own,"
 not a smaller version of the same use case. A student who wants to check
@@ -283,9 +284,9 @@ The work is being staged, not done in one pass:
    compatibility scanner from an earlier session, and `run_query()` was
    already reachable in a cell (it lives in the shared
    `tutorial_tools.py`, which dewmini's `SEED_GLOBALS_CODE` already
-   exposes in full). **Done: `.py` import** (`DECISIONS_LOG.md` 7.85) —
+   exposes in full). **Done: `.py` import** (`DECISIONS_LOG.md` 7.87) —
    closes out the import/export item entirely. **Done: the file manager
-   and genuine SQLite persistence** (`DECISIONS_LOG.md` 7.86) — a
+   and genuine SQLite persistence** (`DECISIONS_LOG.md` 7.88) — a
    mounted filesystem (real folder, OPFS, or IDBFS, tucked into
    Settings' own "Files" section rather than a sidebar tree, per an
    explicit choice against Mini IDE's own heavier shape) plus a

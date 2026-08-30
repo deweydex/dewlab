@@ -628,7 +628,7 @@ async function ensurePyodide() {
     // by the e2e tests and as the standing answer if a school network ever
     // blocks the CDN (OPEN_QUESTIONS.md 32). dewmini had no such override
     // until now — worth adding on its own merits (parity with the other two
-    // runtimes, DECISIONS_LOG.md 7.86), not just because this pass's own
+    // runtimes, DECISIONS_LOG.md 7.88), not just because this pass's own
     // testing needed it.
     const pyodideUrl = new URL(
       globalThis.DEWLAB_PYODIDE_BASE || `https://cdn.jsdelivr.net/pyodide/v${PYODIDE_VERSION}/full/`,
@@ -1617,7 +1617,7 @@ async function updateStorageStatus() {
 /* Re-lists the mounted filesystem's root and redraws the "Files" list —
  * root only, not a full recursive tree the way Mini IDE's own file pane
  * browses subfolders: a compact Settings section is the wrong place for
- * that (DECISIONS_LOG.md 7.86), and dewmini's own use of the mount
+ * that (DECISIONS_LOG.md 7.88), and dewmini's own use of the mount
  * (a saved .db file, a dataset a cell downloaded) rarely goes more than
  * one level deep in practice. */
 async function renderFileList() {

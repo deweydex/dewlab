@@ -128,9 +128,12 @@ to, just the docstring's own example to check your result against.
 ## Settings
 
 One button in the header opens everything you can change or take with
-you, in sections. On a screen wide enough for both, opening Settings or
-Help shrinks the working area rather than covering it, so your cells
-stay fully visible and usable with a panel open.
+you, in sections. It opens as a panel docked down the right-hand side of
+the screen, full height. On a screen wide enough for both, opening
+Settings or Help shrinks the working area rather than covering it, so
+your cells stay fully visible and usable with a panel open. Drag a
+panel's left edge to resize it, and whichever you leave open is still
+open when you come back.
 
 **Run time** — on by default: the small "ran in…" line under a cell's
 output, described above. Switch it off here if you'd rather your output

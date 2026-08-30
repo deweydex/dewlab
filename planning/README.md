@@ -13,8 +13,9 @@ the record of why it works the way it does.
 - **[`EXERCISES.md`](./EXERCISES.md)** — how practice pages and
   fold-hidden answers work, and where worksheet conversion draws from
   ([`deweydex/Mathematics`](https://github.com/deweydex/Mathematics)).
-- **[`PRACTICE.md`](./PRACTICE.md)** — student-authored practice cells:
-  planned, not yet built.
+- **[`PRACTICE.md`](./PRACTICE.md)** — cells a reader adds themselves,
+  anywhere on a page, kept separate from the tutorial's own saved work.
+  Built; this is the design behind it.
 
 ### Architecture
 - **[`STATUS.md`](./STATUS.md)** — what's built, what's still open, and

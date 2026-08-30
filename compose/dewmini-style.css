@@ -678,7 +678,7 @@ kbd {
    same per-item shape Mini IDE's own .mini-ide-filetree-item uses
    (assets/mini-ide-style.css), not its sidebar tree itself: this is a
    plain list a Settings section can hold, not a panel of its own
-   (DECISIONS_LOG.md 7.86). */
+   (DECISIONS_LOG.md 7.88). */
 .dm-filelist {
   list-style: none;
   margin: 0 0 0.5rem;

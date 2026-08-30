@@ -1,5 +1,5 @@
 /* dewmini's filesystem — ported from assets/mini-ide-fs.js
- * (planning/MINI_IDE_REDESIGN.md Phase 2, DECISIONS_LOG.md 7.86), trimmed
+ * (planning/MINI_IDE_REDESIGN.md Phase 2, DECISIONS_LOG.md 7.88), trimmed
  * to match dewmini's own single-threaded engine: Mini IDE's version sits
  * behind mini-ide-engine.js's Worker/main-thread dispatch, since Pyodide
  * there might be running in either place; dewmini only ever runs Pyodide
@@ -304,7 +304,7 @@ function resolvePath(relativePath) {
 /** Lists one directory's contents, folders before files, alphabetically
  * within each group. dewmini's own Settings "Files" list only ever
  * browses the mount's root (a deliberate, smaller scope than Mini IDE's
- * full tree — see DECISIONS_LOG.md 7.86) but this itself stays general,
+ * full tree — see DECISIONS_LOG.md 7.88) but this itself stays general,
  * the same as mini-ide-fs.js's own listDir(). */
 export async function listDir(relativePath = "") {
   const entries = await fsList(resolvePath(relativePath));

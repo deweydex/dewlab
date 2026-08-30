@@ -3172,7 +3172,124 @@ pass's two new panels), and needed a genuine new mechanism
 caught now, before 7.83 merged, rather than as a separate bug report
 later.*
 
-**7.85 — dewmini can import a `.py` file now, closing out one of the
+**7.85 — The README was split by audience: a short overview at the root,
+and one document each for students, tutorial writers, code contributors,
+and anyone reporting a problem.** The README had grown to 671 lines and
+was addressing four readers at once — a student wondering what the
+Settings button does, an author looking up frontmatter fields, a
+developer setting up a build, and somebody who had found a wrong answer
+in a practice page. Each of them had to scroll past the other three.
+Read straight through, it was also a walkthrough of a project rather
+than a way into one, which asks a new reader to learn the history before
+they can do anything.
+
+The split follows who is reading rather than what the subject is.
+`docs/FOR_STUDENTS.md` takes everything a reader of a tutorial needs —
+cells, saved work, Settings, the Reference panel, practice, their own
+cells, the download and export options, and the two Python workspaces.
+`docs/WRITING_TUTORIALS.md` takes the whole authoring format:
+frontmatter, `order.yaml`, cells, mathematics, `check()`, includes,
+links, practice pages, glossary files, curriculum coverage, releases,
+and the pre-pull-request checks. `docs/REPORTING_A_PROBLEM.md` is new
+rather than moved — there was nowhere to send somebody who had found a
+mistake, and "open an issue" alone does not tell them what is useful to
+include. `CONTRIBUTING.md` absorbed the setup, test and CI material the
+README used to carry, so a code contributor now has one door rather than
+two half-doors.
+
+What stayed on the README is what a reader who does not yet know what
+dewlab is needs: what it does, a table pointing each reader at their own
+document, a tour of the features, how the site is put together, how to
+run it locally, and where the project stands. It is 161 lines.
+
+The pass also closed real staleness. The README described none of the
+work of the last several sessions — Mini IDE, dewmini, reader-added
+cells, PDF and Jupyter export, the site search, "Browse by topic" —
+except as filenames in a directory listing. `planning/STATUS.md` still
+said 71 pages and two `computational-methods` tutorials when the
+matrices strand it describes further down the same file had brought
+those to 83 and eight. `planning/README.md` still called reader-added
+practice cells unbuilt. `ARCHITECTURE.md` and `QUESTIONS.md` pointed
+tutorial writers at `README.md` for a format it no longer documents.
+
+Merging 7.83/7.84 in mid-review made the point immediately: the docked
+sidebars landed while this was open, so `docs/FOR_STUDENTS.md` was
+describing a Reference button in the page's top-left corner that no
+longer exists, and had no Series panel in it at all. Both were rewritten
+against the shipped markup rather than the old README's description.
+`docs/MINI_IDE.md` and `docs/DEWMINI.md` picked up the same correction —
+7.84 changed both IDEs' panels without touching either document, leaving
+`MINI_IDE.md` still saying Help and Settings "share the same corner".
+
+*Cost to change: small. Nothing here is code, and no built page links to
+any of these files; reversing it is a `git revert` plus deciding what to
+do about the staleness fixes, which are worth keeping either way. The
+ongoing cost is the opposite of the usual one — four documents can drift
+apart where one could not, so `CONTRIBUTING.md`'s "who reads what"
+section now names each of them explicitly rather than describing
+categories.*
+
+
+**7.86 — The cheat-sheet rename finished in `QUESTIONS.md`: two dead
+file paths fixed, and the term itself changed there too, reversing
+7.82's carve-out for that file.** 7.82 renamed
+`planning/CHEAT_SHEETS.md` to `planning/REFERENCE_PANEL.md` and
+`tests/e2e/test_cheat_sheet.py` to `tests/e2e/test_reference.py`, and
+settled at the time that `DECISIONS_LOG.md` and `QUESTIONS.md` would
+both keep the old term in entries already written, on this project's
+convention of not rewriting finished history.
+
+Two references to the old *paths* survived that, which the convention
+never covered: `QUESTIONS.md` §"Is a structured YAML glossary file the
+right format" pointed a reader at `planning/CHEAT_SHEETS.md` §3/§4 as
+where the glossary format is documented, and §"What should the reference
+panel become on a phone" pointed at `tests/e2e/test_cheat_sheet.py`'s
+`TestMobile`. Both now name the files that exist; §3 and §4 of
+`REFERENCE_PANEL.md` are still the glossary-file and skill sections the
+first one meant, so only the filename was wrong. A settled entry's own
+wording reads correctly as history, but a file path is a signpost, and a
+signpost to a file nobody has is just broken.
+
+**Then the term itself, asked for directly once the paths were fixed**,
+and in two passes. First `QUESTIONS.md`: seven mentions across four
+headings and three paragraphs became "reference panel", on the
+reasoning that `QUESTIONS.md` is not a historical record the way
+`DECISIONS_LOG.md` is — it is a live document a reader consults to find
+out where a question landed, and a reader who has only ever seen the
+panel called "Reference" should not have to work out that the two names
+are the same thing.
+
+Then the last two mentions anywhere outside the log, asked for once it
+was clear how few were left.
+`planning/MINI_IDE_AND_DEWMINI_NEXT.md`'s closing list had a bullet
+announcing the rename in both names; it now names only the panel's
+settled name and says where the older one survives.
+`planning/DOCS_AND_COMMENTS_PASS.md` listed `CHEAT_SHEETS.md` among the
+files one pass rewrote, and now names `REFERENCE_PANEL.md` — the same
+file, under the name it has.
+
+**`DECISIONS_LOG.md` is the sole exception, and stays that way.** It
+keeps the old term throughout its own entries, 7.82's account of the
+rename included, where the word is the subject rather than incidental.
+A decision record edited to match later decisions stops being evidence
+of anything: 7.82 would become an entry about renaming a thing to the
+name it apparently always had. That is the line — every document that
+describes how dewlab works now says "Reference"; the one document that
+records what was decided when keeps the words used at the time.
+
+A sweep for the same class of mistake across every markdown file except
+`DECISIONS_LOG.md` turned up two more, both left alone as somebody
+else's call rather than folded in here: `planning/BUILD_PLAN.md` links
+to `outlines/from-everlearning.md`, an outline that was never written,
+and `planning/EDITOR.md` §3 is titled for `assets/editor.html`, which
+does not exist — the editor page's body is built in `build.py`'s
+`write_editor_page()` and rendered into `shell.html`.
+
+*Cost to change: none worth naming. Twelve string edits across four
+files, no code and no behaviour. The headings that changed carry
+anchors, but nothing in the repository links to a `QUESTIONS.md`
+anchor.*
+**7.87 — dewmini can import a `.py` file now, closing out one of the
 five items on `planning/MINI_IDE_AND_DEWMINI_NEXT.md` §6's parity list —
 and turned out to already be most of the way there.** A gap analysis
 run before starting this work (per §6's own staged plan) found dewmini
@@ -3224,7 +3341,7 @@ self-contained: one new function, a two-line dispatch change, and an
 the next two items on §6's list (the file manager, and the Worker/Stop
 migration) both have.*
 
-**7.86 — dewmini can mount a persistent filesystem now: a real folder, OPFS,
+**7.88 — dewmini can mount a persistent filesystem now: a real folder, OPFS,
 or IDBFS, the same three backends Mini IDE already had, tucked into
 Settings' own "Files" section rather than a sidebar tree.** The second
 item on `planning/MINI_IDE_AND_DEWMINI_NEXT.md` §6's parity list. Asked
@@ -3315,7 +3432,7 @@ IDE's own tree only ever browses one mount's root well anyway (per
 multi-file *editing*, just browse/upload/delete). Real SQLite
 persistence — the other half of §6's list, alongside this — needed no
 separate work: `run_query()` was already reachable in a cell before this
-session (`DECISIONS_LOG.md` 7.85's own finding), and a `.db` file under
+session (`DECISIONS_LOG.md` 7.87's own finding), and a `.db` file under
 the mount now simply persists the way any other file under it does.
 
 *Cost to change: moderate — the FS module itself is a faithful, largely
