@@ -222,10 +222,15 @@ next.
    storage — selection in, `filterReferenceContent()` out. The design
    decision worth knowing is the silence: it stays away for every
    selection that is not a term, which is most of them.
-2. Build-time term links: every later occurrence of a taught term links
-   quietly back to its introduction, so "where did I meet this?" is
-   answerable from anywhere. For returners after a break, re-finding is
-   the need.
+2. "Where did I meet this?" — **built, but not as specified.**
+   `DECISIONS_LOG.md` 7.92. Linking every later occurrence in the *prose*
+   was built, measured and withdrawn: ordinary English words are also
+   glossary terms, and a majority of the matches for *shape* on one page
+   were the everyday sense rather than the matrix one. A confidently wrong
+   link costs a returning learner more than no link. Each inherited
+   reference entry now says "Introduced in *Title*" and links to the
+   section instead — same question answered, no way to be wrong about a
+   sense.
 3. Only after both have lived for a while: gentle retrieval prompts —
    the reference surfacing terms met some tutorials ago, phrased
    invitationally, never as a score.

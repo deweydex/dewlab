@@ -458,6 +458,22 @@ function renderReference(manifest) {
         code.textContent = entry.example;
         dd.append(code);
       }
+      // Where a reader met this, for anything inherited from an earlier
+      // tutorial (build.py's origin_of()). The panel already answers "what
+      // does this mean"; this answers "where did I meet this", which is the
+      // question somebody coming back after a fortnight actually has. A
+      // tutorial's own new terms carry no origin — saying "you met this
+      // here" on the page teaching it would be noise.
+      if (entry.origin && entry.origin.href) {
+        const from = document.createElement("p");
+        from.className = "dl-term-origin";
+        from.append(document.createTextNode("Introduced in "));
+        const link = document.createElement("a");
+        link.href = entry.origin.href;
+        link.textContent = entry.origin.title;
+        from.append(link);
+        dd.append(from);
+      }
       dl.append(dt, dd);
     }
     section.append(dl);

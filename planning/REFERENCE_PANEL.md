@@ -206,6 +206,22 @@ entry's prose.
 
 Nothing is stored. Selection in, the existing filter out.
 
+## 6c. Where a term came from
+
+Built — `DECISIONS_LOG.md` 7.92, `origin_of()`/`origin_anchor()` in
+`build.py`, rendered by `renderReference()`.
+
+Every entry a reader inherited from an earlier tutorial carries **Introduced
+in *Title***, linking to the section that teaches it. A tutorial's own new
+terms carry none: "you met this here" on the page teaching it says nothing.
+
+This replaced a version that linked every later occurrence of a term **in
+the prose**. That was built and withdrawn — ordinary English words are also
+glossary terms, and a regex cannot tell "set a seed" from set theory. 7.92
+has the measurement and the reasoning. The obstacle was sense
+disambiguation, not matching, so a stemmer or a `forms:` list would not have
+helped.
+
 ## 7. What ships in what order
 
 Roughly: schema + a couple of hand-written example glossaries to prove the

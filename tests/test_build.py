@@ -2371,7 +2371,40 @@ class TestTheReference:
         glossary(repo, "two", [{"term": "x", "kind": "concept", "definition": "Second, wrongly."}])
         b.build()
         entries = manifest(built(repo, "two"))["glossary"]
-        assert entries == [{"term": "x", "kind": "concept", "definition": "First."}]
+        assert len(entries) == 1
+        assert entries[0]["term"] == "x"
+        assert entries[0]["definition"] == "First."
+
+    def test_an_inherited_term_says_where_it_was_introduced(self, repo):
+        """planning/ROADMAP.md Phase 5: the panel answers "what does this
+        mean"; the origin answers "where did I meet this"."""
+        write(repo, "One.\n", slug="one")
+        write(repo, "Two.\n", slug="two")
+        set_order(repo, "computational-methods", "python-fundamentals", ["one", "two"])
+        glossary(repo, "one", [{"term": "x", "kind": "concept", "definition": "First."}])
+        b.build()
+        entry = manifest(built(repo, "two"))["glossary"][0]
+        assert entry["origin"]["href"] == "one.html"
+        assert entry["origin"]["title"]
+
+    def test_a_tutorials_own_terms_carry_no_origin(self, repo):
+        """Saying "you met this here" on the page teaching it is noise."""
+        write(repo, "One.\n", slug="one")
+        glossary(repo, "one", [{"term": "x", "kind": "concept", "definition": "First."}])
+        b.build()
+        assert "origin" not in manifest(built(repo, "one"))["glossary"][0]
+
+    def test_the_origin_points_at_the_section_the_term_is_taught_in(self, repo):
+        """A whole-page link makes a reader hunt. The emphasised first use is
+        where PEDAGOGICAL_STYLE_GUIDE.md §4 puts the introduction, so that is
+        the section to land on."""
+        write(repo, "Intro.\n\n## Later On\n\nHere we meet *x* properly.\n", slug="one")
+        write(repo, "Two.\n", slug="two")
+        set_order(repo, "computational-methods", "python-fundamentals", ["one", "two"])
+        glossary(repo, "one", [{"term": "x", "kind": "concept", "definition": "First."}])
+        b.build()
+        entry = manifest(built(repo, "two"))["glossary"][0]
+        assert entry["origin"]["href"] == "one.html#later-on"
 
     def test_an_unknown_kind_fails_the_build(self, repo):
         write(repo, "One.\n", slug="one")

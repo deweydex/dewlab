@@ -1162,8 +1162,24 @@ def cumulative_glossary(
             if key in seen:
                 continue
             seen.add(key)
-            found.append(entry)
+            # Where a reader met this, for everything inherited from an
+            # earlier tutorial. Not for the tutorial's own entries: "you met
+            # this here" is unhelpful on the page that is teaching it.
+            found.append(entry if member is tutorial
+                         else {**entry, "origin": origin_of(tutorial, member, entry["term"])})
     return found
+
+
+def origin_of(reader_at: Tutorial, introduced_by: Tutorial, term: str) -> dict:
+    """The tutorial a term was introduced in, as something the reference panel
+    can render: a title to name it and an href to reach it from the page the
+    reader is on."""
+    href = os.path.relpath(introduced_by.out_path, reader_at.out_path.parent)
+    anchor = origin_anchor(introduced_by, term)
+    return {
+        "title": introduced_by.title,
+        "href": f"{href}#{anchor}" if anchor else href,
+    }
 
 
 def render_toc(tutorial: Tutorial) -> str:
@@ -1992,6 +2008,80 @@ def resolve_links(tutorial: Tutorial, registry: dict[tuple[str, str], Tutorial])
         return f'href="{href}#{anchor}"' if anchor else f'href="{href}"'
 
     return TUTORIAL_HREF_RE.sub(one, tutorial.body_html)
+
+
+# --------------------------------------------------------- where a term came from
+#
+# A reader meets *stationary distribution* in one tutorial and again, three
+# tutorials later, as though they were expected to remember. The reference
+# panel answers "what does this mean"; this answers the other question a
+# returning learner actually asks — "where did I meet this?" — by giving each
+# borrowed entry a link back to the tutorial that introduced it.
+#
+# planning/ROADMAP.md Phase 5 originally proposed linking every later
+# *occurrence in the prose* instead. That was built, measured and withdrawn:
+# see DECISIONS_LOG.md 7.92. Ordinary English words are also glossary terms —
+# set, shape, limit, function — and matching them in prose linked "set a
+# seed" to set theory and "the shape of that improvement" to a matrix's
+# shape. A majority of the matches for some terms were the wrong sense, and a
+# confidently wrong link is worse for a reader than no link at all. Putting
+# the origin in the panel instead answers the same question with no way to be
+# wrong about it.
+
+# A term worth linking in prose reads as words. Function names, operators and
+# formulas — `random.seed()`, `x^2 + y^2 <= 1` — are glossary entries too, but
+# they occur in code spans, which are never rewritten anyway.
+PROSE_TERM_RE = re.compile(r"^[a-z][a-z \-']*[a-z]$", re.I)
+
+
+def origin_anchor(tutorial: Tutorial, term: str) -> str:
+    """The section of `tutorial` a reader should land on for `term`, or "".
+
+    Prefers the term's emphasised first use, since
+    PEDAGOGICAL_STYLE_GUIDE.md §4 asks an author to italicise exactly that,
+    and falls back to its first plain occurrence — a term introduced through
+    a code cell rather than a sentence may never be italicised at all, and
+    landing on the right section still beats landing on the page.
+
+    Only `h2` sections count. The nearest preceding heading of *any* level is
+    often "Your turn", which every tutorial has several of and none of which
+    tells a reader anything about where they are.
+    """
+    body = tutorial.body_html
+    match = (re.search(rf"<em>{re.escape(term)}</em>", body, re.I)
+             or re.search(rf"\b{re.escape(term)}\b", body, re.I))
+    if not match:
+        return ""
+    sections = list(re.finditer(r'<h2[^>]*\sid="([^"]+)"', body))
+    before = [h for h in sections if h.start() < match.start()]
+    return before[-1].group(1) if before else ""
+
+
+def term_origins(
+    tutorial: Tutorial,
+    groups: dict[tuple[str, str], list[Tutorial]],
+) -> dict[str, tuple[Tutorial, str]]:
+    """Every prose term introduced before this tutorial, and where.
+
+    Built from the same series chain and the same glossary files the
+    reference panel is assembled from (`cumulative_glossary()`), so the two
+    can never disagree about what counts as already taught.
+    """
+    chain = series_chain(tutorial.module, tutorial.series, groups)
+    if tutorial not in chain:
+        return {}
+
+    origins: dict[str, tuple[Tutorial, str]] = {}
+    for member in chain[: chain.index(tutorial)]:
+        for entry in own_glossary(member):
+            term = str(entry.get("term", "")).strip()
+            if not term or not PROSE_TERM_RE.match(term):
+                continue
+            key = term.lower()
+            # First introduction wins, matching cumulative_glossary()'s own
+            # rule for a term that appears in two glossaries.
+            origins.setdefault(key, (member, origin_anchor(member, term)))
+    return origins
 
 
 # ---------------------------------------------------------- tutorial assets

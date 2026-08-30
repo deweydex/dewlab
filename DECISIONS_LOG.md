@@ -3654,3 +3654,52 @@ CSS block, one line of exemption inside `initReference()`, and no new
 storage, no manifest change, no build change at all — it reads the
 glossary the manifest already carries and calls the filter the panel's own
 search box already uses. Removing it would leave no trace.*
+
+---
+
+**7.92 — "Where did I meet this?" answered in the reference panel, after
+the prose-linking version was built, measured and withdrawn.**
+`planning/ROADMAP.md` Phase 5 proposed linking every later occurrence of a
+taught term in the prose back to the tutorial that introduced it. That was
+built — a tag-walking rewrite of the rendered HTML, skipping code,
+headings and existing links, linking the first occurrence per section, with
+the anchor taken from the term's emphasised first use. It worked, produced
+347 links across the site at about ten a page, and was structurally sound:
+no nested anchors, nothing rewritten inside a cell.
+
+**It was withdrawn because the links were wrong too often to ship.** The
+glossary's terms include ordinary English words — *set*, *shape*, *limit*,
+*function*, *list* — and a regex cannot tell which sense a sentence means.
+Sampling the eight uses of *shape* on one page: six were the everyday word
+("the shape of that improvement", "whatever shape a problem needs", "a
+flattened shape"), and two were a matrix's shape. A majority of the matches
+for that term pointed a reader at the wrong tutorial with complete
+confidence.
+
+That is worse than not linking at all, and specifically worse for the
+readers this project exists for. `PEDAGOGICAL_STYLE_GUIDE.md` §1 describes
+adult learners returning to education, many expecting to be bad at
+mathematics; sending one of them to a tutorial on set theory because the
+prose said "set a seed" costs confidence, not just a click. A false
+positive here is not a small defect in a useful feature.
+
+**The goal survives; the mechanism does not.** Each reference entry a
+reader inherited from an earlier tutorial now carries "Introduced in
+*Title*", linking to the section that teaches it (`origin_of()`,
+`origin_anchor()` in build.py; the render in `renderReference()`). A
+tutorial's own new terms carry no origin, since "you met this here" on the
+page teaching it says nothing. There is no way for this to be wrong about a
+sense, because it never guesses at one: the entry a reader is already
+looking at *is* the term, so naming where it came from is a fact rather
+than a match. It also composes with 7.91 — select a word, get the panel,
+see where you met it — which is the whole journey the prose links were
+trying to shortcut.
+
+Worth recording for anyone who reaches for the prose-linking idea again:
+the obstacle is sense disambiguation, not matching. Stemming, a `forms:`
+list, or longest-match-first — all of which the roadmap anticipated — solve
+a different problem than the one that actually bit.
+
+*Cost to change: low. `origin_of()` adds one optional key to a manifest
+entry and nothing reads it but the panel; the prose-rewriting code is gone
+rather than disabled, and this entry is what remains of it.*

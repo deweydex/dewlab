@@ -70,6 +70,11 @@ Selecting anything else — a phrase you are copying, a line you are just
 following with the cursor — does nothing at all. The button only appears when
 there is genuinely something to show you.
 
+Anything in the Reference you met in an earlier tutorial also says where you
+met it, with a link straight back to that section. Coming back to a tutorial
+after a fortnight and half recognising a word is an ordinary way to read, and
+this is the way back.
+
 ---
 
 ## Settings

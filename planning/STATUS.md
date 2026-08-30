@@ -66,6 +66,9 @@ current as things change — not a pitch.
   a small button that opens the panel filtered to it; selecting anything
   else does nothing at all (`REFERENCE_PANEL.md` §6b, DECISIONS_LOG.md
   7.91).
+- **Where a term came from**: an inherited reference entry says which
+  tutorial introduced it and links to that section (`REFERENCE_PANEL.md`
+  §6c, DECISIONS_LOG.md 7.92).
 - **Cell tooltips**: hover docs and signature help that cover Python
   builtins, not just a student's own names, falling back to Jedi's
   static analysis for code that hasn't run yet — live always wins when
