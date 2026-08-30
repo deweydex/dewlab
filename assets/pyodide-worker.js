@@ -283,12 +283,12 @@ async function resetPageState() {
 }
 
 /* ---------------------------------------------------------------------
- * Filesystem — Mini IDE only (planning/MINI_IDE_REDESIGN.md Phase 2).
+ * Filesystem — dewmini only (via assets/pyodide-engine.js).
  * Tutorial pages never send these message types, so this section is
  * purely additive: nothing here changes what boot()/runCell() above do.
  *
  * `pyodide.mountNativeFS(mountpoint, handle)` is the one Pyodide API that
- * covers both real tiers a mini-ide-fs.js caller can ask for — a real
+ * covers both real tiers a dewmini-fs.js caller can ask for — a real
  * FileSystemDirectoryHandle from window.showDirectoryPicker() (obtained
  * on the main thread, since that API needs a window and a user gesture,
  * then handed to this worker over postMessage — a FileSystemHandle is

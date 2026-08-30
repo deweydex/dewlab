@@ -304,15 +304,18 @@ Mini IDE between now and convergence.
    opened by double-clicking, only served locally, something nothing
    had tested until building dewmini's own bundle did.
 2. **Done.** Mini IDE retired (`DECISIONS_LOG.md` 7.91) — its hosted
-   URL redirects to dewmini; its app survives, unlinked, only as the
-   source for a still-offered offline download. Collapsing toward one
-   stylesheet for the shared chrome did not turn out to be part of
+   URL redirects to dewmini. At the time its app survived, unlinked, as
+   the source for a still-offered offline download; a later pass
+   (`DECISIONS_LOG.md` 7.98) removed the app, its stylesheet, that
+   download, and in the end the redirect too, once dewmini's own
+   offline bundle (7.92) had made the app redundant and the fact that
+   the site had never been deployed made the redirect pointless —
+   nothing remains. Collapsing toward
+   one stylesheet for the shared chrome did not turn out to be part of
    this step: dewmini and the tutorial pages already shared
    `tutorial-style.css`'s own tokens and `.dl-*` classes before
-   retirement, and Mini IDE's own stylesheet (`assets/mini-ide-style.css`)
-   only needs to keep working for its offline-only copy now, not to
-   converge with anything live — nothing forces that collapse to
-   happen at all unless a real reason to touch that file shows up.
+   retirement, and removal later settled the old stylesheet's fate
+   entirely.
 3. The edges audit, which is the equity work: the site on a phone
    end-to-end, a screen-reader pass, and a proof that the offline
    bundle boots with the network off on a fresh machine — currently
@@ -326,10 +329,11 @@ Mini IDE between now and convergence.
   `assets/pyodide-engine.js`, shared rather than duplicated, exactly as
   this entry's *cost to change* anticipated.
 - **What happens to Mini IDE's URLs and downloaded bundles?**
-  *Decided, and done* (`DECISIONS_LOG.md` 7.91): the hosted page is now
-  a short redirect-with-explanation; the offline download keeps working
-  as a self-contained artifact, produced from a renamed copy of the
-  original app kept for exactly that purpose.
+  *Decided, and done, in two steps* (`DECISIONS_LOG.md` 7.91, 7.98):
+  the hosted page became a redirect at first, and the offline download
+  was kept for continuity; both were then removed outright — dewmini's
+  own offline bundle covered the need, and a site that had never been
+  deployed had no bookmarks for a redirect to serve.
 - **Offline proof: manual or CI?** *Partly answered:* a manual pass
   (`DECISIONS_LOG.md` 7.92) served both bundles with *serve.py* and ran
   a real interrupt-a-`while True`-loop Stop-button test against each,

@@ -51,10 +51,10 @@ let cellsContainer, emptyEl, statusEl;
 let statusClearTimer = null;
 
 // The live Pyodide interpreter, cell execution, hover/signature-help, and
-// filesystem mounting all go through assets/pyodide-engine.js now — the
-// same shared engine Mini IDE uses (DECISIONS_LOG.md 7.89) — rather than
-// this file holding its own `pyodide`/`tools`/`inspectModule` references
-// and talking to Pyodide directly, the way its first version did.
+// filesystem mounting all go through the shared assets/pyodide-engine.js
+// now (DECISIONS_LOG.md 7.89) — rather than this file holding its own
+// `pyodide`/`tools`/`inspectModule` references and talking to Pyodide
+// directly, the way its first version did.
 // toolsSourceCache stays: downloadAsHtml()'s embedded bootstrap below
 // still needs tutorial_tools.py's raw source text, independent of the
 // live engine (a downloaded copy runs its own simple main-thread
@@ -100,9 +100,8 @@ function loadSavedState() {
  * `JSON.stringify` can't handle (they contain circular references back
  * to themselves) and that don't belong in storage anyway, since they get
  * rebuilt fresh every time the notebook renders. This picks out only the
- * five plain-data fields worth keeping, the same "build a fresh plain
- * object rather than serializing the live one directly" fix
- * `assets/mini-ide.js`'s own `saveState()` needed for the same reason. */
+ * plain-data fields worth keeping — build a fresh plain object rather
+ * than serializing the live one directly. */
 function saveState() {
   const plain = cells.map(({ id, type, content, output, error, lastRunMs }) => ({
     id, type, content, output: output || "", error: !!error,
@@ -164,8 +163,7 @@ async function loadExampleCells() {
 }
 
 /* Turns a delete button's click into "press once to arm, press again to
- * actually delete" — ported from Mini IDE's own armDeleteButton(). An
- * armed button auto-disarms after a few seconds, on blur, or the moment
+ * actually delete". An armed button auto-disarms after a few seconds, on blur, or the moment
  * anything else on the page is clicked, so a stale "one more click
  * deletes this" state never lingers into an accidental delete later. */
 function armDeleteButton(btn, onConfirm) {
@@ -235,7 +233,11 @@ function focusCell(id) {
  * cell is a note beside the code, not a document, and the whole point is
  * that a student can read the syntax in the raw textarea at a glance. */
 function escapeHtml(text) {
-  return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  // Quotes too, not just angle brackets: renderDocInline() below places
+  // escaped text inside double-quoted attributes (an image's alt/src), so
+  // a raw " in, say, an imported notebook's markdown could otherwise
+  // close the attribute early and smuggle in an attribute of its own.
+  return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 }
 
 /* Handles the "inline" formatting that can appear inside one line of
@@ -455,8 +457,7 @@ function createCellElement(cell) {
     cell.runBtn = runBtn;
 
     // Clears this cell's own output without touching its code — the
-    // non-destructive counterpart to Delete, matching Mini IDE's own
-    // per-cell reset button.
+    // non-destructive counterpart to Delete.
     const resetOutputBtn = document.createElement("button");
     resetOutputBtn.type = "button";
     resetOutputBtn.className = "dm-icon-btn dm-icon-reset-output";
@@ -632,9 +633,9 @@ async function getToolsSource() {
  * arrives asynchronously and a cell could in principle be gone by the
  * time it does), onStatus forwards boot/package-loading progress the same
  * way this file's own updateStatus() already shows it, and dataBase is
- * "../data/" rather than Mini IDE's own default empty string, since this
- * page lives one directory deeper (compose/, not assets/) and needs the
- * extra "../" to reach the same repo-root data/ folder. Called once, at
+ * "../data/" rather than the engine's default empty string, since this
+ * page lives one directory deeper (compose/, not the site root) and needs
+ * the extra "../" to reach the same repo-root data/ folder. Called once, at
  * module load — configure() itself does no booting. */
 engine.configure({
   getOutputEl: (cellId) => cells.find((c) => c.id === cellId)?.outputEl ?? null,
@@ -671,10 +672,8 @@ async function ensurePyodide() {
 
 /* Autocomplete, hover docs, and signature help all come straight from the
  * shared engine now (engine.pageNamesCompletion/hoverDoc/signatureHelp,
- * DECISIONS_LOG.md 7.89) — the exact functions Mini IDE's own
- * createCodeEditor() call already passes for the same three options
- * (assets/mini-ide.js). Genuinely new capability for dewmini as a side
- * effect: Jedi-based static-analysis tooltips for code that hasn't run
+ * DECISIONS_LOG.md 7.89). New capability for dewmini as a side effect of
+ * that move: Jedi-based static-analysis tooltips for code that hasn't run
  * yet, and a signature-help popup, neither of which its own previous
  * live-namespace-only implementation could offer without a Worker. */
 
@@ -690,7 +689,7 @@ async function ensurePyodide() {
  * (the previous main-thread-only version did) — engine.runCell() already
  * clears the cell's output the moment it starts, and the run/stop state
  * now shows on the cell's own Run button instead (setRunButtonRunning()
- * below), the same place Mini IDE shows it. */
+ * below). */
 async function executeCell(cell) {
   await ensurePyodide();
   const outputEl = cell.outputEl;
@@ -714,8 +713,7 @@ async function executeCell(cell) {
 }
 
 /* Formats how long a cell's last run took, human-scale rather than raw
- * milliseconds: "340 ms" under a second, "2.4 s" at or above it. Ported
- * from Mini IDE's own formatRunDuration(). */
+ * milliseconds: "340 ms" under a second, "2.4 s" at or above it. */
 function formatRunDuration(ms) {
   return ms < 1000 ? `${Math.round(ms)} ms` : `${(ms / 1000).toFixed(1)} s`;
 }
@@ -771,8 +769,7 @@ function clearAllOutputs() {
  * isolated — engine.canStop()) the button becomes a real Stop; otherwise
  * it just shows the cell is busy, since there is nothing to interrupt
  * (a main-thread fallback blocks this same thread completely once a
- * cell starts, with no opportunity for an interrupt to even be noticed).
- * Ported from Mini IDE's own setRunButtonRunning() (assets/mini-ide.js). */
+ * cell starts, with no opportunity for an interrupt to even be noticed). */
 function setRunButtonRunning(runBtn) {
   if (!runBtn) return;
   if (engine.canStop()) {
@@ -798,8 +795,8 @@ function resetRunButton(runBtn) {
 
 /* Runs a single cell by id, in response to its own Run button or
  * Shift+Enter. A second click on the cell that is already running sends
- * a Stop (interrupt) request instead of starting a new run — mirroring
- * Mini IDE's own runCell() (assets/mini-ide.js). `running` guards against
+ * a Stop (interrupt) request instead of starting a new run — the same
+ * button in its Stop state. `running` guards against
  * overlapping runs from two different cells: dewmini has one Python
  * interpreter, so only one cell can actually be executing at a time; a
  * click on a *different* cell while one is already running is ignored
@@ -818,11 +815,9 @@ async function runCell(id) {
     // Boot (or reconnect to an already-booted) engine *before* deciding
     // what the Run button should look like — engine.canStop(), which
     // setRunButtonRunning() reads, only knows worker-vs-main-thread once
-    // ensureBooted() has actually resolved. Calling it here first (rather
-    // than only inside executeCell() below) is what mirrors Mini IDE's own
-    // runCell() (assets/mini-ide.js): its own await ensureEngineAndFsReady()
-    // happens before its own setRunButtonRunning() for exactly this reason.
-    // Skipping this step showed up as a genuine bug in testing: canStop()
+    // ensureBooted() has actually resolved, so the await has to come
+    // first, not only inside executeCell() below.
+    // Skipping this step showed up as a real bug in testing: canStop()
     // read false (its pre-boot default) on every cell's first-ever run,
     // showing the *non-stoppable* "…" busy state even in worker mode.
     await ensurePyodide();
@@ -867,7 +862,7 @@ async function runAllCells() {
     for (const cell of pythonCells) {
       runningCellId = cell.id;
       setRunButtonRunning(cell.runBtn);
-      /* try/finally per cell, matching Mini IDE's own runAllCells(): if a
+      /* try/finally per cell: if a
        * run rejects rather than returning false — which is exactly what
        * restarting Python mid-batch now does, since restart() rejects what
        * was in flight — this cell's button would otherwise be left showing
@@ -1221,6 +1216,9 @@ function nextRandomPracticeIndex(total, lastIdx) {
 function nextPracticeIndex(total) {
   let lastIdx = -1;
   try { lastIdx = parseInt(localStorage.getItem(PRACTICE_INDEX_KEY) || "-1", 10); } catch {}
+  // A stored value that isn't a number parses to NaN, which would poison
+  // every arithmetic step below — treat it as "never started" instead.
+  if (!Number.isInteger(lastIdx)) lastIdx = -1;
   if (loadPracticeOrder() === "random") return nextRandomPracticeIndex(total, lastIdx);
   const idx = ((Math.max(lastIdx, -1) + 1) % total + total) % total;
   return idx;
@@ -1266,8 +1264,7 @@ async function addPracticeProblem() {
  * separate OS process, a raw network socket, a real terminal) — not
  * every package Pyodide happens to lack, just the common, structurally
  * impossible ones worth telling a reader about before they go looking
- * for a bug in their own logic that was never there. Ported from Mini
- * IDE's own PYODIDE_INCOMPATIBLE_MODULES. */
+ * for a bug in their own logic that was never there. */
 const PYODIDE_INCOMPATIBLE_MODULES = {
   tkinter: "opens a GUI window — there is no display here to draw one on",
   turtle: "opens a GUI window — there is no display here to draw one on",
@@ -1296,11 +1293,12 @@ const PYODIDE_INCOMPATIBLE_MODULES = {
 };
 
 /* Best-effort scan of imported Python cells for things that will not
- * work once they actually run here. Ported from Mini IDE's own
- * scanPyodideCompatibility() — see that function's own comment for the
- * full reasoning; identical logic, just reading dewmini's own cell
- * shape (`content`, not `.content` behind a CELL_TYPES.PYTHON check
- * that differs in name only). */
+ * work once they actually run here — Jupyter magics, shell escapes, and
+ * imports of the structurally impossible modules above — so the warning
+ * reaches a reader before they go hunting for a bug in code they didn't
+ * write. Line-based and deliberately shallow: a regex pass over each
+ * line, not a Python parser, which is enough for the fixed set of
+ * shapes it looks for. */
 function scanPyodideCompatibility(importedCells) {
   const magicCells = [];
   const shellCells = [];
@@ -1340,8 +1338,7 @@ function scanPyodideCompatibility(importedCells) {
 }
 
 /* Populates and shows (or hides, if there's nothing to say)
- * #import-compat-notice — the counterpart to Mini IDE's own
- * import-compat-notice, checked before the scanned cells ever land in
+ * #import-compat-notice — checked before the scanned cells ever land in
  * the notebook so the warning, if any, is the first thing a reader
  * sees about this import. Every warning string is built entirely from
  * this file's own hardcoded strings and plain integers (never from the
@@ -1365,8 +1362,7 @@ function showImportCompatNotice(warnings) {
  * array of line-strings (see splitLines() above for why Jupyter itself
  * writes the array form) — this accepts either, so a file from any
  * real Jupyter tool imports correctly either way. Dispatches on the
- * file's own extension, the same way Mini IDE's own import does
- * (mini-ide.js), rather than sniffing content. */
+ * file's own extension rather than sniffing content. */
 async function handleImportFile(e) {
   const input = e.target;
   const file = input.files && input.files[0];
@@ -1382,8 +1378,7 @@ async function handleImportFile(e) {
 }
 
 /* Shared tail end of every import path (a picked file, or a built-in
- * example fetched by URL) — the counterpart to Mini IDE's own
- * applyImportedCells(). */
+ * example fetched by URL). */
 function applyImportedCells(imported, sourceLabel) {
   if (!imported.length) { updateStatus("That notebook has no cells.", "error"); return; }
   showImportCompatNotice(scanPyodideCompatibility(imported));
@@ -1413,16 +1408,13 @@ function parseIpynbCells(text) {
  * downloadAsPython() below, recognizing that same function's own
  * "# ---- cell N ----" / "# ---- note ----" markers so a file downloaded
  * from dewmini and reopened here round-trips back into the same cells,
- * notes included (Mini IDE's own .py export/import pair only ever
- * carries Python cells, since it has no note-cell concept to preserve —
- * dewmini's own format predates this port and already handles both, so
- * it's kept rather than switched to Mini IDE's plain "# %%" marker,
- * which cannot tell a note from a cell apart on its own).
+ * notes included — a marker that names its kind, rather than a bare
+ * "# %%" separator, is what lets a note and a code cell be told apart
+ * on the way back in.
  *
  * A file with none of dewmini's own markers — a plain script, or one
  * exported from somewhere else entirely — imports as a single Python
- * cell instead, the same fallback Mini IDE's own parsePy() uses for an
- * unmarked file (mini-ide.js).
+ * cell instead.
  *
  * @param {string} text - raw .py file contents
  * @returns {Array<Object>} new cell objects, same shape parseIpynbCells() returns
@@ -1474,9 +1466,8 @@ function parsePyCells(text) {
 
 /* Loads one of dewlab's own worked examples (assets/examples/*.ipynb) —
  * a real, runnable walkthrough (SQL over a real dataset, a data
- * investigation, a math simulation, text analysis). Ported from Mini
- * IDE's own loadBuiltInExample(); replaces the notebook outright, the
- * same as picking a file already does here. */
+ * investigation, a math simulation, text analysis). Replaces the
+ * notebook outright, the same as picking a file already does here. */
 async function loadBuiltInExample(path, label) {
   let imported;
   try {
@@ -1603,8 +1594,7 @@ function updateStatus(message, kind = "") {
 
 // -------------------------------------------------------------- storage
 
-/* Human-sized file size, the same three-tier rounding Mini IDE's own
- * formatFileSize() uses (assets/mini-ide.js). */
+/* Human-sized file size — bytes, then one-decimal KB and MB. */
 function formatFileSize(bytes) {
   if (bytes < 1024) return `${bytes} B`;
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
@@ -1612,10 +1602,8 @@ function formatFileSize(bytes) {
 }
 
 /* Reflects engine.engineMode()/canStop() into Settings' "Python" section
- * — ported verbatim from Mini IDE's own updateExecutionStatus()
- * (assets/mini-ide.js), since it's the same engine reporting the same
- * two things: which path booted, and whether Stop can actually do
- * anything in it. */
+ * — the same two things the engine itself reports: which path booted,
+ * and whether Stop can actually do anything in it. */
 function updateExecutionStatus() {
   const el = document.getElementById("settings-execution-status");
   if (!el) return;
@@ -1660,11 +1648,10 @@ function initExecutionSection() {
 }
 
 /* Reflects dfs.getBackend() into Settings' "Files" section: the status
- * line, and the choose/reconnect/forget buttons' own visibility and
- * label — the same three-way message Mini IDE's own updateStorageStatus()
- * shows (assets/mini-ide.js), since it's the same three backends behind
- * the same choice. Also re-renders the file list, since a backend change
- * always means "what's actually in the mount" just changed too. */
+ * line (one message per possible backend), and the
+ * choose/reconnect/forget buttons' own visibility and label. Also
+ * re-renders the file list, since a backend change always means "what's
+ * actually in the mount" just changed too. */
 async function updateStorageStatus() {
   const statusEl = document.getElementById("settings-storage-status");
   const chooseBtn = document.getElementById("settings-choose-folder");
@@ -1695,8 +1682,8 @@ async function updateStorageStatus() {
 }
 
 /* Re-lists the mounted filesystem's root and redraws the "Files" list —
- * root only, not a full recursive tree the way Mini IDE's own file pane
- * browses subfolders: a compact Settings section is the wrong place for
+ * root only, not a full recursive tree with browsable subfolders:
+ * a compact Settings section is the wrong place for
  * that (DECISIONS_LOG.md 7.88), and dewmini's own use of the mount
  * (a saved .db file, a dataset a cell downloaded) rarely goes more than
  * one level deep in practice. */
@@ -1778,11 +1765,10 @@ async function deleteFsFile(name) {
 }
 
 /* Writes one or more picked files into the mounted filesystem's root.
- * Starts Python first if it hasn't already — unlike Mini IDE's own
- * uploadFiles() (which requires a cell to have already been run),
- * uploading a file is itself a reasonable first action for a student to
- * take, so it boots Python the same way clicking Run does rather than
- * just refusing. */
+ * Starts Python first if it hasn't already — uploading a file is itself
+ * a reasonable first action for a student to take, so it boots Python
+ * the same way clicking Run does rather than refusing until a cell has
+ * been run. */
 async function uploadFsFiles(fileList) {
   const files = fileList ? Array.from(fileList) : [];
   if (!files.length) return;
@@ -1927,7 +1913,7 @@ function wireSimplePanel(panel, toggle, closeBtn, otherPanel) {
  * pane, not a popover that happens to be open right now. dewmini only
  * ever has one of the two open at a time (both dock to the same right
  * edge), so this stores a single value rather than the tutorial pages'
- * {left, right} pair — ported from Mini IDE's own copy. */
+ * {left, right} pair. */
 function saveSidebarState() {
   const settingsPanel = document.getElementById("dl-settings");
   const helpPanel = document.getElementById("dm-help");
@@ -1962,8 +1948,8 @@ function restoreSidebarState() {
  * is currently visible, regardless of which of their several open/close
  * paths (toggle click, close button, Escape, click-outside, wireSimplePanel's
  * own "opening one closes the other") fired — a MutationObserver on each
- * panel's `hidden` property, rather than hooking every call site. Ported
- * from Mini IDE's own watchPanelOverlap(). dewmini-style.css reads the
+ * panel's `hidden` property, rather than hooking every call site.
+ * dewmini-style.css reads the
  * attribute to shrink .dl-page's effective width on wide-enough viewports
  * while a panel is open, so its fixed position (tutorial-style.css's own
  * .dl-settings/.dm-panel) never ends up covering a cell's run/reset/delete
@@ -2114,7 +2100,7 @@ function initTexture(onThemeChange) {
  * different set of preferences: how code itself is displayed (its own
  * size, how roomy a cell feels, cursor thickness, gutter/current-line
  * visibility) rather than how the page's reading text looks. These are
- * dewmini/Mini-IDE-specific — a plain tutorial page has no code editor
+ * dewmini-specific — a plain tutorial page has no code editor
  * settings of its own, since a tutorial's cells are meant to look
  * consistent between students, not customized per reader the way a
  * personal notebook's editor reasonably can be. */
@@ -2236,7 +2222,7 @@ function initPracticeOrderSettings() {
 /* Wires up the Settings → Run time "on / off" switch — applied as a
  * data-dm-runstats attribute on <html> (read by renderCellRunStats()),
  * re-painted on every already-rendered cell immediately on toggle, not
- * just future runs. Ported from Mini IDE's own initRunStatsSetting(). */
+ * just future runs. */
 const RUN_STATS_KEY = "dewmini:show-run-stats";
 
 function initRunStatsSetting() {

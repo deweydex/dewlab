@@ -1515,7 +1515,7 @@ function addCustomCell(type = "python", code = "") {
 }
 
 /* Removes one custom cell — no confirmation, matching how deleting a
- * single cell already works in compose/dewmini.js and assets/mini-ide.js;
+ * single cell already works in compose/dewmini.js;
  * only a bulk "remove everything" action asks first (clearCustomCells()
  * below). A cell's own trailing divider (the one mountCustomCellAfter()
  * created alongside it) goes with it — leaving it behind would leave a

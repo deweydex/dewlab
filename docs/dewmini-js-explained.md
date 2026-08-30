@@ -4,25 +4,11 @@ This file is everything that makes dewmini work: creating and deleting
 cells, running Python, the file manager, drag-to-reorder, downloads and
 notebook import, Settings, and the practice-problem picker. It does
 **not** run Python itself — that's
-[`assets/pyodide-engine.js`](pyodide-engine-explained.md)'s job, a
-module shared with the retired Mini IDE's own offline copy — and it does
-**not** decide where files are stored — that's `compose/dewmini-fs.js`'s
-job. This file is the "glue," the same shape
-[`docs/mini-ide-js-explained.md`](mini-ide-js-explained.md) describes
-for Mini IDE's own offline copy: dewmini and that file share the same
-basic structure (a `cells` array as the source of truth, the same
-save-then-render pattern, the same drag-and-drop mechanics, the same
-Run-becomes-Stop button pattern) even though neither imports code from
-the other — `pyodide-engine.js` is the one piece the two genuinely
-share.
-
-dewmini used to be the smaller of two Python workspaces, running Pyodide
-directly on the main thread with no Stop button, while Mini IDE ran it
-in a Worker. dewmini absorbed Mini IDE's Worker/Stop capability
-(`DECISIONS_LOG.md` 7.89) before Mini IDE itself retired
-(`DECISIONS_LOG.md` 7.91); this doc describes dewmini as it is now, with
-that capability built in, not as a smaller alternative to something
-else.
+[`assets/pyodide-engine.js`](pyodide-engine-explained.md)'s job — and it
+does **not** decide where files are stored — that's
+`compose/dewmini-fs.js`'s job. This file is the "glue": a `cells` array
+as the source of truth, a save-then-render pattern for every change, the
+drag-and-drop mechanics, and the Run-becomes-Stop button pattern.
 
 ---
 
@@ -42,9 +28,9 @@ as dfs ...`) — this file never talks to Pyodide or the filesystem
 directly. `engine.configure({...})`, called once near the top, is what
 wires the shared engine up to this specific page: how to find a cell's
 output element, where to show status text, which Pyodide packages to
-load, and `dataBase` (dewmini lives one directory deeper than Mini IDE
-ever did, so it needs a different base path to reach the shared `data/`
-folder for `load_csv()`).
+load, and `dataBase` (dewmini lives one directory below the site root,
+so it needs a different base path to reach the shared `data/` folder
+for `load_csv()`).
 
 ---
 
@@ -96,8 +82,8 @@ folder for `load_csv()`).
    [`tutorial-runtime.js`](tutorial-runtime-explained.md) doing the same
    job for the shared reading-preference settings.
 10. **Start**, at the bottom — `init()` and the
-    `DOMContentLoaded`-or-run-now guard, the same double-init problem and
-    fix `mini-ide.js` had.
+    `DOMContentLoaded`-or-run-now guard against a module script's
+    double-init problem.
 
 ---
 
@@ -125,8 +111,8 @@ already flipped, so it would toggle straight back to editing instead of
 landing on rendered. `previewBtn.addEventListener("mousedown", (e) =>
 e.preventDefault())` is what stops that blur from happening at all,
 so the click handler underneath still sees the state as it was when the
-reader actually clicked. `assets/mini-ide.js` and
-`assets/tutorial-runtime.js`'s own text cells use the identical fix.
+reader actually clicked. `assets/tutorial-runtime.js`'s own text cells
+use the identical fix.
 
 **A downloadable file that builds another whole HTML page.**
 `buildStandaloneHtml` is worth slowing down on: it returns a giant

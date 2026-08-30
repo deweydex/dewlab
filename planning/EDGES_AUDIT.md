@@ -35,6 +35,11 @@ that address aborted at the network layer.
 The claim stands. `tests/MANUAL_CHECKLIST.md` now carries the check so it
 keeps standing.
 
+*(Later note: the bundle this section tested belonged to the since-removed
+second workspace — `DECISIONS_LOG.md` 7.98. The checklist's version of the
+check now runs against dewmini's own bundle, which shares the same serve.py
+mechanism this audit proved.)*
+
 ---
 
 ## 2. Does it work on a phone?

@@ -1,7 +1,7 @@
 # `assets/tutorial_tools.py`, explained
 
 This is the Python file every dewlab cell actually runs against — not
-just Mini IDE's cells, but every tutorial page's too. When a student's
+just dewmini's cells, but every tutorial page's too. When a student's
 cell calls `show(...)`, `check(...)`, or `text_input(...)`, this is where
 those functions live. It also does something a student never calls
 directly: it's what actually *runs* a cell's code and turns whatever

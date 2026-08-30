@@ -8,19 +8,18 @@ booting and running Python. If you've read
 [`docs/dewmini-js-explained.md`](dewmini-js-explained.md) or
 [`docs/pyodide-engine-explained.md`](pyodide-engine-explained.md), a
 good chunk of this file will look familiar — the shared
-`pyodide-engine.js` (dewmini's and Mini IDE's retired offline copy's
-own Python engine) was originally ported from this file's own
-Pyodide-handling code, and both solve the same "worker vs. main thread"
-problem the same way.
+`pyodide-engine.js` (dewmini's own Python engine) was originally ported
+from this file's own Pyodide-handling code, and both solve the same
+"worker vs. main thread" problem the same way.
 
 ---
 
 ## The big idea: one file, several independent jobs
 
-Unlike Mini IDE (which splits cell management, the Python engine, and the
+Unlike dewmini (which splits cell management, the Python engine, and the
 filesystem into three separate files), this file does all of its jobs in
 one place. That's a deliberate difference, not an oversight — a tutorial
-page is simpler than Mini IDE in scope (no file manager, no SQL, no
+page is simpler than dewmini in scope (no file manager, no SQL, no
 uploads), so splitting it further would add file-hopping without buying
 much. Instead, this file is organized into clearly labeled sections (look
 for the `/* ---- section name ---- */` comments), and each section is
@@ -137,7 +136,7 @@ still focused would otherwise blur the textarea *first* (which
 auto-renders), so by the time the button's own click handler ran it
 would see the already-rendered state and toggle straight back to
 editing instead of landing on rendered. Every dewlab surface with a text
-cell (this file, `compose/dewmini.js`, `assets/mini-ide.js`) uses the
+cell (this file, `compose/dewmini.js`) uses the
 same fix, for the same reason.
 
 And a reader isn't limited to one button at the bottom of the page:

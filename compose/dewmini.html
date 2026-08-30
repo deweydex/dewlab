@@ -7,12 +7,11 @@
 
 <!-- Cross-origin isolation, as early as this page can ask for it — a
      genuine Stop button needs the SharedArrayBuffer interrupt path, which
-     needs crossOriginIsolated. Same shim shell.html registers for tutorial
-     pages, and assets/mini-ide.html registers for itself; dewmini needs
-     it for the same reason Mini IDE does now that both share
-     assets/pyodide-engine.js (DECISIONS_LOG.md 7.89) — a standalone page
-     a student can reach without ever visiting a tutorial page first, so
-     it can't rely on one of those having registered it already. One
+     needs crossOriginIsolated. Same shim shell.html registers for
+     tutorial pages; dewmini registers it for itself (DECISIONS_LOG.md
+     7.89) — a standalone page a student can reach without ever visiting
+     a tutorial page first, so it can't rely on one of those having
+     registered it already. One
      level up from this page's own folder: build.py copies the real file
      to the site's root once for the whole site, not once per page. -->
 <script src="../coi-serviceworker.js"></script>
@@ -265,10 +264,9 @@
        dataset) — not the notebook itself, which is the "Keep a copy"
        section below. Mounted lazily, the same "not until Python starts"
        rule the rest of dewmini follows (dfs.init(), dewmini-fs.js), and
-       kept to a flat, root-only list rather than Mini IDE's own
-       browsable tree — a deliberate, smaller scope for a section that
-       lives inside Settings rather than a panel of its own
-       (DECISIONS_LOG.md 7.88). -->
+       kept to a flat, root-only list rather than a browsable tree — a
+       deliberately small scope for a section that lives inside Settings
+       rather than a panel of its own (DECISIONS_LOG.md 7.88). -->
   <section class="dl-settings-section" id="dl-settings-storage">
     <h3>Files</h3>
     <p class="dl-panel-note" id="settings-storage-status">Not started yet — run a cell to start Python.</p>

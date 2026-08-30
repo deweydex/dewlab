@@ -58,6 +58,7 @@ HISTORY = {
     "planning/WHAT_IS_LEFT_TO_WRITE.md",     # retired; says so in its title
     "planning/DOCS_AND_COMMENTS_PASS.md",    # the record of a finished pass
     "planning/MINI_IDE_REDESIGN.md",         # a shipped plan, phase by phase
+    "planning/MINI_IDE_AND_DEWMINI_NEXT.md", # the record of that tool's absorption and removal
     "planning/BUILD_PLAN.md",                # likewise
 }
 

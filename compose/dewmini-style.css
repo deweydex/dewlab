@@ -1,8 +1,4 @@
-/* dewmini — dewlab's minimal, notebook-shaped Python workspace. Used to
- * be the smaller cousin of a second, larger workspace (Mini IDE); dewmini
- * absorbed everything that one did and Mini IDE retired (DECISIONS_LOG.md
- * 7.87-7.90), so this is now the one Python workspace's own stylesheet,
- * not a smaller alternative to another.
+/* dewmini — dewlab's minimal, notebook-shaped Python workspace.
  *
  * Built on tutorial-style.css's own tokens (navy/orange, Georgia, the light
  * and dark palettes) rather than a palette of its own — the borderless,
@@ -188,9 +184,8 @@
 .dm-import-notice li code { font-family: var(--dl-mono); }
 
 /* A gentle, finite pulse on "See an example" the very first time this page
- * ever loads — the show-it-working affordance Mini IDE gets for free from
- * its sample cells, done here as an invitation rather than pre-filled
- * content that squats on the empty state permanently. */
+ * ever loads — a show-it-working affordance done as an invitation rather
+ * than pre-filled content that squats on the empty state permanently. */
 @keyframes dm-pulse {
   0%, 100% { box-shadow: 0 0 0 0 rgba(212, 105, 42, 0.4); }
   50% { box-shadow: 0 0 0 9px rgba(212, 105, 42, 0); }
@@ -694,11 +689,9 @@ kbd {
 }
 .dm-filename-input:focus { outline: none; border-color: var(--dl-orange); }
 
-/* A flat, root-only file list inside Settings' own "Files" section — the
-   same per-item shape Mini IDE's own .mini-ide-filetree-item uses
-   (assets/mini-ide-style.css), not its sidebar tree itself: this is a
-   plain list a Settings section can hold, not a panel of its own
-   (DECISIONS_LOG.md 7.88). */
+/* A flat, root-only file list inside Settings' own "Files" section — a
+   plain list a Settings section can hold, not a browsable tree in a
+   panel of its own (DECISIONS_LOG.md 7.88). */
 .dm-filelist {
   list-style: none;
   margin: 0 0 0.5rem;

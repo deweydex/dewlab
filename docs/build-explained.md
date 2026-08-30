@@ -25,8 +25,8 @@ Run `python3 build.py`, and here's roughly what happens, in order:
    `tutorial:slug#anchor` in the source) are resolved to real relative
    URLs — or the build fails, naming exactly which link is broken.
 3. Extra pages are built from that same data: the **topic tree**, the
-   **knowledge map**, the **contents page**, the **about page**, and the
-   Mini IDE download.
+   **knowledge map**, the **contents page**, the **about page**, and
+   dewmini's offline download.
 4. Every page is **written** to `site/`, including — for a tutorial page
    — a JSON manifest describing its cells for `tutorial-runtime.js` to
    read, and (unless `--no-standalone` is passed) a downloadable,
@@ -70,7 +70,7 @@ table of contents; this groups them into a few bigger phases:
    `page_notice`, `write()` — the function that actually assembles and
    writes one finished tutorial page.
 8. **Standalone** — `standalone_html`, `write_standalone`,
-   `write_series_zip`, `zip_directory`, `write_mini_ide_bundle`. Every
+   `write_series_zip`, `zip_directory`, `write_dewmini_bundle`. Every
    downloadable, offline copy this site produces.
 9. **Site-level pages** — `write_index` (the homepage), `write_tree_page`,
    `write_about_page`, `write_editor_page`.

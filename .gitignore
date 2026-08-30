@@ -10,10 +10,10 @@
 /vendor-src/package-lock.json
 
 # The one exception to "assets/vendor/ IS committed": Pyodide's own runtime
-# for the downloadable Mini IDE bundle (build.py's write_mini_ide_bundle(),
-# planning/MINI_IDE_REDESIGN.md Phase 7) is fetched with dev/fetch_pyodide.py
-# --out assets/vendor/pyodide, same as /dev/pyodide/ above — too large to
-# commit, regenerated on demand instead.
+# for the downloadable dewmini bundle (build.py's write_dewmini_bundle())
+# is fetched with dev/fetch_pyodide.py --out assets/vendor/pyodide, same
+# as /dev/pyodide/ above — too large to commit, regenerated on demand
+# instead.
 /assets/vendor/pyodide/
 
 # Python bytecode.

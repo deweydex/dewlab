@@ -8,24 +8,17 @@ the rest of the app: "start Python," "run this code," and "what does this
 name mean," without the caller needing to know *how* Python is actually
 running underneath.
 
-It's a *shared* file rather than dewmini's own: this was originally Mini
-IDE's own *mini-ide-engine.js*, written when this codebase's convention
-was "each page owns a thin copy rather than a shared runtime module." It
-was generalized into this shared module once dewmini needed the same
-Worker/Stop capability — 700 lines of genuinely tricky Worker/interrupt/
-postMessage logic was judged too large and too risky to duplicate a
-second time, particularly with Mini IDE's own retirement already planned.
-Mini IDE has since retired (`DECISIONS_LOG.md` 7.91); its old, offline-
-only copy (`assets/mini-ide.js` and `assets/mini-ide-fs.js`, packaged by
-`write_mini_ide_bundle()` in `build.py`) still imports this same file, so
-it stays a shared module in fact even though only one of its two callers
-is a page a student actually reaches today. `configure()` is what makes
-sharing it possible at all: the page that calls it hands this module
-accessors for its own output elements and status display, plus a couple
-of small per-page overrides (`dataBase`, since dewmini lives one
-directory deeper than Mini IDE ever did and needs a different base path
-to reach the shared `data/` folder), rather than this file assuming
-anything about the page around it.
+It lives under `assets/` as a page-independent module rather than inside
+`compose/` with the rest of dewmini: 700 lines of tricky
+Worker/interrupt/postMessage logic deserve their own file, decoupled
+from any one page's markup (`DECISIONS_LOG.md` 7.89 for how it came to
+be structured this way). `configure()` is what keeps it
+page-independent: the page that calls it hands this module accessors
+for its own output elements and status display, plus a couple of small
+per-page overrides (`dataBase`, since dewmini lives one directory below
+the site root and needs a different base path to reach the shared
+`data/` folder), rather than this file assuming anything about the page
+around it.
 
 That "how Python actually runs" question turns out to have two real
 answers, and understanding that is the key to reading this whole file.
@@ -142,7 +135,7 @@ registers a COI service worker.
 - **"Why is a URL resolved against `import.meta.url` instead of the
   page?"** — `assetUrl()`, used to build an absolute URL for
   `tutorial_tools.py` before handing it to the worker. Resolving against
-  the *page's* URL (`document.baseURI`) broke the moment a second page
-  one directory deeper than Mini IDE (dewmini, in `compose/`) started
-  importing this file — resolving against this module's own location
-  instead works no matter how deep the importing page sits.
+  the *page's* URL (`document.baseURI`) broke the moment a page one
+  directory deeper (dewmini, in `compose/`) started importing this
+  file — resolving against this module's own location instead works no
+  matter how deep the importing page sits.
