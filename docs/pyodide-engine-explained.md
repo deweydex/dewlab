@@ -9,20 +9,16 @@ name mean," without the caller needing to know *how* Python is actually
 running underneath.
 
 It lives under `assets/` as a page-independent module rather than inside
-`compose/` with the rest of dewmini: it began life as another
-workspace's file, back when this codebase's convention was "each page
-owns a thin copy rather than a shared runtime module," and was
-generalized into a shared module once dewmini needed the same
-Worker/Stop capability — 700 lines of tricky Worker/interrupt/
-postMessage logic was judged too large and too risky to duplicate a
-second time. That other workspace has since been absorbed into dewmini
-(`DECISIONS_LOG.md` 7.91), leaving dewmini this file's only workspace
-client. `configure()` is what keeps it page-independent: the page that
-calls it hands this module accessors for its own output elements and
-status display, plus a couple of small per-page overrides (`dataBase`,
-since dewmini lives one directory below the site root and needs a
-different base path to reach the shared `data/` folder), rather than
-this file assuming anything about the page around it.
+`compose/` with the rest of dewmini: 700 lines of tricky
+Worker/interrupt/postMessage logic deserve their own file, decoupled
+from any one page's markup (`DECISIONS_LOG.md` 7.89 for how it came to
+be structured this way). `configure()` is what keeps it
+page-independent: the page that calls it hands this module accessors
+for its own output elements and status display, plus a couple of small
+per-page overrides (`dataBase`, since dewmini lives one directory below
+the site root and needs a different base path to reach the shared
+`data/` folder), rather than this file assuming anything about the page
+around it.
 
 That "how Python actually runs" question turns out to have two real
 answers, and understanding that is the key to reading this whole file.

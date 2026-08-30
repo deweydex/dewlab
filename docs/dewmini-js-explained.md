@@ -10,13 +10,6 @@ does **not** decide where files are stored — that's
 as the source of truth, a save-then-render pattern for every change, the
 drag-and-drop mechanics, and the Run-becomes-Stop button pattern.
 
-dewmini used to be the smaller of two Python workspaces, running Pyodide
-directly on the main thread with no Stop button. It absorbed the larger
-one's Worker/Stop capability (`DECISIONS_LOG.md` 7.89) before that
-workspace retired (`DECISIONS_LOG.md` 7.91); this doc describes dewmini
-as it is now, with that capability built in, not as a smaller
-alternative to something else.
-
 ---
 
 ## The big idea: `cells` is the source of truth

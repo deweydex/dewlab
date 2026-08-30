@@ -9,19 +9,14 @@
  * page that configures it owns the cell array and the DOM; this module
  * never touches either directly, only through the accessors passed to
  * configure() — which is what keeps it independent of any one page's
- * markup, and what made sharing it between two pages possible back when
- * two pages needed it.
+ * markup.
  *
- * Written when this codebase's convention was "each page owns a thin
- * copy rather than a shared runtime module" (tutorial-runtime.js's own
- * worker-communication block is still duplicated, not imported, for
- * exactly that reason), and extracted into a shared module once a second
- * workspace needed the same capability: 700 lines of genuinely tricky
- * Worker/interrupt/postMessage logic was judged too large and too risky
- * to duplicate. That second workspace has since been absorbed into
- * dewmini (DECISIONS_LOG.md 7.91), leaving dewmini this file's only
- * workspace client — the tutorial pages still run their own copy of the
- * worker-communication logic.
+ * A separate module rather than part of dewmini.js because 700 lines of
+ * genuinely tricky Worker/interrupt/postMessage logic deserve their own
+ * file with their own seams (DECISIONS_LOG.md 7.89 for the history) —
+ * note that tutorial-runtime.js still runs its own copy of the
+ * worker-communication logic rather than importing this, per that
+ * file's own "each page owns a thin copy" convention.
  *
  * A page opened over file:// (a downloadable, offline copy) can run into
  * real restrictions constructing a module Worker at all, so boot() falls

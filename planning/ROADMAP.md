@@ -306,9 +306,11 @@ Mini IDE between now and convergence.
 2. **Done.** Mini IDE retired (`DECISIONS_LOG.md` 7.91) — its hosted
    URL redirects to dewmini. At the time its app survived, unlinked, as
    the source for a still-offered offline download; a later pass
-   (`DECISIONS_LOG.md` 7.98) removed the app, its stylesheet, and that
-   download outright, once dewmini's own offline bundle (7.92) had made
-   them redundant — the redirect is all that remains. Collapsing toward
+   (`DECISIONS_LOG.md` 7.98) removed the app, its stylesheet, that
+   download, and in the end the redirect too, once dewmini's own
+   offline bundle (7.92) had made the app redundant and the fact that
+   the site had never been deployed made the redirect pointless —
+   nothing remains. Collapsing toward
    one stylesheet for the shared chrome did not turn out to be part of
    this step: dewmini and the tutorial pages already shared
    `tutorial-style.css`'s own tokens and `.dl-*` classes before
@@ -328,9 +330,10 @@ Mini IDE between now and convergence.
   this entry's *cost to change* anticipated.
 - **What happens to Mini IDE's URLs and downloaded bundles?**
   *Decided, and done, in two steps* (`DECISIONS_LOG.md` 7.91, 7.98):
-  the hosted page became a redirect, which stays; the offline download
-  was kept at first for continuity, then removed once dewmini's own
-  offline bundle covered the need.
+  the hosted page became a redirect at first, and the offline download
+  was kept for continuity; both were then removed outright — dewmini's
+  own offline bundle covered the need, and a site that had never been
+  deployed had no bookmarks for a redirect to serve.
 - **Offline proof: manual or CI?** *Partly answered:* a manual pass
   (`DECISIONS_LOG.md` 7.92) served both bundles with *serve.py* and ran
   a real interrupt-a-`while True`-loop Stop-button test against each,

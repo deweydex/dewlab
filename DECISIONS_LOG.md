@@ -4073,11 +4073,17 @@ reference across code comments, docs, tests, the deploy workflow, and
 planning was reworded — a workspace that no longer exists should not
 keep turning up by name in the description of the one that does.
 
-**The one deliberate survivor is the redirect.** `assets/mini-ide.html`
-stays, shrunk to an instant, dependency-free redirect to
-`compose/dewmini.html` — same reasoning as 7.91's own choice of a
-redirect over a 404: an old bookmark or link should land somewhere
-useful, and a URL can only keep working if a file answers at it.
+**The redirect goes too — because there was never anyone to redirect.**
+The first draft of this removal kept `assets/mini-ide.html` as an
+instant redirect to `compose/dewmini.html`, on 7.91's own reasoning
+that an old bookmark or link should land somewhere useful. The person
+the site is for then supplied the fact that decides it: the site has
+not been deployed or shared with students, so no bookmark to the old
+URL exists anywhere but in this repository's own history. A redirect
+with no possible visitors is furniture, not continuity — removed, along
+with `build.py`'s copy of it to the site root. (If the URL had ever
+been shared, the redirect would have been the right call; the reasoning
+in 7.91 was sound and simply rested on a premise that turned out false.)
 
 **Historical records stay historical.** `planning/MINI_IDE_REDESIGN.md`,
 `planning/MINI_IDE_AND_DEWMINI_NEXT.md` (which gained a fourth addendum
@@ -4099,6 +4105,7 @@ bundle that actually exists.
 *Cost to change: low — the deletions themselves are the easy half; the
 care was in the sweep, since nearly forty files mentioned the old
 workspace by name, and in deciding which mentions were history (kept)
-and which were descriptions of the present (reworded). Anyone still
-holding a downloaded Mini IDE bundle keeps a working copy — nothing
-about removal reaches into a folder already saved to someone's disk.*
+and which were descriptions of the present (reworded). With the site
+never deployed, nothing removed here was ever in anyone's hands: no
+bookmark breaks and no downloaded bundle exists outside this
+repository.*

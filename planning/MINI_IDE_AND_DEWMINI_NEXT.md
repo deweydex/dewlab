@@ -367,8 +367,9 @@ A later pass (`DECISIONS_LOG.md` 7.98) acted on that: the offline app,
 `write_mini_ide_bundle()` build step and its download, the tombstone
 `docs/MINI_IDE.md`, and the two explainer docs for the deleted code are
 all gone, and every present-tense reference across code and
-documentation was reworded. The one deliberate survivor is the redirect
-at the old hosted URL, kept for the same reason 7.91 chose a redirect
-over a 404 in the first place: an old bookmark should land somewhere
-useful. This document, and `MINI_IDE_REDESIGN.md` beside it, stay as
-the history of how dewlab came to have the one workspace it has.
+documentation was reworded. The redirect at the old hosted URL nearly
+survived, on 7.91's own bookmark reasoning — until the person the site
+is for pointed out the site had never been deployed or shared with
+students, so there were no bookmarks to protect; it went too. This
+document, and `MINI_IDE_REDESIGN.md` beside it, stay as the history of
+how dewlab came to have the one workspace it has.

@@ -1799,8 +1799,6 @@ def render_index(
         # this is not a tutorial and doesn't belong on the numbered list
         # below, but it's common enough a reason to visit ("I just want
         # to try something") that a line buried in prose undersold it.
-        # Used to offer a choice between two workspaces, until dewmini
-        # absorbed the other one entirely (DECISIONS_LOG.md 7.91).
         '<div class="dl-workspaces">',
         # h2, because it is a top-level section of this page like the
         # modules are. It used to be h3 to keep "every <h2> is a module"
@@ -1810,7 +1808,6 @@ def render_index(
         # .dl-module-heading now, so telling them apart no longer depends
         # on the level.
         "<h2>Want to experiment on your own, outside a tutorial?</h2>",
-        '<div class="dl-workspaces-grid">',
         '<a class="dl-workspace-card" href="compose/dewmini.html" target="_blank">',
         "<h3>dewmini</h3>",
         "<p>The same Python as every tutorial, with no tutorial attached — "
@@ -1818,7 +1815,6 @@ def render_index(
         "for a quick calculation, a practice problem, or a project of its "
         "own.</p>",
         "</a>",
-        "</div>",
         "</div>",
         render_search_box("Search by topic — e.g. loops, probability, sorting…"),
     ]
@@ -3522,16 +3518,6 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
     if DATA.is_dir():
         shutil.rmtree(OUT / "data", ignore_errors=True)
         shutil.copytree(DATA, OUT / "data")
-    
-    # assets/mini-ide.html is a permanent redirect to dewmini, kept so
-    # old bookmarks to the workspace that once lived at that URL still
-    # land somewhere useful (DECISIONS_LOG.md 7.91, 7.98) — it needs to
-    # exist at the site root, where those bookmarks point. Guarded like
-    # the coi-serviceworker.js copy below: a test's own minimal ASSETS
-    # fixture need not carry it for that test's build to succeed.
-    redirect_src = ASSETS / "mini-ide.html"
-    if redirect_src.exists():
-        shutil.copy2(redirect_src, OUT / "mini-ide.html")
 
     # dewmini (compose/) is its own small folder rather than more root-level
     # files, so it copies wholesale like assets/ does.
@@ -3555,9 +3541,9 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
     # from the site root, not assets/vendor/ where every other vendored file
     # lives: a service worker's scope defaults to the directory it is served
     # from, and shell.html's {{ROOT_BASE}}coi-serviceworker.js tag registers
-    # it expecting root scope, wide enough to cover every tutorial. Guarded
-    # like the redirect copy above it: a test's own minimal ASSETS fixture
-    # need not carry every vendored file for its build to succeed.
+    # it expecting root scope, wide enough to cover every tutorial. The
+    # existence guard means a test's own minimal ASSETS fixture need not
+    # carry every vendored file for its build to succeed.
     coi_src = ASSETS / "vendor" / "coi-serviceworker.js"
     if coi_src.exists():
         shutil.copy2(coi_src, OUT / "coi-serviceworker.js")

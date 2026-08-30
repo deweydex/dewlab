@@ -1,7 +1,7 @@
 # Contributing code to dewlab
 
 Thanks for wanting to help. This page is for changing the site's own code — the
-build, the runtime, the editors, the two Python workspaces. It covers getting
+build, the runtime, the editors, dewmini. It covers getting
 set up, what to run before you open a pull request, and the one standing
 requirement this repository has: that documentation and comments stay accurate
 as the code changes.

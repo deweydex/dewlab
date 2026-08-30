@@ -362,24 +362,15 @@ tied to one lesson. It shares `tutorial_tools.py` with every tutorial
 page (§2), so `show`/`show_table`/`check`/widgets all behave identically
 everywhere.
 
-dewmini used to be the smaller of *two* such workspaces — the larger
-one had its own file manager and a Stop button dewmini didn't have.
-dewmini has since absorbed everything that workspace did and the other
-one is gone (`DECISIONS_LOG.md` 7.87–7.91; its old hosted URL survives
-only as `assets/mini-ide.html`, a permanent redirect here, so old
-bookmarks still land somewhere useful). There is one Python workspace
-now, and this section describes it.
-
 `compose/dewmini.js` runs Python through `assets/pyodide-engine.js`, a
 shared client of `assets/pyodide-worker.js` — the same Worker-based
 runtime a tutorial page's own `tutorial-runtime.js` boots (§2), reused
 rather than duplicated. That's what gives dewmini a genuine Stop button:
-a runaway cell blocks the Worker, not the page. `pyodide-engine.js` was
-originally the other workspace's own file (written when this codebase's
-convention was "each page owns a thin copy"), generalized into a shared
-module once dewmini needed the same Worker/Stop capability — see that
-file's own top comment for why sharing won out over a second duplicate
-this time. `compose/dewmini-fs.js` sits between dewmini and
+a runaway cell blocks the Worker, not the page. `pyodide-engine.js` is
+its own module rather than part of `dewmini.js` because 700 lines of
+tricky Worker/interrupt logic deserve their own file, decoupled from
+the page's markup — see that file's own top comment.
+`compose/dewmini-fs.js` sits between dewmini and
 the actual filesystem, delegating every primitive (mount, list, read,
 write, delete) to the shared engine and choosing among three backends —
 a real local folder via the File System Access API, its own named OPFS

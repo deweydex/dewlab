@@ -14,13 +14,6 @@ run a few lines of Python that isn't tied to one topic. A tutorial page
 is mostly reading, with some code mixed in. dewmini is mostly code, with
 room for a few notes.
 
-dewlab used to have a second, larger Python tool alongside dewmini,
-with its own file manager and a Stop button that dewmini's simpler
-main-thread Python couldn't offer. dewmini has since absorbed
-everything that tool did, in its own smaller, quieter shape
-(`DECISIONS_LOG.md` 7.87–7.91); there is one Python workspace now, not
-two.
-
 ---
 
 ## What you see
