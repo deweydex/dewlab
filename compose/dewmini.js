@@ -11,6 +11,7 @@
 
 import { createCodeEditor, setEditorTheme } from "../assets/vendor/codemirror.bundle.js";
 import * as dfs from "./dewmini-fs.js";
+import * as engine from "../assets/pyodide-engine.js";
 
 const PYODIDE_VERSION = "0.28.3";
 const STORAGE_KEY = "dewmini:cells:v1";
@@ -40,12 +41,18 @@ let cells = [];
 let cellsContainer, emptyEl, statusEl;
 let statusClearTimer = null;
 
-let pyodide = null;
-let tools = null;
-let inspectModule = null;
+// The live Pyodide interpreter, cell execution, hover/signature-help, and
+// filesystem mounting all go through assets/pyodide-engine.js now — the
+// same shared engine Mini IDE uses (DECISIONS_LOG.md 7.89) — rather than
+// this file holding its own `pyodide`/`tools`/`inspectModule` references
+// and talking to Pyodide directly, the way its first version did.
+// toolsSourceCache stays: downloadAsHtml()'s embedded bootstrap below
+// still needs tutorial_tools.py's raw source text, independent of the
+// live engine (a downloaded copy runs its own simple main-thread
+// Pyodide, same as the live page's own file:// fallback would).
 let toolsSourceCache = null;
-let bootPromise = null;
 let running = false;
+let runningCellId = null;
 
 let draggedId = null;
 
@@ -436,6 +443,7 @@ function createCellElement(cell) {
     runBtn.textContent = "▶";
     runBtn.addEventListener("click", (e) => { e.stopPropagation(); runCell(cell.id); });
     actions.appendChild(runBtn);
+    cell.runBtn = runBtn;
 
     // Clears this cell's own output without touching its code — the
     // non-destructive counterpart to Delete, matching Mini IDE's own
@@ -489,8 +497,9 @@ function createCellElement(cell) {
     const editor = createCodeEditor(editorEl, cell.content, {
       dark: isDarkNow(),
       onChange: (text) => { cell.content = text; saveState(); },
-      completeNames: pageNamesCompletion,
-      getDoc: (name) => getDocForName(name),
+      completeNames: engine.pageNamesCompletion,
+      getDoc: engine.hoverDoc,
+      getSignature: engine.signatureHelp,
     });
     // Capture phase: CodeMirror's own handler sees Enter first on bubble,
     // so intercepting Shift+Enter has to happen before that, not after.
@@ -608,130 +617,78 @@ async function getToolsSource() {
   return toolsSourceCache;
 }
 
+/* Wires the shared engine up to this page — getOutputEl looks a cell's
+ * live output element up by id (the engine's own event stream addresses
+ * cells by id, not by direct element reference, since worker-mode output
+ * arrives asynchronously and a cell could in principle be gone by the
+ * time it does), onStatus forwards boot/package-loading progress the same
+ * way this file's own updateStatus() already shows it, and dataBase is
+ * "../data/" rather than Mini IDE's own default empty string, since this
+ * page lives one directory deeper (compose/, not assets/) and needs the
+ * extra "../" to reach the same repo-root data/ folder. Called once, at
+ * module load — configure() itself does no booting. */
+engine.configure({
+  getOutputEl: (cellId) => cells.find((c) => c.id === cellId)?.outputEl ?? null,
+  onStatus: updateStatus,
+  packages: DM_PACKAGES,
+  dataBase: "../data/",
+});
+
 /* Starts Pyodide the first time it's actually needed (the first Run
  * click), not when the page loads — downloading and starting a whole
  * Python interpreter is slow, and a student reading or writing notes
- * shouldn't have to wait for it if they never run a cell. `bootPromise`
- * caches the boot *in progress*: a second call while still booting
- * returns that same Promise rather than starting a second, wasted boot;
- * once boot fails, the catch handler resets everything back to null so a
- * later retry (a later Run click) gets a fresh attempt. */
+ * shouldn't have to wait for it if they never run a cell. engine.
+ * ensureBooted() itself is idempotent and memoized (a second call while
+ * still booting returns the same in-flight Promise), so this wrapper only
+ * has to add two things on top: showing "Python ready." once, the first
+ * time boot actually finishes (engineMode() is still null beforehand),
+ * and mounting a filesystem right after — a nice-to-have, not something
+ * Python readiness should ever hinge on, so a mount failure here (blocked
+ * storage, an unsupported browser, running from file://) is caught and
+ * surfaced through the Files section in Settings on its own, never
+ * re-thrown. */
 async function ensurePyodide() {
-  if (pyodide && tools) return pyodide;
-  if (bootPromise) return bootPromise;
+  const alreadyBooted = engine.engineMode() !== null;
+  await engine.ensureBooted();
+  if (!alreadyBooted) updateStatus("Python ready.", "ok");
+  updateExecutionStatus();
 
-  bootPromise = (async () => {
-    updateStatus("Loading Python…");
-    // Pyodide is loaded from the public CDN by default. DEWLAB_PYODIDE_BASE
-    // lets a page point at a self-hosted copy instead — the same escape
-    // hatch tutorial-runtime.js and mini-ide-engine.js already carry, used
-    // by the e2e tests and as the standing answer if a school network ever
-    // blocks the CDN (OPEN_QUESTIONS.md 32). dewmini had no such override
-    // until now — worth adding on its own merits (parity with the other two
-    // runtimes, DECISIONS_LOG.md 7.88), not just because this pass's own
-    // testing needed it.
-    const pyodideUrl = new URL(
-      globalThis.DEWLAB_PYODIDE_BASE || `https://cdn.jsdelivr.net/pyodide/v${PYODIDE_VERSION}/full/`,
-      document.baseURI,
-    ).href;
-    const loader = globalThis.loadPyodide || (await import(/* @vite-ignore */ pyodideUrl + "pyodide.mjs")).loadPyodide;
-    pyodide = await loader({ indexURL: pyodideUrl });
-
-    updateStatus("Loading packages…");
-    await pyodide.loadPackage(DM_PACKAGES);
-
-    updateStatus("Preparing notebook tools…");
-    const source = await getToolsSource();
-    pyodide.FS.writeFile("/home/pyodide/tutorial_tools.py", source, { encoding: "utf8" });
-    tools = pyodide.pyimport("tutorial_tools");
-    inspectModule = pyodide.pyimport("inspect");
-    tools.configure("../data/");
-    await pyodide.runPythonAsync(SEED_GLOBALS_CODE);
-
-    // Mounting a filesystem is a nice-to-have (persistence for a chosen
-    // folder, OPFS, or IDBFS), not something Python readiness should ever
-    // hinge on — a mount failure here (blocked storage, an unsupported
-    // browser, running from file://) is caught and surfaced through the
-    // Files section in Settings on its own, never re-thrown, so it can
-    // never turn into "Python failed to start" for an unrelated reason.
-    // dfs.init()'s own getPyodide() calls back into this function — safe
-    // re-entry, since pyodide/tools are both already set by this point,
-    // so that inner call resolves immediately rather than booting twice.
-    try {
-      await dfs.init();
-    } catch (err) {
-      console.warn("dewmini: filesystem mount failed", err);
-    }
-
-    updateStatus("Python ready.", "ok");
-    return pyodide;
-  })().catch((err) => {
-    bootPromise = null;
-    pyodide = null;
-    tools = null;
-    console.error("dewmini: Pyodide failed to start", err);
-    updateStatus(`Python failed to start: ${err.message}`, "error");
-    throw err;
-  });
-
-  return bootPromise;
-}
-
-/* A real CodeMirror completion source (context => CompletionResult|null),
- * not just a names array — passed straight through to createCodeEditor,
- * which uses it as one of the autocompletion engine's own sources. Reads
- * live from tools._page_globals, the exact dict a cell actually runs
- * against, the same way tutorial-runtime.js's own pageNamesCompletion does. */
-function pageNamesCompletion(context) {
-  if (!tools) return null;
-  const word = context.matchBefore(/\w+/);
-  if (!word || (word.from === word.to && !context.explicit)) return null;
-  const names = [...tools._page_globals.keys()].filter((name) => !name.startsWith("_"));
-  if (!names.length) return null;
-  return { from: word.from, options: names.map((label) => ({ label, type: "variable" })) };
-}
-
-/* Gets the docstring for a name that's already run, for CodeMirror's
- * hover tooltip — using Python's own `inspect.getdoc`, the same thing
- * behind Python's built-in `help()`. Unlike Mini IDE and the tutorial
- * pages, dewmini runs Python directly on the main thread with no Worker,
- * so there's no Jedi-based static-analysis fallback for code that hasn't
- * run yet — only this live lookup (see this file's own "What's different
- * from a tutorial page" note in docs/DEWMINI.md for why). The `finally`
- * block's `.destroy()` call matters: Pyodide hands JavaScript a *proxy*
- * standing in for the real Python object, and it has to be destroyed
- * explicitly once no longer needed, or Pyodide can't free the memory. */
-function getDocForName(name) {
-  if (!tools || !inspectModule || !/^[A-Za-z_]\w*$/.test(name)) return null;
-  let obj;
   try {
-    obj = tools._page_globals.get(name);
-  } catch {
-    return null;
-  }
-  if (obj === undefined || obj === null) return null;
-  try {
-    return inspectModule.getdoc(obj) || null;
-  } catch {
-    return null;
-  } finally {
-    if (obj && typeof obj.destroy === "function") obj.destroy();
+    await dfs.init();
+  } catch (err) {
+    console.warn("dewmini: filesystem mount failed", err);
   }
 }
 
-/* Runs one cell's code through tutorial_tools.py's own run_cell() (the
- * same function every dewlab tutorial cell runs through) and records
- * what happened: the rendered output HTML (so it can be saved and shown
- * again without re-running), and whether it errored. Returns whether the
- * run succeeded, the same true/false run_cell() itself returns. */
+/* Autocomplete, hover docs, and signature help all come straight from the
+ * shared engine now (engine.pageNamesCompletion/hoverDoc/signatureHelp,
+ * DECISIONS_LOG.md 7.89) — the exact functions Mini IDE's own
+ * createCodeEditor() call already passes for the same three options
+ * (assets/mini-ide.js). Genuinely new capability for dewmini as a side
+ * effect: Jedi-based static-analysis tooltips for code that hasn't run
+ * yet, and a signature-help popup, neither of which its own previous
+ * live-namespace-only implementation could offer without a Worker. */
+
+/* Runs one cell's code through the shared engine's runCell() (dispatching
+ * to tutorial_tools.py's own run_cell(), the same function every dewlab
+ * tutorial cell runs through, wherever Pyodide actually lives) and
+ * records what happened: the rendered output HTML (so it can be saved
+ * and shown again without re-running), and whether it errored. Returns
+ * whether the run succeeded, the same true/false run_cell() itself
+ * returns.
+ *
+ * No "Running…" placeholder injected into the output area here anymore
+ * (the previous main-thread-only version did) — engine.runCell() already
+ * clears the cell's output the moment it starts, and the run/stop state
+ * now shows on the cell's own Run button instead (setRunButtonRunning()
+ * below), the same place Mini IDE shows it. */
 async function executeCell(cell) {
   await ensurePyodide();
   const outputEl = cell.outputEl;
   if (!outputEl) return true;
   outputEl.classList.remove("dm-empty");
-  outputEl.innerHTML = '<span class="dm-running">Running…</span>';
   const startedAt = performance.now();
-  const ok = await tools.run_cell(cell.id, outputEl, cell.content);
+  const { ok } = await engine.runCell(cell.id, cell.content);
   setCellRunStats(cell, performance.now() - startedAt);
   cell.output = outputEl.innerHTML;
   cell.error = !ok;
@@ -800,34 +757,89 @@ function clearAllOutputs() {
   updateStatus("Output cleared.");
 }
 
+/* Toggles a cell's own Run button into its running/Stop state. When a
+ * genuine interrupt buffer is available (worker mode, cross-origin
+ * isolated — engine.canStop()) the button becomes a real Stop; otherwise
+ * it just shows the cell is busy, since there is nothing to interrupt
+ * (a main-thread fallback blocks this same thread completely once a
+ * cell starts, with no opportunity for an interrupt to even be noticed).
+ * Ported from Mini IDE's own setRunButtonRunning() (assets/mini-ide.js). */
+function setRunButtonRunning(runBtn) {
+  if (!runBtn) return;
+  if (engine.canStop()) {
+    runBtn.disabled = false;
+    runBtn.textContent = "■";
+    runBtn.title = "Stop this cell";
+    runBtn.classList.add("dm-icon-run-stop");
+  } else {
+    runBtn.disabled = true;
+    runBtn.textContent = "…";
+    runBtn.title = "Running…";
+  }
+}
+
+/* Restores a cell's Run button once it finishes (or fails to) run. */
+function resetRunButton(runBtn) {
+  if (!runBtn) return;
+  runBtn.disabled = false;
+  runBtn.classList.remove("dm-icon-run-stop");
+  runBtn.title = "Run this cell (Shift+Enter)";
+  runBtn.textContent = "▶";
+}
+
 /* Runs a single cell by id, in response to its own Run button or
- * Shift+Enter. `running` is a simple flag guarding against overlapping
- * runs — dewmini has one Python interpreter, so only one cell can
- * actually be executing at a time; a click while something else is
- * already running is just ignored rather than queued. */
+ * Shift+Enter. A second click on the cell that is already running sends
+ * a Stop (interrupt) request instead of starting a new run — mirroring
+ * Mini IDE's own runCell() (assets/mini-ide.js). `running` guards against
+ * overlapping runs from two different cells: dewmini has one Python
+ * interpreter, so only one cell can actually be executing at a time; a
+ * click on a *different* cell while one is already running is ignored
+ * rather than queued. */
 async function runCell(id) {
+  if (runningCellId === id) {
+    engine.requestInterrupt();
+    return;
+  }
   if (running) return;
   const cell = cells.find((c) => c.id === id);
   if (!cell || cell.type !== CELL_TYPES.PYTHON) return;
   running = true;
+  runningCellId = id;
   try {
+    // Boot (or reconnect to an already-booted) engine *before* deciding
+    // what the Run button should look like — engine.canStop(), which
+    // setRunButtonRunning() reads, only knows worker-vs-main-thread once
+    // ensureBooted() has actually resolved. Calling it here first (rather
+    // than only inside executeCell() below) is what mirrors Mini IDE's own
+    // runCell() (assets/mini-ide.js): its own await ensureEngineAndFsReady()
+    // happens before its own setRunButtonRunning() for exactly this reason.
+    // Skipping this step showed up as a genuine bug in testing: canStop()
+    // read false (its pre-boot default) on every cell's first-ever run,
+    // showing the *non-stoppable* "…" busy state even in worker mode.
+    await ensurePyodide();
+    setRunButtonRunning(cell.runBtn);
     const ok = await executeCell(cell);
     updateStatus(ok ? "Ran." : "Error — see the cell.", ok ? "ok" : "error");
   } catch (err) {
     updateStatus(`Python isn't available: ${err.message}`, "error");
   } finally {
     running = false;
+    runningCellId = null;
+    resetRunButton(cell.runBtn);
   }
 }
 
 /* Runs every Python cell in order, top to bottom — "Run all." Unlike
- * runCell() for a single cell, this first calls
- * `tools.reset_page_state()` and re-seeds the shared namespace: running
- * every cell again from a clean slate is what makes "what's on screen
- * matches what the code actually did" true even if, say, a variable a
- * cell used to define got deleted from the notebook — without the
- * reset, a stale value from a previous run could linger and mask that
- * kind of mistake. */
+ * runCell() for a single cell, this first calls the shared engine's
+ * resetPageState() (clearing and re-seeding the shared namespace,
+ * cheaper than a full restart): running every cell again from a clean
+ * slate is what makes "what's on screen matches what the code actually
+ * did" true even if, say, a variable a cell used to define got deleted
+ * from the notebook — without the reset, a stale value from a previous
+ * run could linger and mask that kind of mistake. Each cell's own Run
+ * button becomes a Stop button while it's its turn, the same as running
+ * it individually, so a runaway cell partway through "Run all" can still
+ * be interrupted without losing the cells that already ran. */
 async function runAllCells() {
   if (running) return;
   const pythonCells = cells.filter((c) => c.type === CELL_TYPES.PYTHON);
@@ -839,13 +851,15 @@ async function runAllCells() {
 
   try {
     await ensurePyodide();
-    tools.reset_page_state();
-    await pyodide.runPythonAsync(SEED_GLOBALS_CODE);
+    await engine.resetPageState();
     updateStatus(`Running ${pythonCells.length} cell${pythonCells.length === 1 ? "" : "s"}…`);
 
     let errors = 0;
     for (const cell of pythonCells) {
+      runningCellId = cell.id;
+      setRunButtonRunning(cell.runBtn);
       const ok = await executeCell(cell);
+      resetRunButton(cell.runBtn);
       if (!ok) errors += 1;
     }
     updateStatus(
@@ -856,6 +870,7 @@ async function runAllCells() {
     updateStatus(`Python isn't available: ${err.message}`, "error");
   } finally {
     running = false;
+    runningCellId = null;
     if (btn) btn.disabled = false;
   }
 }
@@ -1579,6 +1594,54 @@ function formatFileSize(bytes) {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
+/* Reflects engine.engineMode()/canStop() into Settings' "Python" section
+ * — ported verbatim from Mini IDE's own updateExecutionStatus()
+ * (assets/mini-ide.js), since it's the same engine reporting the same
+ * two things: which path booted, and whether Stop can actually do
+ * anything in it. */
+function updateExecutionStatus() {
+  const el = document.getElementById("settings-execution-status");
+  if (!el) return;
+  const mode = engine.engineMode();
+  if (!mode) {
+    el.textContent = "Not started yet — run a cell to start Python.";
+    return;
+  }
+  const where = mode === "worker"
+    ? "a background worker, so the page stays responsive"
+    : "the main thread (no background worker available here) — a runaway cell will freeze the page until it finishes";
+  const stop = engine.canStop()
+    ? "Stop can genuinely interrupt a running cell."
+    : "Stop can't interrupt a running cell in this mode.";
+  el.textContent = `Running in ${where}. ${stop}`;
+}
+
+/* Wires the "Restart Python" button — tears down the engine entirely
+ * (engine.restart()) and forgets that a filesystem was ever mounted
+ * (dfs.reset(), since a fresh interpreter has nothing mounted into it
+ * yet), then boots a clean one right away so Settings reflects real
+ * status immediately rather than waiting for the next Run click. For
+ * recovering from a corrupted namespace, or a runaway loop the main-
+ * thread fallback's own missing Stop button couldn't reach. */
+function initExecutionSection() {
+  document.getElementById("settings-restart-python")?.addEventListener("click", async () => {
+    if (!confirm("Restart Python? Anything defined in the current session will be lost.")) return;
+    engine.restart();
+    dfs.reset();
+    updateStatus("Restarting Python…");
+    updateExecutionStatus();
+    updateStorageStatus();
+    try {
+      await ensurePyodide();
+      updateStatus("Python restarted.", "ok");
+    } catch (err) {
+      updateStatus(`Python failed to restart: ${err.message}`, "error");
+    }
+    updateExecutionStatus();
+    updateStorageStatus();
+  });
+}
+
 /* Reflects dfs.getBackend() into Settings' "Files" section: the status
  * line, and the choose/reconnect/forget buttons' own visibility and
  * label — the same three-way message Mini IDE's own updateStorageStatus()
@@ -1729,7 +1792,7 @@ async function uploadFsFiles(fileList) {
 }
 
 function initStorageSection() {
-  dfs.configure({ getPyodide: ensurePyodide, onBackendChange: () => updateStorageStatus() });
+  dfs.configure({ onBackendChange: () => updateStorageStatus() });
 
   document.getElementById("settings-choose-folder")?.addEventListener("click", async (e) => {
     const action = e.currentTarget.dataset.action || "choose";
@@ -2281,6 +2344,7 @@ async function init() {
   initPracticeOrderSettings();
   initRunStatsSetting();
   initStorageSection();
+  initExecutionSection();
   wireToolbar();
   setupDragAndDrop();
   renderCells();

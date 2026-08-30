@@ -1627,7 +1627,7 @@ let pyodideReady = false;
 
 /* Everything with an "MT" suffix from here down belongs to the
  * main-thread path: Pyodide running directly in this script, rather than
- * inside a Worker. This is a near-exact twin of mini-ide-engine.js's own
+ * inside a Worker. This is a near-exact twin of pyodide-engine.js's own
  * main-thread fallback (that file's own comments go into more line-by-line
  * detail on the same functions, if this section moves too fast) — the
  * pattern is: `lookupLiveNameMT`/`docForMT`/`signatureForMT` answer
