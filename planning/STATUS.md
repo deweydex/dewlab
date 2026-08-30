@@ -108,7 +108,18 @@ how they're built.
   uses. Settings gained dewmini's own "Your notes" free-text box, an
   "Editor" section (code size, spacing, cursor, gutter, active line),
   and a file name field shared by every download and a Print/PDF
-  button.
+  button. Dark mode had its own bug: a local `.dl-btn` override hardcoded
+  a fixed-dark navy for both toolbar and Settings buttons (invisible on a
+  near-black background), and toolbar icons baked their fill color
+  straight into the SVG data URI instead of using `currentColor` — both
+  fixed, the icons now using the same `mask`/`background: currentColor`
+  technique dewmini's own toolbar icons use. The toolbar was also trimmed
+  down: Import and the `.py`/`.html`/`.ipynb` download buttons moved into
+  Settings (which already had them), replaced by a "Load example" button
+  that loads the same sample cells the notebook used to auto-seed on
+  every load of an empty notebook — now a notebook you've cleared stays
+  cleared. Settings itself is grouped into three collapsible sections
+  (Workspace, Your work, Appearance) instead of one long scroll.
 - **dewmini**: a smaller, quieter cousin — the same
   `tutorial_tools.py`, but Pyodide stays on the main thread always (no
   Worker, no Stop button), by design: dewmini is for something quick,

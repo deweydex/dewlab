@@ -97,11 +97,9 @@ let hasSampleCells = false;
 let cellsContainer;
 let addPythonBtn;
 let addTextBtn;
+let loadExampleBtn;
 let runAllBtn;
 let clearAllBtn;
-let downloadPythonBtn;
-let downloadHtmlBtn;
-let downloadIpynbBtn;
 let statusEl;
 let sampleNoticeEl;
 let removeSampleBtn;
@@ -781,11 +779,9 @@ async function init() {
   cellsContainer = document.getElementById('cells-container');
   addPythonBtn = document.getElementById('add-python-cell');
   addTextBtn = document.getElementById('add-text-cell');
+  loadExampleBtn = document.getElementById('load-example-cells');
   runAllBtn = document.getElementById('run-all');
   clearAllBtn = document.getElementById('clear-all');
-  downloadPythonBtn = document.getElementById('download-python');
-  downloadHtmlBtn = document.getElementById('download-html');
-  downloadIpynbBtn = document.getElementById('download-ipynb');
   statusEl = document.getElementById('mini-ide-status');
   sampleNoticeEl = document.getElementById('sample-cells-notice');
   removeSampleBtn = document.getElementById('remove-sample-cells');
@@ -845,6 +841,14 @@ async function init() {
  * Load saved state from localStorage
  * Validates and sanitizes loaded data
  *
+ * A notebook with nothing saved starts genuinely empty now, rather than
+ * auto-seeding the example cells every time — that used to mean Clear
+ * All never actually stayed empty across a reload, and buried the one
+ * way back to the example (a toolbar "Remove Sample Cells" button, gone
+ * the moment a reader edited anything) with no way to ask for it again.
+ * loadExampleCells() (wired to the toolbar's own "Load example" button)
+ * is that one way back in now, available any time rather than once.
+ *
  * @function loadSavedState
  */
 function loadSavedState() {
@@ -853,9 +857,9 @@ function loadSavedState() {
     try {
       cells = JSON.parse(saved);
       // Validate cells - ensure each has required fields and valid type
-      cells = cells.filter(cell => 
-        cell && 
-        cell.id && 
+      cells = cells.filter(cell =>
+        cell &&
+        cell.id &&
         typeof cell.id === 'string' &&
         [CELL_TYPES.PYTHON, CELL_TYPES.TEXT].includes(cell.type)
       );
@@ -863,12 +867,6 @@ function loadSavedState() {
       console.error('Failed to load saved state:', e);
       cells = [];
     }
-  }
-  
-  // If no cells, create sample cells
-  if (cells.length === 0) {
-    cells = createSampleCells();
-    hasSampleCells = true;
   }
 }
 
@@ -899,6 +897,24 @@ function createSampleCells() {
       true
     )
   ];
+}
+
+/**
+ * Replaces the current cells with the worked example — what the
+ * toolbar's "Load example" button calls. Asks first if that would
+ * throw away real work; doesn't bother when the notebook is already
+ * empty, since there's nothing to lose.
+ *
+ * @function loadExampleCells
+ */
+function loadExampleCells() {
+  if (cells.length && !confirm("Replace the current cells with the example? This can't be undone.")) return;
+  cells = createSampleCells();
+  hasSampleCells = true;
+  saveState();
+  renderCells();
+  if (sampleNoticeEl) sampleNoticeEl.hidden = false;
+  updateStatus('Example loaded.');
 }
 
 /**
@@ -949,6 +965,7 @@ function setupEventListeners() {
   // insertCellAt() the in-between dividers use.
   addPythonBtn?.addEventListener('click', () => insertCellAt(cells.length, CELL_TYPES.PYTHON));
   addTextBtn?.addEventListener('click', () => insertCellAt(cells.length, CELL_TYPES.TEXT));
+  loadExampleBtn?.addEventListener('click', loadExampleCells);
 
   // Run all cells
   runAllBtn?.addEventListener('click', () => {
@@ -998,11 +1015,6 @@ function setupEventListeners() {
   // Import a .ipynb or .py file as this notebook's cells
   importNotebookBtn?.addEventListener('click', () => importNotebookInput?.click());
   importNotebookInput?.addEventListener('change', handleImportNotebookFile);
-
-  // Download buttons
-  downloadPythonBtn?.addEventListener('click', () => downloadAsPython());
-  downloadHtmlBtn?.addEventListener('click', () => downloadAsHtml());
-  downloadIpynbBtn?.addEventListener('click', () => downloadAsIpynb());
 
   // Remove sample cells button
   removeSampleBtn?.addEventListener('click', () => {

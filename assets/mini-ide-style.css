@@ -404,6 +404,41 @@
 .mini-ide-cell-output img { max-width: 100%; border-radius: 3px; }
 
 /* ============================================================================
+ * Settings: collapsible groups — the same <details>/<summary> disclosure
+ * tutorial-style.css's own .dl-toc already uses, so a reader who has
+ * opened one already knows how this one works. Each .dl-settings-section
+ * inside keeps its own heading; the summary just names the cluster of
+ * sections it holds.
+ * ============================================================================
+ */
+.mini-ide-settings-group + .mini-ide-settings-group {
+  margin-top: 1.1rem;
+  padding-top: 1.1rem;
+  border-top: 1px solid var(--dl-rule);
+}
+.mini-ide-settings-group > summary {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  cursor: pointer;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--dl-heading);
+  list-style: none;
+  margin-bottom: 0.8rem;
+}
+.mini-ide-settings-group > summary::-webkit-details-marker { display: none; }
+.mini-ide-settings-group > summary::before {
+  content: "▸";
+  display: inline-block;
+  color: var(--dl-muted);
+  transition: transform 0.12s ease;
+}
+.mini-ide-settings-group[open] > summary::before { transform: rotate(90deg); }
+.mini-ide-settings-group > summary:hover::before { color: var(--dl-orange); }
+
+/* ============================================================================
  * Settings: filename input — matches compose/dewmini-style.css's own
  * .dm-filename-label/.dm-filename-input.
  * ============================================================================
