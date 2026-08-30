@@ -176,6 +176,17 @@ skill never has to re-derive "what came before," only receive it.
   a small fixed corner button at this width; only the floating panel shape
   stopped working, and that is what changes.
 
+**§6 describes the panel as it originally shipped — a floating card with
+a fixed corner toggle. Both changed shape — see `DECISIONS_LOG.md`
+7.83.** The toggle moved into `.dl-masthead-actions`, alongside Settings
+and the series nav's own toggle, rather than staying a fixed-position
+button of its own; the panel became a full-height docked sidebar rather
+than a card capped by `max-height`; and its open state now survives a
+Prev/Next navigation to the next tutorial in the series (still not
+restored below the phone breakpoint, where it stays a bottom sheet a
+reader opens on purpose each time). §6's placement details are kept
+here as the record of the shape this shipped in first, not rewritten.
+
 ## 7. What ships in what order
 
 Roughly: schema + a couple of hand-written example glossaries to prove the

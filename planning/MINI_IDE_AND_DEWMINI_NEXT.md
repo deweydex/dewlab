@@ -14,6 +14,18 @@ chooses between — but yes, quite a bit more sharing of the code
 underneath them than exists today.** The reasoning is in
 [§4](#4-the-merger-question).
 
+**Superseded, directly, by the person this recommendation was written
+for — see the addendum after §5.** §4's own reasoning stands as written
+below (it was correct given what it was weighing), but the actual
+decision it fed into went the other way: not a "two modes in one page"
+merger — §4 is right that this loses more than it gains — but dewmini
+adopting all of Mini IDE's capabilities while keeping its own smaller
+style, with Mini IDE retiring once that parity is reached. This is a
+call only the person the tool is for gets to make, not something a
+written recommendation overrides on its own; see the addendum for what
+actually changed and why it isn't a contradiction of §4's reasoning so
+much as a different question being asked.
+
 ---
 
 ## 1. Where things actually stand
@@ -221,3 +233,58 @@ In order, by how much a student would actually notice:
 Nothing on dewmini's own list is urgent enough to lead with — which, for
 a tool whose entire design point is staying small, is exactly the
 right state to be in.
+
+---
+
+## 6. Addendum: the direction actually taken
+
+Written in a later session, after the person dewlab is built for read this
+plan and answered the merger question directly rather than by proxy:
+"I think dewmini wins out in our little ide competition here... can we
+make sure all of the features of mini-ide are in dewmini but we keep
+dewmini's style and layout?" Asked to choose between keeping both
+indefinitely or retiring Mini IDE once parity was reached, the answer was
+retirement.
+
+This is not §4 turning out to be wrong. §4 weighed a *merger* — one page,
+a mode switch, both experiences folded into a single tool — against
+keeping them genuinely separate, and correctly found the merger worse for
+a student than two pages. What actually got decided is a third thing §4
+never evaluated: not a merger, but a **replacement** — dewmini grows to
+cover everything Mini IDE does, in dewmini's own smaller style rather than
+Mini IDE's, and Mini IDE stops existing once that's true. There is no
+mode switch, no "which experience am I in" for a student to parse, no
+state-migration problem between two coexisting shapes — the two objections
+§4 raised against a merger. One tool remains; it simply isn't the one this
+document originally assumed would be the survivor.
+
+The work is being staged, not done in one pass:
+
+1. **A shared sidebar system first** (`planning/SIDEBAR_CONTENT.md`,
+   `DECISIONS_LOG.md` 7.83/7.84) — Settings, Reference, and (on tutorial
+   pages) the series nav became genuine docked panels, toggled from a
+   sticky masthead action row rather than floating corner popovers, on
+   tutorial pages, Mini IDE, and dewmini alike. Chosen to go first because
+   both IDEs' Settings panel already share `.dl-settings` with tutorial
+   pages — proving the pattern once and reusing it, rather than building
+   it three times.
+2. **Feature parity**, next: the file manager, SQLite persistence,
+   Worker-based Pyodide with a genuine Stop button, and `.ipynb`/`.py`
+   import+export that Mini IDE has and dewmini doesn't, ported into
+   dewmini's own codebase — keeping dewmini's simpler visual language
+   rather than adopting Mini IDE's, per the explicit instruction. §3's "a
+   tool whose entire design point is staying small" framing above is
+   itself now something to hold onto deliberately during this work, not
+   evidence against doing it: the goal is dewmini gaining Mini IDE's
+   *capability*, not its *weight*.
+3. **Mini IDE's retirement**, once parity is real: `mini-ide.html`
+   redirected to dewmini or removed, and every link, doc, and this
+   document's own §4 recommendation updated to match — not before, since
+   retiring the fuller tool before its replacement can actually do
+   everything it does would be a real regression for any student using
+   the features that hadn't landed yet.
+
+§1–§5 above are kept as written: the accounting of what each tool needed
+next was accurate at the time, and most of it (the file manager, SQLite,
+`.ipynb` import/export, Worker-based Pyodide) is exactly the list step 2
+now has to actually port, not work that stopped mattering.

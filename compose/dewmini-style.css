@@ -492,10 +492,12 @@
 }
 .dm-cell-stats:empty { display: none; }
 
-/* Settings and Help are fixed-position panels (tutorial-style.css's own
- * .dl-settings and .dm-panel) that float over the page rather than push
- * it — fine on an ordinary reading page with generous margins either
- * side of its column, not fine once a reader picks a wide line width in
+/* Settings and Help are docked sidebars now (tutorial-style.css's own
+ * .dl-settings and .dm-panel below — the same full-height, edge-flush
+ * shape tutorial pages' Reference/Settings/series nav got, see
+ * DECISIONS_LOG.md 7.83/7.84), not floating cards — which would be fine
+ * to ignore on an ordinary reading page with generous margins either
+ * side of its column, but not once a reader picks a wide line width in
  * Texture: the panel can then cover a cell's own run/reset/delete
  * buttons, or its output. Shrinking .dl-page's effective max-width while
  * a panel is open (data-dl-panel-open, set by watchPanelOverlap() in
@@ -505,44 +507,58 @@
  * more specific selector than tutorial-style.css's own plain `.dl-page`
  * rule, so this wins without needing !important. Skipped below 34rem,
  * where a panel is already a full-width bottom sheet rather than a
- * right-anchored overlay, and there is nothing to reserve room from. */
+ * right-docked sidebar, and there is nothing to reserve room from. */
 @media (min-width: 34rem) {
   html[data-dl-panel-open] .dl-page {
     /* Left-anchored, not centered (tutorial-style.css's own .dl-page
      * normally centers via `margin: 0 auto`), while a panel is open:
      * centering would waste half of whatever width it gives up as a
      * matching left margin nobody asked for, when all of it needs to
-     * go to the right, clear of the panel. margin-right (26rem: the
-     * wider of the two panels, 24rem, plus its own 1rem offset and a
-     * 1rem gap) is intentionally more than max-width ever needs on a
-     * wide screen — the box is over-constrained then, and a browser
-     * gives the surplus back to margin-right, not margin-left, so the
-     * left edge stays put either way. */
+     * go to the right, clear of the panel. --dl-panel-w (set by
+     * watchPanelOverlap()'s own ResizeObserver, tracking whichever of
+     * Settings/Help is actually open) is the panel's *real* rendered
+     * width, not a guess — a docked sidebar can be dragged wider or
+     * narrower via its own resize handle, and a flat guess would let a
+     * reader drag one wide enough to cover their own code again, the
+     * exact problem this whole mechanism exists to prevent. The 26rem
+     * fallback only matters for the one frame before that observer's
+     * first callback lands. */
     margin-left: 0;
-    margin-right: 26rem;
+    margin-right: var(--dl-panel-w, 26rem);
     max-width: var(--dl-line-width);
   }
 }
 
 /* -------------------------------------------------------------- panels
  *
- * dm-help reuses .dl-settings' geometry (same corner, same width, same
- * shadow) but is its own class so opening it never fights the real
- * dl-settings panel for the same DOM node. */
+ * dm-help reuses .dl-settings' geometry (same edge, same width) but is
+ * its own class so opening it never fights the real dl-settings panel
+ * for the same DOM node. A docked sidebar, full height, flush to the
+ * right edge — the same shape tutorial-style.css's own .dl-settings got
+ * in DECISIONS_LOG.md 7.83, ported here in 7.84 rather than left as the
+ * older floating-card shape now that .dl-settings next to it looks
+ * different. */
 
 .dm-panel {
   position: fixed;
-  right: 1rem;
-  top: calc(var(--dl-chrome-h) + 0.5rem);
+  right: 0;
+  top: var(--dl-chrome-h);
+  bottom: 0;
   z-index: 50;
-  width: min(24rem, calc(100vw - 2rem));
-  max-height: calc(100vh - var(--dl-chrome-h) - 1.5rem);
+  width: min(24rem, 100vw);
+  min-width: 16rem;
+  max-width: min(40rem, 100vw);
   overflow-y: auto;
+  overflow-x: hidden;
+  /* No native `resize: horizontal` — its handle would sit exactly on
+     the browser window's own right edge here (flush right, no `left`),
+     with no room on a real screen to drag further right and grow it.
+     makeRightEdgeResizable() (dewmini.js) replaces it with a plain
+     pointer-drag on .dl-panel-resize-handle instead, same fix as
+     .dl-settings' own in tutorial-style.css (DECISIONS_LOG.md 7.84). */
   padding: 1rem 1.1rem 1.1rem;
-  border: 1px solid var(--dl-cell-border);
-  border-radius: 6px;
+  border-left: 1px solid var(--dl-cell-border);
   background: var(--dl-panel-bg);
-  box-shadow: 0 8px 28px var(--dl-shadow);
   font-family: var(--dl-font-family);
   font-size: 0.88rem;
 }
@@ -665,7 +681,20 @@ kbd {
 /* ------------------------------------------------------------- responsive */
 
 @media (max-width: 34rem) {
-  .dm-panel { top: auto; bottom: 0; left: 0; right: 0; width: auto; max-height: 78vh; border-radius: 8px 8px 0 0; }
+  /* Border and shadow come back here — the docked desktop shape above
+     drops both in favour of a single border-left, but a bottom sheet
+     still floats over content below it and reads better with one, same
+     as .dl-settings' own phone breakpoint in tutorial-style.css.
+     width uses !important: makeRightEdgeResizable() (dewmini.js) sets
+     this panel's width as an inline style when dragged on a wider
+     screen, which otherwise beats this media query. */
+  .dm-panel {
+    top: auto; bottom: 0; left: 0; right: 0; width: auto !important; max-width: none; max-height: 78vh;
+    border: 1px solid var(--dl-cell-border); border-bottom: none; border-radius: 8px 8px 0 0;
+    box-shadow: 0 -4px 16px var(--dl-shadow);
+    /* A full-width bottom sheet has no meaningful "width" to resize. */
+    resize: none;
+  }
   .dm-help-label { display: none; }
   .dm-toolbar-group-end { width: 100%; order: 10; }
   .dm-cell-rail { margin-right: 0.6rem; }

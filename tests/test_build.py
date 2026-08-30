@@ -1171,7 +1171,20 @@ class TestTheStickyChrome:
         write(repo, "Some prose.\n")
         b.build()
         page = built(repo)
-        chrome = re.search(r'<div class="dl-chrome".*?</div>', page, re.DOTALL).group(0)
+        # A non-greedy match to the first </div> stops working the moment
+        # .dl-chrome has a nested <div> of its own — which it now does, for
+        # .dl-masthead-actions (the toggle buttons' action row) — so this
+        # walks div depth instead of assuming .dl-chrome's own close is the
+        # first one encountered.
+        start = page.index('<div class="dl-chrome"')
+        depth = 0
+        end = start
+        for tag in re.finditer(r"<div\b|</div>", page[start:]):
+            depth += 1 if tag.group(0) == "<div" else -1
+            if depth == 0:
+                end = start + tag.end()
+                break
+        chrome = page[start:end]
         assert "dl-masthead" in chrome
         assert "dl-nav-top" in chrome
 
