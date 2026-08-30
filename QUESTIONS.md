@@ -66,7 +66,7 @@ question anticipated. The offline standalone export keeps the old
 main-thread path — it has no Stop button to justify the cost, and a
 `file://` page cannot use a module Worker anyway.
 
-### Should a module's series carry an explicit reading order, and should the cheat sheet cross series within one module?
+### Should a module's series carry an explicit reading order, and should the reference panel cross series within one module?
 
 **Settled: series may cross within a module; never across modules.**
 
@@ -95,12 +95,12 @@ alongside confirming this: make sure writing a glossary is well documented
 with the skill highlighted as the tool that makes it easy, so YAML's
 structure is never something an author has to hand-write from a blank
 page. `.claude/skills/tutorial-glossary/SKILL.md` is that documentation —
-`planning/CHEAT_SHEETS.md` §3/§4, `docs/WRITING_TUTORIALS.md`, and
+`planning/REFERENCE_PANEL.md` §3/§4, `docs/WRITING_TUTORIALS.md`, and
 `ARCHITECTURE.md` all
 point to it by name as the way a glossary gets written, rather than
 describing the YAML shape as something to fill in by hand.
 
-### Does a mixed practice page's cheat sheet need curation, or is the raw union always right?
+### Does a mixed practice page's reference panel need curation, or is the raw union always right?
 
 **Settled: fine as the raw union for now.** No change needed today.
 Revisit with `.claude/skills/tutorial-glossary/SKILL.md` if a real
@@ -108,20 +108,20 @@ Revisit with `.claude/skills/tutorial-glossary/SKILL.md` if a real
 can be pointed at a mixed page's actual accumulated list to judge whether
 curation would visibly help, rather than deciding in the abstract.
 
-### What should the cheat sheet become on a phone?
+### What should the reference panel become on a phone?
 
 **Settled: a bottom sheet, mirroring `.dl-settings`' own existing mobile
 treatment**, rather than hiding the panel outright. The toggle stays a
 small fixed corner button at phone width; only the floating panel's shape
 changes — `top: auto; bottom: 0; left: 0; right: 0`, the same rule
-`.dl-settings` already had. `tests/e2e/test_cheat_sheet.py`'s `TestMobile`
+`.dl-settings` already had. `tests/e2e/test_reference.py`'s `TestMobile`
 covers both: the toggle stays visible, and opening it produces a sheet
 actually anchored to the bottom edge (asserted via `getComputedStyle`,
 not just visually).
 
-### Do pedagogical notes and datasets belong in the cheat sheet panel, or in a panel of their own? And is a second, left-anchored panel worth having?
+### Do pedagogical notes and datasets belong in the reference panel, or in a panel of their own? And is a second, left-anchored panel worth having?
 
-**Settled and built: notes and datasets extend the existing cheat-sheet
+**Settled and built: notes and datasets extend the existing reference
 panel, as `planning/SIDEBAR_CONTENT.md` §4 recommended** — no third panel
 for them. `DECISIONS_LOG.md` 7.74. Neither is cumulative across a series
 the way the glossary is; both ride on the same manifest `glossary` already
@@ -131,11 +131,11 @@ mistake a note for an examinable, taught term.
 **The second, left-anchored panel is settled and built, but scaled down
 from §4b's original sketch: series navigation only, not a duplicate of
 the existing "Contents" table of contents.** `DECISIONS_LOG.md` 7.73. An
-external PR (#65) moved the cheat sheet panel itself from right-anchored
+external PR (#65) moved the reference panel itself from right-anchored
 to left-anchored while this was being designed, which took "left" off the
 table as free space for a spatially separate panel — the series nav panel
-instead shares that same anchor, stacked below the cheat sheet's toggle,
-and joined the Settings/cheat-sheet mutual-exclusion group as a third
+instead shares that same anchor, stacked below the reference panel's
+toggle, and joined the Settings/reference mutual-exclusion group as a third
 member. The per-page table of contents (`render_toc()`) was left where it
 already was — inline, at the top of the page — rather than duplicated
 into this panel: it already answers "where am I on this page," and

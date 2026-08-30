@@ -3229,3 +3229,50 @@ apart where one could not, so `CONTRIBUTING.md`'s "who reads what"
 section now names each of them explicitly rather than describing
 categories.*
 
+
+**7.86 — The cheat-sheet rename finished in `QUESTIONS.md`: two dead
+file paths fixed, and the term itself changed there too, reversing
+7.82's carve-out for that file.** 7.82 renamed
+`planning/CHEAT_SHEETS.md` to `planning/REFERENCE_PANEL.md` and
+`tests/e2e/test_cheat_sheet.py` to `tests/e2e/test_reference.py`, and
+settled at the time that `DECISIONS_LOG.md` and `QUESTIONS.md` would
+both keep the old term in entries already written, on this project's
+convention of not rewriting finished history.
+
+Two references to the old *paths* survived that, which the convention
+never covered: `QUESTIONS.md` §"Is a structured YAML glossary file the
+right format" pointed a reader at `planning/CHEAT_SHEETS.md` §3/§4 as
+where the glossary format is documented, and §"What should the reference
+panel become on a phone" pointed at `tests/e2e/test_cheat_sheet.py`'s
+`TestMobile`. Both now name the files that exist; §3 and §4 of
+`REFERENCE_PANEL.md` are still the glossary-file and skill sections the
+first one meant, so only the filename was wrong. A settled entry's own
+wording reads correctly as history, but a file path is a signpost, and a
+signpost to a file nobody has is just broken.
+
+**Then the term itself, asked for directly once the paths were fixed:**
+seven mentions across four headings and three paragraphs became
+"reference panel". This reverses 7.82's decision for `QUESTIONS.md`
+specifically, on the reasoning that `QUESTIONS.md` is not really a
+historical record the way `DECISIONS_LOG.md` is — it is a live document
+a reader consults to find out where a question landed, and a reader who
+has only ever seen the panel called "Reference" should not have to work
+out that the two names are the same thing. `DECISIONS_LOG.md` keeps the
+old term throughout, including in 7.82's own account of the rename,
+where it is the subject of the entry rather than incidental to it.
+`planning/DOCS_AND_COMMENTS_PASS.md` also keeps it, in the one place the
+old name carries the meaning: a list of the files a completed pass
+rewrote, under the names they had then, with the current name added
+beside it so the entry can still be followed.
+
+A sweep for the same class of mistake across every markdown file except
+`DECISIONS_LOG.md` turned up two more, both left alone as somebody
+else's call rather than folded in here: `planning/BUILD_PLAN.md` links
+to `outlines/from-everlearning.md`, an outline that was never written,
+and `planning/EDITOR.md` §3 is titled for `assets/editor.html`, which
+does not exist — the editor page's body is built in `build.py`'s
+`write_editor_page()` and rendered into `shell.html`.
+
+*Cost to change: none worth naming. Ten string edits across three files,
+no code and no behaviour. The headings that changed carry anchors, but
+nothing in the repository links to a `QUESTIONS.md` anchor.*
