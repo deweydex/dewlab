@@ -284,12 +284,17 @@ The work is being staged, not done in one pass:
    already reachable in a cell (it lives in the shared
    `tutorial_tools.py`, which dewmini's `SEED_GLOBALS_CODE` already
    exposes in full). **Done: `.py` import** (`DECISIONS_LOG.md` 7.85) —
-   closes out the import/export item entirely. **Still open: the file
-   manager, genuine SQLite *persistence* (blocked on the file manager —
-   without a mounted filesystem a `.db` file is memory-only, same as
-   today), and the Worker/Stop migration** (the largest and most
-   structurally invasive of the four, and — per §3 above — the one
-   nothing else on this list actually depends on, so it can land last).
+   closes out the import/export item entirely. **Done: the file manager
+   and genuine SQLite persistence** (`DECISIONS_LOG.md` 7.86) — a
+   mounted filesystem (real folder, OPFS, or IDBFS, tucked into
+   Settings' own "Files" section rather than a sidebar tree, per an
+   explicit choice against Mini IDE's own heavier shape) plus a
+   `sync()`-after-every-cell-run fix neither this port nor Mini IDE's
+   own original had, without which a `.db` file's own writes never
+   actually reached persistent storage. **Still open: the Worker/Stop
+   migration** — the largest and most structurally invasive of the
+   four, and — per §3 above — the one nothing else on this list actually
+   depends on, so it was correctly left for last.
 3. **Mini IDE's retirement**, once parity is real: `mini-ide.html`
    redirected to dewmini or removed, and every link, doc, and this
    document's own §4 recommendation updated to match — not before, since

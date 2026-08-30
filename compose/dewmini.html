@@ -244,6 +244,29 @@
     <p class="dl-panel-note">Saved in this browser only, alongside your cells.</p>
   </section>
 
+  <!-- Files a cell writes to disk (a saved .db file, a downloaded
+       dataset) — not the notebook itself, which is the "Keep a copy"
+       section below. Mounted lazily, the same "not until Python starts"
+       rule the rest of dewmini follows (dfs.init(), dewmini-fs.js), and
+       kept to a flat, root-only list rather than Mini IDE's own
+       browsable tree — a deliberate, smaller scope for a section that
+       lives inside Settings rather than a panel of its own
+       (DECISIONS_LOG.md 7.86). -->
+  <section class="dl-settings-section" id="dl-settings-storage">
+    <h3>Files</h3>
+    <p class="dl-panel-note" id="settings-storage-status">Not started yet — run a cell to start Python.</p>
+    <div class="dl-progress-actions">
+      <button type="button" class="dl-btn" id="settings-choose-folder">Use a folder on my computer</button>
+      <button type="button" class="dl-btn" id="settings-forget-folder" hidden>Stop using that folder</button>
+    </div>
+    <div class="dl-progress-actions">
+      <button type="button" class="dl-btn" id="settings-upload-file">Upload a file</button>
+    </div>
+    <input type="file" id="settings-upload-file-input" multiple hidden>
+    <ul class="dm-filelist" id="settings-file-list" hidden></ul>
+    <p class="dl-panel-note" id="settings-file-note">Files appear here once Python starts — run any cell.</p>
+  </section>
+
   <section class="dl-settings-section" id="dl-settings-download">
     <h3>Keep a copy</h3>
     <p class="dl-panel-note">Everything below is saved here as you go. These take a copy with you.</p>
