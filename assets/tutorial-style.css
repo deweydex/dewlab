@@ -648,6 +648,19 @@ p code, li code {
   font-family: var(--dl-mono);
   font-size: 0.76rem;
 }
+/* Every tutorial's bibliography carries URLs, and a URL has no spaces to
+   break at, so on a narrow screen one long DOI pushes the whole page
+   sideways. break-word rather than anywhere: ordinary prose keeps wrapping
+   between words, and only a token that cannot fit on a line by itself is
+   broken. */
+#dl-body { overflow-wrap: break-word; }
+
+/* A failure message often carries a URL, and a URL has no spaces to break
+   at. Left to wrap normally it runs off the side of a phone and takes the
+   whole page with it — which is how a bad connection turns one problem into
+   two, exactly when a reader can least afford it. */
+.dl-status { overflow-wrap: anywhere; }
+
 .dl-status[hidden] { display: none; }
 .dl-status-error { color: var(--dl-error-fg); background: var(--dl-error-bg); border-color: var(--dl-error-fg); }
 

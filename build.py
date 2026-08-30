@@ -1797,10 +1797,14 @@ def render_index(
         # below, but they're common enough a reason to visit ("I just want
         # to try something") that a line buried in prose undersold them.
         '<div class="dl-workspaces">',
-        # h3, not h2: every <h2> on this page is read as a module heading
-        # (module_headings() in tests/test_build.py, and this page's own
-        # <h2> loop below) — this section belongs to neither list.
-        "<h3>Want to experiment on your own, outside a tutorial?</h3>",
+        # h2, because it is a top-level section of this page like the
+        # modules are. It used to be h3 to keep "every <h2> is a module"
+        # true for readers of this markup, at the cost of an h1 -> h3 jump
+        # that a screen reader navigating by heading level reads as a
+        # missing section (planning/EDGES_AUDIT.md). Module headings carry
+        # .dl-module-heading now, so telling them apart no longer depends
+        # on the level.
+        "<h2>Want to experiment on your own, outside a tutorial?</h2>",
         '<div class="dl-workspaces-grid">',
         '<a class="dl-workspace-card" href="mini-ide.html" target="_blank">',
         "<h3>Mini IDE</h3>",
@@ -1825,7 +1829,8 @@ def render_index(
     # adding a module lands it at the end rather than breaking the page.
     ordered = [m for m in listed if m in everywhere] + sorted(everywhere - set(listed))
     for module in ordered:
-        out.append(f"<h2>{html.escape(names.get(module, module))}</h2>")
+        out.append(
+            f'<h2 class="dl-module-heading">{html.escape(names.get(module, module))}</h2>')
         for (owner, series), members in sorted(groups.items()):
             if owner != module:
                 continue

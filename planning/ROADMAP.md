@@ -259,7 +259,23 @@ next.
 
 ---
 
-## Phase 6 — One workspace, and the edges
+## Phase 6 — One workspace, and the edges — **the edges done, the merge scoped**
+
+**The edges audit is done** — `planning/EDGES_AUDIT.md`,
+`DECISIONS_LOG.md` 7.93. The offline bundle was proven to boot and run
+Python with every non-loopback request blocked; two causes of sideways
+scrolling on a 375px phone were found and fixed, one of which made a
+connection failure compound into an unreadable page; and a heading-order
+break on the contents page was corrected. A real screen-reader pass still
+needs a person, and tap-target sizes are a design decision rather than a
+patch — both are named at the end of that document.
+
+**The merge is measured but not executed.** `MINI_IDE_AND_DEWMINI_NEXT.md`'s
+second addendum has the parity table: dewmini already matches Mini IDE on
+everything except Jedi autocomplete and a downloadable offline bundle, and
+the retirement sequence is written down. Neither gap is architectural.
+
+## Phase 6 — the original plan
 
 The addendum in `MINI_IDE_AND_DEWMINI_NEXT.md` records the decision:
 dewmini absorbs Mini IDE's capabilities and keeps its own smaller style;

@@ -3703,3 +3703,52 @@ a different problem than the one that actually bit.
 *Cost to change: low. `origin_of()` adds one optional key to a manifest
 entry and nothing reads it but the panel; the prose-rewriting code is gone
 rather than disabled, and this entry is what remains of it.*
+
+---
+
+**7.93 — The edges audit: the offline bundle proved, two phone-width
+failures fixed, one heading-order break corrected.**
+`planning/EDGES_AUDIT.md` has the full account. Three things had been
+asserted and never tested, and testing them found two real defects.
+
+**The offline bundle works, and now that is a measurement rather than a
+belief.** `planning/MINI_IDE_AND_DEWMINI_NEXT.md` §2 had said plainly that
+nothing proved the downloaded folder boots without a network. It was built
+with a vendored Pyodide, served from loopback, and loaded with every
+non-loopback request aborted: zero blocked requests, and a cell printing
+`42` under Python 3.13.2 with the network still off.
+
+**At 375px the page scrolled sideways, for two separate reasons, both
+URLs.** A bibliography DOI took a tutorial to 381px against a 375px
+viewport — and every tutorial ends with a bibliography. Worse, a Pyodide
+failure message names the URL that failed, and that took the page to
+**511px**. The failures compound: the reader who sees that message is by
+definition the reader on a poor connection, and the message itself then
+made the page unreadable on their screen. `#dl-body` now breaks inside a
+word where a word cannot fit, `.dl-status` wraps anywhere, and every page
+fits 375px exactly.
+
+`tests/e2e/test_narrow_screen.py` was checked against the un-fixed
+stylesheet before being trusted — two of its three tests fail without the
+fix. A regression test that passes either way is worse than none, because
+it reports safety it is not providing.
+
+**The contents page jumped `h1` to `h3`**, which a screen reader
+navigating by heading level hears as a missing section. It was deliberate:
+a comment explained that every `h2` on that page was read as a module
+heading, by the markup and by a test helper. That is a convenience for
+people reading the code, paid for by everyone navigating the page by ear.
+Module headings carry `.dl-module-heading` now, so telling them apart no
+longer depends on the level.
+
+**What this audit is not.** The structural checks — every control named,
+no missing `alt`, one `h1`, landmarks, `lang` — all pass, and they say
+nothing about whether a tutorial page is usable with a screen reader.
+Reading order, whether a sidebar announces itself, whether running a cell
+says anything to someone who cannot see the output: all still need a
+person. That is stated at the end of `EDGES_AUDIT.md` rather than left for
+someone to infer from a green checklist.
+
+*Cost to change: nil to reverse — two CSS declarations and a class name.
+The value is not in the code, which is trivial, but in the three claims
+that are now tested and the one that is honestly still open.*

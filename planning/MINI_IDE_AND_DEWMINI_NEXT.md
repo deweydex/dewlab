@@ -312,3 +312,50 @@ The work is being staged, not done in one pass:
 next was accurate at the time, and most of it (the file manager, SQLite,
 `.ipynb` import/export, Worker-based Pyodide) is exactly the list step 2
 now has to actually port, not work that stopped mattering.
+
+---
+
+## Addendum 2 — the parity checklist, measured
+
+`planning/ROADMAP.md` Phase 6 asked for a written parity checklist before
+retiring Mini IDE. Here it is, taken by reading both codebases rather than
+from memory, after `DECISIONS_LOG.md` 7.89's dewmini Worker migration
+landed.
+
+**dewmini has reached parity on almost everything.** The addendum above
+anticipated a long list; most of it is already done.
+
+| Capability | Mini IDE | dewmini |
+|---|---|---|
+| Worker engine (`assets/pyodide-engine.js`) | yes | yes |
+| A genuine Stop button | yes | yes |
+| Filesystem layer (local folder / OPFS / IDBFS) | yes | yes |
+| SQLite via `run_query()` | via `tutorial_tools` | yes, plus `sqlite3` in its defaults |
+| `.ipynb` / `.py` import | yes | yes |
+| Jedi-backed autocomplete | **yes** | **no** |
+| A downloadable offline bundle | **yes** (`write_mini_ide_bundle()`) | **no** |
+
+**Two gaps, and neither is architectural.** Autocomplete is a
+`vendor-src/codemirror-entry.js` extension already written and wired into two
+surfaces; dewmini needs it wired into a third. The offline bundle is a
+`build.py` function that assembles a folder from one HTML file, its
+JavaScript, and the vendored Pyodide — pointing it at `compose/` instead of
+`assets/` is the shape of the work, not a rewrite.
+
+**Then the retirement**, in this order, so nothing is deleted while anyone
+could still be relying on it:
+
+1. Close both gaps above, so dewmini can do everything Mini IDE can.
+2. Turn `mini-ide.html` into a short page explaining the move and linking to
+   dewmini. Downloaded folders keep working, unsupported — they are a
+   student's own copy and breaking one would be gratuitous.
+3. Delete `assets/mini-ide.js`, `assets/mini-ide-fs.js`,
+   `assets/mini-ide-style.css` and their `docs/*-explained.md`, and fold
+   whatever `mini-ide-style.css` holds that dewmini does not into one
+   stylesheet.
+4. Only then, the three-chromes problem this document opened with becomes
+   two, which is as far as it can go: `shell.html` is a template and
+   `dewmini.html` is a hand-written page, and they are different things.
+
+**Until step 1 is done, no polish work on Mini IDE.** Every hour spent on a
+tool that is leaving is an hour spent twice.

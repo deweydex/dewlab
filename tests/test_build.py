@@ -827,7 +827,7 @@ class TestTheContentsPage:
         By the heading rather than by substring: the slug also appears in every
         href below it, so a plain `index()` finds the link, not the heading."""
         page = (repo / "site" / "index.html").read_text()
-        return re.findall(r"<h2>(.*?)</h2>", page)
+        return re.findall(r'<h2 class="dl-module-heading">(.*?)</h2>', page)
 
     def test_modules_appear_in_the_order_the_module_file_gives(self, repo):
         """Alphabetical by folder name is not an order anybody chose — it is the
@@ -913,12 +913,14 @@ class TestTheContentsPage:
             "module: computational-methods",
             'module: computational-methods\nmodule_title: "Computational Methods"'))
         b.build()
-        assert "<h2>Computational Methods</h2>" in (repo / "site" / "index.html").read_text()
+        assert ('<h2 class="dl-module-heading">Computational Methods</h2>'
+                in (repo / "site" / "index.html").read_text())
 
     def test_without_one_the_folder_name_is_shown(self, repo):
         write(repo, "Prose.\n")
         b.build()
-        assert "<h2>computational-methods</h2>" in (repo / "site" / "index.html").read_text()
+        assert ('<h2 class="dl-module-heading">computational-methods</h2>'
+                in (repo / "site" / "index.html").read_text())
 
     def test_no_tutorials_means_no_index(self, repo):
         assert b.build() == []

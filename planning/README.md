@@ -70,6 +70,11 @@ written before the thing it describes was built.
 - **[`CELL_TOOLTIPS.md`](./CELL_TOOLTIPS.md)** — hover docs and signature
   help, including what Jedi in Pyodide costs and covers.
 
+### The edges
+- **[`EDGES_AUDIT.md`](./EDGES_AUDIT.md)** — the phone, screen-reader and
+  offline-bundle audit: what was claimed, what testing it found, and what
+  still needs a person rather than a script.
+
 ### The documentation itself
 - **[`DOCS_AND_COMMENTS_PASS.md`](./DOCS_AND_COMMENTS_PASS.md)** — the
   repo-wide pass that gave every substantial code file teaching-oriented
