@@ -1,5 +1,5 @@
-/* dewlab's shared Pyodide engine — Mini IDE's and dewmini's worker
- * *client* alike (DECISIONS_LOG.md 7.89).
+/* dewlab's shared Pyodide engine — dewmini's worker *client*
+ * (DECISIONS_LOG.md 7.89).
  *
  * Runs Pyodide off the main thread by reusing assets/pyodide-worker.js —
  * the same file the hosted tutorial pages already boot through
@@ -8,21 +8,20 @@
  * and streaming a cell's output back into its own output element. The
  * page that configures it owns the cell array and the DOM; this module
  * never touches either directly, only through the accessors passed to
- * configure() — which is what makes sharing it between two otherwise
- * independent pages possible at all.
+ * configure() — which is what keeps it independent of any one page's
+ * markup, and what made sharing it between two pages possible back when
+ * two pages needed it.
  *
- * Originally Mini IDE's own file (mini-ide-engine.js), written when this
- * codebase's convention was "each page owns a thin copy rather than a
- * shared runtime module" (tutorial-runtime.js's own worker-communication
- * block is still duplicated, not imported, for exactly that reason).
- * Extracted into a shared module once dewmini needed the same
- * capability: 700 lines of genuinely tricky Worker/interrupt/postMessage
- * logic, already cleanly decoupled from Mini IDE's own DOM via this
- * same configure() pattern, was judged too large and too risky to
- * duplicate a second time — particularly with Mini IDE's own eventual
- * retirement already planned (planning/MINI_IDE_AND_DEWMINI_NEXT.md §6),
- * at which point this file simply keeps existing under dewmini alone
- * rather than needing to be merged back together.
+ * Written when this codebase's convention was "each page owns a thin
+ * copy rather than a shared runtime module" (tutorial-runtime.js's own
+ * worker-communication block is still duplicated, not imported, for
+ * exactly that reason), and extracted into a shared module once a second
+ * workspace needed the same capability: 700 lines of genuinely tricky
+ * Worker/interrupt/postMessage logic was judged too large and too risky
+ * to duplicate. That second workspace has since been absorbed into
+ * dewmini (DECISIONS_LOG.md 7.91), leaving dewmini this file's only
+ * workspace client — the tutorial pages still run their own copy of the
+ * worker-communication logic.
  *
  * A page opened over file:// (a downloadable, offline copy) can run into
  * real restrictions constructing a module Worker at all, so boot() falls
@@ -32,9 +31,9 @@
  */
 
 /* sqlite3 was unvendored from Pyodide's default stdlib bundle as of
- * Pyodide 0.28 (planning/MINI_IDE_REDESIGN.md Phase 4) — it's now just
- * another entry in loadPackage's list, not the vendoring problem
- * planning/DECISIONS.md's older "core libraries" note was about. */
+ * Pyodide 0.28 — it's now just another entry in loadPackage's list, not
+ * the vendoring problem planning/DECISIONS.md's older "core libraries"
+ * note was about. */
 const DEFAULT_PACKAGES = ["numpy", "pandas", "matplotlib", "sqlite3"];
 
 /* Puts every name in tutorial_tools.__all__ into the shared namespace,
@@ -57,8 +56,9 @@ tutorial_tools._page_globals["__name__"] = "__dewlab__"
  * every URL handed to the worker (or read by the main-thread fallback) has
  * to be absolute first — and resolving against this module rather than
  * document.baseURI is what makes that absolute URL come out right no
- * matter how deep the importing page sits (dewmini's own compose/dewmini.html
- * one directory below Mini IDE's, in particular). */
+ * matter how deep the importing page sits (dewmini's own
+ * compose/dewmini.html one directory below the site root, in
+ * particular). */
 function assetUrl(relativePath) {
   return new URL(relativePath, import.meta.url).href;
 }
@@ -75,11 +75,10 @@ let getOutputEl = null; // (cellId) => that cell's output <div>, or null
 let onStatus = null; // (text, kind?) => show a status message on the page
 let packages = DEFAULT_PACKAGES; // which Pyodide packages to load at boot
 // The base URL tutorial_tools.py's own load_csv() resolves a dataset name
-// against — empty by default (Mini IDE's own long-standing value; no page
-// currently reachable from assets/ needs anything else), overridable per
-// page since dewmini lives one directory deeper (compose/) and needs
-// "../data/" to reach the same repo-root data/ folder Mini IDE and the
-// tutorial pages already share.
+// against — empty by default (right for a page at the site root),
+// overridable per page since dewmini lives one directory deeper
+// (compose/) and needs "../data/" to reach the same repo-root data/
+// folder the tutorial pages already share.
 let dataBase = "";
 
 /**
@@ -93,7 +92,7 @@ let dataBase = "";
  *   forwarded boot/package-loading progress text.
  * @param {string[]} [options.packages] - Pyodide packages to load at boot.
  * @param {string} [options.dataBase] - base URL load_csv() resolves a
- *   dataset name against; empty (Mini IDE's own value) unless overridden.
+ *   dataset name against; empty unless overridden.
  */
 export function configure(options) {
   getOutputEl = options.getOutputEl;
@@ -460,9 +459,9 @@ function jediSignatureMT(source, line, col) {
 }
 
 /* Works out the URL Pyodide's own files should be loaded from. Normally
- * that's a CDN (the jsdelivr URL below) — but the downloadable, offline
- * copy of Mini IDE ships its own vendored Pyodide instead (Phase 7 of the
- * redesign), and build.py arranges for that copy to set
+ * that's a CDN (the jsdelivr URL below) — but dewmini's downloadable,
+ * offline copy ships its own vendored Pyodide instead
+ * (write_dewmini_bundle() in build.py), and that copy sets
  * globalThis.DEWLAB_PYODIDE_BASE before this file ever runs, so the same
  * code works in both cases without needing to know which one it's in. */
 function pyodideBase() {
@@ -549,7 +548,7 @@ let mountedFsMT = null; // whatever mount object the active backend gave back, s
 
 /* Connects a real folder on the student's own computer (chosen through
  * the browser's folder picker, handled by the page's own fs module — see
- * assets/mini-ide-fs.js or compose/dewmini-fs.js) to Pyodide's virtual
+ * compose/dewmini-fs.js) to Pyodide's virtual
  * filesystem at `mountpoint`. mkdirTree makes sure the mount point itself
  * exists first — Pyodide can't mount onto a path that isn't there. After
  * this, Python code doing e.g. open(f'{mountpoint}/x.csv') is reading and
@@ -837,8 +836,8 @@ export async function pageNamesCompletion(context) {
 
 /* ------------------------------------------------------------- filesystem
  *
- * Each page's own fs module (assets/mini-ide-fs.js, compose/dewmini-fs.js)
- * is the only caller of everything below: it owns backend selection
+ * The page's own fs module (compose/dewmini-fs.js) is the only caller
+ * of everything below: it owns backend selection
  * (native folder vs. OPFS vs. IDBFS) and calls these once it has decided.
  * Every function here assumes ensureBooted() has already resolved —
  * Pyodide's FS doesn't exist before that. */

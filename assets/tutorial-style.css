@@ -1288,9 +1288,9 @@ p code, li code {
 /* dewmini, on the contents page: a small area of its own rather than a
    line buried in the intro prose above, since "I just want to try
    something, no tutorial attached" is common enough a reason to visit
-   to deserve its own stop. Used to hold two cards (dewmini and the now-
-   retired Mini IDE, DECISIONS_LOG.md 7.90) side by side in a two-column
-   grid — .dl-workspaces-grid keeps its old name and structure since a
+   to deserve its own stop. Used to hold two workspace cards side by
+   side in a two-column grid (DECISIONS_LOG.md 7.91) —
+   .dl-workspaces-grid keeps its old name and structure since a
    second workspace is a real possibility again someday, but with one
    card in it today, max-width keeps that single card from stretching
    into a lopsided full-width bar. */

@@ -4054,3 +4054,51 @@ has in common: every one of them was created by moving execution off the
 main thread, and none was caught by a test. Three needed a browser to see
 at all, and two were documentation that quietly became false while the code
 around it was correct.*
+
+---
+
+**7.98 — Mini IDE is removed, not just retired.** 7.91 retired the
+hosted page but deliberately kept the app alive underneath: the renamed
+`assets/mini-ide-offline-app.html`, its `mini-ide.js`/`mini-ide-fs.js`/
+`mini-ide-style.css`, and `write_mini_ide_bundle()` still packaging them
+into a downloadable bundle — on the reasoning that dewmini had no
+offline distribution of its own yet, so retiring the only offline
+workspace would have been a real capability regression. 7.92 ended that
+reasoning by giving dewmini its own offline bundle; this entry acts on
+the expiry. The four asset files, the bundle function and its
+`site/download/mini-ide` output, the tombstone `docs/MINI_IDE.md`, and
+the two explainer docs for the deleted code (`mini-ide-js-explained.md`,
+`mini-ide-fs-explained.md`) are all gone, and every present-tense
+reference across code comments, docs, tests, the deploy workflow, and
+planning was reworded — a workspace that no longer exists should not
+keep turning up by name in the description of the one that does.
+
+**The one deliberate survivor is the redirect.** `assets/mini-ide.html`
+stays, shrunk to an instant, dependency-free redirect to
+`compose/dewmini.html` — same reasoning as 7.91's own choice of a
+redirect over a 404: an old bookmark or link should land somewhere
+useful, and a URL can only keep working if a file answers at it.
+
+**Historical records stay historical.** `planning/MINI_IDE_REDESIGN.md`,
+`planning/MINI_IDE_AND_DEWMINI_NEXT.md` (which gained a fourth addendum
+recording this removal), `planning/DOCS_AND_COMMENTS_PASS.md`, and this
+log's own earlier entries keep their original wording — they describe
+what was true when written, which is the point of keeping them. Present-
+tense documents (`ARCHITECTURE.md`, `STATUS.md`, `ROADMAP.md`'s Phase 6
+records, the explainer docs, `CONTRIBUTING.md`'s examples) now describe
+one workspace.
+
+**Found while removing: the deploy guard never excluded dewmini's own
+bundle.** `.github/workflows/deploy.yml` counts the built downloadable
+copies against the built tutorial pages and excluded
+`site/download/mini-ide/` from that count — but not
+`site/download/dewmini/`, whose `index.html` and `compose/dewmini.html`
+(shipped since 7.92) land in the same find. The exclusion now names the
+bundle that actually exists.
+
+*Cost to change: low — the deletions themselves are the easy half; the
+care was in the sweep, since nearly forty files mentioned the old
+workspace by name, and in deciding which mentions were history (kept)
+and which were descriptions of the present (reworded). Anyone still
+holding a downloaded Mini IDE bundle keeps a working copy — nothing
+about removal reaches into a folder already saved to someone's disk.*

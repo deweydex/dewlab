@@ -95,13 +95,12 @@ current as things change — not a pitch.
 The one Python workspace with no tutorial attached — see
 `ARCHITECTURE.md` §4 for how it's built.
 
-dewmini used to be the smaller of two such workspaces; Mini IDE was the
-larger, until dewmini absorbed everything it did
-(`DECISIONS_LOG.md` 7.87–7.89) and Mini IDE retired
-(`DECISIONS_LOG.md` 7.91, addendum in
-`planning/MINI_IDE_AND_DEWMINI_NEXT.md`; full history of Mini IDE's own
-build in `MINI_IDE_REDESIGN.md`, kept as a record of work rather than a
-description of what's live). dewmini runs Python through
+dewmini used to be the smaller of two such workspaces, until it
+absorbed everything the larger one did and that one was removed
+(`DECISIONS_LOG.md` 7.87–7.91 and 7.98; addenda in
+`planning/MINI_IDE_AND_DEWMINI_NEXT.md`; the full history of the other
+workspace's build in `MINI_IDE_REDESIGN.md`, kept as a record of work
+rather than a description of what's live). dewmini runs Python through
 `assets/pyodide-engine.js`, a shared Worker-based engine (a client of
 `assets/pyodide-worker.js`, the same runtime tutorial pages use) — a
 genuine Stop button, and real Jedi-backed autocomplete and signature
@@ -110,11 +109,12 @@ Access API), its own named OPFS subdirectory, or IDBFS — whichever the
 browser supports — behind one interface, so the Files section in
 Settings, SQL support (`sqlite3` against a mounted `.db` file), and file
 uploads all work the same way regardless of backend. `.ipynb`/`.py`
-import and export round it out. The hosted `mini-ide.html` is now a
-short redirect notice pointing here; a working, offline-only copy of
-the original Mini IDE app still exists as a download
-(`write_mini_ide_bundle()` in `build.py`), kept for continuity rather
-than retired along with the hosted page.
+import and export round it out, and dewmini has its own downloadable,
+offline-capable copy (`write_dewmini_bundle()` in `build.py`). The old
+second workspace's hosted URL survives only as `mini-ide.html`, a
+permanent redirect here, so old bookmarks still land somewhere useful;
+everything else of it — code, offline bundle, docs — has been removed
+(`DECISIONS_LOG.md` 7.98).
 
 ### Documentation and code comments
 Every substantial code file has detailed, teaching-oriented inline

@@ -43,12 +43,15 @@ the record of why it works the way it does.
 - **[`EDITOR.md`](./EDITOR.md)** — the GitHub-integrated visual editor:
   what it does and how releases work through it.
 - **[`MINI_IDE_AND_DEWMINI_NEXT.md`](./MINI_IDE_AND_DEWMINI_NEXT.md)** —
-  what's still worth building on each of dewlab's two Python workspaces,
-  and why merging them into one tool isn't the answer. Its addendum
-  records the decision that went the other way.
+  a historical record from when dewlab had two Python workspaces: what
+  was worth building on each, why merging them into one tool wasn't the
+  answer, and (in its addenda) the decision that resolved the question
+  the other way — dewmini absorbed everything and is the one workspace
+  now.
 - **[`MINI_IDE_REDESIGN.md`](./MINI_IDE_REDESIGN.md)** — the phased plan
-  Mini IDE was rebuilt to: Worker engine, file manager, SQLite,
-  notebook import, offline bundle. All phases shipped.
+  the earlier, since-absorbed workspace was rebuilt to: Worker engine,
+  file manager, SQLite, notebook import, offline bundle. All phases
+  shipped; the capabilities live on in dewmini.
 
 ### The reading surface
 Each of these designs one part of what a reader sees, and each was

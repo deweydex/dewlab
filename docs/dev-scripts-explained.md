@@ -24,8 +24,8 @@ left to add.
 
 Three different things end up depending on this script: the end-to-end
 tests (so they don't need a live CDN), the self-hosted-Pyodide escape
-hatch for a school network that blocks the CDN, and `build.py`'s Mini IDE
-bundle (with a wider package list, to make the downloadable Mini IDE work
+hatch for a school network that blocks the CDN, and `build.py`'s dewmini
+bundle (with a wider package list, to make the downloadable dewmini work
 completely offline).
 
 ## `dev/generate_doc_snippets.py`

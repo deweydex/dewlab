@@ -100,13 +100,13 @@ a connection.
 
 ```sh
 python3 dev/fetch_pyodide.py --out assets/vendor/pyodide \
-    --packages numpy pandas matplotlib sqlite3 jedi
+    --packages numpy pandas matplotlib sqlite3 Pillow jedi
 python3 build.py --clean
-python3 -m http.server -d site/download/mini-ide 8200
+python3 -m http.server -d site/download/dewmini 8200
 ```
 
 Then, on a machine with the network off (or with everything but
-`127.0.0.1` blocked), open `http://127.0.0.1:8200/mini-ide.html` and:
+`127.0.0.1` blocked), open `http://127.0.0.1:8200/` and:
 
 - [ ] the page loads with no failed requests
 - [ ] adding a Python cell and running `print(6 * 7)` prints `42`

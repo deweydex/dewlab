@@ -9,8 +9,7 @@ This is the module a student's cell code sees. It does two jobs:
   * it provides the small bridge a cell uses to put something on the page and
     read something back: `text_input`, `dropdown`, `button`, `show`,
     `show_table`, and `check` — plus `load_csv` and `run_query` for pulling
-    in data, the latter usable wherever sqlite3 is loaded (dewmini today;
-    planning/MINI_IDE_REDESIGN.md Phase 4).
+    in data, the latter usable wherever sqlite3 is loaded (dewmini today).
 
 Built from the specification in planning/DECISIONS.md, which names those six
 functions and pins down one signature, `check(actual, expected)`. Everything

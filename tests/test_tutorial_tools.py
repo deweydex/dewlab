@@ -294,9 +294,9 @@ class TestTables:
 
 @needs_pandas
 class TestRunQuery:
-    """run_query — planning/MINI_IDE_REDESIGN.md Phase 4, sqlite3 is stdlib
-    so this runs under plain CPython same as everything else here; no
-    Pyodide-only behaviour to defer to the e2e test."""
+    """run_query — sqlite3 is stdlib so this runs under plain CPython
+    same as everything else here; no Pyodide-only behaviour to defer to
+    the e2e test."""
 
     @pytest.fixture()
     def seeded_db(self, tmp_path):

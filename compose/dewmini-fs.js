@@ -1,16 +1,13 @@
-/* dewmini's filesystem — ported from assets/mini-ide-fs.js
- * (planning/MINI_IDE_REDESIGN.md Phase 2, DECISIONS_LOG.md 7.88), now
- * routing through the same shared assets/pyodide-engine.js Mini IDE's
- * own copy already does (DECISIONS_LOG.md 7.89), rather than talking to
- * `pyodide.FS` directly the way this file's first version did — once
- * dewmini's own Pyodide could run inside a Worker, `pyodide.FS` stopped
- * being something this module (running on the main thread) could touch
- * directly at all.
+/* dewmini's filesystem (DECISIONS_LOG.md 7.88), routing through the
+ * shared assets/pyodide-engine.js (DECISIONS_LOG.md 7.89) rather than
+ * talking to `pyodide.FS` directly the way this file's first version
+ * did — once dewmini's own Pyodide could run inside a Worker,
+ * `pyodide.FS` stopped being something this module (running on the main
+ * thread) could touch directly at all.
  *
  * One small interface (init, listDir, readFile, writeFile, deleteFile,
  * mkdir) sitting between a mounted Pyodide filesystem and dewmini's own
- * Settings "Files" section — the same three backends, tried in the same
- * order, for the same reasons mini-ide-fs.js already explains in full:
+ * Settings "Files" section — three backends, tried in order:
  *   1. A real local folder, via the File System Access API. Chromium
  *      only, and only ever entered on an explicit click (chooseFolder()),
  *      never silently.
@@ -29,30 +26,24 @@ const DB_VERSION = 1;
 const STORE_NAME = "kv";
 const HANDLE_KEY = "native-dir-handle";
 
-// mini-ide-fs.js's own OPFS mount hands navigator.storage.getDirectory()
-// straight to engine.mountNative() — mapping Pyodide's mounted view
-// directly onto the origin's one shared OPFS root. Two tools doing that
-// on the same origin would see and could overwrite each other's files,
-// invisibly, the moment both existed — not a problem when Mini IDE was
-// the only one mounting OPFS, but a real one now that dewmini does too.
-// dewmini gets its own named subdirectory of that shared root instead
-// (see mountOpfs() below) before handing *that* handle to the same
-// engine.mountNative() Mini IDE's own real-folder mounting already uses
-// — OPFS mounting and real-folder mounting are the same operation as far
-// as the engine is concerned, just with a different handle source, so
-// this needs no engine change at all. (Mini IDE's own un-namespaced
-// mount is left as-is here — retiring it, not fixing it in place, is the
-// plan per planning/MINI_IDE_AND_DEWMINI_NEXT.md §6.)
+// An OPFS mount could hand navigator.storage.getDirectory() straight to
+// engine.mountNative() — mapping Pyodide's mounted view directly onto
+// the origin's one shared OPFS root. Two tools doing that on the same
+// origin would see and could overwrite each other's files, invisibly,
+// the moment both existed. dewmini mounts its own named subdirectory of
+// that shared root instead (see mountOpfs() below) before handing
+// *that* handle to the same engine.mountNative() real-folder mounting
+// already uses — OPFS mounting and real-folder mounting are the same
+// operation as far as the engine is concerned, just with a different
+// handle source, so this needs no engine change at all.
 const OPFS_SUBDIR = "dewmini";
 
 /* ------------------------------------------------------------- IndexedDB
  * A FileSystemDirectoryHandle is structured-cloneable, so it can be
  * stored as an IndexedDB value directly — the standard way to persist
- * File System Access API access across reloads. Kept under its own
- * database name (not mini-ide-fs.js's), so choosing a folder in one tool
- * never silently reconnects it in the other — each remembers its own
- * choice, even if a student happens to pick the same real folder in
- * both. */
+ * File System Access API access across reloads. Kept under dewmini's own
+ * database name, so no other tool on this origin can silently share or
+ * reconnect the choice. */
 
 function idbOpen() {
   return new Promise((resolve, reject) => {
@@ -138,8 +129,8 @@ let initPromise = null;
 /**
  * Mounts a filesystem: a previously chosen and still-permitted real
  * folder if one is on file, otherwise OPFS, otherwise IDBFS. Requires
- * Pyodide to already be starting — engine.ensureBooted() drives that,
- * same as mini-ide-fs.js's own init() calls it — so "Files" in Settings
+ * Pyodide to already be starting — engine.ensureBooted() drives that —
+ * so "Files" in Settings
  * only ever shows real status once Python has actually started, the same
  * lazy-boot rule the rest of dewmini follows. Idempotent: a second call
  * returns the same in-flight/completed mount rather than mounting twice.
@@ -230,9 +221,8 @@ function resolvePath(relativePath) {
 
 /** Lists one directory's contents, folders before files, alphabetically
  * within each group. dewmini's own Settings "Files" list only ever
- * browses the mount's root (a deliberate, smaller scope than Mini IDE's
- * full tree — see DECISIONS_LOG.md 7.88) but this itself stays general,
- * the same as mini-ide-fs.js's own listDir(). */
+ * browses the mount's root (a deliberately small scope — see
+ * DECISIONS_LOG.md 7.88) but this itself stays general. */
 export async function listDir(relativePath = "") {
   const entries = await engine.listDir(resolvePath(relativePath));
   return entries.sort((a, b) => {

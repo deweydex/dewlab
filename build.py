@@ -1799,8 +1799,8 @@ def render_index(
         # this is not a tutorial and doesn't belong on the numbered list
         # below, but it's common enough a reason to visit ("I just want
         # to try something") that a line buried in prose undersold it.
-        # Used to offer a choice between this and Mini IDE, retired once
-        # dewmini absorbed everything Mini IDE did (DECISIONS_LOG.md 7.90).
+        # Used to offer a choice between two workspaces, until dewmini
+        # absorbed the other one entirely (DECISIONS_LOG.md 7.91).
         '<div class="dl-workspaces">',
         # h2, because it is a top-level section of this page like the
         # modules are. It used to be h3 to keep "every <h2> is a module"
@@ -2738,17 +2738,16 @@ def zip_directory(source_dir: Path, target_zip: Path) -> Path:
 # cross-file import over http:// or https://, never from a file opened
 # directly by double-clicking (a `file://` page has no origin a CORS
 # check can approve, so the browser blocks the import outright, silently
-# leaving the page's own JavaScript never having run at all). Both
-# offline bundles need a real, if tiny and local, server to actually
+# leaving the page's own JavaScript never having run at all). The
+# offline bundle needs a real, if tiny and local, server to actually
 # work — this is that server: nothing beyond what Python itself already
 # ships, run with the same command README.md's own "Running it on your
 # own machine" section already asks a contributor to run for the site
 # itself, just aimed at one already-unzipped folder instead. Found by
 # testing an actual downloaded bundle's own file:// experience while
 # building write_dewmini_bundle() below, not assumed from reading the
-# code — and, once found, true of write_mini_ide_bundle()'s bundle too,
-# which carried the identical, previously untested "reopen it — no
-# server needed" claim in its own docstring.
+# code (an earlier bundle had carried the identical, untested "reopen
+# it — no server needed" claim in its own docstring).
 SERVE_SCRIPT = '''#!/usr/bin/env python3
 """Run this — `python3 serve.py` — to actually open this folder.
 
@@ -2786,145 +2785,13 @@ if __name__ == "__main__":
 '''
 
 
-def write_offline_serve_script(target: Path) -> None:
-    """Drops serve.py (see its own docstring above) into an offline
-    bundle's own folder — shared by write_mini_ide_bundle() and
-    write_dewmini_bundle() below, since the fix is identical either way."""
-    (target / "serve.py").write_text(SERVE_SCRIPT)
-
-
-# The subset of assets/ mini-ide.html actually needs on its own, outside the
-# hosted site — tutorial-runtime.js, every tutorial-only vendor bundle, and
-# the rest of assets/ mini-ide.html never loads would just be dead weight in
-# a download meant to be as small as it can be.
-MINI_IDE_ASSET_FILES = (
-    "mini-ide.js",
-    "pyodide-engine.js",
-    "mini-ide-fs.js",
-    "mini-ide-style.css",
-    "tutorial-style.css",
-    "tutorial_tools.py",
-    "pyodide-worker.js",
-    "vendor/katex.min.css",
-    "vendor/codemirror.bundle.js",
-)
-
-
-def write_mini_ide_bundle() -> Path | None:
-    """The downloadable Mini IDE: a folder a student can save locally and
-    open on the same machine even with no internet — Pyodide included, so
-    the first run doesn't need a live connection either, once
-    assets/vendor/pyodide/ exists. Replaces the loose mini-ide.html/js/css
-    copy at the site root, which only ever worked hosted — see
-    planning/MINI_IDE_REDESIGN.md Phase 7.
-
-    Needs a local server to actually open, though — not literally "reopen
-    the file," however that reads: this folder's JavaScript imports
-    across files the same way any modern web app does, and a browser
-    only allows that from http:///https://, never a file opened straight
-    off disk (see SERVE_SCRIPT's own docstring, copied in as this
-    bundle's own serve.py). Found, and fixed, while building
-    write_dewmini_bundle() below — not assumed from reading this
-    function's own prior claim, which was untested and wrong.
-
-    Mini IDE itself has since retired (DECISIONS_LOG.md 7.91) — the
-    hosted assets/mini-ide.html is now a short redirect notice pointing
-    at dewmini, not the app. This function keeps producing a working
-    offline copy anyway, from assets/mini-ide-offline-app.html (the
-    renamed original), because it is a self-contained artifact that costs
-    nothing to keep working — dewmini has its own offline bundle now too
-    (write_dewmini_bundle() below, DECISIONS_LOG.md 7.92), so this one is
-    no longer the only option, just still a real one; see that file's own
-    top comment.
-
-    assets/vendor/pyodide/ is not committed (gitignored, like /dev/pyodide/
-    a few lines up in .gitignore) — populate it with dev/fetch_pyodide.py,
-    the same trimmed-Pyodide fetcher the e2e tests already use for their
-    own local copy, just pointed at a different --out and asked for one
-    extra package Mini IDE needs that the e2e baseline doesn't:
-
-        python3 dev/fetch_pyodide.py --out assets/vendor/pyodide \\
-            --packages numpy pandas matplotlib sqlite3 jedi
-
-    A build run without that first still produces a working bundle, just
-    one that falls back to the CDN on first run, same as the hosted page
-    does.
-    """
-    mini_ide_html = ASSETS / "mini-ide-offline-app.html"
-    if not mini_ide_html.exists():
-        return None
-
-    target = OUT / "download" / "mini-ide"
-    shutil.rmtree(target, ignore_errors=True)
-    (target / "assets" / "vendor").mkdir(parents=True, exist_ok=True)
-
-    pyodide_vendored = (ASSETS / "vendor" / "pyodide").is_dir()
-
-    html = mini_ide_html.read_text()
-    if pyodide_vendored:
-        # The same override pyodide-engine.js's pyodideBase() already
-        # honors (mirroring tutorial-runtime.js's own PYODIDE_BASE) — no
-        # engine change needed, just telling this one copy of the page to
-        # use it instead of the CDN default.
-        html = html.replace(
-            "<head>",
-            '<head>\n<script>window.DEWLAB_PYODIDE_BASE = "assets/vendor/pyodide/";</script>',
-            1,
-        )
-    (target / "mini-ide.html").write_text(html)
-
-    for rel in MINI_IDE_ASSET_FILES:
-        src = ASSETS / rel
-        if not src.exists():
-            print(f"note: mini-ide bundle is missing {src.relative_to(ROOT)}", file=sys.stderr)
-            continue
-        dest = target / "assets" / rel
-        dest.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(src, dest)
-
-    if pyodide_vendored:
-        shutil.copytree(ASSETS / "vendor" / "pyodide", target / "assets" / "vendor" / "pyodide")
-    else:
-        print(
-            "note: assets/vendor/pyodide/ not found (see "
-            "write_mini_ide_bundle()'s docstring for the fetch command) — "
-            "the Mini IDE bundle will still boot Python from the CDN on "
-            "first run rather than fully offline",
-            file=sys.stderr,
-        )
-
-    # coi-serviceworker.js needs root scope to cover mini-ide.html, the same
-    # reason build() copies it to the hosted site's own root rather than
-    # leaving it under assets/vendor/ alone — see that copy's own comment.
-    coi_src = ASSETS / "vendor" / "coi-serviceworker.js"
-    if coi_src.exists():
-        shutil.copy2(coi_src, target / "coi-serviceworker.js")
-
-    write_offline_serve_script(target)
-    # mini-ide.html doesn't get index.html's own file://-detection
-    # (write_dewmini_bundle() below) — rewriting this legacy, offline-
-    # only file for a nicer error message is outside what retiring Mini
-    # IDE needed; a README a downloader actually sees first says the
-    # same thing without touching the page itself.
-    (target / "README.txt").write_text(
-        "To open this: run `python3 serve.py` in this folder, then use\n"
-        "the browser tab it opens. Double-clicking mini-ide.html directly\n"
-        "shows a blank page — see serve.py's own comment for why.\n"
-    )
-
-    return target
-
-
 # The subset of assets/ (plus data/) dewmini's own compose/dewmini.html
-# actually loads, on its own, outside the hosted site. Mirrors
-# MINI_IDE_ASSET_FILES above; the two lists differ only where the tools
-# themselves do — no vendor/katex.min.css (dewmini renders no maths),
-# but assets/examples/*.ipynb (the four worked-example notebooks Settings'
-# "Keep a copy" section offers) which MINI_IDE_ASSET_FILES should
-# probably carry too and, on inspection while building this, does not —
-# a pre-existing gap in Mini IDE's own bundle, left alone here since
-# fixing another tool's already-shipped download is outside this one's
-# scope.
+# actually loads, on its own, outside the hosted site — tutorial-runtime.js,
+# every tutorial-only vendor bundle, and the rest of assets/ dewmini never
+# touches would just be dead weight in a download meant to be as small as
+# it can be. No vendor/katex.min.css (dewmini renders no maths), but
+# assets/examples/*.ipynb: the four worked-example notebooks Settings'
+# "Keep a copy" section offers.
 DEWMINI_ASSET_FILES = (
     "pyodide-engine.js",
     "pyodide-worker.js",
@@ -2947,13 +2814,7 @@ def write_dewmini_bundle() -> Path | None:
     classroom up for a day with no reliable connection) can save locally
     and open on the same machine even with no internet — Pyodide
     included, so the first run doesn't need a live connection either,
-    once assets/vendor/pyodide/ exists. The one item
-    `planning/MINI_IDE_AND_DEWMINI_NEXT.md` §6's parity list never
-    covered, since Mini IDE's own offline bundle
-    (`write_mini_ide_bundle()` above) covered the "an offline Python
-    workspace exists" need well enough that dewmini going without one had
-    no visible cost — until Mini IDE itself retired (DECISIONS_LOG.md
-    7.91) and dewmini became the only Python workspace there is.
+    once assets/vendor/pyodide/ exists (DECISIONS_LOG.md 7.92).
 
     Needs a local server to actually open, though: dewmini.js imports
     dewmini-fs.js and pyodide-engine.js with real `import` statements,
@@ -2963,39 +2824,32 @@ def write_dewmini_bundle() -> Path | None:
     in as this bundle's own serve.py. `index.html` below actually checks
     for this rather than assuming a downloader read a README first.
 
-    Unlike write_mini_ide_bundle(), which flattens Mini IDE's own hosted
-    page (already at the site root) straight into the bundle, this one
-    mirrors the *hosted site's actual folder shape* — compose/, assets/,
-    and data/ as siblings, exactly what compose/dewmini.html's own
-    `../assets/...`, `../data/`, and `../coi-serviceworker.js` references
-    already assume — so dewmini.html, dewmini.js, and dewmini-fs.js need
-    no rewriting at all to work unhosted; only the same
-    DEWLAB_PYODIDE_BASE override write_mini_ide_bundle() injects gets
-    added here, for the same reason. A tiny top-level `index.html`
-    exists purely so opening the downloaded folder means finding one
-    obvious file, not knowing to look inside `compose/` first — either
-    it's being served (this script, or any other local server) and it
-    forwards straight to compose/dewmini.html, or it's been opened as a
-    bare file and it says so instead of forwarding into a page that
-    would just come up blank.
+    The bundle mirrors the *hosted site's actual folder shape* —
+    compose/, assets/, and data/ as siblings, exactly what
+    compose/dewmini.html's own `../assets/...`, `../data/`, and
+    `../coi-serviceworker.js` references already assume — so
+    dewmini.html, dewmini.js, and dewmini-fs.js need no rewriting at all
+    to work unhosted; only the DEWLAB_PYODIDE_BASE override gets layered
+    in. A tiny top-level `index.html` exists purely so opening the
+    downloaded folder means finding one obvious file, not knowing to
+    look inside `compose/` first — either it's being served (this
+    script, or any other local server) and it forwards straight to
+    compose/dewmini.html, or it's been opened as a bare file and it says
+    so instead of forwarding into a page that would just come up blank.
 
     assets/vendor/pyodide/ is not committed (gitignored, like /dev/pyodide/
     a few lines up in .gitignore) — populate it with dev/fetch_pyodide.py,
-    the same trimmed-Pyodide fetcher write_mini_ide_bundle() already
-    documents using, just asked for the packages dewmini's own DM_PACKAGES
-    needs (compose/dewmini.js) rather than Mini IDE's:
+    the same trimmed-Pyodide fetcher the e2e tests already use for their
+    own local copy, just pointed at a different --out and asked for the
+    packages dewmini's own DM_PACKAGES needs (compose/dewmini.js):
 
         python3 dev/fetch_pyodide.py --out assets/vendor/pyodide \\
             --packages numpy pandas matplotlib sqlite3 Pillow jedi
 
     A build run without that first still produces a working bundle, just
     one that falls back to the CDN on first run, same as the hosted page
-    does. (Mini IDE's own bundle needs a *different* --packages list —
-    no Pillow, since Mini IDE never gained dewmini's image_input() default
-    — so populating both offline bundles' Pyodide from one shared
-    assets/vendor/pyodide/ means fetching the union of the two, jedi and
-    parso included either way since both engines load those regardless
-    of which page's own DM_PACKAGES/DEFAULT_PACKAGES asked for them.)
+    does. (jedi and parso belong on the list regardless of DM_PACKAGES —
+    the engine loads them itself, for autocomplete.)
     """
     dewmini_html = COMPOSE / "dewmini.html"
     if not dewmini_html.exists():
@@ -3010,8 +2864,7 @@ def write_dewmini_bundle() -> Path | None:
     # compose/ wholesale first — dewmini.html, dewmini.js, dewmini-fs.js,
     # dewmini-style.css, practice-bank.json, all exactly as hosted; only
     # dewmini.html then gets its one Pyodide-base override layered in,
-    # the same targeted rewrite write_mini_ide_bundle() does to its own
-    # single HTML file.
+    # a single targeted rewrite of one HTML file.
     shutil.copytree(COMPOSE, target / "compose")
     html = (target / "compose" / "dewmini.html").read_text()
     if pyodide_vendored:
@@ -3052,7 +2905,8 @@ def write_dewmini_bundle() -> Path | None:
     if coi_src.exists():
         shutil.copy2(coi_src, target / "coi-serviceworker.js")
 
-    write_offline_serve_script(target)
+    # serve.py — see SERVE_SCRIPT's own docstring for why a bundle needs it.
+    (target / "serve.py").write_text(SERVE_SCRIPT)
 
     # A single obvious entry point at the folder's own top level: opening
     # a downloaded folder should mean finding one file, not knowing in
@@ -3669,22 +3523,15 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
         shutil.rmtree(OUT / "data", ignore_errors=True)
         shutil.copytree(DATA, OUT / "data")
     
-    # Mini IDE's hosted URL — assets/mini-ide.html is a short retirement
-    # notice now (DECISIONS_LOG.md 7.91), not the app; its <link>/<script>
-    # tags are root-relative, which is what the wholesale assets/ copy
-    # just above puts them at, so it just needs to exist at the site root.
-    # Guarded like the coi-serviceworker.js copy below: a test's own
-    # minimal ASSETS fixture need not carry it for that test's build to
-    # succeed.
-    mini_ide_src = ASSETS / "mini-ide.html"
-    if mini_ide_src.exists():
-        shutil.copy2(mini_ide_src, OUT / "mini-ide.html")
-
-    if standalone:
-        bundle_dir = write_mini_ide_bundle()
-        if bundle_dir is not None:
-            written.append(bundle_dir)
-            written.append(zip_directory(bundle_dir, OUT / "download" / "mini-ide.zip"))
+    # assets/mini-ide.html is a permanent redirect to dewmini, kept so
+    # old bookmarks to the workspace that once lived at that URL still
+    # land somewhere useful (DECISIONS_LOG.md 7.91, 7.98) — it needs to
+    # exist at the site root, where those bookmarks point. Guarded like
+    # the coi-serviceworker.js copy below: a test's own minimal ASSETS
+    # fixture need not carry it for that test's build to succeed.
+    redirect_src = ASSETS / "mini-ide.html"
+    if redirect_src.exists():
+        shutil.copy2(redirect_src, OUT / "mini-ide.html")
 
     # dewmini (compose/) is its own small folder rather than more root-level
     # files, so it copies wholesale like assets/ does.
@@ -3709,7 +3556,7 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
     # lives: a service worker's scope defaults to the directory it is served
     # from, and shell.html's {{ROOT_BASE}}coi-serviceworker.js tag registers
     # it expecting root scope, wide enough to cover every tutorial. Guarded
-    # like the Mini IDE copy above it: a test's own minimal ASSETS fixture
+    # like the redirect copy above it: a test's own minimal ASSETS fixture
     # need not carry every vendored file for its build to succeed.
     coi_src = ASSETS / "vendor" / "coi-serviceworker.js"
     if coi_src.exists():

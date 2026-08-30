@@ -13,8 +13,7 @@ conversation, the side that actually has Pyodide running in it.
 ## The big idea: this is where Python actually lives
 
 Every page that uses this file — a tutorial page via `tutorial-runtime.js`,
-or dewmini (and Mini IDE's own retired, offline-only copy) via
-`pyodide-engine.js` — creates exactly one Worker running
+or dewmini via `pyodide-engine.js` — creates exactly one Worker running
 this file, and from that point on, Python only exists here. The page
 itself never imports Pyodide or touches a Python object directly; it
 sends a message describing what it wants (`"run-cell"`, `"hover-doc"`,
@@ -51,7 +50,7 @@ for how that's wired up).
    `tutorial_tools.py`, sets up the shared namespace.
 7. **`runCell()`** — runs one cell and streams its output back as it
    happens.
-8. **Filesystem** (dewmini and Mini IDE's own offline copy only — a
+8. **Filesystem** (dewmini only — a
    tutorial page has no filesystem to mount) — `fsMountNative`/`fsMountOpfs`/
    `fsMountIdbfs` (the three storage backends), `fsSync`, `fsUnmount`,
    and the plain file operations `fsList`/`fsRead`/`fsWrite`/`fsDelete`/

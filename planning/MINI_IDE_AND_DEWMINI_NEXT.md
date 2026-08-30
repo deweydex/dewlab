@@ -351,3 +351,24 @@ Python" that permanently wedged the tool it exists to unwedge — sat in
 Now that one engine is the only engine, that is not a historical note.
 A change to it is a change to every surface that runs Python, and worth
 reviewing as such rather than as a change to whichever one prompted it.
+
+---
+
+## Addendum 4 — the removal, finishing what retirement started
+
+Step 3's retirement deliberately kept three things: the hosted URL as a
+redirect, the renamed offline app as the source of a still-offered
+download, and the app's own code and stylesheet that download needed.
+The reasoning for the second and third — dewmini had no offline
+distribution of its own yet — expired the moment step 4 built one.
+
+A later pass (`DECISIONS_LOG.md` 7.98) acted on that: the offline app,
+`mini-ide.js`, `mini-ide-fs.js`, `mini-ide-style.css`, the
+`write_mini_ide_bundle()` build step and its download, the tombstone
+`docs/MINI_IDE.md`, and the two explainer docs for the deleted code are
+all gone, and every present-tense reference across code and
+documentation was reworded. The one deliberate survivor is the redirect
+at the old hosted URL, kept for the same reason 7.91 chose a redirect
+over a 404 in the first place: an old bookmark should land somewhere
+useful. This document, and `MINI_IDE_REDESIGN.md` beside it, stay as
+the history of how dewlab came to have the one workspace it has.

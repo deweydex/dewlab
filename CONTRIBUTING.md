@@ -84,7 +84,7 @@ behaviour rather than the old one.
 
 **Update the document that describes it.** If you change what a page does,
 update the document a reader would reach for — `docs/FOR_STUDENTS.md`,
-`docs/MINI_IDE.md`, `docs/DEWMINI.md`. If you change how the code works, update
+`docs/DEWMINI.md`. If you change how the code works, update
 the matching `docs/<name>-explained.md`, and `README.md` or `ARCHITECTURE.md` if
 they mention it.
 
@@ -101,7 +101,7 @@ check it against the code before you leave it alone.
 ### Explanation files
 
 Every substantial code file has a matching file in `docs/` named
-`<file>-explained.md` — `assets/mini-ide.js` has `docs/mini-ide-js-explained.md`,
+`<file>-explained.md` — `compose/dewmini.js` has `docs/dewmini-js-explained.md`,
 and so on. These walk through how the file is put together: what its main pieces
 are, how they call each other, and why it is organised the way it is. They are
 for someone reading the code for the first time. They are not a changelog and
@@ -115,7 +115,7 @@ longer has is worse than confusing.
 
 ### Who reads what
 
-**Student-facing pages** (`docs/FOR_STUDENTS.md`, `docs/MINI_IDE.md`,
+**Student-facing pages** (`docs/FOR_STUDENTS.md`,
 `docs/DEWMINI.md`, the homepage, in-app help text): plain, friendly, welcoming
 language, written for a teenage student. No jargon without explaining it, no
 metaphor for its own sake. If you would not say it that way to a fifteen-year-old
