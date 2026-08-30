@@ -95,7 +95,8 @@ alongside confirming this: make sure writing a glossary is well documented
 with the skill highlighted as the tool that makes it easy, so YAML's
 structure is never something an author has to hand-write from a blank
 page. `.claude/skills/tutorial-glossary/SKILL.md` is that documentation —
-`planning/CHEAT_SHEETS.md` §3/§4, `README.md`, and `ARCHITECTURE.md` all
+`planning/CHEAT_SHEETS.md` §3/§4, `docs/WRITING_TUTORIALS.md`, and
+`ARCHITECTURE.md` all
 point to it by name as the way a glossary gets written, rather than
 describing the YAML shape as something to fill in by hand.
 

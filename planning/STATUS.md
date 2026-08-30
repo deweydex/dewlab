@@ -133,12 +133,15 @@ requirement for future changes, the same way the build already enforces
 that links and folds can't go stale.
 
 ### Curriculum modules (`tutorials/`)
-- **71 published tutorial and practice pages** — 35 tutorials, 32
+- **83 published tutorial and practice pages** — 41 tutorials, 38
   practice pages (one per tutorial, except the three that are already
   problems or reflection), and 4 mixed sets drawing on several tutorials
   at once. See `EXERCISES.md` for where the problems came from.
-  - `computational-methods` (2 tutorials, 2 practice pages):
-    `first-steps.md`, `working-with-tables.md`.
+  - `computational-methods` (8 tutorials, 8 practice pages):
+    `first-steps.md`, `working-with-tables.md`, and the `matrices`
+    series — `grid-of-numbers.md`, `multiplying-grids.md`,
+    `what-a-matrix-does-to-a-picture.md`, `undoing-it.md`,
+    `solving-systems.md`, `where-chains-lead.md`.
   - `mit-pdp-maths-prog-integration` (67 tutorial and practice files):
     - *Foundations & Programming Spine*: `first-steps.md`,
       `storing-and-computing.md`, `making-decisions.md`,
