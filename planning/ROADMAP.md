@@ -267,11 +267,19 @@ Mini IDE between now and convergence.
 
 **The work:**
 
-1. A written parity checklist (files, uploads, SQLite, notebook import,
-   Stop, offline bundle), then dewmini gains each item in its own
-   style.
-2. Retire Mini IDE; collapse toward one stylesheet for the shared
-   chrome.
+1. **Done.** A written parity checklist (files, uploads, SQLite,
+   notebook import, Stop), then dewmini gained each item in its own
+   style (`DECISIONS_LOG.md` 7.87–7.89).
+2. **Done.** Mini IDE retired (`DECISIONS_LOG.md` 7.90) — its hosted
+   URL redirects to dewmini; its app survives, unlinked, only as the
+   source for a still-offered offline download. Collapsing toward one
+   stylesheet for the shared chrome did not turn out to be part of
+   this step: dewmini and the tutorial pages already shared
+   `tutorial-style.css`'s own tokens and `.dl-*` classes before
+   retirement, and Mini IDE's own stylesheet (`assets/mini-ide-style.css`)
+   only needs to keep working for its offline-only copy now, not to
+   converge with anything live — nothing forces that collapse to
+   happen at all unless a real reason to touch that file shows up.
 3. The edges audit, which is the equity work: the site on a phone
    end-to-end, a screen-reader pass, and a proof that the offline
    bundle boots with the network off on a fresh machine — currently
@@ -279,16 +287,16 @@ Mini IDE between now and convergence.
 
 **Open questions:**
 
-- **Does dewmini take the Worker engine?** Absorbing Mini IDE's
-  capabilities implies the Stop button, which implies the Worker — but
-  dewmini's stated identity is main-thread simplicity. *Assumed:* yes,
-  it takes the Worker; the identity worth keeping is the smaller
-  surface, not the older plumbing. *Cost to change:* the engine is
-  already a separable client (`mini-ide-engine.js`), so this is
-  adoption, not a rewrite.
+- **Does dewmini take the Worker engine?** *Decided, and done*
+  (`DECISIONS_LOG.md` 7.89): yes — the identity worth keeping was the
+  smaller surface, not the older plumbing. The separable client became
+  `assets/pyodide-engine.js`, shared rather than duplicated, exactly as
+  this entry's *cost to change* anticipated.
 - **What happens to Mini IDE's URLs and downloaded bundles?**
-  *Assumed:* the hosted page becomes a short redirect-with-explanation;
-  downloaded folders keep working as-is, unsupported. *Cost:* nil.
+  *Decided, and done* (`DECISIONS_LOG.md` 7.90): the hosted page is now
+  a short redirect-with-explanation; the offline download keeps working
+  as a self-contained artifact, produced from a renamed copy of the
+  original app kept for exactly that purpose.
 - **Offline proof: manual or CI?** *Assumed:* a `MANUAL_CHECKLIST.md`
   entry per release first; a CI job that serves the bundle with
   outbound network blocked if the manual check ever gets skipped.

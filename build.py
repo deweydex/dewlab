@@ -1772,25 +1772,23 @@ def render_index(
         "one place.</p>",
         "</div>",
         # A section of its own, not one more paragraph among the intro's —
-        # these two are not tutorials and don't belong on the numbered list
-        # below, but they're common enough a reason to visit ("I just want
-        # to try something") that a line buried in prose undersold them.
+        # this is not a tutorial and doesn't belong on the numbered list
+        # below, but it's common enough a reason to visit ("I just want
+        # to try something") that a line buried in prose undersold it.
+        # Used to offer a choice between this and Mini IDE, retired once
+        # dewmini absorbed everything Mini IDE did (DECISIONS_LOG.md 7.90).
         '<div class="dl-workspaces">',
         # h3, not h2: every <h2> on this page is read as a module heading
         # (module_headings() in tests/test_build.py, and this page's own
         # <h2> loop below) — this section belongs to neither list.
         "<h3>Want to experiment on your own, outside a tutorial?</h3>",
         '<div class="dl-workspaces-grid">',
-        '<a class="dl-workspace-card" href="mini-ide.html" target="_blank">',
-        "<h3>Mini IDE</h3>",
-        "<p>The fuller of the two — a file manager, several files at once, "
-        "and every export option. Good for a project meant to stand on its "
-        "own.</p>",
-        "</a>",
         '<a class="dl-workspace-card" href="compose/dewmini.html" target="_blank">',
         "<h3>dewmini</h3>",
-        "<p>Smaller and quieter, the same Python underneath. Good for a "
-        "quick calculation or a single practice problem.</p>",
+        "<p>The same Python as every tutorial, with no tutorial attached — "
+        "a file manager, SQLite, notebook import, and a real Stop button, "
+        "for a quick calculation, a practice problem, or a project of its "
+        "own.</p>",
         "</a>",
         "</div>",
         "</div>",
@@ -2565,6 +2563,14 @@ def write_mini_ide_bundle() -> Path | None:
     Replaces the loose mini-ide.html/js/css copy at the site root, which
     only ever worked hosted — see planning/MINI_IDE_REDESIGN.md Phase 7.
 
+    Mini IDE itself has since retired (DECISIONS_LOG.md 7.90) — the
+    hosted assets/mini-ide.html is now a short redirect notice pointing
+    at dewmini, not the app. This function keeps producing a working
+    offline copy anyway, from assets/mini-ide-offline-app.html (the
+    renamed original), because it is a self-contained artifact that costs
+    nothing to keep working and dewmini has no offline bundle of its own
+    yet to replace it with; see that file's own top comment.
+
     assets/vendor/pyodide/ is not committed (gitignored, like /dev/pyodide/
     a few lines up in .gitignore) — populate it with dev/fetch_pyodide.py,
     the same trimmed-Pyodide fetcher the e2e tests already use for their
@@ -2578,7 +2584,7 @@ def write_mini_ide_bundle() -> Path | None:
     one that falls back to the CDN on first run, same as the hosted page
     does.
     """
-    mini_ide_html = ASSETS / "mini-ide.html"
+    mini_ide_html = ASSETS / "mini-ide-offline-app.html"
     if not mini_ide_html.exists():
         return None
 
@@ -2995,9 +3001,8 @@ def write_about_page(shell: str) -> Path:
         "place, for practicing out of order once some of it is already behind "
         "you. Most tutorials end with a practice page of further problems on "
         "the same idea. And when nothing about a particular tutorial fits — "
-        'just an idea to try — there\'s a <a href="mini-ide.html">Mini IDE</a> '
-        'and a smaller, quieter <a href="compose/dewmini.html">dewmini</a>, '
-        "both open-ended Python workspaces with no tutorial attached.</p>"
+        'just an idea to try — there\'s <a href="compose/dewmini.html">dewmini</a>, '
+        "an open-ended Python workspace with no tutorial attached.</p>"
         "<p>A tutorial page keeps a reader's edits and any cells they add of "
         "their own in this browser as they go, and offers several ways to "
         "take a copy with them: a single downloadable HTML file, a printed or "
@@ -3196,11 +3201,10 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
         shutil.rmtree(OUT / "data", ignore_errors=True)
         shutil.copytree(DATA, OUT / "data")
     
-    # Mini IDE's hosted copy — assets/mini-ide.html's own <script>/<link>
-    # tags are already root-relative ("assets/mini-ide.js" etc.), which is
-    # what the wholesale assets/ copy just above puts them at, so the
-    # hosted page just needs to exist at the site root; nothing else about
-    # it is hosted-specific the way the downloadable bundle below is.
+    # Mini IDE's hosted URL — assets/mini-ide.html is a short retirement
+    # notice now (DECISIONS_LOG.md 7.90), not the app; its <link>/<script>
+    # tags are root-relative, which is what the wholesale assets/ copy
+    # just above puts them at, so it just needs to exist at the site root.
     # Guarded like the coi-serviceworker.js copy below: a test's own
     # minimal ASSETS fixture need not carry it for that test's build to
     # succeed.

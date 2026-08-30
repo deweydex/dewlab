@@ -1,10 +1,10 @@
 # `assets/pyodide-worker.js`, explained
 
 This file is the *inside* of the Web Worker every hosted dewlab page (and
-Mini IDE, through `mini-ide-engine.js`) runs Python in. It never touches
+dewmini, through `pyodide-engine.js`) runs Python in. It never touches
 the page directly — it can't, a Worker has no access to the DOM — it only
 ever talks back and forth over `postMessage`. If you've already read
-[`mini-ide-engine-explained.md`](mini-ide-engine-explained.md), a lot of
+[`pyodide-engine-explained.md`](pyodide-engine-explained.md), a lot of
 this will look familiar: this file is the other end of that
 conversation, the side that actually has Pyodide running in it.
 
@@ -13,7 +13,8 @@ conversation, the side that actually has Pyodide running in it.
 ## The big idea: this is where Python actually lives
 
 Every page that uses this file — a tutorial page via `tutorial-runtime.js`,
-or Mini IDE via `mini-ide-engine.js` — creates exactly one Worker running
+or dewmini (and Mini IDE's own retired, offline-only copy) via
+`pyodide-engine.js` — creates exactly one Worker running
 this file, and from that point on, Python only exists here. The page
 itself never imports Pyodide or touches a Python object directly; it
 sends a message describing what it wants (`"run-cell"`, `"hover-doc"`,
@@ -50,7 +51,8 @@ for how that's wired up).
    `tutorial_tools.py`, sets up the shared namespace.
 7. **`runCell()`** — runs one cell and streams its output back as it
    happens.
-8. **Filesystem** (Mini IDE only) — `fsMountNative`/`fsMountOpfs`/
+8. **Filesystem** (dewmini and Mini IDE's own offline copy only — a
+   tutorial page has no filesystem to mount) — `fsMountNative`/`fsMountOpfs`/
    `fsMountIdbfs` (the three storage backends), `fsSync`, `fsUnmount`,
    and the plain file operations `fsList`/`fsRead`/`fsWrite`/`fsDelete`/
    `fsMkdir`.
@@ -66,7 +68,7 @@ for how that's wired up).
 **The request/response protocol.** Every message this worker answers
 follows the same shape: `{type, id, ...}` in, `{type: "response", id,
 result}` (or `{type: "response", id, error}`) back. The `id` is what lets
-the page side (`workerRequest()` in `mini-ide-engine.js`, or its
+the page side (`workerRequest()` in `pyodide-engine.js`, or its
 equivalent in `tutorial-runtime.js`) match a reply to the specific
 request that asked for it — since several requests could be in flight at
 once, there's no other way to know which answer belongs to which
@@ -92,7 +94,7 @@ answer available in either case.
 
 - **"How does Stop actually stop a `while True: pass`?"** — the
   `"set-interrupt-buffer"` case in `self.onmessage`, and
-  `mini-ide-engine.js`'s `requestInterrupt()` for the other half.
+  `pyodide-engine.js`'s `requestInterrupt()` for the other half.
 - **"Why can a page mount a real folder here, if this worker has no
   window to show a picker from?"** — `fsMountNative`'s comment: the
   folder picker (`window.showDirectoryPicker()`) has to run on the main

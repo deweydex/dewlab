@@ -3531,3 +3531,93 @@ actual execution engine, touches the file both tools now depend on, and
 both bugs above were exactly the kind that only show up when a real
 browser actually runs the thing — neither would have been caught by
 reading the ported code and confirming it matched its source.*
+
+**7.90 — Mini IDE has retired.** dewmini's parity with Mini IDE
+(7.87–7.89) was the trigger, not a further decision point — an explicit
+instruction earlier in this same working session established retirement
+as a given once parity landed, not something to re-confirm. There is one
+Python workspace now, not two.
+
+**The hosted URL redirects rather than 404s or silently disappearing.**
+`assets/mini-ide.html` — the app itself for years — is now a short,
+dependency-light notice page: a couple of sentences explaining that
+dewmini covers everything Mini IDE did, a `<meta http-equiv="refresh">`
+plus a JS `location.replace()` (belt and suspenders — the meta tag alone
+still gets a reader there with JavaScript off) sending a visitor on to
+`compose/dewmini.html` after a few seconds, and a link to go immediately.
+A bookmark or an old link someone still has keeps landing somewhere
+useful rather than a broken page — the assumption
+`planning/ROADMAP.md`'s own Phase 6 open questions had already settled
+on before this was built.
+
+**The app itself survives, unlinked, only as the offline download's own
+source.** The original `assets/mini-ide.html` was renamed to
+`assets/mini-ide-offline-app.html` rather than deleted — `write_mini_ide_bundle()`
+in `build.py` now sources the downloadable, self-contained Mini IDE
+bundle from that renamed file instead of the (now short) hosted page,
+so the offline download a student might already rely on keeps producing
+a genuinely working copy of the original app, Stop button and all, not
+the retirement notice. `assets/mini-ide.js`, `assets/mini-ide-fs.js`,
+and `assets/mini-ide-style.css` all stay for the same reason — nothing
+hosted links to them any more, but the bundle still needs them. Keeping
+the offline download working, rather than retiring it along with the
+hosted page, was a deliberate call: dewmini has no offline distribution
+of its own yet (the one item of the original four-item parity list that
+was never in scope for this pass), and the alternative — no offline,
+run-without-a-server Python workspace at all until dewmini gets one — was
+a real capability regression for anyone who already depends on that,
+for the cost of keeping one already-working, self-contained artifact
+building. `assets/pyodide-engine.js` — already shared with dewmini since
+7.89 — is what makes this cheap: the renamed offline app imports the
+exact same engine dewmini does, so nothing about the engine itself
+needed touching for this.
+
+**No bug this time, but only because it was checked rather than
+assumed.** 7.89's own `pageUrl()`→`assetUrl()` fix (resolving
+`tutorial_tools.py`'s path against the engine module's own location
+rather than `document.baseURI`, the *page's* URL) was written to fix
+dewmini specifically, before this file's own rename existed. Renaming
+`assets/mini-ide.html` to `assets/mini-ide-offline-app.html` and
+re-pointing `write_mini_ide_bundle()` at it changes what page is doing
+the importing, again — exactly the kind of change 7.89's own bug grew
+out of — so this got the same real-interrupt Stop-button test 7.89 used
+on dewmini run against the actual downloadable bundle's own
+`mini-ide.html`, rather than assuming a working hosted copy implies a
+working offline one. It passed: `assetUrl()`'s fix generalizes correctly
+regardless of which page imports the shared engine, confirmed rather
+than assumed.
+
+**Where the rest of the retirement went:** the homepage's two-workspace
+chooser (`build.py`'s `write_index()`) became a single dewmini card —
+`.dl-workspaces-grid`'s hardcoded two-column layout gained a `max-width`
+so one card doesn't stretch into a lopsided bar; the about page dropped
+its Mini IDE mention; `docs/DEWMINI.md` absorbed the file-manager/
+SQLite/Stop-button/import material that used to live only in
+`docs/MINI_IDE.md`, since dewmini now has all of it; `docs/MINI_IDE.md`
+itself became a short pointer to `docs/DEWMINI.md` rather than staying
+the several-hundred-line guide it was, on the same reasoning as the
+hosted redirect page — a tombstone, not a 404; `docs/FOR_STUDENTS.md`,
+`README.md`, and `ARCHITECTURE.md` §4 lost their two-workspace framing;
+`docs/mini-ide-engine-explained.md` was renamed to
+`docs/pyodide-engine-explained.md` (a rename `DECISIONS_LOG.md` 7.89's
+own engine rename should have carried at the time, and didn't) and
+rewritten to describe the shared module rather than a Mini-IDE-only
+one; `docs/mini-ide-js-explained.md`, `docs/mini-ide-fs-explained.md`,
+and `docs/dewmini-js-explained.md` (the last one substantially, since it
+still described dewmini's pre-7.89 main-thread-only, no-file-manager
+shape) were brought current. `planning/MINI_IDE_REDESIGN.md` and
+`planning/DOCS_AND_COMMENTS_PASS.md` were deliberately left alone —
+historical records of work already done, not descriptions of what's
+live today, the same "tombstone, not rewrite" treatment
+`planning/ROADMAP.md`'s own open question about retired planning docs
+already anticipated.
+
+*Cost to change: moderate — mechanically straightforward (a rename, a
+short new page, prose updates across a genuinely large number of files),
+but wide: nearly thirty files reference Mini IDE by name, and getting
+the hosted-vs-offline split right (one URL now serves two different
+purposes depending on whether it's `assets/mini-ide.html` the redirect
+or `assets/mini-ide-offline-app.html` the packaged app) needed care in
+`build.py` specifically, verified by testing the actual downloadable
+bundle's Stop button, not just the redirect page and dewmini's own
+already-covered behavior.*

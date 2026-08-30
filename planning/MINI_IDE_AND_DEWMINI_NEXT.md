@@ -303,12 +303,22 @@ The work is being staged, not done in one pass:
    button never appearing on a page's first-ever run) were caught by
    testing and fixed, not left as known gaps. **Feature parity is
    complete** — all four items on this list are done.
-3. **Mini IDE's retirement**, now that parity is real (per an explicit
-   instruction that this is a given, not a further decision point):
-   `mini-ide.html` redirected to dewmini or removed, and every link, doc,
-   and this document's own §4 recommendation updated to match.
+3. **Done: Mini IDE's retirement** (`DECISIONS_LOG.md` 7.90), now that
+   parity was real — per an explicit instruction that this was a given,
+   not a further decision point. `assets/mini-ide.html` (the hosted
+   URL) redirected to dewmini rather than being removed outright, so a
+   bookmark or an old link still lands somewhere useful; the app itself
+   was renamed to `assets/mini-ide-offline-app.html` and kept, unlinked,
+   as the source `write_mini_ide_bundle()` in `build.py` still packages
+   into a working, self-contained offline download — dewmini has no
+   offline distribution of its own yet to replace it with, and the
+   download costs nothing to keep working. Every link, doc
+   (`docs/DEWMINI.md`, `docs/MINI_IDE.md`, `docs/FOR_STUDENTS.md`,
+   `README.md`, `ARCHITECTURE.md`, the explainer docs under `docs/`),
+   and this document's own §4 recommendation were updated to match — one
+   Python workspace now, not two.
 
 §1–§5 above are kept as written: the accounting of what each tool needed
 next was accurate at the time, and most of it (the file manager, SQLite,
-`.ipynb` import/export, Worker-based Pyodide) is exactly the list step 2
-now has to actually port, not work that stopped mattering.
+`.ipynb` import/export, Worker-based Pyodide) is exactly what step 2
+went on to actually port, not work that stopped mattering.

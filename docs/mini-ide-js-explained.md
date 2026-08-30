@@ -1,18 +1,27 @@
 # `assets/mini-ide.js`, explained
 
-This file is the heart of Mini IDE. It owns the array of cells, draws
-them on the page, wires up every button, and handles saving your work.
-It does **not** run Python itself — that's a different file's job (see
-[`docs/mini-ide-engine-explained.md`](mini-ide-engine-explained.md)) —
-and it does **not** know how files are actually stored (that's
+**Mini IDE has retired** (`DECISIONS_LOG.md` 7.90) — dewmini
+(`compose/dewmini.js`, [its own explained doc](dewmini-js-explained.md))
+absorbed everything this file did, and no page a student reaches links
+to this file any more. It still exists, and this doc still describes it
+accurately, only because `build.py`'s `write_mini_ide_bundle()` still
+packages it into a self-contained offline download for anyone who
+already relies on one — see that function's own docstring for why.
+
+This file is the heart of that offline copy. It owns the array of cells,
+draws them on the page, wires up every button, and handles saving your
+work. It does **not** run Python itself — that's a different file's job
+(see [`docs/pyodide-engine-explained.md`](pyodide-engine-explained.md),
+a module this file now shares with dewmini) — and it does **not** know
+how files are actually stored (that's
 [`docs/mini-ide-fs-explained.md`](mini-ide-fs-explained.md)). This file
 is the "glue": it owns the page, and asks those other two files to do
 the parts it isn't responsible for.
 
-If you're reading this to understand the code, not just to use Mini
-IDE, this doc is your map. The inline comments in the file itself go
-into detail on any one function; this doc is about how the pieces fit
-together.
+If you're reading this to understand the code, not just to use the
+offline download, this doc is your map. The inline comments in the file
+itself go into detail on any one function; this doc is about how the
+pieces fit together.
 
 ---
 
@@ -89,7 +98,7 @@ read it:
    `createCellElement()`). This is "cells as data and as pixels," not
    "cells as running code."
 7. **Cell Execution** — running cells as code. This is where
-   `mini-ide-engine.js` gets called. `runCell()` handles one cell,
+   `pyodide-engine.js` gets called. `runCell()` handles one cell,
    `runAllCells()` loops over all of them.
 8. **File Tree** — the file manager panel: listing what's in the
    mounted filesystem, uploading, and deleting. All of this talks to
