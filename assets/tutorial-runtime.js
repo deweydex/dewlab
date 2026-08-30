@@ -325,10 +325,56 @@ function clickIsInsidePanels(target, ids) {
   });
 }
 
+/**
+ * The replacement for native CSS `resize: horizontal` on a right-docked
+ * panel — see .dl-panel-resize-handle's own comment in tutorial-style.css
+ * for why native resize doesn't work here (its handle sits exactly on
+ * the browser window's own right edge, with no room to drag further
+ * right and grow it). Adds a thin strip along `panel`'s left edge and
+ * tracks a plain pointer drag on it directly, growing the panel as the
+ * pointer moves left (away from the pinned right edge) and shrinking as
+ * it moves right — the natural direction for a right-docked sidebar,
+ * the same one a real IDE's own side panel uses. `min`/`max` mirror the
+ * panel's own CSS `min-width`/`max-width` (kept in sync by hand — the
+ * two aren't read from computed style, since the constants are already
+ * known and simpler than parsing them back out of the DOM).
+ */
+function makeRightEdgeResizable(panel, min = 256, max = 640) {
+  if (!panel || panel.querySelector(".dl-panel-resize-handle")) return;
+  const handle = document.createElement("div");
+  handle.className = "dl-panel-resize-handle";
+  handle.setAttribute("aria-hidden", "true");
+  panel.prepend(handle);
+
+  let startX = 0;
+  let startWidth = 0;
+
+  function onMove(ev) {
+    const dx = startX - ev.clientX;
+    const next = Math.max(min, Math.min(startWidth + dx, Math.min(max, window.innerWidth)));
+    panel.style.width = `${next}px`;
+  }
+  function onUp() {
+    handle.classList.remove("dl-panel-resize-active");
+    document.removeEventListener("pointermove", onMove);
+    document.removeEventListener("pointerup", onUp);
+  }
+  handle.addEventListener("pointerdown", (ev) => {
+    startX = ev.clientX;
+    startWidth = panel.getBoundingClientRect().width;
+    handle.classList.add("dl-panel-resize-active");
+    document.addEventListener("pointermove", onMove);
+    document.addEventListener("pointerup", onUp);
+    ev.preventDefault();
+  });
+}
+
 function initSettingsPanel() {
   const toggle = document.getElementById("dl-settings-toggle");
   const panel = document.getElementById("dl-settings");
   if (!toggle || !panel) return;
+
+  makeRightEdgeResizable(panel, 256, 640); // matches .dl-settings' own min/max-width
 
   function setOpen(open) {
     panel.toggleAttribute("hidden", !open);

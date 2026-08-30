@@ -717,11 +717,9 @@ p code, li code {
   max-width: min(40rem, 100vw);
   overflow-y: auto;
   overflow-x: hidden;
-  /* Right-anchored (`right: 0`, no `left`), so growing width extends
-     the box leftward, away from the edge already pinned — dragging the
-     handle wider makes more of the panel visible without it ever
-     drifting off the right edge of the screen. */
-  resize: horizontal;
+  /* No native `resize: horizontal` here — see .dl-panel-resize-handle
+     below for why, and makeRightEdgeResizable() in tutorial-runtime.js
+     for what replaces it. */
   padding: 1rem 1.1rem 1.1rem;
   border-left: 1px solid var(--dl-cell-border);
   background: var(--dl-panel-bg);
@@ -729,6 +727,34 @@ p code, li code {
   font-size: 0.85rem;
 }
 .dl-settings[hidden] { display: none; }
+
+/* Native CSS `resize: horizontal` draws its handle at a box's own
+   bottom-right corner and grows the box away from that corner — right
+   for a left-docked panel (.dl-reference/.dl-seriesnav below still use
+   it: dragging right, into the page, is exactly how those grow), wrong
+   for a right-docked one flush to the viewport's own right edge: that
+   corner sits exactly on the edge of the browser window, with zero room
+   on a real screen to drag further right and actually grow it — found
+   by an actual drag-the-handle test, not assumed safe from the CSS
+   alone. makeRightEdgeResizable() (tutorial-runtime.js) replaces it
+   with a plain pointer-drag on this thin strip along the panel's own
+   left edge instead — the edge a right-docked sidebar's resize
+   affordance belongs on, the same one a real IDE's own side panel
+   uses. */
+.dl-panel-resize-handle {
+  position: absolute;
+  left: -3px;
+  top: 0;
+  bottom: 0;
+  width: 6px;
+  cursor: col-resize;
+  touch-action: none;
+}
+.dl-panel-resize-handle:hover,
+.dl-panel-resize-handle.dl-panel-resize-active {
+  background: var(--dl-orange);
+  opacity: 0.5;
+}
 
 .dl-settings-head {
   display: flex;
@@ -1557,7 +1583,14 @@ p code, li code {
     bottom: 0;
     left: 0;
     right: 0;
-    width: auto;
+    /* !important on width alone: makeRightEdgeResizable() (tutorial-
+       runtime.js) sets .dl-settings' own width as an inline style when a
+       reader drags it on a wider screen, and an inline style otherwise
+       beats any stylesheet rule regardless of media query — without
+       this, a panel resized on desktop and then viewed (or resized down
+       to) phone width would keep that desktop pixel width instead of
+       becoming a full-width sheet. */
+    width: auto !important;
     max-width: none;
     max-height: 78vh;
     border: 1px solid var(--dl-cell-border);
@@ -1568,6 +1601,11 @@ p code, li code {
     /* A full-width bottom sheet has no meaningful "width" to resize. */
     resize: none;
   }
+
+  /* The custom drag handle (.dl-panel-resize-handle, tutorial-style.css)
+     only makes sense on the docked desktop shape above; a bottom sheet
+     spans the full device width and has nothing to resize. */
+  .dl-panel-resize-handle { display: none; }
 
   .dl-nav {
     grid-template-columns: 1fr 1fr;

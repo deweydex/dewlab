@@ -3088,3 +3088,86 @@ Reusing the existing `data-dl-panel-left/right` attribute mechanism and
 each panel's own open/close functions kept this from being a rewrite of
 working code — the sidebar concept was proven in 7.73, this changed its
 shape and location, not its logic.*
+
+**7.84 — Mini IDE and dewmini's own Settings/Help panels became docked
+sidebars too, and a real resize bug 7.83 shipped with got caught and
+fixed on all three surfaces.** Reported directly, as a follow-on to
+7.83: "can we make sure all of the features of mini-ide are in dewmini...
+I think its time to introduce more capable sidebars basically" — settled
+into two phases, sidebars first (7.83), then IDE feature parity
+(`planning/MINI_IDE_AND_DEWMINI_NEXT.md`'s own next task). This entry is
+the first phase's second half: both IDEs already reused `.dl-settings`
+from `tutorial-style.css` (a shared class, not a duplicate), so 7.83's
+docked shape landed there automatically — the actual work was their own
+Help panel (`.mini-ide-panel`/`.dm-panel`, each IDE's own class so
+opening Help never fights the real `#dl-settings` node) and the
+`data-dl-panel-open` margin-push both IDEs already had from an earlier
+session (task 9 in that session's own list).
+
+**Both IDEs' Help panel got the same docked-sidebar treatment `.dl-settings`
+got in 7.83** — full height, flush to the right edge, border-left instead
+of a floating card's shadow+radius — and the flat `26rem` margin-push
+guess became width-tracked the same way, via a `ResizeObserver` writing
+`--dl-panel-w` (a single property, not the tutorial pages' left/right
+pair, since both IDEs' two panels dock to the same right edge and are
+already mutually exclusive). Settings/Help open state is now also
+persisted per IDE (`localStorage["dewlab:mini-ide:sidebar"]`/
+`["dewlab:dewmini:sidebar"]`, each storing a single `"settings"|"help"|
+null` rather than the tutorial pages' `{left, right}`), restored the
+same way — clicking the saved toggle at startup, above the phone
+breakpoint only — with the same startup-ordering fix 7.83 needed
+(the DOM-attribute sync and the persisting sync split apart, so the one
+unconditional call at the top of `watchPanelOverlap()` doesn't overwrite
+a reader's actual saved state with "everything closed" before
+`restoreSidebarState()` gets to read it).
+
+**A real bug in 7.83's own right-docked panel shipped undetected until
+this pass actually dragged the resize handle: a panel flush to the
+browser window's own right edge has no room to grow.** Native CSS
+`resize: horizontal` always draws its handle at a box's own bottom-right
+corner and grows the box away from that corner, regardless of which
+edges are anchored via `left`/`right` — correct for `.dl-reference`/
+`.dl-seriesnav` (left-docked: the handle sits well inside the viewport,
+and dragging right, into the page, is exactly how those grow) but wrong
+for anything right-docked and flush to the edge (`.dl-settings`, and now
+`.mini-ide-panel`/`.dm-panel`): that corner sits exactly on the browser
+window's own edge, so growing it would require dragging the pointer
+*past* the edge of the window itself, which a real user's mouse cannot
+do. 7.83 shipped this already, unnoticed, because its own resize test
+only exercised the left-docked reference panel. Fixed the same way on
+all three surfaces: native `resize: horizontal` removed from the three
+right-docked panels, replaced by `makeRightEdgeResizable()` (one copy
+per file — `tutorial-runtime.js`, `mini-ide.js`, `dewmini.js`, matching
+this codebase's own "thin copy per page" convention) — a plain pointer
+drag on a new thin strip along the panel's own *left* edge instead, the
+edge a right-docked sidebar's resize affordance actually belongs on (the
+same edge a real IDE's own side panel uses). Verified by an actual
+drag-the-new-handle Playwright test showing the panel grow, on top of
+the drag-the-old-handle test from 7.83 that had wrongly read as passing
+(it drags the *left*-docked reference panel, which was never broken).
+
+**A second bug found alongside the first, before it shipped rather than
+after: the browser's own native resize sets an element's width as an
+inline style, which beats any stylesheet rule regardless of media
+query.** A panel resized wider on a desktop-width screen, then viewed
+(or resized down to) the phone breakpoint, would have kept that desktop
+pixel width instead of becoming the intended full-width bottom sheet —
+`width: auto` alone, already present in all three phone-breakpoint
+rules, was never enough to override an inline `style.width` the same
+element already carried. Fixed by adding `!important` to that one
+declaration on all three panels across all three stylesheets, and
+verified with a resize-then-shrink-the-viewport Playwright test rather
+than assumed safe from reading the cascade rules alone.
+
+`assets/vendor/standalone.bundle.js` was rebuilt again after this
+pass's `tutorial-runtime.js` changes, same reason 7.82/7.83 needed it.
+
+*Cost to change: moderate — the docked-shape port itself was small (both
+IDEs already shared `.dl-settings`'s CSS, so only the Help panel and the
+margin-push needed touching), but the resize-handle bug it surfaced was
+real, affected three files' worth of already-shipped code (7.83's own
+`.dl-settings`, still an open PR at the time this was caught, plus this
+pass's two new panels), and needed a genuine new mechanism
+(`makeRightEdgeResizable()`) rather than a CSS tweak — cheap to have
+caught now, before 7.83 merged, rather than as a separate bug report
+later.*

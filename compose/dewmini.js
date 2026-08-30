@@ -1468,6 +1468,43 @@ function updateStatus(message, kind = "") {
 
 // ------------------------------------------------------------------ panels
 
+/* The replacement for native CSS `resize: horizontal` on a right-docked
+ * panel — ported from tutorial-runtime.js's own copy (DECISIONS_LOG.md
+ * 7.84). Native resize draws its handle at a box's own bottom-right
+ * corner, which for a panel flush to the browser window's own right
+ * edge sits exactly on that edge with no room to drag further right and
+ * grow it. Adds a thin strip along `panel`'s left edge instead and
+ * tracks a plain pointer drag on it directly. */
+function makeRightEdgeResizable(panel, min = 256, max = 640) {
+  if (!panel || panel.querySelector(".dl-panel-resize-handle")) return;
+  const handle = document.createElement("div");
+  handle.className = "dl-panel-resize-handle";
+  handle.setAttribute("aria-hidden", "true");
+  panel.prepend(handle);
+
+  let startX = 0;
+  let startWidth = 0;
+
+  function onMove(ev) {
+    const dx = startX - ev.clientX;
+    const next = Math.max(min, Math.min(startWidth + dx, Math.min(max, window.innerWidth)));
+    panel.style.width = `${next}px`;
+  }
+  function onUp() {
+    handle.classList.remove("dl-panel-resize-active");
+    document.removeEventListener("pointermove", onMove);
+    document.removeEventListener("pointerup", onUp);
+  }
+  handle.addEventListener("pointerdown", (ev) => {
+    startX = ev.clientX;
+    startWidth = panel.getBoundingClientRect().width;
+    handle.classList.add("dl-panel-resize-active");
+    document.addEventListener("pointermove", onMove);
+    document.addEventListener("pointerup", onUp);
+    ev.preventDefault();
+  });
+}
+
 /* A small reusable version of the "toggle open/closed, and close the
  * other one" pattern tutorial-runtime.js's Settings/reference/nav
  * panels use — generalized into one function here since dewmini only has
@@ -1502,6 +1539,45 @@ function wireSimplePanel(panel, toggle, closeBtn, otherPanel) {
   });
 }
 
+/* Remembers which of Settings/Help a reader left open, the same
+ * localStorage-persisted-sidebar mechanism tutorial pages use (see
+ * saveSidebarState()/restoreSidebarState() in tutorial-runtime.js,
+ * DECISIONS_LOG.md 7.83) — a returning reader's panel comes back open
+ * rather than needing to be reopened, since it's meant to be a permanent
+ * pane, not a popover that happens to be open right now. dewmini only
+ * ever has one of the two open at a time (both dock to the same right
+ * edge), so this stores a single value rather than the tutorial pages'
+ * {left, right} pair — ported from Mini IDE's own copy. */
+function saveSidebarState() {
+  const settingsPanel = document.getElementById("dl-settings");
+  const helpPanel = document.getElementById("dm-help");
+  const open = settingsPanel && !settingsPanel.hidden ? "settings"
+    : helpPanel && !helpPanel.hidden ? "help"
+    : null;
+  try {
+    localStorage.setItem("dewlab:dewmini:sidebar", JSON.stringify({ open }));
+  } catch (e) { /* private mode, blocked storage: nothing to remember */ }
+}
+
+/* The other half of saveSidebarState() — reopens whatever was left open
+ * last time by clicking its toggle, reusing that toggle's own open logic
+ * rather than duplicating it. Skipped below the phone breakpoint, where
+ * a panel is a bottom sheet covering most of the screen rather than a
+ * sidebar worth leaving open by default. */
+function restoreSidebarState() {
+  if (!window.matchMedia("(min-width: 34rem)").matches) return;
+  let state;
+  try {
+    state = JSON.parse(localStorage.getItem("dewlab:dewmini:sidebar") || "{}");
+  } catch (e) {
+    return;
+  }
+  const toggleId = state.open === "settings" ? "dl-settings-toggle"
+    : state.open === "help" ? "dm-help-toggle"
+    : null;
+  if (toggleId) document.getElementById(toggleId)?.click();
+}
+
 /* Keeps `<html data-dl-panel-open>` in sync with whether Settings or Help
  * is currently visible, regardless of which of their several open/close
  * paths (toggle click, close button, Escape, click-outside, wireSimplePanel's
@@ -1511,26 +1587,53 @@ function wireSimplePanel(panel, toggle, closeBtn, otherPanel) {
  * attribute to shrink .dl-page's effective width on wide-enough viewports
  * while a panel is open, so its fixed position (tutorial-style.css's own
  * .dl-settings/.dm-panel) never ends up covering a cell's run/reset/delete
- * buttons or its output. */
+ * buttons or its output.
+ *
+ * A ResizeObserver on the same panels keeps --dl-panel-w in step with
+ * whichever one is actually open's *real* rendered width, not a guess —
+ * a docked sidebar can be dragged wider or narrower via its own resize
+ * handle at any time, same reasoning as tutorial-runtime.js's own copy
+ * (DECISIONS_LOG.md 7.83). */
 function watchPanelOverlap(...panels) {
   const real = panels.filter(Boolean);
   if (!real.length) return;
   const sync = () => {
     const anyOpen = real.some((p) => !p.hidden);
     document.documentElement.toggleAttribute("data-dl-panel-open", anyOpen);
+    saveSidebarState();
   };
   for (const panel of real) {
     new MutationObserver(sync).observe(panel, { attributes: true, attributeFilter: ["hidden"] });
   }
-  sync();
+  // Only the DOM attribute, not a persisted-state write: every panel is
+  // still hidden at this point in startup, before restoreSidebarState()
+  // has had a chance to reopen whatever was actually saved last time —
+  // persisting here would overwrite a real saved preference with
+  // "everything closed" on every single load.
+  document.documentElement.toggleAttribute("data-dl-panel-open", real.some((p) => !p.hidden));
+
+  const widthObserver = new ResizeObserver((entries) => {
+    for (const entry of entries) {
+      const panel = entry.target;
+      if (panel.hidden) continue;
+      // offsetWidth, not the observer's own contentRect: the margin
+      // needs to clear the panel's full border box (border + padding),
+      // plus a small gutter so text doesn't sit flush against its edge.
+      document.documentElement.style.setProperty("--dl-panel-w", `${panel.offsetWidth + 16}px`);
+    }
+  });
+  for (const panel of real) widthObserver.observe(panel);
 }
 
 function initPanels() {
   const settingsPanel = document.getElementById("dl-settings");
   const helpPanel = document.getElementById("dm-help");
+  makeRightEdgeResizable(settingsPanel, 256, 640); // matches .dl-settings' own min/max-width
+  makeRightEdgeResizable(helpPanel, 256, 640); // matches .dm-panel's own min/max-width
   wireSimplePanel(settingsPanel, document.getElementById("dl-settings-toggle"), document.getElementById("dl-settings-close"), helpPanel);
   wireSimplePanel(helpPanel, document.getElementById("dm-help-toggle"), document.getElementById("dm-help-close"), settingsPanel);
   watchPanelOverlap(settingsPanel, helpPanel);
+  restoreSidebarState();
 
   // Hide any Settings section that ended up with nothing in it (mirrors the
   // rest of the site: an empty section is furniture, not a feature).
