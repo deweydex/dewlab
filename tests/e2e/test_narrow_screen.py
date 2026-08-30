@@ -142,18 +142,25 @@ class TestNothingScrollsSideways:
         page = context.new_page()
         page.goto(f"{base_url}/tutorials/{MODULE}/narrow.html")
         page.wait_for_selector("#dl-body")
+        # The real #dl-status from shell.html, not a stand-in appended into
+        # the reading. It is a *sibling* of #dl-body, so it does not inherit
+        # that element's own wrapping — filling a copy inside #dl-body would
+        # test the wrong rule and pass whatever .dl-status does.
         overflow = page.evaluate("""() => {
-          const status = document.createElement('div');
-          status.className = 'dl-status dl-status-error';
+          const status = document.getElementById('dl-status');
+          status.classList.add('dl-status-error');
+          status.hidden = false;
           status.textContent = 'Python failed to start: Failed to fetch '
             + 'dynamically imported module: '
             + 'https://cdn.jsdelivr.net/pyodide/v0.28.3/full/pyodide.mjs. '
             + 'Reloading the page usually fixes it.';
-          document.getElementById('dl-body').prepend(status);
-          return {sw: status.scrollWidth, cw: status.clientWidth,
+          return {inBody: document.getElementById('dl-body').contains(status),
+                  sw: status.scrollWidth, cw: status.clientWidth,
                   page: document.documentElement.scrollWidth,
                   client: document.documentElement.clientWidth};
         }""")
+        assert overflow["inBody"] is False, (
+            "this test only means anything while #dl-status sits outside #dl-body")
         assert overflow["sw"] <= overflow["cw"] + 1, "the error message itself overflows"
         assert overflow["page"] <= overflow["client"] + 1, "the error widened the page"
         context.close()

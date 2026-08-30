@@ -691,10 +691,31 @@ function initReferenceLookup(manifest) {
   /* The term this selection is asking about, or null. A selection matches
    * when it contains a term or a term contains it, so both "matrix" selected
    * inside "transformation matrix" and the whole phrase find the entry. */
+  function whole(word) {
+    // A word-boundary test, built from a selection, so the selection has to
+    // be escaped: a reader can select "f()" or "x^2", and those are regex
+    // metacharacters before they are anything else.
+    return new RegExp(`\\b${word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`);
+  }
+
   function termFor(text) {
     const needle = text.trim().toLowerCase();
     if (needle.length < SHORTEST || needle.length > LONGEST) return null;
-    return terms.find((term) => term.includes(needle) || needle.includes(term)) || null;
+
+    // Exact first, so selecting "running estimate" offers that rather than
+    // whichever of it and "estimate" happens to come first in the list.
+    if (terms.includes(needle)) return needle;
+
+    // Then a whole-word match either way round: "matrix" selected inside a
+    // sentence about a transformation matrix finds the entry, and so does
+    // selecting the whole phrase. Whole-word rather than substring is what
+    // stops "and" offering pandas and "excellent" offering cell — the same
+    // false-positive problem that withdrew prose-linking (DECISIONS_LOG.md
+    // 7.92), reached here by a different route.
+    const bounded = whole(needle);
+    return terms.find((term) => bounded.test(term))
+      || terms.find((term) => whole(term).test(needle))
+      || null;
   }
 
   document.addEventListener("selectionchange", () => {
@@ -765,13 +786,14 @@ function initReferenceLookup(manifest) {
     panel.removeAttribute("hidden");
     toggle.setAttribute("aria-expanded", "true");
     closeSeriesNav();
+    // The value goes in whether or not the box is visible. renderReference()
+    // hides it on a page with only a handful of entries, and the observer in
+    // initReference() clears the filter on close by reading this value — so
+    // skipping it there left such a page filtered to one term the next time
+    // it opened, with no visible box to clear.
     const searchInput = document.getElementById("dl-reference-search");
-    if (searchInput && !searchInput.hidden) {
-      searchInput.value = term;
-      filterReferenceContent(term);
-    } else {
-      filterReferenceContent(term);
-    }
+    if (searchInput) searchInput.value = term;
+    filterReferenceContent(term);
   });
 
   document.addEventListener("scroll", hide, { passive: true });

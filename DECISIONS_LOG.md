@@ -3752,3 +3752,58 @@ someone to infer from a green checklist.
 *Cost to change: nil to reverse — two CSS declarations and a class name.
 The value is not in the code, which is trivial, but in the three claims
 that are now tested and the one that is honestly still open.*
+
+---
+
+**7.94 — Five defects in 7.91 and 7.92, found by reviewing my own work
+before it merged.** Recorded because four of them were invisible to the
+tests that were meant to cover them, and one is the same mistake 7.92 was
+written about.
+
+**The lookup offered ordinary words.** `termFor()` matched a selection
+against a term by plain substring, either way round — so selecting "and"
+offered *pandas*, and "excellent" offered *cell*. That is precisely the
+false-positive class that got prose-linking withdrawn one entry ago,
+arriving by a different door: 7.92 removed a feature for guessing wrong
+about ordinary words while 7.91 shipped one doing the same thing. Matching
+is now whole-word in both directions, with an exact match preferred, so
+selecting "running estimate" offers that rather than *estimate*.
+
+**A page with few entries stayed filtered.** `renderReference()` hides the
+search box below six entries, and the lookup skipped setting its value in
+that case. `initReference()`'s observer clears the filter on close by
+reading that value, so such a page reopened still filtered to one term,
+with no visible box to clear it. The value goes in whether or not the box
+is shown.
+
+**The origin anchor could land in the bibliography.** `origin_anchor()`
+fell back to a term's first plain occurrence, searched over raw HTML —
+which matched the Metropolis and Ulam citation title and sent a reader
+looking for "Monte Carlo method" to *Where to Read More*, the one section
+that does not teach it. It now searches per `h2` section, over each
+section's text rather than its markup (a raw search also matches inside an
+`href`), and skips the bibliography outright.
+
+**A practice page resolved origins from the wrong directory.**
+`cumulative_glossary()` recursed with the *target* tutorial, so hrefs were
+computed relative to that tutorial's folder rather than the page the reader
+is on. Identical for a default practice page and its default tutorial, and
+one level short — a 404 — the moment either has a frozen release. The page
+being rendered is now passed down explicitly. A practice page's own
+tutorial's terms gained an origin as a side effect, which is right: on a
+practice page every term came from somewhere else.
+
+**A regression test that tested nothing.** 7.93's narrow-screen test built
+its own `.dl-status` element and appended it *inside* `#dl-body`, where it
+inherited that element's `overflow-wrap` and passed with the `.dl-status`
+rule deleted. The real `#dl-status` is a sibling of `#dl-body` and inherits
+nothing from it. Worse, the check that "proved" the test caught a
+regression had reverted both rules at once, so the passing half was never
+isolated. The test now drives the real element and asserts it is outside
+`#dl-body`, so the day that stops being true the test says so rather than
+quietly going hollow.
+
+*Cost to change: nil — this is the fix, not a decision. Worth an entry
+because the pattern is the point: two of the five were found only by
+running the thing in a browser and reading the values it produced, and one
+was a test agreeing with itself.*

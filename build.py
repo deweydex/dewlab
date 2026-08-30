@@ -1116,6 +1116,7 @@ def cumulative_glossary(
     tutorial: Tutorial,
     registry: dict[tuple[str, str], Tutorial],
     groups: dict[tuple[str, str], list[Tutorial]],
+    reader_at: Tutorial | None = None,
 ) -> list[dict]:
     """Everything a reader has met by this point: this tutorial's own
     glossary, everything earlier in its own series, and — where
@@ -1129,6 +1130,8 @@ def cumulative_glossary(
     sits — so its reference is the union of the tutorial(s) it names, each
     resolved the same way, rather than its own (nonexistent) coverage.
     """
+    reader_at = reader_at or tutorial
+
     if tutorial.is_practice:
         targets = (
             [tutorial.practice_for] if tutorial.practice_for
@@ -1140,7 +1143,7 @@ def cumulative_glossary(
             target = registry.get((tutorial.module, slug))
             if target is None:
                 continue
-            for entry in cumulative_glossary(target, registry, groups):
+            for entry in cumulative_glossary(target, registry, groups, reader_at):
                 key = (entry["term"], entry["kind"])
                 if key in seen:
                     continue
@@ -1165,8 +1168,8 @@ def cumulative_glossary(
             # Where a reader met this, for everything inherited from an
             # earlier tutorial. Not for the tutorial's own entries: "you met
             # this here" is unhelpful on the page that is teaching it.
-            found.append(entry if member is tutorial
-                         else {**entry, "origin": origin_of(tutorial, member, entry["term"])})
+            found.append(entry if member is reader_at
+                         else {**entry, "origin": origin_of(reader_at, member, entry["term"])})
     return found
 
 
@@ -2033,10 +2036,15 @@ def resolve_links(tutorial: Tutorial, registry: dict[tuple[str, str], Tutorial])
 # the origin in the panel instead answers the same question with no way to be
 # wrong about it.
 
-# A term worth linking in prose reads as words. Function names, operators and
-# formulas — `random.seed()`, `x^2 + y^2 <= 1` — are glossary entries too, but
-# they occur in code spans, which are never rewritten anyway.
-PROSE_TERM_RE = re.compile(r"^[a-z][a-z \-']*[a-z]$", re.I)
+
+# The heading every tutorial closes with. A term's name very often appears
+# in a citation title there — "The Monte Carlo Method" is a paper as well as
+# a concept — and a reader sent to the bibliography to find out where
+# something was taught has been sent to the one section that does not teach
+# it.
+BIBLIOGRAPHY_RE = re.compile(r"read more", re.I)
+
+TAG_RE = re.compile(r"<[^>]+>")
 
 
 def origin_anchor(tutorial: Tutorial, term: str) -> str:
@@ -2048,45 +2056,36 @@ def origin_anchor(tutorial: Tutorial, term: str) -> str:
     a code cell rather than a sentence may never be italicised at all, and
     landing on the right section still beats landing on the page.
 
-    Only `h2` sections count. The nearest preceding heading of *any* level is
-    often "Your turn", which every tutorial has several of and none of which
-    tells a reader anything about where they are.
+    Searched per `h2` section, against each section's *text* rather than its
+    markup, which matters for both halves of that: a raw search over the HTML
+    matches inside an `href` or a class name, and the nearest preceding
+    heading of any level is usually "Your turn", which every tutorial has
+    several of and none of which tells a reader where they are.
     """
     body = tutorial.body_html
-    match = (re.search(rf"<em>{re.escape(term)}</em>", body, re.I)
-             or re.search(rf"\b{re.escape(term)}\b", body, re.I))
-    if not match:
+    headings = list(re.finditer(r'<h2[^>]*\sid="([^"]+)"[^>]*>(.*?)</h2>', body, re.S))
+    if not headings:
         return ""
-    sections = list(re.finditer(r'<h2[^>]*\sid="([^"]+)"', body))
-    before = [h for h in sections if h.start() < match.start()]
-    return before[-1].group(1) if before else ""
 
+    sections = []
+    for index, heading in enumerate(headings):
+        end = headings[index + 1].start() if index + 1 < len(headings) else len(body)
+        title = TAG_RE.sub("", heading.group(2))
+        if BIBLIOGRAPHY_RE.search(title):
+            continue
+        sections.append((heading.group(1), body[heading.end():end]))
 
-def term_origins(
-    tutorial: Tutorial,
-    groups: dict[tuple[str, str], list[Tutorial]],
-) -> dict[str, tuple[Tutorial, str]]:
-    """Every prose term introduced before this tutorial, and where.
+    emphasised = re.compile(rf"<em>{re.escape(term)}</em>", re.I)
+    plain = re.compile(rf"\b{re.escape(term)}\b", re.I)
 
-    Built from the same series chain and the same glossary files the
-    reference panel is assembled from (`cumulative_glossary()`), so the two
-    can never disagree about what counts as already taught.
-    """
-    chain = series_chain(tutorial.module, tutorial.series, groups)
-    if tutorial not in chain:
-        return {}
-
-    origins: dict[str, tuple[Tutorial, str]] = {}
-    for member in chain[: chain.index(tutorial)]:
-        for entry in own_glossary(member):
-            term = str(entry.get("term", "")).strip()
-            if not term or not PROSE_TERM_RE.match(term):
-                continue
-            key = term.lower()
-            # First introduction wins, matching cumulative_glossary()'s own
-            # rule for a term that appears in two glossaries.
-            origins.setdefault(key, (member, origin_anchor(member, term)))
-    return origins
+    # Two passes rather than one, so an emphasised use anywhere in the
+    # tutorial beats a passing mention in an earlier section.
+    for pattern, over_markup in ((emphasised, True), (plain, False)):
+        for anchor, section in sections:
+            haystack = section if over_markup else TAG_RE.sub(" ", section)
+            if pattern.search(haystack):
+                return anchor
+    return ""
 
 
 # ---------------------------------------------------------- tutorial assets

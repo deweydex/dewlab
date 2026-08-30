@@ -2408,6 +2408,48 @@ class TestTheReference:
         entry = manifest(built(repo, "two"))["glossary"][0]
         assert entry["origin"]["href"] == "one.html#later-on"
 
+    def test_the_origin_never_points_at_the_bibliography(self, repo):
+        """A term's name often appears in a citation title — "The Monte Carlo
+        Method" is a paper as well as a concept — and the bibliography is the
+        one section that does not teach it."""
+        write(repo, "Intro.\n\n## Doing It\n\nWe use *x* here.\n\n"
+                    "## Where to Read More\n\nSomebody (1949). *All About x.*\n",
+              slug="one")
+        write(repo, "Two.\n", slug="two")
+        set_order(repo, "computational-methods", "python-fundamentals", ["one", "two"])
+        glossary(repo, "one", [{"term": "x", "kind": "concept", "definition": "First."}])
+        b.build()
+        entry = manifest(built(repo, "two"))["glossary"][0]
+        assert entry["origin"]["href"] == "one.html#doing-it"
+
+    def test_the_origin_ignores_a_match_inside_markup(self, repo):
+        """Searching the raw HTML matches inside an href or a class name, and
+        anchors the reader to whichever section happened to contain it."""
+        write(repo, "Intro.\n\n## Early\n\n[a link](https://example.org/x/page)\n\n"
+                    "## Where It Is Taught\n\nHere is *x* itself.\n", slug="one")
+        write(repo, "Two.\n", slug="two")
+        set_order(repo, "computational-methods", "python-fundamentals", ["one", "two"])
+        glossary(repo, "one", [{"term": "x", "kind": "concept", "definition": "First."}])
+        b.build()
+        entry = manifest(built(repo, "two"))["glossary"][0]
+        assert entry["origin"]["href"] == "one.html#where-it-is-taught"
+
+    def test_a_practice_pages_origins_resolve_from_the_practice_page(self, repo):
+        """A practice page borrows its tutorial's glossary, but the link has
+        to resolve from where the *reader* is — the two sit at different
+        depths the moment either has a frozen release."""
+        write(repo, "One.\n", slug="one")
+        set_order(repo, "computational-methods", "python-fundamentals", ["one"])
+        glossary(repo, "one", [{"term": "x", "kind": "concept", "definition": "First."}])
+        path = tutorial_path(repo, "one-practice", "computational-methods")
+        path.write_text(
+            FRONTMATTER.format(slug="one-practice", version="2026.08.23.1").replace(
+                "version: 2026.08.23.1\n", "version: 2026.08.23.1\npractice_for: one\n")
+            + "**1.** A question.\n")
+        b.build()
+        entry = manifest(built(repo, "one-practice"))["glossary"][0]
+        assert entry["origin"]["href"].startswith("one.html")
+
     def test_an_unknown_kind_fails_the_build(self, repo):
         write(repo, "One.\n", slug="one")
         glossary(repo, "one", [{"term": "x", "kind": "vibe", "definition": "Nope."}])

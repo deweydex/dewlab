@@ -204,6 +204,11 @@ is therefore gated on matching a *term name* in the manifest's glossary —
 never a definition, which would fire on ordinary words appearing in some
 entry's prose.
 
+Matching is whole-word in both directions with an exact match preferred —
+plain substring matching offered *pandas* for "and" and *cell* for
+"excellent", which is the same false-positive problem §6c describes, reached
+by a different route (`DECISIONS_LOG.md` 7.94).
+
 Nothing is stored. Selection in, the existing filter out.
 
 ## 6c. Where a term came from

@@ -2542,30 +2542,6 @@ p code, li code {
   .dl-lookup { display: none !important; }
 }
 
-/* A term introduced by an earlier tutorial, linked back to where a reader
-   met it (link_terms() in build.py). Deliberately quieter than an ordinary
-   link: it is an offer, not an instruction, and a paragraph with three of
-   them should still read as a paragraph rather than as a menu. The dotted
-   underline is the long-standing convention for "there is more here if you
-   want it" and stays out of the way of the reading if you do not. */
-.dl-term {
-  color: inherit;
-  text-decoration: none;
-  border-bottom: 1px dotted var(--dl-muted);
-}
-
-.dl-term:hover,
-.dl-term:focus-visible {
-  color: var(--dl-link, var(--dl-orange));
-  border-bottom-color: currentColor;
-}
-
-/* Printed or exported, the link cannot be followed, so it should not look
-   like one. */
-@media print {
-  .dl-term { border-bottom: none; }
-}
-
 /* "Introduced in …" under a reference entry a reader inherited from an
    earlier tutorial (renderReference() in tutorial-runtime.js, origin_of()
    in build.py). Quiet: it is a way back for someone who wants one, not a
