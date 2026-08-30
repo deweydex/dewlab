@@ -1,29 +1,48 @@
 # `assets/pyodide-engine.js`, explained
 
-This file is Mini IDE's connection to Python. It doesn't draw anything on
-the page — that's [`assets/mini-ide.js`](mini-ide-js-explained.md)'s job —
+This file is dewmini's connection to Python. It doesn't draw anything on
+the page — that's [`compose/dewmini.js`](dewmini-js-explained.md)'s job —
 and it doesn't decide where files are stored — that's
-[`assets/mini-ide-fs.js`](mini-ide-fs-explained.md)'s job. What it does is
-answer three questions for the rest of the app: "start Python," "run this
-code," and "what does this name mean," without the caller needing to know
-*how* Python is actually running underneath.
+`compose/dewmini-fs.js`'s job. What it does is answer three questions for
+the rest of the app: "start Python," "run this code," and "what does this
+name mean," without the caller needing to know *how* Python is actually
+running underneath.
 
-That "how" turns out to have two real answers, and understanding that is
-the key to reading this whole file.
+It's a *shared* file rather than dewmini's own: this was originally Mini
+IDE's own *mini-ide-engine.js*, written when this codebase's convention
+was "each page owns a thin copy rather than a shared runtime module." It
+was generalized into this shared module once dewmini needed the same
+Worker/Stop capability — 700 lines of genuinely tricky Worker/interrupt/
+postMessage logic was judged too large and too risky to duplicate a
+second time, particularly with Mini IDE's own retirement already planned.
+Mini IDE has since retired (`DECISIONS_LOG.md` 7.91); its old, offline-
+only copy (`assets/mini-ide.js` and `assets/mini-ide-fs.js`, packaged by
+`write_mini_ide_bundle()` in `build.py`) still imports this same file, so
+it stays a shared module in fact even though only one of its two callers
+is a page a student actually reaches today. `configure()` is what makes
+sharing it possible at all: the page that calls it hands this module
+accessors for its own output elements and status display, plus a couple
+of small per-page overrides (`dataBase`, since dewmini lives one
+directory deeper than Mini IDE ever did and needs a different base path
+to reach the shared `data/` folder), rather than this file assuming
+anything about the page around it.
+
+That "how Python actually runs" question turns out to have two real
+answers, and understanding that is the key to reading this whole file.
 
 ---
 
 ## The big idea: two engines wearing one interface
 
-Mini IDE tries to run Python inside a **Web Worker** — a separate thread,
-so a runaway loop in a student's code never freezes the page, and a real
-Stop button can interrupt it. But a Worker can't always be created (most
-notably when Mini IDE is opened straight from a `file://` path on disk,
-which some browsers restrict). When that happens, this file falls back to
-running Pyodide directly **on the main thread** instead — the same Python,
-the same `tutorial_tools.py`, just without a genuine Stop button, since a
-loop running on the same thread as everything else blocks that thread
-completely.
+This file tries to run Python inside a **Web Worker** — a separate
+thread, so a runaway loop in a student's code never freezes the page,
+and a real Stop button can interrupt it. But a Worker can't always be
+created (most notably when a page using this module is opened straight
+from a `file://` path on disk, which some browsers restrict). When that
+happens, this file falls back to running Pyodide directly **on the main
+thread** instead — the same Python, the same `tutorial_tools.py`, just
+without a genuine Stop button, since a loop running on the same thread
+as everything else blocks that thread completely.
 
 Both paths exist side by side in this file:
 
@@ -48,10 +67,11 @@ of the file: two engines, one dispatcher, one shared public interface.
 
 1. **Module docstring and config** — what this file is for, and
    `DEFAULT_PACKAGES`, the Pyodide packages loaded at boot.
-2. **`configure()` and status/output plumbing** — how mini-ide.js hands
-   this module a way to find a cell's output element and show status
-   text, and `applyOutputEvent()`, which turns one "something happened in
-   Python" event into real DOM, shared by both engines.
+2. **`configure()` and status/output plumbing** — how the calling page
+   hands this module a way to find a cell's output element and show
+   status text, plus `dataBase`, and `applyOutputEvent()`, which turns
+   one "something happened in Python" event into real DOM, shared by
+   both engines.
 3. **Worker path** — `workerRequest()` (the request/reply pattern over
    `postMessage`), `ensureWorker()` (creates the worker, and is the *one*
    place this file listens for messages from it), `bootWorker()`,
@@ -63,8 +83,11 @@ of the file: two engines, one dispatcher, one shared public interface.
 5. **The dispatcher** — `boot()`, `ensureBooted()`, `restart()`,
    `engineMode()`, `canStop()`.
 6. **The exported API** — `runCell()`, `hoverDoc()`, `signatureHelp()`,
-   `pageNamesCompletion()`, then the filesystem functions
-   (`mountNative()` through `mkdir()`) that `mini-ide-fs.js` calls.
+   `pageNamesCompletion()`, `resetPageState()` (clears and reseeds the
+   shared namespace — what a page's own "Run all" calls between cells
+   instead of a full restart), then the filesystem functions
+   (`mountNative()` through `mkdir()`) that the calling page's own
+   filesystem module uses.
 
 ---
 
@@ -89,8 +112,8 @@ writes the number Pyodide treats as "this means Ctrl-C" into that shared
 memory, and that alone is enough to stop even a `while True: pass` cell.
 This only works when the browser actually handed out a
 `SharedArrayBuffer` in the first place (see `canStop()`), which needs
-cross-origin isolation — the reason Mini IDE registers a COI service
-worker at all.
+cross-origin isolation — the reason every page that uses this module
+registers a COI service worker.
 
 ---
 
@@ -108,10 +131,18 @@ worker at all.
   inside `pyodide-worker.js` and just returns the answer.
 - **"How does a folder actually get connected to Python?"** — the
   `mount*` functions at the bottom, and their `fs*MT` counterparts
-  earlier in the file. `mini-ide-fs.js` decides *which* backend (native
+  earlier in the file. The calling page's own filesystem module (for
+  dewmini, `compose/dewmini-fs.js`) decides *which* backend (native
   folder, OPFS, or IDBFS) and calls these once it has decided; this file
   never picks a backend on its own.
 - **"What happens when Restart is used?"** — `restart()`. It tears down
   whichever engine was running (terminating the worker, or just dropping
   the main-thread references) and resets `mode`/`bootPromise` so the next
   `ensureBooted()` starts a genuinely fresh interpreter.
+- **"Why is a URL resolved against `import.meta.url` instead of the
+  page?"** — `assetUrl()`, used to build an absolute URL for
+  `tutorial_tools.py` before handing it to the worker. Resolving against
+  the *page's* URL (`document.baseURI`) broke the moment a second page
+  one directory deeper than Mini IDE (dewmini, in `compose/`) started
+  importing this file — resolving against this module's own location
+  instead works no matter how deep the importing page sits.

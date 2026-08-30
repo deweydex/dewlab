@@ -5,11 +5,13 @@ loaded on every tutorial page. It's what turns build.py's static HTML
 into an actually-working page: the settings panel, the reference, the
 series navigation, saving a student's work, version switching, and
 booting and running Python. If you've read
-[`docs/mini-ide-js-explained.md`](mini-ide-js-explained.md) or
+[`docs/dewmini-js-explained.md`](dewmini-js-explained.md) or
 [`docs/pyodide-engine-explained.md`](pyodide-engine-explained.md), a
-good chunk of this file will look familiar — Mini IDE's own engine file
-was ported from this one's Pyodide-handling code, and both files solve
-the same "worker vs. main thread" problem the same way.
+good chunk of this file will look familiar — the shared
+`pyodide-engine.js` (dewmini's and Mini IDE's retired offline copy's
+own Python engine) was originally ported from this file's own
+Pyodide-handling code, and both solve the same "worker vs. main thread"
+problem the same way.
 
 ---
 
@@ -36,7 +38,7 @@ close to self-contained:
   a Jupyter notebook, alongside the "Download to keep" section
   `build.py` writes.
 - **Pyodide** — booting Python and running a cell's code, with the same
-  worker/main-thread split Mini IDE's engine file uses.
+  worker/main-thread split `pyodide-engine.js` uses.
 - **Illustrative code and maths** — syntax highlighting for read-only code
   blocks, and KaTeX for rendered maths.
 - **Saved work** — autosaving a student's cells and notes, and restoring

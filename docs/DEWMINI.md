@@ -3,21 +3,23 @@
 dewmini is a small notebook for writing and running Python in your
 browser. It uses the same Python as dewlab's tutorials — nothing to
 install — but without a tutorial attached to it. Open it at
-`compose/dewmini.html`, or from the **dewmini** link on the Mini IDE
-page, and you get a blank page ready for you to add a cell.
+`compose/dewmini.html` and you get a blank page ready for you to add a
+cell.
 
 Use it when a tutorial doesn't quite cover what you want to try: testing
 an idea before deciding it belongs in a lesson, working on a practice
-problem away from the tutorial it came from, or just wanting somewhere
-to run a few lines of Python that isn't tied to one topic. A tutorial
-page is mostly reading, with some code mixed in. dewmini is mostly code,
-with room for a few notes.
+problem away from the tutorial it came from, keeping a small project
+going across sessions with its own files, or just wanting somewhere to
+run a few lines of Python that isn't tied to one topic. A tutorial page
+is mostly reading, with some code mixed in. dewmini is mostly code, with
+room for a few notes.
 
-dewlab's other Python tool, the [Mini IDE](../assets/mini-ide.html), is
-the bigger of the two — it has a fuller toolbar and more export options,
-built for a project that stands on its own outside any tutorial. dewmini
-stays small on purpose: use it for something quick, and switch to Mini
-IDE once a project grows past that.
+dewlab used to have a second, larger Python tool alongside dewmini —
+Mini IDE — with its own file manager and a genuine Stop button that
+dewmini's own simpler main-thread Python couldn't offer. dewmini has
+since absorbed everything Mini IDE did, in its own smaller, quieter
+shape, and Mini IDE has retired; there is one Python workspace now, not
+two.
 
 ---
 
@@ -52,6 +54,11 @@ Settings if you'd rather not see it. A cell's own **×** needs two clicks
 to actually delete it — the first arms it (it turns solid red); the
 second, right after, deletes. Click anything else, or wait a few
 seconds, and it quietly disarms instead.
+
+While you type, dewmini offers the same completion, hover documentation,
+and function-signature help a tutorial page's cells do — on code that
+hasn't run yet, not only on names already defined in a cell you've
+already run.
 
 A text cell is for notes next to your code — a heading, a reminder of
 what a section does, or notes on what you tried. Click away from it and
@@ -102,7 +109,8 @@ them, though you can still `import` them if you want — dewmini keeps
 that import visible on purpose, so a cell you copy somewhere else still
 makes sense by itself. Two more things go beyond what a tutorial page
 offers: `sqlite3`, a real database built into Python with nothing to
-install (`import sqlite3` and go), and Pillow, which is what
+install (`import sqlite3` and go — see Files below for where a `.db`
+file it creates actually lives), and Pillow, which is what
 `image_input()` uses to open a picked image — you get a Pillow `Image`
 if Pillow has loaded, or the file's raw bytes on the rare page where it
 hasn't. If a cell raises an error, you'll see the traceback trimmed down
@@ -135,24 +143,44 @@ your cells stay fully visible and usable with a panel open. Drag a
 panel's left edge to resize it, and whichever you leave open is still
 open when you come back.
 
-**Run time** — on by default: the small "ran in…" line under a cell's
-output, described above. Switch it off here if you'd rather your output
-not have anything below it.
+**Python** — shows how Python is currently running (in a background
+worker, so a runaway cell can be stopped without freezing the page; or
+directly in the page, on a browser or setting where a background worker
+isn't available, where it can't be) and a **Restart Python** button for
+starting over with a clean interpreter — everything a cell has defined
+so far is discarded, though your cells and their code are untouched.
+Below that, the **Run time** switch turns the small "ran in…" line under
+a cell's output on or off.
 
 **Your notes** — a place to jot down anything worth remembering as you
 work, saved along with your cells.
+
+**Files** — a real filesystem a cell can read and write to, separate
+from the notebook itself (that's "Keep a copy," below). By default it's
+private, invisible storage inside your browser; **Use a folder on my
+computer** switches to a real folder instead, in a browser that
+supports it (Chrome or Edge), so files a cell writes actually appear on
+your computer where you can see them — a `sqlite3` database a cell
+creates, a chart a cell saves to disk, anything `open()` can write.
+**Upload a file** adds an existing file from your device into whichever
+storage is active, for a cell to read back with a plain `open()`. The
+list below shows what's there, with a way to delete anything you no
+longer need.
 
 **Keep a copy** — a name for your session, used in every download below
 and shown in the browser tab, so "print to PDF" and file downloads
 suggest something more useful than a default name. Below it: download
 as a Python file, a standalone HTML page, or a Jupyter notebook; print —
 or save as PDF — with just the code and its output, none of the page's
-own header and buttons; and load a `.ipynb` file back in, from here or
-anywhere else, to keep working on it — replacing the current notebook.
-A notebook written outside dewmini can bring along things Pyodide's
-Python genuinely can't run (a `tkinter` window, a Jupyter "magic"
-command, a `!pip install` shell line); a warning banner names exactly
-which imported cell each one is in, right after the import.
+own header and buttons; and load a `.ipynb` or `.py` file back in, from
+here or anywhere else, to keep working on it — replacing the current
+notebook. A `.py` file dewmini itself exported comes back exactly as it
+was, cell by cell, including its text cells; a plain, unmarked `.py`
+script comes back as one Python cell. A notebook written outside dewmini
+can bring along things Pyodide's Python genuinely can't run (a `tkinter`
+window, a Jupyter "magic" command, a `!pip install` shell line); a
+warning banner names exactly which imported cell each one is in, right
+after the import.
 
 Four ready-made examples sit right below that import button — real
 data included, loaded the same way a picked file would be: **SQL & Our
@@ -183,11 +211,13 @@ changes how the code runs — only how it looks.
 Everything you type in dewmini saves to the browser you typed it in, as
 you type it — nothing is sent anywhere, and nothing is scored. That also
 means your work stays on that one browser and that one device; to move
-it somewhere else, use one of the downloads in Settings.
+it somewhere else, use one of the downloads in Settings, or the Files
+section's own "use a folder on my computer" if what you want to keep is
+a file a cell wrote, not the notebook itself.
 
 - **`.py`** joins every Python cell together with a separator, and turns
   each text cell into a comment block, so the whole session reads as one
-  ordinary Python file.
+  ordinary Python file. The same file loads back in exactly as it was.
 - **`.html`** is a single file you can open by double-clicking. It
   carries its own copy of the notebook tools and runs its cells the
   moment it opens. Like a tutorial's own downloadable copy, it needs an
@@ -200,16 +230,21 @@ it somewhere else, use one of the downloads in Settings.
 
 ---
 
-## What's different from a tutorial page
+## The downloadable dewmini
 
-A tutorial page can genuinely stop a cell that's run away — say, an
-accidental infinite loop — because it runs Python in a background
-worker built to allow that. dewmini runs Python directly in the page
-instead, the simpler and older of the two approaches, so a cell that
-never finishes has to be waited out, or the page reloaded, rather than
-stopped with a button. The shared data folder `load_csv` reads from is
-real but currently empty, so asking for a file that isn't there yet
-tells you so rather than pretending it worked. Widgets — `text_input`,
-`dropdown`, `button`, `image_input` — work here exactly as they do on a
-tutorial page, since dewmini keeps Python in the main page, right where
-that direct connection to the page is available.
+Beyond saving your work, the link under dewmini's own title —
+"downloadable copy of dewmini itself" — gets you the whole tool as a
+zip: unzip it, and it works the same as it does online, with no internet
+needed at all once you've unzipped it, once the copy you downloaded
+already includes Python. Good for a classroom with no reliable
+connection, or for keeping a copy that works the same next year
+regardless of what the hosted site looks like by then.
+
+It needs one extra step the online version doesn't: after unzipping,
+run `python3 serve.py` from inside the folder (open a terminal there
+first) rather than double-clicking `index.html` directly. A modern
+browser won't let a page opened straight off disk load its own
+JavaScript the way dewmini needs to — *serve.py* starts a small local
+server and opens the right page for you, and needs nothing installed
+beyond the Python already running it. Leave that terminal window open
+while you use dewmini; closing it stops the server.

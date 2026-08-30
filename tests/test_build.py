@@ -2111,13 +2111,14 @@ class TestDownloadsDoNotCollide:
         self.two_modules(repo_with_assets)
         b.build(standalone=True)
         pages = list((repo_with_assets / "site" / "tutorials").rglob("*.html"))
-        # mini-ide/mini-ide.html (write_mini_ide_bundle()) is a real file
-        # under site/download/ too, but it is not a tutorial's downloadable
-        # copy — repo_with_assets carries the real assets/, so a real
-        # assets/mini-ide.html is always in the mix here.
+        # mini-ide/mini-ide.html (write_mini_ide_bundle()) and dewmini's own
+        # index.html/compose/dewmini.html (write_dewmini_bundle()) are real
+        # files under site/download/ too, but neither is a tutorial's
+        # downloadable copy — repo_with_assets carries the real assets/ and
+        # compose/, so both are always in the mix here.
         copies = [
             p for p in (repo_with_assets / "site" / "download").rglob("*.html")
-            if "mini-ide" not in p.parts
+            if "mini-ide" not in p.parts and "dewmini" not in p.parts
         ]
         assert len(copies) == len(pages) == 2
 

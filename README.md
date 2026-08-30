@@ -22,7 +22,7 @@ only have to read the one that matches what you are here to do.
 | Writing or editing a tutorial | [`docs/WRITING_TUTORIALS.md`](docs/WRITING_TUTORIALS.md) |
 | Changing the code | [`CONTRIBUTING.md`](CONTRIBUTING.md), then [`ARCHITECTURE.md`](ARCHITECTURE.md) |
 | Reporting a mistake or a bug | [`docs/REPORTING_A_PROBLEM.md`](docs/REPORTING_A_PROBLEM.md) |
-| Using the standalone Python workspaces | [`docs/MINI_IDE.md`](docs/MINI_IDE.md), [`docs/DEWMINI.md`](docs/DEWMINI.md) |
+| Using the standalone Python workspace | [`docs/DEWMINI.md`](docs/DEWMINI.md) |
 | Deciding whether to teach with dewlab | keep reading here |
 
 Two more documents sit behind those.
@@ -73,10 +73,10 @@ the course descriptors by what has to come first, and marks the ones dewlab
 does not teach yet. Browse by topic gathers everything on one subject in one
 place.
 
-**Two Python workspaces with no tutorial attached.** Mini IDE is the larger:
-files, uploads, SQLite, notebook import, and a Stop button that interrupts
-code that is stuck. dewmini is the smaller and quieter one, for trying a few
-lines out.
+**A Python workspace with no tutorial attached.** dewmini is a blank page for
+trying a few lines out, with a file manager, uploads, SQLite, notebook import,
+and a Stop button that interrupts code that is stuck, all in its own smaller,
+quieter shape.
 
 **Coverage you can check.** Each tutorial declares which learning outcomes it
 teaches, per section. The build refuses to accept a section that does not

@@ -1,7 +1,7 @@
 # `assets/pyodide-worker.js`, explained
 
 This file is the *inside* of the Web Worker every hosted dewlab page (and
-Mini IDE, through `pyodide-engine.js`) runs Python in. It never touches
+dewmini, through `pyodide-engine.js`) runs Python in. It never touches
 the page directly — it can't, a Worker has no access to the DOM — it only
 ever talks back and forth over `postMessage`. If you've already read
 [`pyodide-engine-explained.md`](pyodide-engine-explained.md), a lot of
@@ -13,7 +13,8 @@ conversation, the side that actually has Pyodide running in it.
 ## The big idea: this is where Python actually lives
 
 Every page that uses this file — a tutorial page via `tutorial-runtime.js`,
-or Mini IDE via `pyodide-engine.js` — creates exactly one Worker running
+or dewmini (and Mini IDE's own retired, offline-only copy) via
+`pyodide-engine.js` — creates exactly one Worker running
 this file, and from that point on, Python only exists here. The page
 itself never imports Pyodide or touches a Python object directly; it
 sends a message describing what it wants (`"run-cell"`, `"hover-doc"`,
@@ -50,7 +51,8 @@ for how that's wired up).
    `tutorial_tools.py`, sets up the shared namespace.
 7. **`runCell()`** — runs one cell and streams its output back as it
    happens.
-8. **Filesystem** (Mini IDE only) — `fsMountNative`/`fsMountOpfs`/
+8. **Filesystem** (dewmini and Mini IDE's own offline copy only — a
+   tutorial page has no filesystem to mount) — `fsMountNative`/`fsMountOpfs`/
    `fsMountIdbfs` (the three storage backends), `fsSync`, `fsUnmount`,
    and the plain file operations `fsList`/`fsRead`/`fsWrite`/`fsDelete`/
    `fsMkdir`.
