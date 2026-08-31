@@ -1118,6 +1118,41 @@ class TestTheSeriesArchive:
         assert 'href="download/computational-methods-core-skills.zip"' in index
         assert "Download all 2" in index
 
+    def test_the_count_includes_practice_pages(self, repo_with_assets):
+        """The archive holds a tutorial's practice right after it
+        (zip_sequence()) — the count beside the download link has to say so
+        too, or "Download all 2" undersells a zip that actually holds 3."""
+        self.two_tutorials(repo_with_assets)
+        practice_path = tutorial_path(repo_with_assets, "t1-practice", "computational-methods")
+        practice_path.write_text(
+            '---\ntitle: "T1 practice"\nslug: t1-practice\n'
+            'module: computational-methods\nyear: "2026-2027"\n'
+            'series: Core skills\nversion: 2026.08.23.1\npractice_for: t1\n'
+            '---\n\n**1.** A question.\n'
+        )
+        b.build(standalone=True)
+        index = (repo_with_assets / "site" / "index.html").read_text()
+        assert "Download all 3" in index
+        assert "Download all 2" not in index
+
+    def test_the_download_link_sits_above_the_list_not_below_it(self, repo_with_assets):
+        self.two_tutorials(repo_with_assets)
+        b.build(standalone=True)
+        index = (repo_with_assets / "site" / "index.html").read_text()
+        link = index.index('href="download/computational-methods-core-skills.zip"')
+        listing = index.index('<ol class="dl-contents">')
+        assert link < listing
+
+    def test_the_download_link_is_a_button_with_a_hidden_icon(self, repo_with_assets):
+        self.two_tutorials(repo_with_assets)
+        b.build(standalone=True)
+        index = (repo_with_assets / "site" / "index.html").read_text()
+        assert (
+            '<a class="dl-download" href="download/computational-methods-core-skills.zip" '
+            'download><span class="dl-download-icon" aria-hidden="true"></span>'
+            "Download all 2" in index
+        )
+
     def test_a_series_of_one_is_offered_in_the_singular(self, repo_with_assets):
         """"Download all 1 as single files" is not a sentence, and a series of
         one stopped being hypothetical when reflections moved to their own."""

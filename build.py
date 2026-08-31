@@ -1257,6 +1257,19 @@ def render_toc(tutorial: Tutorial) -> str:
     return "".join(parts)
 
 
+def download_link_html(href: str, label: str) -> str:
+    """A `.dl-download` link/button, icon and all — the one shape every
+    "take this away" offer uses, whether it's a single tutorial's own copy,
+    a series' archive, or a whole module's. The icon is a plain empty span
+    (a shape drawn in CSS, the same way .dl-settings-icon and its siblings
+    already are — no font, no inline SVG to keep in step with a palette
+    change) marked aria-hidden, so a screen reader reads only `label`, not
+    an icon or the glyph CSS content: used to put there before it.
+    """
+    icon = '<span class="dl-download-icon" aria-hidden="true"></span>'
+    return f'<a class="dl-download" href="{href}" download>{icon}{label}</a>'
+
+
 def download_section(tutorial: Tutorial) -> str:
     """The settings panel's offer to take this tutorial away.
 
@@ -1265,10 +1278,10 @@ def download_section(tutorial: Tutorial) -> str:
     shares the shell — has no single tutorial to offer.
     """
     up = "../" * tutorial.depth
+    href = f"{up}download/{tutorial.module}/{tutorial.slug}.html"
     return (
         "<h3>This tutorial</h3>"
-        f'<a class="dl-download" href="{up}download/{tutorial.module}/'
-        f'{tutorial.slug}.html" download>Download to keep</a>'
+        f"{download_link_html(href, 'Download to keep')}"
         '<p class="dl-panel-note">One file with the reading and the cells inside '
         "it. It needs an internet connection the first time you open it, and "
         "then it is yours.</p>"
@@ -1841,10 +1854,11 @@ def render_index(
                 for (owner, series), members in groups.items() if owner == module
             ) + len(mixed.get(module, []))
             out.append(
-                '<p class="dl-series">'
-                f'<a class="dl-download" href="download/{module_archive.name}" download>'
-                f"Download every tutorial and practice page in this module ({total} files, "
-                f"{readable_size(module_archive)})</a></p>"
+                '<p class="dl-series">' + download_link_html(
+                    f"download/{module_archive.name}",
+                    f"Download every tutorial and practice page in this module "
+                    f"({total} files, {readable_size(module_archive)})",
+                ) + "</p>"
             )
         for (owner, series), members in sorted(groups.items()):
             if owner != module:
@@ -1852,6 +1866,26 @@ def render_index(
             if len({s for m, s in groups if m == module}) > 1:
                 name = titles.get((owner, series), series)
                 out.append(f'<h3>{html.escape(name)}</h3>')
+            archive = archives.get((owner, series))
+            if archive is not None:
+                # Right under the series' own title rather than after its
+                # list, matching where the module's own download offer sits
+                # under its heading — a reader deciding "give me the whole
+                # thing" should not have to scroll past every title first.
+                sequence = zip_sequence(members, practice)
+                count = len(sequence)
+                # A series of one real file is a real case now that
+                # reflections live in their own section, and "Download all 1
+                # as single files" is not a sentence anybody wrote on
+                # purpose.
+                what = ("this one as a single file" if count == 1
+                        else f"all {count} as single files")
+                out.append(
+                    '<p class="dl-series">' + download_link_html(
+                        f"download/{archive.name}",
+                        f"Download {what} ({readable_size(archive)})",
+                    ) + "</p>"
+                )
             out.append('<ol class="dl-contents">')
             for member in members:
                 href = member.out_path.relative_to(OUT).as_posix()
@@ -1869,20 +1903,6 @@ def render_index(
                     f"{html.escape(member.title)}</a>{extra}</li>"
                 )
             out.append("</ol>")
-            archive = archives.get((owner, series))
-            if archive is not None:
-                count = len(members)
-                # A series of one is a real case now that reflections live in
-                # their own section, and "Download all 1 as single files" is
-                # not a sentence anybody wrote on purpose.
-                what = ("this one as a single file" if count == 1
-                        else f"all {count} as single files")
-                out.append(
-                    '<p class="dl-series">'
-                    f'<a class="dl-download" href="download/{archive.name}" download>'
-                    f"Download {what}"
-                    f" ({readable_size(archive)})</a></p>"
-                )
         # After the series and before the archive. A mixed set is part of the
         # course and belongs to no series in it, so there is nowhere else it
         # could go — and it is the only kind of page nothing else links to.

@@ -1223,16 +1223,63 @@ p code, li code {
 .dl-nav-prev::before { content: "←\00a0"; color: var(--dl-muted); }
 .dl-nav-next::after { content: "\00a0→"; color: var(--dl-muted); }
 
-/* Taking the tutorial away with you. It sits in the settings panel rather
-   than the navigation row: it is an occasional action, not part of moving
-   through the series. */
+/* Taking a tutorial, a series, or a module away with you — the single
+   tutorial's own offer sits in the settings panel rather than the
+   navigation row, since it's an occasional action, not part of moving
+   through the series; a series' or module's sits on the contents page,
+   under its own title. One shape for all three: a real button rather than
+   a plain link, so it doesn't read as just another item in the list above
+   or below it. The icon is .dl-download-icon, a shape rather than a font
+   glyph or an inline SVG — see download_link_html()'s own docstring for
+   why it's a plain aria-hidden span. */
 .dl-download {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
   margin-bottom: 0.55rem;
+  padding: 0.4rem 0.85rem;
+  border: 1px solid var(--dl-cell-border);
+  border-radius: 4px;
+  background: var(--dl-panel-bg);
+  color: var(--dl-fg);
   font-family: var(--dl-mono);
   font-size: 0.78rem;
+  text-decoration: none;
 }
-.dl-download::before { content: "↓ "; color: var(--dl-muted); }
+.dl-download:hover { border-color: var(--dl-orange); color: var(--dl-orange); }
+
+.dl-download-icon {
+  flex: none;
+  position: relative;
+  width: 0.8em;
+  height: 0.85em;
+  box-sizing: border-box;
+  border-bottom: 2px solid currentColor;
+}
+.dl-download-icon::before {
+  /* the stem */
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 2px;
+  height: 0.42em;
+  background: currentColor;
+  transform: translateX(-50%);
+}
+.dl-download-icon::after {
+  /* the arrowhead, sitting just above the tray the border-bottom above draws */
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 0.32em;
+  width: 0;
+  height: 0;
+  border-left: 0.24em solid transparent;
+  border-right: 0.24em solid transparent;
+  border-top: 0.26em solid currentColor;
+  transform: translateX(-50%);
+}
 
 /* ------------------------------------------------------- contents of a page
 
@@ -1504,8 +1551,11 @@ p code, li code {
 .dl-contents li { margin: 0.35rem 0; }
 .dl-contents a { text-decoration: none; }
 .dl-contents a:hover { text-decoration: underline; }
-.dl-series { margin: 0 0 2rem; }
-.dl-contents:has(+ .dl-series) { margin-bottom: 0.5rem; }
+/* The whole-series/whole-module download offer, right under its own title
+   rather than after the list under it — .dl-download is a button, not a
+   line of text, so it wants less trailing space before what follows than a
+   paragraph would. */
+.dl-series { margin: 0 0 1.1rem; }
 
 /* How far a reader has gotten in one tutorial, read from this browser's own
  * saved progress with no fetch (renderContentsProgress(),
