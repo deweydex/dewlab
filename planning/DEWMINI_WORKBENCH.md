@@ -129,12 +129,17 @@ lays, and a reference that hid two-thirds of itself on the grounds that
 they had not reached tutorial 31 yet would be actively unhelpful.
 
 So dewmini gets the union: every term from every tutorial's glossary,
-deduplicated on `(term, kind)`, 251 entries across 43 files today,
-grouped by the five kinds the glossary schema already defines — concept,
-function, operator, formula, keyword — with search across both terms and
-definitions, and each entry saying which tutorial introduced it and
-linking there. Category navigation and search are what make 251 entries
+deduplicated on `(term, kind)` — 248 entries today, from 43 glossary
+files — grouped by the five kinds the schema already defines (concept,
+function, operator, formula, keyword), with search across both terms and
+definitions. Category navigation and search are what make 248 entries
 navigable rather than a wall.
+
+Each entry names the tutorial that introduced it, but does **not** link
+to it. This file ships inside dewmini's offline bundle, which carries no
+tutorials at all, so a link would work on the hosted site and 404 for
+every offline reader — and a reference that sends a student somewhere
+broken is worse than one that tells them where to look.
 
 Generated at build time into `assets/reference-index.json` by
 `write_reference_index()`, from the same `own_glossary()` the tutorial
@@ -151,7 +156,7 @@ remembered to print. Variables that exist but were never printed are
 invisible. "Did that actually work?" has no answer short of typing the
 name and running again.
 
-The Workbench's Variables section lists what is actually in the session:
+The Workbench's Variables section lists what is in the session:
 name, type, and a one-line summary — a DataFrame's shape, a list's
 length, a number's value — refreshed after every run. It separates a
 student's own data from the functions and modules that share the
@@ -180,7 +185,7 @@ browsers and are expected to permit it — but *this* was built in a
 sandbox whose network policy blocks `ourworldindata.org` outright, so the
 fetch could not be tried even once. Twice now this repository has shipped
 a claim about something it never tested (`DECISIONS_LOG.md` 7.92: two
-offline bundles that could not actually be opened), so the claim is not
+offline bundles that could not be opened at all), so the claim is not
 being made a third time.
 
 What was built instead assumes nothing: `load_csv()` now accepts a full
@@ -224,13 +229,30 @@ remote dataset, and see which way it goes.
 
 ## 9. What was verified, and how
 
-Not asserted — run, in this order:
+Not asserted — run:
 
-1. `pytest` — unit tests, including the storage migration and
-   `describe_globals()` over every type it claims to summarise.
-2. `python3 build.py --clean` — a real build, with the reference index
-   emitted and checked.
-3. **A real browser.** `tests/e2e/` drives Chromium against a
-   self-hosted Pyodide. New tests there cover tabs, the variable
-   inspector against live Python, and the rails opening together. This
-   is the part the decision log keeps saying was missing.
+1. **Unit tests.** `describe_globals()` over every type it claims to
+   summarise, including a value whose `__repr__` raises; and
+   `write_reference_index()`'s union, deduplication, sorting, and its
+   presence in the offline bundle.
+2. **A real build.** `python3 build.py --clean`, with the index emitted
+   (248 entries) and the bundle carrying it.
+3. **A real browser**, which is the part the decision log keeps saying
+   was missing. Twelve new tests in
+   `tests/e2e/test_dewmini_workbench.py` drive Chromium against a
+   self-hosted Pyodide: tabs keeping their own cells across a switch,
+   the migration from pre-tabs storage, both rails open at once,
+   same-edge panels excluding each other, a rail surviving a click on
+   your own code, reference search and kind filters, a dataset writing
+   its own cell, and the inspector reading variables out of live Python.
+4. **The downloaded bundle, served and opened** the way a student would
+   — 248 terms, six datasets, no failed requests.
+5. **Two screen widths**, by screenshot: 1440px with both rails open,
+   and 375px, where the rails become bottom sheets and nothing scrolls
+   sideways.
+
+Two things this could not verify, both named where they matter rather
+than buried here: remote dataset fetching (§6, and in
+`tests/MANUAL_CHECKLIST.md`), and the two `test_stop_button.py` failures
+that were already failing on `main` before any of this — an interrupt
+timing out under this sandbox's CPU, not a regression.

@@ -1,8 +1,17 @@
-# A glossary for the e2e fixture tutorial, so the build has real entries to
-# assemble into assets/reference-index.json and dewmini's Library rail has
-# something to search. Deliberately spans several kinds — the panel groups by
-# kind and offers one filter button per kind, and neither is exercised by a
-# glossary that is all concepts.
+# A glossary for the e2e fixture, so the build has real entries to assemble
+# into assets/reference-index.json and dewmini's Library rail has something
+# to search. Deliberately spans several kinds — the panel groups by kind and
+# offers one filter button per kind, and neither is exercised by a glossary
+# that is all concepts.
+#
+# It belongs to `third-page` rather than `rendering-tour` on purpose.
+# Giving a tutorial a glossary makes its Reference toggle appear
+# (initReference() unhides it), and `rendering-tour` is the page nearly
+# every other test in this directory drives — so a glossary there quietly
+# changes the page under tests that have nothing to do with the reference.
+# `third-page` is built into the same module and series, so the
+# cross-tutorial index picks these entries up either way, and no other
+# test's page changes shape.
 entries:
   - term: cell
     kind: concept

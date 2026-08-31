@@ -1591,6 +1591,14 @@ async function refreshVariables() {
   const sharedEl = document.getElementById("dm-variables-shared");
   if (!listEl) return;
 
+  // Nothing to draw for a closed panel, and this is called after every
+  // cell run — describing the namespace is a full round trip to the
+  // worker, so "Run all" over fifty cells would otherwise pay fifty of
+  // them to update something nobody is looking at. Opening the Workbench
+  // refreshes it (initPanels()), so it is never stale when visible.
+  const panel = document.getElementById("dm-workbench");
+  if (panel && panel.hidden) return;
+
   if (engine.engineMode() === null) {
     listEl.replaceChildren();
     if (statusEl) statusEl.textContent = "Not started yet — run a cell to start Python.";
@@ -2406,7 +2414,7 @@ function makeRightEdgeResizable(panel, min = 256, max = 640) {
  * page has made room for, where every click on your own notebook would
  * close the reference you opened to read while writing it. Escape and the
  * close button remain, which are the deliberate ways out. */
-function wirePanel(panel, toggle, closeBtn, conflicts = []) {
+function wirePanel(panel, toggle, closeBtn, conflicts = [], onOpen = null) {
   if (!panel) return;
   const setOpen = (open) => {
     panel.hidden = !open;
@@ -2415,6 +2423,11 @@ function wirePanel(panel, toggle, closeBtn, conflicts = []) {
     for (const other of conflicts) {
       if (other && !other.hidden) other.hidden = true;
     }
+    // After the panel is visible, not before: a panel that only draws
+    // itself while open (the variable inspector) needs its own "you are
+    // open now" moment, and reading `hidden` from inside this callback
+    // has to see the new value.
+    onOpen?.();
   };
   toggle?.addEventListener("click", () => setOpen(panel.hidden));
   closeBtn?.addEventListener("click", () => {
@@ -2553,7 +2566,8 @@ function initPanels() {
   wirePanel(settingsPanel, document.getElementById("dl-settings-toggle"),
             document.getElementById("dl-settings-close"), [workbenchPanel]);
   wirePanel(workbenchPanel, document.getElementById("dm-workbench-toggle"),
-            document.getElementById("dm-workbench-close"), [settingsPanel]);
+            document.getElementById("dm-workbench-close"), [settingsPanel],
+            () => refreshVariables());
   wirePanel(libraryPanel, document.getElementById("dm-library-toggle"),
             document.getElementById("dm-library-close"), []);
 
