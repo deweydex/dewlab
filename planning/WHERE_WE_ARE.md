@@ -8,7 +8,7 @@ it from a commit list.
 Everything below lives on `claude/dewlab-remove-mini-ide-c8c35d`
 (**PR #90**, still a draft). The design reasoning is in
 `planning/DEWMINI_WORKBENCH.md`; the decision record is `DECISIONS_LOG.md`
-7.98–7.103.
+7.98–7.104.
 
 Last updated: 2026-08-31.
 
@@ -68,10 +68,11 @@ reverse:
 - **One Python session shared across every tab.** Per-tab namespaces
   would mean threading a namespace id through every surface that runs
   Python. Instead the sharing is made visible in the Variables list.
-- **The reference shows terms from tutorials you haven't reached.** The
-  tutorial pages' own Reference deliberately never does this. A workspace
-  has no position in a series to protect, so this one drops the rule.
-  `planning/DEWMINI_WORKBENCH.md` §4.
+- **The reference shows terms from tutorials you haven't reached.**
+  ~~Yours to overrule~~ — **settled**, and on a better reason than mine:
+  dewmini has no way of knowing what a student has been taught, so hiding
+  two thirds of the reference would mean guessing that against someone who
+  may have finished the course. `DECISIONS_LOG.md` 7.104.
 
 ---
 

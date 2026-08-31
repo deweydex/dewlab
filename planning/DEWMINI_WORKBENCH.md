@@ -146,6 +146,17 @@ Generated at build time into `assets/reference-index.json` by
 pages use. One source of truth: a glossary edit reaches both surfaces, and
 neither can drift from the other.
 
+**Settled (DECISIONS_LOG.md 7.104), on a better reason than this one.**
+Josh confirmed the union, arguing from the reader rather than from the tool:
+dewmini has no way of knowing what a student has been taught. The spoiler
+rule assumes the page knows where its reader has got to — a tutorial page
+does, from its own place in the series; dewmini cannot, because nothing is
+recorded anywhere. Hiding two thirds of the reference would mean guessing
+that, wrongly, against someone who may have finished the whole course. That
+narrows what would reopen this: not "if dewmini becomes more curriculum
+-shaped", but only "if dewmini gains a way to know", which would mean
+tracking readers — refused here on separate grounds.
+
 ### 4a. The filters, and why none of them is a field anyone maintains
 
 Added after the first pass, on Josh's ask for subject and level toggles —

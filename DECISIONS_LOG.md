@@ -4497,3 +4497,36 @@ with width 191 — no overlap on either side, the three of them accounting for
 
 *Cost to change: small, and it deletes more than it adds — one shared
 function in place of two, and three `resize: horizontal` declarations gone.*
+
+---
+
+**7.104 — The union reference is settled, on a better reason than the one I
+gave for it.** 7.99 and `DEWMINI_WORKBENCH.md` §4 dropped the tutorial
+Reference panel's rule (`REFERENCE_PANEL.md` §1: never show a reader a term
+from a tutorial they have not reached) and flagged it as Josh's to overrule.
+He has confirmed it, and his reasoning is the stronger of the two:
+
+> *"we just don't know what the student will be doing when they open
+> dewmini? Maybe they have done all the tutorials online and we just can't
+> see them?"*
+
+My argument was about **dewmini's** nature — a workspace has no position in
+a series, so there is no position to protect. His is about the **reader's**,
+and it is the one that actually decides the case: the spoiler rule assumes
+the page knows where its reader has got to. A tutorial page does know, from
+its own position in the series. dewmini cannot know. Nothing is recorded
+anywhere — no accounts, no server, no tracking (a deliberate property of
+this whole project) — so "what has this person been taught" is not a fact
+dewmini has access to, and hiding two thirds of the reference would mean
+guessing it, wrongly, against a reader who may well have finished the
+course.
+
+Worth writing down because it changes what would reopen this. Under my
+reasoning, the decision would be up for revisiting if dewmini ever became
+more curriculum-shaped. Under his, it only reopens if dewmini gains a way to
+*know* where a reader has got to — which would mean tracking them, which
+this project has refused on other grounds entirely. So this is settled
+harder than I had it.
+
+*Cost to change: unchanged — one function, and both behaviours are tested.
+But the reason to change it is now much narrower.*
