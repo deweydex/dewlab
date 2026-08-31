@@ -1,13 +1,26 @@
 # Five Jupyter features worth having in dewmini
 
-A brief for a future session, written to be read cold. Nothing here has been
-started; nothing here is committed. It is a proposal with the groundwork
-done, not a plan already agreed.
+## Status: four of these five are now built
 
-**Origin.** Josh asked, after the workbench work landed (PR #90, merged
-2026-08-31): *"Are there any other features in Jupyter notebooks that you
-think would be helpful besides widgets?"* This is the considered answer,
-written up so it can be acted on in a different session.
+This began as a proposal for five features borrowed from Jupyter. Four have
+since been implemented, so read this as a record of why they are the way
+they are, not as work to pick up.
+
+| Feature | State |
+|---|---|
+| 1. Execution counters | **Not built.** The only one still open. |
+| 2. Stale-output marker | Built. `DECISIONS_LOG.md` 7.105 |
+| 3. Run above / run below | Built. `DECISIONS_LOG.md` 7.106 |
+| 4. Maths in text cells | Built. `DECISIONS_LOG.md` 7.107 |
+| 5. Restart and run all | Built. `DECISIONS_LOG.md` 7.108 |
+
+Each decision log entry records what was actually done, which in places
+differs from what is proposed here. Where they disagree, the decision log is
+what happened.
+
+The reasoning below is kept because it explains why these features exist and
+what they are for, which the code does not say. Section 1 is still a
+proposal.
 
 **A companion document.** `planning/DATABASE_MODULE_AND_BIGGER_IDEAS.md`
 covers the larger and more speculative ground — why the notebook form fails
@@ -82,6 +95,8 @@ implications beyond dewmini; it has its own section at the end.
 
 ## 1. Execution counters — the `In [3]` numbers
 
+> **Not built.** This is the one feature here still to be done.
+
 **What.** A small number beside each Python cell showing *when* it last ran,
 counting up across the session: the first cell you run is 1, the next 2, and
 so on, regardless of where they sit on the page. A cell that has never run
@@ -138,6 +153,8 @@ assertion.
 
 ## 2. A stale marker — "this output is older than this code"
 
+> **Built.** See `DECISIONS_LOG.md` 7.105 for what shipped.
+
 **What.** When a cell's code has changed since it last ran, say so: a muted
 word or a changed border, cleared the moment it runs again.
 
@@ -176,6 +193,8 @@ re-run, assert it goes.
 
 ## 3. Run above / run below
 
+> **Built.** See `DECISIONS_LOG.md` 7.106 for what shipped.
+
 **What.** Two more run commands: everything up to and including this cell,
 and this cell and everything after it.
 
@@ -212,6 +231,9 @@ Below*, and this is one of the more-used menus in the product.
 ---
 
 ## 4. Maths in text cells
+
+> **Built.** See `DECISIONS_LOG.md` 7.107 for what shipped, including the
+> offline-bundle decision this section left open.
 
 **What.** `$x^2 + 3x$` in a dewmini text cell should render as maths, the
 way it already does in a tutorial.
@@ -346,6 +368,8 @@ agree, or the same definition will render differently in two places.
 
 ## 6. Restart and run all, as one action
 
+> **Built.** See `DECISIONS_LOG.md` 7.108 for what shipped.
+
 **What.** One button: throw the interpreter away, then run every cell from
 the top.
 
@@ -397,6 +421,10 @@ half of the idea.
 ---
 
 ## 8. Suggested order, and why
+
+> **Superseded.** Four of these five are built, so the ordering below is a
+> record of what was recommended rather than a plan. Execution counters are
+> the only item left.
 
 1. **Execution counters** (1) — cheapest, teaches the most, and is the
    foundation the next one leans on.
