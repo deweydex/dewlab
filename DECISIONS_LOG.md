@@ -4530,3 +4530,180 @@ harder than I had it.
 
 *Cost to change: unchanged — one function, and both behaviours are tested.
 But the reason to change it is now much narrower.*
+
+---
+
+**7.105 — A stale-output marker, strict from the start.** A dewmini
+proposal ("Five Jupyter features worth having in dewmini") argued for two
+paired features: execution counters (the `In [3]` numbers) and a marker
+for when a cell's output no longer matches its code. Josh asked to leave
+the counters out for now; the marker does not actually need them — it only
+needs to remember what a cell's content looked like the moment it last
+ran, and compare that to what is on screen now — so it ships on its own.
+
+**Any difference counts, whitespace included.** The proposal flagged this
+as an open question: is `answer = 42` vs `answer  = 42` really "edited
+since last run"? I started strict, per the proposal's own recommendation,
+because the alternative — diffing after some kind of normalisation — is a
+judgement call about what counts as a "real" change, and a wrong judgement
+there hides a genuine edit rather than merely annoying someone over a
+harmless one. If this turns out to be noisy in practice (a reader
+reflowing a paragraph in a docstring, say), loosen it then, with a reason
+in hand rather than a guess.
+
+**The marker does not survive a reload, on purpose.** `ranContent` is
+never written to `saveState()`'s serialized shape and never read back by
+`readCells()` — the same treatment `lastRunMs` and (had it shipped)
+`execution_count` would get, for the same reason: nothing a cell's Python
+actually *did* survives a reload either, since the interpreter itself does
+not. A marker that persisted would claim a fact about a session that no
+longer exists.
+
+*Cost to change: small — one field on the cell object, one comparison
+function, one CSS rule.*
+
+---
+
+**7.106 — Run above/below, behind a menu rather than two more buttons.**
+The same proposal's third feature: run every cell from the top through a
+given one, or that cell and everything after it — the practical repair
+once a reader notices (from 7.105's marker, or just experience) that a
+cell's output no longer matches what is above it.
+
+**The mechanics were mostly already there.** `runAllCells()` already did
+the whole job — the batch loop, the per-cell Stop-button state, the error
+tally — just always over every Python cell and always after a namespace
+reset. It is now `runCellBatch()`, parameterised on which cells and
+whether to reset first, with `runAllCells()`/`runAbove()`/`runBelow()` as
+its three callers.
+
+**The one real risk was getting `reset` backwards.** "Run above" resets
+the namespace first, the same as "Run all" — the point of running from the
+top is that what is on screen matches what the code actually did, which a
+lingering value from a previous run could quietly fake. "Run below" must
+not: its entire reason to exist is keeping what the cells above it already
+defined, so resetting first would erase exactly the state it was built to
+preserve. Written down because getting this one boolean backwards would
+have shipped a feature that silently destroys work rather than saves it.
+
+**Where the controls went.** `.dm-cell-actions` had its Python/Text
+buttons removed only recently, as duplicates of the insert seams (7.102) —
+adding two more always-visible icons per cell would cut straight back
+against that. Both options live behind one "⋯" toggle instead, opened and
+closed the same way `armDeleteButton()`'s outside-click already works: a
+document-level listener added only while the menu is open and removed the
+moment it closes, rather than one kept alive for the cell's whole
+lifetime — with a menu on every cell, an unremoved listener would be a
+real per-cell leak, not a theoretical one. The cost is one extra click to
+reach either option; the alternative the proposal raised, keyboard-only
+shortcuts, would have traded that for a beginner-facing tool learning
+Jupyter's own trapdoor (see this file's "Two I would argue against", still
+true and unrelated to this entry).
+
+*Cost to change: small-to-medium. The batch runner is one function used
+three ways; the menu is self-contained and does not touch anything else
+`.dm-cell-actions` already had.*
+
+---
+
+**7.107 — Maths in dewmini text cells: a second implementation, on
+purpose, and the offline bundle takes the weight.** The same proposal's
+largest item, and the one it explicitly flagged as needing a decision
+first. `$x^2 + 3x$` in a dewmini text cell now renders as maths, the way
+it already does in a tutorial.
+
+**Ported, not called.** Tutorial maths runs through `build.py`'s
+`extract_math()`/`render_math()` — Python, at build time, working on
+python-markdown's input. dewmini's text cells run through
+`renderDocMarkdown()` — JavaScript, at read time, a small hand-written
+renderer that is not python-markdown at all. There was no function to
+reuse, only the pattern: `extractDocMath()` in `compose/dewmini.js` lifts
+`$…$`/`$$…$$` out into the same bare-alphanumeric placeholder scheme
+(`dlmath0z`, `dlmath1z`, …) *before* `renderDocMarkdown()`'s own line-by-
+line pass runs, for the same reason `extract_math()`'s own comment gives:
+`$a_i$` loses its underscore to `renderDocInline()`'s emphasis rule
+exactly the way it loses it to python-markdown's, if the parser sees the
+raw TeX at all.
+
+**This is a second maths renderer, and that is a deliberate, narrow
+choice — not an oversight.** The proposal's own §5 lays out that dewlab
+already has at least three markdown surfaces outside the tutorial
+pipeline (dewmini text cells, the authoring editor's Milkdown/KaTeX, and —
+this session's own finding, which the proposal's enumeration missed —
+`assets/tutorial-runtime.js`'s own copy of `renderDocMarkdown()`, ported
+from dewmini's for a *reader's own* cells inside a tutorial page), and asks
+whether dewlab should converge on one client-side renderer the build also
+targets. That refactor is not this change. Shipping the smaller, proven
+thing first — with this entry naming it plainly as a second
+implementation — means the unification question gets decided with two
+working examples in hand instead of zero. `assets/tutorial-runtime.js`'s
+own copy stays exactly as unaware of maths as it already is; if it needs
+the same treatment, that is the follow-up, not a silent gap in this one.
+
+**KaTeX's stylesheet loads unconditionally; its 266 KB renderer does
+not.** Tutorial pages already make this exact trade in `assets/shell.html`
+(1.8) — the 23 KB CSS is cheap enough to always pay, the JS is not.
+dewmini has no manifest to gate the JS on at build time (a cell's content
+is not decided until a reader writes it), so the gate here is behavioural
+instead: `loadKatexRenderMath()` fetches the bundle the first time
+`renderMathsIn()` finds a `.dl-math` span to render, and never before, and
+never again after. A notebook with no maths in it never pays for either
+KaTeX file beyond the CSS.
+
+**The offline bundle takes the ~590 KB.** `DEWMINI_ASSET_FILES`
+(`build.py`) used to carry a comment saying, correctly at the time,
+"dewmini renders no maths" as the reason `vendor/katex.min.css` was
+missing from the downloadable copy. That comment is now false, and the
+proposal named the trade this reopens plainly: lazy loading only helps a
+classroom *with* a connection on first use; a classroom with none at all
+cannot fetch what was never lazy-loaded in the first place, so the offline
+bundle either carries KaTeX (JS, CSS, and all twenty font files, added to
+`DEWMINI_ASSET_FILES` and a new `shutil.copytree` for the fonts directory)
+or maths silently fails in exactly the setting the bundle exists for. I
+have included it, on the reasoning that a downloadable copy which cannot
+do something the hosted site can do is a worse trade than 590 KB — but the
+proposal marked this explicitly as Josh's call, and it still is; this
+entry is that decision recorded, reversible by dropping three lines from
+`DEWMINI_ASSET_FILES` and the fonts copytree if he decides otherwise.
+
+**The standalone-HTML export needed no change, and that is a finding worth
+recording.** The proposal's own text flagged `buildStandaloneHtml()`'s
+single-file export as a likely gap: if a notebook with maths gets
+exported, does the maths survive? It turns out the question does not
+arise. That export already renders a text cell's content as plain,
+literal `white-space: pre-wrap` text — `body.textContent = cell.content`,
+not `renderDocMarkdown()` — so headings, bold, and bullets were never
+rendered there either, maths included. There was nothing to inline,
+because there was already nothing rendered.
+
+*Cost to change: medium. The extraction/render-span code is small and
+tested; the real ongoing cost is the ~590 KB now in every offline
+download, and the standing question of when (if ever) to unify the
+project's several markdown renderers into one.*
+
+---
+
+**7.108 — Restart and run all, as one button.** The same proposal's
+smallest item: throw the interpreter away, then run every cell from the
+top — the reproducibility check that goes with 7.105's marker (*that*
+shows a notebook might not survive a fresh run; *this* proves whether it
+does).
+
+**The two halves already existed and needed no new logic**, only wiring:
+`restartPython()` (factored out of what "Restart Python" already did —
+`engine.restart()`, `dfs.reset()`, then `ensurePyodide()` again so
+Settings reflects real status immediately) followed by the existing
+`runAllCells()`.
+
+**Whether that makes this button "just a label" was the proposal's own
+open question, and the answer is no.** `runAllCells()` already resets the
+*namespace* first (`engine.resetPageState()`), which is the cheap version:
+clear and re-seed the same interpreter. `engine.restart()` is stronger —
+a genuinely fresh interpreter, which also clears Jedi's completion cache
+and forgets the mounted filesystem handle (`dfs.reset()`), neither of
+which `resetPageState()` touches. So "Restart & run all" is a strictly
+better reproducibility check than "Run all" alone, not a second name for
+the same thing, and Settings now offers both.
+
+*Cost to change: very small — one factored-out function, one new button,
+two confirm dialogues.*

@@ -449,6 +449,124 @@ def test_a_dataset_writes_the_code_to_load_it(dewmini):
     assert "load_csv" in dewmini.locator(".cm-content").first.inner_text()
 
 
+# ----------------------------------------------------------------- running
+
+
+def test_editing_a_run_cell_shows_the_stale_badge(dewmini):
+    """DECISIONS_LOG.md 7.105 — the badge appears the moment a run cell's
+    code changes, and disappears the moment it runs again."""
+    add_python_cell(dewmini, "6 * 7")  # a bare expression, so it actually prints something
+    dewmini.locator(".dm-cell .dm-icon-run").first.click()
+    dewmini.wait_for_selector(".dm-cell-output:not(.dm-empty)", timeout=90_000)
+    assert dewmini.locator(".dm-cell-stale-badge").first.is_hidden(), "nothing to be stale about yet"
+
+    editor = dewmini.locator(".dm-cell-python .cm-content").first
+    editor.click()
+    dewmini.keyboard.press("End")
+    dewmini.keyboard.insert_text(" + 1")
+    assert dewmini.locator(".dm-cell-stale-badge").first.is_visible()
+
+    dewmini.locator(".dm-cell .dm-icon-run").first.click()
+    dewmini.wait_for_function(
+        "document.querySelector('.dm-cell-stale-badge').hidden === true"
+    )
+
+
+def test_run_above_resets_the_namespace_first(dewmini):
+    """DECISIONS_LOG.md 7.106 — 'Run above' starts from a clean interpreter,
+    so running it twice from the same edited cells gives the same answer
+    both times rather than an answer that keeps growing."""
+    add_python_cell(dewmini, "counter = 1")
+    add_python_cell(dewmini, "counter = counter + 1\ncounter")
+
+    def run_above_on_second_cell():
+        cell = dewmini.locator(".dm-cell").nth(1)
+        cell.locator(".dm-icon-more").click()
+        cell.locator(".dm-cell-run-menu-item", has_text="Run above").click()
+        dewmini.wait_for_function(
+            "document.querySelectorAll('.dm-cell')[1]"
+            ".querySelector('.dm-cell-output').innerText.trim().length > 0",
+            timeout=90_000,
+        )
+
+    run_above_on_second_cell()
+    first_output = dewmini.locator(".dm-cell-output").nth(1).inner_text().strip()
+    assert first_output == "2"
+
+    run_above_on_second_cell()
+    second_output = dewmini.locator(".dm-cell-output").nth(1).inner_text().strip()
+    assert second_output == "2", "a second 'Run above' should reset, not accumulate"
+
+
+def test_run_below_keeps_what_came_before_it(dewmini):
+    """DECISIONS_LOG.md 7.106 — 'Run below' must not reset the namespace:
+    its whole point is keeping what an earlier cell already defined."""
+    add_python_cell(dewmini, "shared = 100\nshared")
+    add_python_cell(dewmini, "shared = shared + 1\nshared")
+
+    # Only the first cell runs on its own — the second cell's own "shared"
+    # exists solely because "Run below" is about to reuse what this left
+    # behind, not because it ran as part of the same batch.
+    dewmini.locator(".dm-cell .dm-icon-run").first.click()
+    dewmini.wait_for_selector(".dm-cell-output:not(.dm-empty)", timeout=90_000)
+
+    second_cell = dewmini.locator(".dm-cell").nth(1)
+    second_cell.locator(".dm-icon-more").click()
+    second_cell.locator(".dm-cell-run-menu-item", has_text="Run below").click()
+    dewmini.wait_for_function(
+        "document.querySelectorAll('.dm-cell')[1]"
+        ".querySelector('.dm-cell-output').innerText.trim().length > 0",
+        timeout=90_000,
+    )
+
+    assert "101" in dewmini.locator(".dm-cell-output").nth(1).inner_text()
+    assert "dm-error" not in (second_cell.get_attribute("class") or "")
+
+
+def test_restart_and_run_all_reruns_from_a_clean_start(dewmini):
+    """DECISIONS_LOG.md 7.108 — one button, both halves: a real restart,
+    then every cell run again from the top."""
+    add_python_cell(dewmini, "value = 6 * 7\nvalue")
+    dewmini.once("dialog", lambda dialog: dialog.accept())
+    dewmini.click("#dl-settings-toggle")
+    dewmini.click("#settings-restart-run-all")
+    dewmini.wait_for_function(
+        "document.querySelector('.dm-cell-output')?.innerText.includes('42')",
+        timeout=90_000,
+    )
+
+
+# -------------------------------------------------------------------- maths
+
+
+def test_a_text_cell_renders_maths(dewmini):
+    """DECISIONS_LOG.md 7.107 — $…$ in a text cell renders through the
+    same lazily-loaded KaTeX bundle a tutorial page uses."""
+    dewmini.locator(".dm-insert-btn", has_text="Text").last.click()
+    textarea = dewmini.locator(".dm-textarea").last
+    textarea.click()
+    dewmini.keyboard.insert_text("Solve $x^2 + 1 = 0$ for x.")
+    textarea.evaluate("el => el.blur()")  # triggers showRendered(), same as clicking away
+
+    dewmini.wait_for_selector(".dl-math .katex", timeout=15_000)
+    assert dewmini.locator(".dl-math .katex").count() >= 1
+
+
+def test_maths_survives_a_dollar_sign_that_is_not_maths(dewmini):
+    """The same guard build.py's own INLINE_MATH_RE carries: a bare "$5" in
+    ordinary prose is money, not a broken formula, and should render as
+    plain text rather than as a stray, unrendered "$"."""
+    dewmini.locator(".dm-insert-btn", has_text="Text").last.click()
+    textarea = dewmini.locator(".dm-textarea").last
+    textarea.click()
+    dewmini.keyboard.insert_text("It cost $5 or $6, either way.")
+    textarea.evaluate("el => el.blur()")
+
+    rendered = dewmini.locator(".dm-doc-render").last
+    assert "$5 or $6" in rendered.inner_text()
+    assert rendered.locator(".dl-math").count() == 0
+
+
 # ---------------------------------------------------------------- variables
 
 

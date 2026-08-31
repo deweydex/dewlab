@@ -16,10 +16,17 @@ drag-and-drop mechanics, and the Run-becomes-Stop button pattern.
 
 Almost everything in this file changes the module-level `cells` array
 first, then calls `saveState()` and `renderCells()` to catch the page
-up. A cell object here is `{ id, type, content, output, error }` plus,
-once it's actually drawn on the page, a few DOM-referencing properties
-(`.outputEl`, `.runBtn`) — the rule is: change the data, then make the
-page match it, never the other way around.
+up. A cell object here is `{ id, type, content, output, error }`, plus
+`lastRunMs` and (for a Python cell that has run at least once)
+`ranContent` — the content as it looked at that run, compared against
+the cell's current content to show the "Edited since last run" badge
+(DECISIONS_LOG.md 7.105) — and, once it's actually drawn on the page, a
+few DOM-referencing properties (`.outputEl`, `.runBtn`, `.staleEl`) —
+the rule is: change the data, then make the page match it, never the
+other way around. `ranContent` is deliberately *not* one of the fields
+`saveState()`/`readCells()` carry to and from `localStorage`: it
+describes a live Python session, and no live session survives a reload,
+so neither should the claim that one is stale.
 
 ### …and `cells` belongs to a notebook
 
@@ -67,18 +74,23 @@ for `load_csv()`).
 2. **Storage** — `generateId`, `loadSavedState`, `saveState`.
 3. **Cells** — `insertCellAt`/`addCell`/`deleteCell`/`focusCell`, the
    text-cell markdown renderer (`escapeHtml`/`renderDocInline`/
-   `renderDocMarkdown`), the image-attachment picker, `renderCells`, and
-   `createCellElement` (the big one — builds a cell's entire DOM tree,
-   and wires `completeNames`/`getDoc`/`getSignature` straight to the
-   shared engine's own `pageNamesCompletion`/`hoverDoc`/`signatureHelp`).
+   `extractDocMath`/`renderDocMathSpan`/`renderDocMarkdown`), the KaTeX
+   lazy-loader (`loadKatexRenderMath`/`renderMathsIn`), the
+   image-attachment picker, `renderCells`, `createRunMoreMenu` (the
+   per-cell "⋯" Run-above/Run-below popover), and `createCellElement`
+   (the big one — builds a cell's entire DOM tree, and wires
+   `completeNames`/`getDoc`/`getSignature` straight to the shared
+   engine's own `pageNamesCompletion`/`hoverDoc`/`signatureHelp`).
 4. **Execution** — `ensurePyodide` (boots the shared engine, then mounts
    the filesystem — `dfs.init()` — once it has), `executeCell` (runs one
-   cell through `engine.runCell()` and syncs the filesystem afterward,
-   in case the cell wrote to it directly), `setRunButtonRunning`/
-   `resetRunButton` (the Run-becomes-Stop button), `runCell` (a second
-   click on the currently-running cell sends `engine.requestInterrupt()`
-   instead of starting a new run), `runAllCells` (calls
-   `engine.resetPageState()` first — see below).
+   cell through `engine.runCell()`, records `ranContent`, and syncs the
+   filesystem afterward, in case the cell wrote to it directly),
+   `setRunButtonRunning`/`resetRunButton` (the Run-becomes-Stop button),
+   `runCell` (a second click on the currently-running cell sends
+   `engine.requestInterrupt()` instead of starting a new run),
+   `runCellBatch` (the shared batch runner behind `runAllCells`/
+   `runAbove`/`runBelow` — see below), `restartPython` (factored out of
+   "Restart Python", also the first half of "Restart & run all").
 5. **Downloads** — `triggerDownload` (the shared Blob-download trick),
    then `downloadAsPython`/`downloadAsIpynb`/`downloadAsHtml`, the last
    of which builds an entire second, self-contained HTML page as a
@@ -96,7 +108,8 @@ for `load_csv()`).
    HTML5 Drag and Drop API.
 9. **Status, panels, execution status, storage, texture, editor prefs,
    notes** — `updateExecutionStatus`/`initExecutionSection` (the
-   Settings "Python" section: which mode booted, and Restart Python);
+   Settings "Python" section: which mode booted, Restart Python, and
+   Restart & run all);
    `updateStorageStatus`/`renderFileList`/`deleteFsFile`/
    `uploadFsFiles`/`initStorageSection` (the Settings "Files" section,
    all going through `dfs`, never touching a filesystem directly);
@@ -119,6 +132,21 @@ tracking whether a paragraph or a bullet list is currently "open," and
 decides what to output based on what kind of line it just saw. This is a
 good small example of how a simple parser can be built without a parsing
 library, for a format simple enough not to need one.
+
+**Extract, then restore, for maths the same way as for cells and code
+blocks.** `renderDocMarkdown` extracts `$…$`/`$$…$$` into placeholder
+tokens (`extractDocMath`) *before* its line-by-line pass runs, and only
+restores them to real `<span class="dl-math">` markup at the very end,
+after `escapeHtml`/`renderDocInline` have already touched everything
+else. This is a JavaScript port of `build.py`'s own
+`extract_math`/`render_math`/`place_blocks` pattern, not a call into it —
+dewmini's text cells never go through Python — but the reason is
+identical: letting the line-based parser see raw TeX first means
+`$a_i$`'s underscore gets read as `renderDocInline`'s emphasis marker
+before anyone gets a chance to render it as maths. See
+DECISIONS_LOG.md 7.107 for the rest of the maths decision, including why
+this is deliberately a *second* implementation of the same idea rather
+than a shared one with the tutorial pipeline.
 
 **A button that has to listen on `mousedown`, not `click`.** A text
 cell's header carries an explicit Edit/View button (`previewBtn` in
@@ -178,9 +206,16 @@ decided.
   otherwise know a write happened.
 - **"How does drag-and-drop actually work?"** — `setupDragAndDrop()`'s own
   comment walks through all four Drag and Drop events in order.
-- **"Why does Run All reset everything first?"** — `runAllCells()`'s own
+- **"Why does Run All reset everything first?"** — `runCellBatch()`'s own
   comment: it calls `engine.resetPageState()` so a stale value from a
-  previous run can never mask a genuine mistake.
+  previous run can never mask a genuine mistake. `runAbove()` does the
+  same for the same reason; `runBelow()` deliberately does not, since its
+  whole point is keeping what came before it (DECISIONS_LOG.md 7.106).
+- **"How is 'Restart & run all' different from 'Run all'?"** — `runAllCells()`
+  only calls `engine.resetPageState()` (clear and re-seed the same
+  interpreter); "Restart & run all" calls `restartPython()` first, a real
+  `engine.restart()` that also clears Jedi's cache and the mounted
+  filesystem handle. See DECISIONS_LOG.md 7.108.
 - **"How does an imported `.ipynb`'s source turn into a string?"** —
   `handleImportFile()`'s comment on why source can arrive as either a
   plain string or an array of lines, and `splitLines()` for the reverse
