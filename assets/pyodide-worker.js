@@ -234,6 +234,19 @@ async function loadJedi() {
  * resetPageState() further down after tools.reset_page_state() clears
  * that namespace out, so the always-available names come right back
  * without needing a full re-boot. */
+/* Points ordinary Python HTTP code at the browser's own fetching — the
+ * worker's copy of assets/pyodide-engine.js's own NETWORK_PATCH_SOURCE,
+ * duplicated the same way RESEED_GLOBALS_SOURCE below is, and explained in
+ * full there: what it fixes, why `https` stays genuinely encrypted, and why
+ * it is wrapped rather than trusted to be present. */
+const NETWORK_PATCH_SOURCE = `
+try:
+    import pyodide_http
+    pyodide_http.patch_all()
+except Exception:
+    pass
+`;
+
 const RESEED_GLOBALS_SOURCE = `
 import tutorial_tools
 tutorial_tools._page_globals.update({
@@ -257,6 +270,14 @@ async function boot(msg) {
 
   post({ type: "status", text: `Loading ${msg.packages.join(", ")}…` });
   await pyodide.loadPackage(msg.packages);
+  // Separately, and forgivingly: a Pyodide without this package must still
+  // boot. See NETWORK_PATCH_SOURCE for what it buys.
+  try {
+    await pyodide.loadPackage(["pyodide-http"]);
+    await pyodide.runPythonAsync(NETWORK_PATCH_SOURCE);
+  } catch {
+    /* no browser-backed urllib; tutorial_tools.py's hints cover it */
+  }
 
   post({ type: "status", text: "Preparing the notebook tools…" });
   const source = await fetch(msg.toolsSourceUrl).then((r) => {

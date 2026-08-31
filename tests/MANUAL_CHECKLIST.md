@@ -100,7 +100,7 @@ a connection.
 
 ```sh
 python3 dev/fetch_pyodide.py --out assets/vendor/pyodide \
-    --packages numpy pandas matplotlib sqlite3 Pillow jedi
+    --packages numpy pandas matplotlib sqlite3 Pillow jedi pyodide-http
 python3 build.py --clean
 python3 -m http.server -d site/download/dewmini 8200
 ```

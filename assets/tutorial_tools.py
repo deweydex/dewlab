@@ -615,10 +615,74 @@ def _chained(summary):
         current = nxt
 
 
+# A few failures whose Python error message is true, accurate, and no help
+# whatsoever to the person reading it — because the cause is not in their code
+# at all, but in the fact that this Python runs inside a browser tab.
+#
+# The one that prompted this: pandas reading a URL directly raises
+# "urlopen error unknown url type: https", which says nothing a student can
+# act on. It is also the *first* thing anyone tries, because it is what Our
+# World in Data (and every pandas tutorial ever written) tells them to do.
+#
+# Deliberately a short list, not a general advice engine. Each entry has to
+# earn its place three times over: the failure is common, it is structurally
+# impossible here rather than a bug to fix, and there is a real alternative
+# to point at. Anything else is better served by the traceback alone.
+_ERROR_HINTS = (
+    (
+        ("unknown url type", "urlopen error", "URLError", "RemoteDisconnected"),
+        "Reading a web address directly needs one line of setup here. Python "
+        "is running inside a browser tab, so it has no network connection of "
+        "its own — it has to borrow the browser's, and pandas doesn't know to "
+        "do that until it is told:\n\n"
+        "    import pyodide_http\n"
+        "    pyodide_http.patch_all()\n\n"
+        "Run that once, and pandas reads a URL normally from then on.\n\n"
+        "The shorter route, needing no setup at all:\n\n"
+        "    df = await load_csv(\"https://example.org/data.csv\")\n\n"
+        "Either way, the site you are reading from has to allow other pages "
+        "to read it. Many do; some don't, and the error will say so.",
+    ),
+    (
+        ("No module named 'requests'", "No module named 'httpx'",
+         "No module named 'urllib3'", "No module named 'aiohttp'"),
+        "That library exists here but isn't loaded yet — this Python starts "
+        "with a small set of packages and fetches the rest on request:\n\n"
+        "    import micropip\n"
+        "    await micropip.install(\"requests\")\n\n"
+        "It also needs to borrow the browser's own network connection, since "
+        "a page has no other:\n\n"
+        "    import pyodide_http\n"
+        "    pyodide_http.patch_all()\n\n"
+        "After that, `requests.get(...)` works as it does anywhere else. For "
+        "a CSV, `await load_csv(url)` needs none of this.",
+    ),
+)
+
+
+def _hint_for(message: str) -> str | None:
+    """A plain-English note to sit under a traceback, or None for the many
+    errors that are genuinely about the student's own code and where a hint
+    would just be noise."""
+    for needles, hint in _ERROR_HINTS:
+        if any(needle in message for needle in needles):
+            return hint
+    return None
+
+
 def render_error(message: str) -> None:
-    """Show an error block in the current cell. Also called from the runtime."""
+    """Show an error block in the current cell. Also called from the runtime.
+
+    A recognised failure gets a second block underneath explaining it — see
+    `_ERROR_HINTS`. Under the traceback rather than instead of it: the real
+    error is still what happened, and a student who goes looking for the
+    exact message (in these notes, in a search) should find it.
+    """
     cell = _require_cell()
     cell.sink.append_html(f'<pre class="dl-error">{html.escape(message)}</pre>')
+    hint = _hint_for(message)
+    if hint:
+        cell.sink.append_html(f'<pre class="dl-error-hint">{html.escape(hint)}</pre>')
 
 
 # --------------------------------------------------------------------------

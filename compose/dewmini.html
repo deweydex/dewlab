@@ -249,7 +249,23 @@
       <div class="dm-help-entry"><dt><code>show_table(frame)</code></dt><dd>Render a DataFrame as a table</dd></div>
       <div class="dm-help-entry"><dt><code>check(actual, expected)</code></dt><dd>A quick right / not-yet</dd></div>
       <div class="dm-help-entry"><dt><code>await load_csv(name)</code></dt><dd>Load a CSV from dewlab's shared data folder, if one's there</dd></div>
+      <div class="dm-help-entry"><dt><code>await load_csv(url)</code></dt><dd>Or a CSV from anywhere on the web</dd></div>
     </dl>
+    <p class="dm-help-note">Reaching the web works a little differently here,
+      and it catches everyone once. Python is inside a browser tab, so it has
+      no network connection of its own — it borrows the browser's.
+      <code>await load_csv(url)</code> already does that for a CSV, and
+      <code>pyfetch</code> is the general version:
+      <code>from pyodide.http import pyfetch</code>, then
+      <code>response = await pyfetch(url)</code> and
+      <code>await response.json()</code>.
+      To make <code>pandas.read_csv("https://…")</code> and
+      <code>requests</code> work the way a snippet you copied expects, run
+      <code>import pyodide_http; pyodide_http.patch_all()</code> once first
+      (<code>requests</code> also needs
+      <code>await micropip.install("requests")</code>). Either way the site
+      you're reading from has to allow other pages to read it; if it doesn't,
+      the error says so.</p>
     <p class="dm-help-note">Python runs off the page's own thread here, which is
       what gives you the Stop button — and what stops <code>text_input</code>,
       <code>dropdown</code>, <code>button</code> and <code>image_input</code>

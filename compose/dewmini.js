@@ -1797,6 +1797,15 @@ const PYODIDE_INCOMPATIBLE_MODULES = {
   multiprocessing: "Pyodide runs on a single thread — there is no separate process to start",
   subprocess: "there is no operating system underneath to run a command in",
   socket: "the browser has no raw network socket access",
+  // The network libraries a copied notebook arrives with. These are not
+  // impossible the way the entries above are — Pyodide ships them, and
+  // `pyodide_http.patch_all()` routes them through the browser's own
+  // fetching — but they are not loaded by default, so an unprepared import
+  // fails and the reason is worth saying before the cell runs.
+  requests: "needs loading first (`await micropip.install(\"requests\")`) and `pyodide_http.patch_all()` to use the browser's connection — or use `await load_csv(url)`, which needs neither",
+  httpx: "needs loading first with micropip, and `pyodide_http.patch_all()` to use the browser's connection — or use `await load_csv(url)`, which needs neither",
+  aiohttp: "needs loading first with micropip, and cannot open its own connections here — `pyodide.http.pyfetch` is the browser-native equivalent",
+  urllib3: "needs loading first with micropip, and `pyodide_http.patch_all()` to use the browser's connection",
   ctypes: "there are no native shared libraries here to load",
   serial: "the browser has no serial port access",
   pyaudio: "the browser has no direct audio device access",

@@ -2840,7 +2840,7 @@ def write_dewmini_bundle() -> Path | None:
     packages dewmini's own DM_PACKAGES needs (compose/dewmini.js):
 
         python3 dev/fetch_pyodide.py --out assets/vendor/pyodide \\
-            --packages numpy pandas matplotlib sqlite3 Pillow jedi
+            --packages numpy pandas matplotlib sqlite3 Pillow jedi pyodide-http
 
     A build run without that first still produces a working bundle, just
     one that falls back to the CDN on first run, same as the hosted page

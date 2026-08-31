@@ -4232,3 +4232,65 @@ in two places: the `cells` aliasing above, and the shared engine, where
 `describeGlobals()` follows the existing `page-names` path exactly
 rather than inventing a second shape. Everything else is a panel that
 either renders or does not.*
+
+---
+
+**7.100 — Ordinary Python HTTP code works here now, and `https` was never
+the thing that was missing.** Prompted by a real failure on the live site:
+pasting Our World in Data's own copy-this-to-fetch snippet into a cell gives
+`urllib.error.URLError: <urlopen error unknown url type: https>` in 8ms. That
+message is accurate and useless, and the snippet is the obvious thing to
+try, since it is the button on their page.
+
+**Two claims I made about this were wrong, and the correction is the
+entry.** I said `requests` "isn't available and can't be", and that reading
+a URL with pandas could not work in a browser. Both false. Pyodide ships
+`requests`, `httpx`, `aiohttp`, `urllib3` *and* `pyodide-http`, whose entire
+job is to reroute Python's HTTP machinery through the browser's own
+fetching. They are simply not loaded at boot. Tested in a real browser
+against a local server: after `pyodide_http.patch_all()`, the snippet works
+**verbatim**, `storage_options` and all.
+
+**The fix is 9.6 KB, so it is on by default.** `pyodide-http` alone —
+without `requests`, which drags ~470 KB of certifi/urllib3/idna behind it —
+is enough to make `pandas.read_csv(url)` work, because pandas goes through
+`urllib` and the patch covers `urllib`. Loaded and applied at boot in both
+engine paths (`NETWORK_PATCH_SOURCE`), wrapped in try/except so a vendored
+Pyodide built before this existed still boots, just without the
+convenience. Added to `dev/fetch_pyodide.py`'s baseline so new offline
+bundles carry it.
+
+**`https` was never unavailable — Python just had no handler for it.**
+Worth stating plainly because the error implies otherwise, and because it
+is a thing students are taught to care about. A Pyodide build ships no TLS
+library, so `urllib` registers no HTTPS handler and rejects the scheme
+before any connection is attempted. That is not the absence of encryption;
+it is the absence of Python's *own* encryption. Through the patch the
+browser performs the TLS, with its own certificate validation and its own
+trust store — the same one it uses for every other site. Verified rather
+than reasoned: a real TLS server with a real certificate, and Chromium
+pinned to that one certificate by public-key fingerprint (rather than told
+to ignore certificate errors, which would have proved nothing).
+`pd.read_csv("https://…")` and `await load_csv("https://…")` both read it.
+
+**The cost, named: a hung request cannot be stopped.** The patched path is
+synchronous inside the Worker, so it blocks the interpreter while waiting.
+Tested: the Run button correctly offers Stop, and pressing it does nothing
+— eight seconds later the cell is still waiting. Before this change that
+request failed instantly instead, so this is a new way to be stuck. Taken
+anyway, because "instant unhelpful failure" is not better than "works, and
+a slow server can hang you", and because the async route
+(`await load_csv(url)`) does not block and remains what the docs lead with.
+A timeout on the patched path is the obvious follow-up and is not done.
+
+**Errors that are about the browser now say so.** `_ERROR_HINTS` in
+`tutorial_tools.py` matches a small, deliberately short list of failures
+whose Python message explains nothing a student can act on, and appends a
+plain-English note under the traceback — under, not instead of, so the real
+error is still findable. Two entries today, both about reaching the network.
+The import scanner gained the same libraries, so a pasted notebook is
+warned before it runs rather than after.
+
+*Cost to change: small in code, wide in reach — this touches the shared
+engine's boot, so it changes tutorial pages too. Justified on the same
+grounds: a tutorial cell hits the identical wall.*
