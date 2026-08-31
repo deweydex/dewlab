@@ -24,6 +24,15 @@
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
 
+<!-- Always linked, unlike the KaTeX JS bundle below it (which loads lazily,
+     only once a text cell actually contains maths): the same trade tutorial
+     pages already make in assets/shell.html — 23 KB of CSS is cheap enough
+     to carry unconditionally, where the 266 KB renderer is not
+     (DECISIONS_LOG.md 7.107). A reader who never writes maths never notices
+     it is here; one who does gets it rendering as soon as the JS arrives,
+     with no separate step to wire up first. -->
+<link rel="stylesheet" href="../assets/vendor/katex.min.css">
+
 <link rel="stylesheet" href="../assets/tutorial-style.css">
 <link rel="stylesheet" href="dewmini-style.css">
 
@@ -408,6 +417,8 @@
     <p class="dl-panel-note" id="settings-execution-status">Not started yet — run a cell to start Python.</p>
     <div class="dl-progress-actions">
       <button type="button" class="dl-btn" id="settings-restart-python">Restart Python</button>
+      <button type="button" class="dl-btn" id="settings-restart-run-all"
+              title="Throw away everything Python currently holds, then run every cell from the top — the way to prove a notebook still works from a clean start">Restart &amp; run all</button>
     </div>
     <div class="dl-texture-row">
       <span>Run time</span>

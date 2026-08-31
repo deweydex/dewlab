@@ -493,6 +493,54 @@ function pickImageFile(onDataUrl) {
   input.click();
 }
 
+// Mirrors build.py's DISPLAY_MATH_RE/INLINE_MATH_RE/ESCAPED_DOLLAR exactly
+// (extract_math()'s own comment explains the constraints): display maths
+// first so a $$…$$ block is never eaten piecewise by the inline pattern,
+// inline maths barred from spanning a line or opening/closing against a
+// space (what keeps "it cost $5 or $6" from being read as maths), and a
+// literal "\$" escaped out before either regex runs so it survives as a
+// plain dollar sign rather than becoming one half of a phantom pair.
+const DM_MATH_ESCAPED_DOLLAR = "\0dldollar\0";
+const DM_DISPLAY_MATH_RE = /\$\$([\s\S]+?)\$\$/g;
+const DM_INLINE_MATH_RE = /\$(?!\s)([^$\n]+?)(?<!\s)\$/g;
+
+/* Lifts $…$ and $$…$$ out of a text cell's raw markdown before any of
+ * this file's own hand-written parsing below sees it, leaving a bare
+ * alphanumeric placeholder (`dlmath0z`, `dlmath1z`, …) in their place —
+ * the same extract-then-restore trick build.py's own extract_math()/
+ * render_math() use for tutorial markdown (DECISIONS_LOG.md 7.107),
+ * *ported* into JavaScript rather than merely called from it: this file's
+ * markdown never goes anywhere near build.py's Python side, so there is
+ * no function to reuse, only the pattern. Extracting first is what keeps
+ * renderDocInline()'s own bold/italic rules from mangling raw TeX —
+ * `$a_i$` losing its underscore to *emphasis*, `$x^2$` losing its caret
+ * to nothing — the same failure build.py's own comment warns about for
+ * python-markdown. A bare alphanumeric placeholder can't itself trigger
+ * any of those rules, so nothing is left in the text for them to catch. */
+function extractDocMath(text) {
+  const found = [];
+  let body = text.split("\\$").join(DM_MATH_ESCAPED_DOLLAR);
+  body = body.replace(DM_DISPLAY_MATH_RE, (_match, tex) => {
+    found.push({ tex: tex.trim(), display: true });
+    return `dlmath${found.length - 1}z`;
+  });
+  body = body.replace(DM_INLINE_MATH_RE, (_match, tex) => {
+    found.push({ tex: tex.trim(), display: false });
+    return `dlmath${found.length - 1}z`;
+  });
+  return { body: body.split(DM_MATH_ESCAPED_DOLLAR).join("$"), found };
+}
+
+/* A marked span, the same shape build.py's own render_math() emits for a
+ * tutorial. KaTeX replaces its contents in the browser once it has
+ * loaded (renderMathsIn() below); until then, and permanently without
+ * JavaScript, the span shows its own escaped source TeX — a far better
+ * fallback than a blank gap. */
+function renderDocMathSpan(item) {
+  const classes = item.display ? "dl-math dl-math-display" : "dl-math";
+  return `<span class="${classes}">${escapeHtml(item.tex)}</span>`;
+}
+
 /* Turns a whole text cell's raw content into rendered HTML, line by
  * line. This is a small hand-written line-based parser: it walks the
  * text one line at a time, keeping track of whether a bullet list or a
@@ -504,15 +552,26 @@ function pickImageFile(onDataUrl) {
  * them into one `<p>` and starts fresh. `closeList()` does the same job
  * for a `<ul>` that's currently open. Calling `escapeHtml()` on the whole
  * text *before* any of this runs is what keeps a student's literal `<` or
- * `&` in their notes from being misread as real HTML. */
+ * `&` in their notes from being misread as real HTML.
+ *
+ * Maths runs first, on the raw, unescaped `text` — extractDocMath() has
+ * to see real "$" characters, which escapeHtml() never touches anyway,
+ * but doing this before the line-by-line pass is what lets a display
+ * `$$…$$` block spanning several lines collapse to one placeholder before
+ * the parser ever gets a chance to read those lines as separate
+ * paragraphs. The placeholders extractDocMath() leaves behind are restored
+ * to real `<span>` markup only at the very end, after both escapeHtml()
+ * and renderDocInline() have already run — see extractDocMath()'s own
+ * comment for why that ordering is what keeps the TeX intact. */
 function renderDocMarkdown(text) {
+  const { body, found } = extractDocMath(text);
   const out = [];
   let listOpen = false;
   let para = [];
   const closeList = () => { if (listOpen) { out.push("</ul>"); listOpen = false; } };
   const flushPara = () => { if (para.length) { out.push(`<p>${renderDocInline(para.join(" "))}</p>`); para = []; } };
 
-  for (const raw of escapeHtml(text).split("\n")) {
+  for (const raw of escapeHtml(body).split("\n")) {
     const line = raw.trim();
     const heading = line.match(/^(#{1,3})\s+(.*)$/);
     if (heading) {
@@ -538,7 +597,56 @@ function renderDocMarkdown(text) {
   }
   flushPara();
   closeList();
-  return out.join("\n") || '<p class="dm-doc-empty">Empty note.</p>';
+  let html = out.join("\n") || '<p class="dm-doc-empty">Empty note.</p>';
+  found.forEach((item, i) => { html = html.split(`dlmath${i}z`).join(renderDocMathSpan(item)); });
+  return html;
+}
+
+// Loaded once, lazily, the first time any rendered text cell actually
+// turns out to contain maths — never at boot, and never fetched again
+// after the first successful load. The same trade tutorial pages make in
+// assets/tutorial-runtime.js's own renderMaths() (DECISIONS_LOG.md 1.8),
+// just gated differently: a tutorial page knows at build time, from its
+// manifest, whether it has maths; dewmini doesn't know until a reader
+// writes some, since a cell's content isn't decided until then. Kept as a
+// promise, not a boolean, so two text cells rendering maths for the first
+// time at once still share one fetch rather than racing two.
+let katexRenderMathPromise = null;
+function loadKatexRenderMath() {
+  if (!katexRenderMathPromise) {
+    katexRenderMathPromise = import("../assets/vendor/katex.bundle.js")
+      .then((mod) => mod.renderMath)
+      .catch((err) => {
+        console.error("dewmini: KaTeX failed to load; maths stays as source TeX", err);
+        katexRenderMathPromise = null; // let the next attempt (a later cell, a retry) try again
+        throw err;
+      });
+  }
+  return katexRenderMathPromise;
+}
+
+/* Renders every `.dl-math` span inside `container` in place, loading
+ * KaTeX first if this is the first maths seen so far. Every caller below
+ * fires this and moves on rather than awaiting it: a text cell already
+ * reads fine as source TeX (render_math()'s own fallback) while this is
+ * in flight, or if it fails outright — a blocked CDN, an offline copy
+ * built without the bundle — so nothing here should ever hold up showing
+ * the rest of a note. renderMath() itself (assets/vendor/katex.bundle.js)
+ * never throws for a single bad expression; it marks that one span
+ * `dl-math-error` and carries on, so one broken formula can't blank out
+ * an otherwise-fine note. */
+async function renderMathsIn(container) {
+  const spans = container.querySelectorAll(".dl-math");
+  if (!spans.length) return;
+  let renderMath;
+  try {
+    renderMath = await loadKatexRenderMath();
+  } catch {
+    return;
+  }
+  for (const span of spans) {
+    renderMath(span, span.textContent, span.classList.contains("dl-math-display"));
+  }
 }
 
 function renderCells() {
@@ -594,14 +702,104 @@ function createInsertDivider(index) {
   return row;
 }
 
-/* Updates a cell's on-page "chrome" (right now, just whether it shows the
- * error styling) to match its data, without a full re-render of the
- * whole notebook — called after running a cell, when only that one
- * cell's error state could possibly have changed. */
+/* Whether a Python cell's output belongs to code that no longer exists on
+ * screen: it has run at least once (`ranContent` is set — a cell that has
+ * never run has nothing to be stale relative to) and its current content
+ * no longer matches what actually produced that output. Any difference
+ * counts, whitespace included — see the comment on `dm-stale-badge` below
+ * for why that is the deliberate starting position rather than an
+ * oversight. */
+function isStale(cell) {
+  return cell.type === CELL_TYPES.PYTHON && cell.ranContent !== undefined && cell.ranContent !== cell.content;
+}
+
+/* Updates a cell's on-page "chrome" — the error styling, and (for a
+ * Python cell) the stale-output badge — to match its data, without a full
+ * re-render of the whole notebook. Called after running a cell (error and
+ * staleness both just became current) and on every edit of a cell that
+ * has already run once (staleness is the only thing an edit alone can
+ * change). */
 function updateCellChrome(id) {
   const el = cellsContainer?.querySelector(`.dm-cell[data-id="${id}"]`);
   const cell = cells.find((c) => c.id === id);
-  if (el && cell) el.classList.toggle("dm-error", !!cell.error);
+  if (!el || !cell) return;
+  el.classList.toggle("dm-error", !!cell.error);
+  if (cell.staleEl) cell.staleEl.hidden = !isStale(cell);
+}
+
+/* Builds the "⋯" menu beside a Python cell's Run button, holding "Run
+ * above" and "Run below" (DECISIONS_LOG.md 7.106). These didn't get their
+ * own always-visible buttons: `.dm-cell-actions` had its Python/Text
+ * buttons removed as duplicates only recently (7.102), and two more icons
+ * on every cell would cut straight back against that thinning. A menu
+ * keeps the row the same width whether or not a reader ever opens it, at
+ * the cost of one extra click to reach either option.
+ *
+ * The open/close handling here mirrors armDeleteButton() above: a
+ * document-level outside-click listener is added only while the menu is
+ * open, and removed the moment it closes, rather than one listener kept
+ * alive for the cell's whole lifetime — with a menu on every cell, a
+ * listener nobody ever removes would be a real per-cell leak, not a
+ * theoretical one. */
+function createRunMoreMenu(cell) {
+  const wrap = document.createElement("div");
+  wrap.className = "dm-cell-more";
+
+  const moreBtn = document.createElement("button");
+  moreBtn.type = "button";
+  moreBtn.className = "dm-icon-btn dm-icon-more";
+  moreBtn.title = "More ways to run this cell";
+  moreBtn.textContent = "⋯";
+  moreBtn.setAttribute("aria-haspopup", "true");
+  moreBtn.setAttribute("aria-expanded", "false");
+
+  const menu = document.createElement("div");
+  menu.className = "dm-cell-run-menu";
+  menu.setAttribute("role", "menu");
+  menu.hidden = true;
+
+  let outsideHandler = null;
+  const closeMenu = () => {
+    menu.hidden = true;
+    moreBtn.setAttribute("aria-expanded", "false");
+    if (outsideHandler) {
+      document.removeEventListener("click", outsideHandler, { capture: true });
+      outsideHandler = null;
+    }
+  };
+  const openMenu = () => {
+    menu.hidden = false;
+    moreBtn.setAttribute("aria-expanded", "true");
+    outsideHandler = (e) => { if (!wrap.contains(e.target)) closeMenu(); };
+    // Added after this click has finished bubbling, same trick
+    // armDeleteButton() uses — otherwise the click that opens the menu
+    // would immediately reach this listener and close it again.
+    setTimeout(() => document.addEventListener("click", outsideHandler, { capture: true }), 0);
+  };
+  moreBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    if (menu.hidden) openMenu(); else closeMenu();
+  });
+
+  const addItem = (label, title, onRun) => {
+    const item = document.createElement("button");
+    item.type = "button";
+    item.className = "dm-cell-run-menu-item";
+    item.setAttribute("role", "menuitem");
+    item.title = title;
+    item.textContent = label;
+    item.addEventListener("click", (e) => {
+      e.stopPropagation();
+      closeMenu();
+      onRun();
+    });
+    menu.appendChild(item);
+  };
+  addItem("Run above", "Run every cell from the top through this one, from a clean namespace", () => runAbove(cell.id));
+  addItem("Run below", "Run this cell and every cell after it, keeping what earlier cells defined", () => runBelow(cell.id));
+
+  wrap.append(moreBtn, menu);
+  return wrap;
 }
 
 /* Builds one cell's entire DOM tree from a plain `cell` data object —
@@ -633,6 +831,18 @@ function createCellElement(cell) {
   const pill = document.createElement("span");
   pill.className = "dm-cell-pill";
   pill.textContent = cell.type === CELL_TYPES.PYTHON ? "Python" : "Text";
+
+  // A muted word rather than a loud one on purpose (DECISIONS_LOG.md
+  // 7.105): the output below is still real output, just no longer
+  // guaranteed to match the code sitting above it. Only a Python cell
+  // gets one — built for every cell type so `cell.staleEl` always exists
+  // for updateCellChrome() to find, but left permanently hidden on a text
+  // cell, which has no "ran this code" concept to go stale against.
+  const staleBadge = document.createElement("span");
+  staleBadge.className = "dm-cell-stale-badge";
+  staleBadge.textContent = "Edited since last run";
+  staleBadge.hidden = !isStale(cell);
+  cell.staleEl = staleBadge;
 
   const spacer = document.createElement("span");
   spacer.className = "dm-cell-spacer";
@@ -671,6 +881,8 @@ function createCellElement(cell) {
     resetOutputBtn.textContent = "↺";
     resetOutputBtn.addEventListener("click", (e) => { e.stopPropagation(); resetCellOutput(cell.id); });
     actions.appendChild(resetOutputBtn);
+
+    actions.appendChild(createRunMoreMenu(cell));
   } else {
     // Filled in below, once showEditor()/showRendered() exist to call —
     // built here so it sits in the header row with the other buttons
@@ -700,7 +912,7 @@ function createCellElement(cell) {
   delBtn.addEventListener("click", (e) => { e.stopPropagation(); armDeleteButton(delBtn, () => deleteCell(cell.id)); });
   actions.appendChild(delBtn);
 
-  head.append(pill, spacer, actions);
+  head.append(pill, staleBadge, spacer, actions);
 
   const content = document.createElement("div");
   content.className = "dm-cell-content";
@@ -712,7 +924,16 @@ function createCellElement(cell) {
 
     const editor = createCodeEditor(editorEl, cell.content, {
       dark: isDarkNow(),
-      onChange: (text) => { cell.content = text; saveState(); },
+      onChange: (text) => {
+        cell.content = text;
+        saveState();
+        // The only thing an edit alone can change about a cell's chrome —
+        // whether it's now stale relative to its own last-run content
+        // (isStale() inside updateCellChrome() reads cell.content fresh,
+        // so this reflects every keystroke, not just the ones that
+        // happen to trigger a run).
+        updateCellChrome(cell.id);
+      },
       completeNames: engine.pageNamesCompletion,
       getDoc: engine.hoverDoc,
       getSignature: engine.signatureHelp,
@@ -762,6 +983,11 @@ function createCellElement(cell) {
     const showRendered = () => {
       if (!cell.content.trim()) return; // nothing to render — keep it open for typing
       renderEl.innerHTML = renderDocMarkdown(cell.content);
+      // Not awaited: renderMathsIn() already reads fine mid-flight (its own
+      // comment explains why), and awaiting it here would leave the rest of
+      // the note waiting on a network fetch just to show text that isn't
+      // maths at all.
+      renderMathsIn(renderEl);
       renderEl.hidden = false;
       textarea.hidden = true;
       syncPreviewBtn();
@@ -916,6 +1142,12 @@ async function executeCell(cell) {
   if (!outputEl) return true;
   outputEl.classList.remove("dm-empty");
   const startedAt = performance.now();
+  // Captured before the run, not after: the whole point of the stale
+  // badge is "does this output belong to what the cell says right now",
+  // so this has to be the content that was actually handed to Python,
+  // even in the unusual case where an editor kept accepting keystrokes
+  // while a slow cell was still running.
+  cell.ranContent = cell.content;
   const { ok } = await engine.runCell(cell.id, cell.content);
   setCellRunStats(cell, performance.now() - startedAt);
   cell.output = outputEl.innerHTML;
@@ -976,6 +1208,7 @@ function resetCellOutput(id) {
   cell.output = "";
   cell.error = false;
   delete cell.lastRunMs;
+  delete cell.ranContent;
   renderCellRunStats(cell);
   updateCellChrome(id);
   saveState();
@@ -1058,21 +1291,27 @@ async function runCell(id) {
   }
 }
 
-/* Runs every Python cell in order, top to bottom — "Run all." Unlike
- * runCell() for a single cell, this first calls the shared engine's
- * resetPageState() (clearing and re-seeding the shared namespace,
- * cheaper than a full restart): running every cell again from a clean
- * slate is what makes "what's on screen matches what the code actually
- * did" true even if, say, a variable a cell used to define got deleted
- * from the notebook — without the reset, a stale value from a previous
- * run could linger and mask that kind of mistake. Each cell's own Run
- * button becomes a Stop button while it's its turn, the same as running
- * it individually, so a runaway cell partway through "Run all" can still
- * be interrupted without losing the cells that already ran. */
-async function runAllCells() {
+/* Runs a batch of Python cells in order — the shared engine behind "Run
+ * all", "Run above", and "Run below" below, which differ only in *which*
+ * cells they hand it and whether the namespace gets cleared first.
+ *
+ * `reset` matters more than it looks: "Run all" and "Run above" both
+ * start from `engine.resetPageState()` (clearing and re-seeding the
+ * shared namespace, cheaper than a full restart), because the whole point
+ * of running from the top is that "what's on screen matches what the code
+ * actually did" — without the reset, a stale value from a previous run
+ * could linger and mask a cell that no longer defines something it used
+ * to. "Run below" must *not* reset: its whole point is to keep what the
+ * cells above it already defined, so resetting first would throw away
+ * exactly the state it exists to preserve.
+ *
+ * Each cell's own Run button becomes a Stop button while it's its turn,
+ * the same as running it individually, so a runaway cell partway through
+ * a batch can still be interrupted without losing the cells that already
+ * ran. */
+async function runCellBatch(pythonCells, { reset, emptyMessage, describe }) {
   if (running) return;
-  const pythonCells = cells.filter((c) => c.type === CELL_TYPES.PYTHON);
-  if (!pythonCells.length) { updateStatus("No Python cells to run."); return; }
+  if (!pythonCells.length) { updateStatus(emptyMessage); return; }
 
   running = true;
   const btn = document.getElementById("run-all");
@@ -1080,8 +1319,8 @@ async function runAllCells() {
 
   try {
     await ensurePyodide();
-    await engine.resetPageState();
-    updateStatus(`Running ${pythonCells.length} cell${pythonCells.length === 1 ? "" : "s"}…`);
+    if (reset) await engine.resetPageState();
+    updateStatus(describe(pythonCells.length));
 
     let errors = 0;
     for (const cell of pythonCells) {
@@ -1110,6 +1349,46 @@ async function runAllCells() {
     runningCellId = null;
     if (btn) btn.disabled = false;
   }
+}
+
+/* Runs every Python cell in order, top to bottom — "Run all." */
+async function runAllCells() {
+  await runCellBatch(cells.filter((c) => c.type === CELL_TYPES.PYTHON), {
+    reset: true,
+    emptyMessage: "No Python cells to run.",
+    describe: (n) => `Running ${n} cell${n === 1 ? "" : "s"}…`,
+  });
+}
+
+/* "Run above": every Python cell from the top through (and including)
+ * `id`, from a clean namespace — the honest fix once a cell partway down
+ * has been edited and everything before it needs re-proving, without
+ * paying to re-run whatever comes after it too. */
+async function runAbove(id) {
+  const idx = cells.findIndex((c) => c.id === id);
+  if (idx === -1) return;
+  const slice = cells.slice(0, idx + 1).filter((c) => c.type === CELL_TYPES.PYTHON);
+  await runCellBatch(slice, {
+    reset: true,
+    emptyMessage: "No Python cells above this one to run.",
+    describe: (n) => `Running the ${n} cell${n === 1 ? "" : "s"} above and including this one…`,
+  });
+}
+
+/* "Run below": `id` and every Python cell after it, keeping whatever
+ * earlier cells already defined — the way to redo a slow computation's
+ * downstream steps without paying to redo the computation itself. See
+ * runCellBatch()'s own comment for why this is the one caller that must
+ * not reset the namespace first. */
+async function runBelow(id) {
+  const idx = cells.findIndex((c) => c.id === id);
+  if (idx === -1) return;
+  const slice = cells.slice(idx).filter((c) => c.type === CELL_TYPES.PYTHON);
+  await runCellBatch(slice, {
+    reset: false,
+    emptyMessage: "No Python cells here or below to run.",
+    describe: (n) => `Running the ${n} cell${n === 1 ? "" : "s"} from here on…`,
+  });
 }
 
 // -------------------------------------------------------------- downloads
@@ -2283,29 +2562,52 @@ function updateExecutionStatus() {
   el.textContent = `Running in ${where}. ${stop}`;
 }
 
-/* Wires the "Restart Python" button — tears down the engine entirely
- * (engine.restart()) and forgets that a filesystem was ever mounted
- * (dfs.reset(), since a fresh interpreter has nothing mounted into it
- * yet), then boots a clean one right away so Settings reflects real
- * status immediately rather than waiting for the next Run click. For
- * recovering from a corrupted namespace, or a runaway loop the main-
- * thread fallback's own missing Stop button couldn't reach. */
+/* Tears the engine down entirely (engine.restart()) and forgets that a
+ * filesystem was ever mounted (dfs.reset(), since a fresh interpreter has
+ * nothing mounted into it yet), then boots a clean one right away so
+ * Settings reflects real status immediately rather than waiting for the
+ * next Run click. Shared by both "Restart Python" and "Restart & run
+ * all" below — the run-all button needs exactly this same teardown before
+ * its own extra step. Returns whether the restart itself succeeded, so a
+ * caller that runs cells afterwards knows whether to bother. */
+async function restartPython() {
+  engine.restart();
+  dfs.reset();
+  updateStatus("Restarting Python…");
+  updateExecutionStatus();
+  updateStorageStatus();
+  let ok = true;
+  try {
+    await ensurePyodide();
+    updateStatus("Python restarted.", "ok");
+  } catch (err) {
+    updateStatus(`Python failed to restart: ${err.message}`, "error");
+    ok = false;
+  }
+  updateExecutionStatus();
+  updateStorageStatus();
+  return ok;
+}
+
+/* Wires the "Restart Python" and "Restart & run all" buttons
+ * (DECISIONS_LOG.md 7.108). The second is a reproducibility check: if a
+ * notebook does not survive throwing the interpreter away and running
+ * every cell fresh, it did not really work — it only looked like it did,
+ * because of whatever state a stale namespace was quietly carrying.
+ * runAllCells() already resets the *namespace* (resetPageState, the cheap
+ * version) before it runs; going through a full restart() first
+ * additionally clears anything only a real interpreter restart would —
+ * Jedi's completion cache and the mounted filesystem handle among them —
+ * so this button is a stronger guarantee than "Run all" alone, not merely
+ * its label. */
 function initExecutionSection() {
   document.getElementById("settings-restart-python")?.addEventListener("click", async () => {
     if (!confirm("Restart Python? Anything defined in the current session will be lost.")) return;
-    engine.restart();
-    dfs.reset();
-    updateStatus("Restarting Python…");
-    updateExecutionStatus();
-    updateStorageStatus();
-    try {
-      await ensurePyodide();
-      updateStatus("Python restarted.", "ok");
-    } catch (err) {
-      updateStatus(`Python failed to restart: ${err.message}`, "error");
-    }
-    updateExecutionStatus();
-    updateStorageStatus();
+    await restartPython();
+  });
+  document.getElementById("settings-restart-run-all")?.addEventListener("click", async () => {
+    if (!confirm("Restart Python and run every cell from the top? Anything defined in the current session will be lost.")) return;
+    if (await restartPython()) await runAllCells();
   });
 }
 
