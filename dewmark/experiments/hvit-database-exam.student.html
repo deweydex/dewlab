@@ -1,0 +1,1489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HVIT — Database Methods 5N0783 Examination</title>
+<script src="https://cdn.jsdelivr.net/pyodide/v0.27.4/full/pyodide.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/dracula.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/python/python.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f2f2f2;--surface:#fff;--border:#ccc;
+  --accent:#2c5f8a;--accent-lt:#e4eef7;--accent-dk:#1e4a70;
+  --error:#c0392b;--success:#27ae60;--muted:#666;
+  --panel:272px;--hdr:46px;
+  --mono:"Courier New",monospace;--serif:Georgia,serif;--sans:system-ui,sans-serif;
+  --radius:5px
+}
+html,body{height:100%;overflow:hidden}
+body{font-family:var(--serif);background:var(--bg);color:#222;font-size:16px;line-height:1.6}
+
+/* Loading */
+#loading{position:fixed;inset:0;background:var(--accent);color:#fff;display:flex;
+  flex-direction:column;align-items:center;justify-content:center;gap:16px;z-index:999}
+#loading h1{font-size:1.4rem;font-weight:normal}
+#load-msg{font-size:.9rem;opacity:.85;max-width:380px;text-align:center}
+.spinner{width:42px;height:42px;border:4px solid rgba(255,255,255,.3);
+  border-top-color:#fff;border-radius:50%;animation:spin .9s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Name screen */
+#name-screen{position:fixed;inset:0;background:var(--bg);
+  display:none;align-items:center;justify-content:center}
+.name-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  padding:36px 44px;max-width:480px;width:100%;box-shadow:0 2px 12px rgba(0,0,0,.08)}
+.name-card-institution{font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;
+  color:var(--muted);font-family:var(--sans);margin-bottom:6px}
+.name-card-college{font-size:1.45rem;font-weight:bold;color:var(--accent);
+  font-family:var(--serif);margin-bottom:12px;line-height:1.25}
+.name-card-divider{border:none;border-top:1px solid var(--border);margin:14px 0}
+.name-card-module{font-size:1rem;font-weight:bold;color:#222;font-family:var(--sans);margin-bottom:4px}
+.name-card-duration{font-size:.85rem;color:var(--muted);font-family:var(--sans);margin-bottom:22px}
+.name-card label{display:block;font-size:.88rem;margin-bottom:5px;font-family:var(--sans)}
+.name-card input{width:100%;padding:9px 12px;border:1px solid var(--border);
+  border-radius:var(--radius);font-size:1rem;font-family:var(--serif);margin-bottom:16px}
+.name-card input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-lt)}
+.name-card .note{font-size:.8rem;color:var(--muted);font-family:var(--sans);
+  padding:9px 12px;background:var(--accent-lt);border-radius:var(--radius);margin-bottom:16px}
+.btn-start{width:100%;padding:10px;background:var(--accent);color:#fff;border:none;
+  border-radius:var(--radius);font-size:1rem;font-family:var(--serif);cursor:pointer}
+.btn-start:hover{background:var(--accent-dk)}
+
+/* App layout */
+#app{display:none;flex-direction:column;height:100vh}
+#hdr{height:var(--hdr);background:var(--surface);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;padding:0 14px;gap:10px;flex-shrink:0}
+.h-title{flex:1;font-size:.86rem;color:var(--accent);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.h-student{font-size:.8rem;color:var(--muted);font-family:var(--sans);white-space:nowrap}
+#save-status{font-size:.74rem;font-family:var(--sans);min-width:48px;text-align:right}
+.hbtn{padding:5px 12px;border:1px solid var(--border);border-radius:var(--radius);
+  background:var(--surface);font-size:.78rem;font-family:var(--sans);cursor:pointer;white-space:nowrap}
+.hbtn:hover{background:var(--accent-lt);border-color:var(--accent)}
+.hbtn.pri{background:var(--accent);color:#fff;border-color:var(--accent)}
+.hbtn.pri:hover{background:var(--accent-dk)}
+
+/* Body row */
+#body-row{display:flex;flex:1;overflow:hidden}
+
+/* File panel */
+#file-panel{width:var(--panel);flex-shrink:0;background:var(--surface);
+  border-right:1px solid var(--border);overflow-y:auto;display:flex;flex-direction:column}
+.fp-header{padding:9px 13px;font-size:.76rem;font-weight:bold;font-family:var(--sans);
+  color:var(--accent);border-bottom:1px solid var(--border);background:var(--accent-lt);
+  letter-spacing:.05em;text-transform:uppercase;flex-shrink:0}
+.fp-file{padding:10px 12px;border-bottom:1px solid #eee;
+  display:flex;align-items:center;gap:10px;font-family:var(--sans)}
+.fp-file:hover{background:var(--accent-lt)}
+.fp-filename{font-size:.8rem;font-weight:bold;color:#222;flex:1;word-break:break-all}
+.fp-filedesc{font-size:.7rem;color:var(--muted);margin-top:2px}
+.fp-copy-btn{font-size:.72rem;padding:4px 10px;background:var(--accent);color:#fff;
+  border:none;border-radius:3px;cursor:pointer;flex-shrink:0;font-family:var(--sans);
+  white-space:nowrap}
+.fp-copy-btn:hover{background:var(--accent-dk)}
+.fp-copy-btn.copied{background:var(--success)}
+
+/* Student name strip */
+#fp-student{padding:10px 13px;border-bottom:1px solid var(--border);font-family:var(--sans);background:var(--bg)}
+#fp-student .fp-student-label{font-size:.68rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:2px}
+#fp-student .fp-student-name{font-size:.9rem;font-weight:bold;color:var(--accent);word-break:break-word}
+
+/* Task navigator */
+#fp-tasknav{flex-shrink:0}
+.fp-tasknav-item{display:flex;align-items:center;padding:7px 13px;border-bottom:1px solid #eee;
+  cursor:pointer;font-family:var(--sans);gap:8px;text-decoration:none}
+.fp-tasknav-item:hover{background:var(--accent-lt)}
+.fp-tasknav-num{font-size:.75rem;font-weight:bold;color:#fff;background:var(--accent);
+  border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;font-family:var(--sans)}
+.fp-tasknav-label{font-size:.78rem;color:#333;line-height:1.25}
+.fp-tasknav-marks{margin-left:auto;font-size:.7rem;color:var(--muted);flex-shrink:0;font-family:var(--sans)}
+
+/* exam_tools quick-ref */
+#fp-toolref{flex-shrink:0}
+.fp-toolref-item{padding:8px 13px;border-bottom:1px solid #eee;font-family:var(--sans)}
+.fp-toolref-sig{font-size:.75rem;font-weight:bold;color:var(--accent);font-family:var(--mono);word-break:break-all;margin-bottom:2px}
+.fp-toolref-doc{font-size:.7rem;color:var(--muted);line-height:1.4}
+
+/* Main */
+#main{flex:1;overflow-y:auto;padding:22px 26px 80px}
+
+/* Markdown */
+.md{margin-bottom:18px}
+.md h1{font-size:1.35rem;color:var(--accent);border-bottom:2px solid var(--accent);
+  padding-bottom:6px;margin-bottom:12px}
+.md h2{font-size:1.12rem;color:var(--accent);border-bottom:1px solid var(--border);
+  padding-bottom:4px;margin:22px 0 10px}
+.md h3{font-size:.98rem;color:#444;margin:14px 0 6px}
+.md p{margin-bottom:9px}
+.md ul,.md ol{margin:5px 0 9px 20px}
+.md li{margin-bottom:3px}
+.md code{background:#ebebeb;padding:1px 5px;border-radius:3px;
+  font-family:var(--mono);font-size:.84em}
+.md strong{font-weight:bold}
+.md hr{border:none;border-top:1px solid var(--border);margin:16px 0}
+.md table{border-collapse:collapse;margin:9px 0;font-family:var(--sans);font-size:.83rem;width:100%}
+.md th{background:var(--accent-lt);padding:6px 11px;border:1px solid var(--border);text-align:left}
+.md td{padding:5px 11px;border:1px solid var(--border)}
+
+/* Code cell */
+.cell{background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);margin-bottom:18px;overflow:hidden}
+.cell-bar{background:#efefef;border-bottom:1px solid var(--border);
+  padding:5px 10px;display:flex;align-items:center;gap:8px}
+.cell-lbl{font-size:.74rem;color:var(--muted);font-family:var(--sans);flex:1}
+.cell-stat{font-size:.7rem;font-family:var(--sans);color:var(--muted)}
+.cell-stat.ok{color:var(--success)} .cell-stat.err{color:var(--error)}
+.run-btn{padding:4px 12px;background:var(--accent);color:#fff;border:none;
+  border-radius:var(--radius);font-size:.78rem;font-family:var(--sans);cursor:pointer}
+.run-btn:hover{background:var(--accent-dk)}
+.run-btn:disabled{background:#aaa;cursor:not-allowed}
+.run-hint{font-size:.68rem;color:var(--muted);font-family:var(--sans)}
+
+/* CodeMirror — auto-height */
+.CodeMirror{height:auto!important;min-height:100px;font-family:var(--mono);
+  font-size:.87rem;line-height:1.55;border:none;border-radius:0}
+.CodeMirror-scroll{overflow-y:hidden!important;overflow-x:auto}
+
+/* Output */
+.cell-out{border-top:1px solid var(--border);background:#fafafa;min-height:0}
+.cell-out:not(:empty){padding:11px 13px}
+
+/* exam_tools widgets */
+.et-widget{margin-bottom:10px}
+.et-label{display:block;font-size:.86rem;margin-bottom:4px;font-family:var(--sans)}
+.et-input,.et-select{padding:7px 10px;border:1px solid var(--border);
+  border-radius:var(--radius);font-size:.91rem;font-family:var(--serif);min-width:220px}
+.et-input:focus,.et-select:focus{outline:none;border-color:var(--accent);
+  box-shadow:0 0 0 2px var(--accent-lt)}
+.et-slider{width:220px;accent-color:var(--accent)}
+.et-slider-value{font-weight:bold;color:var(--accent);margin-left:5px}
+.et-button{padding:8px 20px;margin-top:7px;background:var(--accent);color:#fff;
+  border:none;border-radius:var(--radius);font-size:.91rem;font-family:var(--serif);cursor:pointer}
+.et-button:hover{background:var(--accent-dk)}
+.et-btn-output{margin-top:8px}
+.et-table-wrap{overflow-x:auto;margin:5px 0}
+.et-table{border-collapse:collapse;font-family:var(--sans);font-size:.82rem}
+.et-table th{background:var(--accent-lt);padding:5px 9px;border:1px solid var(--border);text-align:left}
+.et-table td{padding:4px 9px;border:1px solid var(--border)}
+.et-table tr:nth-child(even) td{background:#f5f9fc}
+.et-plot{max-width:100%;height:auto;display:block;margin:5px 0}
+.et-text,.et-stdout{font-family:var(--mono);font-size:.82rem;white-space:pre-wrap;margin:3px 0}
+.et-error,.cell-err{background:#fff5f5;border:1px solid #f5c6cb;border-radius:var(--radius);
+  padding:8px 11px;margin:5px 0;color:var(--error);font-family:var(--mono);
+  font-size:.78rem;white-space:pre-wrap}
+.et-empty{color:var(--muted);font-style:italic;font-size:.84rem}
+
+/* Toast */
+#toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);
+  background:#333;color:#fff;padding:7px 18px;border-radius:20px;
+  font-family:var(--sans);font-size:.8rem;opacity:0;
+  transition:opacity .2s;pointer-events:none;z-index:500}
+#toast.show{opacity:1}
+
+/* Print */
+@media print{
+  #loading,#name-screen{display:none!important}
+  #file-panel,#hdr .hbtn,#save-status{display:none}
+  #hdr{position:static}
+  body{font-size:11pt;background:#fff;overflow:auto;height:auto}
+  #app{height:auto;display:block}
+  #body-row{display:block;overflow:visible}
+  #main{overflow:visible;padding:0}
+  .cell{page-break-inside:avoid;border:1px solid #bbb}
+  .run-btn,.run-hint{display:none}
+  .CodeMirror{background:#f5f5f5!important}
+  .CodeMirror,.CodeMirror *{color:#000!important}
+  .cell-out{background:#fff}
+}
+</style>
+</head>
+<body>
+
+<div id="loading">
+  <div class="spinner"></div>
+  <h1>HVIT — Database Methods 5N0783</h1>
+  <p id="load-msg">Loading Python environment — about 20 seconds on first run, then cached...</p>
+</div>
+
+<div id="name-screen">
+  <div class="name-card">
+    <p class="name-card-institution">Dublin and Dun Laoghaire ETB</p>
+    <p class="name-card-college">Dublin College at Dundrum</p>
+    <hr class="name-card-divider">
+    <p class="name-card-module">Database Methods 5N0783</p>
+    <p class="name-card-duration">Practical Examination &mdash; 2 Hours</p>
+    <label for="sname">Your full name:</label>
+    <input type="text" id="sname" placeholder="e.g. Agnes Nitt" autocomplete="off">
+    <p class="note">On Chrome or Edge: you will be asked to choose a save location when you click Begin — the exam will then save automatically after every cell you run. On other browsers: use the <strong>Save</strong> button in the toolbar regularly to download your progress.</p>
+    <button class="btn-start" onclick="beginExam()">Begin Exam</button>
+  </div>
+</div>
+
+<div id="app">
+  <div id="hdr">
+    <span class="h-title" id="h-title"></span>
+    <span class="h-student" id="h-student"></span>
+    <span id="save-status"></span>
+    <button class="hbtn" onclick="saveDownload()">Save</button>
+    <button class="hbtn" onclick="loadFromFile()">Load</button>
+    <button class="hbtn pri" onclick="window.print()">Print / PDF</button>
+  </div>
+  <div id="body-row">
+    <div id="file-panel">
+      <div id="fp-student" style="display:none">
+        <div class="fp-student-label">Student</div>
+        <div class="fp-student-name" id="fp-student-name"></div>
+      </div>
+      <div class="fp-header">Tasks</div>
+      <div id="fp-tasknav"></div>
+      <div class="fp-header" style="margin-top:4px">Exam Files</div>
+      <div id="fp-list"></div>
+      <div class="fp-header" style="margin-top:4px">exam_tools</div>
+      <div id="fp-toolref"></div>
+    </div>
+    <div id="main"></div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ── Embedded data ─────────────────────────────────────────────────────────
+
+const EXAM_MARKDOWN   = `---
+title: Hill Valley Institute of Technology — Student Registry Examination
+module: Database Methods 5N0783
+session: 2025–2026
+total_marks: 60
+duration_minutes: 120
+---
+
+\`\`\`python setup
+# ── Exam setup — runs automatically, do not edit ─────────────────────────────────────────
+import sqlite3
+import pandas as pd
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+from exam_tools import show, show_table, text_input, number_input, dropdown, button, slider
+
+conn   = sqlite3.connect("hvit_registry.db")
+cursor = conn.cursor()
+cursor.execute("PRAGMA foreign_keys = ON")
+
+print("Database ready. If my calculations are correct, this will work perfectly.")
+\`\`\`
+
+## About This Exam
+
+The Hill Valley Institute of Technology has just completed a landmark migration — its entire student registry has been moved from a filing cabinet in the converted clock tower to a modern SQLite database. The migration was authorised at precisely 10:04 PM on 5 November, and the Registrar, E. L. Brown, has left you a note: *"Roads? Where we're going, we don't need roads — but we do need normalised tables."*
+
+As the Institute's first Junior Database Technician, you have been asked to query the database, build a data entry form, produce a visualisation, and import records from two Excel spreadsheets.
+
+**How to run code:** Click the **Run** button on any cell, or press **Ctrl+Enter** (Windows) / **Cmd+Enter** (Mac). The setup cell at the top runs automatically — do not edit it.
+
+**Files available in this exam** (use the **Files** panel on the left — click **Copy filename** and paste into your code):
+
+| File | Description | Used in |
+|------|-------------|---------|
+| \`hvit_registry.db\` | Main student registry database | Tasks 1–4 |
+| \`late_arrivals.xlsx\` | Students who arrived from a previous academic period | Task 5 |
+| \`equipment_survey.xlsx\` | Institute equipment and safety survey | Task 6 |
+
+The database has four tables: **students**, **courses**, **supervisors**, and **labs**.
+
+The five programmes stored in the database are:
+- Temporal Engineering
+- Applied Hoverboard Dynamics
+- Computational Flux Theory
+- Sports Almanac Data Science
+- Nuclear Waste Management
+
+---
+
+## Task 1 — Database Exploration (10 marks)
+
+The Registrar needs a full audit of the database before the new term begins.
+
+### Task 1a — Table structure with PRAGMA (3 marks)
+
+Use \`PRAGMA table_info()\` to display the column structure of the \`students\` table. Print each row on its own line.
+
+\`\`\`python
+# Task 1a — your answer here
+
+\`\`\`
+
+### Task 1b — Counting records (3 marks)
+
+Write a \`COUNT(*)\` query for each of the four tables: \`students\`, \`courses\`, \`supervisors\`, \`labs\`. Print a labelled result for each.
+
+\`\`\`python
+# Task 1b — your answer here
+
+\`\`\`
+
+### Task 1c — Preview with pandas (4 marks)
+
+Use \`pd.read_sql()\` and \`.head()\` to display the first 5 rows of each of the four tables.
+
+\`\`\`python
+# Task 1c — your answer here
+
+\`\`\`
+
+---
+
+## Task 2 — Filtering and Sorting (10 marks)
+
+### Task 2a — WHERE filter (4 marks)
+
+Use \`pd.read_sql()\` with a \`WHERE\` clause to find all students enrolled in the **Temporal Engineering** programme. Display the result with \`show()\`.
+
+\`\`\`python
+# Task 2a — your answer here
+
+\`\`\`
+
+### Task 2b — ORDER BY (3 marks)
+
+Retrieve all courses sorted by **credits** in descending order. Display the result with \`show()\`.
+
+\`\`\`python
+# Task 2b — your answer here
+
+\`\`\`
+
+### Task 2c — pandas boolean filter (3 marks)
+
+Load the entire \`students\` table into a DataFrame, then use a pandas boolean filter to find all students whose **year_of_study** is 1. Display the result with \`show()\`.
+
+\`\`\`python
+# Task 2c — your answer here
+
+\`\`\`
+
+---
+
+## Task 3 — Data Entry Form (10 marks)
+
+Build a data entry form to register new students. The \`students\` table has the following columns: **name** (text), **date_of_birth** (text, format YYYY-MM-DD), **gender** (text), **programme** (text), **year_of_study** (integer).
+
+Your form must:
+
+- Include a text input for the student's **name**
+- Include a text input for their **date of birth** (format: YYYY-MM-DD)
+- Include a dropdown for **gender** with the options: \`F\`, \`M\`, \`Other\`
+- Include a dropdown for **programme** with these five options: \`Temporal Engineering\`, \`Applied Hoverboard Dynamics\`, \`Computational Flux Theory\`, \`Sports Almanac Data Science\`, \`Nuclear Waste Management\`
+- Include a number input for **year of study** (minimum 1, maximum 3, default 1)
+- Include a **"Register Student"** button that inserts the new record into the \`students\` table, commits the transaction, displays a confirmation message, and clears the name and date of birth fields
+
+**Marks:** widgets and form layout (4), INSERT statement and commit (3), confirmation message (2), fields cleared after submission (1)
+
+**Reference:** See the *exam\_tools — widget API reference* and *exam\_tools — worked form example* sections in the reference document.
+
+\`\`\`python
+# Task 3 — your answer here
+
+\`\`\`
+
+---
+
+## Task 4 — Visualisation (10 marks)
+
+### Task 4a — Aggregation query (4 marks)
+
+Write a SQL query using \`GROUP BY\` to count the number of students enrolled in each programme. The result should have two columns: **programme** and a count. Display the result with \`show()\`.
+
+\`\`\`python
+# Task 4a — your answer here
+
+\`\`\`
+
+### Task 4b — Bar chart (6 marks)
+
+Using the result from Task 4a, create a vertical bar chart showing student count by programme. Include a title, an x-axis label, a y-axis label, and \`plt.tight_layout()\`. Display with \`show(fig)\`.
+
+\`\`\`python
+# Task 4b — your answer here
+
+\`\`\`
+
+---
+
+## Task 5 — Import from Excel (10 marks)
+
+Five students have arrived from a previous academic period. Their records are in \`late_arrivals.xlsx\`. The columns in this file match the \`students\` table exactly: **name**, **date_of_birth**, **gender**, **programme**, **year_of_study**.
+
+### Task 5a — Load and inspect (4 marks)
+
+Use \`pd.read_excel()\` to load \`late_arrivals.xlsx\`. Display the DataFrame with \`show()\` and print its shape.
+
+\`\`\`python
+# Task 5a — your answer here
+
+\`\`\`
+
+### Task 5b — Append to database (6 marks)
+
+Use \`.to_sql()\` to append the DataFrame to the \`students\` table. Use \`if_exists='append'\` and \`index=False\` — do not use \`'replace'\` as this would delete all existing records. Then write a \`COUNT(*)\` query to confirm the new total number of students and display it.
+
+\`\`\`python
+# Task 5b — your answer here
+
+\`\`\`
+
+---
+
+## Task 6 — Equipment Survey Analysis (10 marks)
+
+The Institute has completed an equipment and safety survey. Results are in \`equipment_survey.xlsx\`, which contains two sheets: **Survey Results** and **Lab Summary**. The Survey Results sheet has the following columns: **staff_name**, **department**, **equipment_rating** (1–10), **safety_rating** (1–10).
+
+### Task 6a — Load the survey (3 marks)
+
+Use \`pd.read_excel()\` with the \`sheet_name\` argument to load the **Survey Results** sheet. Display the first few rows with \`show()\`.
+
+\`\`\`python
+# Task 6a — your answer here
+
+\`\`\`
+
+### Task 6b — Filter low-rated equipment (3 marks)
+
+Using a pandas boolean filter, find all staff members whose **equipment_rating** is less than 5. Display the result with \`show()\`.
+
+\`\`\`python
+# Task 6b — your answer here
+
+\`\`\`
+
+### Task 6c — Equipment rating chart (4 marks)
+
+Create a horizontal bar chart showing each **staff_name** on the y-axis and their **equipment_rating** on the x-axis. Add a vertical line at x=5 to indicate the midpoint. Include a title and axis labels. Display with \`show(fig)\`.
+
+\`\`\`python
+# Task 6c — your answer here
+
+\`\`\`
+`;
+const EXAM_TOOLS_CODE = `"""
+exam_tools.py — Offline Exam Widget Library
+============================================
+This module provides the widget API that students use during the practical exam.
+It is designed to feel like a simplified version of ipywidgets, so the patterns
+students practised in Jupyter notebooks carry over with minimal changes.
+
+HOW IT WORKS (you do not need to understand this to use it):
+  This file runs inside Pyodide — a version of Python compiled to WebAssembly
+  that runs entirely in the browser. The module uses Pyodide's JavaScript bridge
+  to create HTML elements on the page and read values back from them.
+  Students never modify this file; they simply import from it.
+
+STUDENT USAGE EXAMPLE:
+    from exam_tools import text_input, dropdown, button, show, show_table
+
+    name   = text_input("Student name:")
+    prog   = dropdown("Programme:", options=["Magical Arts", "Natural Philosophy"])
+
+    @button("Register Student")
+    def register():
+        show(f"Registered: {name.value} in {prog.value}")
+
+EQUIVALENT ipywidgets CODE (for reference):
+    import ipywidgets as w
+    name   = w.Text(description="Student name:")
+    prog   = w.Dropdown(options=["Magical Arts", "Natural Philosophy"])
+
+    def register(b):          # note: ipywidgets requires the 'b' parameter
+        print(f"Registered: {name.value} in {prog.value}")
+    btn = w.Button(description="Register Student")
+    btn.on_click(register)
+    display(name, prog, btn)
+
+The key differences:
+  - No need to call display() — widgets appear automatically
+  - @button decorator instead of on_click
+  - No 'b' parameter needed in the decorated function
+  - show() works for strings, DataFrames, and matplotlib figures
+"""
+
+# ── Pyodide bridge imports ─────────────────────────────────────────────────────
+# These are only available inside Pyodide. If you try to import exam_tools in a
+# regular Python environment (e.g. for testing), these lines will fail gracefully.
+try:
+    from js import document, window
+    from pyodide.ffi import create_proxy
+    _IN_PYODIDE = True
+except ImportError:
+    _IN_PYODIDE = False
+    # Stub objects so the rest of the module loads without crashing during testing
+    class _Stub:
+        def __getattr__(self, name): return _Stub()
+        def __call__(self, *a, **kw): return _Stub()
+    document = window = create_proxy = _Stub()
+
+import io
+import base64
+import traceback
+
+
+# ── Internal state ─────────────────────────────────────────────────────────────
+
+# Each widget gets a unique ID so the DOM element can be found later.
+# We use a list-wrapped integer so the inner functions can mutate it (Python 3
+# closures cannot rebind a plain integer from an enclosing scope).
+_counter = [0]
+
+def _uid():
+    """Return a globally unique HTML element ID string."""
+    _counter[0] += 1
+    return f"et_{_counter[0]}"
+
+
+def _current_output():
+    """
+    Return the DOM element that is currently receiving output.
+
+    The JavaScript cell runner sets window.examCurrentOutputId to the ID of
+    the active cell's output <div> before executing each cell. exam_tools reads
+    this value whenever it needs to append content to the page.
+    """
+    if not _IN_PYODIDE:
+        return None
+    eid = window.examCurrentOutputId
+    if not eid:
+        raise RuntimeError(
+            "exam_tools: no output context — are you running inside the exam tool?"
+        )
+    return document.getElementById(eid)
+
+
+def _append(html: str):
+    """Append an HTML string to the current cell's output area."""
+    el = _current_output()
+    if el:
+        el.insertAdjacentHTML("beforeend", html)
+
+
+def _append_to(element_id: str, html: str):
+    """Append an HTML string to a specific element by ID."""
+    el = document.getElementById(element_id)
+    if el:
+        el.insertAdjacentHTML("beforeend", html)
+
+
+# ── Widget base class ──────────────────────────────────────────────────────────
+
+class _Widget:
+    """
+    Base class for all widgets. Stores the DOM element ID so .value can be
+    read from the live page element at any time.
+    """
+    def __init__(self, element_id: str):
+        self._id = element_id
+
+    def _element(self):
+        """Return the underlying DOM element."""
+        return document.getElementById(self._id)
+
+
+# ── Widget classes ─────────────────────────────────────────────────────────────
+
+class TextInput(_Widget):
+    """A single-line text input field."""
+
+    @property
+    def value(self) -> str:
+        """The current text the student has typed."""
+        el = self._element()
+        return el.value if el else ""
+
+    def clear(self):
+        """Empty the field — useful after a successful form submission."""
+        el = self._element()
+        if el:
+            el.value = ""
+
+
+class NumberInput(_Widget):
+    """A numeric input field that returns a float."""
+
+    @property
+    def value(self) -> float:
+        el = self._element()
+        v = el.value if el else ""
+        try:
+            return float(v)
+        except (ValueError, TypeError):
+            return 0.0
+
+
+class Dropdown(_Widget):
+    """A dropdown (select) widget."""
+
+    @property
+    def value(self):
+        """The currently selected option value."""
+        el = self._element()
+        return el.value if el else ""
+
+
+class Slider(_Widget):
+    """A range slider that returns a float."""
+
+    @property
+    def value(self) -> float:
+        el = self._element()
+        try:
+            return float(el.value) if el else 0.0
+        except (ValueError, TypeError):
+            return 0.0
+
+
+# ── Widget factory functions ───────────────────────────────────────────────────
+# These are the functions students actually call. Each one injects HTML into the
+# page and returns a widget object whose .value can be read later.
+
+def text_input(label: str, placeholder: str = "") -> TextInput:
+    """
+    Create a labelled text input field.
+
+    Args:
+        label:       Text shown above the input.
+        placeholder: Grey hint text shown inside the empty input.
+
+    Returns:
+        TextInput — read .value to get the current contents.
+
+    Example:
+        name = text_input("Student name:", placeholder="e.g. Agnes Nitt")
+        # later:
+        print(name.value)
+    """
+    wid = _uid()
+    _append(f"""
+        <div class="et-widget">
+            <label class="et-label" for="{wid}">{label}</label>
+            <input type="text" id="{wid}" class="et-input"
+                   placeholder="{placeholder}" autocomplete="off">
+        </div>
+    """)
+    return TextInput(wid)
+
+
+def number_input(label: str, min_val: float = 0, max_val: float = 100,
+                 default: float = 0) -> NumberInput:
+    """
+    Create a labelled numeric input field.
+
+    Args:
+        label:   Text shown above the input.
+        min_val: Minimum allowed value.
+        max_val: Maximum allowed value.
+        default: Starting value.
+
+    Returns:
+        NumberInput — read .value to get the current number.
+
+    Example:
+        age = number_input("Age:", min_val=16, max_val=120, default=20)
+    """
+    wid = _uid()
+    _append(f"""
+        <div class="et-widget">
+            <label class="et-label" for="{wid}">{label}</label>
+            <input type="number" id="{wid}" class="et-input"
+                   min="{min_val}" max="{max_val}" value="{default}">
+        </div>
+    """)
+    return NumberInput(wid)
+
+
+def dropdown(label: str, options: list) -> Dropdown:
+    """
+    Create a labelled dropdown (select) menu.
+
+    Args:
+        label:   Text shown above the dropdown.
+        options: A list of strings, or a list of (display_text, value) tuples.
+                 Use tuples when the displayed text should differ from the value
+                 stored — for example, showing a programme name but storing its ID.
+
+    Returns:
+        Dropdown — read .value to get the selected option.
+
+    Examples:
+        # Simple list of strings:
+        gender = dropdown("Gender:", options=["F", "M", "Other"])
+
+        # Tuples of (display, value) — useful for database IDs:
+        prog = dropdown("Programme:", options=[
+            ("Magical Arts", 1),
+            ("Natural Philosophy", 2),
+        ])
+        # prog.value will be "1" or "2" (always a string from the DOM)
+    """
+    wid = _uid()
+    opts_html = ""
+    for opt in options:
+        if isinstance(opt, (list, tuple)) and len(opt) == 2:
+            display, val = opt
+            opts_html += f'<option value="{val}">{display}</option>'
+        else:
+            opts_html += f'<option value="{opt}">{opt}</option>'
+
+    _append(f"""
+        <div class="et-widget">
+            <label class="et-label" for="{wid}">{label}</label>
+            <select id="{wid}" class="et-select">{opts_html}</select>
+        </div>
+    """)
+    return Dropdown(wid)
+
+
+def slider(label: str, min_val: float = 0, max_val: float = 100,
+           default: float = 50, step: float = 1) -> Slider:
+    """
+    Create a labelled range slider.
+
+    Args:
+        label:   Text shown above the slider. The current value is shown inline.
+        min_val: Left-most value.
+        max_val: Right-most value.
+        default: Starting position.
+        step:    How much the value changes per tick.
+
+    Returns:
+        Slider — read .value to get the current number.
+
+    Example:
+        credits = slider("Credits:", min_val=5, max_val=30, default=15, step=5)
+    """
+    wid     = _uid()
+    disp_id = _uid()   # ID for the live numeric display next to the label
+    _append(f"""
+        <div class="et-widget">
+            <label class="et-label">
+                {label} <span id="{disp_id}" class="et-slider-value">{default}</span>
+            </label>
+            <input type="range" id="{wid}" class="et-slider"
+                   min="{min_val}" max="{max_val}" value="{default}" step="{step}"
+                   oninput="document.getElementById('{disp_id}').textContent=this.value">
+        </div>
+    """)
+    return Slider(wid)
+
+
+def button(label: str):
+    """
+    Decorator that creates a button. The decorated function runs when clicked.
+
+    Unlike ipywidgets, no 'b' parameter is needed in the function definition.
+    Output from show() inside the function appears in a dedicated area beneath
+    the button, which is cleared and redrawn on each click.
+
+    Example:
+        name = text_input("Name:")
+
+        @button("Submit")
+        def submit():
+            show(f"Hello, {name.value}")
+
+    The @button line must come immediately before the def line.
+    """
+    def decorator(fn):
+        btn_id  = _uid()   # ID for the <button> element
+        out_id  = _uid()   # ID for the output <div> beneath the button
+
+        # Inject the button and its output container into the current cell area
+        _append(f"""
+            <button id="{btn_id}" class="et-button">{label}</button>
+            <div id="{out_id}" class="et-btn-output"></div>
+        """)
+
+        # Capture the current output context so the click handler can restore it
+        # (the click may happen long after this cell has finished running)
+        captured_out_id = out_id
+
+        def _handle_click(event):
+            """Called by JavaScript when the button is clicked."""
+            # Save whatever the current output context is
+            prev_context = window.examCurrentOutputId
+
+            # Clear previous button output
+            out_el = document.getElementById(captured_out_id)
+            if out_el:
+                out_el.innerHTML = ""
+
+            # Point show() / _append() at the button's output div
+            window.examCurrentOutputId = captured_out_id
+
+            try:
+                fn()
+            except Exception:
+                # Show the full traceback so the student can debug
+                tb = traceback.format_exc()
+                _append(f'<pre class="et-error">{tb}</pre>')
+            finally:
+                # Always restore the previous context
+                window.examCurrentOutputId = prev_context
+
+        # create_proxy wraps the Python function so JavaScript can call it
+        proxy = create_proxy(_handle_click)
+        document.getElementById(btn_id).addEventListener("click", proxy)
+
+        return fn   # return the original function unchanged
+
+    return decorator
+
+
+# ── Output functions ───────────────────────────────────────────────────────────
+
+def show(obj):
+    """
+    Display any Python object in the current output area.
+
+    Handles:
+        str, int, float, bool  → plain text
+        pandas DataFrame       → formatted HTML table
+        matplotlib Figure      → inline PNG image
+        list, dict             → plain text via str()
+
+    This replaces both print() and display() from the Jupyter environment.
+    You can call show() multiple times in one cell or button handler.
+
+    Example:
+        show("Query complete.")
+        show(my_dataframe)
+        show(my_figure)
+    """
+    import pandas as pd
+
+    # We import matplotlib lazily so cells that do not use it load faster
+    try:
+        import matplotlib.figure as mpl_fig
+        _has_mpl = True
+    except ImportError:
+        _has_mpl = False
+
+    if isinstance(obj, pd.DataFrame):
+        # Convert DataFrame to an HTML table. index=False keeps it clean.
+        html = obj.to_html(classes="et-table", border=0, index=False)
+        _append(f'<div class="et-table-wrap">{html}</div>')
+
+    elif _has_mpl and isinstance(obj, mpl_fig.Figure):
+        # Render matplotlib figure to a base64-encoded PNG and show it inline
+        import matplotlib.pyplot as plt
+        buf = io.BytesIO()
+        obj.savefig(buf, format="png", bbox_inches="tight", dpi=100)
+        buf.seek(0)
+        b64 = base64.b64encode(buf.read()).decode("ascii")
+        buf.close()
+        plt.close(obj)   # free memory — important in a long exam session
+        _append(f'<img src="data:image/png;base64,{b64}" class="et-plot" alt="chart">')
+
+    elif isinstance(obj, str):
+        # Preserve newlines in string output
+        safe = obj.replace("&","&amp;").replace("<","&lt;").replace(">","&gt;")
+        _append(f'<pre class="et-text">{safe}</pre>')
+
+    else:
+        # Fallback: convert to string representation
+        safe = str(obj).replace("&","&amp;").replace("<","&lt;").replace(">","&gt;")
+        _append(f'<pre class="et-text">{safe}</pre>')
+
+
+def show_table(rows, columns=None):
+    """
+    Display raw sqlite3 query results as a formatted table.
+
+    This is a convenience wrapper for when you use cursor.fetchall() directly
+    rather than pd.read_sql(). If you are already using pd.read_sql(), just
+    call show() on the resulting DataFrame instead.
+
+    Args:
+        rows:    The list of tuples returned by cursor.fetchall().
+        columns: Optional list of column name strings. If omitted, columns are
+                 labelled 0, 1, 2, ...
+
+    Example:
+        cursor.execute("SELECT name, gender FROM students WHERE program_id = 1")
+        show_table(cursor.fetchall(), columns=["Name", "Gender"])
+    """
+    import pandas as pd
+
+    if rows is None or len(rows) == 0:
+        _append('<p class="et-empty">No results returned.</p>')
+        return
+
+    if isinstance(rows, pd.DataFrame):
+        show(rows)
+        return
+
+    df = pd.DataFrame(rows, columns=columns)
+    show(df)
+`;
+const DB_B64          = `U1FMaXRlIGZvcm1hdCAzABAAAQEAQCAgAAAABQAAAAYAAAAAAAAAAAAAAAQAAAAEAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFAC5XSg0AAAAFDEEADsgOdg28DOoMQQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA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AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADkUBwAjIQ9DAUNhc2V5IFZhbmNlMjAwMi0wNC0yNk1BcHBsaWVkIEhvdmVyYm9hcmQgRHluYW1pY3MCNhMHACMhFzUBQmxha2UgR3JpZmYyMDAwLTEwLTA1T3RoZXJUZW1wb3JhbCBFbmdpbmVlcmluZwM5EgcAKSEPPQFJcmluYSBTb2tvbG92YTIwMDEtMDMtMThGTnVjbGVhciBXYXN0ZSBNYW5hZ2VtZW50AjgRBwAjIQ9DCU9zY2FyIE1jRmx5MjAwMy0wNy0wN01BcHBsaWVkIEhvdmVyYm9hcmQgRHluYW1pY3M6EAcAJSEPQwFSb2JpbiBUYW5uZW4xOTk5LTExLTExRlNwb3J0cyBBbG1hbmFjIERhdGEgU2NpZW5jZQM5DwcAKSEPPwlFbGFpbmUgUHVja2V0dDIwMDItMDktMDRGQ29tcHV0YXRpb25hbCBGbHV4IFRoZW9yeTgOBwAnIQ89AUNoZXN0ZXIgRGliYnMyMDAxLTA1LTIzTU51Y2xlYXIgV2FzdGUgTWFuYWdlbWVudAI6DQcAJyEPQwlBbXkgUGF0dGVyc29uMjAwMi0wMS0wOUZBcHBsaWVkIEhvdmVyYm9hcmQgRHluYW1pY3M6DAcAJSEPQwFUZXJyeSBUYW5uZW4yMDAwLTA2LTE3TVNwb3J0cyBBbG1hbmFjIERhdGEgU2NpZW5jZQMyCwcAJSEPNQlNYWdnaWUgTWNGbHkyMDAzLTEyLTAxRlRlbXBvcmFsIEVuZ2luZWVyaW5nQQoHAC8hFz8BU3RyaWNrbGFuZCBKdW5pb3IyMDAxLTA4LTMwT3RoZXJDb21wdXRhdGlvbmFsIEZsdXggVGhlb3J5AjcJBwAnIQ89CUdvbGRpZSBXaWxzb24yMDAyLTEwLTE1TU51Y2xlYXIgV2FzdGUgTWFuYWdlbWVudDgIBwAjIQ9DCUJpZmYgVGFubmVuMTk5OC0wMy0yNk1TcG9ydHMgQWxtYW5hYyBEYXRhIFNjaWVuY2U6BwcAJSEPQwFHZW9yZ2UgTWNGbHkyMDAxLTA0LTAxTVNwb3J0cyBBbG1hbmFjIERhdGEgU2NpZW5jZQI2BgcAKyEPNQFMb3JyYWluZSBCYWluZXMyMDAwLTAyLTI4RlRlbXBvcmFsIEVuZ2luZWVyaW5nAzsFBwArIQ8/AURvdWdsYXMgTmVlZGxlczIwMDItMDctMTlNQ29tcHV0YXRpb25hbCBGbHV4IFRoZW9yeQI9BAcAKyEPQwFKZW5uaWZlciBQYXJrZXIyMDAxLTExLTA1RkFwcGxpZWQgSG92ZXJib2FyZCBEeW5hbWljcwI5AwcAJSEPQwlTZWFtdXMgTWNGbHkyMDAzLTAzLTE0TUFwcGxpZWQgSG92ZXJib2FyZCBEeW5hbWljczQCBwAnIQ81AUNsYXJhIENsYXl0b24yMDAwLTA5LTIyRlRlbXBvcmFsIEVuZ2luZWVyaW5nAzIBBwAjIQ81AU1hcnR5IE1jRmx5MjAwMS0wNi0wOU1UZW1wb3JhbCBFbmdpbmVlcmluZwINAAAAAQ/yAA/yAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwBAx0Bc3R1ZGVudHMUDQAAAAoNuQAPzg+dD2MPJA7qDq8Odw41DfUNuQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA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AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAC0FBQApPQJQcm9mLiBMLiBNY0ZseU51Y2xlYXIgV2FzdGUgTWFuYWdlbWVudAfBLgQFACk/AkRyLiBDLiBDbGF5dG9uQ29tcHV0YXRpb25hbCBGbHV4IFRoZW9yeQeuLwMFACdDAkRyLiBCLiBUYW5uZW5TcG9ydHMgQWxtYW5hYyBEYXRhIFNjaWVuY2UHrzACBQApQwJQcm9mLiBNLiBNY0ZseUFwcGxpZWQgSG92ZXJib2FyZCBEeW5hbWljcwfBKgEFACs1AkRyLiBFLiBMLiBCcm93blRlbXBvcmFsIEVuZ2luZWVyaW5nB6MNAAAABA9bAA/VD7MPhQ9bAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKAQFADcnAVRlbXBvcmFsIEFyY2hpdmUgUm9vbU1haW4gQnVpbGRpbmcPLAMFAD0pAUhvdmVyYm9hcmQgVGVzdGluZyBUcmFja1Nwb3J0cyBDb21wbGV4KCACBQAvHwFGbHV4IFJlc2VhcmNoIExhYkVhc3QgV2luZxQpAQUAOScBQ2xvY2sgVG93ZXIgTGFib3JhdG9yeVNjaWVuY2UgVG93ZXIe`;
+const FILES_META      = [
+  {"name": "hvit_registry.db",     "desc": "Main student registry — Tasks 1 to 4"},
+  {"name": "late_arrivals.xlsx",   "desc": "Late arrivals from a previous academic period — Task 5"},
+  {"name": "equipment_survey.xlsx","desc": "Institute equipment and safety survey — Task 6"}
+];
+
+// Excel files embedded the same way as the database, so the exam is one
+// self-contained file however it is opened (a fetch of a sibling file
+// fails silently on a file:// page and Tasks 5 and 6 would break).
+const XLSX_B64 = {
+  "late_arrivals.xlsx": "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",
+  "equipment_survey.xlsx": "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"
+};
+
+// ── State ──────────────────────────────────────────────────────────────────
+let pyodide=null, cells=[], meta={}, editors={}, fileHandle=null, isRunning=false;
+
+// ── Startup ────────────────────────────────────────────────────────────────
+window.onload = async () => {
+  try {
+    await initPyodide();
+    showNameScreen();
+  } catch(e) {
+    document.getElementById("load-msg").textContent =
+      "Failed to load Python: " + e.message + " — check internet and refresh.";
+  }
+};
+
+async function initPyodide() {
+  // Step 1: Load the Python runtime itself
+  setMsg("Loading Python runtime (step 1 of 3)...");
+  pyodide = await loadPyodide({
+    indexURL: "https://cdn.jsdelivr.net/pyodide/v0.27.4/full/"
+  });
+
+  // Step 2: Install all packages via micropip
+  // The Pyodide docs recommend micropip.install() for everything — it handles
+  // both compiled Pyodide packages (numpy, pandas, matplotlib) and pure Python
+  // packages (openpyxl) using the same call. We load micropip itself first
+  // via loadPackage(), then hand off to it for everything else.
+  setMsg("Installing packages via micropip (step 2 of 3)...");
+  // sqlite3 is a special case — it must use loadPackage, not micropip.
+  // (Pyodide unvendors sqlite3 from the stdlib; the error message says so explicitly.)
+  await pyodide.loadPackage(["micropip", "sqlite3"]);
+
+  // All other packages go through micropip, which handles both
+  // Pyodide-compiled wheels and pure-Python packages like openpyxl.
+  await pyodide.runPythonAsync(`
+import micropip
+await micropip.install(["numpy", "pandas", "matplotlib", "openpyxl"])
+`);
+
+  // Step 3: Set up the exam environment
+  setMsg("Setting up exam environment (step 3 of 3)...");
+
+  // Write exam_tools.py into Pyodide's virtual filesystem
+  pyodide.FS.writeFile("/exam_tools.py", EXAM_TOOLS_CODE);
+
+  // Decode the embedded SQLite database into the virtual filesystem
+  const dbBytes = b64ToBytes(DB_B64);
+  try { pyodide.FS.mkdir("/exam_data"); } catch(e) {}
+  pyodide.FS.writeFile("/exam_data/hvit_registry.db", dbBytes);
+
+  // Decode the embedded Excel files into the virtual filesystem
+  for (const [fname, b64] of Object.entries(XLSX_B64)) {
+    pyodide.FS.writeFile("/exam_data/" + fname, b64ToBytes(b64));
+  }
+
+  // Set working directory and import path so student code finds all files
+  await pyodide.runPythonAsync(`
+import sys, os
+sys.path.insert(0, '/')
+os.chdir('/exam_data')
+import sys, io
+_exam_original_stdout = sys.stdout
+import matplotlib
+matplotlib.use('Agg')
+import sqlite3  # confirm sqlite3 is available before the exam starts
+`);
+}
+
+function setMsg(t){ document.getElementById("load-msg").textContent = t; }
+
+// ── Name screen ────────────────────────────────────────────────────────────
+function showNameScreen() {
+  meta = parseFrontmatter(EXAM_MARKDOWN);
+  document.getElementById("loading").style.display     = "none";
+  document.getElementById("name-screen").style.display = "flex";
+  document.getElementById("sname").addEventListener("keydown", e => {
+    if (e.key === "Enter") beginExam();
+  });
+}
+
+async function beginExam() {
+  const name = document.getElementById("sname").value.trim();
+  if (!name) { alert("Please enter your full name."); return; }
+  if ("showSaveFilePicker" in window) {
+    const safe = name.replace(/[^a-z0-9]/gi,"_").toLowerCase();
+    const date = new Date().toISOString().slice(0,10);
+    try {
+      fileHandle = await window.showSaveFilePicker({
+        suggestedName: `exam_${safe}_${date}.json`,
+        types: [{description:"Exam JSON",accept:{"application/json":[".json"]}}]
+      });
+    } catch(e){
+      fileHandle=null;
+      setSave("off");
+      showToast("File autosave is off — use the Save button regularly");
+    }
+  }
+  document.getElementById("name-screen").style.display = "none";
+  document.getElementById("app").style.display         = "flex";
+  document.getElementById("h-title").textContent       =
+    [meta.title, meta.module].filter(Boolean).join(" — ");
+  document.getElementById("h-student").textContent = name;
+  // Show student name in sidebar
+  document.getElementById("fp-student-name").textContent = name;
+  document.getElementById("fp-student").style.display = "block";
+  cells = parseExam(EXAM_MARKDOWN);
+  buildFilePanel();
+  buildTaskNav();
+  buildToolRef();
+  renderExam();
+  await runSetupCells();
+}
+
+// ── File panel ─────────────────────────────────────────────────────────────
+function buildFilePanel() {
+  const list = document.getElementById("fp-list");
+  list.innerHTML = "";
+  FILES_META.forEach(f => {
+    const div = document.createElement("div");
+    div.className = "fp-file";
+    // Each file gets one row: icon, name+desc, and a single Copy Filename button.
+    // Clicking the button copies the bare filename (e.g. "late_arrivals.xlsx")
+    // so the student can paste it directly into their code.
+    div.innerHTML = `
+      <div style="flex:1">
+        <div class="fp-filename">${f.name}</div>
+        <div class="fp-filedesc">${f.desc}</div>
+      </div>
+      <button class="fp-copy-btn" onclick="copyFilename(this,'${f.name}')">Copy filename</button>`;
+    list.appendChild(div);
+  });
+}
+
+function copyFilename(btn, filename) {
+  navigator.clipboard.writeText(filename).then(() => {
+    btn.textContent = "Copied!";
+    btn.classList.add("copied");
+    showToast(filename + " copied");
+    setTimeout(() => { btn.textContent="Copy filename"; btn.classList.remove("copied"); }, 1500);
+  }).catch(() => {
+    // Clipboard API can be blocked on file:// in some browsers.
+    // Fall back to a prompt so the student can copy manually.
+    window.prompt("Copy this filename:", filename);
+  });
+}
+
+// ── Task navigator ─────────────────────────────────────────────────────────
+const TASK_NAV = [
+  { num: 1, label: "Database Exploration", marks: 10 },
+  { num: 2, label: "Filtering and Sorting", marks: 10 },
+  { num: 3, label: "Data Entry Form",       marks: 10 },
+  { num: 4, label: "Visualisation",         marks: 10 },
+  { num: 5, label: "Import from Excel",     marks: 10 },
+  { num: 6, label: "Equipment Survey",      marks: 10 },
+];
+
+function buildTaskNav() {
+  const nav = document.getElementById("fp-tasknav");
+  nav.innerHTML = "";
+  TASK_NAV.forEach(t => {
+    const a = document.createElement("a");
+    a.className = "fp-tasknav-item";
+    a.href = "#";
+    a.innerHTML = `
+      <span class="fp-tasknav-num">${t.num}</span>
+      <span class="fp-tasknav-label">${t.label}</span>
+      <span class="fp-tasknav-marks">${t.marks} marks</span>`;
+    a.addEventListener("click", e => {
+      e.preventDefault();
+      // Find the heading element for this task in the main panel
+      const main = document.getElementById("main");
+      const headings = main.querySelectorAll(".md h2");
+      for (const h of headings) {
+        if (h.textContent.trim().startsWith("Task " + t.num)) {
+          h.scrollIntoView({ behavior: "smooth", block: "start" });
+          break;
+        }
+      }
+    });
+    nav.appendChild(a);
+  });
+}
+
+// ── exam_tools quick-reference ─────────────────────────────────────────────
+const TOOL_REF = [
+  { sig: "text_input(label, placeholder=\"\")",       doc: "Text field. Read with .value" },
+  { sig: "number_input(label, min_val, max_val, default)", doc: "Numeric field. Read with .value" },
+  { sig: "dropdown(label, options)",                  doc: "Dropdown menu. Read with .value" },
+  { sig: "slider(label, min_val, max_val, default, step)", doc: "Slider. Read with .value" },
+  { sig: "@button(label)",                            doc: "Decorator. Runs the function on click — no 'b' parameter needed" },
+  { sig: "show(obj)",                                 doc: "Display a string, DataFrame, or matplotlib figure" },
+  { sig: "show_table(cursor_or_df)",                  doc: "Display query results as a bordered table" },
+];
+
+function buildToolRef() {
+  const ref = document.getElementById("fp-toolref");
+  ref.innerHTML = "";
+  TOOL_REF.forEach(t => {
+    const div = document.createElement("div");
+    div.className = "fp-toolref-item";
+    div.innerHTML = `<div class="fp-toolref-sig">${t.sig}</div><div class="fp-toolref-doc">${t.doc}</div>`;
+    ref.appendChild(div);
+  });
+}
+
+function showToast(msg) {
+  const t = document.getElementById("toast");
+  t.textContent = msg; t.classList.add("show");
+  setTimeout(() => t.classList.remove("show"), 1800);
+}
+
+// ── Markdown parsing ───────────────────────────────────────────────────────
+function parseFrontmatter(text) {
+  const m = text.match(/^---\n([\s\S]*?)\n---\n/);
+  if (!m) return {};
+  const o = {};
+  m[1].split("\n").forEach(line => {
+    const [k,...v] = line.split(":");
+    if (k && v.length) o[k.trim()] = v.join(":").trim();
+  });
+  return o;
+}
+
+function parseExam(text) {
+  const body = text.replace(/^---\n[\s\S]*?\n---\n/,"");
+  const out=[], fence=/^```(python(?:\s+setup)?)\s*\n([\s\S]*?)^```\s*$/gm;
+  let last=0, label="", marks=0, taskId="", codeIdx=0, m;
+  while ((m=fence.exec(body))!==null) {
+    if (m.index>last) {
+      const prose=body.slice(last,m.index);
+      [...prose.matchAll(/^#{1,6}\s+(.+)$/gm)].forEach(h=>{
+        label=h[1].trim();
+        const mm=label.match(/\((\d+)\s+marks?\)/i); marks=mm?parseInt(mm[1]):0;
+        const tm=label.match(/Task\s+(\w+)/i); taskId=tm?tm[1]:"";
+      });
+      out.push({type:"markdown",content:prose});
+    }
+    const tag=m[1].trim(), src=m[2];
+    if (tag==="python setup") { out.push({type:"setup",content:src}); }
+    else { out.push({type:"code",content:src,label,marks,taskId,
+      index:codeIdx++,studentCode:src,outputHTML:"",hasError:false,lastRun:null}); }
+    last=m.index+m[0].length;
+  }
+  if (last<body.length) out.push({type:"markdown",content:body.slice(last)});
+  return out;
+}
+
+function mdToHtml(md) {
+  let h=md;
+  h=h.replace(/^---$/gm,"<hr>");
+  for(let i=6;i>=1;i--) h=h.replace(new RegExp(`^${"#".repeat(i)}\\s+(.+)$`,"gm"),`<h${i}>$1</h${i}>`);
+  h=h.replace(/((?:^\|.+\|\s*\n)+)/gm,block=>{
+    const rows=block.trim().split("\n").filter(r=>!/^\|[-| :]+\|/.test(r));
+    return "<table>"+rows.map((r,i)=>{
+      const tag=i===0?"th":"td";
+      return "<tr>"+r.split("|").slice(1,-1).map(c=>`<${tag}>${c.trim()}</${tag}>`).join("")+"</tr>";
+    }).join("")+"</table>";
+  });
+  h=h.replace(/\*\*(.+?)\*\*/g,"<strong>$1</strong>");
+  h=h.replace(/`([^`]+)`/g,"<code>$1</code>");
+  h=h.replace(/^> (.+)$/gm,"<blockquote>$1</blockquote>");
+  h=h.replace(/((?:^[-*] .+\n?)+)/gm,b=>"<ul>"+b.trim().split("\n").map(l=>`<li>${l.replace(/^[-*] /,"")}</li>`).join("")+"</ul>");
+  h=h.replace(/((?:^\d+\. .+\n?)+)/gm,b=>"<ol>"+b.trim().split("\n").map(l=>`<li>${l.replace(/^\d+\. /,"")}</li>`).join("")+"</ol>");
+  h=h.split(/\n{2,}/).map(b=>{b=b.trim();if(!b||/^<[a-zA-Z]/.test(b))return b;return`<p>${b.replace(/\n/g,"<br>")}</p>`;}).join("\n");
+  return h;
+}
+
+// ── Rendering ──────────────────────────────────────────────────────────────
+function renderExam() {
+  const main=document.getElementById("main");
+  main.innerHTML="";
+  cells.forEach((cell,idx)=>{
+    if (cell.type==="setup") return;
+    if (cell.type==="markdown") {
+      const d=document.createElement("div");
+      d.className="md"; d.innerHTML=mdToHtml(cell.content);
+      main.appendChild(d); return;
+    }
+    const marks = cell.marks ? ` · ${cell.marks} marks` : "";
+    const wrap=document.createElement("div");
+    wrap.className="cell"; wrap.id=`cell-${idx}`;
+    wrap.innerHTML=`
+      <div class="cell-bar">
+        <span class="cell-lbl">${esc(cell.label||"Cell "+(cell.index+1))}${marks}</span>
+        <span class="cell-stat" id="stat-${idx}"></span>
+        <span class="run-hint">Ctrl+Enter to run</span>
+        <button class="run-btn" id="run-${idx}" onclick="runCell(${idx})">Run</button>
+      </div>
+      <div id="cm-${idx}"></div>
+      <div class="cell-out" id="out-${idx}"></div>`;
+    main.appendChild(wrap);
+
+    // Attach CodeMirror
+    const cm=CodeMirror(document.getElementById(`cm-${idx}`),{
+      value:cell.content, mode:"python", theme:"dracula",
+      lineNumbers:true, indentUnit:4, tabSize:4, indentWithTabs:false,
+      lineWrapping:false, viewportMargin:Infinity,
+      extraKeys:{
+        "Tab": cm=>cm.execCommand("indentMore"),
+        "Shift-Tab": cm=>cm.execCommand("indentLess"),
+        "Ctrl-Enter": ()=>runCell(idx),
+        "Cmd-Enter":  ()=>runCell(idx),
+      }
+    });
+    cm.on("change", ()=>{ cell.studentCode=cm.getValue(); });
+    editors[idx]=cm;
+  });
+
+  // End-of-exam banner — appended after the last cell
+  const banner = document.createElement("div");
+  banner.id = "end-banner";
+  banner.innerHTML = `
+    <div style="border-top:3px solid var(--accent);margin-top:32px;padding:28px 0 8px">
+      <h2 style="font-size:1.2rem;color:var(--accent);margin-bottom:16px">
+        End of Examination
+      </h2>
+      <p style="margin-bottom:20px;font-family:var(--sans);font-size:.95rem">
+        You have reached the end of the exam. Before you finish, complete
+        all three steps below.
+      </p>
+
+      <div style="display:flex;flex-direction:column;gap:12px;font-family:var(--sans);font-size:.9rem">
+
+        <div style="background:var(--accent-lt);border:1px solid var(--accent);
+                    border-radius:var(--radius);padding:14px 18px;display:flex;gap:14px;align-items:flex-start">
+          <span style="font-size:1.3rem;flex-shrink:0">1</span>
+          <div>
+            <strong>Print a PDF for the assessor</strong><br>
+            Click the <strong>Print / PDF</strong> button in the top-right toolbar.
+            When the print dialog opens, set the destination to
+            <em>Save as PDF</em> and save the file.
+            This creates the copy your external assessor will review.
+          </div>
+        </div>
+
+        <div style="background:var(--accent-lt);border:1px solid var(--accent);
+                    border-radius:var(--radius);padding:14px 18px;display:flex;gap:14px;align-items:flex-start">
+          <span style="font-size:1.3rem;flex-shrink:0">2</span>
+          <div>
+            <strong>Save your submission file (.json)</strong><br>
+            Click the <strong>Save</strong> button in the top-right toolbar.
+            This downloads a <code>.json</code> file containing all your code
+            and outputs. Keep this file — you will need it in the next step.
+          </div>
+        </div>
+
+        <div style="background:var(--accent-lt);border:1px solid var(--accent);
+                    border-radius:var(--radius);padding:14px 18px;display:flex;gap:14px;align-items:flex-start">
+          <span style="font-size:1.3rem;flex-shrink:0">3</span>
+          <div>
+            <strong>Upload to Moodle and confirm with your invigilator</strong><br>
+            Upload your <code>.json</code> file to the exam submission link on Moodle.
+            Once uploaded, raise your hand to confirm submission with your invigilator
+            before closing your computer.
+          </div>
+        </div>
+
+      </div>
+    </div>`;
+  main.appendChild(banner);
+}
+
+// ── Cell execution ─────────────────────────────────────────────────────────
+async function runSetupCells() {
+  for (let i=0;i<cells.length;i++) {
+    if (cells[i].type!=="setup") continue;
+    window.examCurrentOutputId="__setup__";
+    try { await pyodide.runPythonAsync(cells[i].content); }
+    catch(e) {
+      const d=document.createElement("div");
+      d.className="cell-err"; d.style.margin="14px";
+      d.textContent="Setup failed: "+e.message;
+      document.getElementById("main").prepend(d);
+    }
+  }
+}
+
+async function runCell(idx) {
+  if (isRunning) { showToast("A cell is already running — wait for it to finish"); return; }
+  isRunning=true;
+  const cell=cells[idx];
+  const outEl=document.getElementById(`out-${idx}`);
+  const btn=document.getElementById(`run-${idx}`);
+  const stat=document.getElementById(`stat-${idx}`);
+  if (editors[idx]) cell.studentCode=editors[idx].getValue();
+  btn.disabled=true; btn.textContent="Running...";
+  stat.textContent=""; stat.className="cell-stat";
+  outEl.innerHTML="";
+  window.examCurrentOutputId=`out-${idx}`;
+
+  await pyodide.runPythonAsync(`
+import sys,io as _io
+_exam_buf=_io.StringIO()
+sys.stdout=_exam_buf
+`);
+  let hasError=false;
+  try { await pyodide.runPythonAsync(cell.studentCode); }
+  catch(e) {
+    hasError=true;
+    const p=document.createElement("pre");
+    p.className="cell-err"; p.textContent=e.message;
+    outEl.appendChild(p);
+  }
+  const printed=await pyodide.runPythonAsync(`
+sys.stdout=_exam_original_stdout
+_cap=_exam_buf.getvalue()
+_exam_buf.close()
+_cap
+`);
+  if (printed&&printed.trim()) {
+    const p=document.createElement("pre");
+    p.className="et-stdout"; p.textContent=printed;
+    outEl.appendChild(p);
+  }
+  cell.hasError=hasError; cell.lastRun=new Date().toISOString();
+  cell.outputHTML=outEl.innerHTML;
+  stat.textContent=hasError?"Error":"OK";
+  stat.className="cell-stat "+(hasError?"err":"ok");
+  btn.disabled=false; btn.textContent="Run";
+  isRunning=false;
+  await autoSave();
+}
+
+// ── Saving ─────────────────────────────────────────────────────────────────
+function buildJSON() {
+  const name=document.getElementById("sname").value||
+             document.getElementById("h-student").textContent;
+  return {
+    student_name:name, exam_title:meta.title||"",
+    module:meta.module||"", session:meta.session||"",
+    exported_at:new Date().toISOString(),
+    cells:cells.filter(c=>c.type==="code").map(c=>({
+      task_id:c.taskId||null, task_label:c.label||"",
+      marks_possible:c.marks||0, student_code:c.studentCode||"",
+      output_html:c.outputHTML||"", has_error:c.hasError||false,
+      last_run:c.lastRun||null
+    }))
+  };
+}
+async function autoSave() {
+  if (!fileHandle) { setSave("unsaved"); return; }
+  try {
+    const w=await fileHandle.createWritable();
+    await w.write(JSON.stringify(buildJSON(),null,2));
+    await w.close(); setSave("saved");
+  } catch(e){ setSave("error"); }
+}
+function saveDownload() {
+  const data=buildJSON();
+  const safe=(data.student_name||"student").replace(/[^a-z0-9]/gi,"_").toLowerCase();
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url; a.download=`exam_${safe}_${new Date().toISOString().slice(0,10)}.json`; a.click();
+  URL.revokeObjectURL(url); setSave("saved");
+}
+function loadFromFile() {
+  const input = document.createElement("input");
+  input.type = "file";
+  input.accept = "application/json,.json";
+  input.onchange = async () => {
+    const file = input.files[0];
+    if (!file) return;
+    let data;
+    try {
+      data = JSON.parse(await file.text());
+    } catch(e) {
+      alert("Could not read that file — make sure it is a valid exam .json submission.");
+      return;
+    }
+    if (!Array.isArray(data.cells)) {
+      alert("This file does not look like an exam submission (no cells array found).");
+      return;
+    }
+
+    // Restore student name
+    if (data.student_name) {
+      const nameEl = document.getElementById("h-student");
+      if (nameEl) nameEl.textContent = data.student_name;
+      const snameEl = document.getElementById("sname");
+      if (snameEl) snameEl.value = data.student_name;
+      const fpName = document.getElementById("fp-student-name");
+      if (fpName) fpName.textContent = data.student_name;
+      const fpStudent = document.getElementById("fp-student");
+      if (fpStudent) fpStudent.style.display = "";
+    }
+
+    // Build task_id -> cell index lookup
+    const taskMap = {};
+    cells.forEach((cell, idx) => {
+      if (cell.type === "code" && cell.taskId) taskMap[cell.taskId] = idx;
+    });
+
+    let restored = 0, skipped = 0;
+    data.cells.forEach(saved => {
+      const tid = saved.task_id;
+      if (tid === null || tid === undefined || !(tid in taskMap)) { skipped++; return; }
+      const idx = taskMap[tid];
+      const cell = cells[idx];
+
+      // Restore code into editor and cell object
+      const code = saved.student_code || "";
+      if (editors[idx]) editors[idx].setValue(code);
+      cell.studentCode = code;
+
+      // Restore output and status
+      cell.outputHTML = saved.output_html || "";
+      cell.hasError   = saved.has_error  || false;
+      cell.lastRun    = saved.last_run   || null;
+
+      const outEl  = document.getElementById(`out-${idx}`);
+      const statEl = document.getElementById(`stat-${idx}`);
+      if (outEl)  outEl.innerHTML = cell.outputHTML;
+      if (statEl && cell.lastRun) {
+        statEl.textContent = cell.hasError ? "Error" : "OK";
+        statEl.className   = "cell-stat " + (cell.hasError ? "err" : "ok");
+      }
+      restored++;
+    });
+
+    setSave("saved");
+    alert(`Loaded "${data.student_name || "unknown"}" — ${restored} cell(s) restored${skipped ? `, ${skipped} skipped (no matching task)` : ""}.`);
+  };
+  input.click();
+}
+
+function setSave(s) {
+  const el=document.getElementById("save-status");
+  el.textContent=s==="saved"?"Saved":s==="error"?"Save failed":
+                 (s==="off"||s==="unsaved")?"File autosave off":"";
+  el.style.color=s==="saved"?"var(--success)":s==="error"?"var(--error)":"var(--muted)";
+}
+
+// ── Utilities ──────────────────────────────────────────────────────────────
+function esc(s){
+  return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+function b64ToBytes(b64){
+  const bin=atob(b64),bytes=new Uint8Array(bin.length);
+  for(let i=0;i<bin.length;i++) bytes[i]=bin.charCodeAt(i);
+  return bytes;
+}
+</script>
+</body>
+</html>

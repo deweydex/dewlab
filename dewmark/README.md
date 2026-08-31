@@ -95,6 +95,7 @@ dewmark/
   workbench/           the grading workbench page            (phase 2)
   composer/            the web composer page                 (phase 4)
   samples/             openly-shareable sample exams          (phase 1)
+  experiments/         the 2025–26 exam experiments, bug-fixed, as prior art
   docs/                format guide for authors and for LLM translation
 ```
 
