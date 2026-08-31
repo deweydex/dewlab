@@ -45,6 +45,39 @@ tutorial_tools._page_globals.update({
 tutorial_tools._page_globals["__name__"] = "__dewlab__"
 `;
 
+/* Lets ordinary Python HTTP code work here, by pointing it at the browser's
+ * own fetching.
+ *
+ * Python in a page has no network connection of its own, so `urllib` — which
+ * is what `pandas.read_csv("https://…")` uses underneath — fails before it
+ * even tries, with "unknown url type: https". That message is accurate and
+ * useless: it means urllib has no HTTPS *handler* registered, because it has
+ * no TLS library to register one with. It does not mean the page cannot
+ * reach an HTTPS site. The browser does that constantly.
+ *
+ * `pyodide_http.patch_all()` bridges the two, rerouting urllib (and requests,
+ * if a reader installs it) through the browser's own fetch. The browser then
+ * performs the TLS itself, with its own certificate checks and its own trust
+ * store — so `https://` stays fully encrypted and verified; the encryption
+ * simply happens one layer out from Python.
+ *
+ * 9.6 KB, which is the whole reason this is on by default rather than an
+ * option: every pandas tutorial ever written reads a URL this way, and a
+ * student copying one should not have to know any of the above.
+ *
+ * Wrapped in try/except because a vendored Pyodide built before this was
+ * added will not have the package (dev/fetch_pyodide.py's --packages list),
+ * and an offline bundle must still boot without it — just without the
+ * convenience. tutorial_tools.py's own error hints then explain the manual
+ * route, so the failure stays informative rather than silent. */
+const NETWORK_PATCH_SOURCE = `
+try:
+    import pyodide_http
+    pyodide_http.patch_all()
+except Exception:
+    pass
+`;
+
 /* Resolved against *this module's own location* (assets/pyodide-engine.js),
  * not the page importing it: a relative fetch from inside the worker
  * resolves against the worker script's own location, not the page's, so
@@ -483,6 +516,14 @@ async function bootMainThread() {
 
   setStatus(`Loading ${packages.join(", ")}…`);
   await pyodideMT.loadPackage(packages);
+  // Separately, and forgivingly: a Pyodide without this package must still
+  // boot. See NETWORK_PATCH_SOURCE for what it buys.
+  try {
+    await pyodideMT.loadPackage(["pyodide-http"]);
+    await pyodideMT.runPythonAsync(NETWORK_PATCH_SOURCE);
+  } catch {
+    /* no browser-backed urllib; tutorial_tools.py's hints cover it */
+  }
 
   setStatus("Preparing the notebook tools…");
   const source = await fetch(assetUrl("tutorial_tools.py")).then((r) => {
@@ -521,6 +562,17 @@ async function resetPageStateMT() {
 function pageNamesMT() {
   if (!toolsMT) return [];
   return [...toolsMT._page_globals.keys()].filter((name) => !name.startsWith("_"));
+}
+
+/* The main-thread counterpart of the worker's "describe-globals" — see
+ * that handler's own comment for why the proxy needs converting and
+ * destroying. */
+function describeGlobalsMT() {
+  if (!toolsMT) return [];
+  const proxy = toolsMT.describe_globals();
+  const described = proxy.toJs({ dict_converter: Object.fromEntries });
+  proxy.destroy();
+  return described;
 }
 
 /* Runs one cell's code directly, on the main thread. tutorial_tools.py's
@@ -827,6 +879,20 @@ export async function pageNamesCompletion(context) {
       : [];
   if (!names.length) return null;
   return { from: word.from, options: names.map((label) => ({ label, type: "variable" })) };
+}
+
+/* What is currently defined in the shared namespace, each with its type and
+ * a one-line summary of its value — what dewmini's Workbench shows, so a
+ * reader can see what their code actually made rather than only what they
+ * remembered to print.
+ *
+ * Returns `[]` rather than throwing when Python has not booted: the panel
+ * asking before the first run is an ordinary thing to happen, not an
+ * error worth a message. */
+export async function describeGlobals() {
+  if (mode === "main-thread") return describeGlobalsMT();
+  if (!worker) return [];
+  return workerRequest("describe-globals", {});
 }
 
 /* ------------------------------------------------------------- filesystem

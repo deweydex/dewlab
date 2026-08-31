@@ -385,6 +385,32 @@ available either, so `pyodide-engine.js` falls back to running Pyodide
 on the main thread when it is reachable at all: same interpreter, same
 `tutorial_tools.py`, just without a genuine Stop button.
 
+**dewmini is a workbench, not one column** (`DECISIONS_LOG.md` 7.99;
+design and reasoning in `planning/DEWMINI_WORKBENCH.md`). Notebooks open
+in tabs — `notebooks[]` in `dewmini.js`, with `cells` re-pointed at
+whichever is active rather than every function being routed through an
+index — and two docked rails sit either side of them: a **Library**
+(left) carrying the cross-tutorial reference, a dataset catalogue and
+the help text, and a **Workbench** (right) carrying a live variable
+inspector, notes and files, with Settings sharing that right edge.
+
+Two pieces of that reach outside `compose/`. `write_reference_index()`
+in `build.py` emits `assets/reference-index.json`, the union of every
+tutorial's glossary — deliberately dropping the "never show what has not
+been taught" rule the tutorial pages' own Reference is built around,
+since a workspace has no position in a series to protect. And
+`tutorial_tools.describe_globals()` walks `_page_globals` and returns
+plain `{name, type, summary, kind}` data, reached through the engine's
+`describeGlobals()` and a `describe-globals` worker message — the same
+shape as the existing `page-names` path, and in Python rather than
+JavaScript so it is unit-testable without a browser.
+
+The rails themselves needed almost no new mechanism: `tutorial-style.css`
+has carried `data-dl-panel-left`/`-right` with independent width
+variables since 7.83, and dewmini had been overriding it with a
+single-panel simplification that was right while both its panels docked
+right (7.84). Deleting that override *is* the two-rail layout.
+
 Each of these files has its own `docs/<file>-explained.md` walking
 through its internal structure in more depth than belongs here — start
 with [`docs/pyodide-engine-explained.md`](docs/pyodide-engine-explained.md)

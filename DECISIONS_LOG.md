@@ -4109,3 +4109,424 @@ and which were descriptions of the present (reworded). With the site
 never deployed, nothing removed here was ever in anyone's hands: no
 bookmark breaks and no downloaded bundle exists outside this
 repository.*
+
+---
+
+**7.99 — dewmini becomes a workbench: tabs, two rails, and tools for
+looking at your own work.** Asked for directly: tabs, sidebars on both
+sides carrying file imports and "variable inspectors and other
+pedagogical tools", a fuller reference with search and category
+navigation on the left, data import from somewhere like Our World in
+Data, and a right-hand side moved away from settings and towards notes
+and pedagogy. Widgets — the one real capability gap — were explicitly
+deferred. `planning/DEWMINI_WORKBENCH.md` is the design; this entry is
+what was decided along the way.
+
+**The smallness rule is not abandoned, it is restated.** Every planning
+document dewmini has says it is the small one, and §3 of
+`MINI_IDE_AND_DEWMINI_NEXT.md` made "nothing that makes it bigger" its
+whole finding. That rule existed because dewmini had a larger sibling to
+be small *against*. 7.91 removed the sibling. A tool with no alternative
+cannot also refuse to grow, so the discipline becomes **quiet by
+default, everything one press away**: nothing new opens on a first
+visit, the notebook keeps the full width until a rail is asked for, and
+someone who came to check `6 * 7` sees exactly what they saw before.
+Every decision below was checked against that sentence.
+
+**Three panels across two edges, and the layout was already built.**
+Library (left) is what you look up; Workbench (right) is your own work;
+Settings keeps the right edge with the Workbench and stops being the
+headline — Notes and Files moved out of it, which is the substance of
+"make the right bar more into notes and pedagogical ideas". Help stopped
+being a panel and became Library sections, on `SIDEBAR_CONTENT.md` §4's
+own reasoning that extending a panel beats adding one. The mechanism
+needed almost nothing new: `tutorial-style.css` has carried
+`data-dl-panel-left`/`-right` with independent width variables since
+7.83, and dewmini had overridden it with a single attribute and one
+width — a fair simplification while both its panels docked right (7.84),
+and exactly wrong with a rail on each side. Deleting that override *is*
+the two-rail layout. Two smaller corrections fell out of it: a
+left-docked panel resizes with native CSS (it grows away from its own
+edge, which is why the right-docked ones need the JS handle), and a
+docked rail must not close on an outside click — dismiss-on-outside is
+right for a popover and wrong for a pane the page has made room for,
+where every click on your own code would shut the reference you opened
+to read while writing it.
+
+**Tabs re-point one variable rather than rewriting the file.**
+`notebooks[]` holds `{id, name, cells}`; the module-level `cells` is not
+a copy of the active notebook's array but *is* that array, so every
+existing function kept working untouched. The cost is one real hazard —
+assigning `cells` alone detaches it, leaving edits landing in an array
+attached to nothing, visible until a tab switch silently reverts them —
+so `setCells()` is the only sanctioned way to swap them, and the e2e
+test covers exactly that round trip. Storage moved to
+`dewmini:notebooks:v1` with a one-way migration from the old bare array,
+tested, and the old key deliberately left in place rather than deleted:
+if the migration is ever wrong, the original is still there.
+
+**One Python session shared by every tab, made visible rather than
+silent.** Real Jupyter gives each notebook its own kernel. Doing that
+here means threading a namespace identifier through every engine call
+and across the worker boundary — a change to the shared engine, which
+7.97 established is a change to every surface that runs Python, and a
+poor trade to make overnight without the person it is for available.
+Instead the sharing is *shown*: the Workbench's Variables list is one
+session, and says so in plain words whenever a second tab exists. A
+student who defines `data` in one tab and finds it in another has been
+told and can see why. If it turns out to confuse people, the per-tab
+namespace is the fix and this paragraph is the brief for it.
+
+**The reference drops the one rule the tutorial pages' own is built
+around, on purpose.** `REFERENCE_PANEL.md` §1 is emphatic that a reader
+must never be shown a term they have not been taught — a reference that
+spoils next week's function names is worse than none. That rule protects
+a reader's position in a sequence. dewmini's readers have no position in
+a sequence; that is what a workspace *is*. So
+`write_reference_index()` emits the union — 248 terms today, deduplicated
+on `(term, kind)`, grouped by the five kinds the schema already defines,
+searchable across terms and definitions, with category filters — from
+the same `own_glossary()` the tutorial pages use, so neither can drift.
+Each entry names the tutorial that introduced it but does **not** link
+to it: this file ships inside the offline bundle, which carries no
+tutorials, and a link that 404s for every offline reader is worse than a
+title that tells them where to look.
+
+**The variable inspector is Python, not JavaScript.**
+`describe_globals()` walks `_page_globals` and returns plain
+`{name, type, summary, kind}` strings: it belongs where the namespace
+lives, nothing crosses the worker boundary as a proxy, and — the reason
+that matters most here — it is unit-testable under plain CPython, which
+the JavaScript half is not. Eleven unit tests cover it, including a
+value whose `__repr__` raises, because that is a bug in a student's own
+object and not a reason for every other variable to vanish from the
+panel.
+
+**Data: one claim this environment could not test, so it is not made.**
+The catalogue lists local and remote datasets with real source and
+licence, and writes working code into the notebook when picked. Remote
+fetching depends on the other site permitting it (CORS), and the sandbox
+this was built in blocks `ourworldindata.org` outright — the fetch could
+not be tried once. Twice already this repository has shipped an untested
+claim (7.92: two offline bundles that could not be opened at all), so
+`load_csv()` was extended to take a URL *and* to fail informatively —
+naming CORS, and pointing at the reliable route of downloading the file
+and adding it through Files — and `tests/MANUAL_CHECKLIST.md` carries
+the check nobody here could run.
+
+**dewmini has e2e coverage for the first time.** Twelve tests driving
+real Chromium against a self-hosted Pyodide: tabs keeping their own
+cells across a switch, the migration from pre-tabs storage, both rails
+open at once, same-edge panels excluding each other, a rail surviving a
+click on your own code, reference search and kind filters, a dataset
+writing its own cell, and the inspector reading variables out of live
+Python. 7.96 and 7.97 were both rounds of defects in code that looked
+right and had no browser test; this is the answer to that, and it found
+one thing immediately — an empty cell container has zero height, so
+"visible" is not what a test should wait on.
+
+*Cost to change: substantial and mostly additive — ~900 lines across
+dewmini's three files, one build step, one shared-engine message, and a
+vendored CodeMirror addition for find-and-replace. The risk concentrates
+in two places: the `cells` aliasing above, and the shared engine, where
+`describeGlobals()` follows the existing `page-names` path exactly
+rather than inventing a second shape. Everything else is a panel that
+either renders or does not.*
+
+---
+
+**7.100 — Ordinary Python HTTP code works here now, and `https` was never
+the thing that was missing.** Prompted by a real failure on the live site:
+pasting Our World in Data's own copy-this-to-fetch snippet into a cell gives
+`urllib.error.URLError: <urlopen error unknown url type: https>` in 8ms. That
+message is accurate and useless, and the snippet is the obvious thing to
+try, since it is the button on their page.
+
+**Two claims I made about this were wrong, and the correction is the
+entry.** I said `requests` "isn't available and can't be", and that reading
+a URL with pandas could not work in a browser. Both false. Pyodide ships
+`requests`, `httpx`, `aiohttp`, `urllib3` *and* `pyodide-http`, whose entire
+job is to reroute Python's HTTP machinery through the browser's own
+fetching. They are simply not loaded at boot. Tested in a real browser
+against a local server: after `pyodide_http.patch_all()`, the snippet works
+**verbatim**, `storage_options` and all.
+
+**The fix is 9.6 KB, so it is on by default.** `pyodide-http` alone —
+without `requests`, which drags ~470 KB of certifi/urllib3/idna behind it —
+is enough to make `pandas.read_csv(url)` work, because pandas goes through
+`urllib` and the patch covers `urllib`. Loaded and applied at boot in both
+engine paths (`NETWORK_PATCH_SOURCE`), wrapped in try/except so a vendored
+Pyodide built before this existed still boots, just without the
+convenience. Added to `dev/fetch_pyodide.py`'s baseline so new offline
+bundles carry it.
+
+**`https` was never unavailable — Python just had no handler for it.**
+Worth stating plainly because the error implies otherwise, and because it
+is a thing students are taught to care about. A Pyodide build ships no TLS
+library, so `urllib` registers no HTTPS handler and rejects the scheme
+before any connection is attempted. That is not the absence of encryption;
+it is the absence of Python's *own* encryption. Through the patch the
+browser performs the TLS, with its own certificate validation and its own
+trust store — the same one it uses for every other site. Verified rather
+than reasoned: a real TLS server with a real certificate, and Chromium
+pinned to that one certificate by public-key fingerprint (rather than told
+to ignore certificate errors, which would have proved nothing).
+`pd.read_csv("https://…")` and `await load_csv("https://…")` both read it.
+
+**The cost, named: a hung request cannot be stopped.** The patched path is
+synchronous inside the Worker, so it blocks the interpreter while waiting.
+Tested: the Run button correctly offers Stop, and pressing it does nothing
+— eight seconds later the cell is still waiting. Before this change that
+request failed instantly instead, so this is a new way to be stuck. Taken
+anyway, because "instant unhelpful failure" is not better than "works, and
+a slow server can hang you", and because the async route
+(`await load_csv(url)`) does not block and remains what the docs lead with.
+A timeout on the patched path is the obvious follow-up and is not done.
+
+**Errors that are about the browser now say so.** `_ERROR_HINTS` in
+`tutorial_tools.py` matches a small, deliberately short list of failures
+whose Python message explains nothing a student can act on, and appends a
+plain-English note under the traceback — under, not instead of, so the real
+error is still findable. Two entries today, both about reaching the network.
+The import scanner gained the same libraries, so a pasted notebook is
+warned before it runs rather than after.
+
+*Cost to change: small in code, wide in reach — this touches the shared
+engine's boot, so it changes tutorial pages too. Justified on the same
+grounds: a tutorial cell hits the identical wall.*
+
+---
+
+**7.101 — The reference's categories are derived, never tagged; and the
+rail's smallest text gets a floor.** Three asks in one message, all of them
+about the Library rail: a topics row that drops down without covering what
+it filters, a check that the whole rail obeys the Texture slider, and — the
+one that changed the design — "the layers are actually a great proxy for
+beginner intermediate advanced! That way if we change the tree later (which
+we inevitably will) it automatically changes the search."
+
+**That is the whole scheme, and it is better than what it replaced.** The
+first pass had subject and level as things someone would maintain. Reading
+them off data that already exists means they cannot drift from the thing
+they describe:
+
+- **Subject** comes from the learning-outcome codes a tutorial already
+  claims in `covers:`. The *prefix* is the key and `strand` is not: PDP-LO2
+  ("algorithms") shares a strand with several MIT outcomes, so strands cut
+  across the maths/computing line rather than along it. MIT is the maths
+  module; PDP and CMPS are the computing ones. Seven tutorials claim an
+  outcome from each side and are filed under both, which is not a fudge to
+  avoid choosing — a term introduced there genuinely belongs to both.
+- **Level** comes from `topic_tiers()`, the prerequisite depth of the
+  `needs:` graph. Nothing is hand-tagged, so rearranging the tree re-files
+  every term on the next build with nobody having retagged anything. There
+  is a test that does exactly that: slide three layers of groundwork under
+  a topic, rebuild, watch a term move from beginner to advanced while its
+  tutorial is untouched.
+
+**Deepest outcome, not shallowest.** `min()` was tried first and is worse in
+both directions: it rates a tutorial by its easiest moment, which put 150 of
+222 terms in "beginner", and it would cheerfully tell someone in week one
+that a tutorial needing four layers of groundwork is approachable. Erring
+deep is the kinder error. Bands at ≤2 / ≤3 against the real spread
+(22/16/5 tutorials); the obvious alternative ≤1 / ≤3 collapses to 10/28/5,
+which makes "intermediate" mean almost everything and so mean nothing.
+
+**A tutorial claiming no outcomes is left unfiled, not guessed at.** Two
+real ones do, plus every practice page. The row offers "Unfiled" as a value
+of its own, so those terms stay reachable instead of vanishing the moment
+any subject is chosen.
+
+**The topic row is a `<details>` in the normal flow, not a popover.** Asked
+for directly — it must not cover the results. So opening it pushes the list
+down, and there is a test that measures the row's bottom edge against the
+list's top edge rather than trusting a screenshot. Subject and level stay on
+the surface because they are the two anyone reaches for; topic and kind fold
+away because they are longer rows that would push the results off-screen
+before a reader had seen any. A folded row that is silently filtering is a
+trap, so the summary reports its own state ("Topics · 1 on").
+
+**The group list is read off the data too — found by a test, not by
+reading.** The topic row was drawing from a hand-kept list of group keys in
+`dewmini.js`, which meant a group added to `topic-groups.yaml` would get no
+chip and nobody would notice. That is precisely the drift the rest of this
+entry is about, arriving through the one door left open. The curated short
+labels stay (the file's own names are page headings — "Trigonometry —
+triangles, circles, and waves" — and far too long for a chip), but they are
+now an *override*: the groups themselves come from the entries, and an
+unlabelled one gets its key turned back into words, which is a visible
+prompt to come and name it.
+
+**"A bit small for tired eyes" was right, and measurably so.** The rail does
+scale with the slider — everything is in `rem` off `--dl-font-size` on
+`html`, which was already true — but at the old floor of 15px the filter
+chips rendered at 10.2px, the kind badge at 9.6px. The slider minimum moves
+to 16px and the small labels take a `max(…, 12px)` floor.
+
+**The sweep found five more than the eyeball did.** Checking the four
+elements I had just changed said the job was done. A test that walks *every*
+element in the rail and reports the smallest computed size found `<kbd>` at
+10.6px, `<code>` inside a panel note at 11.6px, the "from the web" badge at
+11px, and the rail's own section heading at 11.5px — all `em` sizes
+compounding inside an already-small container, which is the failure mode
+eyeballing is worst at. That sweep is now the test, so the floor holds for
+anything added later rather than for the five things that were looked at
+today.
+
+*Cost to change: small. The bands are one tuple; the subject map is one
+dict; the disclosure is one `<details>`. What would be expensive is going
+back to hand-tagging, which is the point.*
+
+---
+
+**7.102 — The boot patch was not universal, and the toolbar had two buttons
+for one job.** Two asks in one message, plus main moving underneath.
+
+**The networking patch reached two of four boot paths, not four.** 7.100
+said ordinary Python HTTP code "works here now"; Josh asked whether that was
+true of the whole application, and it was not. dewlab starts Pyodide in four
+places, and the patch had been added to the two I was looking at:
+
+| Boot path | Used by | Had the patch |
+|---|---|---|
+| `pyodide-worker.js` `boot()` | every hosted page | yes |
+| `pyodide-engine.js` `bootMainThread()` | dewmini with no Worker | yes |
+| `tutorial-runtime.js` `bootMainThread()` | **a downloaded tutorial** | no |
+| `compose/dewmini.js`'s export template | **an exported notebook** | no |
+
+Both misses are the *downloadable* copies — which is the worst possible
+place for them, not an acceptable one. A downloaded tutorial is the copy
+someone opens on a train with no second machine to compare against, and an
+exported notebook is the file a reader sends to somebody else. A cell that
+read a URL perfectly well on the hosted site would have failed with the
+same "unknown url type: https" in both, after every other surface had
+stopped saying it. Fixed in both, wrapped in the same try/except so a
+Pyodide without the package still boots.
+
+Verified rather than reasoned, because the claim being corrected here was
+itself reasoned: a real downloaded export, served from disk, booting its own
+Pyodide, reading `https://` from a real TLS server with Chromium pinned to
+that one certificate by public-key fingerprint. Two rows, two columns, over
+a connection whose certificate was actually checked.
+
+**The lesson is about how the gap was found.** It was not found by reading
+the diff — I wrote the diff. It was found by Josh asking whether the claim
+held everywhere, and then by enumerating every `loadPyodide(` in the
+repository instead of every one I remembered. "Is this universal?" is a
+different question from "is this right?", and the second does not answer
+the first.
+
+**The toolbar's Python and Text buttons are gone.** Also Josh's, and
+correct: the seams between cells already add a cell, and add it where you
+are looking rather than at the end of a page you then scroll back up. Two
+buttons for the same action, one of them worse, is one button. The freed
+space takes **See an example** and **Start with imports**, which previously
+lived only in the empty-notebook block and so vanished the moment a reader
+had a single cell — the two openings hardest to find were the two only
+findable before you needed them.
+
+**Which exposed a hole the change would have left.** The first seam was
+suppressed over an empty notebook, on the reasoning that a seam with
+nothing on either side looks like debris. With the toolbar buttons gone
+that would have left no way at all to start a *blank* cell — only "Start
+with imports", which arrives with three lines in it. The seam is now drawn
+from the start, which is also the better teaching: the affordance a reader
+uses for every cell after the first is the one they meet for the first.
+
+**And a fixture bug that main exposed.** The dewmini e2e fixture pointed the
+page at a locally staged Pyodide only `if "DEWLAB_PYODIDE_BASE" not in
+html`. PR #91 added a comment to `compose/dewmini.html` explaining what that
+override does — containing the name — so the guard was satisfied by prose,
+the injection silently stopped, and every test that runs Python failed
+against a CDN this sandbox blocks. It now matches the assignment and
+asserts the result, because a guard that a sentence can satisfy is not a
+guard. Worth recording as its own mistake: the failure looked exactly like
+a regression from the toolbar change, and treating it as one would have
+meant "fixing" working code.
+
+*Cost to change: small. Two four-line boot additions, one markup move, and
+one deleted conditional.*
+
+---
+
+**7.103 — Both rails drag the same way, and a width someone chose survives
+the reload.** Josh asked whether the side rails are resizable, "so that one
+could work split screen if one wanted to". They were — and measuring it
+found two reasons the answer was worse than yes.
+
+**Two rails, two different affordances.** The right-docked panels got the
+full-height drag strip 7.84 built for them, because native CSS `resize:
+horizontal` is unusable there: its grip sits at the box's bottom-right
+corner, flush with the browser window's own right edge, with no room to drag
+outward. The left-docked ones — dewmini's Library, and a tutorial page's
+Reference and Series nav — were left on native resize, because for them it
+*works*: a left-docked panel grows rightward, into the page.
+
+Working is not the same as findable. Native resize is a small triangle in
+one corner; the strip is the full height of the panel and highlights on
+hover. So one page offered two ways to drag a panel wider, one of them
+plainly better, and which one you got depended on an implementation detail
+about which edge the panel happened to be pinned to. `makeRightEdgeResizable`
+becomes `makeEdgeResizable(panel, side, …)`, the sign of the drag flips with
+the side, and the native grips are gone from both files.
+
+**And the strips were hung outside their panels, losing half their width.**
+The handle sat at `left: -3px`, straddling the panel's edge — but a docked
+panel is a scroll container (`overflow-y: auto`), which clips absolutely
+positioned children to its padding box. Half of every strip was being thrown
+away, and the surviving half ended exactly on the boundary. On the right
+edge that still worked by luck: the leading edge of a clip is inclusive. On
+the new left-edge variant it did not, and the first drag test moved nothing
+at all. Hit-testing the strip's midpoint returned the *panel*, which is what
+named the cause. Both strips now sit flush inside the edge.
+
+Worth keeping because of how it was nearly missed: the strip was in the DOM,
+the class was right, the CSS was right, and the geometry printed correctly.
+Only a real pointer drag showed it doing nothing.
+
+**A width nobody remembers is not a split screen.** `saveSidebarState()`
+stored which rail was open and not how wide it had been dragged, so a rail
+pulled out to half the screen snapped back on the next load. It now stores a
+width per panel and applies them before reopening, so a restored rail opens
+at its own size rather than opening small and jumping.
+
+**Measured rather than asserted**, on a 1440px viewport: with the Library at
+560px and the Workbench dragged to 612px, the notebook column sits at x=598
+with width 191 — no overlap on either side, the three of them accounting for
+1363 of 1440px. Split screen works in the sense the question meant.
+
+*Cost to change: small, and it deletes more than it adds — one shared
+function in place of two, and three `resize: horizontal` declarations gone.*
+
+---
+
+**7.104 — The union reference is settled, on a better reason than the one I
+gave for it.** 7.99 and `DEWMINI_WORKBENCH.md` §4 dropped the tutorial
+Reference panel's rule (`REFERENCE_PANEL.md` §1: never show a reader a term
+from a tutorial they have not reached) and flagged it as Josh's to overrule.
+He has confirmed it, and his reasoning is the stronger of the two:
+
+> *"we just don't know what the student will be doing when they open
+> dewmini? Maybe they have done all the tutorials online and we just can't
+> see them?"*
+
+My argument was about **dewmini's** nature — a workspace has no position in
+a series, so there is no position to protect. His is about the **reader's**,
+and it is the one that actually decides the case: the spoiler rule assumes
+the page knows where its reader has got to. A tutorial page does know, from
+its own position in the series. dewmini cannot know. Nothing is recorded
+anywhere — no accounts, no server, no tracking (a deliberate property of
+this whole project) — so "what has this person been taught" is not a fact
+dewmini has access to, and hiding two thirds of the reference would mean
+guessing it, wrongly, against a reader who may well have finished the
+course.
+
+Worth writing down because it changes what would reopen this. Under my
+reasoning, the decision would be up for revisiting if dewmini ever became
+more curriculum-shaped. Under his, it only reopens if dewmini gains a way to
+*know* where a reader has got to — which would mean tracking them, which
+this project has refused on other grounds entirely. So this is settled
+harder than I had it.
+
+*Cost to change: unchanged — one function, and both behaviours are tested.
+But the reason to change it is now much narrower.*

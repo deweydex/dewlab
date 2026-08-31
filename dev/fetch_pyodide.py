@@ -35,7 +35,11 @@ RELEASE = (
     "https://github.com/pyodide/pyodide/releases/download/"
     "{v}/pyodide-{v}.tar.bz2"
 )
-BASELINE = ["numpy", "pandas", "matplotlib", "jedi"]  # parso comes along as jedi's own dependency
+BASELINE = ["numpy", "pandas", "matplotlib", "jedi", "pyodide-http"]
+# parso comes along as jedi's own dependency. pyodide-http is 9.6 KB and is
+# what lets pandas read a URL at all here (assets/pyodide-engine.js's
+# NETWORK_PATCH_SOURCE) — a self-hosted copy without it still boots, just
+# without that.
 CORE = [
     "pyodide.js",
     "pyodide.mjs",
@@ -85,7 +89,7 @@ def main() -> None:
     parser.add_argument("--version", default=PYODIDE_VERSION)
     parser.add_argument(
         "--packages", nargs="*", default=BASELINE,
-        help="packages to keep, with their dependencies (default: the baseline three)",
+        help="packages to keep, with their dependencies (default: BASELINE above)",
     )
     parser.add_argument(
         "--out", type=Path, default=Path(__file__).resolve().parent / "pyodide",

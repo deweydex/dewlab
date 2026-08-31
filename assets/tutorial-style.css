@@ -576,6 +576,24 @@ p code, li code {
   border-radius: 0 3px 3px 0;
 }
 
+/* The plain-English note under a recognised failure (_ERROR_HINTS in
+   tutorial_tools.py). Deliberately not red: it is the calm half of the
+   pair, and colouring it like a second error would make one problem look
+   like two. Wraps, because it is prose with a code sample in it rather
+   than a traceback to be read line by line. */
+.dl-error-hint {
+  margin-top: 0.35rem;
+  padding: 0.5rem 0.7rem;
+  border-left: 3px solid var(--dl-muted);
+  border-radius: 0 3px 3px 0;
+  background: var(--dl-cell-bg);
+  color: var(--dl-fg);
+  font-size: 0.85rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
 .dl-figure { margin: 0.4rem 0; }
 .dl-figure img { max-width: 100%; height: auto; display: block; border-radius: 3px; }
 
@@ -798,12 +816,26 @@ p code, li code {
    uses. */
 .dl-panel-resize-handle {
   position: absolute;
-  left: -3px;
+  /* Flush inside the panel's own edge, not straddling it. A panel is a
+     scroll container (overflow-y: auto), which clips its absolutely
+     positioned children to the padding box — so a strip hung outside at
+     -3px loses half its width, and the half that survives ends exactly on
+     the boundary, where a pointer lands on the panel instead. Found by
+     hit-testing the midpoint, which returned the panel. */
+  left: 0;
   top: 0;
   bottom: 0;
   width: 6px;
   cursor: col-resize;
   touch-action: none;
+}
+/* A left-docked panel's strip belongs on its *right* edge — the edge away
+   from the one it is pinned to, which is the side it grows into. Both rails
+   then carry the same full-height affordance rather than one full-height
+   strip facing a small corner triangle nobody finds. */
+.dl-panel-resize-handle-right {
+  left: auto;
+  right: 0;
 }
 .dl-panel-resize-handle:hover,
 .dl-panel-resize-handle.dl-panel-resize-active {
@@ -934,10 +966,12 @@ p code, li code {
   max-width: min(40rem, 100vw);
   overflow-y: auto;
   overflow-x: hidden;
-  /* Left-anchored, the mirror image of .dl-settings' own resize note:
-     growing width extends the box rightward, away from the edge
-     already pinned. */
-  resize: horizontal;
+  /* No native `resize: horizontal`, though it would work here — this box
+     is left-anchored, so growing width extends it rightward, away from the
+     edge already pinned. It draws a small corner triangle where
+     .dl-settings has a full-height strip, and one page should not have two
+     different ways to drag a panel wider, so both use
+     .dl-panel-resize-handle (DECISIONS_LOG.md 7.103). */
   padding: 1rem 1.1rem 1.1rem;
   border-right: 1px solid var(--dl-cell-border);
   background: var(--dl-panel-bg);
@@ -1096,7 +1130,7 @@ p code, li code {
   max-width: min(40rem, 100vw);
   overflow-y: auto;
   overflow-x: hidden;
-  resize: horizontal;
+  /* See the note on the panel above: the drag strip, not the native grip. */
   padding: 1rem 1.1rem 1.1rem;
   border-right: 1px solid var(--dl-cell-border);
   background: var(--dl-panel-bg);

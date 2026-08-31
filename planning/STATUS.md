@@ -101,14 +101,24 @@ dewmini runs Python through
 genuine Stop button, and real Jedi-backed autocomplete and signature
 help. `compose/dewmini-fs.js` mounts a real local folder (File System
 Access API), its own named OPFS subdirectory, or IDBFS — whichever the
-browser supports — behind one interface, so the Files section in
-Settings, SQL support (`sqlite3` against a mounted `.db` file), and file
+browser supports — behind one interface, so the Workbench's Files
+section, SQL support (`sqlite3` against a mounted `.db` file), and file
 uploads all work the same way regardless of backend. `.ipynb`/`.py`
 import and export round it out, and dewmini has its own downloadable,
 offline-capable copy (`write_dewmini_bundle()` in `build.py`). How it
 came to be dewlab's one and only workspace is history, not status:
 `DECISIONS_LOG.md` 7.87–7.98 and the addenda in
 `planning/MINI_IDE_AND_DEWMINI_NEXT.md` hold that story.
+
+Since `DECISIONS_LOG.md` 7.99 it is a workbench rather than a single
+column: notebooks open in **tabs**, and two docked rails carry what a
+tutorial page has no need of — a **Library** on the left (the
+cross-tutorial reference built by `write_reference_index()`, a dataset
+catalogue, and the help that used to be its own panel) and a
+**Workbench** on the right (a live variable inspector reading
+`tutorial_tools.describe_globals()`, notes, and files). Both are shut
+until asked for, which is what keeps the five-second version of dewmini
+intact; `planning/DEWMINI_WORKBENCH.md` is the design and its reasoning.
 
 ### Documentation and code comments
 Every substantial code file has detailed, teaching-oriented inline

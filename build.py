@@ -3026,7 +3026,7 @@ def write_dewmini_bundle() -> Path | None:
     packages dewmini's own DM_PACKAGES needs (compose/dewmini.js):
 
         python3 dev/fetch_pyodide.py --out assets/vendor/pyodide \\
-            --packages numpy pandas matplotlib sqlite3 Pillow jedi
+            --packages numpy pandas matplotlib sqlite3 Pillow jedi pyodide-http
 
     A build run without that first still produces a working bundle, just
     one that falls back to the CDN on first run, same as the hosted page
@@ -3086,6 +3086,8 @@ def write_dewmini_bundle() -> Path | None:
     coi_src = ASSETS / "vendor" / "coi-serviceworker.js"
     if coi_src.exists():
         shutil.copy2(coi_src, target / "coi-serviceworker.js")
+
+    _reference_index_for_bundle(target)
 
     # serve.py — see SERVE_SCRIPT's own docstring for why a bundle needs it.
     (target / "serve.py").write_text(SERVE_SCRIPT)
@@ -3488,6 +3490,165 @@ def write_search_index(
     return target
 
 
+# Which module a learning-outcome code belongs to, and therefore which
+# subject a term filed under it belongs to. The prefix is the right key here
+# and `strand` is not: PDP-LO2 ("algorithms") carries the same strand as
+# several MIT outcomes, so strands cut across the maths/computing line rather
+# than along it.
+OUTCOME_SUBJECTS = {
+    "MIT": "maths",       # Maths for Information Technology, 5N18396
+    "PDP": "computing",   # Programming and Design Principles, 5N2927
+    "CMPS": "computing",  # Computational Methods and Problem Solving, 5N0554
+}
+
+# Prerequisite depth, banded into three. `topic_tiers()` counts how many
+# layers of prerequisites sit under an outcome, and that is a better proxy
+# for "how far in is this" than any difficulty field anyone would
+# hand-maintain: it is derived from the dependency graph, so editing the
+# graph re-bands every term automatically and the two can never disagree.
+# Nothing here needs revisiting when the tree changes — which it will.
+#
+# Cut points chosen against the real spread rather than by dividing 0-6
+# evenly. With the deepest-outcome rule below, <=2 / <=3 puts 22 tutorials in
+# reach of a beginner, 16 in the middle and 5 at the deep end; the obvious
+# alternative (<=1 / <=3) collapses to 10/28/5, which makes "intermediate"
+# mean almost everything and so means nothing.
+LEVEL_BANDS = ((2, "beginner"), (3, "intermediate"), (99, "advanced"))
+
+
+def level_for_tier(tier: int) -> str:
+    for ceiling, name in LEVEL_BANDS:
+        if tier <= ceiling:
+            return name
+    return "advanced"
+
+
+def tutorial_facets(
+    tutorials: list[Tutorial],
+) -> dict[tuple[str, str], dict]:
+    """What each tutorial can be filtered by, keyed by (module, slug).
+
+    Three facets, none of them invented here — each is read from data that
+    already exists for another purpose, so none can drift from the thing it
+    describes:
+
+      * `subjects` — from the outcome codes a tutorial claims in `covers:`.
+        A tutorial covering both an MIT and a PDP outcome gets both, which is
+        not a fudge: seven of them genuinely do, and a term introduced there
+        belongs to both subjects.
+      * `level` — from the *deepest* outcome it covers, since that is the
+        one gating how far in you need to be to follow the whole thing.
+        The shallowest was tried first and is worse in both directions: it
+        rates a tutorial by its easiest moment, so 150 of 222 terms came
+        out "beginner", and it would cheerfully tell someone at the start
+        of the course that a tutorial needing four layers of groundwork is
+        approachable. Erring deep is the kinder error.
+      * `groups` — the curated topic groups from topic-groups.yaml, which
+        already allow a tutorial in more than one group by design.
+
+    A tutorial claiming no outcomes (two real ones, plus every practice page)
+    simply has no subject and no level. That is left as absence rather than
+    guessed at, and the panel offers it as "unfiled" instead of hiding it.
+    """
+    topics = load_topics()
+    tiers = topic_tiers(topics) if topics else {}
+
+    groups_by_tutorial: dict[tuple[str, str], list[str]] = {}
+    for group in load_topic_groups():
+        for member in group.get("tutorials") or []:
+            key = (member.get("module"), member.get("slug"))
+            groups_by_tutorial.setdefault(key, []).append(group["key"])
+
+    facets: dict[tuple[str, str], dict] = {}
+    for tutorial in tutorials:
+        codes = [
+            code
+            for claim in (tutorial.meta.get("covers") or {}).values()
+            for code in (claim.get("covers") or [])
+        ]
+        subjects = sorted({
+            OUTCOME_SUBJECTS[code.split("-")[0]]
+            for code in codes
+            if code.split("-")[0] in OUTCOME_SUBJECTS
+        })
+        depths = [tiers[code] for code in codes if code in tiers]
+        facet = {"subjects": subjects}
+        if depths:
+            facet["level"] = level_for_tier(max(depths))
+        groups = groups_by_tutorial.get((tutorial.module, tutorial.slug))
+        if groups:
+            facet["groups"] = sorted(set(groups))
+        facets[(tutorial.module, tutorial.slug)] = facet
+    return facets
+
+
+def write_reference_index(tutorials: list[Tutorial]) -> Path:
+    """One JSON file, `assets/reference-index.json`: every term every
+    tutorial introduces, in one list, for dewmini's Library rail.
+
+    **This deliberately drops the rule the tutorial pages' own Reference
+    panel is built around.** `planning/REFERENCE_PANEL.md` §1 is
+    emphatic that a reader must never be shown something they have not
+    been taught yet — a reference that spoils next week's function names
+    is worse than no reference — which is why `cumulative_glossary()`
+    exists and why it is assembled per page, per position in a series.
+
+    dewmini has no position in a series. It is the workspace a reader
+    opens *outside* the curriculum, to try an idea that may belong to no
+    tutorial at all, and a reference that hid two-thirds of itself on the
+    grounds that they had not reached tutorial 31 yet would be actively
+    unhelpful to the person looking at it. So this one is the union, and
+    the constraint is dropped on purpose rather than by forgetting it —
+    see `planning/DEWMINI_WORKBENCH.md` §4.
+
+    Built from `own_glossary()` so each entry can name the tutorial that
+    introduced it: that provenance is what keeps the union honest, since
+    a reader meeting an unfamiliar term can see where it is actually
+    taught. Deduplicated on `(term, kind)`, first definition winning,
+    the same key `cumulative_glossary()` dedupes on.
+
+    The tutorial's *title*, deliberately, and not a link to it. This file
+    ships inside dewmini's offline bundle, which carries no tutorials at
+    all — a link would resolve on the hosted site and 404 for every
+    offline reader, and a reference that sends a student somewhere
+    broken is worse than one that simply tells them where to look.
+    """
+    facets = tutorial_facets(tutorials)
+    seen: dict[tuple[str, str], dict] = {}
+    for tutorial in sorted(tutorials, key=lambda t: (t.module, t.slug)):
+        if tutorial.archived or not tutorial.is_default or tutorial.is_practice:
+            continue
+        facet = facets.get((tutorial.module, tutorial.slug), {})
+        for entry in own_glossary(tutorial):
+            key = (entry["term"], entry["kind"])
+            if key in seen:
+                continue
+            record = {
+                "term": entry["term"],
+                "kind": entry["kind"],
+                "definition": entry["definition"],
+                "origin": tutorial.title,
+            }
+            # A term inherits what its tutorial can be filtered by. Absent
+            # keys stay absent rather than becoming empty lists: the panel
+            # distinguishes "no subject claimed" from "filtered out".
+            if facet.get("subjects"):
+                record["subjects"] = facet["subjects"]
+            if facet.get("level"):
+                record["level"] = facet["level"]
+            if facet.get("groups"):
+                record["groups"] = facet["groups"]
+            if entry.get("example"):
+                record["example"] = entry["example"]
+            seen[key] = record
+
+    entries = sorted(seen.values(), key=lambda e: e["term"].lower())
+    target = OUT / "assets" / "reference-index.json"
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text(json.dumps(entries, ensure_ascii=False))
+    return target
+
+
 def write_about_page(shell: str) -> Path:
     """A short guide to what the project is and how to contribute to it."""
     body = (
@@ -3734,6 +3895,13 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
         shutil.rmtree(OUT / "data", ignore_errors=True)
         shutil.copytree(DATA, OUT / "data")
 
+    # Before the dewmini bundle below, which copies this file out of OUT
+    # rather than out of the source assets/ (it is generated, not checked
+    # in — see _reference_index_for_bundle()). After the assets/ copytree
+    # above, whose rmtree would otherwise delete it.
+    if tutorials:
+        written.append(write_reference_index(tutorials))
+
     # dewmini (compose/) is its own small folder rather than more root-level
     # files, so it copies wholesale like assets/ does.
     if COMPOSE.is_dir():
@@ -3769,6 +3937,22 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
     if tutorials:
         written.append(write_search_index(tutorials, registry, groups))
     return written
+
+
+def _reference_index_for_bundle(target: Path) -> None:
+    """Copies the generated reference index into an offline bundle.
+
+    It needs its own step because it is *generated* rather than checked
+    in: DEWMINI_ASSET_FILES names files copied out of the source
+    `assets/`, and this one only exists under `OUT` once
+    write_reference_index() has run. Silently skipped when it isn't
+    there — a build with no tutorials in it writes no index, and that
+    should still produce a working bundle (just one whose Library says
+    the reference is unavailable rather than showing an empty list).
+    """
+    source = OUT / "assets" / "reference-index.json"
+    if source.exists():
+        shutil.copy2(source, target / "assets" / "reference-index.json")
 
 
 def main() -> int:

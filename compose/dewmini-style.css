@@ -33,7 +33,23 @@
   flex: none;
 }
 
-.dm-help-toggle {
+/* The masthead sits inside .dl-page, so it narrows with the page whenever a
+   rail opens — and three toggles in a narrowed column squeeze the crumb
+   down to an ellipsis, which reads as a bug rather than as a breadcrumb.
+   It is the most expendable thing in the row (the wordmark still links
+   home, and the page's own <h1> already says where you are), so it stands
+   down while a rail is open rather than being shown broken. */
+html[data-dl-panel-left] .dm-page .dl-crumbs,
+html[data-dl-panel-right] .dm-page .dl-crumbs {
+  display: none;
+}
+
+/* The rail toggles. One shape for both, since they are the same kind of
+ * control on opposite edges — only their icons differ, so a reader can
+ * tell them apart at a glance without reading either label (and does have
+ * to, below the phone breakpoint, where the labels are dropped). */
+.dm-library-toggle,
+.dm-workbench-toggle {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
@@ -47,21 +63,54 @@
   cursor: pointer;
   min-height: 2rem;
 }
-.dm-help-toggle span:first-child {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 1.1rem;
-  height: 1.1rem;
-  border-radius: 50%;
+/* Library: a stack of shelves. Workbench: a bench with a tool on it.
+   Both drawn in borders alone rather than shipped as image files — a
+   sub-kilobyte icon that inherits currentColor and needs no second
+   request, the same approach every other .dl-*-icon here takes. */
+.dm-library-icon,
+.dm-workbench-icon {
+  display: inline-block;
+  width: 0.95rem;
+  height: 0.95rem;
+  position: relative;
   border: 1px solid currentColor;
-  font-style: italic;
-  font-family: Georgia, serif;
-  font-size: 0.7rem;
+  border-radius: 2px;
 }
-.dm-help-toggle:hover,
-.dm-help-toggle:focus-visible { border-color: var(--dl-orange); color: var(--dl-orange); }
-.dm-help-toggle[aria-expanded="true"] {
+.dm-library-icon::before,
+.dm-library-icon::after {
+  content: "";
+  position: absolute;
+  left: 1px;
+  right: 1px;
+  height: 1px;
+  background: currentColor;
+}
+.dm-library-icon::before { top: 3px; }
+.dm-library-icon::after { top: 6px; }
+.dm-workbench-icon::before {
+  content: "";
+  position: absolute;
+  left: 1px;
+  right: 1px;
+  bottom: 2px;
+  height: 1px;
+  background: currentColor;
+}
+.dm-workbench-icon::after {
+  content: "";
+  position: absolute;
+  left: 3px;
+  top: 2px;
+  width: 1px;
+  height: 4px;
+  background: currentColor;
+}
+.dm-library-toggle:hover,
+.dm-library-toggle:focus-visible,
+.dm-workbench-toggle:hover,
+.dm-workbench-toggle:focus-visible { border-color: var(--dl-orange); color: var(--dl-orange); }
+.dm-library-toggle[aria-expanded="true"],
+.dm-workbench-toggle[aria-expanded="true"] {
   background: var(--dl-navy);
   border-color: var(--dl-navy);
   color: #fff;
@@ -161,13 +210,6 @@
 }
 .dm-empty p:first-child { margin: 0 0 0.5rem; color: var(--dl-heading); font-size: 1.05rem; }
 .dm-empty .dm-panel-note { max-width: 30rem; margin-inline: auto; }
-.dm-empty-actions {
-  display: flex;
-  gap: 0.6rem;
-  justify-content: center;
-  flex-wrap: wrap;
-  margin-top: 1rem;
-}
 
 /* A distinct, more serious accent than the plain dashed .dm-empty
  * border it otherwise reuses — this is naming things that will
@@ -510,42 +552,24 @@
 }
 .dm-cell-stats:empty { display: none; }
 
-/* Settings and Help are docked sidebars now (tutorial-style.css's own
- * .dl-settings and .dm-panel below — the same full-height, edge-flush
- * shape tutorial pages' Reference/Settings/series nav got, see
- * DECISIONS_LOG.md 7.83/7.84), not floating cards — which would be fine
- * to ignore on an ordinary reading page with generous margins either
- * side of its column, but not once a reader picks a wide line width in
- * Texture: the panel can then cover a cell's own run/reset/delete
- * buttons, or its output. Shrinking .dl-page's effective max-width while
- * a panel is open (data-dl-panel-open, set by watchPanelOverlap() in
- * dewmini.js) keeps the working area fully visible instead — the panel
- * behaves like a real side pane, the way a student would expect from a
- * desktop IDE, rather than a popover sitting on top of their code. A
- * more specific selector than tutorial-style.css's own plain `.dl-page`
- * rule, so this wins without needing !important. Skipped below 34rem,
- * where a panel is already a full-width bottom sheet rather than a
- * right-docked sidebar, and there is nothing to reserve room from. */
-@media (min-width: 34rem) {
-  html[data-dl-panel-open] .dl-page {
-    /* Left-anchored, not centered (tutorial-style.css's own .dl-page
-     * normally centers via `margin: 0 auto`), while a panel is open:
-     * centering would waste half of whatever width it gives up as a
-     * matching left margin nobody asked for, when all of it needs to
-     * go to the right, clear of the panel. --dl-panel-w (set by
-     * watchPanelOverlap()'s own ResizeObserver, tracking whichever of
-     * Settings/Help is actually open) is the panel's *real* rendered
-     * width, not a guess — a docked sidebar can be dragged wider or
-     * narrower via its own resize handle, and a flat guess would let a
-     * reader drag one wide enough to cover their own code again, the
-     * exact problem this whole mechanism exists to prevent. The 26rem
-     * fallback only matters for the one frame before that observer's
-     * first callback lands. */
-    margin-left: 0;
-    margin-right: var(--dl-panel-w, 26rem);
-    max-width: var(--dl-line-width);
-  }
-}
+/* dewmini's rails are docked sidebars (the same full-height, edge-flush
+ * shape tutorial pages' own panels got, DECISIONS_LOG.md 7.83/7.84), not
+ * floating cards — which would be fine to ignore on a reading page with
+ * generous margins either side of its column, but not once a reader picks
+ * a wide line width in Texture: a panel can then cover a cell's own
+ * run/reset/delete buttons, or its output. Reserving room while a panel is
+ * open keeps the working area fully visible instead, so a rail behaves
+ * like a real side pane the way a student would expect from a desktop IDE.
+ *
+ * That mechanism is *not* written here any more. tutorial-style.css has
+ * carried it since 7.83 — `html[data-dl-panel-left]` and
+ * `[data-dl-panel-right]`, each with its own width variable — and dewmini
+ * overrode it with a single `data-dl-panel-open` and one `--dl-panel-w`,
+ * a fair simplification while both its panels docked to the same right
+ * edge, and exactly wrong now that a rail opens on each side: one
+ * attribute cannot say which edge to make room on, and one width cannot
+ * describe two panels of different widths open at once. Deleting the
+ * override is the fix; the shared rule was already right. */
 
 /* -------------------------------------------------------------- panels
  *
@@ -582,6 +606,23 @@
 }
 .dm-panel[hidden] { display: none; }
 
+/* The left-docked rail — after .dm-panel, since both classes sit on the
+ * same element and this has to win. Only the pinned edge, the separating
+ * border, and which edge its drag strip sits on differ. A left-docked panel
+ * grows rightward, away from the edge it is pinned to and into the page, so
+ * its strip goes on the right — the mirror of the right-docked panels above
+ * (DECISIONS_LOG.md 7.84, 7.103). */
+.dm-panel-left {
+  right: auto;
+  left: 0;
+  border-left: none;
+  border-right: 1px solid var(--dl-cell-border);
+  /* No native `resize: horizontal`, though it would work here: it draws a
+     small corner triangle where the panel on the opposite edge has a
+     full-height strip, and one page should not have two different ways to
+     drag a rail wider. Both use .dl-panel-resize-handle now (7.103). */
+}
+
 .dm-panel-head {
   display: flex;
   align-items: center;
@@ -590,7 +631,7 @@
   margin-bottom: 0.9rem;
 }
 .dm-panel h2 {
-  font-size: 0.72rem;
+  font-size: max(0.72rem, 12px);
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: var(--dl-muted);
@@ -624,11 +665,11 @@
   line-height: 1.55;
   color: var(--dl-muted);
 }
-.dm-panel-note code { font-family: var(--dl-mono); font-size: 0.85em; }
+.dm-panel-note code { font-family: var(--dl-mono); font-size: max(0.85em, 12px); }
 
 kbd {
   font-family: var(--dl-mono);
-  font-size: 0.78em;
+  font-size: max(0.78em, 12px);
   border: 1px solid var(--dl-cell-border);
   border-radius: 3px;
   padding: 0.05em 0.4em;
@@ -762,7 +803,15 @@ kbd {
     /* A full-width bottom sheet has no meaningful "width" to resize. */
     resize: none;
   }
-  .dm-help-label { display: none; }
+  /* Every rail becomes the same bottom sheet, including the left one:
+     below this width there is no room for a side rail of any kind, so
+     the left/right distinction stops meaning anything and both should
+     arrive from the same edge a thumb can reach. */
+  .dm-panel-left {
+    left: 0; right: 0;
+    border-right: 1px solid var(--dl-cell-border);
+    resize: none;
+  }
   .dm-toolbar-group-end { width: 100%; order: 10; }
   .dm-cell-rail { margin-right: 0.6rem; }
 }
@@ -775,7 +824,7 @@ kbd {
  * they get real ink regardless of which theme was on screen. */
 
 @media print {
-  .dl-chrome, .dm-toolbar, .dm-status, .dm-panel, .dm-insert, .dm-cell-actions, .dm-subtitle, .dm-subtitle-note {
+  .dl-chrome, .dm-toolbar, .dm-status, .dm-panel, .dm-insert, .dm-cell-actions, .dm-subtitle, .dm-subtitle-note, .dm-tabs {
     display: none !important;
   }
   body, .dl-page { background: #fff !important; color: #111 !important; }
@@ -793,4 +842,281 @@ kbd {
   /* The cursor's last position has no meaning once nothing is interactive. */
   .dm-editor .cm-activeLine, .dm-editor .cm-activeLineGutter, .dm-editor .cm-cursor { background: transparent !important; border: none !important; }
   a { color: #1b2a4a !important; text-decoration: underline; }
+}
+
+/* ------------------------------------------------------------------ tabs
+ *
+ * One row of notebooks. Deliberately understated — a tab strip is
+ * navigation between things, not a thing itself, and dewmini's whole
+ * layout gives the notebook the attention. Hidden entirely by
+ * renderTabs() while only one notebook is open. */
+.dm-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin: 0 0 0.9rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--dl-rule);
+}
+.dm-tabs[hidden] { display: none; }
+
+.dm-tab {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--dl-cell-border);
+  border-radius: 5px 5px 0 0;
+  background: var(--dl-panel-bg);
+  overflow: hidden;
+}
+.dm-tab-active {
+  border-color: var(--dl-navy);
+  background: var(--dl-navy);
+}
+.dm-tab-label {
+  font-family: var(--dl-mono);
+  font-size: 0.76rem;
+  background: none;
+  border: none;
+  color: var(--dl-muted);
+  padding: 0.35rem 0.2rem 0.35rem 0.6rem;
+  cursor: pointer;
+  max-width: 12rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.dm-tab-active .dm-tab-label { color: #fff; }
+.dm-tab-label:hover { color: var(--dl-orange); }
+.dm-tab-active .dm-tab-label:hover { color: #fff; }
+
+.dm-tab-close {
+  background: none;
+  border: none;
+  color: inherit;
+  opacity: 0.55;
+  font-size: 0.95rem;
+  line-height: 1;
+  padding: 0.35rem 0.55rem 0.4rem 0.3rem;
+  cursor: pointer;
+}
+.dm-tab-close:hover { opacity: 1; color: var(--dl-orange); }
+.dm-tab-active .dm-tab-close { color: #fff; }
+
+/* ------------------------------------------------------- library: reference
+ *
+ * 251 terms across every tutorial, so search and the kind filters are not
+ * a nicety here the way they are on a tutorial page's own dozen — they are
+ * the only thing that makes the list navigable at all. */
+.dm-reference-search,
+.dm-data-search {
+  width: 100%;
+  box-sizing: border-box;
+  font-family: var(--dl-mono);
+  font-size: max(0.78rem, 12.5px);
+  padding: 0.4rem 0.55rem;
+  margin-bottom: 0.5rem;
+  border: 1px solid var(--dl-cell-border);
+  border-radius: 4px;
+  background: var(--dl-bg);
+  color: var(--dl-fg);
+}
+.dm-reference-search:focus { outline: none; border-color: var(--dl-orange); }
+
+/* Filter rows. Four of them, all the same chip, because they are the same
+   kind of control answering different questions — a reader learns the
+   affordance once. Chips wrap rather than scroll sideways: a rail is narrow
+   and a hidden chip is a filter nobody knows exists. */
+.dm-filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin-bottom: 0.4rem;
+}
+.dm-filter-row:empty { display: none; }
+.dm-filter-kinds { margin-bottom: 0.6rem; }
+
+.dm-filter-chip {
+  font-family: var(--dl-mono);
+  /* max() gives every small control a floor it cannot fall below, whatever
+     the Texture size slider is set to. Without it the smallest setting put
+     these at 10.2px and the "from the web" badge at 9.6px — scaling was
+     working correctly, it was just scaling below legibility. The rem half
+     still governs above the floor, so the slider keeps working upward. */
+  font-size: max(0.7rem, 12px);
+  padding: 0.2rem 0.5rem;
+  border: 1px solid var(--dl-cell-border);
+  border-radius: 999px;
+  background: none;
+  color: var(--dl-muted);
+  cursor: pointer;
+  /* A comfortable target on a touch screen without making the row tall. */
+  min-height: 1.7rem;
+}
+.dm-filter-chip:hover { border-color: var(--dl-orange); color: var(--dl-orange); }
+.dm-filter-chip[aria-pressed="true"] {
+  background: var(--dl-navy);
+  border-color: var(--dl-navy);
+  color: #fff;
+}
+
+/* The topics disclosure. Expands in the flow of the rail, pushing the term
+   list down rather than floating over it: a menu that covers the list is
+   covering the very thing being filtered, and on a narrow rail there is
+   nowhere for it to go that is not on top of something. */
+.dm-filter-more {
+  margin: 0 0 0.5rem;
+}
+.dm-filter-more > summary {
+  font-family: var(--dl-mono);
+  font-size: max(0.7rem, 12px);
+  color: var(--dl-muted);
+  cursor: pointer;
+  padding: 0.2rem 0;
+  list-style: none;
+}
+.dm-filter-more > summary::-webkit-details-marker { display: none; }
+/* A caret drawn here rather than relying on the browser's own marker, which
+   differs between engines and cannot be positioned reliably. */
+.dm-filter-more > summary::before {
+  content: "▸";
+  display: inline-block;
+  width: 1em;
+  transition: transform 0.12s ease;
+}
+.dm-filter-more[open] > summary::before { transform: rotate(90deg); }
+.dm-filter-more > summary:hover { color: var(--dl-orange); }
+/* Open, or closed with filters still on inside it — either way the reader
+   needs to see that this row is doing something. */
+.dm-filter-more[open] > summary,
+.dm-filter-more-active > summary { color: var(--dl-fg); }
+
+.dm-reference-group + .dm-reference-group { margin-top: 0.9rem; }
+.dm-reference-group h4 {
+  margin: 0 0 0.35rem;
+  font-family: var(--dl-mono);
+  font-size: max(0.7rem, 12px);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--dl-muted);
+}
+.dm-reference-group dl { margin: 0; }
+.dm-reference-group dt {
+  font-family: var(--dl-mono);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--dl-heading);
+  margin-top: 0.5rem;
+}
+.dm-reference-group dd {
+  margin: 0.15rem 0 0;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: var(--dl-fg);
+}
+.dm-reference-group dd code {
+  display: block;
+  margin-top: 0.3rem;
+  font-family: var(--dl-mono);
+  font-size: max(0.74rem, 12px);
+  padding: 0.3rem 0.45rem;
+  border-radius: 3px;
+  background: var(--dl-cell-bg);
+  overflow-x: auto;
+}
+.dm-term-origin {
+  margin: 0.2rem 0 0;
+  font-size: max(0.72rem, 12px);
+  color: var(--dl-muted);
+}
+
+/* ------------------------------------------------------------ library: data */
+.dm-dataset {
+  border: 1px solid var(--dl-cell-border);
+  border-radius: 5px;
+  padding: 0.55rem 0.65rem;
+  margin-bottom: 0.5rem;
+  background: var(--dl-cell-bg);
+}
+.dm-dataset h4 {
+  margin: 0 0 0.2rem;
+  font-size: 0.84rem;
+  color: var(--dl-heading);
+}
+.dm-dataset p {
+  margin: 0 0 0.35rem;
+  font-size: 0.78rem;
+  line-height: 1.4;
+  color: var(--dl-fg);
+}
+.dm-dataset-meta {
+  font-size: max(0.7rem, 12px);
+  color: var(--dl-muted);
+}
+.dm-dataset-meta a { color: inherit; }
+.dm-dataset-remote {
+  font-family: var(--dl-mono);
+  font-size: max(0.64rem, 12px);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--dl-muted);
+  border: 1px solid var(--dl-cell-border);
+  border-radius: 999px;
+  padding: 0.05rem 0.4rem;
+  margin-left: 0.35rem;
+  vertical-align: 0.1em;
+}
+
+/* ------------------------------------------------- workbench: variables
+ *
+ * A table would be tidier and is wrong: these rows wrap, since a name and
+ * a summary can each be long, and a table would either clip them or force
+ * the panel wider than a rail should be. */
+.dm-variables-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+.dm-variables-head .dm-panel-note { margin: 0; flex: 1; }
+
+.dm-variable {
+  padding: 0.35rem 0;
+  border-top: 1px solid var(--dl-rule);
+}
+.dm-variable:first-child { border-top: none; }
+.dm-variable-name {
+  font-family: var(--dl-mono);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--dl-heading);
+}
+.dm-variable-type {
+  font-family: var(--dl-mono);
+  font-size: 0.68rem;
+  color: var(--dl-muted);
+  margin-left: 0.4rem;
+}
+.dm-variable-summary {
+  display: block;
+  font-family: var(--dl-mono);
+  font-size: 0.74rem;
+  color: var(--dl-fg);
+  margin-top: 0.1rem;
+  overflow-wrap: anywhere;
+}
+/* Functions and modules, folded away under their own summary: they are
+   almost always the same names every session (what the page seeded, what
+   a cell imported), so they are furniture next to a student's own data —
+   worth being able to see, not worth being shown by default. */
+.dm-variables-other { margin-top: 0.6rem; }
+.dm-variables-other summary {
+  font-family: var(--dl-mono);
+  font-size: 0.72rem;
+  color: var(--dl-muted);
+  cursor: pointer;
+}
+.dm-variables-shared {
+  margin-top: 0.6rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--dl-rule);
 }

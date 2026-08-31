@@ -157,6 +157,30 @@ function pageNames() {
   }
 }
 
+/* What is defined in the shared namespace, with each value's type and a
+ * one-line summary — dewmini's variable inspector. The work happens in
+ * Python (tutorial_tools.describe_globals(), which is where _page_globals
+ * lives and which is unit-testable under plain CPython); this only
+ * converts the result across the language boundary.
+ *
+ * `.toJs()` with a Map converter, because Pyodide hands back a list of
+ * Python dicts, and a dict becomes a JS Map by default rather than a
+ * plain object — which structured-clones fine but reads as empty from
+ * the other side of postMessage once JSON-shaped code expects `.name`.
+ * `destroy()` releases the proxy: a describe on every run would
+ * otherwise leak one proxy per call for the life of the worker. */
+function describeGlobals() {
+  if (!tools) return [];
+  try {
+    const proxy = tools.describe_globals();
+    const described = proxy.toJs({ dict_converter: Object.fromEntries });
+    proxy.destroy();
+    return described;
+  } catch {
+    return [];
+  }
+}
+
 /* Real Python source code, defining two small helper functions on top of
  * Jedi — the library that does static analysis of Python source (working
  * out what a name probably refers to by reading the code, without
@@ -210,6 +234,19 @@ async function loadJedi() {
  * resetPageState() further down after tools.reset_page_state() clears
  * that namespace out, so the always-available names come right back
  * without needing a full re-boot. */
+/* Points ordinary Python HTTP code at the browser's own fetching — the
+ * worker's copy of assets/pyodide-engine.js's own NETWORK_PATCH_SOURCE,
+ * duplicated the same way RESEED_GLOBALS_SOURCE below is, and explained in
+ * full there: what it fixes, why `https` stays genuinely encrypted, and why
+ * it is wrapped rather than trusted to be present. */
+const NETWORK_PATCH_SOURCE = `
+try:
+    import pyodide_http
+    pyodide_http.patch_all()
+except Exception:
+    pass
+`;
+
 const RESEED_GLOBALS_SOURCE = `
 import tutorial_tools
 tutorial_tools._page_globals.update({
@@ -233,6 +270,14 @@ async function boot(msg) {
 
   post({ type: "status", text: `Loading ${msg.packages.join(", ")}…` });
   await pyodide.loadPackage(msg.packages);
+  // Separately, and forgivingly: a Pyodide without this package must still
+  // boot. See NETWORK_PATCH_SOURCE for what it buys.
+  try {
+    await pyodide.loadPackage(["pyodide-http"]);
+    await pyodide.runPythonAsync(NETWORK_PATCH_SOURCE);
+  } catch {
+    /* no browser-backed urllib; tutorial_tools.py's hints cover it */
+  }
 
   post({ type: "status", text: "Preparing the notebook tools…" });
   const source = await fetch(msg.toolsSourceUrl).then((r) => {
@@ -433,6 +478,8 @@ self.onmessage = async (ev) => {
       respond(signatureHelp(msg.name, msg.source, msg.line, msg.col));
     } else if (msg.type === "page-names") {
       respond(pageNames());
+    } else if (msg.type === "describe-globals") {
+      respond(describeGlobals());
     } else if (msg.type === "fs-mount-native") {
       await fsMountNative(msg.mountpoint, msg.handle);
       respond("ok");

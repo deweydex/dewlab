@@ -615,10 +615,74 @@ def _chained(summary):
         current = nxt
 
 
+# A few failures whose Python error message is true, accurate, and no help
+# whatsoever to the person reading it — because the cause is not in their code
+# at all, but in the fact that this Python runs inside a browser tab.
+#
+# The one that prompted this: pandas reading a URL directly raises
+# "urlopen error unknown url type: https", which says nothing a student can
+# act on. It is also the *first* thing anyone tries, because it is what Our
+# World in Data (and every pandas tutorial ever written) tells them to do.
+#
+# Deliberately a short list, not a general advice engine. Each entry has to
+# earn its place three times over: the failure is common, it is structurally
+# impossible here rather than a bug to fix, and there is a real alternative
+# to point at. Anything else is better served by the traceback alone.
+_ERROR_HINTS = (
+    (
+        ("unknown url type", "urlopen error", "URLError", "RemoteDisconnected"),
+        "Reading a web address directly needs one line of setup here. Python "
+        "is running inside a browser tab, so it has no network connection of "
+        "its own — it has to borrow the browser's, and pandas doesn't know to "
+        "do that until it is told:\n\n"
+        "    import pyodide_http\n"
+        "    pyodide_http.patch_all()\n\n"
+        "Run that once, and pandas reads a URL normally from then on.\n\n"
+        "The shorter route, needing no setup at all:\n\n"
+        "    df = await load_csv(\"https://example.org/data.csv\")\n\n"
+        "Either way, the site you are reading from has to allow other pages "
+        "to read it. Many do; some don't, and the error will say so.",
+    ),
+    (
+        ("No module named 'requests'", "No module named 'httpx'",
+         "No module named 'urllib3'", "No module named 'aiohttp'"),
+        "That library exists here but isn't loaded yet — this Python starts "
+        "with a small set of packages and fetches the rest on request:\n\n"
+        "    import micropip\n"
+        "    await micropip.install(\"requests\")\n\n"
+        "It also needs to borrow the browser's own network connection, since "
+        "a page has no other:\n\n"
+        "    import pyodide_http\n"
+        "    pyodide_http.patch_all()\n\n"
+        "After that, `requests.get(...)` works as it does anywhere else. For "
+        "a CSV, `await load_csv(url)` needs none of this.",
+    ),
+)
+
+
+def _hint_for(message: str) -> str | None:
+    """A plain-English note to sit under a traceback, or None for the many
+    errors that are genuinely about the student's own code and where a hint
+    would just be noise."""
+    for needles, hint in _ERROR_HINTS:
+        if any(needle in message for needle in needles):
+            return hint
+    return None
+
+
 def render_error(message: str) -> None:
-    """Show an error block in the current cell. Also called from the runtime."""
+    """Show an error block in the current cell. Also called from the runtime.
+
+    A recognised failure gets a second block underneath explaining it — see
+    `_ERROR_HINTS`. Under the traceback rather than instead of it: the real
+    error is still what happened, and a student who goes looking for the
+    exact message (in these notes, in a search) should find it.
+    """
     cell = _require_cell()
     cell.sink.append_html(f'<pre class="dl-error">{html.escape(message)}</pre>')
+    hint = _hint_for(message)
+    if hint:
+        cell.sink.append_html(f'<pre class="dl-error-hint">{html.escape(hint)}</pre>')
 
 
 # --------------------------------------------------------------------------
@@ -1137,21 +1201,56 @@ def image_input(label: str = "Choose an image", id: str | None = None) -> _Widge
 
 
 async def load_csv(name: str, **read_csv_kwargs):
-    """Fetch a CSV from the shared `/data/` folder and return a DataFrame.
+    """Fetch a CSV and return a DataFrame.
 
-    Datasets live once and are fetched at runtime — never embedded or copied
-    per tutorial. Everything is served from one origin, so this is a plain
-    relative fetch with no CORS involved.
-
-    Setup snippets use it with top-level await:
+    `name` is either a file in the shared `/data/` folder, or a full URL to
+    a CSV somewhere else on the web:
 
         df = await load_csv("life-expectancy.csv")
+        df = await load_csv("https://example.org/some-data.csv")
+
+    Datasets in the shared folder live once and are fetched at runtime —
+    never embedded or copied per tutorial. They come from the same origin
+    as the page, so that fetch is straightforward.
+
+    A URL is not, and the failure needs explaining rather than reporting.
+    A browser will only let a page read a file from another website if that
+    website says it may (the CORS rule); when it refuses, the fetch fails
+    with nothing useful attached, and a student reasonably concludes their
+    own code is wrong. So a remote failure raises a message that says what
+    actually happened and what to do instead — downloading the file and
+    adding it through dewmini's Files section always works, because a file
+    already on the machine has no other website's permission to ask for.
     """
     import pandas as pd  # noqa: PLC0415 - deliberately lazy
     from pyodide.http import pyfetch  # pragma: no cover - browser only
 
-    response = await pyfetch(_data_base + name)
+    remote = name.startswith("http://") or name.startswith("https://")
+    url = name if remote else _data_base + name
+
+    try:
+        response = await pyfetch(url)
+    except Exception as exc:  # pragma: no cover - browser-only failure path
+        if not remote:
+            raise
+        raise ConnectionError(
+            f"Couldn't fetch {name}.\n\n"
+            "That file is on another website, and a browser only allows this "
+            "page to read it if that site permits it — many do not. Nothing "
+            "is wrong with your code.\n\n"
+            "What does always work: download the file yourself, then add it "
+            "through Files in the Workbench panel, and load it by name "
+            "instead."
+        ) from exc
+
     if response.status != 200:
+        if remote:
+            raise ConnectionError(
+                f"{name} returned HTTP {response.status}.\n\n"
+                "The address may have changed, or that site may not be "
+                "handing this file out any more. Downloading it yourself and "
+                "adding it through Files in the Workbench panel always works."
+            )
         raise FileNotFoundError(
             f"{name} is not in the shared data folder (HTTP {response.status})"
         )
@@ -1196,3 +1295,111 @@ def run_query(conn_or_path, sql: str, params=None, max_rows: int = 20, caption: 
     if columns:
         cell.sink.append_html(_table_html(frame, max_rows=max_rows, caption=caption))
     return frame
+
+
+# --------------------------------------------------------------------------
+# Describing the namespace
+# --------------------------------------------------------------------------
+
+
+# How much of a value's repr to show before truncating. Long enough for a
+# short string, a small list, or a number; short enough that one runaway
+# value can't push everything else out of the panel.
+_SUMMARY_LIMIT = 80
+
+
+def _shape_summary(value: object) -> str | None:
+    """"3 rows x 2 columns" for a table, "4 values" for a column, "array(2, 2)"
+    for an array — or None for anything that is not shaped like those.
+
+    Recognised by the attributes a value actually has rather than by its
+    type's module path. The first version of this keyed on
+    `(__module__, __name__)` and hardcoded `pandas.core.frame`, which was
+    true of the pandas of the day and false in pandas 3, where public
+    classes report `__module__ == "pandas"` — so a DataFrame silently fell
+    through to printing its whole self into a sidebar. Duck typing cannot
+    break that way when a library rearranges its internals.
+
+    Deliberately does not import pandas or numpy to ask: they may not be
+    loaded, and describing a namespace should never be the thing that
+    drags them in.
+    """
+    shape = getattr(value, "shape", None)
+    if not isinstance(shape, tuple) or not all(isinstance(n, int) for n in shape):
+        return None
+    if hasattr(value, "columns") and len(shape) == 2:  # a DataFrame, or close enough
+        return f"{shape[0]} rows x {shape[1]} columns"
+    if hasattr(value, "index") and len(shape) == 1:  # a Series
+        return f"{shape[0]} values"
+    return f"array{shape}"
+
+
+def _summarise(value: object) -> str:
+    """One short, human-readable line describing a value — its shape for a
+    table or an array, its length for a container, and otherwise a truncated
+    repr. Every branch is wrapped, because this runs over whatever a student
+    happened to define: a repr that raises is a bug in their object, not a
+    reason for the whole panel to go blank."""
+    try:
+        shaped = _shape_summary(value)
+    except Exception:
+        shaped = None
+    if shaped is not None:
+        return shaped
+    if isinstance(value, (str, bytes)):
+        try:
+            text = repr(value)
+        except Exception:
+            return f"{len(value)} characters"
+        return text if len(text) <= _SUMMARY_LIMIT else f"{text[:_SUMMARY_LIMIT - 1]}…"
+    if isinstance(value, (list, tuple, set, frozenset, dict)):
+        size = len(value)
+        noun = "key" if isinstance(value, dict) else "item"
+        return f"{size} {noun}{'' if size == 1 else 's'}"
+    try:
+        text = repr(value)
+    except Exception:
+        return "(cannot be displayed)"
+    return text if len(text) <= _SUMMARY_LIMIT else f"{text[:_SUMMARY_LIMIT - 1]}…"
+
+
+def describe_globals() -> list[dict]:
+    """What is currently defined in the shared namespace, as plain data.
+
+    Powers dewmini's variable inspector: a student can see what their code
+    actually made, which turns "I ran a cell and something happened" into
+    something inspectable. Returns a list of `{name, type, summary, kind}`
+    dictionaries — only strings, so the whole result crosses the worker's
+    postMessage boundary without any of Pyodide's proxy machinery.
+
+    `kind` separates the three things a namespace holds, so the panel can
+    show a student's own data first and keep the furniture out of the way:
+
+      * "data" — what a student's own code made, and what they came to see;
+      * "callable" — functions and classes, theirs or ours;
+      * "module" — anything imported.
+
+    Names starting with "_" are left out entirely, the same convention
+    autocomplete already follows: they are this module's own bookkeeping,
+    not anything a reader put there.
+    """
+    import types  # noqa: PLC0415 - only needed here, and only in this function
+
+    described = []
+    for name, value in list(_page_globals.items()):
+        if name.startswith("_"):
+            continue
+        if isinstance(value, types.ModuleType):
+            kind = "module"
+        elif callable(value):
+            kind = "callable"
+        else:
+            kind = "data"
+        described.append({
+            "name": name,
+            "type": type(value).__name__,
+            "summary": _summarise(value),
+            "kind": kind,
+        })
+    described.sort(key=lambda entry: entry["name"].lower())
+    return described

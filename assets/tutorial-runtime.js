@@ -55,6 +55,11 @@ const TEXTURE_DEFAULTS = {
   link: "#d4692a", header: "full",
 };
 
+/* The size slider's minimum, which has to be known here as well as in the
+ * markup: a preference saved when the floor was lower is lifted to it on
+ * load (loadTexture). Keep in step with `min=` on #dl-texture-size. */
+const TEXTURE_MIN_SIZE = 16;
+
 /* -------------------------------------------------------------- manifest */
 
 /* Every tutorial page build.py generates carries a <script id="dewlab-manifest">
@@ -287,6 +292,14 @@ function watchPanelOverlap() {
   }
   updateAttrs();
 
+  // The same drag strip on both edges. These two panels relied on native
+  // `resize: horizontal` until now, which works but is a corner triangle
+  // facing Settings' full-height strip — one page, two affordances, only
+  // one of them findable (DECISIONS_LOG.md 7.103). Wired here rather than
+  // in each panel's own init, because this is the one place that already
+  // knows which edge each panel is docked to.
+  for (const panel of leftPanels) makeEdgeResizable(panel, "left", 256, 640);
+
   const widthObserver = new ResizeObserver((entries) => {
     for (const entry of entries) {
       const panel = entry.target;
@@ -323,23 +336,32 @@ function clickIsInsidePanels(target, ids) {
 }
 
 /**
- * The replacement for native CSS `resize: horizontal` on a right-docked
- * panel — see .dl-panel-resize-handle's own comment in tutorial-style.css
- * for why native resize doesn't work here (its handle sits exactly on
- * the browser window's own right edge, with no room to drag further
- * right and grow it). Adds a thin strip along `panel`'s left edge and
- * tracks a plain pointer drag on it directly, growing the panel as the
- * pointer moves left (away from the pinned right edge) and shrinking as
- * it moves right — the natural direction for a right-docked sidebar,
- * the same one a real IDE's own side panel uses. `min`/`max` mirror the
- * panel's own CSS `min-width`/`max-width` (kept in sync by hand — the
- * two aren't read from computed style, since the constants are already
- * known and simpler than parsing them back out of the DOM).
+ * A draggable strip along the edge a docked panel grows *into* — its left
+ * edge when docked right, its right edge when docked left.
+ *
+ * This replaces native CSS `resize: horizontal` on both, for two separate
+ * reasons. On a right-docked panel the native handle is unusable: it sits
+ * at the box's bottom-right corner, flush with the browser window's own
+ * right edge, with no room to drag further right and grow it — found by an
+ * actual drag test, not assumed from the CSS (DECISIONS_LOG.md 7.84). On a
+ * left-docked panel it *works*, which is why it was left alone — but it is
+ * a small corner triangle facing a full-height strip on the panel opposite.
+ * Two rails, two affordances, only one of them findable: that asymmetry is
+ * why this is now shared rather than right-docked only.
+ *
+ * `side` is the edge the panel is docked to, so the drag maths runs the
+ * right way round: a right-docked panel grows as the pointer moves left,
+ * a left-docked one as it moves right. `min`/`max` mirror the panel's own
+ * CSS `min-width`/`max-width`, kept in sync by hand — the constants are
+ * already known and simpler than parsing them back out of the DOM.
+ * `onResize` fires once per drag, on release rather than per frame, for a
+ * caller that wants to persist the new width.
  */
-function makeRightEdgeResizable(panel, min = 256, max = 640) {
+function makeEdgeResizable(panel, side = "right", min = 256, max = 640, onResize = null) {
   if (!panel || panel.querySelector(".dl-panel-resize-handle")) return;
   const handle = document.createElement("div");
-  handle.className = "dl-panel-resize-handle";
+  handle.className = "dl-panel-resize-handle"
+    + (side === "left" ? " dl-panel-resize-handle-right" : "");
   handle.setAttribute("aria-hidden", "true");
   panel.prepend(handle);
 
@@ -347,7 +369,7 @@ function makeRightEdgeResizable(panel, min = 256, max = 640) {
   let startWidth = 0;
 
   function onMove(ev) {
-    const dx = startX - ev.clientX;
+    const dx = side === "left" ? ev.clientX - startX : startX - ev.clientX;
     const next = Math.max(min, Math.min(startWidth + dx, Math.min(max, window.innerWidth)));
     panel.style.width = `${next}px`;
   }
@@ -355,6 +377,7 @@ function makeRightEdgeResizable(panel, min = 256, max = 640) {
     handle.classList.remove("dl-panel-resize-active");
     document.removeEventListener("pointermove", onMove);
     document.removeEventListener("pointerup", onUp);
+    if (onResize) onResize();
   }
   handle.addEventListener("pointerdown", (ev) => {
     startX = ev.clientX;
@@ -371,7 +394,7 @@ function initSettingsPanel() {
   const panel = document.getElementById("dl-settings");
   if (!toggle || !panel) return;
 
-  makeRightEdgeResizable(panel, 256, 640); // matches .dl-settings' own min/max-width
+  makeEdgeResizable(panel, "right", 256, 640); // matches .dl-settings' own min/max-width
 
   function setOpen(open) {
     panel.toggleAttribute("hidden", !open);
@@ -867,11 +890,18 @@ function isDarkNow() {
  * nothing, and a broken preference should never be able to crash the
  * whole page. */
 function loadTexture() {
+  let state;
   try {
-    return { ...TEXTURE_DEFAULTS, ...JSON.parse(localStorage.getItem(TEXTURE_KEY) || "{}") };
+    state = { ...TEXTURE_DEFAULTS, ...JSON.parse(localStorage.getItem(TEXTURE_KEY) || "{}") };
   } catch (err) {
     return { ...TEXTURE_DEFAULTS };
   }
+  /* The size slider's floor went from 15px to 16px (DECISIONS_LOG 7.101),
+   * so a preference saved before that can be below the control's own
+   * minimum — the slider would then show a thumb that does not match the
+   * page. Lift it rather than leaving the two disagreeing. */
+  if (!(state.size >= TEXTURE_MIN_SIZE)) state.size = TEXTURE_MIN_SIZE;
+  return state;
 }
 
 /* The write side of loadTexture — same try/catch-and-shrug shape, since a
@@ -1895,6 +1925,26 @@ function jediSignatureMT(source, line, col) {
   }
 }
 
+/* The same browser-backed networking patch assets/pyodide-worker.js and
+ * assets/pyodide-engine.js apply at boot — see the long comment on
+ * pyodide-engine.js's NETWORK_PATCH_SOURCE for what it buys and why it is
+ * on by default.
+ *
+ * It belongs here too, and its absence was a real gap rather than a
+ * deliberate omission: bootMainThread() below is the standalone export's
+ * boot, which is exactly where a reader is *most* likely to hit it. A
+ * downloaded tutorial is the copy someone opens on a train, pastes a
+ * `pd.read_csv("https://…")` into, and has no second machine to compare
+ * against — and it would have been the one surface still answering
+ * "unknown url type: https" after every other one had stopped. */
+const NETWORK_PATCH_SOURCE = `
+try:
+    import pyodide_http
+    pyodide_http.patch_all()
+except Exception:
+    pass
+`;
+
 /* Shared with assets/pyodide-worker.js's own copy — genuinely two separate
  * JS execution contexts (a page never runs both), so this is the one place
  * a small duplication was cheaper than a shared-module import neither
@@ -1957,6 +2007,14 @@ async function bootMainThread(manifest) {
 
   setStatus(`Loading ${manifest.packages.join(", ")}…`);
   await pyodideMT.loadPackage(manifest.packages);
+  // Separately, and forgivingly: a Pyodide without this package must still
+  // boot. See NETWORK_PATCH_SOURCE for what it buys.
+  try {
+    await pyodideMT.loadPackage(["pyodide-http"]);
+    await pyodideMT.runPythonAsync(NETWORK_PATCH_SOURCE);
+  } catch {
+    /* no browser-backed urllib; tutorial_tools.py's hints cover it */
+  }
 
   setStatus("Preparing the notebook tools…");
   /* The standalone export carries this source inside the page, because

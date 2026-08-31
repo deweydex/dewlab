@@ -17,6 +17,7 @@ import { defaultKeymap, history, historyKeymap, indentWithTab } from "@codemirro
 import { python, localCompletionSource, globalCompletion } from "@codemirror/lang-python";
 import { syntaxHighlighting, defaultHighlightStyle, indentOnInput,
          bracketMatching, indentUnit } from "@codemirror/language";
+import { search, searchKeymap, highlightSelectionMatches } from "@codemirror/search";
 import { closeBrackets, closeBracketsKeymap,
          autocompletion, completionKeymap, snippetCompletion } from "@codemirror/autocomplete";
 import { oneDark } from "@codemirror/theme-one-dark";
@@ -364,13 +365,21 @@ export function createCodeEditor(
     pythonSignatureHelp(getSignature),
     indentUnit.of("    "),
     python(),
+    /* Find and replace (Ctrl/Cmd+F), and a highlight on every other
+     * occurrence of whatever is selected. CodeMirror has always supported
+     * both; dewmini had never wired them up, which stops mattering the
+     * moment a notebook grows past a screen of code. `top: true` puts the
+     * panel above the editor rather than below it — below, it would sit
+     * over the cell's own output. */
+    search({ top: true }),
+    highlightSelectionMatches(),
     /* indentWithTab last so Tab indents inside a cell rather than tabbing the
      * browser out of it — with Escape still available to leave, which is what
      * keeps the page keyboard-navigable. completionKeymap ahead of it: Enter
      * and Tab both need to accept an open completion before either falls
      * through to a newline or an indent. */
     keymap.of([...closeBracketsKeymap, ...completionKeymap,
-               ...defaultKeymap, ...historyKeymap, indentWithTab]),
+               ...searchKeymap, ...defaultKeymap, ...historyKeymap, indentWithTab]),
     themeCompartment.of(themeOf(dark)),
     /* After the theme compartment, so dewlab's transparent background wins
      * over one-dark's own and the cell panel colour shows through in both

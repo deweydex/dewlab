@@ -14,7 +14,11 @@ import * as dfs from "./dewmini-fs.js";
 import * as engine from "../assets/pyodide-engine.js";
 
 const PYODIDE_VERSION = "0.28.3";
-const STORAGE_KEY = "dewmini:cells:v1";
+// The pre-tabs key: one notebook, stored as a bare array of cells. Still read
+// once, by migrateLegacyCells() below, so a reader who left work here before
+// tabs existed finds it again afterwards.
+const LEGACY_CELLS_KEY = "dewmini:cells:v1";
+const NOTEBOOKS_KEY = "dewmini:notebooks:v1";
 const NOTES_KEY = "dewmini:notes";
 
 // Beyond the curriculum's numpy/pandas/matplotlib baseline (DECISIONS.md
@@ -24,6 +28,14 @@ const NOTES_KEY = "dewmini:notes";
 // page stays on the narrower curriculum baseline; dewmini is a general
 // notebook, not curriculum content, so it can afford the wider default.
 const DM_PACKAGES = ["numpy", "pandas", "matplotlib", "sqlite3", "Pillow"];
+
+// The browser-backed networking patch, for the exported standalone HTML —
+// dewmini itself gets this from assets/pyodide-engine.js's own copy at boot,
+// but an exported notebook boots its own Pyodide with none of that code, so
+// it carries the patch inline. Without it, a notebook that read a URL
+// perfectly well in dewmini would fail with "unknown url type: https" in the
+// file the reader actually saved and sent to someone.
+const DM_NETWORK_PATCH = "try:\n    import pyodide_http\n    pyodide_http.patch_all()\nexcept Exception:\n    pass\n";
 
 const CELL_TYPES = { PYTHON: "python", TEXT: "text" };
 const IMPORTS_SNIPPET = "import numpy as np\nimport pandas as pd\nimport matplotlib.pyplot as plt\n";
@@ -46,8 +58,16 @@ tutorial_tools._page_globals.update({
 tutorial_tools._page_globals["__name__"] = "__dewlab__"
 `;
 
+// Every open notebook: [{ id, name, cells }]. `cells` below is not a copy of
+// the active one's array — it *is* that array, the same object — so every
+// function in this file that already worked on one notebook's cells keeps
+// working unchanged, and switching tabs is a matter of re-pointing this one
+// variable. setCells() exists because that link is easy to break: assigning
+// `cells = something` alone would leave the notebook holding the old array.
+let notebooks = [];
+let activeNotebookId = null;
 let cells = [];
-let cellsContainer, emptyEl, statusEl;
+let cellsContainer, emptyEl, statusEl, tabsEl;
 let statusClearTimer = null;
 
 // The live Pyodide interpreter, cell execution, hover/signature-help, and
@@ -76,21 +96,78 @@ function generateId() {
   return `cell-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
 }
 
-/* Reads the notebook back out of localStorage on page load. The
- * `.filter(...)` step matters: it drops anything that doesn't look like
- * a real cell (a corrupted entry, or one from some future version of
- * this file with a cell type this version doesn't know about) rather
- * than trusting whatever was stored — a cheap defense against a stray
- * bad value crashing the whole notebook on load. */
-function loadSavedState() {
+/* Turns whatever was stored into real cell objects. The `.filter(...)` step
+ * matters: it drops anything that doesn't look like a real cell (a corrupted
+ * entry, or one from some future version of this file with a cell type this
+ * version doesn't know about) rather than trusting whatever was stored — a
+ * cheap defense against a stray bad value crashing the whole notebook on
+ * load. */
+function readCells(saved) {
+  if (!Array.isArray(saved)) return [];
+  return saved
+    .filter((c) => c && c.id && [CELL_TYPES.PYTHON, CELL_TYPES.TEXT].includes(c.type))
+    .map((c) => ({ id: c.id, type: c.type, content: c.content || "", output: c.output || "", error: !!c.error, lastRunMs: typeof c.lastRunMs === "number" ? c.lastRunMs : undefined }));
+}
+
+/* A notebook with nothing in it yet. Named rather than numbered-only so a
+ * tab strip reads as a row of names, not a row of "Untitled". */
+function makeNotebook(name, cellList = []) {
+  return { id: `nb-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`, name, cells: cellList };
+}
+
+/* Work saved before tabs existed lived under a different key, as a bare
+ * array. Read it once, fold it into a first notebook, and leave the old key
+ * alone rather than deleting it — if this migration ever turns out to be
+ * wrong, the original is still sitting there to recover from, and a stale
+ * key costs a few kilobytes of browser storage. */
+function migrateLegacyCells() {
+  let legacy = [];
   try {
-    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
-    cells = saved
-      .filter((c) => c && c.id && [CELL_TYPES.PYTHON, CELL_TYPES.TEXT].includes(c.type))
-      .map((c) => ({ id: c.id, type: c.type, content: c.content || "", output: c.output || "", error: !!c.error, lastRunMs: typeof c.lastRunMs === "number" ? c.lastRunMs : undefined }));
+    legacy = readCells(JSON.parse(localStorage.getItem(LEGACY_CELLS_KEY) || "[]"));
   } catch {
-    cells = [];
+    legacy = [];
   }
+  return legacy.length ? [makeNotebook("Notebook", legacy)] : [];
+}
+
+/* Reads every open notebook back out of localStorage on page load, falling
+ * back through: saved notebooks, then pre-tabs work migrated into one, then
+ * a single empty notebook. Always ends with at least one notebook and a
+ * valid active id, so nothing downstream has to handle "no notebook". */
+function loadSavedState() {
+  let saved = null;
+  try {
+    saved = JSON.parse(localStorage.getItem(NOTEBOOKS_KEY) || "null");
+  } catch {
+    saved = null;
+  }
+
+  notebooks = [];
+  if (saved && Array.isArray(saved.notebooks)) {
+    notebooks = saved.notebooks
+      .filter((nb) => nb && nb.id)
+      .map((nb) => ({ id: nb.id, name: nb.name || "Notebook", cells: readCells(nb.cells) }));
+  }
+  if (!notebooks.length) notebooks = migrateLegacyCells();
+  if (!notebooks.length) notebooks = [makeNotebook("Notebook")];
+
+  const wanted = saved && saved.active;
+  activeNotebookId = notebooks.some((nb) => nb.id === wanted) ? wanted : notebooks[0].id;
+  cells = activeNotebook().cells;
+}
+
+function activeNotebook() {
+  return notebooks.find((nb) => nb.id === activeNotebookId) || notebooks[0];
+}
+
+/* The one safe way to swap a notebook's cells wholesale. Assigning `cells`
+ * on its own would break the "same array object" link this file relies on
+ * (see the declaration above), leaving edits landing in an array no longer
+ * attached to any notebook — visible on screen until a tab switch silently
+ * reverted them. */
+function setCells(next) {
+  cells = next;
+  activeNotebook().cells = next;
 }
 
 /* Saves the notebook to localStorage. Note the `.map(({ id, type,
@@ -103,13 +180,127 @@ function loadSavedState() {
  * plain-data fields worth keeping — build a fresh plain object rather
  * than serializing the live one directly. */
 function saveState() {
-  const plain = cells.map(({ id, type, content, output, error, lastRunMs }) => ({
+  const plainCells = (list) => list.map(({ id, type, content, output, error, lastRunMs }) => ({
     id, type, content, output: output || "", error: !!error,
     lastRunMs: typeof lastRunMs === "number" ? lastRunMs : undefined
   }));
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(plain));
+    localStorage.setItem(NOTEBOOKS_KEY, JSON.stringify({
+      active: activeNotebookId,
+      notebooks: notebooks.map((nb) => ({ id: nb.id, name: nb.name, cells: plainCells(nb.cells) })),
+    }));
   } catch {}
+}
+
+// --------------------------------------------------------------- notebooks
+
+/* Switches which notebook the page is showing. Every open editor belongs to
+ * the notebook leaving the screen, so they are destroyed here rather than
+ * left behind: a CodeMirror instance holds its own DOM and listeners, and
+ * renderCells() below builds fresh ones for the notebook arriving. */
+function showNotebook(id) {
+  if (id === activeNotebookId) return;
+  const target = notebooks.find((nb) => nb.id === id);
+  if (!target) return;
+  cells.forEach((c) => c.editor?.destroy());
+  activeNotebookId = id;
+  cells = target.cells;
+  saveState();
+  renderTabs();
+  renderCells();
+  updateFilenameField();
+  updateStatus(`Switched to ${target.name}.`);
+}
+
+/* Adds a notebook and switches to it — the shared tail of "+ New", an
+ * import, and anything else that arrives as a whole notebook. */
+function openNotebook(notebook) {
+  cells.forEach((c) => c.editor?.destroy());
+  notebooks.push(notebook);
+  activeNotebookId = notebook.id;
+  cells = notebook.cells;
+  saveState();
+  renderTabs();
+  renderCells();
+  updateFilenameField();
+}
+
+/* Closes a tab. The last one is never closed — a dewmini with no notebook
+ * at all has no meaningful state to be in, and "close" quietly becoming
+ * "clear" would be worse than the button simply not being there. Asks first
+ * only when there is something to lose, so closing an empty scratch tab
+ * stays a single click. */
+function closeNotebook(id) {
+  if (notebooks.length < 2) return;
+  const index = notebooks.findIndex((nb) => nb.id === id);
+  if (index === -1) return;
+  const notebook = notebooks[index];
+  if (notebook.cells.length && !confirm(`Close "${notebook.name}"? Its ${notebook.cells.length} cell${notebook.cells.length === 1 ? "" : "s"} will be gone.`)) return;
+
+  if (id === activeNotebookId) cells.forEach((c) => c.editor?.destroy());
+  notebooks.splice(index, 1);
+  if (id === activeNotebookId) {
+    const next = notebooks[Math.min(index, notebooks.length - 1)];
+    activeNotebookId = next.id;
+    cells = next.cells;
+    renderCells();
+    updateFilenameField();
+  }
+  saveState();
+  renderTabs();
+  updateStatus(`Closed ${notebook.name}.`);
+}
+
+/* Renames a tab through a prompt. Deliberately the plainest possible
+ * mechanism: an inline-editable tab is nicer and is a genuine pile of
+ * focus/blur/Escape handling for something a reader does rarely. */
+function renameNotebook(id) {
+  const notebook = notebooks.find((nb) => nb.id === id);
+  if (!notebook) return;
+  const next = prompt("Name for this notebook:", notebook.name);
+  if (next === null) return;
+  notebook.name = next.trim().slice(0, 40) || notebook.name;
+  saveState();
+  renderTabs();
+  updateFilenameField();
+}
+
+/* Draws the tab strip. Hidden entirely while there is only one notebook —
+ * a row of tabs containing one tab is chrome that explains nothing, and a
+ * reader who never opens a second notebook should never have to look at it
+ * (the "+" lives in the toolbar, so there is still a way to get a second
+ * one). */
+function renderTabs() {
+  if (!tabsEl) return;
+  tabsEl.replaceChildren();
+  tabsEl.hidden = notebooks.length < 2;
+  if (notebooks.length < 2) return;
+
+  for (const notebook of notebooks) {
+    const tab = document.createElement("div");
+    tab.className = "dm-tab";
+    if (notebook.id === activeNotebookId) tab.classList.add("dm-tab-active");
+
+    const label = document.createElement("button");
+    label.type = "button";
+    label.className = "dm-tab-label";
+    label.textContent = notebook.name;
+    label.title = `${notebook.name} — ${notebook.cells.length} cell${notebook.cells.length === 1 ? "" : "s"} (double-click to rename)`;
+    label.setAttribute("aria-current", String(notebook.id === activeNotebookId));
+    label.addEventListener("click", () => showNotebook(notebook.id));
+    label.addEventListener("dblclick", () => renameNotebook(notebook.id));
+
+    const close = document.createElement("button");
+    close.type = "button";
+    close.className = "dm-tab-close";
+    close.textContent = "×";
+    close.title = `Close ${notebook.name}`;
+    close.setAttribute("aria-label", `Close ${notebook.name}`);
+    close.addEventListener("click", (e) => { e.stopPropagation(); closeNotebook(notebook.id); });
+
+    tab.append(label, close);
+    tabsEl.appendChild(tab);
+  }
 }
 
 // ------------------------------------------------------------------- cells
@@ -155,7 +346,7 @@ const EXAMPLE_CELLS = [
 async function loadExampleCells() {
   if (cells.length && !confirm("Replace the current cells with the example? This can't be undone.")) return;
   cells.forEach((c) => c.editor?.destroy());
-  cells = EXAMPLE_CELLS.map((c) => ({ id: generateId(), type: c.type, content: c.content, output: "", error: false }));
+  setCells(EXAMPLE_CELLS.map((c) => ({ id: generateId(), type: c.type, content: c.content, output: "", error: false })));
   saveState();
   renderCells();
   updateStatus("Example loaded — running it now…");
@@ -226,6 +417,17 @@ function focusCell(id) {
   if (cell?.editor) cell.editor.focus();
   else if (cell?.showTextEditor) cell.showTextEditor();
   else if (cell?.textarea) cell.textarea.focus();
+}
+
+/* Moves the cursor to the cell after `id` — what Shift+Enter does once the
+ * run finishes, so holding it works down a notebook the way it does in
+ * Jupyter. At the last cell there is nowhere to advance to, and adding a
+ * cell automatically would quietly fill a notebook with empty ones, so it
+ * simply stays where it is. */
+function focusNextCellAfter(id) {
+  const index = cells.findIndex((c) => c.id === id);
+  if (index === -1 || index === cells.length - 1) return;
+  focusCell(cells[index + 1].id);
 }
 
 /* A small, deliberately shallow markdown for documentation cells — headings,
@@ -342,15 +544,19 @@ function renderDocMarkdown(text) {
 function renderCells() {
   if (!cellsContainer) return;
   cellsContainer.innerHTML = "";
-  // No dividers over an empty notebook — the empty state's own button is
-  // the one way in until there is at least one cell to insert around.
-  if (cells.length) {
-    cellsContainer.appendChild(createInsertDivider(0));
-    cells.forEach((cell, i) => {
-      cellsContainer.appendChild(createCellElement(cell));
-      cellsContainer.appendChild(createInsertDivider(i + 1));
-    });
-  }
+  // The first seam is drawn even over an empty notebook. It used to be
+  // suppressed, because the toolbar carried its own Python/Text buttons and
+  // a seam with nothing on either side of it looked like debris. Those
+  // buttons are gone now, so suppressing it would leave no way at all to
+  // start a *blank* cell — only "Start with imports", which arrives with
+  // three lines already in it. Drawing it here also means the affordance a
+  // reader will use for every cell after this one is the same affordance
+  // they meet for the first.
+  cellsContainer.appendChild(createInsertDivider(0));
+  cells.forEach((cell, i) => {
+    cellsContainer.appendChild(createCellElement(cell));
+    cellsContainer.appendChild(createInsertDivider(i + 1));
+  });
   if (emptyEl) emptyEl.hidden = cells.length > 0;
 }
 
@@ -512,9 +718,23 @@ function createCellElement(cell) {
       getSignature: engine.signatureHelp,
     });
     // Capture phase: CodeMirror's own handler sees Enter first on bubble,
-    // so intercepting Shift+Enter has to happen before that, not after.
+    // so intercepting these has to happen before that, not after.
+    //
+    // Shift+Enter runs and moves to the next cell; Ctrl/Cmd+Enter runs and
+    // stays put. That is the split every notebook tool a student will meet
+    // later uses, and dewmini previously had only the first key doing the
+    // second key's job — a small thing to relearn twice.
     editorEl.addEventListener("keydown", (e) => {
-      if (e.key === "Enter" && e.shiftKey) { e.preventDefault(); e.stopPropagation(); runCell(cell.id); }
+      if (e.key !== "Enter") return;
+      if (e.shiftKey) {
+        e.preventDefault();
+        e.stopPropagation();
+        runCell(cell.id).then(() => focusNextCellAfter(cell.id));
+      } else if (e.ctrlKey || e.metaKey) {
+        e.preventDefault();
+        e.stopPropagation();
+        runCell(cell.id);
+      }
     }, true);
     cell.editor = editor;
   } else {
@@ -709,6 +929,11 @@ async function executeCell(cell) {
   // the best-effort unload flush alone) — not awaited, so a slow sync
   // never makes a fast cell feel slower than it is.
   dfs.sync().catch((err) => console.warn("dewmini: filesystem sync after cell run failed", err));
+  // Same treatment for the Workbench's variable list: a run is exactly
+  // when the namespace changed, so this is when it needs redrawing — but
+  // it is a panel a reader may not even have open, and never worth making
+  // a cell feel slower for.
+  refreshVariables().catch((err) => console.warn("dewmini: refreshing variables failed", err));
   return ok;
 }
 
@@ -896,28 +1121,36 @@ async function runAllCells() {
  * |`) are replaced with a dash, so the same name works whether the
  * download lands on Windows, macOS, or Linux. */
 function getFilenameBase() {
-  const el = document.getElementById("dm-filename");
-  let name = (el?.value || "").trim();
+  let name = (activeNotebook()?.name || "").trim();
   if (!name) name = "dewmini-notebook";
   name = name.replace(/\.(py|html?|ipynb)$/i, "");
   name = name.replace(/[\\/:*?"<>|]+/g, "-").trim();
   return name || "dewmini-notebook";
 }
 
-/* Restores a previously chosen filename (and keeps the browser tab title
- * in sync with it as the reader types) — cosmetic, but it's what makes
- * "print to PDF" and the download buttons suggest something more useful
- * than a generic default name. */
+/* Keeps the Settings filename box, the browser tab title, and the tab strip
+ * all saying the same thing — because since tabs, they are all one thing: a
+ * notebook's name *is* its export filename. Two separate ideas (a tab called
+ * one thing downloading as another) would be a small, permanent confusion
+ * for no gain. */
+function updateFilenameField() {
+  const el = document.getElementById("dm-filename");
+  if (el) el.value = activeNotebook()?.name || "";
+  document.title = `${getFilenameBase()} — dewmini`;
+}
+
+/* Wires the filename box to rename the notebook it belongs to. */
 function initFilename() {
   const el = document.getElementById("dm-filename");
   if (!el) return;
-  let saved = "dewmini-notebook";
-  try { saved = localStorage.getItem("dewmini:filename") || saved; } catch {}
-  el.value = saved;
-  document.title = `${saved} — dewmini`;
+  updateFilenameField();
   el.addEventListener("input", () => {
-    try { localStorage.setItem("dewmini:filename", el.value); } catch {}
+    const notebook = activeNotebook();
+    if (!notebook) return;
+    notebook.name = el.value.trim().slice(0, 40) || notebook.name;
     document.title = `${getFilenameBase()} — dewmini`;
+    saveState();
+    renderTabs();
   });
 }
 
@@ -1092,6 +1325,7 @@ const CELLS = ${JSON.stringify(cellsData)};
 const TOOLS_SRC = ${JSON.stringify(toolsSource)};
 const SEED = ${JSON.stringify(SEED_GLOBALS_CODE)};
 const PACKAGES = ${JSON.stringify(DM_PACKAGES)};
+const NETWORK_PATCH = ${JSON.stringify(DM_NETWORK_PATCH)};
 
 async function main() {
   const statusEl = document.getElementById("status");
@@ -1127,6 +1361,13 @@ async function main() {
   try {
     const pyodide = await loadPyodide();
     await pyodide.loadPackage(PACKAGES);
+    // Browser-backed urllib, so a cell that read a URL in dewmini still
+    // reads it here. Forgiving, like every other boot: a Pyodide without
+    // the package must still start.
+    try {
+      await pyodide.loadPackage(["pyodide-http"]);
+      await pyodide.runPythonAsync(NETWORK_PATCH);
+    } catch (e) {}
     pyodide.FS.writeFile("/home/pyodide/tutorial_tools.py", TOOLS_SRC, { encoding: "utf8" });
     const tools = pyodide.pyimport("tutorial_tools");
     tools.configure("");
@@ -1146,6 +1387,405 @@ main();
 <\/script>
 </body>
 </html>`;
+}
+
+// --------------------------------------------------------------- reference
+
+/* The five kinds a glossary entry can have, in the order the panel shows
+ * them — the same order and labels tutorial pages use, so a reader who has
+ * met the Reference there finds the same shape here. */
+const REFERENCE_KINDS = [
+  ["concept", "Concepts"],
+  ["function", "Functions"],
+  ["operator", "Operators"],
+  ["formula", "Formulas"],
+  ["keyword", "Keywords"],
+];
+
+/* Short labels for the topic groups, in the order
+ * planning/curriculum/topic-groups.yaml lists them. This is a label
+ * *override*, not the list of groups: the file's own names are written for a
+ * page heading ("Trigonometry — triangles, circles, and waves") and are far
+ * too long for a chip, so the curated short forms live here.
+ *
+ * The groups themselves are read off the data (referenceTopics() below), so
+ * adding one to topic-groups.yaml gives it a chip on the next build whether
+ * or not anyone remembers to come back here. That matters: everything else
+ * about these filters re-derives itself when the curriculum data changes,
+ * and a hand-kept list that silently drops new groups would be the one place
+ * the two could quietly disagree. */
+const REFERENCE_TOPIC_LABELS = [
+  ["numbers-and-algebra", "Numbers & algebra"],
+  ["polynomials-and-graphs", "Polynomials"],
+  ["trigonometry", "Trigonometry"],
+  ["rates-of-change", "Rates of change"],
+  ["counting-and-chance", "Counting & chance"],
+  ["logic-and-sets", "Logic & sets"],
+  ["data-and-pictures", "Data"],
+  ["matrices", "Matrices"],
+  ["programming-foundations", "Programming"],
+  ["chance-and-simulation", "Simulation"],
+  ["big-picture", "Big picture"],
+];
+
+/* Every topic group the reference actually has terms for, curated ones first
+ * in their own order and anything new after them, alphabetically. A group
+ * with no short label gets its key turned back into words — plain, and
+ * visibly a fallback, which is the right prompt to come and name it. */
+function referenceTopics() {
+  const labels = new Map(REFERENCE_TOPIC_LABELS);
+  const present = new Set();
+  for (const entry of referenceEntries || []) {
+    for (const key of entry.groups || []) present.add(key);
+  }
+  const curated = REFERENCE_TOPIC_LABELS.filter(([key]) => present.has(key));
+  const rest = [...present]
+    .filter((key) => !labels.has(key))
+    .sort()
+    .map((key) => [key, key.replace(/-/g, " ").replace(/^./, (c) => c.toUpperCase())]);
+  return [...curated, ...rest];
+}
+
+const REFERENCE_SUBJECTS = [["maths", "Maths"], ["computing", "Computing"]];
+const REFERENCE_LEVELS = [
+  ["beginner", "Beginner"],
+  ["intermediate", "Intermediate"],
+  ["advanced", "Advanced"],
+];
+
+let referenceEntries = null;
+
+/* Every filter row is the same shape: a set of chosen values, empty meaning
+ * "no filter on this facet". Four independent sets rather than four
+ * variables so the render and the reset can loop over them. */
+const referenceFilters = {
+  subjects: new Set(),
+  level: new Set(),
+  groups: new Set(),
+  kind: new Set(),
+};
+
+/* Fetches the cross-tutorial reference once (build.py's
+ * write_reference_index()). Absent is not an error: a build with no
+ * tutorials writes no index, and an offline bundle from such a build
+ * should still open — the section says so and gets out of the way. */
+async function loadReference() {
+  const statusEl = document.getElementById("dm-reference-status");
+  try {
+    const response = await fetch("../assets/reference-index.json");
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    referenceEntries = await response.json();
+  } catch (err) {
+    if (statusEl) statusEl.textContent = `The reference isn't available here (${err.message}).`;
+    return;
+  }
+  renderReferenceFilters();
+  renderReference();
+}
+
+/* Does one entry pass every filter row? A row with nothing chosen doesn't
+ * filter; a row with choices passes an entry matching any of them (so
+ * Maths + Computing means "either", not "both"). An entry missing the facet
+ * entirely — a term from a tutorial claiming no outcomes — is filtered out
+ * once that row is in use, which is why "Unfiled" is offered as a value of
+ * its own rather than leaving those terms unreachable. */
+function referenceEntryMatches(entry) {
+  const rowPasses = (chosen, value) => {
+    if (!chosen.size) return true;
+    const values = Array.isArray(value) ? value : (value ? [value] : []);
+    if (!values.length) return chosen.has("unfiled");
+    return values.some((v) => chosen.has(v));
+  };
+  return rowPasses(referenceFilters.subjects, entry.subjects)
+    && rowPasses(referenceFilters.level, entry.level)
+    && rowPasses(referenceFilters.groups, entry.groups)
+    && rowPasses(referenceFilters.kind, entry.kind);
+}
+
+/* One chip. Toggling is additive within its row — picking Maths then
+ * Computing widens rather than replaces, which is what a reader expects of
+ * something that looks like a set of switches. */
+function referenceChip(row, value, label, count) {
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.className = "dm-filter-chip";
+  btn.textContent = count === undefined ? label : `${label} ${count}`;
+  btn.setAttribute("aria-pressed", String(referenceFilters[row].has(value)));
+  btn.addEventListener("click", () => {
+    const chosen = referenceFilters[row];
+    if (chosen.has(value)) chosen.delete(value); else chosen.add(value);
+    renderReferenceFilters();
+    renderReference();
+  });
+  return btn;
+}
+
+/* Draws all four filter rows, each chip carrying how many terms it would
+ * leave — counted against the *other* rows' current choices, so the numbers
+ * describe what would actually happen rather than a total that stops being
+ * true the moment anything else is on. */
+function renderReferenceFilters() {
+  if (!referenceEntries) return;
+
+  const countFor = (row, value) => {
+    const saved = referenceFilters[row];
+    referenceFilters[row] = new Set([value]);
+    const n = referenceEntries.filter(referenceEntryMatches).length;
+    referenceFilters[row] = saved;
+    return n;
+  };
+
+  const fill = (id, row, values) => {
+    const wrap = document.getElementById(id);
+    if (!wrap) return;
+    wrap.replaceChildren();
+    for (const [value, label] of values) {
+      const n = countFor(row, value);
+      if (!n) continue; // a chip that would show nothing is noise
+      wrap.appendChild(referenceChip(row, value, label, n));
+    }
+  };
+
+  fill("dm-reference-subjects", "subjects",
+       [...REFERENCE_SUBJECTS, ["unfiled", "Unfiled"]]);
+  fill("dm-reference-levels", "level",
+       [...REFERENCE_LEVELS, ["unfiled", "Unfiled"]]);
+  fill("dm-reference-topics", "groups", referenceTopics());
+  fill("dm-reference-kinds", "kind", REFERENCE_KINDS);
+
+  // The collapsed summary has to say what is on inside it, or a reader who
+  // scrolled past a narrowed list has no way to tell why.
+  const summary = document.getElementById("dm-reference-topics-summary");
+  const chosen = referenceFilters.groups.size;
+  if (summary) summary.textContent = chosen ? `Topics · ${chosen} on` : "Topics";
+  const wrap = document.getElementById("dm-reference-topics-wrap");
+  if (wrap) wrap.classList.toggle("dm-filter-more-active", chosen > 0);
+}
+
+/* Draws the reference, filtered by the search box and all four chip rows.
+ * Built with createElement rather than an HTML string throughout, for the
+ * same reason tutorial-runtime.js's own renderReference() is: a term can
+ * legitimately contain `<` (dewlab teaches operators), and textContent
+ * cannot turn it into markup where innerHTML would. */
+function renderReference() {
+  const groupsEl = document.getElementById("dm-reference-groups");
+  const statusEl = document.getElementById("dm-reference-status");
+  if (!groupsEl || !referenceEntries) return;
+  groupsEl.replaceChildren();
+
+  const needle = (document.getElementById("dm-reference-search")?.value || "").trim().toLowerCase();
+  const matches = referenceEntries.filter((entry) => {
+    if (!referenceEntryMatches(entry)) return false;
+    if (!needle) return true;
+    return `${entry.term} ${entry.definition}`.toLowerCase().includes(needle);
+  });
+
+  if (statusEl) {
+    statusEl.textContent = matches.length
+      ? `${matches.length} of ${referenceEntries.length} terms, from every tutorial.`
+      : "Nothing matches that.";
+  }
+  if (!matches.length) return;
+
+  for (const [kind, label] of REFERENCE_KINDS) {
+    const inKind = matches.filter((entry) => entry.kind === kind);
+    if (!inKind.length) continue;
+
+    const group = document.createElement("div");
+    group.className = "dm-reference-group";
+    const heading = document.createElement("h4");
+    heading.textContent = label;
+    group.appendChild(heading);
+
+    const list = document.createElement("dl");
+    for (const entry of inKind) {
+      const term = document.createElement("dt");
+      term.textContent = entry.term;
+      const definition = document.createElement("dd");
+      definition.textContent = entry.definition;
+      if (entry.example) {
+        const example = document.createElement("code");
+        example.textContent = entry.example;
+        definition.appendChild(example);
+      }
+      if (entry.origin) {
+        const origin = document.createElement("p");
+        origin.className = "dm-term-origin";
+        origin.textContent = `Introduced in ${entry.origin}`;
+        definition.appendChild(origin);
+      }
+      list.append(term, definition);
+    }
+    group.appendChild(list);
+    groupsEl.appendChild(group);
+  }
+}
+
+function initReferenceSection() {
+  document.getElementById("dm-reference-search")?.addEventListener("input", renderReference);
+  loadReference();
+}
+
+// -------------------------------------------------------------------- data
+
+/* Fetches the dataset catalogue and draws it. Same "fetch a JSON sibling
+ * once" shape as the practice bank, and it rides the same wholesale
+ * compose/ copy into the offline bundle, so the catalogue works offline
+ * even where the datasets it describes do not. */
+async function loadDataCatalogue() {
+  const listEl = document.getElementById("dm-data-list");
+  const statusEl = document.getElementById("dm-data-status");
+  if (!listEl) return;
+
+  let catalogue;
+  try {
+    const response = await fetch("data-catalogue.json");
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    catalogue = await response.json();
+  } catch (err) {
+    if (statusEl) statusEl.textContent = `The catalogue isn't available here (${err.message}).`;
+    return;
+  }
+
+  if (statusEl) statusEl.hidden = true;
+  listEl.replaceChildren();
+  for (const dataset of catalogue) {
+    listEl.appendChild(renderDataset(dataset));
+  }
+}
+
+/* One dataset's card: what it is, where it came from, what licence it
+ * carries, and a button that writes the code to load it.
+ *
+ * The attribution is on the card rather than buried in a repository file
+ * because a student who uses someone's data should see whose it is at the
+ * moment they use it — the same reasoning behind the dataset YAML the
+ * tutorial pages' own Reference already shows. */
+function renderDataset(dataset) {
+  const card = document.createElement("div");
+  card.className = "dm-dataset";
+
+  const title = document.createElement("h4");
+  title.textContent = dataset.title;
+  if (dataset.remote) {
+    const badge = document.createElement("span");
+    badge.className = "dm-dataset-remote";
+    badge.textContent = "from the web";
+    badge.title = "Loaded from another website, so it needs a connection — and that site has to allow it";
+    title.appendChild(badge);
+  }
+  card.appendChild(title);
+
+  const description = document.createElement("p");
+  description.textContent = dataset.description;
+  card.appendChild(description);
+
+  const meta = document.createElement("p");
+  meta.className = "dm-dataset-meta";
+  meta.textContent = `${dataset.source} — ${dataset.license}`;
+  card.appendChild(meta);
+
+  const use = document.createElement("button");
+  use.type = "button";
+  use.className = "dm-tool";
+  use.textContent = "Add a cell that loads it";
+  use.addEventListener("click", () => {
+    addCell(CELL_TYPES.PYTHON, dataset.code);
+    updateStatus(`Added a cell loading ${dataset.title}.`, "ok");
+  });
+  card.appendChild(use);
+
+  return card;
+}
+
+// --------------------------------------------------------------- variables
+
+/* Draws what is currently defined in the Python session. The engine
+ * returns plain `{name, type, summary, kind}` objects
+ * (tutorial_tools.describe_globals()), so nothing here has to know
+ * anything about Python — this is presentation only.
+ *
+ * A student's own data goes first and unfolded; the functions and modules
+ * that share the namespace fold away under a summary, because they are
+ * almost always the same names every session (what the page seeded, what a
+ * cell imported) and would otherwise bury the two variables the reader
+ * actually wants to look at. */
+async function refreshVariables() {
+  const listEl = document.getElementById("dm-variables");
+  const statusEl = document.getElementById("dm-variables-status");
+  const sharedEl = document.getElementById("dm-variables-shared");
+  if (!listEl) return;
+
+  // Nothing to draw for a closed panel, and this is called after every
+  // cell run — describing the namespace is a full round trip to the
+  // worker, so "Run all" over fifty cells would otherwise pay fifty of
+  // them to update something nobody is looking at. Opening the Workbench
+  // refreshes it (initPanels()), so it is never stale when visible.
+  const panel = document.getElementById("dm-workbench");
+  if (panel && panel.hidden) return;
+
+  if (engine.engineMode() === null) {
+    listEl.replaceChildren();
+    if (statusEl) statusEl.textContent = "Not started yet — run a cell to start Python.";
+    if (sharedEl) sharedEl.hidden = true;
+    return;
+  }
+
+  let described;
+  try {
+    described = await engine.describeGlobals();
+  } catch (err) {
+    listEl.replaceChildren();
+    if (statusEl) statusEl.textContent = `Couldn't read the session: ${err.message}`;
+    return;
+  }
+
+  const data = described.filter((entry) => entry.kind === "data");
+  const other = described.filter((entry) => entry.kind !== "data");
+
+  listEl.replaceChildren();
+  if (statusEl) {
+    statusEl.textContent = data.length
+      ? `${data.length} variable${data.length === 1 ? "" : "s"} in your session.`
+      : "Nothing defined yet — run a cell that makes a variable.";
+  }
+  if (sharedEl) sharedEl.hidden = notebooks.length < 2;
+
+  for (const entry of data) listEl.appendChild(renderVariable(entry));
+
+  if (other.length) {
+    const details = document.createElement("details");
+    details.className = "dm-variables-other";
+    const summary = document.createElement("summary");
+    summary.textContent = `${other.length} function${other.length === 1 ? "" : "s"} and module${other.length === 1 ? "" : "s"}`;
+    details.appendChild(summary);
+    for (const entry of other) details.appendChild(renderVariable(entry));
+    listEl.appendChild(details);
+  }
+}
+
+function renderVariable(entry) {
+  const row = document.createElement("div");
+  row.className = "dm-variable";
+
+  const name = document.createElement("span");
+  name.className = "dm-variable-name";
+  name.textContent = entry.name;
+
+  const type = document.createElement("span");
+  type.className = "dm-variable-type";
+  type.textContent = entry.type;
+
+  const summary = document.createElement("span");
+  summary.className = "dm-variable-summary";
+  summary.textContent = entry.summary;
+
+  row.append(name, type, summary);
+  return row;
+}
+
+function initVariablesSection() {
+  document.getElementById("dm-variables-refresh")?.addEventListener("click", () => refreshVariables());
 }
 
 // ---------------------------------------------------------------- practice
@@ -1282,6 +1922,15 @@ const PYODIDE_INCOMPATIBLE_MODULES = {
   multiprocessing: "Pyodide runs on a single thread — there is no separate process to start",
   subprocess: "there is no operating system underneath to run a command in",
   socket: "the browser has no raw network socket access",
+  // The network libraries a copied notebook arrives with. These are not
+  // impossible the way the entries above are — Pyodide ships them, and
+  // `pyodide_http.patch_all()` routes them through the browser's own
+  // fetching — but they are not loaded by default, so an unprepared import
+  // fails and the reason is worth saying before the cell runs.
+  requests: "needs loading first (`await micropip.install(\"requests\")`) and `pyodide_http.patch_all()` to use the browser's connection — or use `await load_csv(url)`, which needs neither",
+  httpx: "needs loading first with micropip, and `pyodide_http.patch_all()` to use the browser's connection — or use `await load_csv(url)`, which needs neither",
+  aiohttp: "needs loading first with micropip, and cannot open its own connections here — `pyodide.http.pyfetch` is the browser-native equivalent",
+  urllib3: "needs loading first with micropip, and `pyodide_http.patch_all()` to use the browser's connection",
   ctypes: "there are no native shared libraries here to load",
   serial: "the browser has no serial port access",
   pyaudio: "the browser has no direct audio device access",
@@ -1378,15 +2027,28 @@ async function handleImportFile(e) {
 }
 
 /* Shared tail end of every import path (a picked file, or a built-in
- * example fetched by URL). */
+ * example fetched by URL).
+ *
+ * Opens what was imported in a *new tab* rather than replacing the notebook
+ * in front of you. Before tabs, this overwrote everything with no
+ * confirmation and no undo — and since every change saves immediately, one
+ * mis-picked file destroyed a session's work with nothing to recover from.
+ * A new tab is a better answer than the confirmation dialog that was the
+ * alternative: nothing is lost, so there is nothing to confirm, and the two
+ * notebooks sit side by side if a reader wanted to compare them anyway. */
 function applyImportedCells(imported, sourceLabel) {
   if (!imported.length) { updateStatus("That notebook has no cells.", "error"); return; }
   showImportCompatNotice(scanPyodideCompatibility(imported));
-  cells.forEach((c) => c.editor?.destroy());
-  cells = imported;
-  saveState();
-  renderCells();
-  updateStatus(`Loaded ${imported.length} cell${imported.length === 1 ? "" : "s"} from ${sourceLabel}.`, "ok");
+  openNotebook(makeNotebook(notebookNameFor(sourceLabel), imported));
+  updateStatus(`Loaded ${imported.length} cell${imported.length === 1 ? "" : "s"} from ${sourceLabel} into a new tab.`, "ok");
+}
+
+/* A tab name from whatever the import was called — the file's own name
+ * without its extension, trimmed to something a tab can actually show. */
+function notebookNameFor(sourceLabel) {
+  const base = String(sourceLabel || "Imported").replace(/\.(ipynb|py|html?|json)$/i, "").trim();
+  if (!base) return "Imported";
+  return base.length > 24 ? `${base.slice(0, 23)}…` : base;
 }
 
 /* Parses a .ipynb notebook's JSON into dewmini's cell shape — the same
@@ -1834,17 +2496,33 @@ function initStorageSection() {
 
 // ------------------------------------------------------------------ panels
 
-/* The replacement for native CSS `resize: horizontal` on a right-docked
- * panel — ported from tutorial-runtime.js's own copy (DECISIONS_LOG.md
- * 7.84). Native resize draws its handle at a box's own bottom-right
- * corner, which for a panel flush to the browser window's own right
- * edge sits exactly on that edge with no room to drag further right and
- * grow it. Adds a thin strip along `panel`'s left edge instead and
- * tracks a plain pointer drag on it directly. */
-function makeRightEdgeResizable(panel, min = 256, max = 640) {
+/**
+ * A draggable strip along the edge a docked panel grows *into* — its left
+ * edge when docked right, its right edge when docked left.
+ *
+ * This replaces native CSS `resize: horizontal` on both, for two separate
+ * reasons. On a right-docked panel the native handle is unusable: it sits
+ * at the box's bottom-right corner, flush with the browser window's own
+ * right edge, with no room to drag further right and grow it — found by an
+ * actual drag test, not assumed from the CSS (DECISIONS_LOG.md 7.84). On a
+ * left-docked panel it *works*, which is why it was left alone — but it is
+ * a small corner triangle facing a full-height strip on the panel opposite.
+ * Two rails, two affordances, only one of them findable: that asymmetry is
+ * why this is now shared rather than right-docked only.
+ *
+ * `side` is the edge the panel is docked to, so the drag maths runs the
+ * right way round: a right-docked panel grows as the pointer moves left,
+ * a left-docked one as it moves right. `min`/`max` mirror the panel's own
+ * CSS `min-width`/`max-width`, kept in sync by hand — the constants are
+ * already known and simpler than parsing them back out of the DOM.
+ * `onResize` fires once per drag, on release rather than per frame, for a
+ * caller that wants to persist the new width.
+ */
+function makeEdgeResizable(panel, side = "right", min = 256, max = 640, onResize = null) {
   if (!panel || panel.querySelector(".dl-panel-resize-handle")) return;
   const handle = document.createElement("div");
-  handle.className = "dl-panel-resize-handle";
+  handle.className = "dl-panel-resize-handle"
+    + (side === "left" ? " dl-panel-resize-handle-right" : "");
   handle.setAttribute("aria-hidden", "true");
   panel.prepend(handle);
 
@@ -1852,7 +2530,7 @@ function makeRightEdgeResizable(panel, min = 256, max = 640) {
   let startWidth = 0;
 
   function onMove(ev) {
-    const dx = startX - ev.clientX;
+    const dx = side === "left" ? ev.clientX - startX : startX - ev.clientX;
     const next = Math.max(min, Math.min(startWidth + dx, Math.min(max, window.innerWidth)));
     panel.style.width = `${next}px`;
   }
@@ -1860,6 +2538,7 @@ function makeRightEdgeResizable(panel, min = 256, max = 640) {
     handle.classList.remove("dl-panel-resize-active");
     document.removeEventListener("pointermove", onMove);
     document.removeEventListener("pointerup", onUp);
+    if (onResize) onResize();
   }
   handle.addEventListener("pointerdown", (ev) => {
     startX = ev.clientX;
@@ -1871,57 +2550,80 @@ function makeRightEdgeResizable(panel, min = 256, max = 640) {
   });
 }
 
-/* A small reusable version of the "toggle open/closed, and close the
- * other one" pattern tutorial-runtime.js's Settings/reference/nav
- * panels use — generalized into one function here since dewmini only has
- * the two panels (Settings and Help) to coordinate, rather than three. */
-function wireSimplePanel(panel, toggle, closeBtn, otherPanel) {
+/* Opens and closes one docked panel, closing only the panels that would
+ * otherwise sit on top of it — the ones docked to the same edge.
+ *
+ * `conflicts` rather than a single `otherPanel`: dewmini used to have two
+ * panels on one edge, where "the other one" was unambiguous. With a rail on
+ * each edge, closing every other panel would make the two rails fight — the
+ * whole point of two rails is having a definition open beside your own
+ * variables.
+ *
+ * A click outside no longer closes anything either. A docked rail is a
+ * permanent pane, not a popover: dismiss-on-outside-click is right for
+ * something floating over the page and actively wrong for something the
+ * page has made room for, where every click on your own notebook would
+ * close the reference you opened to read while writing it. Escape and the
+ * close button remain, which are the deliberate ways out. */
+function wirePanel(panel, toggle, closeBtn, conflicts = [], onOpen = null) {
   if (!panel) return;
-  toggle?.addEventListener("click", () => {
-    const opening = panel.hidden;
-    panel.hidden = !opening;
-    toggle.setAttribute("aria-expanded", String(opening));
-    if (opening && otherPanel && !otherPanel.hidden) {
-      otherPanel.hidden = true;
-      otherPanel.dispatchEvent(new Event("dm-closed"));
+  const setOpen = (open) => {
+    panel.hidden = !open;
+    toggle?.setAttribute("aria-expanded", String(open));
+    if (!open) return;
+    for (const other of conflicts) {
+      if (other && !other.hidden) other.hidden = true;
     }
-  });
+    // After the panel is visible, not before: a panel that only draws
+    // itself while open (the variable inspector) needs its own "you are
+    // open now" moment, and reading `hidden` from inside this callback
+    // has to see the new value.
+    onOpen?.();
+  };
+  toggle?.addEventListener("click", () => setOpen(panel.hidden));
   closeBtn?.addEventListener("click", () => {
-    panel.hidden = true;
-    toggle?.setAttribute("aria-expanded", "false");
+    setOpen(false);
     toggle?.focus();
   });
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && !panel.hidden) {
-      panel.hidden = true;
-      toggle?.setAttribute("aria-expanded", "false");
-    }
-  });
-  document.addEventListener("click", (e) => {
-    if (panel.hidden) return;
-    if (panel.contains(e.target) || toggle?.contains(e.target)) return;
-    panel.hidden = true;
-    toggle?.setAttribute("aria-expanded", "false");
+    if (e.key === "Escape" && !panel.hidden) setOpen(false);
   });
 }
 
-/* Remembers which of Settings/Help a reader left open, the same
+/* Remembers what a reader left open on each edge, the same
  * localStorage-persisted-sidebar mechanism tutorial pages use (see
  * saveSidebarState()/restoreSidebarState() in tutorial-runtime.js,
- * DECISIONS_LOG.md 7.83) — a returning reader's panel comes back open
- * rather than needing to be reopened, since it's meant to be a permanent
- * pane, not a popover that happens to be open right now. dewmini only
- * ever has one of the two open at a time (both dock to the same right
- * edge), so this stores a single value rather than the tutorial pages'
- * {left, right} pair. */
+ * DECISIONS_LOG.md 7.83) — a returning reader's rails come back open
+ * rather than needing to be reopened, since they are meant to be
+ * permanent panes, not popovers that happen to be open right now.
+ *
+ * A {left, right} pair rather than the single value dewmini stored while
+ * both its panels shared one edge: with a rail on each side, "what is
+ * open" is two independent answers. */
+const SIDEBAR_KEY = "dewlab:dewmini:sidebar";
+
 function saveSidebarState() {
-  const settingsPanel = document.getElementById("dl-settings");
-  const helpPanel = document.getElementById("dm-help");
-  const open = settingsPanel && !settingsPanel.hidden ? "settings"
-    : helpPanel && !helpPanel.hidden ? "help"
-    : null;
+  const openOn = (ids) => ids.find((id) => {
+    const panel = document.getElementById(id);
+    return panel && !panel.hidden;
+  }) || null;
+  // Widths as well as which panel is open. A rail dragged to half the
+  // screen and back to its default on every reload is not a working split
+  // screen, which is the whole reason someone widens one.
+  const widthOf = (id) => {
+    const px = document.getElementById(id)?.style.width;
+    return px ? parseInt(px, 10) : null;
+  };
   try {
-    localStorage.setItem("dewlab:dewmini:sidebar", JSON.stringify({ open }));
+    localStorage.setItem(SIDEBAR_KEY, JSON.stringify({
+      left: openOn(["dm-library"]),
+      right: openOn(["dm-workbench", "dl-settings"]),
+      widths: {
+        "dm-library": widthOf("dm-library"),
+        "dm-workbench": widthOf("dm-workbench"),
+        "dl-settings": widthOf("dl-settings"),
+      },
+    }));
   } catch (e) { /* private mode, blocked storage: nothing to remember */ }
 }
 
@@ -1930,75 +2632,119 @@ function saveSidebarState() {
  * rather than duplicating it. Skipped below the phone breakpoint, where
  * a panel is a bottom sheet covering most of the screen rather than a
  * sidebar worth leaving open by default. */
+const PANEL_TOGGLES = {
+  "dm-library": "dm-library-toggle",
+  "dm-workbench": "dm-workbench-toggle",
+  "dl-settings": "dl-settings-toggle",
+};
+
 function restoreSidebarState() {
   if (!window.matchMedia("(min-width: 34rem)").matches) return;
   let state;
   try {
-    state = JSON.parse(localStorage.getItem("dewlab:dewmini:sidebar") || "{}");
+    state = JSON.parse(localStorage.getItem(SIDEBAR_KEY) || "{}");
   } catch (e) {
     return;
   }
-  const toggleId = state.open === "settings" ? "dl-settings-toggle"
-    : state.open === "help" ? "dm-help-toggle"
-    : null;
-  if (toggleId) document.getElementById(toggleId)?.click();
+  // Widths first, so a restored panel opens at the size it was left rather
+  // than opening at its default and visibly jumping.
+  for (const [id, px] of Object.entries(state.widths || {})) {
+    if (typeof px === "number" && px > 0) {
+      const panel = document.getElementById(id);
+      if (panel) panel.style.width = `${px}px`;
+    }
+  }
+  for (const panelId of [state.left, state.right]) {
+    const toggleId = PANEL_TOGGLES[panelId];
+    if (toggleId) document.getElementById(toggleId)?.click();
+  }
 }
 
-/* Keeps `<html data-dl-panel-open>` in sync with whether Settings or Help
- * is currently visible, regardless of which of their several open/close
- * paths (toggle click, close button, Escape, click-outside, wireSimplePanel's
- * own "opening one closes the other") fired — a MutationObserver on each
+/* Keeps `<html data-dl-panel-left>` / `data-dl-panel-right` in sync with
+ * what is actually open on each edge, regardless of which of a panel's
+ * several open/close paths (toggle click, close button, Escape, another
+ * panel on the same edge opening) fired — a MutationObserver on each
  * panel's `hidden` property, rather than hooking every call site.
- * dewmini-style.css reads the
- * attribute to shrink .dl-page's effective width on wide-enough viewports
- * while a panel is open, so its fixed position (tutorial-style.css's own
- * .dl-settings/.dm-panel) never ends up covering a cell's run/reset/delete
- * buttons or its output.
  *
- * A ResizeObserver on the same panels keeps --dl-panel-w in step with
- * whichever one is actually open's *real* rendered width, not a guess —
- * a docked sidebar can be dragged wider or narrower via its own resize
- * handle at any time, same reasoning as tutorial-runtime.js's own copy
- * (DECISIONS_LOG.md 7.83). */
-function watchPanelOverlap(...panels) {
-  const real = panels.filter(Boolean);
-  if (!real.length) return;
-  const sync = () => {
-    const anyOpen = real.some((p) => !p.hidden);
-    document.documentElement.toggleAttribute("data-dl-panel-open", anyOpen);
-    saveSidebarState();
-  };
-  for (const panel of real) {
-    new MutationObserver(sync).observe(panel, { attributes: true, attributeFilter: ["hidden"] });
-  }
-  // Only the DOM attribute, not a persisted-state write: every panel is
-  // still hidden at this point in startup, before restoreSidebarState()
-  // has had a chance to reopen whatever was actually saved last time —
-  // persisting here would overwrite a real saved preference with
-  // "everything closed" on every single load.
-  document.documentElement.toggleAttribute("data-dl-panel-open", real.some((p) => !p.hidden));
+ * These are the *shared* attributes tutorial-style.css has read since
+ * DECISIONS_LOG.md 7.83, one per edge with its own width variable. dewmini
+ * used to override them with a single `data-dl-panel-open` and one width,
+ * which was a fair simplification while both its panels docked right
+ * (7.84) and is exactly wrong with a rail on each side: one attribute
+ * cannot say which edge to make room on, and one width cannot describe two
+ * panels of different sizes open at once.
+ *
+ * A ResizeObserver keeps each side's width variable in step with its
+ * panel's *real* rendered width rather than a guess, since a docked
+ * sidebar can be dragged wider or narrower at any time. */
+function watchPanelOverlap(sides) {
+  const entries = Object.entries(sides)
+    .map(([side, panels]) => [side, panels.filter(Boolean)])
+    .filter(([, panels]) => panels.length);
+  if (!entries.length) return;
 
-  const widthObserver = new ResizeObserver((entries) => {
-    for (const entry of entries) {
+  const updateAttrs = () => {
+    for (const [side, panels] of entries) {
+      document.documentElement.toggleAttribute(
+        `data-dl-panel-${side}`, panels.some((p) => !p.hidden));
+    }
+  };
+
+  for (const [, panels] of entries) {
+    for (const panel of panels) {
+      new MutationObserver(() => { updateAttrs(); saveSidebarState(); })
+        .observe(panel, { attributes: true, attributeFilter: ["hidden"] });
+    }
+  }
+  // The attributes only, not a persisted-state write: every panel is still
+  // hidden at this point in startup, before restoreSidebarState() has had a
+  // chance to reopen what was actually saved last time — persisting here
+  // would overwrite a real saved preference with "everything closed" on
+  // every single load.
+  updateAttrs();
+
+  const widthObserver = new ResizeObserver((observed) => {
+    for (const entry of observed) {
       const panel = entry.target;
       if (panel.hidden) continue;
-      // offsetWidth, not the observer's own contentRect: the margin
-      // needs to clear the panel's full border box (border + padding),
-      // plus a small gutter so text doesn't sit flush against its edge.
-      document.documentElement.style.setProperty("--dl-panel-w", `${panel.offsetWidth + 16}px`);
+      const side = entries.find(([, panels]) => panels.includes(panel))?.[0];
+      if (!side) continue;
+      // offsetWidth, not the observer's own contentRect: the margin needs
+      // to clear the panel's full border box (border + padding), plus a
+      // small gutter so text doesn't sit flush against its edge.
+      document.documentElement.style.setProperty(`--dl-panel-${side}-w`, `${panel.offsetWidth + 16}px`);
     }
   });
-  for (const panel of real) widthObserver.observe(panel);
+  for (const [, panels] of entries) {
+    for (const panel of panels) widthObserver.observe(panel);
+  }
 }
 
 function initPanels() {
   const settingsPanel = document.getElementById("dl-settings");
-  const helpPanel = document.getElementById("dm-help");
-  makeRightEdgeResizable(settingsPanel, 256, 640); // matches .dl-settings' own min/max-width
-  makeRightEdgeResizable(helpPanel, 256, 640); // matches .dm-panel's own min/max-width
-  wireSimplePanel(settingsPanel, document.getElementById("dl-settings-toggle"), document.getElementById("dl-settings-close"), helpPanel);
-  wireSimplePanel(helpPanel, document.getElementById("dm-help-toggle"), document.getElementById("dm-help-close"), settingsPanel);
-  watchPanelOverlap(settingsPanel, helpPanel);
+  const workbenchPanel = document.getElementById("dm-workbench");
+  const libraryPanel = document.getElementById("dm-library");
+
+  // Every docked panel gets the same full-height strip, on whichever edge
+  // it grows into. The left rail used to rely on native `resize:
+  // horizontal` instead — which works, but puts a small corner triangle
+  // opposite a full-height strip, so the two rails behaved differently for
+  // no reason a reader could see (DECISIONS_LOG.md 7.103). The min/max
+  // mirror each panel's own CSS.
+  makeEdgeResizable(settingsPanel, "right", 256, 640, saveSidebarState);
+  makeEdgeResizable(workbenchPanel, "right", 256, 640, saveSidebarState);
+  makeEdgeResizable(libraryPanel, "left", 256, 640, saveSidebarState);
+
+  // Same-edge panels close each other; opposite-edge ones coexist.
+  wirePanel(settingsPanel, document.getElementById("dl-settings-toggle"),
+            document.getElementById("dl-settings-close"), [workbenchPanel]);
+  wirePanel(workbenchPanel, document.getElementById("dm-workbench-toggle"),
+            document.getElementById("dm-workbench-close"), [settingsPanel],
+            () => refreshVariables());
+  wirePanel(libraryPanel, document.getElementById("dm-library-toggle"),
+            document.getElementById("dm-library-close"), []);
+
+  watchPanelOverlap({ left: [libraryPanel], right: [workbenchPanel, settingsPanel] });
   restoreSidebarState();
 
   // Hide any Settings section that ended up with nothing in it (mirrors the
@@ -2182,13 +2928,13 @@ function initNotes() {
 }
 
 /* Pulses "See an example" on the very first time this page has ever loaded
- * in this browser, then never again — an invitation, not a nag. Only spent
- * when the button will actually be visible (the notebook is empty), so a
- * reader who arrives with cells already in it (an imported .ipynb, say)
- * doesn't burn the one first impression on a hidden button. */
+ * in this browser, then never again — an invitation, not a nag. Still spent
+ * only on an empty notebook: the button now lives in the toolbar and so is
+ * always visible, but a reader arriving with cells already in it (an
+ * imported .ipynb, say) has plainly not come here for the example. */
 function maybeHighlightExample() {
   if (cells.length) return;
-  const btn = document.getElementById("dm-empty-example");
+  const btn = document.getElementById("dm-show-example");
   if (!btn) return;
   try {
     if (localStorage.getItem("dewmini:visited") === "1") return;
@@ -2293,11 +3039,13 @@ function observeThemeChanges() {
  * its own dedicated init*() function above — one line per button, each
  * just calling the one function that actually does the work. */
 function wireToolbar() {
-  document.getElementById("add-python-cell")?.addEventListener("click", () => addCell(CELL_TYPES.PYTHON));
-  document.getElementById("add-text-cell")?.addEventListener("click", () => addCell(CELL_TYPES.TEXT));
+  document.getElementById("new-notebook")?.addEventListener("click", () => {
+    openNotebook(makeNotebook(`Notebook ${notebooks.length + 1}`));
+    updateStatus("New notebook.");
+  });
   document.getElementById("add-practice")?.addEventListener("click", () => addPracticeProblem());
-  document.getElementById("dm-empty-add")?.addEventListener("click", () => addCell(CELL_TYPES.PYTHON, IMPORTS_SNIPPET));
-  document.getElementById("dm-empty-example")?.addEventListener("click", () => loadExampleCells());
+  document.getElementById("dm-add-imports")?.addEventListener("click", () => addCell(CELL_TYPES.PYTHON, IMPORTS_SNIPPET));
+  document.getElementById("dm-show-example")?.addEventListener("click", () => loadExampleCells());
   document.getElementById("dm-help-example-link")?.addEventListener("click", (e) => {
     e.preventDefault();
     loadExampleCells();
@@ -2308,7 +3056,7 @@ function wireToolbar() {
     if (!cells.length) return;
     if (!confirm("Clear every cell? This can't be undone.")) return;
     cells.forEach((c) => c.editor?.destroy());
-    cells = [];
+    setCells([]);
     saveState();
     renderCells();
     updateStatus("Cleared.");
@@ -2344,6 +3092,7 @@ async function init() {
   cellsContainer = document.getElementById("cells-container");
   emptyEl = document.getElementById("dm-empty");
   statusEl = document.getElementById("dm-status");
+  tabsEl = document.getElementById("dm-tabs");
 
   loadSavedState();
   initPanels();
@@ -2355,8 +3104,12 @@ async function init() {
   initRunStatsSetting();
   initStorageSection();
   initExecutionSection();
+  initReferenceSection();
+  initVariablesSection();
+  loadDataCatalogue();
   wireToolbar();
   setupDragAndDrop();
+  renderTabs();
   renderCells();
   maybeHighlightExample();
   trackChromeHeight();

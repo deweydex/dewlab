@@ -61,14 +61,24 @@
     <header class="dl-masthead">
       <a class="dl-wordmark" href="../index.html">dewlab</a>
       <span class="dl-crumbs">compose</span>
+      <!-- Toggle order mirrors docking order: the left-docked rail first,
+           then the two right-docked ones, the same left-pair-then-right
+           convention assets/shell.html uses. Every label is wrapped in
+           .dl-toggle-label so the shared phone rule can drop them and leave
+           icon-only buttons, with aria-label carrying the name — dewmini
+           previously had bare label text, which that rule could not reach. -->
       <div class="dm-masthead-actions">
-        <button type="button" class="dm-help-toggle" id="dm-help-toggle"
-                aria-expanded="false" aria-controls="dm-help" title="Help">
-          <span aria-hidden="true">?</span><span class="dm-help-label">Help</span>
+        <button type="button" class="dm-library-toggle" id="dm-library-toggle"
+                aria-expanded="false" aria-controls="dm-library" aria-label="Library">
+          <span class="dm-library-icon" aria-hidden="true"></span><span class="dl-toggle-label">Library</span>
+        </button>
+        <button type="button" class="dm-workbench-toggle" id="dm-workbench-toggle"
+                aria-expanded="false" aria-controls="dm-workbench" aria-label="Workbench">
+          <span class="dm-workbench-icon" aria-hidden="true"></span><span class="dl-toggle-label">Workbench</span>
         </button>
         <button type="button" class="dl-settings-toggle" id="dl-settings-toggle"
-                aria-expanded="false" aria-controls="dl-settings">
-          <span class="dl-settings-icon" aria-hidden="true"></span>Settings
+                aria-expanded="false" aria-controls="dl-settings" aria-label="Settings">
+          <span class="dl-settings-icon" aria-hidden="true"></span><span class="dl-toggle-label">Settings</span>
         </button>
       </div>
     </header>
@@ -87,11 +97,24 @@
 
     <div class="dm-toolbar">
       <div class="dm-toolbar-group">
-        <button id="add-python-cell" class="dm-tool" title="Add a Python cell">
-          <span class="dm-tool-icon dm-tool-icon-python" aria-hidden="true"></span>Python
+        <button id="new-notebook" class="dm-tool" title="Open another notebook in a new tab">
+          <span class="dm-tool-icon dm-tool-icon-text" aria-hidden="true"></span>New
         </button>
-        <button id="add-text-cell" class="dm-tool" title="Add a documentation cell">
-          <span class="dm-tool-icon dm-tool-icon-text" aria-hidden="true"></span>Text
+      </div>
+      <!-- Three ways to *start* something, rather than two ways to add a
+           cell. Plain "Python" and "Text" buttons lived here until the
+           insert seams between cells took over that job — a seam adds a
+           cell where you are already looking, which is what a toolbar
+           button at the top of a long notebook cannot do. Two buttons for
+           the same action, one of them worse, is one button. The freed
+           space goes to the two openings that had nowhere else to live
+           once a notebook was no longer empty. -->
+      <div class="dm-toolbar-group">
+        <button id="dm-show-example" class="dm-tool dm-tool-accent" title="Fill the notebook with a short worked example">
+          <span class="dm-tool-icon dm-tool-icon-run" aria-hidden="true"></span>See an example
+        </button>
+        <button id="dm-add-imports" class="dm-tool" title="Add a Python cell that imports numpy, pandas and matplotlib">
+          <span class="dm-tool-icon dm-tool-icon-python" aria-hidden="true"></span>Start with imports
         </button>
         <button id="add-practice" class="dm-tool" title="Add a problem from dewlab's practice bank (order set in Settings)">
           <span class="dm-tool-icon dm-tool-icon-text" aria-hidden="true"></span>Practice
@@ -109,6 +132,10 @@
       </div>
     </div>
 
+    <!-- Tab strip, hidden while only one notebook is open (renderTabs()) —
+         a row of tabs with one tab in it is chrome that explains nothing. -->
+    <div class="dm-tabs" id="dm-tabs" role="tablist" aria-label="Open notebooks" hidden></div>
+
     <!-- Import compatibility notice — shown after importing a .ipynb
          that scanPyodideCompatibility() flagged something in. Warns and
          gets out of the way; it never blocks the import itself. -->
@@ -124,14 +151,18 @@
         Cells share one namespace top to bottom, the way a notebook does —
         write something in the first cell and the next one can use it.
       </p>
-      <div class="dm-empty-actions">
-        <button type="button" class="dm-tool dm-tool-accent" id="dm-empty-example">
-          <span class="dm-tool-icon dm-tool-icon-run" aria-hidden="true"></span>See an example
-        </button>
-        <button type="button" class="dm-tool" id="dm-empty-add">
-          <span class="dm-tool-icon dm-tool-icon-python" aria-hidden="true"></span>Start with imports
-        </button>
-      </div>
+      <!-- No buttons of its own any more: "See an example" and "Start with
+           imports" are in the toolbar directly above this, and repeating
+           them an inch lower would be the same duplication the toolbar
+           just shed. -->
+      <p class="dm-panel-note">
+        <strong>Python</strong> or <strong>Text</strong> on the seam below adds
+        a blank cell — and every seam between cells does the same, so you can
+        always add one where you are looking. <strong>See an example</strong>
+        above fills this with a short worked notebook, and
+        <strong>Start with imports</strong> opens a cell with numpy, pandas and
+        matplotlib ready.
+      </p>
     </div>
 
     <div id="cells-container" class="dm-cells"></div>
@@ -139,15 +170,67 @@
 
 </div>
 
-<!-- Help: how this page works and what a cell can call, in the same
-     borderless, dt/dd shape as the reference panels elsewhere — recoloured
-     to dewlab's navy and orange rather than kept in its source palette. -->
-<div class="dm-panel dm-help" id="dm-help" role="dialog" aria-modal="false"
-     aria-labelledby="dm-help-title" hidden>
+<!-- Library: everything you look *up* — the reference, the datasets you can
+     load, and how this page itself works. Docked left, and independent of
+     the two right-docked panels, so a reader can keep a definition open
+     beside their own variables (planning/DEWMINI_WORKBENCH.md §2).
+
+     Help used to be a panel of its own; it is these last five sections now,
+     on planning/SIDEBAR_CONTENT.md §4's reasoning — extend a panel rather
+     than add one, since panels that mutually close each other are more
+     moving parts than they are worth. -->
+<div class="dm-panel dm-panel-left dm-library" id="dm-library" role="dialog" aria-modal="false"
+     aria-labelledby="dm-library-title" hidden>
   <div class="dm-panel-head">
-    <h2 id="dm-help-title">Help</h2>
-    <button type="button" class="dm-panel-close" id="dm-help-close" aria-label="Close help">&times;</button>
+    <h2 id="dm-library-title">Library</h2>
+    <button type="button" class="dm-panel-close" id="dm-library-close" aria-label="Close library">&times;</button>
   </div>
+
+  <!-- Reference: every term every tutorial introduces, not just the ones a
+       reader has reached. Tutorial pages deliberately show only what has
+       been taught so far (planning/REFERENCE_PANEL.md §1); dewmini drops
+       that rule on purpose, because a reader in an open workspace has no
+       position in a series to be protected from — see
+       planning/DEWMINI_WORKBENCH.md §4. Filled by renderReference(). -->
+  <section class="dm-panel-section" id="dm-reference-section">
+    <h3>Reference</h3>
+    <input type="search" class="dm-reference-search" id="dm-reference-search"
+           placeholder="Search every term…" aria-label="Search the reference"
+           autocomplete="off">
+
+    <!-- Two always-visible rows, because they are short and answer the two
+         questions a reader asks first: what subject, and how far in. -->
+    <div class="dm-filter-row" id="dm-reference-subjects" role="group" aria-label="Filter by subject"></div>
+    <div class="dm-filter-row" id="dm-reference-levels" role="group" aria-label="Filter by level"></div>
+
+    <!-- Topics: eleven chips is too many to leave open above a list, and a
+         floating menu would cover the very thing you are filtering. A
+         <details> expands *in flow* instead — the list below moves down, the
+         rail scrolls, and nothing is ever hidden behind anything. The
+         summary reports how many are on, so the state is legible while
+         collapsed. -->
+    <details class="dm-filter-more" id="dm-reference-topics-wrap">
+      <summary><span id="dm-reference-topics-summary">Topics</span></summary>
+      <div class="dm-filter-row" id="dm-reference-topics" role="group" aria-label="Filter by topic"></div>
+    </details>
+
+    <div class="dm-filter-row dm-filter-kinds" id="dm-reference-kinds" role="group" aria-label="Filter by kind"></div>
+    <p class="dm-panel-note" id="dm-reference-status">Loading the reference…</p>
+    <div class="dm-reference-groups" id="dm-reference-groups"></div>
+  </section>
+
+  <!-- Data: what a cell can load, with where it came from and what licence
+       it carries — attribution a student can see rather than one buried in
+       a repository. Filled by renderDataCatalogue(). -->
+  <section class="dm-panel-section" id="dm-data-section">
+    <h3>Data</h3>
+    <p class="dm-panel-note">
+      Pick one and it writes the code to load it into your notebook. Every
+      dataset here is real, and says where it came from.
+    </p>
+    <div class="dm-data-list" id="dm-data-list"></div>
+    <p class="dm-panel-note" id="dm-data-status">Loading the catalogue…</p>
+  </section>
 
   <section class="dm-panel-section">
     <h3>Cells</h3>
@@ -180,10 +263,12 @@
   <section class="dm-panel-section">
     <h3>Keys</h3>
     <dl class="dm-help-list">
-      <div class="dm-help-entry"><dt>Shift+Enter</dt><dd>Run this cell</dd></div>
+      <div class="dm-help-entry"><dt>Shift+Enter</dt><dd>Run this cell, move to the next</dd></div>
+      <div class="dm-help-entry"><dt>Ctrl/Cmd+Enter</dt><dd>Run this cell, stay here</dd></div>
+      <div class="dm-help-entry"><dt>Ctrl/Cmd+F</dt><dd>Find and replace in this cell</dd></div>
       <div class="dm-help-entry"><dt>Tab</dt><dd>Indent, or accept a suggestion</dd></div>
       <div class="dm-help-entry"><dt>Shift+Tab</dt><dd>Outdent</dd></div>
-      <div class="dm-help-entry"><dt>Esc</dt><dd>Close a suggestion list</dd></div>
+      <div class="dm-help-entry"><dt>Esc</dt><dd>Close a suggestion list, or a panel</dd></div>
     </dl>
   </section>
 
@@ -201,7 +286,23 @@
       <div class="dm-help-entry"><dt><code>show_table(frame)</code></dt><dd>Render a DataFrame as a table</dd></div>
       <div class="dm-help-entry"><dt><code>check(actual, expected)</code></dt><dd>A quick right / not-yet</dd></div>
       <div class="dm-help-entry"><dt><code>await load_csv(name)</code></dt><dd>Load a CSV from dewlab's shared data folder, if one's there</dd></div>
+      <div class="dm-help-entry"><dt><code>await load_csv(url)</code></dt><dd>Or a CSV from anywhere on the web</dd></div>
     </dl>
+    <p class="dm-help-note">Reaching the web works a little differently here,
+      and it catches everyone once. Python is inside a browser tab, so it has
+      no network connection of its own — it borrows the browser's.
+      <code>await load_csv(url)</code> already does that for a CSV, and
+      <code>pyfetch</code> is the general version:
+      <code>from pyodide.http import pyfetch</code>, then
+      <code>response = await pyfetch(url)</code> and
+      <code>await response.json()</code>.
+      To make <code>pandas.read_csv("https://…")</code> and
+      <code>requests</code> work the way a snippet you copied expects, run
+      <code>import pyodide_http; pyodide_http.patch_all()</code> once first
+      (<code>requests</code> also needs
+      <code>await micropip.install("requests")</code>). Either way the site
+      you're reading from has to allow other pages to read it; if it doesn't,
+      the error says so.</p>
     <p class="dm-help-note">Python runs off the page's own thread here, which is
       what gives you the Stop button — and what stops <code>text_input</code>,
       <code>dropdown</code>, <code>button</code> and <code>image_input</code>
@@ -236,6 +337,62 @@
   </section>
 </div>
 
+<!-- Workbench: everything about the work in front of you — what your code
+     made, what you wrote down, and the files it can reach. Docked right and
+     mutually exclusive with Settings, which shares that edge. Notes and
+     Files used to live inside Settings; they are here now, because they are
+     your work rather than your configuration
+     (planning/DEWMINI_WORKBENCH.md §2). -->
+<div class="dm-panel dm-workbench" id="dm-workbench" role="dialog" aria-modal="false"
+     aria-labelledby="dm-workbench-title" hidden>
+  <div class="dm-panel-head">
+    <h2 id="dm-workbench-title">Workbench</h2>
+    <button type="button" class="dm-panel-close" id="dm-workbench-close" aria-label="Close workbench">&times;</button>
+  </div>
+
+  <!-- Variables: what is actually in the Python session right now. Without
+       this, a variable a student never printed is invisible, and "did that
+       work?" has no answer short of typing the name and running again. -->
+  <section class="dm-panel-section" id="dm-variables-section">
+    <h3>Variables</h3>
+    <div class="dm-variables-head">
+      <p class="dm-panel-note" id="dm-variables-status">Not started yet — run a cell to start Python.</p>
+      <button type="button" class="dm-tool dm-tool-quiet" id="dm-variables-refresh" title="Look again">Refresh</button>
+    </div>
+    <div class="dm-variables" id="dm-variables"></div>
+    <p class="dm-panel-note dm-variables-shared" id="dm-variables-shared" hidden>
+      Every tab shares one Python session, so a variable you make in one
+      notebook is visible in the others.
+    </p>
+  </section>
+
+  <section class="dm-panel-section" id="dm-notes-section">
+    <h3>Your notes</h3>
+    <p class="dm-panel-note">
+      A scratchpad that stays with this browser, not with any one notebook —
+      for what you are trying, what worked, and what to pick up next time.
+    </p>
+    <textarea class="dl-progress-notes" id="dm-notes" rows="8"
+              placeholder="What are you working on? What did you try?"></textarea>
+  </section>
+
+  <!-- Files: the mounted filesystem a cell can read and write — a real
+       folder, this browser's private storage, or its compatibility
+       fallback, whichever the browser allows (DECISIONS_LOG.md 7.88). -->
+  <section class="dm-panel-section" id="dm-files-section">
+    <h3>Files</h3>
+    <p class="dl-panel-note" id="settings-storage-status">Not started yet — run a cell to start Python.</p>
+    <div class="dl-progress-actions">
+      <button type="button" class="dl-btn dl-btn-secondary" id="settings-choose-folder" hidden>Use a folder on my computer</button>
+      <button type="button" class="dl-btn dl-btn-secondary" id="settings-forget-folder" hidden>Stop using that folder</button>
+      <button type="button" class="dl-btn dl-btn-secondary" id="settings-upload-file">Add a file…</button>
+      <input type="file" id="settings-upload-file-input" multiple hidden>
+    </div>
+    <ul class="dm-filelist" id="settings-file-list" hidden></ul>
+    <p class="dl-panel-note" id="settings-file-note"></p>
+  </section>
+</div>
+
 <!-- Settings: the same shape every dewlab page uses, so a reader who has
      found it once has found it everywhere. Texture is the shared reading
      preferences; Editor is this page's own, for the code itself. -->
@@ -261,42 +418,18 @@
     </div>
   </section>
 
-  <section class="dl-settings-section" id="dl-settings-work">
-    <h3>Your notes</h3>
-    <textarea class="dl-progress-notes" id="dm-notes" rows="4"
-              placeholder="Anything worth writing down as you go."></textarea>
-    <p class="dl-panel-note">Saved in this browser only, alongside your cells.</p>
-  </section>
-
-  <!-- Files a cell writes to disk (a saved .db file, a downloaded
-       dataset) — not the notebook itself, which is the "Keep a copy"
-       section below. Mounted lazily, the same "not until Python starts"
-       rule the rest of dewmini follows (dfs.init(), dewmini-fs.js), and
-       kept to a flat, root-only list rather than a browsable tree — a
-       deliberately small scope for a section that lives inside Settings
-       rather than a panel of its own (DECISIONS_LOG.md 7.88). -->
-  <section class="dl-settings-section" id="dl-settings-storage">
-    <h3>Files</h3>
-    <p class="dl-panel-note" id="settings-storage-status">Not started yet — run a cell to start Python.</p>
-    <div class="dl-progress-actions">
-      <button type="button" class="dl-btn" id="settings-choose-folder">Use a folder on my computer</button>
-      <button type="button" class="dl-btn" id="settings-forget-folder" hidden>Stop using that folder</button>
-    </div>
-    <div class="dl-progress-actions">
-      <button type="button" class="dl-btn" id="settings-upload-file">Upload a file</button>
-    </div>
-    <input type="file" id="settings-upload-file-input" multiple hidden>
-    <ul class="dm-filelist" id="settings-file-list" hidden></ul>
-    <p class="dl-panel-note" id="settings-file-note">Files appear here once Python starts — run any cell.</p>
-  </section>
+  <!-- Notes and Files used to sit here; they are the Workbench's now
+       (planning/DEWMINI_WORKBENCH.md §2) — your work rather than your
+       configuration. -->
 
   <section class="dl-settings-section" id="dl-settings-download">
     <h3>Keep a copy</h3>
     <p class="dl-panel-note">Everything below is saved here as you go. These take a copy with you.</p>
 
-    <label class="dm-filename-label" for="dm-filename">File name</label>
+    <label class="dm-filename-label" for="dm-filename">Notebook name</label>
     <input type="text" id="dm-filename" class="dm-filename-input" placeholder="dewmini-notebook"
-           aria-label="File name for downloads">
+           aria-label="Name for this notebook, used for downloads">
+    <p class="dl-panel-note">This names the tab as well as the file.</p>
 
     <div class="dl-progress-actions">
       <button type="button" class="dl-btn" id="download-python">.py</button>
@@ -311,7 +444,7 @@
     </div>
     <input type="file" id="import-ipynb-file" accept=".ipynb,.py,application/json,text/x-python" hidden>
 
-    <p class="dl-panel-note">Worked examples, real data included — loading one replaces the current notebook:</p>
+    <p class="dl-panel-note">Worked examples, real data included — each opens in a new tab:</p>
     <div class="dl-progress-actions">
       <button type="button" class="dl-btn dl-btn-secondary" data-example="../assets/examples/sql-owid.ipynb">SQL &amp; Our World in Data</button>
       <button type="button" class="dl-btn dl-btn-secondary" data-example="../assets/examples/data-investigation.ipynb">A mini data investigation</button>
@@ -356,7 +489,7 @@
 
     <div class="dl-texture-row">
       <span>Size</span>
-      <input type="range" id="dl-texture-size" min="15" max="24" step="1" aria-label="Text size">
+      <input type="range" id="dl-texture-size" min="16" max="24" step="1" aria-label="Text size">
     </div>
 
     <div class="dl-texture-row">

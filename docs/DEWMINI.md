@@ -30,7 +30,11 @@ over it or tap it, but it's there between every pair of cells if you
 look.
 
 A Python cell runs when you press its **Run** arrow, or press
-**Shift+Enter** inside it. Cells share one set of variables from top to
+**Shift+Enter** inside it — which runs it and moves you to the next
+cell, so you can work down a notebook without reaching for the mouse.
+**Ctrl+Enter** (or **Cmd+Enter**) runs it and stays where you are.
+**Ctrl/Cmd+F** opens find-and-replace inside the cell you're in. Cells
+share one set of variables from top to
 bottom, notebook-style: something an earlier cell defines, a later cell
 can use. **Run all** clears every cell's output and reruns the whole
 page in order, so what's on screen always matches what the code actually
@@ -67,16 +71,20 @@ with the cell, and is never uploaded anywhere.
 
 ## Getting started
 
-An empty page offers two ways to begin. **See an example** loads four
-cells — one that prints something, a small numpy calculation, a text
-cell showing what one looks like once formatted, and a plot — and runs
-them right away, so the first thing you see is dewmini actually doing
+The toolbar offers three ways to begin, and they stay there rather than
+disappearing once you have cells. **See an example** loads four cells —
+one that prints something, a small numpy calculation, a text cell
+showing what one looks like once formatted, and a plot — and runs them
+right away, so the first thing you see is dewmini actually doing
 something, not an explanation of what it could do. **Start with
-imports** instead begins with one cell that imports the packages most
-sessions need (`numpy`, `pandas`, `matplotlib.pyplot`), and leaves the
-rest to you. Either way, the toolbar's **Python**, **Text**, and
-**Practice** buttons — and every gap between cells once you have some —
-let you add more.
+imports** begins with one cell that imports the packages most sessions
+need (`numpy`, `pandas`, `matplotlib.pyplot`), and leaves the rest to
+you. **Practice** adds a problem from dewlab's own practice bank.
+
+To add a cell, use the seam: the thin line between any two cells, and
+above the first, carries **Python** and **Text** buttons. That is the
+only place they live, so a cell always arrives where you were looking
+rather than at the bottom of a page you then have to scroll back up.
 
 ---
 
@@ -136,15 +144,106 @@ to, just the docstring's own example to check your result against.
 
 ---
 
-## Settings
+## More than one notebook
 
-One button in the header opens everything you can change or take with
-you, in sections. It opens as a panel docked down the right-hand side of
-the screen, full height. On a screen wide enough for both, opening
-Settings or Help shrinks the working area rather than covering it, so
-your cells stay fully visible and usable with a panel open. Drag a
-panel's left edge to resize it, and whichever you leave open is still
-open when you come back.
+**New** opens a second notebook in its own tab. Each keeps its own cells,
+its own name, and its own downloads — so a scratch calculation doesn't
+have to live in the middle of a project. Click a tab to switch,
+double-click its name to rename it, and the **×** closes it (it asks
+first, if there's anything in it). The row of tabs only appears once you
+have more than one, so a single notebook looks exactly as it always did.
+
+One thing worth knowing: **every tab shares one Python session.** A
+variable you make in one notebook is visible in another. That is
+sometimes useful and occasionally surprising, which is why the
+Workbench's **Variables** list shows you the one session everything
+shares.
+
+---
+
+## The two side panels
+
+Three buttons in the header, opening panels docked down the sides of the
+screen. Nothing opens by itself — if you came to run three lines and
+leave, you never need to touch any of them.
+
+**Library**, on the left, is everything you look *up*. **Workbench**, on
+the right, is everything about the work in front of you. **Settings** is
+what you change. Because the Library docks to the opposite side from the
+other two, you can keep a definition open beside your own variables;
+Workbench and Settings share the right-hand edge, so opening one closes
+the other.
+
+On a screen wide enough, opening a panel shrinks the working area rather
+than covering it, so your cells stay fully visible. Drag a panel's inner
+edge to resize it. Whatever you leave open is still open when you come
+back, and **Esc** closes a panel — clicking your own code never does, so
+a reference you opened to read while writing stays put.
+
+On a phone, panels slide up from the bottom instead.
+
+### Library
+
+**Reference** — every term, function and operator any dewlab tutorial
+introduces, in one searchable list, with the tutorial that introduced
+each one named underneath it. Unlike a tutorial page's own reference,
+which shows only what you have been taught so far, this one shows
+everything — in a workspace with no tutorial attached there's no "so
+far" to go by, and hiding two-thirds of it would just be unhelpful.
+
+Search it, or narrow it with the buttons above the list:
+
+- **Maths** and **Computing**, from the modules a term's tutorial
+  belongs to. A tutorial that covers both is filed under both.
+- **Beginner**, **Intermediate** and **Advanced**, from how many layers
+  of groundwork sit under what that tutorial teaches. Nothing is
+  labelled by hand — this is read off the topic map, so it stays true to
+  the map rather than to whoever last remembered to update it.
+- **Topics** folds open for the broader groupings (trigonometry,
+  matrices, simulation, and so on), and **kind** for concepts,
+  functions, operators, formulas and keywords.
+
+Each button says how many terms it would leave, so one that would empty
+the list tells you before you press it. Picking two in the same row
+means *either*, not both. A term from a tutorial that claims no outcomes
+is filed under **Unfiled** rather than hidden.
+
+**Data** — real datasets you can load, each saying where it came from
+and what licence it carries. Pick one and it writes a working cell into
+your notebook. Some are already in dewlab; others are fetched from the
+web when you run the cell, which needs a connection and needs that site
+to allow it (if it doesn't, the error says so, and says what to do
+instead — download the file and add it through Files).
+
+The rest of the Library is what used to be **Help**: how cells work, the
+keyboard shortcuts, what a cell can call, and how your work is kept.
+
+### Workbench
+
+**Variables** — what's actually in your Python session right now: every
+name, its type, and a short summary of its value (how many rows a table
+has, how many items a list holds, what a number is). It updates every
+time you run a cell. This answers a question that was awkward before —
+"did that actually work?" — without printing everything twice. Functions
+and modules fold away under their own line, so your own variables stay
+at the top.
+
+**Your notes** — a place to jot down anything worth remembering as you
+work. It stays with this browser rather than with any one notebook.
+
+**Files** — a real filesystem a cell can read and write to, separate
+from the notebook itself (that's "Keep a copy," in Settings). By default
+it's private, invisible storage inside your browser; **Use a folder on
+my computer** switches to a real folder instead, in a browser that
+supports it (Chrome or Edge), so files a cell writes actually appear on
+your computer where you can see them — a `sqlite3` database a cell
+creates, a chart a cell saves to disk, anything `open()` can write.
+**Add a file…** brings an existing file from your device into whichever
+storage is active, for a cell to read back with a plain `open()`. The
+list below shows what's there, with a way to delete anything you no
+longer need.
+
+### Settings
 
 **Python** — shows how Python is currently running (in a background
 worker, so a runaway cell can be stopped without freezing the page; or
@@ -155,29 +254,14 @@ so far is discarded, though your cells and their code are untouched.
 Below that, the **Run time** switch turns the small "ran in…" line under
 a cell's output on or off.
 
-**Your notes** — a place to jot down anything worth remembering as you
-work, saved along with your cells.
-
-**Files** — a real filesystem a cell can read and write to, separate
-from the notebook itself (that's "Keep a copy," below). By default it's
-private, invisible storage inside your browser; **Use a folder on my
-computer** switches to a real folder instead, in a browser that
-supports it (Chrome or Edge), so files a cell writes actually appear on
-your computer where you can see them — a `sqlite3` database a cell
-creates, a chart a cell saves to disk, anything `open()` can write.
-**Upload a file** adds an existing file from your device into whichever
-storage is active, for a cell to read back with a plain `open()`. The
-list below shows what's there, with a way to delete anything you no
-longer need.
-
-**Keep a copy** — a name for your session, used in every download below
-and shown in the browser tab, so "print to PDF" and file downloads
-suggest something more useful than a default name. Below it: download
-as a Python file, a standalone HTML page, or a Jupyter notebook; print —
-or save as PDF — with just the code and its output, none of the page's
-own header and buttons; and load a `.ipynb` or `.py` file back in, from
-here or anywhere else, to keep working on it — replacing the current
-notebook. A `.py` file dewmini itself exported comes back exactly as it
+**Keep a copy** — the name of the notebook you're looking at, which is
+also its tab's name and the name every download below uses. Then:
+download as a Python file, a standalone HTML page, or a Jupyter
+notebook; print — or save as PDF — with just the code and its output,
+none of the page's own header and buttons; and load a `.ipynb` or `.py`
+file back in, from here or anywhere else, to keep working on it. An
+import **opens in a new tab**, so it never lands on top of what you were
+doing. A `.py` file dewmini itself exported comes back exactly as it
 was, cell by cell, including its text cells; a plain, unmarked `.py`
 script comes back as one Python cell. A notebook written outside dewmini
 can bring along things Pyodide's Python genuinely can't run (a `tkinter`
@@ -186,7 +270,7 @@ warning banner names exactly which imported cell each one is in, right
 after the import.
 
 Four ready-made examples sit right below that import button — real
-data included, loaded the same way a picked file would be: **SQL & Our
+data included, each opening in its own tab: **SQL & Our
 World in Data** (`sqlite3` and `run_query()` against real CO₂ emissions
 data), **a mini data investigation** (has life expectancy converged
 worldwide since 1950?), **a fun math problem** (estimating π by
@@ -214,9 +298,9 @@ changes how the code runs — only how it looks.
 Everything you type in dewmini saves to the browser you typed it in, as
 you type it — nothing is sent anywhere, and nothing is scored. That also
 means your work stays on that one browser and that one device; to move
-it somewhere else, use one of the downloads in Settings, or the Files
-section's own "use a folder on my computer" if what you want to keep is
-a file a cell wrote, not the notebook itself.
+it somewhere else, use one of the downloads in Settings, or the
+Workbench's Files section and its "use a folder on my computer" if what
+you want to keep is a file a cell wrote, not the notebook itself.
 
 - **`.py`** joins every Python cell together with a separator, and turns
   each text cell into a comment block, so the whole session reads as one
