@@ -6,8 +6,16 @@
 /dev/pyodide/
 
 # Vendor toolchain. assets/vendor/ IS committed; what builds it is not.
+#
+# package-lock.json IS committed, and has to be. package.json pins direct
+# dependencies exactly, but several of them depend on packages through
+# version ranges, and npm installs a separate nested copy whenever a range
+# cannot be satisfied by our pin. Without a lockfile those nested copies are
+# re-resolved on every install, so a fresh build produces different bundles
+# from one day to the next and standalone-bundle-is-current fails on commits
+# that changed no code at all. The lockfile freezes them; CI uses `npm ci`,
+# which installs exactly what it records.
 /vendor-src/node_modules/
-/vendor-src/package-lock.json
 
 # The one exception to "assets/vendor/ IS committed": Pyodide's own runtime
 # for the downloadable dewmini bundle (build.py's write_dewmini_bundle())
