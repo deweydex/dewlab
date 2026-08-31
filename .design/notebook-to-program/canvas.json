@@ -1,0 +1,34 @@
+{
+  "artboards": [
+    { "file": "Main.dc.html", "x": 0, "y": 0, "w": 1560, "h": 700, "title": "Where the code lives" },
+    { "file": "Today.dc.html", "x": 0, "y": 900, "w": 1180, "h": 880, "title": "1 — Today" },
+    { "file": "TheCliff.dc.html", "x": 1300, "y": 900, "w": 1180, "h": 880, "title": "2 — The cliff" },
+    { "file": "Extract.dc.html", "x": 2600, "y": 900, "w": 1180, "h": 880, "title": "3 — Extract" },
+    { "file": "AfterExtract.dc.html", "x": 3900, "y": 900, "w": 1180, "h": 880, "title": "4 — After" },
+    { "file": "RunProject.dc.html", "x": 5200, "y": 900, "w": 1180, "h": 880, "title": "5 — Run it" }
+  ],
+  "annotations": [
+    {
+      "id": "brief",
+      "x": 1660,
+      "y": 0,
+      "w": 300,
+      "text": "The question this answers:\nwhat does \"a path from notebook to program\" actually look like on screen?\n\nStatic mockups, not a working prototype."
+    },
+    {
+      "id": "flow-beats",
+      "x": 0,
+      "y": 760,
+      "w": 420,
+      "text": "Read the row below left to right. Screens 1 and 2 are dewmini as it is today. Screens 3–5 are the proposal."
+    },
+    {
+      "id": "the-hinge",
+      "x": 2600,
+      "y": 760,
+      "w": 380,
+      "text": "The hinge. Everything before this is the problem; everything after is one move at a time, with a working notebook in between."
+    }
+  ],
+  "launch": { "view": "canvas" }
+}

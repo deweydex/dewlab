@@ -1,0 +1,149 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    body { margin: 0; font-family: Georgia, "Iowan Old Style", "Times New Roman", serif; }
+    a { color: #d4692a; } a:hover { color: #b4551f; }
+    .mono { font-family: "SF Mono", "Cascadia Mono", Menlo, Consolas, monospace; }
+    .pill { font-family: "SF Mono", "Cascadia Mono", Menlo, Consolas, monospace; font-size: 12px;
+            letter-spacing: 0.04em; text-transform: uppercase; color: #5f6b7a;
+            border: 1px solid #ddd7cd; border-radius: 999px; padding: 2px 10px; }
+    .code { font-family: "SF Mono", "Cascadia Mono", Menlo, Consolas, monospace; font-size: 15px;
+            line-height: 1.55; background: #f6f4f0; border: 1px solid #ddd7cd; border-radius: 4px;
+            padding: 11px 13px; color: #1a1a1a; white-space: pre; }
+    .out { font-family: "SF Mono", "Cascadia Mono", Menlo, Consolas, monospace; font-size: 15px;
+           line-height: 1.5; background: #fbfaf8; border-radius: 4px; padding: 10px 13px;
+           margin-top: 9px; color: #1a1a1a; }
+    .h3 { font-size: 14.5px; color: #1b2a4a; margin: 0 0 10px; }
+    .frow { display: flex; align-items: center; gap: 9px; padding: 6px 8px; border-radius: 4px;
+            font-family: "SF Mono", "Cascadia Mono", Menlo, Consolas, monospace; font-size: 13px; }
+  </style>
+</helmet>
+
+<div style="width: 1180px; height: 880px; box-sizing: border-box; background: #fdfcfa; color: #1a1a1a; display: flex; flex-direction: column;">
+
+  <div style="border-bottom: 1px solid #e2ddd5; padding: 14px 28px; display: flex; align-items: center; gap: 14px;">
+    <span style="font-size: 19px; color: #1b2a4a;">dewlab</span>
+    <span class="mono" style="font-size: 12.5px; color: #5f6b7a;">compose</span>
+    <span style="flex: 1;"></span>
+    <span class="mono" style="font-size: 13px; padding: 6px 12px; border: 1px solid #1b2a4a; border-radius: 5px; background: #1b2a4a; color: #fff;">Workbench</span>
+  </div>
+
+  <div style="padding: 24px 28px 0;">
+    <div style="display: flex; align-items: baseline; gap: 12px;">
+      <h1 style="margin: 0; font-size: 25px; color: #1b2a4a;">One move, nothing broken</h1>
+      <span class="mono" style="font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; color: #1f6b3f;">4 &mdash; after extracting</span>
+    </div>
+  </div>
+
+  <div style="flex: 1; padding: 18px 0 24px 28px; display: flex; gap: 0; align-items: stretch;">
+
+    <!-- notebook -->
+    <div style="flex: 1; display: flex; flex-direction: column; gap: 15px; padding-right: 24px;">
+
+      <div>
+        <div style="margin-bottom: 8px;"><span class="pill">Python</span></div>
+        <div class="code">marks = [72, 65, 88, 41, 90]</div>
+      </div>
+
+      <div>
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+          <span class="pill">Python</span>
+          <span class="mono" style="font-size: 12px; color: #d4692a;">extracted</span>
+        </div>
+        <div class="code" style="border-color: #d4692a;">from grades import average
+
+average(marks)</div>
+        <div class="out">71.2</div>
+      </div>
+
+      <div>
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+          <span class="pill">Python</span>
+          <span class="mono" style="font-size: 12px; color: #1f6b3f;">untouched, still runs</span>
+        </div>
+        <div class="code">if average(marks) &gt;= 70:
+    band = "Distinction"
+band</div>
+        <div class="out">'Distinction'</div>
+      </div>
+
+      <div style="border-left: 2px solid #1f6b3f; padding-left: 12px; font-size: 14.5px; line-height: 1.55; margin-top: 4px;">
+        <strong>The output did not change.</strong> That is the whole point &mdash; the student moved one
+        thing and the notebook kept working, so the next move is a decision rather than a rescue.
+      </div>
+
+    </div>
+
+    <!-- workbench rail -->
+    <div style="width: 340px; border-left: 1px solid #ddd7cd; background: #ffffff; padding: 18px 20px; display: flex; flex-direction: column; gap: 22px;">
+      <div style="display: flex; align-items: center; justify-content: space-between;">
+        <span class="mono" style="font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; color: #5f6b7a;">Workbench</span>
+        <span style="color: #5f6b7a; font-size: 18px;">&times;</span>
+      </div>
+
+      <div>
+        <h3 class="h3">Variables</h3>
+        <div style="display: flex; flex-direction: column; gap: 5px;">
+          <div class="frow" style="background: #f6f4f0;">
+            <span style="color: #1b2a4a;">marks</span>
+            <span style="flex: 1;"></span>
+            <span style="color: #5f6b7a;">list &middot; 5 items</span>
+          </div>
+          <div class="frow" style="background: #f6f4f0;">
+            <span style="color: #1b2a4a;">average</span>
+            <span style="flex: 1;"></span>
+            <span style="color: #5f6b7a;">function</span>
+          </div>
+          <div class="frow" style="background: #f6f4f0;">
+            <span style="color: #1b2a4a;">band</span>
+            <span style="flex: 1;"></span>
+            <span style="color: #5f6b7a;">str</span>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h3 class="h3">Files</h3>
+        <div style="display: flex; flex-direction: column; gap: 3px;">
+          <div class="frow" style="background: #f6f4f0; border: 1px solid #d4692a;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#d4692a" stroke-width="1.7" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"></path><path d="M14 3v5h5"></path></svg>
+            <span style="color: #1a1a1a;">grades.py</span>
+            <span style="flex: 1;"></span>
+            <span class="mono" style="font-size: 11px; color: #1f6b3f;">new</span>
+          </div>
+          <div class="frow">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#5f6b7a" stroke-width="1.7" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"></path><path d="M14 3v5h5"></path></svg>
+            <span style="color: #5f6b7a;">marks.csv</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="border: 1px solid #ddd7cd; border-radius: 5px; overflow: hidden;">
+        <div style="background: #f6f4f0; border-bottom: 1px solid #ddd7cd; padding: 7px 11px;">
+          <span class="mono" style="font-size: 12px; color: #1b2a4a;">grades.py</span>
+        </div>
+        <div class="mono" style="font-size: 12.5px; line-height: 1.6; padding: 11px; white-space: pre; color: #1a1a1a;">def average(marks):
+    total = 0
+    for m in marks:
+        total = total + m
+    return total / len(marks)</div>
+      </div>
+
+      <div style="border-left: 2px solid #d4692a; padding-left: 11px; font-size: 13.5px; line-height: 1.5;">
+        A <span class="mono" style="font-size: 12.5px;">.py</span> in the workspace is now
+        <strong>importable</strong> &mdash; today dewmini can only read one <em>as cells</em>, replacing the notebook.
+      </div>
+    </div>
+
+  </div>
+</div>
+</x-dc>
+</body>
+</html>

@@ -1,0 +1,123 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    body { margin: 0; font-family: Georgia, "Iowan Old Style", "Times New Roman", serif; }
+    a { color: #d4692a; } a:hover { color: #b4551f; }
+    .mono { font-family: "SF Mono", "Cascadia Mono", Menlo, Consolas, monospace; }
+  </style>
+</helmet>
+
+<div style="width: 1560px; height: 700px; box-sizing: border-box; background: #fdfcfa; padding: 40px 44px; color: #1a1a1a;">
+
+  <div style="display: flex; align-items: baseline; gap: 14px; margin-bottom: 4px;">
+    <h1 style="margin: 0; font-size: 27px; color: #1b2a4a; letter-spacing: -0.01em;">Where the code lives</h1>
+    <span class="mono" style="font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; color: #5f6b7a;">notebook &rarr; program</span>
+  </div>
+  <p style="margin: 0 0 30px; font-size: 15px; color: #5f6b7a; max-width: 96ch; line-height: 1.55; text-wrap: pretty;">
+    The same five lines of a student&rsquo;s code, at three stages. What changes is not the logic &mdash; it is
+    <em>where the logic lives</em> and <em>what holds it together</em>. Today dewmini supports only the left column.
+  </p>
+
+  <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 30px; align-items: start;">
+
+    <!-- ------------------------------------------------ stage 1 -->
+    <div style="display: flex; flex-direction: column; gap: 12px;">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span class="mono" style="font-size: 11px; width: 20px; height: 20px; border-radius: 999px; background: #1b2a4a; color: #fff; display: inline-flex; align-items: center; justify-content: center;">1</span>
+        <span class="mono" style="font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; color: #1b2a4a;">Now</span>
+      </div>
+
+      <div style="border: 1px solid #ddd7cd; border-radius: 6px; background: #ffffff; padding: 16px 18px 18px;">
+        <div class="mono" style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #5f6b7a; margin-bottom: 12px;">The notebook</div>
+        <div style="display: flex; flex-direction: column; gap: 7px;">
+          <div class="mono" style="font-size: 12.5px; background: #f6f4f0; border: 1px solid #ddd7cd; border-radius: 4px; padding: 7px 9px; color: #1a1a1a;">marks = [72, 65, &hellip;]</div>
+          <div class="mono" style="font-size: 12.5px; background: #f6f4f0; border: 1px solid #ddd7cd; border-radius: 4px; padding: 7px 9px; color: #1a1a1a;">total = 0 &hellip; average = &hellip;</div>
+          <div class="mono" style="font-size: 12.5px; background: #f6f4f0; border: 1px solid #ddd7cd; border-radius: 4px; padding: 7px 9px; color: #1a1a1a;">if average &gt;= 70: band = &hellip;</div>
+          <div class="mono" style="font-size: 12.5px; background: #f6f4f0; border: 1px solid #ddd7cd; border-radius: 4px; padding: 7px 9px; color: #1a1a1a;">print(average, band)</div>
+        </div>
+      </div>
+
+      <div style="border-left: 2px solid #d4692a; padding: 2px 0 2px 12px; display: flex; flex-direction: column; gap: 8px;">
+        <p style="margin: 0; font-size: 13.5px; line-height: 1.5; color: #1a1a1a;">
+          Every name is <strong>global</strong>. Nothing marks which lines belong together.
+        </p>
+        <p style="margin: 0; font-size: 13.5px; line-height: 1.5; color: #1a1a1a;">
+          The <strong>program is the cell order</strong> &mdash; and the cell order is not written down anywhere.
+        </p>
+      </div>
+    </div>
+
+    <!-- ------------------------------------------------ stage 2 -->
+    <div style="display: flex; flex-direction: column; gap: 12px;">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span class="mono" style="font-size: 11px; width: 20px; height: 20px; border-radius: 999px; background: #1b2a4a; color: #fff; display: inline-flex; align-items: center; justify-content: center;">2</span>
+        <span class="mono" style="font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; color: #1b2a4a;">After extracting</span>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 10px;">
+        <div style="border: 1px solid #ddd7cd; border-radius: 6px; background: #ffffff; padding: 16px 18px 18px;">
+          <div class="mono" style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #5f6b7a; margin-bottom: 12px;">The notebook</div>
+          <div style="display: flex; flex-direction: column; gap: 7px;">
+            <div class="mono" style="font-size: 12.5px; background: #f6f4f0; border: 1px solid #ddd7cd; border-radius: 4px; padding: 7px 9px;">marks = [72, 65, &hellip;]</div>
+            <div class="mono" style="font-size: 12.5px; background: #fbfaf8; border: 1px solid #d4692a; border-radius: 4px; padding: 7px 9px; color: #1b2a4a;">from grades import average<br>average(marks)</div>
+            <div class="mono" style="font-size: 12.5px; background: #fbfaf8; border: 1px solid #d4692a; border-radius: 4px; padding: 7px 9px; color: #1b2a4a;">band(average(marks))</div>
+          </div>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 8px; padding-left: 4px;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d4692a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 4v16"></path><path d="M6 14l6 6 6-6"></path>
+          </svg>
+          <span class="mono" style="font-size: 11.5px; color: #d4692a;">extracted, one at a time</span>
+        </div>
+
+        <div style="border: 1px solid #ddd7cd; border-radius: 6px; background: #ffffff; padding: 16px 18px 18px;">
+          <div class="mono" style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #5f6b7a; margin-bottom: 12px;">grades.py</div>
+          <div class="mono" style="font-size: 12.5px; background: #f6f4f0; border: 1px solid #ddd7cd; border-radius: 4px; padding: 9px; line-height: 1.6; color: #1a1a1a;">def average(marks):<br>&nbsp;&nbsp;&hellip;<br><br>def band(score):<br>&nbsp;&nbsp;&hellip;</div>
+        </div>
+      </div>
+
+      <div style="border-left: 2px solid #d4692a; padding: 2px 0 2px 12px;">
+        <p style="margin: 0; font-size: 13.5px; line-height: 1.5;">
+          The notebook <strong>still runs</strong> after every move. One thing changes at a time, so a break has one cause.
+        </p>
+      </div>
+    </div>
+
+    <!-- ------------------------------------------------ stage 3 -->
+    <div style="display: flex; flex-direction: column; gap: 12px;">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span class="mono" style="font-size: 11px; width: 20px; height: 20px; border-radius: 999px; background: #1b2a4a; color: #fff; display: inline-flex; align-items: center; justify-content: center;">3</span>
+        <span class="mono" style="font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; color: #1b2a4a;">As a program</span>
+      </div>
+
+      <div style="border: 1px solid #ddd7cd; border-radius: 6px; background: #ffffff; padding: 16px 18px 18px;">
+        <div class="mono" style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #5f6b7a; margin-bottom: 12px;">main.py</div>
+        <div class="mono" style="font-size: 12.5px; background: #f6f4f0; border: 1px solid #ddd7cd; border-radius: 4px; padding: 9px; line-height: 1.65; color: #1a1a1a;">from grades import average, band<br><br>def main():<br>&nbsp;&nbsp;marks = read_marks(&hellip;)<br>&nbsp;&nbsp;print(average(marks), &hellip;)<br><br>main()</div>
+      </div>
+
+      <div style="border: 1px solid #ddd7cd; border-radius: 6px; background: #ffffff; padding: 16px 18px 18px;">
+        <div class="mono" style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #5f6b7a; margin-bottom: 12px;">grades.py</div>
+        <div class="mono" style="font-size: 12.5px; background: #f6f4f0; border: 1px solid #ddd7cd; border-radius: 4px; padding: 9px; line-height: 1.6; color: #1a1a1a;">def average(marks):&nbsp;&hellip;<br>def band(score):&nbsp;&hellip;</div>
+      </div>
+
+      <div style="border-left: 2px solid #1b2a4a; padding: 2px 0 2px 12px;">
+        <p style="margin: 0; font-size: 13.5px; line-height: 1.5;">
+          <span class="mono" style="font-size: 12.5px;">main()</span> is now the thing the cell order used to be &mdash;
+          written down, and runnable without the notebook.
+        </p>
+      </div>
+    </div>
+
+  </div>
+</div>
+</x-dc>
+</body>
+</html>
