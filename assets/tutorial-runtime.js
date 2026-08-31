@@ -985,17 +985,33 @@ function initTexture(onThemeChange) {
 /* ---------------------------------------------------------------- status */
 
 const statusEl = document.getElementById("dl-status");
+/* The status text lives in its own child rather than directly in statusEl,
+ * so setStatus() can rewrite it on every boot-progress message without
+ * touching (and re-hiding) the bouncing dots sitting next to it. */
+const statusTextEl = document.getElementById("dl-status-text");
+const bootDotsEl = document.getElementById("dl-boot-dots");
 
 function setStatus(text, kind) {
   if (!statusEl) return;
   if (!text) {
     statusEl.hidden = true;
-    statusEl.textContent = "";
+    if (statusTextEl) statusTextEl.textContent = "";
     return;
   }
   statusEl.hidden = false;
-  statusEl.textContent = text;
+  if (statusTextEl) statusTextEl.textContent = text;
   statusEl.classList.toggle("dl-status-error", kind === "error");
+}
+
+/* Greys out every cell's editor and shows the bouncing dots next to the
+ * status text, for as long as Pyodide is actually booting — not for the
+ * "unavailable" state a failed boot leaves behind, which gets its own
+ * error banner instead (see ensureBooted()'s catch below). One attribute
+ * on <html> rather than a class, matching the data-dl-panel-left/right
+ * convention above. */
+function setBooting(active) {
+  document.documentElement.toggleAttribute("data-dl-booting", active);
+  if (bootDotsEl) bootDotsEl.hidden = !active;
 }
 
 /* ----------------------------------------------------------------- cells */
@@ -1962,6 +1978,7 @@ tutorial_tools._page_globals["__name__"] = "__dewlab__"
 `);
 
   setStatus("");
+  setBooting(false);
   pyodideReady = true;
   setRunnable(true, "Run");
   loadJediMT();
@@ -2103,6 +2120,7 @@ async function bootWorker(manifest) {
     worker.postMessage({ type: "set-interrupt-buffer", buffer: interruptBuffer });
   }
 
+  setBooting(false);
   pyodideReady = true;
   setRunnable(true, "Run");
 }
@@ -2172,8 +2190,10 @@ function boot(manifest) {
  * retry gets a fresh attempt instead of replaying the same failure. */
 function ensureBooted(manifest) {
   if (!bootPromise) {
+    setBooting(true);
     bootPromise = boot(manifest).catch((err) => {
       console.error("dewlab: Pyodide failed to start", err);
+      setBooting(false);
       setStatus(
         err.dewlabFinal
           ? err.message
