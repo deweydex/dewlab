@@ -55,6 +55,11 @@ const TEXTURE_DEFAULTS = {
   link: "#d4692a", header: "full",
 };
 
+/* The size slider's minimum, which has to be known here as well as in the
+ * markup: a preference saved when the floor was lower is lifted to it on
+ * load (loadTexture). Keep in step with `min=` on #dl-texture-size. */
+const TEXTURE_MIN_SIZE = 16;
+
 /* -------------------------------------------------------------- manifest */
 
 /* Every tutorial page build.py generates carries a <script id="dewlab-manifest">
@@ -867,11 +872,18 @@ function isDarkNow() {
  * nothing, and a broken preference should never be able to crash the
  * whole page. */
 function loadTexture() {
+  let state;
   try {
-    return { ...TEXTURE_DEFAULTS, ...JSON.parse(localStorage.getItem(TEXTURE_KEY) || "{}") };
+    state = { ...TEXTURE_DEFAULTS, ...JSON.parse(localStorage.getItem(TEXTURE_KEY) || "{}") };
   } catch (err) {
     return { ...TEXTURE_DEFAULTS };
   }
+  /* The size slider's floor went from 15px to 16px (DECISIONS_LOG 7.101),
+   * so a preference saved before that can be below the control's own
+   * minimum — the slider would then show a thumb that does not match the
+   * page. Lift it rather than leaving the two disagreeing. */
+  if (!(state.size >= TEXTURE_MIN_SIZE)) state.size = TEXTURE_MIN_SIZE;
+  return state;
 }
 
 /* The write side of loadTexture — same try/catch-and-shrug shape, since a

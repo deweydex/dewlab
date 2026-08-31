@@ -177,7 +177,24 @@
     <input type="search" class="dm-reference-search" id="dm-reference-search"
            placeholder="Search every term…" aria-label="Search the reference"
            autocomplete="off">
-    <div class="dm-reference-kinds" id="dm-reference-kinds" role="group" aria-label="Filter by kind"></div>
+
+    <!-- Two always-visible rows, because they are short and answer the two
+         questions a reader asks first: what subject, and how far in. -->
+    <div class="dm-filter-row" id="dm-reference-subjects" role="group" aria-label="Filter by subject"></div>
+    <div class="dm-filter-row" id="dm-reference-levels" role="group" aria-label="Filter by level"></div>
+
+    <!-- Topics: eleven chips is too many to leave open above a list, and a
+         floating menu would cover the very thing you are filtering. A
+         <details> expands *in flow* instead — the list below moves down, the
+         rail scrolls, and nothing is ever hidden behind anything. The
+         summary reports how many are on, so the state is legible while
+         collapsed. -->
+    <details class="dm-filter-more" id="dm-reference-topics-wrap">
+      <summary><span id="dm-reference-topics-summary">Topics</span></summary>
+      <div class="dm-filter-row" id="dm-reference-topics" role="group" aria-label="Filter by topic"></div>
+    </details>
+
+    <div class="dm-filter-row dm-filter-kinds" id="dm-reference-kinds" role="group" aria-label="Filter by kind"></div>
     <p class="dm-panel-note" id="dm-reference-status">Loading the reference…</p>
     <div class="dm-reference-groups" id="dm-reference-groups"></div>
   </section>
@@ -452,7 +469,7 @@
 
     <div class="dl-texture-row">
       <span>Size</span>
-      <input type="range" id="dl-texture-size" min="15" max="24" step="1" aria-label="Text size">
+      <input type="range" id="dl-texture-size" min="16" max="24" step="1" aria-label="Text size">
     </div>
 
     <div class="dl-texture-row">

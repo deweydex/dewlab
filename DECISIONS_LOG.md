@@ -4294,3 +4294,85 @@ warned before it runs rather than after.
 *Cost to change: small in code, wide in reach — this touches the shared
 engine's boot, so it changes tutorial pages too. Justified on the same
 grounds: a tutorial cell hits the identical wall.*
+
+---
+
+**7.101 — The reference's categories are derived, never tagged; and the
+rail's smallest text gets a floor.** Three asks in one message, all of them
+about the Library rail: a topics row that drops down without covering what
+it filters, a check that the whole rail obeys the Texture slider, and — the
+one that changed the design — "the layers are actually a great proxy for
+beginner intermediate advanced! That way if we change the tree later (which
+we inevitably will) it automatically changes the search."
+
+**That is the whole scheme, and it is better than what it replaced.** The
+first pass had subject and level as things someone would maintain. Reading
+them off data that already exists means they cannot drift from the thing
+they describe:
+
+- **Subject** comes from the learning-outcome codes a tutorial already
+  claims in `covers:`. The *prefix* is the key and `strand` is not: PDP-LO2
+  ("algorithms") shares a strand with several MIT outcomes, so strands cut
+  across the maths/computing line rather than along it. MIT is the maths
+  module; PDP and CMPS are the computing ones. Seven tutorials claim an
+  outcome from each side and are filed under both, which is not a fudge to
+  avoid choosing — a term introduced there genuinely belongs to both.
+- **Level** comes from `topic_tiers()`, the prerequisite depth of the
+  `needs:` graph. Nothing is hand-tagged, so rearranging the tree re-files
+  every term on the next build with nobody having retagged anything. There
+  is a test that does exactly that: slide three layers of groundwork under
+  a topic, rebuild, watch a term move from beginner to advanced while its
+  tutorial is untouched.
+
+**Deepest outcome, not shallowest.** `min()` was tried first and is worse in
+both directions: it rates a tutorial by its easiest moment, which put 150 of
+222 terms in "beginner", and it would cheerfully tell someone in week one
+that a tutorial needing four layers of groundwork is approachable. Erring
+deep is the kinder error. Bands at ≤2 / ≤3 against the real spread
+(22/16/5 tutorials); the obvious alternative ≤1 / ≤3 collapses to 10/28/5,
+which makes "intermediate" mean almost everything and so mean nothing.
+
+**A tutorial claiming no outcomes is left unfiled, not guessed at.** Two
+real ones do, plus every practice page. The row offers "Unfiled" as a value
+of its own, so those terms stay reachable instead of vanishing the moment
+any subject is chosen.
+
+**The topic row is a `<details>` in the normal flow, not a popover.** Asked
+for directly — it must not cover the results. So opening it pushes the list
+down, and there is a test that measures the row's bottom edge against the
+list's top edge rather than trusting a screenshot. Subject and level stay on
+the surface because they are the two anyone reaches for; topic and kind fold
+away because they are longer rows that would push the results off-screen
+before a reader had seen any. A folded row that is silently filtering is a
+trap, so the summary reports its own state ("Topics · 1 on").
+
+**The group list is read off the data too — found by a test, not by
+reading.** The topic row was drawing from a hand-kept list of group keys in
+`dewmini.js`, which meant a group added to `topic-groups.yaml` would get no
+chip and nobody would notice. That is precisely the drift the rest of this
+entry is about, arriving through the one door left open. The curated short
+labels stay (the file's own names are page headings — "Trigonometry —
+triangles, circles, and waves" — and far too long for a chip), but they are
+now an *override*: the groups themselves come from the entries, and an
+unlabelled one gets its key turned back into words, which is a visible
+prompt to come and name it.
+
+**"A bit small for tired eyes" was right, and measurably so.** The rail does
+scale with the slider — everything is in `rem` off `--dl-font-size` on
+`html`, which was already true — but at the old floor of 15px the filter
+chips rendered at 10.2px, the kind badge at 9.6px. The slider minimum moves
+to 16px and the small labels take a `max(…, 12px)` floor.
+
+**The sweep found five more than the eyeball did.** Checking the four
+elements I had just changed said the job was done. A test that walks *every*
+element in the rail and reports the smallest computed size found `<kbd>` at
+10.6px, `<code>` inside a panel note at 11.6px, the "from the web" badge at
+11px, and the rail's own section heading at 11.5px — all `em` sizes
+compounding inside an already-small container, which is the failure mode
+eyeballing is worst at. That sweep is now the test, so the floor holds for
+anything added later rather than for the five things that were looked at
+today.
+
+*Cost to change: small. The bands are one tuple; the subject map is one
+dict; the disclosure is one `<details>`. What would be expensive is going
+back to hand-tagging, which is the point.*

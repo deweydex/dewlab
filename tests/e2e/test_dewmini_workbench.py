@@ -221,10 +221,115 @@ def test_the_reference_filters_by_kind(dewmini):
     )
     everything = dewmini.locator("#dm-reference-groups dt").count()
 
-    # The first button is "All"; the second is whichever kind comes first.
+    # Every button is a kind now — there is no "All", because no chip pressed
+    # already means all of them, the same as every other filter row.
     dewmini.locator("#dm-reference-kinds button").nth(1).click()
     assert dewmini.locator("#dm-reference-groups dt").count() < everything
     assert dewmini.locator("#dm-reference-groups .dm-reference-group").count() == 1
+
+
+def test_the_reference_offers_subject_and_level_up_front(dewmini):
+    """Two facets on the surface, both derived at build time — subject from
+    the outcome codes a tutorial claims, level from the prerequisite depth of
+    the topic tree. The fixture claims one outcome from each module, so both
+    subjects are present."""
+    dewmini.click("#dm-library-toggle")
+    dewmini.wait_for_function(
+        "document.querySelectorAll('#dm-reference-subjects button').length > 0",
+        timeout=15_000,
+    )
+    subjects = dewmini.locator("#dm-reference-subjects button").all_inner_texts()
+    assert any("Maths" in chip for chip in subjects)
+    assert any("Computing" in chip for chip in subjects)
+
+    # Every chip carries its own count, so a filter that would empty the list
+    # says so before it is pressed.
+    assert all(any(ch.isdigit() for ch in chip) for chip in subjects)
+    assert dewmini.locator("#dm-reference-levels button").count() > 0
+
+
+def test_a_subject_narrows_the_list_to_its_own_count(dewmini):
+    """The count on the chip is the promise; this is the check that the list
+    keeps it."""
+    dewmini.click("#dm-library-toggle")
+    dewmini.wait_for_function(
+        "document.querySelectorAll('#dm-reference-subjects button').length > 0",
+        timeout=15_000,
+    )
+    chip = dewmini.locator("#dm-reference-subjects button").first
+    promised = int("".join(ch for ch in chip.inner_text() if ch.isdigit()))
+    chip.click()
+    assert dewmini.locator("#dm-reference-groups dt").count() == promised
+
+
+def test_the_topics_row_opens_in_flow_rather_than_over_the_results(dewmini):
+    """Josh's ask, and the reason this is a `<details>` in the normal flow and
+    not a popover: opening it must push the results down, never sit on top of
+    them. Measured, because "looks fine" is exactly how an overlay ships."""
+    dewmini.click("#dm-library-toggle")
+    dewmini.wait_for_selector("#dm-reference-topics-wrap")
+
+    wrap = dewmini.locator("#dm-reference-topics-wrap")
+    assert wrap.evaluate("el => !el.open"), "it should start closed"
+
+    before = dewmini.locator("#dm-reference-groups").bounding_box()["y"]
+    wrap.locator("summary").click()
+    dewmini.wait_for_function(
+        "document.getElementById('dm-reference-topics-wrap').open"
+    )
+
+    row = dewmini.locator("#dm-reference-topics").bounding_box()
+    after = dewmini.locator("#dm-reference-groups").bounding_box()["y"]
+    assert after > before, "opening it should push the results down"
+    assert row["y"] + row["height"] <= after + 1, "the row must not overlap them"
+
+
+def test_the_topics_summary_says_how_many_are_on(dewmini):
+    """Folded-away filters that are silently active are a trap. The summary
+    reports its own state, so a list narrowed by something out of sight still
+    explains itself."""
+    dewmini.click("#dm-library-toggle")
+    dewmini.wait_for_function(
+        "document.querySelectorAll('#dm-reference-kinds button').length > 1",
+        timeout=15_000,
+    )
+    summary = dewmini.locator("#dm-reference-topics-summary")
+    assert summary.inner_text().strip() == "Topics"
+
+    dewmini.locator("#dm-reference-topics-wrap summary").click()
+    topics = dewmini.locator("#dm-reference-topics button")
+    if topics.count() == 0:
+        pytest.skip("the fixture's tutorials belong to no curated topic group")
+    topics.first.click()
+    assert "1" in summary.inner_text()
+
+
+def test_no_rail_text_shrinks_below_twelve_pixels(dewmini):
+    """The Texture slider scales the whole rail, which is the point — but at
+    its floor the filter chips were rendering at 10.2px. Every small label
+    now carries a `max(…, 12px)` floor, and this is what holds it."""
+    dewmini.click("#dm-library-toggle")
+    dewmini.wait_for_function(
+        "document.querySelectorAll('#dm-reference-subjects button').length > 0",
+        timeout=15_000,
+    )
+    # Drive the root size to the slider's own minimum.
+    dewmini.evaluate(
+        "() => document.documentElement.style.setProperty('--dl-font-size', '16px')"
+    )
+    smallest = dewmini.evaluate(
+        """() => {
+            const rail = document.querySelector('.dm-library');
+            let min = Infinity;
+            for (const el of rail.querySelectorAll('*')) {
+                if (!el.textContent.trim()) continue;
+                const size = parseFloat(getComputedStyle(el).fontSize);
+                if (size < min) min = size;
+            }
+            return min;
+        }"""
+    )
+    assert smallest >= 12, f"something in the rail renders at {smallest}px"
 
 
 # --------------------------------------------------------------------- data

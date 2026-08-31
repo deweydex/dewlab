@@ -1382,8 +1382,68 @@ const REFERENCE_KINDS = [
   ["keyword", "Keywords"],
 ];
 
+/* Short labels for the topic groups, in the order
+ * planning/curriculum/topic-groups.yaml lists them. This is a label
+ * *override*, not the list of groups: the file's own names are written for a
+ * page heading ("Trigonometry — triangles, circles, and waves") and are far
+ * too long for a chip, so the curated short forms live here.
+ *
+ * The groups themselves are read off the data (referenceTopics() below), so
+ * adding one to topic-groups.yaml gives it a chip on the next build whether
+ * or not anyone remembers to come back here. That matters: everything else
+ * about these filters re-derives itself when the curriculum data changes,
+ * and a hand-kept list that silently drops new groups would be the one place
+ * the two could quietly disagree. */
+const REFERENCE_TOPIC_LABELS = [
+  ["numbers-and-algebra", "Numbers & algebra"],
+  ["polynomials-and-graphs", "Polynomials"],
+  ["trigonometry", "Trigonometry"],
+  ["rates-of-change", "Rates of change"],
+  ["counting-and-chance", "Counting & chance"],
+  ["logic-and-sets", "Logic & sets"],
+  ["data-and-pictures", "Data"],
+  ["matrices", "Matrices"],
+  ["programming-foundations", "Programming"],
+  ["chance-and-simulation", "Simulation"],
+  ["big-picture", "Big picture"],
+];
+
+/* Every topic group the reference actually has terms for, curated ones first
+ * in their own order and anything new after them, alphabetically. A group
+ * with no short label gets its key turned back into words — plain, and
+ * visibly a fallback, which is the right prompt to come and name it. */
+function referenceTopics() {
+  const labels = new Map(REFERENCE_TOPIC_LABELS);
+  const present = new Set();
+  for (const entry of referenceEntries || []) {
+    for (const key of entry.groups || []) present.add(key);
+  }
+  const curated = REFERENCE_TOPIC_LABELS.filter(([key]) => present.has(key));
+  const rest = [...present]
+    .filter((key) => !labels.has(key))
+    .sort()
+    .map((key) => [key, key.replace(/-/g, " ").replace(/^./, (c) => c.toUpperCase())]);
+  return [...curated, ...rest];
+}
+
+const REFERENCE_SUBJECTS = [["maths", "Maths"], ["computing", "Computing"]];
+const REFERENCE_LEVELS = [
+  ["beginner", "Beginner"],
+  ["intermediate", "Intermediate"],
+  ["advanced", "Advanced"],
+];
+
 let referenceEntries = null;
-let referenceKindFilter = null; // null = every kind
+
+/* Every filter row is the same shape: a set of chosen values, empty meaning
+ * "no filter on this facet". Four independent sets rather than four
+ * variables so the render and the reset can loop over them. */
+const referenceFilters = {
+  subjects: new Set(),
+  level: new Set(),
+  groups: new Set(),
+  kind: new Set(),
+};
 
 /* Fetches the cross-tutorial reference once (build.py's
  * write_reference_index()). Absent is not an error: a build with no
@@ -1399,45 +1459,90 @@ async function loadReference() {
     if (statusEl) statusEl.textContent = `The reference isn't available here (${err.message}).`;
     return;
   }
-  renderReferenceKinds();
+  renderReferenceFilters();
   renderReference();
 }
 
-/* The kind filters — category navigation, in Josh's own framing. "All"
- * first, then one per kind that actually has entries, each carrying its
- * own count so a reader can see the shape of what they are filtering
- * before they filter it. */
-function renderReferenceKinds() {
-  const wrap = document.getElementById("dm-reference-kinds");
-  if (!wrap || !referenceEntries) return;
-  wrap.replaceChildren();
-
-  const counts = new Map();
-  for (const entry of referenceEntries) {
-    counts.set(entry.kind, (counts.get(entry.kind) || 0) + 1);
-  }
-
-  const button = (kind, label) => {
-    const btn = document.createElement("button");
-    btn.type = "button";
-    btn.className = "dm-reference-kind";
-    btn.textContent = label;
-    btn.setAttribute("aria-pressed", String(referenceKindFilter === kind));
-    btn.addEventListener("click", () => {
-      referenceKindFilter = referenceKindFilter === kind ? null : kind;
-      renderReferenceKinds();
-      renderReference();
-    });
-    return btn;
+/* Does one entry pass every filter row? A row with nothing chosen doesn't
+ * filter; a row with choices passes an entry matching any of them (so
+ * Maths + Computing means "either", not "both"). An entry missing the facet
+ * entirely — a term from a tutorial claiming no outcomes — is filtered out
+ * once that row is in use, which is why "Unfiled" is offered as a value of
+ * its own rather than leaving those terms unreachable. */
+function referenceEntryMatches(entry) {
+  const rowPasses = (chosen, value) => {
+    if (!chosen.size) return true;
+    const values = Array.isArray(value) ? value : (value ? [value] : []);
+    if (!values.length) return chosen.has("unfiled");
+    return values.some((v) => chosen.has(v));
   };
-
-  wrap.appendChild(button(null, `All ${referenceEntries.length}`));
-  for (const [kind, label] of REFERENCE_KINDS) {
-    if (counts.has(kind)) wrap.appendChild(button(kind, `${label} ${counts.get(kind)}`));
-  }
+  return rowPasses(referenceFilters.subjects, entry.subjects)
+    && rowPasses(referenceFilters.level, entry.level)
+    && rowPasses(referenceFilters.groups, entry.groups)
+    && rowPasses(referenceFilters.kind, entry.kind);
 }
 
-/* Draws the reference, filtered by the search box and the kind buttons.
+/* One chip. Toggling is additive within its row — picking Maths then
+ * Computing widens rather than replaces, which is what a reader expects of
+ * something that looks like a set of switches. */
+function referenceChip(row, value, label, count) {
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.className = "dm-filter-chip";
+  btn.textContent = count === undefined ? label : `${label} ${count}`;
+  btn.setAttribute("aria-pressed", String(referenceFilters[row].has(value)));
+  btn.addEventListener("click", () => {
+    const chosen = referenceFilters[row];
+    if (chosen.has(value)) chosen.delete(value); else chosen.add(value);
+    renderReferenceFilters();
+    renderReference();
+  });
+  return btn;
+}
+
+/* Draws all four filter rows, each chip carrying how many terms it would
+ * leave — counted against the *other* rows' current choices, so the numbers
+ * describe what would actually happen rather than a total that stops being
+ * true the moment anything else is on. */
+function renderReferenceFilters() {
+  if (!referenceEntries) return;
+
+  const countFor = (row, value) => {
+    const saved = referenceFilters[row];
+    referenceFilters[row] = new Set([value]);
+    const n = referenceEntries.filter(referenceEntryMatches).length;
+    referenceFilters[row] = saved;
+    return n;
+  };
+
+  const fill = (id, row, values) => {
+    const wrap = document.getElementById(id);
+    if (!wrap) return;
+    wrap.replaceChildren();
+    for (const [value, label] of values) {
+      const n = countFor(row, value);
+      if (!n) continue; // a chip that would show nothing is noise
+      wrap.appendChild(referenceChip(row, value, label, n));
+    }
+  };
+
+  fill("dm-reference-subjects", "subjects",
+       [...REFERENCE_SUBJECTS, ["unfiled", "Unfiled"]]);
+  fill("dm-reference-levels", "level",
+       [...REFERENCE_LEVELS, ["unfiled", "Unfiled"]]);
+  fill("dm-reference-topics", "groups", referenceTopics());
+  fill("dm-reference-kinds", "kind", REFERENCE_KINDS);
+
+  // The collapsed summary has to say what is on inside it, or a reader who
+  // scrolled past a narrowed list has no way to tell why.
+  const summary = document.getElementById("dm-reference-topics-summary");
+  const chosen = referenceFilters.groups.size;
+  if (summary) summary.textContent = chosen ? `Topics · ${chosen} on` : "Topics";
+  const wrap = document.getElementById("dm-reference-topics-wrap");
+  if (wrap) wrap.classList.toggle("dm-filter-more-active", chosen > 0);
+}
+
+/* Draws the reference, filtered by the search box and all four chip rows.
  * Built with createElement rather than an HTML string throughout, for the
  * same reason tutorial-runtime.js's own renderReference() is: a term can
  * legitimately contain `<` (dewlab teaches operators), and textContent
@@ -1450,7 +1555,7 @@ function renderReference() {
 
   const needle = (document.getElementById("dm-reference-search")?.value || "").trim().toLowerCase();
   const matches = referenceEntries.filter((entry) => {
-    if (referenceKindFilter && entry.kind !== referenceKindFilter) return false;
+    if (!referenceEntryMatches(entry)) return false;
     if (!needle) return true;
     return `${entry.term} ${entry.definition}`.toLowerCase().includes(needle);
   });

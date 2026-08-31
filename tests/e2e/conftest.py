@@ -77,6 +77,20 @@ def site_dir(tmp_path_factory) -> Path:
     # The topic tree is built from the curriculum data, and its behaviour —
     # panning, zooming, choosing a topic — only exists in a browser.
     shutil.copytree(DEWLAB / "planning" / "curriculum", root / "planning" / "curriculum")
+    # A topic group naming this fixture's own tutorials, appended to the copy
+    # rather than added to the real file: dewmini's Library rail offers one
+    # filter chip per group a term's tutorial belongs to, and with only the
+    # real groups — every one of which names tutorials this build does not
+    # have — that row would always be empty and its test would prove nothing.
+    groups = root / "planning" / "curriculum" / "topic-groups.yaml"
+    groups.write_text(
+        groups.read_text()
+        + "  - key: e2e-fixtures\n"
+          "    name: Fixtures\n"
+          "    intro: The e2e fixture's own pages, so the topic filter has a group.\n"
+          "    tutorials:\n"
+          f"      - {{ module: {MODULE}, slug: third-page }}\n"
+    )
 
     out = root / "site"
     for name, value in {
@@ -87,6 +101,13 @@ def site_dir(tmp_path_factory) -> Path:
         "ASSETS": root / "assets",
         "SHELL": root / "assets" / "shell.html",
         "OUT": out,
+        # These three are module constants derived from build.py's own ROOT at
+        # import time, so repointing ROOT alone leaves them aimed at the real
+        # repository — which is why the group appended to the copy above had
+        # no effect until they were repointed too.
+        "TOPIC_DATA": root / "planning" / "curriculum" / "topics.yaml",
+        "TOPIC_GROUPS_DATA": root / "planning" / "curriculum" / "topic-groups.yaml",
+        "OUTCOME_DATA": root / "planning" / "curriculum" / "outcomes.yaml",
     }.items():
         setattr(b, name, value)
     b.build(clean=True)

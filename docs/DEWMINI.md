@@ -182,12 +182,27 @@ On a phone, panels slide up from the bottom instead.
 
 **Reference** — every term, function and operator any dewlab tutorial
 introduces, in one searchable list, with the tutorial that introduced
-each one named underneath it. The buttons above the list narrow it to
-one kind at a time: concepts, functions, operators, formulas, keywords.
-Unlike a tutorial page's own reference, which shows only what you have
-been taught so far, this one shows everything — in a workspace with no
-tutorial attached there's no "so far" to go by, and hiding two-thirds of
-it would just be unhelpful.
+each one named underneath it. Unlike a tutorial page's own reference,
+which shows only what you have been taught so far, this one shows
+everything — in a workspace with no tutorial attached there's no "so
+far" to go by, and hiding two-thirds of it would just be unhelpful.
+
+Search it, or narrow it with the buttons above the list:
+
+- **Maths** and **Computing**, from the modules a term's tutorial
+  belongs to. A tutorial that covers both is filed under both.
+- **Beginner**, **Intermediate** and **Advanced**, from how many layers
+  of groundwork sit under what that tutorial teaches. Nothing is
+  labelled by hand — this is read off the topic map, so it stays true to
+  the map rather than to whoever last remembered to update it.
+- **Topics** folds open for the broader groupings (trigonometry,
+  matrices, simulation, and so on), and **kind** for concepts,
+  functions, operators, formulas and keywords.
+
+Each button says how many terms it would leave, so one that would empty
+the list tells you before you press it. Picking two in the same row
+means *either*, not both. A term from a tutorial that claims no outcomes
+is filed under **Unfiled** rather than hidden.
 
 **Data** — real datasets you can load, each saying where it came from
 and what licence it carries. Pick one and it writes a working cell into

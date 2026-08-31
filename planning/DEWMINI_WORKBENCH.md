@@ -146,6 +146,38 @@ Generated at build time into `assets/reference-index.json` by
 pages use. One source of truth: a glossary edit reaches both surfaces, and
 neither can drift from the other.
 
+### 4a. The filters, and why none of them is a field anyone maintains
+
+Added after the first pass, on Josh's ask for subject and level toggles —
+and reshaped by his own suggestion, which is the better idea: *"the layers
+are actually a great proxy for beginner intermediate advanced. That way if
+we change the tree later (which we inevitably will) it automatically
+changes the search."*
+
+So all four facets are read off data that exists for another purpose:
+
+| Facet | Read from | Consequence |
+|---|---|---|
+| Subject | the outcome prefixes in a tutorial's `covers:` | MIT is maths; PDP and CMPS are computing |
+| Level | `topic_tiers()` — prerequisite depth of the `needs:` graph | editing the tree re-files the search |
+| Topic | `topic-groups.yaml` | a new group gets a chip without a code change |
+| Kind | the glossary schema | unchanged |
+
+Nothing is tagged by hand, which is the whole point: a hand-kept facet
+drifts from the thing it describes the first time someone edits one and
+not the other. Level uses the **deepest** outcome a tutorial covers, not
+the shallowest — the shallowest rates a tutorial by its easiest moment,
+which put 150 of 222 terms in "beginner" and would tell a student in week
+one that a tutorial needing four layers of groundwork is approachable.
+
+Subject and level sit on the surface; topic and kind fold into a
+`<details>` that expands **in flow**, pushing the results down rather than
+covering them — asked for directly, and measured in a test rather than
+eyeballed. The summary reports what is on inside it, because a folded row
+that is silently filtering is a trap.
+
+`DECISIONS_LOG.md` 7.101 has the band cut-points and the reasoning.
+
 ---
 
 ## 5. Variables, and why an inspector is a teaching tool

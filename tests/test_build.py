@@ -2948,3 +2948,130 @@ class TestTheCrossTutorialReference:
                    / "assets" / "reference-index.json")
         assert bundled.is_file()
         assert json.loads(bundled.read_text())[0]["term"] == "x"
+
+
+class TestWhatTheReferenceCanBeFilteredBy:
+    """`tutorial_facets()` — the subject and level each term carries into
+    dewmini's Library rail.
+
+    The point of both facets is that neither is a field anyone maintains.
+    Subject is read off the learning-outcome codes a tutorial already claims
+    in `covers:`; level is read off the prerequisite depth of the topic tree.
+    So the tests below are mostly about the *derivation* holding: rearrange
+    the tree and the search re-files itself on the next build, with nobody
+    having retagged anything.
+    """
+
+    def covers(self, path: Path, codes: list[str]) -> None:
+        """Give an already-written tutorial a `covers:` block."""
+        claim = "covers:\n  a-section:\n    covers: [" + ", ".join(codes) + "]\n"
+        path.write_text(path.read_text().replace(
+            "version: 2026.08.23.1\n", "version: 2026.08.23.1\n" + claim))
+
+    def tree(self, monkeypatch, tmp_path: Path, topics: str) -> None:
+        """A throwaway topic tree, since `repo` does not stub this one out and
+        the real `planning/curriculum/topics.yaml` would otherwise be read."""
+        path = tmp_path / "topics.yaml"
+        path.write_text(topics)
+        monkeypatch.setattr(b, "TOPIC_DATA", path)
+
+    def index(self, repo: Path):
+        return json.loads((repo / "site" / "assets" / "reference-index.json").read_text())
+
+    def test_the_outcome_prefix_decides_the_subject(self, repo):
+        """MIT is the maths module; PDP and CMPS are the computing ones. The
+        prefix is the key and `strand` is not — PDP-LO2 shares a strand with
+        several MIT outcomes, so strands cut across the maths/computing line
+        rather than along it."""
+        maths = write(repo, "## A section\n\nProse.\n", slug="one")
+        self.covers(maths, ["MIT-1.4"])
+        computing = write(repo, "## A section\n\nProse.\n", slug="two")
+        self.covers(computing, ["PDP-LO9"])
+        glossary(repo, "one", [{"term": "sine", "kind": "concept", "definition": "A wave."}])
+        glossary(repo, "two", [{"term": "loop", "kind": "concept", "definition": "Again."}])
+        b.build()
+
+        by_term = {e["term"]: e for e in self.index(repo)}
+        assert by_term["sine"]["subjects"] == ["maths"]
+        assert by_term["loop"]["subjects"] == ["computing"]
+
+    def test_a_tutorial_covering_both_files_its_terms_under_both(self, repo):
+        """Not a fudge to avoid choosing: seven real tutorials genuinely claim
+        an outcome from each side, and a term introduced there belongs to
+        both."""
+        path = write(repo, "## A section\n\nProse.\n", slug="one")
+        self.covers(path, ["MIT-1.4", "PDP-LO9"])
+        glossary(repo, "one", [{"term": "plot", "kind": "function", "definition": "Draws."}])
+        b.build()
+
+        assert self.index(repo)[0]["subjects"] == ["computing", "maths"]
+
+    def test_a_tutorial_claiming_nothing_is_left_unfiled(self, repo):
+        """Absence, not a guess. Two real tutorials claim no outcomes at all,
+        and the panel offers them as "unfiled" rather than hiding them or
+        inventing a subject they never claimed."""
+        write(repo, "Prose.\n", slug="one")
+        glossary(repo, "one", [{"term": "x", "kind": "concept", "definition": "A thing."}])
+        b.build()
+
+        entry = self.index(repo)[0]
+        assert "subjects" not in entry
+        assert "level" not in entry
+
+    def test_the_level_comes_from_the_deepest_outcome_not_the_shallowest(
+            self, repo, monkeypatch, tmp_path):
+        """The decision this test exists to hold. Rating a tutorial by its
+        easiest moment put 150 of 222 terms in "beginner" — and would tell
+        someone at the start of the course that a tutorial needing four
+        layers of groundwork is approachable. Erring deep is the kinder
+        error, so `max()`, not `min()`."""
+        self.tree(monkeypatch, tmp_path,
+                  "topics:\n"
+                  "  MIT-1.4:\n    name: Shallow\n    plain: A stub.\n"
+                  "  MIT-2.1:\n    name: One down\n    plain: A stub.\n    needs: [MIT-1.4]\n"
+                  "  MIT-3.1:\n    name: Two down\n    plain: A stub.\n    needs: [MIT-2.1]\n"
+                  "  MIT-4.1:\n    name: Three down\n    plain: A stub.\n    needs: [MIT-3.1]\n")
+        path = write(repo, "## A section\n\nProse.\n", slug="one")
+        self.covers(path, ["MIT-1.4", "MIT-4.1"])
+        glossary(repo, "one", [{"term": "x", "kind": "concept", "definition": "A thing."}])
+        b.build()
+
+        # Shallowest is tier 0 (beginner); deepest is tier 3 (intermediate).
+        assert self.index(repo)[0]["level"] == "intermediate"
+
+    def test_rearranging_the_tree_refiles_the_terms(self, repo, monkeypatch, tmp_path):
+        """The property the whole scheme is for: nothing is hand-tagged, so
+        adding a prerequisite to the tree moves every term that depends on it
+        on the next build, with nobody having touched the tutorial."""
+        path = write(repo, "## A section\n\nProse.\n", slug="one")
+        self.covers(path, ["MIT-2.1"])
+        glossary(repo, "one", [{"term": "x", "kind": "concept", "definition": "A thing."}])
+
+        self.tree(monkeypatch, tmp_path,
+                  "topics:\n"
+                  "  MIT-1.4:\n    name: Root\n    plain: A stub.\n"
+                  "  MIT-2.1:\n    name: One down\n    plain: A stub.\n    needs: [MIT-1.4]\n")
+        b.build()
+        assert self.index(repo)[0]["level"] == "beginner"
+
+        # Three more layers of groundwork slide underneath it. The tutorial is
+        # untouched; only the tree moved.
+        self.tree(monkeypatch, tmp_path,
+                  "topics:\n"
+                  "  MIT-0.1:\n    name: New root\n    plain: A stub.\n"
+                  "  MIT-0.2:\n    name: New second\n    plain: A stub.\n    needs: [MIT-0.1]\n"
+                  "  MIT-0.3:\n    name: New third\n    plain: A stub.\n    needs: [MIT-0.2]\n"
+                  "  MIT-1.4:\n    name: Root\n    plain: A stub.\n    needs: [MIT-0.3]\n"
+                  "  MIT-2.1:\n    name: One down\n    plain: A stub.\n    needs: [MIT-1.4]\n")
+        b.build()
+        assert self.index(repo)[0]["level"] == "advanced"
+
+    def test_the_bands_are_the_ones_chosen_against_the_real_spread(self):
+        """Cut points, not an even three-way split of 0-6. The obvious
+        alternative (<=1 / <=3) collapses the real corpus to 10/28/5, which
+        makes "intermediate" mean almost everything and so mean nothing."""
+        assert [b.level_for_tier(n) for n in range(7)] == [
+            "beginner", "beginner", "beginner",
+            "intermediate",
+            "advanced", "advanced", "advanced",
+        ]

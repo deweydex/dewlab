@@ -632,7 +632,7 @@ html[data-dl-panel-right] .dm-page .dl-crumbs {
   margin-bottom: 0.9rem;
 }
 .dm-panel h2 {
-  font-size: 0.72rem;
+  font-size: max(0.72rem, 12px);
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: var(--dl-muted);
@@ -666,11 +666,11 @@ html[data-dl-panel-right] .dm-page .dl-crumbs {
   line-height: 1.55;
   color: var(--dl-muted);
 }
-.dm-panel-note code { font-family: var(--dl-mono); font-size: 0.85em; }
+.dm-panel-note code { font-family: var(--dl-mono); font-size: max(0.85em, 12px); }
 
 kbd {
   font-family: var(--dl-mono);
-  font-size: 0.78em;
+  font-size: max(0.78em, 12px);
   border: 1px solid var(--dl-cell-border);
   border-radius: 3px;
   padding: 0.05em 0.4em;
@@ -913,7 +913,7 @@ kbd {
   width: 100%;
   box-sizing: border-box;
   font-family: var(--dl-mono);
-  font-size: 0.78rem;
+  font-size: max(0.78rem, 12.5px);
   padding: 0.4rem 0.55rem;
   margin-bottom: 0.5rem;
   border: 1px solid var(--dl-cell-border);
@@ -923,34 +923,79 @@ kbd {
 }
 .dm-reference-search:focus { outline: none; border-color: var(--dl-orange); }
 
-.dm-reference-kinds {
+/* Filter rows. Four of them, all the same chip, because they are the same
+   kind of control answering different questions — a reader learns the
+   affordance once. Chips wrap rather than scroll sideways: a rail is narrow
+   and a hidden chip is a filter nobody knows exists. */
+.dm-filter-row {
   display: flex;
   flex-wrap: wrap;
   gap: 0.25rem;
-  margin-bottom: 0.6rem;
+  margin-bottom: 0.4rem;
 }
-.dm-reference-kind {
+.dm-filter-row:empty { display: none; }
+.dm-filter-kinds { margin-bottom: 0.6rem; }
+
+.dm-filter-chip {
   font-family: var(--dl-mono);
-  font-size: 0.68rem;
+  /* max() gives every small control a floor it cannot fall below, whatever
+     the Texture size slider is set to. Without it the smallest setting put
+     these at 10.2px and the "from the web" badge at 9.6px — scaling was
+     working correctly, it was just scaling below legibility. The rem half
+     still governs above the floor, so the slider keeps working upward. */
+  font-size: max(0.7rem, 12px);
   padding: 0.2rem 0.5rem;
   border: 1px solid var(--dl-cell-border);
   border-radius: 999px;
   background: none;
   color: var(--dl-muted);
   cursor: pointer;
+  /* A comfortable target on a touch screen without making the row tall. */
+  min-height: 1.7rem;
 }
-.dm-reference-kind:hover { border-color: var(--dl-orange); color: var(--dl-orange); }
-.dm-reference-kind[aria-pressed="true"] {
+.dm-filter-chip:hover { border-color: var(--dl-orange); color: var(--dl-orange); }
+.dm-filter-chip[aria-pressed="true"] {
   background: var(--dl-navy);
   border-color: var(--dl-navy);
   color: #fff;
 }
 
+/* The topics disclosure. Expands in the flow of the rail, pushing the term
+   list down rather than floating over it: a menu that covers the list is
+   covering the very thing being filtered, and on a narrow rail there is
+   nowhere for it to go that is not on top of something. */
+.dm-filter-more {
+  margin: 0 0 0.5rem;
+}
+.dm-filter-more > summary {
+  font-family: var(--dl-mono);
+  font-size: max(0.7rem, 12px);
+  color: var(--dl-muted);
+  cursor: pointer;
+  padding: 0.2rem 0;
+  list-style: none;
+}
+.dm-filter-more > summary::-webkit-details-marker { display: none; }
+/* A caret drawn here rather than relying on the browser's own marker, which
+   differs between engines and cannot be positioned reliably. */
+.dm-filter-more > summary::before {
+  content: "▸";
+  display: inline-block;
+  width: 1em;
+  transition: transform 0.12s ease;
+}
+.dm-filter-more[open] > summary::before { transform: rotate(90deg); }
+.dm-filter-more > summary:hover { color: var(--dl-orange); }
+/* Open, or closed with filters still on inside it — either way the reader
+   needs to see that this row is doing something. */
+.dm-filter-more[open] > summary,
+.dm-filter-more-active > summary { color: var(--dl-fg); }
+
 .dm-reference-group + .dm-reference-group { margin-top: 0.9rem; }
 .dm-reference-group h4 {
   margin: 0 0 0.35rem;
   font-family: var(--dl-mono);
-  font-size: 0.7rem;
+  font-size: max(0.7rem, 12px);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: var(--dl-muted);
@@ -973,7 +1018,7 @@ kbd {
   display: block;
   margin-top: 0.3rem;
   font-family: var(--dl-mono);
-  font-size: 0.74rem;
+  font-size: max(0.74rem, 12px);
   padding: 0.3rem 0.45rem;
   border-radius: 3px;
   background: var(--dl-cell-bg);
@@ -981,7 +1026,7 @@ kbd {
 }
 .dm-term-origin {
   margin: 0.2rem 0 0;
-  font-size: 0.72rem;
+  font-size: max(0.72rem, 12px);
   color: var(--dl-muted);
 }
 
@@ -1005,13 +1050,13 @@ kbd {
   color: var(--dl-fg);
 }
 .dm-dataset-meta {
-  font-size: 0.7rem;
+  font-size: max(0.7rem, 12px);
   color: var(--dl-muted);
 }
 .dm-dataset-meta a { color: inherit; }
 .dm-dataset-remote {
   font-family: var(--dl-mono);
-  font-size: 0.64rem;
+  font-size: max(0.64rem, 12px);
   text-transform: uppercase;
   letter-spacing: 0.04em;
   color: var(--dl-muted);
