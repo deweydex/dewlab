@@ -1238,20 +1238,36 @@ def run_query(conn_or_path, sql: str, params=None, max_rows: int = 20, caption: 
 # --------------------------------------------------------------------------
 
 
-# Types worth summarising by shape rather than by repr. Checked by module and
-# name rather than by importing pandas/numpy, which may not be loaded — and
-# asking "is pandas imported?" should never be what makes this function slow
-# or, worse, what imports it.
-_SHAPE_SUMMARIES = {
-    ("pandas.core.frame", "DataFrame"): lambda v: f"{v.shape[0]} rows x {v.shape[1]} columns",
-    ("pandas.core.series", "Series"): lambda v: f"{len(v)} values",
-    ("numpy", "ndarray"): lambda v: f"array{tuple(v.shape)}",
-}
-
 # How much of a value's repr to show before truncating. Long enough for a
 # short string, a small list, or a number; short enough that one runaway
 # value can't push everything else out of the panel.
 _SUMMARY_LIMIT = 80
+
+
+def _shape_summary(value: object) -> str | None:
+    """"3 rows x 2 columns" for a table, "4 values" for a column, "array(2, 2)"
+    for an array — or None for anything that is not shaped like those.
+
+    Recognised by the attributes a value actually has rather than by its
+    type's module path. The first version of this keyed on
+    `(__module__, __name__)` and hardcoded `pandas.core.frame`, which was
+    true of the pandas of the day and false in pandas 3, where public
+    classes report `__module__ == "pandas"` — so a DataFrame silently fell
+    through to printing its whole self into a sidebar. Duck typing cannot
+    break that way when a library rearranges its internals.
+
+    Deliberately does not import pandas or numpy to ask: they may not be
+    loaded, and describing a namespace should never be the thing that
+    drags them in.
+    """
+    shape = getattr(value, "shape", None)
+    if not isinstance(shape, tuple) or not all(isinstance(n, int) for n in shape):
+        return None
+    if hasattr(value, "columns") and len(shape) == 2:  # a DataFrame, or close enough
+        return f"{shape[0]} rows x {shape[1]} columns"
+    if hasattr(value, "index") and len(shape) == 1:  # a Series
+        return f"{shape[0]} values"
+    return f"array{shape}"
 
 
 def _summarise(value: object) -> str:
@@ -1260,12 +1276,12 @@ def _summarise(value: object) -> str:
     repr. Every branch is wrapped, because this runs over whatever a student
     happened to define: a repr that raises is a bug in their object, not a
     reason for the whole panel to go blank."""
-    kind = (type(value).__module__, type(value).__name__)
-    if kind in _SHAPE_SUMMARIES:
-        try:
-            return _SHAPE_SUMMARIES[kind](value)
-        except Exception:
-            pass
+    try:
+        shaped = _shape_summary(value)
+    except Exception:
+        shaped = None
+    if shaped is not None:
+        return shaped
     if isinstance(value, (str, bytes)):
         try:
             text = repr(value)

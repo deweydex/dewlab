@@ -678,3 +678,24 @@ class TestDescribeGlobalsWithPandas:
         tt._page_globals["column"] = pd.Series([1, 2, 3, 4])
         entry = next(e for e in tt.describe_globals() if e["name"] == "column")
         assert entry["summary"] == "4 values"
+
+    def test_an_array_shows_its_dimensions(self):
+        import numpy as np
+
+        tt._page_globals["grid"] = np.zeros((2, 3))
+        entry = next(e for e in tt.describe_globals() if e["name"] == "grid")
+        assert entry["summary"] == "array(2, 3)"
+
+    def test_shape_is_recognised_by_duck_typing_not_module_path(self):
+        """The regression this guards: the first version keyed on
+        `(__module__, __name__)` with `pandas.core.frame` hardcoded, which
+        pandas 3 broke by reporting `__module__ == "pandas"` — a DataFrame
+        then printed its whole self into the sidebar. Nothing here should
+        depend on where a class says it lives."""
+        class NotPandas:
+            shape = (5, 2)
+            columns = ["a", "b"]
+
+        tt._page_globals["lookalike"] = NotPandas()
+        entry = next(e for e in tt.describe_globals() if e["name"] == "lookalike")
+        assert entry["summary"] == "5 rows x 2 columns"
