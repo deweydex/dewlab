@@ -28,6 +28,11 @@ other way around. `ranContent` is deliberately *not* one of the fields
 describes a live Python session, and no live session survives a reload,
 so neither should the claim that one is stale.
 
+`ranContent` is also the groundwork a not-yet-built feature would sit
+on: `planning/CELL_IDENTITY.md` designs an execution counter and a
+per-type cell header (numbered pill, run order, duration) that would
+read this same field rather than add a new one.
+
 ### …and `cells` belongs to a notebook
 
 Since tabs, `cells` is not the only notebook — it is the *active* one.
