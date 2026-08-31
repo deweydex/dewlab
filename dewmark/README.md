@@ -76,11 +76,19 @@ decisions that are not yet made. The order of building is in
 
 ## What already exists
 
-Nothing in this folder is built yet. These documents are the plan. Before
-the plan, three exams were built by hand and used in the 2025–2026
-academic year; they proved that a browser exam with no server works in a
-real exam room, and their faults shaped many of the rules in these
-documents.
+Working drafts of the exam builder, the exam page, and the marking
+workbench are in this folder, together with a sample paper that mixes
+eight question types. The drafts cover every question type except
+Python code, and a browser rehearsal script sits an exam and marks it
+end to end; [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md) lists exactly
+where the drafts still fall short of the design documents.
+[`docs/FOR_TEACHERS.md`](docs/FOR_TEACHERS.md) walks a teacher through
+the whole process.
+
+Before any of this, three exams were built by hand and used in the
+2025–2026 academic year; they proved that a browser exam with no server
+works in a real exam room, and their faults shaped many of the rules in
+these documents.
 [`planning/LESSONS_FROM_THE_EXPERIMENTS.md`](planning/LESSONS_FROM_THE_EXPERIMENTS.md)
 records what those exams taught, and the [`experiments/`](experiments/)
 folder holds corrected copies of them.
@@ -94,16 +102,19 @@ documentation, and openly shareable sample exams only. Teachers keep
 their real exam files and their students' submissions on their own
 computers or in private storage.
 
-## Planned folder layout
+## Folder layout
 
 ```text
 dewmark/
   README.md         this file
   planning/         the design documents listed above
   experiments/      the corrected 2025-2026 hand-built exams
-  build_exam.py     the exam builder (planned)
-  assets/           the exam page template and styles (planned)
-  workbench/        the marking workbench page (planned)
-  samples/          openly shareable sample exams (planned)
-  docs/             guides for teachers (planned)
+  build_exam.py     the exam builder: exam file in, finished pages out
+  assets/           the styles and behaviour built into every exam page
+  workbench/        the marking workbench page
+  samples/          openly shareable sample exams
+  tests/            the builder's automated tests
+  dev/              hand-run scripts, including the browser rehearsal
+  docs/             the teacher guide and the development notes
+  requirements.txt  what the builder and the tests need installed
 ```

@@ -1,0 +1,7 @@
+# What the exam builder needs.
+markdown>=3.4
+pyyaml>=6.0
+
+# What developing dewmark needs on top of that.
+pytest>=7.0
+playwright>=1.40   # only for dev/smoke_pages.py; needs a Chromium browser
