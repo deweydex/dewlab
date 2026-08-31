@@ -406,8 +406,11 @@ Concretely, three things, in order of ambition:
    named function in a file — with the notebook then calling it. This is a
    refactoring tool, and it teaches the move rather than merely permitting
    it.
-3. *Run the project.* A `main.py` that runs without the notebook at all, so
-   the student sees the thing they built work as a program.
+3. *Run the project.* An entry-point file — main.py, by convention — that
+   runs without the notebook at all, so the student sees the thing they built
+   work as a program. (Written without backticks on purpose: it is a file the
+   student would create, not one this repository has, and dev/check_doc_links.py
+   reads a backticked `*.py` as a claim that the file exists here.)
 
 For two of the three current modules this outranks everything in §5.
 
