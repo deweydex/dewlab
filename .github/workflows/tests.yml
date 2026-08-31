@@ -68,7 +68,7 @@ jobs:
       - name: Rebuild the vendor bundles
         working-directory: vendor-src
         run: |
-          npm install --no-audit --no-fund
+          npm ci --no-audit --no-fund
           npm run build
 
       - name: Fail if the committed bundle differs from a fresh build
@@ -76,6 +76,8 @@ jobs:
           if ! git diff --exit-code --stat assets/vendor/; then
             echo
             echo "assets/vendor/ is out of date with vendor-src/."
-            echo "Run 'npm install && npm run build' in vendor-src/ and commit the result."
+            echo "Run 'npm ci && npm run build' in vendor-src/ and commit the result."
+            echo "If you meant to change a dependency, run 'npm install' instead and"
+            echo "commit the updated package-lock.json alongside the rebuilt bundles."
             exit 1
           fi
