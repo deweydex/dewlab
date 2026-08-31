@@ -292,6 +292,14 @@ function watchPanelOverlap() {
   }
   updateAttrs();
 
+  // The same drag strip on both edges. These two panels relied on native
+  // `resize: horizontal` until now, which works but is a corner triangle
+  // facing Settings' full-height strip — one page, two affordances, only
+  // one of them findable (DECISIONS_LOG.md 7.103). Wired here rather than
+  // in each panel's own init, because this is the one place that already
+  // knows which edge each panel is docked to.
+  for (const panel of leftPanels) makeEdgeResizable(panel, "left", 256, 640);
+
   const widthObserver = new ResizeObserver((entries) => {
     for (const entry of entries) {
       const panel = entry.target;
@@ -328,23 +336,32 @@ function clickIsInsidePanels(target, ids) {
 }
 
 /**
- * The replacement for native CSS `resize: horizontal` on a right-docked
- * panel — see .dl-panel-resize-handle's own comment in tutorial-style.css
- * for why native resize doesn't work here (its handle sits exactly on
- * the browser window's own right edge, with no room to drag further
- * right and grow it). Adds a thin strip along `panel`'s left edge and
- * tracks a plain pointer drag on it directly, growing the panel as the
- * pointer moves left (away from the pinned right edge) and shrinking as
- * it moves right — the natural direction for a right-docked sidebar,
- * the same one a real IDE's own side panel uses. `min`/`max` mirror the
- * panel's own CSS `min-width`/`max-width` (kept in sync by hand — the
- * two aren't read from computed style, since the constants are already
- * known and simpler than parsing them back out of the DOM).
+ * A draggable strip along the edge a docked panel grows *into* — its left
+ * edge when docked right, its right edge when docked left.
+ *
+ * This replaces native CSS `resize: horizontal` on both, for two separate
+ * reasons. On a right-docked panel the native handle is unusable: it sits
+ * at the box's bottom-right corner, flush with the browser window's own
+ * right edge, with no room to drag further right and grow it — found by an
+ * actual drag test, not assumed from the CSS (DECISIONS_LOG.md 7.84). On a
+ * left-docked panel it *works*, which is why it was left alone — but it is
+ * a small corner triangle facing a full-height strip on the panel opposite.
+ * Two rails, two affordances, only one of them findable: that asymmetry is
+ * why this is now shared rather than right-docked only.
+ *
+ * `side` is the edge the panel is docked to, so the drag maths runs the
+ * right way round: a right-docked panel grows as the pointer moves left,
+ * a left-docked one as it moves right. `min`/`max` mirror the panel's own
+ * CSS `min-width`/`max-width`, kept in sync by hand — the constants are
+ * already known and simpler than parsing them back out of the DOM.
+ * `onResize` fires once per drag, on release rather than per frame, for a
+ * caller that wants to persist the new width.
  */
-function makeRightEdgeResizable(panel, min = 256, max = 640) {
+function makeEdgeResizable(panel, side = "right", min = 256, max = 640, onResize = null) {
   if (!panel || panel.querySelector(".dl-panel-resize-handle")) return;
   const handle = document.createElement("div");
-  handle.className = "dl-panel-resize-handle";
+  handle.className = "dl-panel-resize-handle"
+    + (side === "left" ? " dl-panel-resize-handle-right" : "");
   handle.setAttribute("aria-hidden", "true");
   panel.prepend(handle);
 
@@ -352,7 +369,7 @@ function makeRightEdgeResizable(panel, min = 256, max = 640) {
   let startWidth = 0;
 
   function onMove(ev) {
-    const dx = startX - ev.clientX;
+    const dx = side === "left" ? ev.clientX - startX : startX - ev.clientX;
     const next = Math.max(min, Math.min(startWidth + dx, Math.min(max, window.innerWidth)));
     panel.style.width = `${next}px`;
   }
@@ -360,6 +377,7 @@ function makeRightEdgeResizable(panel, min = 256, max = 640) {
     handle.classList.remove("dl-panel-resize-active");
     document.removeEventListener("pointermove", onMove);
     document.removeEventListener("pointerup", onUp);
+    if (onResize) onResize();
   }
   handle.addEventListener("pointerdown", (ev) => {
     startX = ev.clientX;
@@ -376,7 +394,7 @@ function initSettingsPanel() {
   const panel = document.getElementById("dl-settings");
   if (!toggle || !panel) return;
 
-  makeRightEdgeResizable(panel, 256, 640); // matches .dl-settings' own min/max-width
+  makeEdgeResizable(panel, "right", 256, 640); // matches .dl-settings' own min/max-width
 
   function setOpen(open) {
     panel.toggleAttribute("hidden", !open);

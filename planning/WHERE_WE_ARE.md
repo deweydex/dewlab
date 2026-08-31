@@ -8,7 +8,7 @@ it from a commit list.
 Everything below lives on `claude/dewlab-remove-mini-ide-c8c35d`
 (**PR #90**, still a draft). The design reasoning is in
 `planning/DEWMINI_WORKBENCH.md`; the decision record is `DECISIONS_LOG.md`
-7.98–7.102.
+7.98–7.103.
 
 Last updated: 2026-08-31.
 
@@ -207,7 +207,35 @@ resolved by rebuilding it rather than picking a side.
 
 ---
 
-## 7. Not done
+## 7. Resizable rails
+
+> *"are the side rails resizable? So that one could work split screen if
+> one wanted to?"*
+
+**Yes — and asking found two things wrong with how.** `DECISIONS_LOG.md`
+7.103.
+
+- Both rails now carry the **same** full-height drag strip. The right-hand
+  ones already did; the left-hand ones (dewmini's Library, and a tutorial
+  page's Reference and Series nav) were on the browser's native resize —
+  which works, but is a small corner triangle facing a full-height strip.
+  Which one you got depended on which edge a panel was pinned to.
+- **The strips were losing half their width.** They were hung across the
+  panel's edge, but a docked panel clips anything positioned outside it, so
+  three of every six pixels were being thrown away and the survivor ended
+  exactly on the boundary. On the right edge it still worked by luck; the
+  new left-edge one did nothing at all on the first drag test. Both now sit
+  flush inside.
+- **A width you chose now survives a reload.** It didn't before, which
+  rather defeats the point of setting one.
+
+Measured at 1440px wide, Library at 560 and Workbench at 612: the notebook
+sits between them at x=598, width 191, overlapping neither. So yes, split
+screen works in the sense you meant.
+
+---
+
+## 8. Not done
 
 Nothing here is blocking; these are the honest gaps.
 
@@ -236,7 +264,7 @@ broke.
 
 ---
 
-## 8. On the shape of all this
+## 9. On the shape of all this
 
 You apologised for throwing a lot over. It's worth saying that two of the
 best outcomes here came from exactly that: the "can you check if those

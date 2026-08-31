@@ -2496,17 +2496,33 @@ function initStorageSection() {
 
 // ------------------------------------------------------------------ panels
 
-/* The replacement for native CSS `resize: horizontal` on a right-docked
- * panel — ported from tutorial-runtime.js's own copy (DECISIONS_LOG.md
- * 7.84). Native resize draws its handle at a box's own bottom-right
- * corner, which for a panel flush to the browser window's own right
- * edge sits exactly on that edge with no room to drag further right and
- * grow it. Adds a thin strip along `panel`'s left edge instead and
- * tracks a plain pointer drag on it directly. */
-function makeRightEdgeResizable(panel, min = 256, max = 640) {
+/**
+ * A draggable strip along the edge a docked panel grows *into* — its left
+ * edge when docked right, its right edge when docked left.
+ *
+ * This replaces native CSS `resize: horizontal` on both, for two separate
+ * reasons. On a right-docked panel the native handle is unusable: it sits
+ * at the box's bottom-right corner, flush with the browser window's own
+ * right edge, with no room to drag further right and grow it — found by an
+ * actual drag test, not assumed from the CSS (DECISIONS_LOG.md 7.84). On a
+ * left-docked panel it *works*, which is why it was left alone — but it is
+ * a small corner triangle facing a full-height strip on the panel opposite.
+ * Two rails, two affordances, only one of them findable: that asymmetry is
+ * why this is now shared rather than right-docked only.
+ *
+ * `side` is the edge the panel is docked to, so the drag maths runs the
+ * right way round: a right-docked panel grows as the pointer moves left,
+ * a left-docked one as it moves right. `min`/`max` mirror the panel's own
+ * CSS `min-width`/`max-width`, kept in sync by hand — the constants are
+ * already known and simpler than parsing them back out of the DOM.
+ * `onResize` fires once per drag, on release rather than per frame, for a
+ * caller that wants to persist the new width.
+ */
+function makeEdgeResizable(panel, side = "right", min = 256, max = 640, onResize = null) {
   if (!panel || panel.querySelector(".dl-panel-resize-handle")) return;
   const handle = document.createElement("div");
-  handle.className = "dl-panel-resize-handle";
+  handle.className = "dl-panel-resize-handle"
+    + (side === "left" ? " dl-panel-resize-handle-right" : "");
   handle.setAttribute("aria-hidden", "true");
   panel.prepend(handle);
 
@@ -2514,7 +2530,7 @@ function makeRightEdgeResizable(panel, min = 256, max = 640) {
   let startWidth = 0;
 
   function onMove(ev) {
-    const dx = startX - ev.clientX;
+    const dx = side === "left" ? ev.clientX - startX : startX - ev.clientX;
     const next = Math.max(min, Math.min(startWidth + dx, Math.min(max, window.innerWidth)));
     panel.style.width = `${next}px`;
   }
@@ -2522,6 +2538,7 @@ function makeRightEdgeResizable(panel, min = 256, max = 640) {
     handle.classList.remove("dl-panel-resize-active");
     document.removeEventListener("pointermove", onMove);
     document.removeEventListener("pointerup", onUp);
+    if (onResize) onResize();
   }
   handle.addEventListener("pointerdown", (ev) => {
     startX = ev.clientX;
@@ -2590,10 +2607,22 @@ function saveSidebarState() {
     const panel = document.getElementById(id);
     return panel && !panel.hidden;
   }) || null;
+  // Widths as well as which panel is open. A rail dragged to half the
+  // screen and back to its default on every reload is not a working split
+  // screen, which is the whole reason someone widens one.
+  const widthOf = (id) => {
+    const px = document.getElementById(id)?.style.width;
+    return px ? parseInt(px, 10) : null;
+  };
   try {
     localStorage.setItem(SIDEBAR_KEY, JSON.stringify({
       left: openOn(["dm-library"]),
       right: openOn(["dm-workbench", "dl-settings"]),
+      widths: {
+        "dm-library": widthOf("dm-library"),
+        "dm-workbench": widthOf("dm-workbench"),
+        "dl-settings": widthOf("dl-settings"),
+      },
     }));
   } catch (e) { /* private mode, blocked storage: nothing to remember */ }
 }
@@ -2616,6 +2645,14 @@ function restoreSidebarState() {
     state = JSON.parse(localStorage.getItem(SIDEBAR_KEY) || "{}");
   } catch (e) {
     return;
+  }
+  // Widths first, so a restored panel opens at the size it was left rather
+  // than opening at its default and visibly jumping.
+  for (const [id, px] of Object.entries(state.widths || {})) {
+    if (typeof px === "number" && px > 0) {
+      const panel = document.getElementById(id);
+      if (panel) panel.style.width = `${px}px`;
+    }
   }
   for (const panelId of [state.left, state.right]) {
     const toggleId = PANEL_TOGGLES[panelId];
@@ -2688,13 +2725,15 @@ function initPanels() {
   const workbenchPanel = document.getElementById("dm-workbench");
   const libraryPanel = document.getElementById("dm-library");
 
-  // Only the right-docked panels get the JS handle. A left-docked panel
-  // grows rightward, away from the edge it is pinned to, so native CSS
-  // `resize: horizontal` works there — and makeRightEdgeResizable()'s own
-  // `startX - clientX` would run backwards, growing the panel when dragged
-  // the way that should shrink it (DECISIONS_LOG.md 7.84).
-  makeRightEdgeResizable(settingsPanel, 256, 640); // matches .dl-settings' own min/max-width
-  makeRightEdgeResizable(workbenchPanel, 256, 640); // matches .dm-panel's own min/max-width
+  // Every docked panel gets the same full-height strip, on whichever edge
+  // it grows into. The left rail used to rely on native `resize:
+  // horizontal` instead — which works, but puts a small corner triangle
+  // opposite a full-height strip, so the two rails behaved differently for
+  // no reason a reader could see (DECISIONS_LOG.md 7.103). The min/max
+  // mirror each panel's own CSS.
+  makeEdgeResizable(settingsPanel, "right", 256, 640, saveSidebarState);
+  makeEdgeResizable(workbenchPanel, "right", 256, 640, saveSidebarState);
+  makeEdgeResizable(libraryPanel, "left", 256, 640, saveSidebarState);
 
   // Same-edge panels close each other; opposite-edge ones coexist.
   wirePanel(settingsPanel, document.getElementById("dl-settings-toggle"),

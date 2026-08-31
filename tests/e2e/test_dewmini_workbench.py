@@ -202,6 +202,62 @@ def test_a_rail_survives_clicking_your_own_notebook(dewmini):
     assert dewmini.locator("#dm-library").is_visible()
 
 
+def test_both_rails_drag_wider_and_the_notebook_gives_up_the_room(dewmini):
+    """Split screen, which is the point of two rails you can size.
+
+    Both edges carry the same full-height strip. The left rail relied on
+    native `resize: horizontal` until 7.103 — which works, but is a small
+    corner grip facing a full-height strip, and hanging either strip outside
+    the panel loses half its width to the panel's own overflow clipping.
+    So this drags both and checks the notebook actually moves.
+    """
+    dewmini.click("#dm-library-toggle")
+    dewmini.click("#dm-workbench-toggle")
+
+    def drag(handle, dx):
+        box = dewmini.locator(handle).bounding_box()
+        y = box["y"] + box["height"] / 2
+        dewmini.mouse.move(box["x"] + box["width"] / 2, y)
+        dewmini.mouse.down()
+        dewmini.mouse.move(box["x"] + box["width"] / 2 + dx, y, steps=8)
+        dewmini.mouse.up()
+
+    before = dewmini.locator("#dm-library").bounding_box()["width"]
+    drag("#dm-library .dl-panel-resize-handle", 140)
+    after = dewmini.locator("#dm-library").bounding_box()["width"]
+    assert after > before + 100, "the left rail should grow when dragged right"
+
+    right_before = dewmini.locator("#dm-workbench").bounding_box()["width"]
+    drag("#dm-workbench .dl-panel-resize-handle", -140)
+    right_after = dewmini.locator("#dm-workbench").bounding_box()["width"]
+    assert right_after > right_before + 100, "the right rail grows when dragged left"
+
+    # The notebook sits between them rather than under either.
+    left = dewmini.locator("#dm-library").bounding_box()
+    right = dewmini.locator("#dm-workbench").bounding_box()
+    main = dewmini.locator("main").bounding_box()
+    assert main["x"] >= left["x"] + left["width"], "the left rail must not cover the notebook"
+    assert main["x"] + main["width"] <= right["x"] + 1, "the right rail must not cover it"
+
+
+def test_a_rails_width_survives_a_reload(dewmini, dewmini_url):
+    """A rail dragged to half the screen and back to its default on every
+    reload is not a working split screen."""
+    dewmini.click("#dm-library-toggle")
+    box = dewmini.locator("#dm-library .dl-panel-resize-handle").bounding_box()
+    y = box["y"] + box["height"] / 2
+    dewmini.mouse.move(box["x"] + box["width"] / 2, y)
+    dewmini.mouse.down()
+    dewmini.mouse.move(box["x"] + box["width"] / 2 + 150, y, steps=8)
+    dewmini.mouse.up()
+    widened = dewmini.locator("#dm-library").bounding_box()["width"]
+
+    dewmini.reload()
+    dewmini.wait_for_selector(".dm-toolbar")
+    dewmini.wait_for_selector("#dm-library", state="visible")
+    assert abs(dewmini.locator("#dm-library").bounding_box()["width"] - widened) < 2
+
+
 # ---------------------------------------------------------------- reference
 
 

@@ -4446,3 +4446,54 @@ meant "fixing" working code.
 
 *Cost to change: small. Two four-line boot additions, one markup move, and
 one deleted conditional.*
+
+---
+
+**7.103 — Both rails drag the same way, and a width someone chose survives
+the reload.** Josh asked whether the side rails are resizable, "so that one
+could work split screen if one wanted to". They were — and measuring it
+found two reasons the answer was worse than yes.
+
+**Two rails, two different affordances.** The right-docked panels got the
+full-height drag strip 7.84 built for them, because native CSS `resize:
+horizontal` is unusable there: its grip sits at the box's bottom-right
+corner, flush with the browser window's own right edge, with no room to drag
+outward. The left-docked ones — dewmini's Library, and a tutorial page's
+Reference and Series nav — were left on native resize, because for them it
+*works*: a left-docked panel grows rightward, into the page.
+
+Working is not the same as findable. Native resize is a small triangle in
+one corner; the strip is the full height of the panel and highlights on
+hover. So one page offered two ways to drag a panel wider, one of them
+plainly better, and which one you got depended on an implementation detail
+about which edge the panel happened to be pinned to. `makeRightEdgeResizable`
+becomes `makeEdgeResizable(panel, side, …)`, the sign of the drag flips with
+the side, and the native grips are gone from both files.
+
+**And the strips were hung outside their panels, losing half their width.**
+The handle sat at `left: -3px`, straddling the panel's edge — but a docked
+panel is a scroll container (`overflow-y: auto`), which clips absolutely
+positioned children to its padding box. Half of every strip was being thrown
+away, and the surviving half ended exactly on the boundary. On the right
+edge that still worked by luck: the leading edge of a clip is inclusive. On
+the new left-edge variant it did not, and the first drag test moved nothing
+at all. Hit-testing the strip's midpoint returned the *panel*, which is what
+named the cause. Both strips now sit flush inside the edge.
+
+Worth keeping because of how it was nearly missed: the strip was in the DOM,
+the class was right, the CSS was right, and the geometry printed correctly.
+Only a real pointer drag showed it doing nothing.
+
+**A width nobody remembers is not a split screen.** `saveSidebarState()`
+stored which rail was open and not how wide it had been dragged, so a rail
+pulled out to half the screen snapped back on the next load. It now stores a
+width per panel and applies them before reopening, so a restored rail opens
+at its own size rather than opening small and jumping.
+
+**Measured rather than asserted**, on a 1440px viewport: with the Library at
+560px and the Workbench dragged to 612px, the notebook column sits at x=598
+with width 191 — no overlap on either side, the three of them accounting for
+1363 of 1440px. Split screen works in the sense the question meant.
+
+*Cost to change: small, and it deletes more than it adds — one shared
+function in place of two, and three `resize: horizontal` declarations gone.*

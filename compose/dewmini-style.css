@@ -608,16 +608,19 @@ html[data-dl-panel-right] .dm-page .dl-crumbs {
 
 /* The left-docked rail — after .dm-panel, since both classes sit on the
  * same element and this has to win. Only the pinned edge, the separating
- * border, and how it resizes differ. Native `resize: horizontal` works
- * here, because a left-docked panel grows rightward, away from the edge
- * it is pinned to and into the page — which is precisely why the
- * right-docked panels above cannot use it (DECISIONS_LOG.md 7.84). */
+ * border, and which edge its drag strip sits on differ. A left-docked panel
+ * grows rightward, away from the edge it is pinned to and into the page, so
+ * its strip goes on the right — the mirror of the right-docked panels above
+ * (DECISIONS_LOG.md 7.84, 7.103). */
 .dm-panel-left {
   right: auto;
   left: 0;
   border-left: none;
   border-right: 1px solid var(--dl-cell-border);
-  resize: horizontal;
+  /* No native `resize: horizontal`, though it would work here: it draws a
+     small corner triangle where the panel on the opposite edge has a
+     full-height strip, and one page should not have two different ways to
+     drag a rail wider. Both use .dl-panel-resize-handle now (7.103). */
 }
 
 .dm-panel-head {
