@@ -9,6 +9,12 @@ done, not a plan already agreed.
 think would be helpful besides widgets?"* This is the considered answer,
 written up so it can be acted on in a different session.
 
+**A companion document.** `planning/DATABASE_MODULE_AND_BIGGER_IDEAS.md`
+covers the larger and more speculative ground — why the notebook form fails
+for databases, what the empty `tutorials/database-methods/` module would
+need, and the path from notebook to program. Read that one for scope; this
+one for the near-term list.
+
 **Widgets are deliberately out of scope** here. They were deferred by Josh
 earlier and remain the one genuine capability gap; they are a separate,
 larger piece of work and are not one of the five below.
