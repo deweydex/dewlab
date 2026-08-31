@@ -1066,17 +1066,50 @@ class TestTheSeriesArchive:
         b.build(standalone=True)
         with zipfile.ZipFile(self.archive(repo_with_assets)) as archive:
             assert sorted(archive.namelist()) == [
-                "computational-methods-core-skills/t1.html",
-                "computational-methods-core-skills/t2.html",
+                "computational-methods-core-skills/0-start-here.html",
+                "computational-methods-core-skills/01-t1.html",
+                "computational-methods-core-skills/02-t2.html",
             ]
 
     def test_what_it_holds_still_runs(self, repo_with_assets):
         self.two_tutorials(repo_with_assets)
         b.build(standalone=True)
         with zipfile.ZipFile(self.archive(repo_with_assets)) as archive:
-            page = archive.read("computational-methods-core-skills/t1.html").decode()
+            page = archive.read("computational-methods-core-skills/01-t1.html").decode()
         assert "pyodide.js" in page
         assert "--dl-navy" in page
+
+    def test_the_start_here_page_links_to_every_file_in_order(self, repo_with_assets):
+        self.two_tutorials(repo_with_assets)
+        b.build(standalone=True)
+        with zipfile.ZipFile(self.archive(repo_with_assets)) as archive:
+            start_here = archive.read(
+                "computational-methods-core-skills/0-start-here.html"
+            ).decode()
+        first = start_here.index("01-t1.html")
+        second = start_here.index("02-t2.html")
+        assert first < second
+        assert 'href="01-t1.html"' in start_here
+        assert 'href="02-t2.html"' in start_here
+
+    def test_a_practice_page_follows_its_tutorial(self, repo_with_assets):
+        self.two_tutorials(repo_with_assets)
+        practice_path = tutorial_path(repo_with_assets, "t1-practice", "computational-methods")
+        practice_path.write_text(
+            '---\ntitle: "T1 practice"\nslug: t1-practice\n'
+            'module: computational-methods\nyear: "2026-2027"\n'
+            'series: Core skills\nversion: 2026.08.23.1\npractice_for: t1\n'
+            '---\n\n**1.** A question.\n'
+        )
+        b.build(standalone=True)
+        with zipfile.ZipFile(self.archive(repo_with_assets)) as archive:
+            names = sorted(archive.namelist())
+        assert names == [
+            "computational-methods-core-skills/0-start-here.html",
+            "computational-methods-core-skills/01-t1.html",
+            "computational-methods-core-skills/02-t1-practice.html",
+            "computational-methods-core-skills/03-t2.html",
+        ]
 
     def test_the_contents_page_offers_it(self, repo_with_assets):
         self.two_tutorials(repo_with_assets)
@@ -1116,6 +1149,97 @@ class TestTheSeriesArchive:
         big.write_bytes(b"x" * 2_500_000)
         assert b.readable_size(small) == "4 KB"
         assert b.readable_size(big) == "2 MB"
+
+
+class TestTheModuleArchive:
+    """One archive for a whole module — every series in it, numbered as one
+    sequence rather than restarting per series, plus whatever mixed problem
+    sets belong to the module rather than to one tutorial in it."""
+
+    def practice(self, repo, slug: str, **frontmatter) -> Path:
+        path = tutorial_path(repo, slug, "computational-methods")
+        extra = "".join(
+            f"{key}: {value}\n" if not isinstance(value, list)
+            else f"{key}:\n" + "".join(f"  - {v}\n" for v in value)
+            for key, value in frontmatter.items()
+        )
+        path.write_text(
+            FRONTMATTER.format(slug=slug, version="2026.08.23.1").replace(
+                "version: 2026.08.23.1\n", f"version: 2026.08.23.1\n{extra}")
+            + "**1.** A question.\n"
+        )
+        return path
+
+    def archive(self, repo) -> Path:
+        return repo / "site" / "download" / "computational-methods-all.zip"
+
+    def test_it_gathers_every_series_in_the_module(self, repo_with_assets):
+        write(repo_with_assets, "One.\n", slug="one")
+        write_in_series(repo_with_assets, "Two.\n", slug="two", series="simulation")
+        set_order(repo_with_assets, "computational-methods", "simulation", ["two"])
+        b.build(standalone=True)
+        assert self.archive(repo_with_assets).is_file()
+
+    def test_numbering_does_not_restart_between_series(self, repo_with_assets):
+        write(repo_with_assets, "One.\n", slug="one")
+        write_in_series(repo_with_assets, "Two.\n", slug="two", series="simulation")
+        set_order(repo_with_assets, "computational-methods", "simulation", ["two"])
+        b.build(standalone=True)
+        with zipfile.ZipFile(self.archive(repo_with_assets)) as archive:
+            names = sorted(archive.namelist())
+        assert names == [
+            "computational-methods/0-start-here.html",
+            "computational-methods/01-one.html",
+            "computational-methods/02-two.html",
+        ]
+
+    def test_practice_still_follows_its_tutorial(self, repo_with_assets):
+        write(repo_with_assets, "One.\n", slug="one")
+        self.practice(repo_with_assets, "one-practice", practice_for="one")
+        write_in_series(repo_with_assets, "Two.\n", slug="two", series="simulation")
+        set_order(repo_with_assets, "computational-methods", "simulation", ["two"])
+        b.build(standalone=True)
+        with zipfile.ZipFile(self.archive(repo_with_assets)) as archive:
+            names = sorted(archive.namelist())
+        assert names == [
+            "computational-methods/0-start-here.html",
+            "computational-methods/01-one.html",
+            "computational-methods/02-one-practice.html",
+            "computational-methods/03-two.html",
+        ]
+
+    def test_a_mixed_set_lands_at_the_end(self, repo_with_assets):
+        write(repo_with_assets, "One.\n", slug="one")
+        write_in_series(repo_with_assets, "Two.\n", slug="two", series="simulation")
+        set_order(repo_with_assets, "computational-methods", "simulation", ["two"])
+        self.practice(repo_with_assets, "mixed", practice_across=["one", "two"])
+        b.build(standalone=True)
+        with zipfile.ZipFile(self.archive(repo_with_assets)) as archive:
+            names = sorted(archive.namelist())
+            start_here = archive.read("computational-methods/0-start-here.html").decode()
+        assert names == [
+            "computational-methods/0-start-here.html",
+            "computational-methods/01-one.html",
+            "computational-methods/02-two.html",
+            "computational-methods/03-mixed.html",
+        ]
+        assert "Mixed problems" in start_here
+        assert start_here.index("02-two.html") < start_here.index("03-mixed.html")
+
+    def test_the_contents_page_offers_it(self, repo_with_assets):
+        write(repo_with_assets, "One.\n", slug="one")
+        write_in_series(repo_with_assets, "Two.\n", slug="two", series="simulation")
+        set_order(repo_with_assets, "computational-methods", "simulation", ["two"])
+        b.build(standalone=True)
+        index = (repo_with_assets / "site" / "index.html").read_text()
+        assert 'href="download/computational-methods-all.zip"' in index
+        assert "Download every tutorial and practice page in this module" in index
+
+    def test_a_build_without_the_copies_offers_no_module_download(self, repo):
+        write(repo, "One.\n", slug="one")
+        b.build()
+        index = (repo / "site" / "index.html").read_text()
+        assert "computational-methods-all.zip" not in index
 
 
 class TestTheSettingsPanel:
@@ -2143,7 +2267,10 @@ class TestDownloadsDoNotCollide:
         archive = (repo_with_assets / "site" / "download"
                    / "other-module-intro.zip")
         with zipfile.ZipFile(archive) as opened:
-            assert opened.namelist() == ["other-module-intro/first-steps.html"]
+            assert sorted(opened.namelist()) == [
+                "other-module-intro/0-start-here.html",
+                "other-module-intro/01-first-steps.html",
+            ]
 
 
 class TestPagesOfProblems:
