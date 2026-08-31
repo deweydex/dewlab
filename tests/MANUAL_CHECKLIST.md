@@ -111,10 +111,17 @@ Then, on a machine with the network off (or with everything but
 - [ ] the page loads with no failed requests
 - [ ] adding a Python cell and running `print(6 * 7)` prints `42`
 - [ ] the Stop button interrupts a `while True: pass`
+- [ ] a text cell with `Solve $x^2 = 4$.` renders as real maths, with no
+      failed request for `katex.bundle.js`, `katex.min.css`, or a font
+      (DECISIONS_LOG.md 7.107 — the offline copy carries all three so a
+      classroom with no network at all can still render maths, not just
+      one with a slow one)
 
 Last verified: 2026-08-30 — loaded and ran Python 3.13.2 with every
 non-loopback request aborted, zero blocked requests recorded.
-`planning/EDGES_AUDIT.md` §1.
+`planning/EDGES_AUDIT.md` §1. The maths line above was added after that
+verification and has not itself been checked against a real offline
+bundle yet.
 
 ### A remote dataset actually loads
 

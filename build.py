@@ -2991,15 +2991,28 @@ if __name__ == "__main__":
 # actually loads, on its own, outside the hosted site — tutorial-runtime.js,
 # every tutorial-only vendor bundle, and the rest of assets/ dewmini never
 # touches would just be dead weight in a download meant to be as small as
-# it can be. No vendor/katex.min.css (dewmini renders no maths), but
-# assets/examples/*.ipynb: the four worked-example notebooks Settings'
-# "Keep a copy" section offers.
+# it can be. Plus assets/examples/*.ipynb: the four worked-example
+# notebooks Settings' "Keep a copy" section offers.
+#
+# vendor/katex.min.css and vendor/katex.bundle.js are here even though
+# dewmini only loads the second of the two lazily, on first sight of maths
+# in a text cell (DECISIONS_LOG.md 7.107): this bundle is exactly the
+# no-connection case that lazy loading cannot help — a classroom with no
+# network at all cannot fetch what it does not already have on disk, so
+# "loads it lazily" and "carries it in the offline copy" are answers to two
+# different questions. The ~590 KB this adds to every offline copy, whether
+# or not that classroom ever does maths, is the trade recorded there; the
+# font files themselves are copied separately below, as a whole directory
+# rather than named one by one, since KaTeX's own stylesheet decides which
+# of them a given formula actually needs.
 DEWMINI_ASSET_FILES = (
     "pyodide-engine.js",
     "pyodide-worker.js",
     "tutorial_tools.py",
     "tutorial-style.css",
     "vendor/codemirror.bundle.js",
+    "vendor/katex.min.css",
+    "vendor/katex.bundle.js",
     "examples/sql-owid.ipynb",
     "examples/data-investigation.ipynb",
     "examples/math-and-charts.ipynb",
@@ -3091,6 +3104,12 @@ def write_dewmini_bundle() -> Path | None:
 
     if DATA.is_dir():
         shutil.copytree(DATA, target / "data")
+
+    # KaTeX's font files, whole — see DEWMINI_ASSET_FILES's own comment on
+    # why these are a directory copy rather than twenty named entries there.
+    fonts_dir = ASSETS / "vendor" / "fonts"
+    if fonts_dir.is_dir():
+        shutil.copytree(fonts_dir, target / "assets" / "vendor" / "fonts")
 
     if pyodide_vendored:
         shutil.copytree(ASSETS / "vendor" / "pyodide", target / "assets" / "vendor" / "pyodide")

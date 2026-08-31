@@ -52,6 +52,20 @@ to actually delete it — the first arms it (it turns solid red); the
 second, right after, deletes. Click anything else, or wait a few
 seconds, and it quietly disarms instead.
 
+If you edit a cell after running it, a small **"Edited since last run"**
+note appears next to its label — a reminder that the output still
+showing underneath belongs to the *old* code, not what's there now. Run
+the cell again and the note goes away. The **⋯** button next to a cell's
+Run arrow opens two more ways to run it: **Run above** runs every cell
+from the top through this one, from a clean start — the fix once an
+earlier cell's output has gone stale; **Run below** runs this cell and
+everything after it, keeping whatever the cells above it already
+defined, for redoing the rest of a notebook without paying to redo a slow
+first step. Settings' **Restart & run all** goes further still: it
+throws Python away completely and reruns every cell from a genuinely
+fresh start — the real test of whether a notebook actually works, not
+just whether it happened to work the way you built it up.
+
 While you type, dewmini offers the same completion, hover documentation,
 and function-signature help a tutorial page's cells do — on code that
 hasn't run yet, not only on names already defined in a cell you've
@@ -60,12 +74,15 @@ already run.
 A text cell is for notes next to your code — a heading, a reminder of
 what a section does, or notes on what you tried. Click away from it and
 it turns into formatted text: `# a heading`, `**bold**`, `*italic*`,
-`` `code` ``, and `- a bullet list` all format themselves. Click back
-into the formatted text to edit the plain words underneath, or use the
-**Edit**/**View** button in its header — the same switch, worth having
-if clicking the rendered text isn't an option you'd think to try. Its
-picture-frame icon attaches an image from your device — the image stays
-with the cell, and is never uploaded anywhere.
+`` `code` ``, and `- a bullet list` all format themselves. Maths formats
+itself too: `$x^2 + 3x$` renders as a real equation, and `$$...$$` on its
+own puts it on its own centered line — the same maths a tutorial page can
+show you, now available for working through a problem in your own words.
+Click back into the formatted text to edit the plain words underneath, or
+use the **Edit**/**View** button in its header — the same switch, worth
+having if clicking the rendered text isn't an option you'd think to try.
+Its picture-frame icon attaches an image from your device — the image
+stays with the cell, and is never uploaded anywhere.
 
 ---
 
@@ -251,8 +268,11 @@ directly in the page, on a browser or setting where a background worker
 isn't available, where it can't be) and a **Restart Python** button for
 starting over with a clean interpreter — everything a cell has defined
 so far is discarded, though your cells and their code are untouched.
-Below that, the **Run time** switch turns the small "ran in…" line under
-a cell's output on or off.
+Next to it, **Restart & run all** does both at once: a clean interpreter,
+then every cell run in order from the top — the way to check a notebook
+still works from scratch, not just from wherever you happened to leave
+it. Below that, the **Run time** switch turns the small "ran in…" line
+under a cell's output on or off.
 
 **Keep a copy** — the name of the notebook you're looking at, which is
 also its tab's name and the name every download below uses. Then:

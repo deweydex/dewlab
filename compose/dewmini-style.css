@@ -348,6 +348,21 @@ html[data-dl-panel-right] .dm-page .dl-crumbs {
   border-radius: 999px;
   padding: 0.1rem 0.55rem;
 }
+/* "Edited since last run" — see updateCellChrome()/isStale() in
+ * dewmini.js. Quiet on purpose: this is a fact worth noticing, not an
+ * error, so it borrows .dm-cell-pill's own restraint (muted colour, small
+ * caps-ish type) rather than reaching for the error red a few lines
+ * below. [hidden] rather than a class toggle for visibility, matching how
+ * every other on/off element in this file is switched. */
+.dm-cell-stale-badge {
+  font-family: var(--dl-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.02em;
+  color: var(--dl-muted);
+  font-style: italic;
+}
+.dm-cell-stale-badge[hidden] { display: none; }
+
 .dm-cell-spacer { flex: 1; }
 
 .dm-cell-actions {
@@ -406,6 +421,45 @@ html[data-dl-panel-right] .dm-page .dl-crumbs {
 .dm-icon-run.dm-icon-run-stop:hover { opacity: 0.85; }
 
 .dm-icon-btn:disabled { opacity: 0.4; cursor: default; }
+
+/* The "⋯" Run-above/Run-below menu (createRunMoreMenu() in dewmini.js) —
+ * a popover anchored to its own toggle button rather than two more
+ * always-visible icons, see that function's comment for why. */
+.dm-cell-more { position: relative; display: inline-flex; }
+.dm-cell-run-menu {
+  position: absolute;
+  top: calc(100% + 0.25rem);
+  right: 0;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  min-width: 9.5rem;
+  padding: 0.25rem;
+  border: 1px solid var(--dl-cell-border);
+  border-radius: 6px;
+  background: var(--dl-panel-bg);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+}
+.dm-cell-run-menu[hidden] { display: none; }
+.dm-cell-run-menu-item {
+  display: block;
+  width: 100%;
+  padding: 0.4rem 0.6rem;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--dl-fg);
+  font-family: var(--dl-font-family);
+  font-size: 0.82rem;
+  text-align: left;
+  cursor: pointer;
+}
+.dm-cell-run-menu-item:hover,
+.dm-cell-run-menu-item:focus-visible {
+  background: var(--dl-cell-bg);
+  color: var(--dl-orange);
+  outline: none;
+}
 
 /* The one .dm-icon-btn with a word on it rather than a glyph — "Edit"/
  * "View" needs more room than the fixed icon square, and there's no
