@@ -223,15 +223,11 @@
   display: flex;
   gap: 0.3rem;
   padding: 0 0.5rem;
+  /* Opaque, always — this patch's job is to occlude .dm-insert-line behind
+   * the buttons. The rest fade lives on .dm-insert-btn instead, so the line
+   * never bleeds through a partly-transparent button. */
   background: var(--dl-bg);
-  /* Faint at rest, not invisible — opacity: 0 meant the only way to learn
-   * this existed was reading the Help panel first. A quiet notebook can
-   * still show its own controls. */
-  opacity: 0.4;
-  transition: opacity 0.12s ease;
 }
-.dm-insert:hover .dm-insert-actions,
-.dm-insert:focus-within .dm-insert-actions { opacity: 1; }
 .dm-insert:hover .dm-insert-line { background: var(--dl-orange); }
 
 .dm-insert-btn {
@@ -246,7 +242,14 @@
   background: var(--dl-panel-bg);
   color: var(--dl-muted);
   cursor: pointer;
+  /* Faint at rest, not invisible — opacity: 0 meant the only way to learn
+   * this existed was reading the Help panel first. A quiet notebook can
+   * still show its own controls. */
+  opacity: 0.4;
+  transition: opacity 0.12s ease;
 }
+.dm-insert:hover .dm-insert-btn,
+.dm-insert:focus-within .dm-insert-btn { opacity: 1; }
 .dm-insert-btn:hover { border-color: var(--dl-orange); color: var(--dl-orange); }
 
 /* A hover that can't happen on a touch screen would hide the only way in —
@@ -254,7 +257,7 @@
  * than waiting for a hover event that will never come. */
 @media (hover: none) {
   .dm-insert { height: 2.4rem; }
-  .dm-insert-actions { opacity: 0.75; }
+  .dm-insert-btn { opacity: 0.75; }
 }
 
 .dm-cell {

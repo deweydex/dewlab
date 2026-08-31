@@ -494,11 +494,7 @@ p code, li code {
   gap: 0.3rem;
   padding: 0 0.5rem;
   background: var(--dl-bg);
-  opacity: 0.4;
-  transition: opacity 0.12s ease;
 }
-.dl-insert:hover .dl-insert-actions,
-.dl-insert:focus-within .dl-insert-actions { opacity: 1; }
 .dl-insert:hover .dl-insert-line { background: var(--dl-orange); }
 
 .dl-insert-btn {
@@ -510,12 +506,16 @@ p code, li code {
   background: var(--dl-panel-bg);
   color: var(--dl-muted);
   cursor: pointer;
+  opacity: 0.4;
+  transition: opacity 0.12s ease;
 }
+.dl-insert:hover .dl-insert-btn,
+.dl-insert:focus-within .dl-insert-btn { opacity: 1; }
 .dl-insert-btn:hover { border-color: var(--dl-orange); color: var(--dl-orange); }
 
 @media (hover: none) {
   .dl-insert { height: 2.4rem; }
-  .dl-insert-actions { opacity: 0.75; }
+  .dl-insert-btn { opacity: 0.75; }
 }
 
 /* Signature help (vendor-src/codemirror-entry.js's pythonSignatureHelp),

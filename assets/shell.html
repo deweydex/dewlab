@@ -20,6 +20,19 @@
      one page that happened to load this script. -->
 <script src="{{ROOT_BASE}}coi-serviceworker.js"></script>
 
+<!-- Every page boots its own Pyodide instance from the public CDN (no
+     dependency actually carries over between pages — see
+     docs/tutorial-runtime-explained.md), so a reader who lands on some
+     tutorial mid-series pays a fully cold DNS+TLS handshake to
+     cdn.jsdelivr.net before the runtime, numpy/pandas/matplotlib wheels
+     can even start downloading. `crossorigin` matters here: Pyodide's own
+     fetches are CORS requests, and a preconnect without it opens a second,
+     wasted connection instead of the one those fetches reuse. Harmless
+     when DEWLAB_PYODIDE_BASE points at a self-hosted copy instead — the
+     browser just never uses the hint. -->
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+
 <!-- Version metadata the Phase 2 loader compares saved progress against
      (VERSIONING_AND_PROGRESS.md). Written here by build.py from frontmatter. -->
 <meta name="tutorial-version" content="{{VERSION}}">

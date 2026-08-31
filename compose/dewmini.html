@@ -16,6 +16,14 @@
      to the site's root once for the whole site, not once per page. -->
 <script src="../coi-serviceworker.js"></script>
 
+<!-- Same cold-start problem as shell.html's tutorial pages: this page boots
+     its own Pyodide instance from the public CDN, and a student can land
+     here directly without ever visiting a tutorial page first. See the
+     matching comment in ../assets/shell.html for why `crossorigin` matters
+     and why this is a no-op when DEWLAB_PYODIDE_BASE is overridden. -->
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+
 <link rel="stylesheet" href="../assets/tutorial-style.css">
 <link rel="stylesheet" href="dewmini-style.css">
 
