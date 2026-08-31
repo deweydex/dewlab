@@ -101,12 +101,20 @@
           <span class="dm-tool-icon dm-tool-icon-text" aria-hidden="true"></span>New
         </button>
       </div>
+      <!-- Three ways to *start* something, rather than two ways to add a
+           cell. Plain "Python" and "Text" buttons lived here until the
+           insert seams between cells took over that job — a seam adds a
+           cell where you are already looking, which is what a toolbar
+           button at the top of a long notebook cannot do. Two buttons for
+           the same action, one of them worse, is one button. The freed
+           space goes to the two openings that had nowhere else to live
+           once a notebook was no longer empty. -->
       <div class="dm-toolbar-group">
-        <button id="add-python-cell" class="dm-tool" title="Add a Python cell">
-          <span class="dm-tool-icon dm-tool-icon-python" aria-hidden="true"></span>Python
+        <button id="dm-show-example" class="dm-tool dm-tool-accent" title="Fill the notebook with a short worked example">
+          <span class="dm-tool-icon dm-tool-icon-run" aria-hidden="true"></span>See an example
         </button>
-        <button id="add-text-cell" class="dm-tool" title="Add a documentation cell">
-          <span class="dm-tool-icon dm-tool-icon-text" aria-hidden="true"></span>Text
+        <button id="dm-add-imports" class="dm-tool" title="Add a Python cell that imports numpy, pandas and matplotlib">
+          <span class="dm-tool-icon dm-tool-icon-python" aria-hidden="true"></span>Start with imports
         </button>
         <button id="add-practice" class="dm-tool" title="Add a problem from dewlab's practice bank (order set in Settings)">
           <span class="dm-tool-icon dm-tool-icon-text" aria-hidden="true"></span>Practice
@@ -143,14 +151,18 @@
         Cells share one namespace top to bottom, the way a notebook does —
         write something in the first cell and the next one can use it.
       </p>
-      <div class="dm-empty-actions">
-        <button type="button" class="dm-tool dm-tool-accent" id="dm-empty-example">
-          <span class="dm-tool-icon dm-tool-icon-run" aria-hidden="true"></span>See an example
-        </button>
-        <button type="button" class="dm-tool" id="dm-empty-add">
-          <span class="dm-tool-icon dm-tool-icon-python" aria-hidden="true"></span>Start with imports
-        </button>
-      </div>
+      <!-- No buttons of its own any more: "See an example" and "Start with
+           imports" are in the toolbar directly above this, and repeating
+           them an inch lower would be the same duplication the toolbar
+           just shed. -->
+      <p class="dm-panel-note">
+        <strong>Python</strong> or <strong>Text</strong> on the seam below adds
+        a blank cell — and every seam between cells does the same, so you can
+        always add one where you are looking. <strong>See an example</strong>
+        above fills this with a short worked notebook, and
+        <strong>Start with imports</strong> opens a cell with numpy, pandas and
+        matplotlib ready.
+      </p>
     </div>
 
     <div id="cells-container" class="dm-cells"></div>

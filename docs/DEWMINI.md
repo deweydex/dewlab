@@ -71,16 +71,20 @@ with the cell, and is never uploaded anywhere.
 
 ## Getting started
 
-An empty page offers two ways to begin. **See an example** loads four
-cells — one that prints something, a small numpy calculation, a text
-cell showing what one looks like once formatted, and a plot — and runs
-them right away, so the first thing you see is dewmini actually doing
+The toolbar offers three ways to begin, and they stay there rather than
+disappearing once you have cells. **See an example** loads four cells —
+one that prints something, a small numpy calculation, a text cell
+showing what one looks like once formatted, and a plot — and runs them
+right away, so the first thing you see is dewmini actually doing
 something, not an explanation of what it could do. **Start with
-imports** instead begins with one cell that imports the packages most
-sessions need (`numpy`, `pandas`, `matplotlib.pyplot`), and leaves the
-rest to you. Either way, the toolbar's **Python**, **Text**, and
-**Practice** buttons — and every gap between cells once you have some —
-let you add more.
+imports** begins with one cell that imports the packages most sessions
+need (`numpy`, `pandas`, `matplotlib.pyplot`), and leaves the rest to
+you. **Practice** adds a problem from dewlab's own practice bank.
+
+To add a cell, use the seam: the thin line between any two cells, and
+above the first, carries **Python** and **Text** buttons. That is the
+only place they live, so a cell always arrives where you were looking
+rather than at the bottom of a page you then have to scroll back up.
 
 ---
 

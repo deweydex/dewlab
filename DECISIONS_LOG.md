@@ -4376,3 +4376,73 @@ today.
 *Cost to change: small. The bands are one tuple; the subject map is one
 dict; the disclosure is one `<details>`. What would be expensive is going
 back to hand-tagging, which is the point.*
+
+---
+
+**7.102 — The boot patch was not universal, and the toolbar had two buttons
+for one job.** Two asks in one message, plus main moving underneath.
+
+**The networking patch reached two of four boot paths, not four.** 7.100
+said ordinary Python HTTP code "works here now"; Josh asked whether that was
+true of the whole application, and it was not. dewlab starts Pyodide in four
+places, and the patch had been added to the two I was looking at:
+
+| Boot path | Used by | Had the patch |
+|---|---|---|
+| `pyodide-worker.js` `boot()` | every hosted page | yes |
+| `pyodide-engine.js` `bootMainThread()` | dewmini with no Worker | yes |
+| `tutorial-runtime.js` `bootMainThread()` | **a downloaded tutorial** | no |
+| `compose/dewmini.js`'s export template | **an exported notebook** | no |
+
+Both misses are the *downloadable* copies — which is the worst possible
+place for them, not an acceptable one. A downloaded tutorial is the copy
+someone opens on a train with no second machine to compare against, and an
+exported notebook is the file a reader sends to somebody else. A cell that
+read a URL perfectly well on the hosted site would have failed with the
+same "unknown url type: https" in both, after every other surface had
+stopped saying it. Fixed in both, wrapped in the same try/except so a
+Pyodide without the package still boots.
+
+Verified rather than reasoned, because the claim being corrected here was
+itself reasoned: a real downloaded export, served from disk, booting its own
+Pyodide, reading `https://` from a real TLS server with Chromium pinned to
+that one certificate by public-key fingerprint. Two rows, two columns, over
+a connection whose certificate was actually checked.
+
+**The lesson is about how the gap was found.** It was not found by reading
+the diff — I wrote the diff. It was found by Josh asking whether the claim
+held everywhere, and then by enumerating every `loadPyodide(` in the
+repository instead of every one I remembered. "Is this universal?" is a
+different question from "is this right?", and the second does not answer
+the first.
+
+**The toolbar's Python and Text buttons are gone.** Also Josh's, and
+correct: the seams between cells already add a cell, and add it where you
+are looking rather than at the end of a page you then scroll back up. Two
+buttons for the same action, one of them worse, is one button. The freed
+space takes **See an example** and **Start with imports**, which previously
+lived only in the empty-notebook block and so vanished the moment a reader
+had a single cell — the two openings hardest to find were the two only
+findable before you needed them.
+
+**Which exposed a hole the change would have left.** The first seam was
+suppressed over an empty notebook, on the reasoning that a seam with
+nothing on either side looks like debris. With the toolbar buttons gone
+that would have left no way at all to start a *blank* cell — only "Start
+with imports", which arrives with three lines in it. The seam is now drawn
+from the start, which is also the better teaching: the affordance a reader
+uses for every cell after the first is the one they meet for the first.
+
+**And a fixture bug that main exposed.** The dewmini e2e fixture pointed the
+page at a locally staged Pyodide only `if "DEWLAB_PYODIDE_BASE" not in
+html`. PR #91 added a comment to `compose/dewmini.html` explaining what that
+override does — containing the name — so the guard was satisfied by prose,
+the injection silently stopped, and every test that runs Python failed
+against a CDN this sandbox blocks. It now matches the assignment and
+asserts the result, because a guard that a sentence can satisfy is not a
+guard. Worth recording as its own mistake: the failure looked exactly like
+a regression from the toolbar change, and treating it as one would have
+meant "fixing" working code.
+
+*Cost to change: small. Two four-line boot additions, one markup move, and
+one deleted conditional.*

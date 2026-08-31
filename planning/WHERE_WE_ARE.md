@@ -8,7 +8,7 @@ it from a commit list.
 Everything below lives on `claude/dewlab-remove-mini-ide-c8c35d`
 (**PR #90**, still a draft). The design reasoning is in
 `planning/DEWMINI_WORKBENCH.md`; the decision record is `DECISIONS_LOG.md`
-7.98–7.101.
+7.98–7.102.
 
 Last updated: 2026-08-31.
 
@@ -173,7 +173,41 @@ against the list's top edge, not by eye.
 
 ---
 
-## 6. Not done
+## 6. The boot patch, everywhere (and the toolbar)
+
+> *"can we check that the boot change is universal for all parts of the
+> application?"* — and separately, *"Do we need the first Python and text
+> button… we have them below no?"*
+
+**Done, and the answer to the first was no.** `DECISIONS_LOG.md` 7.102.
+
+dewlab starts Pyodide in four places. The patch had reached two — and the
+two it had missed were the **downloadable** copies: a downloaded tutorial
+and an exported notebook. That is the worst place to miss, not a tolerable
+one: those are the files someone opens with no second machine to compare
+against. Both are fixed, and proved by driving a real downloaded export
+against a real TLS server with the certificate pinned by fingerprint.
+
+Worth saying plainly: I did not find this by re-reading my own work. You
+asked whether the claim held everywhere, and enumerating every
+`loadPyodide(` in the repository answered it. "Is this right?" and "is this
+universal?" are different questions.
+
+**The toolbar.** Its Python and Text buttons were duplicates of the seams
+between cells, and the seams are better — they add a cell where you are
+looking. They are gone; the space now holds **See an example**, **Start
+with imports** and **Practice**, so the two openings that used to vanish
+the moment you had one cell are permanent. One hole the change would have
+left, now closed: the first seam is drawn over an empty notebook too, or
+there would have been no way to start a *blank* cell.
+
+**Also merged main** (PR #91 — the insert-divider fix, CDN preconnect, boot
+loading indicator). One conflict, in the generated `standalone.bundle.js`,
+resolved by rebuilding it rather than picking a side.
+
+---
+
+## 7. Not done
 
 Nothing here is blocking; these are the honest gaps.
 
@@ -202,7 +236,7 @@ broke.
 
 ---
 
-## 7. On the shape of all this
+## 8. On the shape of all this
 
 You apologised for throwing a lot over. It's worth saying that two of the
 best outcomes here came from exactly that: the "can you check if those

@@ -1907,6 +1907,26 @@ function jediSignatureMT(source, line, col) {
   }
 }
 
+/* The same browser-backed networking patch assets/pyodide-worker.js and
+ * assets/pyodide-engine.js apply at boot — see the long comment on
+ * pyodide-engine.js's NETWORK_PATCH_SOURCE for what it buys and why it is
+ * on by default.
+ *
+ * It belongs here too, and its absence was a real gap rather than a
+ * deliberate omission: bootMainThread() below is the standalone export's
+ * boot, which is exactly where a reader is *most* likely to hit it. A
+ * downloaded tutorial is the copy someone opens on a train, pastes a
+ * `pd.read_csv("https://…")` into, and has no second machine to compare
+ * against — and it would have been the one surface still answering
+ * "unknown url type: https" after every other one had stopped. */
+const NETWORK_PATCH_SOURCE = `
+try:
+    import pyodide_http
+    pyodide_http.patch_all()
+except Exception:
+    pass
+`;
+
 /* Shared with assets/pyodide-worker.js's own copy — genuinely two separate
  * JS execution contexts (a page never runs both), so this is the one place
  * a small duplication was cheaper than a shared-module import neither
@@ -1969,6 +1989,14 @@ async function bootMainThread(manifest) {
 
   setStatus(`Loading ${manifest.packages.join(", ")}…`);
   await pyodideMT.loadPackage(manifest.packages);
+  // Separately, and forgivingly: a Pyodide without this package must still
+  // boot. See NETWORK_PATCH_SOURCE for what it buys.
+  try {
+    await pyodideMT.loadPackage(["pyodide-http"]);
+    await pyodideMT.runPythonAsync(NETWORK_PATCH_SOURCE);
+  } catch {
+    /* no browser-backed urllib; tutorial_tools.py's hints cover it */
+  }
 
   setStatus("Preparing the notebook tools…");
   /* The standalone export carries this source inside the page, because

@@ -210,13 +210,6 @@ html[data-dl-panel-right] .dm-page .dl-crumbs {
 }
 .dm-empty p:first-child { margin: 0 0 0.5rem; color: var(--dl-heading); font-size: 1.05rem; }
 .dm-empty .dm-panel-note { max-width: 30rem; margin-inline: auto; }
-.dm-empty-actions {
-  display: flex;
-  gap: 0.6rem;
-  justify-content: center;
-  flex-wrap: wrap;
-  margin-top: 1rem;
-}
 
 /* A distinct, more serious accent than the plain dashed .dm-empty
  * border it otherwise reuses — this is naming things that will

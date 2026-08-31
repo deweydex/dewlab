@@ -39,12 +39,21 @@ def dewmini_url(site_dir, base_url) -> str:
     page = site_dir / DEWMINI
     assert page.exists(), "build() no longer copies compose/ into the site"
     html = page.read_text()
-    if "DEWLAB_PYODIDE_BASE" not in html:
-        page.write_text(html.replace(
+    # Match the *assignment*, not the name. This guard used to look for the
+    # bare name anywhere in the document, and a comment added upstream
+    # explaining what the override does contained it — so the injection
+    # silently stopped happening and every test that runs Python failed
+    # against a CDN this sandbox blocks. A guard that prose can satisfy is
+    # not a guard.
+    INJECTED = 'window.DEWLAB_PYODIDE_BASE ='
+    if INJECTED not in html:
+        html = html.replace(
             "<head>",
-            '<head>\n<script>window.DEWLAB_PYODIDE_BASE = "../pyodide/";</script>',
+            f'<head>\n<script>{INJECTED} "../pyodide/";</script>',
             1,
-        ))
+        )
+        page.write_text(html)
+    assert INJECTED in page.read_text(), "dewmini would boot from the CDN"
     return f"{base_url}/{DEWMINI}"
 
 
@@ -66,8 +75,12 @@ def dewmini(page, dewmini_url):
 
 
 def add_python_cell(page, code: str) -> None:
-    """Adds a Python cell and types `code` into it."""
-    page.click("#add-python-cell")
+    """Adds a Python cell and types `code` into it.
+
+    Through the last insert seam, which is how a reader adds one: the
+    toolbar's own Python/Text buttons were removed as duplicates of it.
+    """
+    page.locator(".dm-insert-btn", has_text="Python").last.click()
     editor = page.locator(".dm-cell-python .cm-content").last
     editor.click()
     page.keyboard.insert_text(code)
@@ -330,6 +343,41 @@ def test_no_rail_text_shrinks_below_twelve_pixels(dewmini):
         }"""
     )
     assert smallest >= 12, f"something in the rail renders at {smallest}px"
+
+
+def test_a_blank_cell_is_reachable_from_an_empty_notebook(dewmini):
+    """The seam is drawn even with nothing to sit between.
+
+    It used to be suppressed while the toolbar carried its own Python/Text
+    buttons. Removing those as duplicates would have left no way at all to
+    start a *blank* cell — only "Start with imports", which arrives with
+    three lines already in it. This is the test that says so.
+    """
+    assert dewmini.locator(".dm-cell").count() == 0
+    assert dewmini.locator(".dm-insert").count() == 1, "one seam, over an empty notebook"
+
+    dewmini.locator(".dm-insert-btn", has_text="Python").click()
+    assert dewmini.locator(".dm-cell").count() == 1
+    assert dewmini.locator(".dm-cell-python .cm-content").inner_text().strip() == ""
+
+
+def test_the_toolbar_offers_openings_not_a_second_way_to_add_a_cell(dewmini):
+    """Josh's ask: the toolbar's Python and Text buttons duplicated the
+    seams below, so they went, and the space went to the two openings that
+    previously only existed on an empty notebook."""
+    toolbar = dewmini.locator(".dm-toolbar")
+    assert toolbar.locator("#dm-show-example").is_visible()
+    assert toolbar.locator("#dm-add-imports").is_visible()
+    assert toolbar.locator("#add-practice").is_visible()
+    assert toolbar.locator("#add-python-cell").count() == 0
+    assert toolbar.locator("#add-text-cell").count() == 0
+
+    # And they still do what they say, with cells already present — which is
+    # the state their old home (the empty-notebook block) could never reach.
+    dewmini.locator(".dm-insert-btn", has_text="Python").click()
+    dewmini.click("#dm-add-imports")
+    assert dewmini.locator(".dm-cell").count() == 2
+    assert "import pandas" in dewmini.locator(".dm-cell-python .cm-content").last.inner_text()
 
 
 # --------------------------------------------------------------------- data

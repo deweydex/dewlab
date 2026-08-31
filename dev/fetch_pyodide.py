@@ -89,7 +89,7 @@ def main() -> None:
     parser.add_argument("--version", default=PYODIDE_VERSION)
     parser.add_argument(
         "--packages", nargs="*", default=BASELINE,
-        help="packages to keep, with their dependencies (default: the baseline three)",
+        help="packages to keep, with their dependencies (default: BASELINE above)",
     )
     parser.add_argument(
         "--out", type=Path, default=Path(__file__).resolve().parent / "pyodide",

@@ -29,6 +29,14 @@ const NOTES_KEY = "dewmini:notes";
 // notebook, not curriculum content, so it can afford the wider default.
 const DM_PACKAGES = ["numpy", "pandas", "matplotlib", "sqlite3", "Pillow"];
 
+// The browser-backed networking patch, for the exported standalone HTML —
+// dewmini itself gets this from assets/pyodide-engine.js's own copy at boot,
+// but an exported notebook boots its own Pyodide with none of that code, so
+// it carries the patch inline. Without it, a notebook that read a URL
+// perfectly well in dewmini would fail with "unknown url type: https" in the
+// file the reader actually saved and sent to someone.
+const DM_NETWORK_PATCH = "try:\n    import pyodide_http\n    pyodide_http.patch_all()\nexcept Exception:\n    pass\n";
+
 const CELL_TYPES = { PYTHON: "python", TEXT: "text" };
 const IMPORTS_SNIPPET = "import numpy as np\nimport pandas as pd\nimport matplotlib.pyplot as plt\n";
 
@@ -536,15 +544,19 @@ function renderDocMarkdown(text) {
 function renderCells() {
   if (!cellsContainer) return;
   cellsContainer.innerHTML = "";
-  // No dividers over an empty notebook — the empty state's own button is
-  // the one way in until there is at least one cell to insert around.
-  if (cells.length) {
-    cellsContainer.appendChild(createInsertDivider(0));
-    cells.forEach((cell, i) => {
-      cellsContainer.appendChild(createCellElement(cell));
-      cellsContainer.appendChild(createInsertDivider(i + 1));
-    });
-  }
+  // The first seam is drawn even over an empty notebook. It used to be
+  // suppressed, because the toolbar carried its own Python/Text buttons and
+  // a seam with nothing on either side of it looked like debris. Those
+  // buttons are gone now, so suppressing it would leave no way at all to
+  // start a *blank* cell — only "Start with imports", which arrives with
+  // three lines already in it. Drawing it here also means the affordance a
+  // reader will use for every cell after this one is the same affordance
+  // they meet for the first.
+  cellsContainer.appendChild(createInsertDivider(0));
+  cells.forEach((cell, i) => {
+    cellsContainer.appendChild(createCellElement(cell));
+    cellsContainer.appendChild(createInsertDivider(i + 1));
+  });
   if (emptyEl) emptyEl.hidden = cells.length > 0;
 }
 
@@ -1313,6 +1325,7 @@ const CELLS = ${JSON.stringify(cellsData)};
 const TOOLS_SRC = ${JSON.stringify(toolsSource)};
 const SEED = ${JSON.stringify(SEED_GLOBALS_CODE)};
 const PACKAGES = ${JSON.stringify(DM_PACKAGES)};
+const NETWORK_PATCH = ${JSON.stringify(DM_NETWORK_PATCH)};
 
 async function main() {
   const statusEl = document.getElementById("status");
@@ -1348,6 +1361,13 @@ async function main() {
   try {
     const pyodide = await loadPyodide();
     await pyodide.loadPackage(PACKAGES);
+    // Browser-backed urllib, so a cell that read a URL in dewmini still
+    // reads it here. Forgiving, like every other boot: a Pyodide without
+    // the package must still start.
+    try {
+      await pyodide.loadPackage(["pyodide-http"]);
+      await pyodide.runPythonAsync(NETWORK_PATCH);
+    } catch (e) {}
     pyodide.FS.writeFile("/home/pyodide/tutorial_tools.py", TOOLS_SRC, { encoding: "utf8" });
     const tools = pyodide.pyimport("tutorial_tools");
     tools.configure("");
@@ -2869,13 +2889,13 @@ function initNotes() {
 }
 
 /* Pulses "See an example" on the very first time this page has ever loaded
- * in this browser, then never again — an invitation, not a nag. Only spent
- * when the button will actually be visible (the notebook is empty), so a
- * reader who arrives with cells already in it (an imported .ipynb, say)
- * doesn't burn the one first impression on a hidden button. */
+ * in this browser, then never again — an invitation, not a nag. Still spent
+ * only on an empty notebook: the button now lives in the toolbar and so is
+ * always visible, but a reader arriving with cells already in it (an
+ * imported .ipynb, say) has plainly not come here for the example. */
 function maybeHighlightExample() {
   if (cells.length) return;
-  const btn = document.getElementById("dm-empty-example");
+  const btn = document.getElementById("dm-show-example");
   if (!btn) return;
   try {
     if (localStorage.getItem("dewmini:visited") === "1") return;
@@ -2984,11 +3004,9 @@ function wireToolbar() {
     openNotebook(makeNotebook(`Notebook ${notebooks.length + 1}`));
     updateStatus("New notebook.");
   });
-  document.getElementById("add-python-cell")?.addEventListener("click", () => addCell(CELL_TYPES.PYTHON));
-  document.getElementById("add-text-cell")?.addEventListener("click", () => addCell(CELL_TYPES.TEXT));
   document.getElementById("add-practice")?.addEventListener("click", () => addPracticeProblem());
-  document.getElementById("dm-empty-add")?.addEventListener("click", () => addCell(CELL_TYPES.PYTHON, IMPORTS_SNIPPET));
-  document.getElementById("dm-empty-example")?.addEventListener("click", () => loadExampleCells());
+  document.getElementById("dm-add-imports")?.addEventListener("click", () => addCell(CELL_TYPES.PYTHON, IMPORTS_SNIPPET));
+  document.getElementById("dm-show-example")?.addEventListener("click", () => loadExampleCells());
   document.getElementById("dm-help-example-link")?.addEventListener("click", (e) => {
     e.preventDefault();
     loadExampleCells();
