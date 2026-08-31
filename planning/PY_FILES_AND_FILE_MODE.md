@@ -1,331 +1,418 @@
-# Python files in dewmini: what to build, judged for authors and for readers
+# Python files in dewmini
 
-A plan, in levels. Each level is useful on its own, so the work can stop
-anywhere rather than only paying off when it is finished.
+Students who are learning to program eventually have to stop writing code in
+cells and start writing it in files, and then to spread one program across
+several files that call each other. dewmini supports the first of those
+activities well. It does not support the second at all.
 
-**Origin.** Josh, after rejecting the extract-to-function idea: students write
-functions in cells comfortably; the step they find hard is *several functions
-in a file, called from another file*. So the need is multiple files, a file
-manager, and a way to look at a notebook as a `.py`.
+This document explains what dewmini does today, what would have to change, and
+in what order the work could be done. It also settles a related question that
+comes up as soon as files are involved: whether the tutorials themselves
+should be written as Python files rather than as markdown documents.
 
-Written to be read cold. Nothing here is implemented.
-
----
-
-## 0. A correction, because it changed the plan
-
-The first draft of this document defended a migration path: read both the old
-and new cell markers, keep the old spelling working, set a removal date a year
-out, test the compatibility promise. The reasoning was *"a student who cannot
-reopen last term's work has been badly served."*
-
-**There is no last term.** dewlab has never been released. There are no saved
-files, no exported notebooks, no students. Every line of that reasoning
-defended people who do not exist, and the cost was real: a dual-read pattern,
-a deprecation decision to record, an extra test, and a whole open question
-about migrating storage.
-
-This is the second time in this project I have imported a "don't break
-existing users" instinct without checking whether there are users — the Mini
-IDE redirect was the same error, and Josh had to say the same thing then. So
-the process note, not just the fact:
-
-> **Before writing compatibility code, ask who is harmed if this simply
-> changes.** In a pre-release project the answer is usually nobody, and
-> compatibility machinery is then pure cost: complexity with no beneficiary,
-> defended by a habit rather than a reason.
-
-It also changes the *question*. "How do we migrate from the current marker?"
-is a small question. "What is the best format, starting today?" is the real
-one, and it deserves harder scrutiny than a swap-in. Section 3 is that
-scrutiny, and section 2 is a design option that compatibility thinking would
-have hidden entirely.
+Nothing described here has been built.
 
 ---
 
-## 1. The two audiences, which is how every choice below gets judged
+## Terms used in this document
 
-Josh named them and they are the right lens.
+**dewmini** is dewlab's Python workspace: a page at `compose/dewmini.html`
+where a student writes and runs Python in the browser. It is separate from the
+tutorial pages, although the two share the code that runs Python.
 
-**Authors** — the two people who will write tutorials. They meet these choices
-in `tutorials/**/*.md` and in the authoring editor. What matters to them is
-whether the source is pleasant to write, review and diff, and whether a
-tutorial can express what it needs to teach.
+A **cell** is one editable box of code or text. A student runs a code cell and
+its output appears underneath it.
 
-**Readers** — students, meeting these choices inside dewmini. What matters to
-them is whether what is on screen is legible, whether it transfers to tools
-they will meet later, and whether it can be understood without being
-explained.
+A **notebook** is an ordered list of cells that dewmini shows as one document.
+A student can have several notebooks open at once, one per tab.
 
-Those two sometimes pull apart. Where they do, this document says so rather
-than pretending a choice serves both.
+The **workspace** is a folder of files belonging to the student. dewmini
+mounts it inside Python at the path `/mnt/dewmini`, so Python code can read
+and write files there. Data files a student uploads go here.
 
----
-
-## 2. What is a notebook, physically?
-
-The question worth asking now that nothing constrains the answer.
-
-**Today.** A notebook is JSON in `localStorage` under `dewmini:notebooks:v1`:
-`{active, notebooks: [{id, name, cells}]}`, where each cell carries its content
-*and its saved output*. Separately, a filesystem mounts at `/mnt/dewmini`
-holding data files. Two stores, unrelated to each other.
-
-**The option compatibility would have hidden: make a notebook a file.** A
-notebook becomes a percent-format `.py` in the workspace filesystem. Tabs are
-open files. `localStorage` keeps only which tabs are open.
-
-What that buys, and it is a lot:
-
-- The file manager and the tab strip stop being two lists of different things.
-- "View as file" stops being a conversion. It is the file.
-- Multiple files, and one file importing another, fall out rather than being
-  built.
-- A student's work is a folder of `.py` files they can hand to anyone.
-
-What it costs, and this is not free:
-
-- **Outputs have nowhere to live.** A `.py` cannot carry them. Either they
-  move to a sidecar file, or switching to the file lens drops them.
-- **The three filesystem backends differ in reliability.** IDBFS needs an
-  explicit sync (`assets/pyodide-engine.js` ~644). Losing a notebook to a sync
-  that did not fire would be far worse than any problem this solves.
-- It only works once Python has booted, where `localStorage` is there
-  immediately.
-
-**A finding that bears on it.** `saveState()` writes every cell's output into
-`localStorage` inside one JSON blob, and its `catch {}` swallows a quota
-failure silently. `localStorage` is about 5 MB. A student with a few plots or
-a wide table can quietly stop being saved, with nothing on screen to say so.
-That is a live bug in shipped code whichever storage model wins, and it argues
-for the filesystem holding the heavy parts.
-
-**Recommendation: not yet, but decide deliberately.** The unified model is
-better architecture and I would want it eventually. It should not be attempted
-before the outputs question (§6) has an answer, because dropping a student's
-outputs on a lens switch would make a worse tool than we have now. Level 2 is
-written so that it does not foreclose this.
+To **import** a file means to load the Python code in another file so that the
+functions defined there can be called. Python spells this `import shapes`,
+where `shapes` is the name of a file called shapes.py.
 
 ---
 
-## 3. The marker, judged on legibility rather than compatibility
+## What dewmini does today
 
-dewmini writes `# ---- cell 1 ----` and `# ---- note ----`
-(`downloadAsPython()` and `parsePyCells()`, both in `compose/dewmini.js`).
+Four facts matter for everything below.
 
-**Switch to the percent format** — `# %%` and `# %% [markdown]` — which
-Jupytext writes and VS Code, Spyder and PyCharm all read.
+**Notebooks are stored as text in the browser, not as files.** They live in
+`localStorage`, the browser's own small key-value store, under the key
+`dewmini:notebooks:v1`. Each cell is saved with both its code and the output
+it last produced.
 
-Compatibility was never the strong argument for it. Here is the case under the
-two audiences.
+**The workspace filesystem is complete.** `compose/dewmini-fs.js` can list a
+directory, read a file, write a file, delete a file and create a folder. It
+does this across three different storage backends, choosing whichever the
+browser allows.
 
-**For readers.** The cost first, because I skipped past it in the first draft
-while thinking about migration: `# %%` means nothing to a beginner, where
-`# ---- cell 1 ----` explains itself. That is a real loss.
+**A notebook can be exported as a Python file, and read back.** The exported
+file separates cells with comment lines that dewmini invented:
+`# ---- cell 1 ----` before a code cell and `# ---- note ----` before a text
+cell. `downloadAsPython()` writes them and `parsePyCells()` reads them, both in
+`compose/dewmini.js`.
 
-Two things answer it. Inside dewmini the student never sees `# %%` — the file
-lens renders the markers as cell dividers, exactly as VS Code does, so the
-cryptic string surfaces only in a plain text editor. And Josh's own idea
-covers that case: a short explanatory markdown block at the top of a file the
-first time someone makes the transition, which the percent format carries
-natively and the student can delete.
-
-The gain is that the file opens as cells in VS Code on a college machine with
-no conversion step. That is the whole argument for teaching the file rather
-than only the notebook, and it is worth more than a self-describing marker
-that works nowhere else.
-
-**For authors.** No effect at all. Checked rather than assumed:
-`docs/WRITING_TUTORIALS.md` never mentions the `.py` export. Tutorial sources
-are markdown and stay markdown (§4). Josh's assumption here was right.
-
-**Text goes in `#` comment lines, not triple-quoted strings.** A stray
-triple-quoted block at module level is a real string object, and in first
-position it silently becomes the module docstring. A comment cannot be
-mistaken for code by a student or by Python.
-
-**What the swap involves**, with the compatibility scaffolding gone: change
-the writer, change the reader's pattern, update two comments. That is the
-whole change.
-
-**One thing to do first.** There is no test anywhere over `downloadAsPython()`
-or `parsePyCells()` — not in `tests/test_build.py` (they are JavaScript) and
-not in `tests/e2e/`. The round trip is unprotected today. Write the test, then
-change the format.
+**No file in the workspace can import another.** Python looks for importable
+files in a list of directories called `sys.path`, and nothing adds the
+workspace to that list. A student can therefore have two Python files and no
+way to use one from the other.
 
 ---
 
-## 4. Should tutorial sources become Python-first?
+## Part 1: How cells should be marked in a Python file
 
-The pre-release framing sharpens this too. The question is not "is converting
-worth it" — sunk cost is a weak argument and I do not want to lean on it. The
-question is: **starting today, which would we choose?**
+A Python file is a flat sequence of lines. A notebook is a list of separate
+cells. To store a notebook as a Python file, the file needs some way of
+recording where one cell ends and the next begins, and that marker has to be
+something Python ignores. A comment is the only option.
 
-The answer is still markdown, and it is a stronger answer for being derived
-that way.
+dewmini's current markers work, and they explain themselves: a reader who has
+never seen one can guess what `# ---- cell 1 ----` means. No other program
+understands them.
 
-**What the corpus is.** Measured across all 91 tutorials: **6,076 lines of
-code against 17,306 lines of prose**, a ratio of 1:2.8. And 646 executable
-cells against **211 plain code blocks that exist to be read and must not
-run**.
+### The percent format
 
-**For authors.** Nearly three quarters of what they write is prose. A
-Python-first source turns 17,306 lines of writing into `#` comments: worse to
-write, worse to review, worse to diff, for the majority of the artefact. The
-authoring editor (`assets/editor.js`, 1,235 lines of Milkdown/Crepe) edits
-markdown with live maths and code blocks; Python-first breaks it or forces a
-rewrite, and the two authors pay that.
+There is an established convention for the same job, usually called the
+percent format. A code cell begins with a line containing `# %%`. A text cell
+begins with `# %% [markdown]`, and its prose follows as ordinary `#` comment
+lines. A short example:
 
-**For readers.** They never see the source — they read the built page. So the
-only reader-facing consequence is what becomes *teachable*, and there
-Python-first actively loses something. `first-steps.md` teaches the
-distinction between code to run and code to read, in prose. In a Python-first
-file, code that must not run either runs or becomes a comment. Both destroy a
-distinction the tutorials teach on purpose, and 211 blocks depend on it.
+```python
+# %% [markdown]
+# Reading a file of marks, and averaging them.
 
-**The one real pull the other way** is that a tutorial about writing Python
-files would itself be written in a different format from the files it teaches.
-That is a genuine oddity, and the next section dissolves it.
+# %%
+marks = [72, 65, 88]
+sum(marks) / len(marks)
+```
 
-### What is actually needed
+Jupytext, Visual Studio Code, Spyder and PyCharm all read this convention.
+A file written this way is ordinary Python, so `python thing.py` runs it, and
+it is also a notebook, so those editors show it as a sequence of cells.
 
-Not tutorials written in Python — **a tutorial that can carry files.** Every
-tutorial is already a folder holding its markdown, its practice page and its
-glossary. Add one convention:
+### Recommendation, and the cost of it
+
+dewmini should adopt the percent format.
+
+The reason is that a student who writes a file in dewmini can open the same
+file, unchanged, in Visual Studio Code on a college machine, and see the same
+cells. Teaching a student to work in files is only worth doing if the files
+they produce are usable somewhere other than the tool they were taught in.
+
+There is a real cost, which is that `# %%` explains nothing. A beginner
+reading it has no way to work out what it means, where the current markers are
+almost self-explanatory.
+
+Two things reduce that cost. The first is that a student working inside
+dewmini need never see the marker: when dewmini displays a Python file it can
+draw the markers as dividing lines between cells, which is what Visual Studio
+Code does. The marker is only visible if the student opens the file in a plain
+text editor. The second is that an exported file can begin with a few lines of
+explanation, written as a markdown cell, saying what the markers are for. A
+student can delete those lines once they no longer need them.
+
+### Prose belongs in comments, not in strings
+
+Python has a second way to put text in a file that it will not execute: a
+string on a line by itself, usually written with triple quotes. This is a
+worse choice than a comment for two reasons. Such a string is a real value
+that Python creates and discards, so it is not truly inert. And a string in
+the first position in a file becomes that file's docstring, which is a
+documented feature that would then be doing something the author did not
+intend. Comment lines have neither problem.
+
+### What the change involves
+
+The writer, `downloadAsPython()`, emits the new markers. The reader,
+`parsePyCells()`, matches them. Two comments describing the old format need
+updating. That is the whole change.
+
+One piece of work should come first. Neither `downloadAsPython()` nor
+`parsePyCells()` has any test, in `tests/test_build.py` or in `tests/e2e/`, so
+the behaviour being changed is currently unprotected. A test that builds a
+notebook, exports it, imports it again and compares the result would establish
+what the code does before anyone alters it.
+
+---
+
+## Part 2: Letting one file import another
+
+This is the smallest change that addresses the difficulty students actually
+have, which is not writing a function but calling a function that lives in
+another file.
+
+The workspace is mounted at `/mnt/dewmini`, and Python only imports from
+directories listed in `sys.path`. Adding that one path when Python starts
+makes every Python file in the workspace importable. The change itself is a
+single line.
+
+### The problem that has to be solved alongside it
+
+Python remembers every module it has already imported, in a record called
+`sys.modules`. When a program imports the same module a second time, Python
+finds it in that record and returns it without reading the file again. This
+behaviour is deliberate: it stops a large program from reading the same file
+dozens of times.
+
+It also produces a specific and confusing failure for a student. Suppose a
+student writes a file shapes.py containing a function that calculates an
+area, imports it in a cell, and calls it. The answer is wrong. They open
+shapes.py, find the mistake, correct it, and run the cell again. They get the
+same wrong answer, because Python did not read the corrected file. Nothing on
+screen has changed and nothing explains why.
+
+There are three ways dewmini could handle this.
+
+It could **tell the student**. When a file that has been imported changes on
+disk, dewmini shows a message saying so and offers to reload it. This is the
+recommended option. It is the only one of the three that leaves the student
+knowing something true about how Python works, and module caching is a
+behaviour they will meet in every other Python environment.
+
+It could **reload silently**, re-importing any changed file before running a
+cell. This removes the friction and teaches nothing, and the first time the
+student uses Python outside dewmini the problem returns with no explanation.
+
+It could **restart Python** whenever a file changes. This is correct and far
+too slow for a one-character edit.
+
+---
+
+## Part 3: Showing a notebook as a file
+
+A student who is learning to write Python files needs to see one. dewmini
+should therefore be able to show the same document in two ways: as a notebook,
+which is a list of cells, or as a file, which is one continuous piece of text.
+
+### Why both views are needed
+
+An empty file is harder to begin than an empty cell. Faced with a blank page,
+a beginner has to decide what the whole program will be before writing
+anything. A cell asks for one line. Much of why notebooks suit teaching comes
+from that difference, so removing the notebook view in favour of the file view
+would make dewmini harder to start with, not easier.
+
+Keeping both means a student can begin in cells and move to a file when they
+are ready, without changing tools or losing their work. Because a
+percent-format file is both things at once, switching between the views does
+not convert anything. It changes how the same text is displayed.
+
+### Which view is showing should be visible
+
+A tool that behaves differently depending on a setting the user cannot see is
+a tool people get lost in. The current view should be shown on the tab itself,
+where it is always in sight, rather than only in a menu.
+
+### Running in each view
+
+The Run action means something different in each view. That difference should
+be made obvious to the student rather than hidden, because it is one of the
+things the file view exists to teach.
+
+In the notebook view, Run executes one cell, and the output appears under that
+cell. This is what dewmini does now.
+
+In the file view, Run executes the whole file from top to bottom, as running
+`python thing.py` at a command line would, and the output appears in one place
+for the file. This is the point of the view: a file always runs in the order it
+is written, and a notebook does not.
+
+### The file manager
+
+To work with more than one file, a student needs to see which files exist and
+open one of them.
+
+The Workbench panel on the right of the screen already has a Files section,
+but it is an inventory rather than a browser. It lists names and sizes, and
+offers to upload a file or delete one. It has no way to open a file for
+editing, create a new one, or rename one. Those three additions are most of
+the work.
+
+The panel could sit on either side of the screen. `DEWMINI_WORKBENCH.md` §2
+established that the right-hand panel holds a student's own work and the
+left-hand panel holds things they consult, which puts files on the right. Most
+code editors put a file tree on the left. Keeping it on the right is the
+smaller change and is consistent with the existing arrangement, and the tabs
+already provide a way to move between open files, so a tree is only worth
+adding once there are folders or a large number of files. Whoever teaches with
+dewmini should make this call after watching students use it.
+
+---
+
+## Part 4: Where notebooks are stored
+
+This part can be deferred, but the decision affects how Part 3 should be
+built, so it should be made knowingly rather than by default.
+
+At present a notebook is a block of JSON text in `localStorage`, and the
+workspace is a separate filesystem. A notebook is therefore not a file, and
+the list of notebooks and the list of files are two different lists of two
+different kinds of thing.
+
+An alternative is to store each notebook as a percent-format Python file in
+the workspace. The consequences are substantial. The file manager and the tab
+strip would show the same items. Switching to the file view would require no
+conversion, because the notebook would already be a file. Importing one
+notebook from another would work without further changes, because they would
+be ordinary Python files in a directory Python can import from. A student's
+work would be a folder of Python files they could hand to anyone.
+
+Two things stand in the way.
+
+The first is that a Python file has nowhere to record the output a cell
+produced. dewmini currently saves outputs with the cells and restores them
+when the page reloads. Storing notebooks as files would mean either keeping
+outputs in a second file alongside each notebook, or accepting that they are
+lost. Losing a student's outputs would make dewmini worse than it is now, so
+this has to be settled first.
+
+The second is reliability. Of the three storage backends the filesystem can
+use, one of them, IDBFS, only writes to permanent storage when it is
+explicitly told to. A notebook lost because that step did not happen would be
+a more serious failure than any problem this change solves.
+
+### A defect in the current storage worth fixing regardless
+
+`saveState()` writes every notebook, every cell and every saved output into
+`localStorage` as a single block of JSON, inside a `try` with an empty
+`catch`. Browsers limit `localStorage` to roughly five megabytes. A student
+whose notebooks contain a few images or a large table can exceed that limit, at
+which point the write fails, the failure is discarded without being reported,
+and the student's work stops being saved with nothing on screen to indicate it.
+
+This is a defect in code that is already running, independent of anything else
+in this document.
+
+---
+
+## Part 5: Tutorials stay markdown documents
+
+Once dewmini can show Python files, a reasonable question follows: should the
+tutorials be written as Python files too, rather than as markdown documents
+with code blocks in them?
+
+They should not. The case rests on what the tutorials contain and on who does
+the writing.
+
+### What the tutorials contain
+
+Across the 91 tutorial files there are 6,076 lines of code and 17,306 lines of
+prose. Close to three quarters of the material is writing. Written as Python
+files, those 17,306 lines would all become comments, which is a worse format to
+write, review and compare versions of, for the majority of what a tutorial is.
+
+The tutorials also contain 646 executable code blocks and 211 code blocks that
+exist to be read rather than run. `first-steps.md` teaches this distinction
+explicitly: "Not every piece of code on a page is meant to be run." A Python
+file offers no way to keep it. Code in a Python file either runs or is
+commented out, and neither corresponds to a block that is displayed as code but
+never executed.
+
+### Who would pay
+
+Two people write the tutorials, and they would bear the entire cost. The
+authoring editor, `assets/editor.js`, is 1,235 lines built on Milkdown for
+editing markdown with live mathematics and code blocks. Written as Python
+files, the tutorials could not be edited with it.
+
+Students would gain nothing, because students never read the tutorial source.
+They read the built HTML page.
+
+### What is needed instead
+
+The real requirement is not that tutorials be written in Python. It is that a
+tutorial be able to hand a student a set of Python files, so that a lesson
+about importing can ship the two files the lesson is about.
+
+Each tutorial already lives in its own folder, alongside its practice page and
+its glossary. One additional convention would be enough:
 
 ```
 tutorials/database-methods/joining-tables/
-    joining-tables.md            <- markdown, unchanged
+    joining-tables.md
     joining-tables.glossary.yaml
-    workspace/                   <- shipped into the student's dewmini
+    workspace/
 ```
 
-The tutorial stays a document. The lesson about files ships real files, in the
-percent format, which the student opens in dewmini and edits. Authors keep
-markdown; readers get the thing being taught. Small in `build.py`: a copy step
-and a manifest entry.
+`build.py` copies the `workspace` folder alongside the built page, and the page
+offers to open those files in dewmini. The tutorial remains a document, written
+in markdown by people who are writing mostly prose. The lesson about files
+ships actual files, in the percent format, which the student opens and edits.
 
 ---
 
-## 5. The levels
+## Part 6: The work, in order
 
-| Level | What | Effort | Useful alone |
-|---|---|---|---|
-| 0 | Percent-format markers | half a day | yes |
-| 1 | One file imports another | ~a day | yes |
-| 2 | File lens and a file manager | 1-2 weeks | yes |
-| 3 | Tutorials carry a workspace | small | yes |
-| 4 | The sample flow | content | - |
+Each step below is useful on its own, so the work can stop after any of them.
 
-### Level 0 — the markers
+| Step | What it does | Rough size |
+|---|---|---|
+| 1 | Adopt the percent format for exported and imported Python files | Half a day |
+| 2 | Add the workspace to `sys.path` and handle module caching | One day |
+| 3 | Add the file view and extend the Files panel into a file manager | One to two weeks |
+| 4 | Let a tutorial carry a `workspace` folder | Small |
+| 5 | Write the tutorials that use it | Content work |
 
-Writer, reader pattern, two comments, and one new test that should have
-existed anyway. No dual-read, no deprecation window, nothing to migrate.
+Step 1 comes first because it is small, independent, and every later step
+writes files in that format. Step 2 follows because it is the smallest change
+that lets a student do the thing they currently cannot, and it does not require
+any new interface.
 
-**Delete while you are there.** `migrateLegacyCells()` and `LEGACY_CELLS_KEY`
-(`compose/dewmini.js` ~118-131) fold pre-tabs saved work into a first
-notebook. There is no pre-tabs saved work and there never will be. The
-function, the key, and `test_work_saved_before_tabs_is_migrated` in
-`tests/e2e/test_dewmini_workbench.py` all defend a case that cannot occur.
-Removing them leaves a smaller codebase with no lost capability.
+Step 4 does not depend on the others and can be done at any point.
 
-### Level 1 — one file imports another
-
-The smallest change that touches the actual gap. The workspace mounts at
-`/mnt/dewmini` and nothing puts it on `sys.path`; one insertion at boot makes
-every `.py` there importable.
-
-**The wrinkle to design in, not patch on.** Python caches imported modules, so
-after editing a file a second `import` gives the old version: code that is
-visibly right, behaving as though it is wrong. Of the three answers — notice
-the student and offer a reload, reload silently, or restart — take the first.
-It is the only one where the reader ends up knowing something true, and module
-caching is a real thing to know.
-
-### Level 2 — the file lens and the file manager
-
-**The mode is right and my objection was wrong.** I argued against a
-notebook/file mode because beginners get lost in modes. Josh's counter is
-better: an empty file is a blank page, and a blank page is frightening in a
-way an empty cell is not. Lowering the cost of starting is most of why
-notebooks work for teaching at all.
-
-The thing my objection was protecting is cheap to keep: show the current lens
-**on the tab**, so nobody is in a state they cannot see.
-
-**Run means different things in each lens**, and that difference is the lesson
-rather than a wart. Notebook lens: run this cell. File lens: run the whole
-file, top to bottom, as `python thing.py` would.
-
-**The file manager.** `DEWMINI_WORKBENCH.md` §2 already decided the right rail
-means "your own work" and the left means "things you look up", which puts
-files right; every IDE puts the tree left. I would keep it right — tabs
-already carry navigation, and a tree earns its place only with folders or many
-files — but it is a small change either way and Josh watches students use it.
-
-**What exists.** The filesystem layer is complete: `listDir`, `readFile`,
-`writeFile`, `deleteFile`, `mkdir`, across all three backends, folders
-included. The Files section in the Workbench rail is a *storage inventory* —
-names, sizes, delete, upload — with no notion of a file you open. So the work
-is: make a listed file openable, add new-file and rename, and let a tab hold a
-file as well as a notebook.
-
-**Design it so §2 stays open.** Whatever a tab holds should be a *document*
-with a backing store behind an interface, rather than `localStorage` JSON
-assumed throughout. Then moving notebooks onto the filesystem later is a
+Step 3 is much larger than the rest, and most of its cost is not the visible
+interface. It is that a tab currently holds a notebook, and would have to hold
+either a notebook or a file. Anything reading or writing a tab's contents would
+be affected. Before starting, someone should write down what a tab holds. If
+that is described as a document with storage behind an interface, rather than
+as JSON in `localStorage`, then the change described in Part 4 later becomes a
 change in one place instead of everywhere.
 
-### Level 3 — tutorials carry a workspace
+Step 5 should follow the database module's learning outcomes being written,
+since those determine what the tutorials need to demonstrate.
 
-`build.py` copies a tutorial's `workspace/` folder alongside the built page,
-and the page offers to open those files in dewmini. Independent of everything
-above, and worth doing early because it settles what tutorial sources are
-before anyone is tempted to convert them.
+### Code that can be deleted
 
-### Level 4 — the sample flow
-
-Josh's progression, and the thing that makes the rest worth having. The
-database material is the right vehicle because it has a real reason for more
-than one file — the queries belong apart from the reporting — and
-`assets/examples/sql-owid.ipynb` already loads OWID emissions data into
-SQLite, so the starting point is written.
-
-1. **One notebook.** Cells, one namespace.
-2. **The same notebook in the file lens.** Nothing moves. The student sees
-   that what they have been writing *was* a Python file all along.
-3. **Two files.** The queries lift into a file of their own; the notebook
-   imports them. This is the step Josh identified as the hard one.
-4. **A program.** An entry-point file, run without the notebook at all.
-
-Each step is a tutorial and ships its own `workspace/`. Content work, and it
-should follow the database module's outcomes being written.
+`migrateLegacyCells()` and `LEGACY_CELLS_KEY` in `compose/dewmini.js` convert
+saved work from an earlier version of dewmini into the current format. dewlab
+has not been released, so no saved work in that earlier format exists. The
+function, the storage key it reads, and the test
+`test_work_saved_before_tabs_is_migrated` can all be removed without losing
+anything.
 
 ---
 
-## 6. Open questions
+## Part 7: Decisions still open
 
-Shorter than the first draft, because three of them were about migrating from
-a past that does not exist.
+**Where do cell outputs live if a notebook becomes a file?** They could be
+kept in a second file stored beside each notebook, or they could be discarded
+when the page reloads. This question determines whether the change described
+in Part 4 is possible at all, and it should be answered before Step 3 is
+designed.
 
-- **Where do outputs live?** A `.py` cannot carry them. A sidecar file, or
-  dropped on a lens switch? This gates §2 and wants answering before Level 2,
-  not during.
-- **Do notebooks become files?** §2. Better architecture; needs the outputs
-  answer first.
-- **Files rail left or right?** Recommendation above; Josh's call.
-- **Does a carried workspace open automatically or on a press?** Automatic is
-  friendlier; on a press keeps the promise that nothing opens on a first visit
-  (`DEWMINI_WORKBENCH.md` §1).
-- **The silent quota failure in `saveState()`** is a real bug today, found
-  while writing §2. Worth fixing on its own, whatever else happens.
+**Should notebooks be stored as files at all?** Part 4 sets out what this
+would simplify and what it risks. It cannot be decided until the previous
+question has an answer.
+
+**Should the file manager be on the left or the right?** Part 3 gives the
+argument for each side. Whoever teaches with dewmini should decide this after
+watching students use it.
+
+**Should a tutorial's `workspace` folder open in dewmini automatically, or
+when the student asks for it?** Opening it automatically is easier for the
+student. Waiting until asked keeps the existing rule that nothing opens by
+itself on a first visit, described in `DEWMINI_WORKBENCH.md` §1.
 
 ---
 
-*Corpus figures measured, not estimated: 91 tutorials, 646 executable cells,
-211 illustrative blocks, 6,076 code lines, 17,306 prose lines.*
+*Figures in Part 5 were measured from the repository, not estimated: 91
+tutorial files, 646 executable code blocks, 211 non-executable code blocks,
+6,076 lines of code, 17,306 lines of prose.*
 
-*Filenames a student would create are written without backticks on purpose:
-`dev/check_doc_links.py` reads a backticked `*.py` as a claim that the file
-exists in this repository, and these do not.*
-
-*Written 2026-08-31 against `main` at `e3229b6`.*
+*Names such as shapes.py refer to files a student would create. They are
+written without backticks because `dev/check_doc_links.py` treats a backticked
+filename as a claim that the file exists in this repository.*
