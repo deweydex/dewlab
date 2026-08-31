@@ -1,105 +1,109 @@
 # dewmark
 
-Exams that run in a browser, are sat offline, and are marked from a folder.
+dewmark is a set of tools for running exams in a web browser. A teacher
+writes an exam as a single file, and dewmark turns that file into a web
+page that students open on an ordinary computer. The page works without a
+server and, for most exams, without an internet connection. While a
+student works, the page saves their answers continuously. When the
+student finishes, the page produces a small set of files that the teacher
+collects, marks on their own computer, and turns into graded papers for
+the students and a marks spreadsheet for an assessor.
 
-dewmark is the assessment track of the dewlab project. It takes an exam
-written in one source file — markdown or Python, in a documented format — and
-compiles it into a self-contained HTML exam a student can sit with no server
-and, for exams without code, no internet at all. While the student works, the
-exam saves itself. When they finish, it produces a small set of files the
-teacher can collect, open in a local marking workbench, mark against the
-scheme, and export as graded PDFs for the students and a marks sheet for an
-assessor.
+No part of this process sends anything to a server. The exam is a file,
+each student's submission is a file, and the marks are a file. Every
+stage works from a folder on one computer.
 
-Nothing here talks to a server. The exam is a file, the submission is a file,
-the marks are a file. Every stage works from a folder on one machine.
+## Who this is for
 
-## Why this exists
+dewmark is being built inside dewlab, an open teaching project for QQI
+Level 5 and 6 computing and mathematics modules in Ireland. The first
+users are the teachers of those modules. The design aims further than
+that: any teacher who can write an exam in a word processor should be
+able to run it through dewmark, whatever the subject. An exam can contain
+any mixture of question types — multiple choice, written answers of any
+length, essays, calculations, diagram labelling, and live Python
+programming tasks — and the documents in this folder explain each type
+and each way of marking it in full.
 
-Last semester's exams were hand-built HTML experiments — a Pyodide database
-exam, a practice exam for image-space maths, and a two-variant maths paper
-with a model-answer copy. They worked in the room, and they taught us most of
-what is in these specifications, largely by what went wrong in them:
-hand-duplicated data that drifted, answers saved by position instead of by
-name, marks that existed only as prose, silent failure paths in the save
-machinery, and a "grading workflow" that was a stack of PDFs and a biro.
+## The parts
+
+dewmark has five parts. Each has its own document in the
+[`planning/`](planning/) folder.
+
+1. **The exam file.** A teacher describes a whole exam — the questions,
+   the marks, the model answers, and any data files — in one plain-text
+   file. [`planning/THE_EXAM_FILE.md`](planning/THE_EXAM_FILE.md)
+   explains the file's layout. A teacher can write this file directly,
+   or hand an existing exam (a Word document, for example) to an
+   assistant that converts it;
+   [`planning/TRANSLATING_AN_EXISTING_EXAM.md`](planning/TRANSLATING_AN_EXISTING_EXAM.md)
+   explains that route.
+2. **The question types and the ways of marking.** One shared catalogue
+   defines every kind of question an exam can ask and every way an
+   answer can be marked. Any exam may use any mixture.
+   [`planning/QUESTION_TYPES_AND_MARKING.md`](planning/QUESTION_TYPES_AND_MARKING.md)
+   is the catalogue, and it is the most important document in this
+   folder.
+3. **The exam builder.** A program checks the exam file for mistakes —
+   for example, marks that do not add up — and produces the finished
+   web pages: the paper the students sit, a practice version, an answer
+   key, and a marking scheme file for the teacher.
+   [`planning/THE_EXAM_BUILDER.md`](planning/THE_EXAM_BUILDER.md)
+   describes it.
+4. **The exam page.** This is the web page a student opens to sit the
+   exam. It shows the questions, saves the student's work as they type,
+   and packages their answers into a submission when they finish.
+   [`planning/THE_EXAM_PAGE.md`](planning/THE_EXAM_PAGE.md) describes
+   the sitting from start to finish, and
+   [`planning/THE_SUBMISSION.md`](planning/THE_SUBMISSION.md) describes
+   exactly what the student hands in.
+5. **The marking workbench.** After the exam, the teacher gathers the
+   submissions into one folder and opens the marking workbench, a web
+   page that reads that folder. The teacher marks each answer against
+   the marking scheme, writes feedback, and exports two things: a
+   graded paper for each student and a marks spreadsheet for the
+   assessor.
+   [`planning/THE_MARKING_WORKBENCH.md`](planning/THE_MARKING_WORKBENCH.md)
+   describes marking and the exports.
+
+Two further documents cut across the parts.
+[`planning/APPEARANCE_AND_READABILITY.md`](planning/APPEARANCE_AND_READABILITY.md)
+sets out how the pages look, how they print, and what they promise
+students with accessibility needs.
+[`planning/OPEN_QUESTIONS.md`](planning/OPEN_QUESTIONS.md) records the
+decisions that are not yet made. The order of building is in
+[`planning/ROADMAP.md`](planning/ROADMAP.md).
+
+## What already exists
+
+Nothing in this folder is built yet. These documents are the plan. Before
+the plan, three exams were built by hand and used in the 2025–2026
+academic year; they proved that a browser exam with no server works in a
+real exam room, and their faults shaped many of the rules in these
+documents.
 [`planning/LESSONS_FROM_THE_EXPERIMENTS.md`](planning/LESSONS_FROM_THE_EXPERIMENTS.md)
-is the full audit. dewmark is the same idea built deliberately, as one system
-with one source of truth per exam.
+records what those exams taught, and the [`experiments/`](experiments/)
+folder holds corrected copies of them.
 
-## The five pieces
+## Where exam content lives
 
-Three experiences, joined by two formats:
+This repository is public. Real exam content is secret before students
+sit it, and student submissions are personal data at all times, so
+neither is ever committed here. This folder holds the tools, the
+documentation, and openly shareable sample exams only. Teachers keep
+their real exam files and their students' submissions on their own
+computers or in private storage.
 
-1. **The source format** — one file per exam, markdown or Python, that a
-   teacher writes directly, edits in the composer, or produces by translating
-   an old paper (a job an LLM does well when the format is documented and the
-   compiler validates hard). Spec: [`planning/SOURCE_FORMAT.md`](planning/SOURCE_FORMAT.md).
-2. **The composer** — compiles a source file into the exam's variants
-   (student paper, no-Python backup, assessor key, marking pack), first as a
-   command-line builder, later as a page with preview and structured editing.
-   Spec: [`planning/COMPOSER.md`](planning/COMPOSER.md).
-3. **The exam runner** — the page the student sits. Identity, questions,
-   answer fields, code cells where the exam has them, autosave to browser and
-   to a file, and a finish step that packages the submission. Spec:
-   [`planning/EXAM_RUNNER.md`](planning/EXAM_RUNNER.md).
-4. **The submission format** — what leaves the student's machine: one zip
-   holding a machine-readable answers file and a human-readable snapshot.
-   Spec: [`planning/SUBMISSION_FORMAT.md`](planning/SUBMISSION_FORMAT.md).
-5. **The grading workbench** — points at a folder of submissions, shows each
-   answer beside the marking scheme, records part-by-part marks and feedback,
-   and exports graded PDFs and a marks sheet. Spec:
-   [`planning/GRADING_WORKBENCH.md`](planning/GRADING_WORKBENCH.md).
-
-Two cross-cutting documents:
-[`planning/STYLE_AND_READABILITY.md`](planning/STYLE_AND_READABILITY.md) for
-the visual family, print rules, and accessibility, and
-[`planning/OPEN_QUESTIONS.md`](planning/OPEN_QUESTIONS.md) for everything not
-yet decided, in the same four-part form the rest of the repository uses.
-Build order is in [`planning/ROADMAP.md`](planning/ROADMAP.md).
-
-## How dewmark relates to dewlab
-
-dewlab's pre-build questions settled this boundary before dewmark existed:
-assessment tooling does not merge into the tutorials — anything exam-shaped
-stays on its own track, offline, though it should look like it belongs to the
-same family of materials (planning/OPEN_QUESTIONS.md, Q4 in the root
-planning folder). dewmark lives inside this repository because the two tracks
-share machinery and an author, not because they share a surface. Concretely:
-
-- **Shared**: the `--dl-*` design tokens and typeface family from
-  `assets/tutorial-style.css`; the vendored CodeMirror and KaTeX bundles; the
-  fence-with-header-lines source convention; the Pyodide engine and the
-  classic-script standalone build; the repository's habits — one
-  `docs/<file>-explained.md` per code file, numbered decisions, questions
-  recorded with their costs.
-- **Separate**: dewmark has its own builder (an exam is a sealed single-file
-  artefact with no site navigation — a different compilation target from a
-  tutorial page), its own storage keys, and its own planning folder. Student
-  tutorial pages never link to dewmark, and tutorials continue not to name
-  assessments (DECISIONS_LOG 7.9).
-- **Never in this repository**: real exam content. dewlab is public and
-  published. Exam sources are secret until sat, and student submissions are
-  personal data always. Both live outside the repo — see OPEN_QUESTIONS
-  DM-1 for where. What is committed here is the tooling, the format
-  documentation, and openly-shareable sample exams.
-
-## Where things will live
+## Planned folder layout
 
 ```text
 dewmark/
-  README.md            this file
-  planning/            the specifications and open questions
-  build_exam.py        source in, exam variants out          (phase 1)
-  assets/              runner shell, styles, exam runtime    (phase 1)
-  workbench/           the grading workbench page            (phase 2)
-  composer/            the web composer page                 (phase 4)
-  samples/             openly-shareable sample exams          (phase 1)
-  experiments/         the 2025–26 exam experiments, bug-fixed, as prior art
-  docs/                format guide for authors and for LLM translation
+  README.md         this file
+  planning/         the design documents listed above
+  experiments/      the corrected 2025-2026 hand-built exams
+  build_exam.py     the exam builder (planned)
+  assets/           the exam page template and styles (planned)
+  workbench/        the marking workbench page (planned)
+  samples/          openly shareable sample exams (planned)
+  docs/             guides for teachers (planned)
 ```
-
-## Status
-
-Specification. Nothing is built yet; no assessments or students are waiting
-on it. The specifications are written to be argued with first.

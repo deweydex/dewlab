@@ -1,69 +1,84 @@
-# dewmark roadmap
+# Roadmap
 
-Order chosen so that each phase produces something a real exam could use,
-and so the riskiest unknowns (the format's expressiveness, the marking
-workflow) meet reality earliest. Maths before Python throughout: a
-no-code exam exercises the entire pipeline — format, builder, runner,
-persistence, submission, marking, exports — with none of the Pyodide
-weight, and maths is where the offline requirement is absolute.
+This document sets the order of building. The order follows two rules.
+Each phase must end with something a real exam could use, and the
+riskiest unknowns — whether the exam file format can express real
+papers, and whether the marking workbench suits a real marking session
+— must meet reality as early as possible.
 
-## Phase 0 — Specifications (this folder)
+Exams without Python code questions come first throughout, because they
+exercise the whole pipeline (file, builder, exam page, saving,
+submission, marking, exports) while needing no internet connection at
+any point, which is the strictest and simplest case to prove.
 
-Argue with these documents, settle DM-12 (naming) and any DM the
-arguing settles for free, and translate one old maths paper and one old
-database paper into draft source by hand — not to keep, but to find
-where the format spec fails before the parser exists.
+## Phase 1 — the exam file, the builder, and the exam page
 
-## Phase 1 — Format, builder, runner: the maths paper
+Build the exam builder with its full set of checks, and the exam page
+for every question type except Python code: multiple choice,
+fill-in-the-blank, short and long written answers, essays, numeric
+answers, table completion, sketch description, and diagram labelling.
+Build the three layers of saving, the finish step, and the submission
+file.
 
-`build_exam.py` parsing the markdown source into the canonical model
-with the full validation suite; the runner shell and runtime for
-non-code answer types (text, numeric, mcq, table, sketch); build-time
-KaTeX; the three-layer persistence; the finish flow and submission zip.
-Exit test: the MIT 5N18396 paper, translated, sits fully offline from a
-double-clicked file on a machine with networking disabled, and produces
-a valid submission zip — the standing manual check inherited from the
-experiments. A sample exam ships in `dewmark/samples/`.
+The phase is finished when two real past papers, converted into exam
+files, can each be sat start to finish on a computer with its network
+disabled, producing a valid submission: one structured mathematics
+paper, and one paper that mixes written types — fill-in-the-blank,
+diagram labelling, and long answers — to prove that mixing works from
+the first version. An openly shareable sample exam using every
+non-code question type is published in the `samples/` folder.
 
-## Phase 2 — The workbench: a real marking session
+## Phase 2 — the marking workbench
 
-Folder open, roster, per-paper and per-question marking, grading
-record, marks-sheet CSVs, graded HTML + print-to-PDF flow. Exit test: a
-full mock marking session — last year's submissions reconstructed from
-the experiment JSONs plus fresh mock sittings — marked end to end, and
-the exports opened cold by someone who wasn't in the room (the
-assessor's seat is the test of the marks sheet). Expect this phase to
-send corrections back into the format and workbench specs; that is its
-job.
+Build the workbench: opening a submissions folder, the class list,
+marking paper by paper and question by question, all three marking
+methods, feedback, the saved marking record, and the exports (graded
+papers and the marks spreadsheet with its companion sheet).
 
-## Phase 3 — Python exams
+The phase is finished when a full mock marking session has been run —
+a folder of realistic submissions marked end to end — and the exports
+have been read cold by someone outside the project, standing in for an
+assessor. This phase is expected to send corrections back into the
+earlier documents; no part of dewmark has less precedent than the
+workbench, so its design earns trust only through use.
 
-Code answer type, setup/provided cells, embedded files, pyodide-engine
-integration, structured output capture, the backup variant. Exit test:
-the HVIT database exam, translated, sat with the room checklist from
-DM-7 — including once against a blocked CDN with the local override.
+## Phase 3 — Python code questions
 
-## Phase 4 — The composer page and the graded-PDF spike
+Add the Python code question type: the in-browser code editor and
+runner, set-up code, provided read-only code, embedded data files, the
+recording of code and outputs into the submission, and the workbench's
+display and re-run of code answers.
 
-Load-validate-preview-package in the browser (DM-11 decided by then),
-then structured editing if phase 1–3 authoring friction justifies it;
-in parallel, the client-side PDF generation spike (DM-2). Also the
-teacher-facing documentation set in `dewmark/docs/`: the author's
-format guide, the translation guide, the exam-room checklist, the
-marking guide.
+The phase is finished when a real database practical, converted into
+an exam file, has been sat under the exam-room checklist — including
+one run in a room whose internet was deliberately unavailable, using a
+locally served copy of the Python system.
 
-## Phase 5 — Polish that earned its place
+## Phase 4 — translation and guided creation
 
-Rubric-line marking, comment bank refinements, anonymised marking,
-diagram-label answers, xlsx export, practice builds of past papers
-published to the tutorial side — each contingent on someone having
-missed it during a real session, not on the spec having imagined it.
+Build the translation assistant described in
+[TRANSLATING_AN_EXISTING_EXAM.md](TRANSLATING_AN_EXISTING_EXAM.md),
+including the draft-labelling rules and the checking loop against the
+builder, and the descriptor-reading assistant that suggests question
+types. Write the teacher-facing guides: converting an exam, the
+exam-room checklist, and the marking guide. Then, if direct use by
+other teachers demands it, build the point-and-click creation tool with
+its question-type checklist.
 
-## Standing rules across phases
+## Phase 5 — improvements that use has justified
 
-Every code file lands with its `docs/<file>-explained.md` and tests in
-the same PR; every settled DM gets a numbered entry in the root
-DECISIONS_LOG; the storage-key and format contracts get a
-WINDOW_AUDIT-style freeze document before any student sits a real
-paper; and no real exam content or submission ever enters this
-repository (DM-1).
+Later additions are taken up only when a real session has shown the
+need, and each is listed in [OPEN_QUESTIONS.md](OPEN_QUESTIONS.md)
+until then: one-step export of all graded papers as PDF files, a native
+Excel marks file, passage-level comments on essays, and further
+question types.
+
+## Standing rules for every phase
+
+Every program file lands together with its explanation document and its
+automated tests, following dewlab's conventions. Every decision that
+closes an open question is recorded in the repository's decision log.
+Before any real exam is sat, the saved-data formats — the exam file,
+the submission, the marking record — are frozen and documented, because
+real submissions must remain readable for years. And no real exam
+content or student submission is ever committed to this repository.

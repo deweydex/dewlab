@@ -1,84 +1,93 @@
 # The exam experiments, corrected
 
-The two 2025–26 exam experiments that
+This folder holds the two hand-built browser exams from the 2025–2026
+academic year, each in its student version and its sample-answers
+version, with their known code faults repaired. The exams are released
+past papers; committing them here breaks no rule about exam secrecy,
+which applies to exams that have not yet been sat and to student
+submissions. They are kept as working examples of what came before
+dewmark, and
 [`../planning/LESSONS_FROM_THE_EXPERIMENTS.md`](../planning/LESSONS_FROM_THE_EXPERIMENTS.md)
-audits, each in its student and its sample-answers form, with the concrete
-code bugs the audit found repaired. They are past papers the author has
-released; committing them here does not breach the no-real-exam-content
-rule (OPEN_QUESTIONS DM-1), which concerns unsat exams and student
-submissions. They sit here as working prior art and a source of ideas —
-the dewmark specifications, not these files, define what gets built.
+records what they taught. The dewmark design documents, not these
+files, define what gets built.
 
-Only bugs were fixed. The architectural habits the audit criticises —
-content in JS template literals, positional saving in the maths paper,
-hand-duplicated sidebar data — are left as they were, because repairing
-those properly is what dewmark is for and a rewrite here would blur what
-the experiments teach.
+Only faults were fixed. The structural habits that the lessons document
+criticises — saving answers by position, hand-maintaining several
+copies of the same facts, embedding content inside program code — were
+left as they were, because these files are kept as a record, and
+repairing their structure properly is dewmark's job.
 
 ## The files
 
-**`hvit-database-exam.student.html`** — the Database Methods 5N0783
-practical (Pyodide, SQLite, pandas, matplotlib): the paper a student
-sits. **`hvit-database-exam.answers.html`** — the same paper with worked
-sample answers in every cell, for an assessor. Both need the network for
-the Pyodide and CodeMirror CDNs.
+`hvit-database-exam.student.html` is the Database Methods practical:
+six tasks answered as live Python code, with a small database embedded
+in the page. `hvit-database-exam.answers.html` is the same paper with
+worked sample answers in every task. Both versions need an internet
+connection to download the in-browser Python system and code editor
+when they open.
 
-**`mit-5n18396-maths.student.html`** — the Maths for Information
-Technology 5N18396 paper in its no-Python form: fully offline, sat from
-a double-clicked file. **`mit-5n18396-maths.assessor.html`** — the
-Python-enabled variant that fills every field with the model answers on
-load; Run buttons need the Pyodide CDN, everything else works without it.
+`mit-5n18396-maths.student.html` is the Maths for Information
+Technology paper in its fully offline form; it can be sat from a
+double-clicked file with no network at all.
+`mit-5n18396-maths.assessor.html` is the version with runnable Python
+cells that fills every answer space with the model answers when it
+opens; its Run buttons need the internet once, and everything else
+works without it.
 
-## Corrections applied
+## The corrections
 
-To the database exam, both variants:
+The following faults were repaired in the database exam, in both
+versions.
 
-- The two Excel files (`late_arrivals.xlsx`, `equipment_survey.xlsx`)
-  are now embedded as base64 and written into the Pyodide filesystem
-  like the database, instead of fetched from beside the HTML file — the
-  fetch fails silently on a `file://` page and Tasks 5 and 6 then died
-  with a bare `FileNotFoundError`. The workbook contents are
-  reconstructed to the schemas the tasks describe.
-- `slider` is imported by the setup cell, so the sidebar's advertised
-  API no longer raises `NameError`.
-- The sidebar API reference now states the real `number_input` and
-  `slider` signatures (`min_val`/`max_val`, not `min`/`max`).
-- Cancelling the save-location picker shows a persistent "File autosave
-  off" state and a toast instead of failing silently, and the same
-  state shows whenever autosave has no file to write to.
-- The manual Save download is named `exam_<student>_<date>.json`
-  instead of `exam_submission_<timestamp>.json`.
-- Clicking Run while a cell is executing says so instead of silently
-  dropping the click.
-- A stale comment naming `late_enrolments.xlsx` is corrected.
+- The two spreadsheet files the exam uses are now encoded as text and
+  embedded inside the page, as the database already was, instead of
+  being fetched from beside the page when the exam starts. The fetch
+  fails silently when the page is opened from a local file, and two of
+  the six tasks then failed during the exam.
+- The `slider` helper function is now imported by the set-up code, so
+  the sidebar's documentation of it no longer points at a function that
+  produced an error when called.
+- The sidebar's reference card now states the helper functions' real
+  parameter names, which it had misstated.
+- Cancelling the choose-a-save-file step now shows a persistent "file
+  saving is off" notice instead of failing silently, and the same
+  notice appears whenever file saving is unavailable.
+- The manually downloaded answer file is now named with the student's
+  name and the date instead of a bare timestamp.
+- Clicking Run while another task's code is still running now says so
+  instead of ignoring the click.
+- A comment that named a file which does not exist now names the right
+  file.
 
-To the database exam's answers variant:
+The following faults were repaired in the database exam's answers
+version only.
 
-- The Task 3 model answer called
-  `number_input(..., min=1, max=3, ...)` against a signature of
-  `min_val`/`max_val` and raised `TypeError` — the model answer for a
-  ten-mark task did not run. Now it does.
-- The Task 6c model answer gave `axvline` a label but never drew a
-  legend, so "Midpoint" appeared nowhere. `ax.legend()` added.
+- The sample answer for the ten-mark form task called a helper function
+  with parameter names it does not accept, so the model answer failed
+  with an error when run. It now runs.
+- The chart task's sample answer labelled a line for a legend but never
+  drew the legend, so the label appeared nowhere. It now draws it.
 
-To the maths paper, both variants:
+The following faults were repaired in the mathematics paper, in both
+versions.
 
-- Save payloads now carry a `variant` tag (`nopy` / `assessor`), and
-  restore refuses a save file from the other variant with an
-  explanation — the two variants store answers positionally in
-  different field orders, so a cross-variant restore misfiles answers.
-  In the no-Python paper such a restore also hit an undeclared
-  variable (`outputs`) and threw mid-restore; that dead code path is
-  removed.
-- "Clear saved data" now clears the fields on screen as well as the
-  browser storage — previously the answers stayed visible and the next
-  keystroke quietly re-saved everything just "cleared".
+- Saved answer files now record which version of the paper wrote them,
+  and each version refuses to restore a file from the other, with an
+  explanation. The two versions save different lists of answers in
+  positional order, so restoring across versions filed answers into the
+  wrong boxes; in the offline version it also crashed partway through,
+  because the restore code referred to a variable that only the other
+  version defines. That code is removed.
+- "Clear saved data" now clears the answer boxes on screen as well as
+  the browser's stored copy. Previously the answers stayed visible, and
+  the next keystroke saved them all again.
 
-To the maths paper's assessor variant:
+The following faults were repaired in the mathematics paper's assessor
+version only.
 
-- The model answers were injected 200 ms after load on a timer, racing
-  the saved-state restore. They now apply in sequence after the
-  restore, no timer.
-- The fixed "ASSESSOR VERSION" banner is hidden in print — it printed
-  over the first page of the marking scheme. The print header already
-  identifies the document as the model answer key.
+- The model answers are now filled in after the saved-state restore
+  finishes, in a fixed order. Previously they were filled in after a
+  fixed delay of a fifth of a second, racing the restore.
+- The fixed "ASSESSOR VERSION" banner no longer appears on printouts,
+  where it printed over the first page of the marking scheme. The
+  printed header already identifies the document as the answer key.

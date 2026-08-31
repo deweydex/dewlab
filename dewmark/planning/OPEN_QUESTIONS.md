@@ -1,180 +1,218 @@
-# Open questions — dewmark
+# Open questions
 
-The register, in the repository's usual form: what is asked, what is
-assumed and being built meanwhile, what changing the assumption later
-would cost, and what the question blocks. Numbered DM-n so specs and
-code can cite them. Answers land here, in the root DECISIONS_LOG as
-numbered entries, and in the code.
+This document records the design decisions that are not yet made. Each
+entry states the question, the assumption the project builds on until
+the question is answered, what changing that assumption later would
+cost, and what the open question blocks in the meantime. When a
+question is settled, the answer moves into the relevant design document
+and the entry here is removed, with the decision recorded in the
+repository's decision log.
 
----
+**Q1 — Where do real exam files and submissions live?**
+The question: this repository is public, real exams are secret before
+they are sat, and submissions are personal data, so all of it must live
+somewhere else — but where, exactly, and organised how?
+Assumed for now: teachers keep exam files in private storage of their
+own choosing and submissions in ordinary folders on their own machines.
+Cost of changing later: low, because no tool depends on the location.
+Blocked meanwhile: the teacher guide's advice on organising folders.
 
-**DM-1 — Where do exam sources and submissions live?**
-Asked: dewlab is public; exam sources are secret until sat and
-submissions are personal data always, so neither can be committed here.
-Everlearning already holds the private teaching corpus and is the
-obvious home for sources; submissions may belong outside git entirely.
-Assumed meanwhile: sources in a private location of the author's
-choosing, submissions in local folders only; this repo carries tooling
-and openly-shareable samples in `dewmark/samples/`.
-Cost of changing later: low — nothing in the tooling knows where files
-live. Blocks: nothing technical; blocks writing the teacher-facing
-"how to organise your exam folder" documentation.
+**Q2 — How are all the graded papers turned into PDF files in one step?**
+The question: the marking workbench produces a printable graded paper
+per student, and printing thirty of them one at a time through the
+browser's print dialog is tedious; a one-step export needs either a
+PDF-generating library inside the workbench or a small helper program
+run beside it.
+Assumed for now: print-per-student, with the workbench advancing to the
+next paper automatically after each print.
+Cost of changing later: low; the graded page layout stays the same
+either way.
+Blocked meanwhile: nothing, but marking a large class is slower than it
+should be at the final step.
 
-**DM-2 — Graded-PDF generation mechanism.**
-Asked: per-student print-to-PDF works everywhere but is thirty manual
-print dialogs; a vendored client-side PDF library gives one-click zips
-but must reproduce KaTeX maths and figures faithfully.
-Assumed meanwhile: phase 2 ships the print flow with a next-paper
-loop; a library spike (pdf-lib or paged.js rendering path) is scheduled
-after the graded layout stabilises.
-Cost: low — the graded HTML layout is the input to either mechanism.
-Blocks: the one-click export promise in GRADING_WORKBENCH §6.
+**Q3 — Should the marks export include a real Excel file?**
+The question: the workbench exports CSV files, which Excel opens, but a
+native Excel file could hold the marks and the column explanations as
+two sheets of one document.
+Assumed for now: two CSV files with matching names.
+Cost of changing later: trivial; an Excel export is an addition.
+Blocked meanwhile: nothing.
 
-**DM-3 — Marks sheet: CSV only, or also real xlsx?**
-Asked: CSV opens in Excel but multi-region layouts (marks + the id
-descriptions) are clumsy across two files; xlsx would carry both as
-sheets but costs a vendored writer.
-Assumed meanwhile: two CSVs with shared naming.
-Cost: trivial to add xlsx later. Blocks: nothing.
+**Q4 — Should the exam page show a timer?**
+The question: the page knows the time allowed but does not count it
+down; a countdown adds pressure and misleads whenever a student has
+been granted extra time.
+Assumed for now: no timer; the time allowed appears on the opening
+screen only, and the room's clock governs.
+Cost of changing later: none; a timer is an addition.
+Blocked meanwhile: nothing.
 
-**DM-4 — Timer.**
-Asked: should the runner show elapsed/remaining time, and should
-`duration_minutes` do anything beyond display? A countdown raises
-stress and lies whenever a room grants extra time; no timer means the
-wall clock governs, as on paper.
-Assumed meanwhile: no timer in phase 1; `duration_minutes` renders on
-the start screen only.
-Cost: a timer is additive. Blocks: nothing.
+**Q5 — Should the exam know the class list?**
+The question: students typing their own name and number produces
+spelling variations and typing mistakes; building the class list into
+the exam would fix matching but would put personal data inside a widely
+distributed file.
+Assumed for now: students type their details; the marking workbench
+matches on student number, accepts a class list on the teacher's side
+for cross-checking, and reports numbers it cannot match.
+Cost of changing later: low.
+Blocked meanwhile: nothing.
 
-**DM-5 — Identity entry: typed, or roster-backed?**
-Asked: typed names produce "agnes nitt"/"Agnes Nitt"/"A. Nitt"
-variance and typo'd ids; a roster compiled into the exam would fix
-matching but puts a class list inside a distributed file.
-Assumed meanwhile: typed name + student id, workbench matches on id
-and reports unknowns; no roster in the exam file (privacy beats
-convenience). A roster CSV loaded into the *workbench* for
-cross-checking is uncontroversial and planned.
-Cost: low. Blocks: nothing.
+**Q6 — What is the right counting rule for "answer any N" sections?**
+The question: when a student answers more questions than the rule
+allows to count, the workbench counts the best N by default — but an
+institution might instead require the first N, or the N the student
+nominated.
+Assumed for now: mark everything, count the best N, let the marker
+override, and record which questions were counted.
+Cost of changing later: none in the data, since attempts and selections
+are recorded; the policy is applied at counting time.
+Blocked meanwhile: the final wording of the finish screen, and this
+question should be put to quality-assurance colleagues before a real
+sitting.
 
-**DM-6 — Choose-N marking policy.**
-Asked: when a student attempts more than N, does the marker count the
-best N (kindest, and what the workbench defaults to), the first N, or
-a student-declared selection at finish time?
-Assumed meanwhile: mark everything attempted, count best-N, marker can
-override; the finish checklist reports the overrun to the student.
-Cost: policy-only — the submission records attempts, so any policy is
-computable later. Blocks: the exact finish-screen copy; QQI/IV
-guidance should be consulted before first real use.
+**Q7 — How does the Python system reach an exam room reliably?**
+The question: Python exams download a thirty-megabyte runtime on first
+use; exam-room networks are slow, filtered, or absent, so the download
+must have happened beforehand or be served locally.
+Assumed for now: a documented room checklist with two options — open
+the page on every machine the day before, or serve the files from a
+laptop in the room — plus a rehearsal before any first real sitting.
+Cost of changing later: none; both options already work.
+Blocked meanwhile: confidence, which only a rehearsal provides.
 
-**DM-7 — Pyodide delivery in exam rooms.**
-Asked: CDN needs internet and a school network that doesn't block
-jsDelivr (root planning Q32 already flags this); alternatives are a
-room-local server (`serve.py` + `DEWLAB_PYODIDE_BASE`, both existing)
-or per-machine pre-caching.
-Assumed meanwhile: CDN default, override honoured, and a pre-exam
-checklist document for the room ("open the paper the day before on
-each machine" warms every cache).
-Cost: none — the override exists. Blocks: confidence, not code; a real
-room rehearsal is the answer.
+**Q8 — Is "close the page and reopen" an acceptable remedy for frozen
+code?**
+The question: a student's endless loop can freeze the exam page, and
+the current design has no Stop button (the technique that provides one
+is unavailable to a page opened as a local file); the remedy is to
+close and reopen, losing nothing but the running Python session.
+Assumed for now: yes, because continuous saving makes the reopening
+cheap and the remedy is printed on the page before it is needed.
+Cost of changing later: substantial — a Stop button would require
+hosting the exam differently.
+Blocked meanwhile: nothing for exams without code questions.
 
-**DM-8 — `python provided` cells: auto-run or student-run?**
-Asked: auto-running provided cells (HVIT setup style) hides state
-mutations; requiring the student to run them adds a failure mode
-("nothing works because you skipped the first cell").
-Assumed meanwhile: `setup` auto-runs and is invisible; `provided` is
-visible and auto-runs at start with its output shown, so the page
-never depends on a student ritual.
-Cost: low. Blocks: runner implementation detail only.
+**Q9 — What about answers that want to be drawn or handwritten?**
+The question: some questions are best answered with a freehand drawing
+or handwritten working, and dewmark has no drawing type; the
+describe-a-sketch type covers graph sketching, but not, say, a freehand
+biological drawing.
+Assumed for now: exams needing freehand work put those parts on paper
+("complete this part in the answer booklet provided") and everything
+else in dewmark.
+Cost of changing later: a drawing or photograph type would be an
+addition, with real design work around fairness and file handling.
+Blocked meanwhile: nothing, but authors must know the limit when
+choosing question types.
 
-**DM-9 — Main-thread Pyodide (no Stop button) in exams.**
-Asked: single-file `file://` pages preclude the worker + COI apparatus,
-so an infinite student loop freezes the tab; is reload-and-restore an
-acceptable recovery in exam conditions?
-Assumed meanwhile: yes, because persistence makes reload cheap — the
-page states "if the page stops responding, close and reopen; your work
-is saved." A hosted (non-file) exam build could regain the worker.
-Cost: medium if wrong — a worker-capable exam build is real work.
-Blocks: nothing in phase 1 (maths exams have no cells).
+**Q10 — Does the guided creation tool reuse the builder's checking code
+or reimplement it?**
+The question: the planned point-and-click creation tool runs in the
+browser, while the builder's checks are written in Python; two
+implementations of the same checks would inevitably drift apart, and
+running the Python checks inside the browser is possible but heavy.
+Assumed for now: the builder's checking code is written so it can run
+in the browser, and the decision is deferred until the guided tool is
+designed.
+Cost of changing later: high if a second implementation is written
+first — which is why one will not be.
+Blocked meanwhile: the guided creation tool's architecture.
 
-**DM-10 — Handwritten working.**
-Asked: some maths marking wants to see working that typing flattens;
-options include photographing paper working into the submission
-(image answer type), or accepting typed-notation working as
-sufficient (the MIT stance).
-Assumed meanwhile: typed working plus the sketch type; no camera
-path — it reintroduces filenames, sizes, and upload friction that the
-one-zip design removed.
-Cost: an `image` answer type is additive if wanted. Blocks: which
-maths questions are askable; authors should know the constraint.
+**Q11 — Is "dewmark" the final name?**
+The question: the project name appears in file names and stored data,
+so it becomes expensive to change once real exams exist.
+Assumed for now: dewmark.
+Cost of changing later: a rename is cheap now and disruptive after
+first real use.
+Blocked meanwhile: nothing, but the question must close before a real
+sitting.
 
-**DM-11 — One parser, two hosts.**
-Asked: the composer page needs the builder's parser/validator; a JS
-port would drift, running the Python builder in Pyodide inside the
-composer keeps one implementation but couples the composer to a 30 MB
-load.
-Assumed meanwhile: builder is written import-cleanly so it can run
-under Pyodide; the decision is deferred until the composer page
-exists.
-Cost: high if a JS port is written first and drifts — so it won't be.
-Blocks: composer phase 3 architecture.
+**Q12 — How well must marking work outside Chrome and Edge?**
+The question: only Chrome and Edge let a web page open a folder and
+save into it, which the marking workbench relies on; Firefox and Safari
+users can mark, but must manage files by hand.
+Assumed for now: Chrome or Edge is the supported marking environment,
+stated plainly in the teacher guide; the by-hand path exists but is not
+polished.
+Cost of changing later: moderate engineering if a marker who cannot use
+Chromium-based browsers appears.
+Blocked meanwhile: nothing known.
 
-**DM-12 — Naming.**
-Asked: is dewmark the name, and are runner / workbench / composer the
-right component names? ("marking" vs "grading" is also unsettled;
-these specs use both, leaning on "marks" for the quantity and
-"grading workbench" for the tool.)
-Assumed meanwhile: dewmark; rename cost is a find-and-replace while
-nothing is published. Blocks: nothing yet; must settle before storage
-keys and filenames ship (they embed the name).
+**Q13 — What exactly does the exam header look like?**
+The question: the requirement — an exam page must be distinguishable
+from practice material at a glance — is fixed, but the header's design
+is not.
+Assumed for now: a navy band carrying the institution, the module, and
+the word "Examination".
+Cost of changing later: none; this is presentation.
+Blocked meanwhile: nothing; the design will be settled with real pages
+side by side.
 
-**DM-13 — How much marking support on Firefox/Safari?**
-Asked: the workbench leans on `showDirectoryPicker` (Chromium-only)
-for folder-as-database; the fallback is read-only files + manual
-export.
-Assumed meanwhile: Chromium is the supported marking environment,
-stated plainly; the fallback exists but is not polished.
-Cost: revisit if a real marker can't use Chromium. Blocks: nothing.
+**Q14 — When saved copies disagree, which wins?**
+The question: after an interruption, the browser's saved copy and the
+answer file can differ — most sharply when the computer's clocks are
+wrong, which is exactly when a student has moved machines.
+Assumed for now: the page shows both copies with their save times and
+answer counts and asks the student, whenever they differ by more than a
+few seconds.
+Cost of changing later: low.
+Blocked meanwhile: the exact wording of that choice screen.
 
-**DM-14 — The exam signal (visual).**
-Asked: exactly how an exam page announces itself against the tutorial
-family — header band, wordmark, palette shift?
-Assumed meanwhile: STYLE §1's proposal.
-Cost: CSS. Blocks: nothing; settle during the first runner build with
-real pages side by side.
+**Q15 — Should the workbench ever pre-check answers?**
+The question: multiple choice, blanks, and numeric answers could be
+compared against the expected values automatically, and a language
+model could draft feedback; both would change the character of the tool
+and the trust placed in it.
+Assumed for now: no automatic checking of any kind; every mark is
+entered by a person.
+Cost of changing later: none now; any future step here needs its own
+design, its own accuracy evidence, and its own conversation with the
+people who rely on the results.
+Blocked meanwhile: nothing.
 
-**DM-15 — Restore precedence.**
-Asked: when localStorage and a save file disagree, newest-wins is
-assumed — but "newest" depends on machine clocks, and a student moving
-machines mid-exam is exactly when clocks disagree.
-Assumed meanwhile: newest `saved_at` wins with both offered
-explicitly (timestamps and answer counts shown) when they differ by
-more than the debounce interval.
-Cost: low. Blocks: runner restore implementation.
+**Q16 — What is promised to a student using a screen reader?**
+The question: the accessibility baseline in
+[APPEARANCE_AND_READABILITY.md](APPEARANCE_AND_READABILITY.md) is
+firm, but a fully non-visual sitting of a code or mathematics exam
+involves difficulties the baseline does not resolve.
+Assumed for now: the baseline ships in the first version; full
+non-visual sittings are investigated with the institution's disability
+support staff rather than promised in advance, and alternative
+arrangements remain available as they are today.
+Cost of changing later: high wherever structure was built
+inaccessibly — which is why the baseline is first-version work.
+Blocked meanwhile: honest wording in the teacher guide.
 
-**DM-16 — Assisted marking, ever?**
-Asked: numeric and MCQ parts could be auto-scored, and an LLM could
-draft feedback; both change the tool's character and the trust
-teachers and assessors place in it.
-Assumed meanwhile: no — GRADING_WORKBENCH §7's line holds until the
-human workflow has run a real session; any later step here gets its
-own specification, consent story, and accuracy evaluation.
-Cost: none now. Blocks: nothing.
+**Q17 — How do students type symbols?**
+The question: science and mathematics answers want H₂O, superscripts,
+Greek letters, and similar; typed plain text needs either conventions
+(`x^2`, `H2O`), a palette of insertable symbols, or a small formatting
+toolbar.
+Assumed for now: plain text with published conventions plus a symbol
+palette, and marker guidance to accept any unambiguous form.
+Cost of changing later: moderate — stored answers stay plain text under
+every option considered, which keeps the choice reversible.
+Blocked meanwhile: the palette's contents, and the conventions page in
+the student-facing reference material.
 
-**DM-17 — Accessibility commitment.**
-Asked: what does dewmark promise a screen-reader user or a student
-with alternative-arrangement needs, and by when (STYLE §6)?
-Assumed meanwhile: the §6 baseline in phase 1; full non-visual
-sittability investigated with the institution's disability support
-practice rather than guessed at.
-Cost: retrofitting semantics is expensive — which is why the baseline
-is phase 1, not later. Blocks: honest claims in teacher-facing docs.
+**Q18 — Can a marker attach a comment to a chosen passage of an essay?**
+The question: essay feedback currently attaches to criteria and to the
+paper as a whole; pointing at a particular sentence is natural for
+essay markers and is not yet designed.
+Assumed for now: criterion-level and whole-paper comments suffice for
+the first version.
+Cost of changing later: an addition, though a substantial one.
+Blocked meanwhile: nothing.
 
-**DM-18 — Relation to dewlab ROADMAP phases 3 and 4.**
-Asked: seeded practice generators (phase 3) and the portfolio export
-(phase 4) brush against assessment; does dewmark share machinery with
-either?
-Assumed meanwhile: the Python builder (SOURCE_FORMAT §8) and phase-3
-generators should converge on one seeding idiom eventually; the
-portfolio export stays tutorial-side. No shared code yet.
-Cost: divergent seeding idioms would be a nuisance, not a break.
-Blocks: nothing.
+**Q19 — How far may the descriptor assistant go?**
+The question: the assistant that reads a module descriptor currently
+suggests question types; it could plausibly also draft whole questions
+aligned to the descriptor's learning outcomes, which would be more
+useful and easier to over-trust.
+Assumed for now: suggestions of question types only, each tied to the
+descriptor passage that prompted it.
+Cost of changing later: none; drafting would be an addition governed by
+the same rules as exam translation (drafts labelled, marks never
+invented).
+Blocked meanwhile: nothing.
