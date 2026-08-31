@@ -1744,17 +1744,20 @@ def render_index(
     retired: dict[str, list[Tutorial]] | None = None,
     practice: dict[tuple[str, str], Tutorial] | None = None,
     mixed: dict[str, list[Tutorial]] | None = None,
+    module_archives: dict[str, Path] | None = None,
 ) -> str:
     """The contents page: every module, every series, in order.
 
     `archives` maps a series to its zip of downloadable copies, when the build
     wrote them. Without it the page simply carries no whole-series link, which
-    is what a quick local build wants.
+    is what a quick local build wants. `module_archives` is the same idea one
+    level up: a module's every series and every practice page, combined.
     """
     archives = archives or {}
     retired = retired or {}
     practice = practice or {}
     mixed = mixed or {}
+    module_archives = module_archives or {}
     if not groups:
         return "<p>No tutorials have been written yet.</p>"
 
@@ -1828,6 +1831,21 @@ def render_index(
     for module in ordered:
         out.append(
             f'<h2 class="dl-module-heading">{html.escape(names.get(module, module))}</h2>')
+        module_archive = module_archives.get(module)
+        if module_archive is not None:
+            # Same tally write_module_zip() built the archive from, worked out
+            # again here rather than threaded through — groups, practice and
+            # mixed are already everything it takes.
+            total = sum(
+                len(zip_sequence(members, practice))
+                for (owner, series), members in groups.items() if owner == module
+            ) + len(mixed.get(module, []))
+            out.append(
+                '<p class="dl-series">'
+                f'<a class="dl-download" href="download/{module_archive.name}" download>'
+                f"Download every tutorial and practice page in this module ({total} files, "
+                f"{readable_size(module_archive)})</a></p>"
+            )
         for (owner, series), members in sorted(groups.items()):
             if owner != module:
                 continue
@@ -2696,8 +2714,129 @@ def series_slug(module: str, series: str) -> str:
     return slug or "tutorials"
 
 
-def write_series_zip(module: str, series: str, members: list[Tutorial]) -> Path:
-    """Every downloadable copy in one series, gathered into one archive.
+def zip_sequence(
+    members: list[Tutorial], practice: dict[tuple[str, str], Tutorial]
+) -> list[Tutorial]:
+    """Reading order, with each tutorial's own practice page right after it.
+
+    `series_of()` deliberately keeps practice off the reading order used for
+    prev/next navigation (putting it on the route would double the length of
+    every series) — but a downloaded folder is not a route through a page at
+    a time, it is a stack of files a person opens by number, and there the
+    practice page belongs right after the tutorial it tests, not omitted.
+    """
+    sequence: list[Tutorial] = []
+    for tutorial in members:
+        sequence.append(tutorial)
+        page = practice.get((tutorial.module, tutorial.slug))
+        if page is not None:
+            sequence.append(page)
+    return sequence
+
+
+def zip_entry_name(index: int, width: int, slug: str) -> str:
+    """A sortable filename a file browser lists in the order to open them —
+    the same reason build.py's own generated pages sort no particular way,
+    but a downloaded folder is judged by its listing, not by clicking
+    through a nav bar."""
+    return f"{index:0{width}d}-{slug}.html"
+
+
+def start_here_html(title: str, sections: list[tuple[str | None, list[tuple[str, Tutorial]]]]) -> str:
+    """The one file every downloaded folder needs and no individual
+    standalone copy can provide for another: standalone_html() deliberately
+    strips each page's cross-file navigation (prev/next, the series panel),
+    since a single tutorial downloaded on its own has no siblings to point
+    at (see its own docstring). Bundled into a zip, those siblings exist —
+    this page is what tells a reader they are there, and in what order.
+    Plain and self-contained on purpose: it opens straight from disk, next
+    to files that do the same, with no server and nothing else to fetch.
+    """
+    body = []
+    next_number = 1
+    for heading, entries in sections:
+        if heading:
+            body.append(f"<h2>{html.escape(heading)}</h2>")
+        # start=, not a fresh <ol> per section: the number shown beside a link
+        # is what that file is actually numbered, and a list that restarted at
+        # 1 for every series would say otherwise.
+        body.append(f'<ol start="{next_number}">')
+        for name, member in entries:
+            tag = ' <span class="practice">practice</span>' if member.is_practice else ""
+            body.append(
+                f'<li><a href="{html.escape(name)}">{html.escape(member.title)}</a>{tag}</li>'
+            )
+        body.append("</ol>")
+        next_number += len(entries)
+    body_html = "\n".join(body)
+    return f"""<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Start here — {html.escape(title)}</title>
+<style>
+:root {{ color-scheme: light dark; }}
+body {{
+  margin: 0; padding: 2.5rem 1.25rem 4rem; max-width: 38rem; margin-inline: auto;
+  font: 1rem/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #fdfcfa; color: #1a1a1a;
+}}
+h1 {{ font-size: 1.5rem; margin: 0 0 0.6rem; }}
+h2 {{ font-size: 1.05rem; margin: 2rem 0 0.5rem; border-top: 1px solid #ddd7cd; padding-top: 1.5rem; }}
+p.lede {{ color: #5f6b7a; }}
+ol {{ padding-left: 1.4rem; }}
+li {{ margin: 0.4rem 0; }}
+a {{ color: #d4692a; text-decoration: none; }}
+a:hover {{ text-decoration: underline; }}
+.practice {{ font-size: 0.82rem; color: #5f6b7a; }}
+@media (prefers-color-scheme: dark) {{
+  body {{ background: #14181f; color: #e6e3dd; }}
+  h2 {{ border-color: #2f3743; }}
+  p.lede, .practice {{ color: #98a2b3; }}
+}}
+</style>
+</head>
+<body>
+<h1>{html.escape(title)}</h1>
+<p class="lede">Numbered in the order to open them — a tutorial's practice sits
+right after it. Start with 01.</p>
+{body_html}
+</body>
+</html>"""
+
+
+def write_zip_entries(
+    archive: zipfile.ZipFile, folder: str, sequence: list[Tutorial], width: int, start: int = 1
+) -> list[tuple[str, Tutorial]]:
+    """Write one section's standalone copies into `archive` under `folder`,
+    numbered from `start`, zero-padded to `width`. `width` is a parameter
+    rather than worked out from this one section, so every section in a
+    multi-series module archive pads to the same width as the archive's own
+    total — the point at which a count would need another digit rarely falls
+    exactly on a section boundary. Returns the (entry name, tutorial) pairs
+    written, for start_here_html() to link to."""
+    entries = []
+    for offset, member in enumerate(sequence):
+        name = zip_entry_name(start + offset, width, member.slug)
+        archive.write(
+            OUT / "download" / member.module / f"{member.slug}.html",
+            f"{folder}/{name}",
+        )
+        entries.append((name, member))
+    return entries
+
+
+def write_series_zip(
+    module: str,
+    series: str,
+    members: list[Tutorial],
+    practice: dict[tuple[str, str], Tutorial],
+    series_title: str,
+) -> Path:
+    """Every downloadable copy in one series, gathered into one archive,
+    numbered tutorial-then-its-practice in reading order, with a
+    0-start-here.html a reader lands on first after unzipping.
 
     A student takes one tutorial. Somebody setting up a room, or filling a
     memory stick for a class with no reliable connection, wants the set. The
@@ -2707,12 +2846,59 @@ def write_series_zip(module: str, series: str, members: list[Tutorial]) -> Path:
     folder = series_slug(module, series)
     target = OUT / "download" / f"{folder}.zip"
     target.parent.mkdir(parents=True, exist_ok=True)
+    sequence = zip_sequence(members, practice)
+    width = max(2, len(str(len(sequence))))
     with zipfile.ZipFile(target, "w", zipfile.ZIP_DEFLATED) as archive:
-        for member in members:
-            archive.write(
-                OUT / "download" / member.module / f"{member.slug}.html",
-                f"{folder}/{member.slug}.html",
-            )
+        entries = write_zip_entries(archive, folder, sequence, width)
+        archive.writestr(
+            f"{folder}/0-start-here.html", start_here_html(series_title, [(None, entries)])
+        )
+    return target
+
+
+def write_module_zip(
+    module: str,
+    module_title: str,
+    series_in_order: list[tuple[str, str, list[Tutorial]]],
+    practice: dict[tuple[str, str], Tutorial],
+    mixed_pages: list[Tutorial],
+) -> Path:
+    """Every series in a module, and its mixed problem sets, in one archive —
+    the whole module a room or a memory stick wants, not one series of it.
+
+    `series_in_order` is `(series, series_title, members)`, in the same order
+    the contents page already lists that module's series in. Numbering runs
+    once across the whole archive, not restarting per series, so the folder
+    reads as one sequence top to bottom rather than several that happen to
+    share a listing.
+    """
+    target = OUT / "download" / f"{module}-all.zip"
+    target.parent.mkdir(parents=True, exist_ok=True)
+    show_headings = len(series_in_order) > 1
+
+    # Every section's sequence, worked out before anything is written, so the
+    # whole archive's total (not just whichever section happens to be first)
+    # decides the zero-padding width every section then shares.
+    series_sequences = [
+        (series_title, zip_sequence(members, practice))
+        for _, series_title, members in series_in_order
+    ]
+    total = sum(len(seq) for _, seq in series_sequences) + len(mixed_pages)
+    width = max(2, len(str(total)))
+
+    with zipfile.ZipFile(target, "w", zipfile.ZIP_DEFLATED) as archive:
+        sections: list[tuple[str | None, list[tuple[str, Tutorial]]]] = []
+        next_index = 1
+        for series_title, sequence in series_sequences:
+            entries = write_zip_entries(archive, module, sequence, width, start=next_index)
+            next_index += len(sequence)
+            sections.append((series_title if show_headings else None, entries))
+        if mixed_pages:
+            entries = write_zip_entries(archive, module, mixed_pages, width, start=next_index)
+            sections.append(("Mixed problems", entries))
+        archive.writestr(
+            f"{module}/0-start-here.html", start_here_html(module_title, sections)
+        )
     return target
 
 
@@ -2968,6 +3154,7 @@ def write_index(
     retired: dict[str, list[Tutorial]] | None = None,
     practice: dict[tuple[str, str], Tutorial] | None = None,
     mixed: dict[str, list[Tutorial]] | None = None,
+    module_archives: dict[str, Path] | None = None,
 ) -> Path:
     """The contents page at the site root, which every page's masthead links to."""
     manifest = {"slug": "index", "version": 1, "assetBase": "assets/",
@@ -2995,7 +3182,7 @@ def write_index(
         "{{TOC}}": "",
         # Nor a series to navigate — it is the thing every series links back to.
         "{{SERIES_NAV}}": "",
-        "{{BODY}}": render_index(groups, archives, retired, practice, mixed),
+        "{{BODY}}": render_index(groups, archives, retired, practice, mixed, module_archives),
         "{{MANIFEST_JSON}}": json.dumps(manifest).replace("<", "\\u003c"),
         "{{FOOTER}}": site_footer(),
     }
@@ -3496,13 +3683,41 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
             written.append(write_standalone(tutorial, page_path.read_text()))
 
     archives: dict[tuple[str, str], Path] = {}
+    module_archives: dict[str, Path] = {}
     if standalone:
+        titles = series_titles()
         for key, members in groups.items():
-            archives[key] = write_series_zip(key[0], key[1], members)
+            module, series = key
+            archives[key] = write_series_zip(
+                module, series, members, practice, titles.get(key, series)
+            )
         written.extend(archives.values())
 
+        # The same module_title fallback render_index() uses for its own
+        # headings, worked out again here rather than threaded through —
+        # groups is all either needs.
+        names: dict[str, str] = {}
+        for members in groups.values():
+            for member in members:
+                if member.meta.get("module_title"):
+                    names.setdefault(member.module, member.module_title)
+
+        by_module: dict[str, list[tuple[str, str, list[Tutorial]]]] = {}
+        for (module, series), members in sorted(groups.items()):
+            by_module.setdefault(module, []).append(
+                (series, titles.get((module, series), series), members)
+            )
+        for module, series_in_order in by_module.items():
+            module_archives[module] = write_module_zip(
+                module, names.get(module, module), series_in_order,
+                practice, mixed.get(module, []),
+            )
+        written.extend(module_archives.values())
+
     if tutorials:
-        written.append(write_index(shell, groups, archives, retired, practice, mixed))
+        written.append(
+            write_index(shell, groups, archives, retired, practice, mixed, module_archives)
+        )
         tree = write_tree_page(shell, tutorials)
         if tree is not None:
             written.append(tree)
