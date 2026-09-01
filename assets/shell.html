@@ -204,6 +204,28 @@
     </div>
   </section>
 
+  <!-- The live Python session behind every cell on the page — ported from
+       dewmini's own "Python" settings section (DECISIONS_LOG.md 7.108).
+       Removed at load on a page with no cells at all, same as "Your work"
+       above (initExecutionSection(), tutorial-runtime.js) — there is
+       nothing here to restart on a page that never started anything. -->
+  <section class="dl-settings-section" id="dl-settings-execution">
+    <h3>Running Python</h3>
+    <p class="dl-panel-note" id="dl-execution-status">Not started yet — run a cell to start Python.</p>
+    <div class="dl-progress-actions">
+      <button type="button" class="dl-btn" id="dl-restart-python">Restart Python</button>
+      <button type="button" class="dl-btn" id="dl-restart-run-all"
+              title="Throw away everything Python currently holds, then run every cell on this page from the top — the way to prove the page still works from a clean start">Restart &amp; run all</button>
+    </div>
+    <div class="dl-texture-row">
+      <span>Run time</span>
+      <div class="dl-seg" data-run-stats>
+        <button type="button" data-value="on">on</button>
+        <button type="button" data-value="off">off</button>
+      </div>
+    </div>
+  </section>
+
   <!-- Cells a reader writes for themselves — planning/PRACTICE.md §3 — kept
        completely separate from the tutorial's own saved-work record above:
        not tied to this tutorial's version, and not counted in the Progress

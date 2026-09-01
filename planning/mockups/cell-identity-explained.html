@@ -1,0 +1,354 @@
+<title>Cell Identity</title>
+<style>
+  :root {
+    --ink: #1b2a4a;
+    --accent: #d4692a;
+    --bg: #fdfcfa;
+    --fg: #1a1a1a;
+    --muted: #5f6b7a;
+    --panel: #ffffff;
+    --panel-bg: #f6f4f0;
+    --border: #ddd7cd;
+    --shadow: rgba(27, 42, 74, 0.10);
+
+    --type-python: var(--accent);
+    --type-sql: #2d6a85;
+    --type-html: #a13a5c;
+    --type-css: #5b4a91;
+    --type-text: var(--muted);
+
+    --serif: Georgia, "Iowan Old Style", "Times New Roman", serif;
+    --mono: "SF Mono", "Cascadia Mono", Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ink: #b9c8e6; --accent: #e08a4f; --bg: #14181f; --fg: #e6e3dd;
+      --muted: #98a2b3; --panel: #1b2129; --panel-bg: #1b2129; --border: #2f3743;
+      --shadow: rgba(0, 0, 0, 0.45);
+      --type-sql: #7fc4e0; --type-html: #f0a0bd; --type-css: #c3aef0;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ink: #b9c8e6; --accent: #e08a4f; --bg: #14181f; --fg: #e6e3dd;
+    --muted: #98a2b3; --panel: #1b2129; --panel-bg: #1b2129; --border: #2f3743;
+    --shadow: rgba(0, 0, 0, 0.45);
+    --type-sql: #7fc4e0; --type-html: #f0a0bd; --type-css: #c3aef0;
+  }
+
+  * { box-sizing: border-box; }
+  body { background: var(--bg); color: var(--fg); font-family: var(--serif); }
+
+  .page { max-width: 700px; margin: 0 auto; padding: 3.5rem 1.5rem 6rem; }
+
+  .kicker {
+    font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--accent); margin: 0 0 0.6rem;
+  }
+  h1 {
+    font-size: 2.1rem; line-height: 1.15; color: var(--ink); margin: 0 0 1.1rem;
+    text-wrap: balance; letter-spacing: -0.01em;
+  }
+  .dek {
+    font-size: 1.14rem; line-height: 1.55; color: var(--muted); margin: 0 0 2.6rem;
+    max-width: 40em;
+  }
+  .dek strong { color: var(--fg); font-weight: normal; font-style: italic; }
+
+  h2 {
+    font-size: 1.02rem; color: var(--ink); margin: 3rem 0 0.9rem;
+    padding-bottom: 0.5rem; border-bottom: 1px solid var(--border);
+  }
+  p { font-size: 1.02rem; line-height: 1.7; margin: 0 0 1.1rem; max-width: 38em; }
+  ul, ol { margin: 0 0 1.1rem; padding-left: 1.3rem; max-width: 38em; }
+  li { font-size: 1.02rem; line-height: 1.65; margin-bottom: 0.5rem; }
+  strong { color: var(--ink); }
+  code {
+    font-family: var(--mono); font-size: 0.85em; background: var(--panel-bg);
+    border: 1px solid var(--border); border-radius: 3px; padding: 0.05em 0.35em;
+  }
+
+  .specimen {
+    background: var(--panel); border: 1px solid var(--border); border-radius: 8px;
+    padding: 1.4rem 1.5rem; margin: 1.4rem 0 1.8rem; box-shadow: 0 1px 3px var(--shadow);
+  }
+  .specimen-label {
+    font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--muted); margin: 0 0 0.9rem;
+  }
+  .specimen-row { display: flex; align-items: center; gap: 0.9rem; flex-wrap: wrap; margin-bottom: 0.7rem; }
+  .specimen-row:last-child { margin-bottom: 0; }
+  .specimen-caption { font-size: 0.86rem; color: var(--muted); font-style: italic; }
+
+  .pill {
+    display: inline-flex; align-items: stretch; font-family: var(--mono); font-size: 0.72rem;
+    border: 1px solid var(--border); border-radius: 5px; overflow: hidden; background: var(--panel-bg);
+    cursor: grab;
+  }
+  .pill .dots {
+    display: flex; align-items: center; padding: 0 0.35rem; color: var(--muted); letter-spacing: -1px;
+    border-right: 1px solid var(--border);
+  }
+  .pill .num { display: flex; align-items: center; padding: 0 0.6rem; color: var(--fg); white-space: nowrap; }
+  .pill .type {
+    display: flex; align-items: center; padding: 0 0.6rem; text-transform: uppercase;
+    border-left: 1px solid var(--border); font-weight: bold; white-space: nowrap;
+  }
+  .pill .type[data-t="python"] { color: var(--type-python); }
+  .pill .type[data-t="sql"] { color: var(--type-sql); }
+  .pill .type[data-t="html"] { color: var(--type-html); }
+  .pill .type[data-t="css"] { color: var(--type-css); }
+  .pill .type[data-t="text"] { color: var(--type-text); }
+
+  .runline { font-family: var(--mono); font-size: 0.78rem; }
+  .runline.not-run { color: var(--muted); font-style: italic; }
+  .runline.ran .order { color: var(--fg); }
+  .runline.ran .dur { color: var(--muted); }
+  .runline.stale .flag { color: var(--accent); }
+  .runline.running { color: var(--accent); }
+  .runline.running::before {
+    content: ""; display: inline-block; width: 6px; height: 6px; border-radius: 50%;
+    background: var(--accent); margin-right: 0.45em; animation: pulse 1.2s ease-in-out infinite;
+  }
+  @media (prefers-reduced-motion: reduce) { .runline.running::before { animation: none; } }
+  @keyframes pulse { 0%, 100% { opacity: 0.35; } 50% { opacity: 1; } }
+
+  .grid-table { width: 100%; border-collapse: collapse; margin: 1.4rem 0 1.8rem; font-size: 0.92rem; }
+  .grid-table th, .grid-table td {
+    text-align: left; padding: 0.55rem 0.8rem; border-bottom: 1px solid var(--border);
+  }
+  .grid-table th { font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.04em;
+    text-transform: uppercase; color: var(--muted); font-weight: normal; }
+  .grid-table td.yes { color: var(--accent); font-weight: bold; }
+  .grid-table td.no { color: var(--border); }
+  .grid-table tr:last-child td { border-bottom: none; }
+
+  .why {
+    border-left: 3px solid var(--accent); padding: 0.2rem 0 0.2rem 1.1rem; margin: 1.6rem 0;
+    max-width: 38em;
+  }
+  .why p { margin: 0; color: var(--fg); }
+  .why .label {
+    font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--accent); display: block; margin-bottom: 0.35rem;
+  }
+
+  .status-note {
+    background: var(--panel-bg); border: 1px solid var(--border); border-radius: 8px;
+    padding: 1.1rem 1.3rem; margin: 2.6rem 0; font-size: 0.92rem; line-height: 1.6; color: var(--muted);
+  }
+  .status-note strong { color: var(--fg); }
+
+  footer { margin-top: 3.5rem; padding-top: 1.4rem; border-top: 1px solid var(--border);
+    font-size: 0.85rem; color: var(--muted); }
+
+  .theme-toggle { position: fixed; top: 1.2rem; right: 1.2rem; display: inline-flex;
+    border: 1px solid var(--border); border-radius: 999px; overflow: hidden; background: var(--panel); }
+  .theme-toggle button {
+    font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.04em; text-transform: uppercase;
+    color: var(--muted); background: none; border: none; padding: 0.35rem 0.65rem; cursor: pointer;
+  }
+  .theme-toggle button.active { background: var(--accent); color: #fff; }
+</style>
+
+<div class="theme-toggle">
+  <button data-theme-choice="light" class="active">Light</button>
+  <button data-theme-choice="dark">Dark</button>
+</div>
+
+<div class="page">
+  <p class="kicker">dewmini &middot; design note</p>
+  <h1>Why a notebook cell needs to say what it is</h1>
+  <p class="dek">
+    A plan for a feature dewmini doesn't have yet — <strong>execution
+    counters</strong> — written for anyone reading it cold. It explains
+    what problem it solves, and why each small decision in its design
+    turned out to be the shape it is.
+  </p>
+
+  <h2>The problem</h2>
+  <p>
+    In a notebook — dewmini's, or any other tool shaped like one — every
+    cell shares one running program. Run cell three, then cell one, then
+    edit cell two without re-running it, and the page still lists them in
+    the order you typed them: one, two, three. But that is no longer the
+    order anything actually <em>happened</em> in, and the page currently
+    has no way to say so.
+  </p>
+  <p>
+    That gap causes a specific, common kind of confusion: a cell's output
+    doesn't match what its code would currently produce, and there is
+    nothing on the page telling you why. Was it never run? Run, then
+    edited afterwards? Run before some other cell it depends on? All three
+    look identical today — an output sitting under some code — and a
+    reader is left to guess.
+  </p>
+  <p>
+    The fix is not clever. It's a plain, honest record: which cell ran,
+    in what order, how long it took, and whether its code has changed
+    since. The interesting part is not that idea — it's making that record
+    show up clearly, on every kind of cell, without cluttering the ones
+    that don't need it.
+  </p>
+
+  <h2>An identity, at a glance</h2>
+  <p>
+    Every cell gets a small label in its header: its number, and what kind
+    of cell it is.
+  </p>
+
+  <div class="specimen">
+    <p class="specimen-label">the identity pill</p>
+    <div class="specimen-row">
+      <span class="pill"><span class="dots">&#8942;</span><span class="num">Cell 1</span><span class="type" data-t="python">Python</span></span>
+      <span class="pill"><span class="dots">&#8942;</span><span class="num">Cell 4</span><span class="type" data-t="sql">SQL</span></span>
+      <span class="pill"><span class="dots">&#8942;</span><span class="num">Cell 5</span><span class="type" data-t="html">HTML</span></span>
+      <span class="pill"><span class="dots">&#8942;</span><span class="num">Cell 6</span><span class="type" data-t="css">CSS</span></span>
+    </div>
+    <p class="specimen-caption">Every cell, every type — numbered the same way, coloured differently.</p>
+  </div>
+
+  <p>
+    It says the word <strong>Cell</strong> rather than leaving a bare
+    number to imply it — four extra characters, and nothing left for a
+    first-time reader to guess at. The type sits in the same label as the
+    number, because both answer the same question — <em>what is this,
+    before I've read a line of it</em> — and a reader shouldn't have to
+    piece two separate badges together to get one answer.
+  </p>
+
+  <div class="why">
+    <span class="label">why colour, too</span>
+    <p>
+      Each type gets its own hue on top of its own word. In a notebook
+      that mixes Python, SQL, and a bit of HTML, colour lets a reader sort
+      cells by type without reading every label — but only ever
+      <em>on top of</em> the text, never instead of it. A reader who can't
+      tell two colours apart loses nothing, because the word was always
+      there to read.
+    </p>
+  </div>
+
+  <div class="why">
+    <span class="label">why the whole pill drags</span>
+    <p>
+      dewmini lets you reorder cells by dragging them. An early version
+      made only the small three-dot handle draggable — a precise target on
+      an otherwise wide, inviting label, worse on a touchscreen than a
+      mouse. Since the pill already shows exactly what you'd be picking
+      up, there was no reason to make the target smaller than the label
+      itself.
+    </p>
+  </div>
+
+  <h2>A line that says what happened</h2>
+  <p>
+    Underneath the code, a Python or SQL cell — the two kinds that
+    actually run — reports what its last run was like, in one line:
+  </p>
+
+  <div class="specimen">
+    <p class="specimen-label">the run line, in each state</p>
+    <div class="specimen-row"><span class="runline not-run">Not yet run this session</span></div>
+    <div class="specimen-row"><span class="runline ran"><span class="order">Ran 1st</span> <span class="dur">in 340 ms</span></span></div>
+    <div class="specimen-row"><span class="runline ran stale"><span class="order">Ran 1st</span> <span class="dur">in 340 ms</span> — <span class="flag">edited since</span></span></div>
+    <div class="specimen-row"><span class="runline running">Running&hellip; 1.6 s</span></div>
+    <p class="specimen-caption">One line, four states — order, duration, and staleness folded together rather than three separate badges.</p>
+  </div>
+
+  <p>
+    Order and duration sit on the same line because a reader reads them
+    together anyway — <em>when, and how long</em>. The "edited since" flag
+    isn't a separate badge either: it's the same fact about the same run,
+    so it belongs on the same line as the run it's describing. And while a
+    cell is actually running, the time keeps counting up live — useful to
+    watch, but deliberately <em>not</em> read aloud by a screen reader on
+    every tick. A number changing ten times a second is noise, not news;
+    the line still announces itself once, when the run finishes.
+  </p>
+  <p>
+    Cells that never run against the shared program — a Text cell, an
+    HTML cell, a CSS cell used purely for styling — show no run line at
+    all. A cell that can never go stale shouldn't carry a line that could
+    be mistaken for saying it might.
+  </p>
+
+  <h2>Not every cell needs every part</h2>
+  <p>
+    Giving a cell a control it can't use is worse than leaving it off — it
+    invites a reader to wonder what that control does. Four things vary by
+    what kind of cell it is:
+  </p>
+
+  <table class="grid-table">
+    <thead>
+      <tr><th></th><th>Python</th><th>SQL</th><th>HTML</th><th>CSS</th><th>Text</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Numbered, coloured label</td><td class="yes">&check;</td><td class="yes">&check;</td><td class="yes">&check;</td><td class="yes">&check;</td><td class="yes">&check;</td></tr>
+      <tr><td>Run line (order, duration)</td><td class="yes">&check;</td><td class="yes">&check;</td><td class="no">&mdash;</td><td class="no">&mdash;</td><td class="no">&mdash;</td></tr>
+      <tr><td>Collapse the code away</td><td class="yes">&check;</td><td class="yes">&check;</td><td class="no">&mdash;</td><td class="yes">&check;</td><td class="no">&mdash;</td></tr>
+      <tr><td>Renders, and stays quiet until touched</td><td class="no">&mdash;</td><td class="no">&mdash;</td><td class="yes">&check;</td><td class="no">&mdash;</td><td class="yes">&check;</td></tr>
+    </tbody>
+  </table>
+
+  <p>
+    That last row is its own small idea worth naming: a Text or HTML cell
+    is meant to be <em>read</em>, not run, so — like a Markdown cell in
+    any other notebook tool — it renders by default and keeps its editing
+    controls out of the way until you actually click into it. Nothing is
+    removed while it's quiet, only made invisible to the eye; a keyboard
+    user tabbing through the page can still reach and open it, even though
+    a mouse user would need to hover first to see it's there.
+  </p>
+
+  <h2>Where your hands already are</h2>
+  <p>
+    Run and reset sit at the <strong>bottom</strong> of a cell, under the
+    code, not above it. That mirrors where dewlab's tutorial pages already
+    put their own Run button — and the reasoning is the same in both
+    places: your cursor is wherever you just finished typing, at the
+    bottom of what you wrote, not back up at the top. The next thing you
+    do should be waiting where your hand already is.
+  </p>
+
+  <h2>What this leaves out, on purpose</h2>
+  <ul>
+    <li>
+      <strong>No dependency graph between cells.</strong> A plain "Ran
+      1st, ran 2nd" answers <em>when</em> something ran without pretending
+      to know something the notebook genuinely can't see — which cell's
+      variables another cell actually reads.
+    </li>
+    <li>
+      <strong>No keyboard way to drag a cell — yet.</strong> Reordering
+      cells still only works with a mouse or a touchscreen. That's a real
+      gap, named honestly rather than left for someone to discover later.
+    </li>
+  </ul>
+
+  <div class="status-note">
+    <strong>Where this stands:</strong> this is a design, not a built
+    feature — nothing above exists in dewmini today. The pieces it would
+    lean on already do: dewmini already knows when a cell's code has
+    changed since its last run, and already knows how to run a range of
+    cells or restart the whole session. What's missing is only the
+    counter itself, and the header shown here to display it.
+  </div>
+
+  <footer>
+    A working mockup of every cell type in this design — Python, SQL,
+    HTML, CSS, and Text — is kept alongside dewmini's own planning
+    documents in its repository.
+  </footer>
+</div>
+
+<script>
+  var root = document.documentElement;
+  document.querySelectorAll('.theme-toggle button').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      document.querySelectorAll('.theme-toggle button').forEach(function (b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      root.setAttribute('data-theme', btn.dataset.themeChoice);
+    });
+  });
+</script>

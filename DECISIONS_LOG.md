@@ -4707,3 +4707,102 @@ the same thing, and Settings now offers both.
 
 *Cost to change: very small — one factored-out function, one new button,
 two confirm dialogues.*
+
+**7.109 — Three of dewmini's own cell features, ported onto tutorial and
+practice pages.** `planning/CELL_IDENTITY.md` asked the underlying
+question directly: tutorials, practice, and dewmini are three surfaces
+showing the same idea, a cell that runs Python against a shared session,
+in three different pieces of markup. Full unification — one rendering
+function shared by `build.py` (static HTML at build time) and dewmini
+(a live JS `cells` array) — is a large, invasive change the same
+document explicitly did not choose; a practice page turned out to need
+no separate treatment at all, since `build.py` already treats one as "a
+tutorial in every mechanical sense." What shipped instead: the stale
+badge, the "⋯" Run above/below menu, and Restart & run all (7.105,
+7.106, 7.108) ported onto `build.py`'s `render_cell()` and
+`assets/tutorial-runtime.js`, keeping the two engines and DOM systems
+separate — the project's own stated convention ("each page owns a thin
+copy... extract only when a shared fix needs to land in both").
+
+**Not ported: the numbered identity pill, or maths-in-text-cells.** The
+pill is `CELL_IDENTITY.md`'s own still-unbuilt design (nowhere yet,
+dewmini included) — shipping it for tutorials first would mean building
+a feature its own design note calls "not yet built" out of order. Maths
+needed nothing: a tutorial's prose already renders `$…$`/`$$…$$` via
+`extract_math()`/KaTeX (`build.py`), independent of dewmini's Text-cell
+type, which doesn't exist on this side at all.
+
+**The one real engineering gap**, closed here rather than deferred:
+`assets/tutorial-runtime.js` had no `resetPageState()`/`restart()`
+equivalent at all before this. Both now exist, built the same way
+`pyodide-engine.js`'s already did — `resetPageState()` reuses
+`pyodide-worker.js`'s existing `reset-page-state` message type
+(already there for dewmini's sake) and a newly-named
+`RESEED_GLOBALS_SOURCE` constant (previously an inline string, used only
+once, inside `bootMainThread()`); `restartPython()` terminates the
+Worker or drops the main-thread Pyodide references, then leans on the
+existing `ensureBooted()` to reboot. `runCellWorker()`/
+`runCellMainThread()` also now return whether a cell's run raised,
+previously discarded — needed to count errors across a batch, the one
+behavioural gap between a single Run click and "Run above/below".
+
+*Cost to change: small. Every new function names the dewmini original it
+was ported from; a future change to one is a reminder to check the
+other, not a search. The real ongoing cost is the one this decision
+argues against paying yet: a true shared cell implementation, still
+undecided. The numbered identity pill's own design was still unbuilt
+anywhere when this was written; 7.110 changes that, in dewmini.*
+
+**7.110 — The full cell-identity design, built in dewmini.** The
+numbered pill, per-type colour, merged run-line, and collapse triangle
+`planning/CELL_IDENTITY.md` designed and 7.109 explicitly left out —
+built now in `compose/dewmini.js`, on request, rather than staying a
+mockup. Three real amendments to the document along the way, made
+because building the thing surfaced questions the mockup alone hadn't:
+
+**Collapse is for every cell type, not only code-bearing ones.**
+`CELL_IDENTITY.md` §4 reasoned that Text/HTML didn't need it, since they
+already have a rendered form to shrink to. Fair for HTML, once it
+exists — but a long Text cell in *edit* mode has no rendered form to
+fall back on, and "shrink this out of the way without deleting it" is
+exactly as true for a long note as for a long function. Both cell types
+get the triangle now; `cell.collapsed` persists across a reload like any
+other cell field.
+
+**A header-end group, with a genuinely new feature in it.** Duplicate —
+insert a copy of a cell right after itself, same type and code, no run
+history — didn't exist in dewmini at all before this. It's not
+optional garnish: without it, `CELL_IDENTITY.md`'s own header-end layout
+(Edit, Duplicate, Delete) has a hole in it. `duplicateCell()` follows
+`insertCellAt()`'s own shape exactly.
+
+**The collapse triangle is one rotated chevron, not two swapped
+triangles.** The mockup used ▾/▸ (`&#9662;`/`&#9656;`) — filled
+triangles that, once actually sitting a few pixels above the Run
+button's own ▶ in the footer bar, read as confusingly similar glyphs in
+the same corner of the cell. A single `›` (`&#8250;`), rotated 90° by
+CSS between states rather than swapped for a different character, reads
+unambiguously as its own thing.
+
+**Run order resets on any reset, not only a full restart.**
+`runCellBatch()`'s `reset: true` path (Run all, Run above) already threw
+away the Python namespace via `engine.resetPageState()`; it just never
+told the run-line about it. `resetRunSequence()` now runs alongside that
+reset too, so every cell's line correctly reads "Not yet run this
+session" the moment the namespace is cleared, not only after a full
+`restartPython()`.
+
+**Not ported to tutorial or practice pages.** Those still carry 7.109's
+narrower slice. The type-colour system needs real content to colour —
+tutorials are Python-only today — and the header/footer layout move is
+a bigger, separate piece of work on the primary reading surface;
+neither was in scope here.
+
+*Cost to change: medium. `createCellElement()` is substantially rewritten
+— the header/body/footer split, the collapse mechanism, and the run-line
+system are all new structure, not additions to the old one — so a future
+change to a cell's anatomy touches one well-organised function rather
+than several scattered ones. `lastRunMs` is no longer persisted to
+`localStorage` (only `collapsed` is, alongside the existing fields) since
+it's meaningless without `ranOrder`, which was never persisted either;
+nothing reads the old field back, so no migration was needed.*

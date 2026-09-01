@@ -105,6 +105,7 @@ setup/           setup snippets tutorials pull in with {{include: ...}}
 data/            shared CSV datasets
 assets/          the page template, styles, runtime, editors, and vendored libraries
 compose/         dewmini, the smaller Python workspace
+dewmark/         the exam track — specifications for authoring, sitting, and marking exams
 build.py         markdown in, site/ out
 dev/             maintainer scripts, including the curriculum map generator
 tests/           unit tests, browser tests, and a manual checklist

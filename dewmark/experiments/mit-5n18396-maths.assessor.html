@@ -1,0 +1,2149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Maths for IT — 5N18396 — Digital Exam</title>
+<script src="https://cdn.jsdelivr.net/pyodide/v0.25.0/full/pyodide.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Code+Pro:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#F7F5EF;
+  --surface:#FFFFFF;
+  --navy:#1A2E4A;
+  --navy2:#2B4066;
+  --red:#B03010;
+  --text:#1C1B18;
+  --muted:#5A5750;
+  --border:#D0CCC0;
+  --note-bg:#FFF2A0;
+  --note-bd:#B89000;
+  --note-tx:#1A1000;
+  --code-bg:#0E1117;
+  --code-tx:#D4D4D4;
+  --ans-bg:#F8FEF8;
+  --ans-bd:#2B5C2B;
+  --graph-bg:#EEF2FF;
+  --graph-bd:#7080C0;
+}
+html{font-size:17px;scroll-behavior:smooth;}
+body{font-family:'Source Serif 4',Georgia,serif;background:var(--bg);color:var(--text);display:flex;height:100vh;overflow:hidden;}
+
+/* --- LOADING BANNER --- */
+#py-banner{
+  position:fixed;top:2.1rem;left:0;right:0;z-index:200;
+  background:var(--navy);color:white;
+  padding:0.45rem 1.25rem;
+  display:flex;align-items:center;gap:0.75rem;
+  font-size:0.85rem;font-family:'Libre Baskerville',Georgia,serif;
+}
+.spin{width:14px;height:14px;border:2px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;animation:spin 0.8s linear infinite;flex-shrink:0;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* --- SIDEBAR --- */
+#sidebar{
+  width:240px;
+  background:var(--navy);color:white;
+  display:flex;flex-direction:column;
+  height:100vh;overflow:hidden;
+  flex-shrink:0;
+}
+#sidebar-nav{flex:1;overflow-y:auto;min-height:0;}
+#sidebar-logo{
+  padding:0.9rem 1rem 0.6rem;
+  font-family:'Libre Baskerville',Georgia,serif;
+  font-size:0.72rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#90AACC;
+  border-bottom:1px solid rgba(255,255,255,0.1);
+}
+#sidebar-logo span{display:block;color:white;font-size:0.92rem;margin-top:0.2rem;text-transform:none;letter-spacing:0;}
+.nsect{padding:0.45rem 1rem 0.2rem;font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#90AACC;margin-top:0.4rem;}
+.nlink{display:block;padding:0.28rem 1rem 0.28rem 1.4rem;color:#B8CDE0;text-decoration:none;font-size:0.82rem;transition:all 0.12s;}
+.nlink:hover{color:white;background:rgba(255,255,255,0.08);}
+.nlink.active{color:white;font-weight:700;border-left:3px solid #6AABDF;padding-left:calc(1.4rem - 3px);}
+#sidebar-foot{flex-shrink:0;padding:0.7rem 1rem;border-top:1px solid rgba(255,255,255,0.1);}
+#print-btn{width:100%;padding:0.55rem;background:var(--red);color:white;border:none;border-radius:4px;cursor:pointer;font-family:'Libre Baskerville',Georgia,serif;font-size:0.82rem;font-weight:700;transition:background 0.15s;}
+#print-btn:hover{background:#8A2008;}
+
+/* --- SIDEBAR STUDENT + INSTRUCTIONS --- */
+#sidebar-student{padding:0.65rem 1rem 0.55rem;border-bottom:1px solid rgba(255,255,255,0.12);}
+.sid-row{display:flex;align-items:center;gap:0.5rem;margin-bottom:0.28rem;}
+.sid-row:last-child{margin-bottom:0;}
+.sid-label{font-size:0.67rem;font-weight:700;color:#90AACC;white-space:nowrap;min-width:2.1rem;text-transform:uppercase;letter-spacing:0.06em;}
+.sid-input{flex:1;min-width:0;background:transparent;border:none;border-bottom:1px solid rgba(255,255,255,0.2);color:white;font-family:'Source Serif 4',Georgia,serif;font-size:0.82rem;padding:0.06rem 0.2rem;outline:none;}
+.sid-input:focus{border-bottom-color:#6AABDF;}
+.sid-input::placeholder{color:rgba(255,255,255,0.28);font-style:italic;}
+#sidebar-instruct{padding:0.55rem 1rem;border-bottom:1px solid rgba(255,255,255,0.12);}
+.si-item{font-size:0.71rem;color:#B8CDE0;line-height:1.55;margin-bottom:0.2rem;}
+.si-item:last-child{margin-bottom:0;}
+.si-item strong{color:white;font-weight:700;}
+
+/* --- PRINT HEADER --- */
+#print-header{display:none;}
+
+/* --- DRAG HANDLES --- */
+.drag-handle{
+  width:6px;flex-shrink:0;background:transparent;cursor:col-resize;
+  position:relative;transition:background 0.15s;
+}
+.drag-handle:hover{background:rgba(106,171,223,0.25);}
+.drag-handle::after{
+  content:'';position:absolute;top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  width:2px;height:44px;border-radius:2px;
+  background:var(--border);transition:background 0.15s;
+}
+.drag-handle:hover::after{background:#6AABDF;}
+
+/* --- MAIN --- */
+#main{flex:1;min-width:0;padding:2rem 2rem 3rem;overflow-y:auto;}
+
+/* --- RIGHT PANEL --- */
+#right-panel{
+  width:300px;flex-shrink:0;
+  background:var(--surface);border-left:1px solid var(--border);
+  height:100vh;
+  overflow-y:auto;
+  display:flex;flex-direction:column;
+}
+
+/* --- COVER --- */
+#cover{background:white;border:2px solid var(--navy);border-radius:4px;padding:1.75rem;margin-bottom:1.75rem;}
+.cover-top{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid var(--navy);padding-bottom:0.9rem;margin-bottom:0.9rem;}
+.cover-top h1{font-family:'Libre Baskerville',Georgia,serif;font-size:1.4rem;color:var(--navy);}
+.cover-top p{color:var(--muted);font-size:0.88rem;margin-top:0.2rem;}
+.cover-right{text-align:right;font-size:0.82rem;color:var(--muted);}
+.cover-meta{display:grid;grid-template-columns:1fr 1fr;gap:0.35rem 2rem;margin-bottom:0.9rem;font-size:0.88rem;}
+.cover-meta strong{color:var(--navy);}
+.sfields{display:flex;gap:2rem;margin-top:0.6rem;}
+.sfield{display:flex;align-items:center;gap:0.5rem;}
+.sfield label{font-weight:700;font-size:0.88rem;white-space:nowrap;}
+.sfield input{border:none;border-bottom:2px solid var(--navy);background:transparent;font-size:0.9rem;font-family:inherit;padding:0.1rem 0.4rem;min-width:160px;outline:none;}
+.sfield input:focus{border-bottom-color:#5090D0;}
+
+code.ic{background:rgba(0,0,0,0.08);border-radius:3px;padding:0.04em 0.28em;font-family:'Source Code Pro',monospace;font-size:0.82em;}
+
+/* --- COLLAPSIBLE PANELS (right panel) --- */
+.rp-panel{border-bottom:1px solid var(--border);}
+.rp-panel > summary{
+  padding:0.6rem 1rem;list-style:none;
+  font-family:'Libre Baskerville',Georgia,serif;
+  font-size:0.69rem;font-weight:700;letter-spacing:0.09em;text-transform:uppercase;
+  color:var(--muted);cursor:pointer;user-select:none;
+  display:flex;align-items:center;gap:0.45rem;
+}
+.rp-panel > summary::before{content:'▶';font-size:0.56rem;transition:transform 0.18s;color:var(--border);flex-shrink:0;}
+.rp-panel[open] > summary::before{transform:rotate(90deg);}
+.rp-panel > summary::-webkit-details-marker{display:none;}
+.rp-content{padding:0 1rem 0.85rem;}
+.rp-intro{font-size:0.8rem;color:var(--muted);line-height:1.55;margin-bottom:0.7rem;}
+.note-chunk{margin-bottom:0.62rem;}
+.nc-label{font-size:0.77rem;font-weight:700;color:var(--navy);margin-bottom:0.1rem;}
+.nc-body{font-size:0.77rem;color:var(--text);line-height:1.5;}
+
+/* --- COLLAPSIBLE CALCULATOR (left sidebar, fixed at bottom) --- */
+.sidebar-calc{border-top:1px solid rgba(255,255,255,0.1);flex-shrink:0;}
+.sidebar-calc > summary{
+  padding:0.48rem 1rem;list-style:none;
+  font-family:'Libre Baskerville',Georgia,serif;
+  font-size:0.69rem;font-weight:700;letter-spacing:0.09em;text-transform:uppercase;
+  color:#90AACC;cursor:pointer;user-select:none;
+  display:flex;align-items:center;gap:0.45rem;
+}
+.sidebar-calc > summary::before{content:'▶';font-size:0.54rem;transition:transform 0.18s;color:#4A6A8A;flex-shrink:0;}
+.sidebar-calc[open] > summary::before{transform:rotate(90deg);}
+.sidebar-calc > summary::-webkit-details-marker{display:none;}
+.sidebar-calc-body{background:#131315;}
+
+/* --- FORMULA SHEET --- */
+.fs-sec{margin-bottom:0.8rem;padding-bottom:0.8rem;border-bottom:1px solid var(--border);}
+.fs-sec:last-child{border-bottom:none;margin-bottom:0;}
+.fs-stitle{font-family:'Libre Baskerville',Georgia,serif;font-size:0.88rem;font-weight:700;color:var(--navy);margin-bottom:0.4rem;border-bottom:1px solid var(--border);padding-bottom:0.18rem;}
+.fs-item{font-size:0.76rem;line-height:1.5;margin-bottom:0.28rem;color:var(--text);}
+.fs-label{font-weight:700;color:var(--navy);display:block;font-size:0.73rem;margin-bottom:0.08rem;}
+.fs-f{font-family:'Source Code Pro',monospace;font-size:0.74rem;background:#F0F4F0;border-radius:3px;padding:0.18rem 0.4rem;margin:0.08rem 0;color:#1A1A2E;display:block;}
+.fs-tbl{width:100%;border-collapse:collapse;font-size:0.73rem;margin:0.35rem 0;}
+.fs-tbl th{background:var(--navy);color:white;padding:0.18rem 0.3rem;text-align:center;}
+.fs-tbl td{border:1px solid var(--border);padding:0.15rem 0.3rem;text-align:center;}
+
+/* --- PYTHON GUIDE (in right panel) --- */
+.rp-py h3{font-family:'Libre Baskerville',Georgia,serif;font-size:0.76rem;font-weight:700;color:var(--navy);border-bottom:1px solid var(--border);padding-bottom:0.18rem;margin:0.55rem 0 0.3rem;}
+.rp-py pre{background:var(--code-bg);color:var(--code-tx);font-family:'Source Code Pro',monospace;font-size:0.72rem;padding:0.5rem 0.7rem;border-radius:4px;white-space:pre;line-height:1.55;overflow-x:auto;margin-bottom:0.45rem;}
+
+/* --- SECTION HEADERS --- */
+.sec-head{font-family:'Libre Baskerville',Georgia,serif;font-size:1.4rem;color:var(--navy);border-bottom:3px solid var(--navy);padding-bottom:0.4rem;margin:2.25rem 0 1.25rem;}
+.sec-head small{font-size:0.85rem;color:var(--muted);font-weight:400;}
+
+/* --- QUESTION CARDS --- */
+.qcard{background:white;border:1px solid var(--border);border-radius:6px;margin-bottom:1.25rem;overflow:hidden;scroll-margin-top:2.5rem;}
+.qhd{display:flex;justify-content:space-between;align-items:center;padding:0.55rem 1.2rem;background:var(--navy);color:white;}
+.qnum{font-family:'Libre Baskerville',Georgia,serif;font-weight:700;font-size:0.95rem;}
+.qmk{font-size:0.78rem;color:#90AACC;font-style:italic;}
+.qbody{padding:1.2rem;}
+.qbody>p,.qbody>.preamble{margin-bottom:0.65rem;line-height:1.6;font-size:0.93rem;}
+.preamble{font-size:0.93rem;}
+
+/* --- PARTS --- */
+.part{margin:0.65rem 0;display:flex;gap:0.65rem;align-items:flex-start;}
+.plabel{font-weight:700;color:var(--navy);white-space:nowrap;padding-top:0.1rem;min-width:1.8rem;font-size:0.9rem;}
+.pcontent{flex:1;}
+.pcontent>p{margin-bottom:0.4rem;line-height:1.55;font-size:0.9rem;}
+.pm{font-size:0.78rem;color:var(--muted);font-style:italic;}
+.subpart{margin:0.5rem 0 0.5rem 0.5rem;}
+
+/* --- ANSWER AREAS --- */
+.alabel{display:block;font-size:0.76rem;font-weight:700;color:#2B5C2B;margin:0.35rem 0 0.2rem;text-transform:uppercase;letter-spacing:0.05em;}
+textarea.ans{
+  width:100%;min-height:48px;padding:0.5rem 0.65rem;
+  background:var(--ans-bg);border:1.5px solid var(--ans-bd);border-radius:4px;
+  font-family:Georgia,serif;font-size:0.9rem;color:var(--text);
+  resize:vertical;line-height:1.5;overflow:hidden;
+}
+textarea.ans:focus{outline:none;border-color:#1A6B1A;box-shadow:0 0 0 3px rgba(42,90,42,0.12);}
+
+/* --- PYTHON CELLS --- */
+.pycell{margin-top:0.9rem;border:1px solid #2A3A4A;border-radius:6px;overflow:hidden;}
+.cellhd{display:flex;justify-content:space-between;align-items:center;padding:0.35rem 0.7rem;background:#1A2330;color:#90AACC;font-size:0.74rem;font-family:'Source Code Pro',monospace;}
+.runbtn{padding:0.18rem 0.65rem;background:#2A5A3A;color:#7FDFAF;border:1px solid #3A7A4A;border-radius:3px;font-size:0.74rem;font-family:'Source Code Pro',monospace;cursor:pointer;transition:background 0.12s;}
+.runbtn:hover{background:#3A7A4A;}
+.runbtn:disabled{opacity:0.4;cursor:not-allowed;}
+textarea.code{
+  width:100%;background:var(--code-bg);color:var(--code-tx);border:none;
+  padding:0.65rem 0.9rem;font-family:'Source Code Pro',monospace;font-size:0.82rem;
+  line-height:1.6;resize:vertical;tab-size:4;overflow:hidden;
+}
+textarea.code:focus{outline:none;background:#12121C;}
+.codeout{
+  padding:0.45rem 0.9rem;background:#0A0A10;color:#9FDFAF;
+  font-family:'Source Code Pro',monospace;font-size:0.79rem;line-height:1.5;
+  white-space:pre-wrap;display:none;
+}
+.codeout.show{display:block;}
+.codeout.err{color:#FF8080;}
+
+/* --- VALUE TABLE (B2a) --- */
+.vtable{border-collapse:collapse;margin:0.65rem 0;font-size:0.88rem;}
+.vtable th,.vtable td{border:1.5px solid var(--navy);padding:0.35rem 0.8rem;text-align:center;}
+.vtable th{background:var(--navy);color:white;font-weight:700;}
+.vtable td input{width:4.5rem;border:none;background:#EEF8EE;text-align:center;font-size:0.88rem;font-family:Georgia,serif;padding:0.1rem;outline:none;}
+.vtable td input:focus{outline:2px solid var(--ans-bd);}
+
+/* --- GRAPH DESCRIPTION --- */
+.gdesc{background:var(--graph-bg);border:1px solid var(--graph-bd);border-radius:6px;padding:0.85rem 1.1rem;margin-top:0.45rem;}
+.gdesc>p{font-size:0.82rem;color:#304080;font-weight:700;margin-bottom:0.6rem;}
+.gfield{display:flex;align-items:center;gap:0.45rem;margin-bottom:0.4rem;font-size:0.87rem;flex-wrap:wrap;}
+.gfield label{color:#304080;min-width:195px;}
+.gfield input[type=text]{border:1px solid var(--graph-bd);border-radius:3px;padding:0.18rem 0.4rem;font-size:0.87rem;font-family:Georgia,serif;width:72px;background:white;}
+.gfield select{border:1px solid var(--graph-bd);border-radius:3px;padding:0.18rem 0.4rem;font-size:0.87rem;font-family:Georgia,serif;background:white;}
+
+/* --- CUBIC SHAPES --- */
+.cubics-row{display:flex;gap:0.75rem;margin:0.65rem 0;flex-wrap:wrap;}
+.cubic-opt{display:flex;flex-direction:column;align-items:center;gap:0.2rem;cursor:pointer;padding:0.4rem;border:2px solid var(--border);border-radius:6px;transition:all 0.12s;}
+.cubic-opt:hover{border-color:var(--navy);}
+.cubic-opt.sel{border-color:var(--red);background:#FFF0EE;}
+.cubic-opt canvas{width:96px;height:76px;}
+.cubic-opt span{font-size:0.7rem;color:var(--muted);text-align:center;max-width:96px;}
+
+/* --- TRIANGLE CONTAINERS --- */
+.tri-wrap{display:flex;gap:1.75rem;align-items:flex-start;margin:0.65rem 0;flex-wrap:wrap;}
+.tri-tbl{font-size:0.84rem;}
+.tri-tbl td{padding:0.18rem 0.4rem;}
+.tri-tbl input[type=text]{border:1px solid var(--border);border-radius:3px;padding:0.18rem 0.35rem;font-size:0.84rem;font-family:Georgia,serif;width:72px;}
+
+/* --- BAR CHART --- */
+#barchart{border:1px solid var(--border);border-radius:4px;display:block;}
+
+/* --- CALCULATOR (inline in right panel) --- */
+#calcdisplay{padding:0.6rem 0.8rem;background:#0A0A0C;color:#E0E0E0;border-bottom:1px solid #333;}
+#calcdisplay .hint{font-size:0.66rem;color:#666;margin-bottom:0.2rem;font-family:'Source Code Pro',monospace;line-height:1.4;}
+#calcexpr{width:100%;background:transparent;border:none;color:#E0E0E0;font-family:'Source Code Pro',monospace;font-size:0.88rem;outline:none;}
+#calcresult{color:#7FDFAF;font-size:1rem;margin-top:0.2rem;min-height:1.3em;}
+.calcbtns{padding:0.35rem;display:grid;grid-template-columns:repeat(4,1fr);gap:0.22rem;}
+.cbtn{padding:0.38rem;background:#2C2C2E;color:#E0E0E0;border:none;border-radius:4px;font-size:0.82rem;font-family:'Source Code Pro',monospace;cursor:pointer;transition:background 0.1s;}
+.cbtn:hover{background:#3C3C3E;}
+.cbtn.op{color:#FFB84D;}
+.cbtn.fn{color:#6EC6FF;font-size:0.7rem;}
+.cbtn.eq{background:var(--navy);color:white;}
+.cbtn.eq:hover{background:var(--navy2);}
+.calcnote{padding:0.3rem 0.65rem;font-size:0.65rem;color:#555;border-top:1px solid #2A2A2A;font-family:'Source Code Pro',monospace;line-height:1.5;}
+
+/* --- PRINT --- */
+@media print{
+  #py-banner,#assessor-banner,#sidebar,#right-panel,.drag-handle,.runbtn,.cellhd,#filesave-panel{display:none!important;}
+  #main{padding:0;}
+  body{display:block;background:white;}
+  #print-header{
+    display:flex!important;justify-content:space-between;align-items:flex-end;
+    border-bottom:2px solid #1A2E4A;padding-bottom:0.5rem;margin-bottom:1.25rem;
+  }
+  .ph-left h1{font-family:'Libre Baskerville',Georgia,serif;font-size:1rem;color:#1A2E4A;margin:0;}
+  .ph-left p{font-size:0.78rem;color:#555;margin:0.12rem 0 0;}
+  .ph-right{text-align:right;font-size:0.88rem;}
+  .ph-name{font-weight:700;color:#1A2E4A;}
+  .ph-sid{color:#555;font-size:0.82rem;}
+  .qcard{page-break-inside:avoid;break-inside:avoid;border:1px solid #999;margin-bottom:0.75rem;}
+  #section-b .qcard{page-break-before:always;break-before:always;}
+  textarea.ans,textarea.code{resize:none;overflow:visible;height:auto;}
+  .codeout{display:block!important;background:#F0F0F0;color:#333;}
+}
+</style>
+</head>
+<body>
+
+
+<div id="assessor-banner" style="position:fixed;top:0;left:0;right:0;z-index:300;background:#7A4A00;color:#FFF0C0;
+  text-align:center;padding:0.4rem;font-family:'Libre Baskerville',Georgia,serif;
+  font-size:0.82rem;font-weight:700;letter-spacing:0.06em;">
+  ASSESSOR VERSION — Model answers shown. Not for student use.
+</div>
+<div id="py-banner">
+  <div class="spin" id="spin"></div>
+  <span id="pystatus">Loading Python environment — you can read questions and type answers while this loads…</span>
+</div>
+
+<nav id="sidebar">
+  <div id="sidebar-nav">
+  <div id="sidebar-logo">Dublin College Dundrum<span>MIT — 5N18396</span></div>
+
+  <div id="sidebar-student">
+    <div class="sid-row">
+      <span class="sid-label">Name</span>
+      <input type="text" id="sname" class="sid-input" placeholder="Your full name">
+    </div>
+    <div class="sid-row">
+      <span class="sid-label">ID</span>
+      <input type="text" id="sid" class="sid-input" placeholder="Student ID">
+    </div>
+  </div>
+
+  <div id="sidebar-instruct">
+    <div class="si-item">Section A: answer any <strong>10 of 12</strong> questions &mdash; 4 marks each, 40 marks</div>
+    <div class="si-item">Section B: answer any <strong>4 of 6</strong> questions &mdash; 20 marks each, 80 marks</div>
+    <div class="si-item">Calculator: permitted &nbsp;&middot;&nbsp; Show all working</div>
+    <div class="si-item">Code in Python cells counts as working</div>
+  </div>
+
+  <div class="nsect">Section A</div>
+  <a href="#a1" class="nlink">A1 — Sets</a>
+  <a href="#a2" class="nlink">A2 — Functions</a>
+  <a href="#a3" class="nlink">A3 — Quadratic</a>
+  <a href="#a4" class="nlink">A4 — Simultaneous</a>
+  <a href="#a5" class="nlink">A5 — Lines</a>
+  <a href="#a6" class="nlink">A6 — Distance</a>
+  <a href="#a7" class="nlink">A7 — Pythagoras</a>
+  <a href="#a8" class="nlink">A8 — Trig ratios</a>
+  <a href="#a9" class="nlink">A9 — Counting</a>
+  <a href="#a10" class="nlink">A10 — Probability</a>
+  <a href="#a11" class="nlink">A11 — Statistics</a>
+  <a href="#a12" class="nlink">A12 — Limits</a>
+  <div class="nsect">Section B</div>
+  <a href="#b1" class="nlink">B1 — Quadratic</a>
+  <a href="#b2" class="nlink">B2 — Cubic</a>
+  <a href="#b3" class="nlink">B3 — Differentiation</a>
+  <a href="#b4" class="nlink">B4 — Probability</a>
+  <a href="#b5" class="nlink">B5 — Trig</a>
+  <a href="#b6" class="nlink">B6 — Similar triangles</a>
+  </div><!-- end #sidebar-nav -->
+  <details class="sidebar-calc">
+    <summary>Calculator</summary>
+    <div class="sidebar-calc-body">
+      <div id="calcdisplay">
+        <div class="hint">sind/cosd/tand = deg &middot; asin_d returns deg</div>
+        <input type="text" id="calcexpr" placeholder="e.g. sqrt(149-140*cosd(40))" onkeydown="if(event.key==='Enter')calcEval()">
+        <div id="calcresult">&mdash;</div>
+      </div>
+      <div class="calcbtns">
+        <button class="cbtn" onclick="ca('7')">7</button>
+        <button class="cbtn" onclick="ca('8')">8</button>
+        <button class="cbtn" onclick="ca('9')">9</button>
+        <button class="cbtn op" onclick="ca('/')">&#247;</button>
+        <button class="cbtn" onclick="ca('4')">4</button>
+        <button class="cbtn" onclick="ca('5')">5</button>
+        <button class="cbtn" onclick="ca('6')">6</button>
+        <button class="cbtn op" onclick="ca('*')">&#215;</button>
+        <button class="cbtn" onclick="ca('1')">1</button>
+        <button class="cbtn" onclick="ca('2')">2</button>
+        <button class="cbtn" onclick="ca('3')">3</button>
+        <button class="cbtn op" onclick="ca('-')">&minus;</button>
+        <button class="cbtn" onclick="ca('0')">0</button>
+        <button class="cbtn" onclick="ca('.')">.</button>
+        <button class="cbtn" onclick="cc()">C</button>
+        <button class="cbtn op" onclick="ca('+')">+</button>
+        <button class="cbtn fn" onclick="ca('sqrt(')">&#8730;</button>
+        <button class="cbtn fn" onclick="ca('sind(')">sin&deg;</button>
+        <button class="cbtn fn" onclick="ca('cosd(')">cos&deg;</button>
+        <button class="cbtn fn" onclick="ca('tand(')">tan&deg;</button>
+        <button class="cbtn fn" onclick="ca('asin_d(')">asin&deg;</button>
+        <button class="cbtn fn" onclick="ca('acos_d(')">acos&deg;</button>
+        <button class="cbtn fn" onclick="ca('atan_d(')">atan&deg;</button>
+        <button class="cbtn fn" onclick="ca('pi')">&#960;</button>
+        <button class="cbtn fn" onclick="ca('(')">( </button>
+        <button class="cbtn fn" onclick="ca(')')"> )</button>
+        <button class="cbtn fn" onclick="ca('^')">x^y</button>
+        <button class="cbtn eq" onclick="calcEval()">=</button>
+      </div>
+      <div class="calcnote">sin/cos/tan=rad &middot; sind/cosd/tand=deg</div>
+    </div>
+  </details>
+
+  <div id="sidebar-foot">
+    <div id="save-ind"  style="font-size:0.71rem;color:#90AACC;text-align:center;min-height:1em;margin-bottom:0.2rem;">Not yet saved</div>
+    <div id="file-ind"  style="font-size:0.71rem;color:#90AACC;text-align:center;min-height:1em;margin-bottom:0.45rem;"></div>
+    <button id="print-btn" onclick="window.print()">Export PDF</button>
+    <button onclick="clearSaved()" style="width:100%;margin-top:0.35rem;padding:0.42rem;background:transparent;color:#90AACC;border:1px solid rgba(255,255,255,0.18);border-radius:4px;cursor:pointer;font-family:'Libre Baskerville',Georgia,serif;font-size:0.75rem;">Clear saved data</button>
+  </div>
+</nav>
+
+<div class="drag-handle" id="dh-left" title="Drag to resize navigation"></div>
+
+<main id="main">
+
+<!-- PRINT HEADER — shown only when printing -->
+<div id="print-header">
+  <div class="ph-left">
+    <h1>Maths for Information Technology &mdash; 5N18396</h1>
+    <p>Dublin College Dundrum &nbsp;&middot;&nbsp; Dublin and D&uacute;n Laoghaire ETB &nbsp;&middot;&nbsp; Tutor: Josh Aaron</p>
+  </div>
+  <div class="ph-right">
+    <div class="ph-name" id="ph-name-display"></div>
+    <div class="ph-sid" id="ph-sid-display"></div>
+  </div>
+</div>
+
+<!-- WELCOME NOTE -->
+<div style="background:#EEF4FF;border-left:4px solid #1A2E4A;border-radius:0 6px 6px 0;padding:0.9rem 1.1rem;margin-bottom:1.5rem;">
+  <p style="font-family:'Libre Baskerville',Georgia,serif;font-size:0.9rem;font-weight:700;color:#1A2E4A;margin-bottom:0.35rem;">Before you begin</p>
+  <p style="font-size:0.85rem;color:#2A3A5A;line-height:1.6;">Fill in your <strong>name</strong> and <strong>student ID</strong> in the top-left panel, then click <strong>Create save file</strong> and save the file to your <strong>desktop</strong>. Your answers will be saved there automatically as you work.</p>
+</div>
+
+<!-- FILE SAVE SETUP PANEL -->
+<div id="filesave-panel" style="display:none;margin-bottom:1.75rem;">
+  <div style="background:#FEF9E7;border:2px solid #C0A000;border-radius:6px;padding:1rem 1.25rem;">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.45rem;">
+      <h3 style="font-family:'Libre Baskerville',Georgia,serif;font-size:0.95rem;color:#3A2800;font-weight:700;">Save to a file &mdash; recommended</h3>
+      <button onclick="dismissFileSetup()" style="background:none;border:none;color:#999;cursor:pointer;font-size:1.2rem;line-height:1;padding:0 0.1rem;" title="Dismiss">&times;</button>
+    </div>
+    <p style="font-size:0.85rem;color:#5A4000;margin-bottom:0.75rem;line-height:1.5;">
+      Your answers are already being saved in your browser automatically. For extra safety &mdash; especially on shared or school computers that clear browser data on exit &mdash; you can also save to a <strong>.json</strong> file on your own drive. You can restore from it on any computer, in any session.
+    </p>
+    <div style="display:flex;gap:0.65rem;flex-wrap:wrap;">
+      <button id="btn-new-file" onclick="createSaveFile()"
+        style="padding:0.45rem 1rem;background:#1A2E4A;color:white;border:none;border-radius:4px;cursor:pointer;font-family:'Libre Baskerville',Georgia,serif;font-size:0.82rem;font-weight:700;">
+        Create save file
+      </button>
+      <button id="btn-open-file" onclick="openSaveFile()"
+        style="padding:0.45rem 1rem;background:transparent;color:#3A2800;border:1.5px solid #C0A000;border-radius:4px;cursor:pointer;font-family:'Libre Baskerville',Georgia,serif;font-size:0.82rem;">
+        Restore from existing file
+      </button>
+      <button onclick="dismissFileSetup()"
+        style="padding:0.45rem 0.75rem;background:transparent;color:#999;border:none;cursor:pointer;font-family:'Libre Baskerville',Georgia,serif;font-size:0.82rem;">
+        Browser only
+      </button>
+    </div>
+    <div id="filesave-msg"  style="margin-top:0.5rem;font-size:0.8rem;min-height:1em;"></div>
+    <div id="filesave-noapi" style="display:none;margin-top:0.5rem;font-size:0.78rem;color:#B87000;border-top:1px solid #E0C060;padding-top:0.4rem;">
+      Your browser does not support the File System Access API (Chrome and Edge support it; Firefox and Safari do not). Browser storage will be used instead.
+    </div>
+  </div>
+</div>
+
+<!-- PYTHON RESOURCE GUIDE -->
+<!-- ========== SECTION A ========== -->
+<h2 class="sec-head">Section A <small>&mdash; Answer any 10 of the 12 questions (4 marks each)</small></h2>
+
+<!-- A1 -->
+<div class="qcard" id="a1">
+  <div class="qhd"><span class="qnum">A1 &mdash; Sets</span><span class="qmk">4 marks</span></div>
+  <div class="qbody">
+    <p class="preamble">Two friends compare which apps they have installed on their phones.</p>
+    <p><strong>Sam&rsquo;s phone:</strong> Calculator, Camera, Clock, Maps, Music, Weather</p>
+    <p><strong>Kai&rsquo;s phone:</strong> Calendar, Camera, Clock, News, Photos, Weather</p>
+    <div class="part"><span class="plabel">(a)</span><div class="pcontent">
+      <p>Which apps do both Sam and Kai have? <span class="pm">(2 marks)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="2" placeholder="List the apps that appear on both phones."></textarea>
+    </div></div>
+    <div class="part"><span class="plabel">(b)</span><div class="pcontent">
+      <p>List every app that appears on at least one of the two phones. <span class="pm">(1 mark)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="2" placeholder="All apps combined, no duplicates."></textarea>
+    </div></div>
+    <div class="part"><span class="plabel">(c)</span><div class="pcontent">
+      <p>How many apps does Sam have that Kai does not have? <span class="pm">(1 mark)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="1" placeholder="A number."></textarea>
+    </div></div>
+  </div>
+</div>
+
+<!-- A2 -->
+<div class="qcard" id="a2">
+  <div class="qhd"><span class="qnum">A2 &mdash; Functions</span><span class="qmk">4 marks</span></div>
+  <div class="qbody">
+    <p class="preamble">Let f(x) = 2x + 3.</p>
+    <div class="part"><span class="plabel">(a)</span><div class="pcontent">
+      <p>Find f(4). <span class="pm">(1 mark)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="1" placeholder="f(4) = ..."></textarea>
+    </div></div>
+    <div class="part"><span class="plabel">(b)</span><div class="pcontent">
+      <p>Find f<sup>&minus;1</sup>(x), the inverse of f. <span class="pm">(2 marks)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="2" placeholder="Show your working.  f^-1(x) = ..."></textarea>
+    </div></div>
+    <div class="part"><span class="plabel">(c)</span><div class="pcontent">
+      <p>Check your answer: show that f(f<sup>&minus;1</sup>(9)) = 9. <span class="pm">(1 mark)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="2" placeholder="Substitute your inverse into f and simplify."></textarea>
+    </div></div>
+    <div class="pycell">
+      <div class="cellhd"><span>Python &mdash; optional</span><button class="runbtn" onclick="runCell('a2py')">&#9654; Run</button></div>
+      <textarea class="code" id="a2py" rows="5">def f(x):    return 2*x + 3
+def f_inv(x): return (x - 3) / 2
+
+print("f(4) =", f(4))
+print("f_inv(9) =", f_inv(9))
+print("f(f_inv(9)) =", f(f_inv(9)))</textarea>
+      <div class="codeout" id="a2py-out"></div>
+    </div>
+  </div>
+</div>
+
+<!-- A3 -->
+<div class="qcard" id="a3">
+  <div class="qhd"><span class="qnum">A3 &mdash; Quadratic</span><span class="qmk">4 marks</span></div>
+  <div class="qbody">
+    <p class="preamble">Consider f(x) = x&sup2; &minus; 2x &minus; 8.</p>
+    <div class="part"><span class="plabel">(a)</span><div class="pcontent">
+      <p>Write f(x) as a product of two brackets. <span class="pm">(2 marks)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="2" placeholder="f(x) = (  )(  )"></textarea>
+    </div></div>
+    <div class="part"><span class="plabel">(b)</span><div class="pcontent">
+      <p>State the two values of x where the graph crosses the x-axis. <span class="pm">(1 mark)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="1" placeholder="x = ... and x = ..."></textarea>
+    </div></div>
+    <div class="part"><span class="plabel">(c)</span><div class="pcontent">
+      <p>Describe a rough sketch of the graph: mark the two x-intercepts and the y-intercept. <span class="pm">(1 mark)</span></p>
+      <div class="gdesc">
+        <p>Describe your sketch:</p>
+        <div class="gfield"><label>The parabola opens:</label>
+          <select><option value="">— choose —</option><option>upward (&cup; shape)</option><option>downward (&cap; shape)</option></select>
+        </div>
+        <div class="gfield"><label>x-intercept 1 at x =</label><input type="text" placeholder="x&#8321;"></div>
+        <div class="gfield"><label>x-intercept 2 at x =</label><input type="text" placeholder="x&#8322;"></div>
+        <div class="gfield"><label>y-intercept at y =</label><input type="text" placeholder="y"></div>
+      </div>
+    </div></div>
+    <div class="pycell">
+      <div class="cellhd"><span>Python &mdash; optional</span><button class="runbtn" onclick="runCell('a3py')">&#9654; Run</button></div>
+      <textarea class="code" id="a3py" rows="5">import math
+a, b, c = 1, -2, -8
+disc = b**2 - 4*a*c
+x1 = (-b + math.sqrt(disc)) / (2*a)
+x2 = (-b - math.sqrt(disc)) / (2*a)
+print(f"Roots: x = {x1} and x = {x2}")
+print(f"y-intercept: f(0) = {c}")</textarea>
+      <div class="codeout" id="a3py-out"></div>
+    </div>
+  </div>
+</div>
+
+<!-- A4 -->
+<div class="qcard" id="a4">
+  <div class="qhd"><span class="qnum">A4 &mdash; Simultaneous Equations</span><span class="qmk">4 marks</span></div>
+  <div class="qbody">
+    <p class="preamble">Solve the following pair of equations and find the values of x and y.</p>
+    <p style="text-align:center;font-size:1rem;margin:0.65rem 0;letter-spacing:0.05em;">3x + y = 10 &nbsp;&nbsp;&nbsp;&nbsp; x + y = 4</p>
+    <label class="alabel">Your working and answer:</label>
+    <textarea class="ans" rows="5" placeholder="Show all steps. State x = ... and y = ... clearly at the end."></textarea>
+    <div class="pycell">
+      <div class="cellhd"><span>Python &mdash; optional</span><button class="runbtn" onclick="runCell('a4py')">&#9654; Run</button></div>
+      <textarea class="code" id="a4py" rows="4"># Subtract equation 2 from equation 1: 2x = 6
+x = (10 - 4) / (3 - 1)
+y = 4 - x
+print(f"x = {x},  y = {y}")
+print(f"Check: 3({x}) + {y} = {3*x + y}")</textarea>
+      <div class="codeout" id="a4py-out"></div>
+    </div>
+  </div>
+</div>
+
+<!-- A5 -->
+<div class="qcard" id="a5">
+  <div class="qhd"><span class="qnum">A5 &mdash; Lines</span><span class="qmk">4 marks</span></div>
+  <div class="qbody">
+    <p class="preamble">Two points A(2,&thinsp;1) and B(5,&thinsp;7) lie on the coordinate plane.</p>
+    <div class="part"><span class="plabel">(a)</span><div class="pcontent">
+      <p>Find the slope of the line through A and B. <span class="pm">(1 mark)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="2" placeholder="slope = (y2 - y1)/(x2 - x1) = ..."></textarea>
+    </div></div>
+    <div class="part"><span class="plabel">(b)</span><div class="pcontent">
+      <p>Write the equation of the line through A and B. <span class="pm">(1 mark)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="2" placeholder="y = ..."></textarea>
+    </div></div>
+    <div class="part"><span class="plabel">(c)</span><div class="pcontent">
+      <p>A second line passes through B and is perpendicular to AB. Find its equation. <span class="pm">(2 marks)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="3" placeholder="Perpendicular slope = -1/m, then use point B..."></textarea>
+    </div></div>
+    <div class="pycell">
+      <div class="cellhd"><span>Python &mdash; optional</span><button class="runbtn" onclick="runCell('a5py')">&#9654; Run</button></div>
+      <textarea class="code" id="a5py" rows="7">x1,y1 = 2,1;  x2,y2 = 5,7
+m = (y2-y1)/(x2-x1)
+c = y1 - m*x1
+print(f"Slope of AB: {m}")
+print(f"Line AB:  y = {m}x + {c}")
+pm = -1/m
+pc = y2 - pm*x2
+print(f"Perpendicular through B:  y = {pm}x + {pc}")</textarea>
+      <div class="codeout" id="a5py-out"></div>
+    </div>
+  </div>
+</div>
+
+<!-- A6 -->
+<div class="qcard" id="a6">
+  <div class="qhd"><span class="qnum">A6 &mdash; Distance and Midpoint</span><span class="qmk">4 marks</span></div>
+  <div class="qbody">
+    <p class="preamble">Points P(2,&thinsp;&minus;1) and Q(&minus;4,&thinsp;3) are given.</p>
+    <div class="part"><span class="plabel">(a)</span><div class="pcontent">
+      <p>Find the midpoint M of PQ. <span class="pm">(1 mark)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="1" placeholder="M = ( , )"></textarea>
+    </div></div>
+    <div class="part"><span class="plabel">(b)</span><div class="pcontent">
+      <p>Find the distance |PQ|. Leave in surd form if it does not simplify to a whole number. <span class="pm">(2 marks)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="2" placeholder="|PQ| = sqrt(...) = ..."></textarea>
+    </div></div>
+    <div class="part"><span class="plabel">(c)</span><div class="pcontent">
+      <p>Find the distance from M to P. How does it compare to |PQ|? <span class="pm">(1 mark)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="2" placeholder="|MP| = ... which is ..."></textarea>
+    </div></div>
+    <div class="pycell">
+      <div class="cellhd"><span>Python &mdash; optional</span><button class="runbtn" onclick="runCell('a6py')">&#9654; Run</button></div>
+      <textarea class="code" id="a6py" rows="7">import math
+px,py = 2,-1;  qx,qy = -4,3
+mx,my = (px+qx)/2,(py+qy)/2
+pq = math.sqrt((qx-px)**2+(qy-py)**2)
+mp = math.sqrt((mx-px)**2+(my-py)**2)
+print(f"Midpoint M = ({mx}, {my})")
+print(f"|PQ| = sqrt({int((qx-px)**2+(qy-py)**2)}) = {pq:.5f}")
+print(f"|MP| = {mp:.5f}  (= |PQ|/2: {abs(mp-pq/2)<0.0001})")</textarea>
+      <div class="codeout" id="a6py-out"></div>
+    </div>
+  </div>
+</div>
+
+<!-- A7 -->
+<div class="qcard" id="a7">
+  <div class="qhd"><span class="qnum">A7 &mdash; Pythagorean Triples</span><span class="qmk">4 marks</span></div>
+  <div class="qbody">
+    <p class="preamble">A right-angled triangle whose three sides are all whole numbers is called a <em>Pythagorean triple</em>. The 3-4-5 triangle is the simplest example, since 3&sup2;&thinsp;+&thinsp;4&sup2;&thinsp;=&thinsp;9&thinsp;+&thinsp;16&thinsp;=&thinsp;25&thinsp;=&thinsp;5&sup2;.</p>
+    <p>Find two more right-angled triangles where every side is a whole number. For each one, write down the three lengths and show that the Pythagorean theorem holds. <span class="pm">(2 marks each)</span></p>
+    <label class="alabel">Your answer:</label>
+    <textarea class="ans" rows="5" placeholder="Triple 1: sides ..., ..., ...   Check: ...^2 + ...^2 = ...^2&#10;Triple 2: sides ..., ..., ...   Check: ...^2 + ...^2 = ...^2"></textarea>
+    <div class="pycell">
+      <div class="cellhd"><span>Python &mdash; optional: search for triples</span><button class="runbtn" onclick="runCell('a7py')">&#9654; Run</button></div>
+      <textarea class="code" id="a7py" rows="6">triples = []
+for a in range(1,21):
+    for b in range(a,21):
+        c2 = a**2 + b**2
+        c = int(c2**0.5)
+        if c*c == c2 and (a,b,c) != (3,4,5):
+            triples.append((a,b,c))
+for t in triples[:6]:
+    print(f"  {t[0]}² + {t[1]}² = {t[2]}²  →  {t[0]**2} + {t[1]**2} = {t[2]**2}")</textarea>
+      <div class="codeout" id="a7py-out"></div>
+    </div>
+  </div>
+</div>
+
+<!-- A8 -->
+<div class="qcard" id="a8">
+  <div class="qhd"><span class="qnum">A8 &mdash; Trigonometric Ratios</span><span class="qmk">4 marks</span></div>
+  <div class="qbody">
+    <p class="preamble">In a right-angled triangle, the side opposite angle &theta; has length 1 and the hypotenuse has length 2.</p>
+    <div class="part"><span class="plabel">(a)</span><div class="pcontent">
+      <p>Write down sin&thinsp;&theta; and cos&thinsp;&theta;. Leave in surd form where appropriate. <span class="pm">(2 marks)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="2" placeholder="sin θ = ...    cos θ = ..."></textarea>
+    </div></div>
+    <div class="part"><span class="plabel">(b)</span><div class="pcontent">
+      <p>Find the length of the third side (adjacent to &theta;). <span class="pm">(1 mark)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="2" placeholder="adjacent = sqrt(...) = ..."></textarea>
+    </div></div>
+    <div class="part"><span class="plabel">(c)</span><div class="pcontent">
+      <p>Use your answers to find tan&thinsp;&theta;. <span class="pm">(1 mark)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="1" placeholder="tan θ = sin θ / cos θ = ..."></textarea>
+    </div></div>
+    <div class="pycell">
+      <div class="cellhd"><span>Python &mdash; optional</span><button class="runbtn" onclick="runCell('a8py')">&#9654; Run</button></div>
+      <textarea class="code" id="a8py" rows="6">import math
+opp,hyp = 1,2
+adj = math.sqrt(hyp**2 - opp**2)
+print(f"Adjacent = sqrt({hyp**2}-{opp**2}) = sqrt({hyp**2-opp**2}) = {adj:.5f}")
+print(f"sin θ = {opp}/{hyp}")
+print(f"cos θ = {adj:.5f}/{hyp}")
+print(f"tan θ = {opp/hyp}/{adj/hyp:.5f} = {(opp/hyp)/(adj/hyp):.5f}")
+print(f"θ = {math.degrees(math.asin(opp/hyp)):.1f}°")</textarea>
+      <div class="codeout" id="a8py-out"></div>
+    </div>
+  </div>
+</div>
+
+<!-- A9 -->
+<div class="qcard" id="a9">
+  <div class="qhd"><span class="qnum">A9 &mdash; Counting and Probability</span><span class="qmk">4 marks</span></div>
+  <div class="qbody">
+    <div class="part"><span class="plabel">(a)</span><div class="pcontent">
+      <p>A 4-digit PIN uses digits 0&ndash;9 and digits can be repeated. How many different PINs are there? <span class="pm">(1 mark)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="1" placeholder="Number of PINs = ..."></textarea>
+    </div></div>
+    <div class="part"><span class="plabel">(b)</span><div class="pcontent">
+      <p>One PIN is chosen at random. What is the probability it is exactly &ldquo;2580&rdquo;? <span class="pm">(1 mark)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="1" placeholder="P = ..."></textarea>
+    </div></div>
+    <div class="part"><span class="plabel">(c)</span><div class="pcontent">
+      <p>How many PINs are there where no digit is repeated? <span class="pm">(2 marks)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="2" placeholder="Show your reasoning.  Answer = ..."></textarea>
+    </div></div>
+    <div class="pycell">
+      <div class="cellhd"><span>Python &mdash; optional</span><button class="runbtn" onclick="runCell('a9py')">&#9654; Run</button></div>
+      <textarea class="code" id="a9py" rows="4">total = 10**4
+print("PINs with repeats:", total, "   P('2580') = 1/" + str(total))
+no_repeat = 10*9*8*7
+print("PINs without repeats:", no_repeat)</textarea>
+      <div class="codeout" id="a9py-out"></div>
+    </div>
+  </div>
+</div>
+
+<!-- A10 -->
+<div class="qcard" id="a10">
+  <div class="qhd"><span class="qnum">A10 &mdash; Probability</span><span class="qmk">4 marks</span></div>
+  <div class="qbody">
+    <p class="preamble">The English alphabet has 26 letters: 6 vowels (a,&thinsp;e,&thinsp;i,&thinsp;o,&thinsp;u,&thinsp;y) and 20 consonants. A letter is chosen at random.</p>
+    <div class="part"><span class="plabel">(a)</span><div class="pcontent">
+      <p>What is the probability the chosen letter is a vowel? <span class="pm">(1 mark)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="1" placeholder="P(vowel) = ..."></textarea>
+    </div></div>
+    <div class="part"><span class="plabel">(b)</span><div class="pcontent">
+      <p>What is the probability the chosen letter is not a vowel? <span class="pm">(1 mark)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="1" placeholder="P(not vowel) = ..."></textarea>
+    </div></div>
+    <div class="part"><span class="plabel">(c)</span><div class="pcontent">
+      <p>Two letters are chosen one after the other, without replacement. What is the probability both are vowels? Show your working. <span class="pm">(2 marks)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="3" placeholder="P(first vowel) × P(second vowel | first was vowel) = ..."></textarea>
+    </div></div>
+    <div class="pycell">
+      <div class="cellhd"><span>Python &mdash; optional</span><button class="runbtn" onclick="runCell('a10py')">&#9654; Run</button></div>
+      <textarea class="code" id="a10py" rows="5">v,t = 6,26
+print(f"P(vowel) = {v}/{t}")
+print(f"P(not vowel) = {t-v}/{t}")
+both = (v/t)*((v-1)/(t-1))
+print(f"P(both vowels) = (6/26)×(5/25) = {v*(v-1)}/{t*(t-1)} = {both:.5f}")</textarea>
+      <div class="codeout" id="a10py-out"></div>
+    </div>
+  </div>
+</div>
+
+<!-- A11 -->
+<div class="qcard" id="a11">
+  <div class="qhd"><span class="qnum">A11 &mdash; Statistics</span><span class="qmk">4 marks</span></div>
+  <div class="qbody">
+    <p class="preamble">A class of 20 students sat a short quiz. Their scores out of 5 are recorded below.</p>
+    <table class="vtable" style="margin:0.65rem 0;">
+      <tr><th>Score</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr>
+      <tr><th>Students</th><td style="padding:0.35rem 1rem;">2</td><td style="padding:0.35rem 1rem;">4</td><td style="padding:0.35rem 1rem;">8</td><td style="padding:0.35rem 1rem;">4</td><td style="padding:0.35rem 1rem;">2</td></tr>
+    </table>
+    <div class="part"><span class="plabel">(a)</span><div class="pcontent">
+      <p>What score appeared most often? <span class="pm">(1 mark)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="1" placeholder="Mode = ..."></textarea>
+    </div></div>
+    <div class="part"><span class="plabel">(b)</span><div class="pcontent">
+      <p>Calculate the mean score. <span class="pm">(2 marks)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="3" placeholder="Mean = (sum of score × frequency) / total = ..."></textarea>
+    </div></div>
+    <div class="part"><span class="plabel">(c)</span><div class="pcontent">
+      <p>A student is chosen at random. What is the probability their score is 4 or higher? <span class="pm">(1 mark)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="1" placeholder="P(score ≥ 4) = ..."></textarea>
+    </div></div>
+    <div class="pycell">
+      <div class="cellhd"><span>Python &mdash; optional</span><button class="runbtn" onclick="runCell('a11py')">&#9654; Run</button></div>
+      <textarea class="code" id="a11py" rows="6">freq = {1:2, 2:4, 3:8, 4:4, 5:2}
+total = sum(freq.values())
+mode  = max(freq, key=freq.get)
+mean  = sum(k*v for k,v in freq.items()) / total
+p4up  = (freq[4]+freq[5]) / total
+print(f"Mode: {mode}")
+print(f"Mean: {mean}")
+print(f"P(≥4): {freq[4]+freq[5]}/{total} = {p4up:.4f}")</textarea>
+      <div class="codeout" id="a11py-out"></div>
+    </div>
+  </div>
+</div>
+
+<!-- A12 -->
+<div class="qcard" id="a12">
+  <div class="qhd"><span class="qnum">A12 &mdash; Limits</span><span class="qmk">4 marks</span></div>
+  <div class="qbody">
+    <p class="preamble">Consider the function f(x) = 5 + 12/x.</p>
+    <div class="part"><span class="plabel">(a)</span><div class="pcontent">
+      <p>Calculate f(1), f(10), f(100), and f(1000). <span class="pm">(2 marks)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="2" placeholder="f(1) = ...   f(10) = ...   f(100) = ...   f(1000) = ..."></textarea>
+    </div></div>
+    <div class="part"><span class="plabel">(b)</span><div class="pcontent">
+      <p>As x grows larger and larger without end, what single value does f(x) appear to be getting closer and closer to? <span class="pm">(1 mark)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="1" placeholder="f(x) approaches ..."></textarea>
+    </div></div>
+    <div class="part"><span class="plabel">(c)</span><div class="pcontent">
+      <p>What happens to f(x) as x gets very close to 0? Give a brief reason. <span class="pm">(1 mark)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="2" placeholder="As x → 0, f(x) → ...  because ..."></textarea>
+    </div></div>
+    <div class="pycell">
+      <div class="cellhd"><span>Python &mdash; optional</span><button class="runbtn" onclick="runCell('a12py')">&#9654; Run</button></div>
+      <textarea class="code" id="a12py" rows="6">def f(x): return 5 + 12/x
+for x in [1, 10, 100, 1000, 10000]:
+    print(f"f({x}) = {f(x)}")
+print()
+print("As x → 0 (from positive side):")
+for x in [1, 0.1, 0.01, 0.001]:
+    print(f"f({x}) = {f(x):.2f}")</textarea>
+      <div class="codeout" id="a12py-out"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== SECTION B ========== -->
+<h2 class="sec-head" id="section-b">Section B <small>&mdash; Answer any 4 of the 6 questions (20 marks each)</small></h2>
+
+<!-- B1 -->
+<div class="qcard" id="b1">
+  <div class="qhd"><span class="qnum">B1 &mdash; Quadratic Functions and Derivatives</span><span class="qmk">20 marks</span></div>
+  <div class="qbody">
+    <p class="preamble">Let f(x) = x&sup2; &minus; 4x + 3.</p>
+    <div class="part"><span class="plabel">(a)</span><div class="pcontent">
+      <p>Find the two roots of f(x) = 0 and the y-intercept. Use the roots to find the x-coordinate of the vertex, then calculate the y-value there. State the coordinates of the vertex. <span class="pm">(5 marks)</span></p>
+      <label class="alabel">Your working and answer:</label>
+      <textarea class="ans" rows="6" placeholder="Factor or use the quadratic formula...  Vertex x = (root1 + root2)/2  ..."></textarea>
+    </div></div>
+    <div class="part"><span class="plabel">(b)</span><div class="pcontent">
+      <p>Sketch the graph of f(x), clearly showing the vertex, both roots, and the y-intercept. Label all four points with their coordinates. <span class="pm">(6 marks)</span></p>
+      <div class="gdesc">
+        <p>Describe the graph of f(x) = x&sup2; &minus; 4x + 3:</p>
+        <div class="gfield"><label>The parabola opens:</label>
+          <select><option value="">— choose —</option><option>upward (&cup; shape)</option><option>downward (&cap; shape)</option></select>
+        </div>
+        <div class="gfield"><label>Root 1 at:</label>
+          (&thinsp;<input type="text" placeholder="x" style="width:48px">&thinsp;,&thinsp;<input type="text" value="0" style="width:40px">&thinsp;)
+        </div>
+        <div class="gfield"><label>Root 2 at:</label>
+          (&thinsp;<input type="text" placeholder="x" style="width:48px">&thinsp;,&thinsp;<input type="text" value="0" style="width:40px">&thinsp;)
+        </div>
+        <div class="gfield"><label>y-intercept at:</label>
+          (&thinsp;<input type="text" value="0" style="width:40px">&thinsp;,&thinsp;<input type="text" placeholder="y" style="width:48px">&thinsp;)
+        </div>
+        <div class="gfield"><label>Vertex at:</label>
+          (&thinsp;<input type="text" placeholder="x" style="width:48px">&thinsp;,&thinsp;<input type="text" placeholder="y" style="width:48px">&thinsp;)
+        </div>
+        <div class="gfield" style="align-items:flex-start;">
+          <label style="padding-top:0.15rem;">Additional notes:</label>
+          <textarea class="ans" rows="2" style="flex:1;min-height:38px;border-color:var(--graph-bd);background:white;" placeholder="e.g. axis of symmetry at x = ..."></textarea>
+        </div>
+      </div>
+    </div></div>
+    <div class="part"><span class="plabel">(c)</span><div class="pcontent">
+      <p>Find f&prime;(x). Use it to state the value of x at which f has its minimum, the minimum value of f, and the intervals where f is decreasing and where it is increasing. <span class="pm">(5 marks)</span></p>
+      <label class="alabel">Your working and answer:</label>
+      <textarea class="ans" rows="5" placeholder="f'(x) = ...   Set f'(x) = 0 ...   Minimum at x = ...   Decreasing: ...   Increasing: ..."></textarea>
+    </div></div>
+    <div class="part"><span class="plabel">(d)</span><div class="pcontent">
+      <p>Now consider g(x) = f(x&thinsp;+&thinsp;1). Substitute (x&thinsp;+&thinsp;1) into your expression for f and simplify g(x) fully. Then describe in one sentence how the graph of g is related to the graph of f. <span class="pm">(4 marks)</span></p>
+      <label class="alabel">Your working and answer:</label>
+      <textarea class="ans" rows="5" placeholder="g(x) = (x+1)² - 4(x+1) + 3 = ...   The graph of g is ..."></textarea>
+    </div></div>
+    <div class="pycell">
+      <div class="cellhd"><span>Python &mdash; B1</span><button class="runbtn" onclick="runCell('b1py')">&#9654; Run</button></div>
+      <textarea class="code" id="b1py" rows="12">import math
+def f(x): return x**2 - 4*x + 3
+def g(x): return f(x+1)
+
+a,b,c = 1,-4,3
+disc = b**2-4*a*c
+x1 = (-b+math.sqrt(disc))/(2*a)
+x2 = (-b-math.sqrt(disc))/(2*a)
+print(f"Roots: x = {x1}, x = {x2}")
+print(f"y-intercept: f(0) = {f(0)}")
+vx = (x1+x2)/2
+print(f"Vertex: ({vx}, {f(vx)})")
+print(f"\ng(x) = f(x+1);  g(0)={g(0)}, g(1)={g(1)}, g(2)={g(2)}")
+print("g(x) simplifies to x^2 - 2x")</textarea>
+      <div class="codeout" id="b1py-out"></div>
+    </div>
+  </div>
+</div>
+
+<!-- B2 -->
+<div class="qcard" id="b2">
+  <div class="qhd"><span class="qnum">B2 &mdash; Cubic Functions</span><span class="qmk">20 marks</span></div>
+  <div class="qbody">
+    <p class="preamble">Let g(x) = x&sup3; &minus; 12x.</p>
+    <div class="part"><span class="plabel">(a)</span><div class="pcontent">
+      <p>Complete the table of values below. <span class="pm">(3 marks)</span></p>
+      <table class="vtable">
+        <tr><th>x</th><td style="background:#F0E8FF;">&minus;2</td><td style="background:#F0E8FF;">&minus;1</td><td style="background:#F0E8FF;">0</td><td style="background:#F0E8FF;">1</td><td style="background:#F0E8FF;">2</td></tr>
+        <tr><th>g(x)</th>
+          <td><input type="text" id="b2t1" placeholder="?"></td>
+          <td><input type="text" id="b2t2" placeholder="?"></td>
+          <td><input type="text" id="b2t3" placeholder="?"></td>
+          <td><input type="text" id="b2t4" placeholder="?"></td>
+          <td><input type="text" id="b2t5" placeholder="?"></td>
+        </tr>
+      </table>
+    </div></div>
+    <div class="part"><span class="plabel">(b)</span><div class="pcontent">
+      <p>Using your table, sketch the graph of g(x). Mark approximately where the graph crosses the x-axis. <span class="pm">(4 marks)</span></p>
+      <p style="font-size:0.82rem;color:#304080;font-weight:700;margin-bottom:0.5rem;">Choose the shape that most closely matches your sketch, then fill in the details:</p>
+      <div class="cubics-row" id="cubics-row">
+        <div class="cubic-opt" onclick="selectCubic(this,1)" id="co1">
+          <canvas id="cc1" width="96" height="76"></canvas>
+          <span>Positive, two turning points</span>
+        </div>
+        <div class="cubic-opt" onclick="selectCubic(this,2)" id="co2">
+          <canvas id="cc2" width="96" height="76"></canvas>
+          <span>Positive, no turning points</span>
+        </div>
+        <div class="cubic-opt" onclick="selectCubic(this,3)" id="co3">
+          <canvas id="cc3" width="96" height="76"></canvas>
+          <span>Negative, two turning points</span>
+        </div>
+        <div class="cubic-opt" onclick="selectCubic(this,4)" id="co4">
+          <canvas id="cc4" width="96" height="76"></canvas>
+          <span>Negative, no turning points</span>
+        </div>
+      </div>
+      <input type="hidden" id="cubicsel" value="">
+      <div class="gdesc" style="margin-top:0.65rem;">
+        <p>Key features of your sketch:</p>
+        <div class="gfield"><label>Local maximum at x &approx;</label>
+          <input type="text" placeholder="x">&thinsp;,&thinsp; g(x) &approx; <input type="text" placeholder="y">
+        </div>
+        <div class="gfield"><label>Local minimum at x &approx;</label>
+          <input type="text" placeholder="x">&thinsp;,&thinsp; g(x) &approx; <input type="text" placeholder="y">
+        </div>
+        <div class="gfield"><label>Crosses x-axis at x &approx;</label>
+          <input type="text" placeholder="x&#8321;, x&#8322;, x&#8323;" style="width:160px;">
+        </div>
+      </div>
+    </div></div>
+    <div class="part"><span class="plabel">(c)</span><div class="pcontent">
+      <p>Find g&prime;(x) by differentiating. <span class="pm">(2 marks)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="2" placeholder="g'(x) = ..."></textarea>
+    </div></div>
+    <div class="part"><span class="plabel">(d)</span><div class="pcontent">
+      <p>Set g&prime;(x) = 0 and solve to find the x-coordinates of both turning points. Then calculate the y-value at each one. <span class="pm">(4 marks)</span></p>
+      <label class="alabel">Your working and answer:</label>
+      <textarea class="ans" rows="5" placeholder="g'(x) = 0 gives ...   Turning point 1: ( , )   Turning point 2: ( , )"></textarea>
+    </div></div>
+    <div class="part"><span class="plabel">(e)</span><div class="pcontent">
+      <p>For each turning point, explain whether it is a local maximum or a local minimum. Then state the intervals over which g is increasing and over which g is decreasing. <span class="pm">(4 marks)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="4" placeholder="x = -2 is a local ... because ...   Increasing on: ...   Decreasing on: ..."></textarea>
+    </div></div>
+    <div class="part"><span class="plabel">(f)</span><div class="pcontent">
+      <p>As x grows to be a very large positive number, what happens to g(x)? What about when x becomes a very large negative number? <span class="pm">(2 marks)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="2" placeholder="As x → +inf:  g(x) → ...    As x → -inf:  g(x) → ..."></textarea>
+    </div></div>
+    <div class="part"><span class="plabel">(g)</span><div class="pcontent">
+      <p>Calculate g&prime;(0). In one sentence, explain what this value tells you about the shape of the curve at x = 0. <span class="pm">(1 mark)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="2" placeholder="g'(0) = ...   This means ..."></textarea>
+    </div></div>
+    <div class="pycell">
+      <div class="cellhd"><span>Python &mdash; B2</span><button class="runbtn" onclick="runCell('b2py')">&#9654; Run</button></div>
+      <textarea class="code" id="b2py" rows="14">import math
+def g(x):  return x**3 - 12*x
+def gp(x): return 3*x**2 - 12
+
+print("Table of values:")
+for x in [-2,-1,0,1,2]:
+    print(f"  g({x}) = {g(x)}")
+
+print("\nTurning points (g'(x)=0 → x=±2):")
+for x in [-2,2]:
+    print(f"  x={x}: g({x})={g(x)},  g'({x})={gp(x)}")
+
+print(f"\ng'(0) = {gp(0)}")
+print(f"x-intercepts: 0, ±sqrt(12) = ±{math.sqrt(12):.3f}")</textarea>
+      <div class="codeout" id="b2py-out"></div>
+    </div>
+  </div>
+</div>
+
+<!-- B3 -->
+<div class="qcard" id="b3">
+  <div class="qhd"><span class="qnum">B3 &mdash; Differentiation</span><span class="qmk">20 marks</span></div>
+  <div class="qbody">
+    <div class="part"><span class="plabel">(a)</span><div class="pcontent">
+      <p>Find the derivative of each function below. State which rule you are using in each case.</p>
+      <div class="subpart">
+        <div class="part"><span class="plabel">(i)</span><div class="pcontent">
+          <p>h(x) = 3x&#8308; &minus; 2x&sup3; + 5x &minus; 7 <span class="pm">(3 marks)</span></p>
+          <label class="alabel">Your answer:</label>
+          <textarea class="ans" rows="2" placeholder="Rule used: ...    h'(x) = ..."></textarea>
+        </div></div>
+        <div class="part"><span class="plabel">(ii)</span><div class="pcontent">
+          <p>k(x) = (x &minus; 2)(x&sup2; + 3) &nbsp; Expand first, then differentiate. <span class="pm">(4 marks)</span></p>
+          <label class="alabel">Your answer:</label>
+          <textarea class="ans" rows="3" placeholder="Expanded: k(x) = ...    k'(x) = ..."></textarea>
+        </div></div>
+        <div class="part"><span class="plabel">(iii)</span><div class="pcontent">
+          <p>m(x) = (3x + 2)&#8308; <span class="pm">(3 marks)</span></p>
+          <label class="alabel">Your answer:</label>
+          <textarea class="ans" rows="2" placeholder="Rule used: chain rule    m'(x) = ..."></textarea>
+        </div></div>
+      </div>
+    </div></div>
+    <div class="part"><span class="plabel">(b)</span><div class="pcontent">
+      <p>A drone rises straight up from the ground. Its height in metres at time t seconds is:</p>
+      <p style="text-align:center;font-size:1rem;margin:0.5rem 0;letter-spacing:0.04em;">h(t) = 24t &minus; 4t&sup2;, &nbsp; t &ge; 0</p>
+      <div class="subpart">
+        <div class="part"><span class="plabel">(i)</span><div class="pcontent">
+          <p>Find h&prime;(t). In one sentence, describe what h&prime;(t) represents in this situation. <span class="pm">(3 marks)</span></p>
+          <label class="alabel">Your answer:</label>
+          <textarea class="ans" rows="2" placeholder="h'(t) = ...    This represents ..."></textarea>
+        </div></div>
+        <div class="part"><span class="plabel">(ii)</span><div class="pcontent">
+          <p>At what time t does the drone reach its maximum height? <span class="pm">(2 marks)</span></p>
+          <label class="alabel">Your answer:</label>
+          <textarea class="ans" rows="2" placeholder="Set h'(t) = 0 and solve for t ..."></textarea>
+        </div></div>
+        <div class="part"><span class="plabel">(iii)</span><div class="pcontent">
+          <p>What is that maximum height? <span class="pm">(2 marks)</span></p>
+          <label class="alabel">Your answer:</label>
+          <textarea class="ans" rows="2" placeholder="h( ) = ..."></textarea>
+        </div></div>
+        <div class="part"><span class="plabel">(iv)</span><div class="pcontent">
+          <p>After reaching its peak, the drone falls back to the ground. At what time t does it land? <span class="pm">(3 marks)</span></p>
+          <label class="alabel">Your answer:</label>
+          <textarea class="ans" rows="3" placeholder="Set h(t) = 0 and solve (ignore t = 0, the launch time) ..."></textarea>
+        </div></div>
+      </div>
+    </div></div>
+    <div class="pycell">
+      <div class="cellhd"><span>Python &mdash; B3</span><button class="runbtn" onclick="runCell('b3py')">&#9654; Run</button></div>
+      <textarea class="code" id="b3py" rows="14">import math
+def nd(f,x,h=1e-7): return (f(x+h)-f(x-h))/(2*h)
+
+h_fn = lambda x: 3*x**4 - 2*x**3 + 5*x - 7
+k_fn = lambda x: (x-2)*(x**2+3)
+m_fn = lambda x: (3*x+2)**4
+
+print("Numerical derivative checks at x=1:")
+print(f"  h'(1) ≈ {nd(h_fn,1):.3f}  (expect 12-6+5 = 11)")
+print(f"  k'(1) ≈ {nd(k_fn,1):.3f}  (expect 3-4+3 = 2)")
+print(f"  m'(1) ≈ {nd(m_fn,1):.1f}  (expect 12×5^3 = 1500)")
+
+def h(t): return 24*t - 4*t**2
+print(f"\nDrone: max at t = {24/8} s, height = {h(3)} m, lands at t = {24/4} s")</textarea>
+      <div class="codeout" id="b3py-out"></div>
+    </div>
+  </div>
+</div>
+
+<!-- B4 -->
+<div class="qcard" id="b4">
+  <div class="qhd"><span class="qnum">B4 &mdash; Probability and Statistics</span><span class="qmk">20 marks</span></div>
+  <div class="qbody">
+    <p style="font-weight:700;font-size:0.95rem;margin-bottom:0.4rem;">(a) Coin flips</p>
+    <p style="font-size:0.88rem;color:var(--muted);margin-bottom:0.7rem;">There is something genuinely surprising about what happens with long sequences of coin flips.</p>
+    <div class="part"><span class="plabel">(i)</span><div class="pcontent">
+      <p>What is the probability of getting heads on a single flip? <span class="pm">(1 mark)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="1" placeholder="P(heads) = ..."></textarea>
+    </div></div>
+    <div class="part"><span class="plabel">(ii)</span><div class="pcontent">
+      <p>What is the probability of getting heads three times in a row? Show your reasoning. <span class="pm">(2 marks)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="2" placeholder="P(3 heads in a row) = ..."></textarea>
+    </div></div>
+    <div class="part"><span class="plabel">(iii)</span><div class="pcontent">
+      <p>What is the probability of getting heads eight times in a row? <span class="pm">(1 mark)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="1" placeholder="P(8 in a row) = 1/..."></textarea>
+    </div></div>
+    <div class="part"><span class="plabel">(iv)</span><div class="pcontent">
+      <p>Suppose you flip a coin 1000 times. At each position from flip 1 through to flip 993, you can ask: &ldquo;do the next 8 flips all come up heads?&rdquo; That gives 993 possible starting positions for a run of 8 heads. Using your answer to (iii), estimate the expected number of 8-heads-in-a-row runs in 1000 flips. Round to one decimal place. Does the answer surprise you? <span class="pm">(4 marks)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="4" placeholder="Expected runs = 993 × P(8 heads) = ...   This surprises me because ..."></textarea>
+    </div></div>
+
+    <p style="font-weight:700;font-size:0.95rem;margin:1rem 0 0.4rem;">(b) Reading a chart</p>
+    <p style="font-size:0.88rem;margin-bottom:0.5rem;">The bar chart below shows how many times each of the letters A through E appeared in a short message.</p>
+    <canvas id="barchart" width="380" height="220"></canvas>
+
+    <div class="part" style="margin-top:0.75rem;"><span class="plabel">(i)</span><div class="pcontent">
+      <p>Which letter appeared most often? How many times did it appear? <span class="pm">(1 mark)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="1" placeholder="Letter ..., appeared ... times."></textarea>
+    </div></div>
+    <div class="part"><span class="plabel">(ii)</span><div class="pcontent">
+      <p>How many letters are there in the message altogether? <span class="pm">(1 mark)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="1" placeholder="Total = ..."></textarea>
+    </div></div>
+    <div class="part"><span class="plabel">(iii)</span><div class="pcontent">
+      <p>If one letter is chosen at random from the message, what is the probability it is the letter C? <span class="pm">(3 marks)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="2" placeholder="P(C) = .../... = ..."></textarea>
+    </div></div>
+    <div class="part"><span class="plabel">(iv)</span><div class="pcontent">
+      <p>What is the probability the chosen letter is not C? <span class="pm">(1 mark)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="1" placeholder="P(not C) = ..."></textarea>
+    </div></div>
+    <div class="part"><span class="plabel">(v)</span><div class="pcontent">
+      <p>Find the mean frequency across the five letters A&ndash;E. <span class="pm">(3 marks)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="2" placeholder="Mean = (A + B + C + D + E) / 5 = ..."></textarea>
+    </div></div>
+    <div class="part"><span class="plabel">(vi)</span><div class="pcontent">
+      <p>List the five letters in order from least likely to most likely to be chosen at random. <span class="pm">(3 marks)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="1" placeholder="Least likely → ... → ... → ... → ... → most likely"></textarea>
+    </div></div>
+    <div class="pycell">
+      <div class="cellhd"><span>Python &mdash; B4</span><button class="runbtn" onclick="runCell('b4py')">&#9654; Run</button></div>
+      <textarea class="code" id="b4py" rows="12">p8 = 0.5**8
+print(f"P(8 heads) = 1/{int(1/p8)}")
+print(f"Expected 8-head runs in 1000 flips: {993*p8:.1f}")
+
+freq = {'A':5,'B':8,'C':3,'D':7,'E':2}
+total = sum(freq.values())
+print(f"\nTotal letters: {total}")
+print(f"P(C) = {freq['C']}/{total}")
+print(f"P(not C) = {total-freq['C']}/{total}")
+print(f"Mean = {total}/{len(freq)} = {total/len(freq)}")
+print("Order (least→most likely):", ', '.join(k for k,v in sorted(freq.items(),key=lambda x:x[1])))</textarea>
+      <div class="codeout" id="b4py-out"></div>
+    </div>
+  </div>
+</div>
+
+<!-- B5 -->
+<div class="qcard" id="b5">
+  <div class="qhd"><span class="qnum">B5 &mdash; Triangle Trigonometry</span><span class="qmk">20 marks</span></div>
+  <div class="qbody">
+    <p class="preamble">In triangle ABC: angle C = 40&deg;, side a = BC = 7 cm, and side b = AC = 10 cm.</p>
+    <div class="part"><span class="plabel">(i)</span><div class="pcontent">
+      <p>Label the triangle diagram below with all known sides and the known angle. <span class="pm">(3 marks)</span></p>
+      <div class="tri-wrap">
+        <div>
+          <svg viewBox="0 0 260 200" width="260" height="200" style="overflow:visible;display:block;">
+            <polygon points="28,168 228,168 120,30" fill="#F4F0FF" stroke="#1A2E4A" stroke-width="2"/>
+            <!-- Angle arc at C (bottom-left) -->
+            <path d="M 50,168 A 24,24 0 0,1 40,145" fill="none" stroke="#C04020" stroke-width="1.5"/>
+            <!-- Side italic labels -->
+            <text x="52"  y="100" font-family="Georgia,serif" font-size="13" fill="#1A2E4A" font-style="italic">a</text>
+            <text x="192" y="100" font-family="Georgia,serif" font-size="13" fill="#1A2E4A" font-style="italic">b</text>
+            <text x="120" y="188" font-family="Georgia,serif" font-size="13" fill="#1A2E4A" font-style="italic">c</text>
+            <!-- Vertex labels -->
+            <text x="8"   y="183" font-family="Georgia,serif" font-size="14" fill="#1A2E4A" font-weight="bold">C</text>
+            <text x="232" y="183" font-family="Georgia,serif" font-size="14" fill="#1A2E4A" font-weight="bold">A</text>
+            <text x="114" y="22"  font-family="Georgia,serif" font-size="14" fill="#1A2E4A" font-weight="bold">B</text>
+          </svg>
+        </div>
+        <table class="tri-tbl">
+          <tr><td colspan="2"><strong>Fill in the known values:</strong></td></tr>
+          <tr><td>Angle C =</td><td><input type="text" placeholder="°"></td></tr>
+          <tr><td>Side a = BC =</td><td><input type="text" placeholder="cm"></td></tr>
+          <tr><td>Side b = AC =</td><td><input type="text" placeholder="cm"></td></tr>
+          <tr><td style="color:var(--muted);">Side c = AB =</td><td><input type="text" placeholder="unknown"></td></tr>
+          <tr><td style="color:var(--muted);">Angle A =</td><td><input type="text" placeholder="unknown"></td></tr>
+          <tr><td style="color:var(--muted);">Angle B =</td><td><input type="text" placeholder="unknown"></td></tr>
+        </table>
+      </div>
+    </div></div>
+    <div class="part"><span class="plabel">(ii)</span><div class="pcontent">
+      <p>Using the Cosine Rule, find the length of side c = AB. Round to 2 decimal places. <span class="pm">(6 marks)</span></p>
+      <label class="alabel">Your working and answer:</label>
+      <textarea class="ans" rows="6" placeholder="Cosine rule: c² = a² + b² - 2ab cos(C)&#10;c² = 7² + 10² - 2(7)(10)cos(40°)&#10;c² = ...&#10;c  = ..."></textarea>
+    </div></div>
+    <div class="part"><span class="plabel">(iii)</span><div class="pcontent">
+      <p>Using the Sine Rule, find angle A. Round to 1 decimal place. <span class="pm">(6 marks)</span></p>
+      <label class="alabel">Your working and answer:</label>
+      <textarea class="ans" rows="5" placeholder="Sine rule: sin(A)/a = sin(C)/c&#10;sin(A) = 7 × sin(40°) / c&#10;A = arcsin( ... ) = ...°"></textarea>
+    </div></div>
+    <div class="part"><span class="plabel">(iv)</span><div class="pcontent">
+      <p>Find angle B. <span class="pm">(2 marks)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="2" placeholder="Angles sum to 180°.  B = 180 - 40 - A = ...°"></textarea>
+    </div></div>
+    <div class="part"><span class="plabel">(v)</span><div class="pcontent">
+      <p>Calculate the area of triangle ABC using Area = &frac12;ab&thinsp;sin&thinsp;C. <span class="pm">(3 marks)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="2" placeholder="Area = ½ × 7 × 10 × sin(40°) = ... cm²"></textarea>
+    </div></div>
+    <div class="pycell">
+      <div class="cellhd"><span>Python &mdash; B5</span><button class="runbtn" onclick="runCell('b5py')">&#9654; Run</button></div>
+      <textarea class="code" id="b5py" rows="16">import math
+a,b,C_deg = 7,10,40
+C = math.radians(C_deg)
+
+c2 = a**2 + b**2 - 2*a*b*math.cos(C)
+c  = math.sqrt(c2)
+print(f"c² = {a}² + {b}² - 2({a})({b})cos({C_deg}°)")
+print(f"c² = {a**2} + {b**2} - {2*a*b}×{math.cos(C):.4f} = {c2:.4f}")
+print(f"c  = {c:.2f} cm")
+
+sinA = a*math.sin(C)/c
+A_deg = math.degrees(math.asin(sinA))
+print(f"\nsin(A) = {a}×sin({C_deg}°)/{c:.2f} = {sinA:.4f}")
+print(f"A = {A_deg:.1f}°")
+
+B_deg = 180-C_deg-A_deg
+print(f"B = 180-{C_deg}-{A_deg:.1f} = {B_deg:.1f}°")
+
+area = 0.5*a*b*math.sin(C)
+print(f"\nArea = ½×{a}×{b}×sin({C_deg}°) = {area:.2f} cm²")</textarea>
+      <div class="codeout" id="b5py-out"></div>
+    </div>
+  </div>
+</div>
+
+<!-- B6 -->
+<div class="qcard" id="b6">
+  <div class="qhd"><span class="qnum">B6 &mdash; Similar Triangles</span><span class="qmk">20 marks</span></div>
+  <div class="qbody">
+    <p class="preamble">Two right-angled triangles are given. In each triangle, the two shorter sides are equal in length. The longest side of the small triangle is 8 cm, and the longest side of the large triangle is 24 cm.</p>
+    <div class="part"><span class="plabel">(a)</span><div class="pcontent">
+      <p>The two triangles shown are described as <em>similar</em>. Explain in your own words what it means for two triangles to be similar. Then, looking only at what is already marked on the diagrams, identify the features that are the same in both triangles and explain briefly why this is enough to confirm that they are similar to each other. <span class="pm">(4 marks)</span></p>
+      <div class="tri-wrap">
+        <div>
+          <p style="font-size:0.82rem;font-weight:700;margin-bottom:0.35rem;">Small triangle (hypotenuse = 8 cm)</p>
+          <svg viewBox="0 0 130 125" width="130" height="125" style="overflow:visible;display:block;">
+            <polygon points="10,110 110,110 10,10" fill="#F4FFF4" stroke="#1A2E4A" stroke-width="2"/>
+            <polyline points="10,92 28,92 28,110" fill="none" stroke="#1A2E4A" stroke-width="1.5"/>
+            <line x1="57" y1="106" x2="63" y2="114" stroke="#1A2E4A" stroke-width="1.5"/>
+            <line x1="6"  y1="57"  x2="14" y2="63"  stroke="#1A2E4A" stroke-width="1.5"/>
+            <text x="66" y="57" font-family="Georgia,serif" font-size="12" fill="#C04020" font-weight="bold">8 cm</text>
+          </svg>
+        </div>
+        <div>
+          <p style="font-size:0.82rem;font-weight:700;margin-bottom:0.35rem;">Large triangle (hypotenuse = 24 cm)</p>
+          <svg viewBox="0 0 165 155" width="165" height="155" style="overflow:visible;display:block;">
+            <polygon points="10,140 145,140 10,10" fill="#F4FFF4" stroke="#1A2E4A" stroke-width="2"/>
+            <polyline points="10,120 30,120 30,140" fill="none" stroke="#1A2E4A" stroke-width="1.5"/>
+            <line x1="74" y1="136" x2="80" y2="144" stroke="#1A2E4A" stroke-width="1.5"/>
+            <line x1="6"  y1="73"  x2="14" y2="79"  stroke="#1A2E4A" stroke-width="1.5"/>
+            <text x="85" y="72" font-family="Georgia,serif" font-size="12" fill="#C04020" font-weight="bold">24 cm</text>
+          </svg>
+        </div>
+      </div>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="4" placeholder="Two triangles are similar when...   The diagrams show...   This confirms similarity because..."></textarea>
+    </div></div>
+    <div class="part"><span class="plabel">(b)</span><div class="pcontent">
+      <p>Using the fact that the angles of any triangle sum to 180&deg;, find the size of each unknown angle in the small triangle. Explain your reasoning in full. <span class="pm">(4 marks)</span></p>
+      <label class="alabel">Your working and answer:</label>
+      <textarea class="ans" rows="4" placeholder="One angle is 90°. The other two must sum to 90°. Since the two shorter sides are equal..."></textarea>
+    </div></div>
+    <div class="part"><span class="plabel">(c)</span><div class="pcontent">
+      <p>Find the length of each shorter side of the small triangle. Leave your answer in surd form. <span class="pm">(4 marks)</span></p>
+      <label class="alabel">Your working and answer:</label>
+      <textarea class="ans" rows="4" placeholder="Let each short side = s. By Pythagoras: s² + s² = 8²   →   2s² = 64   →   s = ..."></textarea>
+    </div></div>
+    <div class="part"><span class="plabel">(d)</span><div class="pcontent">
+      <p>Write down all three side lengths of the large triangle, and state the scale factor from the small triangle to the large one. <span class="pm">(4 marks)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="3" placeholder="Scale factor = 24/8 = ...   Large triangle sides: ..., ..., 24 cm"></textarea>
+    </div></div>
+    <div class="part"><span class="plabel">(e)</span><div class="pcontent">
+      <p>Calculate the area of each triangle, showing your working. By what factor is the area of the large triangle greater than the area of the small one? <span class="pm">(4 marks)</span></p>
+      <label class="alabel">Your working and answer:</label>
+      <textarea class="ans" rows="5" placeholder="Small area = ½ × base × height = ...&#10;Large area = ...&#10;Area ratio = large/small = ..."></textarea>
+    </div></div>
+    <div class="pycell">
+      <div class="cellhd"><span>Python &mdash; B6</span><button class="runbtn" onclick="runCell('b6py')">&#9654; Run</button></div>
+      <textarea class="code" id="b6py" rows="13">import math
+hs = 8;  hl = 24
+leg_s = hs / math.sqrt(2)
+leg_l = hl / math.sqrt(2)
+scale = hl / hs
+print(f"Small triangle: each leg = {hs}/√2 = {leg_s:.4f}  (= 4√2 = {4*math.sqrt(2):.4f})")
+print(f"Check: {leg_s:.4f}² + {leg_s:.4f}² = {2*leg_s**2:.4f}  (= {hs}² = {hs**2})")
+print(f"\nScale factor: {hl}/{hs} = {scale}")
+print(f"Large triangle: each leg = {leg_l:.4f}  (= 12√2 = {12*math.sqrt(2):.4f})")
+area_s = 0.5 * leg_s**2
+area_l = 0.5 * leg_l**2
+print(f"\nSmall area = {area_s:.2f} cm²  = {round(area_s)} cm²")
+print(f"Large area = {area_l:.2f} cm²  = {round(area_l)} cm²")
+print(f"Area ratio = {area_l/area_s:.1f}  = scale² = {scale}² = {scale**2:.0f}")</textarea>
+      <div class="codeout" id="b6py-out"></div>
+    </div>
+  </div>
+</div>
+<!-- FINISH NOTE -->
+<div style="background:#F0FBF0;border-left:4px solid #2B5C2B;border-radius:0 6px 6px 0;padding:0.9rem 1.1rem;margin-top:2rem;">
+  <p style="font-family:'Libre Baskerville',Georgia,serif;font-size:0.9rem;font-weight:700;color:#1A4A1A;margin-bottom:0.35rem;">Well done — you have reached the end of the exam.</p>
+  <p style="font-size:0.85rem;color:#1A3A1A;line-height:1.6;">If you have time, go back through your answers and check your working. When you are happy, click the <strong>Export PDF</strong> button in the bottom-left panel and save the PDF to your <strong>desktop</strong>.</p>
+</div>
+
+</main>
+
+<div class="drag-handle" id="dh-right" title="Drag to resize panel"></div>
+
+<aside id="right-panel">
+
+  <!-- NOTATION -->
+  <details class="rp-panel" open>
+    <summary>Notation</summary>
+    <div class="rp-content">
+      <p class="rp-intro">Use whatever feels natural &mdash; the only thing that matters is being consistent within each answer.</p>
+      <div class="note-chunk">
+        <div class="nc-label">Powers</div>
+        <div class="nc-body"><code class="ic">x^2</code>, <code class="ic">x**2</code>, and &ldquo;x to the power 2&rdquo; all mean the same thing. Python cells need <code class="ic">x**2</code>.</div>
+      </div>
+      <div class="note-chunk">
+        <div class="nc-label">Fractions</div>
+        <div class="nc-body">Write <code class="ic">a/b</code>. Use brackets for compound tops or bottoms: <code class="ic">(x+3)/(x-1)</code>.</div>
+      </div>
+      <div class="note-chunk">
+        <div class="nc-label">Square roots</div>
+        <div class="nc-body">Write <code class="ic">sqrt(x)</code> or surd form like <code class="ic">4&radic;2</code>. In Python: <code class="ic">math.sqrt(x)</code>.</div>
+      </div>
+      <div class="note-chunk">
+        <div class="nc-label">Derivatives</div>
+        <div class="nc-body"><code class="ic">f'(x)</code>, <code class="ic">dy/dx</code>, or <code class="ic">d/dx</code> are all fine &mdash; say once at the top of each calculus answer which you&rsquo;re using.</div>
+      </div>
+      <div class="note-chunk">
+        <div class="nc-label">Trig in Python</div>
+        <div class="nc-body"><code class="ic">math.sin/cos/tan</code> take radians. The calculator uses <code class="ic">sind/cosd/tand</code> for degrees, or convert: <code class="ic">math.radians(40)</code>.</div>
+      </div>
+      <div class="note-chunk">
+        <div class="nc-label">Intervals</div>
+        <div class="nc-body"><code class="ic">x &lt; 2</code> or <code class="ic">(-inf,&thinsp;2)</code> are both fine &mdash; pick one per answer and stick to it.</div>
+      </div>
+      <div class="note-chunk">
+        <div class="nc-label">Infinity</div>
+        <div class="nc-body">Write <code class="ic">+inf</code> or <code class="ic">-inf</code> when describing what a function approaches.</div>
+      </div>
+      <div class="note-chunk">
+        <div class="nc-label">Working</div>
+        <div class="nc-body">Code in a Python cell counts as working. A correct final answer with nothing else shown may not receive full marks.</div>
+      </div>
+    </div>
+  </details>
+
+  <!-- PYTHON REFERENCE -->
+  <details class="rp-panel">
+    <summary>Python Reference</summary>
+    <div class="rp-content">
+      <div class="rp-py">
+        <h3>Math module</h3>
+        <pre>import math
+
+math.sqrt(16)           # 4.0
+math.pi                 # 3.14159...
+math.e                  # 2.71828...
+math.sin(math.pi/6)     # 0.5  (radians!)
+math.cos(math.radians(40))  # cos 40°
+math.tan(math.radians(45))  # 1.0
+math.asin(0.5)          # 0.5236 rad
+math.acos(0.5)          # 1.0472 rad
+math.atan(1)            # 0.7854 rad
+math.degrees(0.5236)    # 30.0°
+math.radians(30)        # 0.5236 rad
+math.log(x)             # natural log
+math.log10(x)           # log base 10
+math.ceil(2.1)          # 3
+math.floor(2.9)         # 2
+math.factorial(5)       # 120
+math.perm(10, 4)        # 5040
+math.comb(26, 2)        # 325
+abs(-3)                 # 3
+round(3.14159, 2)       # 3.14</pre>
+        <h3>Useful patterns</h3>
+        <pre># Working with tuples / lists
+x = [1, 2, 3, 4, 5]
+sum(x)          # 15
+min(x); max(x)  # 1; 5
+len(x)          # 5
+
+# f-strings for output
+x = 3.14159
+print(f"x = {x:.2f}")   # x = 3.14
+print(f"x = {x:.4f}")   # x = 3.1416
+
+# Range in loops
+for i in range(1, 6):
+    print(i)   # 1 2 3 4 5</pre>
+      </div>
+    </div>
+  </details>
+
+  <!-- FORMULA SHEET -->
+  <details class="rp-panel">
+    <summary>Formula Sheet</summary>
+    <div class="rp-content">
+
+      <div class="fs-sec">
+        <div class="fs-stitle">Algebra and Functions</div>
+        <div class="fs-item"><span class="fs-label">Quadratic formula</span>
+          <code class="fs-f">x = (&minus;b &plusmn; &radic;(b<sup>2</sup>&minus;4ac)) / (2a)</code>
+        </div>
+        <div class="fs-item"><span class="fs-label">Completing the square</span>
+          <code class="fs-f">ax<sup>2</sup>+bx+c = a(x + b/2a)<sup>2</sup> + c &minus; b<sup>2</sup>/4a</code>
+        </div>
+        <div class="fs-item"><span class="fs-label">Inverse function f<sup>&minus;1</sup>(x)</span>
+          Write y&nbsp;=&nbsp;f(x), rearrange to make x the subject, then swap x and y.
+        </div>
+      </div>
+
+      <div class="fs-sec">
+        <div class="fs-stitle">Differentiation</div>
+        <div class="fs-item"><span class="fs-label">Power rule</span>
+          <code class="fs-f">d/dx [x<sup>n</sup>] = n x<sup>n&minus;1</sup></code>
+        </div>
+        <div class="fs-item"><span class="fs-label">Sum rule</span>
+          <code class="fs-f">(f + g)&prime; = f&prime; + g&prime;</code>
+        </div>
+        <div class="fs-item"><span class="fs-label">Product rule</span>
+          <code class="fs-f">(fg)&prime; = f&prime;g + fg&prime;</code>
+        </div>
+        <div class="fs-item"><span class="fs-label">Quotient rule</span>
+          <code class="fs-f">(f/g)&prime; = (f&prime;g &minus; fg&prime;) / g<sup>2</sup></code>
+        </div>
+        <div class="fs-item"><span class="fs-label">Chain rule</span>
+          <code class="fs-f">d/dx [f(g(x))] = f&prime;(g(x)) &middot; g&prime;(x)</code>
+        </div>
+        <div class="fs-item"><span class="fs-label">Trig derivatives</span>
+          <code class="fs-f">d/dx [sin x] = cos x</code>
+          <code class="fs-f">d/dx [cos x] = &minus;sin x</code>
+        </div>
+        <div class="fs-item" style="margin-top:0.25rem;line-height:1.6;">
+          Increasing where f&prime;(x)&nbsp;&gt;&nbsp;0 &nbsp;&middot;&nbsp; Decreasing where f&prime;(x)&nbsp;&lt;&nbsp;0<br>
+          Turning point: f&prime;(x)&nbsp;=&nbsp;0
+        </div>
+      </div>
+
+      <div class="fs-sec">
+        <div class="fs-stitle">Coordinate Geometry</div>
+        <div class="fs-item"><span class="fs-label">Midpoint</span>
+          <code class="fs-f">M = ( (x<sub>1</sub>+x<sub>2</sub>)/2 , (y<sub>1</sub>+y<sub>2</sub>)/2 )</code>
+        </div>
+        <div class="fs-item"><span class="fs-label">Distance</span>
+          <code class="fs-f">|PQ| = &radic;( (x<sub>2</sub>&minus;x<sub>1</sub>)<sup>2</sup> + (y<sub>2</sub>&minus;y<sub>1</sub>)<sup>2</sup> )</code>
+        </div>
+        <div class="fs-item"><span class="fs-label">Slope</span>
+          <code class="fs-f">m = (y<sub>2</sub>&minus;y<sub>1</sub>) / (x<sub>2</sub>&minus;x<sub>1</sub>)</code>
+        </div>
+        <div class="fs-item">Parallel lines have equal slopes.</div>
+        <div class="fs-item"><span class="fs-label">Perpendicular lines</span>
+          <code class="fs-f">m<sub>1</sub> &times; m<sub>2</sub> = &minus;1</code>
+        </div>
+        <div class="fs-item"><span class="fs-label">Line through (x<sub>1</sub>,&thinsp;y<sub>1</sub>) with slope m</span>
+          <code class="fs-f">y &minus; y<sub>1</sub> = m(x &minus; x<sub>1</sub>)</code>
+        </div>
+      </div>
+
+      <div class="fs-sec">
+        <div class="fs-stitle">Counting and Probability</div>
+        <div class="fs-item"><span class="fs-label">Factorial</span>
+          <code class="fs-f">n! = n &times; (n&minus;1) &times; &middot;&middot;&middot; &times; 2 &times; 1</code>
+        </div>
+        <div class="fs-item"><span class="fs-label">Arrangements — order matters</span>
+          <code class="fs-f">P(n,r) = n! / (n&minus;r)!</code>
+        </div>
+        <div class="fs-item"><span class="fs-label">Selections — order doesn&rsquo;t matter</span>
+          <code class="fs-f">C(n,r) = n! / (r! (n&minus;r)!)</code>
+        </div>
+        <div class="fs-item" style="line-height:1.65;">
+          0 &le; P(A) &le; 1<br>
+          P(not A) = 1 &minus; P(A)
+        </div>
+        <div class="fs-item"><span class="fs-label">If A and B cannot both happen</span>
+          <code class="fs-f">P(A or B) = P(A) + P(B)</code>
+        </div>
+        <div class="fs-item"><span class="fs-label">If A and B are independent</span>
+          <code class="fs-f">P(A and B) = P(A) &times; P(B)</code>
+        </div>
+        <div class="fs-item"><span class="fs-label">Expected occurrences</span>
+          <code class="fs-f">E = (number of tries) &times; P(event)</code>
+        </div>
+      </div>
+
+      <div class="fs-sec">
+        <div class="fs-stitle">Trigonometry &mdash; Right-Angled Triangle</div>
+        <div class="fs-item">
+          <code class="fs-f">a<sup>2</sup> + b<sup>2</sup> = c<sup>2</sup></code>
+          <code class="fs-f">sin &theta; = opposite / hypotenuse</code>
+          <code class="fs-f">cos &theta; = adjacent / hypotenuse</code>
+          <code class="fs-f">tan &theta; = opposite / adjacent</code>
+        </div>
+      </div>
+
+      <div class="fs-sec">
+        <div class="fs-stitle">Trigonometry &mdash; Any Triangle</div>
+        <div class="fs-item"><span class="fs-label">Sine rule</span>
+          <code class="fs-f">a / sin A = b / sin B = c / sin C</code>
+        </div>
+        <div class="fs-item"><span class="fs-label">Cosine rule</span>
+          <code class="fs-f">c<sup>2</sup> = a<sup>2</sup> + b<sup>2</sup> &minus; 2ab cos C</code>
+        </div>
+        <div class="fs-item"><span class="fs-label">Area</span>
+          <code class="fs-f">Area = &frac12; ab sin C</code>
+        </div>
+      </div>
+
+      <div class="fs-sec">
+        <div class="fs-stitle">Trigonometric Functions &mdash; A sin(Bx+C)+D</div>
+        <div class="fs-item">
+          <code class="fs-f">Amplitude  = |A|  (half the total height)</code>
+          <code class="fs-f">Period     = 2&pi; / |B|  (one full wave)</code>
+          <code class="fs-f">Phase shift = &minus;C / B  (left or right)</code>
+          <code class="fs-f">Vert. shift = D</code>
+        </div>
+        <div class="fs-item">180&deg; = &pi; rad &nbsp;&middot;&nbsp; to convert: multiply degrees by &pi;/180</div>
+      </div>
+
+      <div class="fs-sec">
+        <div class="fs-stitle">Unit Circle Values</div>
+        <table class="fs-tbl">
+          <tr><th>Angle</th><th>sin</th><th>cos</th></tr>
+          <tr><td>0&deg; / 0</td><td>0</td><td>1</td></tr>
+          <tr><td>30&deg; / &pi;/6</td><td>1/2</td><td>&radic;3/2</td></tr>
+          <tr><td>45&deg; / &pi;/4</td><td>&radic;2/2</td><td>&radic;2/2</td></tr>
+          <tr><td>60&deg; / &pi;/3</td><td>&radic;3/2</td><td>1/2</td></tr>
+          <tr><td>90&deg; / &pi;/2</td><td>1</td><td>0</td></tr>
+          <tr><td>180&deg; / &pi;</td><td>0</td><td>&minus;1</td></tr>
+          <tr><td>270&deg; / 3&pi;/2</td><td>&minus;1</td><td>0</td></tr>
+        </table>
+      </div>
+
+      <div class="fs-sec">
+        <div class="fs-stitle">Statistics</div>
+        <div class="fs-item"><span class="fs-label">Mean</span>
+          Add up all values and divide by how many there are.
+        </div>
+        <div class="fs-item"><span class="fs-label">Mean from a frequency table</span>
+          <code class="fs-f">mean = &Sigma;(value &times; frequency) / total frequency</code>
+          For grouped data, use the midpoint of each group as the value.
+        </div>
+        <div class="fs-item"><span class="fs-label">Median</span>
+          Middle value when all values are listed in order.
+        </div>
+        <div class="fs-item"><span class="fs-label">Mode</span>
+          The value that appears most often.
+        </div>
+        <div class="fs-item"><span class="fs-label">Range</span>
+          Largest value minus smallest value.
+        </div>
+      </div>
+
+    </div>
+  </details>
+
+</aside>
+
+<script>
+// ===== PYODIDE =====
+let pyodide = null;
+const allRunBtns = document.querySelectorAll('.runbtn');
+allRunBtns.forEach(b => b.disabled = true);
+
+async function initPyodide() {
+  try {
+    pyodide = await loadPyodide();
+    document.getElementById('spin').style.display = 'none';
+    document.getElementById('pystatus').textContent = 'Python ready — Run buttons enabled.';
+    document.getElementById('py-banner').classList.add('ready');
+    allRunBtns.forEach(b => b.disabled = false);
+    setTimeout(() => {
+      document.getElementById('py-banner').style.display = 'none';
+    }, 3000);
+  } catch(e) {
+    document.getElementById('pystatus').textContent = 'Python failed to load: ' + e.message;
+  }
+}
+initPyodide();
+
+async function runCell(id) {
+  if (!pyodide) { alert('Python is still loading, please wait.'); return; }
+  const codeEl = document.getElementById(id);
+  const outEl  = document.getElementById(id + '-out');
+  outEl.classList.remove('err','show');
+  outEl.textContent = '';
+  let out = '';
+  pyodide.setStdout({ batched: s => { out += s + '\n'; } });
+  pyodide.setStderr({ batched: s => { out += '! ' + s + '\n'; } });
+  try {
+    await pyodide.runPythonAsync(codeEl.value);
+  } catch(e) {
+    out += 'Error: ' + e.message;
+    outEl.classList.add('err');
+  }
+  if (out.trim()) { outEl.textContent = out; outEl.classList.add('show'); }
+}
+
+// ===== TEXTAREA AUTO-EXPAND =====
+document.querySelectorAll('textarea').forEach(ta => {
+  ta.addEventListener('input', function() {
+    this.style.height = 'auto';
+    this.style.height = this.scrollHeight + 'px';
+  });
+});
+
+// ===== CALCULATOR =====
+function ca(v) { const e = document.getElementById('calcexpr'); e.value += v; e.focus(); }
+function cc() { document.getElementById('calcexpr').value = ''; document.getElementById('calcresult').textContent = '—'; }
+
+function calcEval() {
+  const raw = document.getElementById('calcexpr').value;
+  const res = document.getElementById('calcresult');
+  try {
+    const e = raw
+      .replace(/sind\(/g,   '(__D2R__)(')
+      .replace(/cosd\(/g,   '(__D2RC__)(')
+      .replace(/tand\(/g,   '(__D2RT__)(')
+      .replace(/asin_d\(/g, '(__ASIND__)(')
+      .replace(/acos_d\(/g, '(__ACOSD__)(')
+      .replace(/atan_d\(/g, '(__ATAND__)(')
+      .replace(/\bsin\(/g,  'Math.sin(')
+      .replace(/\bcos\(/g,  'Math.cos(')
+      .replace(/\btan\(/g,  'Math.tan(')
+      .replace(/\basin\(/g, 'Math.asin(')
+      .replace(/\bacos\(/g, 'Math.acos(')
+      .replace(/\batan\(/g, 'Math.atan(')
+      .replace(/\bsqrt\(/g, 'Math.sqrt(')
+      .replace(/\babs\(/g,  'Math.abs(')
+      .replace(/\bln\(/g,   'Math.log(')
+      .replace(/\blog\(/g,  'Math.log10(')
+      .replace(/\bpi\b/g,   'Math.PI')
+      .replace(/\be\b/g,    'Math.E')
+      .replace(/\^/g,       '**')
+      .replace(/__D2R__\(/g,   '(d=>Math.sin(d*Math.PI/180))(')
+      .replace(/__D2RC__\(/g,  '(d=>Math.cos(d*Math.PI/180))(')
+      .replace(/__D2RT__\(/g,  '(d=>Math.tan(d*Math.PI/180))(')
+      .replace(/__ASIND__\(/g, '(v=>Math.asin(v)*180/Math.PI)(')
+      .replace(/__ACOSD__\(/g, '(v=>Math.acos(v)*180/Math.PI)(')
+      .replace(/__ATAND__\(/g, '(v=>Math.atan(v)*180/Math.PI)(');
+    const val = Function('"use strict";return(' + e + ')')();
+    const disp = (typeof val==='number' && !Number.isInteger(val))
+      ? parseFloat(val.toFixed(8)).toString()
+      : String(val);
+    res.textContent = '= ' + disp;
+    res.style.color = '#7FDFAF';
+  } catch(err) {
+    res.textContent = 'Error: ' + err.message;
+    res.style.color = '#FF8080';
+  }
+}
+
+// ===== CUBIC SHAPE CANVASES =====
+function drawCubic(canvasId, fn, col) {
+  const cv = document.getElementById(canvasId);
+  if (!cv) return;
+  const ctx = cv.getContext('2d');
+  const W = cv.width, H = cv.height;
+  const cx = W/2, cy = H/2;
+  const xs = W/6.2, ys = H/8;
+  ctx.fillStyle = '#F8F6F0';
+  ctx.fillRect(0,0,W,H);
+  ctx.strokeStyle = '#CCCCCC'; ctx.lineWidth = 0.8;
+  ctx.beginPath(); ctx.moveTo(4,cy); ctx.lineTo(W-4,cy); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(cx,4); ctx.lineTo(cx,H-4); ctx.stroke();
+  ctx.strokeStyle = col; ctx.lineWidth = 2;
+  ctx.beginPath();
+  let first = true;
+  for (let px = 0; px <= W; px++) {
+    const x = (px - cx) / xs;
+    const y = fn(x);
+    const py = cy - y * ys;
+    if (py < -4 || py > H+4) { first = true; continue; }
+    first ? ctx.moveTo(px,py) : ctx.lineTo(px,py);
+    first = false;
+  }
+  ctx.stroke();
+}
+
+function selectCubic(el, idx) {
+  document.querySelectorAll('.cubic-opt').forEach(o => o.classList.remove('sel'));
+  el.classList.add('sel');
+  document.getElementById('cubicsel').value = idx;
+}
+
+// ===== BAR CHART =====
+function drawBarChart() {
+  const cv = document.getElementById('barchart');
+  if (!cv) return;
+  const ctx = cv.getContext('2d');
+  const W = cv.width, H = cv.height;
+  const data = [['A',5],['B',8],['C',3],['D',7],['E',2]];
+  const maxV = 9;
+  const ml=44, mr=16, mt=20, mb=44;
+  const cw = W-ml-mr, ch = H-mt-mb;
+  const slot = cw / data.length;
+  const bw = slot * 0.55;
+
+  ctx.fillStyle = '#FAFAF7'; ctx.fillRect(0,0,W,H);
+
+  // gridlines
+  for (let v=0; v<=maxV; v+=2) {
+    const y = mt + ch - (v/maxV)*ch;
+    ctx.strokeStyle='#E4E0D8'; ctx.lineWidth=0.8;
+    ctx.beginPath(); ctx.moveTo(ml,y); ctx.lineTo(ml+cw,y); ctx.stroke();
+    ctx.fillStyle='#777'; ctx.font='11px Georgia'; ctx.textAlign='right';
+    ctx.fillText(v, ml-5, y+4);
+  }
+  // bars
+  data.forEach(([letter, val], i) => {
+    const x = ml + i*slot + (slot-bw)/2;
+    const bh = (val/maxV)*ch;
+    const y  = mt + ch - bh;
+    ctx.fillStyle = '#1A2E4A';
+    ctx.fillRect(x, y, bw, bh);
+    ctx.fillStyle='#1A2E4A'; ctx.font='bold 12px Georgia'; ctx.textAlign='center';
+    ctx.fillText(val, x+bw/2, y-4);
+    ctx.fillStyle='#444'; ctx.font='13px Georgia';
+    ctx.fillText(letter, x+bw/2, mt+ch+20);
+  });
+  // axes
+  ctx.strokeStyle='#333'; ctx.lineWidth=1.5;
+  ctx.beginPath(); ctx.moveTo(ml,mt); ctx.lineTo(ml,mt+ch); ctx.lineTo(ml+cw,mt+ch); ctx.stroke();
+  // axis labels
+  ctx.save(); ctx.translate(13, mt+ch/2); ctx.rotate(-Math.PI/2);
+  ctx.fillStyle='#555'; ctx.font='11px Georgia'; ctx.textAlign='center';
+  ctx.fillText('Frequency',0,0); ctx.restore();
+  ctx.fillStyle='#555'; ctx.font='11px Georgia'; ctx.textAlign='center';
+  ctx.fillText('Letter', ml+cw/2, H-6);
+}
+
+// ===== AUTOSAVE (localStorage + File System) =====
+const SAVE_KEY = 'mit_5n18396_assessor_v1';
+let fileHandle = null;
+
+function getSaveables() {
+  // Stable document-order selector — must match between save and restore.
+  return Array.from(document.querySelectorAll(
+    '#sname, #sid, ' +
+    'textarea.ans, textarea.code, ' +
+    '.qcard input[type="text"], ' +
+    '.gdesc select, ' +
+    '#cubicsel'
+  ));
+}
+
+function buildPayload() {
+  const fields  = getSaveables().map(el => el.value);
+  const outputs = Array.from(document.querySelectorAll('.codeout')).map(el => ({
+    t: el.textContent,
+    s: el.classList.contains('show'),
+    e: el.classList.contains('err')
+  }));
+  return { v:1, variant:'assessor', ts: Date.now(), fields, outputs };
+}
+
+function applyData(data) {
+  if (!data || data.v !== 1) return;
+  if (data.variant && data.variant !== 'assessor') {
+    alert('This save file came from the no-Python version of the exam. Its answers are stored in a different order, so this paper cannot restore it safely.');
+    return;
+  }
+  const saves = getSaveables();
+  (data.fields || []).forEach((val, i) => {
+    if (!saves[i]) return;
+    saves[i].value = val;
+    if (saves[i].tagName === 'TEXTAREA') {
+      saves[i].style.height = 'auto';
+      saves[i].style.height = saves[i].scrollHeight + 'px';
+    }
+  });
+  const outputs = Array.from(document.querySelectorAll('.codeout'));
+  (data.outputs || []).forEach((od, i) => {
+    if (!outputs[i] || !od.t) return;
+    outputs[i].textContent = od.t;
+    outputs[i].classList.toggle('show', !!od.s);
+    outputs[i].classList.toggle('err',  !!od.e);
+  });
+  const cubicVal = document.getElementById('cubicsel').value;
+  if (cubicVal) {
+    document.querySelectorAll('.cubic-opt').forEach(o => o.classList.remove('sel'));
+    const opt = document.getElementById('co' + cubicVal);
+    if (opt) opt.classList.add('sel');
+  }
+}
+
+function setLocalInd(msg, ok) {
+  const el = document.getElementById('save-ind');
+  if (el) { el.textContent = msg; el.style.color = ok ? '#9FDFAF' : '#FF8080'; }
+}
+
+function setFileInd(msg, ok) {
+  const el = document.getElementById('file-ind');
+  if (el) { el.textContent = msg; el.style.color = ok ? '#9FDFAF' : '#FF8080'; }
+}
+
+// Save path 1: localStorage (synchronous, always runs)
+// Save path 2: file handle (async, only if set up)
+function saveState() {
+  const payload = buildPayload();
+  try {
+    localStorage.setItem(SAVE_KEY, JSON.stringify(payload));
+    setLocalInd('Browser \u2713 ' + new Date().toLocaleTimeString(), true);
+  } catch(e) {
+    setLocalInd('Browser save failed', false);
+  }
+  if (fileHandle) writeToFile(payload);
+}
+
+async function writeToFile(payload) {
+  if (!fileHandle) return;
+  try {
+    const writable = await fileHandle.createWritable();
+    await writable.write(JSON.stringify(payload || buildPayload(), null, 2));
+    await writable.close();
+    setFileInd('File \u2713 ' + new Date().toLocaleTimeString(), true);
+  } catch(e) {
+    setFileInd('File write failed', false);
+    fileHandle = null; // handle is broken; stop attempting
+  }
+}
+
+function restoreState() {
+  const raw = localStorage.getItem(SAVE_KEY);
+  if (!raw) return;
+  let data;
+  try { data = JSON.parse(raw); } catch(e) { return; }
+  applyData(data);
+  if (data && data.ts) setLocalInd('Restored \u2713 ' + new Date(data.ts).toLocaleTimeString(), true);
+}
+
+function clearSaved() {
+  if (!confirm('Clear all saved answers? This clears every field on screen too and cannot be undone.')) return;
+  localStorage.removeItem(SAVE_KEY);
+  getSaveables().forEach(el => {
+    if (el.tagName === 'SELECT') el.selectedIndex = 0;
+    else el.value = '';
+    if (el.tagName === 'TEXTAREA') el.style.height = '';
+  });
+  document.querySelectorAll('.cubic-opt').forEach(o => o.classList.remove('sel'));
+  setLocalInd('Browser data cleared', false);
+}
+
+// Save immediately before page closes (localStorage only — file writes are async)
+window.addEventListener('beforeunload', () => {
+  try { localStorage.setItem(SAVE_KEY, JSON.stringify(buildPayload())); } catch(e) {}
+});
+
+// Expand all textareas to their full content height before printing
+window.addEventListener('beforeprint', () => {
+  // Populate print header with student name and ID
+  const name = (document.getElementById('sname').value || '').trim();
+  const sid  = (document.getElementById('sid').value || '').trim();
+  const nameEl = document.getElementById('ph-name-display');
+  const sidEl  = document.getElementById('ph-sid-display');
+  if (nameEl) nameEl.textContent = name || '(name not entered)';
+  if (sidEl)  sidEl.textContent  = sid ? 'ID: ' + sid : '';
+  // Expand textareas
+  document.querySelectorAll('textarea').forEach(ta => {
+    ta.style.height = 'auto';
+    ta.style.height = ta.scrollHeight + 'px';
+  });
+});
+
+// Autosave every 2 minutes
+setInterval(saveState, 2 * 60 * 1000);
+
+// Debounced: 2 seconds after last keystroke or change
+let saveDebounce = null;
+function debouncedSave() {
+  clearTimeout(saveDebounce);
+  saveDebounce = setTimeout(saveState, 2000);
+}
+document.addEventListener('input',  debouncedSave);
+document.addEventListener('change', debouncedSave);
+
+// ===== FILE SYSTEM ACCESS =====
+const FILE_API = 'showSaveFilePicker' in window;
+
+function initFileSetupPanel() {
+  const panel = document.getElementById('filesave-panel');
+  if (!panel) return;
+  panel.style.display = 'block';
+  if (!FILE_API) {
+    document.getElementById('filesave-noapi').style.display = 'block';
+    document.getElementById('btn-new-file').disabled = true;
+    document.getElementById('btn-open-file').disabled = true;
+    document.getElementById('btn-new-file').style.opacity = '0.45';
+    document.getElementById('btn-open-file').style.opacity = '0.45';
+  }
+}
+
+function dismissFileSetup() {
+  const panel = document.getElementById('filesave-panel');
+  if (panel) panel.style.display = 'none';
+}
+
+function setFileMsg(msg, ok) {
+  const el = document.getElementById('filesave-msg');
+  if (el) { el.textContent = msg; el.style.color = ok ? '#1A5C2A' : '#C04020'; }
+}
+
+async function createSaveFile() {
+  if (!FILE_API) return;
+  try {
+    const today = new Date().toISOString().slice(0, 10);
+    const name  = (document.getElementById('sname').value.trim() || 'student').replace(/\s+/g, '_');
+    fileHandle  = await window.showSaveFilePicker({
+      suggestedName: `MIT_Exam_${name}_${today}.json`,
+      types: [{ description: 'Exam save file', accept: { 'application/json': ['.json'] } }]
+    });
+    await writeToFile();
+    setFileMsg('Save file created. Autosave now writing to both locations.', true);
+    setFileInd('File \u2713 active', true);
+    setTimeout(dismissFileSetup, 2500);
+  } catch(e) {
+    if (e.name !== 'AbortError') setFileMsg('Could not create file: ' + e.message, false);
+  }
+}
+
+async function openSaveFile() {
+  if (!FILE_API) return;
+  try {
+    [fileHandle] = await window.showOpenFilePicker({
+      types: [{ description: 'Exam save file', accept: { 'application/json': ['.json'] } }]
+    });
+    const file = await fileHandle.getFile();
+    const data = JSON.parse(await file.text());
+    applyData(data);
+    setFileMsg('Answers restored. Autosave now writing to both locations.', true);
+    setFileInd('File \u2713 active', true);
+    setLocalInd('Restored from file \u2713', true);
+    setTimeout(dismissFileSetup, 2500);
+  } catch(e) {
+    if (e.name !== 'AbortError') setFileMsg('Could not open file: ' + e.message, false);
+  }
+}
+
+// ===== RESIZABLE COLUMNS =====
+function setupDrag(handleId, panelId, growsRight) {
+  const handle = document.getElementById(handleId);
+  const panel  = document.getElementById(panelId);
+  if (!handle || !panel) return;
+  let dragging = false, startX = 0, startW = 0;
+  handle.addEventListener('mousedown', e => {
+    dragging = true; startX = e.clientX; startW = panel.offsetWidth;
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+    e.preventDefault();
+  });
+  document.addEventListener('mousemove', e => {
+    if (!dragging) return;
+    const dx = growsRight ? e.clientX - startX : startX - e.clientX;
+    const w  = Math.max(140, Math.min(440, startW + dx));
+    panel.style.width = w + 'px';
+  });
+  document.addEventListener('mouseup', () => {
+    if (!dragging) return;
+    dragging = false;
+    document.body.style.cursor = '';
+    document.body.style.userSelect = '';
+  });
+}
+
+// ===== SIDEBAR ACTIVE NAV =====
+const navLinks = document.querySelectorAll('.nlink');
+const qcards = document.querySelectorAll('.qcard');
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      navLinks.forEach(l => l.classList.remove('active'));
+      const lk = document.querySelector(`.nlink[href="#${e.target.id}"]`);
+      if (lk) lk.classList.add('active');
+    }
+  });
+}, { threshold: 0.25 });
+qcards.forEach(c => obs.observe(c));
+
+// ===== INIT =====
+window.addEventListener('load', () => {
+  drawCubic('cc1', x => x**3 - 3*x,      '#1A2E4A');
+  drawCubic('cc2', x => x**3 * 0.4,       '#2B7A3B');
+  drawCubic('cc3', x => -(x**3) + 3*x,    '#B83018');
+  drawCubic('cc4', x => -(x**3) * 0.4,    '#7030A0');
+  drawBarChart();
+  restoreState();
+  initFileSetupPanel();
+  setupDrag('dh-left',  'sidebar',      true);
+  setupDrag('dh-right', 'right-panel',  false);
+});
+
+// ===== ASSESSOR MODEL ANSWERS =====
+const ASSESSOR_SOLUTIONS = [
+  "Model Answer Key",
+  "ASSESSOR COPY",
+  "Camera, Clock, Weather",
+  "Calculator, Calendar, Camera, Clock, Maps, Music, News, Photos, Weather  (9 apps in total)",
+  "3  (Sam has Calculator, Maps, and Music that Kai does not have)",
+  "f(4) = 2(4) + 3 = 11",
+  "Let y = 2x + 3\nRearrange: y - 3 = 2x  →  x = (y - 3)/2\nSwap x and y:  f⁻¹(x) = (x - 3)/2",
+  "f⁻¹(9) = (9 - 3)/2 = 3\nf(3) = 2(3) + 3 = 9 ✓",
+  null,
+  "f(x) = (x - 4)(x + 2)",
+  "x = 4  and  x = -2",
+  "upward (∪ shape)",
+  "4",
+  "-2",
+  "-8",
+  null,
+  "Subtract equation 2 from equation 1:\n(3x + y) - (x + y) = 10 - 4\n2x = 6  →  x = 3\nSubstitute: 3 + y = 4  →  y = 1\nAnswer: x = 3, y = 1",
+  null,
+  "slope = (7 - 1) / (5 - 2) = 6/3 = 2",
+  "y - 1 = 2(x - 2)\ny = 2x - 4 + 1\ny = 2x - 3",
+  "Perpendicular slope = -1/2\ny - 7 = -1/2 (x - 5)\ny = -x/2 + 5/2 + 7 = -x/2 + 19/2",
+  null,
+  "M = ((-1), 1)  →  M = (-1, 1)",
+  "|PQ| = sqrt( (-4-2)² + (3-(-1))² )\n= sqrt(36 + 16)\n= sqrt(52)\n= 2*sqrt(13)",
+  "|MP| = sqrt( (-1-2)² + (1-(-1))² ) = sqrt(9+4) = sqrt(13)\n|MP| = sqrt(13) = |PQ|/2  ✓",
+  null,
+  "Triple 1:  5, 12, 13\n  5² + 12² = 25 + 144 = 169 = 13²  ✓\n\nTriple 2:  8, 15, 17\n  8² + 15² = 64 + 225 = 289 = 17²  ✓",
+  null,
+  "sin θ = 1/2\ncos θ = sqrt(3)/2",
+  "adjacent = sqrt(hyp² - opp²) = sqrt(4 - 1) = sqrt(3)",
+  "tan θ = sin θ / cos θ = (1/2) / (sqrt(3)/2) = 1/sqrt(3) = sqrt(3)/3",
+  null,
+  "10⁴ = 10,000 different PINs",
+  "P = 1/10,000",
+  "First digit: 10 choices\nSecond: 9 (no repeat)\nThird: 8\nFourth: 7\n10 × 9 × 8 × 7 = 5,040 PINs",
+  null,
+  "P(vowel) = 6/26 = 3/13",
+  "P(not vowel) = 20/26 = 10/13",
+  "P(1st vowel) = 6/26\nP(2nd vowel | 1st was vowel) = 5/25\nP(both vowels) = 6/26 × 5/25 = 30/650 = 3/65",
+  null,
+  "Mode = 3  (appeared 8 times, the most frequent score)",
+  "Mean = (1×2 + 2×4 + 3×8 + 4×4 + 5×2) / 20\n= (2 + 8 + 24 + 16 + 10) / 20\n= 60 / 20 = 3",
+  "P(score ≥ 4) = (4 + 2) / 20 = 6/20 = 3/10",
+  null,
+  "f(1) = 5 + 12/1 = 17\nf(10) = 5 + 12/10 = 6.2\nf(100) = 5 + 12/100 = 5.12\nf(1000) = 5 + 12/1000 = 5.012",
+  "f(x) approaches 5  (as x → ∞, the term 12/x → 0, leaving f(x) → 5)",
+  "As x → 0⁺, f(x) → +∞  because 12/x grows without bound.",
+  null,
+  "Factoring: (x - 1)(x - 3) = 0  →  x = 1 and x = 3\ny-intercept: f(0) = 0 - 0 + 3 = 3\nVertex x-coordinate: (1 + 3)/2 = 2\nVertex y-coordinate: f(2) = 4 - 8 + 3 = -1\nVertex: (2, -1)",
+  "upward (∪ shape)",
+  "1",
+  "0",
+  "3",
+  "0",
+  "0",
+  "3",
+  "2",
+  "-1",
+  "Axis of symmetry at x = 2. Parabola opens upward (positive leading coefficient).",
+  "f'(x) = 2x - 4\nSetting f'(x) = 0:  2x - 4 = 0  →  x = 2\nMinimum value: f(2) = 4 - 8 + 3 = -1\nDecreasing on (-inf, 2)  where f'(x) < 0\nIncreasing on (2, +inf)  where f'(x) > 0",
+  "g(x) = f(x+1) = (x+1)² - 4(x+1) + 3\n= x² + 2x + 1 - 4x - 4 + 3\n= x² - 2x\nThe graph of g is the graph of f shifted 1 unit to the left.",
+  null,
+  "16",
+  "11",
+  "0",
+  "-11",
+  "-16",
+  "1",
+  "-2",
+  "16",
+  "2",
+  "-16",
+  "0, ±2√3 ≈ ±3.46",
+  "Power rule applied to each term:\ng'(x) = 3x² - 12",
+  "Setting g'(x) = 0:\n3x² - 12 = 0  →  x² = 4  →  x = ±2\ng(-2) = (-2)³ - 12(-2) = -8 + 24 = 16  →  turning point (-2, 16)\ng(2)  = (2)³ - 12(2) = 8 - 24 = -16   →  turning point (2, -16)",
+  "At x = -2: g' changes from positive (x < -2) to negative (x > -2)  →  local maximum at (-2, 16)\nAt x = 2:  g' changes from negative (x < 2) to positive (x > 2)   →  local minimum at (2, -16)\nIncreasing on (-inf, -2) and (2, +inf)\nDecreasing on (-2, 2)",
+  "As x → +inf:  g(x) → +inf  (the x³ term dominates with positive coefficient)\nAs x → -inf:  g(x) → -inf",
+  "g'(0) = 3(0)² - 12 = -12\nAt x = 0 the curve has a slope of -12, meaning it is descending steeply.",
+  null,
+  "Power rule — differentiate each term:\nh'(x) = 12x³ - 6x² + 5",
+  "Expand first: k(x) = x³ + 3x - 2x² - 6 = x³ - 2x² + 3x - 6\nPower rule: k'(x) = 3x² - 4x + 3",
+  "Chain rule: let u = 3x + 2, so m = u⁴\nm'(x) = 4u³ · du/dx = 4(3x+2)³ · 3 = 12(3x+2)³",
+  "h'(t) = 24 - 8t\nThis represents the velocity of the drone (rate of change of height with time, in m/s).",
+  "Setting h'(t) = 0:\n24 - 8t = 0  →  t = 3 seconds",
+  "h(3) = 24(3) - 4(3²) = 72 - 36 = 36 metres",
+  "Setting h(t) = 0:\n24t - 4t² = 0  →  4t(6 - t) = 0\nt = 0 (launch) or t = 6 seconds\nThe drone lands at t = 6 seconds.",
+  null,
+  "P(heads) = 1/2",
+  "P(3 heads in a row) = (1/2) × (1/2) × (1/2) = (1/2)³ = 1/8",
+  "P(8 heads in a row) = (1/2)⁸ = 1/256",
+  "Expected runs = 993 × (1/256) = 993/256 ≈ 3.9\nThis is quite surprising — you should expect about 4 runs of 8 consecutive heads in just 1000 flips!",
+  "Letter B appeared most often — 8 times",
+  "Total = 5 + 8 + 3 + 7 + 2 = 25 letters",
+  "P(C) = 3/25\nThere are 3 Cs out of 25 letters total.",
+  "P(not C) = 1 - 3/25 = 22/25",
+  "Mean = (5 + 8 + 3 + 7 + 2) / 5 = 25/5 = 5",
+  "Least likely → most likely:\nE (2/25), C (3/25), A (5/25), D (7/25), B (8/25)",
+  null,
+  "40°",
+  "7 cm",
+  "10 cm",
+  "≈ 6.46 cm",
+  "≈ 44.1°",
+  "≈ 95.9°",
+  "c² = a² + b² - 2ab cos(C)\nc² = 7² + 10² - 2(7)(10)cos(40°)\nc² = 49 + 100 - 140 × 0.7660\nc² = 149 - 107.24 = 41.76\nc = sqrt(41.76) ≈ 6.46 cm",
+  "Sine rule: sin(A)/a = sin(C)/c\nsin(A)/7 = sin(40°)/6.46\nsin(A) = 7 × 0.6428 / 6.46 ≈ 0.6962\nA = arcsin(0.6962) ≈ 44.1°",
+  "B = 180° - C - A = 180° - 40° - 44.1° = 95.9°",
+  "Area = (1/2) × a × b × sin(C)\n= (1/2) × 7 × 10 × sin(40°)\n= 35 × 0.6428\n≈ 22.5 cm²",
+  null,
+  "Two triangles are similar when they have exactly the same set of angles (same shape) but not necessarily the same size — their corresponding sides are proportional rather than equal.\n\nFrom the diagrams: both triangles show a right-angle marker (small square) at the bottom-left vertex, and both show a single tick mark on each of the two shorter sides, indicating those sides are equal to each other. A right-angled triangle with two equal legs must have base angles of 45° each. Since both triangles share the same angle pattern (90°, 45°, 45°), they are similar.",
+  "One angle is 90°. The remaining two angles must sum to 90°.\nSince the two shorter sides are equal, their opposite angles must also be equal.\nEach unknown angle = 90°/2 = 45°.\nAngles: 45°, 45°, 90°.",
+  "Let s = length of each shorter side.\nBy Pythagoras: s² + s² = 8²\n2s² = 64  →  s² = 32  →  s = sqrt(32) = 4*sqrt(2) cm",
+  "Scale factor = 24/8 = 3\nLarge triangle legs: 4*sqrt(2) × 3 = 12*sqrt(2) cm each\nAll three sides: 12*sqrt(2) cm, 12*sqrt(2) cm, 24 cm",
+  "Small area  = (1/2) × 4*sqrt(2) × 4*sqrt(2) = (1/2) × 32 = 16 cm²\nLarge area  = (1/2) × 12*sqrt(2) × 12*sqrt(2) = (1/2) × 288 = 144 cm²\nArea ratio  = 144/16 = 9\nThe large triangle has 9 times the area (= scale factor² = 3² = 9).",
+  null,
+];
+
+// Apply model answers on load, after canvases are drawn and state is restored
+window.addEventListener('load', () => {
+  // Listeners fire in registration order, so restoreState has already run —
+  // apply the model answers directly instead of racing it on a timer.
+  {
+    const saves = getSaveables();
+    ASSESSOR_SOLUTIONS.forEach((val, i) => {
+      if (val === null || !saves[i]) return;
+      saves[i].value = val;
+      if (saves[i].tagName === 'TEXTAREA') {
+        saves[i].style.height = 'auto';
+        saves[i].style.height = saves[i].scrollHeight + 'px';
+      }
+    });
+    // Restore cubic shape visual
+    const cv = document.getElementById('cubicsel').value;
+    if (cv) {
+      document.querySelectorAll('.cubic-opt').forEach(o => o.classList.remove('sel'));
+      const opt = document.getElementById('co' + cv);
+      if (opt) opt.classList.add('sel');
+    }
+  }
+}, { once: true });
+
+</script>
+</body>
+</html>

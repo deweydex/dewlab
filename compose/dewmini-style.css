@@ -333,49 +333,49 @@ html[data-dl-panel-right] .dm-page .dl-crumbs {
   align-items: center;
   gap: 0.5rem;
   margin-bottom: 0.5rem;
-  cursor: grab;
-  user-select: none;
 }
-.dm-cell-head:active { cursor: grabbing; }
 
+/* The identity pill: a drag handle, the cell's number, and its type,
+ * coloured (planning/CELL_IDENTITY.md §2). The pill itself is the drag
+ * target — draggable is set here, not on .dm-cell-head — since it
+ * already shows exactly what would be picked up. */
 .dm-cell-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
   font-family: var(--dl-mono);
   font-size: 0.68rem;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
   color: var(--dl-muted);
   border: 1px solid var(--dl-cell-border);
   border-radius: 999px;
-  padding: 0.1rem 0.55rem;
+  padding: 0.15rem 0.6rem 0.15rem 0.5rem;
+  cursor: grab;
+  user-select: none;
 }
-/* "Edited since last run" — see updateCellChrome()/isStale() in
- * dewmini.js. Quiet on purpose: this is a fact worth noticing, not an
- * error, so it borrows .dm-cell-pill's own restraint (muted colour, small
- * caps-ish type) rather than reaching for the error red a few lines
- * below. [hidden] rather than a class toggle for visibility, matching how
- * every other on/off element in this file is switched. */
-.dm-cell-stale-badge {
-  font-family: var(--dl-mono);
-  font-size: 0.68rem;
-  letter-spacing: 0.02em;
-  color: var(--dl-muted);
-  font-style: italic;
+.dm-cell-pill:active { cursor: grabbing; }
+.dm-cell-pill-dots { color: var(--dl-cell-border); letter-spacing: -1px; }
+.dm-cell-pill-num { white-space: nowrap; }
+.dm-cell-pill-type {
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: bold;
 }
-.dm-cell-stale-badge[hidden] { display: none; }
+.dm-cell-pill-type[data-type="python"] { color: var(--dl-type-python); }
+.dm-cell-pill-type[data-type="text"] { color: var(--dl-type-text); }
 
 .dm-cell-spacer { flex: 1; }
 
-.dm-cell-actions {
+.dm-cell-header-end {
   display: flex;
   gap: 0.25rem;
   opacity: 0.4;
   transition: opacity 0.1s ease;
 }
 @media (hover: none) {
-  .dm-cell-actions { opacity: 1; }
+  .dm-cell-header-end { opacity: 1; }
 }
-.dm-cell:hover .dm-cell-actions,
-.dm-cell:focus-within .dm-cell-actions { opacity: 1; }
+.dm-cell:hover .dm-cell-header-end,
+.dm-cell:focus-within .dm-cell-header-end { opacity: 1; }
 
 .dm-icon-btn {
   display: inline-flex;
@@ -424,16 +424,19 @@ html[data-dl-panel-right] .dm-page .dl-crumbs {
 
 /* The "⋯" Run-above/Run-below menu (createRunMoreMenu() in dewmini.js) —
  * a popover anchored to its own toggle button rather than two more
- * always-visible icons, see that function's comment for why. */
+ * always-visible icons, see that function's comment for why. Opens
+ * upward, not down: the footer bar it lives in sits near the bottom of
+ * the cell, right above the output, so a downward popover would land on
+ * — or spill past — content that isn't part of this menu at all. */
 .dm-cell-more { position: relative; display: inline-flex; }
 .dm-cell-run-menu {
   position: absolute;
-  top: calc(100% + 0.25rem);
+  bottom: calc(100% + 0.25rem);
   right: 0;
   z-index: 5;
   display: flex;
   flex-direction: column;
-  min-width: 9.5rem;
+  min-width: 13rem;
   padding: 0.25rem;
   border: 1px solid var(--dl-cell-border);
   border-radius: 6px;
@@ -471,6 +474,58 @@ html[data-dl-panel-right] .dm-page .dl-crumbs {
   font-family: var(--dl-mono);
   font-size: 0.68rem;
 }
+
+/* ------------------------------------------------------ body + collapse
+ *
+ * Every cell's editable content sits in this row, beside a collapse
+ * triangle — code and text alike (planning/CELL_IDENTITY.md §4, widened:
+ * there's nothing type-specific about wanting a long cell out of the way
+ * without deleting it). The triangle top-aligns with the first line
+ * beside it because both are children of this same flex row, not because
+ * either was nudged into place with a margin. */
+.dm-cell-body-row { display: flex; align-items: flex-start; gap: 0.5rem; }
+.dm-cell-body-row > .dm-cell-content { flex: 1; min-width: 0; }
+.dm-cell-collapse-col { flex: none; }
+.dm-collapse-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.3rem;
+  height: 2.4rem;
+  padding: 0;
+  border: none;
+  border-radius: 4px;
+  background: none;
+  color: var(--dl-muted);
+  cursor: pointer;
+  font-size: 1.05rem;
+  line-height: 1;
+}
+.dm-collapse-toggle:hover { color: var(--dl-orange); background: var(--dl-cell-bg); }
+/* One glyph, rotated rather than swapped — pointing down while expanded
+ * (content is right there, below), rotating back to pointing right, its
+ * own resting orientation, once collapsed. */
+.dm-collapse-caret { display: inline-block; transform: rotate(90deg); transition: transform 0.15s ease; }
+.dm-collapse-toggle-collapsed .dm-collapse-caret { transform: rotate(0deg); }
+
+/* Stands in for .dm-cell-content while collapsed — one line, the first
+ * line of the cell's own code or text, click (or Enter) to expand. */
+.dm-cell-collapsed-summary {
+  flex: 1;
+  min-width: 0;
+  padding: 0.5rem 0.75rem;
+  border-radius: 4px;
+  background: var(--dl-cell-bg);
+  color: var(--dl-muted);
+  font-family: var(--dl-mono);
+  font-size: 0.85rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+}
+.dm-cell-collapsed-summary:hover { color: var(--dl-orange); }
+.dm-cell-collapsed-summary[hidden] { display: none; }
 
 /* Code editor. Font/size/cursor/placement are exactly the affordances asked
  * for, so each is its own variable rather than a hard-coded value — the
@@ -594,17 +649,67 @@ html[data-dl-panel-right] .dm-page .dl-crumbs {
 }
 .dm-cell-output img { max-width: 100%; border-radius: 3px; }
 
-/* Run time, under the output — small and muted on purpose: a nice-to-know,
- * not something that should compete with the output itself. Empty
- * (nothing to show yet, or the Settings toggle is off) collapses to
- * nothing via :empty, same trick .dm-cell-output uses. */
-.dm-cell-stats {
-  margin-top: 0.3rem;
+/* ---------------------------------------------------------- footer bar
+ *
+ * Run, clear-output, the "⋯" menu, and the run-line — Python only, since
+ * these are the only cells that run against the shared session. Sits
+ * between the code and the output, at the bottom-left of the cell
+ * (planning/CELL_IDENTITY.md §5): a reader's cursor is at the bottom of
+ * what they just wrote, not back up at the top, so that's where the next
+ * action should be waiting. */
+.dm-cell-footbar {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-top: 0.5rem;
+}
+
+/* The run-line itself (planning/CELL_IDENTITY.md §3): order, duration,
+ * and staleness folded into one line, rather than the separate stale
+ * badge and duration line this replaced. */
+.dm-cell-runline {
   font-family: var(--dl-mono);
   font-size: 0.72rem;
-  color: var(--dl-muted);
+  color: var(--dl-fg);
 }
-.dm-cell-stats:empty { display: none; }
+.dm-cell-runline.dm-cell-runline-notrun {
+  color: var(--dl-muted);
+  font-style: italic;
+}
+.dm-run-order { color: var(--dl-fg); }
+.dm-run-duration { color: var(--dl-muted); }
+/* "— edited since" — a fact worth noticing, not an error, so it borrows
+ * the accent rather than reaching for error red. */
+.dm-run-flag { color: var(--dl-orange); }
+
+.dm-cell-runline.dm-cell-runline-queued {
+  color: var(--dl-muted);
+  font-style: italic;
+}
+
+/* Ticking live while a cell actually runs (startRunLineTicker() in
+ * dewmini.js) — a plain setTimeout loop repainting textContent, not an
+ * aria-live region: a number changing ten times a second would be noise,
+ * not news, to a screen reader. The pulsing dot is the only part that's
+ * pure animation, so it's the only part prefers-reduced-motion turns off. */
+.dm-cell-runline.dm-cell-runline-active { color: var(--dl-orange); }
+.dm-cell-runline.dm-cell-runline-active::before {
+  content: "";
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--dl-orange);
+  margin-right: 0.4em;
+  animation: dm-runline-pulse 1.2s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .dm-cell-runline.dm-cell-runline-active::before { animation: none; }
+}
+@keyframes dm-runline-pulse {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 1; }
+}
 
 /* dewmini's rails are docked sidebars (the same full-height, edge-flush
  * shape tutorial pages' own panels got, DECISIONS_LOG.md 7.83/7.84), not
@@ -878,7 +983,7 @@ kbd {
  * they get real ink regardless of which theme was on screen. */
 
 @media print {
-  .dl-chrome, .dm-toolbar, .dm-status, .dm-panel, .dm-insert, .dm-cell-actions, .dm-subtitle, .dm-subtitle-note, .dm-tabs {
+  .dl-chrome, .dm-toolbar, .dm-status, .dm-panel, .dm-insert, .dm-cell-header-end, .dm-cell-footbar, .dm-subtitle, .dm-subtitle-note, .dm-tabs {
     display: none !important;
   }
   body, .dl-page { background: #fff !important; color: #111 !important; }
@@ -886,7 +991,7 @@ kbd {
   h1 { color: #1b2a4a !important; }
   .dm-cell { break-inside: avoid; padding: 0.5rem 0; }
   .dm-cell-rail { background: #ccc !important; opacity: 1 !important; }
-  .dm-cell-pill { color: #555 !important; border-color: #ccc !important; }
+  .dm-cell-pill, .dm-cell-pill-type { color: #555 !important; border-color: #ccc !important; }
   .dm-editor .cm-editor, .dm-cell-output, .dm-textarea, .dm-doc-render:hover {
     background: #f7f6f3 !important;
     color: #111 !important;
