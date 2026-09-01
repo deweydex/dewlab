@@ -6,12 +6,12 @@ entries:
   - term: "histogram, bar chart, line chart, scatter plot, pie chart"
     kind: concept
     definition: >
-      Five chart types for five jobs: a histogram shows the distribution
-      of one numerical variable; a bar chart compares quantities across
-      categories; a line chart shows a trend over an ordered sequence; a
-      scatter plot shows the relationship between two numerical
-      variables; a pie chart shows proportions of a whole, best used
-      sparingly since a bar chart is usually clearer.
+      Five chart types for five jobs. A histogram shows how one set of
+      numbers is spread out. A bar chart compares amounts across categories.
+      A line chart shows a trend over an ordered sequence. A scatter plot
+      shows how two sets of numbers relate. A pie chart shows parts of a
+      whole, and is best used sparingly, because a bar chart is usually
+      clearer.
   - term: "plt.bar()"
     kind: function
     definition: Draws a bar chart from category labels and their values.
@@ -27,10 +27,10 @@ entries:
   - term: Anscombe's Quartet
     kind: concept
     definition: >
-      Four datasets with nearly identical statistics (same mean, standard
-      deviation, correlation) that look completely different when
-      plotted — the classic argument for why visualising data matters,
-      not just summarising it.
+      Four datasets with nearly identical statistics, sharing a mean, a
+      standard deviation and a correlation, that look completely different
+      when plotted. It is the classic argument for why data has to be drawn,
+      not only summarised.
   - term: chart junk
     kind: concept
     definition: Decorative elements on a chart that do not convey information — worth avoiding, since simplicity aids understanding.

@@ -7,21 +7,20 @@ entries:
   - term: docstring
     kind: concept
     definition: >
-      A triple-quoted string at the top of a function describing what it
-      does, what it expects, and what it returns — the contract of the
-      function, readable by anyone who wants to use it without reading
-      its code.
+      A triple-quoted string at the top of a function, describing what it
+      does, what it expects and what it returns. It is the function's
+      contract, readable by anyone who wants to use it without reading its
+      code.
     example: 'def mean(numbers):\n    """Compute the arithmetic mean of a list of numbers."""'
   - term: edge case
     kind: concept
     definition: >
       An input a function needs to handle deliberately rather than let
-      crash — an empty list handed to a function that divides by its
-      length, for instance.
+      crash. An empty list handed to a function that divides by its length
+      is one.
   - term: test function
     kind: concept
     definition: >
-      A function that calls another function with known input and checks
-      the result against the expected answer, printing PASS or FAIL —
-      writing one forces you to think clearly about what a function
-      should do.
+      A function that calls another function with a known input and checks
+      the result against the expected answer, printing PASS or FAIL. Writing
+      one forces you to say clearly what the function should do.

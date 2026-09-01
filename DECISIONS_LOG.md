@@ -4752,3 +4752,51 @@ other, not a search. The real ongoing cost is the one this decision
 argues against paying yet: a true shared cell implementation, still
 undecided, and the numbered identity pill's own design, still
 unbuilt anywhere.*
+
+---
+
+## Phase 5 — Readability of the student-facing text
+
+**5.1 — The style guide gained a plain-language section, and the four
+student-facing surfaces were rewritten to it.**
+
+The contents page, the About page, the topic tree and the 251 glossary
+definitions all passed section 4 of `planning/PEDAGOGICAL_STYLE_GUIDE.md`
+as it stood — invitational, warm, prose not bullets, no emoji — and were
+still hard to read. Section 4 governed *stance*; nothing in it governed
+sentence architecture, and section 1 says a reader may be working in a
+second language.
+
+Six habits ran through all four surfaces, in the same proportions on each:
+a short main clause with an em dash carrying the actual meaning; definitions
+written as participles rather than sentences (*"Standing in for a process
+that…"*); contrast before definition (*not x but y*, before x was ever
+said); metaphor standing in place of the plain statement rather than after
+it (*how much skin a solid has*); Irish and British idiom (*already behind
+you*, *paging through*, *it earns its keep*); and an aphorism closing
+almost every unit.
+
+Measured before and after, on the same extraction: the About page went from
+29.7 words per sentence and a 61-word longest sentence to 17.7 and 31
+(Flesch–Kincaid 14.1 → 8.2); the contents page 17.7 → 11.5 (FK 9.4 → 6.1);
+`topics.yaml`'s topic descriptions 18.7 → 15.8 with the longest sentence
+46 → 31 (FK 9.3 → 7.9); the glossary 15.8 → 13.4 with the longest 60 → 45
+(FK 8.5 → 7.4). 25 of 81 topic descriptions and 64 of 251 glossary
+definitions were rewritten — the ones that breached the new rules, not all
+of them, so the diff stays reviewable and the entries that were already
+plain keep their wording.
+
+The rule went into section 4 as a subsection rather than a new numbered
+section on purpose: `.claude/skills/cell-code-review/` and several planning
+documents cite this guide by section number, and renumbering would have
+broken every one of those references silently.
+
+*Cost to change: small for the guide, large for the prose. Loosening the
+rules is an edit to one file. Reverting the rewrites means putting back
+text across `build.py`, `planning/curriculum/topics.yaml` and 30-odd
+glossary files, and `tests/test_build.py` asserts on one phrase of the
+contents page introduction (`test_the_contents_page_introduces_the_place_instead`)
+— which is the check that stops the introduction being deleted rather than
+a check on its wording, so update the phrase there rather than working
+around it.*
+

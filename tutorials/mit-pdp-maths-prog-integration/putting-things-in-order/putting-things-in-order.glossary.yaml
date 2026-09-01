@@ -21,7 +21,7 @@ entries:
     kind: concept
     definition: >
       Keep a sorted portion at the start of the list, and insert each new
-      element into its correct place within it — the way most people sort
+      element into its right place within it. It is the way most people sort
       a hand of playing cards.
   - term: selection sort
     kind: concept

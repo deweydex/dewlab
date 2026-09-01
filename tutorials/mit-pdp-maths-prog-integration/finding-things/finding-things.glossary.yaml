@@ -31,8 +31,8 @@ entries:
   - term: binary search
     kind: concept
     definition: >
-      Repeatedly checks the middle of a sorted range and eliminates half
-      the remaining possibilities — only works on sorted data, but is
+      Repeatedly checks the middle of a sorted range and throws away half
+      the remaining possibilities. It only works on sorted data, but it is
       dramatically faster than linear search.
   - term: "O(log n)"
     kind: concept

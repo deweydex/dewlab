@@ -12,9 +12,9 @@ entries:
   - term: completing the square
     kind: concept
     definition: >
-      Rewriting x^2 + bx + c as (x + h)^2 + k, which is the same function
-      written so its vertex is visible without solving anything: halve b
-      to get h, then k = c - h^2.
+      Rewriting x^2 + bx + c as (x + h)^2 + k. It is the same function,
+      written so that its vertex is visible without solving anything: halve
+      b to get h, then k = c - h^2.
   - term: "vertex form: (x + h)^2 + k"
     kind: formula
     definition: >

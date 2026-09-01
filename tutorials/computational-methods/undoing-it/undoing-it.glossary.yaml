@@ -15,7 +15,7 @@ entries:
   - term: "A^-1 (inverse matrix)"
     kind: formula
     definition: >
-      The matrix that undoes A. For a 2×2 matrix, (1/det(A)) times [[d, -b],
-      [-c, a]] — undefined when det(A) is zero, which is the algebra for
-      why a flattened shape cannot be recovered.
+      The matrix that undoes A. For a 2×2 matrix it is (1/det(A)) times [[d,
+      -b], [-c, a]]. It is undefined when det(A) is zero, which is the
+      algebra behind why a flattened shape cannot be recovered.
     example: "multiply(A, inverse(A)) == identity"

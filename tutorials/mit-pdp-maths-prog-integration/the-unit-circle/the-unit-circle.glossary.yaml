@@ -6,10 +6,10 @@ entries:
   - term: cosine, sine
     kind: concept
     definition: >
-      The coordinates of a point on the unit circle: cosine is the across
-      (x) value, sine is the up (y) value, for a given angle from the
-      positive x-axis. Named after the coordinates, not the other way
-      round.
+      The coordinates of a point on the unit circle, for a given angle
+      measured from the positive x-axis. Cosine is the across (x) value and
+      sine is the up (y) value. They are named after the coordinates, not
+      the other way round.
     example: "math.cos(angle), math.sin(angle)"
   - term: "sin^2(theta) + cos^2(theta) = 1"
     kind: formula
