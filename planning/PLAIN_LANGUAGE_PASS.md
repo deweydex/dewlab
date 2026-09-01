@@ -104,11 +104,14 @@ filesystem a cell can read from and write to*, and the label is still bold and
 still findable.
 
 `dev/check_plain_language.py` is new and decides only what can be decided:
-sentence length, a sentence with no finite verb, more than one em dash in a
-paragraph, the meaning falling after the dash, *not x but y* reversals, the
-banned words, listed idioms, and emoji. It cannot see metaphor, hedging, or a
-hidden sequence, which are three of the eight. Run it to catch what it catches,
-then read the document, because a clean report is a floor and not a pass.
+sentence length, more than one em dash in a paragraph, the meaning falling
+after the dash, *not x but y* reversals, the banned words, listed idioms, and
+emoji. Four of the eight rules are not in it at all. Checking whether a
+sentence has a verb was tried and taken out, because a regex needs a list of
+verbs and any catch-all wide enough to cover the rest also matches every
+plural noun: *Two ways of measuring an angle* reads as having a verb in
+*ways*. Run it to catch what it catches, then read the document, because a
+clean report is a floor and not a pass.
 
 **Bibliographies.** Unrelated to readability but still the largest outstanding
 piece of style work — see section 8 of the style guide.

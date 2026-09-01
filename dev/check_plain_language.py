@@ -26,27 +26,14 @@ IDIOMS = ["behind you", "paging through", "cuts across", "dead end",
           "out of the box", "down the line", "a stone's throw"]
 # An imperative has a finite verb with the subject understood, which is the
 # right form for an instruction: "Drag a panel's inner edge to resize it."
-IMPERATIVE = re.compile(
-    r"^(drag|use|click|run|open|pick|write|add|read|search|turn|press|fill|"
-    r"keep|leave|delete|choose|set|try|see|note|save|download|start|stop|"
-    r"put|give|take|move|check|load|import|call|go|do|make|type|hover|tap|"
-    r"unzip|copy|paste|rename|close|switch)\b", re.I)
-
-# The same verbs after an introductory phrase: "To add a cell, use the seam."
-IMPERATIVE_AFTER_COMMA = re.compile(r",\s+" + IMPERATIVE.pattern[1:], re.I)
-
-FINITE = re.compile(
-    r"\b(is|are|was|were|be|been|am|has|have|had|do|does|did|can|could|will|"
-    r"would|shall|should|may|might|must|says?|holds?|keeps?|gives?|makes?|"
-    r"takes?|runs?|reads?|writes?|opens?|needs?|means?|comes?|goes?|works?|"
-    r"lives?|sits?|carries|carry|shows?|names?|drops?|fits?|lose[sd]?|"
-    # Bare present-tense forms, which take no -s after I/you/we/they and so
-    # are missed by the \w+s catch-all below.
-    r"get|want|let|stay|suit|cover|start|appear|arrive|offer|add|load|pick|"
-    r"fold|update|answer|switch|bring|find|hold|keep|give|make|take|run|"
-    r"report|record|explain|describe|apply|belong|remain|"
-    r"read|write|open|need|mean|come|go|work|live|show|name|drop|fit|"
-    r"\w+ed|\w+es|\w+s)\b", re.I)
+# There is no check here for a sentence without a finite verb, and the rule
+# is left to a reader. Deciding it needs a part-of-speech tagger. A regex
+# needs a list of verbs, and any catch-all wide enough to cover the verbs
+# nobody listed — \w+s, \w+ed — also matches every plural noun, so
+# "Two ways of measuring an angle" reads as having a verb in "ways". That is
+# the worked example in CLAUDE.md for the rule, and the check could not see
+# it, while firing 91 times across this repository's documents on labels and
+# table cells that are not sentences at all.
 
 def strip_markup(t, keep_italics=False):
     t = re.sub(r"`[^`]*`", "CODE", t)
@@ -88,9 +75,6 @@ def check(name, text, student_facing=True):
             if is_list:
                 continue
             n = len(words)
-            if (not FINITE.search(s) and not IMPERATIVE.match(s)
-                    and not IMPERATIVE_AFTER_COMMA.search(s) and n > 2):
-                problems.append(("no finite verb", f"{n}w", s[:80]))
             if student_facing and n > 25:
                 problems.append(("over 25 words", f"{n}w", s[:80]))
             if student_facing and "—" in s:
