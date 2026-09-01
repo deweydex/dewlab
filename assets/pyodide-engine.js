@@ -25,11 +25,6 @@
  * tutorial pages' own standalone export (DECISIONS_LOG.md 7.77).
  */
 
-/* The Python that makes the mounted folder importable, and that spots a
- * file edited after Python already read it. Shared with pyodide-worker.js
- * so both paths run the same Python rather than two copies that drift. */
-import { importPathSource, importedModuleTimesSource, reloadModulesSource } from "./module-watch.js";
-
 /* sqlite3 was unvendored from Pyodide's default stdlib bundle as of
  * Pyodide 0.28 — it's now just another entry in loadPackage's list, not
  * the vendoring problem planning/DECISIONS.md's older "core libraries"
@@ -785,10 +780,6 @@ export function restart() {
   pendingRequests.clear();
   openStreams.clear();
 
-  // A fresh interpreter has imported nothing, so every remembered file
-  // time describes a module that no longer exists.
-  seenModuleTimes.clear();
-
   mountedFsMT = null;
   pyodideMT = null;
   toolsMT = null;
@@ -987,93 +978,4 @@ export async function deleteFile(path) {
 export async function mkdir(path) {
   if (mode === "main-thread") return fsMkdirMT(path);
   return workerRequest("fs-mkdir", { path });
-}
-
-/* ------------------------------------------- importing from the mount
- *
- * Mounting a folder makes its files readable. It does not make them
- * importable: Python only imports from directories listed in `sys.path`,
- * and a mount point is not on that list. These three functions are what
- * turn a mounted folder into somewhere `import shapes` works. */
-
-/* Puts `path` on Python's import search list, so a .py file sitting there
- * can be imported by name. A deliberately narrow function rather than a
- * general "run this Python quietly": it does one thing, it says so, and
- * it cannot be reached for anything else. */
-export async function addImportPath(path) {
-  if (mode === "main-thread") {
-    pyodideMT.runPython(importPathSource(path));
-    return;
-  }
-  await workerRequest("add-import-path", { path });
-}
-
-/* What the last call to changedImportedModules() saw: module name to the
- * last-modified time of the file it was read from. Cleared by restart(),
- * whose fresh interpreter has imported nothing at all. */
-const seenModuleTimes = new Map();
-
-/* Which modules imported from under `path` have been edited since this
- * function last looked, as a list of module names.
- *
- * Python keeps every module it has imported in `sys.modules` and hands
- * back the remembered one rather than reading the file again. That is
- * right for a program and confusing for a student: they import a file,
- * call a function, get a wrong answer, find and fix the mistake, run the
- * cell again — and get the same wrong answer, with nothing on screen to
- * say why. This is how a page finds out that has happened, so it can.
- *
- * The first call after a module is imported records its time and reports
- * nothing. That is the intended reading of "changed": an edit made after
- * dewmini last looked, not the import itself.
- *
- * Comparison happens here rather than in Python so that the interpreter
- * keeps no state of dewmini's — the Python is a question, asked and
- * answered, with nothing left behind in the namespace a student's own
- * cells run against. */
-export async function changedImportedModules(path) {
-  let current;
-  try {
-    const raw = mode === "main-thread"
-      ? pyodideMT.runPython(importedModuleTimesSource(path))
-      : worker ? await workerRequest("imported-module-times", { path }) : "[]";
-    current = JSON.parse(raw || "[]");
-  } catch (err) {
-    // Never worth interrupting a run over: this only ever drives a
-    // notice, and a page that cannot ask simply does not show one.
-    console.warn("dewlab: could not check imported modules", err);
-    return [];
-  }
-
-  const changed = [];
-  const live = new Set();
-  for (const { name, mtime } of current) {
-    live.add(name);
-    const seen = seenModuleTimes.get(name);
-    if (seen !== undefined && mtime !== null && mtime !== seen) changed.push(name);
-    if (mtime !== null) seenModuleTimes.set(name, mtime);
-  }
-  // A module no longer in sys.modules cannot go stale, and keeping its
-  // time would make a re-import of the same name look like an edit.
-  for (const name of [...seenModuleTimes.keys()]) {
-    if (!live.has(name)) seenModuleTimes.delete(name);
-  }
-  return changed;
-}
-
-/* Re-reads the named modules from disk. Returns the names that reloaded
- * and, separately, any that failed with the error each raised — a file
- * edited into a syntax error is an ordinary thing for a student to do,
- * and it has to reach them as an answer rather than as silence. */
-export async function reloadModules(names) {
-  if (!names.length) return { reloaded: [], failed: [] };
-  const raw = mode === "main-thread"
-    ? pyodideMT.runPython(reloadModulesSource(names))
-    : worker ? await workerRequest("reload-modules", { names }) : null;
-  const result = raw ? JSON.parse(raw) : { reloaded: [], failed: [] };
-  // A reloaded module has been read afresh, so whatever its file says now
-  // is what Python holds — forget the old time rather than leave the next
-  // check comparing against it.
-  for (const name of result.reloaded) seenModuleTimes.delete(name);
-  return result;
 }

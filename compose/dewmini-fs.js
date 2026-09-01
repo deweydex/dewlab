@@ -101,12 +101,6 @@ export function getBackend() {
   return backend;
 }
 
-/** Where the workspace is mounted inside Python — the directory a
- * student's own .py files are imported from. */
-export function mountPoint() {
-  return MOUNT_POINT;
-}
-
 /**
  * @param {Object} [options]
  * @param {(backend: string) => void} [options.onBackendChange] - called
@@ -148,14 +142,6 @@ export function init() {
 
 async function doInit() {
   await engine.ensureBooted();
-
-  // Before any backend is chosen: the mount point goes on Python's import
-  // search list whichever backend ends up behind it, and the path itself
-  // is the same in all three cases. Without this a student can write two
-  // Python files in the workspace and have no way to use one from the
-  // other, which is the whole difficulty this workspace exists to teach
-  // them through.
-  await engine.addImportPath(MOUNT_POINT);
 
   const storedHandle = await idbGet(HANDLE_KEY).catch(() => null);
   if (storedHandle) {

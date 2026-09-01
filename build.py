@@ -3028,9 +3028,6 @@ if __name__ == "__main__":
 DEWMINI_ASSET_FILES = (
     "pyodide-engine.js",
     "pyodide-worker.js",
-    # Imported by both of the two above, so a bundle without it has an
-    # engine that cannot start.
-    "module-watch.js",
     "tutorial_tools.py",
     "tutorial-style.css",
     "vendor/codemirror.bundle.js",

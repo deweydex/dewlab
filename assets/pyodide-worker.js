@@ -22,11 +22,6 @@
  * here.
  */
 
-/* Shared with pyodide-engine.js's main-thread fallback, so both paths
- * run the same Python for making the mounted folder importable and for
- * spotting a file edited after Python already read it. */
-import { importPathSource, importedModuleTimesSource, reloadModulesSource } from "./module-watch.js";
-
 /* This whole file runs inside a Web Worker, not on the page itself — a
  * separate thread with its own memory, created by `new Worker(...)` on
  * the page side (see pyodide-engine.js's ensureWorker(), or
@@ -513,13 +508,6 @@ self.onmessage = async (ev) => {
     } else if (msg.type === "fs-mkdir") {
       fsMkdir(msg.path);
       respond("ok");
-    } else if (msg.type === "add-import-path") {
-      pyodide.runPython(importPathSource(msg.path));
-      respond("ok");
-    } else if (msg.type === "imported-module-times") {
-      respond(pyodide.runPython(importedModuleTimesSource(msg.path)));
-    } else if (msg.type === "reload-modules") {
-      respond(pyodide.runPython(reloadModulesSource(msg.names)));
     }
   } catch (err) {
     fail(err);
