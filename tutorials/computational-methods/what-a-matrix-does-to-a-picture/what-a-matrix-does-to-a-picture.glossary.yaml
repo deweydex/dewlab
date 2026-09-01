@@ -3,18 +3,19 @@ entries:
   - term: transformation matrix
     kind: concept
     definition: >
-      A matrix read as an instruction for moving every point in a picture
-      somewhere else, rather than as a grid you add or multiply on its
-      own. Multiplying it by a set of points moves those points.
+      A matrix read as an instruction, rather than as a grid you add or
+      multiply on its own. The instruction moves every point in a picture
+      somewhere else, and multiplying the matrix by a set of points is what
+      carries it out.
   - term: reading a matrix's columns
     kind: concept
     definition: >
       For any 2×2 matrix, the first column is where (1,0) lands and the
-      second column is where (0,1) lands under the transformation — enough
-      on its own to work out what happens to every other point.
+      second column is where (0,1) lands. That is enough on its own to work
+      out what happens to every other point.
   - term: stretch, squash, rotate, shear, reflect
     kind: concept
     definition: >
-      The five named effects a 2×2 matrix can have on a picture — worth
-      recognising from a matrix's numbers before running it, and from the
-      picture it produces after.
+      The five named effects a 2×2 matrix can have on a picture. They are
+      worth recognising from a matrix's numbers before you run it, and from
+      the picture it produces afterwards.

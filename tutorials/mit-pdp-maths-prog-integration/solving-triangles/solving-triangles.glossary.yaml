@@ -7,17 +7,17 @@ entries:
     kind: formula
     definition: >
       The area of a triangle from two sides and the angle between them,
-      rather than base and height — useful because the height often is not
-      known directly. Reduces to the familiar (1/2) * base * height when C
-      is 90 degrees, since sin(90) = 1.
+      rather than from a base and a height. That is useful because the
+      height often is not known directly. When C is 90 degrees, sin(90) = 1,
+      and this reduces to the familiar (1/2) * base * height.
     example: "area = 0.5 * a * b * math.sin(C)"
   - term: "Cosine Rule: c^2 = a^2 + b^2 - 2ab*cos(C)"
     kind: formula
     definition: >
       Finds a missing side or angle in any triangle, not just right-angled
-      ones. It is the Pythagorean theorem with a correction term for
-      angles that are not 90 degrees — the -2ab*cos(C) term vanishes when
-      C is 90 degrees, since cos(90) = 0, leaving Pythagoras exactly.
+      ones. It is the Pythagorean theorem with a correction term for angles
+      that are not 90 degrees. When C is 90 degrees, cos(90) = 0, so the
+      -2ab*cos(C) term disappears and Pythagoras is left exactly.
   - term: "Sine Rule: a / sin(A) = b / sin(B) = c / sin(C)"
     kind: formula
     definition: >
@@ -27,7 +27,8 @@ entries:
   - term: ambiguous case
     kind: concept
     definition: >
-      Given two sides and a non-included angle, the Sine Rule can produce
-      two different valid triangles (an angle and its supplement both have
-      the same sine), so both must be checked and reported rather than
-      just taking the one answer a calculator's inverse sine returns.
+      Given two sides and an angle that is not between them, the Sine Rule
+      can produce two different valid triangles. That happens because an
+      angle and its supplement have the same sine. Check and report both,
+      rather than taking the single answer a calculator's inverse sine
+      returns.

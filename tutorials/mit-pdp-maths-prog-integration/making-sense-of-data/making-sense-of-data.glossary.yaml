@@ -24,18 +24,18 @@ entries:
   - term: standard deviation
     kind: formula
     definition: >
-      How far, on average, each data point sits from the mean: find each
-      value's distance from the mean, square it, average those, then take
-      the square root.
+      How far, on average, each data point sits from the mean. Find each
+      value's distance from the mean, square it, average those squares, then
+      take the square root.
     example: "sigma = sqrt((1/N) * sum((x - x_bar)**2))"
   - term: categorical, ordinal, discrete, continuous
     kind: concept
     definition: >
-      Four kinds of data. Categorical has no order (favourite colour);
-      ordinal has order but no consistent spacing (star ratings); discrete
-      is countable (bugs in a program); continuous can take any value in a
-      range (temperature). What kind a value is decides which summary
-      measures make sense for it.
+      Four kinds of data. Categorical has no order, like favourite colour.
+      Ordinal has an order but no consistent spacing, like star ratings.
+      Discrete is countable, like bugs in a program. Continuous can take any
+      value in a range, like temperature. Which kind a value is decides
+      which summary measures make sense for it.
   - term: frequency distribution, bins
     kind: concept
     definition: >

@@ -88,6 +88,13 @@ Let them multiply a transition matrix until the state vector stops moving, and
 then say stationary distribution. A name given before the experience is a name
 to memorise; a name given after it is a name for something they already have.
 
+Three steps, in that order: explore the problem, then the general principle
+underneath it, then the name. And say what the name is *for*. It is not a label
+the tutorial awards at the end for having paid attention. It is the word that
+lets a student talk to somebody else about the thing they have just done — a
+tutor, a classmate, a search box, the next tutorial. Saying that out loud is
+what turns the naming step from a formality into the reason for it.
+
 ---
 
 ## 4. Voice
@@ -122,6 +129,90 @@ introduced, or introduced twice with different meanings.
 
 **Do not over-format.** Bold that appears in every paragraph has stopped meaning
 anything.
+
+### Plain language
+
+Everything above governs *stance* — who the sentence positions the reader as.
+Nothing above governs *sentence architecture*, and section 1 says a reader may
+be working in their second language and may not have done mathematics since
+school. Prose can satisfy every rule in this section and still be hard for that
+reader. These are the rules that close the gap.
+
+**Say what a thing is before what it is not.** "An expression has a value; an
+equation is a claim that two of them are equal" reaches a reader who knows
+neither. "Not a value but a claim" only reaches one who already knows the first
+half. Contrast is a second pass, not a first definition.
+
+**A definition is a sentence with a subject and a verb.** *Standing in for a
+process that would be slow to run for real, by working it out numerically
+instead* is a participle with nothing to attach to; a reader has to supply the
+missing "this topic is about" before they can start. Write "You work out what
+would happen instead of running the real thing."
+
+**One idea per sentence, and roughly twenty words.** Twenty-five is a ceiling
+worth a reason; past thirty the sentence has two ideas in it and wants to be
+two sentences. A list of four things is allowed to be longer, because the
+reader is counting rather than following an argument.
+
+**Put the meaning before the dash, not after it.** The habit this repository
+fell into is a short main clause, an em dash, and then the part that actually
+carries the sense. It reads beautifully to somebody who already understands
+the sentence and it costs everyone else a re-read. One dash to a paragraph, and
+never the one holding the definition.
+
+**A metaphor illustrates a plain statement; it does not replace one.** *How
+much skin a solid has*, *turning the probability toolkit outward onto the
+machine*, *something to hang it on* — each asks a reader to unpack an image
+before they can find the fact. Say the fact, then reach for the picture if it
+earns its place. A picture that has to be decoded is a second problem, not a
+help.
+
+**No idiom that depends on knowing Irish or British English.** *Behind you*,
+*paging through*, *cuts across that order*, *at the first dead end*, *it earns
+its keep*, *the average that flatters*. These are the most invisible barrier in
+the whole document, because a native speaker cannot see them.
+
+**Ration the aphorism.** A unit that ends on a maxim rather than on information
+is teaching the reader to expect a punchline, and at this density it trains
+them to skim for it. Keep the best ones; that is what makes them the best ones.
+
+**Put steps in the order they happen, and mark the order.** *First… then…
+then…* Three short sentences in sequence show a reader where they are in a
+process. Two actions folded into one clause with an *and then* hide the
+sequence inside a single breath, and a reader who is not confident loses their
+place in it. This is the cheapest fix on this page and the one that helps most.
+
+**No reversals.** *Not the answer but the steps* asks a reader to hold a
+negative in mind before there is anything to hold it against. *What we are
+learning is the steps that get us there* says the same thing forwards. Put the
+thing you actually mean in the subject of the sentence, and let it arrive in
+the order it happens.
+
+**"We" for the learning, "you" for what is theirs.** *We explore, then we name
+what we found* puts the writer beside the reader in the work. *Your work is
+saved on this device* is about their machine and their file, and a "we" there
+would be a pretence. Keep the two apart and both stay honest.
+
+**Hedge what is not a binary.** *Usually comes afterwards*, *is usually telling
+us something useful*, *what usually comes first*. Most teaching claims have
+exceptions, and a reader who meets the exception in their second tutorial
+learns to distrust the flat ones. State flatly only what is genuinely flat —
+*nothing you write leaves your browser* is a real binary, and hedging it would
+read as evasion.
+
+**The test.** Not whether the sentence is elegant. Whether a reader who is
+unsure of themselves comes out of it feeling more able than they went in.
+
+None of this asks for flat writing. Warmth is in the second person, in the
+invitation, and in what the sentence does not assume about the reader — not in
+figurative language. The plainest version of a sentence is usually also the
+friendliest.
+
+`CONTRIBUTING.md` ("Who reads what") has said most of this for the site's own
+pages all along — *no jargon without explaining it, no metaphor for its own
+sake, if you would not say it that way to a fifteen-year-old sitting next to
+you, rewrite it*. It was never in the guide the tutorial writers read, so it
+governed the homepage and not the teaching. It governs both now.
 
 ---
 
@@ -322,6 +413,16 @@ see section 5.
 - Does the frontmatter declare `covers:` for what is taught and `touches:` for
   what is referenced?
 - Are the explanations prose rather than bullets?
+- Is any sentence over twenty-five words, and does it need to be?
+- Does every definition open with a subject and a verb, and say what the thing
+  is before what it is not?
+- Is any metaphor carrying the meaning rather than illustrating it? Any idiom
+  that assumes Irish or British English?
+- Where something happens in a sequence, is the sequence marked — first, then,
+  then — rather than folded into one clause?
+- Any reversal that makes the reader hold a negative before they have anything
+  to hold it against?
+- Is a claim stated flatly that is not actually a binary?
 - Any command language aimed at the student? Any emoji?
 - Has every number in the tutorial and its practice page actually been run?
 - Does the practice page exist, and do hard problems carry a stepped hint?

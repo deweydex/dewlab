@@ -8,19 +8,19 @@ entries:
   - term: Gaussian elimination
     kind: concept
     definition: >
-      Solves a system by simplifying it one row operation at a time until
-      the answer can be read straight off, rather than by computing an
-      inverse — the method that scales to many unknowns, and the one
-      computers actually use.
+      Solves a system by simplifying it one row operation at a time, until
+      the answer can be read straight off. It does not compute an inverse.
+      This is the method that scales to many unknowns, and the one computers
+      actually use.
   - term: augmented matrix
     kind: concept
     definition: A system's coefficients with the right-hand side tacked on as one more column.
   - term: row operations
     kind: concept
     definition: >
-      Three moves that leave a system's solution unchanged — swapping two
-      rows, scaling a row by a non-zero number, and replacing a row with
-      itself plus a multiple of another row.
+      Three moves that leave a system's solution unchanged: swapping two
+      rows, scaling a row by a number that is not zero, and replacing a row
+      with itself plus a multiple of another row.
   - term: row echelon form
     kind: concept
     definition: A staircase shape — every row starting with more zeros than the one above it.

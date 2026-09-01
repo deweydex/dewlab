@@ -7,16 +7,16 @@ entries:
     kind: concept
     definition: >
       Two lines are parallel when they have the same slope. They are
-      perpendicular (meet at a right angle) when their slopes multiply to
-      -1 — turn the slope triangle a quarter turn and the rise and run
-      swap, with one changing sign, which is exactly what that -1 is.
+      perpendicular, meeting at a right angle, when their slopes multiply to
+      -1. Turn the slope triangle a quarter turn and the rise and run swap,
+      with one changing sign, and that is where the -1 comes from.
   - term: "general form of a line: ax + by + c = 0"
     kind: formula
     definition: >
       A third way to write a line, alongside y = mx + c and the plain
-      function form. Worse for most lines, but the only one of the three
-      that can describe a vertical line (b = 0 is allowed here; y = mx + c
-      has no slope that produces one).
+      function form. It is worse for most lines, but it is the only one of
+      the three that can describe a vertical line. Here b = 0 is allowed,
+      whereas y = mx + c has no slope that produces one.
   - term: midpoint
     kind: formula
     definition: The halfway point between two points — average the x values, average the y values.
@@ -24,9 +24,9 @@ entries:
   - term: "Pythagorean theorem, distance formula"
     kind: formula
     definition: >
-      In a right-angled triangle, the two short sides squared and added
-      give the long side squared. The distance between two points is
-      exactly this, with the horizontal and vertical gaps as the short
-      sides — the same fact seen from two directions, not two separate
-      things to remember.
+      In a right-angled triangle, the two short sides squared and added give
+      the long side squared. The distance between two points is exactly
+      this, with the horizontal and vertical gaps as the short sides. They
+      are the same fact seen from two directions, not two separate things to
+      remember.
     example: "distance = sqrt((x2-x1)**2 + (y2-y1)**2)"
