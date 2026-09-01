@@ -5430,3 +5430,91 @@ new execution model is involved: every earlier catch this document
 records of the same shape (7.96, 7.97, this one) was invisible from the
 code and the design doc alike, and visible immediately the moment the
 feature actually ran.*
+
+**7.120 — HTML and CSS, retired as separate types and merged into one:
+Web.** Not a bug fix the way 7.118's and 7.119's own mid-build design
+corrections were — HTML and CSS worked exactly as designed, each on its
+own. The merge came from actually using both once they existed: a CSS
+cell could only ever style `CSS_PREVIEW_MARKUP`, a fixed sample page
+that was never the reader's own markup, and an HTML cell had no CSS of
+its own reachable at all — the pairing planning/CELL_IDENTITY.md §8's
+own CSS design explicitly declined to guess at ("CSS styling an HTML
+cell right above it… would make a CSS cell's behaviour depend on cell
+order and type"), because that reasoning assumed two separate cells
+where "which HTML is this CSS for" has no clean answer. One cell with
+both halves removes the question rather than answering it differently.
+
+**What changed.** `CELL_TYPES.HTML`/`CELL_TYPES.CSS` are gone;
+`CELL_TYPES.WEB` replaces both. A cell object gains a second content
+field, `style` (CSS), alongside the `content` field every type already
+had (now HTML, for a web cell) — the first time any dewmini cell has
+needed two independent source fields rather than one, which touched
+more of `compose/dewmini.js` than the type's own `createCellElement()`
+branch: `insertCellAt()`/`addCell()`/`duplicateCell()` all needed to
+carry the second field through, `saveState()`/`readCells()` needed to
+persist and restore it, and a new `destroyCellEditors(cell)` helper
+replaced six separate `cell.editor?.destroy()` call sites so a web
+cell's *second* CodeMirror instance (`cell.cssEditor`) stops leaking
+too, not only its first.
+
+**The cell itself: two editors, always both visible, one Render
+button.** Neither editor swaps out for a rendered view the way HTML's
+and CSS's own Edit/View toggle used to — both stay editable at once, so
+`READ_NOT_RUN_TYPES` (compose/dewmini.js) narrowed to Text alone, the
+only type left with an actual toggle. Rendering is the header's own
+explicit Render button instead of either editor's own `focusout`: two
+editors both auto-rendering on blur, the way HTML and CSS separately
+did, would have fired the same preview update twice for one edit, and
+shown a half-finished render mid-tab between the two. An empty HTML
+half still falls back to `CSS_PREVIEW_MARKUP`, so the old standalone-CSS
+use case — style a fixed little page, no markup of the reader's own
+needed — still works exactly as it did.
+
+**Migration: each old cell becomes its own new web cell, never merged
+with a neighbour.** A notebook saved under the two-type model still
+loads — `readCells()` runs every stored cell through a new
+`migrateLegacyCellType()` first, mapping a standalone `type: "html"`
+cell to a web cell with an empty CSS half, and a standalone `type:
+"css"` cell to one with an empty HTML half. Deliberately not smarter
+than that: guessing that an HTML cell and the CSS cell sitting next to
+it were meant as a pair is exactly the ambiguity the new design exists
+to no longer need, and a wrong guess would silently combine two things
+a reader may not have intended combined. Two old cells just become two
+new ones, each exactly where it already was — a reader who did mean
+them as a pair can copy one CSS rule into the other cell's own CSS half
+by hand, which costs one paste, not a filesystem-scale migration risk.
+
+**Export paths that would have silently dropped the CSS half.**
+`downloadAsPython()`, `downloadAsIpynb()`, and the standalone HTML
+export's own generic non-Python rendering all used to read only
+`cell.content` for every non-Python type — harmless before, since an
+old CSS cell's *entire* content was `cell.content`, but a real,
+silent data-loss bug for a web cell's separate `style` field if left
+unchanged. A new `cellExportContent(cell)` helper folds a non-empty CSS
+half into the exported text (wrapped in a `<style>` tag, clearly
+labelled) for all three call sites, so a reader downloading a notebook
+never loses the CSS half of a cell they can still see on screen.
+
+**Verified in a real browser**: both editors visible and independently
+editable with no toggle; a script inside the rendered iframe still
+cannot reach the parent page (the sandboxing itself untouched by the
+merge); a CSS rule now genuinely styling the *same* cell's own HTML,
+not a fixed sample; the CSS-only fallback still rendering
+`CSS_PREVIEW_MARKUP`; Render staying inert until clicked, confirming
+no accidental auto-render survived the rewrite; reload persistence for
+both halves at once; collapse/duplicate; and the migration path itself,
+seeding raw `type: "html"`/`type: "css"` localStorage data and
+confirming it becomes two independent web cells on load. Ten e2e tests
+replace the eleven the two old types had (net one fewer, covering more:
+the old suites never had a test proving CSS could style a cell's own
+HTML, because until this change it never could).
+
+*Cost to change: smaller than either SQL's or JavaScript's — no new
+engine, no new sandboxing model, the same iframe HTML already used with
+a second editor and one field threaded through the cell data model. The
+real cost was breadth, not depth: six call sites for editor teardown,
+three export paths, a data migration, and every doc/design surface that
+named "HTML" and "CSS" as two things rather than one — more files
+touched than either of the two harder builds that came before it, for a
+change with no new runtime behaviour to speak of beyond the merge
+itself.*

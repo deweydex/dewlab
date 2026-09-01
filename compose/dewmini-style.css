@@ -197,11 +197,6 @@ html[data-dl-panel-right] .dm-page .dl-crumbs {
   mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6z'/%3E%3C/svg%3E") center/contain no-repeat;
   -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6z'/%3E%3C/svg%3E") center/contain no-repeat;
 }
-.dm-tool-icon-css {
-  background: currentColor;
-  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9c.83 0 1.5-.67 1.5-1.5 0-.39-.15-.74-.39-1.01-.23-.26-.38-.61-.38-.99 0-.83.67-1.5 1.5-1.5H16c2.76 0 5-2.24 5-5 0-4.42-4.03-8-9-8zm-5.5 9c-.83 0-1.5-.67-1.5-1.5S5.67 9 6.5 9 8 9.67 8 10.5 7.33 12 6.5 12zm3-4C8.67 8 8 7.33 8 6.5S8.67 5 9.5 5s1.5.67 1.5 1.5S10.33 8 9.5 8zm5 0c-.83 0-1.5-.67-1.5-1.5S13.67 5 14.5 5s1.5.67 1.5 1.5S15.33 8 14.5 8zm3 4c-.83 0-1.5-.67-1.5-1.5S16.67 9 17.5 9s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z'/%3E%3C/svg%3E") center/contain no-repeat;
-  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9c.83 0 1.5-.67 1.5-1.5 0-.39-.15-.74-.39-1.01-.23-.26-.38-.61-.38-.99 0-.83.67-1.5 1.5-1.5H16c2.76 0 5-2.24 5-5 0-4.42-4.03-8-9-8zm-5.5 9c-.83 0-1.5-.67-1.5-1.5S5.67 9 6.5 9 8 9.67 8 10.5 7.33 12 6.5 12zm3-4C8.67 8 8 7.33 8 6.5S8.67 5 9.5 5s1.5.67 1.5 1.5S10.33 8 9.5 8zm5 0c-.83 0-1.5-.67-1.5-1.5S13.67 5 14.5 5s1.5.67 1.5 1.5S15.33 8 14.5 8zm3 4c-.83 0-1.5-.67-1.5-1.5S16.67 9 17.5 9s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z'/%3E%3C/svg%3E") center/contain no-repeat;
-}
 .dm-tool-icon-sql {
   background: currentColor;
   mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 3C7.58 3 4 4.79 4 7s3.58 4 8 4 8-1.79 8-4-3.58-4-8-4zM4 9v3c0 2.21 3.58 4 8 4s8-1.79 8-4V9c0 2.21-3.58 4-8 4S4 11.21 4 9zm0 5v3c0 2.21 3.58 4 8 4s8-1.79 8-4v-3c0 2.21-3.58 4-8 4s-8-1.79-8-4z'/%3E%3C/svg%3E") center/contain no-repeat;
@@ -382,8 +377,13 @@ html[data-dl-panel-right] .dm-page .dl-crumbs {
 }
 .dm-cell-pill-type[data-type="python"] { color: var(--dl-type-python); }
 .dm-cell-pill-type[data-type="text"] { color: var(--dl-type-text); }
-.dm-cell-pill-type[data-type="html"] { color: var(--dl-type-html); }
-.dm-cell-pill-type[data-type="css"] { color: var(--dl-type-css); }
+/* "web" (the merged HTML+CSS cell, DECISIONS_LOG.md 7.120) keeps HTML's
+ * own colour token — one type, one colour, and violet was the more
+ * structural of the two the retired separate types had.
+ * --dl-type-css stays defined in assets/tutorial-style.css but is no
+ * longer used by anything; removing the token itself would touch a file
+ * dewmini doesn't otherwise need to for this change. */
+.dm-cell-pill-type[data-type="web"] { color: var(--dl-type-html); }
 .dm-cell-pill-type[data-type="sql"] { color: var(--dl-type-sql); }
 .dm-cell-pill-type[data-type="javascript"] { color: var(--dl-type-js); }
 
@@ -401,27 +401,28 @@ html[data-dl-panel-right] .dm-page .dl-crumbs {
 .dm-cell:hover .dm-cell-header-end,
 .dm-cell:focus-within .dm-cell-header-end { opacity: 1; }
 
-/* A text or HTML cell renders by default and is meant to be read, not
- * run (planning/CELL_IDENTITY.md §4/§8, DECISIONS_LOG.md 7.115) — its
- * pill, Duplicate/Delete/Edit, and collapse triangle stay invisible
- * until a reader actually touches the cell, so a rendered note or a
- * rendered HTML/CSS cell reads like part of the page rather than
- * sitting open and code-shaped among cells that are. `opacity: 0;
- * pointer-events: none`, never `display: none`: the elements stay in
- * the tab order, so a keyboard user tabbing onto one reveals it via
- * :focus-within the same moment it receives focus — only a mouse user
- * needs to hover the cell first. A touch device has no hover to reveal
- * anything with, so it gets the chrome on unconditionally. */
-:is(.dm-cell-text, .dm-cell-html, .dm-cell-css) :is(.dm-cell-head, .dm-cell-collapse-col) {
+/* A text or web (HTML+CSS) cell renders by default and is meant to be
+ * read, not run (planning/CELL_IDENTITY.md §4/§8, DECISIONS_LOG.md
+ * 7.115, 7.120) — its pill, Duplicate/Delete/Render, and collapse
+ * triangle stay invisible until a reader actually touches the cell, so
+ * a rendered note or a rendered web cell reads like part of the page
+ * rather than sitting open and code-shaped among cells that are.
+ * `opacity: 0; pointer-events: none`, never `display: none`: the
+ * elements stay in the tab order, so a keyboard user tabbing onto one
+ * reveals it via :focus-within the same moment it receives focus — only
+ * a mouse user needs to hover the cell first. A touch device has no
+ * hover to reveal anything with, so it gets the chrome on
+ * unconditionally. */
+:is(.dm-cell-text, .dm-cell-web) :is(.dm-cell-head, .dm-cell-collapse-col) {
   transition: opacity 0.1s ease;
 }
-:is(.dm-cell-text, .dm-cell-html, .dm-cell-css):not(:hover):not(:focus-within)
+:is(.dm-cell-text, .dm-cell-web):not(:hover):not(:focus-within)
   :is(.dm-cell-head, .dm-cell-collapse-col) {
   opacity: 0;
   pointer-events: none;
 }
 @media (hover: none) {
-  :is(.dm-cell-text, .dm-cell-html, .dm-cell-css) :is(.dm-cell-head, .dm-cell-collapse-col) {
+  :is(.dm-cell-text, .dm-cell-web) :is(.dm-cell-head, .dm-cell-collapse-col) {
     opacity: 1;
     pointer-events: auto;
   }
@@ -514,11 +515,12 @@ html[data-dl-panel-right] .dm-page .dl-crumbs {
   outline: none;
 }
 
-/* The one .dm-icon-btn with a word on it rather than a glyph — "Edit"/
- * "View" needs more room than the fixed icon square, and there's no
- * single symbol for "toggle between editing and reading this note" that
- * reads clearly at a glance the way a pencil or an eye alone might not. */
-.dm-icon-preview {
+/* The few .dm-icon-btns with a word on them rather than a glyph —
+ * "Edit"/"View" (a text cell's rendered/editor toggle) and "Render" (a
+ * web cell's own explicit render button, DECISIONS_LOG.md 7.120) — all
+ * need more room than the fixed icon square, and no single symbol reads
+ * clearly at a glance for either. */
+.dm-icon-preview, .dm-icon-render {
   width: auto;
   padding: 0 0.5rem;
   font-family: var(--dl-mono);
@@ -643,7 +645,26 @@ html[data-dl-panel-right] .dm-page .dl-crumbs {
 .dm-doc-render img { display: block; max-width: 100%; height: auto; border-radius: 6px; margin: 0.4rem 0; }
 .dm-doc-empty { color: var(--dl-muted); font-style: italic; margin: 0; }
 
-/* An HTML cell's rendered view (planning/CELL_IDENTITY.md §8) — the
+/* A web cell's two source panels, stacked rather than side by side
+ * (DECISIONS_LOG.md 7.120) — a notebook cell's own column is narrow
+ * enough that two side-by-side editors would each be too cramped to
+ * read comfortably, the same width constraint that already keeps every
+ * other cell type to one editor at a time. */
+.dm-web-split {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.dm-web-pane-label {
+  font-family: var(--dl-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--dl-muted);
+  margin-bottom: 0.25rem;
+}
+
+/* A web cell's rendered view (planning/CELL_IDENTITY.md §8) — the
  * iframe itself carries the sandboxing; this is just its frame on the
  * page. resize:vertical, the same affordance .dm-textarea already gives
  * a Text cell's own editor, so a reader can drag it taller for content
@@ -653,6 +674,7 @@ html[data-dl-panel-right] .dm-page .dl-crumbs {
  * mode, the same reason a code editor's syntax theme does not follow
  * dewlab's light/dark toggle for the *page* it is styling. */
 .dm-html-render[hidden] { display: none; }
+.dm-web-split + .dm-html-render { margin-top: 0.5rem; }
 .dm-html-frame {
   display: block;
   width: 100%;

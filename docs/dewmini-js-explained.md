@@ -43,30 +43,41 @@ carry this same anatomy now too (7.113–7.115), by way of `build.py`'s
 `render_cell()` and `assets/tutorial-runtime.js` rather than this file —
 see `docs/tutorial-runtime-explained.md` for that side.
 
-Three more `CELL_TYPES` values, `html`, `css`, and `sql` (DECISIONS_LOG.md
-7.116/7.117/7.118, `planning/CELL_IDENTITY.md` §8), are dewmini-only —
-three of four new cell types that document designs (SQL, HTML, CSS,
-JavaScript are the full set; JavaScript isn't built yet).
-`createCellElement()`'s HTML branch mirrors Text's shape (an editor, a
-rendered view, the same quiet-until-touched/Edit-View chrome) but a
-CodeMirror editor (`language: "html"`) in place of a plain `<textarea>`,
-and a sandboxed `<iframe sandbox="allow-scripts" srcdoc="…">` in place
-of `innerHTML`-ing rendered markdown straight into the page — Text's own
-click-to-edit gesture on its rendered view cannot work here, since a
-click inside a cross-origin iframe never bubbles out to a listener in
-this document; the header's Edit/View toggle is the one way in. The CSS
-branch is close to a copy of HTML's, with two differences: the language
-mode, and what the iframe's `srcdoc` actually holds — `CSS_PREVIEW_MARKUP`
-(a fixed little "page") with the reader's rule in a `<style>` tag ahead
-of it, rather than the reader's own markup. `READ_NOT_RUN_TYPES` (`text`,
-`html`, `css`) is what the header-end/Edit-View and quiet-until-touched
-logic actually check now, in place of an accumulating `||` chain across
-`cell.type === CELL_TYPES.X` comparisons. `readCells()`'s cell-type
-whitelist generalised to `Object.values(CELL_TYPES)` while HTML was
-built, rather than needing another hand-edit the next time a type is
-added.
+Three more `CELL_TYPES` values are dewmini-only: `web`, `sql`, and
+`javascript` (DECISIONS_LOG.md 7.116–7.120, `planning/CELL_IDENTITY.md`
+§8) — the shipped set, not the four separate types §8 originally
+designed. HTML and CSS shipped as separate types first and were merged
+into one, `web`, once both existed to show the merge was the right call
+(7.120) — this file's own history briefly had separate `HTML`/`CSS`
+members on `CELL_TYPES` and a matching pair of near-identical
+`createCellElement()` branches; neither exists anymore.
 
-The SQL and JavaScript branches look nothing like HTML/CSS's, because
+A web cell's own branch has two CodeMirror editors, HTML and CSS
+(`language: "html"`/`"css"`), both always visible and always editable —
+unlike Text, nothing here ever swaps an editor out for a rendered view,
+so there is no Edit/View toggle to wire up. `READ_NOT_RUN_TYPES`
+narrowed to `text` alone for that reason: it used to gate the
+Edit/View-toggle button (`previewBtn`) for three types, and now only
+Text still wants one. A web cell gets its own separate button instead,
+`renderBtn`, built unconditionally for `CELL_TYPES.WEB` right beside
+where `previewBtn` is built — clicking it (not either editor's own
+`focusout`, the way HTML and CSS separately used to auto-render) reads
+both `cell.content` (HTML) and `cell.style` (CSS, the one field no
+other cell type has) and combines them into one sandboxed `<iframe
+sandbox="allow-scripts" srcdoc="…">`, falling back to
+`CSS_PREVIEW_MARKUP` (a fixed little "page") when the HTML half is
+empty — the old standalone-CSS cell's own use case, preserved.
+`destroyCellEditors(cell)` replaced six separate `cell.editor?.destroy()`
+call sites for this reason: a web cell's second editor lives in
+`cell.cssEditor`, and every place that tears a cell down (deleting it,
+switching notebooks, replacing the whole list) needs to destroy both,
+not just `cell.editor`. `readCells()`'s own migration,
+`migrateLegacyCellType()`, turns a notebook's old standalone `html`/
+`css` cells into independent `web` cells on load — each old cell
+becomes its own new one, never merged with a neighbour; see
+DECISIONS_LOG.md 7.120 for why guessing at a pairing was rejected.
+
+The SQL and JavaScript branches look nothing like a web cell's, because
 neither is a read-not-run type — both run against a shared session, the
 same as Python. `RUNS_AGAINST_SESSION` (`python`, `sql`, `javascript`)
 is the sibling set to `READ_NOT_RUN_TYPES`: every place that used to
@@ -77,8 +88,8 @@ against a session" (the footer/footbar build, `isStale()`,
 `RUNS_AGAINST_SESSION.has(cell.type)` instead, so a SQL or JavaScript
 cell gets the identical run line, Run/Stop button, and staleness
 tracking a Python cell already had, unmodified. Both cells' own
-`createCellElement()` branches are closer to Python's than to HTML/CSS's:
-a bare CodeMirror editor (`language: "sql"`/`"javascript"`), no
+`createCellElement()` branches are closer to Python's than to a web
+cell's: a bare CodeMirror editor (`language: "sql"`/`"javascript"`), no
 rendered/editor toggle at all.
 
 What makes a SQL cell a SQL cell rather than a second Python cell type is

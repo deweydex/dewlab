@@ -646,23 +646,45 @@ def test_a_python_cells_chrome_is_never_hidden(dewmini):
     assert head_opacity(dewmini, cell) == "1"
 
 
-# --------------------------------------------------------------- html cells
+# ---------------------------------------------------------------- web cells
 
 
-def _html_cell(page, markup="<h2>Hi</h2>"):
-    """Adds an HTML cell, types markup into it, and blurs to render —
-    the same shape _quiet_text_cell() uses for Text."""
-    page.locator(".dm-insert-btn", has_text="HTML").last.click()
-    editor = page.locator(".dm-cell-html .cm-content").last
-    editor.click()
-    page.keyboard.insert_text(markup)
-    editor.evaluate("el => el.blur()")
-    return page.locator(".dm-cell-html").last
+def _web_cell(page, html="", css=""):
+    """Adds a web (merged HTML+CSS) cell, types into whichever of its two
+    editors was given content, and clicks Render if there's anything to
+    render — the split-view replacement for the old separate
+    _html_cell()/_css_cell() helpers (DECISIONS_LOG.md 7.120). Both
+    editors are always visible at once, so unlike those helpers there is
+    no blur-to-render step; Render is the one explicit trigger."""
+    page.locator(".dm-insert-btn", has_text="Web").last.click()
+    cell = page.locator(".dm-cell-web").last
+    editors = cell.locator(".cm-content")
+    if html:
+        editors.nth(0).click()
+        page.keyboard.insert_text(html)
+    if css:
+        editors.nth(1).click()
+        page.keyboard.insert_text(css)
+    if html or css:
+        cell.locator(".dm-icon-render").click()
+    return cell
 
 
-def test_an_html_cell_renders_its_markup_in_a_sandboxed_iframe(dewmini):
-    """DECISIONS_LOG.md 7.116, planning/CELL_IDENTITY.md §8."""
-    cell = _html_cell(dewmini, "<h2>Hello from HTML</h2>")
+def test_a_web_cells_two_editors_are_both_always_visible(dewmini):
+    """No Edit/View toggle, unlike the read-not-run types that keep one
+    — both the HTML and the CSS editor stay visible and editable
+    together, the whole point of merging the two old separate cell
+    types (DECISIONS_LOG.md 7.120)."""
+    dewmini.locator(".dm-insert-btn", has_text="Web").last.click()
+    cell = dewmini.locator(".dm-cell-web").last
+    assert cell.locator(".cm-content").count() == 2
+    assert cell.locator(".dm-icon-preview").count() == 0
+    assert cell.locator(".dm-html-render").is_hidden()
+
+
+def test_a_web_cells_html_renders_in_a_sandboxed_iframe(dewmini):
+    """DECISIONS_LOG.md 7.116/7.120, planning/CELL_IDENTITY.md §8."""
+    cell = _web_cell(dewmini, html="<h2>Hello from HTML</h2>")
     frame_el = cell.locator(".dm-html-frame")
     assert frame_el.get_attribute("sandbox") == "allow-scripts"
 
@@ -670,107 +692,72 @@ def test_an_html_cell_renders_its_markup_in_a_sandboxed_iframe(dewmini):
     assert frame.locator("h2").text_content() == "Hello from HTML"
 
 
-def test_an_html_cells_script_cannot_reach_the_parent_page(dewmini):
+def test_a_web_cells_script_cannot_reach_the_parent_page(dewmini):
     """The whole point of sandbox="allow-scripts" with no
     allow-same-origin: a script inside the cell runs, but in an
     opaque-origin document that cannot touch this page's own window,
     localStorage, or DOM — including a cell imported from a shared
     file, not only one the reader wrote themselves."""
-    cell = _html_cell(
+    cell = _web_cell(
         dewmini,
-        '<script>try { window.parent.document.title = "hijacked"; } catch (e) {}</script>',
+        html='<script>try { window.parent.document.title = "hijacked"; } catch (e) {}</script>',
     )
     dewmini.wait_for_timeout(300)
     assert dewmini.title() != "hijacked"
 
 
-def test_editing_an_html_cell_toggles_between_source_and_rendered(dewmini):
-    cell = _html_cell(dewmini)
-    assert cell.locator(".dm-editor").is_hidden()
-    assert cell.locator(".dm-html-render").is_visible()
-
-    hover_cell(dewmini, cell)
-    cell.locator(".dm-icon-preview").click()
-    assert cell.locator(".dm-editor").is_visible()
-    assert cell.locator(".dm-html-render").is_hidden()
-    assert cell.locator(".dm-icon-preview").text_content() == "View"
-
-
-def test_an_html_cells_chrome_is_also_quiet_until_touched(dewmini):
-    cell = _html_cell(dewmini)
-    dewmini.mouse.move(5, 5)
-    assert head_opacity(dewmini, cell) == "0"
-
-    hover_cell(dewmini, cell)
-    assert head_opacity(dewmini, cell) == "1"
-
-
-def test_an_html_cell_survives_a_reload(dewmini):
-    _html_cell(dewmini, "<p>Saved content</p>")
-    dewmini.reload()
-    dewmini.wait_for_selector(".dm-toolbar")
-    assert dewmini.locator(".dm-cell-html").count() == 1
-    frame = dewmini.locator(".dm-cell-html .dm-html-frame").content_frame
-    assert "Saved content" in frame.locator("p").text_content()
-
-
-def test_an_html_cell_can_be_collapsed_and_duplicated(dewmini):
-    cell = _html_cell(dewmini, "<p>Some markup</p>")
-    hover_cell(dewmini, cell)
-    cell.locator(".dm-collapse-toggle").click()
-    assert cell.locator(".dm-cell-content").is_hidden()
-    assert cell.locator(".dm-cell-collapsed-summary").is_visible()
-
-    cell.locator(".dm-icon-duplicate").click()
-    assert dewmini.locator(".dm-cell-html").count() == 2
-
-
-# ---------------------------------------------------------------- css cells
-
-
-def _css_cell(page, rule="h2 { color: rebeccapurple; }"):
-    """Adds a CSS cell, types a rule into it, and blurs to render —
-    same shape as _html_cell()."""
-    page.locator(".dm-insert-btn", has_text="CSS").last.click()
-    editor = page.locator(".dm-cell-css .cm-content").last
-    editor.click()
-    page.keyboard.insert_text(rule)
-    editor.evaluate("el => el.blur()")
-    return page.locator(".dm-cell-css").last
-
-
-def test_a_new_css_cell_starts_in_its_editor(dewmini):
-    """A CSS cell's preview always has *something* to show (the fixed
-    sample markup, styled or not) — but a brand-new cell still opens
-    ready to type, same as every other cell type."""
-    dewmini.locator(".dm-insert-btn", has_text="CSS").last.click()
-    cell = dewmini.locator(".dm-cell-css").last
-    assert cell.locator(".dm-editor").is_visible()
-    assert cell.locator(".dm-html-render").is_hidden()
-
-
-def test_a_css_cells_rule_applies_to_the_fixed_preview(dewmini):
-    """DECISIONS_LOG.md 7.117, planning/CELL_IDENTITY.md §8 — no HTML of
-    the reader's own needed; the preview markup is fixed on purpose."""
-    cell = _css_cell(dewmini, "h2 { color: rebeccapurple; } button { background: gold; }")
+def test_a_web_cells_css_styles_its_own_html(dewmini):
+    """The capability merging the two types unlocks that neither could
+    do alone: a CSS rule styling the *same* cell's own markup, not a
+    fixed sample page — the pairing the old separate CSS cell's own
+    design note explicitly declined to guess at, now not a guess at
+    all (DECISIONS_LOG.md 7.120)."""
+    cell = _web_cell(
+        dewmini,
+        html="<h2>Styled</h2><button>Go</button>",
+        css="h2 { color: rebeccapurple; } button { background: gold; }",
+    )
     frame = cell.locator(".dm-html-frame").content_frame
+    assert frame.locator("h2").text_content() == "Styled"
     assert frame.locator("h2").evaluate("el => getComputedStyle(el).color") == "rgb(102, 51, 153)"
     assert frame.locator("button").evaluate(
         "el => getComputedStyle(el).backgroundColor"
     ) == "rgb(255, 215, 0)"
 
 
-def test_a_css_cell_survives_a_reload(dewmini):
-    _css_cell(dewmini, "h2 { color: rebeccapurple; }")
-    dewmini.reload()
-    dewmini.wait_for_selector(".dm-toolbar")
-    assert dewmini.locator(".dm-cell-css").count() == 1
-    frame = dewmini.locator(".dm-cell-css .dm-html-frame").content_frame
+def test_an_empty_html_half_falls_back_to_the_fixed_preview(dewmini):
+    """A CSS-only web cell — the old standalone CSS cell's own use case
+    — still has something real to style before the reader has written
+    any markup of their own (DECISIONS_LOG.md 7.117/7.120)."""
+    cell = _web_cell(dewmini, css="h2 { color: rebeccapurple; }")
+    frame = cell.locator(".dm-html-frame").content_frame
     assert frame.locator("h2").evaluate("el => getComputedStyle(el).color") == "rgb(102, 51, 153)"
 
 
-def test_a_css_cells_chrome_is_also_quiet_until_touched(dewmini):
-    cell = _css_cell(dewmini)
+def test_rendering_a_web_cell_only_happens_on_render_click(dewmini):
+    """Explicit, not on blur, unlike the two types this replaces — two
+    editors both auto-rendering on their own focusout would fire twice
+    for one edit (DECISIONS_LOG.md 7.120)."""
+    dewmini.locator(".dm-insert-btn", has_text="Web").last.click()
+    cell = dewmini.locator(".dm-cell-web").last
+    editor = cell.locator(".cm-content").first
+    editor.click()
+    dewmini.keyboard.insert_text("<p>Not rendered yet</p>")
+    editor.evaluate("el => el.blur()")
+    assert cell.locator(".dm-html-render").is_hidden()
+
+    cell.locator(".dm-icon-render").click()
+    assert cell.locator(".dm-html-render").is_visible()
+
+
+def test_a_web_cells_chrome_is_also_quiet_until_touched(dewmini):
+    cell = _web_cell(dewmini, html="<p>Hi</p>")
+    # _web_cell() leaves focus inside whichever editor it typed into —
+    # there's no blur-to-render step to do that for it here, unlike the
+    # old _html_cell()/_css_cell() helpers. :focus-within keeps the
+    # chrome visible while focus is still there, correctly, so this has
+    # to move focus away itself before checking quiet-until-touched.
+    dewmini.evaluate("document.activeElement.blur()")
     dewmini.mouse.move(5, 5)
     assert head_opacity(dewmini, cell) == "0"
 
@@ -778,15 +765,60 @@ def test_a_css_cells_chrome_is_also_quiet_until_touched(dewmini):
     assert head_opacity(dewmini, cell) == "1"
 
 
-def test_a_css_cell_can_be_collapsed_and_duplicated(dewmini):
-    cell = _css_cell(dewmini, "p { color: teal; }")
+def test_a_web_cell_survives_a_reload(dewmini):
+    _web_cell(dewmini, html="<p>Saved HTML</p>", css="p { color: teal; }")
+    dewmini.reload()
+    dewmini.wait_for_selector(".dm-toolbar")
+    assert dewmini.locator(".dm-cell-web").count() == 1
+    frame = dewmini.locator(".dm-cell-web .dm-html-frame").content_frame
+    assert "Saved HTML" in frame.locator("p").text_content()
+    assert frame.locator("p").evaluate("el => getComputedStyle(el).color") == "rgb(0, 128, 128)"
+
+
+def test_a_web_cell_can_be_collapsed_and_duplicated(dewmini):
+    cell = _web_cell(dewmini, html="<p>Some markup</p>")
     hover_cell(dewmini, cell)
     cell.locator(".dm-collapse-toggle").click()
     assert cell.locator(".dm-cell-content").is_hidden()
     assert cell.locator(".dm-cell-collapsed-summary").is_visible()
 
     cell.locator(".dm-icon-duplicate").click()
-    assert dewmini.locator(".dm-cell-css").count() == 2
+    assert dewmini.locator(".dm-cell-web").count() == 2
+
+
+def test_old_html_and_css_cells_migrate_to_web_cells_on_load(dewmini):
+    """A notebook saved before 7.120 could hold standalone `html`/`css`
+    cells — both retired in favour of the merged `web` type. Each old
+    cell becomes its own new `web` cell independently: an old HTML
+    cell's markup becomes the new cell's HTML half with an empty CSS
+    half, and vice versa — never merged into one cell, since guessing
+    which HTML an old CSS cell was written to style is exactly the
+    ambiguity DECISIONS_LOG.md 7.120 declines to resolve."""
+    dewmini.evaluate(
+        """() => {
+            localStorage.setItem("dewmini:notebooks:v1", JSON.stringify({
+                active: "nb-1",
+                notebooks: [{
+                    id: "nb-1", name: "Notebook",
+                    cells: [
+                        { id: "c1", type: "html", content: "<p>Old HTML cell</p>", output: "", error: false },
+                        { id: "c2", type: "css", content: "h2 { color: rebeccapurple; }", output: "", error: false },
+                    ],
+                }],
+            }));
+        }"""
+    )
+    dewmini.reload()
+    dewmini.wait_for_selector(".dm-toolbar")
+
+    cells = dewmini.locator(".dm-cell-web")
+    assert cells.count() == 2
+
+    first_frame = cells.nth(0).locator(".dm-html-frame").content_frame
+    assert "Old HTML cell" in first_frame.locator("p").text_content()
+
+    second_frame = cells.nth(1).locator(".dm-html-frame").content_frame
+    assert second_frame.locator("h2").evaluate("el => getComputedStyle(el).color") == "rgb(102, 51, 153)"
 
 
 # ---------------------------------------------------------------- sql cells

@@ -126,10 +126,12 @@ show a single line reporting what happened last:
   times a second would be noise, not information, for anyone using a
   screen reader.
 
-Cell types that never run against the session — Text, HTML, CSS-as-styling
-— have nothing to report here and show no run line at all
-(`RUNS_AGAINST_SESSION = {python, sql}` in the mockup). A cell that
-cannot be stale should not have a line implying it could be.
+Cell types that never run against the session — Text, and Web
+(§8's merged HTML+CSS type, 7.120) — have nothing to report here and
+show no run line at all (`RUNS_AGAINST_SESSION = {python, sql}` in the
+mockup, predating both SQL's own build and the HTML/CSS merge; the
+shipped set is `{python, sql, javascript}` — §8). A cell that cannot be
+stale should not have a line implying it could be.
 
 ## 4. What differs by cell type, and why
 
@@ -137,44 +139,51 @@ Not every cell needs every affordance, and giving one to a cell that
 can't use it is worse than simply leaving it off — it invites a reader
 to wonder what it does. Four things vary by type:
 
-| | Python | SQL | HTML | CSS | JavaScript | Text |
-|---|---|---|---|---|---|---|
-| Numbered, coloured pill | yes | yes | yes | yes | yes | yes |
-| Drag target | yes | yes | yes | yes | yes | yes |
-| Header-end: Duplicate, Delete | yes | yes | yes | yes | yes | yes |
-| Run line (order/duration/stale) | yes | yes | — | — | yes | — |
-| Collapse triangle | yes | yes | **yes** | **yes** | yes | yes |
-| Edit / View toggle | — | — | yes | yes | — | yes |
-| Quiet until touched | — | — | yes | yes | — | yes |
+| | Python | SQL | Web | JavaScript | Text |
+|---|---|---|---|---|---|
+| Numbered, coloured pill | yes | yes | yes | yes | yes |
+| Drag target | yes | yes | yes | yes | yes |
+| Header-end: Duplicate, Delete | yes | yes | yes | yes | yes |
+| Run line (order/duration/stale) | yes | yes | — | yes | — |
+| Collapse triangle | yes | yes | yes | yes | yes |
+| Edit / View toggle | — | — | — | — | yes |
+| Render button | — | — | yes | — | — |
+| Quiet until touched | — | — | yes | — | yes |
 
-Collapse settled as "every type" once Text actually shipped it (§4's own
-amendment, just below); §8 settles the rest, including JavaScript, which
-this table never covered until it existed to design against.
+Five columns, not six — HTML and CSS shipped as separate types first
+(7.116, 7.117) and were later merged into one, Web (7.120); read §8's
+own "Two types become one" note for why. Collapse settled as "every
+type" once Text actually shipped it (§4's own amendment, just below);
+§8 settles the rest, including JavaScript, which this table never
+covered until it existed to design against.
 
 **Header-end** is Duplicate and Delete, on every cell, plus an Edit
-toggle for Text and HTML only — settled on while building 7.110, not
-fully spelled out when this table was first written. Duplicate inserts
-a copy of the cell right after itself, same type and code, no run
-history: a starting point for a variation, not a claim that the copy
-already ran.
+toggle for Text only, and a Render button for Web only — settled on
+while building 7.110 (Edit) and 7.120 (Render), not fully spelled out
+when this table was first written. Duplicate inserts a copy of the cell
+right after itself, same type and code, no run history: a starting
+point for a variation, not a claim that the copy already ran.
 
 **Collapse, amended: every cell type gets it, code-bearing or not (built
-this way in dewmini, 7.110).** The reasoning below explains why HTML
-doesn't need it — a rendered form already exists to shrink to — but a
-Text cell caught in *edit* mode has no such fallback, and "shrink this
-out of the way without deleting it" is exactly as true for a long note
-as for a long function. HTML may still turn out not to need one, once it
-exists; Text does.
+this way in dewmini, 7.110).** The reasoning below explains why a
+read-not-run type doesn't strictly need it — a rendered form already
+exists to shrink to — but a Text cell caught in *edit* mode has no such
+fallback, and "shrink this out of the way without deleting it" is
+exactly as true for a long note as for a long function.
 
-**Edit/View, and staying quiet until touched,** belong to Text and HTML
-only — the two types meant to be *read*, not run. Like a Markdown cell in
-any other notebook tool, they render by default and hide their source
-until a reader deliberately asks for it (a click to reveal the chrome, a
-double-click to edit) rather than sitting open and code-shaped among
-cells that are. Their controls are not removed while quiet, only made
-invisible — `opacity: 0; pointer-events: none`, not `display: none` — so
-a keyboard user tabbing through the page can still reach and open them;
-only a mouse user actually needs to hover first.
+**Edit/View belongs to Text alone now — a further amendment past what
+this table first said.** HTML had it too, when HTML was still its own
+type: a click revealing the source behind a rendered view. Web, the
+type that replaced it, has no toggle at all, because it has nothing to
+toggle *between* — both its editors (HTML, CSS) are always visible and
+always editable at once, never swapped out for a rendered view the way
+Text's editor is. **Quiet until touched still belongs to both Text and
+Web**, unchanged: both render by default and hide their chrome until a
+reader deliberately touches the cell, rather than sitting open and
+code-shaped among cells that are. Controls are not removed while quiet,
+only made invisible — `opacity: 0; pointer-events: none`, not `display:
+none` — so a keyboard user tabbing through the page can still reach and
+open them; only a mouse user actually needs to hover first.
 
 ## 5. Where the controls sit
 
@@ -222,22 +231,28 @@ carrying the state rather than its shape.
   `restartPython()` (7.108) turned out to be exactly the groundwork this
   needed, unchanged.
 - **SQL, HTML, CSS, JavaScript: designed in §8, built from there outward,
-  in dewmini only, one type at a time. All four are built now — HTML
-  (7.116), CSS (7.117), SQL (7.118), JavaScript (7.119).** This
-  document's own multi-type table was a design for when they exist, not
-  a claim that they do — §8 is where "when they exist" turns into an
-  actual execution model per type, since the table alone only ever
-  answered *what chrome a cell gets*, never *what running one does*.
-  `--dl-type-python`/`--dl-type-text` were the only colour tokens
-  defined until §8 added four more, all four now in real use. Two of
-  §8's own entries changed underneath it before their type was actually
-  built, both caught by starting the work rather than only reasoning
-  about the design on paper: SQL's *sql.js* engine was set aside for
-  Python's own `sqlite3` (7.118); JavaScript's own `<script>`-tag
-  execution model was set aside for indirect `eval`, once re-running an
-  edited `let`-declaring cell turned out to throw under the original
-  plan (7.119). Both subsections read as revised rather than as first
-  written for that reason.
+  in dewmini only, one type at a time. All four shipped — HTML (7.116),
+  CSS (7.117), SQL (7.118), JavaScript (7.119) — and HTML and CSS were
+  then merged into one type, Web (7.120).** This document's own
+  multi-type table was a design for when they exist, not a claim that
+  they do — §8 is where "when they exist" turns into an actual execution
+  model per type, since the table alone only ever answered *what chrome
+  a cell gets*, never *what running one does*. `--dl-type-python`/
+  `--dl-type-text` were the only colour tokens defined until §8 added
+  four more; Web kept HTML's own token rather than needing a fifth.
+  §4's own table is five columns now, not six, for the same reason.
+  Three of §8's own entries changed underneath it before or after their
+  type was actually built, each caught by starting the work (or living
+  with it once built) rather than only reasoning about the design on
+  paper: SQL's *sql.js* engine was set aside for Python's own `sqlite3`
+  (7.118); JavaScript's own `<script>`-tag execution model was set aside
+  for indirect `eval`, once re-running an edited `let`-declaring cell
+  turned out to throw under the original plan (7.119); HTML and CSS's
+  own separate-type design was set aside for one merged type once both
+  existed to show that a CSS cell styling a fixed sample page forever,
+  and an HTML cell with no CSS of its own at all, were each half of one
+  idea (7.120). All three subsections read as revised rather than as
+  first written for that reason.
 - **Tutorial and practice pages: the pill and the run line are now ported
   too (7.113).** 7.109 ported the run-line-adjacent pieces (staleness,
   run above/below, restart & run all) onto `build.py`'s
@@ -314,45 +329,62 @@ violet, CSS blue, JavaScript rose: four hues that read as distinct from
 each other, from Python's orange, and from error red/pass green, in
 either theme.
 
-### HTML
+### Web (HTML + CSS)
 
-Renders live, the way a Text cell renders Markdown — but raw HTML
-cannot share Text's `innerHTML`-into-the-page approach safely, because
-dewmini already has an import path (Settings → Load a shared cell/
-notebook) that can bring in a `<script>` a reader didn't write
-themselves. It renders inside a sandboxed `<iframe srcdoc="…">
-sandbox="allow-scripts">` instead — no `allow-same-origin`, so anything
-inside it, script included, cannot reach the rest of the page, this
-cell's own `localStorage`, or any other cell, regardless of who wrote
-it. The iframe gets a generous default height and `resize: vertical` so
-a reader can drag it taller for content that needs it, rather than the
-page reaching into a cross-origin frame to measure its content height
-(which the same sandboxing that keeps it safe also makes impossible
-without an explicit `postMessage` handshake — not worth the complexity
-for a first version).
+Originally two separate types, each with its own subsection here — read
+that history in the "Two types become one" note below if you want it.
+This section describes the merged design that actually shipped
+(`CELL_TYPES.WEB`, DECISIONS_LOG.md 7.120), not the two-type one that
+came before it.
 
-Chrome: pill, Duplicate/Delete, collapse, Edit/View, quiet until
-touched — the same full Text-shaped set §4's table already gives HTML,
-now that "once it exists" (§4's own hedge on HTML's collapse) is true.
-No run line: rendering isn't running against a session, and a cell that
-cannot go stale should not have a line implying it could.
+A web cell has two editors, HTML and CSS, both always visible and both
+always editable — never one swapped out for the other the way a Text
+cell's rendered view swaps out for its editor. Rendering is the header's
+own explicit Render button rather than something either editor triggers
+on its own: two editors both auto-rendering on blur, the way HTML and
+CSS separately used to, would fire the same preview update twice for one
+edit, and would show a reader tabbing from one editor to the other a
+half-finished render flash by in between. Render combines both halves
+into one sandboxed `<iframe srcdoc="…" sandbox="allow-scripts">` — no
+`allow-same-origin`, so anything inside it, script included, cannot
+reach the rest of the page, this cell's own `localStorage`, or any other
+cell, regardless of who wrote it (the reasoning is unchanged from when
+HTML was its own type: dewmini already has an import path, Settings →
+Load a shared cell/notebook, that can bring in a `<script>` a reader
+didn't write themselves). The iframe gets a generous default height and
+`resize: vertical`, same as before.
 
-### CSS
+**The pairing the old separate CSS cell's own design explicitly declined
+to guess at is no longer a guess.** That subsection's own reasoning — "CSS
+styling an HTML cell right above it… would make a CSS cell's behaviour
+depend on cell order and type" — assumed two *different* cells, where
+"which HTML is this CSS for" has no answer nothing else in dewmini's
+model already gives. One cell with both halves has an unambiguous
+answer: its own HTML. An empty HTML half still falls back to
+`CSS_PREVIEW_MARKUP` (the fixed little "page" the old standalone CSS
+cell always rendered against), so a reader who has only written a rule
+still has something real to see it styling.
 
-The obvious pairing — CSS styling an HTML cell right above it — was
-considered and set aside: it would make a CSS cell's behaviour depend on
-cell order and type in a way nothing else in dewmini's model does (a
-Python cell reads the *shared namespace*, never "whatever cell happens
-to sit above it"). Instead a CSS cell renders its own small, fixed
-preview — a heading, a paragraph, a button, a list, a link — inside the
-same kind of sandboxed iframe HTML uses, with the reader's CSS in a
-`<style>` tag ahead of that markup. Self-contained, live-updated as the
-reader types (debounced, the same rhythm autosave already uses), and
-exactly as functional as a standalone "try CSS" tool needs to be.
+Chrome: pill, Duplicate/Delete, Render, collapse, quiet until touched —
+close to the full Text-shaped set §4's table gives HTML/CSS, minus the
+Edit/View toggle: with nothing ever swapped out for anything else, there
+is nothing for a toggle to switch between. No run line: rendering isn't
+running against a session, and a cell that cannot go stale should not
+have a line implying it could.
 
-Chrome: same as HTML — pill, Duplicate/Delete, collapse, Edit/View,
-quiet until touched, no run line. A CSS cell is read (the rule) and seen
-(the preview), never run against anything shared.
+**Two types become one (DECISIONS_LOG.md 7.120).** HTML and CSS shipped
+as separate types first (7.116, 7.117) and were merged after — not a
+bug fix the way SQL's and JavaScript's own revisions were, but a design
+improvement raised directly by dewlab's own maintainer once both types
+existed to see in use: a CSS cell that could never style anything but a
+fixed sample page, and an HTML cell with no CSS of its own at all, were
+each half of one idea rather than two complete ones. A notebook saved
+under the old two-type model still loads: each standalone `html`/`css`
+cell becomes its own new web cell independently (an old HTML cell's
+markup becomes the new cell's HTML half with an empty CSS half, and
+symmetrically for CSS) — never merged into one cell, since guessing
+which HTML an old CSS cell was written to style is exactly the ambiguity
+the design above was built to no longer need.
 
 ### SQL
 
@@ -523,6 +555,12 @@ inside it safely across repeated re-runs — see this section's own
 "Built on indirect `eval`" entry above for the redeclaration bug that
 caught, and the persistence trade-off (`var`/`function` only, not
 `let`/`const`) it settled on.
+
+**Fifth, after all four existed: HTML and CSS merged into one type,
+Web.** Not part of the original build order above — those two
+subsections' own "Two types become one" note (7.120) explains why the
+merge happened once both types existed to show it was the right call,
+not something either subsection's own design work missed at the time.
 
 Not attempted here, on purpose: none of the four get a drag-and-drop
 keyboard equivalent (§6 already flags this as owed to every cell type,

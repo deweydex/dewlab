@@ -38,15 +38,18 @@ const DM_PACKAGES = ["numpy", "pandas", "matplotlib", "sqlite3", "Pillow"];
 // file the reader actually saved and sent to someone.
 const DM_NETWORK_PATCH = "try:\n    import pyodide_http\n    pyodide_http.patch_all()\nexcept Exception:\n    pass\n";
 
-const CELL_TYPES = { PYTHON: "python", TEXT: "text", HTML: "html", CSS: "css", SQL: "sql", JAVASCRIPT: "javascript" };
+const CELL_TYPES = { PYTHON: "python", TEXT: "text", WEB: "web", SQL: "sql", JAVASCRIPT: "javascript" };
 
-/* The fixed little "page" a CSS cell's own preview renders — a heading, a
- * paragraph with a link, a button, a list: enough ordinary elements that a
- * reader's own selectors (h2, p, a, button, li, …) land on something real,
- * without asking them to write any HTML of their own first
- * (planning/CELL_IDENTITY.md §8's own reasoning for why a CSS cell doesn't
- * simply style the HTML cell above it — that would make its behaviour
- * depend on cell order, which nothing else in dewmini's model does). */
+/* The fixed little "page" a web cell's own preview falls back to when its
+ * HTML half is empty — a heading, a paragraph with a link, a button, a
+ * list: enough ordinary elements that a reader's own CSS selectors (h2,
+ * p, a, button, li, …) land on something real, without asking them to
+ * write any HTML of their own first (planning/CELL_IDENTITY.md §8's own
+ * reasoning for why a CSS rule doesn't simply style whatever markup sits
+ * above it in a *different* cell — that would make its behaviour depend
+ * on cell order, which nothing else in dewmini's model does; a web cell
+ * folding both halves into one cell, DECISIONS_LOG.md 7.120, sidesteps
+ * the question rather than answering it differently). */
 const CSS_PREVIEW_MARKUP = `<h2>Heading</h2>
 <p>A paragraph of text, with a <a href="#">link</a> inside it.</p>
 <button>A button</button>
@@ -54,12 +57,17 @@ const CSS_PREVIEW_MARKUP = `<h2>Heading</h2>
 const IMPORTS_SNIPPET = "import numpy as np\nimport pandas as pd\nimport matplotlib.pyplot as plt\n";
 
 /* The cell types meant to be read, not run — rendered by default, with
- * an explicit Edit/View toggle and chrome that stays quiet until
- * touched (planning/CELL_IDENTITY.md §4/§8). Python, SQL, and
- * JavaScript sit outside this set: all three run against a shared
- * session, so all three keep Python-shaped chrome (a run line, not a
- * rendered/editor toggle) — see RUNS_AGAINST_SESSION below. */
-const READ_NOT_RUN_TYPES = new Set([CELL_TYPES.TEXT, CELL_TYPES.HTML, CELL_TYPES.CSS]);
+ * chrome that stays quiet until touched (planning/CELL_IDENTITY.md
+ * §4/§8). Python, SQL, and JavaScript sit outside this set: all three
+ * run against a shared session, so all three keep Python-shaped chrome
+ * (a run line, not a rendered view) — see RUNS_AGAINST_SESSION below.
+ * Text is the only member with an actual Edit/View toggle now — a web
+ * cell's own HTML and CSS editors are always both visible
+ * (DECISIONS_LOG.md 7.120), so there is nothing for a toggle to switch
+ * between; this Set still exists for Text alone rather than being
+ * inlined as a single `=== CELL_TYPES.TEXT` check, since a future
+ * read-not-run type may want the same toggle Text already has. */
+const READ_NOT_RUN_TYPES = new Set([CELL_TYPES.TEXT]);
 
 /* The cell types that run against a shared session and so get
  * Python-shaped chrome: a run line, a Run/Stop button, "Clear output",
@@ -168,8 +176,31 @@ function generateId() {
 function readCells(saved) {
   if (!Array.isArray(saved)) return [];
   return saved
-    .filter((c) => c && c.id && Object.values(CELL_TYPES).includes(c.type))
-    .map((c) => ({ id: c.id, type: c.type, content: c.content || "", output: c.output || "", error: !!c.error, collapsed: !!c.collapsed }));
+    .filter((c) => c && c.id)
+    .map(migrateLegacyCellType)
+    .filter((c) => Object.values(CELL_TYPES).includes(c.type))
+    .map((c) => ({
+      id: c.id, type: c.type, content: c.content || "", style: c.style || "",
+      output: c.output || "", error: !!c.error, collapsed: !!c.collapsed,
+    }));
+}
+
+/* A notebook saved before 7.120 could hold standalone `html`/`css`
+ * cells — both retired in favour of one merged type, CELL_TYPES.WEB,
+ * with an HTML half (`content`, same field every other type already
+ * uses) and a CSS half (`style`). Each old cell becomes its own new
+ * `web` cell, independently: an old HTML cell's markup becomes the new
+ * cell's `content` with an empty `style`; an old CSS cell's rule
+ * becomes the new cell's `style` with an empty `content`. Two old cells
+ * a reader had built as a matching pair are *not* merged into one —
+ * guessing which HTML an old CSS cell was written to style is exactly
+ * the ambiguity a real fix would need to resolve, and nothing here
+ * attempts it; the reader's own two cells just both become `web` cells,
+ * each exactly where it already was. */
+function migrateLegacyCellType(c) {
+  if (c.type === "html") return { ...c, type: CELL_TYPES.WEB, content: c.content || "", style: "" };
+  if (c.type === "css") return { ...c, type: CELL_TYPES.WEB, content: "", style: c.content || "" };
+  return c;
 }
 
 /* A notebook with nothing in it yet. Named rather than numbered-only so a
@@ -254,17 +285,18 @@ let warnedDroppedOutputs = 0;
  * Returns false when it did not fit (or when storage is unavailable at
  * all, as in a browser with site data blocked), true when it did.
  *
- * Note the `.map(({ id, type, content, output, error }) => ({...}))`
+ * Note the `.map(({ id, type, content, style, output, error }) => ({...}))`
  * step: by the time a cell has been rendered, it also carries live things
  * like `.editor` (a CodeMirror instance) and `.outputEl` (a DOM element)
  * — objects that `JSON.stringify` can't handle (they contain circular
  * references back to themselves) and that don't belong in storage anyway,
  * since they get rebuilt fresh every time the notebook renders. This
  * picks out only the plain-data fields worth keeping — build a fresh
- * plain object rather than serializing the live one directly. */
+ * plain object rather than serializing the live one directly. `style` is
+ * a Web cell's CSS half; every other type simply never sets it. */
 function writeSavedState(skipOutputFor) {
-  const plainCells = (list) => list.map(({ id, type, content, output, error, collapsed }) => ({
-    id, type, content,
+  const plainCells = (list) => list.map(({ id, type, content, style, output, error, collapsed }) => ({
+    id, type, content, style: style || "",
     output: skipOutputFor.has(id) ? "" : (output || ""),
     error: !!error,
     collapsed: !!collapsed
@@ -407,7 +439,7 @@ function showNotebook(id) {
   const target = notebooks.find((nb) => nb.id === id);
   if (!target) return;
   flushFileEditor();
-  cells.forEach((c) => c.editor?.destroy());
+  cells.forEach(destroyCellEditors);
   activeNotebookId = id;
   cells = target.cells;
   saveState();
@@ -421,7 +453,7 @@ function showNotebook(id) {
 /* Adds a notebook and switches to it — the shared tail of "+ New", an
  * import, and anything else that arrives as a whole notebook. */
 function openNotebook(notebook) {
-  cells.forEach((c) => c.editor?.destroy());
+  cells.forEach(destroyCellEditors);
   notebooks.push(notebook);
   activeNotebookId = notebook.id;
   cells = notebook.cells;
@@ -443,7 +475,7 @@ function closeNotebook(id) {
   const notebook = notebooks[index];
   if (notebook.cells.length && !confirm(`Close "${notebook.name}"? Its ${notebook.cells.length} cell${notebook.cells.length === 1 ? "" : "s"} will be gone.`)) return;
 
-  if (id === activeNotebookId) cells.forEach((c) => c.editor?.destroy());
+  if (id === activeNotebookId) cells.forEach(destroyCellEditors);
   notebooks.splice(index, 1);
   if (id === activeNotebookId) {
     const next = notebooks[Math.min(index, notebooks.length - 1)];
@@ -523,8 +555,8 @@ function renderTabs() {
  * used everywhere in this file that changes `cells`: update the array,
  * save it, re-render the page to match, then focus the thing that
  * changed. */
-function insertCellAt(index, type, content = "") {
-  const cell = { id: generateId(), type, content, output: "", error: false };
+function insertCellAt(index, type, content = "", style = "") {
+  const cell = { id: generateId(), type, content, style, output: "", error: false };
   cells.splice(index, 0, cell);
   saveState();
   renderCells();
@@ -534,8 +566,8 @@ function insertCellAt(index, type, content = "") {
 /* Adds a cell at the very end — what the toolbar's own "+ Python"/"+ Text"
  * buttons call, as opposed to insertCellAt() directly for an in-between
  * insert. */
-function addCell(type, content = "") {
-  insertCellAt(cells.length, type, content);
+function addCell(type, content = "", style = "") {
+  insertCellAt(cells.length, type, content, style);
 }
 
 /* A small, real tour rather than placeholder text — print, an expression,
@@ -556,10 +588,22 @@ const EXAMPLE_CELLS = [
   },
 ];
 
+/* Destroys every CodeMirror editor a cell owns — `.editor` always, plus
+ * `.cssEditor` for a web cell's second (CSS) pane (DECISIONS_LOG.md
+ * 7.120). A CodeMirror instance holds its own DOM and listeners that
+ * removing the wrapping element alone doesn't clean up, so every place
+ * that gets rid of a cell — deleting it, switching notebooks, replacing
+ * the whole list — has to call this rather than reach for `.editor`
+ * directly, or a web cell would leak its CSS editor's own instance. */
+function destroyCellEditors(cell) {
+  cell.editor?.destroy();
+  cell.cssEditor?.destroy();
+}
+
 async function loadExampleCells() {
   if (cells.length && !confirm("Replace the current cells with the example? This can't be undone.")) return;
-  cells.forEach((c) => c.editor?.destroy());
-  setCells(EXAMPLE_CELLS.map((c) => ({ id: generateId(), type: c.type, content: c.content, output: "", error: false })));
+  cells.forEach(destroyCellEditors);
+  setCells(EXAMPLE_CELLS.map((c) => ({ id: generateId(), type: c.type, content: c.content, style: c.style || "", output: "", error: false })));
   saveState();
   renderCells();
   updateStatus("Example loaded — running it now…");
@@ -597,14 +641,14 @@ function disarmDeleteButton(btn) {
   btn.title = "Delete this cell";
 }
 
-/* Removes a cell. `.editor?.destroy()` matters: CodeMirror editors hold
+/* Removes a cell. destroyCellEditors() matters: CodeMirror editors hold
  * their own internal state and DOM listeners, and simply removing the
  * wrapping element from the page wouldn't clean those up on its own —
  * calling `.destroy()` first releases them properly. */
 function deleteCell(id) {
   const idx = cells.findIndex((c) => c.id === id);
   if (idx === -1) return;
-  cells[idx].editor?.destroy();
+  destroyCellEditors(cells[idx]);
   cells.splice(idx, 1);
   saveState();
   renderCells();
@@ -623,6 +667,7 @@ function duplicateCell(id) {
     id: generateId(),
     type: original.type,
     content: original.content,
+    style: original.style || "",
     output: "",
     error: false,
     collapsed: !!original.collapsed,
@@ -1164,19 +1209,12 @@ function createInsertDivider(index) {
   addTxt.innerHTML = '<span class="dm-tool-icon dm-tool-icon-text" aria-hidden="true"></span>Text';
   addTxt.addEventListener("click", () => insertCellAt(index, CELL_TYPES.TEXT));
 
-  const addHtml = document.createElement("button");
-  addHtml.type = "button";
-  addHtml.className = "dm-insert-btn";
-  addHtml.title = "Insert an HTML cell here";
-  addHtml.innerHTML = '<span class="dm-tool-icon dm-tool-icon-html" aria-hidden="true"></span>HTML';
-  addHtml.addEventListener("click", () => insertCellAt(index, CELL_TYPES.HTML));
-
-  const addCss = document.createElement("button");
-  addCss.type = "button";
-  addCss.className = "dm-insert-btn";
-  addCss.title = "Insert a CSS cell here";
-  addCss.innerHTML = '<span class="dm-tool-icon dm-tool-icon-css" aria-hidden="true"></span>CSS';
-  addCss.addEventListener("click", () => insertCellAt(index, CELL_TYPES.CSS));
+  const addWeb = document.createElement("button");
+  addWeb.type = "button";
+  addWeb.className = "dm-insert-btn";
+  addWeb.title = "Insert an HTML+CSS cell here";
+  addWeb.innerHTML = '<span class="dm-tool-icon dm-tool-icon-html" aria-hidden="true"></span>Web';
+  addWeb.addEventListener("click", () => insertCellAt(index, CELL_TYPES.WEB));
 
   const addSql = document.createElement("button");
   addSql.type = "button";
@@ -1192,7 +1230,7 @@ function createInsertDivider(index) {
   addJs.innerHTML = '<span class="dm-tool-icon dm-tool-icon-js" aria-hidden="true"></span>JS';
   addJs.addEventListener("click", () => insertCellAt(index, CELL_TYPES.JAVASCRIPT));
 
-  actions.append(addPy, addTxt, addHtml, addCss, addSql, addJs);
+  actions.append(addPy, addTxt, addWeb, addSql, addJs);
   row.append(line, actions);
   return row;
 }
@@ -1446,7 +1484,7 @@ function createCellElement(cell) {
   pill.title = "Click, hold, and drag — or tap and hold, then drag — to move this cell.";
   const PILL_LABELS = {
     [CELL_TYPES.PYTHON]: "Python", [CELL_TYPES.TEXT]: "Text",
-    [CELL_TYPES.HTML]: "HTML", [CELL_TYPES.CSS]: "CSS", [CELL_TYPES.SQL]: "SQL",
+    [CELL_TYPES.WEB]: "HTML/CSS", [CELL_TYPES.SQL]: "SQL",
     [CELL_TYPES.JAVASCRIPT]: "JavaScript",
   };
   pill.innerHTML =
@@ -1476,6 +1514,19 @@ function createCellElement(cell) {
     previewBtn.type = "button";
     previewBtn.className = "dm-icon-btn dm-icon-preview";
     headerEnd.appendChild(previewBtn);
+  }
+  // A web cell's own explicit render trigger (DECISIONS_LOG.md 7.120) —
+  // filled in by that branch below, same "built here so it sits in the
+  // header row regardless of where the branch runs" reasoning as
+  // insertDocImage above, since it needs closures that only exist there.
+  let renderBtn = null;
+  if (cell.type === CELL_TYPES.WEB) {
+    renderBtn = document.createElement("button");
+    renderBtn.type = "button";
+    renderBtn.className = "dm-icon-btn dm-icon-render";
+    renderBtn.textContent = "Render";
+    renderBtn.title = "Render this cell's HTML and CSS together";
+    headerEnd.appendChild(renderBtn);
   }
   // Attaching an image from disk only makes sense for a Text cell's own
   // markdown-image syntax — an HTML cell's reader can already write an
@@ -1670,10 +1721,37 @@ function createCellElement(cell) {
 
     if (cell.content.trim()) showRendered();
     else syncPreviewBtn();
-  } else if (cell.type === CELL_TYPES.HTML) {
-    const editorEl = document.createElement("div");
-    editorEl.className = "dm-editor";
-    contentRegion.appendChild(editorEl);
+  } else if (cell.type === CELL_TYPES.WEB) {
+    // The merged replacement for the old separate HTML and CSS cell
+    // types (DECISIONS_LOG.md 7.120) — one cell, two source panels,
+    // stacked, and a rendered preview below both. Unlike the types it
+    // replaces, both editors are always visible and always editable —
+    // nothing is ever swapped out for anything else — so there is no
+    // Edit/View toggle here despite the shared quiet-until-touched
+    // chrome (`.dm-cell-web` sits in that CSS rule alongside
+    // `.dm-cell-text`). Rendering is instead the header's own explicit
+    // Render button (renderBtn, built above): two editors both
+    // auto-rendering on their own focusout, the way HTML and CSS used to
+    // separately, would fire the same preview update twice for one edit,
+    // and would mean a reader tabbing from one editor into the other
+    // sees a half-finished render flash by in between.
+    const split = document.createElement("div");
+    split.className = "dm-web-split";
+
+    const htmlLabel = document.createElement("div");
+    htmlLabel.className = "dm-web-pane-label";
+    htmlLabel.textContent = "HTML";
+    const htmlEditorEl = document.createElement("div");
+    htmlEditorEl.className = "dm-editor";
+
+    const cssLabel = document.createElement("div");
+    cssLabel.className = "dm-web-pane-label";
+    cssLabel.textContent = "CSS";
+    const cssEditorEl = document.createElement("div");
+    cssEditorEl.className = "dm-editor";
+
+    split.append(htmlLabel, htmlEditorEl, cssLabel, cssEditorEl);
+    contentRegion.appendChild(split);
 
     const renderEl = document.createElement("div");
     renderEl.className = "dm-html-render";
@@ -1693,118 +1771,45 @@ function createCellElement(cell) {
     const iframe = document.createElement("iframe");
     iframe.className = "dm-html-frame";
     iframe.setAttribute("sandbox", "allow-scripts");
-    iframe.title = `Cell ${cellNumber}'s rendered HTML`;
+    iframe.title = `Cell ${cellNumber}'s rendered page`;
     renderEl.appendChild(iframe);
 
-    const syncPreviewBtn = () => {
-      const editing = !editorEl.hidden;
-      previewBtn.textContent = editing ? "View" : "Edit";
-      previewBtn.title = editing ? "Show this cell rendered" : "Edit this cell's HTML";
-    };
-    const showEditor = () => {
-      editorEl.hidden = false;
-      renderEl.hidden = true;
-      editor.focus();
-      syncPreviewBtn();
-    };
-    const showRendered = () => {
-      if (!cell.content.trim()) return; // nothing to render — keep it open for typing
-      iframe.srcdoc = cell.content;
+    // An empty HTML half falls back to CSS_PREVIEW_MARKUP — the same
+    // fixed little "page" the old standalone CSS cell always rendered
+    // against — so a reader who has only written a rule still has
+    // something real to see it styling, before they've written any
+    // markup of their own.
+    const render = () => {
+      const html = cell.content.trim() ? cell.content : CSS_PREVIEW_MARKUP;
+      iframe.srcdoc = `<style>${cell.style}</style>${html}`;
       renderEl.hidden = false;
-      editorEl.hidden = true;
-      syncPreviewBtn();
     };
 
-    const editor = createCodeEditor(editorEl, cell.content, {
+    const htmlEditor = createCodeEditor(htmlEditorEl, cell.content, {
       dark: isDarkNow(),
       language: "html",
       onChange: (text) => { cell.content = text; saveState(); },
     });
-    cell.editor = editor;
-    // focusout, not CodeMirror's own updateListener: it fires once focus
-    // has actually left the editor's DOM subtree (relatedTarget is the
-    // element gaining focus), the same "genuinely done editing" signal a
-    // textarea's own blur gives Text cells — CodeMirror's editable
-    // element does not dispatch a native blur/focusout of its own that
-    // bubbles the way a textarea's does, so this listens one level up.
-    editorEl.addEventListener("focusout", (e) => {
-      if (!editorEl.contains(e.relatedTarget)) showRendered();
-    });
-
-    // No click-to-edit on the rendered view itself, unlike Text — a click
-    // inside the iframe is a click inside a different document, and
-    // cross-document clicks don't bubble out to this page's listeners.
-    // The header's own Edit/View toggle (revealed by hover, same as any
-    // other quiet chrome) is the one way in.
-    previewBtn.addEventListener("mousedown", (e) => e.preventDefault());
-    previewBtn.addEventListener("click", (e) => {
-      e.stopPropagation();
-      if (editorEl.hidden) showEditor(); else showRendered();
-    });
-
-    if (cell.content.trim()) showRendered();
-    else syncPreviewBtn();
-  } else if (cell.type === CELL_TYPES.CSS) {
-    // Same mechanism as HTML — a CodeMirror source editor, a sandboxed
-    // iframe standing in for the rendered view, the same Edit/View
-    // toggle — the only two differences are the language mode and what
-    // goes in the iframe: CSS_PREVIEW_MARKUP (a fixed little "page") with
-    // the reader's own rule in a <style> tag ahead of it, rather than the
-    // reader's markup directly.
-    const editorEl = document.createElement("div");
-    editorEl.className = "dm-editor";
-    contentRegion.appendChild(editorEl);
-
-    const renderEl = document.createElement("div");
-    renderEl.className = "dm-html-render";
-    renderEl.hidden = true;
-    contentRegion.appendChild(renderEl);
-
-    const iframe = document.createElement("iframe");
-    iframe.className = "dm-html-frame";
-    iframe.setAttribute("sandbox", "allow-scripts");
-    iframe.title = `Cell ${cellNumber}'s CSS preview`;
-    renderEl.appendChild(iframe);
-
-    const syncPreviewBtn = () => {
-      const editing = !editorEl.hidden;
-      previewBtn.textContent = editing ? "View" : "Edit";
-      previewBtn.title = editing ? "Show the preview" : "Edit this cell's CSS";
-    };
-    const showEditor = () => {
-      editorEl.hidden = false;
-      renderEl.hidden = true;
-      editor.focus();
-      syncPreviewBtn();
-    };
-    const showRendered = () => {
-      iframe.srcdoc = `<style>${cell.content}</style>${CSS_PREVIEW_MARKUP}`;
-      renderEl.hidden = false;
-      editorEl.hidden = true;
-      syncPreviewBtn();
-    };
-
-    const editor = createCodeEditor(editorEl, cell.content, {
+    const cssEditor = createCodeEditor(cssEditorEl, cell.style, {
       dark: isDarkNow(),
       language: "css",
-      onChange: (text) => { cell.content = text; saveState(); },
+      onChange: (text) => { cell.style = text; saveState(); },
     });
-    cell.editor = editor;
-    editorEl.addEventListener("focusout", (e) => {
-      if (!editorEl.contains(e.relatedTarget)) showRendered();
-    });
+    cell.editor = htmlEditor;
+    cell.cssEditor = cssEditor;
 
-    previewBtn.addEventListener("mousedown", (e) => e.preventDefault());
-    previewBtn.addEventListener("click", (e) => {
+    renderBtn.addEventListener("mousedown", (e) => e.preventDefault());
+    renderBtn.addEventListener("click", (e) => {
       e.stopPropagation();
-      if (editorEl.hidden) showEditor(); else showRendered();
+      render();
     });
 
-    // A brand-new cell starts in the editor, same as HTML/Text — only a
-    // cell with something in it already (restored from a save) opens
-    // straight to its rendered preview.
-    if (cell.content.trim()) showRendered();
-    else syncPreviewBtn();
+    // A brand-new cell shows no preview at all until the reader actually
+    // asks for one — only a cell restored with existing content (from a
+    // save, or a migrated old HTML/CSS cell) renders straight away, the
+    // same "picks up where it left off" behaviour the types it replaces
+    // already had.
+    if (cell.content.trim() || cell.style.trim()) render();
   } else if (cell.type === CELL_TYPES.SQL) {
     // Python-shaped, not HTML/CSS-shaped: a SQL cell runs against the
     // same shared session a Python cell does (RUNS_AGAINST_SESSION), so
@@ -2564,6 +2569,20 @@ function triggerDownload(filename, content, mime) {
   URL.revokeObjectURL(url);
 }
 
+/* Every export below (.py, .ipynb) only ever reads one field, `content`
+ * — fine for every type except `web` (DECISIONS_LOG.md 7.120), whose
+ * CSS half lives in a second field, `style`, that would otherwise be
+ * silently dropped from a downloaded file with no way to notice short of
+ * comparing it against the cell still on screen. Not a concern the
+ * types `web` replaced ever had: an old CSS cell's whole content *was*
+ * `cell.content`, so nothing was lost exporting it the same generic way
+ * every other non-Python type already was. */
+function cellExportContent(cell) {
+  if (cell.type !== CELL_TYPES.WEB) return cell.content;
+  if (!cell.style.trim()) return cell.content;
+  return `${cell.content}\n\n<style>\n${cell.style}\n</style>`;
+}
+
 /* Joins every cell into one plain .py file: a Python cell's code goes in
  * as-is, and a text cell's content gets turned into `#`-prefixed comment
  * lines, so the whole notebook reads as one ordinary, runnable Python
@@ -2609,7 +2628,7 @@ function cellsToPercentText(cellList) {
       parts.push(PY_TEXT_MARKER);
       cell.content.split("\n").forEach((line) => parts.push(`# ${line}`.trimEnd()));
     } else {
-      parts.push(PY_CELL_MARKER, cell.content);
+      parts.push(PY_CELL_MARKER, cellExportContent(cell));
     }
     parts.push("");
   });
@@ -2876,7 +2895,7 @@ function cellsToIpynb(cellList) {
       // own. Only what is read back on import is written: a name nothing
       // reads would be a claim in the file that nothing keeps true.
       metadata: typeof cell.lastRunMs === "number" ? { dewmini: { lastRunMs: cell.lastRunMs } } : {},
-      source: splitLines(cell.content),
+      source: splitLines(cellExportContent(cell)),
       ...(cell.type === CELL_TYPES.PYTHON
         // No execution_count: dewmini does not number runs, and writing a
         // number it did not measure would be a claim about the order this
@@ -2939,7 +2958,7 @@ async function downloadAsHtml() {
   updateStatus("Building the standalone file…");
   try {
     const toolsSource = await getToolsSource();
-    const cellsData = cells.map((c) => ({ id: c.id, type: c.type, content: c.content }));
+    const cellsData = cells.map((c) => ({ id: c.id, type: c.type, content: c.content, style: c.style || "" }));
     const name = getFilenameBase();
     const html = buildStandaloneHtml(toolsSource, cellsData, isDarkNow(), name);
     triggerDownload(`${name}.html`, html, "text/html");
@@ -3014,7 +3033,9 @@ async function main() {
     } else {
       const body = document.createElement("div");
       body.className = "text-body";
-      body.textContent = cell.content;
+      body.textContent = cell.type === "web" && cell.style
+        ? cell.content + "\\n\\n<style>\\n" + cell.style + "\\n</style>"
+        : cell.content;
       wrap.appendChild(body);
     }
     container.appendChild(wrap);
@@ -4896,7 +4917,7 @@ function wireToolbar() {
   document.getElementById("clear-all")?.addEventListener("click", () => {
     if (!cells.length) return;
     if (!confirm("Clear every cell? This can't be undone.")) return;
-    cells.forEach((c) => c.editor?.destroy());
+    cells.forEach(destroyCellEditors);
     setCells([]);
     saveState();
     renderCells();
