@@ -184,10 +184,10 @@ know which backend is active.
   building a full nbformat renderer.
 - **`.py` import:** split on `# %%` cell markers (the
   Jupytext/VS Code/Spyder convention); if none are found, import the whole
-  file as one cell. Note: `downloadAsPython()`'s current export separator
-  (`\n\n# ---\n\n`, `mini-ide.js:1059-1075`) won't round-trip through this
-  splitter — switch the export separator to `# %%` too for round-trip
-  symmetry (small fix, bundle with this phase).
+  file as one cell. The export side has to use the same markers or the
+  round trip does not close. **Done** — see `docs/DEWMINI.md` for
+  what shipped, including the `# %% [markdown]` spelling that lets a text
+  cell and a code cell be told apart on the way back in.
 
 ## Phase 6 — Settings panel expansion
 

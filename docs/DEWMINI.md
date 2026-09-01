@@ -322,9 +322,19 @@ it somewhere else, use one of the downloads in Settings, or the
 Workbench's Files section and its "use a folder on my computer" if what
 you want to keep is a file a cell wrote, not the notebook itself.
 
-- **`.py`** joins every Python cell together with a separator, and turns
-  each text cell into a comment block, so the whole session reads as one
-  ordinary Python file. The same file loads back in exactly as it was.
+- **`.py`** joins every Python cell together and turns each text cell
+  into a comment block, so the whole session reads as one ordinary
+  Python file. The same file loads back in exactly as it was.
+
+  The cells are marked with `# %%` lines — `# %% [markdown]` before a
+  text cell. Python ignores them, so the file runs as an ordinary
+  script, and Visual Studio Code, Spyder, PyCharm and Jupytext all
+  understand them, so the same file opens as the same cells on a
+  machine that has never heard of dewlab. The file opens with a few
+  comment lines saying so; delete them and nothing changes.
+
+  A `.py` file has nowhere to keep what your cells printed. It is the
+  code, not the session.
 - **`.html`** is a single file you can open by double-clicking. It
   carries its own copy of the notebook tools and runs its cells the
   moment it opens. Like a tutorial's own downloadable copy, it needs an

@@ -1796,24 +1796,58 @@ function triggerDownload(filename, content, mime) {
 /* Joins every cell into one plain .py file: a Python cell's code goes in
  * as-is, and a text cell's content gets turned into `#`-prefixed comment
  * lines, so the whole notebook reads as one ordinary, runnable Python
- * script — no special notebook format needed to open it. The
- * "# ---- cell N ----"/"# ---- note ----" markers are also exactly what
- * parsePyCells() looks for on the way back in, so a downloaded .py loads
- * straight back into the same cells, notes included. */
+ * script — no special notebook format needed to open it.
+ *
+ * The cell markers are the percent format: `# %%` before a code cell and
+ * `# %% [markdown]` before a text cell. This replaces markers dewmini
+ * invented for itself ("# ---- cell 1 ----"), which no other program
+ * understood. Jupytext, Visual Studio Code, Spyder and PyCharm all read
+ * the percent format, so a file written here opens as the same cells on
+ * a machine that has never heard of dewlab — which is the only thing
+ * that makes teaching a student to work in files worth doing.
+ *
+ * `# %%` explains nothing to a beginner, where the old markers almost
+ * explained themselves. That is why the file opens with a few lines
+ * saying what the markers are for, as a text cell the student can delete
+ * once they no longer need it. Inside dewmini they never see a marker at
+ * all: the cells are the markers.
+ *
+ * parsePyCells() reads exactly what this writes, so a downloaded .py
+ * loads straight back into the same cells, notes included. */
+const PY_CELL_MARKER = "# %%";
+const PY_TEXT_MARKER = "# %% [markdown]";
+// The first line of the header block below. parsePyCells() matches this
+// exact opening to tell dewmini's own header from a leading comment a
+// file written elsewhere came with — a licence notice, say, which must
+// be kept. Change one and change the other.
+const PY_HEADER_OPENING = "# dewmini export";
+
 function downloadAsPython() {
   if (!cells.length) { updateStatus("No cells to export.", "error"); return; }
-  const parts = [`# dewmini export — ${new Date().toISOString().slice(0, 10)}`, ""];
-  cells.forEach((cell, i) => {
+  // The header sits *before* the first marker, so it is not a cell.
+  // Written as a cell it would come back as one on the next import, and
+  // then be written out again above a second copy of itself, growing by
+  // one note every time a reader exported and reopened their work.
+  const parts = [
+    `${PY_HEADER_OPENING} — ${new Date().toISOString().slice(0, 10)}`,
+    "#",
+    "# The \`# %%\` lines below mark where one cell ends and the next",
+    "# begins. Python ignores them, so this file runs as an ordinary",
+    "# script; editors that understand the convention show it as cells.",
+    "# Delete these lines and nothing changes.",
+    "",
+  ];
+  cells.forEach((cell) => {
     if (cell.type === CELL_TYPES.TEXT) {
-      parts.push("# ---- note ----");
+      parts.push(PY_TEXT_MARKER);
       cell.content.split("\n").forEach((line) => parts.push(`# ${line}`.trimEnd()));
     } else {
-      parts.push(`# ---- cell ${i + 1} ----`, cell.content);
+      parts.push(PY_CELL_MARKER, cell.content);
     }
     parts.push("");
   });
   triggerDownload(`${getFilenameBase()}.py`, parts.join("\n"), "text/x-python");
-  updateStatus("Downloaded as Python.", "ok");
+  updateStatus("Downloaded as Python. Outputs are not in a .py file — use .ipynb to keep those.", "ok");
 }
 
 /* The Jupyter notebook format (.ipynb) stores a cell's source as a list
@@ -2685,23 +2719,33 @@ function parseIpynbCells(text) {
   }));
 }
 
-/* Parses a .py file into dewmini's cell shape — the counterpart to
- * downloadAsPython() below, recognizing that same function's own
- * "# ---- cell N ----" / "# ---- note ----" markers so a file downloaded
- * from dewmini and reopened here round-trips back into the same cells,
- * notes included — a marker that names its kind, rather than a bare
- * "# %%" separator, is what lets a note and a code cell be told apart
- * on the way back in.
+/* Parses a .py file in the percent format into dewmini's cell shape —
+ * the counterpart to downloadAsPython() above.
  *
- * A file with none of dewmini's own markers — a plain script, or one
- * exported from somewhere else entirely — imports as a single Python
- * cell instead.
+ * `# %%` starts a code cell and `# %% [markdown]` starts a text cell,
+ * whose prose follows as ordinary `#` comment lines. A marker may carry
+ * a title and options after it, which is what Jupytext and Visual Studio
+ * Code write (`# %% A title [markdown] tags=["x"]`), so the kind is
+ * decided by looking for a bracketed word rather than by matching the
+ * whole line. `[raw]` is read as a text cell: its content is not Python,
+ * and a text cell is the closer of the two things dewmini has.
+ *
+ * Code before the first marker is kept as a leading Python cell. In a
+ * file written anywhere else that is real code — a shebang line, a block
+ * of imports — and discarding it would lose part of the program.
+ *
+ * A file with no markers at all — a plain script — imports as a single
+ * Python cell.
  *
  * @param {string} text - raw .py file contents
  * @returns {Array<Object>} new cell objects, same shape parseIpynbCells() returns
  */
 function parsePyCells(text) {
-  const markerRe = /^# ---- (cell \d+|note) ----$/;
+  // Leading whitespace is allowed before the "#" because some editors
+  // indent a marker inside a block; anything after the "%%" is the
+  // marker's own title and options.
+  const markerRe = /^\s*#\s*%%(.*)$/;
+  const isTextMarker = (rest) => /\[(markdown|md|raw)\]/i.test(rest);
   const lines = text.split("\n");
   if (!lines.some((line) => markerRe.test(line))) {
     const trimmed = text.trim();
@@ -2711,7 +2755,7 @@ function parsePyCells(text) {
   // downloadAsPython() prefixes every note line with "# " (or a bare "#"
   // for a line that was empty) — this reverses exactly that, not a
   // general "#" comment stripper, so a genuine Python comment inside a
-  // *code* cell is left alone (this only ever runs on a "note" block's
+  // *code* cell is left alone (this only ever runs on a text block's
   // own lines).
   const unescapeNoteLine = (line) => {
     if (line === "#") return "";
@@ -2721,22 +2765,31 @@ function parsePyCells(text) {
   };
 
   const cells = [];
+  // Null until the first marker is seen. Anything buffered before then is
+  // code the file opened with — a shebang, a block of imports — so it is
+  // flushed as a Python cell rather than dropped. The one exception is
+  // dewmini's own header, recognised by its first line and discarded, so
+  // that exporting and reopening a notebook returns the same cells
+  // rather than one more note each time.
   let currentType = null;
   let buffer = [];
+  const isOwnHeader = (lines) => {
+    const first = lines.find((line) => line.trim());
+    return first !== undefined && first.trim().startsWith(PY_HEADER_OPENING);
+  };
   const flush = () => {
-    // Content before the first marker is downloadAsPython()'s own
-    // header line ("# dewmini export — <date>") — not a cell.
-    if (currentType === null) { buffer = []; return; }
-    const raw = currentType === CELL_TYPES.TEXT ? buffer.map(unescapeNoteLine).join("\n") : buffer.join("\n");
+    if (currentType === null && isOwnHeader(buffer)) { buffer = []; return; }
+    const type = currentType === null ? CELL_TYPES.PYTHON : currentType;
+    const raw = type === CELL_TYPES.TEXT ? buffer.map(unescapeNoteLine).join("\n") : buffer.join("\n");
     const content = raw.replace(/\n+$/, "");
-    if (content.trim()) cells.push({ id: generateId(), type: currentType, content, output: "", error: false });
+    if (content.trim()) cells.push({ id: generateId(), type, content, output: "", error: false });
     buffer = [];
   };
   for (const line of lines) {
     const marker = line.match(markerRe);
     if (marker) {
       flush();
-      currentType = marker[1] === "note" ? CELL_TYPES.TEXT : CELL_TYPES.PYTHON;
+      currentType = isTextMarker(marker[1]) ? CELL_TYPES.TEXT : CELL_TYPES.PYTHON;
       continue;
     }
     buffer.push(line);
