@@ -323,9 +323,11 @@ cross to delete it.
 
 A `.py` opens as a file, so you see the thing you are learning to write.
 A `.ipynb` opens as cells, because that format carries the results each
-one produced. Editing either one saves straight back to the file. Other
-kinds of file stay in the list for a cell to read, since dewmini would
-have to guess how to show them as code.
+one produced. A `.html` opens as a small website. Its matching `.css` and
+`.js` files open beside it, and the page updates as you type. Editing any
+of these saves straight back to its file. Other kinds of file stay in the
+list for a cell to read, since dewmini would have to guess how to show
+them as code.
 
 **Your own Python files live here too, and you can import them.** Write
 shapes.py into this storage. A cell can then say `import shapes` and

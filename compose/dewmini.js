@@ -121,7 +121,7 @@ let cells = [];
  * empty cell. A blank page asks a beginner to decide what the whole
  * program will be before writing anything, and a cell asks for one line.
  * A student can start in cells and move to a file when they are ready. */
-const VIEWS = { CELLS: "cells", FILE: "file" };
+const VIEWS = { CELLS: "cells", FILE: "file", SITE: "site" };
 
 /* Output from a whole-file run is not any cell's, so it needs an id of
  * its own for the engine to route by. Prefixed like a real cell id and
@@ -132,6 +132,11 @@ const FILE_RUN_ID = "cell-file-run";
 let fileEditor = null;
 let fileRunOutputEl = null;
 let fileParseTimer = null;
+// A site tab's three CodeMirror editors, live while it is the notebook on
+// screen — destroyed and re-created on every tab switch the same as
+// fileEditor above, for the same reason (a CodeMirror instance holds its
+// own DOM and listeners; nothing here is meant to outlive its render).
+let siteEditors = null;
 let cellsContainer, emptyEl, statusEl, tabsEl;
 let statusClearTimer = null;
 
@@ -242,11 +247,25 @@ function loadSavedState() {
     notebooks = saved.notebooks
       .filter((nb) => nb && nb.id)
       .map((nb) => ({ id: nb.id, name: nb.name || "Notebook", cells: readCells(nb.cells),
-                      view: nb.view === VIEWS.FILE ? VIEWS.FILE : VIEWS.CELLS,
+                      view: nb.view === VIEWS.FILE ? VIEWS.FILE
+                          : nb.view === VIEWS.SITE ? VIEWS.SITE : VIEWS.CELLS,
                       // Which workspace file this tab is, when it is one.
                       // Without this a reload would quietly turn it into an
                       // ordinary notebook and stop saving the file.
-                      ...(typeof nb.path === "string" && nb.path ? { path: nb.path } : {}) }));
+                      ...(typeof nb.path === "string" && nb.path ? { path: nb.path } : {}),
+                      // A site tab's own three files, and where its CSS and
+                      // JavaScript live when they exist. Restored here
+                      // rather than re-read from disk on every reload —
+                      // the same "localStorage is the fast-path cache, the
+                      // real file is the debounced write" pattern every
+                      // other workspace-backed tab already follows.
+                      ...(nb.view === VIEWS.SITE ? {
+                        siteCssPath: typeof nb.siteCssPath === "string" ? nb.siteCssPath : "",
+                        siteJsPath: typeof nb.siteJsPath === "string" ? nb.siteJsPath : "",
+                        siteHtml: typeof nb.siteHtml === "string" ? nb.siteHtml : "",
+                        siteCss: typeof nb.siteCss === "string" ? nb.siteCss : "",
+                        siteJs: typeof nb.siteJs === "string" ? nb.siteJs : "",
+                      } : {}) }));
   }
   if (!notebooks.length) notebooks = migrateLegacyCells();
   if (!notebooks.length) notebooks = [makeNotebook("Notebook")];
@@ -306,6 +325,10 @@ function writeSavedState(skipOutputFor) {
       active: activeNotebookId,
       notebooks: notebooks.map((nb) => ({ id: nb.id, name: nb.name, view: nb.view || VIEWS.CELLS,
                                          ...(nb.path ? { path: nb.path } : {}),
+                                         ...(nb.view === VIEWS.SITE ? {
+                                           siteCssPath: nb.siteCssPath || "", siteJsPath: nb.siteJsPath || "",
+                                           siteHtml: nb.siteHtml || "", siteCss: nb.siteCss || "", siteJs: nb.siteJs || "",
+                                         } : {}),
                                          cells: plainCells(nb.cells) })),
     }));
     return true;
@@ -523,14 +546,16 @@ function renderTabs() {
     label.type = "button";
     label.className = "dm-tab-label";
     label.textContent = notebook.name;
-    if (notebook.view === VIEWS.FILE) {
+    if (notebook.view === VIEWS.FILE || notebook.view === VIEWS.SITE) {
       const badge = document.createElement("span");
       badge.className = "dm-tab-view";
-      badge.textContent = "file";
+      badge.textContent = notebook.view === VIEWS.SITE ? "site" : "file";
       label.append(" ", badge);
     }
-    const shown = notebook.view === VIEWS.FILE ? "shown as a file" : "shown as cells";
-    label.title = `${notebook.name}, ${shown} — ${notebook.cells.length} cell${notebook.cells.length === 1 ? "" : "s"} (double-click to rename)`;
+    label.title = notebook.view === VIEWS.SITE
+      ? `${notebook.name}, a small website (double-click to rename)`
+      : `${notebook.name}, ${notebook.view === VIEWS.FILE ? "shown as a file" : "shown as cells"} — `
+        + `${notebook.cells.length} cell${notebook.cells.length === 1 ? "" : "s"} (double-click to rename)`;
     label.setAttribute("aria-current", String(notebook.id === activeNotebookId));
     label.addEventListener("click", () => showNotebook(notebook.id));
     label.addEventListener("dblclick", () => renameNotebook(notebook.id));
@@ -936,9 +961,12 @@ async function renderMathsIn(container) {
  * A .py opens in the file view, because a file is what it is, and the
  * reader should see the thing they are learning to write. A .ipynb opens
  * as cells, because that format carries outputs and cells are what shows
- * them. Anything else stays where it is: dewmini would have to guess how
- * to read a .csv as code, and guessing wrong turns a data file into one
- * long broken cell.
+ * them. A .html opens as a site (planning/DEWMINI_WORKBENCH.md §10):
+ * dewmini already runs HTML, CSS and JavaScript separately (the Web and
+ * JavaScript cell types), so the obvious follow-on is showing them as the
+ * three real files a static site actually is. Anything else stays where
+ * it is: dewmini would have to guess how to read a .csv as code, and
+ * guessing wrong turns a data file into one long broken cell.
  *
  * The tab remembers which file it came from, so editing it writes back to
  * the workspace rather than to a download. That is the difference between
@@ -947,13 +975,16 @@ async function openWorkspaceFile(name) {
   const lower = name.toLowerCase();
   const isPy = lower.endsWith(".py");
   const isIpynb = lower.endsWith(".ipynb");
-  if (!isPy && !isIpynb) {
-    updateStatus(`dewmini opens .py and .ipynb files. ${name} stays in the workspace for a cell to read.`, "error");
+  const isHtml = lower.endsWith(".html") || lower.endsWith(".htm");
+  if (!isPy && !isIpynb && !isHtml) {
+    updateStatus(`dewmini opens .py, .ipynb and .html files. ${name} stays in the workspace for a cell to read.`, "error");
     return;
   }
 
   const already = notebooks.find((nb) => nb.path === name);
   if (already) { showNotebook(already.id); return; }
+
+  if (isHtml) { await openSiteFile(name); return; }
 
   let text;
   try {
@@ -979,6 +1010,49 @@ async function openWorkspaceFile(name) {
   updateStatus(`Opened ${name}. Edits here save back to the workspace.`, "ok");
 }
 
+/* Reads a file's text back, or "" if it does not exist yet — the read a
+ * site's optional CSS or JavaScript half needs, where "not written yet"
+ * is the ordinary case rather than an error worth reporting. */
+async function readFileIfExists(name) {
+  try {
+    return await dfs.readFile(name, "utf8");
+  } catch {
+    return "";
+  }
+}
+
+/* Opens an .html file as a site tab: the HTML itself, plus whichever of
+ * the matching .css and .js (same base name — `page.html` pairs with
+ * `page.css` and `page.js`) already exist alongside it. Nothing is
+ * required to exist but the HTML — a site with no styling and no script
+ * is still a site, and forcing three files where a reader wants one is
+ * exactly the fixed-three-files rule §10 argues against. */
+async function openSiteFile(name) {
+  let html;
+  try {
+    html = await dfs.readFile(name, "utf8");
+  } catch (err) {
+    updateStatus(`Couldn't open ${name}: ${err.message}`, "error");
+    return;
+  }
+
+  const base = name.replace(/\.html?$/i, "");
+  const cssPath = `${base}.css`;
+  const jsPath = `${base}.js`;
+  const [css, js] = await Promise.all([readFileIfExists(cssPath), readFileIfExists(jsPath)]);
+
+  const notebook = makeNotebook(notebookNameFor(name), [], VIEWS.SITE);
+  notebook.path = name;
+  notebook.siteCssPath = cssPath;
+  notebook.siteJsPath = jsPath;
+  notebook.siteHtml = html;
+  notebook.siteCss = css;
+  notebook.siteJs = js;
+  openNotebook(notebook);
+  updateViewSwitch();
+  updateStatus(`Opened ${name}. Edits here save back to the workspace.`, "ok");
+}
+
 /* Writes a tab that came from the workspace back to the file it came
  * from, in the format that file already is.
  *
@@ -994,6 +1068,7 @@ function scheduleWorkspaceWrite(notebook) {
 
 async function writeNotebookToWorkspace(notebook) {
   if (!notebook?.path) return;
+  if (notebook.view === VIEWS.SITE) { await writeSiteToWorkspace(notebook); return; }
   const text = notebook.path.toLowerCase().endsWith(".ipynb")
     ? JSON.stringify(cellsToIpynb(notebook.cells), null, 2)
     : cellsToPercentText(notebook.cells);
@@ -1006,8 +1081,26 @@ async function writeNotebookToWorkspace(notebook) {
   renderFileList();
 }
 
+/* Writes a site tab's own three files back to the workspace. The HTML
+ * half always gets written — it is the file this tab is — but the CSS
+ * and JavaScript halves only when there is something in them: a reader
+ * who never touched the CSS pane should not find an empty page.css
+ * littering their workspace afterward. */
+async function writeSiteToWorkspace(notebook) {
+  try {
+    await dfs.writeFile(notebook.path, notebook.siteHtml || "");
+    if ((notebook.siteCss || "").trim()) await dfs.writeFile(notebook.siteCssPath, notebook.siteCss);
+    if ((notebook.siteJs || "").trim()) await dfs.writeFile(notebook.siteJsPath, notebook.siteJs);
+  } catch (err) {
+    updateStatus(`Couldn't save ${notebook.path}: ${err.message}`, "error");
+    return;
+  }
+  renderFileList();
+}
+
 function currentView() {
-  return activeNotebook()?.view === VIEWS.FILE ? VIEWS.FILE : VIEWS.CELLS;
+  const view = activeNotebook()?.view;
+  return view === VIEWS.FILE ? VIEWS.FILE : view === VIEWS.SITE ? VIEWS.SITE : VIEWS.CELLS;
 }
 
 /* Parsed cells, carrying forward the id and output of every cell the edit
@@ -1073,7 +1166,10 @@ function setView(view) {
   updateViewSwitch();
 }
 
-/* Keeps the toolbar's two buttons showing which view is on. */
+/* Keeps the toolbar's two buttons showing which view is on, and hides
+ * every cell-notebook toolbar group (.dm-cellview-only) while a site tab
+ * is active — Cells/File, "See an example", "Run all" and the rest are
+ * all about a notebook of Python cells, which a site tab does not have. */
 function updateViewSwitch() {
   const view = currentView();
   const cellsBtn = document.getElementById("dm-view-cells");
@@ -1082,6 +1178,7 @@ function updateViewSwitch() {
   fileBtn?.setAttribute("aria-pressed", String(view === VIEWS.FILE));
   cellsBtn?.classList.toggle("dm-viewswitch-on", view === VIEWS.CELLS);
   fileBtn?.classList.toggle("dm-viewswitch-on", view === VIEWS.FILE);
+  document.querySelectorAll(".dm-cellview-only").forEach((el) => { el.hidden = view === VIEWS.SITE; });
 }
 
 /* The notebook as one Python document: a single editor over the whole
@@ -1159,11 +1256,93 @@ async function runWholeFile() {
   }
 }
 
+/* A site tab: three editors and a live preview, split-screen, the way an
+ * ordinary code-and-preview IDE lays the two out — not a separate button
+ * press away, the way a Web cell's Render is. A site is what a reader
+ * came to look at continuously while they work on it, not a one-shot
+ * question a cell asks and answers (planning/DEWMINI_WORKBENCH.md §10).
+ *
+ * The CSS and JavaScript panes are always shown, whether or not their
+ * file exists yet on disk — a reader building a site from nothing needs
+ * somewhere to start typing a stylesheet before writeSiteToWorkspace()
+ * has anything to write. */
+function renderSiteView() {
+  const notebook = activeNotebook();
+  const wrap = document.createElement("div");
+  wrap.className = "dm-siteview";
+
+  const note = document.createElement("p");
+  note.className = "dm-fileview-note";
+  note.textContent = `A small website: ${notebook.path}`
+    + (notebook.siteCssPath ? `, ${notebook.siteCssPath}` : "")
+    + (notebook.siteJsPath ? ` and ${notebook.siteJsPath}` : "")
+    + ". The preview on the right updates as you type.";
+  wrap.appendChild(note);
+
+  const split = document.createElement("div");
+  split.className = "dm-siteview-split";
+  wrap.appendChild(split);
+
+  const editors = document.createElement("div");
+  editors.className = "dm-siteview-editors";
+  split.appendChild(editors);
+
+  const iframe = document.createElement("iframe");
+  iframe.className = "dm-siteview-frame";
+  iframe.setAttribute("sandbox", "allow-scripts");
+  iframe.title = `${notebook.name}'s rendered page`;
+  split.appendChild(iframe);
+
+  // Combines the three editors' own live text, not a fresh disk read —
+  // the same choice the Web cell's own preview makes, so typing shows up
+  // straight away rather than waiting on the debounced write to land.
+  const render = () => {
+    iframe.srcdoc = `<style>${notebook.siteCss}</style>${notebook.siteHtml}`
+      + `<script>${notebook.siteJs}</script>`;
+  };
+
+  const pane = (label, content, language, onChange) => {
+    const paneEl = document.createElement("div");
+    paneEl.className = "dm-siteview-pane";
+    const labelEl = document.createElement("div");
+    labelEl.className = "dm-web-pane-label";
+    labelEl.textContent = label;
+    const editorEl = document.createElement("div");
+    editorEl.className = "dm-editor";
+    paneEl.append(labelEl, editorEl);
+    editors.appendChild(paneEl);
+    return createCodeEditor(editorEl, content, {
+      dark: isDarkNow(), language,
+      onChange: (text) => { onChange(text); saveState(); render(); },
+    });
+  };
+
+  siteEditors = {
+    html: pane("HTML", notebook.siteHtml, "html", (text) => { notebook.siteHtml = text; }),
+    css: pane("CSS", notebook.siteCss, "css", (text) => { notebook.siteCss = text; }),
+    js: pane("JavaScript", notebook.siteJs, "javascript", (text) => { notebook.siteJs = text; }),
+  };
+
+  cellsContainer.appendChild(wrap);
+  render();
+}
+
+function destroySiteEditors() {
+  if (!siteEditors) return;
+  siteEditors.html?.destroy();
+  siteEditors.css?.destroy();
+  siteEditors.js?.destroy();
+  siteEditors = null;
+}
+
 function renderCells() {
   if (!cellsContainer) return;
   destroyFileEditor();
+  destroySiteEditors();
   cellsContainer.innerHTML = "";
+  if (emptyEl) emptyEl.hidden = true;
   if (currentView() === VIEWS.FILE) { renderFileView(); return; }
+  if (currentView() === VIEWS.SITE) { renderSiteView(); return; }
   // The first seam is drawn even over an empty notebook. It used to be
   // suppressed, because the toolbar carried its own Python/Text buttons and
   // a seam with nothing on either side of it looked like debris. Those
@@ -4252,7 +4431,7 @@ async function newFsFile() {
   let name = asked.trim();
   if (!name) return;
   if (name.includes("/")) { updateStatus("A name cannot contain a slash.", "error"); return; }
-  if (!/\.(py|ipynb)$/i.test(name)) name += ".py";
+  if (!/\.(py|ipynb|html?)$/i.test(name)) name += ".py";
 
   try {
     const existing = await dfs.listDir("");
@@ -4893,6 +5072,9 @@ function observeThemeChanges() {
     const dark = isDarkNow();
     cells.forEach((c) => { if (c.editor) { try { setEditorTheme(c.editor, dark); } catch {} } });
     if (fileEditor) { try { setEditorTheme(fileEditor, dark); } catch {} }
+    if (siteEditors) {
+      for (const ed of Object.values(siteEditors)) { try { setEditorTheme(ed, dark); } catch {} }
+    }
   });
   observer.observe(document.documentElement, { attributes: true });
 }
@@ -4965,6 +5147,9 @@ async function init() {
   initTexture((dark) => {
     cells.forEach((c) => { if (c.editor) { try { setEditorTheme(c.editor, dark); } catch {} } });
     if (fileEditor) { try { setEditorTheme(fileEditor, dark); } catch {} }
+    if (siteEditors) {
+      for (const ed of Object.values(siteEditors)) { try { setEditorTheme(ed, dark); } catch {} }
+    }
   });
   initEditorSettings();
   initNotes();

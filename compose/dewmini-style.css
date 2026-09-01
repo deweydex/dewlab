@@ -135,6 +135,13 @@ html[data-dl-panel-right] .dm-page .dl-crumbs {
   border-bottom: 1px solid var(--dl-rule);
 }
 .dm-toolbar-group { display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; }
+/* display:flex above beats the browser's own [hidden] rule (an author
+ * stylesheet always wins over the user-agent one for the same property,
+ * regardless of specificity) — the same reason every other conditionally-
+ * hidden element in this file needs its own [hidden] override. Without
+ * this, hiding .dm-cellview-only for a site tab (updateViewSwitch())
+ * would set the attribute and change nothing on screen. */
+.dm-toolbar-group[hidden] { display: none; }
 .dm-toolbar-group-end { margin-left: auto; }
 
 .dm-tool {
@@ -1423,6 +1430,51 @@ kbd {
 
 .dm-fileview-output { margin: 0; }
 .dm-fileview-output.dm-empty { display: none; }
+
+/* A site tab (planning/DEWMINI_WORKBENCH.md §10): editors on the left,
+ * a live preview on the right, split screen the way an ordinary
+ * code-and-preview IDE lays the two out — unlike a Web cell's own
+ * Render button, a site is what a reader keeps looking at while they
+ * work rather than a one-shot question. Below the same width a panel
+ * becomes a bottom sheet at, there isn't room for the split either, so
+ * the preview drops beneath the editors instead of beside them. */
+.dm-siteview { display: flex; flex-direction: column; gap: 0.75rem; }
+
+.dm-siteview-split {
+  display: flex;
+  gap: 0.75rem;
+  align-items: stretch;
+}
+@media (max-width: 48rem) {
+  .dm-siteview-split { flex-direction: column; }
+}
+
+.dm-siteview-editors {
+  flex: 1 1 50%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.dm-siteview-pane .dm-editor {
+  border: 1px solid var(--dl-rule);
+  border-radius: 6px;
+  overflow: hidden;
+  min-height: 8rem;
+}
+
+/* Fixed white background regardless of theme, the same reasoning as a
+ * Web cell's own .dm-html-frame: a reader's page is written assuming a
+ * page, not dewlab's dark mode. */
+.dm-siteview-frame {
+  flex: 1 1 50%;
+  min-width: 0;
+  min-height: 24rem;
+  border: 1px solid var(--dl-cell-border);
+  border-radius: 6px;
+  background: #fff;
+}
 
 /* On the tab, so a reader can tell at a glance which of two open
  * notebooks is showing as a file. */

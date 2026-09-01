@@ -22,6 +22,7 @@ from __future__ import annotations
 import json
 
 import pytest
+from playwright.sync_api import expect
 
 # The page under test, relative to the built site root.
 DEWMINI = "compose/dewmini.html"
@@ -1813,7 +1814,7 @@ def test_a_file_dewmini_cannot_open_says_so_and_stays_put(dewmini):
     tabs_before = dewmini.locator(".dm-tab").count()
     dewmini.locator(".dm-filelist-item-name", has_text="readings.csv").click()
 
-    assert "opens .py and .ipynb" in dewmini.locator("#dm-status").inner_text()
+    assert "opens .py, .ipynb and .html" in dewmini.locator("#dm-status").inner_text()
     assert dewmini.locator(".dm-tab").count() == tabs_before
 
 
@@ -1856,3 +1857,136 @@ def test_the_project_is_on_the_left_and_the_reference_on_the_right(dewmini):
     assert dewmini.locator("#dm-workbench #settings-file-list").count() == 1
     assert dewmini.locator("#dm-workbench #dm-variables").count() == 1
     assert dewmini.locator("#dm-library #dm-reference-section").count() == 1
+
+
+# --------------------------------------------------------------------- site
+
+
+def test_an_html_file_in_the_workspace_opens_as_a_site(dewmini):
+    """A .html opens split-screen: its own editor plus a live preview,
+    not as a file view or as cells (planning/DEWMINI_WORKBENCH.md §10)."""
+    write_workspace_file(dewmini, "index.html", "<h1>Hello site</h1>")
+    open_files_panel(dewmini)
+
+    dewmini.locator(".dm-filelist-item-name", has_text="index.html").click()
+    dewmini.wait_for_selector(".dm-siteview")
+
+    assert dewmini.locator(".dm-siteview-pane").count() == 3
+    frame = dewmini.locator(".dm-siteview-frame").content_frame
+    assert frame.locator("h1").text_content() == "Hello site"
+
+
+def test_a_site_discovers_matching_css_and_js_files(dewmini):
+    """No fixed three names — a same-base-name .css and .js beside the
+    .html open with it, because a site can be built from nothing, not
+    only from index.html/style.css/script.js."""
+    write_workspace_file(dewmini, "page.css", "h1 { color: rebeccapurple; }")
+    write_workspace_file(dewmini, "page.js", "document.querySelector('h1').textContent += '!';")
+    write_workspace_file(dewmini, "page.html", "<h1>Hi</h1>")
+    open_files_panel(dewmini)
+
+    dewmini.locator(".dm-filelist-item-name", has_text="page.html").click()
+    dewmini.wait_for_selector(".dm-siteview")
+
+    panes = dewmini.locator(".dm-siteview-pane")
+    assert "rebeccapurple" in panes.nth(1).locator(".cm-content").inner_text()
+    assert "textContent" in panes.nth(2).locator(".cm-content").inner_text()
+
+    frame = dewmini.locator(".dm-siteview-frame").content_frame
+    assert frame.locator("h1").text_content() == "Hi!"
+    assert frame.locator("h1").evaluate(
+        "el => getComputedStyle(el).color"
+    ) == "rgb(102, 51, 153)"
+
+
+def test_a_site_with_no_css_or_js_still_opens(dewmini):
+    """A lone .html is still a whole site — the CSS and JS panes are
+    just empty, not an error and not a reason to refuse opening it."""
+    write_workspace_file(dewmini, "lonely.html", "<p>Just me</p>")
+    open_files_panel(dewmini)
+
+    dewmini.locator(".dm-filelist-item-name", has_text="lonely.html").click()
+    dewmini.wait_for_selector(".dm-siteview")
+
+    panes = dewmini.locator(".dm-siteview-pane")
+    assert panes.nth(1).locator(".cm-content").inner_text().strip() == ""
+    assert panes.nth(2).locator(".cm-content").inner_text().strip() == ""
+    frame = dewmini.locator(".dm-siteview-frame").content_frame
+    assert frame.locator("p").text_content() == "Just me"
+
+
+def test_editing_a_sites_html_updates_the_preview_live(dewmini):
+    """Split-screen means the preview follows typing, not a separate
+    Render press the way a Web cell needs — a site is what a reader
+    keeps looking at while they work, not a one-shot question."""
+    write_workspace_file(dewmini, "index.html", "<p>Before</p>")
+    open_files_panel(dewmini)
+    dewmini.locator(".dm-filelist-item-name", has_text="index.html").click()
+    dewmini.wait_for_selector(".dm-siteview")
+
+    editor = dewmini.locator(".dm-siteview-pane").nth(0).locator(".cm-content")
+    editor.click()
+    dewmini.keyboard.press("Control+A")
+    dewmini.keyboard.insert_text("<p>After</p>")
+
+    # Not el.contentDocument from the parent page's own JS: the sandboxed
+    # iframe has no allow-same-origin, so it is a genuinely different,
+    # opaque origin, and the parent cannot read into it that way (it just
+    # sees null, forever). Playwright's own content_frame reaches inside
+    # via the DevTools protocol instead, which real page script cannot do.
+    frame = dewmini.locator(".dm-siteview-frame").content_frame
+    expect(frame.locator("p")).to_have_text("After")
+
+
+def test_editing_a_sites_css_writes_back_to_its_own_file(dewmini):
+    """The CSS and JS halves each save to their own file, not into the
+    HTML file or into localStorage alone."""
+    write_workspace_file(dewmini, "index.html", "<h1>Hi</h1>")
+    open_files_panel(dewmini)
+    dewmini.locator(".dm-filelist-item-name", has_text="index.html").click()
+    dewmini.wait_for_selector(".dm-siteview")
+
+    css_editor = dewmini.locator(".dm-siteview-pane").nth(1).locator(".cm-content")
+    css_editor.click()
+    dewmini.keyboard.insert_text("h1 { color: gold; }")
+
+    # Two debounces stack before this is durable: scheduleWorkspaceWrite()'s
+    # own 600ms, then dewmini-fs.js's internal sync debounce on top of that
+    # (the same reasoning the earlier standalone Site design noted, and
+    # discarded along with it — DECISIONS_LOG.md 7.121).
+    dewmini.wait_for_timeout(3000)
+
+    dewmini.locator("#new-notebook").click()
+    add_python_cell(dewmini, "print(open('index.css').read())")
+    shown = run_first_cell_and_wait(dewmini)
+    assert "gold" in shown
+
+
+def test_a_site_survives_a_reload(dewmini, dewmini_url):
+    """A site tab is still open, on the same three files, after a reload —
+    the same durability every other workspace-backed tab already has."""
+    write_workspace_file(dewmini, "index.html", "<h1>Hi</h1>")
+    open_files_panel(dewmini)
+    dewmini.locator(".dm-filelist-item-name", has_text="index.html").click()
+    dewmini.wait_for_selector(".dm-siteview")
+    dewmini.wait_for_timeout(3000)
+
+    dewmini.goto(dewmini_url)
+    dewmini.wait_for_selector(".dm-siteview")
+    frame = dewmini.locator(".dm-siteview-frame").content_frame
+    assert frame.locator("h1").text_content() == "Hi"
+
+
+def test_the_cell_toolbar_hides_for_a_site_tab(dewmini):
+    """Cells/File, Run all and the rest are about a notebook of Python
+    cells, which a site tab does not have."""
+    write_workspace_file(dewmini, "index.html", "<h1>Hi</h1>")
+    open_files_panel(dewmini)
+    dewmini.locator(".dm-filelist-item-name", has_text="index.html").click()
+    dewmini.wait_for_selector(".dm-siteview")
+
+    assert dewmini.locator("#run-all").is_hidden()
+    assert dewmini.locator("#dm-view-cells").is_hidden()
+
+    dewmini.locator(".dm-tab-label", has_text="Notebook").first.click()
+    assert dewmini.locator("#run-all").is_visible()

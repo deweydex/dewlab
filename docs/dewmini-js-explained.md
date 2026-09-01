@@ -188,6 +188,16 @@ for `load_csv()`).
    `runAllCells`/`runAbove`/`runBelow` — see below), `restartPython`
    (factored out of "Restart Python", also the first half of "Restart &
    run all" — resets the run sequence too, via `resetRunSequence()`).
+
+   A tab need not be a notebook of cells at all. `openWorkspaceFile`
+   opens a real file from the mounted filesystem into a tab of its own —
+   a `.py` as one editor (`renderFileView`, `VIEWS.FILE`), a `.ipynb` as
+   cells, an `.html` as a site (`renderSiteView`, `VIEWS.SITE`:
+   `planning/DEWMINI_WORKBENCH.md` §10) — and `writeNotebookToWorkspace`
+   is the debounced write back the other way, called from `saveState()`
+   whenever the tab's `.path` is set. A site tab has no cells; its three
+   files' live text sits directly on the notebook object
+   (`siteHtml`/`siteCss`/`siteJs`) instead.
 5. **Downloads** — `triggerDownload` (the shared Blob-download trick),
    then `downloadAsPython`/`downloadAsIpynb`/`downloadAsHtml`, the last
    of which builds an entire second, self-contained HTML page as a

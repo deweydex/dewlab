@@ -5518,3 +5518,125 @@ named "HTML" and "CSS" as two things rather than one — more files
 touched than either of the two harder builds that came before it, for a
 change with no new runtime behaviour to speak of beyond the merge
 itself.*
+
+**7.121 — Site: an .html file opens as a small website, on the same
+mounted filesystem — and a first design for it, built and then thrown
+away before it was ever committed, because `main` had moved underneath
+it.** The question 7.116–7.120 raised on the way past: dewmini can now
+run HTML, CSS and JavaScript separately (the Web and JavaScript cell
+types); the obvious follow-on is showing them together the way a real
+static site actually is — three real files, not three cells.
+
+A first version was built directly on this branch's own base
+(`57c6604`): a fixed `site/index.html`/`style.css`/`script.js`, a
+bespoke Workbench section of its own with its own load/save/debounce
+plumbing, and the three files hidden inside their own `site/` subfolder
+so Files' flat list (`DECISIONS_LOG.md` 7.88) would not show them
+directly. Before it was committed, `origin/main` was checked against —
+prompted directly, not discovered — and had moved three commits past
+this branch's base while this and the Web-cell merge were being built:
+`290829c` (a notebook shown as one Python file, `VIEWS.FILE`), `574d5c3`
+(Files becomes a real file manager — `openWorkspaceFile`, a debounced
+`writeNotebookToWorkspace`, rename, "New file…"), and `3325694`
+(Workbench moved to the left rail, Library to the right). Rebasing onto
+it produced real textual conflicts in `compose/dewmini.js`, `dewmini.html`
+and `dewmini-style.css` — not just adjacency, competing edits to the same
+functions (`runCellBatch`, `executeCell`'s post-run cleanup, the ipynb/
+percent-text export helpers) — resolved by hand, kept whichever side had
+since become the more complete version of each (main's dropped-output
+save mechanism, this branch's per-engine `ensureSessionFor`/`canStopFor`
+dispatch) rather than picking one side wholesale.
+
+**Why the first version was abandoned rather than merged forward.**
+`574d5c3` already builds almost exactly the mechanism a bespoke Site
+panel was reinventing in miniature: open a workspace file into a tab,
+edit it, debounce a write back to the real mounted filesystem, redraw
+the file list without a race. Building Site as its own section, with its
+own copy of that plumbing, made sense only while Files could not open
+anything — the moment it can, a second "open, edit, save" path next to
+it is duplication, not a feature. The `site/` subfolder-hiding trick
+existed only to keep those three files out of a Files list that could not
+do anything with them anyway; once Files can open an `.html` directly,
+hiding it from that same list stops making sense.
+
+**What shipped instead: a third tab kind, not a fourth panel.**
+`VIEWS` gains `SITE` alongside `CELLS` and `FILE` — the same enum
+`290829c` already introduced, extended rather than duplicated.
+`openWorkspaceFile()`'s guard, which used to refuse anything but `.py`/
+`.ipynb`, now also accepts `.html`: it reads the file, looks for a
+same-base-name `.css` and `.js` beside it (`page.html` pairs with
+`page.css`/`page.js` — Josh's own correction to the first design, which
+had fixed on three exact names), and opens a tab with no cells at all.
+The site's own three files' live text sits directly on the notebook
+object (`siteHtml`/`siteCss`/`siteJs`, `siteCssPath`/`siteJsPath`),
+persisted through `writeSavedState()`/`loadSavedState()` the same way
+`.path` already is for a File-view tab — the same "localStorage is the
+fast-path cache, the real file is the debounced write" pattern the rest
+of the file manager already uses, not a new one. `writeNotebookToWorkspace()`
+gained a Site branch (`writeSiteToWorkspace()`): the HTML file is always
+written, since it is the file the tab is; the CSS and JS files are
+written only once there is something in them, so a reader who never
+touched the CSS pane does not find an empty `page.css` in their
+workspace afterward. Neither file needs to exist for the tab to open — a
+site with no styling and no script is still a site, and requiring all
+three would reintroduce the fixed-files problem the base-name pairing
+was meant to solve.
+
+**Split screen, not a Render button.** Editors on one side, a live
+sandboxed `<iframe sandbox="allow-scripts">` (no `allow-same-origin`,
+the same isolation the Web cell already uses) on the other, updating on
+every keystroke across all three panes rather than waiting for an
+explicit press. Argued for directly: a Web cell's Render button suits a
+notebook cell answering a one-shot question inside a wider document; a
+site is what a reader keeps looking at continuously while they build it,
+closer to an ordinary code-and-preview IDE than to a cell. `renderCells()`
+gained a `VIEWS.SITE` branch (`renderSiteView()`) alongside the existing
+`VIEWS.FILE` one; the Cells/File toggle and every Python-notebook-only
+toolbar button (`See an example`, `Start with imports`, `Practice`,
+`Run all`, `Clear output`, `Clear`) hide themselves for a site tab behind
+one shared class, `.dm-cellview-only`, toggled in `updateViewSwitch()` —
+none of them mean anything for a tab with no cells.
+
+**One CSS bug worth naming, because it will recur.** The first attempt
+at hiding those toolbar groups set their `hidden` attribute and nothing
+happened — `.dm-toolbar-group { display: flex; }`, an author-stylesheet
+rule, always wins over the browser's own `[hidden] { display: none }`
+user-agent rule for the same property, regardless of selector
+specificity or source order, because origin (author vs. user-agent)
+decides before specificity does. Every other conditionally-hidden
+element in `dewmini-style.css` already carries its own explicit
+`.foo[hidden] { display: none; }` override for exactly this reason
+(`.dm-panel[hidden]`, `.dm-tabs[hidden]`, six others) — `.dm-toolbar-group`
+now does too. Caught by the e2e test written for it, not by inspection.
+
+**Verified in a real browser**, not asserted: opening an `.html` from
+Files renders a split-screen tab with a live preview of its actual
+content; a same-base-name `.css`/`.js` pair opens beside it with the
+preview reflecting all three (a JS cell mutating the DOM the HTML half
+produced, not just running inertly); a lone `.html` with no siblings
+still opens, its CSS/JS panes empty rather than erroring; typing in any
+of the three panes updates the preview without a separate press; the CSS
+and JS halves each write back to their own real file, readable from a
+Python cell in another tab; the toolbar's cell-only controls hide for a
+site tab and reappear switching back to a notebook tab; and a site tab
+survives a full page reload. Seven new e2e tests in
+`tests/e2e/test_dewmini_workbench.py` cover this ground — one of them
+(the CSS write-back test) needing a 3-second wait rather than 1.5,
+because two debounces still stack before a site's own file is durable on
+disk: `scheduleWorkspaceWrite()`'s 600ms, then `dewmini-fs.js`'s own
+internal sync debounce on top of that — the same discovery the abandoned
+first design made about its own, differently-shaped debounce stack,
+carried forward rather than rediscovered.
+
+*Cost to change: mostly absorbed by `574d5c3` already having built the
+file-open/write-back mechanism this reuses rather than reinvents — the
+net new surface is `VIEWS.SITE` itself, the sibling-discovery logic, and
+`renderSiteView()`'s split layout. The real cost was the false start:
+a working, tested implementation built and then discarded whole, because
+it was designed against a base three commits behind the one it needed
+to ship against. The lesson worth keeping is not "check `main` before
+building" in the abstract — that was already the working assumption —
+it is that a design decision made while a *sibling* branch is still
+landing large, overlapping surface area (the same `compose/dewmini.js`
+regions, in this case) has a short shelf life, and is worth holding
+loosely until both have actually met.*

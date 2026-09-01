@@ -122,13 +122,18 @@
            in a menu: a tool that behaves differently depending on a
            setting the reader cannot see is one they get lost in. The tab
            carries the same word once more than one notebook is open. -->
-      <div class="dm-toolbar-group dm-viewswitch" role="group" aria-label="How to show this notebook">
+      <!-- .dm-cellview-only: meaningless for a Site tab (planning/
+           DEWMINI_WORKBENCH.md §10) — there are no Python cells to show as
+           a file, run, or seed with an example — so updateViewSwitch()
+           hides every group carrying this class whenever the active tab
+           is showing a site rather than a notebook. -->
+      <div class="dm-toolbar-group dm-viewswitch dm-cellview-only" role="group" aria-label="How to show this notebook">
         <button id="dm-view-cells" class="dm-tool dm-viewswitch-btn" aria-pressed="true"
                 title="Show this notebook as a list of cells">Cells</button>
         <button id="dm-view-file" class="dm-tool dm-viewswitch-btn" aria-pressed="false"
                 title="Show this notebook as one Python file">File</button>
       </div>
-      <div class="dm-toolbar-group">
+      <div class="dm-toolbar-group dm-cellview-only">
         <button id="dm-show-example" class="dm-tool dm-tool-accent" title="Fill the notebook with a short worked example">
           <span class="dm-tool-icon dm-tool-icon-run" aria-hidden="true"></span>See an example
         </button>
@@ -139,7 +144,7 @@
           <span class="dm-tool-icon dm-tool-icon-text" aria-hidden="true"></span>Practice
         </button>
       </div>
-      <div class="dm-toolbar-group">
+      <div class="dm-toolbar-group dm-cellview-only">
         <button id="run-all" class="dm-tool dm-tool-accent" title="Run every cell in order">
           <span class="dm-tool-icon dm-tool-icon-run" aria-hidden="true"></span>Run all
         </button>

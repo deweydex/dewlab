@@ -401,10 +401,20 @@ JavaScript gets a second.
 design and reasoning in `planning/DEWMINI_WORKBENCH.md`). Notebooks open
 in tabs — `notebooks[]` in `dewmini.js`, with `cells` re-pointed at
 whichever is active rather than every function being routed through an
-index — and two docked rails sit either side of them: a **Library**
-(left) carrying the cross-tutorial reference, a dataset catalogue and
-the help text, and a **Workbench** (right) carrying a live variable
-inspector, notes and files, with Settings sharing that right edge.
+index — and two docked rails sit either side of them: a **Workbench**
+(left) carrying a live variable inspector, notes and a real file
+manager, and a **Library** (right) carrying the cross-tutorial
+reference, a dataset catalogue and the help text, with Settings sharing
+that right edge (`DECISIONS_LOG.md` 7.99, 7.121 — the sides swapped
+after the layout first shipped).
+
+A tab need not hold a notebook of cells at all. Files' own file manager
+(`openWorkspaceFile()`) can open a real workspace file directly: a `.py`
+as one editor, a `.ipynb` as cells, and an `.html` as a small website —
+its own editor split-screen against a live sandboxed preview, discovering
+whatever `.css`/`.js` of the same base name sit beside it rather than
+requiring three fixed names (`DECISIONS_LOG.md` 7.121,
+`planning/DEWMINI_WORKBENCH.md` §10).
 
 Two pieces of that reach outside `compose/`. `write_reference_index()`
 in `build.py` emits `assets/reference-index.json`, the union of every
