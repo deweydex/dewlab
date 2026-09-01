@@ -804,3 +804,87 @@ def test_a_leading_comment_from_another_file_is_kept(dewmini, tmp_path):
     assert len(cells) == 2, "the licence header was dropped"
     assert "Copyright 2026 Somebody Else." in cells[0][1]
     assert "MIT licence" in cells[0][1]
+
+
+# ------------------------------------------- importing a workspace file
+
+
+def run_first_cell_and_wait(page, index=0):
+    """Runs one cell by index and waits for its output to arrive."""
+    page.locator(".dm-cell .dm-icon-run").nth(index).click()
+    page.wait_for_function(
+        "(i) => {"
+        " const out = document.querySelectorAll('.dm-cell-output')[i];"
+        " return out && out.innerText.trim().length > 0;"
+        "}",
+        arg=index,
+        timeout=120_000,
+    )
+    return page.locator(".dm-cell-output").nth(index).inner_text().strip()
+
+
+def test_a_workspace_file_can_be_imported(dewmini):
+    """The whole point of putting the mount on `sys.path`: a .py file a
+    student writes in the workspace is importable by name.
+
+    Before this, the workspace was readable and not importable — a
+    student could have two Python files and no way to use one from the
+    other, which is exactly the step this is meant to teach.
+    """
+    add_python_cell(
+        dewmini,
+        'open("/mnt/dewmini/shapes.py", "w").write("def area(side):\\n    return side * side\\n")\n'
+        "import shapes\n"
+        "shapes.area(4)",
+    )
+
+    assert run_first_cell_and_wait(dewmini) == "16"
+
+
+def test_an_edited_import_is_reported_and_can_be_re_read(dewmini):
+    """The failure that comes free with importing, and the answer to it.
+
+    Python keeps an imported module in `sys.modules` and hands back the
+    remembered one rather than re-reading the file, so a student who
+    fixes their .py and runs the cell again gets the same wrong answer
+    with nothing on screen to explain it. dewmini says so, and offers to
+    re-read — rather than reloading silently, which would teach nothing
+    about behaviour they will meet in every other Python environment.
+    """
+    add_python_cell(
+        dewmini,
+        'open("/mnt/dewmini/tools.py", "w").write("def double(n):\\n    return n + n\\n")\n'
+        "import tools\n"
+        "tools.double(5)",
+    )
+    assert run_first_cell_and_wait(dewmini) == "10"
+
+    # The student edits the file — here, from another cell, which is the
+    # only way to write into the workspace before a file editor exists.
+    add_python_cell(
+        dewmini,
+        'open("/mnt/dewmini/tools.py", "w").write("def double(n):\\n    return n * 2 + 100\\n")\n'
+        '"edited"',
+    )
+    run_first_cell_and_wait(dewmini, 1)
+
+    # Nothing has been said yet, and the old version is still what runs.
+    add_python_cell(dewmini, "tools.double(5)")
+    assert run_first_cell_and_wait(dewmini, 2) == "10", "Python should still be using the old module"
+
+    # The run above is what noticed. The notice names the file.
+    notice = dewmini.locator("#stale-imports-notice")
+    notice.wait_for(state="visible", timeout=30_000)
+    assert "tools.py" in notice.inner_text()
+
+    dewmini.click("#reload-stale-imports")
+    assert notice.is_hidden()
+
+    # Waiting for the new value rather than for "some output": the old
+    # output is still on screen when the re-run starts, so a check for
+    # non-empty text can read the previous answer and pass by luck.
+    dewmini.locator(".dm-cell .dm-icon-run").nth(2).click()
+    dewmini.wait_for_function(
+        "document.querySelectorAll('.dm-cell-output')[2].innerText.trim() === '110'",
+        timeout=120_000,
+    )

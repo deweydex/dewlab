@@ -4822,3 +4822,59 @@ defect that only a browser could have surfaced, and because the tests for
 waits for the collapse before anything else is clicked) rather than by
 accident. A fix would keep the cell's height stable across the swap, or
 render on a change rather than on blur.
+
+---
+
+**7.113 — The workspace on `sys.path`, and the module caching that comes
+with it.** dewmini mounted the workspace at `/mnt/dewmini`, and nothing
+put that directory on Python's import search list. Files there were
+readable and not importable, so a student could write two Python files
+and have no way to use one from the other — which is precisely the step
+`planning/PY_FILES_AND_FILE_MODE.md` Part 2 identifies as the hard one.
+The mount point is now added when the filesystem initialises, before any
+backend is chosen, since the path is the same in all three cases.
+
+**The one line was never the whole change.** Python keeps every imported
+module in `sys.modules` and hands back the remembered one rather than
+re-reading the file. A student imports shapes.py, calls a function, gets
+a wrong answer, finds the mistake, corrects the file, runs the cell
+again — and gets the same wrong answer, with nothing on screen to
+explain it. Shipping the import path without an answer to this would have
+handed students a new and worse confusion than the one it solved.
+
+**dewmini says so, and offers to re-read.** Of the three options Part 2
+sets out — tell them, reload silently, restart Python — this is the only
+one that leaves them knowing something true. Module caching is real
+Python behaviour they will meet in every other environment; a student who
+has met it here with an explanation is better placed than one for whom it
+was quietly papered over. Restarting is correct and far too slow for a
+one-character edit.
+
+**The notice names the files.** "A module changed" would send a reader
+looking through everything they have open.
+
+**The reply after a re-read says what a re-read cannot fix.** Reloading
+replaces what is inside the module object. A name pulled out of it with
+`from shapes import area` still points at the old function, because that
+binding lives in the student's own namespace. Someone who re-reads, runs
+the cell, and still sees the old answer has been told nothing useful
+unless this is said, so the confirmation says it.
+
+**Where the state lives is deliberate.** Python is asked a question and
+answers it; the "what did we see last time" map is held in
+`pyodide-engine.js` and cleared by `restart()`. Nothing is installed into
+the interpreter at boot, so a tutorial page — which never mounts a folder
+— pays nothing for any of this. The Python itself lives in one new file,
+`assets/module-watch.js`, imported by both `pyodide-engine.js` (for the
+main-thread fallback) and `pyodide-worker.js`, rather than written twice
+in two places that would drift while both looked right.
+
+**Failure is reported, not raised.** Editing a file into a syntax error
+is an ordinary thing for a student to do, and the re-read is dewmini
+asking on their behalf — so the error belongs on screen as an answer to
+"re-read this", not as an exception from a cell that did nothing wrong.
+
+*Cost to change: one day, as estimated. Two e2e tests: one proving a
+workspace file imports at all, one walking the whole confusion — write,
+import, call, edit, run again and still get the old answer, see the
+notice, re-read, get the new one.*

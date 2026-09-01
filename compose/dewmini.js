@@ -1279,6 +1279,7 @@ async function runCell(id) {
     // read false (its pre-boot default) on every cell's first-ever run,
     // showing the *non-stoppable* "…" busy state even in worker mode.
     await ensurePyodide();
+    await checkImportedFiles();
     setRunButtonRunning(cell.runBtn);
     const ok = await executeCell(cell);
     updateStatus(ok ? "Ran." : "Error — see the cell.", ok ? "ok" : "error");
@@ -1319,6 +1320,9 @@ async function runCellBatch(pythonCells, { reset, emptyMessage, describe }) {
 
   try {
     await ensurePyodide();
+    // Once for the whole batch, not once per cell: the answer would be
+    // the same every time and each ask is a round trip.
+    await checkImportedFiles();
     if (reset) await engine.resetPageState();
     updateStatus(describe(pythonCells.length));
 
@@ -1389,6 +1393,94 @@ async function runBelow(id) {
     emptyMessage: "No Python cells here or below to run.",
     describe: (n) => `Running the ${n} cell${n === 1 ? "" : "s"} from here on…`,
   });
+}
+
+/* ------------------------------------------------- imported .py files
+ *
+ * A student who writes shapes.py in the workspace and imports it in a
+ * cell meets a specific, confusing failure the first time they edit that
+ * file. Python keeps every module it has imported in `sys.modules` and
+ * hands back the remembered one rather than reading the file again, so
+ * the corrected function is not the one that runs. The answer does not
+ * change, and nothing on screen says why.
+ *
+ * dewmini tells them, and offers to re-read the files. It does not
+ * re-read silently: module caching is real Python behaviour they will
+ * meet in every other environment they ever use, and a student who has
+ * met it here with an explanation is better placed than one for whom it
+ * was quietly papered over. Restarting Python instead would be correct
+ * and far too slow for a one-character edit. */
+
+// Module names currently shown in the notice, so its button knows what to
+// re-read without asking Python a second time.
+let staleImportNames = [];
+
+/* Asks whether any workspace file already imported has been edited since
+ * Python read it, and shows the notice if so.
+ *
+ * Cheap to call and safe to call often: with nothing mounted there is no
+ * import path to have imported from, so this returns without a round
+ * trip at all. Never throws — it drives a notice, and a page that cannot
+ * ask simply does not show one. */
+async function checkImportedFiles() {
+  if (!dfs.getBackend()) return;
+  const changed = await engine.changedImportedModules(dfs.mountPoint());
+  if (changed.length) showStaleImportsNotice(changed);
+}
+
+/* Names the edited files and says what to do about them. Deliberately
+ * concrete about which files: "a module changed" would send a student
+ * looking through everything they have open. */
+function showStaleImportsNotice(names) {
+  staleImportNames = names;
+  const notice = document.getElementById("stale-imports-notice");
+  const text = document.getElementById("stale-imports-text");
+  if (!notice || !text) return;
+  const files = names.map((n) => `${n}.py`).join(", ");
+  text.textContent = names.length === 1
+    ? `You have edited ${files} since Python read it. Python is still using the version it read first, so your change is not in what runs.`
+    : `You have edited these since Python read them: ${files}. Python is still using the versions it read first, so your changes are not in what runs.`;
+  notice.hidden = false;
+}
+
+function hideStaleImportsNotice() {
+  staleImportNames = [];
+  const notice = document.getElementById("stale-imports-notice");
+  if (notice) notice.hidden = true;
+}
+
+/* Re-reads the edited modules, then says what happened.
+ *
+ * The warning about `from … import …` is not a footnote. Reloading
+ * replaces what is inside the module object; a name the student imported
+ * *out* of it still points at the old function, because that binding
+ * lives in their own namespace. Someone who re-reads the file, runs the
+ * cell, and still sees the old answer has been told nothing useful
+ * unless this is said. */
+async function reloadStaleImports() {
+  const names = staleImportNames.slice();
+  if (!names.length) { hideStaleImportsNotice(); return; }
+  hideStaleImportsNotice();
+  updateStatus("Re-reading…");
+  let result;
+  try {
+    result = await engine.reloadModules(names);
+  } catch (err) {
+    updateStatus(`Couldn't re-read those files: ${err.message}`, "error");
+    return;
+  }
+  if (result.failed.length) {
+    const first = result.failed[0];
+    updateStatus(`${first.name}.py could not be read: ${first.error}`, "error");
+    return;
+  }
+  const many = result.reloaded.length !== 1;
+  updateStatus(
+    `Re-read ${result.reloaded.map((n) => `${n}.py`).join(", ")}. `
+    + `If you wrote \`from ${result.reloaded[0]} import …\`, run that line again too — `
+    + `${many ? "those names" : "that name"} still point at the old version.`,
+    "ok"
+  );
 }
 
 // -------------------------------------------------------------- downloads
@@ -3421,6 +3513,8 @@ function wireToolbar() {
   document.getElementById("download-ipynb")?.addEventListener("click", downloadAsIpynb);
   document.getElementById("import-ipynb")?.addEventListener("click", () => document.getElementById("import-ipynb-file")?.click());
   document.getElementById("import-ipynb-file")?.addEventListener("change", handleImportFile);
+  document.getElementById("reload-stale-imports")?.addEventListener("click", reloadStaleImports);
+  document.getElementById("dismiss-stale-imports")?.addEventListener("click", hideStaleImportsNotice);
   // Built-in worked examples — one listener for all four buttons, keyed
   // off the path/label already sitting in each button's own markup.
   for (const btn of document.querySelectorAll("#dl-settings-download [data-example]")) {
