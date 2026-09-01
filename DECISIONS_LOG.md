@@ -4800,3 +4800,37 @@ contents page introduction (`test_the_contents_page_introduces_the_place_instead
 a check on its wording, so update the phrase there rather than working
 around it.*
 
+**5.2 — The contents page introduction is one paragraph and six points, in
+the order a reader meets them.**
+
+Six paragraphs and 254 words was the wrong shape for the page somebody
+lands on. It answered several independent questions in prose — what is a
+cell, can I break this, where does my work go, how is the list organised,
+where do I start — so a reader arriving with one of them had to read the
+rest to find it. Section 4 of the style guide asks for prose over bullets;
+that rule is about an *explanation*, where the joins between sentences are
+the reasoning. Six separate answers to six separate questions have no
+joins to remove, so this is an exception rather than a breach, and it is
+noted in `render_index()` and in the stylesheet beside `.dl-intro-points`.
+
+The framing of two of those points was rewritten after the first draft got
+it wrong. "We try things before we name them" sold the running-first as
+novelty. The point is the sequence: explore a problem, then the general
+principle underneath it, then the name — and the name matters because it
+is how a student talks to somebody else about what they just did. Section
+3 now says that. Likewise the practice point: answers sit below the
+problems not as a concession but because the answer was never the thing
+worth protecting, and what is being learned is the steps — small first,
+then multi-step, then more abstract.
+
+Section 4 also gained the sentence-level rules this exposed: mark a
+sequence with *first… then… then*, do not make a reader hold a negative
+before there is anything to hold it against, "we" for the learning and
+"you" for what is actually theirs, and hedge any claim that is not a real
+binary.
+
+*Cost to change: trivial for the wording, small for the shape. The points
+live in one list in `render_index()`. Going back to prose means deleting
+`.dl-intro-points` from the stylesheet and the exception note from both
+comments — do not leave either behind claiming a list that is not there.*
+

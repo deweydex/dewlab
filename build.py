@@ -1818,24 +1818,30 @@ def render_index(
         "install and no account to make. Open any tutorial and start.</p>",
         '<ul class="dl-intro-points">',
         "<li><strong>Tutorials are made of cells.</strong> A cell is a small "
-        "box of Python set into the reading. We can change what is in it, run "
-        "it, and the result appears underneath.</li>",
-        "<li><strong>We try things before we name them.</strong> Most "
-        "tutorials give us a cell to run before they explain it. The name for "
-        "what we just did usually comes afterwards.</li>",
-        "<li><strong>Getting it wrong costs nothing.</strong> An error message "
-        "is usually telling us something useful. Nothing here is scored, and "
-        "nothing you write leaves your browser.</li>",
-        "<li><strong>Your work is saved</strong> on this device as you go. You "
+        "box of Python set into the reading. We can change what is in it and "
+        "run it. The result appears just underneath.</li>",
+        "<li><strong>First we explore, then we name what we found.</strong> A "
+        "tutorial usually opens with a problem or an idea to try out. Then we "
+        "look at the general principle behind it. Then we learn the name "
+        "people give it, so that we can talk to other people about the same "
+        "idea.</li>",
+        "<li><strong>Practice problems run all the way through.</strong> Most "
+        "tutorials have a page of them as well, linked as <em>practice</em> "
+        "beside the title. The answer usually sits right below each problem. "
+        "We are not trying to hide the right answer. What we are learning is "
+        "the steps that get us there. The first problems are small. Later ones "
+        "take several steps. Later ones again are more abstract.</li>",
+        "<li><strong>Getting something wrong costs nothing.</strong> An error "
+        "message is usually telling us something useful. Nothing here is "
+        "scored. Nothing you write leaves your browser.</li>",
+        "<li><strong>Your work is saved on this device as you go.</strong> You "
         "can also download any tutorial as a single file and keep it.</li>",
         "<li><strong>The list below is grouped into modules, and each module "
-        "into series.</strong> A series is meant to be read in order. Most "
-        "tutorials have a practice page as well, linked as <em>practice</em> "
-        "beside the title, with more problems on the same idea.</li>",
-        '<li><strong>Not sure where to start?</strong> The <a href="tree.html">'
-        "topic tree</a> shows what the course covers, and what usually comes "
-        'first. <a href="topics.html">Browse by topic</a> gathers one subject '
-        "— trigonometry, say — in one place.</li>",
+        "into series.</strong> A series is meant to be read in order, from the "
+        'top. If you are not sure where to start, the <a href="tree.html">topic '
+        "tree</a> shows what the course covers and what usually comes first. "
+        '<a href="topics.html">Browse by topic</a> gathers one subject — '
+        "trigonometry, say — in one place.</li>",
         "</ul>",
         '<p class="dl-intro-tree">This project is open and still growing. '
         '<a href="about.html">About this project</a> explains how to suggest a '

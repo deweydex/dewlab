@@ -88,6 +88,13 @@ Let them multiply a transition matrix until the state vector stops moving, and
 then say stationary distribution. A name given before the experience is a name
 to memorise; a name given after it is a name for something they already have.
 
+Three steps, in that order: explore the problem, then the general principle
+underneath it, then the name. And say what the name is *for*. It is not a label
+the tutorial awards at the end for having paid attention. It is the word that
+lets a student talk to somebody else about the thing they have just done — a
+tutor, a classmate, a search box, the next tutorial. Saying that out loud is
+what turns the naming step from a formality into the reason for it.
+
 ---
 
 ## 4. Voice
@@ -168,6 +175,33 @@ the whole document, because a native speaker cannot see them.
 **Ration the aphorism.** A unit that ends on a maxim rather than on information
 is teaching the reader to expect a punchline, and at this density it trains
 them to skim for it. Keep the best ones; that is what makes them the best ones.
+
+**Put steps in the order they happen, and mark the order.** *First… then…
+then…* Three short sentences in sequence show a reader where they are in a
+process. Two actions folded into one clause with an *and then* hide the
+sequence inside a single breath, and a reader who is not confident loses their
+place in it. This is the cheapest fix on this page and the one that helps most.
+
+**No reversals.** *Not the answer but the steps* asks a reader to hold a
+negative in mind before there is anything to hold it against. *What we are
+learning is the steps that get us there* says the same thing forwards. Put the
+thing you actually mean in the subject of the sentence, and let it arrive in
+the order it happens.
+
+**"We" for the learning, "you" for what is theirs.** *We explore, then we name
+what we found* puts the writer beside the reader in the work. *Your work is
+saved on this device* is about their machine and their file, and a "we" there
+would be a pretence. Keep the two apart and both stay honest.
+
+**Hedge what is not a binary.** *Usually comes afterwards*, *is usually telling
+us something useful*, *what usually comes first*. Most teaching claims have
+exceptions, and a reader who meets the exception in their second tutorial
+learns to distrust the flat ones. State flatly only what is genuinely flat —
+*nothing you write leaves your browser* is a real binary, and hedging it would
+read as evasion.
+
+**The test.** Not whether the sentence is elegant. Whether a reader who is
+unsure of themselves comes out of it feeling more able than they went in.
 
 None of this asks for flat writing. Warmth is in the second person, in the
 invitation, and in what the sentence does not assume about the reader — not in
@@ -384,6 +418,11 @@ see section 5.
   is before what it is not?
 - Is any metaphor carrying the meaning rather than illustrating it? Any idiom
   that assumes Irish or British English?
+- Where something happens in a sequence, is the sequence marked — first, then,
+  then — rather than folded into one clause?
+- Any reversal that makes the reader hold a negative before they have anything
+  to hold it against?
+- Is a claim stated flatly that is not actually a binary?
 - Any command language aimed at the student? Any emoji?
 - Has every number in the tutorial and its practice page actually been run?
 - Does the practice page exist, and do hard problems carry a stepped hint?
