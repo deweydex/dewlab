@@ -4806,3 +4806,81 @@ than several scattered ones. `lastRunMs` is no longer persisted to
 `localStorage` (only `collapsed` is, alongside the existing fields) since
 it's meaningless without `ranOrder`, which was never persisted either;
 nothing reads the old field back, so no migration was needed.*
+
+**7.111 — The style guide gained a plain-language section, and the four
+student-facing surfaces were rewritten to it.**
+
+The contents page, the About page, the topic tree and the 251 glossary
+definitions all passed section 4 of `planning/PEDAGOGICAL_STYLE_GUIDE.md`
+as it stood — invitational, warm, prose not bullets, no emoji — and were
+still hard to read. Section 4 governed *stance*; nothing in it governed
+sentence architecture, and section 1 says a reader may be working in a
+second language.
+
+Six habits ran through all four surfaces, in the same proportions on each:
+a short main clause with an em dash carrying the actual meaning; definitions
+written as participles rather than sentences (*"Standing in for a process
+that…"*); contrast before definition (*not x but y*, before x was ever
+said); metaphor standing in place of the plain statement rather than after
+it (*how much skin a solid has*); Irish and British idiom (*already behind
+you*, *paging through*, *it earns its keep*); and an aphorism closing
+almost every unit.
+
+Measured before and after, on the same extraction: the About page went from
+29.7 words per sentence and a 61-word longest sentence to 17.7 and 31
+(Flesch–Kincaid 14.1 → 8.2); the contents page 17.7 → 11.5 (FK 9.4 → 6.1);
+`topics.yaml`'s topic descriptions 18.7 → 15.8 with the longest sentence
+46 → 31 (FK 9.3 → 7.9); the glossary 15.8 → 13.4 with the longest 60 → 45
+(FK 8.5 → 7.4). 25 of 81 topic descriptions and 64 of 251 glossary
+definitions were rewritten — the ones that breached the new rules, not all
+of them, so the diff stays reviewable and the entries that were already
+plain keep their wording.
+
+The rule went into section 4 as a subsection rather than a new numbered
+section on purpose: `.claude/skills/cell-code-review/` and several planning
+documents cite this guide by section number, and renumbering would have
+broken every one of those references silently.
+
+*Cost to change: small for the guide, large for the prose. Loosening the
+rules is an edit to one file. Reverting the rewrites means putting back
+text across `build.py`, `planning/curriculum/topics.yaml` and 30-odd
+glossary files, and `tests/test_build.py` asserts on one phrase of the
+contents page introduction (`test_the_contents_page_introduces_the_place_instead`)
+— which is the check that stops the introduction being deleted rather than
+a check on its wording, so update the phrase there rather than working
+around it.*
+
+**7.112 — The contents page introduction is one paragraph and six points, in
+the order a reader meets them.**
+
+Six paragraphs and 254 words was the wrong shape for the page somebody
+lands on. It answered several independent questions in prose — what is a
+cell, can I break this, where does my work go, how is the list organised,
+where do I start — so a reader arriving with one of them had to read the
+rest to find it. Section 4 of the style guide asks for prose over bullets;
+that rule is about an *explanation*, where the joins between sentences are
+the reasoning. Six separate answers to six separate questions have no
+joins to remove, so this is an exception rather than a breach, and it is
+noted in `render_index()` and in the stylesheet beside `.dl-intro-points`.
+
+The framing of two of those points was rewritten after the first draft got
+it wrong. "We try things before we name them" sold the running-first as
+novelty. The point is the sequence: explore a problem, then the general
+principle underneath it, then the name — and the name matters because it
+is how a student talks to somebody else about what they just did. Section
+3 now says that. Likewise the practice point: answers sit below the
+problems not as a concession but because the answer was never the thing
+worth protecting, and what is being learned is the steps — small first,
+then multi-step, then more abstract.
+
+Section 4 also gained the sentence-level rules this exposed: mark a
+sequence with *first… then… then*, do not make a reader hold a negative
+before there is anything to hold it against, "we" for the learning and
+"you" for what is actually theirs, and hedge any claim that is not a real
+binary.
+
+*Cost to change: trivial for the wording, small for the shape. The points
+live in one list in `render_index()`. Going back to prose means deleting
+`.dl-intro-points` from the stylesheet and the exception note from both
+comments — do not leave either behind claiming a list that is not there.*
+

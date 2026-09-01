@@ -52,7 +52,8 @@ entries:
     kind: function
     definition: >
       Asks the person using the page to type something, and hands back
-      whatever they typed — always as a str, even if it looks like a number.
+      whatever they typed. It always comes back as a str, even when it looks
+      like a number.
   - term: binary
     kind: concept
     definition: >

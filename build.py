@@ -1802,34 +1802,50 @@ def render_index(
 
     # An introduction rather than a diagram. The map moved to its own page,
     # where it can have the whole window; this page's job is to say what dewlab
-    # is to somebody who has just arrived, and then get out of the way of the
-    # list they came for.
+    # is to somebody who has just arrived, in as few lines as that takes, and
+    # then leave them to the list they came for. One paragraph and six points,
+    # deliberately: PEDAGOGICAL_STYLE_GUIDE.md section 4 asks for prose over
+    # bullets in an *explanation*, and this is not one — it is the separate
+    # things a reader wants answered before they choose a tutorial (what a cell
+    # is, whether they can break it, where their work goes, how the list below
+    # is organised, where to start), and no answer follows from another. Prose
+    # made the reader hunt for their own question.
     out = [
         "<h1>Tutorials</h1>",
         '<div class="dl-intro">',
-        "<p>dewlab is a set of browser-based tutorials for learning mathematics "
-        "and programming together. Open any page and start immediately: no "
-        "installs, no accounts, and no setup before you can begin.</p>",
-        "<p>Every tutorial opens with something to run, before it explains "
-        "anything — you meet an idea by trying it, and the name for what you "
-        "just did comes afterwards, once you already have something to hang it "
-        "on. Being wrong here is cheap and visible: a cell that raises an error "
-        "in front of you is doing its job, not marking you down, and nothing "
-        "you do is scored or sent anywhere.</p>",
-        "<p>Each tutorial combines reading with runnable Python cells, so you can "
-        "test ideas while you work through the explanation. Your edits stay in "
-        "this browser on this device, and every tutorial can also be downloaded "
-        "as a single file to keep.</p>",
-        '<p>This project is open and still evolving. The <a href="about.html">About '
-        "this project</a> page explains how to suggest improvements, report "
-        "errors, and contribute directly on GitHub.</p>",
-        '<p class="dl-intro-tree">New here, or not sure where a topic fits? '
-        'The <a href="tree.html">topic tree</a> shows everything the course '
-        "covers and what has to come first. Already partway through, and "
-        'want to practice one topic — trigonometry, say — in whatever '
-        'order suits you rather than paging through the whole list? '
-        '<a href="topics.html">Browse by topic</a> gathers each one in '
-        "one place.</p>",
+        "<p>dewlab is a set of tutorials where we learn maths and programming "
+        "together. Everything runs in your browser, so there is nothing to "
+        "install and no account to make. Open any tutorial and start.</p>",
+        '<ul class="dl-intro-points">',
+        "<li><strong>Tutorials are made of cells.</strong> A cell is a small "
+        "box of Python set into the reading. We can change what is in it and "
+        "run it. The result appears just underneath.</li>",
+        "<li><strong>First we explore, then we name what we found.</strong> A "
+        "tutorial usually opens with a problem or an idea to try out. Then we "
+        "look at the general principle behind it. Then we learn the name "
+        "people give it, so that we can talk to other people about the same "
+        "idea.</li>",
+        "<li><strong>Practice problems run all the way through.</strong> Most "
+        "tutorials have a page of them as well, linked as <em>practice</em> "
+        "beside the title. The answer usually sits right below each problem. "
+        "We are not trying to hide the right answer. What we are learning is "
+        "the steps that get us there. The first problems are small. Later ones "
+        "take several steps. Later ones again are more abstract.</li>",
+        "<li><strong>Getting something wrong costs nothing.</strong> An error "
+        "message is usually telling us something useful. Nothing here is "
+        "scored. Nothing you write leaves your browser.</li>",
+        "<li><strong>Your work is saved on this device as you go.</strong> You "
+        "can also download any tutorial as a single file and keep it.</li>",
+        "<li><strong>The list below is grouped into modules, and each module "
+        "into series.</strong> A series is meant to be read in order, from the "
+        'top. If you are not sure where to start, the <a href="tree.html">topic '
+        "tree</a> shows what the course covers and what usually comes first. "
+        '<a href="topics.html">Browse by topic</a> gathers one subject — '
+        "trigonometry, say — in one place.</li>",
+        "</ul>",
+        '<p class="dl-intro-tree">This project is open and still growing. '
+        '<a href="about.html">About this project</a> explains how to suggest a '
+        "change or report a mistake.</p>",
         "</div>",
         # A section of its own, not one more paragraph among the intro's —
         # this is not a tutorial and doesn't belong on the numbered list
@@ -1846,10 +1862,9 @@ def render_index(
         "<h2>Want to experiment on your own, outside a tutorial?</h2>",
         '<a class="dl-workspace-card" href="compose/dewmini.html" target="_blank">',
         "<h3>dewmini</h3>",
-        "<p>The same Python as every tutorial, with no tutorial attached — "
-        "a file manager, SQLite, notebook import, and a real Stop button, "
-        "for a quick calculation, a practice problem, or a project of its "
-        "own.</p>",
+        "<p>An open Python workspace with no tutorial attached. The same "
+        "cells and the same Python, plus files, SQLite and a Stop button. "
+        "Useful when we just want to try something out.</p>",
         "</a>",
         "</div>",
         render_search_box("Search by topic — e.g. loops, probability, sorting…"),
@@ -1930,9 +1945,9 @@ def render_index(
             if member is mixed[module][0]:
                 out.append('<h3 class="dl-mixed-head">Mixed problems</h3>')
                 out.append(
-                    '<p class="dl-mixed-note">Problems drawing on several '
-                    "tutorials at once. Worth doing once the tutorials they "
-                    "name are behind you.</p>"
+                    '<p class="dl-mixed-note">Problems that draw on several '
+                    "tutorials at once. Try them once you have finished the "
+                    "tutorials they name.</p>"
                 )
                 out.append('<ul class="dl-contents dl-mixed">')
             href = member.out_path.relative_to(OUT).as_posix()
@@ -1950,8 +1965,8 @@ def render_index(
                 out.append('<h3 class="dl-archive-head">Archive</h3>')
                 out.append(
                     '<p class="dl-archive-note">No longer part of the course. '
-                    "Kept so that saved work is still reachable and old links "
-                    "still work.</p>"
+                    "Kept here so that saved work can still be found and old "
+                    "links still work.</p>"
                 )
                 out.append('<ul class="dl-contents dl-archive">')
             href = member.out_path.relative_to(OUT).as_posix()
@@ -3279,9 +3294,9 @@ def strand_key(data: dict) -> str:
     )
     return (
         '<details class="dl-tree-strands"><summary>What the colours mean</summary>'
-        '<p class="dl-tree-strands-note">The stripe down the left of every topic '
-        "is its subject. Subjects are not laid out in columns — depth is — so "
-        "the colour is how you follow one thread down the tree.</p>"
+        '<p class="dl-tree-strands-note">The stripe down the left of each topic '
+        "shows its subject. The columns do not group subjects; only depth does. "
+        "So the colour is how you follow one subject down the tree.</p>"
         f'<p class="dl-tree-key-list">{items}</p></details>'
     )
 
@@ -3300,12 +3315,12 @@ def write_tree_page(shell: str, tutorials: list[Tutorial]) -> Path | None:
 
     body = (
         '<h1>The topic tree</h1>'
-        '<p class="dl-tree-intro">Everything both modules cover, and what has to '
-        "come before what. <strong>It reads downwards.</strong> Nothing in the top "
-        "row needs anything, so any of it can be started today; the further down a "
-        "topic sits, the more has to come first. Drag to move around it, scroll to "
-        "zoom, and choose any topic to find out what it is, where it turns up in "
-        "computing, and where it is taught.</p>"
+        '<p class="dl-tree-intro">Every topic both modules cover, and the order '
+        "they build in. <strong>The tree reads downwards.</strong> Topics in the "
+        "top row need nothing before them, so you could start any of them today. "
+        "The further down a topic sits, the more you need to know first. Drag to "
+        "move around, scroll to zoom, and choose any topic to see what it is, "
+        "where it comes up in computing, and where it is taught.</p>"
         '<div class="dl-tree-layout">'
         '<div class="dl-tree-main">'
         # Above the frame rather than floating inside it. Floating, they sat on
@@ -3343,9 +3358,10 @@ def write_tree_page(shell: str, tutorials: list[Tutorial]) -> Path | None:
             body += (
                 '<h2 class="dl-tree-second">How the tutorials relate</h2>'
                 '<figure class="dl-map-figure">' + svg +
-                "<figcaption>The reading order, in solid arrows. A dashed arrow "
+                "<figcaption>Solid arrows show the reading order. A dashed arrow "
                 "means the later tutorial builds on the earlier one and says so "
-                "in its own text. Any box takes you there.</figcaption></figure>"
+                "in its own text. Choose any box to open that "
+                "tutorial.</figcaption></figure>"
             )
             break
 
@@ -3709,35 +3725,49 @@ def write_reference_index(tutorials: list[Tutorial]) -> Path:
 
 
 def write_about_page(shell: str) -> Path:
-    """A short guide to what the project is and how to contribute to it."""
+    """A short guide to what the project is and how to contribute to it.
+
+    Written to PEDAGOGICAL_STYLE_GUIDE.md section 4 "Plain language": short
+    sentences in the order things happen, "we" for the work and "you" for what
+    is the reader's own, and a heading over each question rather than one run
+    of paragraphs a reader has to search.
+    """
     body = (
         "<h1>About this project</h1>"
-        "<p>dewlab is an open educational project: tutorials that mix prose, "
-        "mathematics and runnable Python in one page so students can read and "
-        "experiment at the same time.</p>"
+        "<p>dewlab is an open educational project. We put writing, maths and "
+        "runnable Python on the same page, so that you can read about an idea "
+        "and try it out in the same place.</p>"
         "<h2>What's here</h2>"
-        "<p>Tutorials read in the order the course teaches things, but two "
-        'other pages cut across that order: the <a href="tree.html">topic '
-        "tree</a> shows what a tutorial needs before it, for a reader moving "
-        'through in sequence, and <a href="topics.html">Browse by topic</a> '
-        "gathers everything about one subject — trigonometry, say — in one "
-        "place, for practicing out of order once some of it is already behind "
-        "you. Most tutorials end with a practice page of further problems on "
-        "the same idea. And when nothing about a particular tutorial fits — "
-        'just an idea to try — there\'s <a href="compose/dewmini.html">dewmini</a>, '
-        "an open-ended Python workspace with no tutorial attached.</p>"
-        "<p>A tutorial page keeps a reader's edits and any cells they add of "
-        "their own in this browser as they go, and offers several ways to "
-        "take a copy with them: a single downloadable HTML file, a printed or "
-        "PDF copy, or their cells saved as a Jupyter notebook.</p>"
-        "<p>If you would like to improve the material, you are very welcome to "
-        "contribute. You can open an issue for ideas, requests, suggestions or "
-        "comments, or send a pull request with a direct edit.</p>"
+        "<p>The tutorials are listed in the order the course teaches them. That "
+        "is the main way in, and a series is meant to be read from the top.</p>"
+        "<p>Two other pages help when the course order is not the one you "
+        'need. The <a href="tree.html">topic tree</a> shows what a tutorial '
+        'usually expects you to know already. <a href="topics.html">Browse by '
+        "topic</a> gathers everything on one subject — trigonometry, say — in "
+        "one place. That one is useful when you are practising a single topic "
+        "rather than working through in order.</p>"
+        "<p>Most tutorials come with a practice page. It holds more problems on "
+        "the same idea, and the answer usually sits right below each one. We "
+        "are not trying to hide the right answer. What we are learning is the "
+        "steps that get us there.</p>"
+        '<p><a href="compose/dewmini.html">dewmini</a> is an open Python '
+        "workspace with no tutorial attached. Open it when you just want to try "
+        "something out.</p>"
+        "<h2>Your work</h2>"
+        "<p>A tutorial saves your edits as you go, along with any cells you add "
+        "yourself. Everything stays in this browser, on this device.</p>"
+        "<p>You can also take a copy with you. There are three ways to do it: a "
+        "single HTML file, a printed or PDF copy, or your cells saved as a "
+        "Jupyter notebook.</p>"
+        "<h2>Helping out</h2>"
+        "<p>We would be glad of help with the material. You can open an issue "
+        "with an idea, a request or a comment. You can also send a pull request "
+        "with a change of your own.</p>"
+        "<p>If you have found a mistake, please open a GitHub issue. If you "
+        "would rather fix it yourself, send a pull request and we will review "
+        "it and merge it.</p>"
         '<p><strong>Project repository:</strong> <a href="https://github.com/deweydex/dewlab">'
         "github.com/deweydex/dewlab</a></p>"
-        "<p><strong>Found an error?</strong> Please report it in a GitHub issue, "
-        "or fix it directly and open a pull request so it can be reviewed and "
-        "merged.</p>"
         '<p><strong>Contact:</strong> <a href="mailto:deweydex@jsaaron.com">'
         "deweydex@jsaaron.com</a></p>"
     )

@@ -67,6 +67,6 @@ entries:
   - term: order of operations
     kind: concept
     definition: >
-      The order Python evaluates an expression in: parentheses first, then
+      The order Python works through an expression: parentheses first, then
       exponents, then multiplication and division, then addition and
-      subtraction — the same rule taught as PEMDAS or BODMAS in maths.
+      subtraction. It is the same rule taught as PEMDAS or BODMAS in maths.

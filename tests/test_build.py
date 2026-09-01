@@ -2143,7 +2143,7 @@ class TestTheTopicTree:
         write(repo, "Some prose.\n")
         b.build()
         index = (repo / "site" / "index.html").read_text()
-        assert "Open any page and start immediately" in index
+        assert "Open any tutorial and start" in index
         assert 'href="tree.html"' in index
 
 

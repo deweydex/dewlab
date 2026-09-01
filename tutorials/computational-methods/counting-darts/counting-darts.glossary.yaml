@@ -9,9 +9,9 @@ entries:
   - term: "Monte Carlo integration"
     kind: concept
     definition: >
-      Using that counting idea to measure an area or a volume: throw points
-      at a region whose size you know, and the fraction landing inside the
-      part you want gives you its size.
+      Using that counting idea to measure an area or a volume. Throw points
+      at a region whose size you already know. The fraction landing inside
+      the part you want gives you its size.
     example: "area = hits / n * area_of_the_region_you_threw_at"
 
   - term: "estimate"
@@ -24,20 +24,21 @@ entries:
   - term: "1/sqrt(n) error"
     kind: formula
     definition: >
-      The rule governing how a Monte Carlo estimate improves: the typical
-      error falls in proportion to one over the square root of the number of
+      The rule for how a Monte Carlo estimate improves. The typical error
+      falls in proportion to one over the square root of the number of
       samples. A hundred times the work buys one more correct decimal place.
 
   - term: "x^2 + y^2 <= 1"
     kind: formula
     definition: >
       The test for a point lying inside a circle of radius 1 centred on the
-      origin — Pythagoras, used as a membership test rather than to find a
-      distance.
+      origin. It is Pythagoras again, used to ask whether a point belongs
+      rather than to find a distance.
     example: "if x * x + y * y <= 1:"
 
   - term: "running estimate"
     kind: concept
     definition: >
-      The answer recomputed after every new sample, kept as a list so the
-      way it settles can be plotted rather than only its final value read.
+      The answer recomputed after every new sample, and kept as a list. That
+      way the path it takes as it settles can be plotted, rather than only
+      its final value read.

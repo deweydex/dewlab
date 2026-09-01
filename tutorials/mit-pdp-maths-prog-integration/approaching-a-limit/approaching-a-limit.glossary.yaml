@@ -10,16 +10,16 @@ entries:
   - term: "lim(x -> a) f(x)"
     kind: formula
     definition: >
-      The notation for "the limit of f(x) as x approaches a" — the single
-      number f(x) gets arbitrarily close to as x gets arbitrarily close to
-      a, from either side.
+      The notation for "the limit of f(x) as x approaches a". It is the
+      single number f(x) gets arbitrarily close to as x gets arbitrarily
+      close to a, from either side.
   - term: one-sided limits must agree
     kind: concept
     definition: >
-      A limit only exists if approaching from below and from above head
-      for the same number. If the two sides approach different numbers
-      (or one side does not settle at all), the limit does not exist,
-      even though the function may be perfectly well defined nearby.
+      A limit only exists if approaching from below and from above head for
+      the same number. If the two sides approach different numbers, or one
+      side does not settle at all, the limit does not exist. The function
+      may still be perfectly well defined nearby.
   - term: limit at infinity
     kind: concept
     definition: >

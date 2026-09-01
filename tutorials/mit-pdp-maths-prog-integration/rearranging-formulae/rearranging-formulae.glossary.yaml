@@ -9,13 +9,14 @@ entries:
   - term: do the same thing to both sides
     kind: concept
     definition: >
-      The one rule behind every rearrangement — whatever you do to one
-      side of an equation, do to the other, working backwards through the
-      operations from the outside in to isolate the letter you want.
+      The one rule behind every rearrangement: whatever you do to one side
+      of an equation, do to the other. Work backwards through the
+      operations, from the outside in, until the letter you want is on its
+      own.
   - term: floating-point comparison tolerance
     kind: concept
     definition: >
-      Two floats that should be mathematically equal can differ in the
-      last decimal place, so check whether they are closer together than
-      you care about rather than asking if they are exactly equal.
+      Two floats that should be equal in maths can differ in the last
+      decimal place. So check whether they are closer together than you care
+      about, rather than asking whether they are exactly equal.
     example: "abs(recovered - expected) > 1e-9"

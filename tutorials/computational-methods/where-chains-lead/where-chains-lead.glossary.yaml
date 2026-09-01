@@ -21,15 +21,15 @@ entries:
   - term: Markov chain
     kind: concept
     definition: >
-      A process that moves between states using a transition matrix, where
-      what happens next depends only on the current state, never on how it
-      got there.
+      A process that moves between states using a transition matrix. What
+      happens next depends only on the current state, never on how it got
+      there.
   - term: PageRank
     kind: concept
     definition: >
-      Ranks pages by the stationary distribution of a random-surfer Markov
-      chain over the web's link graph — a page's rank is how much of a
-      random surfer's long-run time it accumulates.
+      Ranks pages using the stationary distribution of a random-surfer
+      Markov chain over the web's link graph. A page's rank is the share of
+      a random surfer's long-run time that it collects.
   - term: "random.choices()"
     kind: function
     definition: Picks one item from a list at random, according to a list of weights.

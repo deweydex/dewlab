@@ -13,9 +13,9 @@ entries:
     kind: keyword
     definition: >
       Your code is not valid Python at all. Python's marker often points
-      just after the real problem, not at it — and an unclosed bracket is
-      reported at the point Python gives up looking for the closer, which
-      modern Python now traces back to where it was opened.
+      just after the real problem rather than at it. An unclosed bracket is
+      reported where Python gives up looking for the closing one, though
+      recent versions also point back to where it was opened.
   - term: "ZeroDivisionError"
     kind: keyword
     definition: You divided by zero. Almost always means a count came out empty when you assumed it would not.
@@ -44,7 +44,7 @@ entries:
   - term: traceback
     kind: concept
     definition: >
-      The record of how a running program got to the place it broke. Read
-      it from the bottom: the last line says what went wrong, the lines
-      above say how it got there — and the line that failed is often not
-      the line that is responsible.
+      The record of how a running program got to the place it broke. Read it
+      from the bottom: the last line says what went wrong, and the lines
+      above say how it got there. The line that failed is often not the line
+      that is responsible.

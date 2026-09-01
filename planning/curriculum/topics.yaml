@@ -25,9 +25,9 @@ topics:
     name: Powers and logarithms
     plain: >
       Multiplying a number by itself over and over, and the operation that
-      undoes it. A logarithm answers "how many times did I multiply?" — which
-      turns out to be the natural way to talk about anything that grows or
-      shrinks by a factor rather than by an amount.
+      undoes it. A logarithm answers the question "how many times did I
+      multiply?" Anything that grows or shrinks by a factor, rather than by a
+      fixed amount, is most naturally described that way.
     uses:
       - Measuring how much slower a program gets as its input grows — an
         algorithm that halves the problem each step takes a logarithmic number
@@ -53,8 +53,8 @@ topics:
   MIT-1.3:
     name: Volume and surface area
     plain: >
-      The same question one dimension up: how much a solid holds, and how much
-      skin it has. Cube, cylinder, cone, sphere.
+      The same question in three dimensions: how much a solid holds, and how
+      much surface covers the outside. Cube, cylinder, cone, sphere.
     uses:
       - 3D graphics and games, where every object needs a bounding volume before
         anything can be drawn or collided.
@@ -97,8 +97,8 @@ topics:
       multiplying out brackets, collecting like terms.
     uses:
       - Making a slow calculation fast. The same arithmetic in a different shape
-        can mean far fewer operations, which is the whole of query optimisation
-        in miniature.
+        can mean far fewer operations, which is what query optimisation does
+        on a much larger scale.
       - Reading someone else's formula and satisfying yourself it does what they
         claim.
     needs: [MIT-1.5]
@@ -230,8 +230,8 @@ topics:
     name: De Morgan's Laws
     plain: >
       Two rules for turning a negation inside out. "Not (A and B)" is the same
-      as "not A, or not B" — and once you have seen it you cannot unsee it in
-      other people's conditions.
+      as "not A, or not B" — and once you have noticed it, you will start
+      seeing it in other people's conditions.
     uses:
       - Simplifying a tangled `if`. Most conditions that need a comment to
         explain them are one De Morgan away from not needing one.
@@ -496,10 +496,10 @@ topics:
   MIT-5.4:
     name: Permutations
     plain: >
-      Choosing some of a set when the order they come in matters. Picking a
-      first, second and third from eight runners is a different count from
-      picking three of them to go through, because here the podium positions
-      are distinguishable.
+      Choosing some of a set when the order matters. Picking a first, second
+      and third from eight runners is a different count from picking any three
+      to go through, because first place and second place are different
+      places.
     uses:
       - Ranking and scheduling problems, where first and second are different
         from second and first.
@@ -508,10 +508,10 @@ topics:
   MIT-5.5:
     name: Combinations
     plain: >
-      Choosing some of a set when the order does not matter — a committee rather
-      than a podium. It is the permutation count divided by the number of ways
-      the chosen ones could have been shuffled, since all of those now count as
-      the same choice.
+      Choosing some of a set when the order does not matter — a committee
+      rather than a podium. Take the permutation count and divide it by the
+      number of ways the chosen ones could be reordered, because all of those
+      orders now count as one choice.
     uses:
       - Sampling — how many different groups of five could be drawn from a
         class of thirty.
@@ -526,14 +526,15 @@ topics:
       one is certain, and everything real is in between.
     uses:
       - Reading a model's confidence honestly. A classifier that says 0.51 is
-        not making a prediction, it is shrugging.
+        not really making a prediction; it is saying it does not know.
     needs: []
 
   MIT-5.7:
     name: Equally likely outcomes
     plain: >
-      When every outcome is as likely as every other, the probability of
-      something is simply how many outcomes count divided by how many there are.
+      Sometimes every outcome is as likely as every other. Then the
+      probability of something is just the number of outcomes that count,
+      divided by how many outcomes there are altogether.
     uses:
       - Random number generation, shuffling, and load balancing — all of which
         assume this and break interestingly when the assumption is false.
@@ -603,7 +604,7 @@ topics:
       data is lopsided or has a few extreme values.
     uses:
       - Salary and response-time figures, both of which are routinely reported
-        with the average that flatters.
+        using whichever average looks best.
     needs: [MIT-5.12]
 
   # ------------------------------------------ MIT 6: algorithms and computation
@@ -620,9 +621,9 @@ topics:
   MIT-6.2:
     name: Algorithms as functions
     plain: >
-      Thinking of an algorithm as a machine with a defined set of allowed inputs
-      and one output for each. What it does with an input outside that set is a
-      question you have to answer on purpose.
+      Thinking of an algorithm as a machine with a defined set of allowed
+      inputs and one output for each. What it should do with an input outside
+      that set is a decision you have to make deliberately.
     uses:
       - API design. Most of what a specification says is which inputs are
         allowed.
@@ -705,10 +706,10 @@ topics:
   PDP-LO2:
     name: Algorithms in the real world
     plain: >
-      Recognising the algorithms already running in ordinary life — how post is
-      sorted, how a queue is served, how change is counted out — and describing
-      them precisely enough that somebody could implement one without asking you
-      a single question.
+      Spotting the algorithms already running in ordinary life: how post is
+      sorted, how a queue is served, how change is counted out. Then
+      describing one precisely enough that somebody else could build it
+      without asking you a single question.
     uses:
       - Turning "how we do it at the moment" into something a computer can do,
         which is most of the job.
@@ -717,10 +718,10 @@ topics:
   PDP-LO3:
     name: Comparing languages
     plain: >
-      What actually differs between programming languages once you look past the
-      punctuation: whether they check types before running, how they manage
-      memory, and what they make easy. Choosing one is mostly choosing which
-      problems you would rather have.
+      What really differs between programming languages, once you look past
+      the punctuation. Do they check types before running? How do they manage
+      memory? What do they make easy? Choosing a language is mostly choosing
+      which problems you would rather have.
     uses:
       - Reading code in a language you do not know, which is easier than it
         sounds once you know what to expect.
@@ -739,10 +740,10 @@ topics:
   PDP-LO5:
     name: Solving in sequence
     plain: >
-      Breaking a task into ordered steps, and noticing which steps genuinely
-      depend on which. The dependencies are what fix the order; everything else
-      could be done in any sequence, and knowing the difference is what lets
-      work be split up.
+      Breaking a task into ordered steps, and noticing which steps really
+      depend on which. The dependencies are what fix the order. Everything
+      else could be done in any sequence, and seeing the difference is what
+      lets work be shared out.
     uses:
       - Planning before coding, which is the difference between an hour's work
         and an afternoon's.
@@ -760,10 +761,10 @@ topics:
   PDP-LO7:
     name: Documented programs
     plain: >
-      Writing programs somebody else can pick up and change — including you, in
-      a month, having forgotten every decision you made. Names, comments and
-      structure are the whole of it, and none of them affect whether the program
-      runs.
+      Writing programs somebody else can pick up and change — including you,
+      in a month, having forgotten every decision you made. Names, comments
+      and structure are the whole of it, and none of them change whether the
+      program runs.
     uses:
       - Any code that outlives the afternoon it was written in.
     needs: [PDP-LO6]
@@ -781,9 +782,9 @@ topics:
   PDP-LO9:
     name: Reading error messages
     plain: >
-      What the computer is actually telling you when it refuses, and what to do
-      about it. Error messages are written for people who already know — this is
-      how to become one of them.
+      What the computer is telling you when it refuses to run your code, and
+      what to do about it. Error messages are written for people who already
+      know Python. This is how to become one of them.
     uses:
       - The single most useful skill a beginner can acquire, measured in hours
         saved.
@@ -812,8 +813,9 @@ topics:
   PDP-LO12:
     name: Working as a team
     plain: >
-      Designing, building and releasing software with other people over time,
-      including reviewing each other's work and shipping more than one version.
+      Designing, building and releasing software with other people over time.
+      That includes reviewing each other's work and shipping more than one
+      version.
     uses:
       - How essentially all professional software is made.
     needs: [PDP-LO10, PDP-LO11]
@@ -822,10 +824,10 @@ topics:
   CMPS-LO1:
     name: Data structures and recursion
     plain: >
-      Arranging many values so a program can find, change and reason about them
-      efficiently — a flat row, a two-dimensional grid, a tree that branches —
-      together with the choice between repeating a step in a loop and having a
-      function call itself.
+      Ways of arranging many values so a program can find and change them
+      quickly: a flat row, a grid with rows and columns, or a tree that
+      branches. It also covers the choice between repeating a step in a loop
+      and having a function call itself.
     uses:
       - ASCII art and computer graphics, where a grid of characters or pixels
         is a matrix in the plainest possible sense.
@@ -839,10 +841,10 @@ topics:
   CMPS-LO2:
     name: Probability and information
     plain: >
-      How likely something is, expressed as a number between zero and one, and
-      how that idea extends to sample statistics, to events that do or do not
-      depend on each other, and to the random numbers a computer needs and
-      cannot truly produce on its own.
+      How likely something is, written as a number between zero and one. The
+      idea extends to statistics taken from a sample, and to events that do or
+      do not affect each other. It also covers the random numbers a computer
+      needs but cannot truly produce on its own.
     uses:
       - Games of chance, and any feature that needs a fair-seeming shuffle or
         deal.
@@ -855,10 +857,10 @@ topics:
   CMPS-LO3:
     name: Computer simulation
     plain: >
-      Standing in for a process that would be slow, expensive or impossible to
-      run for real, by working it out numerically instead — repeating a
-      calculation many times, often with randomness built in, until the
-      results settle into a trustworthy answer.
+      Working out what would happen, instead of running the real thing when
+      that would be slow, expensive or impossible. You repeat a calculation
+      many times, often with randomness in it, until the results settle on an
+      answer you can trust.
     uses:
       - Monte Carlo estimation, which turns a geometric or physical question
         into a counting exercise a computer can just run.
@@ -869,9 +871,9 @@ topics:
   CMPS-LO4:
     name: Matrices in practice
     plain: >
-      Taking the grid of numbers from a data-structures course and putting it
-      to work — as the machinery behind a graphics transformation, a game's
-      state, a web search ranking, or a way of comparing one thing with its
+      What a grid of numbers is good for once you leave the data-structures
+      course. A matrix is the machinery behind a graphics transformation, a
+      game's state, a web search ranking, and comparing one thing with its
       nearest neighbours.
     uses:
       - Computer graphics and game engines, where every rotation, scale and
@@ -885,10 +887,9 @@ topics:
   CMPS-LO5:
     name: Algorithmic complexity
     plain: >
-      Judging an algorithm by how its cost grows as the input grows, rather
-      than by how fast it feels on one small example — separating the best
-      case, the case you should expect, and the worst case that has to be
-      planned for.
+      Judging an algorithm by how its cost grows as the input grows, not by
+      how fast it feels on one small example. You separate the best case, the
+      case you should expect, and the worst case you have to plan for.
     uses:
       - Choosing between two libraries that solve the same problem, where the
         real difference only shows up at scale.
@@ -899,10 +900,9 @@ topics:
   CMPS-LO6:
     name: Probability applied to computing
     plain: >
-      Turning the probability toolkit outward onto the machine itself — asking
-      how often an algorithm meets its average case rather than its worst, how
-      likely a component is to fail, and what a stream of network traffic
-      looks like when some of it is lost.
+      Using probability on computing itself. How often does an algorithm meet
+      its average case rather than its worst? How likely is a part to fail?
+      What does network traffic look like when some of it goes missing?
     uses:
       - Average-case analysis of an algorithm, which is often the number that
         actually matters in production.
@@ -914,9 +914,9 @@ topics:
   CMPS-LO7:
     name: Modelling versus simulation
     plain: >
-      Two related but different acts — a model is the simplified description
-      of a real system, stripped down to the parts that matter, and a
-      simulation is running that description forward in time to see what it
+      Two related things that are easy to confuse. A model is a simplified
+      description of a real system, cut down to the parts that matter. A
+      simulation runs that description forward in time to see what it
       predicts.
     uses:
       - A server room's cooling system, described as a model and then
@@ -928,9 +928,9 @@ topics:
   CMPS-LO8:
     name: Problem definition and design
     plain: >
-      The stage before any code is written — pinning down what problem is
-      actually being solved, sketching a solution, and deciding in advance how
-      it will be tested and judged to have worked.
+      The work that comes before any code is written. You pin down what the
+      problem actually is, sketch a solution, and decide in advance how you
+      will test it and how you will know it worked.
     uses:
       - Writing a specification or an assessment brief that someone else could
         implement without asking you what you meant.
@@ -940,10 +940,9 @@ topics:
   CMPS-LO9:
     name: Problem-solving strategies
     plain: >
-      Comparing the handful of general approaches to a hard problem — trying
-      everything, splitting the problem in half and combining the answers, or
-      accepting a good-enough answer quickly — and knowing which suits which
-      situation.
+      The few general approaches to a hard problem, and which one suits which
+      situation. You can try everything, split the problem in half and combine
+      the answers, or accept a good-enough answer quickly.
     uses:
       - Brute force where the input is small enough that cleverness is not
         worth the risk of a bug.
@@ -956,9 +955,10 @@ topics:
   CMPS-LO10:
     name: Symptoms versus root cause
     plain: >
-      The difference between a fix that makes an error message go away and a
-      fix that addresses why the program produced it — reading a problem for
-      its logic rather than patching the first thing that looks wrong.
+      The difference between a fix that makes the error message go away and a
+      fix that deals with why the program produced it. It means reading a
+      problem for its logic instead of patching the first thing that looks
+      wrong.
     uses:
       - Debugging — a crash on line 40 is often caused by a bad value created
         on line 12.
@@ -969,9 +969,9 @@ topics:
   CMPS-LO11:
     name: Iterating a model
     plain: >
-      Building a model, checking it against what actually happens, and
-      adjusting it — not once, but as a loop, because the first version of a
-      model is almost never the last one that is needed.
+      Building a model, checking it against what really happens, and adjusting
+      it. You do this as a loop rather than once, because the first version of
+      a model is almost never the one you end up using.
     uses:
       - Traffic flow at a single intersection, refined against observed queue
         lengths until the model's predictions hold up.
@@ -982,10 +982,10 @@ topics:
   CMPS-LO12:
     name: Personal attributes in problem-solving
     plain: >
-      The habits that make someone good at solving problems and are not
-      themselves a technique — starting before every detail is settled,
-      working methodically, reasoning logically, not giving up at the first
-      dead end, and occasionally trying the unlikely idea.
+      The habits that make someone good at solving problems, none of which is
+      a technique you can be taught. Starting before every detail is settled,
+      working methodically, reasoning logically, keeping going when the first
+      idea fails, and now and then trying the unlikely one.
     uses:
       - Debugging a stubborn fault, which usually rewards persistence over any
         particular tool.
@@ -995,9 +995,9 @@ topics:
   CMPS-LO13:
     name: What a model's numbers are worth
     plain: >
-      Stepping back from a computational model to ask how much its accuracy
-      and precision can actually be trusted, and what it means to make a real
-      decision on the strength of a simulation's output.
+      How far a computational model can be trusted. You ask how accurate and
+      how precise its numbers really are, and what it means to make a real
+      decision on the strength of what a simulation says.
     uses:
       - Deciding whether a weather or climate model's forecast is precise
         enough to act on.

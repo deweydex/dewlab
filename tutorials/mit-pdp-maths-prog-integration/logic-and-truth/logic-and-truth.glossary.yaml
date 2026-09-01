@@ -3,9 +3,9 @@ entries:
   - term: truth table
     kind: concept
     definition: >
-      Every possible combination of True/False inputs to a logical
-      operator, and what it outputs for each — not a fact to memorise, but
-      what a loop over every case produces.
+      Every possible combination of True/False inputs to a logical operator,
+      and what it outputs for each. It is not a fact to memorise; it is what
+      a loop over every case produces.
   - term: exclusive or, XOR
     kind: concept
     definition: >
@@ -16,10 +16,10 @@ entries:
   - term: De Morgan's Laws
     kind: formula
     definition: >
-      Pushing a not inside a bracket flips and to or (and vice versa):
-      not (A and B) equals (not A) or (not B); not (A or B) equals
-      (not A) and (not B). The same two laws hold for sets, with union
-      for or, intersection for and, and complement for not.
+      Pushing a not inside a bracket flips and to or, and or to and. So not
+      (A and B) equals (not A) or (not B), and not (A or B) equals (not A)
+      and (not B). The same two laws hold for sets, with union for or,
+      intersection for and, and complement for not.
   - term: "Python's built-in set: |, &, -"
     kind: operator
     definition: >
