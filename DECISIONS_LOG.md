@@ -5723,3 +5723,82 @@ feature that had just shipped, in a real browser, rather than by
 re-reading the code that built it — the same lesson 7.96, 7.97 and
 7.119 already drew about defects invisible from the source and visible
 immediately once a reader (or a screenshot) actually meets them.*
+
+**7.123 — Two accessible reading fonts, and a High contrast switch that
+is its own toggle rather than a sixth font choice.** Josh's own framing
+settled the shape before any code did: "high contrast means font and
+colours as a toggle" — one switch changing two things together, not a
+new entry in the Font row asking a reader to somehow pick "high
+contrast" as if it were a typeface. The two fonts (Atkinson Hyperlegible,
+from the Braille Institute of America, and OpenDyslexic) sit in the Font
+row as two ordinary choices; High contrast is a second, independent
+row that forces both a black-on-white (or white-on-black in dark theme)
+palette and Atkinson Hyperlegible specifically, regardless of whichever
+of the five fonts a reader separately picked — legibility and contrast
+are two different questions from "which typeface", and bundling all
+three into one six-wide button group would have answered none of them
+cleanly.
+
+**Self-hosted, not a Google Fonts `<link>`.** The same reasoning KaTeX's
+own fonts already settled here: this is exactly the offline bundle
+(`write_dewmini_bundle()`, `DECISIONS_LOG.md` 7.92) a CDN link would
+leave broken, and this sandbox's own network policy blocks
+`fonts.googleapis.com` outright — confirmed with a direct `curl`, not
+assumed. `npm`'s own registry was reachable where the CDN was not, so
+both fonts come from `@fontsource/atkinson-hyperlegible` and
+`@fontsource/opendyslexic` (SIL OFL 1.1, same license family as most of
+the web's open fonts), vendored through `vendor-src/build-vendor.mjs`
+exactly like every other pinned asset in that directory — four faces
+each (regular/bold × roman/italic), the minimum for a page's own bold or
+italic markdown to render as a real face rather than a synthetic one.
+The woff2 files land flat in `vendor/fonts/`, beside KaTeX's own, rather
+than in a subfolder of their own — a deliberate choice, once it became
+clear `build.py`'s `standalone_html()` already has a `FONT_URL_RE`-based
+inlining step for KaTeX's fonts (folding them into the single-file
+tutorial download as base64 data) that a flat layout could reuse
+unchanged rather than needing a second copy of the same regex.
+
+**Shared with every tutorial page, not dewmini-only.** `data-font`/
+`data-contrast` and the CSS behind them live in `tutorial-style.css`
+and `tutorial-runtime.js` — the same reading-preference system every
+dewlab page already shares (`TEXTURE_DEFAULTS`, `applyTexture()`) — so
+the two new fonts and the contrast switch had to go in `assets/shell.html`
+(the tutorial pages' own Settings markup) as well as
+`compose/dewmini.html`, and `build.py` gained an
+`{{ACCESSIBLE_FONTS_CSS_URL}}` template token linked from every one of
+its six page-writing functions. **dewmini.js duplicates this whole
+mechanism rather than importing it** (documented already, in the
+duplicated code's own comment) — the first attempt at wiring the
+contrast toggle only touched the shared `tutorial-runtime.js` copy and
+did nothing in a real dewmini page, caught by watching `--dl-fg`/
+`--dl-bg` stay unchanged after clicking the toggle in a real browser
+rather than by re-reading the (correct) shared-file change and assuming
+it was enough.
+
+**One real test broken by a real behaviour change, both times fixed by
+narrowing what the test actually checks rather than by changing the
+behaviour.** `test_nothing_is_left_pointing_outside_the_file` failed
+outright — an unhandled `<link>` this new stylesheet added, exactly
+what that test exists to catch — fixed by giving
+`standalone_html()` an `inline_accessible_fonts_css()` alongside
+`inline_katex_css()`. `test_a_tutorial_without_maths_does_not_carry_them`
+failed more subtly: it asserted no `data:font/woff2;base64,` at all for
+a maths-free page, which was true only because KaTeX's own fonts were
+the sole source of that marker — now that the accessible fonts are
+inlined unconditionally, every standalone page carries some, maths or
+not. The fix looks for `.katex-html` specifically (a class only
+`katex.min.css` itself defines) rather than the family name `KaTeX_Main`,
+which a first attempt reached for and which the very page under test
+was already carrying anyway — `tutorial-style.css`'s own `.dl-math`
+fallback rule names it, whether or not KaTeX's fonts travelled.
+
+*Cost to change: real but contained. The vendoring step and the two new
+CSS rules are genuinely new surface; wiring the toggle itself rode
+entirely on a mechanism (`TEXTURE_DEFAULTS`, the generic `.dl-seg`
+sync loop) that already existed and needed no change beyond one new
+key — the same reason the two new font buttons could share the *same*
+`data-texture="font"` group, on a second `.dl-texture-row`, and just
+work. The one real trap, and worth remembering past this feature: a
+shared mechanism that has been duplicated (dewmini.js's own texture
+functions) needs the fix applied twice, and only a real browser catches
+the copy that was missed.*

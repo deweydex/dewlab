@@ -4886,7 +4886,7 @@ function initPanels() {
  * functions there (the try/catch-around-localStorage convention, the
  * `{...a, ...b}` merge-with-defaults pattern) for more detail than
  * repeated here — the code is close to line-for-line the same. */
-const TEXTURE_DEFAULTS = { theme: "system", font: "serif", size: 18, width: 34, link: "#d4692a" };
+const TEXTURE_DEFAULTS = { theme: "system", font: "serif", size: 18, width: 34, link: "#d4692a", contrast: "normal" };
 
 function loadTexture() {
   try {
@@ -4904,6 +4904,7 @@ function applyTexture(state) {
   const root = document.documentElement;
   if (state.theme === "system") root.removeAttribute("data-theme"); else root.setAttribute("data-theme", state.theme);
   if (state.font === "serif") root.removeAttribute("data-font"); else root.setAttribute("data-font", state.font);
+  if (state.contrast === "normal") root.removeAttribute("data-contrast"); else root.setAttribute("data-contrast", state.contrast);
   root.style.setProperty("--dl-font-size", `${state.size}px`);
   root.style.setProperty("--dl-line-width", `${state.width}rem`);
   root.style.setProperty("--dl-link", state.link);

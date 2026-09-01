@@ -33,6 +33,14 @@
      with no separate step to wire up first. -->
 <link rel="stylesheet" href="../assets/vendor/katex.min.css">
 
+<!-- Two accessible reading fonts, self-hosted rather than a Google Fonts
+     CDN link — the same reasoning as the KaTeX CSS above: this is exactly
+     the offline copy (write_dewmini_bundle()) a CDN would leave broken.
+     Cheap enough (~500 KB total, four faces each) to carry unconditionally
+     rather than only once a reader actually turns one on in Settings
+     (DECISIONS_LOG.md 7.123). -->
+<link rel="stylesheet" href="../assets/vendor/accessible-fonts.css">
+
 <link rel="stylesheet" href="../assets/tutorial-style.css">
 <link rel="stylesheet" href="dewmini-style.css">
 
@@ -571,6 +579,27 @@
         <button type="button" data-value="serif">serif</button>
         <button type="button" data-value="sans">sans</button>
         <button type="button" data-value="mono">mono</button>
+      </div>
+    </div>
+
+    <!-- Same data-texture="font" as the row above — a second .dl-seg
+         group sharing one key works with no JS change (initTexture()'s
+         own sync loop matches every group with this attribute, not one
+         specific element), which is what lets these sit on their own
+         line below the first three rather than crowding a six-wide row. -->
+    <div class="dl-texture-row">
+      <span></span>
+      <div class="dl-seg" data-texture="font">
+        <button type="button" data-value="atkinson">Atkinson Hyperlegible</button>
+        <button type="button" data-value="opendyslexic">OpenDyslexic</button>
+      </div>
+    </div>
+
+    <div class="dl-texture-row">
+      <span>High contrast</span>
+      <div class="dl-seg" data-texture="contrast">
+        <button type="button" data-value="normal">off</button>
+        <button type="button" data-value="high">on</button>
       </div>
     </div>
 

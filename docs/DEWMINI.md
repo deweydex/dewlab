@@ -402,9 +402,11 @@ Each one is a runnable dewlab tutorial in miniature.
 **Practice** holds the order switch described above.
 
 **Texture** holds the same reading preferences every dewlab page has:
-theme, font, text size, page width and link color. A choice you make
-here follows you to the tutorials, and a choice you make on a tutorial
-page follows you back here.
+theme, font, text size, page width and link color. Two of the font
+choices are built for easier reading. High contrast turns on
+black-and-white and a clearer font together. A choice you make here
+follows you to the tutorials, and a choice you make on a tutorial page
+follows you back here.
 
 **Editor** holds the settings for a page you write code on rather than
 read. You can set how large the code is and how much room a cell gives
