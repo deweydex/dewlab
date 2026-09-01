@@ -127,12 +127,51 @@ def test_unknown_question_type_is_refused(tmp_path):
     assert "unknown question type" in str(caught.value)
 
 
-def test_python_code_is_named_as_not_built_yet(tmp_path):
-    text = minimal().replace("type: short-written-answer",
-                             "type: python-code")
+PYTHON_QUESTION = """\
+### Question A2
+
+```question
+name: a2
+marks: 3
+```
+
+```answer
+name: a2.code
+type: python-code
+marks: 3
+prompt: Print the numbers one to three, one per line.
+starter_code: |
+  # write your loop here
+model_answer_code: |
+  for number in range(1, 4):
+      print(number)
+```
+"""
+
+
+def test_a_python_question_without_a_python_list_is_refused(tmp_path):
     with pytest.raises(build_exam.BuildError) as caught:
-        build_text(tmp_path, text)
-    assert "not built yet" in str(caught.value)
+        build_text(tmp_path, minimal(more=PYTHON_QUESTION))
+    assert "needs 'python:'" in str(caught.value)
+
+
+def test_a_python_exam_builds_and_embeds_its_data_file(tmp_path):
+    (tmp_path / "counts.csv").write_text("day,visits\nMon,4\n")
+    text = minimal(more=PYTHON_QUESTION).replace(
+        "instructions: |",
+        "python: []\n"
+        "data_files:\n"
+        "  - path: counts.csv\n"
+        "    description: Daily visit counts.\n"
+        "instructions: |")
+    build_text(tmp_path, text)
+    student = (tmp_path / "out" / "tiny-2027.student.html").read_text()
+    assert "dm-code" in student
+    assert "counts.csv" in student
+    # the model answer's code stays out of the student page
+    assert "range(1, 4)" not in student
+    key = (tmp_path / "out" / "tiny-2027.answer-key.html").read_text()
+    assert "range(1, 4)" in key
 
 
 def test_a_choose_rule_missing_from_instructions_is_refused(tmp_path):

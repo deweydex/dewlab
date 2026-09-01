@@ -4,4 +4,4 @@ pyyaml>=6.0
 
 # What developing dewmark needs on top of that.
 pytest>=7.0
-playwright>=1.40   # only for dev/smoke_pages.py; needs a Chromium browser
+playwright>=1.40   # only for the dev/ browser rehearsals; needs Chromium

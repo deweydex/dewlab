@@ -102,6 +102,19 @@ function collectAnswer(root, type) {
     return any
       ? { shape: shapeEl ? Number(shapeEl.value) : null, features } : null;
   }
+  if (type === "python-code") {
+    const editor = root.querySelector(".dm-code");
+    const run = pythonRuns[root.dataset.answer] || {};
+    const untouched = editor.value.trim() === editor.defaultValue.trim()
+      && !(run.outputs || []).length;
+    if (untouched) return null;
+    return {
+      code: editor.value,
+      outputs: run.outputs || [],
+      last_run: run.last_run || null,
+      run_matches_code: run.ran_code === editor.value,
+    };
+  }
   if (type === "label-the-diagram") {
     const labels = {};
     let any = false;
@@ -154,6 +167,21 @@ function applyAnswer(root, type, value) {
     for (const el of root.querySelectorAll(".dm-diagram-label input")) {
       el.value = (value.labels || {})[el.dataset.label] || "";
     }
+  } else if (type === "python-code") {
+    const editor = root.querySelector(".dm-code");
+    editor.value = value.code || "";
+    pythonRuns[root.dataset.answer] = {
+      outputs: value.outputs || [],
+      last_run: value.last_run || null,
+      ran_code: value.run_matches_code ? value.code : "\u0000never",
+    };
+    const output = root.querySelector(".dm-code-output");
+    renderRecords(output, value.outputs || []);
+    if ((value.outputs || []).length) {
+      output.prepend(el_note("Recorded output from your last run. The "
+        + "running Python session was not kept: run your cells again, "
+        + "top to bottom, to rebuild it."));
+    }
   }
 }
 
@@ -201,6 +229,7 @@ function saveEverywhere() {
     }, 800);
   }
   refreshProgress();
+  refreshCodeNotes();
 }
 
 function safeName(text) {
@@ -282,6 +311,7 @@ function enterExam() {
   }
   buildPanel();
   saveEverywhere();
+  if (MODEL.python) startPython();
 }
 
 function loadAnswerFile() {
@@ -346,7 +376,7 @@ function refreshProgress() {
 }
 
 function buildPanel() {
-  const panel = document.getElementById("dm-panel");
+  const panel = document.getElementById("dm-panel-questions");
   panel.innerHTML = "";
   for (const section of MODEL.sections) {
     const heading = document.createElement("h2");
@@ -533,6 +563,334 @@ function downloadAnswerFile() {
   link.download = submissionBaseName() + ".json";
   link.click();
   URL.revokeObjectURL(link.href);
+}
+
+/* ---------------------------------------------- python code questions */
+
+/* Python questions run through Pyodide, a build of the Python language
+   for the browser. The runtime downloads once (about thirty megabytes)
+   from a public address, or from a local copy when the page defines
+   window.DEWMARK_PYTHON_BASE before this script runs — that is how an
+   exam room without internet serves it from a laptop. */
+
+const pythonRuns = {};   // answer name -> {outputs, last_run, ran_code}
+let pyodide = null;
+let pythonBusy = false;
+
+function el_note(text) {
+  const note = document.createElement("p");
+  note.className = "dm-code-restore-note";
+  note.textContent = text;
+  return note;
+}
+
+function renderRecords(container, records) {
+  /* Draw a run's recorded output. Records are data — text, tables as
+     rows, images as encoded pictures — and are rendered as such, never
+     as markup. */
+  container.innerHTML = "";
+  for (const record of records || []) {
+    if (record.kind === "stdout") {
+      const pre = document.createElement("pre");
+      pre.className = "dm-out-text";
+      pre.textContent = record.text;
+      container.appendChild(pre);
+    } else if (record.kind === "error") {
+      const pre = document.createElement("pre");
+      pre.className = "dm-out-error";
+      pre.textContent = record.text;
+      container.appendChild(pre);
+    } else if (record.kind === "image"
+               && /^[A-Za-z0-9+/=]+$/.test(record.b64 || "")) {
+      const img = document.createElement("img");
+      img.className = "dm-out-image";
+      img.alt = "output figure";
+      img.src = "data:image/png;base64," + record.b64;
+      container.appendChild(img);
+    } else if (record.kind === "table") {
+      const table = document.createElement("table");
+      table.className = "dm-out-table";
+      const head = document.createElement("tr");
+      for (const column of record.columns || []) {
+        const th = document.createElement("th");
+        th.textContent = column;
+        head.appendChild(th);
+      }
+      table.appendChild(head);
+      for (const cells of record.rows || []) {
+        const tr = document.createElement("tr");
+        for (const cell of cells) {
+          const td = document.createElement("td");
+          td.textContent = cell;
+          tr.appendChild(td);
+        }
+        table.appendChild(tr);
+      }
+      container.appendChild(table);
+    }
+  }
+}
+
+/* The small Python helper module exam code imports. show() displays a
+   value, a table, or a chart; the form helpers build simple controls in
+   the output area, in the style students met in notebooks. */
+const DEWMARK_TOOLS_PY = `
+import io, json, base64
+from js import document, window
+from pyodide.ffi import create_proxy
+
+def _out():
+    return document.getElementById(window.__dewmarkOut)
+
+def _emit(kind, payload):
+    window.__dewmarkEmit(kind, json.dumps(payload))
+
+_uid_counter = [0]
+def _uid():
+    _uid_counter[0] += 1
+    return "dmw_" + str(_uid_counter[0])
+
+def show(value):
+    try:
+        import pandas as pd
+        if isinstance(value, pd.DataFrame):
+            _emit("table", {"columns": [str(c) for c in value.columns],
+                            "rows": [[str(cell) for cell in row]
+                                     for row in value.itertuples(index=False)]})
+            return
+    except ImportError:
+        pass
+    try:
+        import matplotlib.figure
+        if isinstance(value, matplotlib.figure.Figure):
+            import matplotlib.pyplot as plt
+            buffer = io.BytesIO()
+            value.savefig(buffer, format="png", bbox_inches="tight", dpi=100)
+            _emit("image", {"b64": base64.b64encode(buffer.getvalue()).decode()})
+            plt.close(value)
+            return
+    except ImportError:
+        pass
+    _emit("stdout", {"text": str(value) + "\\n"})
+
+def show_table(rows, columns=None):
+    rows = [list(map(str, row)) for row in (rows or [])]
+    _emit("table", {"columns": [str(c) for c in (columns or [])],
+                    "rows": rows})
+
+class _Field:
+    def __init__(self, element_id):
+        self._id = element_id
+    @property
+    def value(self):
+        node = document.getElementById(self._id)
+        return node.value if node else ""
+    def clear(self):
+        node = document.getElementById(self._id)
+        if node:
+            node.value = ""
+
+def text_input(label, placeholder=""):
+    field_id = _uid()
+    _out().insertAdjacentHTML("beforeend",
+        '<div class="dm-widget"><label>' + str(label)
+        + ' <input type="text" id="' + field_id + '" placeholder="'
+        + str(placeholder).replace('"', "&quot;") + '"></label></div>')
+    return _Field(field_id)
+
+def number_input(label, min_val=0, max_val=100, default=0):
+    field_id = _uid()
+    _out().insertAdjacentHTML("beforeend",
+        '<div class="dm-widget"><label>' + str(label)
+        + ' <input type="number" id="' + field_id + '" min="' + str(min_val)
+        + '" max="' + str(max_val) + '" value="' + str(default)
+        + '"></label></div>')
+    return _Field(field_id)
+
+def dropdown(label, options):
+    field_id = _uid()
+    choices = "".join('<option>' + str(option) + "</option>"
+                      for option in options)
+    _out().insertAdjacentHTML("beforeend",
+        '<div class="dm-widget"><label>' + str(label) + ' <select id="'
+        + field_id + '">' + choices + "</select></label></div>")
+    return _Field(field_id)
+
+def button(label):
+    def decorator(handler):
+        button_id, result_id = _uid(), _uid()
+        _out().insertAdjacentHTML("beforeend",
+            '<div class="dm-widget"><button type="button" id="' + button_id
+            + '">' + str(label) + '</button><div id="' + result_id
+            + '"></div></div>')
+        def on_click(event):
+            previous = window.__dewmarkOut
+            window.__dewmarkOut = result_id
+            document.getElementById(result_id).innerHTML = ""
+            try:
+                handler()
+            except Exception as error:
+                _emit("error", {"text": str(error)})
+            finally:
+                window.__dewmarkOut = previous
+        document.getElementById(button_id).addEventListener(
+            "click", create_proxy(on_click))
+        return handler
+    return decorator
+`;
+
+function setPythonStatus(text, cls) {
+  const pill = document.getElementById("dm-python-status");
+  pill.hidden = false;
+  pill.textContent = text;
+  pill.className = "dm-save-pill" + (cls ? " " + cls : "");
+}
+
+async function startPython() {
+  const config = MODEL.python;
+  setPythonStatus("Python loading…");
+  const base = window.DEWMARK_PYTHON_BASE
+    || "https://cdn.jsdelivr.net/pyodide/v0.27.4/full/";
+  try {
+    await new Promise((resolve, reject) => {
+      const script = document.createElement("script");
+      script.src = base + "pyodide.js";
+      script.onload = resolve;
+      script.onerror = () => reject(new Error("could not load " + script.src));
+      document.head.appendChild(script);
+    });
+    pyodide = await loadPyodide({ indexURL: base });
+
+    /* The output bridge: Python emits records, this side keeps and
+       draws them. Consecutive printed chunks merge into one record. */
+    let currentRecords = null;
+    window.__dewmarkEmit = (kind, payloadJson) => {
+      const payload = JSON.parse(payloadJson);
+      const record = Object.assign({ kind }, payload);
+      if (currentRecords) {
+        const last = currentRecords[currentRecords.length - 1];
+        if (kind === "stdout" && last && last.kind === "stdout") {
+          last.text += payload.text;
+        } else {
+          currentRecords.push(record);
+        }
+      }
+      const target = document.getElementById(window.__dewmarkOut);
+      if (target && currentRecords) renderRecords(target, currentRecords);
+    };
+    window.__dewmarkBeginRun = (records) => { currentRecords = records; };
+
+    pyodide.setStdout({ batched: (text) =>
+      window.__dewmarkEmit("stdout", JSON.stringify({ text: text + "\n" })) });
+    pyodide.setStderr({ batched: (text) =>
+      window.__dewmarkEmit("error", JSON.stringify({ text })) });
+
+    const loadable = ["micropip"];
+    if (config.packages.includes("sqlite3")) loadable.push("sqlite3");
+    await pyodide.loadPackage(loadable);
+    const viaMicropip = config.packages.filter((pkg) => pkg !== "sqlite3");
+    if (viaMicropip.length) {
+      setPythonStatus("Python packages…");
+      await pyodide.runPythonAsync(
+        "import micropip\nawait micropip.install("
+        + JSON.stringify(viaMicropip) + ")");
+    }
+    pyodide.FS.mkdirTree("/exam");
+    for (const file of config.files) {
+      const bytes = Uint8Array.from(atob(file.b64), (c) => c.charCodeAt(0));
+      pyodide.FS.writeFile("/exam/" + file.name, bytes);
+    }
+    pyodide.FS.writeFile("/dewmark_tools.py", DEWMARK_TOOLS_PY);
+    let boot = "import sys, os\nsys.path.insert(0, '/')\nos.chdir('/exam')\n";
+    if (config.packages.includes("matplotlib")) {
+      boot += "import matplotlib\nmatplotlib.use('Agg')\n";
+    }
+    await pyodide.runPythonAsync(boot);
+    setPythonStatus("Python ready", "dm-ok");
+  } catch (error) {
+    setPythonStatus("Python failed — click to retry", "dm-off");
+    document.getElementById("dm-python-status").onclick = startPython;
+    return;
+  }
+
+  for (const button of document.querySelectorAll(".dm-run")) {
+    button.disabled = false;
+  }
+  if (config.setup_code.trim()) {
+    await runPython(config.setup_code, null);
+  }
+  for (const provided of config.provided) {
+    const holder = document.querySelector(
+      '[data-question="' + provided.question + '"] .dm-provided-output');
+    await runPython(provided.code, holder);
+  }
+}
+
+async function runPython(code, outputElement) {
+  if (!pyodide || pythonBusy) return null;
+  pythonBusy = true;
+  const records = [];
+  window.__dewmarkBeginRun(records);
+  if (outputElement) {
+    if (!outputElement.id) {
+      outputElement.id = "dm-out-" + Math.random().toString(36).slice(2);
+    }
+    window.__dewmarkOut = outputElement.id;
+    outputElement.innerHTML = "";
+  } else {
+    window.__dewmarkOut = "dm-nowhere";
+  }
+  try {
+    await pyodide.runPythonAsync(code);
+  } catch (error) {
+    window.__dewmarkEmit("error", JSON.stringify(
+      { text: String(error.message || error) }));
+  }
+  window.__dewmarkBeginRun(null);
+  pythonBusy = false;
+  return records;
+}
+
+document.addEventListener("click", async (event) => {
+  const button = event.target.closest(".dm-run");
+  if (!button) return;
+  const root = button.closest(".dm-answer");
+  const name = root.dataset.answer;
+  const editor = root.querySelector(".dm-code");
+  if (!pyodide) return;
+  if (pythonBusy) {
+    root.querySelector(".dm-code-note").textContent =
+      "another cell is still running";
+    return;
+  }
+  button.disabled = true;
+  button.textContent = "Running…";
+  const records = await runPython(editor.value,
+    root.querySelector(".dm-code-output"));
+  button.disabled = false;
+  button.textContent = "Run";
+  pythonRuns[name] = { outputs: records,
+    last_run: new Date().toISOString(), ran_code: editor.value };
+  saveEverywhere();
+});
+
+function refreshCodeNotes() {
+  for (const root of document.querySelectorAll(
+      '.dm-answer[data-type="python-code"]')) {
+    const note = root.querySelector(".dm-code-note");
+    const run = pythonRuns[root.dataset.answer];
+    const editor = root.querySelector(".dm-code");
+    if (!run || !(run.outputs || []).length) {
+      note.textContent = "";
+      continue;
+    }
+    if (run.ran_code !== editor.value) {
+      note.textContent = "the output below is from an earlier version "
+        + "of this code";
+    } else {
+      note.textContent = "";
+    }
+  }
 }
 
 /* ---------------------------------------------- wiring */

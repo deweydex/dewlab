@@ -45,15 +45,23 @@ python dewmark/build_exam.py dewmark/samples/sample-mixed-paper.exam.md \
 # the builder's tests
 python -m pytest dewmark/tests -q
 
-# the browser smoke test (needs Playwright and a Chromium; see the file)
+# the browser smoke tests (need Playwright and a Chromium; see each file)
 python dewmark/dev/smoke_pages.py
+python dewmark/dev/smoke_python_page.py
 ```
 
-The smoke test builds the sample exam, sits part of it in a headless
-browser (answers several question types, finishes, downloads the
-submission, reloads and restores), then loads the marking workbench,
-marks with all three marking methods, and checks the exports. It is the
-closest thing to a rehearsal that runs without a person.
+The first smoke test builds the mixed sample exam, sits part of it in
+a headless browser (answers several question types, finishes,
+downloads the submission, reloads and restores), then loads the
+marking workbench, marks with all three marking methods, and checks
+the exports. The second does the same round trip for Python code
+questions using the database practical sample: it waits for the
+Python system, runs cells that query the embedded database, draw a
+chart, and read a spreadsheet, checks the recorded outputs inside the
+submission, and confirms the workbench displays a code answer.
+Together they are the closest thing to a rehearsal that runs without a
+person. The repository's continuous checks run the builder's tests and
+build every sample exam; the browser rehearsals stay hand-run.
 
 ## Where the draft falls short of the design
 
@@ -62,9 +70,14 @@ decision against the design documents. The documents remain the target.
 
 - **Mathematics is not typeset.** Text between dollar signs renders in
   italics. The design calls for proper typesetting at build time.
-- **Python code questions are refused by the builder** with a message
-  naming the roadmap. Everything about them — the in-page runner, the
-  recorded outputs — is still to build.
+- **Python code questions run, but young.** The in-page runner (the
+  Pyodide system, loaded from a network address or a locally served
+  copy), the shared session, set-up and provided code, embedded data
+  files, the form helpers, and the recording of printed text, tables,
+  and pictures into the submission are all built and exercised by a
+  browser test. Not yet built: stopping a runaway cell without
+  reloading the page, a per-question time or output limit, and the
+  exam-room checklist document for serving Pyodide locally.
 - **The essay writing view is simplified.** The word count and the
   planning box work; the full-width distraction-free layout the design
   describes is not built.
@@ -82,8 +95,9 @@ decision against the design documents. The documents remain the target.
   stored without compression). A zip re-packed by other software is
   reported, not read.
 - **Question prose cannot contain lines of three backticks**, because
-  the parser treats every such line as a settings block. This will
-  matter when Python questions arrive and is noted in the parser.
+  the parser treats every such line as a settings block. Code shown in
+  prose must use indented blocks instead, as the reference blocks in
+  the two sample papers with code do.
 - **Two markers, one folder, is unhandled.** The marking record is a
   single file with no merging; the last save wins.
 - **The accessibility baseline is only partly met.** Answer spaces have

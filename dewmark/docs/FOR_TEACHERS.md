@@ -24,8 +24,15 @@ full route is described in
 **Write the exam file directly.** The file format is documented in
 [../planning/THE_EXAM_FILE.md](../planning/THE_EXAM_FILE.md), and the
 sample in [../samples/sample-mixed-paper.exam.md](../samples/sample-mixed-paper.exam.md)
-shows a complete paper that mixes eight question types. Copying the
-sample and replacing its questions is a reasonable way to start.
+shows a complete paper that mixes eight question types. Two further
+samples show the shapes real papers take:
+[../samples/maths-for-it-5n18396.exam.md](../samples/maths-for-it-5n18396.exam.md)
+is a 120-mark mathematics paper with "answer any N" sections, a
+formula sheet in the side panel, and diagrams in the questions, and
+[../samples/hvit-database-practical.exam.md](../samples/hvit-database-practical.exam.md)
+is a database practical made entirely of Python code questions, with a
+database and two spreadsheets embedded. Copying the sample nearest
+your paper and replacing its questions is a reasonable way to start.
 
 Every question type available to you — from multiple choice to essays
 with marking criteria — is explained, with what students see and how
@@ -65,7 +72,11 @@ Give students the single student file through whatever you already use
 — a Moodle assignment, a shared folder, or a USB stick. The page works
 offline: a student can double-click the file with no internet
 connection and sit the whole exam. (The exception is exams containing
-Python programming tasks, which are not yet supported in this version.)
+Python programming tasks: the first time the page runs code it
+downloads the Python system, about thirty megabytes, so those exams
+need either an internet connection or a copy of the Python system
+served from a machine in the room. Rehearse this on the room's own
+computers before a real sitting.)
 
 When a student opens the page they type their name and student number
 and press Begin. On Chrome and Edge the page then asks them to choose

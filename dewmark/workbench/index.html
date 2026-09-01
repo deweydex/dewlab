@@ -54,6 +54,21 @@ tr.clickable:hover { background: #f6f4f0; cursor: pointer; }
   border-radius: 4px; padding: 10px 14px; font-family: var(--dm-serif);
   font-size: 15px; white-space: pre-wrap; }
 .student-answer .missing { color: var(--dm-muted); font-style: italic; }
+.code-block, .run-output, .run-error {
+  font-family: ui-monospace, Consolas, Menlo, monospace; font-size: 12.5px;
+  line-height: 1.5; white-space: pre-wrap; overflow-x: auto;
+  background: #f6f4f0; border: 1px solid var(--dm-border);
+  border-radius: 3px; padding: 8px 10px; margin: 6px 0; }
+.code-block { background: #21283b; color: #e8e6e1; border-color: #21283b; }
+.run-error { color: #8a2a1f; background: #faf0ee; border-color: #e4c7c1; }
+.run-image { max-width: 100%; height: auto; display: block; margin: 6px 0;
+  border: 1px solid var(--dm-border); border-radius: 3px; background: #fff; }
+.run-table { border-collapse: collapse; margin: 6px 0; font-size: 13px; }
+.run-table th, .run-table td { border: 1px solid var(--dm-border);
+  padding: 3px 8px; text-align: left; }
+.stale-run { color: var(--dm-warn); background: var(--dm-warn-bg);
+  border-radius: 3px; padding: 5px 9px; font-family: var(--dm-sans);
+  font-size: 12.5px; }
 .scheme-side { background: #fff; border: 1px solid var(--dm-border);
   border-radius: 4px; padding: 12px 16px; }
 .model { background: #eef2f8; border-radius: 3px; padding: 8px 12px;
@@ -479,6 +494,45 @@ function renderStudentAnswer(container, spec, value) {
   } else if (a.type === "label-the-diagram") {
     add(null, Object.entries(value.labels || {})
       .map(([k, v]) => k + ": " + (v || "(empty)")).join("\n"));
+  } else if (a.type === "python-code") {
+    const code = el("pre", "code-block", value.code || "(no code)");
+    container.appendChild(code);
+    if (value.run_matches_code === false) {
+      container.appendChild(el("p", "stale-run", "The code was edited "
+        + "after its last run: the recorded output below came from an "
+        + "earlier version of the code."));
+    }
+    if (!(value.outputs || []).length) {
+      container.appendChild(el("p", "missing", "no recorded output"));
+    }
+    for (const record of value.outputs || []) {
+      if (record.kind === "stdout") {
+        container.appendChild(el("pre", "run-output", record.text));
+      } else if (record.kind === "error") {
+        container.appendChild(el("pre", "run-error", record.text));
+      } else if (record.kind === "image"
+                 && /^[A-Za-z0-9+/=]+$/.test(record.b64 || "")) {
+        const img = document.createElement("img");
+        img.className = "run-image";
+        img.alt = "output figure";
+        img.src = "data:image/png;base64," + record.b64;
+        container.appendChild(img);
+      } else if (record.kind === "table") {
+        const table = el("table", "run-table");
+        const head = el("tr");
+        for (const column of record.columns || []) {
+          head.appendChild(el("th", null, String(column)));
+        }
+        table.appendChild(head);
+        for (const cells of record.rows || []) {
+          const tr = el("tr");
+          for (const cell of cells) tr.appendChild(el("td", null,
+            String(cell)));
+          table.appendChild(tr);
+        }
+        container.appendChild(table);
+      }
+    }
   } else {
     add(null, value.text || JSON.stringify(value));
   }
@@ -495,6 +549,9 @@ function renderModel(container, spec) {
     box.appendChild(line);
   };
   if (a.model_answer) addText(a.model_answer);
+  if (a.type === "python-code" && a.model_answer_code) {
+    box.appendChild(el("pre", "code-block", a.model_answer_code));
+  }
   if (a.type === "multiple-choice" && a.correct) {
     const picks = Array.isArray(a.correct) ? a.correct : [a.correct];
     addText("Correct: " + picks.map((p) => a.options[p - 1]).join("; "));

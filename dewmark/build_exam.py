@@ -31,12 +31,12 @@ import yaml
 
 # ---------------------------------------------------------------- constants
 
-BLOCK_KINDS = {"exam", "section", "question", "answer", "marking"}
+BLOCK_KINDS = {"exam", "section", "question", "answer", "marking",
+               "reference"}
 
-# The question types the draft builder can render. python-code is defined
-# in the catalogue but is planned for a later phase; naming it here lets
-# the builder refuse it with an accurate message instead of "unknown type".
+# The question types the draft builder can render — the full catalogue.
 SUPPORTED_TYPES = {
+    "python-code",
     "multiple-choice",
     "fill-in-the-blank",
     "short-written-answer",
@@ -47,7 +47,6 @@ SUPPORTED_TYPES = {
     "describe-a-sketch",
     "label-the-diagram",
 }
-PLANNED_TYPES = {"python-code"}
 
 NAME_RE = re.compile(r"^[a-z][a-z0-9_.-]*$")
 SECTION_NAME_RE = re.compile(r"^[A-Za-z][A-Za-z0-9_.-]*$")
@@ -58,6 +57,9 @@ VERSION_RE = re.compile(r"^\d{4}\.\d{2}\.\d{2}\.\d+$")
 POINT_RE = re.compile(r"^\s*(\d+(?:\.5)?)\s+marks?\s*[-–]\s*(.+)$", re.S)
 # "16 to 20 - a sustained line of argument" -> (16, 20, "a sustained ...")
 BAND_RE = re.compile(r"^\s*(\d+)\s*(?:to|[-–])\s*(\d+)\s*[-–]\s*(.+)$", re.S)
+
+# "![a bar chart of letter counts](pictures/chart.svg)" in prose
+PROSE_IMAGE_RE = re.compile(r"!\[([^\]]*)\]\(([^)\s]+)\)")
 
 NUMBER_WORDS = {
     1: "one", 2: "two", 3: "three", 4: "four", 5: "five", 6: "six",
@@ -193,6 +195,9 @@ def parse_exam_file(text, base_dir):
                                                 "answer": answer})
             last_answer = answer
             prose_since_answer = False
+        elif kind == "reference":
+            flush_prose()
+            exam.setdefault("reference", []).append(settings)
         elif kind == "marking":
             if last_answer is None or prose_since_answer:
                 problems.append((start_line, "a 'marking' block must come "
@@ -298,6 +303,10 @@ def check_exam(exam, problems, base_dir):
                                  "'marks'"))
                 marks = 0
             q_marks.append(marks)
+            if "provided_code" in q_set and not isinstance(
+                    q_set["provided_code"], str):
+                problems.append((q_line, "'provided_code' must be a block "
+                                 "of text"))
             answer_total = 0
             if not question["answers"]:
                 problems.append((q_line, "this question has no answer "
@@ -332,6 +341,51 @@ def check_exam(exam, problems, base_dir):
         else:
             total += sum(q_marks)
 
+    # Python code questions need the exam to say so, because the built
+    # page then carries the Python runtime and its set-up.
+    uses_python = any(
+        answer["settings"].get("type") == "python-code"
+        for section in exam["sections"]
+        for question in section["questions"]
+        for answer in question["answers"])
+    if uses_python and not isinstance(settings.get("python"), list):
+        problems.append((line, "this exam contains python-code questions, "
+                         "so the exam block needs 'python:' with a list of "
+                         "the packages the exam uses (the list may be "
+                         "empty: python: [])"))
+    for entry in settings.get("data_files") or []:
+        if not isinstance(entry, dict) or "path" not in entry:
+            problems.append((line, "each data file needs at least a 'path'"))
+            continue
+        if not (base_dir / entry["path"]).is_file():
+            problems.append((line, f"the data file '{entry['path']}' does "
+                             "not exist beside the exam file"))
+    for entry in exam.get("reference", []):
+        r_line = entry.get("_line", 0)
+        if not entry.get("title") or not entry.get("text"):
+            problems.append((r_line, "every reference block needs a 'title' "
+                             "and a 'text'"))
+
+    def prose_nodes():
+        yield from exam.get("preamble", [])
+        for section in exam["sections"]:
+            yield from section["content"]
+            for question in section["questions"]:
+                for node in question["content"]:
+                    if node["kind"] == "prose":
+                        yield node
+
+    for node in prose_nodes():
+        for alt, path in PROSE_IMAGE_RE.findall(node["md"]):
+            if not alt.strip():
+                problems.append((node["line"], f"the picture '{path}' needs "
+                                 "a written description between its square "
+                                 "brackets, for readers using a screen "
+                                 "reader: ![description](path)"))
+            if not (base_dir / path).is_file():
+                problems.append((node["line"], f"the picture '{path}' does "
+                                 "not exist beside the exam file"))
+
     declared = settings.get("total_marks")
     if isinstance(declared, (int, float)) and total != declared:
         problems.append((line, f"total_marks says {declared} but the paper "
@@ -347,11 +401,6 @@ def check_answer(answer, problems, base_dir):
     if not isinstance(marks, (int, float)) or marks <= 0:
         problems.append((a_line, "every answer space needs positive 'marks'"))
         marks = 0
-    if a_type in PLANNED_TYPES:
-        problems.append((a_line, f"the question type '{a_type}' is defined "
-                         "in the catalogue but is not built yet; see the "
-                         "roadmap"))
-        return marks
     if a_type not in SUPPORTED_TYPES:
         problems.append((a_line, f"unknown question type '{a_type}'; the "
                          "types are listed in "
@@ -370,7 +419,12 @@ def check_answer(answer, problems, base_dir):
             return None
         return value
 
-    if a_type == "multiple-choice":
+    if a_type == "python-code":
+        starter = a.get("starter_code", "")
+        if not isinstance(starter, str):
+            problems.append((a_line, "'starter_code' must be a block of "
+                             "text"))
+    elif a_type == "multiple-choice":
         options = need("options", list)
         if options is not None and len(options) < 2:
             problems.append((a_line, "multiple choice needs at least two "
@@ -554,13 +608,28 @@ def check_marking(answer, marks, problems):
 MATH_RE = re.compile(r"\$([^$\n]+)\$")
 
 
-def render_markdown(md_text):
+def embed_image(base_dir, path):
+    """A picture file as a data address, so the page stays one file."""
+    image_path = base_dir / path
+    data = image_path.read_bytes()
+    suffix = image_path.suffix.lower().lstrip(".")
+    mime = {"svg": "image/svg+xml", "png": "image/png",
+            "jpg": "image/jpeg", "jpeg": "image/jpeg"}.get(
+                suffix, "application/octet-stream")
+    return f"data:{mime};base64,{base64.b64encode(data).decode('ascii')}"
+
+
+def render_markdown(md_text, base_dir=None):
     """Render a prose chunk to HTML.
 
     Mathematics between dollar signs is lifted out before the Markdown
     step and re-inserted afterwards in a styled span. The draft shows it
     in italics rather than typeset; proper typesetting at build time is a
     known gap listed in docs/DEVELOPMENT.md.
+
+    When base_dir is given, pictures written as ![description](path) are
+    embedded into the page (the checks have already confirmed the file
+    exists and the description is present).
     """
     holes = []
 
@@ -574,6 +643,12 @@ def render_markdown(md_text):
         rendered = rendered.replace(
             f"\x00MATH{index}\x00",
             f'<em class="dm-math">{html.escape(content)}</em>')
+    if base_dir is not None:
+        rendered = re.sub(
+            r'(<img [^>]*?src=")([^"]+)(")',
+            lambda m: m.group(1) + embed_image(base_dir, m.group(2))
+            + m.group(3),
+            rendered)
     return rendered
 
 
@@ -606,7 +681,19 @@ def render_answer_space(answer, variant, base_dir):
     show_models = variant == "answer_key"
 
     inner = []
-    if a_type == "multiple-choice":
+    if a_type == "python-code":
+        starter = a.get("starter_code", "")
+        inner.append('<div class="dm-code-bar">'
+                     '<span class="dm-code-lang">Python</span>'
+                     '<span class="dm-code-note"></span>'
+                     '<button type="button" class="dm-run" disabled>Run'
+                     "</button></div>")
+        inner.append(f'<textarea class="dm-code" spellcheck="false" '
+                     f'aria-label="your code" rows="'
+                     f'{max(6, starter.count(chr(10)) + 3)}">'
+                     f"{esc(starter.rstrip())}</textarea>")
+        inner.append('<div class="dm-code-output" aria-live="polite"></div>')
+    elif a_type == "multiple-choice":
         several = a.get("choose") == "several"
         control = "checkbox" if several else "radio"
         options = []
@@ -705,16 +792,9 @@ def render_answer_space(answer, variant, base_dir):
             inner.append('<p class="dm-feature-row">' + "".join(pieces)
                          + "</p>")
     elif a_type == "label-the-diagram":
-        image_path = base_dir / a["image"]
-        data = image_path.read_bytes()
-        suffix = image_path.suffix.lower().lstrip(".")
-        mime = {"svg": "image/svg+xml", "png": "image/png",
-                "jpg": "image/jpeg", "jpeg": "image/jpeg"}.get(
-                    suffix, "application/octet-stream")
-        encoded = base64.b64encode(data).decode("ascii")
         inner.append(
             f'<img class="dm-diagram" alt="{esc(a["image_description"])}" '
-            f'src="data:{mime};base64,{encoded}">')
+            f'src="{embed_image(base_dir, a["image"])}">')
         label_rows = []
         for label in a["labels"]:
             number = label["number"]
@@ -779,6 +859,10 @@ def render_model_block(answer):
         pairs = "; ".join(f'{label["number"]}: {label.get("expected", "?")}'
                           for label in a["labels"])
         parts.append(f'<p class="dm-model-text">Labels: {esc(pairs)}</p>')
+    if a.get("model_answer_code"):
+        parts.append('<p class="dm-model-label">Model code</p>'
+                     f'<pre class="dm-model-code">'
+                     f'{esc(str(a["model_answer_code"]).rstrip())}</pre>')
     method = parsed.get("method")
     if method == "points-with-a-limit":
         parts.append(f'<p class="dm-model-label">Points (limit '
@@ -810,7 +894,7 @@ def render_paper(exam, variant, base_dir):
     answer spaces, in file order."""
     parts = []
     for node in exam.get("preamble", []):
-        parts.append(render_markdown(node["md"]))
+        parts.append(render_markdown(node["md"], base_dir))
     for section in exam["sections"]:
         s = section["settings"]
         choose = s.get("choose")
@@ -818,16 +902,29 @@ def render_paper(exam, variant, base_dir):
                      f'data-section="{esc(s["name"])}"'
                      + (f' data-choose="{choose}"' if choose else "") + ">")
         for node in section["content"]:
-            parts.append(render_markdown(node["md"]))
+            parts.append(render_markdown(node["md"], base_dir))
         for question in section["questions"]:
             q = question["settings"]
             parts.append(f'<div class="dm-question" '
                          f'data-question="{esc(q["name"])}" '
                          f'data-marks="{q["marks"]:g}" '
                          f'data-section="{esc(s["name"])}">')
+            # The marks chip is generated, so what the page shows can
+            # never drift from what the marking counts.
+            parts.append(f'<span class="dm-question-chip">'
+                         f'{q["marks"]:g} marks</span>')
+            if q.get("provided_code"):
+                parts.append('<div class="dm-provided">'
+                             '<p class="dm-small-label">Provided code — '
+                             "runs automatically when the exam starts</p>"
+                             f'<pre class="dm-provided-code">'
+                             f'{esc(str(q["provided_code"]).rstrip())}'
+                             "</pre>"
+                             '<div class="dm-provided-output"></div>'
+                             "</div>")
             for node in question["content"]:
                 if node["kind"] == "prose":
-                    parts.append(render_markdown(node["md"]))
+                    parts.append(render_markdown(node["md"], base_dir))
                 else:
                     parts.append(render_answer_space(node["answer"], variant,
                                                      base_dir))
@@ -857,7 +954,7 @@ def page_model(exam):
             })
         sections.append({"name": s["name"], "choose": s.get("choose"),
                          "questions": questions})
-    return {
+    model = {
         "format_version": 1,
         "exam_code": settings["exam_code"],
         "exam_version": settings["version"],
@@ -867,6 +964,22 @@ def page_model(exam):
         "student_details": settings["student_details"],
         "sections": sections,
     }
+    if isinstance(settings.get("python"), list):
+        provided = []
+        for section in exam["sections"]:
+            for question in section["questions"]:
+                if question["settings"].get("provided_code"):
+                    provided.append({
+                        "question": question["settings"]["name"],
+                        "code": str(question["settings"]["provided_code"]),
+                    })
+        model["python"] = {
+            "packages": [str(pkg) for pkg in settings["python"]],
+            "setup_code": str(settings.get("setup_code", "")),
+            "provided": provided,
+            "files": [],
+        }
+    return model
 
 
 def build_page(exam, variant, base_dir):
@@ -879,9 +992,36 @@ def build_page(exam, variant, base_dir):
               "answer_key": "Answer key — not for students"}[variant]
     model = page_model(exam)
     model["variant"] = variant
+    if "python" in model:
+        for entry in settings.get("data_files") or []:
+            data = (base_dir / entry["path"]).read_bytes()
+            model["python"]["files"].append({
+                "name": entry.get("as", Path(entry["path"]).name),
+                "description": entry.get("description", ""),
+                "b64": base64.b64encode(data).decode("ascii"),
+            })
     model_json = json.dumps(model).replace("</", "<\\/")
     paper = render_paper(exam, variant, base_dir)
     instructions = render_markdown(settings["instructions"])
+    panel_extras = []
+    if exam.get("reference"):
+        panel_extras.append("<h2>Reference</h2>")
+        for entry in exam["reference"]:
+            panel_extras.append(
+                '<details class="dm-ref"><summary>'
+                + esc(entry["title"]) + "</summary>"
+                + render_markdown(str(entry["text"])) + "</details>")
+    if "python" in model and (settings.get("data_files") or []):
+        panel_extras.append("<h2>Files</h2>")
+        for entry in settings["data_files"]:
+            name = entry.get("as", Path(entry["path"]).name)
+            panel_extras.append(
+                '<p class="dm-file-row"><code>' + esc(name) + "</code><br>"
+                + esc(entry.get("description", "")) + "</p>")
+        panel_extras.append('<p class="dm-panel-note">Use these file '
+                            "names in your code exactly as written.</p>")
+    panel_html = ('<div id="dm-panel-questions"></div>'
+                  + "".join(panel_extras))
     detail_inputs = "".join(
         f'<label class="dm-detail">{esc(detail)} '
         f'<input type="text" data-detail="{esc(detail)}" '
@@ -923,11 +1063,12 @@ def build_page(exam, variant, base_dir):
     browser">Browser —</span>
     <span id="dm-save-file" class="dm-save-pill" title="saved to your answer
     file">File —</span>
+    <span id="dm-python-status" class="dm-save-pill" hidden>Python</span>
     <button id="dm-download" class="dm-secondary">Save a copy</button>
     <button id="dm-finish" class="dm-primary">Finish exam…</button>
   </div>
   <div id="dm-body">
-    <nav id="dm-panel" aria-label="questions"></nav>
+    <nav id="dm-panel" aria-label="questions and reference">{panel_html}</nav>
     <main id="dm-paper">{paper}</main>
   </div>
 </div>
@@ -968,6 +1109,8 @@ def leak_fragments(exam):
                 a = answer["settings"]
                 if a.get("model_answer"):
                     add(a["model_answer"])
+                if a.get("model_answer_code"):
+                    add(a["model_answer_code"])
                 if a["type"] == "fill-in-the-blank":
                     for gap in re.findall(r"\{([^{}]+)\}", a.get("text", "")):
                         add(gap, giveaway=True)
