@@ -725,6 +725,70 @@ def test_an_html_cell_can_be_collapsed_and_duplicated(dewmini):
     assert dewmini.locator(".dm-cell-html").count() == 2
 
 
+# ---------------------------------------------------------------- css cells
+
+
+def _css_cell(page, rule="h2 { color: rebeccapurple; }"):
+    """Adds a CSS cell, types a rule into it, and blurs to render —
+    same shape as _html_cell()."""
+    page.locator(".dm-insert-btn", has_text="CSS").last.click()
+    editor = page.locator(".dm-cell-css .cm-content").last
+    editor.click()
+    page.keyboard.insert_text(rule)
+    editor.evaluate("el => el.blur()")
+    return page.locator(".dm-cell-css").last
+
+
+def test_a_new_css_cell_starts_in_its_editor(dewmini):
+    """A CSS cell's preview always has *something* to show (the fixed
+    sample markup, styled or not) — but a brand-new cell still opens
+    ready to type, same as every other cell type."""
+    dewmini.locator(".dm-insert-btn", has_text="CSS").last.click()
+    cell = dewmini.locator(".dm-cell-css").last
+    assert cell.locator(".dm-editor").is_visible()
+    assert cell.locator(".dm-html-render").is_hidden()
+
+
+def test_a_css_cells_rule_applies_to_the_fixed_preview(dewmini):
+    """DECISIONS_LOG.md 7.117, planning/CELL_IDENTITY.md §8 — no HTML of
+    the reader's own needed; the preview markup is fixed on purpose."""
+    cell = _css_cell(dewmini, "h2 { color: rebeccapurple; } button { background: gold; }")
+    frame = cell.locator(".dm-html-frame").content_frame
+    assert frame.locator("h2").evaluate("el => getComputedStyle(el).color") == "rgb(102, 51, 153)"
+    assert frame.locator("button").evaluate(
+        "el => getComputedStyle(el).backgroundColor"
+    ) == "rgb(255, 215, 0)"
+
+
+def test_a_css_cell_survives_a_reload(dewmini):
+    _css_cell(dewmini, "h2 { color: rebeccapurple; }")
+    dewmini.reload()
+    dewmini.wait_for_selector(".dm-toolbar")
+    assert dewmini.locator(".dm-cell-css").count() == 1
+    frame = dewmini.locator(".dm-cell-css .dm-html-frame").content_frame
+    assert frame.locator("h2").evaluate("el => getComputedStyle(el).color") == "rgb(102, 51, 153)"
+
+
+def test_a_css_cells_chrome_is_also_quiet_until_touched(dewmini):
+    cell = _css_cell(dewmini)
+    dewmini.mouse.move(5, 5)
+    assert head_opacity(dewmini, cell) == "0"
+
+    hover_cell(dewmini, cell)
+    assert head_opacity(dewmini, cell) == "1"
+
+
+def test_a_css_cell_can_be_collapsed_and_duplicated(dewmini):
+    cell = _css_cell(dewmini, "p { color: teal; }")
+    hover_cell(dewmini, cell)
+    cell.locator(".dm-collapse-toggle").click()
+    assert cell.locator(".dm-cell-content").is_hidden()
+    assert cell.locator(".dm-cell-collapsed-summary").is_visible()
+
+    cell.locator(".dm-icon-duplicate").click()
+    assert dewmini.locator(".dm-cell-css").count() == 2
+
+
 # ---------------------------------------------------------------- variables
 
 

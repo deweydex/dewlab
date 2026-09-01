@@ -5125,3 +5125,43 @@ line) should be a similarly small addition, not a redesign. The
 `if`/`else if` chain bug is exactly the kind of mistake worth a linter
 catching automatically rather than relying on remembering to check
 against `.mjs`; not set up here, left as a known gap.*
+
+**7.117 — CSS, the second of the four new cell types, built in dewmini.**
+Close to a copy of 7.116's HTML branch — CodeMirror with
+`@codemirror/lang-css`, a sandboxed `<iframe sandbox="allow-scripts">`
+for the preview, the same Edit/View toggle, the same quiet-until-touched
+chrome — with two differences, both settled in `planning/CELL_IDENTITY.md`
+§8 before this was built: the iframe's `srcdoc` is
+`CSS_PREVIEW_MARKUP` (a fixed little "page" — a heading, a paragraph
+with a link, a button, a list) with the reader's own rule in a
+`<style>` tag ahead of it, not the reader's own markup; and styling the
+HTML cell sitting above it was considered and set aside, since that
+would make a CSS cell's behaviour depend on cell order and type in a
+way nothing else in dewmini's model does.
+
+**A UX bug caught before it shipped, not after: a brand-new CSS cell
+opened with its editor already hidden.** The first pass called
+`showRendered()` unconditionally at the end of the branch, reasoning
+that a CSS cell's preview "always has something to show, empty rule or
+not" — true, but beside the point: every other cell type opens ready to
+type, and a fixed preview with nothing to look at yet is worse than an
+empty editor waiting for the reader's first keystroke. Fixed to the same
+`if (cell.content.trim()) showRendered(); else syncPreviewBtn();` HTML
+and Text already use — only a cell restored with existing content opens
+straight to its preview.
+
+The `READ_NOT_RUN_TYPES` set (`text`, `html`, `css`) replaced the
+`cell.type === CELL_TYPES.TEXT || cell.type === CELL_TYPES.HTML` check
+7.116 left behind — a third `||` clause for CSS would have worked, but
+the set reads as what it actually means ("the types meant to be read,
+not run") rather than an accumulating list of exceptions, and a fourth
+type (JavaScript, which *does* run) won't need touching it at all. The
+quiet-until-touched CSS rule got the same treatment, `:is(.dm-cell-text,
+.dm-cell-html, .dm-cell-css)` in place of three separate comma-joined
+selector lists.
+
+*Cost to change: small, and getting smaller — CSS took noticeably less
+new code than HTML did, most of it copied and adapted rather than
+designed from scratch, which is roughly what §8's own build order bet
+on. SQL and JavaScript won't get to make the same bet: both need a
+genuinely new execution engine, not another coat of the same pattern.*

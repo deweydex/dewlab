@@ -222,15 +222,15 @@ carrying the state rather than its shape.
   `restartPython()` (7.108) turned out to be exactly the groundwork this
   needed, unchanged.
 - **SQL, HTML, CSS, JavaScript: designed in §8, being built from there
-  outward, in dewmini only, one type at a time. HTML is built (7.116);
-  CSS, SQL, and JavaScript are not, yet.** This document's own
-  multi-type table was a design for when they exist, not a claim that
-  they do — §8 is where "when they exist" turns into an actual
+  outward, in dewmini only, one type at a time. HTML (7.116) and CSS
+  (7.117) are built; SQL and JavaScript are not, yet.** This document's
+  own multi-type table was a design for when they exist, not a claim
+  that they do — §8 is where "when they exist" turns into an actual
   execution model per type, since the table alone only ever answered
   *what chrome a cell gets*, never *what running one does*.
   `--dl-type-python`/`--dl-type-text` were the only colour tokens
-  defined until §8 added four more, one of them (`--dl-type-html`) now
-  in real use.
+  defined until §8 added four more, two of them (`--dl-type-html`,
+  `--dl-type-css`) now in real use.
 - **Tutorial and practice pages: the pill and the run line are now ported
   too (7.113).** 7.109 ported the run-line-adjacent pieces (staleness,
   run above/below, restart & run all) onto `build.py`'s
@@ -409,9 +409,15 @@ cross-origin sandboxed iframe never bubbles out to a listener in this
 document. The header's own Edit/View toggle — already there, already
 revealed the same way by quiet-until-touched — is the one way in.
 
-CSS next, since it shares that same iframe pattern almost entirely. SQL
-and JavaScript both need a genuinely new execution engine (*sql.js*; the
-persistent sandboxed session) and come after, in whichever order the
+CSS next, since it shares that same iframe pattern almost entirely.
+**Built (7.117).** Styling the HTML cell above it — the obvious pairing
+— was set aside for the reason above §8 already gives: it would make a
+CSS cell's behaviour depend on cell order and type, which nothing else
+here does. Its preview is `CSS_PREVIEW_MARKUP`, a fixed little "page,"
+with the reader's rule in a `<style>` tag ahead of it.
+
+SQL and JavaScript both need a genuinely new execution engine (*sql.js*;
+the persistent sandboxed session) and come after, in whichever order the
 work actually lands.
 
 Not attempted here, on purpose: none of the four get a drag-and-drop

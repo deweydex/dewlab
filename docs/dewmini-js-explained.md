@@ -43,20 +43,28 @@ carry this same anatomy now too (7.113–7.115), by way of `build.py`'s
 `render_cell()` and `assets/tutorial-runtime.js` rather than this file —
 see `docs/tutorial-runtime-explained.md` for that side.
 
-A third `CELL_TYPES` value, `html` (DECISIONS_LOG.md 7.116,
-`planning/CELL_IDENTITY.md` §8), is dewmini-only — the first of four new
-cell types that document designs (SQL, HTML, CSS, JavaScript), and the
-only one built so far. `createCellElement()`'s HTML branch mirrors
-Text's shape (an editor, a rendered view, the same quiet-until-touched/
-Edit-View chrome) but a CodeMirror editor (`language: "html"`) in place
-of a plain `<textarea>`, and a sandboxed `<iframe sandbox="allow-scripts"
-srcdoc="…">` in place of `innerHTML`-ing rendered markdown straight into
-the page — Text's own click-to-edit gesture on its rendered view cannot
-work here, since a click inside a cross-origin iframe never bubbles out
-to a listener in this document; the header's Edit/View toggle is the one
-way in. `readCells()`'s cell-type whitelist generalised to
-`Object.values(CELL_TYPES)` while this was built, rather than needing
-another hand-edit the next time a type is added.
+Two more `CELL_TYPES` values, `html` and `css` (DECISIONS_LOG.md
+7.116/7.117, `planning/CELL_IDENTITY.md` §8), are dewmini-only — the
+first two of four new cell types that document designs (SQL, HTML, CSS,
+JavaScript are the full set; SQL and JavaScript aren't built yet).
+`createCellElement()`'s HTML branch mirrors Text's shape (an editor, a
+rendered view, the same quiet-until-touched/Edit-View chrome) but a
+CodeMirror editor (`language: "html"`) in place of a plain `<textarea>`,
+and a sandboxed `<iframe sandbox="allow-scripts" srcdoc="…">` in place
+of `innerHTML`-ing rendered markdown straight into the page — Text's own
+click-to-edit gesture on its rendered view cannot work here, since a
+click inside a cross-origin iframe never bubbles out to a listener in
+this document; the header's Edit/View toggle is the one way in. The CSS
+branch is close to a copy of HTML's, with two differences: the language
+mode, and what the iframe's `srcdoc` actually holds — `CSS_PREVIEW_MARKUP`
+(a fixed little "page") with the reader's rule in a `<style>` tag ahead
+of it, rather than the reader's own markup. `READ_NOT_RUN_TYPES` (`text`,
+`html`, `css`) is what the header-end/Edit-View and quiet-until-touched
+logic actually check now, in place of an accumulating `||` chain across
+`cell.type === CELL_TYPES.X` comparisons. `readCells()`'s cell-type
+whitelist generalised to `Object.values(CELL_TYPES)` while HTML was
+built, rather than needing another hand-edit the next time a type is
+added.
 
 ### …and `cells` belongs to a notebook
 

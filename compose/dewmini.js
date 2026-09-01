@@ -37,8 +37,27 @@ const DM_PACKAGES = ["numpy", "pandas", "matplotlib", "sqlite3", "Pillow"];
 // file the reader actually saved and sent to someone.
 const DM_NETWORK_PATCH = "try:\n    import pyodide_http\n    pyodide_http.patch_all()\nexcept Exception:\n    pass\n";
 
-const CELL_TYPES = { PYTHON: "python", TEXT: "text", HTML: "html" };
+const CELL_TYPES = { PYTHON: "python", TEXT: "text", HTML: "html", CSS: "css" };
+
+/* The fixed little "page" a CSS cell's own preview renders — a heading, a
+ * paragraph with a link, a button, a list: enough ordinary elements that a
+ * reader's own selectors (h2, p, a, button, li, …) land on something real,
+ * without asking them to write any HTML of their own first
+ * (planning/CELL_IDENTITY.md §8's own reasoning for why a CSS cell doesn't
+ * simply style the HTML cell above it — that would make its behaviour
+ * depend on cell order, which nothing else in dewmini's model does). */
+const CSS_PREVIEW_MARKUP = `<h2>Heading</h2>
+<p>A paragraph of text, with a <a href="#">link</a> inside it.</p>
+<button>A button</button>
+<ul><li>One item</li><li>Another item</li></ul>`;
 const IMPORTS_SNIPPET = "import numpy as np\nimport pandas as pd\nimport matplotlib.pyplot as plt\n";
+
+/* The cell types meant to be read, not run — rendered by default, with
+ * an explicit Edit/View toggle and chrome that stays quiet until
+ * touched (planning/CELL_IDENTITY.md §4/§8). Python is the one type
+ * outside this set that still runs against the shared session; SQL and
+ * JavaScript will join it once they exist. */
+const READ_NOT_RUN_TYPES = new Set([CELL_TYPES.TEXT, CELL_TYPES.HTML, CELL_TYPES.CSS]);
 
 /* Seeds the namespace for the *standalone export* only — a downloaded copy
  * carries its own tiny runtime rather than pyodide-engine.js, which is what
@@ -1135,7 +1154,14 @@ function createInsertDivider(index) {
   addHtml.innerHTML = '<span class="dm-tool-icon dm-tool-icon-html" aria-hidden="true"></span>HTML';
   addHtml.addEventListener("click", () => insertCellAt(index, CELL_TYPES.HTML));
 
-  actions.append(addPy, addTxt, addHtml);
+  const addCss = document.createElement("button");
+  addCss.type = "button";
+  addCss.className = "dm-insert-btn";
+  addCss.title = "Insert a CSS cell here";
+  addCss.innerHTML = '<span class="dm-tool-icon dm-tool-icon-css" aria-hidden="true"></span>CSS';
+  addCss.addEventListener("click", () => insertCellAt(index, CELL_TYPES.CSS));
+
+  actions.append(addPy, addTxt, addHtml, addCss);
   row.append(line, actions);
   return row;
 }
@@ -1386,7 +1412,10 @@ function createCellElement(cell) {
   // there's no reason the hit target should be smaller than the label.
   pill.draggable = true;
   pill.title = "Click, hold, and drag — or tap and hold, then drag — to move this cell.";
-  const PILL_LABELS = { [CELL_TYPES.PYTHON]: "Python", [CELL_TYPES.TEXT]: "Text", [CELL_TYPES.HTML]: "HTML" };
+  const PILL_LABELS = {
+    [CELL_TYPES.PYTHON]: "Python", [CELL_TYPES.TEXT]: "Text",
+    [CELL_TYPES.HTML]: "HTML", [CELL_TYPES.CSS]: "CSS",
+  };
   pill.innerHTML =
     '<span class="dm-cell-pill-dots" aria-hidden="true">&#8942;</span>' +
     `<span class="dm-cell-pill-num">Cell ${cellNumber}</span>` +
@@ -1409,7 +1438,7 @@ function createCellElement(cell) {
   // no hover to reveal that the note is clickable at all. Its label is
   // kept in sync by showEditor()/showRendered().
   let previewBtn = null;
-  if (cell.type === CELL_TYPES.TEXT || cell.type === CELL_TYPES.HTML) {
+  if (READ_NOT_RUN_TYPES.has(cell.type)) {
     previewBtn = document.createElement("button");
     previewBtn.type = "button";
     previewBtn.className = "dm-icon-btn dm-icon-preview";
@@ -1680,6 +1709,67 @@ function createCellElement(cell) {
       if (editorEl.hidden) showEditor(); else showRendered();
     });
 
+    if (cell.content.trim()) showRendered();
+    else syncPreviewBtn();
+  } else if (cell.type === CELL_TYPES.CSS) {
+    // Same mechanism as HTML — a CodeMirror source editor, a sandboxed
+    // iframe standing in for the rendered view, the same Edit/View
+    // toggle — the only two differences are the language mode and what
+    // goes in the iframe: CSS_PREVIEW_MARKUP (a fixed little "page") with
+    // the reader's own rule in a <style> tag ahead of it, rather than the
+    // reader's markup directly.
+    const editorEl = document.createElement("div");
+    editorEl.className = "dm-editor";
+    contentRegion.appendChild(editorEl);
+
+    const renderEl = document.createElement("div");
+    renderEl.className = "dm-html-render";
+    renderEl.hidden = true;
+    contentRegion.appendChild(renderEl);
+
+    const iframe = document.createElement("iframe");
+    iframe.className = "dm-html-frame";
+    iframe.setAttribute("sandbox", "allow-scripts");
+    iframe.title = `Cell ${cellNumber}'s CSS preview`;
+    renderEl.appendChild(iframe);
+
+    const syncPreviewBtn = () => {
+      const editing = !editorEl.hidden;
+      previewBtn.textContent = editing ? "View" : "Edit";
+      previewBtn.title = editing ? "Show the preview" : "Edit this cell's CSS";
+    };
+    const showEditor = () => {
+      editorEl.hidden = false;
+      renderEl.hidden = true;
+      editor.focus();
+      syncPreviewBtn();
+    };
+    const showRendered = () => {
+      iframe.srcdoc = `<style>${cell.content}</style>${CSS_PREVIEW_MARKUP}`;
+      renderEl.hidden = false;
+      editorEl.hidden = true;
+      syncPreviewBtn();
+    };
+
+    const editor = createCodeEditor(editorEl, cell.content, {
+      dark: isDarkNow(),
+      language: "css",
+      onChange: (text) => { cell.content = text; saveState(); },
+    });
+    cell.editor = editor;
+    editorEl.addEventListener("focusout", (e) => {
+      if (!editorEl.contains(e.relatedTarget)) showRendered();
+    });
+
+    previewBtn.addEventListener("mousedown", (e) => e.preventDefault());
+    previewBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      if (editorEl.hidden) showEditor(); else showRendered();
+    });
+
+    // A brand-new cell starts in the editor, same as HTML/Text — only a
+    // cell with something in it already (restored from a save) opens
+    // straight to its rendered preview.
     if (cell.content.trim()) showRendered();
     else syncPreviewBtn();
   }
