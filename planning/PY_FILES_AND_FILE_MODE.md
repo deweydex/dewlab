@@ -460,7 +460,7 @@ Each step below is useful on its own, so the work can stop after any of them.
 | Step | What it does | Rough size |
 |---|---|---|
 | 1 | Adopt the percent format for exported and imported Python files | **Done** — `DECISIONS_LOG.md` 7.110 |
-| 2 | Add the workspace to `sys.path` and handle module caching | One day |
+| 2 | Add the workspace to `sys.path` and handle module caching | **Done** — `DECISIONS_LOG.md` 7.113 |
 | 3 | Carry cell outputs through the `.ipynb` reader and writer | Two to three days |
 | 4 | Add the file view and extend the Files panel into a file manager, moving the panels to the sides Part 3 settles | One to two weeks |
 | 5 | Let a tutorial carry a `workspace` folder, opened automatically | Small |
@@ -474,8 +474,11 @@ because it then imports as a note and is written out again above a fresh
 copy of itself, growing the notebook by one note on every round trip. It
 sits above the first marker instead, and the reader discards it by
 matching its first line. Step 2 follows because it is the smallest change
-that lets a student do the thing they currently cannot, and it does not require
-any new interface.
+that lets a student do the thing they currently cannot. It is done. It did
+require a small new interface after all: the notice that names a file edited
+after Python read it, and the button that re-reads it. Part 2 recommended
+telling the student rather than reloading silently, and telling them takes
+somewhere to say it.
 
 Step 3 is worth doing before step 4 and is worth doing even if step 4 never
 happens. It fixes the existing defect that an imported notebook silently loses
