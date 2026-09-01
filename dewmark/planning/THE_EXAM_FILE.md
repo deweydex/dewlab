@@ -167,6 +167,11 @@ as a whole.
   page does not enforce it; the room's clock and the invigilator do.
 - `student_details` — which identifying details the student is asked to
   type before starting, usually full name and student number.
+- `calculator` — set to `scientific` to give the exam page a calculator
+  in its side panel: a keypad and typed expressions, with square roots,
+  powers, and trigonometry in degrees and radians. Leave the setting
+  out and the page has no calculator. The calculator works offline,
+  keeps no history, and puts nothing into the submission.
 - `instructions` — the text of the front-page instructions, including
   any "answer any N of M" wording. The counting rules themselves are
   written in the `section` blocks, so the tools and the instructions

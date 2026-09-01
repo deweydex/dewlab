@@ -29,6 +29,11 @@ from pathlib import Path
 import markdown as markdown_lib
 import yaml
 
+try:
+    import latex2mathml.converter as mathml_converter
+except ImportError:  # the checks report this when the file needs it
+    mathml_converter = None
+
 # ---------------------------------------------------------------- constants
 
 BLOCK_KINDS = {"exam", "section", "question", "answer", "marking",
@@ -60,6 +65,30 @@ BAND_RE = re.compile(r"^\s*(\d+)\s*(?:to|[-–])\s*(\d+)\s*[-–]\s*(.+)$", re.S
 
 # "![a bar chart of letter counts](pictures/chart.svg)" in prose
 PROSE_IMAGE_RE = re.compile(r"!\[([^\]]*)\]\(([^)\s]+)\)")
+
+
+def every_math_text(exam):
+    """Every (line, text) pair that may hold $...$ mathematics: the
+    front-page instructions, all prose, reference material, and answer
+    space prompts."""
+    settings = exam["settings"] or {}
+    yield settings.get("_line", 0), settings.get("instructions", "")
+    yield from ((node["line"], node["md"])
+                for node in exam.get("preamble", []))
+    for entry in exam.get("reference", []):
+        yield entry.get("_line", 0), entry.get("text", "")
+    for section in exam["sections"]:
+        yield from ((node["line"], node["md"])
+                    for node in section["content"])
+        for question in section["questions"]:
+            for node in question["content"]:
+                if node["kind"] == "prose":
+                    yield node["line"], node["md"]
+            for answer in question["answers"]:
+                a = answer["settings"]
+                yield a.get("_line", 0), a.get("prompt", "")
+                if isinstance(a.get("shape"), dict):
+                    yield a.get("_line", 0), a["shape"].get("prompt", "")
 
 NUMBER_WORDS = {
     1: "one", 2: "two", 3: "three", 4: "four", 5: "five", 6: "six",
@@ -99,7 +128,7 @@ def parse_exam_file(text, base_dir):
     prose_start = 1
 
     def flush_prose():
-        nonlocal prose_lines, prose_start
+        nonlocal prose_lines, prose_start, prose_since_answer
         chunk = "\n".join(prose_lines).strip("\n")
         if chunk.strip():
             node = {"kind": "prose", "md": chunk, "line": prose_start}
@@ -109,6 +138,7 @@ def parse_exam_file(text, base_dir):
                 current_section["content"].append(node)
             else:
                 exam.setdefault("preamble", []).append(node)
+            prose_since_answer = True
         prose_lines = []
 
     lines = text.split("\n")
@@ -198,7 +228,9 @@ def parse_exam_file(text, base_dir):
         elif kind == "reference":
             flush_prose()
             exam.setdefault("reference", []).append(settings)
+            prose_since_answer = True
         elif kind == "marking":
+            flush_prose()
             if last_answer is None or prose_since_answer:
                 problems.append((start_line, "a 'marking' block must come "
                                  "directly after the answer space it "
@@ -218,18 +250,6 @@ def parse_exam_file(text, base_dir):
 
     # Prose that arrives after an answer breaks the answer->marking
     # adjacency; track it by scanning the flush order. The flush above
-    # already appended prose to the question, so recompute the flag from
-    # content ordering instead of during the loop (simpler and correct).
-    for section in exam["sections"]:
-        for question in section["questions"]:
-            seen_prose_after = False
-            for node in question["content"]:
-                if node["kind"] == "prose":
-                    seen_prose_after = True
-                elif node["kind"] == "answer":
-                    seen_prose_after = False
-            del seen_prose_after  # ordering itself is what renders
-
     check_exam(exam, problems, base_dir)
     return exam, problems
 
@@ -353,6 +373,12 @@ def check_exam(exam, problems, base_dir):
                          "so the exam block needs 'python:' with a list of "
                          "the packages the exam uses (the list may be "
                          "empty: python: [])"))
+    calculator = settings.get("calculator")
+    if calculator not in (None, "scientific"):
+        problems.append((line, f"'calculator: {calculator}' is not a "
+                         "calculator the exam page offers; the only one so "
+                         "far is 'calculator: scientific', and leaving the "
+                         "setting out gives no calculator"))
     for entry in settings.get("data_files") or []:
         if not isinstance(entry, dict) or "path" not in entry:
             problems.append((line, "each data file needs at least a 'path'"))
@@ -385,6 +411,26 @@ def check_exam(exam, problems, base_dir):
             if not (base_dir / path).is_file():
                 problems.append((node["line"], f"the picture '{path}' does "
                                  "not exist beside the exam file"))
+
+    # Every $...$ expression must typeset (see math_html); a page that
+    # silently fell back to italics would look broken to students.
+    math_uses = [(line, tex)
+                 for line, text in every_math_text(exam)
+                 for tex in MATH_RE.findall(str(text))]
+    if math_uses and mathml_converter is None:
+        problems.append((math_uses[0][0], "this exam contains $...$ "
+                         "mathematics, but the latex2mathml package that "
+                         "typesets it is not installed; install it with "
+                         "'pip install -r dewmark/requirements.txt'"))
+    elif mathml_converter is not None:
+        for m_line, tex in math_uses:
+            try:
+                mathml_converter.convert(tex)
+            except Exception as error:
+                problems.append((m_line, f"the mathematics '${tex}$' cannot "
+                                 f"be typeset ({type(error).__name__}); fix "
+                                 "the expression, or drop the dollar signs "
+                                 "to show it as plain text"))
 
     declared = settings.get("total_marks")
     if isinstance(declared, (int, float)) and total != declared:
@@ -608,6 +654,37 @@ def check_marking(answer, marks, problems):
 MATH_RE = re.compile(r"\$([^$\n]+)\$")
 
 
+def math_html(tex):
+    """One $...$ expression, typeset at build time.
+
+    The expression becomes MathML, which every current browser displays
+    natively, so the finished page needs no typesetting program of its
+    own. When the converter is missing or refuses the expression the
+    text falls back to italics; the checks report both situations, so a
+    built page only ever falls back after a deliberate choice to
+    ignore the report.
+    """
+    if mathml_converter is not None:
+        try:
+            return mathml_converter.convert(tex)
+        except Exception:
+            pass
+    return f'<em class="dm-math">{html.escape(tex)}</em>'
+
+
+def esc_with_math(value):
+    """Escape a settings text for HTML, typesetting any $...$ inside."""
+    text = str(value)
+    pieces = []
+    last = 0
+    for match in MATH_RE.finditer(text):
+        pieces.append(esc(text[last:match.start()]))
+        pieces.append(math_html(match.group(1)))
+        last = match.end()
+    pieces.append(esc(text[last:]))
+    return "".join(pieces)
+
+
 def embed_image(base_dir, path):
     """A picture file as a data address, so the page stays one file."""
     image_path = base_dir / path
@@ -623,9 +700,7 @@ def render_markdown(md_text, base_dir=None):
     """Render a prose chunk to HTML.
 
     Mathematics between dollar signs is lifted out before the Markdown
-    step and re-inserted afterwards in a styled span. The draft shows it
-    in italics rather than typeset; proper typesetting at build time is a
-    known gap listed in docs/DEVELOPMENT.md.
+    step, typeset (see math_html), and re-inserted afterwards.
 
     When base_dir is given, pictures written as ![description](path) are
     embedded into the page (the checks have already confirmed the file
@@ -640,9 +715,8 @@ def render_markdown(md_text, base_dir=None):
     stashed = MATH_RE.sub(stash, md_text)
     rendered = markdown_lib.markdown(stashed, extensions=["tables"])
     for index, content in enumerate(holes):
-        rendered = rendered.replace(
-            f"\x00MATH{index}\x00",
-            f'<em class="dm-math">{html.escape(content)}</em>')
+        rendered = rendered.replace(f"\x00MATH{index}\x00",
+                                    math_html(content))
     if base_dir is not None:
         rendered = re.sub(
             r'(<img [^>]*?src=")([^"]+)(")',
@@ -719,7 +793,7 @@ def render_answer_space(answer, variant, base_dir):
         inner.append('<p class="dm-blank-text">' + "".join(pieces) + "</p>")
     elif a_type in ("short-written-answer", "long-written-answer"):
         prompt = a.get("prompt", "")
-        inner.append(f'<p class="dm-prompt">{esc(prompt)}</p>')
+        inner.append(f'<p class="dm-prompt">{esc_with_math(prompt)}</p>')
         hint = esc(a.get("hint", "")) if show_hints and a.get("hint") else ""
         inner.append(f'<textarea class="dm-writing" rows="{rows_for(marks)}" '
                      f'aria-label="your answer" placeholder="{hint}">'
@@ -775,7 +849,8 @@ def render_answer_space(answer, variant, base_dir):
                 f'<label class="dm-option dm-shape"><input type="radio" '
                 f'name="{esc(name)}.shape" value="{index}"> '
                 f"<span>{esc(option)}</span></label>")
-        inner.append(f'<p class="dm-prompt">{esc(shape.get("prompt", ""))}'
+        inner.append(f'<p class="dm-prompt">'
+                     f'{esc_with_math(shape.get("prompt", ""))}'
                      "</p>")
         inner.append('<div class="dm-options">' + "".join(options) + "</div>")
         for f_index, feature in enumerate(a["features"]):
@@ -1004,6 +1079,40 @@ def build_page(exam, variant, base_dir):
     paper = render_paper(exam, variant, base_dir)
     instructions = render_markdown(settings["instructions"])
     panel_extras = []
+    if settings.get("calculator"):
+        digit_rows = [["7", "8", "9", "÷"], ["4", "5", "6", "×"],
+                      ["1", "2", "3", "−"], ["0", ".", "(", ")"],
+                      ["+", "√", "π", "^"]]
+        trig_rows = [["sind", "cosd", "tand"],
+                     ["asind", "acosd", "atand"]]
+        inserts = {"÷": "/", "×": "*", "−": "-", "√": "sqrt(", "π": "pi",
+                   "sind": "sind(", "cosd": "cosd(", "tand": "tand(",
+                   "asind": "asind(", "acosd": "acosd(", "atand": "atand("}
+
+        def keys(rows):
+            return "".join(
+                f'<button type="button" data-insert='
+                f'"{esc(inserts.get(key, key))}">{esc(key)}</button>'
+                for row in rows for key in row)
+
+        panel_extras.append(
+            '<details class="dm-calc" id="dm-calc" open><summary>'
+            "Calculator</summary>"
+            '<input id="dm-calc-display" type="text" autocomplete="off" '
+            'spellcheck="false" aria-label="calculator display" '
+            'placeholder="for example sqrt(41.76)">'
+            '<p id="dm-calc-result" aria-live="polite"></p>'
+            '<div class="dm-calc-keys dm-calc-grid4">'
+            + keys(digit_rows) + "</div>"
+            '<div class="dm-calc-keys dm-calc-grid3">'
+            + keys(trig_rows) + "</div>"
+            '<div class="dm-calc-keys dm-calc-grid2">'
+            '<button type="button" data-action="clear">C</button>'
+            '<button type="button" data-action="equals">=</button></div>'
+            '<p class="dm-panel-note">sin, cos and tan read radians; '
+            "sind, cosd and tand read degrees, and asind, acosd and "
+            "atand answer in degrees. The calculator keeps no history "
+            "and is not handed in.</p></details>")
     if exam.get("reference"):
         panel_extras.append("<h2>Reference</h2>")
         for entry in exam["reference"]:

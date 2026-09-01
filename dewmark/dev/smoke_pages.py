@@ -76,6 +76,21 @@ def main():
         page.click("#dm-begin")
         page.wait_for_selector("#dm-app:not([hidden])")
 
+        # the calculator panel: buttons, typing, a degree function, and
+        # an error message rather than a surprise
+        page.click("#dm-calc button[data-insert='(']")
+        page.fill("#dm-calc-display", "sind(30) + 2^3 / 4")
+        page.click("#dm-calc button[data-action='equals']")
+        assert page.text_content("#dm-calc-result").strip() == "= 2.5"
+        page.fill("#dm-calc-display", "sqrt(2")
+        page.click("#dm-calc button[data-action='equals']")
+        assert "bracket" in page.text_content("#dm-calc-result")
+        print("calculator: ok")
+
+        # the mathematics in the paper is typeset, not italic dollars
+        assert page.locator("#dm-paper math").count() > 0
+        print("typeset mathematics: ok")
+
         page.check('[data-answer="a1.choice"] input[value="2"]')
         page.fill('[data-answer="a2.blanks"] .dm-blank[data-blank="1"]',
                   "premises")

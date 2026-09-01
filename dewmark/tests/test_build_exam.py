@@ -247,6 +247,43 @@ labels:
     assert "image_description" in str(caught.value)
 
 
+def test_mathematics_is_typeset_into_the_page(tmp_path):
+    text = minimal().replace(
+        "prompt: State what is meant by a variable.",
+        "prompt: State the roots of $f(x) = x^2 - 2x - 8$.")
+    build_text(tmp_path, text)
+    page = (tmp_path / "out" / "tiny-2027.student.html").read_text()
+    assert "<math " in page
+    assert "$" not in page.split("<body")[1].split("<script")[0]
+
+
+def test_mathematics_that_cannot_typeset_is_refused(tmp_path):
+    text = minimal().replace(
+        "prompt: State what is meant by a variable.",
+        "prompt: Consider $x^$ carefully.")
+    with pytest.raises(build_exam.BuildError) as caught:
+        build_text(tmp_path, text)
+    assert "cannot be typeset" in str(caught.value)
+
+
+def test_a_marking_block_separated_by_prose_is_refused(tmp_path):
+    # the mistake a cut-and-paste edit makes: text lands between an
+    # answer space and its marking block
+    more = SECOND_QUESTION + """\
+
+Some stray prose between the answer and its marking.
+
+```marking
+marks: 3
+guidance:
+  - 1 mark per blank
+```
+"""
+    with pytest.raises(build_exam.BuildError) as caught:
+        build_text(tmp_path, minimal(more=more))
+    assert "directly after" in str(caught.value)
+
+
 def test_points_that_cannot_reach_the_limit_are_refused(tmp_path):
     more = SECOND_QUESTION + """\
 
