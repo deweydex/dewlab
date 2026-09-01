@@ -16,22 +16,28 @@ drag-and-drop mechanics, and the Run-becomes-Stop button pattern.
 
 Almost everything in this file changes the module-level `cells` array
 first, then calls `saveState()` and `renderCells()` to catch the page
-up. A cell object here is `{ id, type, content, output, error }`, plus
-`lastRunMs` and (for a Python cell that has run at least once)
-`ranContent` — the content as it looked at that run, compared against
-the cell's current content to show the "Edited since last run" badge
-(DECISIONS_LOG.md 7.105) — and, once it's actually drawn on the page, a
-few DOM-referencing properties (`.outputEl`, `.runBtn`, `.staleEl`) —
-the rule is: change the data, then make the page match it, never the
-other way around. `ranContent` is deliberately *not* one of the fields
-`saveState()`/`readCells()` carry to and from `localStorage`: it
-describes a live Python session, and no live session survives a reload,
-so neither should the claim that one is stale.
+up. A cell object here is `{ id, type, content, output, error,
+collapsed }`, plus — for a Python cell that has run at least once this
+session — `ranContent` (the content as it looked at that run, compared
+against the cell's current content for the run-line's "edited since"
+flag), `lastRunMs`, and `ranOrder` (this session's own running count,
+`runSequenceCounter`, behind the run-line's "Ran Nth" —
+planning/CELL_IDENTITY.md §3) — and, once it's actually drawn on the
+page, a few DOM-referencing properties (`.outputEl`, `.runBtn`,
+`.runLineEl`) — the rule is: change the data, then make the page match
+it, never the other way around. `ranContent`/`lastRunMs`/`ranOrder` are
+deliberately *not* among the fields `saveState()`/`readCells()` carry to
+and from `localStorage`: they describe a live Python session, and no
+live session survives a reload, so neither should any claim about one.
 
-`ranContent` is also the groundwork a not-yet-built feature would sit
-on: `planning/CELL_IDENTITY.md` designs an execution counter and a
-per-type cell header (numbered pill, run order, duration) that would
-read this same field rather than add a new one.
+`compose/dewmini.js` is where `planning/CELL_IDENTITY.md`'s design
+actually lives now — the numbered, coloured identity pill, the merged
+run-line (order, duration, staleness, and the live "Running…"/"Running
+next" states), the collapse triangle (every cell type, not only
+code-bearing ones — an amendment past that document's own §4), and the
+header-end group (Edit for text, Duplicate, Delete). Not yet ported:
+tutorial and practice pages still show the plainer, four-feature slice
+from 7.109, not this full anatomy.
 
 ### …and `cells` belongs to a notebook
 
@@ -75,27 +81,32 @@ for `load_csv()`).
    `Pillow` beyond a tutorial page's baseline, since it isn't tied to
    one curriculum), the `engine.configure({...})` call, and the
    module-level variables that hold the whole notebook's state
-   (`cells`, `running`, `runningCellId`).
+   (`cells`, `running`, `runningCellId`, `runSequenceCounter`).
 2. **Storage** — `generateId`, `loadSavedState`, `saveState`.
-3. **Cells** — `insertCellAt`/`addCell`/`deleteCell`/`focusCell`, the
-   text-cell markdown renderer (`escapeHtml`/`renderDocInline`/
-   `extractDocMath`/`renderDocMathSpan`/`renderDocMarkdown`), the KaTeX
-   lazy-loader (`loadKatexRenderMath`/`renderMathsIn`), the
-   image-attachment picker, `renderCells`, `createRunMoreMenu` (the
-   per-cell "⋯" Run-above/Run-below popover), and `createCellElement`
-   (the big one — builds a cell's entire DOM tree, and wires
+3. **Cells** — `insertCellAt`/`addCell`/`deleteCell`/`duplicateCell`/
+   `focusCell`, the text-cell markdown renderer (`escapeHtml`/
+   `renderDocInline`/`extractDocMath`/`renderDocMathSpan`/
+   `renderDocMarkdown`), the KaTeX lazy-loader (`loadKatexRenderMath`/
+   `renderMathsIn`), the image-attachment picker, `renderCells`,
+   `createRunMoreMenu` (the per-cell "⋯" Run-above/Run-below popover),
+   the run-line functions (`formatOrdinal`/`renderCellRunLine`/
+   `resetRunSequence`/`startRunLineTicker`/`clearRunLineTicker`/
+   `setRunLineQueued` — planning/CELL_IDENTITY.md §3), and
+   `createCellElement` (the big one — builds a cell's entire DOM tree:
+   header, collapsible body, footer bar, output — and wires
    `completeNames`/`getDoc`/`getSignature` straight to the shared
    engine's own `pageNamesCompletion`/`hoverDoc`/`signatureHelp`).
 4. **Execution** — `ensurePyodide` (boots the shared engine, then mounts
    the filesystem — `dfs.init()` — once it has), `executeCell` (runs one
-   cell through `engine.runCell()`, records `ranContent`, and syncs the
-   filesystem afterward, in case the cell wrote to it directly),
-   `setRunButtonRunning`/`resetRunButton` (the Run-becomes-Stop button),
-   `runCell` (a second click on the currently-running cell sends
-   `engine.requestInterrupt()` instead of starting a new run),
-   `runCellBatch` (the shared batch runner behind `runAllCells`/
-   `runAbove`/`runBelow` — see below), `restartPython` (factored out of
-   "Restart Python", also the first half of "Restart & run all").
+   cell through `engine.runCell()`, records `ranContent`/`lastRunMs`/
+   `ranOrder`, and syncs the filesystem afterward, in case the cell wrote
+   to it directly), `setRunButtonRunning`/`resetRunButton` (the
+   Run-becomes-Stop button), `runCell` (a second click on the
+   currently-running cell sends `engine.requestInterrupt()` instead of
+   starting a new run), `runCellBatch` (the shared batch runner behind
+   `runAllCells`/`runAbove`/`runBelow` — see below), `restartPython`
+   (factored out of "Restart Python", also the first half of "Restart &
+   run all" — resets the run sequence too, via `resetRunSequence()`).
 5. **Downloads** — `triggerDownload` (the shared Blob-download trick),
    then `downloadAsPython`/`downloadAsIpynb`/`downloadAsHtml`, the last
    of which builds an entire second, self-contained HTML page as a

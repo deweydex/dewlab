@@ -558,9 +558,9 @@ def render_cell(cell: Cell) -> str:
         'aria-expanded="false" title="More ways to run this cell">&#8943;</button>'
         '<div class="dl-cell-run-menu" role="menu" hidden>'
         '<button type="button" class="dl-cell-run-menu-item" role="menuitem" '
-        'data-run-menu="above">Run above</button>'
+        'data-run-menu="above">Run this cell and all above</button>'
         '<button type="button" class="dl-cell-run-menu-item" role="menuitem" '
-        'data-run-menu="below">Run below</button>'
+        'data-run-menu="below">Run this cell and all below</button>'
         "</div>"
         "</div>"
         '<button type="button" class="dl-btn dl-btn-run" disabled>…</button>'

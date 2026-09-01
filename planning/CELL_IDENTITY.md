@@ -1,11 +1,13 @@
 # Cell identity and the execution counter: a design note
 
-Not built yet. This is the settled shape of one proposed feature — a
-notebook cell that tells you, at a glance, what it is, whether it has
+**Built in `compose/dewmini.js` (7.110).** This is the settled shape of
+a notebook cell that tells you, at a glance, what it is, whether it has
 run, and whether its output still matches its code — kept here as the
-record of *why* it looks the way it does, before any of it is wired into
-`compose/dewmini.js`. Two static pages sit alongside this file, neither
-needing a server or a build step to open:
+record of *why* it looks the way it does. `compose/dewmini.js` is now
+the source of truth for what actually ships, not the two static mockups
+below — they capture the original proposal and have not been redrawn to
+match; §4 and §7 note the real, small differences 7.110 settled on while
+building it:
 
 - [`mockups/cell-identity.html`](./mockups/cell-identity.html) — a
   working mockup of every cell type in this design (Python, SQL, HTML,
@@ -15,17 +17,17 @@ needing a server or a build step to open:
   project. This document (below) assumes more context and is written for
   maintainers; that one is written to stand alone.
 
-Four related, smaller features from the same proposal shipped already
+Four related, smaller features from the same proposal shipped first
 (`DECISIONS_LOG.md` 7.105–7.108): the "edited since last run" marker,
 Run above/below, Restart & run all, and maths rendering in text cells —
 and per 7.109, three of those four (everything but maths, which needed
 nothing extra there) now also run on tutorial and practice pages'
-`.dl-cell`, not only in dewmini. This document covers the one piece that
-is still deliberately held back everywhere, dewmini included — execution
-counters, the numbered identity pill — because unlike the other four, it
-does not fit as a small addition to the existing cell markup. It touches
-the same header every cell already has, so it was worth designing
-properly rather than bolting a number onto the side.
+`.dl-cell`. This document's own subject — execution counters, the
+numbered identity pill — held back at first because unlike the other
+four, it didn't fit as a small addition to the existing cell markup; it
+touched the same header every cell already had, so it was worth
+designing properly before building it, which 7.110 then did, in
+dewmini only.
 
 ---
 
@@ -135,14 +137,26 @@ to wonder what it does. Four things vary by type:
 |---|---|---|---|---|---|
 | Numbered, coloured pill | yes | yes | yes | yes | yes |
 | Drag target | yes | yes | yes | yes | yes |
+| Header-end: Duplicate, Delete | yes | yes | yes | yes | yes |
 | Run line (order/duration/stale) | yes | yes | — | — | — |
-| Collapse triangle | yes | yes | — | yes | — |
+| Collapse triangle | yes | yes | — | yes | **yes** |
 | Edit / View toggle | — | — | yes | — | yes |
 | Quiet until touched | — | — | yes | — | yes |
 
-**Collapse** exists wherever there is code worth hiding — Python, SQL,
-and CSS-as-source. HTML and Text don't get it because they already have
-a rendered form to shrink down to (see next).
+**Header-end** is Duplicate and Delete, on every cell, plus an Edit
+toggle for Text and HTML only — settled on while building 7.110, not
+fully spelled out when this table was first written. Duplicate inserts
+a copy of the cell right after itself, same type and code, no run
+history: a starting point for a variation, not a claim that the copy
+already ran.
+
+**Collapse, amended: every cell type gets it, code-bearing or not (built
+this way in dewmini, 7.110).** The reasoning below explains why HTML
+doesn't need it — a rendered form already exists to shrink to — but a
+Text cell caught in *edit* mode has no such fallback, and "shrink this
+out of the way without deleting it" is exactly as true for a long note
+as for a long function. HTML may still turn out not to need one, once it
+exists; Text does.
 
 **Edit/View, and staying quiet until touched,** belong to Text and HTML
 only — the two types meant to be *read*, not run. Like a Markdown cell in
@@ -167,6 +181,14 @@ achieved by making both siblings of the same flex row rather than
 nudging one with a margin — the more reliable way to keep two things
 level than hand-tuning spacing between two separate elements.
 
+**One rotated chevron, not two swapped triangles (7.110).** The mockups
+use ▾/▸, filled triangles swapped between expanded and collapsed. Once
+actually built, with the footer's own ▶ Run button sitting only a line
+or two below it, two different filled triangles in the same corner of
+the cell read as confusingly similar. dewmini instead rotates a single
+`›` 90° between states — the same glyph throughout, its orientation
+carrying the state rather than its shape.
+
 ## 6. What this deliberately doesn't do
 
 - **No execution-order graph or arrows between cells.** A plain ordinal
@@ -181,27 +203,35 @@ level than hand-tuning spacing between two separate elements.
 
 ## 7. What's still open
 
-- **Implementation.** Everything above is design, not code, and none of
-  it is wired into `compose/dewmini.js` yet. The groundwork it would
-  build on is more complete than when this was written, though —
-  `ranContent`/staleness (7.105), `runCellBatch()`/`runAbove()`/
-  `runBelow()` (7.106), and `restartPython()` (7.108) all exist now on
-  *both* dewmini and tutorial/practice pages (7.109) — but the counter
-  itself, the pill, its type colours, and the per-type behaviour split
-  above are still unbuilt everywhere.
+- **Implementation: done in dewmini, for the two cell types that exist
+  there (7.110).** The numbered, coloured pill; the merged run-line,
+  including the live "Running…"/"Running next" states and the run-order
+  counter (`runSequenceCounter`, reset on any namespace reset, not only a
+  full restart); the collapse triangle, on every cell type per this
+  document's own amendment above; and the header-end group, Duplicate —
+  a genuinely new feature — included. `ranContent`/staleness (7.105),
+  `runCellBatch()`/`runAbove()`/`runBelow()` (7.106), and
+  `restartPython()` (7.108) turned out to be exactly the groundwork this
+  needed, unchanged.
+- **SQL, HTML, CSS, JavaScript.** Still not real cell types anywhere —
+  this document's own multi-type table is a design for when they exist,
+  not a claim that they do. `--dl-type-python`/`--dl-type-text` are the
+  only colour tokens defined so far; a real type gets a literal hue added
+  alongside them when it's built, not before.
 - **Tutorial and practice pages.** 7.109 ported the run-line-adjacent
   pieces (staleness, run above/below, restart & run all) onto
   `build.py`'s `render_cell()`/`assets/tutorial-runtime.js`, keeping
   dewmini's and the tutorial runtime's own engines and DOM separate
   rather than unifying them — see that decision for why a full shared
-  cell implementation was explicitly not the chosen path. The pill and
-  the numbered counter itself were deliberately left out of that port —
-  building it for tutorials before dewmini would ship an "unbuilt
-  anywhere" design out of order — and still need the cell types this
-  document was written assuming (a tutorial page today distinguishes
-  only "has a Run button" from "does not," not Python from SQL from
-  HTML). The same instinct that makes a Text cell go quiet until touched
-  here should carry over directly: a tutorial's own prose-like cells
+  cell implementation was explicitly not the chosen path. 7.110's fuller
+  anatomy — the pill, the numbered counter, the header/footer layout
+  move, Duplicate — was not part of that port and still isn't: it needs
+  the cell types this document was written assuming (a tutorial page
+  today distinguishes only "has a Run button" from "does not," not
+  Python from SQL from HTML), and moving Run/Reset/⋯ out of the header
+  is a larger, separate change to the primary reading surface. The same
+  instinct that makes a Text cell go quiet until touched here should
+  carry over directly, though: a tutorial's own prose-like cells
   (Markdown-shaped, non-executable) ought to fade their chrome away the
   same way, rather than looking like every other numbered, run-tracked
   cell around them.
