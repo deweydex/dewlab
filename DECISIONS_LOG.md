@@ -4707,3 +4707,48 @@ the same thing, and Settings now offers both.
 
 *Cost to change: very small — one factored-out function, one new button,
 two confirm dialogues.*
+
+**7.109 — Three of dewmini's own cell features, ported onto tutorial and
+practice pages.** `planning/CELL_IDENTITY.md` asked the underlying
+question directly: tutorials, practice, and dewmini are three surfaces
+showing the same idea, a cell that runs Python against a shared session,
+in three different pieces of markup. Full unification — one rendering
+function shared by `build.py` (static HTML at build time) and dewmini
+(a live JS `cells` array) — is a large, invasive change the same
+document explicitly did not choose; a practice page turned out to need
+no separate treatment at all, since `build.py` already treats one as "a
+tutorial in every mechanical sense." What shipped instead: the stale
+badge, the "⋯" Run above/below menu, and Restart & run all (7.105,
+7.106, 7.108) ported onto `build.py`'s `render_cell()` and
+`assets/tutorial-runtime.js`, keeping the two engines and DOM systems
+separate — the project's own stated convention ("each page owns a thin
+copy... extract only when a shared fix needs to land in both").
+
+**Not ported: the numbered identity pill, or maths-in-text-cells.** The
+pill is `CELL_IDENTITY.md`'s own still-unbuilt design (nowhere yet,
+dewmini included) — shipping it for tutorials first would mean building
+a feature its own design note calls "not yet built" out of order. Maths
+needed nothing: a tutorial's prose already renders `$…$`/`$$…$$` via
+`extract_math()`/KaTeX (`build.py`), independent of dewmini's Text-cell
+type, which doesn't exist on this side at all.
+
+**The one real engineering gap**, closed here rather than deferred:
+`assets/tutorial-runtime.js` had no `resetPageState()`/`restart()`
+equivalent at all before this. Both now exist, built the same way
+`pyodide-engine.js`'s already did — `resetPageState()` reuses
+`pyodide-worker.js`'s existing `reset-page-state` message type
+(already there for dewmini's sake) and a newly-named
+`RESEED_GLOBALS_SOURCE` constant (previously an inline string, used only
+once, inside `bootMainThread()`); `restartPython()` terminates the
+Worker or drops the main-thread Pyodide references, then leans on the
+existing `ensureBooted()` to reboot. `runCellWorker()`/
+`runCellMainThread()` also now return whether a cell's run raised,
+previously discarded — needed to count errors across a batch, the one
+behavioural gap between a single Run click and "Run above/below".
+
+*Cost to change: small. Every new function names the dewmini original it
+was ported from; a future change to one is a reminder to check the
+other, not a search. The real ongoing cost is the one this decision
+argues against paying yet: a true shared cell implementation, still
+undecided, and the numbered identity pill's own design, still
+unbuilt anywhere.*

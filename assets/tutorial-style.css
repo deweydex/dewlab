@@ -309,7 +309,69 @@ p code, li code {
 }
 
 .dl-cell-id { letter-spacing: 0.03em; }
+
+/* Run time, next to the cell's id — small and muted on purpose: a
+   nice-to-know, not something that should compete with the id itself.
+   Empty (nothing run yet, or the Settings "Run time" toggle is off)
+   collapses to nothing via :empty, same trick .dl-progress-summary uses.
+   Ported from dewmini's .dm-cell-stats (DECISIONS_LOG.md 7.105). */
+.dl-cell-stats { margin-left: 0.5rem; }
+.dl-cell-stats:empty { display: none; }
+.dl-cell-stats::before { content: "\2014\0020"; } /* — */
+
+/* "Edited since last run" — see updateCellStaleness()/isStale() in
+   tutorial-runtime.js, ported from dewmini's .dm-cell-stale-badge. Quiet
+   on purpose: this is a fact worth noticing, not an error, so it stays in
+   the bar's own muted colour with only italics to set it apart, rather
+   than reaching for the error red a few lines below. */
+.dl-cell-stale-badge {
+  margin-left: 0.5rem;
+  font-style: italic;
+}
+.dl-cell-stale-badge[hidden] { display: none; }
+
 .dl-cell-spacer { flex: 1; }
+
+/* The "Run above"/"Run below" menu (initCellRunMenu() in
+   tutorial-runtime.js, ported from dewmini's createRunMoreMenu()) — a
+   popover anchored to its own toggle button rather than two more
+   always-visible buttons crowding a bar that already has reset and Run. */
+.dl-cell-more { position: relative; display: inline-flex; }
+.dl-btn-more { font-family: var(--dl-mono); }
+.dl-cell-run-menu {
+  position: absolute;
+  bottom: calc(100% + 0.25rem);
+  right: 0;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  min-width: 9.5rem;
+  padding: 0.25rem;
+  border: 1px solid var(--dl-cell-border);
+  border-radius: 6px;
+  background: var(--dl-panel-bg);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+}
+.dl-cell-run-menu[hidden] { display: none; }
+.dl-cell-run-menu-item {
+  display: block;
+  width: 100%;
+  padding: 0.4rem 0.6rem;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--dl-fg);
+  font-family: var(--dl-font-family);
+  font-size: 0.82rem;
+  text-align: left;
+  cursor: pointer;
+}
+.dl-cell-run-menu-item:hover,
+.dl-cell-run-menu-item:focus-visible {
+  background: var(--dl-cell-bg);
+  color: var(--dl-orange);
+  outline: none;
+}
 
 .dl-btn {
   font: inherit;

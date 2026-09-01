@@ -199,6 +199,46 @@ keep already cover the full page, and the Settings panel note says so.
 
 ---
 
+## Staleness, the "⋯" run menu, and Restart & run all
+
+Three pieces ported from `compose/dewmini.js`, once that file had already
+proven them out (`planning/CELL_IDENTITY.md`): a cell's "edited since
+last run" badge, "Run above"/"Run below", and Settings' "Restart & run
+all". They didn't move wholesale — dewmini's `cells` array holds a plain
+`.content` string kept in sync by hand, while this file's cells only ever
+ask their own CodeMirror editor for its current value (`getCode()`), so
+`isStale()` here compares against that instead of a mirrored field. The
+functions are otherwise a close, deliberate copy, including the
+reasoning in their own comments — `runCellBatch()`'s `reset` parameter,
+in particular, is worth reading there rather than here, since it explains
+why "Run below" is the one caller that must *not* reset the namespace
+first.
+
+`executeCell()` is the seam this needed that didn't already exist: the
+old `runCell()` inlined "time it, run it, save it" directly, which is
+fine for a single cell's own Stop-capable button but has nothing to say
+about *loops over several cells*, wanting each one to get that same
+Stop-button treatment as its own turn comes up. `runCell()` now just
+wraps `executeCell()` with the single-cell Run/Stop button dance;
+`runCellBatch()` wraps it with the same dance run once per cell in a
+list, plus the batch-level status line. Neither duplicates the actual
+running-and-timing logic.
+
+Restarting Python is a heavier version of the same idea already used for
+"Run all"/"Run above": `resetPageState()` (worker message type
+`reset-page-state`, already in `assets/pyodide-worker.js` for dewmini's
+own use) clears and re-seeds the shared namespace without throwing
+anything away; `restartPython()` throws the whole interpreter away —
+terminating the Worker, or dropping every main-thread Pyodide reference,
+depending on which path this page is on — so a later `ensureBooted()`
+boots a genuinely fresh one. That's a strictly stronger reproducibility
+check than a reset (Jedi's completion cache and anything else only a
+real restart clears go with it too), which is why Settings offers both
+"Restart Python" alone and "Restart & run all" together, mirroring
+dewmini's own two buttons.
+
+---
+
 ## Two patterns worth understanding on their own
 
 **Three panels, one rule.** Settings, the reference, and the series
