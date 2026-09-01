@@ -160,6 +160,15 @@ carries the sense. It reads beautifully to somebody who already understands
 the sentence and it costs everyone else a re-read. One dash to a paragraph, and
 never the one holding the definition.
 
+**A labelled entry is still a sentence.** Reference material is a list of
+labels, and the shape that suggests itself is *Name — what it is*. That is the
+dash rule again, arriving once per entry because the genre invites it, so a
+panel reference can break it eight times without any one of them looking
+wrong. *Files — a real filesystem a cell can read and write to* becomes *Files
+is a real filesystem a cell can read from and write to.* The label stays bold
+and findable either way. Only the second one is a sentence the reader can
+carry off.
+
 **A metaphor illustrates a plain statement; it does not replace one.** *How
 much skin a solid has*, *turning the probability toolkit outward onto the
 machine*, *something to hang it on* — each asks a reader to unpack an image

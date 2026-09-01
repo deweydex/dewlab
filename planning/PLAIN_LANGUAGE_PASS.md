@@ -92,21 +92,23 @@ one where flattening would cost the most. Worth doing deliberately, tutorial by
 tutorial, rather than in a sweep.
 
 **`docs/DEWMINI.md`.** Done. The guide a student reads to use dewmini, and
-never covered by the first pass. It began at 107 issues and now reports none.
+the first reference document to go through the pass rather than a teaching
+one.
 
-The commonest fault was length: 45 sentences ran past twenty-five words,
-several past forty, and one reached seventy-four. Next came the em dash
-carrying the sense, a short main clause followed by a dash and then the part a
-reader needs, in 31 sentences. Another 17 paragraphs held more than
-one dash. *Actually* appeared eleven times and *genuinely* twice.
+That difference is the thing worth carrying forward. A reference document is
+mostly labelled entries, and the shape a labelled entry falls into is *Name —
+what it is*. It is habit 1 above, but the genre invites it once per entry, so
+one panel description broke the rule eight times without any single line
+looking wrong. Section 4 now has a rule for it. Write *Files is a real
+filesystem a cell can read from and write to*, and the label is still bold and
+still findable.
 
-The count comes from `dev/check_plain_language.py`, which is new. It decides
-what can be decided: sentences over twenty-five words, a sentence with no
-finite verb, more than one em dash in a paragraph, the meaning falling after
-the dash, *not x but y* reversals, the banned words, listed idioms, and emoji.
-It says nothing about metaphor, hedging, or whether the sequence of a process
-is marked, because those need a reader. A clean report is a floor and not a
-pass, and this document was read as well as measured.
+`dev/check_plain_language.py` is new and decides only what can be decided:
+sentence length, a sentence with no finite verb, more than one em dash in a
+paragraph, the meaning falling after the dash, *not x but y* reversals, the
+banned words, listed idioms, and emoji. It cannot see metaphor, hedging, or a
+hidden sequence, which are three of the eight. Run it to catch what it catches,
+then read the document, because a clean report is a floor and not a pass.
 
 **Bibliographies.** Unrelated to readability but still the largest outstanding
 piece of style work — see section 8 of the style guide.
