@@ -91,6 +91,13 @@ the tree descriptions do.
 one where flattening would cost the most. Worth doing deliberately, tutorial by
 tutorial, rather than in a sweep.
 
+**`docs/DEWMINI.md`.** The guide a student reads to use dewmini, and not
+covered by the first pass. Four passages in it were written to the eight
+checks when dewmini's file handling changed: what happens when browser storage
+fills, what the `# %%` markers in a `.py` download are, what an `.ipynb`
+download keeps, and how to import your own Python file from Files. The rest of
+the document has not been read against the checks.
+
 **Bibliographies.** Unrelated to readability but still the largest outstanding
 piece of style work — see section 8 of the style guide.
 
