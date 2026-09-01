@@ -1459,12 +1459,12 @@ p code, li code {
 
 /* ------------------------------------------------------- the contents page
 
-   What somebody sees first. One short paragraph saying what this is, then four
-   points answering the questions a student arrives with — do I have to install
-   anything, can I break it, where does my work go, where do I start — and then
-   the list they came for. The points are a list rather than prose on purpose:
-   they are four independent answers, and a reader arriving with one of those
-   questions should not have to read the other three to find it. */
+   What somebody sees first. One short paragraph saying what this is, then the
+   points answering the questions a student arrives with — what is a cell, can
+   I break it, where does my work go, how is the list below organised, where do
+   I start — and then the list they came for. The points are a list rather than
+   prose on purpose: they are independent answers, and a reader arriving with
+   one of those questions should not have to read the rest to find it. */
 .dl-intro { margin: 0 0 2.5rem; }
 .dl-intro p { margin: 0 0 0.9rem; }
 .dl-intro-points {

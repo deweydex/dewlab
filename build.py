@@ -1803,12 +1803,13 @@ def render_index(
     # An introduction rather than a diagram. The map moved to its own page,
     # where it can have the whole window; this page's job is to say what dewlab
     # is to somebody who has just arrived, in as few lines as that takes, and
-    # then leave them to the list they came for. One paragraph and four points,
+    # then leave them to the list they came for. One paragraph and six points,
     # deliberately: PEDAGOGICAL_STYLE_GUIDE.md section 4 asks for prose over
-    # bullets in an *explanation*, and this is not one — it is the four things
-    # a reader wants answered before they choose a tutorial, and each answer is
-    # independent of the others. Prose made the reader hunt for their own
-    # question.
+    # bullets in an *explanation*, and this is not one — it is the separate
+    # things a reader wants answered before they choose a tutorial (what a cell
+    # is, whether they can break it, where their work goes, how the list below
+    # is organised, where to start), and no answer follows from another. Prose
+    # made the reader hunt for their own question.
     out = [
         "<h1>Tutorials</h1>",
         '<div class="dl-intro">',
@@ -1816,14 +1817,21 @@ def render_index(
         "together. Everything runs in your browser, so there is nothing to "
         "install and no account to make. Open any tutorial and start.</p>",
         '<ul class="dl-intro-points">',
+        "<li><strong>Tutorials are made of cells.</strong> A cell is a small "
+        "box of Python set into the reading. We can change what is in it, run "
+        "it, and the result appears underneath.</li>",
         "<li><strong>We try things before we name them.</strong> Most "
-        "tutorials give us something to run first. The name for what we just "
-        "did usually comes afterwards.</li>",
+        "tutorials give us a cell to run before they explain it. The name for "
+        "what we just did usually comes afterwards.</li>",
         "<li><strong>Getting it wrong costs nothing.</strong> An error message "
         "is usually telling us something useful. Nothing here is scored, and "
         "nothing you write leaves your browser.</li>",
         "<li><strong>Your work is saved</strong> on this device as you go. You "
         "can also download any tutorial as a single file and keep it.</li>",
+        "<li><strong>The list below is grouped into modules, and each module "
+        "into series.</strong> A series is meant to be read in order. Most "
+        "tutorials have a practice page as well, linked as <em>practice</em> "
+        "beside the title, with more problems on the same idea.</li>",
         '<li><strong>Not sure where to start?</strong> The <a href="tree.html">'
         "topic tree</a> shows what the course covers, and what usually comes "
         'first. <a href="topics.html">Browse by topic</a> gathers one subject '
@@ -1849,7 +1857,7 @@ def render_index(
         '<a class="dl-workspace-card" href="compose/dewmini.html" target="_blank">',
         "<h3>dewmini</h3>",
         "<p>An open Python workspace with no tutorial attached. The same "
-        "Python as the tutorials, plus files, SQLite and a Stop button. "
+        "cells and the same Python, plus files, SQLite and a Stop button. "
         "Useful when we just want to try something out.</p>",
         "</a>",
         "</div>",
