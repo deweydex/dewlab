@@ -1055,6 +1055,41 @@ const cells = [];
  * apart from `cells` above rather than merged into it. */
 const customCells = [];
 
+/* Collapses or expands one cell — an authored cell or a custom one,
+ * python or text — by hiding its editable content (`.dl-cell-content`)
+ * and showing a one-line summary in its place, or the reverse. Ported
+ * from dewmini's own setCollapsed() closure inside createCellElement()
+ * (DECISIONS_LOG.md 7.110/7.112, planning/CELL_IDENTITY.md §4): every
+ * cell type gets this, code and text alike, since there's nothing
+ * type-specific about wanting a long cell out of the way without
+ * deleting it. Unlike dewmini's version this is a standalone function
+ * rather than a per-cell closure, since it has to work the same way for
+ * both `cells` and `customCells` — it reads `cell.collapseBtn`/
+ * `contentRegion`/`collapsedSummary`, set once when each cell is built,
+ * rather than closing over element references of its own. Saving is the
+ * caller's job — saveNow() or saveCustomCells() directly, not the
+ * debounced scheduleSave()/scheduleCustomSave(), matching dewmini's own
+ * setCollapsed() (which calls saveState() the same way): a collapse
+ * toggle is one discrete click, not a burst of keystrokes worth
+ * coalescing, and debouncing it only risks losing the state to a reload
+ * that beats the timer. */
+function setCellCollapsed(cell, collapsed) {
+  cell.collapsed = collapsed;
+  if (cell.contentRegion) cell.contentRegion.hidden = collapsed;
+  if (cell.collapsedSummary) {
+    cell.collapsedSummary.hidden = !collapsed;
+    if (collapsed) {
+      const firstLine = (cell.getCode().split("\n")[0] || "").trim();
+      cell.collapsedSummary.textContent = firstLine || "(empty)";
+    }
+  }
+  if (cell.collapseBtn) {
+    cell.collapseBtn.setAttribute("aria-expanded", String(!collapsed));
+    cell.collapseBtn.title = collapsed ? "Expand this cell" : "Collapse this cell";
+    cell.collapseBtn.classList.toggle("dl-collapse-toggle-collapsed", collapsed);
+  }
+}
+
 /* Turns the manifest's plain-data cell descriptions into real, working
  * cells on the page: finds each cell's DOM elements (already present in
  * the HTML build.py generated — this doesn't create the cell's markup,
@@ -1079,6 +1114,10 @@ function buildCells(manifest) {
     const runBtn = host.querySelector(".dl-btn-run");
     const resetBtn = host.querySelector(".dl-btn-reset");
     const runLineEl = host.querySelector(".dl-cell-runline");
+    const duplicateBtn = host.querySelector(".dl-btn-duplicate");
+    const collapseBtn = host.querySelector(".dl-collapse-toggle");
+    const contentRegion = host.querySelector(".dl-cell-content");
+    const collapsedSummary = host.querySelector(".dl-cell-collapsed-summary");
 
     const cell = {
       id: spec.id,
@@ -1086,6 +1125,9 @@ function buildCells(manifest) {
       outputEl,
       runBtn,
       runLineEl,
+      collapseBtn,
+      contentRegion,
+      collapsedSummary,
       element: host,
       getCode: () => editor.getValue(),
     };
@@ -1113,6 +1155,22 @@ function buildCells(manifest) {
       });
     }
     initCellRunMenu(cell, host);
+
+    if (collapseBtn) {
+      collapseBtn.addEventListener("click", () => {
+        setCellCollapsed(cell, !cell.collapsed);
+        saveNow();
+      });
+    }
+    if (collapsedSummary) {
+      collapsedSummary.addEventListener("click", () => { setCellCollapsed(cell, false); saveNow(); });
+      collapsedSummary.addEventListener("keydown", (ev) => {
+        if (ev.key === "Enter") { setCellCollapsed(cell, false); saveNow(); }
+      });
+    }
+    if (duplicateBtn) {
+      duplicateBtn.addEventListener("click", () => duplicateAsCustomCell(cell, "python"));
+    }
 
     /* A cell's own hint, if it has one: a plain click toggle, not hover — see
      * the CSS comment on .dl-hint-icon for why. Opening it is a real state
@@ -1507,6 +1565,7 @@ function saveCustomCells() {
         anchor: host.dataset.anchor,
         code: cell.getCode(),
         output: cell.outputEl ? cell.outputEl.innerHTML : "",
+        collapsed: !!cell.collapsed,
       };
     })
     .filter(Boolean);
@@ -1555,14 +1614,30 @@ function createCustomCellElement(id, type) {
   const host = document.createElement("div");
   host.className = type === "text" ? "dl-cell dl-cell-custom dl-cell-text" : "dl-cell dl-cell-custom";
   host.dataset.cellId = id;
+  const collapseCol = (
+    '<div class="dl-cell-collapse-col">'
+    + '<button type="button" class="dl-collapse-toggle" aria-expanded="true" '
+    + 'title="Collapse this cell">'
+    + '<span class="dl-collapse-caret" aria-hidden="true">&#8250;</span>'
+    + "</button>"
+    + "</div>"
+  );
   if (type === "text") {
     host.innerHTML = (
-      '<textarea class="dl-doc-editor" placeholder="Notes… (# heading, **bold**, - bullets)"></textarea>'
+      '<div class="dl-cell-body-row">'
+      + collapseCol
+      + '<div class="dl-cell-content">'
+      + '<textarea class="dl-doc-editor" placeholder="Notes… (# heading, **bold**, - bullets)"></textarea>'
       + '<div class="dl-doc-render" tabindex="0" hidden></div>'
+      + "</div>"
+      + '<div class="dl-cell-collapsed-summary" tabindex="0" hidden></div>'
+      + "</div>"
       + '<div class="dl-cell-bar">'
       + '<span class="dl-cell-id">your own note</span>'
       + '<span class="dl-cell-spacer"></span>'
       + '<button type="button" class="dl-btn dl-btn-preview">view</button>'
+      + '<button type="button" class="dl-btn dl-btn-duplicate" '
+      + 'title="Copy this cell, right below it">duplicate</button>'
       + '<button type="button" class="dl-btn dl-btn-share">share</button>'
       + '<button type="button" class="dl-btn dl-btn-delete">delete</button>'
       + "</div>"
@@ -1571,11 +1646,17 @@ function createCustomCellElement(id, type) {
     const runAttrs = pyodideReady ? "" : "disabled";
     const runLabel = pyodideReady ? "Run" : "…";
     host.innerHTML = (
-      '<div class="dl-editor"></div>'
+      '<div class="dl-cell-body-row">'
+      + collapseCol
+      + '<div class="dl-cell-content"><div class="dl-editor"></div></div>'
+      + '<div class="dl-cell-collapsed-summary" tabindex="0" hidden></div>'
+      + "</div>"
       + '<div class="dl-output"></div>'
       + '<div class="dl-cell-bar">'
       + '<span class="dl-cell-id">your own cell</span>'
       + '<span class="dl-cell-spacer"></span>'
+      + '<button type="button" class="dl-btn dl-btn-duplicate" '
+      + 'title="Copy this cell, right below it">duplicate</button>'
       + '<button type="button" class="dl-btn dl-btn-share">share</button>'
       + '<button type="button" class="dl-btn dl-btn-delete">delete</button>'
       + `<button type="button" class="dl-btn dl-btn-run" ${runAttrs}>${runLabel}</button>`
@@ -1661,6 +1742,10 @@ function mountCustomCellAfter(afterNode, id, type, code, anchor) {
 
   const shareBtn = host.querySelector(".dl-btn-share");
   const deleteBtn = host.querySelector(".dl-btn-delete");
+  const duplicateBtn = host.querySelector(".dl-btn-duplicate");
+  const collapseBtn = host.querySelector(".dl-collapse-toggle");
+  const contentRegion = host.querySelector(".dl-cell-content");
+  const collapsedSummary = host.querySelector(".dl-cell-collapsed-summary");
   let cell;
 
   if (type === "text") {
@@ -1704,6 +1789,9 @@ function mountCustomCellAfter(afterNode, id, type, code, anchor) {
       id,
       type,
       element: host,
+      collapseBtn,
+      contentRegion,
+      collapsedSummary,
       getCode: () => textarea.value,
       focus: () => { showEditor(); textarea.focus(); },
     };
@@ -1727,6 +1815,9 @@ function mountCustomCellAfter(afterNode, id, type, code, anchor) {
       outputEl,
       runBtn,
       element: host,
+      collapseBtn,
+      contentRegion,
+      collapsedSummary,
       getCode: () => editor.getValue(),
       focus: () => editor.focus(),
     };
@@ -1742,6 +1833,21 @@ function mountCustomCellAfter(afterNode, id, type, code, anchor) {
   customCells.push(cell);
   shareBtn.addEventListener("click", () => exportCustomCell(cell));
   deleteBtn.addEventListener("click", () => deleteCustomCell(cell));
+  if (duplicateBtn) {
+    duplicateBtn.addEventListener("click", () => duplicateAsCustomCell(cell, cell.type));
+  }
+  if (collapseBtn) {
+    collapseBtn.addEventListener("click", () => {
+      setCellCollapsed(cell, !cell.collapsed);
+      saveCustomCells();
+    });
+  }
+  if (collapsedSummary) {
+    collapsedSummary.addEventListener("click", () => { setCellCollapsed(cell, false); saveCustomCells(); });
+    collapsedSummary.addEventListener("keydown", (ev) => {
+      if (ev.key === "Enter") { setCellCollapsed(cell, false); saveCustomCells(); }
+    });
+  }
 
   return { cell, divider };
 }
@@ -1766,6 +1872,35 @@ function insertCustomCell(afterNode, type, code, anchor) {
 function addCustomCell(type = "python", code = "") {
   const afterNode = lastDividerFor(TRAILING_ANCHOR);
   return afterNode ? insertCustomCell(afterNode, type, code, TRAILING_ANCHOR) : null;
+}
+
+/* Duplicate — an authored cell's own button (build.py's render_cell())
+ * and a custom cell's own (createCustomCellElement()) both call this,
+ * DECISIONS_LOG.md 7.112: drops a fresh custom cell, seeded with this
+ * cell's current code, immediately after it — `type` is always
+ * "python" for an authored cell (the only type one has) and the
+ * originating cell's own `.type` for a custom one, so a text cell
+ * duplicates as text.
+ *
+ * "Immediately after it" is `cell.element.nextElementSibling` — every
+ * cell this file ever mounts, real or custom, gets its own trailing
+ * `.dl-insert` divider right there and nothing else is ever inserted
+ * directly against the cell element itself, so that sibling is a
+ * stable handle on "the seam right after this specific cell" no matter
+ * how many other custom cells a reader has since added further down
+ * the same anchor's chain. Reusing that divider's own `insertCustomCell()`
+ * — the same one its own "+Code"/"+Text" buttons call — means Duplicate
+ * needed no insertion logic of its own.
+ *
+ * No run history travels with the copy, the same as dewmini's own
+ * Duplicate: a starting point for a variation, not a claim that the
+ * copy already ran. An authored cell itself never changes — it is the
+ * tutorial's own content; the copy is the reader's from the moment it
+ * exists. */
+function duplicateAsCustomCell(cell, type) {
+  const afterNode = cell.element.nextElementSibling;
+  if (!afterNode || !afterNode.classList.contains("dl-insert")) return null; // should not happen
+  return insertCustomCell(afterNode, type, cell.getCode(), afterNode.dataset.anchor);
 }
 
 /* Removes one custom cell — no confirmation, matching how deleting a
@@ -1902,6 +2037,7 @@ function initCustomCellsSection() {
     for (const saved of byAnchor.get(anchor) || []) {
       const { cell, divider } = mountCustomCellAfter(point, saved.id, saved.type, saved.code, anchor);
       if (typeof saved.output === "string" && cell.outputEl) cell.outputEl.innerHTML = saved.output;
+      if (saved.collapsed) setCellCollapsed(cell, true);
       point = divider;
     }
   };
@@ -2995,6 +3131,7 @@ function saveNow() {
        * indicator, this page's own Settings summary) re-parsing HTML to
        * ask the same question. */
       errored: !!cell.outputEl.querySelector(".dl-error"),
+      collapsed: !!cell.collapsed,
     })),
   };
   try {
@@ -3049,6 +3186,7 @@ function restoreSaved() {
       cell.outputEl.innerHTML = saved.output_html;
       if (saved.output_html.includes("dl-widget")) widgets = true;
     }
+    if (saved.collapsed) setCellCollapsed(cell, true);
     restored.push(cell.id);
   }
 

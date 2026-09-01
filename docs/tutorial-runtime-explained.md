@@ -199,7 +199,7 @@ keep already cover the full page, and the Settings panel note says so.
 
 ---
 
-## The pill, the run line, the "⋯" run menu, and Restart & run all
+## The pill, the run line, collapse, Duplicate, the "⋯" run menu, and Restart & run all
 
 Several pieces ported from `compose/dewmini.js`, once that file had
 already proven them out (`planning/CELL_IDENTITY.md`): a numbered,
@@ -259,6 +259,39 @@ check than a reset (Jedi's completion cache and anything else only a
 real restart clears go with it too), which is why Settings offers both
 "Restart Python" alone and "Restart & run all" together, mirroring
 dewmini's own two buttons.
+
+`setCellCollapsed(cell, collapsed)` hides a cell's editable content
+(`.dl-cell-content` — the CodeMirror editor for a python cell, or both
+the textarea and rendered view for a custom text cell) behind a
+one-line summary, leaving the output and the bar beneath it visible.
+It's one standalone function rather than a per-cell closure the way
+dewmini's own `setCollapsed()` is, because it has to serve both
+`buildCells()` (authored cells) and `mountCustomCellAfter()` (custom
+cells) the same way — it reads `cell.collapseBtn`/`contentRegion`/
+`collapsedSummary`, set once when each cell is built, rather than
+closing over element references of its own. Saving after a toggle is
+immediate (`saveNow()`/`saveCustomCells()`), not the debounced
+`scheduleSave()`/`scheduleCustomSave()` every keystroke goes through —
+a discrete click has nothing to coalesce, and debouncing it risks
+losing the state to a reload that beats the timer (a real bug an e2e
+test caught during 7.112, before it shipped).
+
+Duplicate (`.dl-btn-duplicate`, `duplicateAsCustomCell(cell, type)`)
+means something narrower here than in dewmini, because an authored cell
+isn't the reader's own the way every dewmini cell is — it's the
+tutorial's own fixed content. Clicking it doesn't touch the original; it
+drops a new *custom* cell, seeded with the original's current code,
+immediately after it. This rides entirely on insertion machinery that
+already existed for an unrelated reason: every cell this file mounts,
+real or custom, gets its own trailing `.dl-insert` divider right after
+it (`initCustomCellsSection()`/`mountCustomCellAfter()`) — the same
+seam "+Code"/"+Text" already use for "Try something of your own" —
+and `duplicateAsCustomCell()` just calls the same `insertCustomCell()`
+those buttons call, finding its divider via `cell.element.nextElementSibling`
+rather than searching for it, so the copy lands right after *this*
+cell even if a reader has since added their own cells further down the
+same chain. Custom cells got a Duplicate button too, `type` carried
+through so a text cell's own copy stays text.
 
 ---
 

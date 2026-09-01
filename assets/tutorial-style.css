@@ -306,6 +306,65 @@ p code, li code {
    covers a custom cell a reader adds mid-boot. */
 [data-dl-booting] .dl-cell { opacity: 0.45; }
 
+/* A cell's editable content sits beside a collapse triangle — code and
+   text alike, ported from dewmini's own .dm-cell-body-row
+   (planning/CELL_IDENTITY.md §4, DECISIONS_LOG.md 7.110/7.112). The
+   triangle top-aligns with the first line beside it because both are
+   children of this same flex row, not because either was nudged into
+   place with a margin. Collapsing hides only the editable content
+   (.dl-cell-content) — the output and the bar underneath stay visible,
+   the same choice dewmini made: a reader wants the code out of the way,
+   not the result it produced. */
+.dl-cell-body-row { display: flex; align-items: flex-start; gap: 0.5rem; padding: 0.5rem; }
+.dl-cell-body-row > .dl-cell-content { flex: 1; min-width: 0; }
+.dl-cell-collapse-col { flex: none; }
+.dl-collapse-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.3rem;
+  height: 2.4rem;
+  padding: 0;
+  border: none;
+  border-radius: 4px;
+  background: none;
+  color: var(--dl-muted);
+  cursor: pointer;
+  font-size: 1.05rem;
+  line-height: 1;
+}
+.dl-collapse-toggle:hover { color: var(--dl-orange); background: var(--dl-cell-bg); }
+/* One glyph, rotated rather than swapped between two — pointing down
+   while expanded (content is right there, below), rotating back to
+   pointing right, its own resting orientation, once collapsed. Matches
+   dewmini's own choice (DECISIONS_LOG.md 7.110): two different filled
+   triangles in the same small corner of a cell read as confusingly
+   similar once actually built. */
+.dl-collapse-caret { display: inline-block; transform: rotate(90deg); transition: transform 0.15s ease; }
+.dl-collapse-toggle-collapsed .dl-collapse-caret { transform: rotate(0deg); }
+
+/* Stands in for .dl-cell-content while collapsed — one line, the first
+   line of the cell's own code or text, click (or Enter) to expand.
+   --dl-panel-bg rather than --dl-cell-bg, the same surface .dl-editor
+   already uses, so it reads as a distinct panel against the cell's own
+   background instead of disappearing into it. */
+.dl-cell-collapsed-summary {
+  flex: 1;
+  min-width: 0;
+  padding: 0.5rem 0.75rem;
+  border-radius: 4px;
+  background: var(--dl-panel-bg);
+  color: var(--dl-muted);
+  font-family: var(--dl-mono);
+  font-size: 0.85rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+}
+.dl-cell-collapsed-summary:hover { color: var(--dl-orange); }
+.dl-cell-collapsed-summary[hidden] { display: none; }
+
 .dl-cell-bar {
   display: flex;
   align-items: center;

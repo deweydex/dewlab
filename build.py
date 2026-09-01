@@ -537,6 +537,22 @@ def render_cell(cell: Cell, number: int) -> str:
     here — tutorial-runtime.js fills and wires them the same way it
     already owns everything else about a live cell, the same treatment
     dewmini gives a Python cell (DECISIONS_LOG.md 7.105, 7.106, 7.110).
+
+    The editor sits in a `.dl-cell-body-row`, beside a collapse triangle
+    — every cell type gets one in dewmini (`planning/CELL_IDENTITY.md`
+    §4), and there is nothing type-specific here to make that not apply
+    (DECISIONS_LOG.md 7.112). `.dl-cell-collapsed-summary` is the
+    one-line stand-in tutorial-runtime.js shows in its place once
+    collapsed; both start empty/hidden and are filled in by
+    `setCellCollapsed()` there, the same way the run-line is.
+
+    Duplicate turns this cell's current code into a new custom cell
+    dropped immediately after it — `initCustomCellsSection()` already
+    seeds an insertion point after every real cell for the reader's own
+    "Try something of your own" cells, so Duplicate just reuses that
+    same seam rather than needing one of its own. An authored cell
+    itself is the tutorial's own content and stays fixed; the copy is
+    the reader's, free to edit or delete.
     """
     safe_id = html.escape(cell.id, quote=True)
     hint_markup = ""
@@ -553,7 +569,16 @@ def render_cell(cell: Cell, number: int) -> str:
         )
     return (
         f'<div class="dl-cell" data-cell-id="{safe_id}">'
-        '<div class="dl-editor"></div>'
+        '<div class="dl-cell-body-row">'
+        '<div class="dl-cell-collapse-col">'
+        '<button type="button" class="dl-collapse-toggle" aria-expanded="true" '
+        'title="Collapse this cell">'
+        '<span class="dl-collapse-caret" aria-hidden="true">&#8250;</span>'
+        "</button>"
+        "</div>"
+        '<div class="dl-cell-content"><div class="dl-editor"></div></div>'
+        '<div class="dl-cell-collapsed-summary" tabindex="0" hidden></div>'
+        "</div>"
         '<div class="dl-output"></div>'
         '<div class="dl-cell-bar">'
         '<span class="dl-cell-pill">'
@@ -563,6 +588,8 @@ def render_cell(cell: Cell, number: int) -> str:
         '<span class="dl-cell-runline"></span>'
         '<span class="dl-cell-spacer"></span>'
         f"{hint_markup}"
+        '<button type="button" class="dl-btn dl-btn-duplicate" '
+        'title="Copy this cell into your own, right below it">duplicate</button>'
         '<button type="button" class="dl-btn dl-btn-reset">reset</button>'
         '<div class="dl-cell-more">'
         '<button type="button" class="dl-btn dl-btn-more" aria-haspopup="true" '
