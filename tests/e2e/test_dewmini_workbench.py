@@ -593,6 +593,21 @@ def head_opacity(page, cell) -> str:
     return cell.locator(".dm-cell-head").evaluate("el => getComputedStyle(el).opacity")
 
 
+def hover_cell(page, cell):
+    """A real mouse move to a point near the cell's own top-left corner
+    — inside its header row, above wherever a rendered HTML cell's own
+    sandboxed iframe sits. :hover on the outer page does not reliably
+    propagate to a cell's ancestors when the cursor sits over a
+    cross-origin/sandboxed <iframe> under synthetic (CDP-driven) input,
+    even though elementFromPoint confirms the coordinate is genuinely
+    inside the cell's own box — a real user's mouse does not have this
+    problem, but a test hovering the geometric centre of an HTML cell
+    can land squarely inside its iframe and this call needs to be
+    reliable regardless of cell type."""
+    box = cell.bounding_box()
+    page.mouse.move(box["x"] + 15, box["y"] + 15, steps=5)
+
+
 def test_a_rendered_text_cells_chrome_is_invisible_until_touched(dewmini):
     """DECISIONS_LOG.md 7.115, planning/CELL_IDENTITY.md §4 — a rendered
     text cell reads like part of the page, not a code widget, until a
@@ -629,6 +644,85 @@ def test_a_python_cells_chrome_is_never_hidden(dewmini):
     dewmini.mouse.move(5, 5)
     cell = dewmini.locator(".dm-cell-python").last
     assert head_opacity(dewmini, cell) == "1"
+
+
+# --------------------------------------------------------------- html cells
+
+
+def _html_cell(page, markup="<h2>Hi</h2>"):
+    """Adds an HTML cell, types markup into it, and blurs to render —
+    the same shape _quiet_text_cell() uses for Text."""
+    page.locator(".dm-insert-btn", has_text="HTML").last.click()
+    editor = page.locator(".dm-cell-html .cm-content").last
+    editor.click()
+    page.keyboard.insert_text(markup)
+    editor.evaluate("el => el.blur()")
+    return page.locator(".dm-cell-html").last
+
+
+def test_an_html_cell_renders_its_markup_in_a_sandboxed_iframe(dewmini):
+    """DECISIONS_LOG.md 7.116, planning/CELL_IDENTITY.md §8."""
+    cell = _html_cell(dewmini, "<h2>Hello from HTML</h2>")
+    frame_el = cell.locator(".dm-html-frame")
+    assert frame_el.get_attribute("sandbox") == "allow-scripts"
+
+    frame = frame_el.content_frame
+    assert frame.locator("h2").text_content() == "Hello from HTML"
+
+
+def test_an_html_cells_script_cannot_reach_the_parent_page(dewmini):
+    """The whole point of sandbox="allow-scripts" with no
+    allow-same-origin: a script inside the cell runs, but in an
+    opaque-origin document that cannot touch this page's own window,
+    localStorage, or DOM — including a cell imported from a shared
+    file, not only one the reader wrote themselves."""
+    cell = _html_cell(
+        dewmini,
+        '<script>try { window.parent.document.title = "hijacked"; } catch (e) {}</script>',
+    )
+    dewmini.wait_for_timeout(300)
+    assert dewmini.title() != "hijacked"
+
+
+def test_editing_an_html_cell_toggles_between_source_and_rendered(dewmini):
+    cell = _html_cell(dewmini)
+    assert cell.locator(".dm-editor").is_hidden()
+    assert cell.locator(".dm-html-render").is_visible()
+
+    hover_cell(dewmini, cell)
+    cell.locator(".dm-icon-preview").click()
+    assert cell.locator(".dm-editor").is_visible()
+    assert cell.locator(".dm-html-render").is_hidden()
+    assert cell.locator(".dm-icon-preview").text_content() == "View"
+
+
+def test_an_html_cells_chrome_is_also_quiet_until_touched(dewmini):
+    cell = _html_cell(dewmini)
+    dewmini.mouse.move(5, 5)
+    assert head_opacity(dewmini, cell) == "0"
+
+    hover_cell(dewmini, cell)
+    assert head_opacity(dewmini, cell) == "1"
+
+
+def test_an_html_cell_survives_a_reload(dewmini):
+    _html_cell(dewmini, "<p>Saved content</p>")
+    dewmini.reload()
+    dewmini.wait_for_selector(".dm-toolbar")
+    assert dewmini.locator(".dm-cell-html").count() == 1
+    frame = dewmini.locator(".dm-cell-html .dm-html-frame").content_frame
+    assert "Saved content" in frame.locator("p").text_content()
+
+
+def test_an_html_cell_can_be_collapsed_and_duplicated(dewmini):
+    cell = _html_cell(dewmini, "<p>Some markup</p>")
+    hover_cell(dewmini, cell)
+    cell.locator(".dm-collapse-toggle").click()
+    assert cell.locator(".dm-cell-content").is_hidden()
+    assert cell.locator(".dm-cell-collapsed-summary").is_visible()
+
+    cell.locator(".dm-icon-duplicate").click()
+    assert dewmini.locator(".dm-cell-html").count() == 2
 
 
 # ---------------------------------------------------------------- variables

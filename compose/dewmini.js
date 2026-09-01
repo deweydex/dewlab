@@ -37,7 +37,7 @@ const DM_PACKAGES = ["numpy", "pandas", "matplotlib", "sqlite3", "Pillow"];
 // file the reader actually saved and sent to someone.
 const DM_NETWORK_PATCH = "try:\n    import pyodide_http\n    pyodide_http.patch_all()\nexcept Exception:\n    pass\n";
 
-const CELL_TYPES = { PYTHON: "python", TEXT: "text" };
+const CELL_TYPES = { PYTHON: "python", TEXT: "text", HTML: "html" };
 const IMPORTS_SNIPPET = "import numpy as np\nimport pandas as pd\nimport matplotlib.pyplot as plt\n";
 
 /* Seeds the namespace for the *standalone export* only — a downloaded copy
@@ -132,7 +132,7 @@ function generateId() {
 function readCells(saved) {
   if (!Array.isArray(saved)) return [];
   return saved
-    .filter((c) => c && c.id && [CELL_TYPES.PYTHON, CELL_TYPES.TEXT].includes(c.type))
+    .filter((c) => c && c.id && Object.values(CELL_TYPES).includes(c.type))
     .map((c) => ({ id: c.id, type: c.type, content: c.content || "", output: c.output || "", error: !!c.error, collapsed: !!c.collapsed }));
 }
 
@@ -1128,7 +1128,14 @@ function createInsertDivider(index) {
   addTxt.innerHTML = '<span class="dm-tool-icon dm-tool-icon-text" aria-hidden="true"></span>Text';
   addTxt.addEventListener("click", () => insertCellAt(index, CELL_TYPES.TEXT));
 
-  actions.append(addPy, addTxt);
+  const addHtml = document.createElement("button");
+  addHtml.type = "button";
+  addHtml.className = "dm-insert-btn";
+  addHtml.title = "Insert an HTML cell here";
+  addHtml.innerHTML = '<span class="dm-tool-icon dm-tool-icon-html" aria-hidden="true"></span>HTML';
+  addHtml.addEventListener("click", () => insertCellAt(index, CELL_TYPES.HTML));
+
+  actions.append(addPy, addTxt, addHtml);
   row.append(line, actions);
   return row;
 }
@@ -1379,10 +1386,11 @@ function createCellElement(cell) {
   // there's no reason the hit target should be smaller than the label.
   pill.draggable = true;
   pill.title = "Click, hold, and drag — or tap and hold, then drag — to move this cell.";
+  const PILL_LABELS = { [CELL_TYPES.PYTHON]: "Python", [CELL_TYPES.TEXT]: "Text", [CELL_TYPES.HTML]: "HTML" };
   pill.innerHTML =
     '<span class="dm-cell-pill-dots" aria-hidden="true">&#8942;</span>' +
     `<span class="dm-cell-pill-num">Cell ${cellNumber}</span>` +
-    `<span class="dm-cell-pill-type" data-type="${cell.type}">${cell.type === CELL_TYPES.PYTHON ? "Python" : "Text"}</span>`;
+    `<span class="dm-cell-pill-type" data-type="${cell.type}">${PILL_LABELS[cell.type]}</span>`;
 
   const spacer = document.createElement("span");
   spacer.className = "dm-cell-spacer";
@@ -1401,12 +1409,16 @@ function createCellElement(cell) {
   // no hover to reveal that the note is clickable at all. Its label is
   // kept in sync by showEditor()/showRendered().
   let previewBtn = null;
-  if (cell.type === CELL_TYPES.TEXT) {
+  if (cell.type === CELL_TYPES.TEXT || cell.type === CELL_TYPES.HTML) {
     previewBtn = document.createElement("button");
     previewBtn.type = "button";
     previewBtn.className = "dm-icon-btn dm-icon-preview";
     headerEnd.appendChild(previewBtn);
-
+  }
+  // Attaching an image from disk only makes sense for a Text cell's own
+  // markdown-image syntax — an HTML cell's reader can already write an
+  // <img> tag directly, so this stays Text-only.
+  if (cell.type === CELL_TYPES.TEXT) {
     const imgBtn = document.createElement("button");
     imgBtn.type = "button";
     imgBtn.className = "dm-icon-btn dm-icon-image";
@@ -1527,7 +1539,7 @@ function createCellElement(cell) {
       }
     }, true);
     cell.editor = editor;
-  } else {
+  } else if (cell.type === CELL_TYPES.TEXT) {
     const textarea = document.createElement("textarea");
     textarea.className = "dm-textarea";
     textarea.value = cell.content;
@@ -1593,6 +1605,80 @@ function createCellElement(cell) {
     contentRegion.append(textarea, renderEl);
     cell.textarea = textarea;
     cell.showTextEditor = showEditor;
+
+    if (cell.content.trim()) showRendered();
+    else syncPreviewBtn();
+  } else if (cell.type === CELL_TYPES.HTML) {
+    const editorEl = document.createElement("div");
+    editorEl.className = "dm-editor";
+    contentRegion.appendChild(editorEl);
+
+    const renderEl = document.createElement("div");
+    renderEl.className = "dm-html-render";
+    renderEl.hidden = true;
+    contentRegion.appendChild(renderEl);
+
+    // sandbox="allow-scripts" only — no allow-same-origin. Whatever this
+    // cell's HTML does, including a <script> tag, it does inside an
+    // opaque-origin document that cannot reach this page's own DOM,
+    // localStorage, or any other cell — the same isolation a reader's
+    // HTML deserves whether they wrote it themselves or it arrived
+    // through Settings' "Load a shared cell/notebook" (planning/
+    // CELL_IDENTITY.md §8). resize:vertical (see the stylesheet) rather
+    // than measuring the frame's own content height: that would need a
+    // postMessage handshake from inside the sandboxed document, not
+    // worth the complexity for a first version.
+    const iframe = document.createElement("iframe");
+    iframe.className = "dm-html-frame";
+    iframe.setAttribute("sandbox", "allow-scripts");
+    iframe.title = `Cell ${cellNumber}'s rendered HTML`;
+    renderEl.appendChild(iframe);
+
+    const syncPreviewBtn = () => {
+      const editing = !editorEl.hidden;
+      previewBtn.textContent = editing ? "View" : "Edit";
+      previewBtn.title = editing ? "Show this cell rendered" : "Edit this cell's HTML";
+    };
+    const showEditor = () => {
+      editorEl.hidden = false;
+      renderEl.hidden = true;
+      editor.focus();
+      syncPreviewBtn();
+    };
+    const showRendered = () => {
+      if (!cell.content.trim()) return; // nothing to render — keep it open for typing
+      iframe.srcdoc = cell.content;
+      renderEl.hidden = false;
+      editorEl.hidden = true;
+      syncPreviewBtn();
+    };
+
+    const editor = createCodeEditor(editorEl, cell.content, {
+      dark: isDarkNow(),
+      language: "html",
+      onChange: (text) => { cell.content = text; saveState(); },
+    });
+    cell.editor = editor;
+    // focusout, not CodeMirror's own updateListener: it fires once focus
+    // has actually left the editor's DOM subtree (relatedTarget is the
+    // element gaining focus), the same "genuinely done editing" signal a
+    // textarea's own blur gives Text cells — CodeMirror's editable
+    // element does not dispatch a native blur/focusout of its own that
+    // bubbles the way a textarea's does, so this listens one level up.
+    editorEl.addEventListener("focusout", (e) => {
+      if (!editorEl.contains(e.relatedTarget)) showRendered();
+    });
+
+    // No click-to-edit on the rendered view itself, unlike Text — a click
+    // inside the iframe is a click inside a different document, and
+    // cross-document clicks don't bubble out to this page's listeners.
+    // The header's own Edit/View toggle (revealed by hover, same as any
+    // other quiet chrome) is the one way in.
+    previewBtn.addEventListener("mousedown", (e) => e.preventDefault());
+    previewBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      if (editorEl.hidden) showEditor(); else showRendered();
+    });
 
     if (cell.content.trim()) showRendered();
     else syncPreviewBtn();

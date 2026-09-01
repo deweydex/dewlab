@@ -192,6 +192,11 @@ html[data-dl-panel-right] .dm-page .dl-crumbs {
   mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M8 5v14l11-7z'/%3E%3C/svg%3E") center/contain no-repeat;
   -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M8 5v14l11-7z'/%3E%3C/svg%3E") center/contain no-repeat;
 }
+.dm-tool-icon-html {
+  background: currentColor;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6z'/%3E%3C/svg%3E") center/contain no-repeat;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6z'/%3E%3C/svg%3E") center/contain no-repeat;
+}
 .dm-tool-icon-image {
   background: currentColor;
   mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z'/%3E%3C/svg%3E") center/contain no-repeat;
@@ -362,6 +367,10 @@ html[data-dl-panel-right] .dm-page .dl-crumbs {
 }
 .dm-cell-pill-type[data-type="python"] { color: var(--dl-type-python); }
 .dm-cell-pill-type[data-type="text"] { color: var(--dl-type-text); }
+.dm-cell-pill-type[data-type="html"] { color: var(--dl-type-html); }
+.dm-cell-pill-type[data-type="css"] { color: var(--dl-type-css); }
+.dm-cell-pill-type[data-type="sql"] { color: var(--dl-type-sql); }
+.dm-cell-pill-type[data-type="javascript"] { color: var(--dl-type-js); }
 
 .dm-cell-spacer { flex: 1; }
 
@@ -377,26 +386,34 @@ html[data-dl-panel-right] .dm-page .dl-crumbs {
 .dm-cell:hover .dm-cell-header-end,
 .dm-cell:focus-within .dm-cell-header-end { opacity: 1; }
 
-/* A text cell renders by default and is meant to be read, not run
- * (planning/CELL_IDENTITY.md §4, DECISIONS_LOG.md 7.115) — its pill,
- * Duplicate/Delete/Edit, and collapse triangle stay invisible until a
- * reader actually touches the cell, so a rendered note reads like part
- * of the page rather than sitting open and code-shaped among cells that
- * are. `opacity: 0; pointer-events: none`, never `display: none`: the
- * elements stay in the tab order, so a keyboard user tabbing onto one
- * reveals it via :focus-within the same moment it receives focus — only
- * a mouse user needs to hover the cell first. A touch device has no
- * hover to reveal anything with, so it gets the chrome on unconditionally. */
-.dm-cell-text .dm-cell-head,
-.dm-cell-text .dm-cell-collapse-col { transition: opacity 0.1s ease; }
+/* A text or HTML cell renders by default and is meant to be read, not
+ * run (planning/CELL_IDENTITY.md §4/§8, DECISIONS_LOG.md 7.115) — its
+ * pill, Duplicate/Delete/Edit, and collapse triangle stay invisible
+ * until a reader actually touches the cell, so a rendered note or a
+ * rendered HTML cell reads like part of the page rather than sitting
+ * open and code-shaped among cells that are. `opacity: 0;
+ * pointer-events: none`, never `display: none`: the elements stay in
+ * the tab order, so a keyboard user tabbing onto one reveals it via
+ * :focus-within the same moment it receives focus — only a mouse user
+ * needs to hover the cell first. A touch device has no hover to reveal
+ * anything with, so it gets the chrome on unconditionally. */
+.dm-cell-text .dm-cell-head, .dm-cell-html .dm-cell-head,
+.dm-cell-text .dm-cell-collapse-col, .dm-cell-html .dm-cell-collapse-col {
+  transition: opacity 0.1s ease;
+}
 .dm-cell-text:not(:hover):not(:focus-within) .dm-cell-head,
-.dm-cell-text:not(:hover):not(:focus-within) .dm-cell-collapse-col {
+.dm-cell-html:not(:hover):not(:focus-within) .dm-cell-head,
+.dm-cell-text:not(:hover):not(:focus-within) .dm-cell-collapse-col,
+.dm-cell-html:not(:hover):not(:focus-within) .dm-cell-collapse-col {
   opacity: 0;
   pointer-events: none;
 }
 @media (hover: none) {
-  .dm-cell-text .dm-cell-head,
-  .dm-cell-text .dm-cell-collapse-col { opacity: 1; pointer-events: auto; }
+  .dm-cell-text .dm-cell-head, .dm-cell-html .dm-cell-head,
+  .dm-cell-text .dm-cell-collapse-col, .dm-cell-html .dm-cell-collapse-col {
+    opacity: 1;
+    pointer-events: auto;
+  }
 }
 
 .dm-icon-btn {
@@ -614,6 +631,28 @@ html[data-dl-panel-right] .dm-page .dl-crumbs {
 .dm-doc-render em { color: var(--dl-muted); }
 .dm-doc-render img { display: block; max-width: 100%; height: auto; border-radius: 6px; margin: 0.4rem 0; }
 .dm-doc-empty { color: var(--dl-muted); font-style: italic; margin: 0; }
+
+/* An HTML cell's rendered view (planning/CELL_IDENTITY.md §8) — the
+ * iframe itself carries the sandboxing; this is just its frame on the
+ * page. resize:vertical, the same affordance .dm-textarea already gives
+ * a Text cell's own editor, so a reader can drag it taller for content
+ * that needs it rather than the page reaching into a cross-origin frame
+ * to measure it. A fixed white background regardless of theme: a
+ * reader's own HTML is written assuming a page, not dewlab's own dark
+ * mode, the same reason a code editor's syntax theme does not follow
+ * dewlab's light/dark toggle for the *page* it is styling. */
+.dm-html-render[hidden] { display: none; }
+.dm-html-frame {
+  display: block;
+  width: 100%;
+  height: 8rem;
+  min-height: 3rem;
+  resize: vertical;
+  overflow: auto;
+  border: 1px solid var(--dl-cell-border);
+  border-radius: 4px;
+  background: #fff;
+}
 
 .dm-cell-output {
   margin-top: 0.6rem;

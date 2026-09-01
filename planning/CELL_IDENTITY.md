@@ -222,13 +222,15 @@ carrying the state rather than its shape.
   `restartPython()` (7.108) turned out to be exactly the groundwork this
   needed, unchanged.
 - **SQL, HTML, CSS, JavaScript: designed in §8, being built from there
-  outward, in dewmini only, one type at a time (starting with HTML).**
-  This document's own multi-type table was a design for when they
-  exist, not a claim that they do — §8 is where "when they exist" turns
-  into an actual execution model per type, since the table alone only
-  ever answered *what chrome a cell gets*, never *what running one
-  does*. `--dl-type-python`/`--dl-type-text` were the only colour tokens
-  defined until §8 added four more.
+  outward, in dewmini only, one type at a time. HTML is built (7.116);
+  CSS, SQL, and JavaScript are not, yet.** This document's own
+  multi-type table was a design for when they exist, not a claim that
+  they do — §8 is where "when they exist" turns into an actual
+  execution model per type, since the table alone only ever answered
+  *what chrome a cell gets*, never *what running one does*.
+  `--dl-type-python`/`--dl-type-text` were the only colour tokens
+  defined until §8 added four more, one of them (`--dl-type-html`) now
+  in real use.
 - **Tutorial and practice pages: the pill and the run line are now ported
   too (7.113).** 7.109 ported the run-line-adjacent pieces (staleness,
   run above/below, restart & run all) onto `build.py`'s
@@ -400,7 +402,14 @@ collapse, run line, no Edit/View, no quiet-until-touched.
 
 HTML first — no new runtime dependency, and the sandboxed-iframe
 pattern CSS and JavaScript both reuse gets proven once, on the simplest
-case. CSS next, since it shares that same pattern almost entirely. SQL
+case. **Built (7.116).** One real, deliberate difference from Text
+despite the shared shape: a click on Text's rendered view opens its
+editor; the same gesture cannot work for HTML, because a click inside a
+cross-origin sandboxed iframe never bubbles out to a listener in this
+document. The header's own Edit/View toggle — already there, already
+revealed the same way by quiet-until-touched — is the one way in.
+
+CSS next, since it shares that same iframe pattern almost entirely. SQL
 and JavaScript both need a genuinely new execution engine (*sql.js*; the
 persistent sandboxed session) and come after, in whichever order the
 work actually lands.

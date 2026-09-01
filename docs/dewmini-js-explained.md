@@ -43,6 +43,21 @@ carry this same anatomy now too (7.113–7.115), by way of `build.py`'s
 `render_cell()` and `assets/tutorial-runtime.js` rather than this file —
 see `docs/tutorial-runtime-explained.md` for that side.
 
+A third `CELL_TYPES` value, `html` (DECISIONS_LOG.md 7.116,
+`planning/CELL_IDENTITY.md` §8), is dewmini-only — the first of four new
+cell types that document designs (SQL, HTML, CSS, JavaScript), and the
+only one built so far. `createCellElement()`'s HTML branch mirrors
+Text's shape (an editor, a rendered view, the same quiet-until-touched/
+Edit-View chrome) but a CodeMirror editor (`language: "html"`) in place
+of a plain `<textarea>`, and a sandboxed `<iframe sandbox="allow-scripts"
+srcdoc="…">` in place of `innerHTML`-ing rendered markdown straight into
+the page — Text's own click-to-edit gesture on its rendered view cannot
+work here, since a click inside a cross-origin iframe never bubbles out
+to a listener in this document; the header's Edit/View toggle is the one
+way in. `readCells()`'s cell-type whitelist generalised to
+`Object.values(CELL_TYPES)` while this was built, rather than needing
+another hand-edit the next time a type is added.
+
 ### …and `cells` belongs to a notebook
 
 Since tabs, `cells` is not the only notebook — it is the *active* one.

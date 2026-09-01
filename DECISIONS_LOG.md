@@ -5055,3 +5055,73 @@ the mockup separately described.
 *Cost to change: trivial. Pure CSS on both sides, no new class, no new
 JS state — a future cell type that also wants this only needs its own
 selector added to the same rule.*
+
+**7.116 — HTML, the first of the four new cell types
+`planning/CELL_IDENTITY.md` §8 designed, built in dewmini.** `CELL_TYPES`
+gains `html`; the insert seam gets a third button; `createCellElement()`
+gets a third branch. An HTML cell's source is a CodeMirror editor (the
+`@codemirror/lang-html` support 7.115's own groundwork commit added,
+finally with a consumer) rather than Text's plain `<textarea>` — real
+code deserves real highlighting, and nothing about the Edit/View
+mechanism cared which kind of editor sat behind it. Rendering is a
+sandboxed `<iframe sandbox="allow-scripts" srcdoc="…">`, `resize:
+vertical` rather than measuring the frame's own content height, exactly
+as §8 designed it, no `allow-same-origin` — a reader's own HTML, or one
+they imported from somewhere else entirely, cannot reach this page's own
+window, storage, or DOM, script tag or not.
+
+**Rendering, not source, is the click target — unlike Text.** Text's
+`renderEl.addEventListener("click", showEditor)` cannot work for HTML:
+a click inside a cross-origin iframe is a click inside a different
+document, and it never bubbles out to a listener on this one. The
+header's own Edit/View toggle, already revealed by the same
+quiet-until-touched hover this entry extends to `.dm-cell-html`, is the
+one way in — not a regression from Text's affordance, a genuine
+difference in what the two documents can tell each other.
+
+**A real bug, caught by the browser rather than by `node --check`:
+`if {} else {} else if {}` is invalid JavaScript, and this file's own
+`.js` extension hid it.** The third branch was added after an existing
+`if (PYTHON) {…} else {…text…}`, which needed to become `if (PYTHON) {…}
+else if (TEXT) {…} else if (HTML) {…}` — an easy mistake, adding an
+`else if` after a bare `else` that already closed the chain. `node
+--check compose/dewmini.js` reported no error; `dewmini.js` loads in the
+browser as an ES module (`<script type="module">`), and copying it to a
+`.mjs` extension before checking reproduces the browser's own
+`SyntaxError: Unexpected token 'else'` immediately — `node --check` on a
+plain `.js` file parses it as a CommonJS script, and that parse did not
+catch it here. `node --check` against a temporary `.mjs` copy (or
+`--input-type=module`) is the check that actually matches how this file
+runs, for `dewmini.js` and `tutorial-runtime.js` alike, and is worth
+reaching for on every future change to either.
+
+**Another real bug, caught by a browser-driven e2e test, not by
+inspection: `readCells()`'s own type whitelist would have silently
+dropped every saved HTML cell on reload.** `.filter((c) => c && c.id &&
+[CELL_TYPES.PYTHON, CELL_TYPES.TEXT].includes(c.type))` — a deliberate
+defense against a stray bad value crashing the notebook, written when
+only two types existed and never revisited when a third arrived. Fixed
+to `Object.values(CELL_TYPES).includes(c.type)`, so it stays correct the
+next time a type gets added rather than needing another manual edit
+found only by testing reload.
+
+**A genuine test-tooling wrinkle, not a product bug: hovering a cell's
+own geometric centre is not a reliable way to trigger CSS `:hover` when
+that centre sits inside a sandboxed iframe.** `elementFromPoint` at that
+coordinate correctly returns the iframe — the point genuinely is inside
+the cell's box — but under Playwright's CDP-driven synthetic mouse
+input, the outer document's `:hover` state did not consistently follow
+the cursor across that particular boundary, confirmed by hovering the
+same coordinate with a raw `page.mouse.move()` in an interactive
+Chromium session both with and without success across repeated runs. A
+real user's mouse does not appear to have this problem; the test suite's
+own `hover_cell()` helper now moves to a point inside the cell's header
+row instead, above where an HTML cell's iframe sits, which is reliable
+for every cell type.
+
+*Cost to change: small. `createCellElement()`'s HTML branch mirrors
+Text's shape closely enough that a future CSS type (§8's next type in
+line) should be a similarly small addition, not a redesign. The
+`if`/`else if` chain bug is exactly the kind of mistake worth a linter
+catching automatically rather than relying on remembering to check
+against `.mjs`; not set up here, left as a known gap.*
