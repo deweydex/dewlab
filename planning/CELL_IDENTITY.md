@@ -17,12 +17,15 @@ needing a server or a build step to open:
 
 Four related, smaller features from the same proposal shipped already
 (`DECISIONS_LOG.md` 7.105–7.108): the "edited since last run" marker,
-Run above/below, Restart & run all, and maths rendering in text cells.
-This document covers the one piece that was deliberately held back —
-execution counters — because unlike the other four, it does not fit as a
-small addition to the existing cell markup. It touches the same header
-every cell already has, so it was worth designing properly rather than
-bolting a number onto the side.
+Run above/below, Restart & run all, and maths rendering in text cells —
+and per 7.109, three of those four (everything but maths, which needed
+nothing extra there) now also run on tutorial and practice pages'
+`.dl-cell`, not only in dewmini. This document covers the one piece that
+is still deliberately held back everywhere, dewmini included — execution
+counters, the numbered identity pill — because unlike the other four, it
+does not fit as a small addition to the existing cell markup. It touches
+the same header every cell already has, so it was worth designing
+properly rather than bolting a number onto the side.
 
 ---
 
@@ -178,19 +181,27 @@ level than hand-tuning spacing between two separate elements.
 
 ## 7. What's still open
 
-- **Implementation.** Everything above is design, not code. The
-  groundwork it would build on already exists — `ranContent` and the
-  staleness check (7.105), `runCellBatch()`/`runAbove()`/`runBelow()`
-  (7.106), `restartPython()` (7.108) — but the counter itself, the pill,
-  and the per-type behaviour split are not wired into
-  `compose/dewmini.js` yet.
-- **Tutorial and practice pages.** This design is dewmini-only so far.
-  Carrying it to the reading pages a tutorial builds (`build.py`'s
-  `render_cell()`) is a larger piece of work on its own, and would need
-  cell types dewmini doesn't have today — a tutorial page currently
-  distinguishes only "has a Run button" from "does not," not Python from
-  SQL from HTML. The same instinct that makes a Text cell go quiet until
-  touched here should carry over directly: a tutorial's own prose-like
-  cells (Markdown-shaped, non-executable) ought to fade their chrome away
-  the same way, rather than looking like every other numbered, run-tracked
+- **Implementation.** Everything above is design, not code, and none of
+  it is wired into `compose/dewmini.js` yet. The groundwork it would
+  build on is more complete than when this was written, though —
+  `ranContent`/staleness (7.105), `runCellBatch()`/`runAbove()`/
+  `runBelow()` (7.106), and `restartPython()` (7.108) all exist now on
+  *both* dewmini and tutorial/practice pages (7.109) — but the counter
+  itself, the pill, its type colours, and the per-type behaviour split
+  above are still unbuilt everywhere.
+- **Tutorial and practice pages.** 7.109 ported the run-line-adjacent
+  pieces (staleness, run above/below, restart & run all) onto
+  `build.py`'s `render_cell()`/`assets/tutorial-runtime.js`, keeping
+  dewmini's and the tutorial runtime's own engines and DOM separate
+  rather than unifying them — see that decision for why a full shared
+  cell implementation was explicitly not the chosen path. The pill and
+  the numbered counter itself were deliberately left out of that port —
+  building it for tutorials before dewmini would ship an "unbuilt
+  anywhere" design out of order — and still need the cell types this
+  document was written assuming (a tutorial page today distinguishes
+  only "has a Run button" from "does not," not Python from SQL from
+  HTML). The same instinct that makes a Text cell go quiet until touched
+  here should carry over directly: a tutorial's own prose-like cells
+  (Markdown-shaped, non-executable) ought to fade their chrome away the
+  same way, rather than looking like every other numbered, run-tracked
   cell around them.
