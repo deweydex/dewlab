@@ -158,6 +158,8 @@ table { border-collapse: collapse; }
 }
 .dm-table input.dm-cell { width: 70px; border: 1px solid var(--dm-border); border-radius: 3px; padding: 4px 6px; }
 .dm-diagram { max-width: 100%; height: auto; display: block; margin: 6px 0 10px; }
+.dm-question img, .dm-section > img, .dm-section > p img {
+  max-width: 100%; height: auto; }
 .dm-diagram-labels { display: flex; flex-direction: column; gap: 8px; }
 .dm-diagram-label input {
   width: 220px; font-family: var(--dm-serif); font-size: 15px;
@@ -165,6 +167,79 @@ table { border-collapse: collapse; }
   background: var(--dm-bg);
 }
 .dm-feature-row { margin: 8px 0; }
+
+/* ------------------------------------------------ python code questions */
+.dm-question-chip {
+  font-family: var(--dm-sans); font-size: 11px; font-weight: 700;
+  color: var(--dm-muted); background: var(--dm-box-bg);
+  border: 1px solid var(--dm-border); border-radius: 3px;
+  display: inline-block; padding: 1px 7px; margin: 0 0 6px;
+}
+.dm-code-bar {
+  display: flex; align-items: center; gap: 10px;
+  background: var(--dm-navy); color: var(--dm-bg);
+  border-radius: 3px 3px 0 0; padding: 5px 10px;
+  font-family: var(--dm-sans); font-size: 12px;
+}
+.dm-code-lang { font-weight: 700; letter-spacing: 0.04em; }
+.dm-code-note { flex: 1; font-size: 12px; color: #f0c9a8; }
+.dm-run {
+  font-family: var(--dm-sans); font-size: 13px; font-weight: 600;
+  background: var(--dm-orange); color: #ffffff; border: none;
+  border-radius: 3px; padding: 4px 16px; cursor: pointer;
+}
+.dm-run:disabled { opacity: 0.45; cursor: default; }
+.dm-code {
+  display: block; width: 100%; box-sizing: border-box;
+  font-family: "SF Mono", ui-monospace, Consolas, Menlo, monospace;
+  font-size: 13.5px; line-height: 1.5; tab-size: 4;
+  background: #21283b; color: #e8e6e1;
+  border: 1px solid var(--dm-navy); border-top: none; border-radius: 0 0 3px 3px;
+  padding: 10px 12px; resize: vertical; min-height: 90px;
+}
+.dm-code-output, .dm-provided-output { margin: 8px 0 4px; }
+.dm-code-output:empty, .dm-provided-output:empty { display: none; }
+.dm-out-text, .dm-out-error {
+  font-family: ui-monospace, Consolas, Menlo, monospace; font-size: 13px;
+  line-height: 1.5; margin: 6px 0; padding: 8px 12px; border-radius: 3px;
+  white-space: pre-wrap; overflow-x: auto;
+  background: var(--dm-box-bg); border: 1px solid var(--dm-border);
+}
+.dm-out-error { color: #8a2a1f; background: #faf0ee; border-color: #e4c7c1; }
+.dm-out-image { max-width: 100%; height: auto; display: block; margin: 8px 0;
+  border: 1px solid var(--dm-border); border-radius: 3px; background: #ffffff; }
+.dm-out-table { border-collapse: collapse; margin: 8px 0; font-size: 13.5px; }
+.dm-out-table th, .dm-out-table td {
+  border: 1px solid var(--dm-border); padding: 4px 10px; text-align: left; }
+.dm-out-table th { background: var(--dm-box-bg); font-family: var(--dm-sans);
+  font-size: 12px; }
+.dm-widget { margin: 6px 0; font-family: var(--dm-sans); font-size: 14px; }
+.dm-widget input, .dm-widget select {
+  border: 1px solid var(--dm-border); border-radius: 3px; padding: 4px 8px;
+  font-size: 14px; margin-left: 6px; }
+.dm-widget button {
+  font-family: var(--dm-sans); font-size: 13px; border: 1px solid var(--dm-navy);
+  background: var(--dm-bg); color: var(--dm-navy); border-radius: 3px;
+  padding: 4px 14px; cursor: pointer; }
+.dm-provided { margin: 10px 0; }
+.dm-provided-code {
+  font-family: ui-monospace, Consolas, Menlo, monospace; font-size: 13px;
+  line-height: 1.5; margin: 4px 0; padding: 10px 12px; border-radius: 3px;
+  background: var(--dm-box-bg); border: 1px solid var(--dm-border);
+  white-space: pre-wrap; overflow-x: auto;
+}
+.dm-code-restore-note {
+  font-family: var(--dm-sans); font-size: 13px; color: var(--dm-warn);
+  background: var(--dm-warn-bg); border-radius: 3px; padding: 6px 10px;
+  margin: 6px 0;
+}
+.dm-ref { margin: 8px 0; font-size: 13.5px; }
+.dm-ref summary { font-family: var(--dm-sans); font-size: 13px; font-weight: 600;
+  color: var(--dm-navy); cursor: pointer; }
+.dm-ref p, .dm-ref ul, .dm-ref table { font-size: 13.5px; margin: 6px 0; }
+.dm-file-row { font-family: var(--dm-sans); font-size: 13px; margin: 5px 0; }
+.dm-file-row code { font-size: 12.5px; background: var(--dm-box-bg);
+  border: 1px solid var(--dm-border); border-radius: 3px; padding: 1px 5px; }
 
 /* ------------------------------------------------ answer key extras */
 .dm-model {

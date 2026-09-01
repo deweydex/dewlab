@@ -31,7 +31,7 @@ short list of labelled values that carries the machine-checkable facts:
 names, marks, question types, correct answers. A block begins with a
 line of three backticks (the backtick is the ` character) followed by
 the block's kind, holds one setting per line in the form `marks: 4`, and
-ends with a line of three backticks. There are five kinds of block:
+ends with a line of three backticks. There are six kinds of block:
 
 - `exam` — one per file, at the top: the exam's overall settings.
 - `section` — starts a section of the paper.
@@ -39,6 +39,10 @@ ends with a line of three backticks. There are five kinds of block:
 - `answer` — creates an answer space inside the current question.
 - `marking` — attaches a marking scheme to the answer space directly
   above it.
+- `reference` — a titled piece of support material, such as a formula
+  sheet or a guide to typing notation, shown in the exam page's side
+  panel. A reference block carries a `title` and a `text`, and an exam
+  may have any number of them.
 
 Two rules govern how blocks relate to the text around them. First,
 structure comes only from the blocks: a `section` block runs until the
@@ -169,11 +173,24 @@ as a whole.
   cannot drift apart: the builder checks that each section's rule is
   mentioned in the instructions.
 - `data_files` — a list of files the exam provides to students, such as
-  a database or a spreadsheet for Python questions. Every listed file is
+  a database or a spreadsheet for Python questions. Each entry names the
+  file's `path` beside the exam file, an optional `as` name students see,
+  and a one-line `description` for the side panel. Every listed file is
   embedded into the finished exam page when the exam is built. The page
   never fetches a file over the network during the sitting, so a missing
   file is a building error, discovered by the teacher, and never a
   surprise discovered by a student mid-exam.
+
+Two further settings exist only for exams with Python code questions.
+`python` lists the Python packages the exam uses (the list may be
+empty), and is required whenever the exam contains a Python question, so
+the decision to carry the Python system is always visible at the top of
+the file. `setup_code` holds code that runs automatically before the
+student starts — the place to open a database connection or import the
+packages — so no question depends on the student remembering to run
+something first. A `question` block may also carry `provided_code`:
+read-only code shown to the student that runs automatically when the
+exam starts, for questions of the form "here is a program; extend it".
 
 ## 4. Sections, questions, and "answer any N"
 
@@ -233,7 +250,8 @@ description. The full list of checks lives with the builder
 ([THE_EXAM_BUILDER.md](THE_EXAM_BUILDER.md)); the most important are
 that all marks add up, that every name is unique, that every question
 type is one the catalogue defines, that every picture and data file
-named in the exam exists, that every picture has a written description
+named in the exam exists, that every picture — including one placed in
+the question text as `![description](path)` — has a written description
 for screen-reader users, and that no model answer leaks into the student
 paper. A file that passes every check builds the same finished pages
 every time.
