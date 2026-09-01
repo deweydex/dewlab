@@ -51,6 +51,34 @@ jobs:
       - name: Fail if a document points at a file that is not there
         run: python3 dev/check_doc_links.py
 
+  # dewmark lives in its own folder with its own dependencies and tests, so it
+  # gets its own job: a dewmark change cannot break the tutorials' job and a
+  # tutorials change cannot break this one. The browser rehearsals
+  # (dev/smoke_pages.py, dev/smoke_python_page.py) stay local and manual for
+  # the same reason the e2e suite does.
+  dewmark:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install pytest markdown pyyaml
+
+      - name: Run the exam builder's tests
+        run: python -m pytest dewmark/tests -q
+
+      - name: Build every sample exam
+        run: |
+          for exam in dewmark/samples/*.exam.md; do
+            python dewmark/build_exam.py "$exam" --output /tmp/dewmark-out
+          done
+
   # The standalone bundle is the runtime rebuilt in the older script format and
   # committed, so that build.py needs no Node. That means it can go stale the
   # moment anyone edits the runtime — and a stale copy would make downloaded

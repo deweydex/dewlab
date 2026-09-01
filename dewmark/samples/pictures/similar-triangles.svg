@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 220" font-family="Georgia, serif">
+  <rect width="420" height="220" fill="#fdfcfa"/>
+  <!-- small right-angled triangle, equal legs, hypotenuse 8 cm -->
+  <polygon points="40,190 120,190 40,110" fill="#e7f0e8" stroke="#1b2a4a" stroke-width="2"/>
+  <rect x="40" y="176" width="14" height="14" fill="none" stroke="#1b2a4a" stroke-width="1.5"/>
+  <!-- one tick mark on each of the two equal legs -->
+  <line x1="78" y1="184" x2="82" y2="196" stroke="#1b2a4a" stroke-width="2"/>
+  <line x1="34" y1="148" x2="46" y2="152" stroke="#1b2a4a" stroke-width="2"/>
+  <text x="90" y="140" font-size="15" fill="#d4692a">8 cm</text>
+  <!-- large right-angled triangle, equal legs, hypotenuse 24 cm -->
+  <polygon points="190,190 360,190 190,20" fill="#e7f0e8" stroke="#1b2a4a" stroke-width="2"/>
+  <rect x="190" y="174" width="16" height="16" fill="none" stroke="#1b2a4a" stroke-width="1.5"/>
+  <line x1="273" y1="184" x2="277" y2="196" stroke="#1b2a4a" stroke-width="2"/>
+  <line x1="184" y1="103" x2="196" y2="107" stroke="#1b2a4a" stroke-width="2"/>
+  <text x="290" y="100" font-size="15" fill="#d4692a">24 cm</text>
+</svg>
