@@ -82,6 +82,12 @@ let statusClearTimer = null;
 let toolsSourceCache = null;
 let running = false;
 let runningCellId = null;
+/* How many cells have actually run since the interpreter last started or
+ * was last reset from a clean namespace — the counter behind each cell's
+ * "Ran Nth" (planning/CELL_IDENTITY.md §3). Reset to 0 by
+ * resetRunSequence(), never decremented otherwise: a cell that runs twice
+ * in the same session just gets a new, later ordinal each time. */
+let runSequenceCounter = 0;
 
 let draggedId = null;
 
@@ -106,7 +112,7 @@ function readCells(saved) {
   if (!Array.isArray(saved)) return [];
   return saved
     .filter((c) => c && c.id && [CELL_TYPES.PYTHON, CELL_TYPES.TEXT].includes(c.type))
-    .map((c) => ({ id: c.id, type: c.type, content: c.content || "", output: c.output || "", error: !!c.error, lastRunMs: typeof c.lastRunMs === "number" ? c.lastRunMs : undefined }));
+    .map((c) => ({ id: c.id, type: c.type, content: c.content || "", output: c.output || "", error: !!c.error, collapsed: !!c.collapsed }));
 }
 
 /* A notebook with nothing in it yet. Named rather than numbered-only so a
@@ -180,9 +186,8 @@ function setCells(next) {
  * plain-data fields worth keeping — build a fresh plain object rather
  * than serializing the live one directly. */
 function saveState() {
-  const plainCells = (list) => list.map(({ id, type, content, output, error, lastRunMs }) => ({
-    id, type, content, output: output || "", error: !!error,
-    lastRunMs: typeof lastRunMs === "number" ? lastRunMs : undefined
+  const plainCells = (list) => list.map(({ id, type, content, output, error, collapsed }) => ({
+    id, type, content, output: output || "", error: !!error, collapsed: !!collapsed
   }));
   try {
     localStorage.setItem(NOTEBOOKS_KEY, JSON.stringify({
@@ -396,6 +401,29 @@ function deleteCell(id) {
   saveState();
   renderCells();
   updateStatus("Cell deleted.");
+}
+
+/* Inserts a copy of a cell right after itself — the same type and code,
+ * but a fresh id and no run history: a duplicate is a starting point for
+ * a variation, not a claim that it already ran (planning/CELL_IDENTITY.md
+ * §2's header-end group, alongside Delete). */
+function duplicateCell(id) {
+  const idx = cells.findIndex((c) => c.id === id);
+  if (idx === -1) return;
+  const original = cells[idx];
+  const copy = {
+    id: generateId(),
+    type: original.type,
+    content: original.content,
+    output: "",
+    error: false,
+    collapsed: !!original.collapsed,
+  };
+  cells.splice(idx + 1, 0, copy);
+  saveState();
+  renderCells();
+  focusCell(copy.id);
+  updateStatus("Cell duplicated.");
 }
 
 /* Scrolls to a cell, briefly highlights it (the `dm-focused` class, added
@@ -706,34 +734,34 @@ function createInsertDivider(index) {
  * screen: it has run at least once (`ranContent` is set — a cell that has
  * never run has nothing to be stale relative to) and its current content
  * no longer matches what actually produced that output. Any difference
- * counts, whitespace included — see the comment on `dm-stale-badge` below
- * for why that is the deliberate starting position rather than an
- * oversight. */
+ * counts, whitespace included — a deliberate starting position, not an
+ * oversight: the alternative (ignoring whitespace-only edits) would need
+ * this to understand what a *meaningful* change is, which is exactly the
+ * judgement call it exists to avoid making on a reader's behalf. */
 function isStale(cell) {
   return cell.type === CELL_TYPES.PYTHON && cell.ranContent !== undefined && cell.ranContent !== cell.content;
 }
 
 /* Updates a cell's on-page "chrome" — the error styling, and (for a
- * Python cell) the stale-output badge — to match its data, without a full
- * re-render of the whole notebook. Called after running a cell (error and
- * staleness both just became current) and on every edit of a cell that
- * has already run once (staleness is the only thing an edit alone can
- * change). */
+ * Python cell) the run-line — to match its data, without a full re-render
+ * of the whole notebook. Called after running a cell (error and staleness
+ * both just became current) and on every edit of a cell that has already
+ * run once (staleness is the only thing an edit alone can change). */
 function updateCellChrome(id) {
   const el = cellsContainer?.querySelector(`.dm-cell[data-id="${id}"]`);
   const cell = cells.find((c) => c.id === id);
   if (!el || !cell) return;
   el.classList.toggle("dm-error", !!cell.error);
-  if (cell.staleEl) cell.staleEl.hidden = !isStale(cell);
+  renderCellRunLine(cell);
 }
 
 /* Builds the "⋯" menu beside a Python cell's Run button, holding "Run
  * above" and "Run below" (DECISIONS_LOG.md 7.106). These didn't get their
- * own always-visible buttons: `.dm-cell-actions` had its Python/Text
- * buttons removed as duplicates only recently (7.102), and two more icons
- * on every cell would cut straight back against that thinning. A menu
- * keeps the row the same width whether or not a reader ever opens it, at
- * the cost of one extra click to reach either option.
+ * own always-visible buttons: the footer bar already carries Run and
+ * Clear output, and two more icons on every cell would crowd a row that
+ * already earns its keep. A menu keeps the row the same width whether or
+ * not a reader ever opens it, at the cost of one extra click to reach
+ * either option.
  *
  * The open/close handling here mirrors armDeleteButton() above: a
  * document-level outside-click listener is added only while the menu is
@@ -781,11 +809,12 @@ function createRunMoreMenu(cell) {
     if (menu.hidden) openMenu(); else closeMenu();
   });
 
-  const addItem = (label, title, onRun) => {
+  const addItem = (label, title, which, onRun) => {
     const item = document.createElement("button");
     item.type = "button";
     item.className = "dm-cell-run-menu-item";
     item.setAttribute("role", "menuitem");
+    item.dataset.runMenu = which;
     item.title = title;
     item.textContent = label;
     item.addEventListener("click", (e) => {
@@ -795,11 +824,116 @@ function createRunMoreMenu(cell) {
     });
     menu.appendChild(item);
   };
-  addItem("Run above", "Run every cell from the top through this one, from a clean namespace", () => runAbove(cell.id));
-  addItem("Run below", "Run this cell and every cell after it, keeping what earlier cells defined", () => runBelow(cell.id));
+  addItem("Run this cell and all above", "Run every cell from the top through this one, from a clean namespace", "above", () => runAbove(cell.id));
+  addItem("Run this cell and all below", "Run this cell and every cell after it, keeping what earlier cells defined", "below", () => runBelow(cell.id));
 
   wrap.append(moreBtn, menu);
   return wrap;
+}
+
+// -------------------------------------------------------------- run line
+//
+// A Python cell's run-line (planning/CELL_IDENTITY.md §3) — one line,
+// below the code, folding together whether it has run this session, in
+// what order, how long it took, and whether it's stale, rather than the
+// three separate signals (a stale badge, a duration line, no order at
+// all) dewmini shipped first. A cell that never runs against the shared
+// session — text — never gets one; `cell.runLineEl` is simply never set
+// for it, and every function below already guards on that.
+
+/* "1st", "2nd", "3rd", "4th", … — the ordinal a run-line reports. */
+function formatOrdinal(n) {
+  const rem100 = n % 100;
+  if (rem100 >= 11 && rem100 <= 13) return `${n}th`;
+  switch (n % 10) {
+    case 1: return `${n}st`;
+    case 2: return `${n}nd`;
+    case 3: return `${n}rd`;
+    default: return `${n}th`;
+  }
+}
+
+/* Paints a cell's run-line from its stored state — cell.ranOrder (unset
+ * until its first run this session), cell.lastRunMs, and isStale(cell).
+ * Also the one place a live ticker gets cancelled: whatever this paints
+ * is the truth, so anything still counting up on a stale timer has to
+ * stop the moment a real state gets painted over it. */
+function renderCellRunLine(cell) {
+  const el = cell.runLineEl;
+  if (!el) return;
+  clearRunLineTicker(cell);
+  el.classList.remove("dm-cell-runline-queued");
+
+  if (cell.ranOrder == null) {
+    el.textContent = "Not yet run this session";
+    el.classList.add("dm-cell-runline-notrun");
+    el.classList.remove("dm-cell-runline-stale");
+    return;
+  }
+  el.classList.remove("dm-cell-runline-notrun");
+
+  const showDuration = document.documentElement.getAttribute("data-dm-runstats") !== "off"
+    && typeof cell.lastRunMs === "number";
+  let html = `<span class="dm-run-order">Ran ${formatOrdinal(cell.ranOrder)}</span>`;
+  if (showDuration) html += `<span class="dm-run-duration"> in ${formatRunDuration(cell.lastRunMs)}</span>`;
+  const stale = isStale(cell);
+  if (stale) html += '<span class="dm-run-flag"> — edited since</span>';
+  el.classList.toggle("dm-cell-runline-stale", stale);
+  el.innerHTML = html;
+}
+
+/* Every cell forgets when (and whether) it last ran — called wherever the
+ * interpreter itself gets thrown away or the namespace gets cleared and
+ * re-seeded (restartPython(), and runCellBatch() below whenever it's
+ * asked to reset first): from that point on, nothing has run yet, in the
+ * one sense that actually matters to a reader — this session, against
+ * the namespace currently backing the page. */
+function resetRunSequence() {
+  runSequenceCounter = 0;
+  for (const cell of cells) {
+    delete cell.ranOrder;
+    delete cell.ranContent;
+    delete cell.lastRunMs;
+    renderCellRunLine(cell);
+  }
+}
+
+/* Starts (or restarts) a live "Running… Xs" display on a cell's run-line
+ * for as long as it's actually executing — a plain setTimeout loop, not
+ * an aria-live region: announcing a number changing ten times a second
+ * would be noise, not news, to a screen reader. */
+function startRunLineTicker(cell) {
+  clearRunLineTicker(cell);
+  const el = cell.runLineEl;
+  if (!el) return;
+  el.classList.remove("dm-cell-runline-notrun", "dm-cell-runline-stale", "dm-cell-runline-queued");
+  el.classList.add("dm-cell-runline-active");
+  const startedAt = performance.now();
+  const tick = () => {
+    el.textContent = `Running… ${formatRunDuration(performance.now() - startedAt)}`;
+    cell._runTicker = setTimeout(tick, 100);
+  };
+  tick();
+}
+
+function clearRunLineTicker(cell) {
+  if (cell._runTicker) {
+    clearTimeout(cell._runTicker);
+    delete cell._runTicker;
+  }
+  cell.runLineEl?.classList.remove("dm-cell-runline-active");
+}
+
+/* Marks a cell as next in line during a batch run (runCellBatch() below)
+ * — only ever the one cell right after whichever is currently running,
+ * updated as the batch moves along, not the whole remaining list at
+ * once. */
+function setRunLineQueued(cell) {
+  if (!cell.runLineEl) return;
+  clearRunLineTicker(cell);
+  cell.runLineEl.classList.remove("dm-cell-runline-notrun", "dm-cell-runline-stale");
+  cell.runLineEl.classList.add("dm-cell-runline-queued");
+  cell.runLineEl.textContent = "Running next";
 }
 
 /* Builds one cell's entire DOM tree from a plain `cell` data object —
@@ -823,74 +957,52 @@ function createCellElement(cell) {
   const main = document.createElement("div");
   main.className = "dm-cell-main";
 
+  // ------------------------------------------------------------- header
+  //
+  // Identity pill (numbered, coloured by type) on the left; Edit (text
+  // only), Duplicate, and Delete on the right (planning/CELL_IDENTITY.md
+  // §2, §4). Nothing about running a cell lives here any more — that
+  // moved to the footer bar below, next to the code (§5).
+
   const head = document.createElement("div");
   head.className = "dm-cell-head";
-  head.draggable = true;
   head.dataset.id = cell.id;
 
+  const cellNumber = cells.indexOf(cell) + 1;
   const pill = document.createElement("span");
   pill.className = "dm-cell-pill";
-  pill.textContent = cell.type === CELL_TYPES.PYTHON ? "Python" : "Text";
-
-  // A muted word rather than a loud one on purpose (DECISIONS_LOG.md
-  // 7.105): the output below is still real output, just no longer
-  // guaranteed to match the code sitting above it. Only a Python cell
-  // gets one — built for every cell type so `cell.staleEl` always exists
-  // for updateCellChrome() to find, but left permanently hidden on a text
-  // cell, which has no "ran this code" concept to go stale against.
-  const staleBadge = document.createElement("span");
-  staleBadge.className = "dm-cell-stale-badge";
-  staleBadge.textContent = "Edited since last run";
-  staleBadge.hidden = !isStale(cell);
-  cell.staleEl = staleBadge;
+  // The pill itself is the drag target, not just the dots inside it — it
+  // already shows exactly what would be picked up ("Cell 3, Python"), so
+  // there's no reason the hit target should be smaller than the label.
+  pill.draggable = true;
+  pill.title = "Click, hold, and drag — or tap and hold, then drag — to move this cell.";
+  pill.innerHTML =
+    '<span class="dm-cell-pill-dots" aria-hidden="true">&#8942;</span>' +
+    `<span class="dm-cell-pill-num">Cell ${cellNumber}</span>` +
+    `<span class="dm-cell-pill-type" data-type="${cell.type}">${cell.type === CELL_TYPES.PYTHON ? "Python" : "Text"}</span>`;
 
   const spacer = document.createElement("span");
   spacer.className = "dm-cell-spacer";
 
-  const actions = document.createElement("div");
-  actions.className = "dm-cell-actions";
+  const headerEnd = document.createElement("div");
+  headerEnd.className = "dm-cell-header-end";
 
   // Filled in by the text-cell branch below, since attaching an image
   // needs the textarea/showEditor closures that only exist there. The
-  // button itself lives in the head, built here alongside Run/Delete so
-  // all three sit in one row regardless of which branch runs.
+  // button itself is built here so it sits in the header row with the
+  // rest of headerEnd regardless of where the text-cell branch runs.
   let insertDocImage = null;
-  // Same reasoning, for the explicit Edit/View button a text cell's
-  // header gets below: clicking a rendered note to get back to editing
-  // it works with a mouse, but has no equivalent affordance on a touch
-  // device, which has no hover to reveal that the note is clickable at
-  // all. Its label is kept in sync by showEditor()/showRendered().
+  // Same reasoning, for the Edit/View toggle a text cell's header gets:
+  // clicking a rendered note to get back to editing it works with a
+  // mouse, but has no equivalent affordance on a touch device, which has
+  // no hover to reveal that the note is clickable at all. Its label is
+  // kept in sync by showEditor()/showRendered().
   let previewBtn = null;
-
-  if (cell.type === CELL_TYPES.PYTHON) {
-    const runBtn = document.createElement("button");
-    runBtn.type = "button";
-    runBtn.className = "dm-icon-btn dm-icon-run";
-    runBtn.title = "Run this cell (Shift+Enter)";
-    runBtn.textContent = "▶";
-    runBtn.addEventListener("click", (e) => { e.stopPropagation(); runCell(cell.id); });
-    actions.appendChild(runBtn);
-    cell.runBtn = runBtn;
-
-    // Clears this cell's own output without touching its code — the
-    // non-destructive counterpart to Delete.
-    const resetOutputBtn = document.createElement("button");
-    resetOutputBtn.type = "button";
-    resetOutputBtn.className = "dm-icon-btn dm-icon-reset-output";
-    resetOutputBtn.title = "Clear this cell's output";
-    resetOutputBtn.textContent = "↺";
-    resetOutputBtn.addEventListener("click", (e) => { e.stopPropagation(); resetCellOutput(cell.id); });
-    actions.appendChild(resetOutputBtn);
-
-    actions.appendChild(createRunMoreMenu(cell));
-  } else {
-    // Filled in below, once showEditor()/showRendered() exist to call —
-    // built here so it sits in the header row with the other buttons
-    // regardless of where in this function the text-cell branch runs.
+  if (cell.type === CELL_TYPES.TEXT) {
     previewBtn = document.createElement("button");
     previewBtn.type = "button";
     previewBtn.className = "dm-icon-btn dm-icon-preview";
-    actions.appendChild(previewBtn);
+    headerEnd.appendChild(previewBtn);
 
     const imgBtn = document.createElement("button");
     imgBtn.type = "button";
@@ -898,8 +1010,16 @@ function createCellElement(cell) {
     imgBtn.title = "Attach an image from your device";
     imgBtn.innerHTML = '<span class="dm-tool-icon dm-tool-icon-image" aria-hidden="true"></span>';
     imgBtn.addEventListener("click", (e) => { e.stopPropagation(); insertDocImage?.(); });
-    actions.appendChild(imgBtn);
+    headerEnd.appendChild(imgBtn);
   }
+
+  const dupBtn = document.createElement("button");
+  dupBtn.type = "button";
+  dupBtn.className = "dm-icon-btn dm-icon-duplicate";
+  dupBtn.title = "Duplicate this cell";
+  dupBtn.textContent = "⧉";
+  dupBtn.addEventListener("click", (e) => { e.stopPropagation(); duplicateCell(cell.id); });
+  headerEnd.appendChild(dupBtn);
 
   // Arm-then-confirm rather than a native confirm() dialog: a dialog
   // stops the whole page and needs a mouse trip to its own button,
@@ -910,17 +1030,63 @@ function createCellElement(cell) {
   delBtn.title = "Delete this cell";
   delBtn.textContent = "×";
   delBtn.addEventListener("click", (e) => { e.stopPropagation(); armDeleteButton(delBtn, () => deleteCell(cell.id)); });
-  actions.appendChild(delBtn);
+  headerEnd.appendChild(delBtn);
 
-  head.append(pill, staleBadge, spacer, actions);
+  head.append(pill, spacer, headerEnd);
 
-  const content = document.createElement("div");
-  content.className = "dm-cell-content";
+  // -------------------------------------------------------------- body
+  //
+  // A collapse triangle beside the editable content — every cell type
+  // gets one now, code and text alike: there's nothing type-specific
+  // about wanting a long cell out of the way without deleting it. The
+  // triangle's own box top-aligns with the first line beside it because
+  // both are children of the same flex row (bodyRow), not because either
+  // was nudged into place with a margin.
+
+  const bodyRow = document.createElement("div");
+  bodyRow.className = "dm-cell-body-row";
+
+  const collapseCol = document.createElement("div");
+  collapseCol.className = "dm-cell-collapse-col";
+  const collapseBtn = document.createElement("button");
+  collapseBtn.type = "button";
+  collapseBtn.className = "dm-collapse-toggle";
+  // One chevron, rotated by CSS rather than swapped between two glyphs —
+  // a filled triangle here reads too much like the Run button's own ▶
+  // once the two sit close together in the same corner of the cell.
+  collapseBtn.innerHTML = '<span class="dm-collapse-caret" aria-hidden="true">&#8250;</span>';
+  collapseCol.appendChild(collapseBtn);
+
+  const contentRegion = document.createElement("div");
+  contentRegion.className = "dm-cell-content";
+
+  const collapsedSummary = document.createElement("div");
+  collapsedSummary.className = "dm-cell-collapsed-summary";
+  collapsedSummary.tabIndex = 0;
+  collapsedSummary.addEventListener("click", () => setCollapsed(false));
+  collapsedSummary.addEventListener("keydown", (e) => { if (e.key === "Enter") setCollapsed(false); });
+
+  function setCollapsed(collapsed) {
+    cell.collapsed = collapsed;
+    contentRegion.hidden = collapsed;
+    collapsedSummary.hidden = !collapsed;
+    collapseBtn.setAttribute("aria-expanded", String(!collapsed));
+    collapseBtn.title = collapsed ? "Expand this cell" : "Collapse this cell";
+    collapseBtn.classList.toggle("dm-collapse-toggle-collapsed", collapsed);
+    if (collapsed) {
+      const firstLine = (cell.content.split("\n")[0] || "").trim();
+      collapsedSummary.textContent = firstLine || "(empty)";
+    }
+    saveState();
+  }
+  collapseBtn.addEventListener("click", (e) => { e.stopPropagation(); setCollapsed(!cell.collapsed); });
+
+  bodyRow.append(collapseCol, contentRegion, collapsedSummary);
 
   if (cell.type === CELL_TYPES.PYTHON) {
     const editorEl = document.createElement("div");
     editorEl.className = "dm-editor";
-    content.appendChild(editorEl);
+    contentRegion.appendChild(editorEl);
 
     const editor = createCodeEditor(editorEl, cell.content, {
       dark: isDarkNow(),
@@ -1021,12 +1187,60 @@ function createCellElement(cell) {
     });
     renderEl.addEventListener("keydown", (e) => { if (e.key === "Enter") showEditor(); });
 
-    content.append(textarea, renderEl);
+    contentRegion.append(textarea, renderEl);
     cell.textarea = textarea;
     cell.showTextEditor = showEditor;
 
     if (cell.content.trim()) showRendered();
     else syncPreviewBtn();
+  }
+
+  setCollapsed(!!cell.collapsed);
+
+  // ------------------------------------------------------------ footer
+  //
+  // Run, clear-output, the "⋯" run-above/below menu, and the run-line —
+  // Python only, since these are the only cells that run against the
+  // shared session. Sits between the code and the output, at the
+  // bottom-left of the cell: a reader's cursor is at the bottom of what
+  // they just wrote, not back up at the top, so that's where the next
+  // action should be waiting.
+
+  let footbar = null;
+  if (cell.type === CELL_TYPES.PYTHON) {
+    footbar = document.createElement("div");
+    footbar.className = "dm-cell-footbar";
+
+    const runBtn = document.createElement("button");
+    runBtn.type = "button";
+    runBtn.className = "dm-icon-btn dm-icon-run";
+    runBtn.title = "Run this cell (Shift+Enter)";
+    runBtn.textContent = "▶";
+    runBtn.addEventListener("click", (e) => { e.stopPropagation(); runCell(cell.id); });
+    footbar.appendChild(runBtn);
+    cell.runBtn = runBtn;
+
+    // Clears this cell's own output without touching its code — the
+    // non-destructive counterpart to Delete.
+    const resetOutputBtn = document.createElement("button");
+    resetOutputBtn.type = "button";
+    resetOutputBtn.className = "dm-icon-btn dm-icon-reset-output";
+    resetOutputBtn.title = "Clear this cell's output";
+    resetOutputBtn.textContent = "↺";
+    resetOutputBtn.addEventListener("click", (e) => { e.stopPropagation(); resetCellOutput(cell.id); });
+    footbar.appendChild(resetOutputBtn);
+
+    footbar.appendChild(createRunMoreMenu(cell));
+
+    const footSpacer = document.createElement("span");
+    footSpacer.className = "dm-cell-spacer";
+    footbar.appendChild(footSpacer);
+
+    const runLineEl = document.createElement("div");
+    runLineEl.className = "dm-cell-runline";
+    footbar.appendChild(runLineEl);
+    cell.runLineEl = runLineEl;
+    renderCellRunLine(cell);
   }
 
   const outputEl = document.createElement("div");
@@ -1035,15 +1249,9 @@ function createCellElement(cell) {
   else outputEl.classList.add("dm-empty");
   cell.outputEl = outputEl;
 
-  // Run time, under the output — see renderCellRunStats() below. Empty
-  // (nothing to show, or the Settings toggle is off) collapses to
-  // nothing via :empty, same as .dm-cell-output itself.
-  const statsEl = document.createElement("div");
-  statsEl.className = "dm-cell-stats";
-  cell.statsEl = statsEl;
-  if (cell.type === CELL_TYPES.PYTHON) renderCellRunStats(cell);
-
-  main.append(head, content, outputEl, statsEl);
+  main.append(head, bodyRow);
+  if (footbar) main.appendChild(footbar);
+  main.appendChild(outputEl);
   wrap.append(rail, main);
   return wrap;
 }
@@ -1142,14 +1350,15 @@ async function executeCell(cell) {
   if (!outputEl) return true;
   outputEl.classList.remove("dm-empty");
   const startedAt = performance.now();
-  // Captured before the run, not after: the whole point of the stale
-  // badge is "does this output belong to what the cell says right now",
-  // so this has to be the content that was actually handed to Python,
-  // even in the unusual case where an editor kept accepting keystrokes
-  // while a slow cell was still running.
+  // Captured before the run, not after: the whole point of the run-line's
+  // "edited since" flag is "does this output belong to what the cell says
+  // right now", so this has to be the content that was actually handed to
+  // Python, even in the unusual case where an editor kept accepting
+  // keystrokes while a slow cell was still running.
   cell.ranContent = cell.content;
   const { ok } = await engine.runCell(cell.id, cell.content);
-  setCellRunStats(cell, performance.now() - startedAt);
+  cell.lastRunMs = performance.now() - startedAt;
+  cell.ranOrder = ++runSequenceCounter;
   cell.output = outputEl.innerHTML;
   cell.error = !ok;
   if (!outputEl.innerHTML.trim()) outputEl.classList.add("dm-empty");
@@ -1175,28 +1384,10 @@ function formatRunDuration(ms) {
   return ms < 1000 ? `${Math.round(ms)} ms` : `${(ms / 1000).toFixed(1)} s`;
 }
 
-/* Records and (when the "Run time" setting is on) displays how long a
- * cell's most recent run took. Always kept on the cell object — cheap to
- * compute, and worth saving even while the setting is off, in case a
- * reader turns it on later without re-running everything. */
-function setCellRunStats(cell, ms) {
-  cell.lastRunMs = ms;
-  renderCellRunStats(cell);
-}
-
-/* Paints (or clears) one cell's stats line from its stored lastRunMs. */
-function renderCellRunStats(cell) {
-  if (!cell.statsEl) return;
-  const showStats = document.documentElement.getAttribute("data-dm-runstats") !== "off";
-  cell.statsEl.textContent = (showStats && typeof cell.lastRunMs === "number")
-    ? `Ran in ${formatRunDuration(cell.lastRunMs)}`
-    : "";
-}
-
-/* Clears one cell's output (and its run-time stat) without touching its
- * code — the non-destructive counterpart to deleting the cell outright.
- * A no-op while something is running, since clearing mid-run would fight
- * the output the running cell is actively writing. */
+/* Clears one cell's output (and its run-line) without touching its code —
+ * the non-destructive counterpart to deleting the cell outright. A no-op
+ * while something is running, since clearing mid-run would fight the
+ * output the running cell is actively writing. */
 function resetCellOutput(id) {
   const cell = cells.find((c) => c.id === id);
   if (!cell || cell.type !== CELL_TYPES.PYTHON || running) return;
@@ -1209,7 +1400,7 @@ function resetCellOutput(id) {
   cell.error = false;
   delete cell.lastRunMs;
   delete cell.ranContent;
-  renderCellRunStats(cell);
+  delete cell.ranOrder;
   updateCellChrome(id);
   saveState();
 }
@@ -1280,6 +1471,7 @@ async function runCell(id) {
     // showing the *non-stoppable* "…" busy state even in worker mode.
     await ensurePyodide();
     setRunButtonRunning(cell.runBtn);
+    startRunLineTicker(cell);
     const ok = await executeCell(cell);
     updateStatus(ok ? "Ran." : "Error — see the cell.", ok ? "ok" : "error");
   } catch (err) {
@@ -1288,6 +1480,7 @@ async function runCell(id) {
     running = false;
     runningCellId = null;
     resetRunButton(cell.runBtn);
+    clearRunLineTicker(cell);
   }
 }
 
@@ -1319,13 +1512,22 @@ async function runCellBatch(pythonCells, { reset, emptyMessage, describe }) {
 
   try {
     await ensurePyodide();
-    if (reset) await engine.resetPageState();
+    if (reset) {
+      await engine.resetPageState();
+      resetRunSequence();
+    }
     updateStatus(describe(pythonCells.length));
+    // Only ever the one cell right after whichever is about to run, kept
+    // current as the batch moves along below — not the whole remaining
+    // list marked "next" at once.
+    if (pythonCells[1]) setRunLineQueued(pythonCells[1]);
 
     let errors = 0;
-    for (const cell of pythonCells) {
+    for (let i = 0; i < pythonCells.length; i++) {
+      const cell = pythonCells[i];
       runningCellId = cell.id;
       setRunButtonRunning(cell.runBtn);
+      startRunLineTicker(cell);
       /* try/finally per cell: if a
        * run rejects rather than returning false — which is exactly what
        * restarting Python mid-batch now does, since restart() rejects what
@@ -1336,7 +1538,10 @@ async function runCellBatch(pythonCells, { reset, emptyMessage, describe }) {
         if (!ok) errors += 1;
       } finally {
         resetRunButton(cell.runBtn);
+        clearRunLineTicker(cell);
       }
+      const next = pythonCells[i + 1];
+      if (next) setRunLineQueued(next);
     }
     updateStatus(
       errors ? `Done — ${errors} cell${errors === 1 ? "" : "s"} errored.` : "All cells ran cleanly.",
@@ -2626,6 +2831,7 @@ function updateExecutionStatus() {
 async function restartPython() {
   engine.restart();
   dfs.reset();
+  resetRunSequence();
   updateStatus("Restarting Python…");
   updateExecutionStatus();
   updateStorageStatus();
@@ -3321,9 +3527,11 @@ function initPracticeOrderSettings() {
 }
 
 /* Wires up the Settings → Run time "on / off" switch — applied as a
- * data-dm-runstats attribute on <html> (read by renderCellRunStats()),
+ * data-dm-runstats attribute on <html> (read by renderCellRunLine()),
  * re-painted on every already-rendered cell immediately on toggle, not
- * just future runs. */
+ * just future runs. Only the duration half of the run-line is gated by
+ * this — order and staleness are core identity, not a "nice to know",
+ * and stay visible either way. */
 const RUN_STATS_KEY = "dewmini:show-run-stats";
 
 function initRunStatsSetting() {
@@ -3332,7 +3540,7 @@ function initRunStatsSetting() {
 
   const apply = () => {
     document.documentElement.setAttribute("data-dm-runstats", show ? "on" : "off");
-    cells.forEach(renderCellRunStats);
+    cells.forEach(renderCellRunLine);
   };
   apply();
 

@@ -452,23 +452,25 @@ def test_a_dataset_writes_the_code_to_load_it(dewmini):
 # ----------------------------------------------------------------- running
 
 
-def test_editing_a_run_cell_shows_the_stale_badge(dewmini):
-    """DECISIONS_LOG.md 7.105 — the badge appears the moment a run cell's
-    code changes, and disappears the moment it runs again."""
+def test_editing_a_run_cell_shows_the_stale_flag_on_the_run_line(dewmini):
+    """DECISIONS_LOG.md 7.105 / planning/CELL_IDENTITY.md §3 — the run-
+    line's "edited since" flag appears the moment a run cell's code
+    changes, and disappears the moment it runs again."""
     add_python_cell(dewmini, "6 * 7")  # a bare expression, so it actually prints something
     dewmini.locator(".dm-cell .dm-icon-run").first.click()
     dewmini.wait_for_selector(".dm-cell-output:not(.dm-empty)", timeout=90_000)
-    assert dewmini.locator(".dm-cell-stale-badge").first.is_hidden(), "nothing to be stale about yet"
+    assert "edited since" not in dewmini.locator(".dm-cell-runline").first.inner_text(), \
+        "nothing to be stale about yet"
 
     editor = dewmini.locator(".dm-cell-python .cm-content").first
     editor.click()
     dewmini.keyboard.press("End")
     dewmini.keyboard.insert_text(" + 1")
-    assert dewmini.locator(".dm-cell-stale-badge").first.is_visible()
+    assert "edited since" in dewmini.locator(".dm-cell-runline").first.inner_text()
 
     dewmini.locator(".dm-cell .dm-icon-run").first.click()
     dewmini.wait_for_function(
-        "document.querySelector('.dm-cell-stale-badge').hidden === true"
+        "!document.querySelector('.dm-cell-runline').textContent.includes('edited since')"
     )
 
 
@@ -482,7 +484,7 @@ def test_run_above_resets_the_namespace_first(dewmini):
     def run_above_on_second_cell():
         cell = dewmini.locator(".dm-cell").nth(1)
         cell.locator(".dm-icon-more").click()
-        cell.locator(".dm-cell-run-menu-item", has_text="Run above").click()
+        cell.locator('.dm-cell-run-menu-item[data-run-menu="above"]').click()
         dewmini.wait_for_function(
             "document.querySelectorAll('.dm-cell')[1]"
             ".querySelector('.dm-cell-output').innerText.trim().length > 0",
@@ -512,7 +514,7 @@ def test_run_below_keeps_what_came_before_it(dewmini):
 
     second_cell = dewmini.locator(".dm-cell").nth(1)
     second_cell.locator(".dm-icon-more").click()
-    second_cell.locator(".dm-cell-run-menu-item", has_text="Run below").click()
+    second_cell.locator('.dm-cell-run-menu-item[data-run-menu="below"]').click()
     dewmini.wait_for_function(
         "document.querySelectorAll('.dm-cell')[1]"
         ".querySelector('.dm-cell-output').innerText.trim().length > 0",
@@ -622,7 +624,7 @@ def add_text_cell(page, prose: str) -> None:
     happens presses on one element and releases over another, and is
     lost. Leaving the cell deliberately, and waiting for the collapse,
     keeps the tests below measuring what they mean to measure. (The same
-    shift is visible to a reader; see DECISIONS_LOG.md 7.110.)
+    shift is visible to a reader; see DECISIONS_LOG.md 7.113.)
     """
     page.locator(".dm-insert-btn", has_text="Text").last.click()
     box = page.locator(".dm-cell-text textarea").last
@@ -710,7 +712,7 @@ def test_a_plain_script_imports_as_one_python_cell(dewmini, tmp_path):
 
 
 def test_an_exported_file_uses_the_percent_format(dewmini, tmp_path):
-    """DECISIONS_LOG.md 7.110 — the markers are the ones other editors
+    """DECISIONS_LOG.md 7.112 — the markers are the ones other editors
     read, not ones dewmini invented for itself.
 
     Asserted on the file's bytes rather than only through the round trip:
