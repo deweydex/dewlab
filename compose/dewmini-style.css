@@ -377,6 +377,28 @@ html[data-dl-panel-right] .dm-page .dl-crumbs {
 .dm-cell:hover .dm-cell-header-end,
 .dm-cell:focus-within .dm-cell-header-end { opacity: 1; }
 
+/* A text cell renders by default and is meant to be read, not run
+ * (planning/CELL_IDENTITY.md §4, DECISIONS_LOG.md 7.115) — its pill,
+ * Duplicate/Delete/Edit, and collapse triangle stay invisible until a
+ * reader actually touches the cell, so a rendered note reads like part
+ * of the page rather than sitting open and code-shaped among cells that
+ * are. `opacity: 0; pointer-events: none`, never `display: none`: the
+ * elements stay in the tab order, so a keyboard user tabbing onto one
+ * reveals it via :focus-within the same moment it receives focus — only
+ * a mouse user needs to hover the cell first. A touch device has no
+ * hover to reveal anything with, so it gets the chrome on unconditionally. */
+.dm-cell-text .dm-cell-head,
+.dm-cell-text .dm-cell-collapse-col { transition: opacity 0.1s ease; }
+.dm-cell-text:not(:hover):not(:focus-within) .dm-cell-head,
+.dm-cell-text:not(:hover):not(:focus-within) .dm-cell-collapse-col {
+  opacity: 0;
+  pointer-events: none;
+}
+@media (hover: none) {
+  .dm-cell-text .dm-cell-head,
+  .dm-cell-text .dm-cell-collapse-col { opacity: 1; pointer-events: auto; }
+}
+
 .dm-icon-btn {
   display: inline-flex;
   align-items: center;

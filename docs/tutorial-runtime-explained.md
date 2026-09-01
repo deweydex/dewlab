@@ -293,6 +293,16 @@ cell even if a reader has since added their own cells further down the
 same chain. Custom cells got a Duplicate button too, `type` carried
 through so a text cell's own copy stays text.
 
+A rendered custom text cell goes quiet until touched (`.dl-cell-text`,
+`assets/tutorial-style.css`, DECISIONS_LOG.md 7.115): its `.dl-cell-bar`
+and `.dl-cell-collapse-col` sit at `opacity: 0; pointer-events: none`
+until a reader hovers or focuses the cell, so a rendered note reads like
+part of the page rather than a code widget sitting open among cells that
+are meant to be run. Pure CSS, ported from `compose/dewmini-style.css`'s
+own `.dm-cell-text` rule — `:focus-within` already covers "actively
+editing" (focusing the textarea puts the whole cell in that state), so
+no JS class-toggling was needed on either side.
+
 ---
 
 ## Two patterns worth understanding on their own

@@ -24,13 +24,19 @@
   --dl-link: var(--dl-orange);
 
   /* A cell type's colour, layered onto its label rather than standing in
-     for it — planning/CELL_IDENTITY.md §2. References --dl-orange/--dl-
-     muted rather than fixed hex, so both already track the theme and the
-     texture panel's own choices for free; only a genuinely new hue (SQL,
-     HTML, CSS, JavaScript, once those cell types are real) needs a literal
-     value of its own, added here when it's built. */
+     for it — planning/CELL_IDENTITY.md §2/§8. Python/Text reference
+     --dl-orange/--dl-muted, so both already track the theme and the
+     texture panel's own choices for free. SQL/HTML/CSS/JavaScript needed
+     literal hues of their own instead — light-legible values here,
+     redefined for dark below the same way --dl-error-fg/--dl-pass-fg
+     already are, since a colour picked for the light cell background is
+     not automatically legible against the dark one. */
   --dl-type-python: var(--dl-orange);
   --dl-type-text: var(--dl-muted);
+  --dl-type-sql: #0d7a72;
+  --dl-type-html: #7c3aed;
+  --dl-type-css: #2563eb;
+  --dl-type-js: #b8228f;
 
   /* Light palette. The dark block below redefines only these. */
   --dl-bg: #fdfcfa;
@@ -74,6 +80,10 @@
   --dl-pass-bg: #16261d;
   --dl-panel-bg: #1b2129;
   --dl-shadow: rgba(0, 0, 0, 0.5);
+  --dl-type-sql: #5eead4;
+  --dl-type-html: #c4b5fd;
+  --dl-type-css: #93c5fd;
+  --dl-type-js: #f0a8db;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -92,6 +102,10 @@
     --dl-pass-bg: #16261d;
     --dl-panel-bg: #1b2129;
     --dl-shadow: rgba(0, 0, 0, 0.5);
+    --dl-type-sql: #5eead4;
+    --dl-type-html: #c4b5fd;
+    --dl-type-css: #93c5fd;
+    --dl-type-js: #f0a8db;
   }
 }
 
@@ -604,6 +618,29 @@ p code, li code {
  * no output, just a textarea that turns into rendered text on blur. Same
  * click-to-edit/blur-to-render shape as compose/dewmini.js's own text
  * cells (.dm-textarea/.dm-doc-render), ported here rather than reinvented. */
+
+/* Rendered, it reads like part of the page, not a code widget — its bar
+ * (the "your own note" label, view/duplicate/share/delete) and its
+ * collapse triangle stay invisible until a reader actually touches the
+ * cell (planning/CELL_IDENTITY.md §4, DECISIONS_LOG.md 7.115, ported
+ * from compose/dewmini-style.css's own .dm-cell-text rule).
+ * `opacity: 0; pointer-events: none`, never `display: none`, so the
+ * controls stay in the tab order — a keyboard user tabbing onto one
+ * reveals it via :focus-within the moment it receives focus, and only a
+ * mouse user needs to hover the cell first. A touch device has no hover
+ * to reveal anything with, so it gets the chrome on unconditionally. */
+.dl-cell-text .dl-cell-bar,
+.dl-cell-text .dl-cell-collapse-col { transition: opacity 0.1s ease; }
+.dl-cell-text:not(:hover):not(:focus-within) .dl-cell-bar,
+.dl-cell-text:not(:hover):not(:focus-within) .dl-cell-collapse-col {
+  opacity: 0;
+  pointer-events: none;
+}
+@media (hover: none) {
+  .dl-cell-text .dl-cell-bar,
+  .dl-cell-text .dl-cell-collapse-col { opacity: 1; pointer-events: auto; }
+}
+
 .dl-doc-editor {
   display: block;
   width: 100%;

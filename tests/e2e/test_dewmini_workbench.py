@@ -571,6 +571,66 @@ def test_maths_survives_a_dollar_sign_that_is_not_maths(dewmini):
     assert rendered.locator(".dl-math").count() == 0
 
 
+# -------------------------------------------------------- quiet until touched
+
+
+def _quiet_text_cell(page):
+    """Adds a text cell, gives it content, and blurs it so it renders —
+    the same setup test_a_text_cell_renders_maths uses."""
+    page.locator(".dm-insert-btn", has_text="Text").last.click()
+    textarea = page.locator(".dm-textarea").last
+    textarea.click()
+    page.keyboard.insert_text("A note for the reader.")
+    textarea.evaluate("el => el.blur()")
+    return page.locator(".dm-cell-text").last
+
+
+def head_opacity(page, cell) -> str:
+    """The cell's .dm-cell-head opacity, after its 0.1s CSS transition has
+    had time to settle — reading it immediately after a hover/mouse-move
+    can still catch it mid-animation."""
+    page.wait_for_timeout(150)
+    return cell.locator(".dm-cell-head").evaluate("el => getComputedStyle(el).opacity")
+
+
+def test_a_rendered_text_cells_chrome_is_invisible_until_touched(dewmini):
+    """DECISIONS_LOG.md 7.115, planning/CELL_IDENTITY.md §4 — a rendered
+    text cell reads like part of the page, not a code widget, until a
+    reader actually touches it."""
+    cell = _quiet_text_cell(dewmini)
+    dewmini.mouse.move(5, 5)  # away from the cell entirely
+    assert head_opacity(dewmini, cell) == "0"
+
+
+def test_hovering_the_cell_reveals_its_chrome(dewmini):
+    cell = _quiet_text_cell(dewmini)
+    dewmini.mouse.move(5, 5)
+    assert head_opacity(dewmini, cell) == "0"
+
+    cell.hover()
+    assert head_opacity(dewmini, cell) == "1"
+
+
+def test_tabbing_onto_a_hidden_control_reveals_it_too(dewmini):
+    """opacity/pointer-events, not display:none (planning/CELL_IDENTITY.md
+    §4) — a keyboard user never needs to hover first."""
+    cell = _quiet_text_cell(dewmini)
+    dewmini.mouse.move(5, 5)
+    assert head_opacity(dewmini, cell) == "0"
+
+    cell.locator(".dm-icon-delete").focus()
+    assert head_opacity(dewmini, cell) == "1"
+
+
+def test_a_python_cells_chrome_is_never_hidden(dewmini):
+    """Quiet-until-touched is a text-cell-only affordance — a Python cell
+    is meant to be worked on, not read past."""
+    add_python_cell(dewmini, "1 + 1")
+    dewmini.mouse.move(5, 5)
+    cell = dewmini.locator(".dm-cell-python").last
+    assert head_opacity(dewmini, cell) == "1"
+
+
 # ---------------------------------------------------------------- variables
 
 

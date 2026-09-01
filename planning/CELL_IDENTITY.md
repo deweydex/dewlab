@@ -137,15 +137,19 @@ Not every cell needs every affordance, and giving one to a cell that
 can't use it is worse than simply leaving it off — it invites a reader
 to wonder what it does. Four things vary by type:
 
-| | Python | SQL | HTML | CSS | Text |
-|---|---|---|---|---|---|
-| Numbered, coloured pill | yes | yes | yes | yes | yes |
-| Drag target | yes | yes | yes | yes | yes |
-| Header-end: Duplicate, Delete | yes | yes | yes | yes | yes |
-| Run line (order/duration/stale) | yes | yes | — | — | — |
-| Collapse triangle | yes | yes | — | yes | **yes** |
-| Edit / View toggle | — | — | yes | — | yes |
-| Quiet until touched | — | — | yes | — | yes |
+| | Python | SQL | HTML | CSS | JavaScript | Text |
+|---|---|---|---|---|---|---|
+| Numbered, coloured pill | yes | yes | yes | yes | yes | yes |
+| Drag target | yes | yes | yes | yes | yes | yes |
+| Header-end: Duplicate, Delete | yes | yes | yes | yes | yes | yes |
+| Run line (order/duration/stale) | yes | yes | — | — | yes | — |
+| Collapse triangle | yes | yes | **yes** | **yes** | yes | yes |
+| Edit / View toggle | — | — | yes | yes | — | yes |
+| Quiet until touched | — | — | yes | yes | — | yes |
+
+Collapse settled as "every type" once Text actually shipped it (§4's own
+amendment, just below); §8 settles the rest, including JavaScript, which
+this table never covered until it existed to design against.
 
 **Header-end** is Duplicate and Delete, on every cell, plus an Edit
 toggle for Text and HTML only — settled on while building 7.110, not
@@ -217,11 +221,14 @@ carrying the state rather than its shape.
   `runCellBatch()`/`runAbove()`/`runBelow()` (7.106), and
   `restartPython()` (7.108) turned out to be exactly the groundwork this
   needed, unchanged.
-- **SQL, HTML, CSS, JavaScript.** Still not real cell types anywhere —
-  this document's own multi-type table is a design for when they exist,
-  not a claim that they do. `--dl-type-python`/`--dl-type-text` are the
-  only colour tokens defined so far; a real type gets a literal hue added
-  alongside them when it's built, not before.
+- **SQL, HTML, CSS, JavaScript: designed in §8, being built from there
+  outward, in dewmini only, one type at a time (starting with HTML).**
+  This document's own multi-type table was a design for when they
+  exist, not a claim that they do — §8 is where "when they exist" turns
+  into an actual execution model per type, since the table alone only
+  ever answered *what chrome a cell gets*, never *what running one
+  does*. `--dl-type-python`/`--dl-type-text` were the only colour tokens
+  defined until §8 added four more.
 - **Tutorial and practice pages: the pill and the run line are now ported
   too (7.113).** 7.109 ported the run-line-adjacent pieces (staleness,
   run above/below, restart & run all) onto `build.py`'s
@@ -268,7 +275,143 @@ carrying the state rather than its shape.
   Custom cells got their own Duplicate too, inserting the copy right
   after the original the same way.
 
-  The same instinct that makes a Text cell go quiet until touched in
-  dewmini has not been carried over here yet — a tutorial's own
-  prose-like custom cells still look like every other cell around them
-  rather than fading their chrome away. Left for a later pass.
+- **Quiet until touched, built for the first time anywhere (7.115).**
+  This document described it from §2 onward, but it was never actually
+  built — not in dewmini, not here — until now. A rendered Text cell's
+  chrome (dewmini's `.dm-cell-head`/`.dm-cell-collapse-col`; a custom
+  text cell's own `.dl-cell-bar`/`.dl-cell-collapse-col`) stays
+  `opacity: 0; pointer-events: none` until a reader hovers or focuses
+  the cell, one CSS rule with no JavaScript on either side — a reader
+  focusing the textarea to edit already puts the cell in `:focus-within`,
+  which is exactly when the chrome should reappear. Authored cells and
+  custom python cells keep their chrome on always; only Text is quiet.
+
+## 8. SQL, HTML, CSS, JavaScript: what running one actually does
+
+§4's table answered what chrome each type gets. It never answered the
+harder question: what happens when a reader presses Run, or when a
+rendered cell first appears — because none of these types existed yet
+to test that question against. This section answers it, type by type,
+before any of it gets built. dewmini only, for now (see the closing note
+below) — building four cell types into two engines at once would be the
+same mistake 7.109 explicitly declined to make for Python.
+
+**Colour tokens.** Four new hues, alongside `--dl-type-python`/
+`--dl-type-text`, each defined for light and dark the same way
+`--dl-error-fg`/`--dl-pass-fg` already are rather than as a single fixed
+hex — a colour picked for legibility against the light cell background
+is not automatically legible against the dark one. SQL teal, HTML
+violet, CSS blue, JavaScript rose: four hues that read as distinct from
+each other, from Python's orange, and from error red/pass green, in
+either theme.
+
+### HTML
+
+Renders live, the way a Text cell renders Markdown — but raw HTML
+cannot share Text's `innerHTML`-into-the-page approach safely, because
+dewmini already has an import path (Settings → Load a shared cell/
+notebook) that can bring in a `<script>` a reader didn't write
+themselves. It renders inside a sandboxed `<iframe srcdoc="…">
+sandbox="allow-scripts">` instead — no `allow-same-origin`, so anything
+inside it, script included, cannot reach the rest of the page, this
+cell's own `localStorage`, or any other cell, regardless of who wrote
+it. The iframe gets a generous default height and `resize: vertical` so
+a reader can drag it taller for content that needs it, rather than the
+page reaching into a cross-origin frame to measure its content height
+(which the same sandboxing that keeps it safe also makes impossible
+without an explicit `postMessage` handshake — not worth the complexity
+for a first version).
+
+Chrome: pill, Duplicate/Delete, collapse, Edit/View, quiet until
+touched — the same full Text-shaped set §4's table already gives HTML,
+now that "once it exists" (§4's own hedge on HTML's collapse) is true.
+No run line: rendering isn't running against a session, and a cell that
+cannot go stale should not have a line implying it could.
+
+### CSS
+
+The obvious pairing — CSS styling an HTML cell right above it — was
+considered and set aside: it would make a CSS cell's behaviour depend on
+cell order and type in a way nothing else in dewmini's model does (a
+Python cell reads the *shared namespace*, never "whatever cell happens
+to sit above it"). Instead a CSS cell renders its own small, fixed
+preview — a heading, a paragraph, a button, a list, a link — inside the
+same kind of sandboxed iframe HTML uses, with the reader's CSS in a
+`<style>` tag ahead of that markup. Self-contained, live-updated as the
+reader types (debounced, the same rhythm autosave already uses), and
+exactly as functional as a standalone "try CSS" tool needs to be.
+
+Chrome: same as HTML — pill, Duplicate/Delete, collapse, Edit/View,
+quiet until touched, no run line. A CSS cell is read (the rule) and seen
+(the preview), never run against anything shared.
+
+### SQL
+
+The one type that genuinely runs, against a namespace as real as
+Python's own — `RUNS_AGAINST_SESSION` gains `sql` alongside `python`,
+and every piece of machinery that already exists for that reason
+(`runCellBatch()`, Run above/below, Restart & run all, the run-line's
+order/duration/staleness) applies to a SQL cell exactly as built,
+unmodified. The database itself is *sql.js* (SQLite compiled to
+WebAssembly) — the same category of choice Pyodide already made for
+Python, a real interpreter running entirely in the reader's own tab, no
+server. One shared, in-memory database for the whole notebook, created
+lazily on the first SQL cell's first run; `CREATE TABLE` in one cell and
+`SELECT` from it in a later one work exactly the way defining a variable
+in one Python cell and reading it in a later one already does. Restart
+Python (renamed, in spirit, to cover this) discards and recreates the
+database the same way it discards and recreates the Pyodide interpreter.
+
+Output: a `SELECT`'s rows render as an HTML table, reusing the exact
+markup and CSS `tutorial_tools.py`'s own `show_table()` already produces
+for a Python DataFrame, so a SQL result and a pandas result look like
+the same kind of thing on the page, because they are. A statement with
+no rows to return (`CREATE`/`INSERT`/`UPDATE`/`DELETE`) reports what it
+did in a short line — "3 rows inserted," "Table created" — the SQL
+equivalent of a Python statement that prints nothing.
+
+Chrome: the Python-shaped set — pill, Duplicate/Delete, collapse, run
+line. No Edit/View toggle, no quiet-until-touched: like Python, a SQL
+cell is meant to be worked on, not read past.
+
+### JavaScript
+
+Also a real, shared session, on the same reasoning as SQL — closer in
+kind to Python than to HTML/CSS's read-only rendering, so
+`RUNS_AGAINST_SESSION` gains `javascript` too. The session lives in one
+persistent sandboxed iframe for the whole notebook (`sandbox=
+"allow-scripts"`, no `allow-same-origin`, the same isolation HTML's
+preview uses), created lazily on first run and torn down and recreated
+on Restart Python exactly like the Pyodide interpreter is. Each cell's
+code is posted into that iframe and evaluated there, so a `var`/
+function/`const` declared in one cell is still there for a later one to
+read, the same persistent-namespace feel Python's own session already
+has. `console.log`, its arguments serialised the way `tutorial_tools.py`
+already serialises a Python `print()`'s, and a thrown error, both
+`postMessage` back to the parent as this cell's output — the same
+"emit as you go" shape `run_cell()`'s own `emit` callback already uses
+for Python, just crossing a `postMessage` boundary instead of a Pyodide
+one.
+
+Chrome: the Python-shaped set, same as SQL — pill, Duplicate/Delete,
+collapse, run line, no Edit/View, no quiet-until-touched.
+
+### Build order, and what stays out of scope for now
+
+HTML first — no new runtime dependency, and the sandboxed-iframe
+pattern CSS and JavaScript both reuse gets proven once, on the simplest
+case. CSS next, since it shares that same pattern almost entirely. SQL
+and JavaScript both need a genuinely new execution engine (*sql.js*; the
+persistent sandboxed session) and come after, in whichever order the
+work actually lands.
+
+Not attempted here, on purpose: none of the four get a drag-and-drop
+keyboard equivalent (§6 already flags this as owed to every cell type,
+not something new these four add to); SQL and JavaScript get no
+autocomplete or hover-doc the way Python's Jedi-backed tooling does —
+real, but a second project once the execution model itself is proven;
+and tutorial/practice pages get none of this in this pass — §7's own
+"dewmini only" scoping decisions for the pill/run-line/collapse/
+Duplicate work apply here for the same reason: these are genuinely new
+engines, not a port of something dewmini already proved, and the
+tutorial runtime has never needed anything but Python.

@@ -34,10 +34,14 @@ live session survives a reload, so neither should any claim about one.
 actually lives now — the numbered, coloured identity pill, the merged
 run-line (order, duration, staleness, and the live "Running…"/"Running
 next" states), the collapse triangle (every cell type, not only
-code-bearing ones — an amendment past that document's own §4), and the
-header-end group (Edit for text, Duplicate, Delete). Not yet ported:
-tutorial and practice pages still show the plainer, four-feature slice
-from 7.109, not this full anatomy.
+code-bearing ones — an amendment past that document's own §4), the
+header-end group (Edit for text, Duplicate, Delete), and a text cell's
+chrome going quiet — `opacity: 0; pointer-events: none` on
+`.dm-cell-head`/`.dm-cell-collapse-col` — until a reader hovers or
+focuses the cell (DECISIONS_LOG.md 7.115). Tutorial and practice pages
+carry this same anatomy now too (7.113–7.115), by way of `build.py`'s
+`render_cell()` and `assets/tutorial-runtime.js` rather than this file —
+see `docs/tutorial-runtime-explained.md` for that side.
 
 ### …and `cells` belongs to a notebook
 

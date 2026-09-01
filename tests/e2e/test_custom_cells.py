@@ -175,6 +175,27 @@ class TestAddingACustomCell:
         assert "<h4>Heading</h4>" in rendered
         assert "<strong>bold</strong>" in rendered
 
+    def test_a_rendered_text_cells_chrome_is_invisible_until_touched(self, clean_storage):
+        """DECISIONS_LOG.md 7.115, planning/CELL_IDENTITY.md §4 — a rendered
+        text cell reads like part of the page, not a code widget, until a
+        reader actually touches it. Ported from compose/dewmini-style.css's
+        own .dm-cell-text rule."""
+        page = clean_storage
+        add_via_trailing_divider(page, "Text")
+        page.wait_for_selector(".dl-cell-text", timeout=5_000)
+        page.fill(".dl-cell-text .dl-doc-editor", "A note for the reader.")
+        page.locator(".dl-cell-text .dl-doc-editor").blur()
+        page.wait_for_selector(".dl-cell-text .dl-doc-render:not([hidden])", timeout=5_000)
+
+        page.mouse.move(5, 5)
+        page.wait_for_timeout(150)  # let the 0.1s opacity transition settle
+        bar = page.locator(".dl-cell-text .dl-cell-bar")
+        assert bar.evaluate("el => getComputedStyle(el).opacity") == "0"
+
+        page.hover(".dl-cell-text")
+        page.wait_for_timeout(150)
+        assert bar.evaluate("el => getComputedStyle(el).opacity") == "1"
+
     def test_the_view_edit_button_toggles_while_the_textarea_is_still_focused(self, clean_storage):
         """A click on the button, not a blur-then-click, is the case worth
         covering: clicking straight out of the textarea (rather than

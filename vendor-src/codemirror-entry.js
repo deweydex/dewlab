@@ -15,6 +15,10 @@ import { EditorView, ViewPlugin, keymap, lineNumbers, highlightActiveLine,
 import { EditorState, Compartment, StateField, StateEffect } from "@codemirror/state";
 import { defaultKeymap, history, historyKeymap, indentWithTab } from "@codemirror/commands";
 import { python, localCompletionSource, globalCompletion } from "@codemirror/lang-python";
+import { html } from "@codemirror/lang-html";
+import { css } from "@codemirror/lang-css";
+import { javascript } from "@codemirror/lang-javascript";
+import { sql } from "@codemirror/lang-sql";
 import { syntaxHighlighting, defaultHighlightStyle, indentOnInput,
          bracketMatching, indentUnit } from "@codemirror/language";
 import { search, searchKeymap, highlightSelectionMatches } from "@codemirror/search";
@@ -341,12 +345,30 @@ function pythonSignatureHelp(getSignature) {
   return [signatureTooltipField, plugin];
 }
 
+/* One extension per non-Python language dewlab's cells can hold
+ * (planning/CELL_IDENTITY.md §8) — each package supplies its own
+ * completion source via CodeMirror's language-data mechanism, so a
+ * plain autocompletion() with no override is enough to get tag/
+ * attribute completion for HTML, property completion for CSS, and so
+ * on, the same "free, built-in" deal Python's own syntax highlighting
+ * already is. Python keeps its own richer setup (Jedi-backed hover and
+ * signature help, a live namespace to complete names from) below,
+ * since those genuinely need this file's own machinery, not just the
+ * language package. */
+const OTHER_LANGUAGES = {
+  html: () => [html(), autocompletion()],
+  css: () => [css(), autocompletion()],
+  javascript: () => [javascript(), autocompletion()],
+  sql: () => [sql(), autocompletion()],
+};
+
 export function createCodeEditor(
   parent, doc,
   { dark = false, onChange = null, completeNames = null, getDoc = null,
-    getSignature = null, getJediCompletions = null } = {}
+    getSignature = null, getJediCompletions = null, language = "python" } = {}
 ) {
   const themeCompartment = new Compartment();
+  const isPython = language === "python";
 
   const extensions = [
     lineNumbers(),
@@ -360,11 +382,10 @@ export function createCodeEditor(
     indentOnInput(),
     bracketMatching(),
     closeBrackets(),
-    pythonCompletion(completeNames, getJediCompletions),
-    pythonDocTooltip(getDoc),
-    pythonSignatureHelp(getSignature),
-    indentUnit.of("    "),
-    python(),
+    ...(isPython
+      ? [pythonCompletion(completeNames, getJediCompletions), pythonDocTooltip(getDoc),
+         pythonSignatureHelp(getSignature), indentUnit.of("    "), python()]
+      : OTHER_LANGUAGES[language]()),
     /* Find and replace (Ctrl/Cmd+F), and a highlight on every other
      * occurrence of whatever is selected. CodeMirror has always supported
      * both; dewmini had never wired them up, which stops mattering the

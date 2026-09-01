@@ -5016,3 +5016,42 @@ change: any new way to mutate `cell.collapsed` needs an immediate save
 call alongside it, not the debounced one — that mistake is easy to
 reintroduce by copying the pattern every other cell mutation in this
 file already follows.*
+
+**7.115 — A text cell's chrome finally goes quiet until touched, in
+dewmini and on tutorial and practice pages both.** `planning/CELL_IDENTITY.md`
+§4 described this from the start — a Text cell renders by default and
+hides its own chrome until a reader deliberately touches it, `opacity: 0;
+pointer-events: none` rather than `display: none` so a keyboard user
+tabbing onto a hidden control still reveals it. 7.110's own text ("built
+this way in dewmini") and 7.114's ("the same instinct... has not been
+carried over here") both said or implied dewmini already had this. It
+never did — no `.dm-cell-text`-specific rule of any kind existed in
+`compose/dewmini-style.css` before this entry, checked directly rather
+than assumed. The design was real; the claim that it shipped wasn't.
+Built now, in both places it was claimed for.
+
+**One rule, no JavaScript, on either side.** `.dm-cell-text:not(:hover):not(:focus-within)`
+fades `.dm-cell-head` and `.dm-cell-collapse-col` to `opacity: 0` (the
+tutorial side does the same to `.dl-cell-bar`/`.dl-cell-collapse-col`,
+its own equivalents); a plain `@media (hover: none)` keeps the chrome on
+for a touch device, which has no hover to reveal anything with. No JS
+class-toggling needed: a reader focusing the textarea to edit already
+makes the whole cell match `:focus-within`, which is exactly when the
+chrome should be back. `:not(:hover):not(:focus-within)` on the cell
+covers hovering the rendered text itself too, not only the chrome —
+reasonable, since a reader's cursor being anywhere in the cell is itself
+a sign they're paying it attention.
+
+**Deliberately not changed: the interaction that opens a Text cell for
+editing.** The design doc's original mockup describes "a click to reveal
+the chrome, a double-click to edit" — but the version that actually
+shipped, in both dewmini and tutorial pages, has always used a single
+click on the rendered view to start editing directly, with an explicit
+Edit/View toggle as the keyboard- and touch-accessible alternative. That
+behaviour is established, tested, and outside what was asked here; this
+entry only fixes the chrome's own visibility, not the click semantics
+the mockup separately described.
+
+*Cost to change: trivial. Pure CSS on both sides, no new class, no new
+JS state — a future cell type that also wants this only needs its own
+selector added to the same rule.*
