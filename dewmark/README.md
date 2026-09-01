@@ -77,12 +77,13 @@ decisions that are not yet made. The order of building is in
 ## What already exists
 
 Working drafts of the exam builder, the exam page, and the marking
-workbench are in this folder, together with three sample papers: one
+workbench are in this folder, together with five sample papers: one
 that mixes eight written question types, a full mathematics paper with
-"answer any N" sections and a formula sheet, and a database practical
-made of Python code questions. The drafts cover every question type in
-the catalogue, and two browser rehearsal scripts sit the exams and
-mark them end to end; [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md)
+"answer any N" sections and a formula sheet, a database practical made
+of Python code questions, a biology paper of explanatory questions,
+and an essay paper marked with criteria grids. The drafts cover every
+question type in the catalogue, and two browser rehearsal scripts sit
+the exams and mark them end to end; [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md)
 lists exactly where the drafts still fall short of the design
 documents.
 [`docs/FOR_TEACHERS.md`](docs/FOR_TEACHERS.md) walks a teacher through
