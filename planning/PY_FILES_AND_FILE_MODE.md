@@ -10,7 +10,9 @@ in what order the work could be done. It also settles a related question that
 comes up as soon as files are involved: whether the tutorials themselves
 should be written as Python files rather than as markdown documents.
 
-Nothing described here has been built.
+None of the changes described here has been built. One defect the document
+found along the way, in how dewmini saves work, has been fixed separately;
+Part 4 says where.
 
 ---
 
@@ -232,60 +234,166 @@ offers to upload a file or delete one. It has no way to open a file for
 editing, create a new one, or rename one. Those three additions are most of
 the work.
 
-The panel could sit on either side of the screen. `DEWMINI_WORKBENCH.md` §2
-established that the right-hand panel holds a student's own work and the
-left-hand panel holds things they consult, which puts files on the right. Most
-code editors put a file tree on the left. Keeping it on the right is the
-smaller change and is consistent with the existing arrangement, and the tabs
-already provide a way to move between open files, so a tree is only worth
-adding once there are folders or a large number of files. Whoever teaches with
-dewmini should make this call after watching students use it.
+**The file manager belongs on the left**, and this decision changes what each
+side of the screen is for.
+
+`DEWMINI_WORKBENCH.md` §2 divided the two panels by ownership: the right-hand
+panel held a student's own work and the left-hand panel held things they
+consulted. That division put files on the right and the variable list on the
+right, and put the reference glossary on the left.
+
+The division that replaces it is by subject. **The left-hand panel describes
+the project the student is working on: where they are in it, what files it
+contains, and what values its code has produced. The right-hand panel holds
+what is outside the project: reference material and settings.** So the left
+holds the table of contents, the file manager and the variable list, and the
+right holds the glossary and the settings.
+
+Three things recommend this arrangement. Nearly every code editor a student
+will meet afterwards puts a file tree on the left, so the habit transfers.
+Files and the table of contents answer the same question — what is in this
+piece of work — and belong beside each other rather than on opposite sides.
+And the variable list is read while looking at the code that produced it,
+which makes it part of the project rather than a thing consulted about it.
+
+The cost is that the variable list and the glossary each move to the other
+side, which invalidates the parts of `DEWMINI_WORKBENCH.md` §2 and of the
+existing browser tests that name a panel's side. The move is worth doing as
+part of building the file manager rather than on its own, because on its own
+it rearranges the screen without adding anything a student can use.
 
 ---
 
-## Part 4: Where notebooks are stored
+## Part 4: Where notebooks are stored, and in what format
 
-This part can be deferred, but the decision affects how Part 3 should be
-built, so it should be made knowingly rather than by default.
+**Notebooks become files in the workspace.** This part sets out what that
+means and which file format to use.
 
 At present a notebook is a block of JSON text in `localStorage`, and the
 workspace is a separate filesystem. A notebook is therefore not a file, and
 the list of notebooks and the list of files are two different lists of two
 different kinds of thing.
 
-An alternative is to store each notebook as a percent-format Python file in
-the workspace. The consequences are substantial. The file manager and the tab
-strip would show the same items. Switching to the file view would require no
-conversion, because the notebook would already be a file. Importing one
-notebook from another would work without further changes, because they would
-be ordinary Python files in a directory Python can import from. A student's
-work would be a folder of Python files they could hand to anyone.
+Storing each notebook as a file in the workspace has substantial consequences.
+The file manager and the tab strip show the same items. Switching to the file
+view requires no conversion. A student's work becomes a folder of files they
+can hand to anyone. The two lists become one list.
 
-Two things stand in the way.
+### Terms this part needs
 
-The first is that a Python file has nowhere to record the output a cell
-produced. dewmini currently saves outputs with the cells and restores them
-when the page reloads. Storing notebooks as files would mean either keeping
-outputs in a second file alongside each notebook, or accepting that they are
-lost. Losing a student's outputs would make dewmini worse than it is now, so
-this has to be settled first.
+**nbformat** is the published specification for the Jupyter notebook file
+format, whose files use the extension `.ipynb`. A file in this format is a
+JSON document holding a list of cells. Each code cell stores both its source
+and the output that source last produced.
 
-The second is reliability. Of the three storage backends the filesystem can
-use, one of them, IDBFS, only writes to permanent storage when it is
-explicitly told to. A notebook lost because that step did not happen would be
-a more serious failure than any problem this change solves.
+A **MIME type** is a short label naming what kind of data something is, such
+as `text/plain` for ordinary text, `text/html` for HTML, or `image/png` for a
+PNG image. nbformat uses these labels to say what an output is.
 
-### A defect in the current storage worth fixing regardless
+**Metadata**, in nbformat, is an object attached to a notebook or to a single
+cell in which a tool may store information the specification itself does not
+describe.
 
-`saveState()` writes every notebook, every cell and every saved output into
+### Which format to use
+
+Three formats are possible.
+
+**A Python file in percent format.** Part 1 recommends this format, and it is
+the right format for a file that is a program. It has no place to record the
+output a cell produced. Adding one would destroy the property that makes it
+valuable, which is that the file is an ordinary Python file that any editor
+opens and Python runs unchanged. A notebook stored this way loses its outputs.
+
+**A Jupyter notebook file.** Outputs have a defined place in it. Jupyter,
+JupyterLab, Google Colab, Visual Studio Code and GitHub's file viewer all read
+it. dewlab already writes it, reads it, and ships four worked examples in it
+under `assets/examples/`.
+
+**A format designed for dewlab.** It would fit dewmini exactly and nothing
+else.
+
+**Use the Jupyter notebook format.** A format designed here can be read only
+by software written here, so a student who wanted to hand a notebook to a
+teacher, open it on a university machine or put it in a repository would find
+that nothing else opened it. dewlab would also have to write and maintain a
+reader, a writer and a set of round-trip tests for a format offering nothing
+the published one does not.
+
+The useful part of the third option is the wish to store things nbformat does
+not describe: how long a cell took to run, whether its output is older than
+its code, the name shown on its tab. nbformat already provides for this. Every
+notebook and every cell carries a metadata object, and the specification
+requires a tool to preserve metadata keys it does not recognise rather than
+discard them. dewmini can therefore keep its own information under a `dewmini`
+key inside that object, and the file remains a valid Jupyter notebook that
+other programs open normally. A format that is ours and also compatible with
+an existing one is exactly what nbformat's metadata already offers, so there
+is nothing left for a new format to do.
+
+### Both formats stay, doing different jobs
+
+A `.ipynb` file is a notebook: cells, and the outputs they produced. A `.py`
+file in percent format is a program: code that another file can import, with
+no outputs in it. A student writing a module they will import writes a `.py`
+file. A student keeping a piece of work together with its results keeps a
+`.ipynb` file.
+
+Saving a notebook as a `.py` file remains available and remains useful, and
+dewmini should say in one line, at the moment it writes the file, that the
+outputs are not in it. The message belongs there rather than in a dialogue
+box asking for confirmation, because the student has not made a mistake and
+does not need to be stopped.
+
+### What storing outputs actually requires
+
+dewmini keeps a cell's output as HTML — the value of `outputEl.innerHTML` at
+the moment the cell finished. nbformat does not store HTML by default. It
+stores a list of output objects, each of a stated kind: `stream` for text a
+cell printed, `error` for an exception with its traceback, and `display_data`
+or `execute_result` for a value, carried as a set of alternative
+representations labelled by MIME type.
+
+Writing dewmini's HTML into a `text/html` representation is valid and Jupyter
+displays it. It gives a poor result in one case: a figure that Jupyter would
+have stored as a PNG arrives instead as HTML containing a base64 image, which
+other tools show but cannot treat as an image. A translation in each direction
+avoids this, and is the actual work this decision creates.
+
+Writing a file: text a cell printed becomes a `stream` output. An output that
+is a single `<img src="data:image/png;base64,…">` becomes an `image/png`
+representation. Anything else becomes `text/html`.
+
+Reading a file: an `image/png` becomes an `<img>` element. A `text/html` is
+used as it stands. A `stream` or a `text/plain` becomes escaped text inside a
+`<pre>`. An `error` becomes the error display dewmini already has.
+
+The reading direction fixes an existing defect. `parseIpynbCells()` sets every
+imported cell's output to the empty string, and `downloadAsIpynb()` writes
+`outputs: []` for every code cell. A student who imports a notebook today
+loses every result it arrived with, and is told nothing about it.
+
+### The reliability question this raises
+
+Of the three storage backends the workspace filesystem can use, one of them,
+IDBFS, writes to permanent storage only when it is explicitly told to. A
+notebook lost because that step did not happen would be a worse failure than
+any problem this change solves. Before notebooks move out of `localStorage`,
+the check recorded in `tests/MANUAL_CHECKLIST.md` — that a file written to the
+workspace survives a reload on each backend — has to pass on a real machine.
+
+### The defect in the current storage, now fixed
+
+`saveState()` wrote every notebook, every cell and every saved output into
 `localStorage` as a single block of JSON, inside a `try` with an empty
 `catch`. Browsers limit `localStorage` to roughly five megabytes. A student
-whose notebooks contain a few images or a large table can exceed that limit, at
-which point the write fails, the failure is discarded without being reported,
-and the student's work stops being saved with nothing on screen to indicate it.
+whose notebooks held a few figures exceeded that limit, the write failed, the
+failure was discarded without being reported, and the student's work stopped
+being saved with nothing on screen to indicate it.
 
-This is a defect in code that is already running, independent of anything else
-in this document.
+This was a defect in code already running, independent of anything else in
+this document. It is fixed: the save now gives up cell outputs, largest first,
+until what remains fits, and shows a standing notice saying which outputs it
+could not keep. `DECISIONS_LOG.md` 7.109 records the reasoning.
 
 ---
 
@@ -353,26 +461,33 @@ Each step below is useful on its own, so the work can stop after any of them.
 |---|---|---|
 | 1 | Adopt the percent format for exported and imported Python files | Half a day |
 | 2 | Add the workspace to `sys.path` and handle module caching | One day |
-| 3 | Add the file view and extend the Files panel into a file manager | One to two weeks |
-| 4 | Let a tutorial carry a `workspace` folder | Small |
-| 5 | Write the tutorials that use it | Content work |
+| 3 | Carry cell outputs through the `.ipynb` reader and writer | Two to three days |
+| 4 | Add the file view and extend the Files panel into a file manager, moving the panels to the sides Part 3 settles | One to two weeks |
+| 5 | Let a tutorial carry a `workspace` folder, opened automatically | Small |
+| 6 | Write the tutorials that use it | Content work |
 
 Step 1 comes first because it is small, independent, and every later step
 writes files in that format. Step 2 follows because it is the smallest change
 that lets a student do the thing they currently cannot, and it does not require
 any new interface.
 
-Step 4 does not depend on the others and can be done at any point.
+Step 3 is worth doing before step 4 and is worth doing even if step 4 never
+happens. It fixes the existing defect that an imported notebook silently loses
+every result it arrived with, and it is the piece Part 4's decision depends
+on: notebooks cannot become files until the file can hold what a cell
+produced.
 
-Step 3 is much larger than the rest, and most of its cost is not the visible
+Step 5 does not depend on the others and can be done at any point.
+
+Step 4 is much larger than the rest, and most of its cost is not the visible
 interface. It is that a tab currently holds a notebook, and would have to hold
 either a notebook or a file. Anything reading or writing a tab's contents would
 be affected. Before starting, someone should write down what a tab holds. If
 that is described as a document with storage behind an interface, rather than
-as JSON in `localStorage`, then the change described in Part 4 later becomes a
-change in one place instead of everywhere.
+as JSON in `localStorage`, then the change described in Part 4 becomes a change
+in one place instead of everywhere.
 
-Step 5 should follow the database module's learning outcomes being written,
+Step 6 should follow the database module's learning outcomes being written,
 since those determine what the tutorials need to demonstrate.
 
 ### Code that can be deleted
@@ -386,26 +501,49 @@ anything.
 
 ---
 
-## Part 7: Decisions still open
+## Part 7: What has been decided, and what has not
 
-**Where do cell outputs live if a notebook becomes a file?** They could be
-kept in a second file stored beside each notebook, or they could be discarded
-when the page reloads. This question determines whether the change described
-in Part 4 is possible at all, and it should be answered before Step 3 is
-designed.
+### Decided
 
-**Should notebooks be stored as files at all?** Part 4 sets out what this
-would simplify and what it risks. It cannot be decided until the previous
-question has an answer.
+**Notebooks become files in the workspace**, stored in the Jupyter notebook
+format, with dewmini's own information kept under a `dewmini` key in
+nbformat's metadata. Cell outputs are stored in the file, which is what makes
+this possible at all. Part 4 gives the reasoning and the translation each
+direction requires.
 
-**Should the file manager be on the left or the right?** Part 3 gives the
-argument for each side. Whoever teaches with dewmini should decide this after
-watching students use it.
+**No new file format is invented.** nbformat's metadata already provides the
+room a dewlab-specific format would have been created to provide.
 
-**Should a tutorial's `workspace` folder open in dewmini automatically, or
-when the student asks for it?** Opening it automatically is easier for the
-student. Waiting until asked keeps the existing rule that nothing opens by
-itself on a first visit, described in `DEWMINI_WORKBENCH.md` §1.
+**Saving as a Python file stays**, without outputs, with one line said at the
+moment the file is written.
+
+**The file manager goes on the left**, with the table of contents and the
+variable list. The glossary and the settings go on the right. Part 3 states
+the division this rests on and what it costs: the left-hand panel is about the
+project the student is working on, the right-hand panel is about everything
+outside it.
+
+**A tutorial's `workspace` folder opens in dewmini automatically.** This is a
+deliberate exception to the rule in `DEWMINI_WORKBENCH.md` §1 that nothing
+opens by itself on a first visit. That rule exists so a student is not met
+with panels they did not ask for. A workspace folder is not a panel: it is the
+material the tutorial's own instructions refer to, and a student who has to
+find and open it before the first instruction makes sense has been given a
+task that teaches nothing.
+
+**The project view is designed after all of the above is in place**, not
+alongside it, because what a project view should show depends on what a
+project turns out to be.
+
+### Not decided
+
+**Whether the workspace filesystem is reliable enough to hold a student's
+notebooks.** Part 4 explains why this has to be answered before notebooks
+leave `localStorage`, and what test answers it.
+
+**What a tab holds.** Part 6 argues that this should be written down before
+the file view is built. It is a design question rather than an open choice,
+but nothing else in Part 6 is safe to start until someone has answered it.
 
 ---
 
@@ -416,3 +554,6 @@ tutorial files, 646 executable code blocks, 211 non-executable code blocks,
 *Names such as shapes.py refer to files a student would create. They are
 written without backticks because `dev/check_doc_links.py` treats a backticked
 filename as a claim that the file exists in this repository.*
+
+*Part 7 records decisions taken after the first draft. Parts 3, 4 and 6 were
+rewritten to match them.*

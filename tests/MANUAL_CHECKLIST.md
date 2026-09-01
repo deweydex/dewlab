@@ -148,6 +148,35 @@ offered a dataset that reliably fails.
 
 Last verified: never.
 
+### A workspace file survives a reload on every filesystem backend
+
+The check that decides whether dewmini's notebooks can safely stop living
+in `localStorage` and become files in the workspace
+(`planning/PY_FILES_AND_FILE_MODE.md` Part 4).
+
+`compose/dewmini-fs.js` chooses among three backends according to what
+the browser allows: a native folder handle the reader granted, OPFS, or
+IDBFS. The last of those keeps its files in memory and writes them to
+permanent storage only when it is explicitly told to, so a missed or
+failed sync loses the file with nothing said. This cannot be checked in
+the headless browser the e2e tests use, because that browser only ever
+reaches one of the three.
+
+For each backend in turn — a granted folder, then a browser session with
+no folder granted, then a browser with OPFS unavailable — open dewmini,
+write a file to the workspace from a cell, and reload the page.
+
+- [ ] the file is still listed in **Files** after the reload
+- [ ] reading it from Python returns what was written, not an older
+      version or an error
+- [ ] the same holds after closing the tab entirely and reopening it,
+      not only after a reload
+
+A failure on IDBFS specifically means notebooks must stay in
+`localStorage` until the sync is made reliable.
+
+Last verified: never.
+
 ### A phone
 
 At 375px wide, on a tutorial and a practice page:
