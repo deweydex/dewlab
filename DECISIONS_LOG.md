@@ -4884,3 +4884,135 @@ live in one list in `render_index()`. Going back to prose means deleting
 `.dl-intro-points` from the stylesheet and the exception note from both
 comments — do not leave either behind claiming a list that is not there.*
 
+**7.113 — The pill and the run line, ported onto tutorial and practice
+pages too.** 7.110 built the numbered pill and the merged run-line in
+dewmini and explicitly left tutorial/practice pages on 7.109's narrower
+slice. This carries both over: `build.py`'s `render_cell()` now renders
+a `.dl-cell-pill` (`Cell N`, a coloured "Python" type badge) and a single
+`.dl-cell-runline` span in place of the old bare `.dl-cell-id` text and
+the separate `.dl-cell-stats`/`.dl-cell-stale-badge` pair; the run-line
+machinery in `assets/tutorial-runtime.js` — `runSequenceCounter`,
+`renderCellRunLine()`, `resetRunSequence()`, the live ticker, "Running
+next" for a queued batch cell — is a close copy of dewmini's own, adapted
+the same way 7.109's staleness code already was: these cells ask their
+CodeMirror editor for its code directly rather than comparing against a
+mirrored `.content` field.
+
+**The pill's number is static, not live.** dewmini recomputes a cell's
+position on every drag, since its cells can be reordered. A tutorial
+page's authored cells can't be — `build.py` generates static HTML once,
+at build time — so `render_cell()` just takes the cell's fixed 1-based
+position as a `number` argument. No drag handle exists here for the same
+reason: there is nothing to pick up.
+
+**No new colour token, and no drag/collapse/Duplicate.** The pill's type
+badge always reads "Python", coloured with the `--dl-type-python` token
+7.110 already defined — every authored cell on a tutorial page is
+Python, so there was nothing new to colour. Custom cells (the reader's
+own, added on the page) were left out of this port entirely; they keep
+their old plain-text `.dl-cell-id` label and no run line, since they're
+a separate system from authored cells (`docs/tutorial-runtime-explained.md`)
+and the user's own request was scoped to "the pill and run-line design,"
+not the fuller anatomy 7.110 also built — collapse and Duplicate stay
+dewmini-only for now (7.114 closes that gap). One thing not left for
+later: there is no header→footer move to make here at all — `build.py`'s
+`render_cell()` had its `.dl-cell-bar` below the editor and output
+already, before dewmini had one; 7.110 was the side that needed to move
+to match this one, not the other way around.
+
+*Cost to change: small. Both files' run-line functions name what they
+were ported from, the same convention 7.109 established; the only real
+new surface is `render_cell()`'s `number` parameter, a single call-site
+change in `place_blocks()`.*
+
+**7.114 — Collapse and Duplicate, the rest of dewmini's cell anatomy,
+ported to tutorial and practice pages.** 7.113 carried over the pill and
+run-line and left collapse and Duplicate dewmini-only, since the user's
+request that time was scoped narrowly. Asked to keep going and bring
+these two the rest of the way, both landed — but Duplicate needed a real
+design decision first, not just a port, because of a difference between
+the two surfaces this document hadn't had to reckon with yet: every
+dewmini cell is the reader's own, so "duplicate" always meant "copy
+something I already own." An authored tutorial cell is the opposite —
+it's the tutorial's own fixed content, generated once by `build.py` and
+never the reader's to change. Two shapes were on the table: leave
+Duplicate off authored cells entirely (custom cells, the reader's own,
+would still get it), or have it mean something adjacent — a copy that
+*becomes* the reader's, dropped in as a new custom cell right after the
+original. Chose the second, on request: it keeps the button meaningful
+everywhere the pill and run-line already are, and it turns "try it
+yourself" into one click on a specific example rather than a scroll down
+to a generic "+Code" seam with nothing already in it.
+
+**Duplicate reuses an existing seam rather than building a new one, and
+lands right after the cell it copies — not at the end of whatever a
+reader has already added there.** `initCustomCellsSection()` already
+drops a "+Code / +Text" insertion point immediately after every real
+cell (and `mountCustomCellAfter()` gives every custom cell its own
+trailing one too) — built for "Try something of your own" placed
+anywhere on the page, long before this decision needed it.
+`duplicateAsCustomCell(cell, type)` calls the same `insertCustomCell()`
+those buttons call, with the originating cell's current code instead of
+an empty string. The first version found its insertion point via
+`lastDividerFor(cell.id)` — the same helper `addCustomCell()` uses for
+"append to the end of the trailing section" — but that finds the *last*
+divider under an anchor, so duplicating an authored cell a second time,
+after a reader had already added their own cell under the first
+duplicate, put the new copy after that reader cell instead of the
+tutorial's own. Switched to `cell.element.nextElementSibling`: every
+cell this file ever mounts gets its own trailing `.dl-insert` right
+there, permanently, so it's a stable handle on "immediately after this
+specific cell" regardless of what else has since been added further
+down the same chain — matching `planning/CELL_IDENTITY.md` §4's own
+wording ("Duplicate inserts a copy of the cell right after itself")
+precisely, where the divider-search version only approximated it.
+Custom cells got
+the button too, once the mechanism no longer specifically assumed
+"copying an authored cell" — `cell.type` travels through so a text
+cell's own Duplicate stays text. No new markup beyond one more button,
+no new mounting logic.
+
+**Collapse applies to every cell with editable content, authored or
+custom, python or text** — the same table `planning/CELL_IDENTITY.md`
+§4 already settled for dewmini, carried over rather than re-litigated.
+Unlike the pill/run-line's `renderCellRunLine()`/`resetRunSequence()`
+split, one function, `setCellCollapsed(cell, collapsed)`, now serves
+`cells` and `customCells` alike — dewmini's own `setCollapsed()` is a
+closure inside `createCellElement()`, one instance per cell, but this
+file builds authored and custom cells through two different functions
+(`buildCells()`, `mountCustomCellAfter()`) that needed to share the same
+behavior, so it reads `cell.collapseBtn`/`contentRegion`/
+`collapsedSummary` off whichever cell object it's given rather than
+closing over element references of its own.
+
+**A real bug caught by a test, not by inspection: collapse must save
+immediately, not on the debounced timer.** The first pass wired the
+collapse toggle through `scheduleSave()`/`scheduleCustomSave()` — the
+same debounced save every keystroke already goes through — and a new
+"collapse survives a reload" e2e test failed: reload beat the 500 ms
+timer to the punch, so the very state the test had just set was gone.
+dewmini's own `setCollapsed()` never had this problem because it calls
+`saveState()` directly, not a scheduled version — a toggle is one
+discrete click, not a burst of keystrokes worth coalescing, so nothing
+was gained by debouncing it here either. Fixed to call `saveNow()`/
+`saveCustomCells()` directly, matching dewmini.
+
+**Corrected while writing this: 7.113's own text overstated what was
+left.** It said the header→footer layout move stayed dewmini-only for
+tutorial pages, alongside collapse and Duplicate. That was never true —
+`build.py`'s `render_cell()` had `.dl-cell-bar` below the editor and
+output since before dewmini's own cell existed at all; 7.110 was the
+side that had to move to match this one. Fixed in 7.113's own entry
+along with `planning/CELL_IDENTITY.md` §7, since both were still on this
+same, not-yet-merged branch. (Renumbered from 7.111/7.112 to 7.113/7.114
+while merging main: 7.111/7.112 landed there first, for the
+plain-language pass, from a branch that split from the same point.)
+
+*Cost to change: small. `setCellCollapsed()` and `duplicateAsCustomCell()`
+are each one function, and Duplicate's whole implementation rides on
+insertion machinery `initCustomCellsSection()` already had to build for
+an unrelated reason. The one thing worth remembering for a future
+change: any new way to mutate `cell.collapsed` needs an immediate save
+call alongside it, not the debounced one — that mistake is easy to
+reintroduce by copying the pattern every other cell mutation in this
+file already follows.*

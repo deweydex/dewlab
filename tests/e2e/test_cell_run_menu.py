@@ -1,7 +1,7 @@
-"""Browser tests for the staleness badge, the "⋯" Run above/below menu, and
-Restart & run all — planning/CELL_IDENTITY.md, ported from dewmini.js's own
-already-shipped versions (DECISIONS_LOG.md 7.105, 7.106, 7.108) onto tutorial
-pages' `.dl-cell`.
+"""Browser tests for the merged run line (order, duration, staleness), the
+"⋯" Run above/below menu, and Restart & run all — planning/CELL_IDENTITY.md,
+ported from dewmini.js's own already-shipped versions (DECISIONS_LOG.md
+7.105, 7.106, 7.108, 7.113) onto tutorial pages' `.dl-cell`.
 
     python3 -m pytest tests/e2e/test_cell_run_menu.py -q
 """
@@ -21,13 +21,13 @@ def output_text(page, cell_id: str) -> str:
     )
 
 
-def stale_badge(page, cell_id: str):
-    return page.locator(f".dl-cell[data-cell-id='{cell_id}'] .dl-cell-stale-badge")
+def run_line(page, cell_id: str):
+    return page.locator(f".dl-cell[data-cell-id='{cell_id}'] .dl-cell-runline")
 
 
-def stats_text(page, cell_id: str) -> str:
+def run_line_text(page, cell_id: str) -> str:
     return page.eval_on_selector(
-        f".dl-cell[data-cell-id='{cell_id}'] .dl-cell-stats", "el => el.textContent"
+        f".dl-cell[data-cell-id='{cell_id}'] .dl-cell-runline", "el => el.textContent"
     )
 
 
@@ -41,13 +41,13 @@ def run_cell(page, cell_id: str):
 
 
 def wait_for_run_stats(page, cell_id: str, timeout: int = 20_000):
-    """Waits for a specific cell's own stats span to say it ran — a signal
+    """Waits for a specific cell's own run line to say it ran — a signal
     tied to that one cell, unlike the shared #dl-status line, which a
     later step of the same batch could already have overwritten by the
     time this gets to check it."""
     page.wait_for_function(
-        "sel => (document.querySelector(sel)?.textContent || '').startsWith('Ran in')",
-        arg=f".dl-cell[data-cell-id='{cell_id}'] .dl-cell-stats",
+        "sel => (document.querySelector(sel)?.textContent || '').startsWith('Ran ')",
+        arg=f".dl-cell[data-cell-id='{cell_id}'] .dl-cell-runline",
         timeout=timeout,
     )
 
@@ -64,21 +64,22 @@ def clean_storage(page):
     page.evaluate("localStorage.clear()")
 
 
-class TestStaleBadge:
-    def test_hidden_before_a_cell_has_ever_run(self, clean_storage):
+class TestRunLine:
+    def test_says_not_yet_run_before_a_cell_has_ever_run(self, clean_storage):
         page = clean_storage
-        assert stale_badge(page, "plain-python").is_hidden()
+        assert run_line_text(page, "plain-python") == "Not yet run this session"
 
     def test_appears_after_editing_a_cell_that_already_ran(self, clean_storage):
         page = clean_storage
         run_cell(page, "plain-python")
-        assert stale_badge(page, "plain-python").is_hidden()
-        assert stats_text(page, "plain-python").startswith("Ran in")
+        text = run_line_text(page, "plain-python")
+        assert text.startswith("Ran ")
+        assert "edited since" not in text
 
         page.click(".dl-cell[data-cell-id='plain-python'] .cm-content")
         page.keyboard.press("Control+End")
         page.keyboard.insert_text("\n# a harmless edit")
-        assert stale_badge(page, "plain-python").is_visible()
+        assert "edited since" in run_line_text(page, "plain-python")
 
     def test_clears_once_the_cell_is_run_again(self, clean_storage):
         page = clean_storage
@@ -86,10 +87,10 @@ class TestStaleBadge:
         page.click(".dl-cell[data-cell-id='plain-python'] .cm-content")
         page.keyboard.press("Control+End")
         page.keyboard.insert_text("\n# a harmless edit")
-        assert stale_badge(page, "plain-python").is_visible()
+        assert "edited since" in run_line_text(page, "plain-python")
 
         run_cell(page, "plain-python")
-        assert stale_badge(page, "plain-python").is_hidden()
+        assert "edited since" not in run_line_text(page, "plain-python")
 
     def test_reset_clears_it_along_with_the_output(self, clean_storage):
         page = clean_storage
@@ -97,11 +98,10 @@ class TestStaleBadge:
         page.click(".dl-cell[data-cell-id='plain-python'] .cm-content")
         page.keyboard.press("Control+End")
         page.keyboard.insert_text("\n# a harmless edit")
-        assert stale_badge(page, "plain-python").is_visible()
+        assert "edited since" in run_line_text(page, "plain-python")
 
         page.click(".dl-cell[data-cell-id='plain-python'] .dl-btn-reset")
-        assert stale_badge(page, "plain-python").is_hidden()
-        assert stats_text(page, "plain-python") == ""
+        assert run_line_text(page, "plain-python") == "Not yet run this session"
 
 
 class TestRunMenu:
@@ -115,7 +115,7 @@ class TestRunMenu:
         assert "mean:" in output_text(page, "numpy-basics")
         assert output_text(page, "pandas-table").strip() != ""
         # Nothing below the target ran — the whole point of "above".
-        assert stats_text(page, "matplotlib-figure") == ""
+        assert run_line_text(page, "matplotlib-figure") == "Not yet run this session"
 
     def test_run_below_keeps_earlier_state_and_does_not_reset_the_namespace(self, clean_storage):
         page = clean_storage
@@ -179,4 +179,4 @@ class TestRestartAndRunAll:
         wait_for_run_stats(page, "tools-widgets", timeout=60_000)
         assert "counting: 2" in output_text(page, "plain-python")
         assert "mean:" in output_text(page, "numpy-basics")
-        assert stats_text(page, "plain-python").startswith("Ran in")
+        assert run_line_text(page, "plain-python").startswith("Ran ")

@@ -1055,6 +1055,41 @@ const cells = [];
  * apart from `cells` above rather than merged into it. */
 const customCells = [];
 
+/* Collapses or expands one cell — an authored cell or a custom one,
+ * python or text — by hiding its editable content (`.dl-cell-content`)
+ * and showing a one-line summary in its place, or the reverse. Ported
+ * from dewmini's own setCollapsed() closure inside createCellElement()
+ * (DECISIONS_LOG.md 7.110/7.112, planning/CELL_IDENTITY.md §4): every
+ * cell type gets this, code and text alike, since there's nothing
+ * type-specific about wanting a long cell out of the way without
+ * deleting it. Unlike dewmini's version this is a standalone function
+ * rather than a per-cell closure, since it has to work the same way for
+ * both `cells` and `customCells` — it reads `cell.collapseBtn`/
+ * `contentRegion`/`collapsedSummary`, set once when each cell is built,
+ * rather than closing over element references of its own. Saving is the
+ * caller's job — saveNow() or saveCustomCells() directly, not the
+ * debounced scheduleSave()/scheduleCustomSave(), matching dewmini's own
+ * setCollapsed() (which calls saveState() the same way): a collapse
+ * toggle is one discrete click, not a burst of keystrokes worth
+ * coalescing, and debouncing it only risks losing the state to a reload
+ * that beats the timer. */
+function setCellCollapsed(cell, collapsed) {
+  cell.collapsed = collapsed;
+  if (cell.contentRegion) cell.contentRegion.hidden = collapsed;
+  if (cell.collapsedSummary) {
+    cell.collapsedSummary.hidden = !collapsed;
+    if (collapsed) {
+      const firstLine = (cell.getCode().split("\n")[0] || "").trim();
+      cell.collapsedSummary.textContent = firstLine || "(empty)";
+    }
+  }
+  if (cell.collapseBtn) {
+    cell.collapseBtn.setAttribute("aria-expanded", String(!collapsed));
+    cell.collapseBtn.title = collapsed ? "Expand this cell" : "Collapse this cell";
+    cell.collapseBtn.classList.toggle("dl-collapse-toggle-collapsed", collapsed);
+  }
+}
+
 /* Turns the manifest's plain-data cell descriptions into real, working
  * cells on the page: finds each cell's DOM elements (already present in
  * the HTML build.py generated — this doesn't create the cell's markup,
@@ -1078,29 +1113,35 @@ function buildCells(manifest) {
     const outputEl = host.querySelector(".dl-output");
     const runBtn = host.querySelector(".dl-btn-run");
     const resetBtn = host.querySelector(".dl-btn-reset");
-    const statsEl = host.querySelector(".dl-cell-stats");
-    const staleEl = host.querySelector(".dl-cell-stale-badge");
+    const runLineEl = host.querySelector(".dl-cell-runline");
+    const duplicateBtn = host.querySelector(".dl-btn-duplicate");
+    const collapseBtn = host.querySelector(".dl-collapse-toggle");
+    const contentRegion = host.querySelector(".dl-cell-content");
+    const collapsedSummary = host.querySelector(".dl-cell-collapsed-summary");
 
     const cell = {
       id: spec.id,
       starter: spec.code || "",
       outputEl,
       runBtn,
-      statsEl,
-      staleEl,
+      runLineEl,
+      collapseBtn,
+      contentRegion,
+      collapsedSummary,
       element: host,
       getCode: () => editor.getValue(),
     };
 
     const editor = createCodeEditor(editorHost, spec.code || "", {
       dark,
-      onChange: () => { scheduleSave(); updateCellStaleness(cell); },
+      onChange: () => { scheduleSave(); renderCellRunLine(cell); },
       completeNames: pageNamesCompletion,
       getDoc: hoverDoc,
       getSignature: signatureHelp,
     });
     cell.editor = editor;
     cells.push(cell);
+    renderCellRunLine(cell);
 
     runBtn.addEventListener("click", () => runCell(cell));
     if (resetBtn) {
@@ -1109,11 +1150,27 @@ function buildCells(manifest) {
         outputEl.replaceChildren();
         delete cell.lastRunMs;
         delete cell.ranContent;
-        renderCellRunStats(cell);
-        updateCellStaleness(cell);
+        delete cell.ranOrder;
+        renderCellRunLine(cell);
       });
     }
     initCellRunMenu(cell, host);
+
+    if (collapseBtn) {
+      collapseBtn.addEventListener("click", () => {
+        setCellCollapsed(cell, !cell.collapsed);
+        saveNow();
+      });
+    }
+    if (collapsedSummary) {
+      collapsedSummary.addEventListener("click", () => { setCellCollapsed(cell, false); saveNow(); });
+      collapsedSummary.addEventListener("keydown", (ev) => {
+        if (ev.key === "Enter") { setCellCollapsed(cell, false); saveNow(); }
+      });
+    }
+    if (duplicateBtn) {
+      duplicateBtn.addEventListener("click", () => duplicateAsCustomCell(cell, "python"));
+    }
 
     /* A cell's own hint, if it has one: a plain click toggle, not hover — see
      * the CSS comment on .dl-hint-icon for why. Opening it is a real state
@@ -1154,22 +1211,44 @@ function setRunnable(enabled, label) {
   }
 }
 
-/* ------------------------------------------------------- staleness, stats
+/* -------------------------------------------------------------- run line
  *
- * A cell's "edited since last run" badge and its "Ran in …" stats line —
- * ported from compose/dewmini.js's own isStale()/setCellRunStats()
- * (DECISIONS_LOG.md 7.105), adapted to this file's cells (no separate
- * `.content` field to compare against; the editor's own current value is
- * asked for directly). A custom cell has no `.statsEl`/`.staleEl` — its
- * bar was never given the spans build.py's render_cell() adds — so the
- * functions below are no-ops for one; `ranContent`/`lastRunMs` are still
- * tracked on it regardless, in case that changes later.
+ * A cell's run-line — order, duration, and staleness folded into one
+ * (planning/CELL_IDENTITY.md §3), ported from compose/dewmini.js's own
+ * version (DECISIONS_LOG.md 7.110), which itself replaced this file's
+ * own first-generation separate stats span and stale badge (7.105,
+ * 7.109). Adapted to this file's cells: no separate `.content` field to
+ * compare against for staleness, the editor's own current value is asked
+ * for directly. A custom cell has no `.runLineEl` — its bar was never
+ * given the span build.py's render_cell() adds for an authored cell —
+ * so the functions below are no-ops for one; `ranContent`/`lastRunMs`/
+ * `ranOrder` are still tracked on it regardless, in case that changes
+ * later.
  */
+
+/* How many cells on this page have actually run since the interpreter
+ * last started or was last reset from a clean namespace — the counter
+ * behind each cell's "Ran Nth". Reset to 0 by resetRunSequence(), never
+ * decremented otherwise: a cell that runs twice in the same session just
+ * gets a new, later ordinal each time. */
+let runSequenceCounter = 0;
 
 /* Formats how long a cell's last run took, human-scale rather than raw
  * milliseconds: "340 ms" under a second, "2.4 s" at or above it. */
 function formatRunDuration(ms) {
   return ms < 1000 ? `${Math.round(ms)} ms` : `${(ms / 1000).toFixed(1)} s`;
+}
+
+/* "1st", "2nd", "3rd", "4th", … — the ordinal a run-line reports. */
+function formatOrdinal(n) {
+  const rem100 = n % 100;
+  if (rem100 >= 11 && rem100 <= 13) return `${n}th`;
+  switch (n % 10) {
+    case 1: return `${n}st`;
+    case 2: return `${n}nd`;
+    case 3: return `${n}rd`;
+    default: return `${n}th`;
+  }
 }
 
 function readRunStats() {
@@ -1189,22 +1268,6 @@ function writeRunStats(mode) {
   }
 }
 
-/* Records how long a cell's most recent run took and repaints its stats
- * span from it. Always recorded, even while the "Run time" Settings
- * toggle is off, so turning it on later shows the last real run rather
- * than nothing. */
-function setCellRunStats(cell, ms) {
-  cell.lastRunMs = ms;
-  renderCellRunStats(cell);
-}
-
-function renderCellRunStats(cell) {
-  if (!cell.statsEl) return;
-  cell.statsEl.textContent = readRunStats() && typeof cell.lastRunMs === "number"
-    ? `Ran in ${formatRunDuration(cell.lastRunMs)}`
-    : "";
-}
-
 /* Whether a cell's output belongs to code that no longer exists on
  * screen: it has run at least once (`ranContent` is set — a cell that has
  * never run has nothing to be stale relative to) and its current content
@@ -1215,8 +1278,86 @@ function isStale(cell) {
   return cell.ranContent !== undefined && cell.ranContent !== cell.getCode();
 }
 
-function updateCellStaleness(cell) {
-  if (cell.staleEl) cell.staleEl.hidden = !isStale(cell);
+/* Paints a cell's run-line from its stored state — cell.ranOrder (unset
+ * until its first run this session), cell.lastRunMs, and isStale(cell).
+ * Also the one place a live ticker gets cancelled: whatever this paints
+ * is the truth, so anything still counting up on a stale timer has to
+ * stop the moment a real state gets painted over it. */
+function renderCellRunLine(cell) {
+  const el = cell.runLineEl;
+  if (!el) return;
+  clearRunLineTicker(cell);
+  el.classList.remove("dl-cell-runline-queued");
+
+  if (cell.ranOrder == null) {
+    el.textContent = "Not yet run this session";
+    el.classList.add("dl-cell-runline-notrun");
+    el.classList.remove("dl-cell-runline-stale");
+    return;
+  }
+  el.classList.remove("dl-cell-runline-notrun");
+
+  const showDuration = readRunStats() && typeof cell.lastRunMs === "number";
+  let html = `<span class="dl-run-order">Ran ${formatOrdinal(cell.ranOrder)}</span>`;
+  if (showDuration) html += `<span class="dl-run-duration"> in ${formatRunDuration(cell.lastRunMs)}</span>`;
+  const stale = isStale(cell);
+  if (stale) html += '<span class="dl-run-flag"> — edited since</span>';
+  el.classList.toggle("dl-cell-runline-stale", stale);
+  el.innerHTML = html;
+}
+
+/* Every cell on the page forgets when (and whether) it last ran — called
+ * wherever the interpreter itself gets thrown away or the namespace gets
+ * cleared and re-seeded (restartPython(), and runCellBatch() below
+ * whenever it's asked to reset first): from that point on, nothing has
+ * run yet, in the one sense that actually matters to a reader — this
+ * session, against the namespace currently backing the page. */
+function resetRunSequence() {
+  runSequenceCounter = 0;
+  for (const cell of cells) {
+    delete cell.ranOrder;
+    delete cell.ranContent;
+    delete cell.lastRunMs;
+    renderCellRunLine(cell);
+  }
+}
+
+/* Starts (or restarts) a live "Running… Xs" display on a cell's run-line
+ * for as long as it's actually executing — a plain setTimeout loop, not
+ * an aria-live region: announcing a number changing ten times a second
+ * would be noise, not news, to a screen reader. */
+function startRunLineTicker(cell) {
+  clearRunLineTicker(cell);
+  const el = cell.runLineEl;
+  if (!el) return;
+  el.classList.remove("dl-cell-runline-notrun", "dl-cell-runline-stale", "dl-cell-runline-queued");
+  el.classList.add("dl-cell-runline-active");
+  const startedAt = performance.now();
+  const tick = () => {
+    el.textContent = `Running… ${formatRunDuration(performance.now() - startedAt)}`;
+    cell._runTicker = setTimeout(tick, 100);
+  };
+  tick();
+}
+
+function clearRunLineTicker(cell) {
+  if (cell._runTicker) {
+    clearTimeout(cell._runTicker);
+    delete cell._runTicker;
+  }
+  cell.runLineEl?.classList.remove("dl-cell-runline-active");
+}
+
+/* Marks a cell as next in line during a batch run (runCellBatch() below)
+ * — only ever the one cell right after whichever is currently running,
+ * updated as the batch moves along, not the whole remaining list at
+ * once. */
+function setRunLineQueued(cell) {
+  if (!cell.runLineEl) return;
+  clearRunLineTicker(cell);
+  cell.runLineEl.classList.remove("dl-cell-runline-notrun", "dl-cell-runline-stale");
+  cell.runLineEl.classList.add("dl-cell-runline-queued");
+  cell.runLineEl.textContent = "Running next";
 }
 
 /* Wires the "⋯" button beside a cell's Run button to the "Run above"/"Run
@@ -1424,6 +1565,7 @@ function saveCustomCells() {
         anchor: host.dataset.anchor,
         code: cell.getCode(),
         output: cell.outputEl ? cell.outputEl.innerHTML : "",
+        collapsed: !!cell.collapsed,
       };
     })
     .filter(Boolean);
@@ -1472,14 +1614,30 @@ function createCustomCellElement(id, type) {
   const host = document.createElement("div");
   host.className = type === "text" ? "dl-cell dl-cell-custom dl-cell-text" : "dl-cell dl-cell-custom";
   host.dataset.cellId = id;
+  const collapseCol = (
+    '<div class="dl-cell-collapse-col">'
+    + '<button type="button" class="dl-collapse-toggle" aria-expanded="true" '
+    + 'title="Collapse this cell">'
+    + '<span class="dl-collapse-caret" aria-hidden="true">&#8250;</span>'
+    + "</button>"
+    + "</div>"
+  );
   if (type === "text") {
     host.innerHTML = (
-      '<textarea class="dl-doc-editor" placeholder="Notes… (# heading, **bold**, - bullets)"></textarea>'
+      '<div class="dl-cell-body-row">'
+      + collapseCol
+      + '<div class="dl-cell-content">'
+      + '<textarea class="dl-doc-editor" placeholder="Notes… (# heading, **bold**, - bullets)"></textarea>'
       + '<div class="dl-doc-render" tabindex="0" hidden></div>'
+      + "</div>"
+      + '<div class="dl-cell-collapsed-summary" tabindex="0" hidden></div>'
+      + "</div>"
       + '<div class="dl-cell-bar">'
       + '<span class="dl-cell-id">your own note</span>'
       + '<span class="dl-cell-spacer"></span>'
       + '<button type="button" class="dl-btn dl-btn-preview">view</button>'
+      + '<button type="button" class="dl-btn dl-btn-duplicate" '
+      + 'title="Copy this cell, right below it">duplicate</button>'
       + '<button type="button" class="dl-btn dl-btn-share">share</button>'
       + '<button type="button" class="dl-btn dl-btn-delete">delete</button>'
       + "</div>"
@@ -1488,11 +1646,17 @@ function createCustomCellElement(id, type) {
     const runAttrs = pyodideReady ? "" : "disabled";
     const runLabel = pyodideReady ? "Run" : "…";
     host.innerHTML = (
-      '<div class="dl-editor"></div>'
+      '<div class="dl-cell-body-row">'
+      + collapseCol
+      + '<div class="dl-cell-content"><div class="dl-editor"></div></div>'
+      + '<div class="dl-cell-collapsed-summary" tabindex="0" hidden></div>'
+      + "</div>"
       + '<div class="dl-output"></div>'
       + '<div class="dl-cell-bar">'
       + '<span class="dl-cell-id">your own cell</span>'
       + '<span class="dl-cell-spacer"></span>'
+      + '<button type="button" class="dl-btn dl-btn-duplicate" '
+      + 'title="Copy this cell, right below it">duplicate</button>'
       + '<button type="button" class="dl-btn dl-btn-share">share</button>'
       + '<button type="button" class="dl-btn dl-btn-delete">delete</button>'
       + `<button type="button" class="dl-btn dl-btn-run" ${runAttrs}>${runLabel}</button>`
@@ -1578,6 +1742,10 @@ function mountCustomCellAfter(afterNode, id, type, code, anchor) {
 
   const shareBtn = host.querySelector(".dl-btn-share");
   const deleteBtn = host.querySelector(".dl-btn-delete");
+  const duplicateBtn = host.querySelector(".dl-btn-duplicate");
+  const collapseBtn = host.querySelector(".dl-collapse-toggle");
+  const contentRegion = host.querySelector(".dl-cell-content");
+  const collapsedSummary = host.querySelector(".dl-cell-collapsed-summary");
   let cell;
 
   if (type === "text") {
@@ -1621,6 +1789,9 @@ function mountCustomCellAfter(afterNode, id, type, code, anchor) {
       id,
       type,
       element: host,
+      collapseBtn,
+      contentRegion,
+      collapsedSummary,
       getCode: () => textarea.value,
       focus: () => { showEditor(); textarea.focus(); },
     };
@@ -1644,6 +1815,9 @@ function mountCustomCellAfter(afterNode, id, type, code, anchor) {
       outputEl,
       runBtn,
       element: host,
+      collapseBtn,
+      contentRegion,
+      collapsedSummary,
       getCode: () => editor.getValue(),
       focus: () => editor.focus(),
     };
@@ -1659,6 +1833,21 @@ function mountCustomCellAfter(afterNode, id, type, code, anchor) {
   customCells.push(cell);
   shareBtn.addEventListener("click", () => exportCustomCell(cell));
   deleteBtn.addEventListener("click", () => deleteCustomCell(cell));
+  if (duplicateBtn) {
+    duplicateBtn.addEventListener("click", () => duplicateAsCustomCell(cell, cell.type));
+  }
+  if (collapseBtn) {
+    collapseBtn.addEventListener("click", () => {
+      setCellCollapsed(cell, !cell.collapsed);
+      saveCustomCells();
+    });
+  }
+  if (collapsedSummary) {
+    collapsedSummary.addEventListener("click", () => { setCellCollapsed(cell, false); saveCustomCells(); });
+    collapsedSummary.addEventListener("keydown", (ev) => {
+      if (ev.key === "Enter") { setCellCollapsed(cell, false); saveCustomCells(); }
+    });
+  }
 
   return { cell, divider };
 }
@@ -1683,6 +1872,35 @@ function insertCustomCell(afterNode, type, code, anchor) {
 function addCustomCell(type = "python", code = "") {
   const afterNode = lastDividerFor(TRAILING_ANCHOR);
   return afterNode ? insertCustomCell(afterNode, type, code, TRAILING_ANCHOR) : null;
+}
+
+/* Duplicate — an authored cell's own button (build.py's render_cell())
+ * and a custom cell's own (createCustomCellElement()) both call this,
+ * DECISIONS_LOG.md 7.112: drops a fresh custom cell, seeded with this
+ * cell's current code, immediately after it — `type` is always
+ * "python" for an authored cell (the only type one has) and the
+ * originating cell's own `.type` for a custom one, so a text cell
+ * duplicates as text.
+ *
+ * "Immediately after it" is `cell.element.nextElementSibling` — every
+ * cell this file ever mounts, real or custom, gets its own trailing
+ * `.dl-insert` divider right there and nothing else is ever inserted
+ * directly against the cell element itself, so that sibling is a
+ * stable handle on "the seam right after this specific cell" no matter
+ * how many other custom cells a reader has since added further down
+ * the same anchor's chain. Reusing that divider's own `insertCustomCell()`
+ * — the same one its own "+Code"/"+Text" buttons call — means Duplicate
+ * needed no insertion logic of its own.
+ *
+ * No run history travels with the copy, the same as dewmini's own
+ * Duplicate: a starting point for a variation, not a claim that the
+ * copy already ran. An authored cell itself never changes — it is the
+ * tutorial's own content; the copy is the reader's from the moment it
+ * exists. */
+function duplicateAsCustomCell(cell, type) {
+  const afterNode = cell.element.nextElementSibling;
+  if (!afterNode || !afterNode.classList.contains("dl-insert")) return null; // should not happen
+  return insertCustomCell(afterNode, type, cell.getCode(), afterNode.dataset.anchor);
 }
 
 /* Removes one custom cell — no confirmation, matching how deleting a
@@ -1819,6 +2037,7 @@ function initCustomCellsSection() {
     for (const saved of byAnchor.get(anchor) || []) {
       const { cell, divider } = mountCustomCellAfter(point, saved.id, saved.type, saved.code, anchor);
       if (typeof saved.output === "string" && cell.outputEl) cell.outputEl.innerHTML = saved.output;
+      if (saved.collapsed) setCellCollapsed(cell, true);
       point = divider;
     }
   };
@@ -2481,8 +2700,9 @@ async function executeCell(cell) {
   const ok = currentManifest.standalone
     ? await runCellMainThread(cell)
     : await runCellWorker(cell);
-  setCellRunStats(cell, performance.now() - startedAt);
-  updateCellStaleness(cell);
+  cell.lastRunMs = performance.now() - startedAt;
+  cell.ranOrder = ++runSequenceCounter;
+  renderCellRunLine(cell);
   saveNow();
   return ok;
 }
@@ -2525,6 +2745,7 @@ async function runCell(cell) {
   if (running) return;
   running = cell;
   const previousLabel = setCellRunning(cell);
+  startRunLineTicker(cell);
 
   try {
     await ensureBooted(currentManifest);
@@ -2541,6 +2762,7 @@ async function runCell(cell) {
   } finally {
     running = null;
     clearCellRunning(cell, previousLabel);
+    clearRunLineTicker(cell);
   }
 }
 
@@ -2569,19 +2791,31 @@ async function runCellBatch(list, { reset, emptyMessage, describe }) {
   running = true;
   try {
     await ensureBooted(currentManifest);
-    if (reset) await resetPageState();
+    if (reset) {
+      await resetPageState();
+      resetRunSequence();
+    }
     setStatus(describe(list.length));
+    // Only ever the one cell right after whichever is about to run, kept
+    // current as the batch moves along below — not the whole remaining
+    // list marked "next" at once.
+    if (list[1]) setRunLineQueued(list[1]);
 
     let errors = 0;
-    for (const cell of list) {
+    for (let i = 0; i < list.length; i++) {
+      const cell = list[i];
       running = cell;
       const previousLabel = setCellRunning(cell);
+      startRunLineTicker(cell);
       try {
         const ok = await executeCell(cell);
         if (!ok) errors += 1;
       } finally {
         clearCellRunning(cell, previousLabel);
+        clearRunLineTicker(cell);
       }
+      const next = list[i + 1];
+      if (next) setRunLineQueued(next);
     }
     setStatus(
       errors ? `Done — ${errors} cell${errors === 1 ? "" : "s"} errored.` : "All cells ran cleanly.",
@@ -2671,6 +2905,8 @@ async function restartPython() {
     openStreams.clear();
   }
 
+  resetRunSequence();
+
   bootPromise = null;
   pyodideReady = false;
   setRunnable(false);
@@ -2754,7 +2990,7 @@ function initRunStatsToggle() {
     if (!btn) return;
     writeRunStats(btn.dataset.value);
     sync();
-    for (const cell of [...cells, ...customCells]) renderCellRunStats(cell);
+    for (const cell of [...cells, ...customCells]) renderCellRunLine(cell);
   });
 
   sync();
@@ -2895,6 +3131,7 @@ function saveNow() {
        * indicator, this page's own Settings summary) re-parsing HTML to
        * ask the same question. */
       errored: !!cell.outputEl.querySelector(".dl-error"),
+      collapsed: !!cell.collapsed,
     })),
   };
   try {
@@ -2949,6 +3186,7 @@ function restoreSaved() {
       cell.outputEl.innerHTML = saved.output_html;
       if (saved.output_html.includes("dl-widget")) widgets = true;
     }
+    if (saved.collapsed) setCellCollapsed(cell, true);
     restored.push(cell.id);
   }
 
