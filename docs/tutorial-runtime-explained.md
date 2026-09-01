@@ -274,7 +274,7 @@ immediate (`saveNow()`/`saveCustomCells()`), not the debounced
 `scheduleSave()`/`scheduleCustomSave()` every keystroke goes through —
 a discrete click has nothing to coalesce, and debouncing it risks
 losing the state to a reload that beats the timer (a real bug an e2e
-test caught during 7.112, before it shipped).
+test caught during 7.114, before it shipped).
 
 Duplicate (`.dl-btn-duplicate`, `duplicateAsCustomCell(cell, type)`)
 means something narrower here than in dewmini, because an authored cell

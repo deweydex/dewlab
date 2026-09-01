@@ -12,7 +12,7 @@ entries:
     kind: concept
     definition: >
       A comparison like readings["evening"] > 14 applies to a whole column
-      at once, giving one True/False answer per row — and that result can
+      at once, giving one True or False answer per row. That result can then
       be used to select just the rows where it was True.
     example: 'readings[readings["evening"] > 14]'
   - term: "check()"

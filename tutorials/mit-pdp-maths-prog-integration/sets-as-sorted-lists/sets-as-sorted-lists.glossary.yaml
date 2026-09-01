@@ -7,9 +7,10 @@ entries:
   - term: merge-walk pattern
     kind: concept
     definition: >
-      Walk two sorted lists with two pointers at once, advancing whichever
-      side is behind (or both, on a match) — the pattern behind merge
-      sort's merge step and every set operation here, runs in O(n + m).
+      Walk two sorted lists at once with two pointers, advancing whichever
+      side is behind, or both on a match. It is the pattern behind merge
+      sort's merge step and behind every set operation here, and it runs in
+      O(n + m).
   - term: union, intersection, difference, symmetric difference
     kind: concept
     definition: >
@@ -25,6 +26,6 @@ entries:
   - term: inclusion-exclusion principle
     kind: concept
     definition: >
-      len(a) + len(b) - len(intersection(a, b)) equals len(union(a, b)) —
-      the set-sizes version of the same overlap-subtracting idea behind
+      len(a) + len(b) - len(intersection(a, b)) equals len(union(a, b)). It
+      is the set-sizes version of the same overlap-subtracting idea behind
       the general addition rule for probabilities.

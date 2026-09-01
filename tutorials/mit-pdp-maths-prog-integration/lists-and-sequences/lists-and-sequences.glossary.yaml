@@ -40,7 +40,7 @@ entries:
     kind: concept
     definition: >
       A parameter is a function's own placeholder name for a value it
-      expects; the argument is the actual value handed over when you call
+      expects. The argument is the actual value handed over when you call
       it. return sends a value back to whoever called the function, so it
       can be used in further calculations rather than only printed.
   - term: dot product

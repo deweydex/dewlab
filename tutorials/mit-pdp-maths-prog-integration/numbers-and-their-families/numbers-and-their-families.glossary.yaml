@@ -12,10 +12,10 @@ entries:
     kind: concept
     definition: >
       Which operations stay inside a number family. N is closed under
-      addition but not subtraction (3 - 5 is not natural); Z is closed
-      under addition and subtraction but not always division; Q is closed
-      under all four operations except dividing by zero; R fills in the
-      remaining gaps with irrationals like sqrt(2) and pi.
+      addition but not subtraction, since 3 - 5 is not a natural number. Z
+      is closed under addition and subtraction, but not always division. Q
+      is closed under all four operations, apart from dividing by zero. R
+      fills the remaining gaps with irrationals like sqrt(2) and pi.
   - term: laws of indices (powers)
     kind: formula
     definition: >

@@ -36,9 +36,9 @@ entries:
   - term: procedural, functional, object-oriented
     kind: concept
     definition: >
-      Three paradigms for the same task: procedural says how to build the
-      answer step by step; functional describes the transformation, not
-      the loop that applies it; object-oriented keeps the data and the
+      Three paradigms for the same task. Procedural says how to build the
+      answer step by step. Functional describes the transformation rather
+      than the loop that applies it. Object-oriented keeps the data and the
       things you do to it together, as a class.
   - term: "chr()"
     kind: function

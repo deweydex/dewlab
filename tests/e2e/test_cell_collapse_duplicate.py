@@ -1,6 +1,6 @@
 """Browser tests for the collapse triangle and Duplicate — the rest of
 dewmini's cell anatomy (DECISIONS_LOG.md 7.110), ported onto tutorial
-pages' `.dl-cell` in 7.112.
+pages' `.dl-cell` in 7.114.
 
     python3 -m pytest tests/e2e/test_cell_collapse_duplicate.py -q
 """

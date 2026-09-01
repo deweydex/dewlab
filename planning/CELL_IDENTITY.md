@@ -27,9 +27,9 @@ numbered identity pill — held back at first because unlike the other
 four, it didn't fit as a small addition to the existing cell markup; it
 touched the same header every cell already had, so it was worth
 designing properly before building it, which 7.110 then did, in
-dewmini first. 7.111 carried the pill and the merged run-line on to
+dewmini first. 7.113 carried the pill and the merged run-line on to
 tutorial and practice pages too, once dewmini had settled their shape,
-and 7.112 followed with collapse and Duplicate — see §7 for exactly
+and 7.114 followed with collapse and Duplicate — see §7 for exactly
 what did and didn't come along with them, and what Duplicate ended up
 meaning on a page whose cells aren't all the reader's own.
 
@@ -223,12 +223,12 @@ carrying the state rather than its shape.
   only colour tokens defined so far; a real type gets a literal hue added
   alongside them when it's built, not before.
 - **Tutorial and practice pages: the pill and the run line are now ported
-  too (7.111).** 7.109 ported the run-line-adjacent pieces (staleness,
+  too (7.113).** 7.109 ported the run-line-adjacent pieces (staleness,
   run above/below, restart & run all) onto `build.py`'s
   `render_cell()`/`assets/tutorial-runtime.js`, keeping dewmini's and the
   tutorial runtime's own engines and DOM separate rather than unifying
   them — see that decision for why a full shared cell implementation was
-  explicitly not the chosen path. 7.111 carried the pill (`Cell N`,
+  explicitly not the chosen path. 7.113 carried the pill (`Cell N`,
   coloured "Python" type) and the merged run-line (order, duration,
   staleness, live "Running…"/"Running next") over the same way, replacing
   the plain `.dl-cell-id` text and the separate stats/stale-badge pair
@@ -246,7 +246,7 @@ carrying the state rather than its shape.
   from the start (§5 above notes this — it's the layout dewmini's own
   7.110 moved *to*), so nothing here needed relocating.
 
-- **Tutorial and practice pages: collapse and Duplicate too (7.112).**
+- **Tutorial and practice pages: collapse and Duplicate too (7.114).**
   The collapse triangle now applies to every cell that has editable
   content — an authored cell's code, and both a custom python cell's
   code and a custom text cell's note-or-rendered-view — the same "every

@@ -25,11 +25,18 @@ only have to read the one that matches what you are here to do.
 | Using the standalone Python workspace | [`docs/DEWMINI.md`](docs/DEWMINI.md) |
 | Deciding whether to teach with dewlab | keep reading here |
 
-Two more documents sit behind those.
+Three more documents sit behind those.
 [`planning/PEDAGOGICAL_STYLE_GUIDE.md`](planning/PEDAGOGICAL_STYLE_GUIDE.md)
 settles how a tutorial is written and why — anyone writing prose for the site
-should read it. [`planning/README.md`](planning/README.md) indexes the design
-notes and decision records for the rest.
+should read it, and section 4's "Plain language" rules govern every word a
+student sees. [`planning/PLAIN_LANGUAGE_PASS.md`](planning/PLAIN_LANGUAGE_PASS.md)
+says which parts of the site have been through those rules and which have not.
+[`planning/README.md`](planning/README.md) indexes the design notes and
+decision records for the rest.
+
+[`CLAUDE.md`](CLAUDE.md) is the short version of all of it, written for an
+assistant working in this repository rather than for a person, and kept to what
+is easy to get wrong here.
 
 ---
 
