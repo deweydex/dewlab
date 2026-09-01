@@ -520,6 +520,14 @@ def render_cell(cell: Cell) -> str:
     block after the bar rather than a floating popover: expanding it grows
     the cell and pushes whatever comes after it down the page, rather than
     covering the editor or output it might otherwise float over.
+
+    The stats/stale-badge spans and the "Run above/below" menu are empty
+    shells here — tutorial-runtime.js fills and wires them the same way it
+    already owns everything else about a live cell. This is the same
+    treatment dewmini gives a Python cell (DECISIONS_LOG.md 7.105, 7.106),
+    ported rather than reinvented: planning/CELL_IDENTITY.md's own numbered
+    identity pill is a separate, not-yet-built design and is deliberately
+    not part of this.
     """
     safe_id = html.escape(cell.id, quote=True)
     hint_markup = ""
@@ -540,9 +548,21 @@ def render_cell(cell: Cell) -> str:
         '<div class="dl-output"></div>'
         '<div class="dl-cell-bar">'
         f'<span class="dl-cell-id">{safe_id}</span>'
+        '<span class="dl-cell-stats"></span>'
+        '<span class="dl-cell-stale-badge" hidden>edited since last run</span>'
         '<span class="dl-cell-spacer"></span>'
         f"{hint_markup}"
         '<button type="button" class="dl-btn dl-btn-reset">reset</button>'
+        '<div class="dl-cell-more">'
+        '<button type="button" class="dl-btn dl-btn-more" aria-haspopup="true" '
+        'aria-expanded="false" title="More ways to run this cell">&#8943;</button>'
+        '<div class="dl-cell-run-menu" role="menu" hidden>'
+        '<button type="button" class="dl-cell-run-menu-item" role="menuitem" '
+        'data-run-menu="above">Run above</button>'
+        '<button type="button" class="dl-cell-run-menu-item" role="menuitem" '
+        'data-run-menu="below">Run below</button>'
+        "</div>"
+        "</div>"
         '<button type="button" class="dl-btn dl-btn-run" disabled>…</button>'
         "</div>"
         f"{hint_text}"

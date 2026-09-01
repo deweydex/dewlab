@@ -45,6 +45,7 @@ const PROGRESS_BADGES_KEY = "dewlab:progress-badges";
 const NOTES_EXPORT_PREFIX = "dewlab:notes-exported-len:";
 const NOTES_NUDGE_KEY = "dewlab:notes-nudge";
 const NOTES_NUDGE_THRESHOLD = 120;
+const RUN_STATS_KEY = "dewlab:run-stats";
 const AUTOSAVE_DELAY = 500;
 /* The build.py write_*_page() slugs that are not a tutorial at all —
  * nothing here has "your work" to save, cells or notes alike, the way an
@@ -1077,24 +1078,28 @@ function buildCells(manifest) {
     const outputEl = host.querySelector(".dl-output");
     const runBtn = host.querySelector(".dl-btn-run");
     const resetBtn = host.querySelector(".dl-btn-reset");
-
-    const editor = createCodeEditor(editorHost, spec.code || "", {
-      dark,
-      onChange: () => scheduleSave(),
-      completeNames: pageNamesCompletion,
-      getDoc: hoverDoc,
-      getSignature: signatureHelp,
-    });
+    const statsEl = host.querySelector(".dl-cell-stats");
+    const staleEl = host.querySelector(".dl-cell-stale-badge");
 
     const cell = {
       id: spec.id,
       starter: spec.code || "",
-      editor,
       outputEl,
       runBtn,
+      statsEl,
+      staleEl,
       element: host,
       getCode: () => editor.getValue(),
     };
+
+    const editor = createCodeEditor(editorHost, spec.code || "", {
+      dark,
+      onChange: () => { scheduleSave(); updateCellStaleness(cell); },
+      completeNames: pageNamesCompletion,
+      getDoc: hoverDoc,
+      getSignature: signatureHelp,
+    });
+    cell.editor = editor;
     cells.push(cell);
 
     runBtn.addEventListener("click", () => runCell(cell));
@@ -1102,8 +1107,13 @@ function buildCells(manifest) {
       resetBtn.addEventListener("click", () => {
         editor.setValue(cell.starter);
         outputEl.replaceChildren();
+        delete cell.lastRunMs;
+        delete cell.ranContent;
+        renderCellRunStats(cell);
+        updateCellStaleness(cell);
       });
     }
+    initCellRunMenu(cell, host);
 
     /* A cell's own hint, if it has one: a plain click toggle, not hover — see
      * the CSS comment on .dl-hint-icon for why. Opening it is a real state
@@ -1142,6 +1152,121 @@ function setRunnable(enabled, label) {
     cell.runBtn.disabled = !enabled;
     cell.runBtn.textContent = label || (enabled ? "Run" : "…");
   }
+}
+
+/* ------------------------------------------------------- staleness, stats
+ *
+ * A cell's "edited since last run" badge and its "Ran in …" stats line —
+ * ported from compose/dewmini.js's own isStale()/setCellRunStats()
+ * (DECISIONS_LOG.md 7.105), adapted to this file's cells (no separate
+ * `.content` field to compare against; the editor's own current value is
+ * asked for directly). A custom cell has no `.statsEl`/`.staleEl` — its
+ * bar was never given the spans build.py's render_cell() adds — so the
+ * functions below are no-ops for one; `ranContent`/`lastRunMs` are still
+ * tracked on it regardless, in case that changes later.
+ */
+
+/* Formats how long a cell's last run took, human-scale rather than raw
+ * milliseconds: "340 ms" under a second, "2.4 s" at or above it. */
+function formatRunDuration(ms) {
+  return ms < 1000 ? `${Math.round(ms)} ms` : `${(ms / 1000).toFixed(1)} s`;
+}
+
+function readRunStats() {
+  try {
+    return localStorage.getItem(RUN_STATS_KEY) !== "off";
+  } catch (err) {
+    return true;
+  }
+}
+
+function writeRunStats(mode) {
+  try {
+    localStorage.setItem(RUN_STATS_KEY, mode);
+  } catch (err) {
+    /* This reader's own choice only; forgotten after it, same as the rest
+     * of this file's storage refusal shape. */
+  }
+}
+
+/* Records how long a cell's most recent run took and repaints its stats
+ * span from it. Always recorded, even while the "Run time" Settings
+ * toggle is off, so turning it on later shows the last real run rather
+ * than nothing. */
+function setCellRunStats(cell, ms) {
+  cell.lastRunMs = ms;
+  renderCellRunStats(cell);
+}
+
+function renderCellRunStats(cell) {
+  if (!cell.statsEl) return;
+  cell.statsEl.textContent = readRunStats() && typeof cell.lastRunMs === "number"
+    ? `Ran in ${formatRunDuration(cell.lastRunMs)}`
+    : "";
+}
+
+/* Whether a cell's output belongs to code that no longer exists on
+ * screen: it has run at least once (`ranContent` is set — a cell that has
+ * never run has nothing to be stale relative to) and its current content
+ * no longer matches what actually produced that output. Any difference
+ * counts, whitespace included, the same deliberate starting position
+ * dewmini's own isStale() takes. */
+function isStale(cell) {
+  return cell.ranContent !== undefined && cell.ranContent !== cell.getCode();
+}
+
+function updateCellStaleness(cell) {
+  if (cell.staleEl) cell.staleEl.hidden = !isStale(cell);
+}
+
+/* Wires the "⋯" button beside a cell's Run button to the "Run above"/"Run
+ * below" popover build.py's render_cell() already lays down empty —
+ * ported from dewmini.js's own createRunMoreMenu() (DECISIONS_LOG.md
+ * 7.106). The open/close handling mirrors that function's own comment: a
+ * document-level outside-click listener is added only while the menu is
+ * open, and removed the moment it closes, rather than one listener kept
+ * alive for the cell's whole lifetime. */
+function initCellRunMenu(cell, host) {
+  const wrap = host.querySelector(".dl-cell-more");
+  const moreBtn = host.querySelector(".dl-btn-more");
+  const menu = host.querySelector(".dl-cell-run-menu");
+  if (!wrap || !moreBtn || !menu) return;
+
+  let outsideHandler = null;
+  const closeMenu = () => {
+    menu.hidden = true;
+    moreBtn.setAttribute("aria-expanded", "false");
+    if (outsideHandler) {
+      document.removeEventListener("click", outsideHandler, { capture: true });
+      outsideHandler = null;
+    }
+  };
+  const openMenu = () => {
+    menu.hidden = false;
+    moreBtn.setAttribute("aria-expanded", "true");
+    outsideHandler = (e) => { if (!wrap.contains(e.target)) closeMenu(); };
+    // Added after this click has finished bubbling — otherwise the click
+    // that opens the menu would immediately reach this listener and
+    // close it straight back again.
+    setTimeout(() => document.addEventListener("click", outsideHandler, { capture: true }), 0);
+  };
+  moreBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    if (menu.hidden) openMenu(); else closeMenu();
+  });
+
+  const aboveItem = menu.querySelector('[data-run-menu="above"]');
+  const belowItem = menu.querySelector('[data-run-menu="below"]');
+  aboveItem?.addEventListener("click", (e) => {
+    e.stopPropagation();
+    closeMenu();
+    runAbove(cell.id);
+  });
+  belowItem?.addEventListener("click", (e) => {
+    e.stopPropagation();
+    closeMenu();
+    runBelow(cell.id);
+  });
 }
 
 /* ------------------------------------------------------------ custom cells
@@ -1832,7 +1957,13 @@ function downloadAsIpynb() {
  * ensureBooted()/runCell() needs to know or care which one is live. */
 
 let bootPromise = null;
-let running = null; // null, or the cell object currently running
+/* null when nothing is running; the cell object currently running a
+ * single Run click; or plain `true` for the brief window at the start of
+ * runCellBatch() (booting, resetting the namespace) before the batch has
+ * reached its first cell — truthy either way, so `if (running) return`
+ * still blocks every other Run click, but not yet any *particular* cell,
+ * so `running === cell` can't misfire during that window. */
+let running = null;
 
 /* Whether Python has actually finished starting — set true at the end of
  * bootMainThread()/bootWorker() below, wherever they call
@@ -1972,6 +2103,23 @@ def _dewlab_signature(source, line, col):
     return None
 `;
 
+/* Puts every name in tutorial_tools.__all__ into the shared namespace,
+ * plus __name__ — run once at the end of bootMainThread()'s own first
+ * pass below, and again by resetPageStateMT() after
+ * tutorial_tools.reset_page_state() clears that namespace out, so the
+ * always-available names come right back without needing a full re-boot.
+ * Genuinely duplicated from pyodide-engine.js's own copy rather than
+ * shared — two separate JS execution contexts, a page never runs both
+ * (see JEDI_HELPER_SOURCE's own comment above for the same reasoning). */
+const RESEED_GLOBALS_SOURCE = `
+import tutorial_tools
+tutorial_tools._page_globals.update({
+    name: getattr(tutorial_tools, name)
+    for name in tutorial_tools.__all__
+})
+tutorial_tools._page_globals["__name__"] = "__dewlab__"
+`;
+
 async function loadJediMT() {
   try {
     await pyodideMT.loadPackage(["jedi", "parso"]);
@@ -2026,20 +2174,25 @@ async function bootMainThread(manifest) {
   builtinsModuleMT = pyodideMT.pyimport("builtins");
   toolsMT.configure(manifest.dataBase);
 
-  await pyodideMT.runPythonAsync(`
-import tutorial_tools
-tutorial_tools._page_globals.update({
-    name: getattr(tutorial_tools, name)
-    for name in tutorial_tools.__all__
-})
-tutorial_tools._page_globals["__name__"] = "__dewlab__"
-`);
+  await pyodideMT.runPythonAsync(RESEED_GLOBALS_SOURCE);
 
   setStatus("");
   setBooting(false);
   pyodideReady = true;
   setRunnable(true, "Run");
+  updateExecutionStatus();
   loadJediMT();
+}
+
+/* Re-seeds the shared namespace exactly the way bootMainThread()'s own
+ * first pass does, without re-running the rest of boot — clears
+ * _page_globals first (tutorial_tools.reset_page_state()) and then
+ * restores the always-available names. The main-thread half of
+ * resetPageState() below; resetPageStateWorker() further down is its
+ * Worker twin. Ported from pyodide-engine.js's own resetPageStateMT(). */
+async function resetPageStateMT() {
+  toolsMT.reset_page_state();
+  await pyodideMT.runPythonAsync(RESEED_GLOBALS_SOURCE);
 }
 
 /* Every name currently defined in the shared namespace, for autocomplete
@@ -2053,9 +2206,11 @@ function pageNamesMT() {
 /* Runs one cell directly on the main thread. tutorial_tools.py's own
  * run_cell() does essentially everything — running the code, capturing
  * output, rendering it into the cell's output element — so this is
- * mostly just "hand off to Python." */
+ * mostly just "hand off to Python." Returns whether it completed without
+ * raising (run_cell()'s own return value, a Python bool Pyodide hands
+ * back as a plain JS boolean) — used by runCellBatch() to count errors. */
 async function runCellMainThread(cell) {
-  await toolsMT.run_cell(cell.id, cell.outputEl, cell.getCode());
+  return toolsMT.run_cell(cell.id, cell.outputEl, cell.getCode());
 }
 
 /* ---- hosted / Worker path (planning/CELL_CONTROLS.md §2) ---- */
@@ -2181,6 +2336,7 @@ async function bootWorker(manifest) {
   setBooting(false);
   pyodideReady = true;
   setRunnable(true, "Run");
+  updateExecutionStatus();
 }
 
 /* How the Stop button actually stops a running cell. Two threads
@@ -2203,9 +2359,19 @@ function requestInterrupt() {
 /* Asks the worker to run one cell and waits for it to finish. The
  * cell's actual output arrives separately, as "output" messages handled
  * in ensureWorker's onmessage above, as the cell runs — not bundled into
- * this Promise's result. */
+ * this Promise's result, which is just the `{ok}` pyodide-worker.js's own
+ * "run-cell" handler responds with. */
 async function runCellWorker(cell) {
-  await workerRequest("run-cell", { cellId: cell.id, code: cell.getCode() });
+  const { ok } = await workerRequest("run-cell", { cellId: cell.id, code: cell.getCode() });
+  return ok;
+}
+
+/* The worker half of resetPageState() below — asks pyodide-worker.js's
+ * own "reset-page-state" handler (already there for dewmini's use) to
+ * clear and re-seed the shared namespace inside the worker, the same two
+ * steps resetPageStateMT() does on the main-thread path. */
+async function resetPageStateWorker() {
+  await workerRequest("reset-page-state", {});
 }
 
 /* ---- code intelligence: what vendor-src/codemirror-entry.js actually calls ---- */
@@ -2237,6 +2403,17 @@ async function signatureHelp(name, source, line, col, argIndex) {
  * (see this file's own top comment), everything else uses the Worker. */
 function boot(manifest) {
   return manifest.standalone ? bootMainThread(manifest) : bootWorker(manifest);
+}
+
+/* Clears the shared namespace and re-seeds the always-available names,
+ * without a full restart — the cheap version restartPython() below
+ * builds on. Used by runCellBatch() ahead of "Run all"/"Run above": the
+ * whole point of running from the top is that what's on screen matches
+ * what the code actually did, which a stale value from a previous run
+ * could otherwise mask. Ported from pyodide-engine.js's own
+ * resetPageState(). */
+function resetPageState() {
+  return currentManifest.standalone ? resetPageStateMT() : resetPageStateWorker();
 }
 
 /* The one function everything else calls to make sure Python is running
@@ -2288,6 +2465,53 @@ async function pageNamesCompletion(context) {
 
 /* ------------------------------------------------------------ running a cell */
 
+/* Runs one cell's code and everything that goes with it: timing the run
+ * for the stats span, capturing the content that was actually handed to
+ * Python (before the run, not after — see dewmini.js's own executeCell()
+ * for why: even in the unusual case where an editor kept accepting
+ * keystrokes while a slow cell was still running, the stale check has to
+ * compare against what really produced this output), and saving
+ * afterwards so what's stored is the output a reader actually ended up
+ * looking at. Shared by runCell() (one cell, its own Stop-capable button)
+ * and runCellBatch() below (many cells in a row) — neither duplicates
+ * this. Returns whether the run completed without raising. */
+async function executeCell(cell) {
+  const startedAt = performance.now();
+  cell.ranContent = cell.getCode();
+  const ok = currentManifest.standalone
+    ? await runCellMainThread(cell)
+    : await runCellWorker(cell);
+  setCellRunStats(cell, performance.now() - startedAt);
+  updateCellStaleness(cell);
+  saveNow();
+  return ok;
+}
+
+/* Puts a cell's own Run button into its running/Stop state, wherever a
+ * genuine interrupt is possible (canStop, planning/CELL_CONTROLS.md §2);
+ * otherwise it just shows the cell is busy. Returns the button's previous
+ * label, for clearCellRunning() below to restore once the run is done. */
+function setCellRunning(cell) {
+  const previousLabel = cell.runBtn.textContent;
+  const canStop = !currentManifest.standalone && interruptBuffer !== null;
+  if (canStop) {
+    cell.runBtn.disabled = false;
+    cell.runBtn.textContent = "Stop";
+    cell.runBtn.classList.add("dl-btn-stop");
+  } else {
+    cell.runBtn.disabled = true;
+    cell.runBtn.textContent = "Running…";
+  }
+  return previousLabel;
+}
+
+function clearCellRunning(cell, previousLabel) {
+  cell.runBtn.disabled = false;
+  cell.runBtn.classList.remove("dl-btn-stop");
+  cell.runBtn.textContent =
+    previousLabel === "Running…" || previousLabel === "Stop" ? "Run" : previousLabel;
+}
+
 async function runCell(cell) {
   /* A second click on the cell that is already running is a Stop request,
    * not a second Run — the same button does both, per
@@ -2300,17 +2524,7 @@ async function runCell(cell) {
   }
   if (running) return;
   running = cell;
-
-  const previousLabel = cell.runBtn.textContent;
-  const canStop = !currentManifest.standalone && interruptBuffer !== null;
-  if (canStop) {
-    cell.runBtn.disabled = false;
-    cell.runBtn.textContent = "Stop";
-    cell.runBtn.classList.add("dl-btn-stop");
-  } else {
-    cell.runBtn.disabled = true;
-    cell.runBtn.textContent = "Running…";
-  }
+  const previousLabel = setCellRunning(cell);
 
   try {
     await ensureBooted(currentManifest);
@@ -2320,21 +2534,230 @@ async function runCell(cell) {
      * so they appear in the order the code produced them. A student's error —
      * a Stop click included — is normal traffic and is rendered in the cell,
      * not thrown up here. */
-    if (currentManifest.standalone) await runCellMainThread(cell);
-    else await runCellWorker(cell);
-    /* Saved after the run rather than during it, so what is stored is the
-     * output the student actually ended up looking at. */
-    saveNow();
+    await executeCell(cell);
   } catch (err) {
     /* Boot failure. Already surfaced in the status bar; nothing useful to add
      * inside the cell. */
   } finally {
     running = null;
-    cell.runBtn.disabled = false;
-    cell.runBtn.classList.remove("dl-btn-stop");
-    cell.runBtn.textContent =
-      previousLabel === "Running…" || previousLabel === "Stop" ? "Run" : previousLabel;
+    clearCellRunning(cell, previousLabel);
   }
+}
+
+/* Runs a batch of cells in order — the shared engine behind "Restart &
+ * run all", "Run above", and "Run below", which differ only in *which*
+ * cells they hand it and whether the namespace gets reset first. Ported
+ * from compose/dewmini.js's own runCellBatch() (DECISIONS_LOG.md 7.106).
+ *
+ * `reset` matters more than it looks: "Run all" and "Run above" both
+ * start from resetPageState() (clearing and re-seeding the shared
+ * namespace), because the whole point of running from the top is that
+ * what's on screen matches what the code actually did — without the
+ * reset, a stale value from a previous run could linger and mask a cell
+ * that no longer defines something it used to. "Run below" must *not*
+ * reset: its whole point is to keep what the cells above it already
+ * defined.
+ *
+ * Each cell's own Run button becomes a Stop button while it's its turn,
+ * the same as running it individually, so a runaway cell partway through
+ * a batch can still be interrupted without losing the cells that already
+ * ran; the batch itself simply moves on to the next cell afterwards. */
+async function runCellBatch(list, { reset, emptyMessage, describe }) {
+  if (running) return;
+  if (!list.length) { setStatus(emptyMessage); return; }
+
+  running = true;
+  try {
+    await ensureBooted(currentManifest);
+    if (reset) await resetPageState();
+    setStatus(describe(list.length));
+
+    let errors = 0;
+    for (const cell of list) {
+      running = cell;
+      const previousLabel = setCellRunning(cell);
+      try {
+        const ok = await executeCell(cell);
+        if (!ok) errors += 1;
+      } finally {
+        clearCellRunning(cell, previousLabel);
+      }
+    }
+    setStatus(
+      errors ? `Done — ${errors} cell${errors === 1 ? "" : "s"} errored.` : "All cells ran cleanly.",
+      errors ? "error" : "ok"
+    );
+  } catch (err) {
+    setStatus(`Python isn't available: ${err.message}`, "error");
+  } finally {
+    running = null;
+  }
+}
+
+async function runAllCells() {
+  await runCellBatch(cells, {
+    reset: true,
+    emptyMessage: "No cells to run.",
+    describe: (n) => `Running ${n} cell${n === 1 ? "" : "s"}…`,
+  });
+}
+
+/* "Run above": every cell from the top through (and including) `id`,
+ * from a clean namespace — the honest fix once a cell partway down has
+ * been edited and everything before it needs re-proving, without paying
+ * to re-run whatever comes after it too. */
+async function runAbove(id) {
+  const idx = cells.findIndex((c) => c.id === id);
+  if (idx === -1) return;
+  const slice = cells.slice(0, idx + 1);
+  await runCellBatch(slice, {
+    reset: true,
+    emptyMessage: "No cells above this one to run.",
+    describe: (n) => `Running the ${n} cell${n === 1 ? "" : "s"} above and including this one…`,
+  });
+}
+
+/* "Run below": `id` and every cell after it, keeping whatever earlier
+ * cells already defined — the way to redo a slow computation's
+ * downstream steps without paying to redo the computation itself. See
+ * runCellBatch()'s own comment for why this is the one caller that must
+ * not reset the namespace first. */
+async function runBelow(id) {
+  const idx = cells.findIndex((c) => c.id === id);
+  if (idx === -1) return;
+  const slice = cells.slice(idx);
+  await runCellBatch(slice, {
+    reset: false,
+    emptyMessage: "No cells here or below to run.",
+    describe: (n) => `Running the ${n} cell${n === 1 ? "" : "s"} from here on…`,
+  });
+}
+
+/* Tears down whatever's running — the Worker if one exists, or the
+ * main-thread Pyodide instance — so the next ensureBooted() starts a
+ * genuinely fresh interpreter, clearing anything only a real restart
+ * would (Jedi's completion cache included), not just the namespace
+ * resetPageState() clears. Ported from pyodide-engine.js's own restart()
+ * plus dewmini.js's own restartPython() wrapper (DECISIONS_LOG.md 7.108).
+ * Returns whether the restart itself succeeded, so a caller that runs
+ * cells afterwards (Restart & run all) knows whether to bother. */
+async function restartPython() {
+  if (currentManifest.standalone) {
+    pyodideMT = null;
+    toolsMT = null;
+    inspectModuleMT = null;
+    builtinsModuleMT = null;
+    jediHoverFnMT = null;
+    jediSignatureFnMT = null;
+  } else {
+    if (worker) {
+      try {
+        worker.terminate();
+      } catch {
+        // already gone
+      }
+    }
+    worker = null;
+    interruptBuffer = null;
+    jediReadyWorker = false;
+    /* Reject what was in flight before dropping it — terminating the
+     * worker means no reply is ever coming, and a Promise that neither
+     * resolves nor rejects hangs forever, and so does whatever awaited
+     * it (this button exists precisely to get someone out of that). */
+    for (const { reject } of pendingRequests.values()) {
+      reject(new Error("Python was restarted before this finished."));
+    }
+    pendingRequests.clear();
+    openStreams.clear();
+  }
+
+  bootPromise = null;
+  pyodideReady = false;
+  setRunnable(false);
+  setStatus("Restarting Python…");
+  updateExecutionStatus();
+
+  let ok = true;
+  try {
+    await ensureBooted(currentManifest);
+    setStatus("Python restarted.", "ok");
+  } catch (err) {
+    ok = false;
+  }
+  updateExecutionStatus();
+  return ok;
+}
+
+/* A plain summary of whether Python has started yet, for Settings' own
+ * "Running Python" section — ported from dewmini.js's own
+ * updateExecutionStatus(). */
+function updateExecutionStatus() {
+  const el = document.getElementById("dl-execution-status");
+  if (!el) return;
+  el.textContent = pyodideReady
+    ? "Python is running."
+    : "Not started yet — run a cell to start Python.";
+}
+
+/* Wires the "Restart Python" and "Restart & run all" buttons in Settings
+ * (DECISIONS_LOG.md 7.108) — ported from dewmini.js's own
+ * initExecutionSection(). "Restart & run all" is a reproducibility check:
+ * if a page does not survive throwing the interpreter away and running
+ * every cell fresh, it did not really work, it only looked like it did,
+ * because of whatever state a stale namespace was quietly carrying.
+ * Removed at load on a page with no cells at all, same as
+ * initCustomCellsSection() above — there is nothing here to restart on a
+ * page that never started anything. */
+function initExecutionSection() {
+  const section = document.getElementById("dl-settings-execution");
+  if (!section) return;
+  if (cells.length === 0) {
+    section.remove();
+    return;
+  }
+
+  document.getElementById("dl-restart-python")?.addEventListener("click", async () => {
+    if (!confirm("Restart Python? Anything defined in the current session will be lost.")) return;
+    await restartPython();
+  });
+  document.getElementById("dl-restart-run-all")?.addEventListener("click", async () => {
+    if (!confirm(
+      "Restart Python and run every cell on this page from the top? "
+      + "Anything defined in the current session will be lost."
+    )) return;
+    const ok = await restartPython();
+    if (ok) await runAllCells();
+  });
+
+  updateExecutionStatus();
+}
+
+/* The "Run time" Settings toggle — same shape as initNotesNudgeToggle()/
+ * initProgressBadgesToggle() above, ported from dewmini's own "Run time"
+ * on/off row. Lives inside #dl-settings-execution, so on a page with no
+ * cells at all it is already gone by the time this runs (called after
+ * initExecutionSection(), which removes that whole section) — the query
+ * below then simply finds nothing and this is a no-op. */
+function initRunStatsToggle() {
+  const group = document.querySelector("[data-run-stats]");
+  if (!group) return;
+
+  function sync() {
+    const on = readRunStats();
+    for (const btn of group.querySelectorAll("button")) {
+      btn.setAttribute("aria-pressed", String((btn.dataset.value === "on") === on));
+    }
+  }
+
+  group.addEventListener("click", (ev) => {
+    const btn = ev.target.closest("button");
+    if (!btn) return;
+    writeRunStats(btn.dataset.value);
+    sync();
+    for (const cell of [...cells, ...customCells]) renderCellRunStats(cell);
+  });
+
+  sync();
 }
 
 /* ------------------------------------------------- illustrative code, maths */
@@ -3318,6 +3741,8 @@ initTexture((dark) => {
 buildCells(currentManifest);
 initProgressSection();
 initCustomCellsSection();
+initExecutionSection();
+initRunStatsToggle();
 initExportSection();
 initVersionsSection();
 initVersionMarker();

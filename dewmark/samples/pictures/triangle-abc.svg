@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 240" font-family="Georgia, serif">
+  <rect width="360" height="240" fill="#fdfcfa"/>
+  <!-- vertices: C bottom-left, A bottom-right, B apex -->
+  <polygon points="50,200 320,200 150,50" fill="#e9e6f2" stroke="#1b2a4a" stroke-width="2"/>
+  <!-- the known angle at C, marked with an arc -->
+  <path d="M 86 200 A 36 36 0 0 0 74 172" fill="none" stroke="#d4692a" stroke-width="2"/>
+  <text x="96" y="188" font-size="15" fill="#d4692a">C = 40°</text>
+  <!-- vertex labels -->
+  <text x="34" y="216" font-size="18" fill="#1a1a1a">C</text>
+  <text x="326" y="216" font-size="18" fill="#1a1a1a">A</text>
+  <text x="144" y="38" font-size="18" fill="#1a1a1a">B</text>
+  <!-- side labels: a joins C and B, b joins B and A, c joins C and A -->
+  <text x="84" y="118" font-size="16" font-style="italic" fill="#1a1a1a">a</text>
+  <text x="244" y="118" font-size="16" font-style="italic" fill="#1a1a1a">b</text>
+  <text x="182" y="222" font-size="16" font-style="italic" fill="#1a1a1a">c</text>
+</svg>

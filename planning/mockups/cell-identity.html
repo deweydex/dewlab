@@ -1,0 +1,692 @@
+<title>The Finished Cell</title>
+<style>
+:root {
+  --dl-navy: #1b2a4a;
+  --dl-orange: #d4692a;
+  --dl-font-family: Georgia, "Iowan Old Style", "Times New Roman", serif;
+  --dl-mono: "SF Mono", "Cascadia Mono", Menlo, Consolas, monospace;
+
+  --dl-bg: #fdfcfa;
+  --dl-fg: #1a1a1a;
+  --dl-muted: #5f6b7a;
+  --dl-rule: #e2ddd5;
+  --dl-heading: var(--dl-navy);
+  --dl-cell-bg: #f6f4f0;
+  --dl-cell-border: #ddd7cd;
+  --dl-output-bg: #fbfaf8;
+  --dl-error-fg: #9b2226;
+  --dl-error-bg: #fdf0ef;
+  --dl-pass-fg: #1f6b3f;
+  --dl-panel-bg: #ffffff;
+  --dl-shadow: rgba(27, 42, 74, 0.14);
+
+  --dm-gap-xs: 0.25rem;
+  --dm-gap-sm: 0.5rem;
+  --dm-gap-md: 0.75rem;
+
+  /* Type colour, added on request: muted enough to sit quietly next to
+   * everything else here, but distinct enough to scan a mixed notebook
+   * by. Python reuses the app's own orange rather than inventing a sixth
+   * hue, since it's the primary type; Text stays fully neutral — it's
+   * the plain baseline, not a type worth hunting for by colour. */
+  --dl-type-python: var(--dl-orange);
+  --dl-type-sql: #2d6a85;
+  --dl-type-html: #a13a5c;
+  --dl-type-css: #5b4a91;
+  --dl-type-text: var(--dl-muted);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --dl-bg: #14181f;
+    --dl-fg: #e6e3dd;
+    --dl-muted: #98a2b3;
+    --dl-rule: #2a3140;
+    --dl-heading: #b9c8e6;
+    --dl-cell-bg: #1b2129;
+    --dl-cell-border: #2f3743;
+    --dl-output-bg: #171c24;
+    --dl-error-fg: #f2999b;
+    --dl-error-bg: #2a1a1c;
+    --dl-pass-fg: #86d6a5;
+    --dl-panel-bg: #1b2129;
+    --dl-shadow: rgba(0, 0, 0, 0.5);
+    --dl-type-sql: #7fc4e0;
+    --dl-type-html: #f0a0bd;
+    --dl-type-css: #c3aef0;
+    --dl-type-text: var(--dl-muted);
+  }
+}
+:root[data-theme="dark"] {
+  --dl-bg: #14181f;
+  --dl-fg: #e6e3dd;
+  --dl-muted: #98a2b3;
+  --dl-rule: #2a3140;
+  --dl-heading: #b9c8e6;
+  --dl-cell-bg: #1b2129;
+  --dl-cell-border: #2f3743;
+  --dl-output-bg: #171c24;
+  --dl-error-fg: #f2999b;
+  --dl-error-bg: #2a1a1c;
+  --dl-pass-fg: #86d6a5;
+  --dl-panel-bg: #1b2129;
+  --dl-shadow: rgba(0, 0, 0, 0.5);
+  --dl-type-sql: #7fc4e0;
+  --dl-type-html: #f0a0bd;
+  --dl-type-css: #c3aef0;
+  --dl-type-text: var(--dl-muted);
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--dl-bg);
+  color: var(--dl-fg);
+  font-family: var(--dl-font-family);
+  -webkit-font-smoothing: antialiased;
+}
+.page { max-width: 44rem; margin: 0 auto; padding: 2.4rem 1.1rem 5rem; }
+@media (max-width: 480px) { .page { padding-left: 0.6rem; padding-right: 0.6rem; } }
+
+.masthead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  border-bottom: 1px solid var(--dl-rule);
+  padding-bottom: 1rem;
+  margin-bottom: 0.5rem;
+}
+.eyebrow {
+  font-family: var(--dl-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--dl-orange);
+  margin: 0 0 0.3rem;
+}
+h1 { font-size: 1.7rem; line-height: 1.15; color: var(--dl-heading); margin: 0; text-wrap: balance; }
+.theme-toggle { display: inline-flex; border: 1px solid var(--dl-cell-border); border-radius: 999px; overflow: hidden; flex: none; }
+.theme-toggle button {
+  font-family: var(--dl-mono); font-size: 0.68rem; letter-spacing: 0.04em; text-transform: uppercase;
+  color: var(--dl-muted); background: var(--dl-panel-bg); border: none; padding: 0.4rem 0.75rem; cursor: pointer;
+}
+.theme-toggle button.active { background: var(--dl-orange); color: #fff; }
+
+.dek { font-size: 1rem; line-height: 1.6; color: var(--dl-muted); margin: 1.1rem 0 1.6rem; }
+.dek strong { color: var(--dl-fg); font-weight: normal; font-style: italic; }
+
+h2 { font-size: 1.05rem; color: var(--dl-heading); margin: 2.4rem 0 0.6rem; }
+.section-note { font-size: 0.92rem; line-height: 1.6; color: var(--dl-muted); margin: 0 0 1rem; }
+code { font-family: var(--dl-mono); font-size: 0.85em; background: var(--dl-cell-bg); padding: 0.1em 0.35em; border-radius: 3px; }
+
+/* ---------------------------------------------------------- notebook shell */
+
+.notebook {
+  border: 1px solid var(--dl-cell-border);
+  border-radius: 8px;
+  background: var(--dl-panel-bg);
+  padding: var(--dm-gap-md) var(--dm-gap-md) var(--dm-gap-sm);
+  box-shadow: 0 2px 10px var(--dl-shadow);
+}
+.dm-cell { display: flex; padding: var(--dm-gap-md) 0; border-bottom: 1px solid var(--dl-rule); }
+.dm-cell:last-child { border-bottom: none; }
+.dm-cell-rail { flex: none; width: 3px; border-radius: 2px; margin-right: var(--dm-gap-sm); background: transparent; }
+.dm-cell-main { flex: 1; min-width: 0; }
+
+.dm-cell-head { display: flex; align-items: center; gap: var(--dm-gap-sm); margin-bottom: var(--dm-gap-sm); }
+.dm-cell-spacer { flex: 1; }
+
+/* --------------------------------------------------------- identity pill */
+
+.ct-segmented {
+  display: inline-flex;
+  align-items: stretch;
+  border: 1px solid var(--dl-cell-border);
+  border-radius: 6px;
+  overflow: hidden;
+  font-family: var(--dl-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.02em;
+}
+.ct-segmented > span { display: inline-flex; align-items: center; padding: 0.1rem 0.55rem; color: var(--dl-muted); }
+.ct-segmented > span + span { border-left: 1px solid var(--dl-cell-border); }
+/* Only the type half carries colour — "Cell N" stays neutral, since
+ * position is a structural fact shared by every cell alike, where type
+ * is specifically the thing this palette exists to help tell apart. */
+.ct-segmented .seg-type { text-transform: uppercase; color: var(--dl-type-text); }
+.ct-segmented .seg-type[data-type="python"] { color: var(--dl-type-python); }
+.ct-segmented .seg-type[data-type="sql"] { color: var(--dl-type-sql); }
+.ct-segmented .seg-type[data-type="html"] { color: var(--dl-type-html); }
+.ct-segmented .seg-type[data-type="css"] { color: var(--dl-type-css); }
+.ct-segmented-drag { cursor: grab; }
+.ct-segmented-drag .seg-pos { display: inline-flex; align-items: center; gap: 0.35rem; }
+.dm-drag-dots {
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 0 0.2em; letter-spacing: -0.1em; color: var(--dl-muted);
+}
+.ct-segmented-drag:hover .dm-drag-dots { color: var(--dl-orange); }
+
+/* -------------------------------------------------------------- run line */
+
+.dm-cell-runline { font-family: var(--dl-mono); font-size: 0.72rem; color: var(--dl-muted); }
+.dm-cell-runline .run-order { color: var(--dl-orange); }
+.dm-cell-runline .run-duration { color: var(--dl-muted); }
+.dm-cell-runline.needs-look { color: var(--dl-orange); font-style: italic; }
+.dm-cell-runline.needs-look .run-order,
+.dm-cell-runline.needs-look .run-duration { color: inherit; font-style: inherit; }
+.dm-cell-runline.is-running { color: var(--dl-orange); }
+@media (prefers-reduced-motion: no-preference) {
+  .dm-cell-runline.is-running { animation: dm-pulse 1.6s ease-in-out infinite; }
+}
+@keyframes dm-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.55; } }
+.dm-cell-runline.is-queued { color: var(--dl-muted); font-style: italic; }
+
+/* ------------------------------------------------------------- controls */
+
+.dm-icon-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 1.7rem; height: 1.7rem; padding: 0;
+  border: 1px solid var(--dl-cell-border); border-radius: 4px;
+  background: var(--dl-panel-bg); color: var(--dl-muted); cursor: pointer; font-size: 0.85rem; line-height: 1;
+}
+.dm-icon-btn:hover { border-color: var(--dl-orange); color: var(--dl-orange); }
+.dm-icon-run:hover { border-color: var(--dl-pass-fg); color: var(--dl-pass-fg); }
+.dm-icon-delete:hover { border-color: var(--dl-error-fg); color: var(--dl-error-fg); }
+.dm-icon-run.dm-icon-run-stop { background: var(--dl-error-fg); border-color: var(--dl-error-fg); color: #fff; }
+.dm-icon-preview { width: auto; padding: 0 0.5rem; font-family: var(--dl-mono); font-size: 0.68rem; }
+.dm-header-end { display: flex; gap: var(--dm-gap-xs); flex: none; }
+
+.dm-cell-footbar { display: flex; align-items: center; gap: var(--dm-gap-xs); margin: var(--dm-gap-sm) 0 0; }
+
+/* --------------------------------------------------------- code + gutter */
+
+.dm-cell-body-row { display: flex; align-items: flex-start; gap: var(--dm-gap-xs); }
+.dm-cell-body-row > .dm-editor-lined,
+.dm-cell-body-row > .dm-collapsed-row { flex: 1; min-width: 0; }
+.dm-cell-collapse-col { flex: none; }
+.dm-collapse-toggle {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 1.3rem; height: 2.6rem; border-radius: 4px;
+  color: var(--dl-muted); cursor: pointer; font-size: 1.15rem; line-height: 1;
+  background: none; border: none;
+}
+.dm-collapse-toggle:hover { color: var(--dl-orange); background: var(--dl-cell-bg); }
+
+.dm-editor-lined { display: flex; border-radius: 4px; background: var(--dl-cell-bg); overflow: hidden; }
+.dm-editor-lines {
+  flex: none; padding: 0.6rem 0.5rem 0.6rem 0.6rem;
+  font-family: var(--dl-mono); font-size: 0.85rem; line-height: 1.6;
+  color: var(--dl-muted); text-align: right; user-select: none; white-space: pre;
+}
+.dm-editor-code {
+  flex: 1; min-width: 0; padding: 0.6rem 0.75rem 0.6rem 0.5rem;
+  font-family: var(--dl-mono); font-size: 0.85rem; line-height: 1.6; white-space: pre; overflow-x: auto;
+}
+.dm-editor-code .tok-name { color: var(--dl-heading); }
+.dm-editor-code .tok-num { color: var(--dl-orange); }
+
+.dm-collapsed-row {
+  display: flex; align-items: center; gap: 0.4rem;
+  padding: 0.4rem 0.75rem; border-radius: 4px; background: var(--dl-cell-bg);
+  color: var(--dl-muted); font-family: var(--dl-mono); font-size: 0.8rem; cursor: pointer;
+}
+.dm-collapsed-row:hover { color: var(--dl-orange); }
+
+.dm-cell-output {
+  margin-top: var(--dm-gap-sm); padding: 0.5rem 0.75rem; border-radius: 4px;
+  background: var(--dl-output-bg); font-family: var(--dl-mono); font-size: 0.8rem; color: var(--dl-muted);
+}
+.dm-cell-output.is-error {
+  color: var(--dl-error-fg); background: var(--dl-error-bg);
+  border-left: 3px solid var(--dl-error-fg); border-radius: 0 4px 4px 0; padding-left: 0.65rem;
+}
+
+/* -------------------------------------------------------------- doc/text */
+
+.dm-doc-mock { padding: 0.55rem 0.6rem; border-radius: 4px; cursor: pointer; font-size: 0.95rem; line-height: 1.6; }
+.dm-doc-mock:hover { background: var(--dl-cell-bg); }
+.dm-doc-mock:focus-visible { outline: 2px solid var(--dl-orange); outline-offset: 2px; }
+.dm-html-preview {
+  padding: 0.55rem 0.6rem; border-radius: 4px; cursor: pointer; font-size: 0.9rem;
+  background: color-mix(in srgb, var(--dl-orange) 10%, transparent);
+}
+.dm-html-preview:hover { background: color-mix(in srgb, var(--dl-orange) 16%, transparent); }
+.dm-html-preview:focus-visible { outline: 2px solid var(--dl-orange); outline-offset: 2px; }
+
+.dm-quiet-cell .dm-cell-rail,
+.dm-quiet-cell .dm-cell-head {
+  opacity: 0; pointer-events: none; transition: opacity 0.12s ease;
+}
+.dm-quiet-cell.is-armed .dm-cell-rail,
+.dm-quiet-cell.is-armed .dm-cell-head,
+.dm-quiet-cell:focus-within .dm-cell-rail,
+.dm-quiet-cell:focus-within .dm-cell-head {
+  opacity: 1; pointer-events: auto;
+}
+.quiet-hint { margin: 0.35rem 0 0; font-size: 0.78rem; color: var(--dl-muted); }
+
+/* ------------------------------------------------------------- tooltips */
+
+.tt-wrap { position: relative; display: inline-flex; }
+.tt-trigger { cursor: help; outline: none; }
+.tt-bubble {
+  position: absolute; top: calc(100% + 0.45rem); left: 0; z-index: 20;
+  width: max-content; max-width: 15.5rem; padding: 0.55rem 0.7rem;
+  border: 1px solid var(--dl-cell-border); border-radius: 6px; background: var(--dl-panel-bg);
+  box-shadow: 0 4px 14px var(--dl-shadow); font-family: var(--dl-font-family); font-size: 0.82rem; line-height: 1.45;
+  color: var(--dl-fg); opacity: 0; visibility: hidden; transform: translateY(-2px);
+  transition: opacity 0.12s ease, transform 0.12s ease; pointer-events: none;
+}
+.tt-wrap:hover .tt-bubble, .tt-wrap:focus-within .tt-bubble, .tt-wrap.tt-open .tt-bubble {
+  opacity: 1; visibility: visible; transform: translateY(0);
+}
+
+/* ------------------------------------------------------------ rules panel */
+
+.rules { margin-top: 2.6rem; padding: 1.1rem 1.2rem; border: 1px solid var(--dl-cell-border); border-radius: 8px; background: var(--dl-cell-bg); }
+.rules h2 { margin-top: 0; }
+.rules dl { margin: 0; display: grid; grid-template-columns: 9rem 1fr; gap: 0.5rem 1rem; }
+.rules dt { font-family: var(--dl-mono); font-size: 0.72rem; letter-spacing: 0.02em; color: var(--dl-orange); padding-top: 0.15rem; }
+.rules dd { margin: 0; font-size: 0.88rem; line-height: 1.55; color: var(--dl-muted); }
+@media (max-width: 560px) { .rules dl { grid-template-columns: 1fr; gap: 0.15rem 0; } .rules dt { padding-top: 0.6rem; } }
+
+hr.rule { border: none; border-top: 1px solid var(--dl-rule); margin: 2rem 0; }
+</style>
+
+<div class="page">
+
+  <div class="masthead">
+    <div>
+      <p class="eyebrow">dewmini · settled</p>
+      <h1>The finished cell</h1>
+    </div>
+    <div class="theme-toggle" role="group" aria-label="Preview theme">
+      <button type="button" data-theme-choice="light" class="active">Light</button>
+      <button type="button" data-theme-choice="dark">Dark</button>
+    </div>
+  </div>
+
+  <p class="dek">
+    One notebook, every cell type, each in the shape this conversation
+    actually landed on. Try it — the collapse triangles, the drag pill's
+    tooltip, the quiet Text and HTML cells, and the live batch below all
+    really work.
+  </p>
+
+  <div id="mock-notebook"></div>
+
+  <h2>Mid-batch</h2>
+  <p class="section-note">
+    The same cells, a moment earlier — one of these two is genuinely
+    running, with a real elapsed timer; the other is next in line. Watch
+    it for a few seconds.
+  </p>
+
+  <div id="mock-batch"></div>
+
+  <div class="rules">
+    <h2>What holds for every cell, and what doesn't</h2>
+    <dl>
+      <dt>Numbered</dt>
+      <dd>Every cell, every type — the identity pill never depends on
+        whether anything has run.</dd>
+      <dt>Type colour</dt>
+      <dd>Only the type half of the pill, not the number — Python reuses
+        the app's own orange, Text stays neutral, SQL/HTML/CSS each get
+        one muted hue of their own so a mixed notebook scans by colour as
+        well as by label.</dd>
+      <dt>Drag target</dt>
+      <dd>The whole pill, dots included — not the dots alone.</dd>
+      <dt>Run line</dt>
+      <dd>Only cells that run against the shared session (Python, SQL).
+        Text, HTML, and CSS render from their own content and have
+        nothing to report there.</dd>
+      <dt>Collapse</dt>
+      <dd>Only where there's code to hide: Python, SQL, CSS.</dd>
+      <dt>Edit / View</dt>
+      <dd>Only where there's a rendered form to toggle away from: Text
+        and HTML. Code cells are always their own source.</dd>
+      <dt>Quiet by default</dt>
+      <dd>Text and HTML only — chrome is opacity-hidden, not
+        <code>display:none</code>, so it stays reachable by Tab even
+        while invisible.</dd>
+      <dt>Stale</dt>
+      <dd>Folded into the run line as a third reading — "ran Nth in
+        X ms — edited since" — not a separate badge.</dd>
+    </dl>
+  </div>
+
+</div>
+
+<script>
+function ordinal(n) {
+  const s = ['th', 'st', 'nd', 'rd'];
+  const v = n % 100;
+  return n + (s[(v - 20) % 10] || s[v] || s[0]);
+}
+function formatDuration(ms) {
+  return ms < 1000 ? `${Math.round(ms)} ms` : `${(ms / 1000).toFixed(1)} s`;
+}
+function escapeForMock(text) {
+  return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+function highlightPython(code) {
+  return escapeForMock(code)
+    .replace(/\b(df|summary|conn|city|total|average)\b/g, '<span class="tok-name">$1</span>')
+    .replace(/\b(\d+(\.\d+)?)\b/g, '<span class="tok-num">$1</span>');
+}
+function lineNumbersFor(code) {
+  return code.split('\n').map((_, i) => i + 1).join('\n');
+}
+
+const TYPE_LABEL = { python: 'Python', sql: 'SQL', html: 'HTML', css: 'CSS', text: 'Text' };
+const RUNS_AGAINST_SESSION = new Set(['python', 'sql']);
+const CODE_TYPES = new Set(['python', 'sql', 'css']);
+
+let ttSeq = 0;
+function withTooltip(innerHtml, text, key) {
+  const id = `tt-${key}-${ttSeq++}`;
+  return `<span class="tt-wrap">` +
+    `<span class="tt-trigger" tabindex="0" aria-describedby="${id}">${innerHtml}</span>` +
+    `<span class="tt-bubble" role="tooltip" id="${id}">${text}</span>` +
+  `</span>`;
+}
+document.addEventListener('click', (e) => {
+  const trigger = e.target.closest('.tt-trigger');
+  const wasOpen = trigger && trigger.closest('.tt-wrap').classList.contains('tt-open');
+  document.querySelectorAll('.tt-wrap.tt-open').forEach((w) => w.classList.remove('tt-open'));
+  if (trigger && !wasOpen) trigger.closest('.tt-wrap').classList.add('tt-open');
+});
+
+// Trimmed to just the one fact a plain-text pill can't say for itself:
+// that it drags. "Cell N — Type" is already printed right there, and the
+// runs-against-the-session distinction is a one-time thing to learn, not
+// something worth re-explaining on every cell's hover — it's covered
+// once, for good, in the rules panel below.
+function identityBadge(cell, key) {
+  return withTooltip(
+    `<span class="ct-segmented ct-segmented-drag">` +
+      `<span class="seg-pos"><span class="dm-drag-dots">&#8942;</span>Cell ${cell.pos}</span>` +
+      `<span class="seg-type" data-type="${cell.type}">${TYPE_LABEL[cell.type]}</span>` +
+    `</span>`,
+    'Click, hold, and drag — or tap and hold, then drag — to move this cell.',
+    key,
+  );
+}
+
+function headerEndMarkup(cell, keyPrefix) {
+  const edit = (cell.type === 'text' || cell.type === 'html')
+    ? `<button type="button" class="dm-icon-btn dm-icon-preview" data-role="edit-toggle" title="Edit this cell">Edit</button>`
+    : '';
+  return `<span class="dm-header-end">${edit}` +
+    `<span class="dm-icon-btn" title="Duplicate this cell">&#10697;</span>` +
+    `<span class="dm-icon-btn dm-icon-delete" title="Delete this cell">&times;</span>` +
+  `</span>`;
+}
+
+function runLineMarkup(cell) {
+  if (!RUNS_AGAINST_SESSION.has(cell.type)) return '';
+  if (cell.count == null) return `<div class="dm-cell-runline needs-look">Not yet run this session</div>`;
+  const order = `<span class="run-order">Ran ${ordinal(cell.count)}</span>`;
+  const duration = `<span class="run-duration"> in ${formatDuration(cell.durationMs)}</span>`;
+  if (cell.stale) return `<div class="dm-cell-runline needs-look">${order}${duration} — edited since</div>`;
+  return `<div class="dm-cell-runline">${order}${duration}</div>`;
+}
+
+function footbarMarkup(cell) {
+  if (!RUNS_AGAINST_SESSION.has(cell.type)) return '';
+  return `<div class="dm-cell-footbar">
+    <span class="dm-icon-btn dm-icon-run" id="runbtn-${cell.key}" title="Run this cell">&#9654;</span>
+    <span class="dm-icon-btn" title="Clear this cell's output">&#8634;</span>
+    <span class="dm-icon-btn" title="Run above or below">&#8943;</span>
+    <span class="dm-cell-spacer"></span>
+    <div class="dm-cell-runline" id="runline-${cell.key}">${runLineMarkup(cell).replace(/^<div class="dm-cell-runline[^"]*">|<\/div>$/g, '')}</div>
+  </div>`;
+}
+
+function codeBodyMarkup(cell) {
+  const codeHtml = cell.type === 'python' ? highlightPython(cell.code) : escapeForMock(cell.code);
+  const editor = `<div class="dm-editor-lined" id="editor-${cell.key}" data-collapsed="false">
+    <div class="dm-editor-lines">${lineNumbersFor(cell.code)}</div>
+    <div class="dm-editor-code">${codeHtml}</div>
+  </div>`;
+  return `<div class="dm-cell-body-row">
+    <div class="dm-cell-collapse-col">
+      <button type="button" class="dm-collapse-toggle" data-collapse-for="${cell.key}" aria-label="Collapse this cell's code">&#9662;</button>
+    </div>
+    ${editor}
+  </div>`;
+}
+
+const COLLAPSE_CELLS = {};
+document.addEventListener('click', (e) => {
+  const btn = e.target.closest('.dm-collapse-toggle');
+  if (!btn) return;
+  const key = btn.dataset.collapseFor;
+  const el = document.getElementById(`editor-${key}`);
+  const cell = COLLAPSE_CELLS[key];
+  if (!el || !cell) return;
+  const collapsed = el.dataset.collapsed === 'true';
+  if (collapsed) {
+    const codeHtml = cell.type === 'python' ? highlightPython(cell.code) : escapeForMock(cell.code);
+    el.outerHTML = `<div class="dm-editor-lined" id="editor-${key}" data-collapsed="false">
+      <div class="dm-editor-lines">${lineNumbersFor(cell.code)}</div>
+      <div class="dm-editor-code">${codeHtml}</div>
+    </div>`;
+  } else {
+    const n = cell.code.split('\n').length;
+    el.outerHTML = `<div class="dm-collapsed-row" id="editor-${key}" data-collapsed="true">&#9656; ${n} line${n === 1 ? '' : 's'} hidden</div>`;
+  }
+  btn.innerHTML = collapsed ? '&#9662;' : '&#9656;';
+  btn.setAttribute('aria-label', collapsed ? "Collapse this cell's code" : "Expand this cell's code");
+});
+
+function pythonOrSqlOrCssCell(cell) {
+  const outputHtml = cell.out
+    ? `<div class="dm-cell-output${cell.isError ? ' is-error' : ''}">${escapeForMock(cell.out)}</div>` : '';
+  return `<div class="dm-cell">
+    <div class="dm-cell-rail"></div>
+    <div class="dm-cell-main">
+      <div class="dm-cell-head">
+        ${identityBadge(cell, cell.key)}
+        <span class="dm-cell-spacer"></span>
+        ${headerEndMarkup(cell)}
+      </div>
+      ${codeBodyMarkup(cell)}
+      ${footbarMarkup(cell)}
+      ${outputHtml}
+    </div>
+  </div>`;
+}
+
+// -------------------------------------------------------- text/html quiet
+
+function textOrHtmlCell(cell) {
+  const rendered = cell.type === 'html'
+    ? `<div class="dm-html-preview" id="render-${cell.key}" tabindex="0">${cell.renderedHtml}</div>`
+    : `<div class="dm-doc-mock" id="render-${cell.key}" tabindex="0">${cell.renderedHtml}</div>`;
+  return `<div class="dm-cell dm-quiet-cell" id="wrap-${cell.key}">
+    <div class="dm-cell-rail"></div>
+    <div class="dm-cell-main">
+      <div class="dm-cell-head">
+        ${identityBadge(cell, cell.key)}
+        <span class="dm-cell-spacer"></span>
+        ${headerEndMarkup(cell)}
+      </div>
+      ${rendered}
+    </div>
+  </div>
+  <p class="quiet-hint">Idle until touched — click once to reveal its chrome, again (or double-click) to edit.</p>`;
+}
+
+function textOrHtmlEditMarkup(cell) {
+  return `<div class="dm-cell dm-quiet-cell is-armed" id="wrap-${cell.key}">
+    <div class="dm-cell-rail"></div>
+    <div class="dm-cell-main">
+      <div class="dm-cell-head">
+        ${identityBadge(cell, cell.key)}
+        <span class="dm-cell-spacer"></span>
+        <span class="dm-header-end">
+          <button type="button" class="dm-icon-btn dm-icon-preview" data-role="view-toggle" title="View this cell rendered">View</button>
+          <span class="dm-icon-btn" title="Duplicate this cell">&#10697;</span>
+          <span class="dm-icon-btn dm-icon-delete" title="Delete this cell">&times;</span>
+        </span>
+      </div>
+      <div class="dm-editor-lined">
+        <div class="dm-editor-lines">${lineNumbersFor(cell.source)}</div>
+        <div class="dm-editor-code">${escapeForMock(cell.source)}</div>
+      </div>
+    </div>
+  </div>
+  <p class="quiet-hint">Click View, or click away, to render it again.</p>`;
+}
+
+function mountQuietCell(container, cell) {
+  function showRendered() {
+    container.innerHTML = textOrHtmlCell(cell);
+    const mock = document.getElementById(`render-${cell.key}`);
+    const wrap = document.getElementById(`wrap-${cell.key}`);
+    const editBtn = wrap.querySelector('[data-role="edit-toggle"]');
+    mock.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (wrap.classList.contains('is-armed')) showEdit(); else wrap.classList.add('is-armed');
+    });
+    mock.addEventListener('dblclick', (e) => { e.stopPropagation(); showEdit(); });
+    editBtn.addEventListener('click', (e) => { e.stopPropagation(); showEdit(); });
+  }
+  function showEdit() {
+    container.innerHTML = textOrHtmlEditMarkup(cell);
+    container.querySelector('[data-role="view-toggle"]').addEventListener('click', showRendered);
+  }
+  showRendered();
+  document.addEventListener('click', (e) => {
+    const wrap = document.getElementById(`wrap-${cell.key}`);
+    if (!wrap || e.target.closest(`#wrap-${cell.key}`)) return;
+    wrap.classList.remove('is-armed');
+  });
+}
+
+// ----------------------------------------------------------- the notebook
+
+const notebookCells = [
+  { key: 'n1', pos: 1, type: 'python',
+    code: 'import pandas as pd\ndf = pd.read_csv("readings.csv")\nsummary = df.groupby("city")["temp_c"].mean()\nsummary',
+    out: 'city\nLeeds  14.2\nPerth  22.1\nName: temp_c, dtype: float64',
+    count: 1, durationMs: 340 },
+  { key: 'n2', pos: 2, type: 'text',
+    renderedHtml: 'Averaged by city — <strong>Leeds</strong> is the cooler of the two on this sample.',
+    source: 'Averaged by city — **Leeds** is the cooler of the two on this sample.' },
+  { key: 'n3', pos: 3, type: 'python',
+    code: 'fahrenheit = summary * 1.8 + 32\nfahrenheit',
+    count: null },
+  { key: 'n4', pos: 4, type: 'sql',
+    code: 'CREATE TABLE readings (city TEXT, temp_c REAL);\nINSERT INTO readings VALUES\n  (\'Leeds\', 14.2), (\'Perth\', 22.1);',
+    count: 2, durationMs: 180 },
+  { key: 'n5', pos: 5, type: 'html',
+    renderedHtml: 'Note — <em>convert to °F before sharing with a US collaborator.</em>',
+    source: '<div class="note">\n  Note — <em>convert to °F before\n  sharing with a US collaborator.</em>\n</div>' },
+  { key: 'n6', pos: 6, type: 'css',
+    code: '.note {\n  background: #fde3c7;\n  padding: 0.5rem 0.75rem;\n  border-radius: 4px;\n}' },
+];
+
+const nb = document.getElementById('mock-notebook');
+nb.outerHTML = `<div class="notebook" id="mock-notebook">${
+  notebookCells.map((c) => {
+    if (c.type === 'text' || c.type === 'html') return `<div id="slot-${c.key}"></div>`;
+    COLLAPSE_CELLS[c.key] = c;
+    return pythonOrSqlOrCssCell(c);
+  }).join('')
+}</div>`;
+notebookCells.forEach((c) => {
+  if (c.type === 'text' || c.type === 'html') {
+    const slot = document.getElementById(`slot-${c.key}`);
+    mountQuietCell(slot, c);
+  }
+});
+
+// -------------------------------------------------------------- mid-batch
+
+const batchCells = [
+  { key: 'b1', pos: 3, type: 'python', code: 'fahrenheit = summary * 1.8 + 32\nfahrenheit', totalMs: 1600 },
+  { key: 'b2', pos: 4, type: 'sql', code: 'SELECT city, AVG(temp_c) FROM readings\nGROUP BY city;', totalMs: 1100 },
+];
+batchCells.forEach((c) => { COLLAPSE_CELLS[c.key] = c; });
+
+function batchCellMarkup(cell) {
+  return `<div class="dm-cell">
+    <div class="dm-cell-rail"></div>
+    <div class="dm-cell-main">
+      <div class="dm-cell-head">
+        ${identityBadge(cell, cell.key)}
+        <span class="dm-cell-spacer"></span>
+        ${headerEndMarkup(cell)}
+      </div>
+      ${codeBodyMarkup(cell)}
+      <div class="dm-cell-footbar">
+        <span class="dm-icon-btn dm-icon-run" id="runbtn-${cell.key}" title="Run this cell">&#9654;</span>
+        <span class="dm-icon-btn" title="Clear this cell's output">&#8634;</span>
+        <span class="dm-icon-btn" title="Run above or below">&#8943;</span>
+        <span class="dm-cell-spacer"></span>
+        <div class="dm-cell-runline" id="runline-${cell.key}"></div>
+      </div>
+      <div id="out-${cell.key}"></div>
+    </div>
+  </div>`;
+}
+
+document.getElementById('mock-batch').outerHTML =
+  `<div class="notebook" id="mock-batch">${batchCells.map(batchCellMarkup).join('')}</div>`;
+
+function setRunLine(key, html, cls) {
+  const el = document.getElementById(`runline-${key}`);
+  if (!el) return;
+  el.className = 'dm-cell-runline' + (cls ? ' ' + cls : '');
+  el.innerHTML = html;
+}
+function setRunButton(key, running) {
+  const btn = document.getElementById(`runbtn-${key}`);
+  if (!btn) return;
+  btn.classList.toggle('dm-icon-run-stop', running);
+  btn.innerHTML = running ? '&#9632;' : '&#9654;';
+  btn.title = running ? 'Stop this cell' : 'Run this cell';
+}
+
+async function playBatch() {
+  setRunLine(batchCells[0].key, 'Running…', 'is-running');
+  setRunLine(batchCells[1].key, 'Running next', 'is-queued');
+
+  for (let i = 0; i < batchCells.length; i++) {
+    const cell = batchCells[i];
+    setRunButton(cell.key, true);
+    const startedAt = performance.now();
+    await new Promise((resolve) => {
+      const tick = () => {
+        const elapsed = performance.now() - startedAt;
+        if (elapsed >= cell.totalMs) { resolve(); return; }
+        setRunLine(cell.key, `Running… ${formatDuration(elapsed)}`, 'is-running');
+        setTimeout(tick, 100);
+      };
+      tick();
+    });
+    setRunButton(cell.key, false);
+    setRunLine(cell.key,
+      `<span class="run-order">Ran ${ordinal(i + 1)}</span><span class="run-duration"> in ${formatDuration(cell.totalMs)}</span>`);
+    const next = batchCells[i + 1];
+    if (next) setRunLine(next.key, 'Running next', 'is-queued');
+  }
+}
+playBatch();
+setInterval(playBatch, 6500);
+
+// ------------------------------------------------------------ theme toggle
+
+const root = document.documentElement;
+root.setAttribute('data-theme', 'light');
+for (const btn of document.querySelectorAll('.theme-toggle button')) {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.theme-toggle button').forEach((b) => b.classList.remove('active'));
+    btn.classList.add('active');
+    root.setAttribute('data-theme', btn.dataset.themeChoice);
+  });
+}
+</script>

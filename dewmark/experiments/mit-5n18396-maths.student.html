@@ -1,0 +1,1648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Maths for IT — 5N18396 — Digital Exam</title>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Code+Pro:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#F7F5EF;
+  --surface:#FFFFFF;
+  --navy:#1A2E4A;
+  --navy2:#2B4066;
+  --red:#B03010;
+  --text:#1C1B18;
+  --muted:#5A5750;
+  --border:#D0CCC0;
+  --note-bg:#FFF2A0;
+  --note-bd:#B89000;
+  --note-tx:#1A1000;
+  --ans-bg:#F8FEF8;
+  --ans-bd:#2B5C2B;
+  --graph-bg:#EEF2FF;
+  --graph-bd:#7080C0;
+}
+html{font-size:17px;scroll-behavior:smooth;}
+body{font-family:'Source Serif 4',Georgia,serif;background:var(--bg);color:var(--text);display:flex;height:100vh;overflow:hidden;}
+
+/* --- LOADING BANNER --- */
+
+
+
+
+/* --- SIDEBAR --- */
+#sidebar{
+  width:240px;
+  background:var(--navy);color:white;
+  display:flex;flex-direction:column;
+  height:100vh;overflow:hidden;
+  flex-shrink:0;
+}
+#sidebar-nav{flex:1;overflow-y:auto;min-height:0;}
+#sidebar-logo{
+  padding:0.9rem 1rem 0.6rem;
+  font-family:'Libre Baskerville',Georgia,serif;
+  font-size:0.72rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#90AACC;
+  border-bottom:1px solid rgba(255,255,255,0.1);
+}
+#sidebar-logo span{display:block;color:white;font-size:0.92rem;margin-top:0.2rem;text-transform:none;letter-spacing:0;}
+.nsect{padding:0.45rem 1rem 0.2rem;font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#90AACC;margin-top:0.4rem;}
+.nlink{display:block;padding:0.28rem 1rem 0.28rem 1.4rem;color:#B8CDE0;text-decoration:none;font-size:0.82rem;transition:all 0.12s;}
+.nlink:hover{color:white;background:rgba(255,255,255,0.08);}
+.nlink.active{color:white;font-weight:700;border-left:3px solid #6AABDF;padding-left:calc(1.4rem - 3px);}
+#sidebar-foot{flex-shrink:0;padding:0.7rem 1rem;border-top:1px solid rgba(255,255,255,0.1);}
+#print-btn{width:100%;padding:0.55rem;background:var(--red);color:white;border:none;border-radius:4px;cursor:pointer;font-family:'Libre Baskerville',Georgia,serif;font-size:0.82rem;font-weight:700;transition:background 0.15s;}
+#print-btn:hover{background:#8A2008;}
+
+/* --- SIDEBAR STUDENT + INSTRUCTIONS --- */
+#sidebar-student{padding:0.65rem 1rem 0.55rem;border-bottom:1px solid rgba(255,255,255,0.12);}
+.sid-row{display:flex;align-items:center;gap:0.5rem;margin-bottom:0.28rem;}
+.sid-row:last-child{margin-bottom:0;}
+.sid-label{font-size:0.67rem;font-weight:700;color:#90AACC;white-space:nowrap;min-width:2.1rem;text-transform:uppercase;letter-spacing:0.06em;}
+.sid-input{flex:1;min-width:0;background:transparent;border:none;border-bottom:1px solid rgba(255,255,255,0.2);color:white;font-family:'Source Serif 4',Georgia,serif;font-size:0.82rem;padding:0.06rem 0.2rem;outline:none;}
+.sid-input:focus{border-bottom-color:#6AABDF;}
+.sid-input::placeholder{color:rgba(255,255,255,0.28);font-style:italic;}
+#sidebar-instruct{padding:0.55rem 1rem;border-bottom:1px solid rgba(255,255,255,0.12);}
+.si-item{font-size:0.71rem;color:#B8CDE0;line-height:1.55;margin-bottom:0.2rem;}
+.si-item:last-child{margin-bottom:0;}
+.si-item strong{color:white;font-weight:700;}
+
+/* --- PRINT HEADER --- */
+#print-header{display:none;}
+
+/* --- DRAG HANDLES --- */
+.drag-handle{
+  width:6px;flex-shrink:0;background:transparent;cursor:col-resize;
+  position:relative;transition:background 0.15s;
+}
+.drag-handle:hover{background:rgba(106,171,223,0.25);}
+.drag-handle::after{
+  content:'';position:absolute;top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  width:2px;height:44px;border-radius:2px;
+  background:var(--border);transition:background 0.15s;
+}
+.drag-handle:hover::after{background:#6AABDF;}
+
+/* --- MAIN --- */
+#main{flex:1;min-width:0;padding:2rem 2rem 3rem;overflow-y:auto;}
+
+/* --- RIGHT PANEL --- */
+#right-panel{
+  width:300px;flex-shrink:0;
+  background:var(--surface);border-left:1px solid var(--border);
+  height:100vh;
+  overflow-y:auto;
+  display:flex;flex-direction:column;
+}
+
+/* --- COVER --- */
+#cover{background:white;border:2px solid var(--navy);border-radius:4px;padding:1.75rem;margin-bottom:1.75rem;}
+.cover-top{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid var(--navy);padding-bottom:0.9rem;margin-bottom:0.9rem;}
+.cover-top h1{font-family:'Libre Baskerville',Georgia,serif;font-size:1.4rem;color:var(--navy);}
+.cover-top p{color:var(--muted);font-size:0.88rem;margin-top:0.2rem;}
+.cover-right{text-align:right;font-size:0.82rem;color:var(--muted);}
+.cover-meta{display:grid;grid-template-columns:1fr 1fr;gap:0.35rem 2rem;margin-bottom:0.9rem;font-size:0.88rem;}
+.cover-meta strong{color:var(--navy);}
+.sfields{display:flex;gap:2rem;margin-top:0.6rem;}
+.sfield{display:flex;align-items:center;gap:0.5rem;}
+.sfield label{font-weight:700;font-size:0.88rem;white-space:nowrap;}
+.sfield input{border:none;border-bottom:2px solid var(--navy);background:transparent;font-size:0.9rem;font-family:inherit;padding:0.1rem 0.4rem;min-width:160px;outline:none;}
+.sfield input:focus{border-bottom-color:#5090D0;}
+
+code.ic{background:rgba(0,0,0,0.08);border-radius:3px;padding:0.04em 0.28em;font-family:'Source Code Pro',monospace;font-size:0.82em;}
+
+/* --- COLLAPSIBLE PANELS (right panel) --- */
+.rp-panel{border-bottom:1px solid var(--border);}
+.rp-panel > summary{
+  padding:0.6rem 1rem;list-style:none;
+  font-family:'Libre Baskerville',Georgia,serif;
+  font-size:0.69rem;font-weight:700;letter-spacing:0.09em;text-transform:uppercase;
+  color:var(--muted);cursor:pointer;user-select:none;
+  display:flex;align-items:center;gap:0.45rem;
+}
+.rp-panel > summary::before{content:'▶';font-size:0.56rem;transition:transform 0.18s;color:var(--border);flex-shrink:0;}
+.rp-panel[open] > summary::before{transform:rotate(90deg);}
+.rp-panel > summary::-webkit-details-marker{display:none;}
+.rp-content{padding:0 1rem 0.85rem;}
+.rp-intro{font-size:0.8rem;color:var(--muted);line-height:1.55;margin-bottom:0.7rem;}
+.note-chunk{margin-bottom:0.62rem;}
+.nc-label{font-size:0.77rem;font-weight:700;color:var(--navy);margin-bottom:0.1rem;}
+.nc-body{font-size:0.77rem;color:var(--text);line-height:1.5;}
+
+/* --- COLLAPSIBLE CALCULATOR (left sidebar, fixed at bottom) --- */
+.sidebar-calc{border-top:1px solid rgba(255,255,255,0.1);flex-shrink:0;}
+.sidebar-calc > summary{
+  padding:0.48rem 1rem;list-style:none;
+  font-family:'Libre Baskerville',Georgia,serif;
+  font-size:0.69rem;font-weight:700;letter-spacing:0.09em;text-transform:uppercase;
+  color:#90AACC;cursor:pointer;user-select:none;
+  display:flex;align-items:center;gap:0.45rem;
+}
+.sidebar-calc > summary::before{content:'▶';font-size:0.54rem;transition:transform 0.18s;color:#4A6A8A;flex-shrink:0;}
+.sidebar-calc[open] > summary::before{transform:rotate(90deg);}
+.sidebar-calc > summary::-webkit-details-marker{display:none;}
+.sidebar-calc-body{background:#131315;}
+
+/* --- FORMULA SHEET --- */
+.fs-sec{margin-bottom:0.8rem;padding-bottom:0.8rem;border-bottom:1px solid var(--border);}
+.fs-sec:last-child{border-bottom:none;margin-bottom:0;}
+.fs-stitle{font-family:'Libre Baskerville',Georgia,serif;font-size:0.88rem;font-weight:700;color:var(--navy);margin-bottom:0.4rem;border-bottom:1px solid var(--border);padding-bottom:0.18rem;}
+.fs-item{font-size:0.76rem;line-height:1.5;margin-bottom:0.28rem;color:var(--text);}
+.fs-label{font-weight:700;color:var(--navy);display:block;font-size:0.73rem;margin-bottom:0.08rem;}
+.fs-f{font-family:'Source Code Pro',monospace;font-size:0.74rem;background:#F0F4F0;border-radius:3px;padding:0.18rem 0.4rem;margin:0.08rem 0;color:#1A1A2E;display:block;}
+.fs-tbl{width:100%;border-collapse:collapse;font-size:0.73rem;margin:0.35rem 0;}
+.fs-tbl th{background:var(--navy);color:white;padding:0.18rem 0.3rem;text-align:center;}
+.fs-tbl td{border:1px solid var(--border);padding:0.15rem 0.3rem;text-align:center;}
+
+/* --- SECTION HEADERS --- */
+.sec-head{font-family:'Libre Baskerville',Georgia,serif;font-size:1.4rem;color:var(--navy);border-bottom:3px solid var(--navy);padding-bottom:0.4rem;margin:2.25rem 0 1.25rem;}
+.sec-head small{font-size:0.85rem;color:var(--muted);font-weight:400;}
+
+/* --- QUESTION CARDS --- */
+.qcard{background:white;border:1px solid var(--border);border-radius:6px;margin-bottom:1.25rem;overflow:hidden;scroll-margin-top:2.5rem;}
+.qhd{display:flex;justify-content:space-between;align-items:center;padding:0.55rem 1.2rem;background:var(--navy);color:white;}
+.qnum{font-family:'Libre Baskerville',Georgia,serif;font-weight:700;font-size:0.95rem;}
+.qmk{font-size:0.78rem;color:#90AACC;font-style:italic;}
+.qbody{padding:1.2rem;}
+.qbody>p,.qbody>.preamble{margin-bottom:0.65rem;line-height:1.6;font-size:0.93rem;}
+.preamble{font-size:0.93rem;}
+
+/* --- PARTS --- */
+.part{margin:0.65rem 0;display:flex;gap:0.65rem;align-items:flex-start;}
+.plabel{font-weight:700;color:var(--navy);white-space:nowrap;padding-top:0.1rem;min-width:1.8rem;font-size:0.9rem;}
+.pcontent{flex:1;}
+.pcontent>p{margin-bottom:0.4rem;line-height:1.55;font-size:0.9rem;}
+.pm{font-size:0.78rem;color:var(--muted);font-style:italic;}
+.subpart{margin:0.5rem 0 0.5rem 0.5rem;}
+
+/* --- ANSWER AREAS --- */
+.alabel{display:block;font-size:0.76rem;font-weight:700;color:#2B5C2B;margin:0.35rem 0 0.2rem;text-transform:uppercase;letter-spacing:0.05em;}
+textarea.ans{
+  width:100%;min-height:48px;padding:0.5rem 0.65rem;
+  background:var(--ans-bg);border:1.5px solid var(--ans-bd);border-radius:4px;
+  font-family:Georgia,serif;font-size:0.9rem;color:var(--text);
+  resize:vertical;line-height:1.5;overflow:hidden;
+}
+textarea.ans:focus{outline:none;border-color:#1A6B1A;box-shadow:0 0 0 3px rgba(42,90,42,0.12);}
+
+/* --- VALUE TABLE (B2a) --- */
+.vtable{border-collapse:collapse;margin:0.65rem 0;font-size:0.88rem;}
+.vtable th,.vtable td{border:1.5px solid var(--navy);padding:0.35rem 0.8rem;text-align:center;}
+.vtable th{background:var(--navy);color:white;font-weight:700;}
+.vtable td input{width:4.5rem;border:none;background:#EEF8EE;text-align:center;font-size:0.88rem;font-family:Georgia,serif;padding:0.1rem;outline:none;}
+.vtable td input:focus{outline:2px solid var(--ans-bd);}
+
+/* --- GRAPH DESCRIPTION --- */
+.gdesc{background:var(--graph-bg);border:1px solid var(--graph-bd);border-radius:6px;padding:0.85rem 1.1rem;margin-top:0.45rem;}
+.gdesc>p{font-size:0.82rem;color:#304080;font-weight:700;margin-bottom:0.6rem;}
+.gfield{display:flex;align-items:center;gap:0.45rem;margin-bottom:0.4rem;font-size:0.87rem;flex-wrap:wrap;}
+.gfield label{color:#304080;min-width:195px;}
+.gfield input[type=text]{border:1px solid var(--graph-bd);border-radius:3px;padding:0.18rem 0.4rem;font-size:0.87rem;font-family:Georgia,serif;width:72px;background:white;}
+.gfield select{border:1px solid var(--graph-bd);border-radius:3px;padding:0.18rem 0.4rem;font-size:0.87rem;font-family:Georgia,serif;background:white;}
+
+/* --- CUBIC SHAPES --- */
+.cubics-row{display:flex;gap:0.75rem;margin:0.65rem 0;flex-wrap:wrap;}
+.cubic-opt{display:flex;flex-direction:column;align-items:center;gap:0.2rem;cursor:pointer;padding:0.4rem;border:2px solid var(--border);border-radius:6px;transition:all 0.12s;}
+.cubic-opt:hover{border-color:var(--navy);}
+.cubic-opt.sel{border-color:var(--red);background:#FFF0EE;}
+.cubic-opt canvas{width:96px;height:76px;}
+.cubic-opt span{font-size:0.7rem;color:var(--muted);text-align:center;max-width:96px;}
+
+/* --- TRIANGLE CONTAINERS --- */
+.tri-wrap{display:flex;gap:1.75rem;align-items:flex-start;margin:0.65rem 0;flex-wrap:wrap;}
+.tri-tbl{font-size:0.84rem;}
+.tri-tbl td{padding:0.18rem 0.4rem;}
+.tri-tbl input[type=text]{border:1px solid var(--border);border-radius:3px;padding:0.18rem 0.35rem;font-size:0.84rem;font-family:Georgia,serif;width:72px;}
+
+/* --- BAR CHART --- */
+#barchart{border:1px solid var(--border);border-radius:4px;display:block;}
+
+/* --- CALCULATOR (inline in right panel) --- */
+#calcdisplay{padding:0.6rem 0.8rem;background:#0A0A0C;color:#E0E0E0;border-bottom:1px solid #333;}
+#calcdisplay .hint{font-size:0.66rem;color:#666;margin-bottom:0.2rem;font-family:'Source Code Pro',monospace;line-height:1.4;}
+#calcexpr{width:100%;background:transparent;border:none;color:#E0E0E0;font-family:'Source Code Pro',monospace;font-size:0.88rem;outline:none;}
+#calcresult{color:#7FDFAF;font-size:1rem;margin-top:0.2rem;min-height:1.3em;}
+.calcbtns{padding:0.35rem;display:grid;grid-template-columns:repeat(4,1fr);gap:0.22rem;}
+.cbtn{padding:0.38rem;background:#2C2C2E;color:#E0E0E0;border:none;border-radius:4px;font-size:0.82rem;font-family:'Source Code Pro',monospace;cursor:pointer;transition:background 0.1s;}
+.cbtn:hover{background:#3C3C3E;}
+.cbtn.op{color:#FFB84D;}
+.cbtn.fn{color:#6EC6FF;font-size:0.7rem;}
+.cbtn.eq{background:var(--navy);color:white;}
+.cbtn.eq:hover{background:var(--navy2);}
+.calcnote{padding:0.3rem 0.65rem;font-size:0.65rem;color:#555;border-top:1px solid #2A2A2A;font-family:'Source Code Pro',monospace;line-height:1.5;}
+
+/* --- PRINT --- */
+@media print{
+  #sidebar,#right-panel,.drag-handle,#filesave-panel{display:none!important;}
+  #main{padding:0;}
+  body{display:block;background:white;}
+  #print-header{
+    display:flex!important;justify-content:space-between;align-items:flex-end;
+    border-bottom:2px solid #1A2E4A;padding-bottom:0.5rem;margin-bottom:1.25rem;
+  }
+  .ph-left h1{font-family:'Libre Baskerville',Georgia,serif;font-size:1rem;color:#1A2E4A;margin:0;}
+  .ph-left p{font-size:0.78rem;color:#555;margin:0.12rem 0 0;}
+  .ph-right{text-align:right;font-size:0.88rem;}
+  .ph-name{font-weight:700;color:#1A2E4A;}
+  .ph-sid{color:#555;font-size:0.82rem;}
+  .qcard{page-break-inside:avoid;break-inside:avoid;border:1px solid #999;margin-bottom:0.75rem;}
+  #section-b .qcard{page-break-before:always;break-before:always;}
+  textarea.ans{resize:none;overflow:visible;height:auto;}
+}
+</style>
+</head>
+<body>
+
+
+<nav id="sidebar">
+  <div id="sidebar-nav">
+  <div id="sidebar-logo">Dublin College Dundrum<span>MIT — 5N18396</span></div>
+
+  <div id="sidebar-student">
+    <div class="sid-row">
+      <span class="sid-label">Name</span>
+      <input type="text" id="sname" class="sid-input">
+    </div>
+    <div class="sid-row">
+      <span class="sid-label">ID</span>
+      <input type="text" id="sid" class="sid-input">
+    </div>
+  </div>
+
+  <div id="sidebar-instruct">
+    <div class="si-item">Section A: answer any <strong>10 of 12</strong> questions &mdash; 4 marks each, 40 marks</div>
+    <div class="si-item">Section B: answer any <strong>4 of 6</strong> questions &mdash; 20 marks each, 80 marks</div>
+    <div class="si-item">Calculator: permitted &nbsp;&middot;&nbsp; Show all working</div>
+  </div>
+
+  <div class="nsect">Section A</div>
+  <a href="#a1" class="nlink">A1 — Sets</a>
+  <a href="#a2" class="nlink">A2 — Functions</a>
+  <a href="#a3" class="nlink">A3 — Quadratic</a>
+  <a href="#a4" class="nlink">A4 — Simultaneous</a>
+  <a href="#a5" class="nlink">A5 — Lines</a>
+  <a href="#a6" class="nlink">A6 — Distance</a>
+  <a href="#a7" class="nlink">A7 — Pythagoras</a>
+  <a href="#a8" class="nlink">A8 — Trig ratios</a>
+  <a href="#a9" class="nlink">A9 — Counting</a>
+  <a href="#a10" class="nlink">A10 — Probability</a>
+  <a href="#a11" class="nlink">A11 — Statistics</a>
+  <a href="#a12" class="nlink">A12 — Limits</a>
+  <div class="nsect">Section B</div>
+  <a href="#b1" class="nlink">B1 — Quadratic</a>
+  <a href="#b2" class="nlink">B2 — Cubic</a>
+  <a href="#b3" class="nlink">B3 — Differentiation</a>
+  <a href="#b4" class="nlink">B4 — Probability</a>
+  <a href="#b5" class="nlink">B5 — Trig</a>
+  <a href="#b6" class="nlink">B6 — Similar triangles</a>
+  </div><!-- end #sidebar-nav -->
+  <details class="sidebar-calc">
+    <summary>Calculator</summary>
+    <div class="sidebar-calc-body">
+      <div id="calcdisplay">
+        <div class="hint">sind/cosd/tand = deg &middot; asin_d returns deg</div>
+        <input type="text" id="calcexpr" onkeydown="if(event.key==='Enter')calcEval()">
+        <div id="calcresult">&mdash;</div>
+      </div>
+      <div class="calcbtns">
+        <button class="cbtn" onclick="ca('7')">7</button>
+        <button class="cbtn" onclick="ca('8')">8</button>
+        <button class="cbtn" onclick="ca('9')">9</button>
+        <button class="cbtn op" onclick="ca('/')">&#247;</button>
+        <button class="cbtn" onclick="ca('4')">4</button>
+        <button class="cbtn" onclick="ca('5')">5</button>
+        <button class="cbtn" onclick="ca('6')">6</button>
+        <button class="cbtn op" onclick="ca('*')">&#215;</button>
+        <button class="cbtn" onclick="ca('1')">1</button>
+        <button class="cbtn" onclick="ca('2')">2</button>
+        <button class="cbtn" onclick="ca('3')">3</button>
+        <button class="cbtn op" onclick="ca('-')">&minus;</button>
+        <button class="cbtn" onclick="ca('0')">0</button>
+        <button class="cbtn" onclick="ca('.')">.</button>
+        <button class="cbtn" onclick="cc()">C</button>
+        <button class="cbtn op" onclick="ca('+')">+</button>
+        <button class="cbtn fn" onclick="ca('sqrt(')">&#8730;</button>
+        <button class="cbtn fn" onclick="ca('sind(')">sin&deg;</button>
+        <button class="cbtn fn" onclick="ca('cosd(')">cos&deg;</button>
+        <button class="cbtn fn" onclick="ca('tand(')">tan&deg;</button>
+        <button class="cbtn fn" onclick="ca('asin_d(')">asin&deg;</button>
+        <button class="cbtn fn" onclick="ca('acos_d(')">acos&deg;</button>
+        <button class="cbtn fn" onclick="ca('atan_d(')">atan&deg;</button>
+        <button class="cbtn fn" onclick="ca('pi')">&#960;</button>
+        <button class="cbtn fn" onclick="ca('(')">( </button>
+        <button class="cbtn fn" onclick="ca(')')"> )</button>
+        <button class="cbtn fn" onclick="ca('^')">x^y</button>
+        <button class="cbtn eq" onclick="calcEval()">=</button>
+      </div>
+      <div class="calcnote">sin/cos/tan=rad &middot; sind/cosd/tand=deg</div>
+    </div>
+  </details>
+
+  <div id="sidebar-foot">
+    <div id="save-ind"  style="font-size:0.71rem;color:#90AACC;text-align:center;min-height:1em;margin-bottom:0.2rem;">Not yet saved</div>
+    <div id="file-ind"  style="font-size:0.71rem;color:#90AACC;text-align:center;min-height:1em;margin-bottom:0.45rem;"></div>
+    <button id="print-btn" onclick="window.print()">Export PDF</button>
+    <button onclick="clearSaved()" style="width:100%;margin-top:0.35rem;padding:0.42rem;background:transparent;color:#90AACC;border:1px solid rgba(255,255,255,0.18);border-radius:4px;cursor:pointer;font-family:'Libre Baskerville',Georgia,serif;font-size:0.75rem;">Clear saved data</button>
+  </div>
+</nav>
+
+<div class="drag-handle" id="dh-left" title="Drag to resize navigation"></div>
+
+<main id="main">
+
+<!-- PRINT HEADER — shown only when printing -->
+<div id="print-header">
+  <div class="ph-left">
+    <h1>Maths for Information Technology &mdash; 5N18396</h1>
+    <p>Dublin College Dundrum &nbsp;&middot;&nbsp; Dublin and D&uacute;n Laoghaire ETB &nbsp;&middot;&nbsp; Tutor: Josh Aaron</p>
+  </div>
+  <div class="ph-right">
+    <div class="ph-name" id="ph-name-display"></div>
+    <div class="ph-sid" id="ph-sid-display"></div>
+  </div>
+</div>
+
+<!-- WELCOME NOTE -->
+<div style="background:#EEF4FF;border-left:4px solid #1A2E4A;border-radius:0 6px 6px 0;padding:0.9rem 1.1rem;margin-bottom:1.5rem;">
+  <p style="font-family:'Libre Baskerville',Georgia,serif;font-size:0.9rem;font-weight:700;color:#1A2E4A;margin-bottom:0.35rem;">Before you begin</p>
+  <p style="font-size:0.85rem;color:#2A3A5A;line-height:1.6;">Fill in your <strong>name</strong> and <strong>student ID</strong> in the top-left panel, then click <strong>Create save file</strong> and save the file to your <strong>desktop</strong>. Your answers will be saved there automatically as you work.</p>
+</div>
+
+<!-- FILE SAVE SETUP PANEL -->
+<div id="filesave-panel" style="display:none;margin-bottom:1.75rem;">
+  <div style="background:#FEF9E7;border:2px solid #C0A000;border-radius:6px;padding:1rem 1.25rem;">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.45rem;">
+      <h3 style="font-family:'Libre Baskerville',Georgia,serif;font-size:0.95rem;color:#3A2800;font-weight:700;">Save to a file &mdash; recommended</h3>
+      <button onclick="dismissFileSetup()" style="background:none;border:none;color:#999;cursor:pointer;font-size:1.2rem;line-height:1;padding:0 0.1rem;" title="Dismiss">&times;</button>
+    </div>
+    <p style="font-size:0.85rem;color:#5A4000;margin-bottom:0.75rem;line-height:1.5;">
+      Your answers are already being saved in your browser automatically. For extra safety &mdash; especially on shared or school computers that clear browser data on exit &mdash; you can also save to a <strong>.json</strong> file on your own drive. You can restore from it on any computer, in any session.
+    </p>
+    <div style="display:flex;gap:0.65rem;flex-wrap:wrap;">
+      <button id="btn-new-file" onclick="createSaveFile()"
+        style="padding:0.45rem 1rem;background:#1A2E4A;color:white;border:none;border-radius:4px;cursor:pointer;font-family:'Libre Baskerville',Georgia,serif;font-size:0.82rem;font-weight:700;">
+        Create save file
+      </button>
+      <button id="btn-open-file" onclick="openSaveFile()"
+        style="padding:0.45rem 1rem;background:transparent;color:#3A2800;border:1.5px solid #C0A000;border-radius:4px;cursor:pointer;font-family:'Libre Baskerville',Georgia,serif;font-size:0.82rem;">
+        Restore from existing file
+      </button>
+      <button onclick="dismissFileSetup()"
+        style="padding:0.45rem 0.75rem;background:transparent;color:#999;border:none;cursor:pointer;font-family:'Libre Baskerville',Georgia,serif;font-size:0.82rem;">
+        Browser only
+      </button>
+    </div>
+    <div id="filesave-msg"  style="margin-top:0.5rem;font-size:0.8rem;min-height:1em;"></div>
+    <div id="filesave-noapi" style="display:none;margin-top:0.5rem;font-size:0.78rem;color:#B87000;border-top:1px solid #E0C060;padding-top:0.4rem;">
+      Your browser does not support the File System Access API (Chrome and Edge support it; Firefox and Safari do not). Browser storage will be used instead.
+    </div>
+  </div>
+</div>
+
+<!-- ========== SECTION A ========== -->
+<h2 class="sec-head">Section A <small>&mdash; Answer any 10 of the 12 questions (4 marks each)</small></h2>
+
+<!-- A1 -->
+<div class="qcard" id="a1">
+  <div class="qhd"><span class="qnum">A1 &mdash; Sets</span><span class="qmk">4 marks</span></div>
+  <div class="qbody">
+    <p class="preamble">Two friends compare which apps they have installed on their phones.</p>
+    <p><strong>Sam&rsquo;s phone:</strong> Calculator, Camera, Clock, Maps, Music, Weather</p>
+    <p><strong>Kai&rsquo;s phone:</strong> Calendar, Camera, Clock, News, Photos, Weather</p>
+    <div class="part"><span class="plabel">(a)</span><div class="pcontent">
+      <p>Which apps do both Sam and Kai have? <span class="pm">(2 marks)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="2"></textarea>
+    </div></div>
+    <div class="part"><span class="plabel">(b)</span><div class="pcontent">
+      <p>List every app that appears on at least one of the two phones. <span class="pm">(1 mark)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="2"></textarea>
+    </div></div>
+    <div class="part"><span class="plabel">(c)</span><div class="pcontent">
+      <p>How many apps does Sam have that Kai does not have? <span class="pm">(1 mark)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="1"></textarea>
+    </div></div>
+  </div>
+</div>
+
+<!-- A2 -->
+<div class="qcard" id="a2">
+  <div class="qhd"><span class="qnum">A2 &mdash; Functions</span><span class="qmk">4 marks</span></div>
+  <div class="qbody">
+    <p class="preamble">Let f(x) = 2x + 3.</p>
+    <div class="part"><span class="plabel">(a)</span><div class="pcontent">
+      <p>Find f(4). <span class="pm">(1 mark)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="1"></textarea>
+    </div></div>
+    <div class="part"><span class="plabel">(b)</span><div class="pcontent">
+      <p>Find f<sup>&minus;1</sup>(x), the inverse of f. <span class="pm">(2 marks)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="2"></textarea>
+    </div></div>
+    <div class="part"><span class="plabel">(c)</span><div class="pcontent">
+      <p>Check your answer: show that f(f<sup>&minus;1</sup>(9)) = 9. <span class="pm">(1 mark)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="2"></textarea>
+    </div></div>
+    
+  </div>
+</div>
+
+<!-- A3 -->
+<div class="qcard" id="a3">
+  <div class="qhd"><span class="qnum">A3 &mdash; Quadratic</span><span class="qmk">4 marks</span></div>
+  <div class="qbody">
+    <p class="preamble">Consider f(x) = x&sup2; &minus; 2x &minus; 8.</p>
+    <div class="part"><span class="plabel">(a)</span><div class="pcontent">
+      <p>Write f(x) as a product of two brackets. <span class="pm">(2 marks)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="2"></textarea>
+    </div></div>
+    <div class="part"><span class="plabel">(b)</span><div class="pcontent">
+      <p>State the two values of x where the graph crosses the x-axis. <span class="pm">(1 mark)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="1"></textarea>
+    </div></div>
+    <div class="part"><span class="plabel">(c)</span><div class="pcontent">
+      <p>Describe a rough sketch of the graph: mark the two x-intercepts and the y-intercept. <span class="pm">(1 mark)</span></p>
+      <div class="gdesc">
+        <p>Describe your sketch:</p>
+        <div class="gfield"><label>The parabola opens:</label>
+          <select><option value="">— choose —</option><option>upward (&cup; shape)</option><option>downward (&cap; shape)</option></select>
+        </div>
+        <div class="gfield"><label>x-intercept 1 at x =</label><input type="text"></div>
+        <div class="gfield"><label>x-intercept 2 at x =</label><input type="text"></div>
+        <div class="gfield"><label>y-intercept at y =</label><input type="text"></div>
+      </div>
+    </div></div>
+    
+  </div>
+</div>
+
+<!-- A4 -->
+<div class="qcard" id="a4">
+  <div class="qhd"><span class="qnum">A4 &mdash; Simultaneous Equations</span><span class="qmk">4 marks</span></div>
+  <div class="qbody">
+    <p class="preamble">Solve the following pair of equations and find the values of x and y.</p>
+    <p style="text-align:center;font-size:1rem;margin:0.65rem 0;letter-spacing:0.05em;">3x + y = 10 &nbsp;&nbsp;&nbsp;&nbsp; x + y = 4</p>
+    <label class="alabel">Your working and answer:</label>
+    <textarea class="ans" rows="5"></textarea>
+    
+  </div>
+</div>
+
+<!-- A5 -->
+<div class="qcard" id="a5">
+  <div class="qhd"><span class="qnum">A5 &mdash; Lines</span><span class="qmk">4 marks</span></div>
+  <div class="qbody">
+    <p class="preamble">Two points A(2,&thinsp;1) and B(5,&thinsp;7) lie on the coordinate plane.</p>
+    <div class="part"><span class="plabel">(a)</span><div class="pcontent">
+      <p>Find the slope of the line through A and B. <span class="pm">(1 mark)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="2"></textarea>
+    </div></div>
+    <div class="part"><span class="plabel">(b)</span><div class="pcontent">
+      <p>Write the equation of the line through A and B. <span class="pm">(1 mark)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="2"></textarea>
+    </div></div>
+    <div class="part"><span class="plabel">(c)</span><div class="pcontent">
+      <p>A second line passes through B and is perpendicular to AB. Find its equation. <span class="pm">(2 marks)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="3"></textarea>
+    </div></div>
+    
+  </div>
+</div>
+
+<!-- A6 -->
+<div class="qcard" id="a6">
+  <div class="qhd"><span class="qnum">A6 &mdash; Distance and Midpoint</span><span class="qmk">4 marks</span></div>
+  <div class="qbody">
+    <p class="preamble">Points P(2,&thinsp;&minus;1) and Q(&minus;4,&thinsp;3) are given.</p>
+    <div class="part"><span class="plabel">(a)</span><div class="pcontent">
+      <p>Find the midpoint M of PQ. <span class="pm">(1 mark)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="1"></textarea>
+    </div></div>
+    <div class="part"><span class="plabel">(b)</span><div class="pcontent">
+      <p>Find the distance |PQ|. Leave in surd form if it does not simplify to a whole number. <span class="pm">(2 marks)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="2"></textarea>
+    </div></div>
+    <div class="part"><span class="plabel">(c)</span><div class="pcontent">
+      <p>Find the distance from M to P. How does it compare to |PQ|? <span class="pm">(1 mark)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="2"></textarea>
+    </div></div>
+    
+  </div>
+</div>
+
+<!-- A7 -->
+<div class="qcard" id="a7">
+  <div class="qhd"><span class="qnum">A7 &mdash; Pythagorean Triples</span><span class="qmk">4 marks</span></div>
+  <div class="qbody">
+    <p class="preamble">A right-angled triangle whose three sides are all whole numbers is called a <em>Pythagorean triple</em>. The 3-4-5 triangle is the simplest example, since 3&sup2;&thinsp;+&thinsp;4&sup2;&thinsp;=&thinsp;9&thinsp;+&thinsp;16&thinsp;=&thinsp;25&thinsp;=&thinsp;5&sup2;.</p>
+    <p>Find two more right-angled triangles where every side is a whole number. For each one, write down the three lengths and show that the Pythagorean theorem holds. <span class="pm">(2 marks each)</span></p>
+    <label class="alabel">Your answer:</label>
+    <textarea class="ans" rows="5"></textarea>
+    
+  </div>
+</div>
+
+<!-- A8 -->
+<div class="qcard" id="a8">
+  <div class="qhd"><span class="qnum">A8 &mdash; Trigonometric Ratios</span><span class="qmk">4 marks</span></div>
+  <div class="qbody">
+    <p class="preamble">In a right-angled triangle, the side opposite angle &theta; has length 1 and the hypotenuse has length 2.</p>
+    <div class="part"><span class="plabel">(a)</span><div class="pcontent">
+      <p>Write down sin&thinsp;&theta; and cos&thinsp;&theta;. Leave in surd form where appropriate. <span class="pm">(2 marks)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="2"></textarea>
+    </div></div>
+    <div class="part"><span class="plabel">(b)</span><div class="pcontent">
+      <p>Find the length of the third side (adjacent to &theta;). <span class="pm">(1 mark)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="2"></textarea>
+    </div></div>
+    <div class="part"><span class="plabel">(c)</span><div class="pcontent">
+      <p>Use your answers to find tan&thinsp;&theta;. <span class="pm">(1 mark)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="1"></textarea>
+    </div></div>
+    
+  </div>
+</div>
+
+<!-- A9 -->
+<div class="qcard" id="a9">
+  <div class="qhd"><span class="qnum">A9 &mdash; Counting and Probability</span><span class="qmk">4 marks</span></div>
+  <div class="qbody">
+    <div class="part"><span class="plabel">(a)</span><div class="pcontent">
+      <p>A 4-digit PIN uses digits 0&ndash;9 and digits can be repeated. How many different PINs are there? <span class="pm">(1 mark)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="1"></textarea>
+    </div></div>
+    <div class="part"><span class="plabel">(b)</span><div class="pcontent">
+      <p>One PIN is chosen at random. What is the probability it is exactly &ldquo;2580&rdquo;? <span class="pm">(1 mark)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="1"></textarea>
+    </div></div>
+    <div class="part"><span class="plabel">(c)</span><div class="pcontent">
+      <p>How many PINs are there where no digit is repeated? <span class="pm">(2 marks)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="2"></textarea>
+    </div></div>
+    
+  </div>
+</div>
+
+<!-- A10 -->
+<div class="qcard" id="a10">
+  <div class="qhd"><span class="qnum">A10 &mdash; Probability</span><span class="qmk">4 marks</span></div>
+  <div class="qbody">
+    <p class="preamble">The English alphabet has 26 letters: 6 vowels (a,&thinsp;e,&thinsp;i,&thinsp;o,&thinsp;u,&thinsp;y) and 20 consonants. A letter is chosen at random.</p>
+    <div class="part"><span class="plabel">(a)</span><div class="pcontent">
+      <p>What is the probability the chosen letter is a vowel? <span class="pm">(1 mark)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="1"></textarea>
+    </div></div>
+    <div class="part"><span class="plabel">(b)</span><div class="pcontent">
+      <p>What is the probability the chosen letter is not a vowel? <span class="pm">(1 mark)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="1"></textarea>
+    </div></div>
+    <div class="part"><span class="plabel">(c)</span><div class="pcontent">
+      <p>Two letters are chosen one after the other, without replacement. What is the probability both are vowels? Show your working. <span class="pm">(2 marks)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="3"></textarea>
+    </div></div>
+    
+  </div>
+</div>
+
+<!-- A11 -->
+<div class="qcard" id="a11">
+  <div class="qhd"><span class="qnum">A11 &mdash; Statistics</span><span class="qmk">4 marks</span></div>
+  <div class="qbody">
+    <p class="preamble">A class of 20 students sat a short quiz. Their scores out of 5 are recorded below.</p>
+    <table class="vtable" style="margin:0.65rem 0;">
+      <tr><th>Score</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr>
+      <tr><th>Students</th><td style="padding:0.35rem 1rem;">2</td><td style="padding:0.35rem 1rem;">4</td><td style="padding:0.35rem 1rem;">8</td><td style="padding:0.35rem 1rem;">4</td><td style="padding:0.35rem 1rem;">2</td></tr>
+    </table>
+    <div class="part"><span class="plabel">(a)</span><div class="pcontent">
+      <p>What score appeared most often? <span class="pm">(1 mark)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="1"></textarea>
+    </div></div>
+    <div class="part"><span class="plabel">(b)</span><div class="pcontent">
+      <p>Calculate the mean score. <span class="pm">(2 marks)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="3"></textarea>
+    </div></div>
+    <div class="part"><span class="plabel">(c)</span><div class="pcontent">
+      <p>A student is chosen at random. What is the probability their score is 4 or higher? <span class="pm">(1 mark)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="1"></textarea>
+    </div></div>
+    
+  </div>
+</div>
+
+<!-- A12 -->
+<div class="qcard" id="a12">
+  <div class="qhd"><span class="qnum">A12 &mdash; Limits</span><span class="qmk">4 marks</span></div>
+  <div class="qbody">
+    <p class="preamble">Consider the function f(x) = 5 + 12/x.</p>
+    <div class="part"><span class="plabel">(a)</span><div class="pcontent">
+      <p>Calculate f(1), f(10), f(100), and f(1000). <span class="pm">(2 marks)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="2"></textarea>
+    </div></div>
+    <div class="part"><span class="plabel">(b)</span><div class="pcontent">
+      <p>As x grows larger and larger without end, what single value does f(x) appear to be getting closer and closer to? <span class="pm">(1 mark)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="1"></textarea>
+    </div></div>
+    <div class="part"><span class="plabel">(c)</span><div class="pcontent">
+      <p>What happens to f(x) as x gets very close to 0? Give a brief reason. <span class="pm">(1 mark)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="2"></textarea>
+    </div></div>
+    
+  </div>
+</div>
+
+<!-- ========== SECTION B ========== -->
+<h2 class="sec-head" id="section-b">Section B <small>&mdash; Answer any 4 of the 6 questions (20 marks each)</small></h2>
+
+<!-- B1 -->
+<div class="qcard" id="b1">
+  <div class="qhd"><span class="qnum">B1 &mdash; Quadratic Functions and Derivatives</span><span class="qmk">20 marks</span></div>
+  <div class="qbody">
+    <p class="preamble">Let f(x) = x&sup2; &minus; 4x + 3.</p>
+    <div class="part"><span class="plabel">(a)</span><div class="pcontent">
+      <p>Find the two roots of f(x) = 0 and the y-intercept. Use the roots to find the x-coordinate of the vertex, then calculate the y-value there. State the coordinates of the vertex. <span class="pm">(5 marks)</span></p>
+      <label class="alabel">Your working and answer:</label>
+      <textarea class="ans" rows="6"></textarea>
+    </div></div>
+    <div class="part"><span class="plabel">(b)</span><div class="pcontent">
+      <p>Sketch the graph of f(x), clearly showing the vertex, both roots, and the y-intercept. Label all four points with their coordinates. <span class="pm">(6 marks)</span></p>
+      <div class="gdesc">
+        <p>Describe the graph of f(x) = x&sup2; &minus; 4x + 3:</p>
+        <div class="gfield"><label>The parabola opens:</label>
+          <select><option value="">— choose —</option><option>upward (&cup; shape)</option><option>downward (&cap; shape)</option></select>
+        </div>
+        <div class="gfield"><label>Root 1 at:</label>
+          (&thinsp;<input type="text" style="width:48px">&thinsp;,&thinsp;<input type="text" value="0" style="width:40px">&thinsp;)
+        </div>
+        <div class="gfield"><label>Root 2 at:</label>
+          (&thinsp;<input type="text" style="width:48px">&thinsp;,&thinsp;<input type="text" value="0" style="width:40px">&thinsp;)
+        </div>
+        <div class="gfield"><label>y-intercept at:</label>
+          (&thinsp;<input type="text" value="0" style="width:40px">&thinsp;,&thinsp;<input type="text" style="width:48px">&thinsp;)
+        </div>
+        <div class="gfield"><label>Vertex at:</label>
+          (&thinsp;<input type="text" style="width:48px">&thinsp;,&thinsp;<input type="text" style="width:48px">&thinsp;)
+        </div>
+        <div class="gfield" style="align-items:flex-start;">
+          <label style="padding-top:0.15rem;">Additional notes:</label>
+          <textarea class="ans" rows="2" style="flex:1;min-height:38px;border-color:var(--graph-bd);background:white;"></textarea>
+        </div>
+      </div>
+    </div></div>
+    <div class="part"><span class="plabel">(c)</span><div class="pcontent">
+      <p>Find f&prime;(x). Use it to state the value of x at which f has its minimum, the minimum value of f, and the intervals where f is decreasing and where it is increasing. <span class="pm">(5 marks)</span></p>
+      <label class="alabel">Your working and answer:</label>
+      <textarea class="ans" rows="5"></textarea>
+    </div></div>
+    <div class="part"><span class="plabel">(d)</span><div class="pcontent">
+      <p>Now consider g(x) = f(x&thinsp;+&thinsp;1). Substitute (x&thinsp;+&thinsp;1) into your expression for f and simplify g(x) fully. Then describe in one sentence how the graph of g is related to the graph of f. <span class="pm">(4 marks)</span></p>
+      <label class="alabel">Your working and answer:</label>
+      <textarea class="ans" rows="5"></textarea>
+    </div></div>
+    
+  </div>
+</div>
+
+<!-- B2 -->
+<div class="qcard" id="b2">
+  <div class="qhd"><span class="qnum">B2 &mdash; Cubic Functions</span><span class="qmk">20 marks</span></div>
+  <div class="qbody">
+    <p class="preamble">Let g(x) = x&sup3; &minus; 12x.</p>
+    <div class="part"><span class="plabel">(a)</span><div class="pcontent">
+      <p>Complete the table of values below. <span class="pm">(3 marks)</span></p>
+      <table class="vtable">
+        <tr><th>x</th><td style="background:#F0E8FF;">&minus;2</td><td style="background:#F0E8FF;">&minus;1</td><td style="background:#F0E8FF;">0</td><td style="background:#F0E8FF;">1</td><td style="background:#F0E8FF;">2</td></tr>
+        <tr><th>g(x)</th>
+          <td><input type="text" id="b2t1"></td>
+          <td><input type="text" id="b2t2"></td>
+          <td><input type="text" id="b2t3"></td>
+          <td><input type="text" id="b2t4"></td>
+          <td><input type="text" id="b2t5"></td>
+        </tr>
+      </table>
+    </div></div>
+    <div class="part"><span class="plabel">(b)</span><div class="pcontent">
+      <p>Using your table, sketch the graph of g(x). Mark approximately where the graph crosses the x-axis. <span class="pm">(4 marks)</span></p>
+      <p style="font-size:0.82rem;color:#304080;font-weight:700;margin-bottom:0.5rem;">Choose the shape that most closely matches your sketch, then fill in the details:</p>
+      <div class="cubics-row" id="cubics-row">
+        <div class="cubic-opt" onclick="selectCubic(this,1)" id="co1">
+          <canvas id="cc1" width="96" height="76"></canvas>
+          <span>Positive, two turning points</span>
+        </div>
+        <div class="cubic-opt" onclick="selectCubic(this,2)" id="co2">
+          <canvas id="cc2" width="96" height="76"></canvas>
+          <span>Positive, no turning points</span>
+        </div>
+        <div class="cubic-opt" onclick="selectCubic(this,3)" id="co3">
+          <canvas id="cc3" width="96" height="76"></canvas>
+          <span>Negative, two turning points</span>
+        </div>
+        <div class="cubic-opt" onclick="selectCubic(this,4)" id="co4">
+          <canvas id="cc4" width="96" height="76"></canvas>
+          <span>Negative, no turning points</span>
+        </div>
+      </div>
+      <input type="hidden" id="cubicsel" value="">
+      <div class="gdesc" style="margin-top:0.65rem;">
+        <p>Key features of your sketch:</p>
+        <div class="gfield"><label>Local maximum at x &approx;</label>
+          <input type="text">&thinsp;,&thinsp; g(x) &approx; <input type="text">
+        </div>
+        <div class="gfield"><label>Local minimum at x &approx;</label>
+          <input type="text">&thinsp;,&thinsp; g(x) &approx; <input type="text">
+        </div>
+        <div class="gfield"><label>Crosses x-axis at x &approx;</label>
+          <input type="text" style="width:160px;">
+        </div>
+      </div>
+    </div></div>
+    <div class="part"><span class="plabel">(c)</span><div class="pcontent">
+      <p>Find g&prime;(x) by differentiating. <span class="pm">(2 marks)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="2"></textarea>
+    </div></div>
+    <div class="part"><span class="plabel">(d)</span><div class="pcontent">
+      <p>Set g&prime;(x) = 0 and solve to find the x-coordinates of both turning points. Then calculate the y-value at each one. <span class="pm">(4 marks)</span></p>
+      <label class="alabel">Your working and answer:</label>
+      <textarea class="ans" rows="5"></textarea>
+    </div></div>
+    <div class="part"><span class="plabel">(e)</span><div class="pcontent">
+      <p>For each turning point, explain whether it is a local maximum or a local minimum. Then state the intervals over which g is increasing and over which g is decreasing. <span class="pm">(4 marks)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="4"></textarea>
+    </div></div>
+    <div class="part"><span class="plabel">(f)</span><div class="pcontent">
+      <p>As x grows to be a very large positive number, what happens to g(x)? What about when x becomes a very large negative number? <span class="pm">(2 marks)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="2"></textarea>
+    </div></div>
+    <div class="part"><span class="plabel">(g)</span><div class="pcontent">
+      <p>Calculate g&prime;(0). In one sentence, explain what this value tells you about the shape of the curve at x = 0. <span class="pm">(1 mark)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="2"></textarea>
+    </div></div>
+    
+  </div>
+</div>
+
+<!-- B3 -->
+<div class="qcard" id="b3">
+  <div class="qhd"><span class="qnum">B3 &mdash; Differentiation</span><span class="qmk">20 marks</span></div>
+  <div class="qbody">
+    <div class="part"><span class="plabel">(a)</span><div class="pcontent">
+      <p>Find the derivative of each function below. State which rule you are using in each case.</p>
+      <div class="subpart">
+        <div class="part"><span class="plabel">(i)</span><div class="pcontent">
+          <p>h(x) = 3x&#8308; &minus; 2x&sup3; + 5x &minus; 7 <span class="pm">(3 marks)</span></p>
+          <label class="alabel">Your answer:</label>
+          <textarea class="ans" rows="2"></textarea>
+        </div></div>
+        <div class="part"><span class="plabel">(ii)</span><div class="pcontent">
+          <p>k(x) = (x &minus; 2)(x&sup2; + 3) &nbsp; Expand first, then differentiate. <span class="pm">(4 marks)</span></p>
+          <label class="alabel">Your answer:</label>
+          <textarea class="ans" rows="3"></textarea>
+        </div></div>
+        <div class="part"><span class="plabel">(iii)</span><div class="pcontent">
+          <p>m(x) = (3x + 2)&#8308; <span class="pm">(3 marks)</span></p>
+          <label class="alabel">Your answer:</label>
+          <textarea class="ans" rows="2"></textarea>
+        </div></div>
+      </div>
+    </div></div>
+    <div class="part"><span class="plabel">(b)</span><div class="pcontent">
+      <p>A drone rises straight up from the ground. Its height in metres at time t seconds is:</p>
+      <p style="text-align:center;font-size:1rem;margin:0.5rem 0;letter-spacing:0.04em;">h(t) = 24t &minus; 4t&sup2;, &nbsp; t &ge; 0</p>
+      <div class="subpart">
+        <div class="part"><span class="plabel">(i)</span><div class="pcontent">
+          <p>Find h&prime;(t). In one sentence, describe what h&prime;(t) represents in this situation. <span class="pm">(3 marks)</span></p>
+          <label class="alabel">Your answer:</label>
+          <textarea class="ans" rows="2"></textarea>
+        </div></div>
+        <div class="part"><span class="plabel">(ii)</span><div class="pcontent">
+          <p>At what time t does the drone reach its maximum height? <span class="pm">(2 marks)</span></p>
+          <label class="alabel">Your answer:</label>
+          <textarea class="ans" rows="2"></textarea>
+        </div></div>
+        <div class="part"><span class="plabel">(iii)</span><div class="pcontent">
+          <p>What is that maximum height? <span class="pm">(2 marks)</span></p>
+          <label class="alabel">Your answer:</label>
+          <textarea class="ans" rows="2"></textarea>
+        </div></div>
+        <div class="part"><span class="plabel">(iv)</span><div class="pcontent">
+          <p>After reaching its peak, the drone falls back to the ground. At what time t does it land? <span class="pm">(3 marks)</span></p>
+          <label class="alabel">Your answer:</label>
+          <textarea class="ans" rows="3"></textarea>
+        </div></div>
+      </div>
+    </div></div>
+    
+  </div>
+</div>
+
+<!-- B4 -->
+<div class="qcard" id="b4">
+  <div class="qhd"><span class="qnum">B4 &mdash; Probability and Statistics</span><span class="qmk">20 marks</span></div>
+  <div class="qbody">
+    <p style="font-weight:700;font-size:0.95rem;margin-bottom:0.4rem;">(a) Coin flips</p>
+    <p style="font-size:0.88rem;color:var(--muted);margin-bottom:0.7rem;">There is something genuinely surprising about what happens with long sequences of coin flips.</p>
+    <div class="part"><span class="plabel">(i)</span><div class="pcontent">
+      <p>What is the probability of getting heads on a single flip? <span class="pm">(1 mark)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="1"></textarea>
+    </div></div>
+    <div class="part"><span class="plabel">(ii)</span><div class="pcontent">
+      <p>What is the probability of getting heads three times in a row? Show your reasoning. <span class="pm">(2 marks)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="2"></textarea>
+    </div></div>
+    <div class="part"><span class="plabel">(iii)</span><div class="pcontent">
+      <p>What is the probability of getting heads eight times in a row? <span class="pm">(1 mark)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="1"></textarea>
+    </div></div>
+    <div class="part"><span class="plabel">(iv)</span><div class="pcontent">
+      <p>Suppose you flip a coin 1000 times. At each position from flip 1 through to flip 993, you can ask: &ldquo;do the next 8 flips all come up heads?&rdquo; That gives 993 possible starting positions for a run of 8 heads. Using your answer to (iii), estimate the expected number of 8-heads-in-a-row runs in 1000 flips. Round to one decimal place. Does the answer surprise you? <span class="pm">(4 marks)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="4"></textarea>
+    </div></div>
+
+    <p style="font-weight:700;font-size:0.95rem;margin:1rem 0 0.4rem;">(b) Reading a chart</p>
+    <p style="font-size:0.88rem;margin-bottom:0.5rem;">The bar chart below shows how many times each of the letters A through E appeared in a short message.</p>
+    <canvas id="barchart" width="380" height="220"></canvas>
+
+    <div class="part" style="margin-top:0.75rem;"><span class="plabel">(i)</span><div class="pcontent">
+      <p>Which letter appeared most often? How many times did it appear? <span class="pm">(1 mark)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="1"></textarea>
+    </div></div>
+    <div class="part"><span class="plabel">(ii)</span><div class="pcontent">
+      <p>How many letters are there in the message altogether? <span class="pm">(1 mark)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="1"></textarea>
+    </div></div>
+    <div class="part"><span class="plabel">(iii)</span><div class="pcontent">
+      <p>If one letter is chosen at random from the message, what is the probability it is the letter C? <span class="pm">(3 marks)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="2"></textarea>
+    </div></div>
+    <div class="part"><span class="plabel">(iv)</span><div class="pcontent">
+      <p>What is the probability the chosen letter is not C? <span class="pm">(1 mark)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="1"></textarea>
+    </div></div>
+    <div class="part"><span class="plabel">(v)</span><div class="pcontent">
+      <p>Find the mean frequency across the five letters A&ndash;E. <span class="pm">(3 marks)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="2"></textarea>
+    </div></div>
+    <div class="part"><span class="plabel">(vi)</span><div class="pcontent">
+      <p>List the five letters in order from least likely to most likely to be chosen at random. <span class="pm">(3 marks)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="1"></textarea>
+    </div></div>
+    
+  </div>
+</div>
+
+<!-- B5 -->
+<div class="qcard" id="b5">
+  <div class="qhd"><span class="qnum">B5 &mdash; Triangle Trigonometry</span><span class="qmk">20 marks</span></div>
+  <div class="qbody">
+    <p class="preamble">In triangle ABC: angle C = 40&deg;, side a = BC = 7 cm, and side b = AC = 10 cm.</p>
+    <div class="part"><span class="plabel">(i)</span><div class="pcontent">
+      <p>Label the triangle diagram below with all known sides and the known angle. <span class="pm">(3 marks)</span></p>
+      <div class="tri-wrap">
+        <div>
+          <svg viewBox="0 0 260 200" width="260" height="200" style="overflow:visible;display:block;">
+            <polygon points="28,168 228,168 120,30" fill="#F4F0FF" stroke="#1A2E4A" stroke-width="2"/>
+            <!-- Angle arc at C (bottom-left) -->
+            <path d="M 50,168 A 24,24 0 0,1 40,145" fill="none" stroke="#C04020" stroke-width="1.5"/>
+            <!-- Side italic labels -->
+            <text x="52"  y="100" font-family="Georgia,serif" font-size="13" fill="#1A2E4A" font-style="italic">a</text>
+            <text x="192" y="100" font-family="Georgia,serif" font-size="13" fill="#1A2E4A" font-style="italic">b</text>
+            <text x="120" y="188" font-family="Georgia,serif" font-size="13" fill="#1A2E4A" font-style="italic">c</text>
+            <!-- Vertex labels -->
+            <text x="8"   y="183" font-family="Georgia,serif" font-size="14" fill="#1A2E4A" font-weight="bold">C</text>
+            <text x="232" y="183" font-family="Georgia,serif" font-size="14" fill="#1A2E4A" font-weight="bold">A</text>
+            <text x="114" y="22"  font-family="Georgia,serif" font-size="14" fill="#1A2E4A" font-weight="bold">B</text>
+          </svg>
+        </div>
+        <table class="tri-tbl">
+          <tr><td colspan="2"><strong>Fill in the known values:</strong></td></tr>
+          <tr><td>Angle C =</td><td><input type="text"></td></tr>
+          <tr><td>Side a = BC =</td><td><input type="text"></td></tr>
+          <tr><td>Side b = AC =</td><td><input type="text"></td></tr>
+          <tr><td style="color:var(--muted);">Side c = AB =</td><td><input type="text"></td></tr>
+          <tr><td style="color:var(--muted);">Angle A =</td><td><input type="text"></td></tr>
+          <tr><td style="color:var(--muted);">Angle B =</td><td><input type="text"></td></tr>
+        </table>
+      </div>
+    </div></div>
+    <div class="part"><span class="plabel">(ii)</span><div class="pcontent">
+      <p>Using the Cosine Rule, find the length of side c = AB. Round to 2 decimal places. <span class="pm">(6 marks)</span></p>
+      <label class="alabel">Your working and answer:</label>
+      <textarea class="ans" rows="6"></textarea>
+    </div></div>
+    <div class="part"><span class="plabel">(iii)</span><div class="pcontent">
+      <p>Using the Sine Rule, find angle A. Round to 1 decimal place. <span class="pm">(6 marks)</span></p>
+      <label class="alabel">Your working and answer:</label>
+      <textarea class="ans" rows="5"></textarea>
+    </div></div>
+    <div class="part"><span class="plabel">(iv)</span><div class="pcontent">
+      <p>Find angle B. <span class="pm">(2 marks)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="2"></textarea>
+    </div></div>
+    <div class="part"><span class="plabel">(v)</span><div class="pcontent">
+      <p>Calculate the area of triangle ABC using Area = &frac12;ab&thinsp;sin&thinsp;C. <span class="pm">(3 marks)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="2"></textarea>
+    </div></div>
+    
+  </div>
+</div>
+
+<!-- B6 -->
+<div class="qcard" id="b6">
+  <div class="qhd"><span class="qnum">B6 &mdash; Similar Triangles</span><span class="qmk">20 marks</span></div>
+  <div class="qbody">
+    <p class="preamble">Two right-angled triangles are given. In each triangle, the two shorter sides are equal in length. The longest side of the small triangle is 8 cm, and the longest side of the large triangle is 24 cm.</p>
+    <div class="part"><span class="plabel">(a)</span><div class="pcontent">
+      <p>The two triangles shown are described as <em>similar</em>. Explain in your own words what it means for two triangles to be similar. Then, looking only at what is already marked on the diagrams, identify the features that are the same in both triangles and explain briefly why this is enough to confirm that they are similar to each other. <span class="pm">(4 marks)</span></p>
+      <div class="tri-wrap">
+        <div>
+          <p style="font-size:0.82rem;font-weight:700;margin-bottom:0.35rem;">Small triangle (hypotenuse = 8 cm)</p>
+          <svg viewBox="0 0 130 125" width="130" height="125" style="overflow:visible;display:block;">
+            <polygon points="10,110 110,110 10,10" fill="#F4FFF4" stroke="#1A2E4A" stroke-width="2"/>
+            <polyline points="10,92 28,92 28,110" fill="none" stroke="#1A2E4A" stroke-width="1.5"/>
+            <line x1="57" y1="106" x2="63" y2="114" stroke="#1A2E4A" stroke-width="1.5"/>
+            <line x1="6"  y1="57"  x2="14" y2="63"  stroke="#1A2E4A" stroke-width="1.5"/>
+            <text x="66" y="57" font-family="Georgia,serif" font-size="12" fill="#C04020" font-weight="bold">8 cm</text>
+          </svg>
+        </div>
+        <div>
+          <p style="font-size:0.82rem;font-weight:700;margin-bottom:0.35rem;">Large triangle (hypotenuse = 24 cm)</p>
+          <svg viewBox="0 0 165 155" width="165" height="155" style="overflow:visible;display:block;">
+            <polygon points="10,140 145,140 10,10" fill="#F4FFF4" stroke="#1A2E4A" stroke-width="2"/>
+            <polyline points="10,120 30,120 30,140" fill="none" stroke="#1A2E4A" stroke-width="1.5"/>
+            <line x1="74" y1="136" x2="80" y2="144" stroke="#1A2E4A" stroke-width="1.5"/>
+            <line x1="6"  y1="73"  x2="14" y2="79"  stroke="#1A2E4A" stroke-width="1.5"/>
+            <text x="85" y="72" font-family="Georgia,serif" font-size="12" fill="#C04020" font-weight="bold">24 cm</text>
+          </svg>
+        </div>
+      </div>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="4"></textarea>
+    </div></div>
+    <div class="part"><span class="plabel">(b)</span><div class="pcontent">
+      <p>Using the fact that the angles of any triangle sum to 180&deg;, find the size of each unknown angle in the small triangle. Explain your reasoning in full. <span class="pm">(4 marks)</span></p>
+      <label class="alabel">Your working and answer:</label>
+      <textarea class="ans" rows="4"></textarea>
+    </div></div>
+    <div class="part"><span class="plabel">(c)</span><div class="pcontent">
+      <p>Find the length of each shorter side of the small triangle. Leave your answer in surd form. <span class="pm">(4 marks)</span></p>
+      <label class="alabel">Your working and answer:</label>
+      <textarea class="ans" rows="4"></textarea>
+    </div></div>
+    <div class="part"><span class="plabel">(d)</span><div class="pcontent">
+      <p>Write down all three side lengths of the large triangle, and state the scale factor from the small triangle to the large one. <span class="pm">(4 marks)</span></p>
+      <label class="alabel">Your answer:</label>
+      <textarea class="ans" rows="3"></textarea>
+    </div></div>
+    <div class="part"><span class="plabel">(e)</span><div class="pcontent">
+      <p>Calculate the area of each triangle, showing your working. By what factor is the area of the large triangle greater than the area of the small one? <span class="pm">(4 marks)</span></p>
+      <label class="alabel">Your working and answer:</label>
+      <textarea class="ans" rows="5"></textarea>
+    </div></div>
+    
+  </div>
+</div>
+<!-- FINISH NOTE -->
+<div style="background:#F0FBF0;border-left:4px solid #2B5C2B;border-radius:0 6px 6px 0;padding:0.9rem 1.1rem;margin-top:2rem;">
+  <p style="font-family:'Libre Baskerville',Georgia,serif;font-size:0.9rem;font-weight:700;color:#1A4A1A;margin-bottom:0.35rem;">Well done — you have reached the end of the exam.</p>
+  <p style="font-size:0.85rem;color:#1A3A1A;line-height:1.6;">If you have time, go back through your answers and check your working. When you are happy, click the <strong>Export PDF</strong> button in the bottom-left panel and save the PDF to your <strong>desktop</strong>.</p>
+</div>
+
+</main>
+
+<div class="drag-handle" id="dh-right" title="Drag to resize panel"></div>
+
+<aside id="right-panel">
+
+  <!-- NOTATION -->
+  <details class="rp-panel" open>
+    <summary>Notation</summary>
+    <div class="rp-content">
+      <p class="rp-intro">Use whatever feels natural &mdash; the only thing that matters is being consistent within each answer.</p>
+      <div class="note-chunk">
+        <div class="nc-label">Powers</div>
+        <div class="nc-body"><code class="ic">x^2</code>, <code class="ic">x**2</code>, and &ldquo;x to the power 2&rdquo; all mean the same thing. <code class="ic">x**2</code> is the same thing.</div>
+      </div>
+      <div class="note-chunk">
+        <div class="nc-label">Fractions</div>
+        <div class="nc-body">Write <code class="ic">a/b</code>. Use brackets for compound tops or bottoms: <code class="ic">(x+3)/(x-1)</code>.</div>
+      </div>
+      <div class="note-chunk">
+        <div class="nc-label">Square roots</div>
+        <div class="nc-body">Write <code class="ic">sqrt(x)</code> or surd form like <code class="ic">4&radic;2</code>..</div>
+      </div>
+      <div class="note-chunk">
+        <div class="nc-label">Derivatives</div>
+        <div class="nc-body"><code class="ic">f'(x)</code>, <code class="ic">dy/dx</code>, or <code class="ic">d/dx</code> are all fine &mdash; say once at the top of each calculus answer which you&rsquo;re using.</div>
+      </div>
+      <div class="note-chunk">
+        <div class="nc-label">Trig and degrees</div>
+        <div class="nc-body">The calculator uses <code class="ic">sind/cosd/tand</code> for degree input. To convert manually: multiply degrees by &pi;/180.</div>
+      </div>
+      <div class="note-chunk">
+        <div class="nc-label">Intervals</div>
+        <div class="nc-body"><code class="ic">x &lt; 2</code> or <code class="ic">(-inf,&thinsp;2)</code> are both fine &mdash; pick one per answer and stick to it.</div>
+      </div>
+      <div class="note-chunk">
+        <div class="nc-label">Infinity</div>
+        <div class="nc-body">Write <code class="ic">+inf</code> or <code class="ic">-inf</code> when describing what a function approaches.</div>
+      </div>
+      <div class="note-chunk">
+        <div class="nc-label">Working</div>
+        <div class="nc-body">A correct final answer with no working shown may not receive full marks.</div>
+      </div>
+    </div>
+  </details>
+
+  <!-- FORMULA SHEET -->
+  <details class="rp-panel">
+    <summary>Formula Sheet</summary>
+    <div class="rp-content">
+
+      <div class="fs-sec">
+        <div class="fs-stitle">Algebra and Functions</div>
+        <div class="fs-item"><span class="fs-label">Quadratic formula</span>
+          <code class="fs-f">x = (&minus;b &plusmn; &radic;(b<sup>2</sup>&minus;4ac)) / (2a)</code>
+        </div>
+        <div class="fs-item"><span class="fs-label">Completing the square</span>
+          <code class="fs-f">ax<sup>2</sup>+bx+c = a(x + b/2a)<sup>2</sup> + c &minus; b<sup>2</sup>/4a</code>
+        </div>
+        <div class="fs-item"><span class="fs-label">Inverse function f<sup>&minus;1</sup>(x)</span>
+          Write y&nbsp;=&nbsp;f(x), rearrange to make x the subject, then swap x and y.
+        </div>
+      </div>
+
+      <div class="fs-sec">
+        <div class="fs-stitle">Differentiation</div>
+        <div class="fs-item"><span class="fs-label">Power rule</span>
+          <code class="fs-f">d/dx [x<sup>n</sup>] = n x<sup>n&minus;1</sup></code>
+        </div>
+        <div class="fs-item"><span class="fs-label">Sum rule</span>
+          <code class="fs-f">(f + g)&prime; = f&prime; + g&prime;</code>
+        </div>
+        <div class="fs-item"><span class="fs-label">Product rule</span>
+          <code class="fs-f">(fg)&prime; = f&prime;g + fg&prime;</code>
+        </div>
+        <div class="fs-item"><span class="fs-label">Quotient rule</span>
+          <code class="fs-f">(f/g)&prime; = (f&prime;g &minus; fg&prime;) / g<sup>2</sup></code>
+        </div>
+        <div class="fs-item"><span class="fs-label">Chain rule</span>
+          <code class="fs-f">d/dx [f(g(x))] = f&prime;(g(x)) &middot; g&prime;(x)</code>
+        </div>
+        <div class="fs-item"><span class="fs-label">Trig derivatives</span>
+          <code class="fs-f">d/dx [sin x] = cos x</code>
+          <code class="fs-f">d/dx [cos x] = &minus;sin x</code>
+        </div>
+        <div class="fs-item" style="margin-top:0.25rem;line-height:1.6;">
+          Increasing where f&prime;(x)&nbsp;&gt;&nbsp;0 &nbsp;&middot;&nbsp; Decreasing where f&prime;(x)&nbsp;&lt;&nbsp;0<br>
+          Turning point: f&prime;(x)&nbsp;=&nbsp;0
+        </div>
+      </div>
+
+      <div class="fs-sec">
+        <div class="fs-stitle">Coordinate Geometry</div>
+        <div class="fs-item"><span class="fs-label">Midpoint</span>
+          <code class="fs-f">M = ( (x<sub>1</sub>+x<sub>2</sub>)/2 , (y<sub>1</sub>+y<sub>2</sub>)/2 )</code>
+        </div>
+        <div class="fs-item"><span class="fs-label">Distance</span>
+          <code class="fs-f">|PQ| = &radic;( (x<sub>2</sub>&minus;x<sub>1</sub>)<sup>2</sup> + (y<sub>2</sub>&minus;y<sub>1</sub>)<sup>2</sup> )</code>
+        </div>
+        <div class="fs-item"><span class="fs-label">Slope</span>
+          <code class="fs-f">m = (y<sub>2</sub>&minus;y<sub>1</sub>) / (x<sub>2</sub>&minus;x<sub>1</sub>)</code>
+        </div>
+        <div class="fs-item">Parallel lines have equal slopes.</div>
+        <div class="fs-item"><span class="fs-label">Perpendicular lines</span>
+          <code class="fs-f">m<sub>1</sub> &times; m<sub>2</sub> = &minus;1</code>
+        </div>
+        <div class="fs-item"><span class="fs-label">Line through (x<sub>1</sub>,&thinsp;y<sub>1</sub>) with slope m</span>
+          <code class="fs-f">y &minus; y<sub>1</sub> = m(x &minus; x<sub>1</sub>)</code>
+        </div>
+      </div>
+
+      <div class="fs-sec">
+        <div class="fs-stitle">Counting and Probability</div>
+        <div class="fs-item"><span class="fs-label">Factorial</span>
+          <code class="fs-f">n! = n &times; (n&minus;1) &times; &middot;&middot;&middot; &times; 2 &times; 1</code>
+        </div>
+        <div class="fs-item"><span class="fs-label">Arrangements — order matters</span>
+          <code class="fs-f">P(n,r) = n! / (n&minus;r)!</code>
+        </div>
+        <div class="fs-item"><span class="fs-label">Selections — order doesn&rsquo;t matter</span>
+          <code class="fs-f">C(n,r) = n! / (r! (n&minus;r)!)</code>
+        </div>
+        <div class="fs-item" style="line-height:1.65;">
+          0 &le; P(A) &le; 1<br>
+          P(not A) = 1 &minus; P(A)
+        </div>
+        <div class="fs-item"><span class="fs-label">If A and B cannot both happen</span>
+          <code class="fs-f">P(A or B) = P(A) + P(B)</code>
+        </div>
+        <div class="fs-item"><span class="fs-label">If A and B are independent</span>
+          <code class="fs-f">P(A and B) = P(A) &times; P(B)</code>
+        </div>
+        <div class="fs-item"><span class="fs-label">Expected occurrences</span>
+          <code class="fs-f">E = (number of tries) &times; P(event)</code>
+        </div>
+      </div>
+
+      <div class="fs-sec">
+        <div class="fs-stitle">Trigonometry &mdash; Right-Angled Triangle</div>
+        <div class="fs-item">
+          <code class="fs-f">a<sup>2</sup> + b<sup>2</sup> = c<sup>2</sup></code>
+          <code class="fs-f">sin &theta; = opposite / hypotenuse</code>
+          <code class="fs-f">cos &theta; = adjacent / hypotenuse</code>
+          <code class="fs-f">tan &theta; = opposite / adjacent</code>
+        </div>
+      </div>
+
+      <div class="fs-sec">
+        <div class="fs-stitle">Trigonometry &mdash; Any Triangle</div>
+        <div class="fs-item"><span class="fs-label">Sine rule</span>
+          <code class="fs-f">a / sin A = b / sin B = c / sin C</code>
+        </div>
+        <div class="fs-item"><span class="fs-label">Cosine rule</span>
+          <code class="fs-f">c<sup>2</sup> = a<sup>2</sup> + b<sup>2</sup> &minus; 2ab cos C</code>
+        </div>
+        <div class="fs-item"><span class="fs-label">Area</span>
+          <code class="fs-f">Area = &frac12; ab sin C</code>
+        </div>
+      </div>
+
+      <div class="fs-sec">
+        <div class="fs-stitle">Trigonometric Functions &mdash; A sin(Bx+C)+D</div>
+        <div class="fs-item">
+          <code class="fs-f">Amplitude  = |A|  (half the total height)</code>
+          <code class="fs-f">Period     = 2&pi; / |B|  (one full wave)</code>
+          <code class="fs-f">Phase shift = &minus;C / B  (left or right)</code>
+          <code class="fs-f">Vert. shift = D</code>
+        </div>
+        <div class="fs-item">180&deg; = &pi; rad &nbsp;&middot;&nbsp; to convert: multiply degrees by &pi;/180</div>
+      </div>
+
+      <div class="fs-sec">
+        <div class="fs-stitle">Unit Circle Values</div>
+        <table class="fs-tbl">
+          <tr><th>Angle</th><th>sin</th><th>cos</th></tr>
+          <tr><td>0&deg; / 0</td><td>0</td><td>1</td></tr>
+          <tr><td>30&deg; / &pi;/6</td><td>1/2</td><td>&radic;3/2</td></tr>
+          <tr><td>45&deg; / &pi;/4</td><td>&radic;2/2</td><td>&radic;2/2</td></tr>
+          <tr><td>60&deg; / &pi;/3</td><td>&radic;3/2</td><td>1/2</td></tr>
+          <tr><td>90&deg; / &pi;/2</td><td>1</td><td>0</td></tr>
+          <tr><td>180&deg; / &pi;</td><td>0</td><td>&minus;1</td></tr>
+          <tr><td>270&deg; / 3&pi;/2</td><td>&minus;1</td><td>0</td></tr>
+        </table>
+      </div>
+
+      <div class="fs-sec">
+        <div class="fs-stitle">Statistics</div>
+        <div class="fs-item"><span class="fs-label">Mean</span>
+          Add up all values and divide by how many there are.
+        </div>
+        <div class="fs-item"><span class="fs-label">Mean from a frequency table</span>
+          <code class="fs-f">mean = &Sigma;(value &times; frequency) / total frequency</code>
+          For grouped data, use the midpoint of each group as the value.
+        </div>
+        <div class="fs-item"><span class="fs-label">Median</span>
+          Middle value when all values are listed in order.
+        </div>
+        <div class="fs-item"><span class="fs-label">Mode</span>
+          The value that appears most often.
+        </div>
+        <div class="fs-item"><span class="fs-label">Range</span>
+          Largest value minus smallest value.
+        </div>
+      </div>
+
+    </div>
+  </details>
+
+</aside>
+
+<script>
+// ===== TEXTAREA AUTO-EXPAND =====
+document.querySelectorAll('textarea').forEach(ta => {
+  ta.addEventListener('input', function() {
+    this.style.height = 'auto';
+    this.style.height = this.scrollHeight + 'px';
+  });
+});
+
+// ===== CALCULATOR =====
+function ca(v) { const e = document.getElementById('calcexpr'); e.value += v; e.focus(); }
+function cc() { document.getElementById('calcexpr').value = ''; document.getElementById('calcresult').textContent = '—'; }
+
+function calcEval() {
+  const raw = document.getElementById('calcexpr').value;
+  const res = document.getElementById('calcresult');
+  try {
+    const e = raw
+      .replace(/sind\(/g,   '(__D2R__)(')
+      .replace(/cosd\(/g,   '(__D2RC__)(')
+      .replace(/tand\(/g,   '(__D2RT__)(')
+      .replace(/asin_d\(/g, '(__ASIND__)(')
+      .replace(/acos_d\(/g, '(__ACOSD__)(')
+      .replace(/atan_d\(/g, '(__ATAND__)(')
+      .replace(/\bsin\(/g,  'Math.sin(')
+      .replace(/\bcos\(/g,  'Math.cos(')
+      .replace(/\btan\(/g,  'Math.tan(')
+      .replace(/\basin\(/g, 'Math.asin(')
+      .replace(/\bacos\(/g, 'Math.acos(')
+      .replace(/\batan\(/g, 'Math.atan(')
+      .replace(/\bsqrt\(/g, 'Math.sqrt(')
+      .replace(/\babs\(/g,  'Math.abs(')
+      .replace(/\bln\(/g,   'Math.log(')
+      .replace(/\blog\(/g,  'Math.log10(')
+      .replace(/\bpi\b/g,   'Math.PI')
+      .replace(/\be\b/g,    'Math.E')
+      .replace(/\^/g,       '**')
+      .replace(/__D2R__\(/g,   '(d=>Math.sin(d*Math.PI/180))(')
+      .replace(/__D2RC__\(/g,  '(d=>Math.cos(d*Math.PI/180))(')
+      .replace(/__D2RT__\(/g,  '(d=>Math.tan(d*Math.PI/180))(')
+      .replace(/__ASIND__\(/g, '(v=>Math.asin(v)*180/Math.PI)(')
+      .replace(/__ACOSD__\(/g, '(v=>Math.acos(v)*180/Math.PI)(')
+      .replace(/__ATAND__\(/g, '(v=>Math.atan(v)*180/Math.PI)(');
+    const val = Function('"use strict";return(' + e + ')')();
+    const disp = (typeof val==='number' && !Number.isInteger(val))
+      ? parseFloat(val.toFixed(8)).toString()
+      : String(val);
+    res.textContent = '= ' + disp;
+    res.style.color = '#7FDFAF';
+  } catch(err) {
+    res.textContent = 'Error: ' + err.message;
+    res.style.color = '#FF8080';
+  }
+}
+
+// ===== CUBIC SHAPE CANVASES =====
+function drawCubic(canvasId, fn, col) {
+  const cv = document.getElementById(canvasId);
+  if (!cv) return;
+  const ctx = cv.getContext('2d');
+  const W = cv.width, H = cv.height;
+  const cx = W/2, cy = H/2;
+  const xs = W/6.2, ys = H/8;
+  ctx.fillStyle = '#F8F6F0';
+  ctx.fillRect(0,0,W,H);
+  ctx.strokeStyle = '#CCCCCC'; ctx.lineWidth = 0.8;
+  ctx.beginPath(); ctx.moveTo(4,cy); ctx.lineTo(W-4,cy); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(cx,4); ctx.lineTo(cx,H-4); ctx.stroke();
+  ctx.strokeStyle = col; ctx.lineWidth = 2;
+  ctx.beginPath();
+  let first = true;
+  for (let px = 0; px <= W; px++) {
+    const x = (px - cx) / xs;
+    const y = fn(x);
+    const py = cy - y * ys;
+    if (py < -4 || py > H+4) { first = true; continue; }
+    first ? ctx.moveTo(px,py) : ctx.lineTo(px,py);
+    first = false;
+  }
+  ctx.stroke();
+}
+
+function selectCubic(el, idx) {
+  document.querySelectorAll('.cubic-opt').forEach(o => o.classList.remove('sel'));
+  el.classList.add('sel');
+  document.getElementById('cubicsel').value = idx;
+}
+
+// ===== BAR CHART =====
+function drawBarChart() {
+  const cv = document.getElementById('barchart');
+  if (!cv) return;
+  const ctx = cv.getContext('2d');
+  const W = cv.width, H = cv.height;
+  const data = [['A',5],['B',8],['C',3],['D',7],['E',2]];
+  const maxV = 9;
+  const ml=44, mr=16, mt=20, mb=44;
+  const cw = W-ml-mr, ch = H-mt-mb;
+  const slot = cw / data.length;
+  const bw = slot * 0.55;
+
+  ctx.fillStyle = '#FAFAF7'; ctx.fillRect(0,0,W,H);
+
+  // gridlines
+  for (let v=0; v<=maxV; v+=2) {
+    const y = mt + ch - (v/maxV)*ch;
+    ctx.strokeStyle='#E4E0D8'; ctx.lineWidth=0.8;
+    ctx.beginPath(); ctx.moveTo(ml,y); ctx.lineTo(ml+cw,y); ctx.stroke();
+    ctx.fillStyle='#777'; ctx.font='11px Georgia'; ctx.textAlign='right';
+    ctx.fillText(v, ml-5, y+4);
+  }
+  // bars
+  data.forEach(([letter, val], i) => {
+    const x = ml + i*slot + (slot-bw)/2;
+    const bh = (val/maxV)*ch;
+    const y  = mt + ch - bh;
+    ctx.fillStyle = '#1A2E4A';
+    ctx.fillRect(x, y, bw, bh);
+    ctx.fillStyle='#1A2E4A'; ctx.font='bold 12px Georgia'; ctx.textAlign='center';
+    ctx.fillText(val, x+bw/2, y-4);
+    ctx.fillStyle='#444'; ctx.font='13px Georgia';
+    ctx.fillText(letter, x+bw/2, mt+ch+20);
+  });
+  // axes
+  ctx.strokeStyle='#333'; ctx.lineWidth=1.5;
+  ctx.beginPath(); ctx.moveTo(ml,mt); ctx.lineTo(ml,mt+ch); ctx.lineTo(ml+cw,mt+ch); ctx.stroke();
+  // axis labels
+  ctx.save(); ctx.translate(13, mt+ch/2); ctx.rotate(-Math.PI/2);
+  ctx.fillStyle='#555'; ctx.font='11px Georgia'; ctx.textAlign='center';
+  ctx.fillText('Frequency',0,0); ctx.restore();
+  ctx.fillStyle='#555'; ctx.font='11px Georgia'; ctx.textAlign='center';
+  ctx.fillText('Letter', ml+cw/2, H-6);
+}
+
+// ===== AUTOSAVE (localStorage + File System) =====
+const SAVE_KEY = 'mit_5n18396_nopy_v1';
+let fileHandle = null;
+
+function getSaveables() {
+  // Stable document-order selector — must match between save and restore.
+  return Array.from(document.querySelectorAll(
+    '#sname, #sid, ' +
+    'textarea.ans, ' +
+    '.qcard input[type="text"], ' +
+    '.gdesc select, ' +
+    '#cubicsel'
+  ));
+}
+
+function buildPayload() {
+  const fields  = getSaveables().map(el => el.value);
+  return { v:1, variant:'nopy', ts: Date.now(), fields };
+}
+
+function applyData(data) {
+  if (!data || data.v !== 1) return;
+  if (data.variant && data.variant !== 'nopy') {
+    alert('This save file came from the Python version of the exam. Its answers are stored in a different order, so this paper cannot restore it safely.');
+    return;
+  }
+  const saves = getSaveables();
+  (data.fields || []).forEach((val, i) => {
+    if (!saves[i]) return;
+    saves[i].value = val;
+    if (saves[i].tagName === 'TEXTAREA') {
+      saves[i].style.height = 'auto';
+      saves[i].style.height = saves[i].scrollHeight + 'px';
+    }
+  });
+  const cubicVal = document.getElementById('cubicsel').value;
+  if (cubicVal) {
+    document.querySelectorAll('.cubic-opt').forEach(o => o.classList.remove('sel'));
+    const opt = document.getElementById('co' + cubicVal);
+    if (opt) opt.classList.add('sel');
+  }
+}
+
+function setLocalInd(msg, ok) {
+  const el = document.getElementById('save-ind');
+  if (el) { el.textContent = msg; el.style.color = ok ? '#9FDFAF' : '#FF8080'; }
+}
+
+function setFileInd(msg, ok) {
+  const el = document.getElementById('file-ind');
+  if (el) { el.textContent = msg; el.style.color = ok ? '#9FDFAF' : '#FF8080'; }
+}
+
+// Save path 1: localStorage (synchronous, always runs)
+// Save path 2: file handle (async, only if set up)
+function saveState() {
+  const payload = buildPayload();
+  try {
+    localStorage.setItem(SAVE_KEY, JSON.stringify(payload));
+    setLocalInd('Browser \u2713 ' + new Date().toLocaleTimeString(), true);
+  } catch(e) {
+    setLocalInd('Browser save failed', false);
+  }
+  if (fileHandle) writeToFile(payload);
+}
+
+async function writeToFile(payload) {
+  if (!fileHandle) return;
+  try {
+    const writable = await fileHandle.createWritable();
+    await writable.write(JSON.stringify(payload || buildPayload(), null, 2));
+    await writable.close();
+    setFileInd('File \u2713 ' + new Date().toLocaleTimeString(), true);
+  } catch(e) {
+    setFileInd('File write failed', false);
+    fileHandle = null; // handle is broken; stop attempting
+  }
+}
+
+function restoreState() {
+  const raw = localStorage.getItem(SAVE_KEY);
+  if (!raw) return;
+  let data;
+  try { data = JSON.parse(raw); } catch(e) { return; }
+  applyData(data);
+  if (data && data.ts) setLocalInd('Restored \u2713 ' + new Date(data.ts).toLocaleTimeString(), true);
+}
+
+function clearSaved() {
+  if (!confirm('Clear all saved answers? This clears every field on screen too and cannot be undone.')) return;
+  localStorage.removeItem(SAVE_KEY);
+  getSaveables().forEach(el => {
+    if (el.tagName === 'SELECT') el.selectedIndex = 0;
+    else el.value = '';
+    if (el.tagName === 'TEXTAREA') el.style.height = '';
+  });
+  document.querySelectorAll('.cubic-opt').forEach(o => o.classList.remove('sel'));
+  setLocalInd('Browser data cleared', false);
+}
+
+// Save immediately before page closes (localStorage only — file writes are async)
+window.addEventListener('beforeunload', () => {
+  try { localStorage.setItem(SAVE_KEY, JSON.stringify(buildPayload())); } catch(e) {}
+});
+
+// Expand all textareas to their full content height before printing
+window.addEventListener('beforeprint', () => {
+  // Populate print header with student name and ID
+  const name = (document.getElementById('sname').value || '').trim();
+  const sid  = (document.getElementById('sid').value || '').trim();
+  const nameEl = document.getElementById('ph-name-display');
+  const sidEl  = document.getElementById('ph-sid-display');
+  if (nameEl) nameEl.textContent = name || '(name not entered)';
+  if (sidEl)  sidEl.textContent  = sid ? 'ID: ' + sid : '';
+  // Expand textareas
+  document.querySelectorAll('textarea').forEach(ta => {
+    ta.style.height = 'auto';
+    ta.style.height = ta.scrollHeight + 'px';
+  });
+});
+
+// Autosave every 2 minutes
+setInterval(saveState, 2 * 60 * 1000);
+
+// Debounced: 2 seconds after last keystroke or change
+let saveDebounce = null;
+function debouncedSave() {
+  clearTimeout(saveDebounce);
+  saveDebounce = setTimeout(saveState, 2000);
+}
+document.addEventListener('input',  debouncedSave);
+document.addEventListener('change', debouncedSave);
+
+// ===== FILE SYSTEM ACCESS =====
+const FILE_API = 'showSaveFilePicker' in window;
+
+function initFileSetupPanel() {
+  const panel = document.getElementById('filesave-panel');
+  if (!panel) return;
+  panel.style.display = 'block';
+  if (!FILE_API) {
+    document.getElementById('filesave-noapi').style.display = 'block';
+    document.getElementById('btn-new-file').disabled = true;
+    document.getElementById('btn-open-file').disabled = true;
+    document.getElementById('btn-new-file').style.opacity = '0.45';
+    document.getElementById('btn-open-file').style.opacity = '0.45';
+  }
+}
+
+function dismissFileSetup() {
+  const panel = document.getElementById('filesave-panel');
+  if (panel) panel.style.display = 'none';
+}
+
+function setFileMsg(msg, ok) {
+  const el = document.getElementById('filesave-msg');
+  if (el) { el.textContent = msg; el.style.color = ok ? '#1A5C2A' : '#C04020'; }
+}
+
+async function createSaveFile() {
+  if (!FILE_API) return;
+  try {
+    const today = new Date().toISOString().slice(0, 10);
+    const name  = (document.getElementById('sname').value.trim() || 'student').replace(/\s+/g, '_');
+    fileHandle  = await window.showSaveFilePicker({
+      suggestedName: `MIT_Exam_${name}_${today}.json`,
+      types: [{ description: 'Exam save file', accept: { 'application/json': ['.json'] } }]
+    });
+    await writeToFile();
+    setFileMsg('Save file created. Autosave now writing to both locations.', true);
+    setFileInd('File \u2713 active', true);
+    setTimeout(dismissFileSetup, 2500);
+  } catch(e) {
+    if (e.name !== 'AbortError') setFileMsg('Could not create file: ' + e.message, false);
+  }
+}
+
+async function openSaveFile() {
+  if (!FILE_API) return;
+  try {
+    [fileHandle] = await window.showOpenFilePicker({
+      types: [{ description: 'Exam save file', accept: { 'application/json': ['.json'] } }]
+    });
+    const file = await fileHandle.getFile();
+    const data = JSON.parse(await file.text());
+    applyData(data);
+    setFileMsg('Answers restored. Autosave now writing to both locations.', true);
+    setFileInd('File \u2713 active', true);
+    setLocalInd('Restored from file \u2713', true);
+    setTimeout(dismissFileSetup, 2500);
+  } catch(e) {
+    if (e.name !== 'AbortError') setFileMsg('Could not open file: ' + e.message, false);
+  }
+}
+
+// ===== RESIZABLE COLUMNS =====
+function setupDrag(handleId, panelId, growsRight) {
+  const handle = document.getElementById(handleId);
+  const panel  = document.getElementById(panelId);
+  if (!handle || !panel) return;
+  let dragging = false, startX = 0, startW = 0;
+  handle.addEventListener('mousedown', e => {
+    dragging = true; startX = e.clientX; startW = panel.offsetWidth;
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+    e.preventDefault();
+  });
+  document.addEventListener('mousemove', e => {
+    if (!dragging) return;
+    const dx = growsRight ? e.clientX - startX : startX - e.clientX;
+    const w  = Math.max(140, Math.min(440, startW + dx));
+    panel.style.width = w + 'px';
+  });
+  document.addEventListener('mouseup', () => {
+    if (!dragging) return;
+    dragging = false;
+    document.body.style.cursor = '';
+    document.body.style.userSelect = '';
+  });
+}
+
+// ===== SIDEBAR ACTIVE NAV =====
+const navLinks = document.querySelectorAll('.nlink');
+const qcards = document.querySelectorAll('.qcard');
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      navLinks.forEach(l => l.classList.remove('active'));
+      const lk = document.querySelector(`.nlink[href="#${e.target.id}"]`);
+      if (lk) lk.classList.add('active');
+    }
+  });
+}, { threshold: 0.25 });
+qcards.forEach(c => obs.observe(c));
+
+// ===== INIT =====
+window.addEventListener('load', () => {
+  drawCubic('cc1', x => x**3 - 3*x,      '#1A2E4A');
+  drawCubic('cc2', x => x**3 * 0.4,       '#2B7A3B');
+  drawCubic('cc3', x => -(x**3) + 3*x,    '#B83018');
+  drawCubic('cc4', x => -(x**3) * 0.4,    '#7030A0');
+  drawBarChart();
+  restoreState();
+  initFileSetupPanel();
+  setupDrag('dh-left',  'sidebar',      true);
+  setupDrag('dh-right', 'right-panel',  false);
+});
+</script>
+</body>
+</html>

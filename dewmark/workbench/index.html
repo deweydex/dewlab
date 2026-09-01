@@ -1,0 +1,928 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>dewmark marking workbench</title>
+<style>
+/* The workbench repeats the dewmark palette so it stays self-contained. */
+:root {
+  --dm-navy: #1b2a4a; --dm-orange: #d4692a; --dm-bg: #fdfcfa;
+  --dm-ink: #1a1a1a; --dm-muted: #5f6b7a; --dm-rule: #e2ddd5;
+  --dm-border: #ddd7cd; --dm-good: #1f6b3f; --dm-good-bg: #edf7f0;
+  --dm-warn: #8a6d1f; --dm-warn-bg: #faf3dc;
+  --dm-serif: Georgia, "Iowan Old Style", serif;
+  --dm-sans: system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--dm-bg); color: var(--dm-ink);
+  font-family: var(--dm-sans); font-size: 14px; line-height: 1.55; }
+header { background: var(--dm-navy); color: var(--dm-bg); padding: 12px 24px;
+  display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+header h1 { font-family: var(--dm-serif); font-size: 17px; margin: 0; }
+header .pill { font-size: 12px; padding: 3px 10px; border-radius: 999px;
+  background: rgba(255,255,255,0.15); }
+header .pill.ok { background: var(--dm-good-bg); color: var(--dm-good); }
+button { cursor: pointer; font-family: var(--dm-sans); border-radius: 4px; }
+.primary { background: var(--dm-navy); color: #fff; border: none;
+  padding: 8px 16px; font-weight: 600; }
+.secondary { background: #fff; color: var(--dm-navy);
+  border: 1px solid var(--dm-border); padding: 7px 12px; }
+main { max-width: 1200px; margin: 0 auto; padding: 22px 24px 80px; }
+.card { background: #fff; border: 1px solid var(--dm-border);
+  border-radius: 4px; padding: 18px 22px; margin-bottom: 16px; }
+table { border-collapse: collapse; width: 100%; }
+td, th { border-bottom: 1px solid var(--dm-rule); padding: 8px 10px;
+  text-align: left; }
+th { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em;
+  color: var(--dm-muted); }
+tr.clickable:hover { background: #f6f4f0; cursor: pointer; }
+.status { font-size: 11px; font-weight: 600; border-radius: 3px;
+  padding: 2px 8px; }
+.status.done { color: var(--dm-good); background: var(--dm-good-bg); }
+.status.progress { color: var(--dm-navy); background: #eef2f8; }
+.status.untouched { color: var(--dm-muted); background: #f6f4f0; }
+.status.warn { color: var(--dm-warn); background: var(--dm-warn-bg); }
+.problem { color: var(--dm-warn); background: var(--dm-warn-bg);
+  border: 1px solid #e8d9a8; border-radius: 4px; padding: 8px 12px;
+  margin: 6px 0; }
+.marking-row { display: grid; grid-template-columns: 1fr 420px; gap: 18px;
+  border-top: 2px solid var(--dm-rule); padding-top: 16px; margin-top: 16px; }
+.answer-side h3 { margin: 0 0 6px; font-family: var(--dm-serif);
+  color: var(--dm-navy); }
+.student-answer { background: #fff; border: 1px solid var(--dm-border);
+  border-radius: 4px; padding: 10px 14px; font-family: var(--dm-serif);
+  font-size: 15px; white-space: pre-wrap; }
+.student-answer .missing { color: var(--dm-muted); font-style: italic; }
+.code-block, .run-output, .run-error {
+  font-family: ui-monospace, Consolas, Menlo, monospace; font-size: 12.5px;
+  line-height: 1.5; white-space: pre-wrap; overflow-x: auto;
+  background: #f6f4f0; border: 1px solid var(--dm-border);
+  border-radius: 3px; padding: 8px 10px; margin: 6px 0; }
+.code-block { background: #21283b; color: #e8e6e1; border-color: #21283b; }
+.run-error { color: #8a2a1f; background: #faf0ee; border-color: #e4c7c1; }
+.run-image { max-width: 100%; height: auto; display: block; margin: 6px 0;
+  border: 1px solid var(--dm-border); border-radius: 3px; background: #fff; }
+.run-table { border-collapse: collapse; margin: 6px 0; font-size: 13px; }
+.run-table th, .run-table td { border: 1px solid var(--dm-border);
+  padding: 3px 8px; text-align: left; }
+.stale-run { color: var(--dm-warn); background: var(--dm-warn-bg);
+  border-radius: 3px; padding: 5px 9px; font-family: var(--dm-sans);
+  font-size: 12.5px; }
+.scheme-side { background: #fff; border: 1px solid var(--dm-border);
+  border-radius: 4px; padding: 12px 16px; }
+.model { background: #eef2f8; border-radius: 3px; padding: 8px 12px;
+  margin-bottom: 10px; font-family: var(--dm-serif); font-size: 13.5px; }
+.model .label { font-family: var(--dm-sans); font-size: 10.5px;
+  font-weight: 700; text-transform: uppercase; color: var(--dm-navy); }
+.mark-entry { display: flex; align-items: center; gap: 8px; margin: 8px 0; }
+.mark-entry input[type=number] { width: 70px; padding: 6px 8px; font-size: 15px;
+  border: 1px solid var(--dm-border); border-radius: 3px; }
+.point-row, .band-row { display: flex; gap: 8px; align-items: baseline;
+  margin: 4px 0; }
+.criterion { border-top: 1px dashed var(--dm-border); padding-top: 8px;
+  margin-top: 8px; }
+textarea.feedback { width: 100%; min-height: 52px; font-family: var(--dm-serif);
+  font-size: 14px; border: 1px solid var(--dm-border); border-radius: 3px;
+  padding: 7px 10px; margin-top: 6px; }
+.totals { position: sticky; top: 0; z-index: 5; background: var(--dm-navy);
+  color: #fff; border-radius: 4px; padding: 10px 16px; display: flex;
+  gap: 20px; align-items: center; }
+.totals strong { font-size: 17px; }
+.diagram { max-width: 320px; display: block; margin: 6px 0; }
+select { padding: 6px 9px; border: 1px solid var(--dm-border);
+  border-radius: 3px; font-size: 14px; }
+.hint { color: var(--dm-muted); font-size: 12.5px; }
+@media print { header, .totals, button, select, .scheme-side { display: none; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>dewmark marking workbench</h1>
+  <span id="scheme-pill" class="pill">no marking scheme loaded</span>
+  <span id="subs-pill" class="pill">no submissions loaded</span>
+  <button id="load-scheme" class="secondary">Load marking scheme…</button>
+  <button id="load-subs" class="secondary">Open submissions…</button>
+  <button id="load-record" class="secondary">Load marking record…</button>
+  <button id="save-record" class="secondary">Save marking record</button>
+  <button id="export-csv" class="primary">Export marks…</button>
+</header>
+<main>
+  <div id="problems"></div>
+  <div id="view-list" class="card">
+    <p class="hint">Load the marking scheme file that the exam builder
+    produced, then open the folder (or select the files) of student
+    submissions. Everything stays on this computer.</p>
+    <div id="class-table"></div>
+    <p class="hint" id="by-question-hint" hidden>Or mark one question across
+    every student: <select id="question-picker"></select>
+    <button id="open-by-question" class="secondary">Mark by question</button></p>
+  </div>
+  <div id="view-paper" hidden></div>
+  <div id="view-question" hidden></div>
+</main>
+<script>
+"use strict";
+
+/* Everything read from a submission is student-authored data. It is only
+   ever placed into the page as text (textContent), never as markup, so a
+   hostile submission cannot run anything here. */
+
+let scheme = null;
+let submissions = {};   // student number -> submission
+let record = { format_version: 1, exam_code: null, papers: {} };
+let dirHandle = null;
+let currentNumber = null;
+
+const $ = (id) => document.getElementById(id);
+const el = (tag, cls, text) => {
+  const node = document.createElement(tag);
+  if (cls) node.className = cls;
+  if (text !== undefined) node.textContent = text;
+  return node;
+};
+
+function problem(text) {
+  const box = el("div", "problem", text);
+  $("problems").appendChild(box);
+}
+
+/* ------------------------------------------------ loading the scheme */
+
+function pickFile(accept, handler) {
+  const input = document.createElement("input");
+  input.type = "file";
+  input.accept = accept;
+  input.multiple = accept.includes("zip");
+  input.onchange = () => handler([...input.files]);
+  input.click();
+}
+
+$("load-scheme").addEventListener("click", () => {
+  pickFile(".json", async (files) => {
+    try {
+      const data = JSON.parse(await files[0].text());
+      if (data.format_version !== 1 || !data.sections) {
+        problem("That file is not a dewmark marking scheme.");
+        return;
+      }
+      scheme = data;
+      record.exam_code = scheme.exam_code;
+      $("scheme-pill").textContent = scheme.exam_code + " · version "
+        + scheme.exam_version;
+      $("scheme-pill").classList.add("ok");
+      renderClassList();
+    } catch (err) {
+      problem("The marking scheme could not be read: " + err.message);
+    }
+  });
+});
+
+/* ------------------------------------------------ loading submissions */
+
+async function readZipStoredEntries(bytes) {
+  /* dewmark submissions are zip files whose entries are stored without
+     compression, so a small reader is enough. A zip that was
+     re-compressed by other software is reported rather than guessed at. */
+  const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+  const decoder = new TextDecoder();
+  const entries = {};
+  let offset = 0;
+  while (offset + 4 <= bytes.length
+         && view.getUint32(offset, true) === 0x04034b50) {
+    const method = view.getUint16(offset + 8, true);
+    const size = view.getUint32(offset + 18, true);
+    const nameLength = view.getUint16(offset + 26, true);
+    const extraLength = view.getUint16(offset + 28, true);
+    const name = decoder.decode(
+      bytes.subarray(offset + 30, offset + 30 + nameLength));
+    const start = offset + 30 + nameLength + extraLength;
+    if (method !== 0) {
+      throw new Error("the entry '" + name + "' is compressed; this draft "
+        + "reads only dewmark's own submission files");
+    }
+    entries[name] = bytes.subarray(start, start + size);
+    offset = start + size;
+  }
+  return entries;
+}
+
+async function ingestSubmissionFile(file) {
+  let answersText = null;
+  if (file.name.endsWith(".zip")) {
+    const bytes = new Uint8Array(await file.arrayBuffer());
+    const entries = await readZipStoredEntries(bytes);
+    if (!entries["answers.json"]) {
+      throw new Error("no answers.json inside " + file.name);
+    }
+    answersText = new TextDecoder().decode(entries["answers.json"]);
+  } else if (file.name.endsWith(".json")) {
+    answersText = await file.text();
+  } else {
+    return;
+  }
+  const data = JSON.parse(answersText);
+  if (scheme && data.exam_code !== scheme.exam_code) {
+    problem(file.name + " belongs to a different exam ("
+      + data.exam_code + ") and was set aside.");
+    return;
+  }
+  const number = (data.student || {})["student number"] || file.name;
+  const existing = submissions[number];
+  if (existing) {
+    const keepNew = (data.saved_at || "") > (existing.saved_at || "");
+    const kept = keepNew ? data : existing;
+    const other = keepNew ? existing : data;
+    kept.others = (existing.others || []).concat(
+      [{ file: other.sourceFile || file.name, saved_at: other.saved_at }]);
+    submissions[number] = kept;
+    problem("Two submissions for student " + number
+      + "; the newest (saved " + kept.saved_at + ") is being marked.");
+  } else {
+    submissions[number] = data;
+  }
+  submissions[number].sourceFile = file.name;
+  if (data.exam_version && scheme
+      && data.exam_version !== scheme.exam_version) {
+    problem("Student " + number + " sat version " + data.exam_version
+      + " but the scheme is version " + scheme.exam_version + ".");
+  }
+  if (!data.finished_at) {
+    problem("Student " + number + "'s file was collected without the "
+      + "finish step; it can be marked as normal.");
+  }
+}
+
+$("load-subs").addEventListener("click", async () => {
+  if (!scheme) { problem("Load the marking scheme first."); return; }
+  if ("showDirectoryPicker" in window) {
+    try {
+      dirHandle = await window.showDirectoryPicker({ mode: "readwrite" });
+      for await (const entry of dirHandle.values()) {
+        if (entry.kind !== "file") continue;
+        try {
+          await ingestSubmissionFile(await entry.getFile());
+        } catch (err) {
+          problem(entry.name + ": " + err.message);
+        }
+      }
+      renderClassList();
+      return;
+    } catch (err) { /* fall through to plain file selection */ }
+  }
+  pickFile(".zip,.json", async (files) => {
+    for (const file of files) {
+      try { await ingestSubmissionFile(file); }
+      catch (err) { problem(file.name + ": " + err.message); }
+    }
+    renderClassList();
+  });
+});
+
+/* ------------------------------------------------ the marking record */
+
+function paperRecord(number) {
+  if (!record.papers[number]) {
+    record.papers[number] = { marks: {}, ticks: {}, criteria: {},
+      feedback: {}, overall: "", counted_override: null };
+  }
+  return record.papers[number];
+}
+
+async function persistRecord() {
+  const text = JSON.stringify(record, null, 2);
+  const name = "dewmark_" + scheme.exam_code + "_marking_record.json";
+  if (dirHandle) {
+    try {
+      const handle = await dirHandle.getFileHandle(name, { create: true });
+      const writable = await handle.createWritable();
+      await writable.write(text);
+      await writable.close();
+      return;
+    } catch (err) { /* fall back to a download below */ }
+  }
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(
+    new Blob([text], { type: "application/json" }));
+  link.download = name;
+  link.click();
+  URL.revokeObjectURL(link.href);
+}
+$("save-record").addEventListener("click", persistRecord);
+$("load-record").addEventListener("click", () => {
+  pickFile(".json", async (files) => {
+    try {
+      const data = JSON.parse(await files[0].text());
+      if (!data.papers) throw new Error("not a marking record");
+      record = data;
+      renderClassList();
+    } catch (err) { problem("Could not load the record: " + err.message); }
+  });
+});
+
+let autosaveTimer = null;
+function recordChanged() {
+  clearTimeout(autosaveTimer);
+  if (dirHandle) autosaveTimer = setTimeout(persistRecord, 1200);
+}
+
+/* ------------------------------------------------ scheme lookups */
+
+function everyAnswerSpace() {
+  const spaces = [];
+  for (const section of scheme.sections) {
+    for (const question of section.questions) {
+      for (const answer of question.answers) {
+        spaces.push({ section, question, answer });
+      }
+    }
+  }
+  return spaces;
+}
+
+function questionTotal(number, question) {
+  const paper = paperRecord(number);
+  let total = 0;
+  let any = false;
+  for (const answer of question.answers) {
+    const mark = paper.marks[answer.settings.name];
+    if (typeof mark === "number") { total += mark; any = true; }
+  }
+  return any ? total : null;
+}
+
+function attempted(number, question) {
+  const answers = (submissions[number] || {}).answers || {};
+  return question.answers.some((a) => a.settings.name in answers);
+}
+
+function paperTotals(number) {
+  /* Section totals apply the "answer any N" rule: the best N question
+     totals count, unless the marker has overridden the selection. */
+  const paper = paperRecord(number);
+  let total = 0;
+  const sections = [];
+  for (const section of scheme.sections) {
+    const perQuestion = section.questions.map((q) => ({
+      name: q.name,
+      attempted: attempted(number, q),
+      total: questionTotal(number, q),
+    }));
+    let counted = perQuestion.filter((q) => q.total !== null);
+    if (section.choose) {
+      const override = (paper.counted_override || {})[section.name];
+      if (override) {
+        counted = perQuestion.filter((q) => override.includes(q.name));
+      } else {
+        counted = counted.sort((a, b) => b.total - a.total)
+          .slice(0, section.choose);
+      }
+    }
+    const sectionTotal = counted.reduce((s, q) => s + (q.total || 0), 0);
+    sections.push({ name: section.name, choose: section.choose,
+      counted: counted.map((q) => q.name), total: sectionTotal,
+      perQuestion });
+    total += sectionTotal;
+  }
+  return { total, sections };
+}
+
+function markingProgress(number) {
+  const paper = paperRecord(number);
+  let needed = 0;
+  let done = 0;
+  for (const { question, answer } of everyAnswerSpace()) {
+    if (!attempted(number, question)) continue;
+    needed += 1;
+    if (typeof paper.marks[answer.settings.name] === "number") done += 1;
+  }
+  return { needed, done };
+}
+
+/* ------------------------------------------------ the class list */
+
+function renderClassList() {
+  const holder = $("class-table");
+  holder.innerHTML = "";
+  const numbers = Object.keys(submissions).sort();
+  if (!scheme || numbers.length === 0) return;
+  const table = el("table");
+  const head = el("tr");
+  for (const title of ["Student", "Number", "Handed in", "Attempted",
+                       "Status", "Total / " + scheme.total_marks]) {
+    head.appendChild(el("th", null, title));
+  }
+  table.appendChild(head);
+  for (const number of numbers) {
+    const sub = submissions[number];
+    const row = el("tr", "clickable");
+    row.appendChild(el("td", null,
+      (sub.student || {})["full name"] || "(no name)"));
+    row.appendChild(el("td", null, number));
+    row.appendChild(el("td", null, sub.finished_at
+      ? new Date(sub.finished_at).toLocaleString()
+      : "no finish step"));
+    const attempts = scheme.sections.map((s) => s.name + ": "
+      + s.questions.filter((q) => attempted(number, q)).length).join(" · ");
+    row.appendChild(el("td", null, attempts));
+    const progress = markingProgress(number);
+    const statusCell = el("td");
+    const status = progress.done === 0 ? ["untouched", "not started"]
+      : progress.done < progress.needed
+        ? ["progress", progress.done + " of " + progress.needed]
+        : ["done", "marked"];
+    statusCell.appendChild(el("span", "status " + status[0], status[1]));
+    row.appendChild(statusCell);
+    row.appendChild(el("td", null,
+      progress.done ? String(paperTotals(number).total) : "—"));
+    row.addEventListener("click", () => openPaper(number));
+    table.appendChild(row);
+  }
+  holder.appendChild(table);
+  $("by-question-hint").hidden = false;
+  const picker = $("question-picker");
+  picker.innerHTML = "";
+  for (const { answer, question } of everyAnswerSpace()) {
+    const option = el("option", null, answer.settings.name + " ("
+      + answer.settings.marks + " marks)");
+    option.value = answer.settings.name;
+    picker.appendChild(option);
+  }
+}
+
+/* ------------------------------------------------ rendering answers */
+
+function renderStudentAnswer(container, spec, value) {
+  /* Show one student answer as plain text, shaped by its type. */
+  const a = spec.settings;
+  if (value === undefined) {
+    container.appendChild(el("p", "missing", "not attempted"));
+    return;
+  }
+  const add = (label, text) => {
+    if (label) container.appendChild(el("p", "label", label));
+    const pre = el("div", null, text);
+    pre.style.whiteSpace = "pre-wrap";
+    container.appendChild(pre);
+  };
+  if (a.type === "multiple-choice") {
+    const chosen = (value.chosen || [])
+      .map((i) => i + ". " + (a.options[i - 1] || "?")).join("; ");
+    add(null, "Chose: " + (chosen || "(nothing)"));
+  } else if (a.type === "fill-in-the-blank") {
+    add(null, Object.entries(value.blanks || {})
+      .map(([k, v]) => "blank " + k + ": " + (v || "(empty)")).join("\n"));
+  } else if (a.type === "essay") {
+    if (value.planning && value.planning.trim()) {
+      add(null, "[planning — carries no marks]\n" + value.planning);
+    }
+    add(null, value.text || "(empty)");
+  } else if (a.type === "numeric-answer") {
+    const boxes = Object.entries(value.boxes || {})
+      .map(([k, v]) => (a.boxes[k - 1] || {}).label + " " + v).join("   ");
+    add(null, boxes);
+    if (value.working) add(null, "Working:\n" + value.working);
+  } else if (a.type === "complete-the-table") {
+    add(null, Object.entries(value.cells || {})
+      .map(([k, v]) => k + " = " + (v || "(empty)")).join("\n"));
+  } else if (a.type === "describe-a-sketch") {
+    const shape = value.shape
+      ? (a.shape.options[value.shape - 1] || "?") : "(no shape chosen)";
+    add(null, "Shape: " + shape + "\n"
+      + Object.entries(value.features || {})
+        .map(([k, v]) => "value " + k + ": " + v).join("\n"));
+  } else if (a.type === "label-the-diagram") {
+    add(null, Object.entries(value.labels || {})
+      .map(([k, v]) => k + ": " + (v || "(empty)")).join("\n"));
+  } else if (a.type === "python-code") {
+    const code = el("pre", "code-block", value.code || "(no code)");
+    container.appendChild(code);
+    if (value.run_matches_code === false) {
+      container.appendChild(el("p", "stale-run", "The code was edited "
+        + "after its last run: the recorded output below came from an "
+        + "earlier version of the code."));
+    }
+    if (!(value.outputs || []).length) {
+      container.appendChild(el("p", "missing", "no recorded output"));
+    }
+    for (const record of value.outputs || []) {
+      if (record.kind === "stdout") {
+        container.appendChild(el("pre", "run-output", record.text));
+      } else if (record.kind === "error") {
+        container.appendChild(el("pre", "run-error", record.text));
+      } else if (record.kind === "image"
+                 && /^[A-Za-z0-9+/=]+$/.test(record.b64 || "")) {
+        const img = document.createElement("img");
+        img.className = "run-image";
+        img.alt = "output figure";
+        img.src = "data:image/png;base64," + record.b64;
+        container.appendChild(img);
+      } else if (record.kind === "table") {
+        const table = el("table", "run-table");
+        const head = el("tr");
+        for (const column of record.columns || []) {
+          head.appendChild(el("th", null, String(column)));
+        }
+        table.appendChild(head);
+        for (const cells of record.rows || []) {
+          const tr = el("tr");
+          for (const cell of cells) tr.appendChild(el("td", null,
+            String(cell)));
+          table.appendChild(tr);
+        }
+        container.appendChild(table);
+      }
+    }
+  } else {
+    add(null, value.text || JSON.stringify(value));
+  }
+}
+
+function renderModel(container, spec) {
+  const a = spec.settings;
+  const marking = spec.marking || {};
+  const box = el("div", "model");
+  box.appendChild(el("span", "label", "Marking scheme"));
+  const addText = (text) => {
+    const line = el("div", null, text);
+    line.style.whiteSpace = "pre-wrap";
+    box.appendChild(line);
+  };
+  if (a.model_answer) addText(a.model_answer);
+  if (a.type === "python-code" && a.model_answer_code) {
+    box.appendChild(el("pre", "code-block", a.model_answer_code));
+  }
+  if (a.type === "multiple-choice" && a.correct) {
+    const picks = Array.isArray(a.correct) ? a.correct : [a.correct];
+    addText("Correct: " + picks.map((p) => a.options[p - 1]).join("; "));
+  }
+  if (a.type === "fill-in-the-blank") {
+    const gaps = [...(a.text || "").matchAll(/\{([^{}]+)\}/g)]
+      .map((m, i) => "blank " + (i + 1) + ": " + m[1]);
+    addText(gaps.join("\n"));
+  }
+  if (a.type === "numeric-answer") {
+    addText((a.boxes || []).map((b) => b.label + " " + b.expected).join("   "));
+  }
+  if (a.type === "complete-the-table" && a.expected) {
+    addText(a.expected.map((row) => row.join(", ")).join("\n"));
+  }
+  if (a.type === "describe-a-sketch") {
+    if (a.shape && a.shape.correct) {
+      addText("Shape: " + a.shape.options[a.shape.correct - 1]);
+    }
+    for (const feature of a.features || []) {
+      if (feature.expected) {
+        addText(feature.label + " → " + feature.expected.join(", "));
+      }
+    }
+  }
+  if (a.type === "label-the-diagram") {
+    addText((a.labels || [])
+      .map((l) => l.number + ": " + l.expected).join("\n"));
+  }
+  if (marking.method === "marks-out-of-a-total"
+      && (marking.guidance || []).length) {
+    addText((marking.guidance || []).map((g) => "· " + g).join("\n"));
+  }
+  container.appendChild(box);
+}
+
+function renderMarkControls(container, number, spec, onChange) {
+  const a = spec.settings;
+  const name = a.name;
+  const marks = a.marks;
+  const paper = paperRecord(number);
+  const marking = spec.marking || { method: "marks-out-of-a-total" };
+
+  const entry = el("div", "mark-entry");
+  const input = document.createElement("input");
+  input.type = "number";
+  input.min = 0;
+  input.max = marks;
+  input.step = 0.5;
+  if (typeof paper.marks[name] === "number") input.value = paper.marks[name];
+  const commit = () => {
+    const value = input.value === "" ? undefined : Number(input.value);
+    if (value === undefined) delete paper.marks[name];
+    else paper.marks[name] = Math.max(0, Math.min(marks, value));
+    recordChanged();
+    onChange();
+  };
+  input.addEventListener("input", commit);
+  entry.appendChild(input);
+  entry.appendChild(el("span", null, "/ " + marks));
+
+  if (marking.method === "points-with-a-limit") {
+    const ticks = paper.ticks[name] || (paper.ticks[name] =
+      marking.points.map(() => false));
+    marking.points.forEach((point, index) => {
+      const row = el("label", "point-row");
+      const box = document.createElement("input");
+      box.type = "checkbox";
+      box.checked = ticks[index];
+      box.addEventListener("change", () => {
+        ticks[index] = box.checked;
+        const sum = marking.points.reduce(
+          (s, p, i) => s + (ticks[i] ? p.marks : 0), 0);
+        input.value = Math.min(sum, marking.limit);
+        commit();
+      });
+      row.appendChild(box);
+      row.appendChild(el("span", null,
+        point.marks + " — " + point.text));
+      container.appendChild(row);
+    });
+    container.appendChild(el("p", "hint",
+      "Ticked points add up and stop at " + marking.limit
+      + "; adjust the final mark by hand if needed."));
+  } else if (marking.method === "a-criteria-grid") {
+    const perCriterion = paper.criteria[name]
+      || (paper.criteria[name] = {});
+    marking.criteria.forEach((criterion, index) => {
+      const holder = el("div", "criterion");
+      holder.appendChild(el("strong", null,
+        criterion.name + " (" + criterion.marks + ")"));
+      for (const band of criterion.bands) {
+        holder.appendChild(el("div", "band-row",
+          band.low + "–" + band.high + ": " + band.text));
+      }
+      const critInput = document.createElement("input");
+      critInput.type = "number";
+      critInput.min = 0;
+      critInput.max = criterion.marks;
+      critInput.step = 0.5;
+      if (typeof perCriterion[index] === "number") {
+        critInput.value = perCriterion[index];
+      }
+      critInput.addEventListener("input", () => {
+        perCriterion[index] = critInput.value === ""
+          ? undefined : Number(critInput.value);
+        const values = marking.criteria.map((c, i) => perCriterion[i]);
+        if (values.every((v) => typeof v === "number")) {
+          input.value = values.reduce((s, v) => s + v, 0);
+          commit();
+        } else {
+          recordChanged();
+        }
+      });
+      const row = el("div", "mark-entry");
+      row.appendChild(critInput);
+      row.appendChild(el("span", null, "/ " + criterion.marks));
+      holder.appendChild(row);
+      container.appendChild(holder);
+    });
+  }
+  container.appendChild(entry);
+
+  const feedback = document.createElement("textarea");
+  feedback.className = "feedback";
+  feedback.placeholder = "Feedback for the student (optional)";
+  feedback.value = paper.feedback[name] || "";
+  feedback.addEventListener("input", () => {
+    if (feedback.value.trim()) paper.feedback[name] = feedback.value;
+    else delete paper.feedback[name];
+    recordChanged();
+  });
+  container.appendChild(feedback);
+}
+
+/* ------------------------------------------------ marking one paper */
+
+function openPaper(number) {
+  currentNumber = number;
+  const sub = submissions[number];
+  const view = $("view-paper");
+  view.innerHTML = "";
+  view.hidden = false;
+  $("view-list").hidden = true;
+  $("view-question").hidden = true;
+
+  const totals = el("div", "totals");
+  const back = el("button", "secondary", "← Class list");
+  back.addEventListener("click", () => {
+    view.hidden = true;
+    $("view-list").hidden = false;
+    renderClassList();
+  });
+  totals.appendChild(back);
+  totals.appendChild(el("span", null,
+    ((sub.student || {})["full name"] || "") + " · " + number));
+  const totalLabel = el("span");
+  totals.appendChild(totalLabel);
+  const printButton = el("button", "secondary", "Graded paper…");
+  printButton.addEventListener("click", () => openGradedPaper(number));
+  totals.appendChild(printButton);
+  view.appendChild(totals);
+
+  const refreshTotal = () => {
+    const totalsNow = paperTotals(number);
+    totalLabel.innerHTML = "";
+    totalLabel.appendChild(el("strong", null, String(totalsNow.total)));
+    totalLabel.appendChild(document.createTextNode(
+      " / " + scheme.total_marks + "   ("
+      + totalsNow.sections.map((s) => s.name + ": " + s.total
+        + (s.choose ? " counting " + s.counted.join(", ") : ""))
+        .join(" · ") + ")"));
+  };
+
+  for (const section of scheme.sections) {
+    for (const question of section.questions) {
+      if (!attempted(number, question)
+          && section.choose) continue;  /* skip untried optional questions */
+      for (const answer of question.answers) {
+        const spec = { settings: answer.settings, marking: answer.marking };
+        const row = el("div", "marking-row");
+        const left = el("div", "answer-side");
+        left.appendChild(el("h3", null, answer.settings.name + " — "
+          + answer.settings.type + " (" + answer.settings.marks
+          + " marks)"));
+        if (question.prose) {
+          left.appendChild(el("p", "hint", question.prose));
+        }
+        const answerBox = el("div", "student-answer");
+        renderStudentAnswer(answerBox, spec,
+          (sub.answers || {})[answer.settings.name]);
+        left.appendChild(answerBox);
+        const right = el("div", "scheme-side");
+        renderModel(right, spec);
+        renderMarkControls(right, number, spec, refreshTotal);
+        row.appendChild(left);
+        row.appendChild(right);
+        view.appendChild(row);
+      }
+    }
+  }
+  const overallCard = el("div", "card");
+  overallCard.appendChild(el("strong", null, "Closing comment"));
+  const overall = document.createElement("textarea");
+  overall.className = "feedback";
+  overall.value = paperRecord(number).overall || "";
+  overall.addEventListener("input", () => {
+    paperRecord(number).overall = overall.value;
+    recordChanged();
+  });
+  overallCard.appendChild(overall);
+  view.appendChild(overallCard);
+  refreshTotal();
+}
+
+/* ------------------------------------------------ marking by question */
+
+$("open-by-question").addEventListener("click", () => {
+  const target = $("question-picker").value;
+  const view = $("view-question");
+  view.innerHTML = "";
+  view.hidden = false;
+  $("view-list").hidden = true;
+  const bar = el("div", "totals");
+  const back = el("button", "secondary", "← Class list");
+  back.addEventListener("click", () => {
+    view.hidden = true;
+    $("view-list").hidden = false;
+    renderClassList();
+  });
+  bar.appendChild(back);
+  bar.appendChild(el("span", null, "Marking " + target
+    + " for every student"));
+  view.appendChild(bar);
+  const spec = everyAnswerSpace()
+    .find((s) => s.answer.settings.name === target);
+  for (const number of Object.keys(submissions).sort()) {
+    const row = el("div", "marking-row");
+    const left = el("div", "answer-side");
+    left.appendChild(el("h3", null, number));
+    const answerBox = el("div", "student-answer");
+    renderStudentAnswer(answerBox,
+      { settings: spec.answer.settings },
+      (submissions[number].answers || {})[target]);
+    left.appendChild(answerBox);
+    const right = el("div", "scheme-side");
+    renderMarkControls(right, number,
+      { settings: spec.answer.settings, marking: spec.answer.marking },
+      () => {});
+    row.appendChild(left);
+    row.appendChild(right);
+    view.appendChild(row);
+  }
+  const model = el("div", "card");
+  renderModel(model, { settings: spec.answer.settings,
+    marking: spec.answer.marking });
+  view.insertBefore(model, view.children[1]);
+});
+
+/* ------------------------------------------------ exports */
+
+function csvCell(value) {
+  const text = String(value === undefined || value === null ? "" : value);
+  return /[",\n]/.test(text) ? '"' + text.replace(/"/g, '""') + '"' : text;
+}
+
+function download(name, text, type) {
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(new Blob([text], { type }));
+  link.download = name;
+  link.click();
+  URL.revokeObjectURL(link.href);
+}
+
+$("export-csv").addEventListener("click", () => {
+  if (!scheme) { problem("Load the marking scheme first."); return; }
+  const questionColumns = [];
+  for (const section of scheme.sections) {
+    for (const question of section.questions) {
+      questionColumns.push({ section, question });
+    }
+  }
+  const head = ["student_number", "name"]
+    .concat(questionColumns.map((c) => c.question.name + " ("
+      + c.question.marks + ")"))
+    .concat(scheme.sections.map((s) => "Section " + s.name
+      + (s.choose ? " (best " + s.choose + ")" : "")))
+    .concat(["total (" + scheme.total_marks + ")", "marking status"]);
+  const lines = [head.map(csvCell).join(",")];
+  for (const number of Object.keys(submissions).sort()) {
+    const totals = paperTotals(number);
+    const progress = markingProgress(number);
+    const row = [number,
+      (submissions[number].student || {})["full name"] || ""];
+    for (const column of questionColumns) {
+      const total = questionTotal(number, column.question);
+      row.push(total === null ? "" : total);
+    }
+    for (const section of totals.sections) row.push(section.total);
+    row.push(totals.total);
+    row.push(progress.done === 0 ? "not started"
+      : progress.done < progress.needed ? "in progress" : "marked");
+    lines.push(row.map(csvCell).join(","));
+  }
+  download(scheme.exam_code + "_marks.csv", lines.join("\n"), "text/csv");
+
+  const companion = [["question", "marks", "topic", "wording"]
+    .map(csvCell).join(",")];
+  for (const column of questionColumns) {
+    companion.push([column.question.name, column.question.marks,
+      column.question.topic || "",
+      (column.question.prose || "").replace(/\s+/g, " ").slice(0, 300)]
+      .map(csvCell).join(","));
+  }
+  download(scheme.exam_code + "_what_the_columns_mean.csv",
+    companion.join("\n"), "text/csv");
+});
+
+/* ------------------------------------------------ the graded paper */
+
+function openGradedPaper(number) {
+  const sub = submissions[number];
+  const paper = paperRecord(number);
+  const totals = paperTotals(number);
+  const page = window.open("", "_blank");
+  const doc = page.document;
+  doc.title = "Graded paper — " + number;
+  const style = doc.createElement("style");
+  style.textContent = "body { font-family: Georgia, serif; margin: 40px;"
+    + " color: #1a1a1a; } h1 { font-size: 20px; color: #1b2a4a;"
+    + " border-bottom: 2px solid #1b2a4a; padding-bottom: 6px; }"
+    + " h2 { font-size: 15px; color: #1b2a4a; margin-top: 24px; }"
+    + " .mark { color: #1f6b3f; font-weight: bold; }"
+    + " .fb { border-left: 3px solid #d4692a; background: #fbf3ec;"
+    + " padding: 6px 10px; margin: 6px 0; font-size: 14px; }"
+    + " pre { white-space: pre-wrap; font-family: Georgia, serif;"
+    + " background: #faf9f7; border: 1px solid #e2ddd5; padding: 8px 12px; }";
+  doc.head.appendChild(style);
+  const add = (tag, text, cls) => {
+    const node = doc.createElement(tag);
+    node.textContent = text;
+    if (cls) node.className = cls;
+    doc.body.appendChild(node);
+    return node;
+  };
+  add("h1", scheme.title + " — marked paper");
+  add("p", ((sub.student || {})["full name"] || "") + " · " + number
+    + " · total " + totals.total + " / " + scheme.total_marks);
+  for (const section of scheme.sections) {
+    for (const question of section.questions) {
+      for (const answer of question.answers) {
+        const name = answer.settings.name;
+        const value = (sub.answers || {})[name];
+        if (value === undefined
+            && !(name in paper.marks)) continue;
+        const mark = paper.marks[name];
+        add("h2", name + "  —  "
+          + (typeof mark === "number" ? mark : "unmarked")
+          + " / " + answer.settings.marks, "mark");
+        const holder = doc.createElement("pre");
+        const shadow = el("div");
+        renderStudentAnswer(shadow, { settings: answer.settings }, value);
+        holder.textContent = shadow.textContent;
+        doc.body.appendChild(holder);
+        if (paper.feedback[name]) add("p", paper.feedback[name], "fb");
+      }
+    }
+  }
+  if (paper.overall) add("p", "Overall: " + paper.overall, "fb");
+  add("p", "Use your browser's Print command to save this as a PDF.");
+}
+</script>
+</body>
+</html>

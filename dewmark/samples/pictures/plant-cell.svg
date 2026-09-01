@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 260" width="360" height="260">
+  <rect x="1" y="1" width="358" height="258" fill="#ffffff"/>
+  <!-- cell wall (outer) and membrane (inner) -->
+  <rect x="30" y="30" width="240" height="200" rx="26" fill="#eef4ea" stroke="#4a6741" stroke-width="6"/>
+  <rect x="42" y="42" width="216" height="176" rx="20" fill="#f6faf3" stroke="#7a9a6d" stroke-width="2"/>
+  <!-- nucleus -->
+  <circle cx="150" cy="130" r="34" fill="#dce8f5" stroke="#3d5a80" stroke-width="2.5"/>
+  <circle cx="150" cy="130" r="10" fill="#a9c3de" stroke="#3d5a80" stroke-width="1.5"/>
+  <!-- a few small bodies in the cytoplasm -->
+  <ellipse cx="92" cy="86" rx="14" ry="8" fill="#e7efdd" stroke="#7a9a6d" stroke-width="1.5"/>
+  <ellipse cx="208" cy="182" rx="14" ry="8" fill="#e7efdd" stroke="#7a9a6d" stroke-width="1.5"/>
+  <ellipse cx="212" cy="88" rx="10" ry="7" fill="#e7efdd" stroke="#7a9a6d" stroke-width="1.5"/>
+  <!-- pointer 1: cell wall -->
+  <line x1="300" y1="52" x2="268" y2="40" stroke="#1a1a1a" stroke-width="1.8"/>
+  <circle cx="312" cy="56" r="11" fill="#1b2a4a"/>
+  <text x="312" y="61" font-family="system-ui, sans-serif" font-size="13" font-weight="bold" fill="#ffffff" text-anchor="middle">1</text>
+  <!-- pointer 2: cytoplasm -->
+  <line x1="300" y1="150" x2="230" y2="150" stroke="#1a1a1a" stroke-width="1.8"/>
+  <circle cx="312" cy="150" r="11" fill="#1b2a4a"/>
+  <text x="312" y="155" font-family="system-ui, sans-serif" font-size="13" font-weight="bold" fill="#ffffff" text-anchor="middle">2</text>
+  <!-- pointer 3: nucleus -->
+  <line x1="300" y1="222" x2="172" y2="148" stroke="#1a1a1a" stroke-width="1.8"/>
+  <circle cx="312" cy="226" r="11" fill="#1b2a4a"/>
+  <text x="312" y="231" font-family="system-ui, sans-serif" font-size="13" font-weight="bold" fill="#ffffff" text-anchor="middle">3</text>
+</svg>
