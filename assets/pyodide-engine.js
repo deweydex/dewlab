@@ -28,7 +28,7 @@
 /* The Python that makes the mounted folder importable, and that spots a
  * file edited after Python already read it. Shared with pyodide-worker.js
  * so both paths run the same Python rather than two copies that drift. */
-import { importPathSource, importedModuleTimesSource, reloadModulesSource } from "./module-watch.js";
+import { importPathSource, importedModuleTimesSource, reloadModulesSource, workingDirectorySource } from "./module-watch.js";
 
 /* sqlite3 was unvendored from Pyodide's default stdlib bundle as of
  * Pyodide 0.28 — it's now just another entry in loadPackage's list, not
@@ -1006,6 +1006,17 @@ export async function addImportPath(path) {
     return;
   }
   await workerRequest("add-import-path", { path });
+}
+
+/* Points Python's working directory at the mounted workspace, so a
+ * student's own relative `open(...)` lands in the folder the Files panel
+ * shows rather than in a temporary directory they cannot see. */
+export async function setWorkingDirectory(path) {
+  if (mode === "main-thread") {
+    pyodideMT.runPython(workingDirectorySource(path));
+    return;
+  }
+  await workerRequest("set-working-directory", { path });
 }
 
 /* What the last call to changedImportedModules() saw: module name to the

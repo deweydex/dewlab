@@ -1279,3 +1279,94 @@ kbd {
   padding-top: 0.5rem;
   border-top: 1px solid var(--dl-rule);
 }
+
+/* ----------------------------------------------------------- file view
+ *
+ * The same notebook shown as one continuous Python document rather than
+ * as a list of cells. Deliberately plainer than a cell: no per-cell
+ * chrome, one editor, one output area underneath, because the point of
+ * the view is that a file is one thing that runs from the top. */
+
+.dm-viewswitch { gap: 0; }
+.dm-viewswitch-btn { border-radius: 0; }
+.dm-viewswitch-btn:first-child { border-radius: 4px 0 0 4px; }
+.dm-viewswitch-btn:last-child { border-radius: 0 4px 4px 0; margin-left: -1px; }
+.dm-viewswitch-on {
+  background: var(--dl-panel-active, rgba(212, 105, 42, 0.12));
+  border-color: var(--dl-orange);
+  color: var(--dl-orange);
+  font-weight: 600;
+}
+
+.dm-fileview { display: flex; flex-direction: column; gap: 0.75rem; }
+
+.dm-fileview-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.dm-fileview-note {
+  margin: 0;
+  flex: 1 1 20rem;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--dl-muted);
+}
+
+.dm-fileview-run { flex: 0 0 auto; }
+
+/* The editor carries the notebook's whole text, so it needs room to grow
+ * rather than the fixed height a single cell gets. */
+.dm-fileview-editor {
+  border: 1px solid var(--dl-rule);
+  border-radius: 6px;
+  overflow: hidden;
+  min-height: 24rem;
+}
+
+.dm-fileview-output { margin: 0; }
+.dm-fileview-output.dm-empty { display: none; }
+
+/* On the tab, so a reader can tell at a glance which of two open
+ * notebooks is showing as a file. */
+.dm-tab-view {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  opacity: 0.7;
+  border: 1px solid currentColor;
+  border-radius: 3px;
+  padding: 0 0.25em;
+}
+
+/* The file list is a manager now, not an inventory: the name opens the
+ * file, and Rename sits beside the delete cross. */
+.dm-filelist-item-name {
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-color: var(--dl-rule);
+  text-underline-offset: 2px;
+}
+.dm-filelist-item-name:hover { color: var(--dl-orange); }
+span.dm-filelist-item-name { cursor: default; text-decoration: none; }
+
+.dm-filelist-item-rename {
+  background: none;
+  border: 0;
+  padding: 0 0.4em;
+  font: inherit;
+  font-size: 0.78rem;
+  color: var(--dl-muted);
+  cursor: pointer;
+  opacity: 0.75;
+}
+.dm-filelist-item-rename:hover { opacity: 1; color: var(--dl-orange); }

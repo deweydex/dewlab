@@ -118,6 +118,16 @@
            the same action, one of them worse, is one button. The freed
            space goes to the two openings that had nowhere else to live
            once a notebook was no longer empty. -->
+      <!-- Which of the two views is showing has to be visible, not buried
+           in a menu: a tool that behaves differently depending on a
+           setting the reader cannot see is one they get lost in. The tab
+           carries the same word once more than one notebook is open. -->
+      <div class="dm-toolbar-group dm-viewswitch" role="group" aria-label="How to show this notebook">
+        <button id="dm-view-cells" class="dm-tool dm-viewswitch-btn" aria-pressed="true"
+                title="Show this notebook as a list of cells">Cells</button>
+        <button id="dm-view-file" class="dm-tool dm-viewswitch-btn" aria-pressed="false"
+                title="Show this notebook as one Python file">File</button>
+      </div>
       <div class="dm-toolbar-group">
         <button id="dm-show-example" class="dm-tool dm-tool-accent" title="Fill the notebook with a short worked example">
           <span class="dm-tool-icon dm-tool-icon-run" aria-hidden="true"></span>See an example
@@ -213,7 +223,7 @@
      on planning/SIDEBAR_CONTENT.md §4's reasoning — extend a panel rather
      than add one, since panels that mutually close each other are more
      moving parts than they are worth. -->
-<div class="dm-panel dm-panel-left dm-library" id="dm-library" role="dialog" aria-modal="false"
+<div class="dm-panel dm-library" id="dm-library" role="dialog" aria-modal="false"
      aria-labelledby="dm-library-title" hidden>
   <div class="dm-panel-head">
     <h2 id="dm-library-title">Library</h2>
@@ -377,7 +387,7 @@
      Files used to live inside Settings; they are here now, because they are
      your work rather than your configuration
      (planning/DEWMINI_WORKBENCH.md §2). -->
-<div class="dm-panel dm-workbench" id="dm-workbench" role="dialog" aria-modal="false"
+<div class="dm-panel dm-panel-left dm-workbench" id="dm-workbench" role="dialog" aria-modal="false"
      aria-labelledby="dm-workbench-title" hidden>
   <div class="dm-panel-head">
     <h2 id="dm-workbench-title">Workbench</h2>
@@ -419,6 +429,7 @@
     <div class="dl-progress-actions">
       <button type="button" class="dl-btn dl-btn-secondary" id="settings-choose-folder" hidden>Use a folder on my computer</button>
       <button type="button" class="dl-btn dl-btn-secondary" id="settings-forget-folder" hidden>Stop using that folder</button>
+      <button type="button" class="dl-btn dl-btn-secondary" id="settings-new-file">New file…</button>
       <button type="button" class="dl-btn dl-btn-secondary" id="settings-upload-file">Add a file…</button>
       <input type="file" id="settings-upload-file-input" multiple hidden>
     </div>

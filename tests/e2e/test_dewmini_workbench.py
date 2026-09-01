@@ -180,15 +180,15 @@ def test_both_rails_can_be_open_at_once(dewmini):
     assert dewmini.evaluate("document.documentElement.hasAttribute('data-dl-panel-right')")
 
 
-def test_settings_and_workbench_share_an_edge(dewmini):
+def test_settings_and_the_library_share_an_edge(dewmini):
     """Two panels on one edge still close each other — otherwise the second
-    simply covers the first."""
-    dewmini.click("#dm-workbench-toggle")
-    assert dewmini.locator("#dm-workbench").is_visible()
+    simply covers the first. Settings and the Library are that pair now."""
+    dewmini.click("#dm-library-toggle")
+    assert dewmini.locator("#dm-library").is_visible()
 
     dewmini.click("#dl-settings-toggle")
     assert dewmini.locator("#dl-settings").is_visible()
-    assert dewmini.locator("#dm-workbench").is_hidden()
+    assert dewmini.locator("#dm-library").is_hidden()
 
 
 def test_a_rail_survives_clicking_your_own_notebook(dewmini):
@@ -224,19 +224,19 @@ def test_both_rails_drag_wider_and_the_notebook_gives_up_the_room(dewmini):
         dewmini.mouse.move(box["x"] + box["width"] / 2 + dx, y, steps=8)
         dewmini.mouse.up()
 
-    before = dewmini.locator("#dm-library").bounding_box()["width"]
-    drag("#dm-library .dl-panel-resize-handle", 140)
-    after = dewmini.locator("#dm-library").bounding_box()["width"]
+    before = dewmini.locator("#dm-workbench").bounding_box()["width"]
+    drag("#dm-workbench .dl-panel-resize-handle", 140)
+    after = dewmini.locator("#dm-workbench").bounding_box()["width"]
     assert after > before + 100, "the left rail should grow when dragged right"
 
-    right_before = dewmini.locator("#dm-workbench").bounding_box()["width"]
-    drag("#dm-workbench .dl-panel-resize-handle", -140)
-    right_after = dewmini.locator("#dm-workbench").bounding_box()["width"]
+    right_before = dewmini.locator("#dm-library").bounding_box()["width"]
+    drag("#dm-library .dl-panel-resize-handle", -140)
+    right_after = dewmini.locator("#dm-library").bounding_box()["width"]
     assert right_after > right_before + 100, "the right rail grows when dragged left"
 
     # The notebook sits between them rather than under either.
-    left = dewmini.locator("#dm-library").bounding_box()
-    right = dewmini.locator("#dm-workbench").bounding_box()
+    left = dewmini.locator("#dm-workbench").bounding_box()
+    right = dewmini.locator("#dm-library").bounding_box()
     main = dewmini.locator("main").bounding_box()
     assert main["x"] >= left["x"] + left["width"], "the left rail must not cover the notebook"
     assert main["x"] + main["width"] <= right["x"] + 1, "the right rail must not cover it"
@@ -1124,3 +1124,248 @@ def test_an_error_output_from_a_file_reads_as_an_error(dewmini, tmp_path):
     assert "ZeroDivisionError" in shown and "division by zero" in shown
     assert "0;31m" not in shown, "terminal colour codes reached the page"
     assert output.locator(".dl-error").count() == 1
+
+
+# --------------------------------------------------------------- file view
+
+
+def switch_view(page, which: str) -> None:
+    """Switches between the cells view and the file view."""
+    page.locator(f"#dm-view-{which}").click()
+
+
+def test_the_file_view_shows_the_notebook_as_one_python_file(dewmini):
+    """Two cells become one document with the markers between them."""
+    add_python_cell(dewmini, "x = 1")
+    add_python_cell(dewmini, "print(x)")
+    switch_view(dewmini, "file")
+
+    text = dewmini.locator(".dm-fileview-editor .cm-content").inner_text()
+    assert "# %%" in text
+    assert "x = 1" in text
+    assert "print(x)" in text
+    # One editor for the whole file, not one per cell.
+    assert dewmini.locator(".dm-cell").count() == 0
+
+
+def test_a_text_cell_survives_the_round_trip_as_a_comment(dewmini):
+    """A note goes out commented and comes back as a note, not as code."""
+    add_python_cell(dewmini, "x = 1")
+    dewmini.locator(".dm-insert-btn", has_text="Text").last.click()
+    dewmini.locator(".dm-cell-text textarea").last.fill("A note about x")
+    dewmini.locator("h1").click()  # blur, so the text cell commits
+
+    switch_view(dewmini, "file")
+    text = dewmini.locator(".dm-fileview-editor .cm-content").inner_text()
+    assert "# %% [markdown]" in text
+    assert "# A note about x" in text
+
+    switch_view(dewmini, "cells")
+    kinds = dewmini.evaluate(
+        "() => [...document.querySelectorAll('.dm-cell')]"
+        ".map(c => c.className.includes('dm-cell-text') ? 'text' : 'python')"
+    )
+    assert kinds == ["python", "text"]
+
+
+def test_a_round_trip_through_the_file_view_keeps_outputs(dewmini):
+    """The point of merging by content: an untouched cell keeps its result.
+
+    parsePyCells() mints a fresh id for every cell it reads, and a cell's
+    output is stored under its id. Without the merge, one look at the file
+    view would silently empty every output in the notebook.
+    """
+    add_python_cell(dewmini, "print('kept')")
+    before = run_first_cell_and_wait(dewmini)
+    assert before == "kept"
+
+    switch_view(dewmini, "file")
+    switch_view(dewmini, "cells")
+
+    assert dewmini.locator(".dm-cell-output").first.inner_text().strip() == "kept"
+
+
+def test_editing_in_the_file_view_reaches_the_cells(dewmini):
+    """Text typed into the file becomes a cell when the view switches back."""
+    add_python_cell(dewmini, "x = 1")
+    switch_view(dewmini, "file")
+
+    editor = dewmini.locator(".dm-fileview-editor .cm-content")
+    editor.click()
+    dewmini.keyboard.press("Control+End")
+    dewmini.keyboard.insert_text("\n# %%\ny = 2\n")
+
+    switch_view(dewmini, "cells")
+    contents = dewmini.evaluate(
+        "() => [...document.querySelectorAll('.dm-cell .cm-content')]"
+        ".map(e => e.innerText.trim())"
+    )
+    assert any("y = 2" in c for c in contents)
+
+
+def test_the_file_view_survives_a_reload(dewmini, dewmini_url):
+    """Which view you left a notebook in is part of the notebook."""
+    add_python_cell(dewmini, "x = 1")
+    switch_view(dewmini, "file")
+    dewmini.goto(dewmini_url)
+    dewmini.wait_for_selector(".dm-fileview-editor")
+    assert dewmini.locator("#dm-view-file").get_attribute("aria-pressed") == "true"
+
+
+def test_running_the_file_runs_the_whole_thing_in_order(dewmini):
+    """A file runs top to bottom, with its output in one place."""
+    add_python_cell(dewmini, "a = 2")
+    add_python_cell(dewmini, "print(a * 3)")
+    switch_view(dewmini, "file")
+
+    dewmini.locator(".dm-fileview-run").click()
+    dewmini.wait_for_function(
+        "() => {"
+        " const out = document.querySelector('.dm-fileview-output');"
+        " return out && out.innerText.trim() === '6';"
+        "}",
+        timeout=120_000,
+    )
+
+
+# ------------------------------------------------------------ file manager
+
+
+def write_workspace_file(page, name: str, text: str) -> None:
+    """Writes a file into the workspace from a Python cell, and waits.
+
+    Through a cell rather than through the filesystem interface directly,
+    because that is how a student's own file gets there, and it also
+    guarantees Python has started before the Files panel is asked for a
+    listing.
+    """
+    add_python_cell(page, f"open({name!r}, 'w').write({text!r})")
+    run_first_cell_and_wait(page, page.locator(".dm-cell").count() - 1)
+
+
+def open_files_panel(page):
+    page.locator("#dm-workbench-toggle").click()
+    page.wait_for_selector("#settings-file-list li")
+
+
+def test_a_py_file_in_the_workspace_opens_as_a_file(dewmini):
+    """Clicking a .py opens it in a tab, showing it as a file."""
+    write_workspace_file(dewmini, "shapes.py", "def area(r):\n    return 3.14 * r * r\n")
+    open_files_panel(dewmini)
+
+    dewmini.locator(".dm-filelist-item-name", has_text="shapes.py").click()
+    dewmini.wait_for_selector(".dm-fileview-editor")
+
+    assert dewmini.locator("#dm-view-file").get_attribute("aria-pressed") == "true"
+    assert "def area" in dewmini.locator(".dm-fileview-editor .cm-content").inner_text()
+
+
+def test_an_ipynb_in_the_workspace_opens_as_cells(dewmini):
+    """A notebook file opens rendered, because that format carries outputs."""
+    notebook = (
+        '{"nbformat": 4, "nbformat_minor": 5, "metadata": {}, "cells": ['
+        '{"cell_type": "code", "execution_count": null, "metadata": {},'
+        ' "source": ["print(\\"from a file\\")"], "outputs": []}]}'
+    )
+    write_workspace_file(dewmini, "saved.ipynb", notebook)
+    open_files_panel(dewmini)
+
+    dewmini.locator(".dm-filelist-item-name", has_text="saved.ipynb").click()
+    dewmini.wait_for_selector(".dm-cell")
+
+    assert dewmini.locator("#dm-view-cells").get_attribute("aria-pressed") == "true"
+    contents = dewmini.evaluate(
+        "() => [...document.querySelectorAll('.dm-cell .cm-content')]"
+        ".map(e => e.innerText)"
+    )
+    assert any("from a file" in c for c in contents)
+
+
+def test_editing_an_opened_file_writes_back_to_the_workspace(dewmini):
+    """The difference between a file manager and an import button."""
+    write_workspace_file(dewmini, "notes.py", "x = 1\n")
+    open_files_panel(dewmini)
+    dewmini.locator(".dm-filelist-item-name", has_text="notes.py").click()
+    dewmini.wait_for_selector(".dm-fileview-editor")
+
+    editor = dewmini.locator(".dm-fileview-editor .cm-content")
+    editor.click()
+    dewmini.keyboard.press("Control+End")
+    dewmini.keyboard.insert_text("\ny = 2\n")
+
+    # The write is debounced, so give it a moment to land. Then read the
+    # file back from a notebook of its own: this tab is showing a file, and
+    # a file view has no insert seams to add a cell through.
+    dewmini.wait_for_timeout(1500)
+    dewmini.locator("#new-notebook").click()
+    add_python_cell(dewmini, "print(open('notes.py').read())")
+    shown = run_first_cell_and_wait(dewmini)
+    assert "y = 2" in shown
+
+
+def test_renaming_a_file_follows_the_tab_that_is_open_on_it(dewmini):
+    """A tab left pointing at the old name would recreate it on the next key."""
+    write_workspace_file(dewmini, "before.py", "x = 1\n")
+    open_files_panel(dewmini)
+    dewmini.locator(".dm-filelist-item-name", has_text="before.py").click()
+    dewmini.wait_for_selector(".dm-fileview-editor")
+
+    dewmini.once("dialog", lambda d: d.accept("after.py"))
+    dewmini.locator(".dm-filelist-item-rename").first.click()
+    dewmini.wait_for_selector(".dm-filelist-item-name:has-text('after.py')")
+
+    names = dewmini.locator(".dm-filelist-item-name").all_inner_texts()
+    assert "before.py" not in names
+
+
+def test_a_file_dewmini_cannot_open_says_so_and_stays_put(dewmini):
+    """Guessing how to read a .csv as code would break the data file."""
+    write_workspace_file(dewmini, "readings.csv", "a,b\n1,2\n")
+    open_files_panel(dewmini)
+
+    tabs_before = dewmini.locator(".dm-tab").count()
+    dewmini.locator(".dm-filelist-item-name", has_text="readings.csv").click()
+
+    assert "opens .py and .ipynb" in dewmini.locator("#dm-status").inner_text()
+    assert dewmini.locator(".dm-tab").count() == tabs_before
+
+
+def test_a_file_a_cell_writes_lands_in_the_workspace(dewmini):
+    """A plain open(...) in a cell writes where the Files panel looks.
+
+    Python's own working directory used to be a temporary folder nothing
+    in the interface showed. A student writing open("notes.txt", "w") put
+    the file somewhere they could not see, could not import from, and lost
+    on the next reload, while the Files panel called itself a real
+    filesystem a cell can write to.
+    """
+    add_python_cell(dewmini, "open('notes.txt', 'w').write('hello')\nprint('written')")
+    assert run_first_cell_and_wait(dewmini) == "written"
+
+    open_files_panel(dewmini)
+    names = dewmini.locator(".dm-filelist-item-name").all_inner_texts()
+    assert "notes.txt" in names
+
+
+def test_a_file_a_cell_writes_can_then_be_imported(dewmini):
+    """The workspace is both the working directory and on the import path."""
+    add_python_cell(dewmini, "open('shapes.py', 'w').write('def area(r):\\n    return 3 * r * r\\n')\nprint('written')")
+    assert run_first_cell_and_wait(dewmini) == "written"
+
+    add_python_cell(dewmini, "import shapes\nprint(shapes.area(2))")
+    assert run_first_cell_and_wait(dewmini, 1) == "12"
+
+
+def test_the_project_is_on_the_left_and_the_reference_on_the_right(dewmini):
+    """Files and variables dock left; the reference docks right."""
+    dewmini.click("#dm-workbench-toggle")
+    dewmini.click("#dm-library-toggle")
+
+    workbench = dewmini.locator("#dm-workbench").bounding_box()
+    library = dewmini.locator("#dm-library").bounding_box()
+    assert workbench["x"] < library["x"], "files and variables belong on the left"
+
+    # And the sections really are where the division says they are.
+    assert dewmini.locator("#dm-workbench #settings-file-list").count() == 1
+    assert dewmini.locator("#dm-workbench #dm-variables").count() == 1
+    assert dewmini.locator("#dm-library #dm-reference-section").count() == 1
