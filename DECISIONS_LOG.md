@@ -4752,3 +4752,63 @@ other, not a search. The real ongoing cost is the one this decision
 argues against paying yet: a true shared cell implementation, still
 undecided, and the numbered identity pill's own design, still
 unbuilt anywhere.*
+
+---
+
+**7.114 — Cell outputs travel in a `.ipynb`, and imported HTML is
+rebuilt rather than trusted.** *(7.110 to 7.113 are on branches still
+open, so this takes the next number after them rather than after `main`.)*
+
+`downloadAsIpynb()` wrote `outputs: []` for every code cell and
+`parseIpynbCells()` set every imported cell's output to the empty string.
+Both directions threw results away, and neither said so — a student who
+imported a notebook lost every figure and every table it arrived with,
+silently. Both now carry outputs.
+
+**The translation is child by child, not one blob.** dewmini keeps a
+cell's output as the HTML its output area was showing; nbformat keeps a
+list of typed objects labelled by MIME type. The output area is already a
+sequence of separate things — `applyOutputEvent()` appends one `<pre>` per
+run of printed text and ready-made HTML for anything else — so each child
+translates on its own terms. A figure survives as a real `image/png`,
+which is what every other notebook tool expects, and a table stays HTML
+because that is genuinely what it is.
+
+**An error becomes a `stderr` stream, not an nbformat `error`.** An
+`error` object wants the exception's name and value as separate fields,
+and what dewmini kept is the rendered message. Splitting it back apart
+would be guessing, and a wrong exception name written into a file is
+worse than an honest stream of the text that was actually shown. The
+reading direction still understands a real `error` from Jupyter, and
+strips the terminal colour codes Jupyter leaves in its tracebacks — those
+are instructions to a terminal and line noise in a browser.
+
+**Reading carries a risk writing does not, and it is answered with an
+allow-list.** An imported `.ipynb` is a file from anywhere — a classmate,
+a download, a repository — and its `text/html` outputs would go straight
+into the page. `sanitizeImportedHtml()` rebuilds the markup instead of
+editing it: a fixed set of elements is kept, every attribute is dropped
+unless deliberately copied across, and an `<img>` survives only when its
+source is an embedded image rather than a URL that would make opening a
+notebook fetch from wherever its author chose. A list of things to remove
+is only ever as good as its author's imagination; a list of things to
+keep fails closed. Parsing happens inside an inert `<template>`, so
+nothing runs and nothing is fetched while this decides what to keep.
+
+**No `execution_count` is written.** dewmini does not number runs
+(`planning/JUPYTER_FEATURES_NEXT.md` §1 is still a proposal), and a number
+it did not measure would be a claim about run order that nothing here can
+support.
+
+**Cell metadata is where dewmini's own information goes.** nbformat
+requires a tool to preserve metadata keys it does not recognise, so
+`metadata.dewmini` holds what the format has no place for — currently a
+cell's last run time — and the file stays a notebook Jupyter, JupyterLab,
+Colab and VS Code all open normally. This is what makes a dewlab notebook
+format unnecessary. Only what is read back is written: a field nothing
+reads would be a claim in the file that nothing keeps true.
+
+*Cost to change: two to three days as estimated, in one file. Five e2e
+tests, including one that was checked to fail with the sanitiser
+neutered — a security test that passes against unsafe code is worse than
+no test at all.*

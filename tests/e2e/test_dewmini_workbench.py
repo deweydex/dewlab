@@ -19,6 +19,8 @@ one: pointing dewmini at that local Pyodide rather than the CDN.
 
 from __future__ import annotations
 
+import json
+
 import pytest
 
 # The page under test, relative to the built site root.
@@ -608,3 +610,175 @@ def test_the_inspector_folds_away_functions_and_modules(dewmini):
     assert not folded.locator("summary").inner_text().startswith("0")
     # The reader's own variable is not inside the folded section.
     assert "mine" not in folded.inner_text()
+
+
+# --------------------------------------------------- outputs in a .ipynb
+
+# A 1x1 transparent PNG. Small enough to write inline, real enough that a
+# browser renders it — so an image can be tested without paying for a
+# matplotlib figure on every run.
+TINY_PNG = (
+    "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk"
+    "YPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=="
+)
+
+# What real Jupyter leaves in a traceback: terminal colour codes, which are
+# instructions to a terminal and line noise in a browser.
+ANSI_TRACEBACK = "\x1b[0;31mZeroDivisionError\x1b[0m: division by zero"
+
+
+def import_file(page, path):
+    """Loads a .ipynb or .py through the real file input, which is what
+    picking a file from the Settings panel does."""
+    page.set_input_files("#import-ipynb-file", str(path))
+    page.wait_for_selector(".dm-tab")
+
+
+def export_ipynb(page, tmp_path, name="exported.ipynb"):
+    """Clicks the .ipynb download and returns the parsed notebook."""
+    page.click("#dl-settings-toggle")
+    with page.expect_download() as caught:
+        page.click("#download-ipynb")
+    written = tmp_path / name
+    caught.value.save_as(written)
+    page.click("#dl-settings-toggle")
+    return json.loads(written.read_text())
+
+
+def write_ipynb(path, cells):
+    """Writes a minimal but valid nbformat 4 notebook."""
+    path.write_text(json.dumps({
+        "nbformat": 4,
+        "nbformat_minor": 5,
+        "metadata": {},
+        "cells": cells,
+    }))
+    return path
+
+
+def code_cell(source, outputs):
+    return {
+        "cell_type": "code",
+        "metadata": {},
+        "execution_count": 1,
+        "source": [source],
+        "outputs": outputs,
+    }
+
+
+def test_a_printed_output_reaches_the_exported_ipynb(dewmini, tmp_path):
+    """`downloadAsIpynb()` wrote `outputs: []` for every code cell, so a
+    notebook exported from dewmini carried none of its results.
+
+    Asserted on nbformat's own shape rather than only through a round
+    trip: the whole reason for using the published format is that other
+    programs read it, and a round trip closes just as neatly on a shape
+    only dewmini understands.
+    """
+    add_python_cell(dewmini, 'print("forty two")')
+    dewmini.locator(".dm-cell .dm-icon-run").first.click()
+    dewmini.wait_for_selector(".dm-cell-output:not(.dm-empty)", timeout=120_000)
+
+    notebook = export_ipynb(dewmini, tmp_path)
+    outputs = notebook["cells"][0]["outputs"]
+
+    assert len(outputs) == 1
+    assert outputs[0]["output_type"] == "stream"
+    assert outputs[0]["name"] == "stdout"
+    assert "forty two" in "".join(outputs[0]["text"])
+
+
+def test_an_imported_notebooks_outputs_are_shown(dewmini, tmp_path):
+    """`parseIpynbCells()` set every imported cell's output to the empty
+    string, so a student who opened a notebook lost every result it came
+    with and was told nothing about it."""
+    path = write_ipynb(tmp_path / "with_results.ipynb", [code_cell(
+        "print('from the file')\n",
+        [{"output_type": "stream", "name": "stdout", "text": ["from the file\n"]}],
+    )])
+
+    import_file(dewmini, path)
+
+    output = dewmini.locator(".dm-cell-output").first
+    output.wait_for(state="visible")
+    assert "from the file" in output.inner_text()
+
+
+def test_an_image_survives_the_round_trip_as_a_png(dewmini, tmp_path):
+    """A figure has to travel as a real `image/png`, not as HTML with a
+    base64 string buried in it — that is the difference between another
+    notebook tool showing a picture and showing markup.
+
+    Goes in as a file and back out as one, which exercises both
+    translations without paying for a matplotlib figure.
+    """
+    path = write_ipynb(tmp_path / "with_figure.ipynb", [code_cell(
+        "plot()\n",
+        [{"output_type": "display_data", "data": {"image/png": TINY_PNG}, "metadata": {}}],
+    )])
+
+    import_file(dewmini, path)
+    assert dewmini.locator(".dm-cell-output img").count() == 1
+
+    notebook = export_ipynb(dewmini, tmp_path, "round-tripped.ipynb")
+    outputs = notebook["cells"][0]["outputs"]
+    assert len(outputs) == 1
+    assert "image/png" in outputs[0]["data"], "the figure came back as something other than an image"
+    assert "".join(outputs[0]["data"]["image/png"]).strip() == TINY_PNG
+
+
+def test_html_output_from_an_imported_notebook_cannot_bring_anything_active(dewmini, tmp_path):
+    """An imported .ipynb is a file from anywhere, and its HTML outputs go
+    into the page. Only an allow-list is safe here: a list of things to
+    remove is as good as its author's imagination, and a list of things
+    to keep fails closed.
+
+    The table's real content has to survive, or the sanitising has simply
+    replaced one broken behaviour with another.
+    """
+    hostile = (
+        "<table><tr><td>keep this number</td></tr></table>"
+        "<script>window.__ranFromNotebook = true;</script>"
+        '<img src="x" onerror="window.__ranFromNotebook = true">'
+        '<img src="https://example.invalid/tracker.gif">'
+        '<a href="javascript:void(0)">a link</a>'
+    )
+    path = write_ipynb(tmp_path / "hostile.ipynb", [code_cell(
+        "frame\n",
+        [{"output_type": "display_data", "data": {"text/html": [hostile]}, "metadata": {}}],
+    )])
+
+    import_file(dewmini, path)
+
+    output = dewmini.locator(".dm-cell-output").first
+    output.wait_for(state="visible")
+
+    assert "keep this number" in output.inner_text(), "the table's own content was thrown away"
+    assert output.locator("script").count() == 0
+    assert output.locator("img").count() == 0, "neither <img> here has a source worth keeping"
+    assert output.locator("a").count() == 0, "an anchor is not on the allow-list"
+    assert dewmini.evaluate("window.__ranFromNotebook === true") is False
+
+
+def test_an_error_output_from_a_file_reads_as_an_error(dewmini, tmp_path):
+    """nbformat's `error` output carries the exception separately from its
+    traceback, and real Jupyter leaves terminal colour codes in that
+    traceback."""
+    path = write_ipynb(tmp_path / "with_error.ipynb", [code_cell(
+        "1 / 0\n",
+        [{
+            "output_type": "error",
+            "ename": "ZeroDivisionError",
+            "evalue": "division by zero",
+            "traceback": [ANSI_TRACEBACK],
+        }],
+    )])
+
+    import_file(dewmini, path)
+
+    output = dewmini.locator(".dm-cell-output").first
+    output.wait_for(state="visible")
+    shown = output.inner_text()
+    assert "ZeroDivisionError" in shown and "division by zero" in shown
+    assert "0;31m" not in shown, "terminal colour codes reached the page"
+    assert output.locator(".dl-error").count() == 1
