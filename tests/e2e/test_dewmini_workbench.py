@@ -624,7 +624,7 @@ def add_text_cell(page, prose: str) -> None:
     happens presses on one element and releases over another, and is
     lost. Leaving the cell deliberately, and waiting for the collapse,
     keeps the tests below measuring what they mean to measure. (The same
-    shift is visible to a reader; see DECISIONS_LOG.md 7.113.)
+    shift is visible to a reader; see planning/OPEN_QUESTIONS.md.)
     """
     page.locator(".dm-insert-btn", has_text="Text").last.click()
     box = page.locator(".dm-cell-text textarea").last
@@ -712,7 +712,7 @@ def test_a_plain_script_imports_as_one_python_cell(dewmini, tmp_path):
 
 
 def test_an_exported_file_uses_the_percent_format(dewmini, tmp_path):
-    """DECISIONS_LOG.md 7.112 — the markers are the ones other editors
+    """The markers are the ones other editors
     read, not ones dewmini invented for itself.
 
     Asserted on the file's bytes rather than only through the round trip:

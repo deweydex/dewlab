@@ -185,7 +185,7 @@ know which backend is active.
 - **`.py` import:** split on `# %%` cell markers (the
   Jupytext/VS Code/Spyder convention); if none are found, import the whole
   file as one cell. The export side has to use the same markers or the
-  round trip does not close. **Done** — `DECISIONS_LOG.md` 7.112 records
+  round trip does not close. **Done** — see `docs/DEWMINI.md` for
   what shipped, including the `# %% [markdown]` spelling that lets a text
   cell and a code cell be told apart on the way back in.
 

@@ -27,3 +27,9 @@
 # Python bytecode.
 __pycache__/
 *.py[cod]
+
+# Design canvases. The .dc.html artboards and canvas.json under /.design/ ARE
+# committed — they are the editable source. The assembled page is not: it
+# carries a ~2.5 MB copy of the canvas editor and is regenerated on demand.
+/.design/*/*.html
+!/.design/*/*.dc.html
