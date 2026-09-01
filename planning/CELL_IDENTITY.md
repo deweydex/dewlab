@@ -27,7 +27,11 @@ numbered identity pill — held back at first because unlike the other
 four, it didn't fit as a small addition to the existing cell markup; it
 touched the same header every cell already had, so it was worth
 designing properly before building it, which 7.110 then did, in
-dewmini only.
+dewmini first. 7.113 carried the pill and the merged run-line on to
+tutorial and practice pages too, once dewmini had settled their shape,
+and 7.114 followed with collapse and Duplicate — see §7 for exactly
+what did and didn't come along with them, and what Duplicate ended up
+meaning on a page whose cells aren't all the reader's own.
 
 ---
 
@@ -218,20 +222,53 @@ carrying the state rather than its shape.
   not a claim that they do. `--dl-type-python`/`--dl-type-text` are the
   only colour tokens defined so far; a real type gets a literal hue added
   alongside them when it's built, not before.
-- **Tutorial and practice pages.** 7.109 ported the run-line-adjacent
-  pieces (staleness, run above/below, restart & run all) onto
-  `build.py`'s `render_cell()`/`assets/tutorial-runtime.js`, keeping
-  dewmini's and the tutorial runtime's own engines and DOM separate
-  rather than unifying them — see that decision for why a full shared
-  cell implementation was explicitly not the chosen path. 7.110's fuller
-  anatomy — the pill, the numbered counter, the header/footer layout
-  move, Duplicate — was not part of that port and still isn't: it needs
-  the cell types this document was written assuming (a tutorial page
-  today distinguishes only "has a Run button" from "does not," not
-  Python from SQL from HTML), and moving Run/Reset/⋯ out of the header
-  is a larger, separate change to the primary reading surface. The same
-  instinct that makes a Text cell go quiet until touched here should
-  carry over directly, though: a tutorial's own prose-like cells
-  (Markdown-shaped, non-executable) ought to fade their chrome away the
-  same way, rather than looking like every other numbered, run-tracked
-  cell around them.
+- **Tutorial and practice pages: the pill and the run line are now ported
+  too (7.113).** 7.109 ported the run-line-adjacent pieces (staleness,
+  run above/below, restart & run all) onto `build.py`'s
+  `render_cell()`/`assets/tutorial-runtime.js`, keeping dewmini's and the
+  tutorial runtime's own engines and DOM separate rather than unifying
+  them — see that decision for why a full shared cell implementation was
+  explicitly not the chosen path. 7.113 carried the pill (`Cell N`,
+  coloured "Python" type) and the merged run-line (order, duration,
+  staleness, live "Running…"/"Running next") over the same way, replacing
+  the plain `.dl-cell-id` text and the separate stats/stale-badge pair
+  7.109 had used. The pill's number is different in kind from dewmini's,
+  though: a tutorial page's cells are never reordered, so `build.py`
+  gives each one its static, build-time position rather than
+  live-recomputing it the way dewmini must for a draggable list — there
+  is no drag handle here, because there is nothing to drag. The colour
+  token is always `--dl-type-python`, since every authored cell on a
+  tutorial page is Python; `--dl-type-text` and the rest stay unused
+  until a real second authored type exists.
+
+  There was never a header→footer move to make on this side, unlike
+  dewmini: `build.py`'s `.dl-cell-bar` sat below the editor and output
+  from the start (§5 above notes this — it's the layout dewmini's own
+  7.110 moved *to*), so nothing here needed relocating.
+
+- **Tutorial and practice pages: collapse and Duplicate too (7.114).**
+  The collapse triangle now applies to every cell that has editable
+  content — an authored cell's code, and both a custom python cell's
+  code and a custom text cell's note-or-rendered-view — the same "every
+  type gets it" reasoning §4's amendment already settled for dewmini.
+  Collapsing hides only `.dl-cell-content`; the output and the bar
+  beneath it stay visible, same as dewmini.
+
+  Duplicate turned out to mean something different here than in
+  dewmini, because an authored cell isn't a reader's own the way a
+  dewmini cell is — it's the tutorial's own fixed content. Rather than
+  skip it, Duplicate on an authored cell inserts a copy of its code as a
+  new *custom* cell immediately after it — the reader's own copy to
+  experiment with, the tutorial's own left untouched. This reuses
+  machinery that already existed for an unrelated reason:
+  `initCustomCellsSection()` already seeds a "+Code / +Text" insertion
+  point after every real cell (for "Try something of your own" placed
+  anywhere on the page, not only at the bottom), so Duplicate is just
+  one more way of using that same seam, not a new insertion mechanism.
+  Custom cells got their own Duplicate too, inserting the copy right
+  after the original the same way.
+
+  The same instinct that makes a Text cell go quiet until touched in
+  dewmini has not been carried over here yet — a tutorial's own
+  prose-like custom cells still look like every other cell around them
+  rather than fading their chrome away. Left for a later pass.

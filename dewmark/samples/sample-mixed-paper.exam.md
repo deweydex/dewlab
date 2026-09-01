@@ -5,6 +5,7 @@ version: 2027.01.15.1
 total_marks: 50
 time_allowed: 90 minutes
 student_details: [full name, student number]
+calculator: scientific
 instructions: |
   Answer every question in Section A. In Section B, answer one of the
   two essay titles. Show your working where a question asks for it; a

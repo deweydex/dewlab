@@ -19,6 +19,8 @@ one: pointing dewmini at that local Pyodide rather than the CDN.
 
 from __future__ import annotations
 
+import json
+
 import pytest
 
 # The page under test, relative to the built site root.
@@ -610,3 +612,515 @@ def test_the_inspector_folds_away_functions_and_modules(dewmini):
     assert not folded.locator("summary").inner_text().startswith("0")
     # The reader's own variable is not inside the folded section.
     assert "mine" not in folded.inner_text()
+
+
+# ------------------------------------------------------------------ storage
+
+
+def test_a_full_storage_keeps_the_code_and_says_what_it_dropped(dewmini):
+    """When localStorage fills, saveState() gives up outputs rather than
+    giving up silently. See "Keeping your work" in docs/DEWMINI.md.
+
+    The old version wrapped its one `setItem` in an empty `catch`, so a
+    student with a few figures crossed the browser's ~5 MB limit and their
+    work simply stopped being saved: no error on screen, and a reload back
+    to whatever had been stored before the first failed write.
+
+    This fills storage from the page itself rather than mocking `setItem`,
+    because the behaviour under test *is* the browser's real quota — a
+    stubbed throw would prove only that the catch block runs.
+    """
+    # Fill storage to the brim, then hand back one chunk. What is left is
+    # room for the notebook's code and nowhere near room for its output.
+    headroom = dewmini.evaluate(
+        """() => {
+          const chunk = "x".repeat(64 * 1024);
+          let i = 0;
+          try {
+            for (; i < 200; i += 1) localStorage.setItem(`filler:${i}`, chunk);
+          } catch {}
+          if (i === 0) return 0;
+          localStorage.removeItem(`filler:${i - 1}`);
+          return i;
+        }"""
+    )
+    assert headroom > 0, "this browser let us write 200 chunks — the quota is not what we assumed"
+
+    # An output far larger than the single chunk of headroom left above.
+    add_python_cell(dewmini, 'print("y" * 300000)')
+    dewmini.locator(".dm-cell .dm-icon-run").first.click()
+    dewmini.wait_for_selector(".dm-cell-output:not(.dm-empty)", timeout=90_000)
+
+    # The reader is told, and told that the code is the part that survived.
+    # The notice, not the status line: a run posts "Ran." to that line the
+    # instant after the save, which is exactly why this has its own place.
+    notice = dewmini.locator("#storage-notice")
+    notice.wait_for(state="visible", timeout=30_000)
+    assert "code is saved" in notice.inner_text()
+    assert "run that cell again" in notice.inner_text()
+
+    # The part that actually mattered: work done *after* the oversized
+    # output still gets saved. Under the old empty `catch` every write
+    # from here on failed — the payload always carried that output — so
+    # this second cell would never reach storage and a reload would find
+    # one cell, not two.
+    add_python_cell(dewmini, "written_after = 1")
+
+    dewmini.reload()
+    dewmini.wait_for_selector(".dm-cell")
+    assert dewmini.locator(".dm-cell").count() == 2, "the save stopped working after the big output"
+    text = dewmini.locator(".cm-content").all_inner_texts()
+    assert any('print("y" * 300000)' in t for t in text)
+    assert any("written_after = 1" in t for t in text)
+    # The code came back; the output it could not store did not.
+    assert dewmini.locator(".dm-cell-output").first.inner_text().strip() == ""
+
+
+def test_an_ordinary_save_says_nothing_about_storage(dewmini):
+    """The degraded path must not leak into the normal one: a small
+    notebook saves in silence, as it always did."""
+    add_python_cell(dewmini, "small = 1")
+    dewmini.locator(".dm-cell .dm-icon-run").first.click()
+    dewmini.wait_for_function(
+        "document.querySelectorAll('.dm-cell').length === 1", timeout=90_000
+    )
+    assert dewmini.locator("#storage-notice").is_hidden()
+# ------------------------------------------------- the .py round trip
+
+
+def add_text_cell(page, prose: str) -> None:
+    """Adds a text cell, types `prose` into it, and lets it settle.
+
+    The blur matters. A text cell's textarea hides on blur and its
+    rendered markdown takes its place, which is usually shorter — so
+    everything below the cell moves up. A click begun before that
+    happens presses on one element and releases over another, and is
+    lost. Leaving the cell deliberately, and waiting for the collapse,
+    keeps the tests below measuring what they mean to measure. (The same
+    shift is visible to a reader; see planning/OPEN_QUESTIONS.md.)
+    """
+    page.locator(".dm-insert-btn", has_text="Text").last.click()
+    box = page.locator(".dm-cell-text textarea").last
+    box.click()
+    page.keyboard.insert_text(prose)
+    page.keyboard.press("Tab")
+    box.wait_for(state="hidden")
+
+
+def export_python(page, tmp_path):
+    """Clicks the .py download and returns the file's text.
+
+    Through the Settings panel, which is where a reader finds it.
+    """
+    page.click("#dl-settings-toggle")
+    with page.expect_download() as caught:
+        page.click("#download-python")
+    written = tmp_path / "exported.py"
+    caught.value.save_as(written)
+    page.click("#dl-settings-toggle")
+    return written
+
+
+# --------------------------------------------------- outputs in a .ipynb
+
+# A 1x1 transparent PNG. Small enough to write inline, real enough that a
+# browser renders it — so an image can be tested without paying for a
+# matplotlib figure on every run.
+TINY_PNG = (
+    "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk"
+    "YPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=="
+)
+
+# What real Jupyter leaves in a traceback: terminal colour codes, which are
+# instructions to a terminal and line noise in a browser.
+ANSI_TRACEBACK = "\x1b[0;31mZeroDivisionError\x1b[0m: division by zero"
+
+
+def import_file(page, path):
+    """Loads a .ipynb or .py through the real file input, which is what
+    picking a file from the Settings panel does."""
+    page.set_input_files("#import-ipynb-file", str(path))
+    page.wait_for_selector(".dm-tab")
+
+
+def cell_kinds_and_text(page):
+    """Every cell in the visible notebook, as (kind, text) pairs.
+
+    The kind is read from the cell element's own class — createCellElement()
+    writes `dm-cell dm-cell-<type>` onto one div, so a descendant lookup for
+    `.dm-cell-python` inside a `.dm-cell` finds nothing and silently calls
+    every cell a text cell.
+    """
+    page.wait_for_selector(".dm-cell")
+    out = []
+    for cell in page.locator(".dm-cell").all():
+        classes = cell.get_attribute("class") or ""
+        if "dm-cell-python" in classes.split():
+            cell.locator(".cm-content").wait_for()
+            out.append(("python", cell.locator(".cm-content").inner_text()))
+        else:
+            out.append(("text", cell.locator("textarea").input_value()))
+    return out
+
+
+def test_a_notebook_exported_as_python_comes_back_the_same(dewmini, tmp_path):
+    """The .py round trip, which had no test of any kind before this one.
+
+    `downloadAsPython()` and `parsePyCells()` are each other's inverse and
+    neither was covered, so the behaviour was free to drift. Includes the
+    two cases that make the reverse tricky: a code cell containing its own
+    `#` comment, which must not be mistaken for note prose, and a note
+    with a blank line in it, which is written out as a bare `#`.
+    """
+    add_text_cell(dewmini, "A note.\n\nWith a blank line in it.")
+    add_python_cell(dewmini, "# a real comment\ntotal = 1 + 1")
+    add_python_cell(dewmini, "total * 2")
+
+    before = cell_kinds_and_text(dewmini)
+    assert [kind for kind, _ in before] == ["text", "python", "python"]
+
+    exported = export_python(dewmini, tmp_path)
+    import_file(dewmini, exported)
+
+    assert cell_kinds_and_text(dewmini) == before
+
+
+def test_a_plain_script_imports_as_one_python_cell(dewmini, tmp_path):
+    """A file with none of dewmini's markers — anything written anywhere
+    else — arrives whole rather than being cut up by guesswork."""
+    script = tmp_path / "plain.py"
+    script.write_text("import math\n\n# not a cell marker\nprint(math.pi)\n")
+
+    import_file(dewmini, script)
+
+    cells = cell_kinds_and_text(dewmini)
+    assert len(cells) == 1
+    assert cells[0][0] == "python"
+    assert "import math" in cells[0][1] and "print(math.pi)" in cells[0][1]
+
+
+def test_an_exported_file_uses_the_percent_format(dewmini, tmp_path):
+    """The markers are the ones other editors
+    read, not ones dewmini invented for itself.
+
+    Asserted on the file's bytes rather than only through the round trip:
+    a round trip closes just as neatly on a private format, which is the
+    thing this change exists to stop.
+    """
+    add_text_cell(dewmini, "A heading.")
+    add_python_cell(dewmini, "value = 1")
+
+    written = export_python(dewmini, tmp_path).read_text()
+
+    assert "# %% [markdown]" in written
+    assert "\n# %%\nvalue = 1" in written
+    assert "---- cell" not in written and "---- note" not in written
+    # The file is still ordinary Python: nothing outside a comment.
+    for line in written.splitlines():
+        assert line.startswith("#") or not line.strip() or "value = 1" in line
+
+
+def test_a_percent_file_written_elsewhere_imports_as_cells(dewmini, tmp_path):
+    """The point of the format: a file dewmini never wrote still opens as
+    cells. Uses the shapes other tools actually produce — a marker with a
+    title after it, a `[markdown]` cell, and imports sitting above the
+    first marker.
+    """
+    foreign = tmp_path / "from_vscode.py"
+    foreign.write_text(
+        "import math\n"
+        "\n"
+        "# %% [markdown]\n"
+        "# What this does.\n"
+        "\n"
+        "# %% Compute it tags=[\"slow\"]\n"
+        "answer = math.sqrt(16)\n"
+    )
+
+    import_file(dewmini, foreign)
+
+    cells = cell_kinds_and_text(dewmini)
+    assert [kind for kind, _ in cells] == ["python", "text", "python"]
+    # Code above the first marker is kept, not discarded.
+    assert "import math" in cells[0][1]
+    assert cells[1][1] == "What this does."
+    # A marker's title and tags are not mistaken for a text cell.
+    assert "answer = math.sqrt(16)" in cells[2][1]
+
+
+
+def test_exporting_twice_does_not_grow_the_notebook(dewmini, tmp_path):
+    """The export writes a short header explaining what `# %%` means. It
+    sits above the first marker so it is not a cell — otherwise it would
+    import as a note, be written out again above a fresh copy of itself,
+    and a reader who exported and reopened their work a few times would
+    accumulate one note per round trip.
+    """
+    add_python_cell(dewmini, "value = 1")
+
+    first = export_python(dewmini, tmp_path)
+    import_file(dewmini, first)
+    after_one = cell_kinds_and_text(dewmini)
+
+    second = tmp_path / "again.py"
+    dewmini.click("#dl-settings-toggle")
+    with dewmini.expect_download() as caught:
+        dewmini.click("#download-python")
+    caught.value.save_as(second)
+    dewmini.click("#dl-settings-toggle")
+    import_file(dewmini, second)
+
+    assert cell_kinds_and_text(dewmini) == after_one
+    assert second.read_text().count("dewmini export") == 1
+
+
+def test_a_leading_comment_from_another_file_is_kept(dewmini, tmp_path):
+    """dewmini's own header is discarded on import by matching its first
+    line. A comment block someone else wrote — a licence notice, an
+    attribution — is not dewmini's to throw away.
+    """
+    foreign = tmp_path / "licensed.py"
+    foreign.write_text(
+        "# Copyright 2026 Somebody Else.\n"
+        "# Licensed under the MIT licence.\n"
+        "\n"
+        "# %%\n"
+        "print('hello')\n"
+    )
+
+    import_file(dewmini, foreign)
+
+    cells = cell_kinds_and_text(dewmini)
+    assert len(cells) == 2, "the licence header was dropped"
+    assert "Copyright 2026 Somebody Else." in cells[0][1]
+    assert "MIT licence" in cells[0][1]
+# ------------------------------------------- importing a workspace file
+
+
+def run_first_cell_and_wait(page, index=0):
+    """Runs one cell by index and waits for its output to arrive."""
+    page.locator(".dm-cell .dm-icon-run").nth(index).click()
+    page.wait_for_function(
+        "(i) => {"
+        " const out = document.querySelectorAll('.dm-cell-output')[i];"
+        " return out && out.innerText.trim().length > 0;"
+        "}",
+        arg=index,
+        timeout=120_000,
+    )
+    return page.locator(".dm-cell-output").nth(index).inner_text().strip()
+
+
+def test_a_workspace_file_can_be_imported(dewmini):
+    """The whole point of putting the mount on `sys.path`: a .py file a
+    student writes in the workspace is importable by name.
+
+    Before this, the workspace was readable and not importable — a
+    student could have two Python files and no way to use one from the
+    other, which is exactly the step this is meant to teach.
+    """
+    add_python_cell(
+        dewmini,
+        'open("/mnt/dewmini/shapes.py", "w").write("def area(side):\\n    return side * side\\n")\n'
+        "import shapes\n"
+        "shapes.area(4)",
+    )
+
+    assert run_first_cell_and_wait(dewmini) == "16"
+
+
+def test_an_edited_import_is_reported_and_can_be_re_read(dewmini):
+    """The failure that comes free with importing, and the answer to it.
+
+    Python keeps an imported module in `sys.modules` and hands back the
+    remembered one rather than re-reading the file, so a student who
+    fixes their .py and runs the cell again gets the same wrong answer
+    with nothing on screen to explain it. dewmini says so, and offers to
+    re-read — rather than reloading silently, which would teach nothing
+    about behaviour they will meet in every other Python environment.
+    """
+    add_python_cell(
+        dewmini,
+        'open("/mnt/dewmini/tools.py", "w").write("def double(n):\\n    return n + n\\n")\n'
+        "import tools\n"
+        "tools.double(5)",
+    )
+    assert run_first_cell_and_wait(dewmini) == "10"
+
+    # The student edits the file — here, from another cell, which is the
+    # only way to write into the workspace before a file editor exists.
+    add_python_cell(
+        dewmini,
+        'open("/mnt/dewmini/tools.py", "w").write("def double(n):\\n    return n * 2 + 100\\n")\n'
+        '"edited"',
+    )
+    run_first_cell_and_wait(dewmini, 1)
+
+    # Nothing has been said yet, and the old version is still what runs.
+    add_python_cell(dewmini, "tools.double(5)")
+    assert run_first_cell_and_wait(dewmini, 2) == "10", "Python should still be using the old module"
+
+    # The run above is what noticed. The notice names the file.
+    notice = dewmini.locator("#stale-imports-notice")
+    notice.wait_for(state="visible", timeout=30_000)
+    assert "tools.py" in notice.inner_text()
+
+    dewmini.click("#reload-stale-imports")
+    assert notice.is_hidden()
+
+    # Waiting for the new value rather than for "some output": the old
+    # output is still on screen when the re-run starts, so a check for
+    # non-empty text can read the previous answer and pass by luck.
+    dewmini.locator(".dm-cell .dm-icon-run").nth(2).click()
+    dewmini.wait_for_function(
+        "document.querySelectorAll('.dm-cell-output')[2].innerText.trim() === '110'",
+        timeout=120_000,
+    )
+def export_ipynb(page, tmp_path, name="exported.ipynb"):
+    """Clicks the .ipynb download and returns the parsed notebook."""
+    page.click("#dl-settings-toggle")
+    with page.expect_download() as caught:
+        page.click("#download-ipynb")
+    written = tmp_path / name
+    caught.value.save_as(written)
+    page.click("#dl-settings-toggle")
+    return json.loads(written.read_text())
+
+
+def write_ipynb(path, cells):
+    """Writes a minimal but valid nbformat 4 notebook."""
+    path.write_text(json.dumps({
+        "nbformat": 4,
+        "nbformat_minor": 5,
+        "metadata": {},
+        "cells": cells,
+    }))
+    return path
+
+
+def code_cell(source, outputs):
+    return {
+        "cell_type": "code",
+        "metadata": {},
+        "execution_count": 1,
+        "source": [source],
+        "outputs": outputs,
+    }
+
+
+def test_a_printed_output_reaches_the_exported_ipynb(dewmini, tmp_path):
+    """`downloadAsIpynb()` wrote `outputs: []` for every code cell, so a
+    notebook exported from dewmini carried none of its results.
+
+    Asserted on nbformat's own shape rather than only through a round
+    trip: the whole reason for using the published format is that other
+    programs read it, and a round trip closes just as neatly on a shape
+    only dewmini understands.
+    """
+    add_python_cell(dewmini, 'print("forty two")')
+    dewmini.locator(".dm-cell .dm-icon-run").first.click()
+    dewmini.wait_for_selector(".dm-cell-output:not(.dm-empty)", timeout=120_000)
+
+    notebook = export_ipynb(dewmini, tmp_path)
+    outputs = notebook["cells"][0]["outputs"]
+
+    assert len(outputs) == 1
+    assert outputs[0]["output_type"] == "stream"
+    assert outputs[0]["name"] == "stdout"
+    assert "forty two" in "".join(outputs[0]["text"])
+
+
+def test_an_imported_notebooks_outputs_are_shown(dewmini, tmp_path):
+    """`parseIpynbCells()` set every imported cell's output to the empty
+    string, so a student who opened a notebook lost every result it came
+    with and was told nothing about it."""
+    path = write_ipynb(tmp_path / "with_results.ipynb", [code_cell(
+        "print('from the file')\n",
+        [{"output_type": "stream", "name": "stdout", "text": ["from the file\n"]}],
+    )])
+
+    import_file(dewmini, path)
+
+    output = dewmini.locator(".dm-cell-output").first
+    output.wait_for(state="visible")
+    assert "from the file" in output.inner_text()
+
+
+def test_an_image_survives_the_round_trip_as_a_png(dewmini, tmp_path):
+    """A figure has to travel as a real `image/png`, not as HTML with a
+    base64 string buried in it — that is the difference between another
+    notebook tool showing a picture and showing markup.
+
+    Goes in as a file and back out as one, which exercises both
+    translations without paying for a matplotlib figure.
+    """
+    path = write_ipynb(tmp_path / "with_figure.ipynb", [code_cell(
+        "plot()\n",
+        [{"output_type": "display_data", "data": {"image/png": TINY_PNG}, "metadata": {}}],
+    )])
+
+    import_file(dewmini, path)
+    assert dewmini.locator(".dm-cell-output img").count() == 1
+
+    notebook = export_ipynb(dewmini, tmp_path, "round-tripped.ipynb")
+    outputs = notebook["cells"][0]["outputs"]
+    assert len(outputs) == 1
+    assert "image/png" in outputs[0]["data"], "the figure came back as something other than an image"
+    assert "".join(outputs[0]["data"]["image/png"]).strip() == TINY_PNG
+
+
+def test_html_output_from_an_imported_notebook_cannot_bring_anything_active(dewmini, tmp_path):
+    """An imported .ipynb is a file from anywhere, and its HTML outputs go
+    into the page. Only an allow-list is safe here: a list of things to
+    remove is as good as its author's imagination, and a list of things
+    to keep fails closed.
+
+    The table's real content has to survive, or the sanitising has simply
+    replaced one broken behaviour with another.
+    """
+    hostile = (
+        "<table><tr><td>keep this number</td></tr></table>"
+        "<script>window.__ranFromNotebook = true;</script>"
+        '<img src="x" onerror="window.__ranFromNotebook = true">'
+        '<img src="https://example.invalid/tracker.gif">'
+        '<a href="javascript:void(0)">a link</a>'
+    )
+    path = write_ipynb(tmp_path / "hostile.ipynb", [code_cell(
+        "frame\n",
+        [{"output_type": "display_data", "data": {"text/html": [hostile]}, "metadata": {}}],
+    )])
+
+    import_file(dewmini, path)
+
+    output = dewmini.locator(".dm-cell-output").first
+    output.wait_for(state="visible")
+
+    assert "keep this number" in output.inner_text(), "the table's own content was thrown away"
+    assert output.locator("script").count() == 0
+    assert output.locator("img").count() == 0, "neither <img> here has a source worth keeping"
+    assert output.locator("a").count() == 0, "an anchor is not on the allow-list"
+    assert dewmini.evaluate("window.__ranFromNotebook === true") is False
+
+
+def test_an_error_output_from_a_file_reads_as_an_error(dewmini, tmp_path):
+    """nbformat's `error` output carries the exception separately from its
+    traceback, and real Jupyter leaves terminal colour codes in that
+    traceback."""
+    path = write_ipynb(tmp_path / "with_error.ipynb", [code_cell(
+        "1 / 0\n",
+        [{
+            "output_type": "error",
+            "ename": "ZeroDivisionError",
+            "evalue": "division by zero",
+            "traceback": [ANSI_TRACEBACK],
+        }],
+    )])
+
+    import_file(dewmini, path)
+
+    output = dewmini.locator(".dm-cell-output").first
+    output.wait_for(state="visible")
+    shown = output.inner_text()
+    assert "ZeroDivisionError" in shown and "division by zero" in shown
+    assert "0;31m" not in shown, "terminal colour codes reached the page"
+    assert output.locator(".dl-error").count() == 1

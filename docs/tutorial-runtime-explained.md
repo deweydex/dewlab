@@ -199,20 +199,43 @@ keep already cover the full page, and the Settings panel note says so.
 
 ---
 
-## Staleness, the "⋯" run menu, and Restart & run all
+## The pill, the run line, collapse, Duplicate, the "⋯" run menu, and Restart & run all
 
-Three pieces ported from `compose/dewmini.js`, once that file had already
-proven them out (`planning/CELL_IDENTITY.md`): a cell's "edited since
-last run" badge, "Run above"/"Run below", and Settings' "Restart & run
-all". They didn't move wholesale — dewmini's `cells` array holds a plain
-`.content` string kept in sync by hand, while this file's cells only ever
-ask their own CodeMirror editor for its current value (`getCode()`), so
-`isStale()` here compares against that instead of a mirrored field. The
-functions are otherwise a close, deliberate copy, including the
-reasoning in their own comments — `runCellBatch()`'s `reset` parameter,
-in particular, is worth reading there rather than here, since it explains
-why "Run below" is the one caller that must *not* reset the namespace
-first.
+Several pieces ported from `compose/dewmini.js`, once that file had
+already proven them out (`planning/CELL_IDENTITY.md`): a numbered,
+coloured identity pill (`Cell N` plus its type); a single merged run
+line reporting order, duration, and staleness together; "Run
+above"/"Run below"; and Settings' "Restart & run all". They didn't move
+wholesale — dewmini's `cells` array holds a plain `.content` string kept
+in sync by hand, while this file's cells only ever ask their own
+CodeMirror editor for its current value (`getCode()`), so `isStale()`
+here compares against that instead of a mirrored field; and dewmini's
+pill number is live-recomputed on every reorder (cells can be dragged),
+while `build.py`'s is a static, build-time position (`render_cell()`'s
+`number` argument) since authored cells never move. The functions are
+otherwise a close, deliberate copy, including the reasoning in their own
+comments — `runCellBatch()`'s `reset` parameter, in particular, is worth
+reading there rather than here, since it explains why "Run below" is the
+one caller that must *not* reset the namespace first.
+
+The run line (`.dl-cell-runline`, `renderCellRunLine()`) replaced what
+used to be two separate elements — a `.dl-cell-stats` span ("Ran in
+340 ms") and a `.dl-cell-stale-badge` ("edited since last run") shown or
+hidden independently. `planning/CELL_IDENTITY.md` §3 folds them into one
+line because a reader reads them together anyway: "Ran 1st in 340 ms",
+or with the edit flag, "Ran 1st in 340 ms — edited since". The run order
+(`ranOrder`, from a module-level `runSequenceCounter`) is new here —
+tutorial pages previously had no notion of *when*, relative to other
+cells, a given cell last ran, only whether its output matched its
+current code. The counter resets to 0, and every cell's `ranOrder` along
+with it, on any full namespace reset: "Restart & run all" and a
+standalone "Restart Python" both call `resetRunSequence()`, and
+"Run above"/"Run below" already reset the namespace first when their own
+`reset: true` applies. A cell mid-run shows a live "Running… 1.6 s" via
+`startRunLineTicker()`, a plain 100 ms timer rather than an `aria-live`
+region (announcing a number changing ten times a second would be noise,
+not information, for anyone using a screen reader); the very next cell
+queued in a batch shows "Running next" via `setRunLineQueued()`.
 
 `executeCell()` is the seam this needed that didn't already exist: the
 old `runCell()` inlined "time it, run it, save it" directly, which is
@@ -236,6 +259,39 @@ check than a reset (Jedi's completion cache and anything else only a
 real restart clears go with it too), which is why Settings offers both
 "Restart Python" alone and "Restart & run all" together, mirroring
 dewmini's own two buttons.
+
+`setCellCollapsed(cell, collapsed)` hides a cell's editable content
+(`.dl-cell-content` — the CodeMirror editor for a python cell, or both
+the textarea and rendered view for a custom text cell) behind a
+one-line summary, leaving the output and the bar beneath it visible.
+It's one standalone function rather than a per-cell closure the way
+dewmini's own `setCollapsed()` is, because it has to serve both
+`buildCells()` (authored cells) and `mountCustomCellAfter()` (custom
+cells) the same way — it reads `cell.collapseBtn`/`contentRegion`/
+`collapsedSummary`, set once when each cell is built, rather than
+closing over element references of its own. Saving after a toggle is
+immediate (`saveNow()`/`saveCustomCells()`), not the debounced
+`scheduleSave()`/`scheduleCustomSave()` every keystroke goes through —
+a discrete click has nothing to coalesce, and debouncing it risks
+losing the state to a reload that beats the timer (a real bug an e2e
+test caught during 7.114, before it shipped).
+
+Duplicate (`.dl-btn-duplicate`, `duplicateAsCustomCell(cell, type)`)
+means something narrower here than in dewmini, because an authored cell
+isn't the reader's own the way every dewmini cell is — it's the
+tutorial's own fixed content. Clicking it doesn't touch the original; it
+drops a new *custom* cell, seeded with the original's current code,
+immediately after it. This rides entirely on insertion machinery that
+already existed for an unrelated reason: every cell this file mounts,
+real or custom, gets its own trailing `.dl-insert` divider right after
+it (`initCustomCellsSection()`/`mountCustomCellAfter()`) — the same
+seam "+Code"/"+Text" already use for "Try something of your own" —
+and `duplicateAsCustomCell()` just calls the same `insertCustomCell()`
+those buttons call, finding its divider via `cell.element.nextElementSibling`
+rather than searching for it, so the copy lands right after *this*
+cell even if a reader has since added their own cells further down the
+same chain. Custom cells got a Duplicate button too, `type` carried
+through so a text cell's own copy stays text.
 
 ---
 

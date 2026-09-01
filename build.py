@@ -511,7 +511,7 @@ def extract_math(body: str) -> tuple[str, list[Math]]:
 # ----------------------------------------------------------------- rendering
 
 
-def render_cell(cell: Cell) -> str:
+def render_cell(cell: Cell, number: int) -> str:
     """The markup the runtime binds an editor, a Run button and an output area to.
 
     The bar sits below the editor and output, not above them — a reader's
@@ -521,13 +521,38 @@ def render_cell(cell: Cell) -> str:
     the cell and pushes whatever comes after it down the page, rather than
     covering the editor or output it might otherwise float over.
 
-    The stats/stale-badge spans and the "Run above/below" menu are empty
-    shells here — tutorial-runtime.js fills and wires them the same way it
-    already owns everything else about a live cell. This is the same
-    treatment dewmini gives a Python cell (DECISIONS_LOG.md 7.105, 7.106),
-    ported rather than reinvented: planning/CELL_IDENTITY.md's own numbered
-    identity pill is a separate, not-yet-built design and is deliberately
-    not part of this.
+    `number` is the cell's plain 1-based position on the page (its index
+    in `place_blocks()`'s own `cells` list, the same order the page reads
+    in) — an authored cell's order never changes at runtime the way a
+    dewmini cell's can, so unlike `compose/dewmini.js`'s own
+    `createCellElement()` this never needs recomputing after the fact.
+    The pill shows it alongside the cell's type — always "Python" here,
+    since an authored `exec` cell has no other kind yet — coloured via
+    the same `--dl-type-python` token dewmini's own pill uses
+    (`planning/CELL_IDENTITY.md` §2, built for this page in 7.113). No
+    drag handle: authored cells aren't reorderable, so there's nothing
+    for one to do.
+
+    The run-line span and the "Run above/below" menu are empty shells
+    here — tutorial-runtime.js fills and wires them the same way it
+    already owns everything else about a live cell, the same treatment
+    dewmini gives a Python cell (DECISIONS_LOG.md 7.105, 7.106, 7.110).
+
+    The editor sits in a `.dl-cell-body-row`, beside a collapse triangle
+    — every cell type gets one in dewmini (`planning/CELL_IDENTITY.md`
+    §4), and there is nothing type-specific here to make that not apply
+    (DECISIONS_LOG.md 7.114). `.dl-cell-collapsed-summary` is the
+    one-line stand-in tutorial-runtime.js shows in its place once
+    collapsed; both start empty/hidden and are filled in by
+    `setCellCollapsed()` there, the same way the run-line is.
+
+    Duplicate turns this cell's current code into a new custom cell
+    dropped immediately after it — `initCustomCellsSection()` already
+    seeds an insertion point after every real cell for the reader's own
+    "Try something of your own" cells, so Duplicate just reuses that
+    same seam rather than needing one of its own. An authored cell
+    itself is the tutorial's own content and stays fixed; the copy is
+    the reader's, free to edit or delete.
     """
     safe_id = html.escape(cell.id, quote=True)
     hint_markup = ""
@@ -544,14 +569,27 @@ def render_cell(cell: Cell) -> str:
         )
     return (
         f'<div class="dl-cell" data-cell-id="{safe_id}">'
-        '<div class="dl-editor"></div>'
+        '<div class="dl-cell-body-row">'
+        '<div class="dl-cell-collapse-col">'
+        '<button type="button" class="dl-collapse-toggle" aria-expanded="true" '
+        'title="Collapse this cell">'
+        '<span class="dl-collapse-caret" aria-hidden="true">&#8250;</span>'
+        "</button>"
+        "</div>"
+        '<div class="dl-cell-content"><div class="dl-editor"></div></div>'
+        '<div class="dl-cell-collapsed-summary" tabindex="0" hidden></div>'
+        "</div>"
         '<div class="dl-output"></div>'
         '<div class="dl-cell-bar">'
-        f'<span class="dl-cell-id">{safe_id}</span>'
-        '<span class="dl-cell-stats"></span>'
-        '<span class="dl-cell-stale-badge" hidden>edited since last run</span>'
+        '<span class="dl-cell-pill">'
+        f'<span class="dl-cell-pill-num">Cell {number}</span>'
+        '<span class="dl-cell-pill-type" data-type="python">Python</span>'
+        "</span>"
+        '<span class="dl-cell-runline"></span>'
         '<span class="dl-cell-spacer"></span>'
         f"{hint_markup}"
+        '<button type="button" class="dl-btn dl-btn-duplicate" '
+        'title="Copy this cell into your own, right below it">duplicate</button>'
         '<button type="button" class="dl-btn dl-btn-reset">reset</button>'
         '<div class="dl-cell-more">'
         '<button type="button" class="dl-btn dl-btn-more" aria-haspopup="true" '
@@ -624,7 +662,7 @@ def place_blocks(
         placeholder = f"<!--dewlab-cell-{index}-->"
         if placeholder not in page_html:
             raise BuildError(f"cell {cell.id!r} was lost during markdown conversion")
-        page_html = page_html.replace(placeholder, render_cell(cell))
+        page_html = page_html.replace(placeholder, render_cell(cell, index + 1))
     for index, block in enumerate(blocks):
         page_html = page_html.replace(f"<!--dewlab-code-{index}-->", render_code_block(block))
     for index, item in enumerate(maths):
@@ -3043,6 +3081,9 @@ if __name__ == "__main__":
 DEWMINI_ASSET_FILES = (
     "pyodide-engine.js",
     "pyodide-worker.js",
+    # Imported by both of the two above, so a bundle without it has an
+    # engine that cannot start.
+    "module-watch.js",
     "tutorial_tools.py",
     "tutorial-style.css",
     "vendor/codemirror.bundle.js",

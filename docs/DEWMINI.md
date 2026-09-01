@@ -288,6 +288,24 @@ storage is active, for a cell to read back with a plain `open()`. The
 list below shows what is there, and lets you delete anything you no
 longer need.
 
+**Your own Python files live here too, and you can import them.** Write
+shapes.py into this storage. A cell can then say `import shapes` and
+call `shapes.area(4)`. That is how a program spread across several files
+works anywhere else, and it is the step from writing functions to using
+them.
+
+One thing about it surprises most people the first time. Python reads a
+file once and remembers it. Editing that file after you have imported it
+does not change what runs. You fix a mistake, run the cell again, and
+get the same wrong answer. dewmini notices when this happens, names the
+file that changed, and offers to re-read it. The behaviour is Python's
+own, and you will meet it in every other Python you use. That is why
+dewmini tells you about it rather than working around it quietly.
+
+Re-reading a file replaces what is inside it. A name you imported with
+`from shapes import area` still points at the old version, so run that
+line again as well.
+
 ### Settings
 
 **Python** shows how Python is currently running. It usually runs in a
@@ -366,9 +384,27 @@ move it somewhere else, use one of the downloads in Settings. If what
 you want to keep is a file a cell wrote, use the Workbench's Files
 section and its "use a folder on my computer".
 
+A browser gives each site a limited amount of room, usually around five
+megabytes. One chart takes up far more of that room than all your code
+does. If you fill it, dewmini keeps your code and gives up the outputs
+it cannot fit. It names the ones it dropped. Run those cells again after
+a reload and the outputs come back. If even the code will not fit,
+dewmini says so and asks you to download the notebook. A reload from
+that point would lose your work.
+
 - **`.py`** joins every Python cell together and turns each text cell
   into a comment block. The whole session then reads as one ordinary
   Python file, and it loads back in here exactly as it was.
+
+  The cells are marked with `# %%` lines. A text cell is marked
+  `# %% [markdown]`. Python ignores both, so the file still runs as an
+  ordinary script. Visual Studio Code, Spyder, PyCharm and Jupytext all
+  understand these markers, so the same file opens as the same cells on
+  another machine. The file starts with a few comment lines saying so,
+  and you can delete them without changing anything.
+
+  A `.py` file has nowhere to keep what your cells printed. It holds
+  the code, not the results.
 - **`.html`** is a single file you can open by double-clicking. It
   carries its own copy of the notebook tools and runs its cells the
   moment it opens. Like a tutorial's own downloadable copy, it needs an
@@ -378,6 +414,11 @@ section and its "use a folder on my computer".
   cells, text cells become markdown cells, and it opens in Jupyter,
   JupyterLab, or Colab. The same file loads back into dewmini from
   Settings.
+
+  This is the download that keeps your results. Printed text, tables
+  and figures travel with the file. They are there when you open it
+  again, here or anywhere else. A notebook someone else made shows you
+  their results as soon as you load it, without running anything.
 
 ---
 

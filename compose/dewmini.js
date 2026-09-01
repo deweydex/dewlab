@@ -176,25 +176,158 @@ function setCells(next) {
   activeNotebook().cells = next;
 }
 
-/* Saves the notebook to localStorage. Note the `.map(({ id, type,
- * content, output, error }) => ({...}))` step: by the time a cell has
- * been rendered, it also carries live things like `.editor` (a CodeMirror
- * instance) and `.outputEl` (a DOM element) — objects that
- * `JSON.stringify` can't handle (they contain circular references back
- * to themselves) and that don't belong in storage anyway, since they get
- * rebuilt fresh every time the notebook renders. This picks out only the
- * plain-data fields worth keeping — build a fresh plain object rather
- * than serializing the live one directly. */
-function saveState() {
+/* Cell ids whose output has been left out of storage because the whole
+ * notebook would not fit otherwise — see saveState(). The output is still
+ * on screen and still on the cell object; it is only the saved copy that
+ * lacks it, so a reload shows the code with an empty output area. */
+const outputsTooLargeToSave = new Set();
+
+/* How many outputs had been dropped the last time the reader was told.
+ * Kept so the warning appears when the situation gets worse rather than
+ * on every keystroke, since saveState() runs on every edit. */
+let warnedDroppedOutputs = 0;
+
+/* One attempt at writing the whole of dewmini's work to localStorage.
+ * Returns false when it did not fit (or when storage is unavailable at
+ * all, as in a browser with site data blocked), true when it did.
+ *
+ * Note the `.map(({ id, type, content, output, error }) => ({...}))`
+ * step: by the time a cell has been rendered, it also carries live things
+ * like `.editor` (a CodeMirror instance) and `.outputEl` (a DOM element)
+ * — objects that `JSON.stringify` can't handle (they contain circular
+ * references back to themselves) and that don't belong in storage anyway,
+ * since they get rebuilt fresh every time the notebook renders. This
+ * picks out only the plain-data fields worth keeping — build a fresh
+ * plain object rather than serializing the live one directly. */
+function writeSavedState(skipOutputFor) {
   const plainCells = (list) => list.map(({ id, type, content, output, error, collapsed }) => ({
-    id, type, content, output: output || "", error: !!error, collapsed: !!collapsed
+    id, type, content,
+    output: skipOutputFor.has(id) ? "" : (output || ""),
+    error: !!error,
+    collapsed: !!collapsed
   }));
   try {
     localStorage.setItem(NOTEBOOKS_KEY, JSON.stringify({
       active: activeNotebookId,
       notebooks: notebooks.map((nb) => ({ id: nb.id, name: nb.name, cells: plainCells(nb.cells) })),
     }));
-  } catch {}
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/* Saves every open notebook, giving up outputs before it gives up code.
+ *
+ * A browser allows an origin somewhere around 5 MB of localStorage, and a
+ * cell's output is stored as the HTML the output area is showing — which
+ * for a matplotlib figure is a base64 PNG of tens of kilobytes. A few
+ * plots across a few notebooks reaches the limit, and `setItem` then
+ * throws a QuotaExceededError.
+ *
+ * This function used to wrap that single write in a `try` with an empty
+ * `catch`, which meant crossing the limit stopped the work being saved
+ * with no error, no message, and no sign anything had changed — until a
+ * reload, which brought back whatever had been stored before the first
+ * failed write. Losing an afternoon that way is the worst outcome this
+ * file can produce, so it is worth some care.
+ *
+ * Code is small and cannot be recovered by any other means. An output is
+ * large and can be recovered by running the cell again. So when the full
+ * save does not fit, outputs are dropped — largest first, since the
+ * largest one is usually the whole problem — and the write is tried
+ * again after each. Only if every output is gone and it still does not
+ * fit is anything actually lost, and then the reader is told plainly.
+ *
+ * Once an output has been dropped, its cell id stays in
+ * `outputsTooLargeToSave`, so the following keystroke does not repeat the
+ * search. The id comes back out when that cell runs again or its output
+ * is cleared, which is when its size has changed and it deserves another
+ * try. */
+function saveState() {
+  pruneDroppedOutputs();
+  if (writeSavedState(outputsTooLargeToSave)) {
+    if (outputsTooLargeToSave.size > warnedDroppedOutputs) warnAboutDroppedOutputs();
+    else if (!outputsTooLargeToSave.size) showStorageNotice("");
+    return;
+  }
+
+  const candidates = [];
+  for (const nb of notebooks) {
+    for (const cell of nb.cells) {
+      if (cell.output && !outputsTooLargeToSave.has(cell.id)) candidates.push(cell);
+    }
+  }
+  candidates.sort((a, b) => b.output.length - a.output.length);
+
+  for (const cell of candidates) {
+    outputsTooLargeToSave.add(cell.id);
+    if (writeSavedState(outputsTooLargeToSave)) {
+      warnAboutDroppedOutputs();
+      return;
+    }
+  }
+
+  // Nothing left to give up: even the code alone will not fit. This is
+  // the one case where work really is at risk, so it says so plainly and
+  // names the one action that keeps the work regardless of storage.
+  showStorageNotice(
+    "This browser's storage is full, so your work is no longer being saved. "
+    + "Use Download to keep it — a reload from here would lose it."
+  );
+}
+
+/* Says how many outputs are being left out of the save, and why that is
+ * survivable. Deliberately not phrased as a failure: the code — the part
+ * that cannot be regenerated — is safely stored. */
+function warnAboutDroppedOutputs() {
+  const n = outputsTooLargeToSave.size;
+  warnedDroppedOutputs = n;
+  showStorageNotice(
+    `Your code is saved. ${n === 1 ? "One output was" : `${n} outputs were`} too large for this `
+    + `browser's storage, so ${n === 1 ? "it" : "they"} will be empty after a reload — `
+    + `run ${n === 1 ? "that cell" : "those cells"} again to see ${n === 1 ? "it" : "them"}, `
+    + "or use Download to keep everything."
+  );
+}
+
+/* Puts a message in the standing storage notice, or takes it away when
+ * `message` is empty. Not updateStatus(): that line is wiped by the very
+ * next thing to report, and a run reports "Ran." immediately after the
+ * save that produced this — so a reader would never see it. */
+function showStorageNotice(message) {
+  const notice = document.getElementById("storage-notice");
+  const text = document.getElementById("storage-notice-text");
+  if (!notice || !text) return;
+  if (!message) {
+    notice.hidden = true;
+    text.textContent = "";
+    return;
+  }
+  text.textContent = message;
+  notice.hidden = false;
+}
+
+/* Forgets ids for cells that no longer exist, so the number in the
+ * warning stays honest after a cell is deleted or a notebook closed.
+ * Guarded on the set being non-empty, which it is in every ordinary
+ * session, so the usual save costs one comparison rather than a walk. */
+function pruneDroppedOutputs() {
+  if (!outputsTooLargeToSave.size) return;
+  const live = new Set();
+  for (const nb of notebooks) for (const cell of nb.cells) live.add(cell.id);
+  for (const id of outputsTooLargeToSave) {
+    if (!live.has(id)) outputsTooLargeToSave.delete(id);
+  }
+  warnedDroppedOutputs = Math.min(warnedDroppedOutputs, outputsTooLargeToSave.size);
+}
+
+/* Lets a cell's output be tried again on the next save. Called wherever
+ * an output is replaced or emptied, since a new output may well fit
+ * where the old one did not. */
+function allowOutputToSaveAgain(cellId) {
+  if (!outputsTooLargeToSave.delete(cellId)) return;
+  warnedDroppedOutputs = Math.min(warnedDroppedOutputs, outputsTooLargeToSave.size);
 }
 
 // --------------------------------------------------------------- notebooks
@@ -1361,6 +1494,7 @@ async function executeCell(cell) {
   cell.ranOrder = ++runSequenceCounter;
   cell.output = outputEl.innerHTML;
   cell.error = !ok;
+  allowOutputToSaveAgain(cell.id);
   if (!outputEl.innerHTML.trim()) outputEl.classList.add("dm-empty");
   updateCellChrome(cell.id);
   saveState();
@@ -1398,6 +1532,7 @@ function resetCellOutput(id) {
   }
   cell.output = "";
   cell.error = false;
+  allowOutputToSaveAgain(cell.id);
   delete cell.lastRunMs;
   delete cell.ranContent;
   delete cell.ranOrder;
@@ -1470,6 +1605,7 @@ async function runCell(id) {
     // read false (its pre-boot default) on every cell's first-ever run,
     // showing the *non-stoppable* "…" busy state even in worker mode.
     await ensurePyodide();
+    await checkImportedFiles();
     setRunButtonRunning(cell.runBtn);
     startRunLineTicker(cell);
     const ok = await executeCell(cell);
@@ -1512,6 +1648,9 @@ async function runCellBatch(pythonCells, { reset, emptyMessage, describe }) {
 
   try {
     await ensurePyodide();
+    // Once for the whole batch, not once per cell: the answer would be
+    // the same every time and each ask is a round trip.
+    await checkImportedFiles();
     if (reset) {
       await engine.resetPageState();
       resetRunSequence();
@@ -1596,6 +1735,94 @@ async function runBelow(id) {
   });
 }
 
+/* ------------------------------------------------- imported .py files
+ *
+ * A student who writes shapes.py in the workspace and imports it in a
+ * cell meets a specific, confusing failure the first time they edit that
+ * file. Python keeps every module it has imported in `sys.modules` and
+ * hands back the remembered one rather than reading the file again, so
+ * the corrected function is not the one that runs. The answer does not
+ * change, and nothing on screen says why.
+ *
+ * dewmini tells them, and offers to re-read the files. It does not
+ * re-read silently: module caching is real Python behaviour they will
+ * meet in every other environment they ever use, and a student who has
+ * met it here with an explanation is better placed than one for whom it
+ * was quietly papered over. Restarting Python instead would be correct
+ * and far too slow for a one-character edit. */
+
+// Module names currently shown in the notice, so its button knows what to
+// re-read without asking Python a second time.
+let staleImportNames = [];
+
+/* Asks whether any workspace file already imported has been edited since
+ * Python read it, and shows the notice if so.
+ *
+ * Cheap to call and safe to call often: with nothing mounted there is no
+ * import path to have imported from, so this returns without a round
+ * trip at all. Never throws — it drives a notice, and a page that cannot
+ * ask simply does not show one. */
+async function checkImportedFiles() {
+  if (!dfs.getBackend()) return;
+  const changed = await engine.changedImportedModules(dfs.mountPoint());
+  if (changed.length) showStaleImportsNotice(changed);
+}
+
+/* Names the edited files and says what to do about them. Deliberately
+ * concrete about which files: "a module changed" would send a student
+ * looking through everything they have open. */
+function showStaleImportsNotice(names) {
+  staleImportNames = names;
+  const notice = document.getElementById("stale-imports-notice");
+  const text = document.getElementById("stale-imports-text");
+  if (!notice || !text) return;
+  const files = names.map((n) => `${n}.py`).join(", ");
+  text.textContent = names.length === 1
+    ? `You have edited ${files} since Python read it. Python is still using the version it read first, so your change is not in what runs.`
+    : `You have edited these since Python read them: ${files}. Python is still using the versions it read first, so your changes are not in what runs.`;
+  notice.hidden = false;
+}
+
+function hideStaleImportsNotice() {
+  staleImportNames = [];
+  const notice = document.getElementById("stale-imports-notice");
+  if (notice) notice.hidden = true;
+}
+
+/* Re-reads the edited modules, then says what happened.
+ *
+ * The warning about `from … import …` is not a footnote. Reloading
+ * replaces what is inside the module object; a name the student imported
+ * *out* of it still points at the old function, because that binding
+ * lives in their own namespace. Someone who re-reads the file, runs the
+ * cell, and still sees the old answer has been told nothing useful
+ * unless this is said. */
+async function reloadStaleImports() {
+  const names = staleImportNames.slice();
+  if (!names.length) { hideStaleImportsNotice(); return; }
+  hideStaleImportsNotice();
+  updateStatus("Re-reading…");
+  let result;
+  try {
+    result = await engine.reloadModules(names);
+  } catch (err) {
+    updateStatus(`Couldn't re-read those files: ${err.message}`, "error");
+    return;
+  }
+  if (result.failed.length) {
+    const first = result.failed[0];
+    updateStatus(`${first.name}.py could not be read: ${first.error}`, "error");
+    return;
+  }
+  const many = result.reloaded.length !== 1;
+  updateStatus(
+    `Re-read ${result.reloaded.map((n) => `${n}.py`).join(", ")}. `
+    + `If you wrote \`from ${result.reloaded[0]} import …\`, run that line again too — `
+    + `${many ? "those names" : "that name"} still point at the old version.`,
+    "ok"
+  );
+}
+
 // -------------------------------------------------------------- downloads
 
 /* Reads the reader's chosen filename from Settings, cleaned up for use
@@ -1661,24 +1888,58 @@ function triggerDownload(filename, content, mime) {
 /* Joins every cell into one plain .py file: a Python cell's code goes in
  * as-is, and a text cell's content gets turned into `#`-prefixed comment
  * lines, so the whole notebook reads as one ordinary, runnable Python
- * script — no special notebook format needed to open it. The
- * "# ---- cell N ----"/"# ---- note ----" markers are also exactly what
- * parsePyCells() looks for on the way back in, so a downloaded .py loads
- * straight back into the same cells, notes included. */
+ * script — no special notebook format needed to open it.
+ *
+ * The cell markers are the percent format: `# %%` before a code cell and
+ * `# %% [markdown]` before a text cell. This replaces markers dewmini
+ * invented for itself ("# ---- cell 1 ----"), which no other program
+ * understood. Jupytext, Visual Studio Code, Spyder and PyCharm all read
+ * the percent format, so a file written here opens as the same cells on
+ * a machine that has never heard of dewlab — which is the only thing
+ * that makes teaching a student to work in files worth doing.
+ *
+ * `# %%` explains nothing to a beginner, where the old markers almost
+ * explained themselves. That is why the file opens with a few lines
+ * saying what the markers are for, as a text cell the student can delete
+ * once they no longer need it. Inside dewmini they never see a marker at
+ * all: the cells are the markers.
+ *
+ * parsePyCells() reads exactly what this writes, so a downloaded .py
+ * loads straight back into the same cells, notes included. */
+const PY_CELL_MARKER = "# %%";
+const PY_TEXT_MARKER = "# %% [markdown]";
+// The first line of the header block below. parsePyCells() matches this
+// exact opening to tell dewmini's own header from a leading comment a
+// file written elsewhere came with — a licence notice, say, which must
+// be kept. Change one and change the other.
+const PY_HEADER_OPENING = "# dewmini export";
+
 function downloadAsPython() {
   if (!cells.length) { updateStatus("No cells to export.", "error"); return; }
-  const parts = [`# dewmini export — ${new Date().toISOString().slice(0, 10)}`, ""];
-  cells.forEach((cell, i) => {
+  // The header sits *before* the first marker, so it is not a cell.
+  // Written as a cell it would come back as one on the next import, and
+  // then be written out again above a second copy of itself, growing by
+  // one note every time a reader exported and reopened their work.
+  const parts = [
+    `${PY_HEADER_OPENING} — ${new Date().toISOString().slice(0, 10)}`,
+    "#",
+    "# The \`# %%\` lines below mark where one cell ends and the next",
+    "# begins. Python ignores them, so this file runs as an ordinary",
+    "# script; editors that understand the convention show it as cells.",
+    "# Delete these lines and nothing changes.",
+    "",
+  ];
+  cells.forEach((cell) => {
     if (cell.type === CELL_TYPES.TEXT) {
-      parts.push("# ---- note ----");
+      parts.push(PY_TEXT_MARKER);
       cell.content.split("\n").forEach((line) => parts.push(`# ${line}`.trimEnd()));
     } else {
-      parts.push(`# ---- cell ${i + 1} ----`, cell.content);
+      parts.push(PY_CELL_MARKER, cell.content);
     }
     parts.push("");
   });
   triggerDownload(`${getFilenameBase()}.py`, parts.join("\n"), "text/x-python");
-  updateStatus("Downloaded as Python.", "ok");
+  updateStatus("Downloaded as Python. Outputs are not in a .py file — use .ipynb to keep those.", "ok");
 }
 
 /* The Jupyter notebook format (.ipynb) stores a cell's source as a list
@@ -1691,6 +1952,207 @@ function downloadAsPython() {
 function splitLines(text) {
   const lines = text.split("\n");
   return lines.map((line, i) => (i < lines.length - 1 ? `${line}\n` : line));
+}
+
+/* ------------------------------------------------ outputs in a .ipynb
+ *
+ * dewmini keeps a cell's output as HTML — the contents of its output area
+ * when the cell finished. The Jupyter notebook format keeps a list of
+ * typed output objects instead: `stream` for text a cell printed, `error`
+ * for an exception, and `display_data` or `execute_result` for a value,
+ * carried as alternative representations labelled by MIME type.
+ *
+ * Neither direction used to be attempted. downloadAsIpynb() wrote
+ * `outputs: []` for every code cell and parseIpynbCells() set every
+ * imported cell's output to the empty string, so a student who imported
+ * a notebook silently lost every result it arrived with. These two
+ * functions are the translation that fixes it. */
+
+/* dewmini's own output HTML, turned into nbformat output objects.
+ *
+ * Translated child by child rather than as one blob, because the output
+ * area is already a sequence of separate things: applyOutputEvent() in
+ * pyodide-engine.js appends a `<pre>` per run of printed text and
+ * ready-made HTML for anything else. A figure therefore survives as a
+ * real `image/png`, which is what any other notebook tool expects, while
+ * a table stays HTML because that is genuinely what it is.
+ *
+ * An error becomes a `stderr` stream rather than an nbformat `error`
+ * object. An `error` requires an exception name and value as separate
+ * fields, and what dewmini has kept is the rendered message. Splitting
+ * that back apart would be guessing, and a wrong exception name in a file
+ * is worse than an honest stream of the text that was actually shown. */
+function cellOutputsForIpynb(cell) {
+  if (!cell.output) return [];
+  const holder = document.createElement("template");
+  holder.innerHTML = cell.output;
+
+  const outputs = [];
+  for (const node of holder.content.childNodes) {
+    if (node.nodeType === Node.TEXT_NODE) {
+      if (node.textContent.trim()) {
+        outputs.push({ output_type: "stream", name: "stdout", text: splitLines(node.textContent) });
+      }
+      continue;
+    }
+    if (node.nodeType !== Node.ELEMENT_NODE) continue;
+
+    const classes = node.getAttribute("class") || "";
+    if (node.tagName === "PRE") {
+      outputs.push({
+        output_type: "stream",
+        name: classes.includes("dl-error") ? "stderr" : "stdout",
+        text: splitLines(node.textContent),
+      });
+      continue;
+    }
+
+    const png = lonePngDataUrl(node);
+    if (png) {
+      outputs.push({
+        output_type: "display_data",
+        // The base64 payload only, without the "data:image/png;base64,"
+        // prefix — nbformat stores the data, and every reader adds its
+        // own prefix back when it builds an <img>.
+        data: { "image/png": png },
+        metadata: {},
+      });
+      continue;
+    }
+
+    outputs.push({
+      output_type: "display_data",
+      data: {
+        "text/html": splitLines(node.outerHTML),
+        // A plain-text alternative for any reader that will not show
+        // HTML. Cheap, and the difference between a table appearing as
+        // its numbers and appearing as nothing at all.
+        "text/plain": splitLines(node.textContent),
+      },
+      metadata: {},
+    });
+  }
+  return outputs;
+}
+
+/* The base64 of a PNG data URL when `node` is an image and nothing else
+ * — either an <img> itself or a wrapper whose only content is one. Null
+ * for anything more complicated, which then travels as HTML. */
+function lonePngDataUrl(node) {
+  const img = node.tagName === "IMG" ? node : node.querySelector("img");
+  if (!img) return null;
+  if (node !== img && (node.querySelectorAll("img").length !== 1 || node.textContent.trim())) return null;
+  const match = /^data:image\/png;base64,(.+)$/.exec(img.getAttribute("src") || "");
+  return match ? match[1] : null;
+}
+
+/* Elements an imported notebook's HTML output may keep. Everything else
+ * is dropped, contents and all.
+ *
+ * An imported .ipynb is a file from anywhere — a classmate, a download, a
+ * repository — and its outputs are HTML that would otherwise be put
+ * straight into the page. An allow-list is the safe shape for this: a
+ * list of things to remove is only ever as good as its author's
+ * imagination, while a list of things to keep fails closed. */
+const IMPORTED_HTML_TAGS = new Set([
+  "P", "DIV", "SPAN", "PRE", "CODE", "BR", "HR", "EM", "STRONG", "B", "I", "U", "SMALL", "SUB", "SUP",
+  "UL", "OL", "LI", "DL", "DT", "DD", "BLOCKQUOTE",
+  "TABLE", "THEAD", "TBODY", "TFOOT", "TR", "TH", "TD", "CAPTION", "COLGROUP", "COL",
+  "H1", "H2", "H3", "H4", "H5", "H6", "IMG",
+]);
+
+/* Rebuilds `html` keeping only the elements above, `class` as their only
+ * attribute, and an <img> only when its source is an embedded image.
+ *
+ * Rebuilding rather than editing in place: every attribute is dropped by
+ * default and the few that survive are copied across deliberately, so an
+ * attribute nobody thought of — an event handler, a `style` carrying a
+ * URL, an `srcset` — cannot survive by not having been considered.
+ *
+ * Parsing happens inside a <template>, whose contents are inert: no
+ * script runs and no image is fetched while this is deciding what to
+ * keep. */
+function sanitizeImportedHtml(html) {
+  const source = document.createElement("template");
+  source.innerHTML = html;
+  const out = document.createElement("div");
+
+  const copy = (from, to) => {
+    for (const node of from.childNodes) {
+      if (node.nodeType === Node.TEXT_NODE) {
+        to.appendChild(document.createTextNode(node.textContent));
+        continue;
+      }
+      if (node.nodeType !== Node.ELEMENT_NODE) continue;
+      if (!IMPORTED_HTML_TAGS.has(node.tagName)) continue;
+
+      const clean = document.createElement(node.tagName.toLowerCase());
+      const className = node.getAttribute("class");
+      if (className) clean.setAttribute("class", className);
+      if (node.tagName === "IMG") {
+        const src = node.getAttribute("src") || "";
+        // Only an embedded image. A remote URL would make opening a
+        // notebook fetch from wherever its author chose, which is a
+        // request the reader never made.
+        if (!/^data:image\/(png|jpeg|gif|webp);base64,/.test(src)) continue;
+        clean.setAttribute("src", src);
+        const alt = node.getAttribute("alt");
+        if (alt) clean.setAttribute("alt", alt);
+      }
+      copy(node, clean);
+      to.appendChild(clean);
+    }
+  };
+
+  copy(source.content, out);
+  return out.innerHTML;
+}
+
+/* nbformat output objects, turned back into the HTML dewmini shows.
+ *
+ * `text/html` from a file is put through sanitizeImportedHtml() above.
+ * `image/png` becomes an <img> built here rather than trusted as markup.
+ * An `error` keeps its exception name and value, and its traceback with
+ * the terminal colour codes real Jupyter leaves in it stripped out —
+ * those are escape sequences meant for a terminal, and shown in a browser
+ * they are line noise around the message a student needs to read. */
+function htmlForIpynbOutputs(outputs) {
+  if (!Array.isArray(outputs)) return "";
+  const text = (value) => (Array.isArray(value) ? value.join("") : String(value ?? ""));
+  const escape = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  const parts = [];
+
+  for (const output of outputs) {
+    if (!output || typeof output !== "object") continue;
+    if (output.output_type === "stream") {
+      const cssClass = output.name === "stderr" ? "dl-error" : "dl-stdout";
+      parts.push(`<pre class="${cssClass}">${escape(text(output.text))}</pre>`);
+      continue;
+    }
+    if (output.output_type === "error") {
+      const trace = text(Array.isArray(output.traceback) ? output.traceback.join("\n") : output.traceback);
+      // eslint-disable-next-line no-control-regex
+      const plain = trace.replace(/\u001b\[[0-9;]*m/g, "");
+      const heading = [output.ename, output.evalue].filter(Boolean).join(": ");
+      parts.push(`<pre class="dl-error">${escape(plain || heading)}</pre>`);
+      continue;
+    }
+    const data = output.data || {};
+    if (typeof data["image/png"] === "string" || Array.isArray(data["image/png"])) {
+      const base64 = text(data["image/png"]).replace(/\s+/g, "");
+      parts.push(`<img src="data:image/png;base64,${base64}" alt="">`);
+      continue;
+    }
+    if (data["text/html"] !== undefined) {
+      const clean = sanitizeImportedHtml(text(data["text/html"]));
+      if (clean) parts.push(clean);
+      continue;
+    }
+    if (data["text/plain"] !== undefined) {
+      parts.push(`<pre class="dl-stdout">${escape(text(data["text/plain"]))}</pre>`);
+    }
+  }
+  return parts.join("");
 }
 
 /* Builds a real Jupyter notebook (nbformat 4) file: a Python cell becomes
@@ -1709,9 +2171,21 @@ function downloadAsIpynb() {
     },
     cells: cells.map((cell) => ({
       cell_type: cell.type === CELL_TYPES.PYTHON ? "code" : "markdown",
-      metadata: {},
+      // nbformat requires a tool to preserve metadata keys it does not
+      // recognise rather than discard them, so a cell's metadata is where
+      // dewmini's own information belongs. The file stays a valid Jupyter
+      // notebook that Jupyter, JupyterLab, Colab and VS Code all open
+      // normally — which is why dewlab needs no notebook format of its
+      // own. Only what is read back on import is written: a name nothing
+      // reads would be a claim in the file that nothing keeps true.
+      metadata: typeof cell.lastRunMs === "number" ? { dewmini: { lastRunMs: cell.lastRunMs } } : {},
       source: splitLines(cell.content),
-      ...(cell.type === CELL_TYPES.PYTHON ? { execution_count: null, outputs: [] } : {}),
+      ...(cell.type === CELL_TYPES.PYTHON
+        // No execution_count: dewmini does not number runs, and writing a
+        // number it did not measure would be a claim about the order this
+        // notebook was run in that nothing here can support.
+        ? { execution_count: null, outputs: cellOutputsForIpynb(cell) }
+        : {}),
     })),
   };
   triggerDownload(`${getFilenameBase()}.ipynb`, JSON.stringify(notebook, null, 2), "application/json");
@@ -2541,32 +3015,51 @@ function notebookNameFor(sourceLabel) {
 function parseIpynbCells(text) {
   const notebook = JSON.parse(text);
   if (!Array.isArray(notebook.cells)) throw new Error("that file has no cells array");
-  return notebook.cells.map((c) => ({
-    id: generateId(),
-    type: c.cell_type === "code" ? CELL_TYPES.PYTHON : CELL_TYPES.TEXT,
-    content: Array.isArray(c.source) ? c.source.join("") : c.source || "",
-    output: "",
-    error: false,
-  }));
+  return notebook.cells.map((c) => {
+    const output = c.cell_type === "code" ? htmlForIpynbOutputs(c.outputs) : "";
+    const dewmini = (c.metadata && c.metadata.dewmini) || {};
+    return {
+      id: generateId(),
+      type: c.cell_type === "code" ? CELL_TYPES.PYTHON : CELL_TYPES.TEXT,
+      content: Array.isArray(c.source) ? c.source.join("") : c.source || "",
+      output,
+      // An imported cell has not been run here, so it has no code that
+      // its output belongs to yet — `ranContent` stays unset and the
+      // stale badge stays quiet until this cell is actually run.
+      error: Array.isArray(c.outputs)
+        && c.outputs.some((o) => o && (o.output_type === "error" || o.name === "stderr")),
+      ...(typeof dewmini.lastRunMs === "number" ? { lastRunMs: dewmini.lastRunMs } : {}),
+    };
+  });
 }
 
-/* Parses a .py file into dewmini's cell shape — the counterpart to
- * downloadAsPython() below, recognizing that same function's own
- * "# ---- cell N ----" / "# ---- note ----" markers so a file downloaded
- * from dewmini and reopened here round-trips back into the same cells,
- * notes included — a marker that names its kind, rather than a bare
- * "# %%" separator, is what lets a note and a code cell be told apart
- * on the way back in.
+/* Parses a .py file in the percent format into dewmini's cell shape —
+ * the counterpart to downloadAsPython() above.
  *
- * A file with none of dewmini's own markers — a plain script, or one
- * exported from somewhere else entirely — imports as a single Python
- * cell instead.
+ * `# %%` starts a code cell and `# %% [markdown]` starts a text cell,
+ * whose prose follows as ordinary `#` comment lines. A marker may carry
+ * a title and options after it, which is what Jupytext and Visual Studio
+ * Code write (`# %% A title [markdown] tags=["x"]`), so the kind is
+ * decided by looking for a bracketed word rather than by matching the
+ * whole line. `[raw]` is read as a text cell: its content is not Python,
+ * and a text cell is the closer of the two things dewmini has.
+ *
+ * Code before the first marker is kept as a leading Python cell. In a
+ * file written anywhere else that is real code — a shebang line, a block
+ * of imports — and discarding it would lose part of the program.
+ *
+ * A file with no markers at all — a plain script — imports as a single
+ * Python cell.
  *
  * @param {string} text - raw .py file contents
  * @returns {Array<Object>} new cell objects, same shape parseIpynbCells() returns
  */
 function parsePyCells(text) {
-  const markerRe = /^# ---- (cell \d+|note) ----$/;
+  // Leading whitespace is allowed before the "#" because some editors
+  // indent a marker inside a block; anything after the "%%" is the
+  // marker's own title and options.
+  const markerRe = /^\s*#\s*%%(.*)$/;
+  const isTextMarker = (rest) => /\[(markdown|md|raw)\]/i.test(rest);
   const lines = text.split("\n");
   if (!lines.some((line) => markerRe.test(line))) {
     const trimmed = text.trim();
@@ -2576,7 +3069,7 @@ function parsePyCells(text) {
   // downloadAsPython() prefixes every note line with "# " (or a bare "#"
   // for a line that was empty) — this reverses exactly that, not a
   // general "#" comment stripper, so a genuine Python comment inside a
-  // *code* cell is left alone (this only ever runs on a "note" block's
+  // *code* cell is left alone (this only ever runs on a text block's
   // own lines).
   const unescapeNoteLine = (line) => {
     if (line === "#") return "";
@@ -2586,22 +3079,31 @@ function parsePyCells(text) {
   };
 
   const cells = [];
+  // Null until the first marker is seen. Anything buffered before then is
+  // code the file opened with — a shebang, a block of imports — so it is
+  // flushed as a Python cell rather than dropped. The one exception is
+  // dewmini's own header, recognised by its first line and discarded, so
+  // that exporting and reopening a notebook returns the same cells
+  // rather than one more note each time.
   let currentType = null;
   let buffer = [];
+  const isOwnHeader = (lines) => {
+    const first = lines.find((line) => line.trim());
+    return first !== undefined && first.trim().startsWith(PY_HEADER_OPENING);
+  };
   const flush = () => {
-    // Content before the first marker is downloadAsPython()'s own
-    // header line ("# dewmini export — <date>") — not a cell.
-    if (currentType === null) { buffer = []; return; }
-    const raw = currentType === CELL_TYPES.TEXT ? buffer.map(unescapeNoteLine).join("\n") : buffer.join("\n");
+    if (currentType === null && isOwnHeader(buffer)) { buffer = []; return; }
+    const type = currentType === null ? CELL_TYPES.PYTHON : currentType;
+    const raw = type === CELL_TYPES.TEXT ? buffer.map(unescapeNoteLine).join("\n") : buffer.join("\n");
     const content = raw.replace(/\n+$/, "");
-    if (content.trim()) cells.push({ id: generateId(), type: currentType, content, output: "", error: false });
+    if (content.trim()) cells.push({ id: generateId(), type, content, output: "", error: false });
     buffer = [];
   };
   for (const line of lines) {
     const marker = line.match(markerRe);
     if (marker) {
       flush();
-      currentType = marker[1] === "note" ? CELL_TYPES.TEXT : CELL_TYPES.PYTHON;
+      currentType = isTextMarker(marker[1]) ? CELL_TYPES.TEXT : CELL_TYPES.PYTHON;
       continue;
     }
     buffer.push(line);
@@ -3576,6 +4078,8 @@ function wireToolbar() {
   document.getElementById("download-ipynb")?.addEventListener("click", downloadAsIpynb);
   document.getElementById("import-ipynb")?.addEventListener("click", () => document.getElementById("import-ipynb-file")?.click());
   document.getElementById("import-ipynb-file")?.addEventListener("change", handleImportFile);
+  document.getElementById("reload-stale-imports")?.addEventListener("click", reloadStaleImports);
+  document.getElementById("dismiss-stale-imports")?.addEventListener("click", hideStaleImportsNotice);
   // Built-in worked examples — one listener for all four buttons, keyed
   // off the path/label already sitting in each button's own markup.
   for (const btn of document.querySelectorAll("#dl-settings-download [data-example]")) {

@@ -951,6 +951,138 @@ if (stored && Object.keys(stored.answers || {}).length) {
   document.getElementById("dm-start").prepend(note);
 }
 
+/* ---------------------------------------------- the calculator panel
+
+   A small expression calculator for exams whose file asks for one.
+   The expression is read by a parser of its own rather than handed to
+   the browser's code runner, so the calculator can only ever do
+   arithmetic, and a typing mistake produces a message instead of
+   something surprising. */
+
+const CALC_FUNCTIONS = {
+  sqrt: Math.sqrt,
+  sin: Math.sin, cos: Math.cos, tan: Math.tan,
+  asin: Math.asin, acos: Math.acos, atan: Math.atan,
+  sind: (d) => Math.sin(d * Math.PI / 180),
+  cosd: (d) => Math.cos(d * Math.PI / 180),
+  tand: (d) => Math.tan(d * Math.PI / 180),
+  asind: (x) => Math.asin(x) * 180 / Math.PI,
+  acosd: (x) => Math.acos(x) * 180 / Math.PI,
+  atand: (x) => Math.atan(x) * 180 / Math.PI,
+};
+
+function calculate(text) {
+  /* Returns a number, or throws with a readable message. */
+  const source = text.replace(/÷/g, "/").replace(/×/g, "*")
+    .replace(/−/g, "-").replace(/√/g, "sqrt").replace(/π/g, "pi");
+  const tokens = [];
+  const tokenRe = /\s*(?:(\d+\.?\d*|\.\d+)|([A-Za-z]+)|([()+\-*/^]))/y;
+  let at = 0;
+  while (at < source.length) {
+    tokenRe.lastIndex = at;
+    const match = tokenRe.exec(source);
+    if (!match || tokenRe.lastIndex === at) {
+      if (!source.slice(at).trim()) break;
+      throw new Error("cannot read “" + source.slice(at).trim()
+        + "”");
+    }
+    if (match[1] !== undefined) tokens.push(Number(match[1]));
+    else tokens.push(match[2] || match[3]);
+    at = tokenRe.lastIndex;
+  }
+  if (!tokens.length) throw new Error("nothing to work out");
+
+  let position = 0;
+  const peek = () => tokens[position];
+  const take = () => tokens[position++];
+
+  function primary() {
+    const token = take();
+    if (typeof token === "number") return token;
+    if (token === "pi") return Math.PI;
+    if (token === "(") {
+      const value = sum();
+      if (take() !== ")") throw new Error("a bracket is not closed");
+      return value;
+    }
+    if (token === "-") return -primary();
+    if (token === "+") return primary();
+    if (CALC_FUNCTIONS[token]) {
+      if (take() !== "(") {
+        throw new Error(token + " needs brackets: " + token + "(...)");
+      }
+      const value = sum();
+      if (take() !== ")") throw new Error("a bracket is not closed");
+      return CALC_FUNCTIONS[token](value);
+    }
+    throw new Error("cannot read “" + token + "”");
+  }
+
+  function power() {
+    const base = primary();
+    if (peek() === "^") { take(); return base ** power(); }
+    return base;
+  }
+
+  function product() {
+    let value = power();
+    while (peek() === "*" || peek() === "/") {
+      value = take() === "*" ? value * power() : value / power();
+    }
+    return value;
+  }
+
+  function sum() {
+    let value = product();
+    while (peek() === "+" || peek() === "-") {
+      value = take() === "+" ? value + product() : value - product();
+    }
+    return value;
+  }
+
+  const result = sum();
+  if (position < tokens.length) {
+    throw new Error("cannot read “" + tokens[position] + "”");
+  }
+  if (!Number.isFinite(result)) throw new Error("this has no value");
+  return result;
+}
+
+const calcPanel = document.getElementById("dm-calc");
+if (calcPanel) {
+  const display = document.getElementById("dm-calc-display");
+  const result = document.getElementById("dm-calc-result");
+  const evaluate = () => {
+    if (!display.value.trim()) { result.textContent = ""; return; }
+    try {
+      result.textContent = "= " + Number(calculate(display.value)
+        .toPrecision(12));
+      result.classList.remove("dm-calc-error");
+    } catch (error) {
+      result.textContent = error.message;
+      result.classList.add("dm-calc-error");
+    }
+  };
+  calcPanel.addEventListener("click", (event) => {
+    const button = event.target.closest("button");
+    if (!button) return;
+    if (button.dataset.action === "clear") {
+      display.value = "";
+      result.textContent = "";
+    } else if (button.dataset.action === "equals") {
+      evaluate();
+    } else if (button.dataset.insert !== undefined) {
+      display.setRangeText(button.dataset.insert,
+        display.selectionStart ?? display.value.length,
+        display.selectionEnd ?? display.value.length, "end");
+    }
+    display.focus();
+  });
+  display.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") { event.preventDefault(); evaluate(); }
+  });
+}
+
 /* A second copy of the exam open in this browser must not save over the
    first; the second copy detects the first and steps back. */
 const channel = "BroadcastChannel" in window

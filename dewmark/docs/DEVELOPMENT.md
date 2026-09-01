@@ -68,8 +68,12 @@ build every sample exam; the browser rehearsals stay hand-run.
 Each of these is a deliberate simplification in the current code, not a
 decision against the design documents. The documents remain the target.
 
-- **Mathematics is not typeset.** Text between dollar signs renders in
-  italics. The design calls for proper typesetting at build time.
+- **Mathematics typesets to MathML.** Text between dollar signs is
+  converted at build time and rendered by the browser itself, with no
+  typesetting program in the page. Browsers released before 2023 show
+  it poorly; the older italic form remains only as the fallback for an
+  expression the converter refuses, and the checks report every such
+  expression so a built page never falls back unnoticed.
 - **Python code questions run, but young.** The in-page runner (the
   Pyodide system, loaded from a network address or a locally served
   copy), the shared session, set-up and provided code, embedded data

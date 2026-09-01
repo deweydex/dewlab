@@ -1,6 +1,7 @@
 # What the exam builder needs.
 markdown>=3.4
 pyyaml>=6.0
+latex2mathml>=3.77   # typesets $...$ mathematics at build time
 
 # What developing dewmark needs on top of that.
 pytest>=7.0

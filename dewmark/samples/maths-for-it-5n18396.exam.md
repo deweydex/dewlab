@@ -5,13 +5,14 @@ version: 2026.09.01.1
 total_marks: 120
 time_allowed: 3 hours
 student_details: [full name, student number]
+calculator: scientific
 instructions: |
   In Section A, answer any ten of the twelve questions; each is worth 4
   marks. In Section B, answer any four of the six questions; each is
-  worth 20 marks. A calculator is permitted. Show all working: a
-  correct final answer with no working shown may not receive full
-  marks. The side panel holds a formula sheet and a guide to typing
-  mathematical notation.
+  worth 20 marks. Show all working: a correct final answer with no
+  working shown may not receive full marks. The side panel holds a
+  calculator, a formula sheet, and a guide to typing mathematical
+  notation.
 ```
 
 ```reference
