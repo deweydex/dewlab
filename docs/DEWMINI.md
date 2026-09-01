@@ -303,8 +303,8 @@ notebook.
 
 **Files** is a real filesystem a cell can read from and write to. Your
 open notebooks list here too, so you can always see where they are. A
-notebook itself is not a file: it lives in this browser, and "Keep a
-copy" in Settings saves one as a real file.
+notebook lives in this browser, not as a file. "Keep a copy" in
+Settings saves one as a real file.
 
 By default it is private storage inside your browser, which you cannot
 see from outside. **Use a folder on my computer** switches to a real
