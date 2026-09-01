@@ -454,6 +454,17 @@
        fallback, whichever the browser allows (DECISIONS_LOG.md 7.88). -->
   <section class="dm-panel-section" id="dm-files-section">
     <h3>Files</h3>
+
+    <!-- Open notebooks, even though none of them are a file here
+         (renderNotebookList()). A notebook lives in this browser's own
+         storage, not on the mounted filesystem below — listed anyway,
+         so a reader can still see where it is. -->
+    <p class="dl-panel-note">
+      Your open notebooks live in this browser, not as files below.
+      Keep a copy in Settings saves one as a real file.
+    </p>
+    <ul class="dm-filelist" id="settings-notebook-list"></ul>
+
     <p class="dl-panel-note" id="settings-storage-status">Not started yet — run a cell to start Python.</p>
     <div class="dl-progress-actions">
       <button type="button" class="dl-btn dl-btn-secondary" id="settings-choose-folder" hidden>Use a folder on my computer</button>
@@ -636,6 +647,39 @@
     </div>
 
     <button type="button" class="dl-texture-reset" id="dm-editor-reset">reset to defaults</button>
+  </section>
+
+  <!-- Which cell types offer themselves on the insert seam
+       (initCellTypeSettings(), createInsertDivider()). A cell already in
+       the notebook keeps working even with its own type turned off here
+       — this only changes what a reader can add next. -->
+  <section class="dl-settings-section" id="dl-settings-cell-types">
+    <h3>Cell types</h3>
+    <p class="dl-panel-note">
+      Turn a cell type off to hide it from the seam between cells. A cell
+      you already have still works, even with its type turned off.
+    </p>
+    <div class="dl-texture-row">
+      <span>Web (HTML+CSS)</span>
+      <div class="dl-seg" data-dm="celltype-web">
+        <button type="button" data-value="on">on</button>
+        <button type="button" data-value="off">off</button>
+      </div>
+    </div>
+    <div class="dl-texture-row">
+      <span>SQL</span>
+      <div class="dl-seg" data-dm="celltype-sql">
+        <button type="button" data-value="on">on</button>
+        <button type="button" data-value="off">off</button>
+      </div>
+    </div>
+    <div class="dl-texture-row">
+      <span>JavaScript</span>
+      <div class="dl-seg" data-dm="celltype-javascript">
+        <button type="button" data-value="on">on</button>
+        <button type="button" data-value="off">off</button>
+      </div>
+    </div>
   </section>
 </div>
 

@@ -5640,3 +5640,86 @@ it is that a design decision made while a *sibling* branch is still
 landing large, overlapping surface area (the same `compose/dewmini.js`
 regions, in this case) has a short shelf life, and is worth holding
 loosely until both have actually met.*
+
+**7.122 — Five smaller things, from actually using what 7.116–7.121
+built: a cell-type toggle, a real notebook location, two layout bugs,
+and one CSS trap caught twice in one session.** Not one build — a run
+of small, direct fixes and one real feature, each found by looking at
+what had just shipped rather than by planning ahead.
+
+**Web and SQL cells default off, behind a per-type Settings toggle.**
+Four cell types shipped in 7.116–7.120; not every reader wants all four
+offered on every seam. Settings gains "Cell types": Web and SQL start
+off, JavaScript starts on, Python and Text carry no toggle at all —
+they are the notebook, not an extra. `enabledCellTypes`, read once at
+boot and on every toggle click, gates which buttons
+`createInsertDivider()` builds; nothing about a cell already in the
+notebook changes when its type is later turned off — it still shows,
+still runs, still exports, since the toggle only answers "what can be
+added next," never "what already exists." The existing e2e suite
+assumed all types were always offered, so the shared `dewmini` fixture
+now seeds Web and SQL on before the rest of the suite loads — the
+default-off behaviour, and the toggle itself, get their own tests
+against a page that fixture never touches.
+
+**A notebook now shows up in Files, without writing it to disk.**
+Raised directly: a file a cell's own code writes already appears in
+Files, but the notebook holding that cell had nowhere it showed up at
+all — not even the default one, on a first-ever visit. The tempting fix
+— write every notebook out as a real `.py` on the mounted filesystem —
+has a real cost this repository has already ruled against once: mounting
+that filesystem means booting Pyodide, and doing that on every page
+load, before a reader has touched Python, is exactly what
+`planning/DEWMINI_WORKBENCH.md` §1's "nothing opens on a first visit"
+rule exists to prevent. `renderNotebookList()` instead lists every open
+notebook with no `.path` directly in the Files panel, labelled as living
+in this browser rather than as a file, switching to it on click — no
+filesystem read, so it draws instantly regardless of whether Python has
+ever booted, piggybacked on `renderTabs()` so it can never drift out of
+sync with what is actually open. A notebook already backed by a real
+file (opened `.py`/`.ipynb`/`.html` from Files) is left out of this list
+on purpose — it already appears in the ordinary file list under its own
+name, and listing it twice would be the same notebook claiming two
+homes.
+
+**Two layout bugs, both found by looking at a screenshot rather than
+by reading the CSS.** Library and Workbench opened 3rem wider than
+Settings by default (`.dm-panel`'s `min(24rem, 100vw)` against
+`.dl-settings`' own `min(21rem, 100vw)` in the shared
+`tutorial-style.css`) — fixed on dewmini's own side, matching `.dm-panel`
+down to 21rem, rather than touching the shared rule and every tutorial
+page's own Settings width along with it. And the per-cell "⋯" run
+menu, right-anchored and growing left with no notion of the viewport's
+own edge, could run itself off-screen once the button sat close enough
+to it — increasingly reachable now that Workbench docks left (7.99).
+`openMenu()` now measures its own `getBoundingClientRect()` after
+becoming visible and flips to a left-anchored class when it would
+overflow, rather than trying to predict in advance when that will
+happen.
+
+**The same CSS trap, twice.** The Site tab's own note picked up
+`.dm-fileview-note`'s `flex: 1 1 20rem` by reusing that class outright
+— a rule written for a *row* flex parent (`.dm-fileview-head`) that,
+inside the Site tab's *column* flex wrapper, flex-grew the note to
+absorb the entire column's spare height instead, leaving a sentence of
+text sitting in a box hundreds of pixels tall. Given its own class,
+`.dm-siteview-note`, with the same look and none of that. And
+`.dm-toolbar-group`'s own `display: flex` was found, separately, to
+silently beat the browser's `[hidden] { display: none }` rule for the
+cell-type toggle's Settings groups — an author stylesheet always wins
+over the user-agent one for the same property regardless of specificity
+or order — fixed the same way every other conditionally-hidden element
+in this file already is, with its own explicit `[hidden]` override.
+Two different symptoms, the same one-line category of CSS mistake,
+caught by a test in one case and a screenshot in the other — neither
+readable from the rule that caused it.
+
+*Cost to change: each of these was small in isolation and none touched
+architecture — the toggle reuses `renderCells()`'s existing render
+path, the notebook list reuses `renderTabs()`'s existing trigger points,
+and both layout fixes are one CSS rule apiece. What is worth keeping is
+the pattern behind all five: every one of them was found by using the
+feature that had just shipped, in a real browser, rather than by
+re-reading the code that built it — the same lesson 7.96, 7.97 and
+7.119 already drew about defects invisible from the source and visible
+immediately once a reader (or a screenshot) actually meets them.*

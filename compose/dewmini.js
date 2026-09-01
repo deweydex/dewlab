@@ -40,6 +40,24 @@ const DM_NETWORK_PATCH = "try:\n    import pyodide_http\n    pyodide_http.patch_
 
 const CELL_TYPES = { PYTHON: "python", TEXT: "text", WEB: "web", SQL: "sql", JAVASCRIPT: "javascript" };
 
+/* Which of the newer cell types (planning/CELL_IDENTITY.md §8) offer
+ * themselves on the insert seam between cells — a Settings → "Cell
+ * types" toggle per type, checked by createInsertDivider() below. Web
+ * and SQL default off, JavaScript defaults on (DECISIONS_LOG.md 7.122):
+ * a reader turns on what they mean to use rather than finding every
+ * cell type dewmini knows about crowded onto every seam. Python and
+ * Text carry no toggle — they are the notebook, not an extra a reader
+ * opts into. Turning a type off never touches a cell of that type
+ * already in the notebook: it still shows, still runs, still exports —
+ * only what a reader can *add* changes. */
+const CELL_TYPE_TOGGLES = [
+  { type: CELL_TYPES.WEB, dm: "celltype-web", key: "dewmini:celltype-web", defaultOn: false },
+  { type: CELL_TYPES.SQL, dm: "celltype-sql", key: "dewmini:celltype-sql", defaultOn: false },
+  { type: CELL_TYPES.JAVASCRIPT, dm: "celltype-javascript", key: "dewmini:celltype-javascript", defaultOn: true },
+];
+
+let enabledCellTypes = new Set([CELL_TYPES.PYTHON, CELL_TYPES.TEXT]);
+
 /* The fixed little "page" a web cell's own preview falls back to when its
  * HTML half is empty — a heading, a paragraph with a link, a button, a
  * list: enough ordinary elements that a reader's own CSS selectors (h2,
@@ -532,6 +550,11 @@ function renameNotebook(id) {
  * (the "+" lives in the toolbar, so there is still a way to get a second
  * one). */
 function renderTabs() {
+  // Every call site that redraws the tab strip is exactly when the
+  // Files panel's own notebook list needs redrawing too — a notebook
+  // opened, closed, or renamed changes both at once.
+  renderNotebookList();
+
   if (!tabsEl) return;
   tabsEl.replaceChildren();
   tabsEl.hidden = notebooks.length < 2;
@@ -1272,7 +1295,7 @@ function renderSiteView() {
   wrap.className = "dm-siteview";
 
   const note = document.createElement("p");
-  note.className = "dm-fileview-note";
+  note.className = "dm-siteview-note";
   note.textContent = `This site is ${notebook.path}`
     + (notebook.siteCssPath ? `, ${notebook.siteCssPath}` : "")
     + (notebook.siteJsPath ? ` and ${notebook.siteJsPath}` : "")
@@ -1388,28 +1411,41 @@ function createInsertDivider(index) {
   addTxt.innerHTML = '<span class="dm-tool-icon dm-tool-icon-text" aria-hidden="true"></span>Text';
   addTxt.addEventListener("click", () => insertCellAt(index, CELL_TYPES.TEXT));
 
-  const addWeb = document.createElement("button");
-  addWeb.type = "button";
-  addWeb.className = "dm-insert-btn";
-  addWeb.title = "Insert an HTML+CSS cell here";
-  addWeb.innerHTML = '<span class="dm-tool-icon dm-tool-icon-html" aria-hidden="true"></span>Web';
-  addWeb.addEventListener("click", () => insertCellAt(index, CELL_TYPES.WEB));
+  actions.append(addPy, addTxt);
 
-  const addSql = document.createElement("button");
-  addSql.type = "button";
-  addSql.className = "dm-insert-btn";
-  addSql.title = "Insert a SQL cell here";
-  addSql.innerHTML = '<span class="dm-tool-icon dm-tool-icon-sql" aria-hidden="true"></span>SQL';
-  addSql.addEventListener("click", () => insertCellAt(index, CELL_TYPES.SQL));
+  // Web, SQL and JavaScript only offer themselves here once their own
+  // Settings → "Cell types" toggle is on (CELL_TYPE_TOGGLES) — Web and
+  // SQL start off, JavaScript starts on.
+  if (enabledCellTypes.has(CELL_TYPES.WEB)) {
+    const addWeb = document.createElement("button");
+    addWeb.type = "button";
+    addWeb.className = "dm-insert-btn";
+    addWeb.title = "Insert an HTML+CSS cell here";
+    addWeb.innerHTML = '<span class="dm-tool-icon dm-tool-icon-html" aria-hidden="true"></span>Web';
+    addWeb.addEventListener("click", () => insertCellAt(index, CELL_TYPES.WEB));
+    actions.append(addWeb);
+  }
 
-  const addJs = document.createElement("button");
-  addJs.type = "button";
-  addJs.className = "dm-insert-btn";
-  addJs.title = "Insert a JavaScript cell here";
-  addJs.innerHTML = '<span class="dm-tool-icon dm-tool-icon-js" aria-hidden="true"></span>JS';
-  addJs.addEventListener("click", () => insertCellAt(index, CELL_TYPES.JAVASCRIPT));
+  if (enabledCellTypes.has(CELL_TYPES.SQL)) {
+    const addSql = document.createElement("button");
+    addSql.type = "button";
+    addSql.className = "dm-insert-btn";
+    addSql.title = "Insert a SQL cell here";
+    addSql.innerHTML = '<span class="dm-tool-icon dm-tool-icon-sql" aria-hidden="true"></span>SQL';
+    addSql.addEventListener("click", () => insertCellAt(index, CELL_TYPES.SQL));
+    actions.append(addSql);
+  }
 
-  actions.append(addPy, addTxt, addWeb, addSql, addJs);
+  if (enabledCellTypes.has(CELL_TYPES.JAVASCRIPT)) {
+    const addJs = document.createElement("button");
+    addJs.type = "button";
+    addJs.className = "dm-insert-btn";
+    addJs.title = "Insert a JavaScript cell here";
+    addJs.innerHTML = '<span class="dm-tool-icon dm-tool-icon-js" aria-hidden="true"></span>JS';
+    addJs.addEventListener("click", () => insertCellAt(index, CELL_TYPES.JAVASCRIPT));
+    actions.append(addJs);
+  }
+
   row.append(line, actions);
   return row;
 }
@@ -1481,7 +1517,15 @@ function createRunMoreMenu(cell) {
     }
   };
   const openMenu = () => {
+    menu.classList.remove("dm-cell-run-menu-left");
     menu.hidden = false;
+    // Anchored from the button's right edge by default (see the
+    // stylesheet), which runs the menu off the left of the viewport once
+    // the button sits close enough to it — reachable more often now that
+    // Workbench docks left (DECISIONS_LOG.md 7.122), but always possible
+    // on a narrow screen. Measured after becoming visible, since a
+    // hidden element's rect is always zero.
+    if (menu.getBoundingClientRect().left < 0) menu.classList.add("dm-cell-run-menu-left");
     moreBtn.setAttribute("aria-expanded", "true");
     outsideHandler = (e) => { if (!wrap.contains(e.target)) closeMenu(); };
     // Added after this click has finished bubbling, same trick
@@ -4269,6 +4313,45 @@ async function updateStorageStatus() {
   renderFileList();
 }
 
+/* Lists every open notebook in the Files panel too, even though none of
+ * them are a file on the mounted filesystem. A notebook lives in this
+ * browser's own storage — the Files section is where a reader already
+ * looks to answer "where is my work", and until this a plain notebook
+ * had no answer there at all, unlike a file a cell's own code writes
+ * (DECISIONS_LOG.md 7.122). No filesystem read, so this needs no
+ * ticket-guard the way renderFileList() does, and draws instantly
+ * regardless of whether Python has ever booted.
+ *
+ * A notebook already backed by a real workspace file (`.path` is set —
+ * opened from Files as a `.py`/`.ipynb`/`.html`) is skipped: it already
+ * appears in the ordinary file list below under its own name, and
+ * listing it here too would be the same notebook claiming two homes. */
+function renderNotebookList() {
+  const listEl = document.getElementById("settings-notebook-list");
+  if (!listEl) return;
+  listEl.replaceChildren();
+
+  for (const nb of notebooks) {
+    if (nb.path) continue;
+    const item = document.createElement("li");
+    item.className = "dm-filelist-item";
+
+    const nameEl = document.createElement("button");
+    nameEl.type = "button";
+    nameEl.className = "dm-filelist-item-name";
+    nameEl.textContent = nb.name;
+    nameEl.title = `Switch to ${nb.name}`;
+    nameEl.addEventListener("click", () => showNotebook(nb.id));
+
+    const badge = document.createElement("span");
+    badge.className = "dm-filelist-item-size";
+    badge.textContent = "notebook";
+
+    item.append(nameEl, badge);
+    listEl.append(item);
+  }
+}
+
 /* Re-lists the mounted filesystem's root and redraws the "Files" list —
  * root only, not a full recursive tree with browsable subfolders:
  * a compact Settings section is the wrong place for
@@ -5003,6 +5086,58 @@ function initPracticeOrderSettings() {
   sync();
 }
 
+/* Reads the saved on/off state for every toggle in CELL_TYPE_TOGGLES into
+ * enabledCellTypes. Called before the first renderCells() (see init()),
+ * since createInsertDivider() reads enabledCellTypes on every render. */
+function loadCellTypeToggles() {
+  enabledCellTypes = new Set([CELL_TYPES.PYTHON, CELL_TYPES.TEXT]);
+  for (const t of CELL_TYPE_TOGGLES) {
+    let on = t.defaultOn;
+    try {
+      const saved = localStorage.getItem(t.key);
+      if (saved === "on") on = true;
+      else if (saved === "off") on = false;
+    } catch {}
+    if (on) enabledCellTypes.add(t.type);
+  }
+}
+
+/* Wires up Settings → "Cell types". A toggle here only changes which
+ * insert-seam buttons createInsertDivider() draws — flipping one off
+ * re-renders the seams (via renderCells()) so the change is visible
+ * straight away, but touches nothing already in the notebook. */
+function initCellTypeSettings() {
+  loadCellTypeToggles();
+
+  const panel = document.getElementById("dl-settings-cell-types");
+  if (!panel) return;
+
+  const sync = () => {
+    for (const t of CELL_TYPE_TOGGLES) {
+      const group = panel.querySelector(`.dl-seg[data-dm="${t.dm}"]`);
+      if (!group) continue;
+      const on = enabledCellTypes.has(t.type);
+      for (const btn of group.querySelectorAll("button")) {
+        btn.setAttribute("aria-pressed", String(btn.dataset.value === (on ? "on" : "off")));
+      }
+    }
+  };
+
+  for (const t of CELL_TYPE_TOGGLES) {
+    const group = panel.querySelector(`.dl-seg[data-dm="${t.dm}"]`);
+    group?.addEventListener("click", (ev) => {
+      const btn = ev.target.closest("button");
+      if (!btn) return;
+      const on = btn.dataset.value === "on";
+      if (on) enabledCellTypes.add(t.type); else enabledCellTypes.delete(t.type);
+      try { localStorage.setItem(t.key, on ? "on" : "off"); } catch {}
+      sync();
+      renderCells();
+    });
+  }
+  sync();
+}
+
 /* Wires up the Settings → Run time "on / off" switch — applied as a
  * data-dm-runstats attribute on <html> (read by renderCellRunLine()),
  * re-painted on every already-rendered cell immediately on toggle, not
@@ -5156,6 +5291,7 @@ async function init() {
   initFilename();
   initPracticeOrderSettings();
   initRunStatsSetting();
+  initCellTypeSettings();
   initStorageSection();
   initExecutionSection();
   initReferenceSection();

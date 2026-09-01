@@ -62,14 +62,25 @@ def dewmini_url(site_dir, base_url) -> str:
 
 @pytest.fixture
 def dewmini(page, dewmini_url):
-    """A fresh dewmini with no saved state.
+    """A fresh dewmini with no saved state, and Web and SQL cells turned on.
 
     Storage is cleared *before* the real load, on a blank page from the
     same origin: clearing after dewmini has already read localStorage
     would leave the page showing state this test then thinks is gone.
+
+    Web and SQL default off (DECISIONS_LOG.md 7.122) — seeded on here,
+    before the real load reads them, because the great majority of this
+    suite is testing something else entirely and would otherwise have to
+    turn each on for itself. The default-off behaviour, and the toggle
+    itself, get their own tests below against a page that does *not* go
+    through this fixture.
     """
     page.goto(dewmini_url)
-    page.evaluate("localStorage.clear()")
+    page.evaluate("""() => {
+        localStorage.clear();
+        localStorage.setItem('dewmini:celltype-web', 'on');
+        localStorage.setItem('dewmini:celltype-sql', 'on');
+    }""")
     page.goto(dewmini_url)
     # The toolbar, not #cells-container: an empty notebook's cell
     # container has zero height, which Playwright counts as hidden.
@@ -1990,3 +2001,68 @@ def test_the_cell_toolbar_hides_for_a_site_tab(dewmini):
 
     dewmini.locator(".dm-tab-label", has_text="Notebook").first.click()
     assert dewmini.locator("#run-all").is_visible()
+
+
+# ---------------------------------------------------------------- cell types
+
+
+def fresh_page(page, dewmini_url):
+    """A page with truly empty storage — unlike the `dewmini` fixture,
+    which seeds Web and SQL on for the rest of this suite's convenience
+    (DECISIONS_LOG.md 7.122). The default-off behaviour can only be seen
+    from a page that fixture never touched."""
+    page.goto(dewmini_url)
+    page.evaluate("localStorage.clear()")
+    page.goto(dewmini_url)
+    page.wait_for_selector(".dm-toolbar")
+    return page
+
+
+def open_cell_type_settings(page):
+    page.click("#dl-settings-toggle")
+    page.wait_for_selector("#dl-settings-cell-types")
+
+
+def test_web_and_sql_default_off_javascript_defaults_on(page, dewmini_url):
+    """A reader turns on what they mean to use, rather than finding
+    every cell type dewmini knows about crowded onto every seam."""
+    fresh_page(page, dewmini_url)
+    buttons = page.locator(".dm-insert-btn").all_inner_texts()
+    assert "Web" not in buttons
+    assert "SQL" not in buttons
+    assert "JS" in buttons
+
+
+def test_turning_on_a_cell_type_adds_it_to_the_seam(page, dewmini_url):
+    fresh_page(page, dewmini_url)
+    open_cell_type_settings(page)
+    page.click('.dl-seg[data-dm="celltype-web"] button[data-value="on"]')
+    page.click("#dl-settings-close")
+
+    assert "Web" in page.locator(".dm-insert-btn").all_inner_texts()
+
+
+def test_turning_a_type_off_does_not_touch_a_cell_already_there(dewmini):
+    """Only what a reader can *add* changes — a cell already in the
+    notebook keeps showing and keeps running."""
+    cell = _web_cell(dewmini, html="<p>Still here</p>")
+    frame = cell.locator(".dm-html-frame").content_frame
+    assert frame.locator("p").text_content() == "Still here"
+
+    open_cell_type_settings(dewmini)
+    dewmini.click('.dl-seg[data-dm="celltype-web"] button[data-value="off"]')
+    dewmini.click("#dl-settings-close")
+
+    assert dewmini.locator(".dm-cell-web").count() == 1
+    assert "Web" not in dewmini.locator(".dm-insert-btn").all_inner_texts()
+    assert cell.locator(".dm-html-frame").content_frame.locator("p").text_content() == "Still here"
+
+
+def test_a_cell_type_toggle_survives_a_reload(dewmini, dewmini_url):
+    open_cell_type_settings(dewmini)
+    dewmini.click('.dl-seg[data-dm="celltype-sql"] button[data-value="off"]')
+    dewmini.click("#dl-settings-close")
+
+    dewmini.goto(dewmini_url)
+    dewmini.wait_for_selector(".dm-toolbar")
+    assert "SQL" not in dewmini.locator(".dm-insert-btn").all_inner_texts()

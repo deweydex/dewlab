@@ -502,6 +502,10 @@ html[data-dl-panel-right] .dm-page .dl-crumbs {
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
 }
 .dm-cell-run-menu[hidden] { display: none; }
+/* The default right: 0 above grows the menu leftward from the button;
+ * openMenu() (dewmini.js) adds this once that would run off the left
+ * edge of the viewport, so it grows rightward from the button instead. */
+.dm-cell-run-menu-left { right: auto; left: 0; }
 .dm-cell-run-menu-item {
   display: block;
   width: 100%;
@@ -847,7 +851,11 @@ html[data-dl-panel-right] .dm-page .dl-crumbs {
   top: var(--dl-chrome-h);
   bottom: 0;
   z-index: 50;
-  width: min(24rem, 100vw);
+  /* Matches .dl-settings' own default (tutorial-style.css) — Library,
+     Workbench and Settings all open at the same width until a reader
+     drags one, rather than Settings alone starting 3rem narrower
+     (DECISIONS_LOG.md 7.122). */
+  width: min(21rem, 100vw);
   min-width: 16rem;
   max-width: min(40rem, 100vw);
   overflow-y: auto;
@@ -1439,6 +1447,19 @@ kbd {
  * becomes a bottom sheet at, there isn't room for the split either, so
  * the preview drops beneath the editors instead of beside them. */
 .dm-siteview { display: flex; flex-direction: column; gap: 0.75rem; }
+
+/* Its own class rather than reusing .dm-fileview-note: that one carries
+ * flex: 1 1 20rem, meant for a *row* flex parent (.dm-fileview-head) —
+ * inside .dm-siteview's *column* flex, the same rule flex-grows the note
+ * to absorb the whole column's extra height instead, leaving a few
+ * words of text sitting in a box hundreds of pixels tall. Same look,
+ * without that. */
+.dm-siteview-note {
+  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--dl-muted);
+}
 
 .dm-siteview-split {
   display: flex;

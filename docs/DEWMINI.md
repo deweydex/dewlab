@@ -301,9 +301,10 @@ their own line, so your own variables stay at the top.
 you work. It stays with this browser rather than with any one
 notebook.
 
-**Files** is a real filesystem a cell can read from and write to. It is
-separate from the notebook itself, which lives under "Keep a copy" in
-Settings.
+**Files** is a real filesystem a cell can read from and write to. Your
+open notebooks list here too, so you can always see where they are. A
+notebook itself is not a file: it lives in this browser, and "Keep a
+copy" in Settings saves one as a real file.
 
 By default it is private storage inside your browser, which you cannot
 see from outside. **Use a folder on my computer** switches to a real
