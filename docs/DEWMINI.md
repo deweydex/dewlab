@@ -349,8 +349,8 @@ dewmini says so and asks you to download the notebook. A reload from
 that point would lose your work.
 
 - **`.py`** joins every Python cell together and turns each text cell
-  into a comment block, so the whole session reads as one ordinary
-  Python file. The same file loads back in exactly as it was.
+  into a comment block. The whole session then reads as one ordinary
+  Python file, and it loads back in here exactly as it was.
 
   The cells are marked with `# %%` lines. A text cell is marked
   `# %% [markdown]`. Python ignores both, so the file still runs as an

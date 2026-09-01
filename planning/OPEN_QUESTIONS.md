@@ -19,7 +19,7 @@ the repository.
 These need answering eventually. None of them blocks current work, and each
 says what it would change.
 
-**A known defect: a text cell collapsing on blur swallows the next click.**
+**A text cell collapsing on blur swallows the next click.**
 A text cell's editing box hides when it loses focus and its rendered
 markdown takes its place. The rendered form is usually shorter, so
 everything below the cell moves up at that moment. A reader who finishes

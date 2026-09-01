@@ -91,12 +91,20 @@ the tree descriptions do.
 one where flattening would cost the most. Worth doing deliberately, tutorial by
 tutorial, rather than in a sweep.
 
-**`docs/DEWMINI.md`.** The guide a student reads to use dewmini, and not
-covered by the first pass. Four passages in it were written to the eight
+**`docs/DEWMINI.md`, 116 issues.** The guide a student reads to use dewmini,
+and never covered by the first pass. Four passages in it were written to the
 checks when dewmini's file handling changed: what happens when browser storage
 fills, what the `# %%` markers in a `.py` download are, what an `.ipynb`
-download keeps, and how to import your own Python file from Files. The rest of
-the document has not been read against the checks.
+download keeps, and how to import your own Python file from Files. Those four
+report clean. The other 116 are in prose that predates this work, and the count
+comes from `dev/check_plain_language.py`, which is new.
+
+That script decides what can be decided: sentences over twenty-five words, a
+sentence with no finite verb, more than one em dash in a paragraph, the meaning
+falling after the dash, *not x but y* reversals, the banned words, listed
+idioms, and emoji. It says nothing about metaphor, hedging or whether the
+sequence of a process is marked, because those need a reader. A clean report is
+therefore a floor and not a pass.
 
 **Bibliographies.** Unrelated to readability but still the largest outstanding
 piece of style work — see section 8 of the style guide.
