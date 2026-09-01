@@ -91,20 +91,22 @@ the tree descriptions do.
 one where flattening would cost the most. Worth doing deliberately, tutorial by
 tutorial, rather than in a sweep.
 
-**`docs/DEWMINI.md`, 116 issues.** The guide a student reads to use dewmini,
-and never covered by the first pass. Four passages in it were written to the
-checks when dewmini's file handling changed: what happens when browser storage
-fills, what the `# %%` markers in a `.py` download are, what an `.ipynb`
-download keeps, and how to import your own Python file from Files. Those four
-report clean. The other 116 are in prose that predates this work, and the count
-comes from `dev/check_plain_language.py`, which is new.
+**`docs/DEWMINI.md`.** Done. The guide a student reads to use dewmini, and
+never covered by the first pass. It began at 116 issues and now reports none.
 
-That script decides what can be decided: sentences over twenty-five words, a
-sentence with no finite verb, more than one em dash in a paragraph, the meaning
-falling after the dash, *not x but y* reversals, the banned words, listed
-idioms, and emoji. It says nothing about metaphor, hedging or whether the
-sequence of a process is marked, because those need a reader. A clean report is
-therefore a floor and not a pass.
+The commonest fault was the em dash carrying the sense: a short main clause,
+a dash, and then the part a reader actually needed. Thirty-four sentences did
+that. Forty-four ran past twenty-five words, several past forty, and one at
+seventy-three. *Actually* appeared eleven times, and eight sentences had no
+finite verb.
+
+The count comes from `dev/check_plain_language.py`, which is new. It decides
+what can be decided: sentences over twenty-five words, a sentence with no
+finite verb, more than one em dash in a paragraph, the meaning falling after
+the dash, *not x but y* reversals, the banned words, listed idioms, and emoji.
+It says nothing about metaphor, hedging, or whether the sequence of a process
+is marked, because those need a reader. A clean report is a floor and not a
+pass, and this document was read as well as measured.
 
 **Bibliographies.** Unrelated to readability but still the largest outstanding
 piece of style work — see section 8 of the style guide.
