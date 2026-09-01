@@ -24,15 +24,27 @@ full route is described in
 **Write the exam file directly.** The file format is documented in
 [../planning/THE_EXAM_FILE.md](../planning/THE_EXAM_FILE.md), and the
 sample in [../samples/sample-mixed-paper.exam.md](../samples/sample-mixed-paper.exam.md)
-shows a complete paper that mixes eight question types. Two further
-samples show the shapes real papers take:
-[../samples/maths-for-it-5n18396.exam.md](../samples/maths-for-it-5n18396.exam.md)
-is a 120-mark mathematics paper with "answer any N" sections, a
-formula sheet in the side panel, and diagrams in the questions, and
-[../samples/hvit-database-practical.exam.md](../samples/hvit-database-practical.exam.md)
-is a database practical made entirely of Python code questions, with a
-database and two spreadsheets embedded. Copying the sample nearest
-your paper and replacing its questions is a reasonable way to start.
+shows a complete paper that mixes eight question types. Four further
+samples show the shapes real papers take.
+
+- [../samples/maths-for-it-5n18396.exam.md](../samples/maths-for-it-5n18396.exam.md)
+  is a 120-mark mathematics paper with "answer any N" sections, a
+  calculator, a formula sheet in the side panel, and diagrams in the
+  questions.
+- [../samples/hvit-database-practical.exam.md](../samples/hvit-database-practical.exam.md)
+  is a database practical made entirely of Python code questions,
+  with a database and two spreadsheets embedded.
+- [../samples/sample-biology-paper.exam.md](../samples/sample-biology-paper.exam.md)
+  is a science paper: fill-in-the-blank, diagram labelling, a table,
+  a calculation, a sketch description, and long explanatory answers
+  marked with guidance.
+- [../samples/sample-essay-paper.exam.md](../samples/sample-essay-paper.exam.md)
+  is a writing paper: reading questions on a passage, a choice of
+  three 40-mark essay titles, and a formal letter, all marked with
+  criteria grids.
+
+Copying the sample nearest your paper and replacing its questions is
+a reasonable way to start.
 
 Every question type available to you — from multiple choice to essays
 with marking criteria — is explained, with what students see and how
