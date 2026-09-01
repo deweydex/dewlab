@@ -1,56 +1,61 @@
 # dewmini
 
 dewmini is a small notebook for writing and running Python in your
-browser. It uses the same Python as dewlab's tutorials — nothing to
-install — but without a tutorial attached to it. Open it at
-`compose/dewmini.html` and you get a blank page ready for you to add a
+browser. It uses the same Python as dewlab's tutorials, so there is
+nothing to install. No tutorial is attached to it. Open it at
+`compose/dewmini.html` and you get a blank page, ready for you to add a
 cell.
 
-Use it when a tutorial doesn't quite cover what you want to try: testing
-an idea before deciding it belongs in a lesson, working on a practice
-problem away from the tutorial it came from, keeping a small project
-going across sessions with its own files, or just wanting somewhere to
-run a few lines of Python that isn't tied to one topic. A tutorial page
-is mostly reading, with some code mixed in. dewmini is mostly code, with
-room for a few notes.
+Use it when a tutorial does not quite cover what you want to try. It
+suits four things in particular:
+
+- testing an idea before you decide whether it belongs in a lesson
+- working on a practice problem away from the tutorial it came from
+- keeping a small project going across sessions, with its own files
+- running a few lines of Python that are not tied to any one topic
+
+A tutorial page is mostly reading, with some code mixed in. dewmini is
+mostly code, with room for a few notes.
 
 ---
 
 ## What you see
 
-dewmini is a plain page, not a busy app. Cells sit directly on the
-background with a thin colored line down the left instead of a bordered
-box — invisible for an ordinary cell, and only showing up (orange for
-whichever cell you touched last, red if its last run errored) when
-there's actually something worth flagging. Between any two cells — and
-before the first one,
-and after the last one — you can add a new cell right there: a blank
-Python cell or a text cell. That spot is easy to miss until you hover
-over it or tap it, but it's there between every pair of cells if you
-look.
+dewmini is a plain page. Cells sit directly on the background rather
+than in bordered boxes. Each cell has a thin colored line down its left
+side, and that line is invisible most of the time. It turns orange for
+the cell you touched last. It turns red if that cell's last run gave an
+error.
 
-A Python cell runs when you press its **Run** arrow, or press
-**Shift+Enter** inside it — which runs it and moves you to the next
-cell, so you can work down a notebook without reaching for the mouse.
-**Ctrl+Enter** (or **Cmd+Enter**) runs it and stays where you are.
-**Ctrl/Cmd+F** opens find-and-replace inside the cell you're in. Cells
-share one set of variables from top to
-bottom, notebook-style: something an earlier cell defines, a later cell
-can use. **Run all** clears every cell's output and reruns the whole
-page in order, so what's on screen always matches what the code actually
-did. Drag a cell by its header to move it anywhere on the page.
+You can add a cell between any two cells, before the first one, or after
+the last one. The spot is easy to miss until you hover over it or tap
+it. It offers you a blank Python cell or a text cell.
 
-Each Python cell also has a small **↺** button next to Run — it clears
-just that cell's own output, keeping its code, for when you want a clean
-slate on one cell without rerunning (or losing) everything else. The
-toolbar's own **Clear output** does the same for every cell at once,
-still keeping every cell and its code — a different, non-destructive
-button from **Clear**, which deletes the cells themselves. A small line
-under a cell's output shows how long it took to run; turn that off in
-Settings if you'd rather not see it. A cell's own **×** needs two clicks
-to actually delete it — the first arms it (it turns solid red); the
-second, right after, deletes. Click anything else, or wait a few
-seconds, and it quietly disarms instead.
+A Python cell runs when you press its **Run** arrow. **Shift+Enter**
+inside the cell runs it and then moves you to the next one, so you can
+work down a notebook without reaching for the mouse. **Ctrl+Enter**, or
+**Cmd+Enter**, runs the cell and leaves you where you are.
+**Ctrl/Cmd+F** opens find-and-replace inside the cell you are in. Cells
+share one set of variables from top to bottom, the way a notebook does.
+Something an earlier cell defines, a later cell can use. **Run all**
+first clears every cell's output, then reruns the whole page in order,
+so what is on screen matches what the code did. Drag a cell by its
+header to move it anywhere on the page.
+
+Each Python cell also has a small **↺** button next to Run. It clears
+that one cell's output and keeps its code, which gives you a clean slate
+on a single cell without rerunning everything else. The toolbar's
+**Clear output** does the same for every cell at once, and it also keeps
+every cell and its code. **Clear** is the destructive one: it deletes
+the cells themselves.
+
+A small line under a cell's output shows how long the cell took to run.
+You can turn that off in Settings.
+
+A cell's own **×** needs two clicks. The first click arms the button and
+turns it solid red. The second click, straight after, deletes the cell.
+Click anything else, or wait a few seconds, and the button disarms
+again.
 
 If you edit a cell after running it, a small **"Edited since last run"**
 note appears next to its label — a reminder that the output still
