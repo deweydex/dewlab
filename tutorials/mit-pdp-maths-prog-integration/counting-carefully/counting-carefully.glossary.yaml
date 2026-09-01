@@ -12,9 +12,9 @@ entries:
   - term: "combination, C(n, r)"
     kind: formula
     definition: >
-      The number of ways to choose r objects from n where order does not
-      matter — a permutation count divided by r!, since each combination
-      can be arranged r! ways. Written (n choose r).
+      The number of ways to choose r objects from n when the order does not
+      matter. It is a permutation count divided by r!, since each
+      combination can be arranged r! ways. Written (n choose r).
     example: "C(52, 5) = 52! / (5! * 47!) = 2,598,960"
   - term: multiplication principle
     kind: concept

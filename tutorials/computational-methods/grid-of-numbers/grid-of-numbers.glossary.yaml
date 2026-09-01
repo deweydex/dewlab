@@ -17,8 +17,9 @@ entries:
   - term: a_ij
     kind: formula
     definition: >
-      The entry in row i and column j of a matrix — written a_ij in
-      maths, and pixels[i][j] in Python (row index first, then column).
+      The entry in row i and column j of a matrix. It is written a_ij in
+      maths and pixels[i][j] in Python, with the row index first and the
+      column second.
   - term: matrix addition
     kind: concept
     definition: >
@@ -42,7 +43,7 @@ entries:
   - term: "ValueError"
     kind: keyword
     definition: >
-      An error you raise yourself, with a message that says what actually
-      went wrong — the fix for a confusing built-in error like IndexError
-      that only points at where something failed, not why.
+      An error you raise yourself, with a message saying what actually went
+      wrong. It is the fix for a confusing built-in error like IndexError,
+      which points at where something failed but not at why.
     example: "raise ValueError(\"matrices must be the same shape\")"

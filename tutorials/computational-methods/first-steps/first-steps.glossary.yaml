@@ -9,9 +9,9 @@ entries:
   - term: expression
     kind: concept
     definition: >
-      A line whose value is shown automatically, with no print needed —
-      as opposed to an ordinary instruction, which produces nothing on its
-      own unless it prints something.
+      A line whose value is shown automatically, with no print needed. An
+      ordinary instruction is different: it produces nothing on its own
+      unless it prints something.
   - term: illustrative code
     kind: concept
     definition: >

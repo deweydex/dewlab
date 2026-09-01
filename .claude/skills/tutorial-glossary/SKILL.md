@@ -97,11 +97,12 @@ entries:
   - term: "transformation matrix"
     kind: concept
     definition: >
-      A grid of numbers that describes a specific reshaping of space —
-      multiplying it against a point moves that point to a new one.
+      A transformation matrix is a grid of numbers that describes one
+      specific reshaping of space. Multiplying it against a point moves
+      that point somewhere new.
   - term: "@"
     kind: operator
-    definition: "Matrix multiplication, as opposed to * (elementwise)."
+    definition: "Multiplies two matrices. Use * instead to multiply elementwise."
     example: "rotated = M @ point"
 ```
 
@@ -112,10 +113,35 @@ entries:
   the more concrete one (a named formula is `formula`, not `concept`, even
   though it is also a concept).
 - `definition` — one to three sentences, dewlab's own voice
-  (`PEDAGOGICAL_STYLE_GUIDE.md` §4: plain, warm, no condescension, no
-  emoji). This is a reference entry, not the tutorial's own explanation
-  restated — shorter, and written to jog a reader's memory of something
-  they already met, not to teach it fresh.
+  (`PEDAGOGICAL_STYLE_GUIDE.md` §4, **including its "Plain language"
+  subsection**). This is a reference entry, not the tutorial's own
+  explanation restated — shorter, and written to jog a reader's memory of
+  something they already met, not to teach it fresh.
+
+  Four of those rules do most of the work, and a glossary is where they
+  get broken most often. Check each definition against them before you
+  write the file.
+
+  **Write a sentence, not a noun phrase.** *A grid of numbers arranged in
+  rows and columns.* has no verb in it, and a reader who is unsure of
+  themselves has to supply the missing "a matrix is" before they can
+  start. *A matrix is a grid of numbers arranged in rows and columns.*
+  does the work for them. The one exception is a `function` or `operator`
+  entry, where the house form drops the subject and leads with the verb —
+  *Displays whatever is inside its parentheses.* That is a sentence with
+  an implied subject, not a fragment. Lead with the verb for functions and
+  operators; give everything else a real subject.
+
+  **One idea per sentence, about twenty words.** Three short sentences
+  beat one sentence carrying three clauses across two em dashes. If a
+  definition needs a contrast, a consequence and an example, that is three
+  sentences.
+
+  **Say what a thing is before you say what it is not.** A reader meeting
+  the term for the first time has nothing to hang the contrast on yet.
+
+  **Do not let a metaphor carry the definition.** A metaphor can follow a
+  plain statement; it cannot stand in for one.
 - `example` — optional. Include it when a short code fragment says more
   than another sentence would (an operator, a function's call shape); skip
   it for a pure concept.

@@ -312,7 +312,7 @@ its series:
 entries:
   - term: matrix
     kind: concept
-    definition: A grid of numbers, arranged in rows and columns.
+    definition: A matrix is a grid of numbers, arranged in rows and columns.
 ```
 
 The build assembles a tutorial's Reference panel from its own glossary plus

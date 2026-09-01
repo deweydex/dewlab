@@ -3,9 +3,9 @@ entries:
   - term: while loop
     kind: keyword
     definition: >
-      Repeats its body as long as a condition stays True. Needs an
-      initial state, a condition checked before each pass, and an update
-      inside the body that eventually makes the condition False — miss
+      Repeats its body as long as a condition stays True. It needs three
+      things: a starting state, a condition checked before each pass, and an
+      update inside the body that eventually makes the condition False. Miss
       that last part and it never stops.
   - term: for loop
     kind: keyword
@@ -29,8 +29,8 @@ entries:
   - term: "product notation (Π) and factorial"
     kind: formula
     definition: >
-      Capital pi means "multiply every value over the given range," the
-      same way sigma means "add." The product from 1 to n is exactly the
+      Capital pi means "multiply every value over the given range". Sigma
+      means "add" in the same way. The product from 1 to n is exactly the
       factorial function, n!.
     example: "5! = 1 * 2 * 3 * 4 * 5 = 120"
   - term: nested loops
