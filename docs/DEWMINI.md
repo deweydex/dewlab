@@ -260,6 +260,25 @@ storage is active, for a cell to read back with a plain `open()`. The
 list below shows what's there, with a way to delete anything you no
 longer need.
 
+**Your own Python files live here too, and you can import them.** Write
+shapes.py into this storage and a cell can say `import shapes`, then
+call `shapes.area(4)` — the same way a program spread across several
+files works anywhere else. This is the step from writing functions to
+using them, and it is worth the practice.
+
+One thing about it surprises everybody the first time. Python reads a
+file once and remembers it, so editing that file after you have imported
+it does not change what runs: you fix a mistake, run the cell again, and
+get the same wrong answer. dewmini notices when this happens and tells
+you which file changed, with a button to re-read it. That behaviour is
+Python's, not dewmini's, and you will meet it in every other Python you
+ever use — which is why dewmini says what happened rather than quietly
+hiding it.
+
+Re-reading a file replaces what is inside it. If you wrote
+`from shapes import area`, the name `area` in your notebook still points
+at the old version, so run that line again as well.
+
 ### Settings
 
 **Python** — shows how Python is currently running (in a background
@@ -322,6 +341,14 @@ it somewhere else, use one of the downloads in Settings, or the
 Workbench's Files section and its "use a folder on my computer" if what
 you want to keep is a file a cell wrote, not the notebook itself.
 
+A browser gives each site a limited amount of room — around five
+megabytes — and one chart takes far more of it than all your code does.
+If you make enough charts to fill it, dewmini keeps the code and gives
+up the outputs it cannot fit, naming the ones it dropped: run those
+cells again after a reload to see them. If even the code will not fit it
+says so plainly and asks you to download the notebook, because from that
+point a reload would lose it.
+
 - **`.py`** joins every Python cell together and turns each text cell
   into a comment block, so the whole session reads as one ordinary
   Python file. The same file loads back in exactly as it was.
@@ -344,6 +371,11 @@ you want to keep is a file a cell wrote, not the notebook itself.
   cells, text cells become markdown cells, and it opens in Jupyter,
   JupyterLab, or Colab. The same file loads back into dewmini from
   Settings.
+
+  This is the download that keeps your results. Printed text, tables and
+  figures travel with the file and are there when you open it again,
+  here or anywhere else — and a notebook someone else made shows you
+  their results when you load it, without running anything.
 
 ---
 

@@ -618,8 +618,8 @@ def test_the_inspector_folds_away_functions_and_modules(dewmini):
 
 
 def test_a_full_storage_keeps_the_code_and_says_what_it_dropped(dewmini):
-    """DECISIONS_LOG.md 7.111 — when localStorage fills, saveState() gives
-    up outputs rather than giving up silently.
+    """When localStorage fills, saveState() gives up outputs rather than
+    giving up silently. See "Keeping your work" in docs/DEWMINI.md.
 
     The old version wrapped its one `setItem` in an empty `catch`, so a
     student with a few figures crossed the browser's ~5 MB limit and their
