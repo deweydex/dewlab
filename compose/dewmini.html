@@ -164,6 +164,21 @@
       <p id="storage-notice-text"></p>
     </div>
 
+    <!-- Shown when a .py file in the workspace has been edited after
+         Python already imported it. Python hands back the module it
+         remembers rather than re-reading the file, so without this the
+         student fixes their file, runs the cell again, and gets the same
+         wrong answer with nothing on screen to explain it. Says what
+         happened rather than hiding it: module caching is behaviour they
+         will meet in every other Python environment. -->
+    <div id="stale-imports-notice" class="dm-empty dm-import-notice" role="status" aria-live="polite" hidden>
+      <p id="stale-imports-text"></p>
+      <div class="dl-progress-actions">
+        <button type="button" class="dm-tool" id="reload-stale-imports">Re-read them</button>
+        <button type="button" class="dm-tool dm-tool-quiet" id="dismiss-stale-imports">Not now</button>
+      </div>
+    </div>
+
     <div class="dm-empty" id="dm-empty" hidden>
       <p>Nothing here yet.</p>
       <p class="dm-panel-note">
