@@ -118,6 +118,16 @@
            the same action, one of them worse, is one button. The freed
            space goes to the two openings that had nowhere else to live
            once a notebook was no longer empty. -->
+      <!-- Which of the two views is showing has to be visible, not buried
+           in a menu: a tool that behaves differently depending on a
+           setting the reader cannot see is one they get lost in. The tab
+           carries the same word once more than one notebook is open. -->
+      <div class="dm-toolbar-group dm-viewswitch" role="group" aria-label="How to show this notebook">
+        <button id="dm-view-cells" class="dm-tool dm-viewswitch-btn" aria-pressed="true"
+                title="Show this notebook as a list of cells">Cells</button>
+        <button id="dm-view-file" class="dm-tool dm-viewswitch-btn" aria-pressed="false"
+                title="Show this notebook as one Python file">File</button>
+      </div>
       <div class="dm-toolbar-group">
         <button id="dm-show-example" class="dm-tool dm-tool-accent" title="Fill the notebook with a short worked example">
           <span class="dm-tool-icon dm-tool-icon-run" aria-hidden="true"></span>See an example

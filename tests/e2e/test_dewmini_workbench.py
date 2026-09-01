@@ -1124,3 +1124,105 @@ def test_an_error_output_from_a_file_reads_as_an_error(dewmini, tmp_path):
     assert "ZeroDivisionError" in shown and "division by zero" in shown
     assert "0;31m" not in shown, "terminal colour codes reached the page"
     assert output.locator(".dl-error").count() == 1
+
+
+# --------------------------------------------------------------- file view
+
+
+def switch_view(page, which: str) -> None:
+    """Switches between the cells view and the file view."""
+    page.locator(f"#dm-view-{which}").click()
+
+
+def test_the_file_view_shows_the_notebook_as_one_python_file(dewmini):
+    """Two cells become one document with the markers between them."""
+    add_python_cell(dewmini, "x = 1")
+    add_python_cell(dewmini, "print(x)")
+    switch_view(dewmini, "file")
+
+    text = dewmini.locator(".dm-fileview-editor .cm-content").inner_text()
+    assert "# %%" in text
+    assert "x = 1" in text
+    assert "print(x)" in text
+    # One editor for the whole file, not one per cell.
+    assert dewmini.locator(".dm-cell").count() == 0
+
+
+def test_a_text_cell_survives_the_round_trip_as_a_comment(dewmini):
+    """A note goes out commented and comes back as a note, not as code."""
+    add_python_cell(dewmini, "x = 1")
+    dewmini.locator(".dm-insert-btn", has_text="Text").last.click()
+    dewmini.locator(".dm-cell-text textarea").last.fill("A note about x")
+    dewmini.locator("h1").click()  # blur, so the text cell commits
+
+    switch_view(dewmini, "file")
+    text = dewmini.locator(".dm-fileview-editor .cm-content").inner_text()
+    assert "# %% [markdown]" in text
+    assert "# A note about x" in text
+
+    switch_view(dewmini, "cells")
+    kinds = dewmini.evaluate(
+        "() => [...document.querySelectorAll('.dm-cell')]"
+        ".map(c => c.className.includes('dm-cell-text') ? 'text' : 'python')"
+    )
+    assert kinds == ["python", "text"]
+
+
+def test_a_round_trip_through_the_file_view_keeps_outputs(dewmini):
+    """The point of merging by content: an untouched cell keeps its result.
+
+    parsePyCells() mints a fresh id for every cell it reads, and a cell's
+    output is stored under its id. Without the merge, one look at the file
+    view would silently empty every output in the notebook.
+    """
+    add_python_cell(dewmini, "print('kept')")
+    before = run_first_cell_and_wait(dewmini)
+    assert before == "kept"
+
+    switch_view(dewmini, "file")
+    switch_view(dewmini, "cells")
+
+    assert dewmini.locator(".dm-cell-output").first.inner_text().strip() == "kept"
+
+
+def test_editing_in_the_file_view_reaches_the_cells(dewmini):
+    """Text typed into the file becomes a cell when the view switches back."""
+    add_python_cell(dewmini, "x = 1")
+    switch_view(dewmini, "file")
+
+    editor = dewmini.locator(".dm-fileview-editor .cm-content")
+    editor.click()
+    dewmini.keyboard.press("Control+End")
+    dewmini.keyboard.insert_text("\n# %%\ny = 2\n")
+
+    switch_view(dewmini, "cells")
+    contents = dewmini.evaluate(
+        "() => [...document.querySelectorAll('.dm-cell .cm-content')]"
+        ".map(e => e.innerText.trim())"
+    )
+    assert any("y = 2" in c for c in contents)
+
+
+def test_the_file_view_survives_a_reload(dewmini, dewmini_url):
+    """Which view you left a notebook in is part of the notebook."""
+    add_python_cell(dewmini, "x = 1")
+    switch_view(dewmini, "file")
+    dewmini.goto(dewmini_url)
+    dewmini.wait_for_selector(".dm-fileview-editor")
+    assert dewmini.locator("#dm-view-file").get_attribute("aria-pressed") == "true"
+
+
+def test_running_the_file_runs_the_whole_thing_in_order(dewmini):
+    """A file runs top to bottom, with its output in one place."""
+    add_python_cell(dewmini, "a = 2")
+    add_python_cell(dewmini, "print(a * 3)")
+    switch_view(dewmini, "file")
+
+    dewmini.locator(".dm-fileview-run").click()
+    dewmini.wait_for_function(
+        "() => {"
+        " const out = document.querySelector('.dm-fileview-output');"
+        " return out && out.innerText.trim() === '6';"
+        "}",
+        timeout=120_000,
+    )

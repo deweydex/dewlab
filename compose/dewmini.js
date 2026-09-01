@@ -67,6 +67,27 @@ tutorial_tools._page_globals["__name__"] = "__dewlab__"
 let notebooks = [];
 let activeNotebookId = null;
 let cells = [];
+
+/* The two ways a notebook can be shown. A notebook is a list of cells; a
+ * file is one continuous piece of text. Because a percent-format Python
+ * file is both of those at once, switching between them converts nothing
+ * — it changes how the same work is displayed.
+ *
+ * Both views are kept because an empty file is harder to begin than an
+ * empty cell. A blank page asks a beginner to decide what the whole
+ * program will be before writing anything, and a cell asks for one line.
+ * A student can start in cells and move to a file when they are ready. */
+const VIEWS = { CELLS: "cells", FILE: "file" };
+
+/* Output from a whole-file run is not any cell's, so it needs an id of
+ * its own for the engine to route by. Prefixed like a real cell id and
+ * impossible to collide with one, since generateId() always ends in
+ * random base-36 rather than a word. */
+const FILE_RUN_ID = "cell-file-run";
+
+let fileEditor = null;
+let fileRunOutputEl = null;
+let fileParseTimer = null;
 let cellsContainer, emptyEl, statusEl, tabsEl;
 let statusClearTimer = null;
 
@@ -117,8 +138,9 @@ function readCells(saved) {
 
 /* A notebook with nothing in it yet. Named rather than numbered-only so a
  * tab strip reads as a row of names, not a row of "Untitled". */
-function makeNotebook(name, cellList = []) {
-  return { id: `nb-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`, name, cells: cellList };
+function makeNotebook(name, cellList = [], view = VIEWS.CELLS) {
+  return { id: `nb-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`,
+           name, cells: cellList, view };
 }
 
 /* Work saved before tabs existed lived under a different key, as a bare
@@ -152,7 +174,8 @@ function loadSavedState() {
   if (saved && Array.isArray(saved.notebooks)) {
     notebooks = saved.notebooks
       .filter((nb) => nb && nb.id)
-      .map((nb) => ({ id: nb.id, name: nb.name || "Notebook", cells: readCells(nb.cells) }));
+      .map((nb) => ({ id: nb.id, name: nb.name || "Notebook", cells: readCells(nb.cells),
+                      view: nb.view === VIEWS.FILE ? VIEWS.FILE : VIEWS.CELLS }));
   }
   if (!notebooks.length) notebooks = migrateLegacyCells();
   if (!notebooks.length) notebooks = [makeNotebook("Notebook")];
@@ -209,7 +232,8 @@ function writeSavedState(skipOutputFor) {
   try {
     localStorage.setItem(NOTEBOOKS_KEY, JSON.stringify({
       active: activeNotebookId,
-      notebooks: notebooks.map((nb) => ({ id: nb.id, name: nb.name, cells: plainCells(nb.cells) })),
+      notebooks: notebooks.map((nb) => ({ id: nb.id, name: nb.name, view: nb.view || VIEWS.CELLS,
+                                         cells: plainCells(nb.cells) })),
     }));
     return true;
   } catch {
@@ -340,6 +364,7 @@ function showNotebook(id) {
   if (id === activeNotebookId) return;
   const target = notebooks.find((nb) => nb.id === id);
   if (!target) return;
+  flushFileEditor();
   cells.forEach((c) => c.editor?.destroy());
   activeNotebookId = id;
   cells = target.cells;
@@ -347,6 +372,7 @@ function showNotebook(id) {
   renderTabs();
   renderCells();
   updateFilenameField();
+  updateViewSwitch();
   updateStatus(`Switched to ${target.name}.`);
 }
 
@@ -423,7 +449,14 @@ function renderTabs() {
     label.type = "button";
     label.className = "dm-tab-label";
     label.textContent = notebook.name;
-    label.title = `${notebook.name} — ${notebook.cells.length} cell${notebook.cells.length === 1 ? "" : "s"} (double-click to rename)`;
+    if (notebook.view === VIEWS.FILE) {
+      const badge = document.createElement("span");
+      badge.className = "dm-tab-view";
+      badge.textContent = "file";
+      label.append(" ", badge);
+    }
+    const shown = notebook.view === VIEWS.FILE ? "shown as a file" : "shown as cells";
+    label.title = `${notebook.name}, ${shown} — ${notebook.cells.length} cell${notebook.cells.length === 1 ? "" : "s"} (double-click to rename)`;
     label.setAttribute("aria-current", String(notebook.id === activeNotebookId));
     label.addEventListener("click", () => showNotebook(notebook.id));
     label.addEventListener("dblclick", () => renameNotebook(notebook.id));
@@ -810,9 +843,165 @@ async function renderMathsIn(container) {
   }
 }
 
+/* Which view the active notebook is showing. */
+function currentView() {
+  return activeNotebook()?.view === VIEWS.FILE ? VIEWS.FILE : VIEWS.CELLS;
+}
+
+/* Parsed cells, carrying forward the id and output of every cell the edit
+ * did not change.
+ *
+ * This is the whole reason editing in the file view is safe. parsePyCells()
+ * mints a fresh id for every cell it reads, and a cell id is the key its
+ * saved output lives under, so re-parsing naively would throw away every
+ * result in the notebook each time a reader switched views. Matching first
+ * at the same position and then anywhere means an unchanged cell keeps its
+ * id, its output and its collapsed state, while a cell whose code the
+ * reader actually edited starts clean — which is right, because its old
+ * output no longer belongs to it. */
+function mergeParsedCells(oldCells, parsed) {
+  const spare = oldCells.map((cell, index) => ({ cell, index, used: false }));
+  const same = (slot, next) => !slot.used && slot.cell.type === next.type
+                               && slot.cell.content === next.content;
+  return parsed.map((next, i) => {
+    const hit = spare.find((slot) => slot.index === i && same(slot, next))
+             || spare.find((slot) => same(slot, next));
+    if (!hit) return next;
+    hit.used = true;
+    return { ...next, id: hit.cell.id, output: hit.cell.output,
+             error: hit.cell.error, collapsed: hit.cell.collapsed };
+  });
+}
+
+/* Turns what the file editor is showing back into cells. Deliberately does
+ * not re-render: while the file view is open the editor owns the screen,
+ * and redrawing it under the reader would take their cursor with it. */
+function commitFileText(text) {
+  clearTimeout(fileParseTimer);
+  fileParseTimer = null;
+  setCells(mergeParsedCells(cells, parsePyCells(text)));
+  saveState();
+}
+
+/* Pulls whatever the file editor holds back into the cells before anything
+ * reads them. Called by every path that leaves the file view or acts on
+ * the notebook as a whole; a no-op in the cells view. */
+function flushFileEditor() {
+  if (fileEditor) commitFileText(fileEditor.getValue());
+}
+
+function destroyFileEditor() {
+  if (!fileEditor) return;
+  clearTimeout(fileParseTimer);
+  fileParseTimer = null;
+  fileEditor.destroy();
+  fileEditor = null;
+  fileRunOutputEl = null;
+}
+
+/* Switches the active notebook between the two views. */
+function setView(view) {
+  const notebook = activeNotebook();
+  if (!notebook || notebook.view === view) return;
+  flushFileEditor();
+  notebook.view = view;
+  saveState();
+  renderCells();
+  renderTabs();
+  updateViewSwitch();
+}
+
+/* Keeps the toolbar's two buttons showing which view is on. */
+function updateViewSwitch() {
+  const view = currentView();
+  const cellsBtn = document.getElementById("dm-view-cells");
+  const fileBtn = document.getElementById("dm-view-file");
+  cellsBtn?.setAttribute("aria-pressed", String(view === VIEWS.CELLS));
+  fileBtn?.setAttribute("aria-pressed", String(view === VIEWS.FILE));
+  cellsBtn?.classList.toggle("dm-viewswitch-on", view === VIEWS.CELLS);
+  fileBtn?.classList.toggle("dm-viewswitch-on", view === VIEWS.FILE);
+}
+
+/* The notebook as one Python document: a single editor over the whole
+ * percent-format text, with one output area beneath it for a whole-file
+ * run. */
+function renderFileView() {
+  const wrap = document.createElement("div");
+  wrap.className = "dm-fileview";
+
+  const head = document.createElement("div");
+  head.className = "dm-fileview-head";
+  const note = document.createElement("p");
+  note.className = "dm-fileview-note";
+  note.textContent = "One Python file. The # %% lines mark where one cell "
+    + "ends and the next begins. Run works through the whole file from the "
+    + "top, the way running a file at a command line does.";
+  const runBtn = document.createElement("button");
+  runBtn.type = "button";
+  runBtn.className = "dm-tool dm-tool-accent dm-fileview-run";
+  runBtn.textContent = "Run the file";
+  runBtn.addEventListener("click", () => runWholeFile());
+  head.append(note, runBtn);
+
+  const editorEl = document.createElement("div");
+  editorEl.className = "dm-fileview-editor";
+
+  const output = document.createElement("div");
+  output.className = "dm-output dm-empty dm-fileview-output";
+  fileRunOutputEl = output;
+
+  wrap.append(head, editorEl, output);
+  cellsContainer.appendChild(wrap);
+
+  fileEditor = createCodeEditor(editorEl, cellsToPercentText(cells), {
+    dark: isDarkNow(),
+    /* Committed on a pause rather than on every keystroke. Parsing
+     * half-typed text would churn the cells for no gain, and the editor
+     * holds the text meanwhile, so nothing is lost if the reader keeps
+     * going. Every path that needs the cells up to date calls
+     * flushFileEditor() first. */
+    onChange: (text) => {
+      clearTimeout(fileParseTimer);
+      fileParseTimer = setTimeout(() => commitFileText(text), 400);
+    },
+    completeNames: engine.pageNamesCompletion,
+    getDoc: engine.hoverDoc,
+    getSignature: engine.signatureHelp,
+  });
+
+  if (emptyEl) emptyEl.hidden = true;
+}
+
+/* Runs the whole document top to bottom as one unit, which is the point of
+ * the file view: a file always runs in the order it is written, and a
+ * notebook does not. */
+async function runWholeFile() {
+  if (running || !fileEditor) return;
+  flushFileEditor();
+  const source = fileEditor.getValue();
+  if (!source.trim()) { updateStatus("Nothing to run.", "error"); return; }
+  running = true;
+  updateStatus("Running the file…");
+  try {
+    await ensurePyodide();
+    fileRunOutputEl?.classList.remove("dm-empty");
+    const { ok } = await engine.runCell(FILE_RUN_ID, source);
+    if (fileRunOutputEl && !fileRunOutputEl.innerHTML.trim()) {
+      fileRunOutputEl.classList.add("dm-empty");
+    }
+    updateStatus(ok ? "Ran the file." : "The file stopped on an error.", ok ? "ok" : "error");
+  } finally {
+    running = false;
+    dfs.sync().catch((err) => console.warn("dewmini: filesystem sync after a file run failed", err));
+    refreshVariables().catch((err) => console.warn("dewmini: refreshing variables failed", err));
+  }
+}
+
 function renderCells() {
   if (!cellsContainer) return;
+  destroyFileEditor();
   cellsContainer.innerHTML = "";
+  if (currentView() === VIEWS.FILE) { renderFileView(); return; }
   // The first seam is drawn even over an empty notebook. It used to be
   // suppressed, because the toolbar carried its own Python/Text buttons and
   // a seam with nothing on either side of it looked like debris. Those
@@ -1425,7 +1614,9 @@ async function getToolsSource() {
  * the extra "../" to reach the same repo-root data/ folder. Called once, at
  * module load — configure() itself does no booting. */
 engine.configure({
-  getOutputEl: (cellId) => cells.find((c) => c.id === cellId)?.outputEl ?? null,
+  getOutputEl: (cellId) => (cellId === FILE_RUN_ID
+    ? fileRunOutputEl
+    : cells.find((c) => c.id === cellId)?.outputEl ?? null),
   onStatus: updateStatus,
   packages: DM_PACKAGES,
   dataBase: "../data/",
@@ -1697,6 +1888,9 @@ async function runCellBatch(pythonCells, { reset, emptyMessage, describe }) {
 
 /* Runs every Python cell in order, top to bottom — "Run all." */
 async function runAllCells() {
+  // In the file view there are no cells on screen to run one at a time,
+  // and the file runs top to bottom as one thing.
+  if (currentView() === VIEWS.FILE) { await runWholeFile(); return; }
   await runCellBatch(cells.filter((c) => c.type === CELL_TYPES.PYTHON), {
     reset: true,
     emptyMessage: "No Python cells to run.",
@@ -1914,22 +2108,18 @@ const PY_TEXT_MARKER = "# %% [markdown]";
 // be kept. Change one and change the other.
 const PY_HEADER_OPENING = "# dewmini export";
 
-function downloadAsPython() {
-  if (!cells.length) { updateStatus("No cells to export.", "error"); return; }
-  // The header sits *before* the first marker, so it is not a cell.
-  // Written as a cell it would come back as one on the next import, and
-  // then be written out again above a second copy of itself, growing by
-  // one note every time a reader exported and reopened their work.
-  const parts = [
-    `${PY_HEADER_OPENING} — ${new Date().toISOString().slice(0, 10)}`,
-    "#",
-    "# The \`# %%\` lines below mark where one cell ends and the next",
-    "# begins. Python ignores them, so this file runs as an ordinary",
-    "# script; editors that understand the convention show it as cells.",
-    "# Delete these lines and nothing changes.",
-    "",
-  ];
-  cells.forEach((cell) => {
+/* A list of cells as one percent-format Python document: `# %%` before a
+ * code cell, `# %% [markdown]` before a text cell, whose lines are then
+ * commented out.
+ *
+ * No explanatory header. downloadAsPython() adds one, because a file
+ * leaving here is read by somebody who has never seen the convention. The
+ * file *view* deliberately does without: its header would carry today's
+ * date, so regenerating it on every switch between the two views would
+ * look to the reader like an edit they did not make. */
+function cellsToPercentText(cellList) {
+  const parts = [];
+  cellList.forEach((cell) => {
     if (cell.type === CELL_TYPES.TEXT) {
       parts.push(PY_TEXT_MARKER);
       cell.content.split("\n").forEach((line) => parts.push(`# ${line}`.trimEnd()));
@@ -1938,7 +2128,27 @@ function downloadAsPython() {
     }
     parts.push("");
   });
-  triggerDownload(`${getFilenameBase()}.py`, parts.join("\n"), "text/x-python");
+  return parts.join("\n");
+}
+
+function downloadAsPython() {
+  flushFileEditor();
+  if (!cells.length) { updateStatus("No cells to export.", "error"); return; }
+  // The header sits *before* the first marker, so it is not a cell.
+  // Written as a cell it would come back as one on the next import, and
+  // then be written out again above a second copy of itself, growing by
+  // one note every time a reader exported and reopened their work.
+  const header = [
+    `${PY_HEADER_OPENING} — ${new Date().toISOString().slice(0, 10)}`,
+    "#",
+    "# The \`# %%\` lines below mark where one cell ends and the next",
+    "# begins. Python ignores them, so this file runs as an ordinary",
+    "# script; editors that understand the convention show it as cells.",
+    "# Delete these lines and nothing changes.",
+    "",
+  ].join("\n");
+  triggerDownload(`${getFilenameBase()}.py`, `${header}\n${cellsToPercentText(cells)}`,
+                  "text/x-python");
   updateStatus("Downloaded as Python. Outputs are not in a .py file — use .ipynb to keep those.", "ok");
 }
 
@@ -2161,6 +2371,7 @@ function htmlForIpynbOutputs(outputs) {
  * produces opens correctly in any of them, and the same file loads back
  * into dewmini via handleImportFile() below. */
 function downloadAsIpynb() {
+  flushFileEditor();
   if (!cells.length) { updateStatus("No cells to export.", "error"); return; }
   const notebook = {
     nbformat: 4,
@@ -2231,6 +2442,7 @@ function standaloneCss(dark) {
  * completely on its own, without dewmini itself — see buildStandaloneHtml
  * below for how that file actually works. */
 async function downloadAsHtml() {
+  flushFileEditor();
   if (!cells.length) { updateStatus("No cells to export.", "error"); return; }
   updateStatus("Building the standalone file…");
   try {
@@ -4043,6 +4255,7 @@ function observeThemeChanges() {
     if (!mutations.some((m) => m.attributeName === "data-theme")) return;
     const dark = isDarkNow();
     cells.forEach((c) => { if (c.editor) { try { setEditorTheme(c.editor, dark); } catch {} } });
+    if (fileEditor) { try { setEditorTheme(fileEditor, dark); } catch {} }
   });
   observer.observe(document.documentElement, { attributes: true });
 }
@@ -4073,6 +4286,8 @@ function wireToolbar() {
     renderCells();
     updateStatus("Cleared.");
   });
+  document.getElementById("dm-view-cells")?.addEventListener("click", () => setView(VIEWS.CELLS));
+  document.getElementById("dm-view-file")?.addEventListener("click", () => setView(VIEWS.FILE));
   document.getElementById("download-python")?.addEventListener("click", downloadAsPython);
   document.getElementById("download-html")?.addEventListener("click", downloadAsHtml);
   document.getElementById("download-ipynb")?.addEventListener("click", downloadAsIpynb);
@@ -4110,7 +4325,10 @@ async function init() {
 
   loadSavedState();
   initPanels();
-  initTexture((dark) => cells.forEach((c) => { if (c.editor) { try { setEditorTheme(c.editor, dark); } catch {} } }));
+  initTexture((dark) => {
+    cells.forEach((c) => { if (c.editor) { try { setEditorTheme(c.editor, dark); } catch {} } });
+    if (fileEditor) { try { setEditorTheme(fileEditor, dark); } catch {} }
+  });
   initEditorSettings();
   initNotes();
   initFilename();
@@ -4125,6 +4343,7 @@ async function init() {
   setupDragAndDrop();
   renderTabs();
   renderCells();
+  updateViewSwitch();
   maybeHighlightExample();
   trackChromeHeight();
   observeThemeChanges();
