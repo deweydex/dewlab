@@ -170,18 +170,35 @@ function setCells(next) {
   activeNotebook().cells = next;
 }
 
-/* Saves the notebook to localStorage. Note the `.map(({ id, type,
- * content, output, error }) => ({...}))` step: by the time a cell has
- * been rendered, it also carries live things like `.editor` (a CodeMirror
- * instance) and `.outputEl` (a DOM element) — objects that
- * `JSON.stringify` can't handle (they contain circular references back
- * to themselves) and that don't belong in storage anyway, since they get
- * rebuilt fresh every time the notebook renders. This picks out only the
- * plain-data fields worth keeping — build a fresh plain object rather
- * than serializing the live one directly. */
-function saveState() {
+/* Cell ids whose output has been left out of storage because the whole
+ * notebook would not fit otherwise — see saveState(). The output is still
+ * on screen and still on the cell object; it is only the saved copy that
+ * lacks it, so a reload shows the code with an empty output area. */
+const outputsTooLargeToSave = new Set();
+
+/* How many outputs had been dropped the last time the reader was told.
+ * Kept so the warning appears when the situation gets worse rather than
+ * on every keystroke, since saveState() runs on every edit. */
+let warnedDroppedOutputs = 0;
+
+/* One attempt at writing the whole of dewmini's work to localStorage.
+ * Returns false when it did not fit (or when storage is unavailable at
+ * all, as in a browser with site data blocked), true when it did.
+ *
+ * Note the `.map(({ id, type, content, output, error }) => ({...}))`
+ * step: by the time a cell has been rendered, it also carries live things
+ * like `.editor` (a CodeMirror instance) and `.outputEl` (a DOM element)
+ * — objects that `JSON.stringify` can't handle (they contain circular
+ * references back to themselves) and that don't belong in storage anyway,
+ * since they get rebuilt fresh every time the notebook renders. This
+ * picks out only the plain-data fields worth keeping — build a fresh
+ * plain object rather than serializing the live one directly. */
+function writeSavedState(skipOutputFor) {
   const plainCells = (list) => list.map(({ id, type, content, output, error, lastRunMs }) => ({
-    id, type, content, output: output || "", error: !!error,
+    id, type,
+    content,
+    output: skipOutputFor.has(id) ? "" : (output || ""),
+    error: !!error,
     lastRunMs: typeof lastRunMs === "number" ? lastRunMs : undefined
   }));
   try {
@@ -189,7 +206,123 @@ function saveState() {
       active: activeNotebookId,
       notebooks: notebooks.map((nb) => ({ id: nb.id, name: nb.name, cells: plainCells(nb.cells) })),
     }));
-  } catch {}
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/* Saves every open notebook, giving up outputs before it gives up code.
+ *
+ * A browser allows an origin somewhere around 5 MB of localStorage, and a
+ * cell's output is stored as the HTML the output area is showing — which
+ * for a matplotlib figure is a base64 PNG of tens of kilobytes. A few
+ * plots across a few notebooks reaches the limit, and `setItem` then
+ * throws a QuotaExceededError.
+ *
+ * This function used to wrap that single write in a `try` with an empty
+ * `catch`, which meant crossing the limit stopped the work being saved
+ * with no error, no message, and no sign anything had changed — until a
+ * reload, which brought back whatever had been stored before the first
+ * failed write. Losing an afternoon that way is the worst outcome this
+ * file can produce, so it is worth some care.
+ *
+ * Code is small and cannot be recovered by any other means. An output is
+ * large and can be recovered by running the cell again. So when the full
+ * save does not fit, outputs are dropped — largest first, since the
+ * largest one is usually the whole problem — and the write is tried
+ * again after each. Only if every output is gone and it still does not
+ * fit is anything actually lost, and then the reader is told plainly.
+ *
+ * Once an output has been dropped, its cell id stays in
+ * `outputsTooLargeToSave`, so the following keystroke does not repeat the
+ * search. The id comes back out when that cell runs again or its output
+ * is cleared, which is when its size has changed and it deserves another
+ * try. */
+function saveState() {
+  pruneDroppedOutputs();
+  if (writeSavedState(outputsTooLargeToSave)) {
+    if (outputsTooLargeToSave.size > warnedDroppedOutputs) warnAboutDroppedOutputs();
+    else if (!outputsTooLargeToSave.size) showStorageNotice("");
+    return;
+  }
+
+  const candidates = [];
+  for (const nb of notebooks) {
+    for (const cell of nb.cells) {
+      if (cell.output && !outputsTooLargeToSave.has(cell.id)) candidates.push(cell);
+    }
+  }
+  candidates.sort((a, b) => b.output.length - a.output.length);
+
+  for (const cell of candidates) {
+    outputsTooLargeToSave.add(cell.id);
+    if (writeSavedState(outputsTooLargeToSave)) {
+      warnAboutDroppedOutputs();
+      return;
+    }
+  }
+
+  // Nothing left to give up: even the code alone will not fit. This is
+  // the one case where work really is at risk, so it says so plainly and
+  // names the one action that keeps the work regardless of storage.
+  showStorageNotice(
+    "This browser's storage is full, so your work is no longer being saved. "
+    + "Use Download to keep it — a reload from here would lose it."
+  );
+}
+
+/* Says how many outputs are being left out of the save, and why that is
+ * survivable. Deliberately not phrased as a failure: the code — the part
+ * that cannot be regenerated — is safely stored. */
+function warnAboutDroppedOutputs() {
+  const n = outputsTooLargeToSave.size;
+  warnedDroppedOutputs = n;
+  showStorageNotice(
+    `Your code is saved. ${n === 1 ? "One output was" : `${n} outputs were`} too large for this `
+    + `browser's storage, so ${n === 1 ? "it" : "they"} will be empty after a reload — `
+    + `run ${n === 1 ? "that cell" : "those cells"} again to see ${n === 1 ? "it" : "them"}, `
+    + "or use Download to keep everything."
+  );
+}
+
+/* Puts a message in the standing storage notice, or takes it away when
+ * `message` is empty. Not updateStatus(): that line is wiped by the very
+ * next thing to report, and a run reports "Ran." immediately after the
+ * save that produced this — so a reader would never see it. */
+function showStorageNotice(message) {
+  const notice = document.getElementById("storage-notice");
+  const text = document.getElementById("storage-notice-text");
+  if (!notice || !text) return;
+  if (!message) {
+    notice.hidden = true;
+    text.textContent = "";
+    return;
+  }
+  text.textContent = message;
+  notice.hidden = false;
+}
+
+/* Forgets ids for cells that no longer exist, so the number in the
+ * warning stays honest after a cell is deleted or a notebook closed.
+ * Guarded on the set being non-empty, which it is in every ordinary
+ * session, so the usual save costs one comparison rather than a walk. */
+function pruneDroppedOutputs() {
+  if (!outputsTooLargeToSave.size) return;
+  const live = new Set();
+  for (const nb of notebooks) for (const cell of nb.cells) live.add(cell.id);
+  for (const id of outputsTooLargeToSave) {
+    if (!live.has(id)) outputsTooLargeToSave.delete(id);
+  }
+  warnedDroppedOutputs = Math.min(warnedDroppedOutputs, outputsTooLargeToSave.size);
+}
+
+/* Lets a cell's output be tried again on the next save. Called wherever
+ * an output is replaced or emptied, since a new output may well fit
+ * where the old one did not. */
+function allowOutputToSaveAgain(cellId) {
+  if (!outputsTooLargeToSave.delete(cellId)) return;
+  warnedDroppedOutputs = Math.min(warnedDroppedOutputs, outputsTooLargeToSave.size);
 }
 
 // --------------------------------------------------------------- notebooks
@@ -1152,6 +1285,7 @@ async function executeCell(cell) {
   setCellRunStats(cell, performance.now() - startedAt);
   cell.output = outputEl.innerHTML;
   cell.error = !ok;
+  allowOutputToSaveAgain(cell.id);
   if (!outputEl.innerHTML.trim()) outputEl.classList.add("dm-empty");
   updateCellChrome(cell.id);
   saveState();
@@ -1207,6 +1341,7 @@ function resetCellOutput(id) {
   }
   cell.output = "";
   cell.error = false;
+  allowOutputToSaveAgain(cell.id);
   delete cell.lastRunMs;
   delete cell.ranContent;
   renderCellRunStats(cell);

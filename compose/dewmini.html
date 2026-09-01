@@ -154,6 +154,16 @@
       <button type="button" class="dm-tool" id="dismiss-import-compat">Dismiss</button>
     </div>
 
+    <!-- Storage notice — shown while saveState() is having to leave cell
+         outputs out of the saved copy, or cannot save at all. Deliberately
+         not routed through the status line above: that line is transient
+         and the "Ran." message a run posts straight afterwards would wipe
+         it, while this is a standing condition that lasts until the reader
+         frees some room or downloads the notebook. -->
+    <div id="storage-notice" class="dm-empty dm-import-notice" role="status" aria-live="polite" hidden>
+      <p id="storage-notice-text"></p>
+    </div>
+
     <div class="dm-empty" id="dm-empty" hidden>
       <p>Nothing here yet.</p>
       <p class="dm-panel-note">

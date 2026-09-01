@@ -608,3 +608,76 @@ def test_the_inspector_folds_away_functions_and_modules(dewmini):
     assert not folded.locator("summary").inner_text().startswith("0")
     # The reader's own variable is not inside the folded section.
     assert "mine" not in folded.inner_text()
+
+
+# ------------------------------------------------------------------ storage
+
+
+def test_a_full_storage_keeps_the_code_and_says_what_it_dropped(dewmini):
+    """DECISIONS_LOG.md 7.109 — when localStorage fills, saveState() gives
+    up outputs rather than giving up silently.
+
+    The old version wrapped its one `setItem` in an empty `catch`, so a
+    student with a few figures crossed the browser's ~5 MB limit and their
+    work simply stopped being saved: no error on screen, and a reload back
+    to whatever had been stored before the first failed write.
+
+    This fills storage from the page itself rather than mocking `setItem`,
+    because the behaviour under test *is* the browser's real quota — a
+    stubbed throw would prove only that the catch block runs.
+    """
+    # Fill storage to the brim, then hand back one chunk. What is left is
+    # room for the notebook's code and nowhere near room for its output.
+    headroom = dewmini.evaluate(
+        """() => {
+          const chunk = "x".repeat(64 * 1024);
+          let i = 0;
+          try {
+            for (; i < 200; i += 1) localStorage.setItem(`filler:${i}`, chunk);
+          } catch {}
+          if (i === 0) return 0;
+          localStorage.removeItem(`filler:${i - 1}`);
+          return i;
+        }"""
+    )
+    assert headroom > 0, "this browser let us write 200 chunks — the quota is not what we assumed"
+
+    # An output far larger than the single chunk of headroom left above.
+    add_python_cell(dewmini, 'print("y" * 300000)')
+    dewmini.locator(".dm-cell .dm-icon-run").first.click()
+    dewmini.wait_for_selector(".dm-cell-output:not(.dm-empty)", timeout=90_000)
+
+    # The reader is told, and told that the code is the part that survived.
+    # The notice, not the status line: a run posts "Ran." to that line the
+    # instant after the save, which is exactly why this has its own place.
+    notice = dewmini.locator("#storage-notice")
+    notice.wait_for(state="visible", timeout=30_000)
+    assert "code is saved" in notice.inner_text()
+    assert "run that cell again" in notice.inner_text()
+
+    # The part that actually mattered: work done *after* the oversized
+    # output still gets saved. Under the old empty `catch` every write
+    # from here on failed — the payload always carried that output — so
+    # this second cell would never reach storage and a reload would find
+    # one cell, not two.
+    add_python_cell(dewmini, "written_after = 1")
+
+    dewmini.reload()
+    dewmini.wait_for_selector(".dm-cell")
+    assert dewmini.locator(".dm-cell").count() == 2, "the save stopped working after the big output"
+    text = dewmini.locator(".cm-content").all_inner_texts()
+    assert any('print("y" * 300000)' in t for t in text)
+    assert any("written_after = 1" in t for t in text)
+    # The code came back; the output it could not store did not.
+    assert dewmini.locator(".dm-cell-output").first.inner_text().strip() == ""
+
+
+def test_an_ordinary_save_says_nothing_about_storage(dewmini):
+    """The degraded path must not leak into the normal one: a small
+    notebook saves in silence, as it always did."""
+    add_python_cell(dewmini, "small = 1")
+    dewmini.locator(".dm-cell .dm-icon-run").first.click()
+    dewmini.wait_for_function(
+        "document.querySelectorAll('.dm-cell').length === 1", timeout=90_000
+    )
+    assert dewmini.locator("#storage-notice").is_hidden()

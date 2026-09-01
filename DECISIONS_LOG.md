@@ -4707,3 +4707,42 @@ the same thing, and Settings now offers both.
 
 *Cost to change: very small — one factored-out function, one new button,
 two confirm dialogues.*
+
+---
+
+**7.109 — A full localStorage gives up outputs, not code, and says so.**
+`saveState()` wrote every notebook, every cell and every saved output
+into one `localStorage` key inside a `try` with an empty `catch`. A
+browser allows an origin roughly five megabytes, and a cell's output is
+stored as the HTML the output area is showing — which for a matplotlib
+figure is a base64 PNG of tens of kilobytes. A few plots reached the
+limit, `setItem` threw, the `catch` discarded it, and from that moment
+nothing was saved: no error, no marker, and a reload back to whatever had
+been stored before the first failed write.
+
+**The write is now attempted repeatedly, giving up the largest output
+each time until the rest fits.** Code is small and cannot be recovered by
+any other means; an output is large and can be recovered by running the
+cell again. So the eviction order follows what a student can replace.
+Cell ids whose output has been dropped are remembered in
+`outputsTooLargeToSave`, so the next keystroke does not repeat the
+search, and an id leaves that set when its cell runs again or is cleared
+— the moment its size changed and it deserves another attempt.
+
+**The warning is a standing notice, not a status message.** The first
+version put it through `updateStatus()`, and the e2e test caught what
+reading would not have: a run posts "Ran." to that same line
+milliseconds after the save that produced the warning, so a reader never
+saw it. `#storage-notice` sits under the tab strip and stays until the
+condition clears.
+
+**The test fills real storage rather than stubbing `setItem` to throw.**
+The behaviour under test is the browser's actual quota; a stubbed throw
+would prove only that the catch block runs. It also asserts the thing
+that actually harmed a student — that a cell written *after* the
+oversized output still reaches storage — rather than only that a notice
+appeared.
+
+*Cost to change: small and self-contained — one function split in two,
+one notice element, two e2e tests. Found by asking what happens when the
+quota is reached, not by anything failing.*
