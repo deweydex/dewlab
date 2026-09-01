@@ -1459,11 +1459,37 @@ p code, li code {
 
 /* ------------------------------------------------------- the contents page
 
-   What somebody sees first. Three short paragraphs answering the questions a
-   student arrives with — do I need to install anything, can I break it, where
-   is my work — and then the list they came for. */
+   What somebody sees first. One short paragraph saying what this is, then four
+   points answering the questions a student arrives with — do I have to install
+   anything, can I break it, where does my work go, where do I start — and then
+   the list they came for. The points are a list rather than prose on purpose:
+   they are four independent answers, and a reader arriving with one of those
+   questions should not have to read the other three to find it. */
 .dl-intro { margin: 0 0 2.5rem; }
 .dl-intro p { margin: 0 0 0.9rem; }
+.dl-intro-points {
+  margin: 0 0 1.1rem;
+  padding-left: 1.1rem;
+  list-style: none;
+}
+.dl-intro-points li {
+  position: relative;
+  margin: 0 0 0.55rem;
+}
+/* A small marker rather than a bullet glyph: the contents list below uses
+   real numbers, and two competing bullet shapes on one page read as two
+   kinds of list when these are not one. */
+.dl-intro-points li::before {
+  content: "";
+  position: absolute;
+  left: -1.1rem;
+  top: 0.62em;
+  width: 0.32rem;
+  height: 0.32rem;
+  border-radius: 50%;
+  background: var(--dl-orange);
+}
+.dl-intro-points strong { font-weight: 600; }
 .dl-intro-tree {
   padding-top: 0.8rem;
   border-top: 1px solid var(--dl-rule);

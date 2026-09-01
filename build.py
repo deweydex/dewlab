@@ -1802,33 +1802,36 @@ def render_index(
 
     # An introduction rather than a diagram. The map moved to its own page,
     # where it can have the whole window; this page's job is to say what dewlab
-    # is to somebody who has just arrived, and then get out of the way of the
-    # list they came for.
+    # is to somebody who has just arrived, in as few lines as that takes, and
+    # then leave them to the list they came for. One paragraph and four points,
+    # deliberately: PEDAGOGICAL_STYLE_GUIDE.md section 4 asks for prose over
+    # bullets in an *explanation*, and this is not one — it is the four things
+    # a reader wants answered before they choose a tutorial, and each answer is
+    # independent of the others. Prose made the reader hunt for their own
+    # question.
     out = [
         "<h1>Tutorials</h1>",
         '<div class="dl-intro">',
-        "<p>dewlab is a set of tutorials for learning mathematics and "
-        "programming together. They run in your browser. There is nothing to "
-        "install, no account to make and no setup to do. Open any tutorial and "
-        "start.</p>",
-        "<p>Each tutorial mixes reading with small boxes of Python you can "
-        "change and run. Most of them give you something to run before they "
-        "explain it, so you try an idea first and get the name for it "
-        "afterwards.</p>",
-        "<p>Getting something wrong here costs you nothing. An error message is "
-        "the page telling you something useful, not marking you down. Nothing "
-        "you do is scored, and nothing you write leaves your browser.</p>",
-        "<p>Your work is saved on this device as you go. You can also download "
-        "any tutorial as a single file and keep it.</p>",
-        '<p class="dl-intro-tree">Not sure where a topic fits? The '
-        '<a href="tree.html">topic tree</a> shows everything the course covers '
-        "and what to learn first. Want to practise one topic on its own — "
-        "trigonometry, say — instead of working through the whole list? "
-        '<a href="topics.html">Browse by topic</a> gathers each one in one '
-        "place.</p>",
-        '<p>This project is open and still growing. The <a href="about.html">'
-        "About this project</a> page explains how to suggest a change, report "
-        "a mistake, or help with the writing on GitHub.</p>",
+        "<p>dewlab is a set of tutorials where we learn maths and programming "
+        "together. Everything runs in your browser, so there is nothing to "
+        "install and no account to make. Open any tutorial and start.</p>",
+        '<ul class="dl-intro-points">',
+        "<li><strong>We try things before we name them.</strong> Most "
+        "tutorials give us something to run first. The name for what we just "
+        "did usually comes afterwards.</li>",
+        "<li><strong>Getting it wrong costs nothing.</strong> An error message "
+        "is usually telling us something useful. Nothing here is scored, and "
+        "nothing you write leaves your browser.</li>",
+        "<li><strong>Your work is saved</strong> on this device as you go. You "
+        "can also download any tutorial as a single file and keep it.</li>",
+        '<li><strong>Not sure where to start?</strong> The <a href="tree.html">'
+        "topic tree</a> shows what the course covers, and what usually comes "
+        'first. <a href="topics.html">Browse by topic</a> gathers one subject '
+        "— trigonometry, say — in one place.</li>",
+        "</ul>",
+        '<p class="dl-intro-tree">This project is open and still growing. '
+        '<a href="about.html">About this project</a> explains how to suggest a '
+        "change or report a mistake.</p>",
         "</div>",
         # A section of its own, not one more paragraph among the intro's —
         # this is not a tutorial and doesn't belong on the numbered list
@@ -1845,10 +1848,9 @@ def render_index(
         "<h2>Want to experiment on your own, outside a tutorial?</h2>",
         '<a class="dl-workspace-card" href="compose/dewmini.html" target="_blank">',
         "<h3>dewmini</h3>",
-        "<p>An open Python workspace with no tutorial attached. It runs the "
-        "same Python as every tutorial, and adds files, SQLite, notebook "
-        "import and a Stop button. Good for a quick calculation, a practice "
-        "problem, or a project of your own.</p>",
+        "<p>An open Python workspace with no tutorial attached. The same "
+        "Python as the tutorials, plus files, SQLite and a Stop button. "
+        "Useful when we just want to try something out.</p>",
         "</a>",
         "</div>",
         render_search_box("Search by topic — e.g. loops, probability, sorting…"),
