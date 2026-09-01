@@ -19,6 +19,21 @@ the repository.
 These need answering eventually. None of them blocks current work, and each
 says what it would change.
 
+**A text cell collapsing on blur swallows the next click.**
+A text cell's editing box hides when it loses focus and its rendered
+markdown takes its place. The rendered form is usually shorter, so
+everything below the cell moves up at that moment. A reader who finishes
+typing a note and then clicks an insert seam below it presses the mouse
+on the button and releases it over whatever has slid into that position,
+and the click is lost. They click again and it works, so it reads as a
+stray misclick rather than as a defect.
+
+Found while writing the tests for the percent format, not looked for. A
+fix would keep the cell's height stable across the swap, or render on a
+change rather than on blur. The browser tests work around it
+deliberately — `add_text_cell()` leaves the cell and waits for the
+collapse — so the workaround is not mistaken for ceremony and removed.
+
 **9. Does the mathematics content need symbolic computation?**
 A library like sympy would give algebra that works with symbols rather than
 numbers — factorising, solving, simplifying. numpy covers numeric work already.
