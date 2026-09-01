@@ -23,6 +23,15 @@
   --dl-line-width: 34rem;
   --dl-link: var(--dl-orange);
 
+  /* A cell type's colour, layered onto its label rather than standing in
+     for it — planning/CELL_IDENTITY.md §2. References --dl-orange/--dl-
+     muted rather than fixed hex, so both already track the theme and the
+     texture panel's own choices for free; only a genuinely new hue (SQL,
+     HTML, CSS, JavaScript, once those cell types are real) needs a literal
+     value of its own, added here when it's built. */
+  --dl-type-python: var(--dl-orange);
+  --dl-type-text: var(--dl-muted);
+
   /* Light palette. The dark block below redefines only these. */
   --dl-bg: #fdfcfa;
   --dl-fg: #1a1a1a;
@@ -345,7 +354,7 @@ p code, li code {
   z-index: 5;
   display: flex;
   flex-direction: column;
-  min-width: 9.5rem;
+  min-width: 13rem;
   padding: 0.25rem;
   border: 1px solid var(--dl-cell-border);
   border-radius: 6px;

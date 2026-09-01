@@ -4750,14 +4750,64 @@ behavioural gap between a single Run click and "Run above/below".
 was ported from; a future change to one is a reminder to check the
 other, not a search. The real ongoing cost is the one this decision
 argues against paying yet: a true shared cell implementation, still
-undecided, and the numbered identity pill's own design, still
-unbuilt anywhere.*
+undecided. The numbered identity pill's own design was still unbuilt
+anywhere when this was written; 7.110 changes that, in dewmini.*
 
----
+**7.110 — The full cell-identity design, built in dewmini.** The
+numbered pill, per-type colour, merged run-line, and collapse triangle
+`planning/CELL_IDENTITY.md` designed and 7.109 explicitly left out —
+built now in `compose/dewmini.js`, on request, rather than staying a
+mockup. Three real amendments to the document along the way, made
+because building the thing surfaced questions the mockup alone hadn't:
 
-## Phase 5 — Readability of the student-facing text
+**Collapse is for every cell type, not only code-bearing ones.**
+`CELL_IDENTITY.md` §4 reasoned that Text/HTML didn't need it, since they
+already have a rendered form to shrink to. Fair for HTML, once it
+exists — but a long Text cell in *edit* mode has no rendered form to
+fall back on, and "shrink this out of the way without deleting it" is
+exactly as true for a long note as for a long function. Both cell types
+get the triangle now; `cell.collapsed` persists across a reload like any
+other cell field.
 
-**5.1 — The style guide gained a plain-language section, and the four
+**A header-end group, with a genuinely new feature in it.** Duplicate —
+insert a copy of a cell right after itself, same type and code, no run
+history — didn't exist in dewmini at all before this. It's not
+optional garnish: without it, `CELL_IDENTITY.md`'s own header-end layout
+(Edit, Duplicate, Delete) has a hole in it. `duplicateCell()` follows
+`insertCellAt()`'s own shape exactly.
+
+**The collapse triangle is one rotated chevron, not two swapped
+triangles.** The mockup used ▾/▸ (`&#9662;`/`&#9656;`) — filled
+triangles that, once actually sitting a few pixels above the Run
+button's own ▶ in the footer bar, read as confusingly similar glyphs in
+the same corner of the cell. A single `›` (`&#8250;`), rotated 90° by
+CSS between states rather than swapped for a different character, reads
+unambiguously as its own thing.
+
+**Run order resets on any reset, not only a full restart.**
+`runCellBatch()`'s `reset: true` path (Run all, Run above) already threw
+away the Python namespace via `engine.resetPageState()`; it just never
+told the run-line about it. `resetRunSequence()` now runs alongside that
+reset too, so every cell's line correctly reads "Not yet run this
+session" the moment the namespace is cleared, not only after a full
+`restartPython()`.
+
+**Not ported to tutorial or practice pages.** Those still carry 7.109's
+narrower slice. The type-colour system needs real content to colour —
+tutorials are Python-only today — and the header/footer layout move is
+a bigger, separate piece of work on the primary reading surface;
+neither was in scope here.
+
+*Cost to change: medium. `createCellElement()` is substantially rewritten
+— the header/body/footer split, the collapse mechanism, and the run-line
+system are all new structure, not additions to the old one — so a future
+change to a cell's anatomy touches one well-organised function rather
+than several scattered ones. `lastRunMs` is no longer persisted to
+`localStorage` (only `collapsed` is, alongside the existing fields) since
+it's meaningless without `ranOrder`, which was never persisted either;
+nothing reads the old field back, so no migration was needed.*
+
+**7.111 — The style guide gained a plain-language section, and the four
 student-facing surfaces were rewritten to it.**
 
 The contents page, the About page, the topic tree and the 251 glossary
@@ -4800,7 +4850,7 @@ contents page introduction (`test_the_contents_page_introduces_the_place_instead
 a check on its wording, so update the phrase there rather than working
 around it.*
 
-**5.2 — The contents page introduction is one paragraph and six points, in
+**7.112 — The contents page introduction is one paragraph and six points, in
 the order a reader meets them.**
 
 Six paragraphs and 254 words was the wrong shape for the page somebody

@@ -29,7 +29,8 @@ Two more were named later, after the first pass had been through:
 8. Claims stated flat that are not binaries.
 
 Section 4 now has a rule against each of the eight, and section 9 has a
-checklist item for each. Section 3 says what a name is *for* — a student
+checklist item for each. `DECISIONS_LOG.md` 7.111 and 7.112 record why, and
+what changing any of it would cost. Section 3 says what a name is *for* — a student
 talking to somebody else about the thing they just did — which is the reason
 the explore-then-name order matters and not only its ordering.
 
