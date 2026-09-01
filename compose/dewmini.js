@@ -175,7 +175,11 @@ function loadSavedState() {
     notebooks = saved.notebooks
       .filter((nb) => nb && nb.id)
       .map((nb) => ({ id: nb.id, name: nb.name || "Notebook", cells: readCells(nb.cells),
-                      view: nb.view === VIEWS.FILE ? VIEWS.FILE : VIEWS.CELLS }));
+                      view: nb.view === VIEWS.FILE ? VIEWS.FILE : VIEWS.CELLS,
+                      // Which workspace file this tab is, when it is one.
+                      // Without this a reload would quietly turn it into an
+                      // ordinary notebook and stop saving the file.
+                      ...(typeof nb.path === "string" && nb.path ? { path: nb.path } : {}) }));
   }
   if (!notebooks.length) notebooks = migrateLegacyCells();
   if (!notebooks.length) notebooks = [makeNotebook("Notebook")];
@@ -233,6 +237,7 @@ function writeSavedState(skipOutputFor) {
     localStorage.setItem(NOTEBOOKS_KEY, JSON.stringify({
       active: activeNotebookId,
       notebooks: notebooks.map((nb) => ({ id: nb.id, name: nb.name, view: nb.view || VIEWS.CELLS,
+                                         ...(nb.path ? { path: nb.path } : {}),
                                          cells: plainCells(nb.cells) })),
     }));
     return true;
@@ -269,6 +274,7 @@ function writeSavedState(skipOutputFor) {
  * is cleared, which is when its size has changed and it deserves another
  * try. */
 function saveState() {
+  scheduleWorkspaceWrite(activeNotebook());
   pruneDroppedOutputs();
   if (writeSavedState(outputsTooLargeToSave)) {
     if (outputsTooLargeToSave.size > warnedDroppedOutputs) warnAboutDroppedOutputs();
@@ -844,6 +850,81 @@ async function renderMathsIn(container) {
 }
 
 /* Which view the active notebook is showing. */
+/* Opens a file from the workspace in a tab of its own.
+ *
+ * A .py opens in the file view, because a file is what it is, and the
+ * reader should see the thing they are learning to write. A .ipynb opens
+ * as cells, because that format carries outputs and cells are what shows
+ * them. Anything else stays where it is: dewmini would have to guess how
+ * to read a .csv as code, and guessing wrong turns a data file into one
+ * long broken cell.
+ *
+ * The tab remembers which file it came from, so editing it writes back to
+ * the workspace rather than to a download. That is the difference between
+ * a file manager and an import button. */
+async function openWorkspaceFile(name) {
+  const lower = name.toLowerCase();
+  const isPy = lower.endsWith(".py");
+  const isIpynb = lower.endsWith(".ipynb");
+  if (!isPy && !isIpynb) {
+    updateStatus(`dewmini opens .py and .ipynb files. ${name} stays in the workspace for a cell to read.`, "error");
+    return;
+  }
+
+  const already = notebooks.find((nb) => nb.path === name);
+  if (already) { showNotebook(already.id); return; }
+
+  let text;
+  try {
+    text = await dfs.readFile(name, "utf8");
+  } catch (err) {
+    updateStatus(`Couldn't open ${name}: ${err.message}`, "error");
+    return;
+  }
+
+  let imported;
+  try {
+    imported = isIpynb ? parseIpynbCells(text) : parsePyCells(text);
+  } catch (err) {
+    updateStatus(`Couldn't read ${name}: ${err.message}`, "error");
+    return;
+  }
+
+  const notebook = makeNotebook(notebookNameFor(name), imported,
+                                isPy ? VIEWS.FILE : VIEWS.CELLS);
+  notebook.path = name;
+  openNotebook(notebook);
+  updateViewSwitch();
+  updateStatus(`Opened ${name}. Edits here save back to the workspace.`, "ok");
+}
+
+/* Writes a tab that came from the workspace back to the file it came
+ * from, in the format that file already is.
+ *
+ * Debounced, because saveState() runs on every keystroke and a filesystem
+ * write is not free. Nothing here reports success: a save that worked is
+ * not news, and the status line is where a run says what it did. */
+let workspaceWriteTimer = null;
+function scheduleWorkspaceWrite(notebook) {
+  if (!notebook?.path) return;
+  clearTimeout(workspaceWriteTimer);
+  workspaceWriteTimer = setTimeout(() => writeNotebookToWorkspace(notebook), 600);
+}
+
+async function writeNotebookToWorkspace(notebook) {
+  if (!notebook?.path) return;
+  const text = notebook.path.toLowerCase().endsWith(".ipynb")
+    ? JSON.stringify(cellsToIpynb(notebook.cells), null, 2)
+    : cellsToPercentText(notebook.cells);
+  try {
+    await dfs.writeFile(notebook.path, text);
+  } catch (err) {
+    updateStatus(`Couldn't save ${notebook.path}: ${err.message}`, "error");
+    return;
+  }
+  renderFileList();
+}
+
 function currentView() {
   return activeNotebook()?.view === VIEWS.FILE ? VIEWS.FILE : VIEWS.CELLS;
 }
@@ -1694,7 +1775,12 @@ async function executeCell(cell) {
   // needs this rather than relying on writeFile()'s debounced sync or
   // the best-effort unload flush alone) — not awaited, so a slow sync
   // never makes a fast cell feel slower than it is.
-  dfs.sync().catch((err) => console.warn("dewmini: filesystem sync after cell run failed", err));
+  dfs.sync()
+    // A cell that wrote a file is exactly when the Files list is wrong, and
+    // nothing else was redrawing it: a student could write shapes.py, open
+    // Files, and not see it until some unrelated thing refreshed the panel.
+    .then(() => renderFileList())
+    .catch((err) => console.warn("dewmini: filesystem sync after cell run failed", err));
   // Same treatment for the Workbench's variable list: a run is exactly
   // when the namespace changed, so this is when it needs redrawing — but
   // it is a panel a reader may not even have open, and never worth making
@@ -2370,17 +2456,18 @@ function htmlForIpynbOutputs(outputs) {
  * shape Jupyter, JupyterLab, and Colab all expect — so the file this
  * produces opens correctly in any of them, and the same file loads back
  * into dewmini via handleImportFile() below. */
-function downloadAsIpynb() {
-  flushFileEditor();
-  if (!cells.length) { updateStatus("No cells to export.", "error"); return; }
-  const notebook = {
+/* A list of cells as a Jupyter notebook object, ready to be serialised.
+ * Shared by the download and by saving a .ipynb back to the workspace, so
+ * the two can never write files that differ. */
+function cellsToIpynb(cellList) {
+  return {
     nbformat: 4,
     nbformat_minor: 5,
     metadata: {
       kernelspec: { display_name: "Python 3", language: "python", name: "python3" },
       language_info: { name: "python", pygments_lexer: "ipython3" },
     },
-    cells: cells.map((cell) => ({
+    cells: cellList.map((cell) => ({
       cell_type: cell.type === CELL_TYPES.PYTHON ? "code" : "markdown",
       // nbformat requires a tool to preserve metadata keys it does not
       // recognise rather than discard them, so a cell's metadata is where
@@ -2399,7 +2486,13 @@ function downloadAsIpynb() {
         : {}),
     })),
   };
-  triggerDownload(`${getFilenameBase()}.ipynb`, JSON.stringify(notebook, null, 2), "application/json");
+}
+
+function downloadAsIpynb() {
+  flushFileEditor();
+  if (!cells.length) { updateStatus("No cells to export.", "error"); return; }
+  triggerDownload(`${getFilenameBase()}.ipynb`,
+                  JSON.stringify(cellsToIpynb(cells), null, 2), "application/json");
   updateStatus("Downloaded as Jupyter Notebook.", "ok");
 }
 
@@ -3571,10 +3664,22 @@ async function updateStorageStatus() {
  * that (DECISIONS_LOG.md 7.88), and dewmini's own use of the mount
  * (a saved .db file, a dataset a cell downloaded) rarely goes more than
  * one level deep in practice. */
+/* Which call to renderFileList() is the current one.
+ *
+ * The function clears the list, then awaits a directory listing, then
+ * appends. Two calls overlapping in that await therefore both clear an
+ * already-empty list and then both append, so every file shows twice.
+ * Reachable now that a cell run and opening the panel each ask for a
+ * redraw, and found by a rename test that suddenly saw three copies of
+ * one name. Each call takes a ticket; a call whose ticket is no longer
+ * the newest stops before it writes anything. */
+let fileListRender = 0;
+
 async function renderFileList() {
   const listEl = document.getElementById("settings-file-list");
   const noteEl = document.getElementById("settings-file-note");
   if (!listEl || !noteEl) return;
+  const ticket = ++fileListRender;
 
   // Cleared unconditionally, not just in the loop below that repopulates
   // it: every early-return branch below also hides this list, but
@@ -3594,7 +3699,9 @@ async function renderFileList() {
   let entries;
   try {
     entries = await dfs.listDir("");
+    if (ticket !== fileListRender) return;
   } catch (err) {
+    if (ticket !== fileListRender) return;
     listEl.hidden = true;
     noteEl.hidden = false;
     noteEl.textContent = `Couldn't list files: ${err.message}`;
@@ -3610,19 +3717,42 @@ async function renderFileList() {
 
   noteEl.hidden = true;
   listEl.hidden = false;
+  // Cleared again here, not only at the top: this is the first point past
+  // every await, so it is the only place a clear cannot be undone by a
+  // call that overtook this one.
+  listEl.replaceChildren();
 
   for (const entry of entries) {
     const item = document.createElement("li");
     item.className = "dm-filelist-item";
 
-    const nameEl = document.createElement("span");
+    /* The name is a button, not a label. A list that shows what exists
+     * and offers no way to open any of it is an inventory; being able to
+     * open one is what makes this a file manager. A folder stays a plain
+     * label, since dewmini has nothing to show for one yet. */
+    let nameEl;
+    if (entry.isDir) {
+      nameEl = document.createElement("span");
+      nameEl.textContent = `${entry.name}/`;
+    } else {
+      nameEl = document.createElement("button");
+      nameEl.type = "button";
+      nameEl.textContent = entry.name;
+      nameEl.addEventListener("click", () => openWorkspaceFile(entry.name));
+    }
     nameEl.className = "dm-filelist-item-name";
-    nameEl.textContent = entry.isDir ? `${entry.name}/` : entry.name;
-    nameEl.title = entry.name;
+    nameEl.title = entry.isDir ? entry.name : `Open ${entry.name}`;
 
     const sizeEl = document.createElement("span");
     sizeEl.className = "dm-filelist-item-size";
     sizeEl.textContent = entry.isDir ? "" : formatFileSize(entry.size);
+
+    const renameBtn = document.createElement("button");
+    renameBtn.type = "button";
+    renameBtn.className = "dm-filelist-item-rename";
+    renameBtn.textContent = "Rename";
+    renameBtn.title = `Rename ${entry.name}`;
+    renameBtn.addEventListener("click", () => renameFsFile(entry.name));
 
     const deleteBtn = document.createElement("button");
     deleteBtn.type = "button";
@@ -3632,9 +3762,81 @@ async function renderFileList() {
     deleteBtn.setAttribute("aria-label", `Delete ${entry.name}`);
     deleteBtn.addEventListener("click", () => deleteFsFile(entry.name));
 
-    item.append(nameEl, sizeEl, deleteBtn);
+    item.append(nameEl, sizeEl, renameBtn, deleteBtn);
     listEl.append(item);
   }
+}
+
+/* Renames a file in the workspace, and follows the tab that is showing it.
+ *
+ * A copy-then-delete, because the filesystem interface has no rename of
+ * its own across all three backends. The delete only happens once the copy
+ * is written, so a failure halfway leaves the original where it was rather
+ * than losing it. */
+async function renameFsFile(name) {
+  const next = prompt(`Rename "${name}" to:`, name);
+  if (next === null) return;
+  const target = next.trim();
+  if (!target || target === name) return;
+  if (target.includes("/")) {
+    updateStatus("A name cannot contain a slash.", "error");
+    return;
+  }
+
+  try {
+    const existing = await dfs.listDir("");
+    if (existing.some((entry) => entry.name === target)) {
+      updateStatus(`${target} already exists.`, "error");
+      return;
+    }
+    const contents = await dfs.readFile(name, "utf8");
+    await dfs.writeFile(target, contents);
+    await dfs.deleteFile(name);
+  } catch (err) {
+    updateStatus(`Couldn't rename ${name}: ${err.message}`, "error");
+    return;
+  }
+
+  // A tab open on the old name would otherwise keep saving to a file that
+  // no longer exists, quietly recreating it on the next keystroke.
+  const open = notebooks.find((nb) => nb.path === name);
+  if (open) {
+    open.path = target;
+    open.name = notebookNameFor(target);
+    saveState();
+    renderTabs();
+  }
+  renderFileList();
+  updateStatus(`Renamed ${name} to ${target}.`, "ok");
+}
+
+/* Starts a new, empty Python file in the workspace and opens it. Python
+ * needs the file to exist before anything can import it, so this writes
+ * it rather than only opening an empty tab. */
+async function newFsFile() {
+  await ensurePyodide();
+  const asked = prompt("Name for the new file:", "shapes.py");
+  if (asked === null) return;
+  let name = asked.trim();
+  if (!name) return;
+  if (name.includes("/")) { updateStatus("A name cannot contain a slash.", "error"); return; }
+  if (!/\.(py|ipynb)$/i.test(name)) name += ".py";
+
+  try {
+    const existing = await dfs.listDir("");
+    if (existing.some((entry) => entry.name === name)) {
+      updateStatus(`${name} already exists. Open it from the list.`, "error");
+      return;
+    }
+    await dfs.writeFile(name, name.toLowerCase().endsWith(".ipynb")
+      ? JSON.stringify(cellsToIpynb([]), null, 2)
+      : "");
+  } catch (err) {
+    updateStatus(`Couldn't create ${name}: ${err.message}`, "error");
+    return;
+  }
+  await renderFileList();
+  await openWorkspaceFile(name);
 }
 
 async function deleteFsFile(name) {
@@ -3707,6 +3909,7 @@ function initStorageSection() {
     updateStorageStatus();
   });
 
+  document.getElementById("settings-new-file")?.addEventListener("click", () => newFsFile());
   document.getElementById("settings-upload-file")?.addEventListener("click", () => document.getElementById("settings-upload-file-input")?.click());
   document.getElementById("settings-upload-file-input")?.addEventListener("change", (e) => {
     uploadFsFiles(e.target.files);
@@ -3962,7 +4165,7 @@ function initPanels() {
             document.getElementById("dl-settings-close"), [workbenchPanel]);
   wirePanel(workbenchPanel, document.getElementById("dm-workbench-toggle"),
             document.getElementById("dm-workbench-close"), [settingsPanel],
-            () => refreshVariables());
+            () => { refreshVariables(); renderFileList(); });
   wirePanel(libraryPanel, document.getElementById("dm-library-toggle"),
             document.getElementById("dm-library-close"), []);
 

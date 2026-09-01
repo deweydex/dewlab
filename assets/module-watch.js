@@ -32,6 +32,27 @@ del _dewlab_path, _dewlab_sys
 `;
 }
 
+/* Makes one directory Python's working directory.
+ *
+ * Without this a student's own `open("notes.txt", "w")` writes to
+ * Pyodide's default directory, which is not the workspace: the file does
+ * not appear in Files, is not on the import path, and is gone on the next
+ * reload. Every part of the interface already tells them otherwise — the
+ * Files panel calls itself "a real filesystem a cell can read and write
+ * to" — so the working directory is what has to move, not the promise.
+ *
+ * Idempotent, and safe to run after every mount. */
+export function workingDirectorySource(path) {
+  return `
+import os as _dewlab_os
+try:
+    _dewlab_os.chdir(${JSON.stringify(path)})
+except OSError:
+    pass
+del _dewlab_os
+`;
+}
+
 /* Reports every module imported from under `path`, with the last-modified
  * time of the file it was read from, as a JSON array of
  * `{name, file, mtime}`.

@@ -157,6 +157,20 @@ async function doInit() {
   // them through.
   await engine.addImportPath(MOUNT_POINT);
 
+  await mountBestBackend();
+
+  // Only now, and not beside addImportPath above. sys.path takes a string
+  // and does not care whether the directory exists yet; chdir does, and
+  // fails on a path nothing is mounted at. Done too early it therefore did
+  // nothing at all, quietly, and a student's own open("notes.txt", "w")
+  // went on landing outside the workspace.
+  await engine.setWorkingDirectory(MOUNT_POINT);
+}
+
+/* Picks the best filesystem the browser will give us and mounts it: a
+ * folder on the reader's own computer if they have chosen one, then OPFS,
+ * then IDBFS. */
+async function mountBestBackend() {
   const storedHandle = await idbGet(HANDLE_KEY).catch(() => null);
   if (storedHandle) {
     try {
