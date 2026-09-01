@@ -180,15 +180,15 @@ def test_both_rails_can_be_open_at_once(dewmini):
     assert dewmini.evaluate("document.documentElement.hasAttribute('data-dl-panel-right')")
 
 
-def test_settings_and_workbench_share_an_edge(dewmini):
+def test_settings_and_the_library_share_an_edge(dewmini):
     """Two panels on one edge still close each other — otherwise the second
-    simply covers the first."""
-    dewmini.click("#dm-workbench-toggle")
-    assert dewmini.locator("#dm-workbench").is_visible()
+    simply covers the first. Settings and the Library are that pair now."""
+    dewmini.click("#dm-library-toggle")
+    assert dewmini.locator("#dm-library").is_visible()
 
     dewmini.click("#dl-settings-toggle")
     assert dewmini.locator("#dl-settings").is_visible()
-    assert dewmini.locator("#dm-workbench").is_hidden()
+    assert dewmini.locator("#dm-library").is_hidden()
 
 
 def test_a_rail_survives_clicking_your_own_notebook(dewmini):
@@ -224,19 +224,19 @@ def test_both_rails_drag_wider_and_the_notebook_gives_up_the_room(dewmini):
         dewmini.mouse.move(box["x"] + box["width"] / 2 + dx, y, steps=8)
         dewmini.mouse.up()
 
-    before = dewmini.locator("#dm-library").bounding_box()["width"]
-    drag("#dm-library .dl-panel-resize-handle", 140)
-    after = dewmini.locator("#dm-library").bounding_box()["width"]
+    before = dewmini.locator("#dm-workbench").bounding_box()["width"]
+    drag("#dm-workbench .dl-panel-resize-handle", 140)
+    after = dewmini.locator("#dm-workbench").bounding_box()["width"]
     assert after > before + 100, "the left rail should grow when dragged right"
 
-    right_before = dewmini.locator("#dm-workbench").bounding_box()["width"]
-    drag("#dm-workbench .dl-panel-resize-handle", -140)
-    right_after = dewmini.locator("#dm-workbench").bounding_box()["width"]
+    right_before = dewmini.locator("#dm-library").bounding_box()["width"]
+    drag("#dm-library .dl-panel-resize-handle", -140)
+    right_after = dewmini.locator("#dm-library").bounding_box()["width"]
     assert right_after > right_before + 100, "the right rail grows when dragged left"
 
     # The notebook sits between them rather than under either.
-    left = dewmini.locator("#dm-library").bounding_box()
-    right = dewmini.locator("#dm-workbench").bounding_box()
+    left = dewmini.locator("#dm-workbench").bounding_box()
+    right = dewmini.locator("#dm-library").bounding_box()
     main = dewmini.locator("main").bounding_box()
     assert main["x"] >= left["x"] + left["width"], "the left rail must not cover the notebook"
     assert main["x"] + main["width"] <= right["x"] + 1, "the right rail must not cover it"
@@ -1354,3 +1354,18 @@ def test_a_file_a_cell_writes_can_then_be_imported(dewmini):
 
     add_python_cell(dewmini, "import shapes\nprint(shapes.area(2))")
     assert run_first_cell_and_wait(dewmini, 1) == "12"
+
+
+def test_the_project_is_on_the_left_and_the_reference_on_the_right(dewmini):
+    """Files and variables dock left; the reference docks right."""
+    dewmini.click("#dm-workbench-toggle")
+    dewmini.click("#dm-library-toggle")
+
+    workbench = dewmini.locator("#dm-workbench").bounding_box()
+    library = dewmini.locator("#dm-library").bounding_box()
+    assert workbench["x"] < library["x"], "files and variables belong on the left"
+
+    # And the sections really are where the division says they are.
+    assert dewmini.locator("#dm-workbench #settings-file-list").count() == 1
+    assert dewmini.locator("#dm-workbench #dm-variables").count() == 1
+    assert dewmini.locator("#dm-library #dm-reference-section").count() == 1

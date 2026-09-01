@@ -4041,8 +4041,8 @@ function saveSidebarState() {
   };
   try {
     localStorage.setItem(SIDEBAR_KEY, JSON.stringify({
-      left: openOn(["dm-library"]),
-      right: openOn(["dm-workbench", "dl-settings"]),
+      left: openOn(["dm-workbench"]),
+      right: openOn(["dm-library", "dl-settings"]),
       widths: {
         "dm-library": widthOf("dm-library"),
         "dm-workbench": widthOf("dm-workbench"),
@@ -4156,20 +4156,22 @@ function initPanels() {
   // opposite a full-height strip, so the two rails behaved differently for
   // no reason a reader could see (DECISIONS_LOG.md 7.103). The min/max
   // mirror each panel's own CSS.
+  // Left is the project: files, variables, notes. Right is everything
+  // outside it: the reference, and settings.
   makeEdgeResizable(settingsPanel, "right", 256, 640, saveSidebarState);
-  makeEdgeResizable(workbenchPanel, "right", 256, 640, saveSidebarState);
-  makeEdgeResizable(libraryPanel, "left", 256, 640, saveSidebarState);
+  makeEdgeResizable(libraryPanel, "right", 256, 640, saveSidebarState);
+  makeEdgeResizable(workbenchPanel, "left", 256, 640, saveSidebarState);
 
   // Same-edge panels close each other; opposite-edge ones coexist.
   wirePanel(settingsPanel, document.getElementById("dl-settings-toggle"),
-            document.getElementById("dl-settings-close"), [workbenchPanel]);
-  wirePanel(workbenchPanel, document.getElementById("dm-workbench-toggle"),
-            document.getElementById("dm-workbench-close"), [settingsPanel],
-            () => { refreshVariables(); renderFileList(); });
+            document.getElementById("dl-settings-close"), [libraryPanel]);
   wirePanel(libraryPanel, document.getElementById("dm-library-toggle"),
-            document.getElementById("dm-library-close"), []);
+            document.getElementById("dm-library-close"), [settingsPanel]);
+  wirePanel(workbenchPanel, document.getElementById("dm-workbench-toggle"),
+            document.getElementById("dm-workbench-close"), [],
+            () => { refreshVariables(); renderFileList(); });
 
-  watchPanelOverlap({ left: [libraryPanel], right: [workbenchPanel, settingsPanel] });
+  watchPanelOverlap({ left: [workbenchPanel], right: [libraryPanel, settingsPanel] });
   restoreSidebarState();
 
   // Hide any Settings section that ended up with nothing in it (mirrors the

@@ -229,12 +229,18 @@ Three buttons in the header open panels docked down the sides of the
 screen. Nothing opens by itself. If you came to run three lines and
 leave, you never need to touch any of them.
 
-**Library**, on the left, is everything you look *up*. **Workbench**, on
-the right, is everything about the work in front of you. **Settings** is
-what you change. The Library docks to the opposite side from the other
-two, so you can keep a definition open beside your own variables.
-Workbench and Settings share the right-hand edge, so opening one closes
-the other.
+The two sides mean different things. The left is your project: the files
+in it, and the values your code has made. The right is everything outside
+your project: things you look up, and things you change.
+
+**Workbench**, on the left, holds your files, your variables and your
+notes. **Library**, on the right, is everything you look *up*.
+**Settings** is what you change. The Workbench has the left edge to
+itself, so you can keep a definition open beside your own files. Library
+and Settings share the right-hand edge, so opening one closes the other.
+
+Almost every code editor you meet after this one puts your files on the
+left, so the habit carries over.
 
 On a wide enough screen, opening a panel shrinks the working area rather
 than covering it, so your cells stay visible. Drag a panel's inner edge

@@ -49,27 +49,30 @@ Every decision below is checked against that sentence.
 
 Three panels across two edges, replacing today's two-on-one-edge.
 
-**Left — Library (`#dm-library`). Things you bring in.**
-Reference, data, and help: everything that is *lookup*. A student opens
-the left rail with a question about the world outside their notebook —
-what does `enumerate` do, what data can I get, what does Shift+Enter do.
+**The division is by subject.** The left-hand panel describes the project
+the student is working on: what files it contains, and what values its
+code has produced. The right-hand panel holds what is outside the
+project: reference material and settings.
 
-**Right — Workbench (`#dm-workbench`). Things about your own work.**
-Notes, variables, files. A student opens the right rail with a question
-about the notebook in front of them — what have I got, where did my
-`.db` file go, what was I thinking last time.
+**Left — Workbench (`#dm-workbench`). The project.**
+Files, variables and notes. A student opens it with a question about the
+work in front of them: what have I got, where did my `.db` file go, what
+was I thinking last time.
+
+**Right — Library (`#dm-library`). Everything outside the project.**
+Reference, data and help: everything that is *lookup*. A student opens it
+with a question about the world outside their notebook. What does
+`enumerate` do, what data can I get, what does Shift+Enter do.
 
 **Right — Settings (`#dl-settings`). Configuration, demoted.**
 Still there, still docked right, but no longer the headline. Notes and
-Files *move out of it* into the Workbench, which is the substance of the
-instruction to make the right-hand side "more into notes and other
-pedagogical ideas": the right rail's identity is now your work, and
-settings is the thing you occasionally go and change.
+Files moved out of it, which is the substance of the instruction to make
+one side "more into notes and other pedagogical ideas".
 
 The pairing follows the tutorial pages exactly, mirrored: the two
 right-docked panels are mutually exclusive because they occupy the same
 edge; the left one is independent, so a reader can have the reference
-open beside their variables. That is not a new mechanism — the shared
+open beside their own files. That is not a new mechanism — the shared
 stylesheet has carried `data-dl-panel-left`/`data-dl-panel-right` and
 independent width variables since `DECISIONS_LOG.md` 7.83. dewmini had
 been overriding it with a single-panel simplification (7.84, correct at
