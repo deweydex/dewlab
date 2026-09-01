@@ -4707,3 +4707,71 @@ the same thing, and Settings now offers both.
 
 *Cost to change: very small — one factored-out function, one new button,
 two confirm dialogues.*
+
+---
+
+**7.110 — The percent format, so a file written here opens elsewhere.**
+`downloadAsPython()` wrote markers dewmini invented — `# ---- cell 1 ----`
+and `# ---- note ----` — and `parsePyCells()` read them back. They explain
+themselves, and no other program understands them. They are now `# %%`
+for a code cell and `# %% [markdown]` for a text cell, which Jupytext,
+Visual Studio Code, Spyder and PyCharm all read
+(`planning/PY_FILES_AND_FILE_MODE.md` Part 1).
+
+**The reason is not tidiness.** Teaching a student to work in files is
+worth doing only if the files they produce are usable somewhere other
+than the tool they were taught in. A student who writes a file in dewmini
+can now open it, unchanged, in VS Code on a college machine and see the
+same cells.
+
+**The old markers are simply gone, with no reader for them.** dewlab has
+not been released, so no file in the old format exists outside this
+repository, and nobody is harmed by the change. Compatibility code
+defending nobody is cost with no benefit.
+
+**The explanatory header sits above the first marker, not inside a
+cell.** `# %%` tells a beginner nothing, so an exported file opens with
+six comment lines saying what the markers are for. Written as a markdown
+cell — which was the first attempt — it imported as a note, was written
+out again above a fresh copy of itself, and grew the notebook by one note
+on every export-and-reopen. A test now asserts that exporting twice
+leaves the cell list unchanged. `parsePyCells()` recognises the header by
+its first line (`PY_HEADER_OPENING`) and discards it; a leading comment
+block that does *not* start that way — someone else's licence notice — is
+kept as a Python cell, which is also tested.
+
+**Reading is deliberately more permissive than writing.** Real percent
+files carry titles and options after the marker (`# %% Compute it
+tags=["slow"]`), so the kind is decided by looking for a bracketed
+`[markdown]`, `[md]` or `[raw]` rather than by matching the whole line,
+and `[raw]` reads as a text cell because its content is not Python. Code
+above the first marker is kept: in a file from elsewhere that is a
+shebang or a block of imports, and dropping it would lose part of the
+program.
+
+**Neither function had a single test before this.** The round trip was
+covered first, against the old markers, and only then changed — the order
+`planning/PY_FILES_AND_FILE_MODE.md` Part 1 asked for.
+
+*Cost to change: half a day, as estimated. Six e2e tests where there were
+none.*
+
+---
+
+**7.111 — A text cell collapsing on blur swallows the next click.**
+Found while writing 7.110's tests, not looked for.
+
+A text cell's textarea hides on blur and its rendered markdown takes its
+place. The rendered form is usually shorter than the editing box, so
+everything below the cell moves up at the moment focus leaves it. A
+reader who finishes typing a note and then clicks an insert seam below it
+presses the mouse on the button and releases it over whatever has slid
+into that position — and the click is lost. They click again and it
+works, so it reads as a stray misclick rather than a defect.
+
+This is not fixed. It is recorded here because it is a real interaction
+defect that only a browser could have surfaced, and because the tests for
+7.110 work around it deliberately (`add_text_cell()` leaves the cell and
+waits for the collapse before anything else is clicked) rather than by
+accident. A fix would keep the cell's height stable across the swap, or
+render on a change rather than on blur.
