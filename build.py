@@ -3725,35 +3725,49 @@ def write_reference_index(tutorials: list[Tutorial]) -> Path:
 
 
 def write_about_page(shell: str) -> Path:
-    """A short guide to what the project is and how to contribute to it."""
+    """A short guide to what the project is and how to contribute to it.
+
+    Written to PEDAGOGICAL_STYLE_GUIDE.md section 4 "Plain language": short
+    sentences in the order things happen, "we" for the work and "you" for what
+    is the reader's own, and a heading over each question rather than one run
+    of paragraphs a reader has to search.
+    """
     body = (
         "<h1>About this project</h1>"
-        "<p>dewlab is an open educational project. It is a set of tutorials "
-        "that put writing, mathematics and runnable Python on the same page, "
-        "so you can read about an idea and try it in the same place.</p>"
+        "<p>dewlab is an open educational project. We put writing, maths and "
+        "runnable Python on the same page, so that you can read about an idea "
+        "and try it out in the same place.</p>"
         "<h2>What's here</h2>"
-        "<p>The tutorials are listed in the order the course teaches them. Two "
-        'other pages let you find things a different way. The <a href="tree.html">'
-        "topic tree</a> shows what a tutorial expects you to know already. "
-        '<a href="topics.html">Browse by topic</a> gathers everything on one '
-        "subject — trigonometry, say — in one place, which is what you want "
-        "when you are practising rather than working through in order.</p>"
-        "<p>Most tutorials come with a practice page of further problems on the "
-        "same idea. And if you only want to try something out, with no tutorial "
-        'attached, there is <a href="compose/dewmini.html">dewmini</a>, an open '
-        "Python workspace.</p>"
-        "<p>A tutorial page saves your edits, and any cells you add yourself, in "
-        "this browser as you go. You can also take a copy with you: a single "
-        "HTML file, a printed or PDF copy, or your cells saved as a Jupyter "
-        "notebook.</p>"
-        "<p>If you would like to improve the material, you are very welcome to. "
-        "You can open an issue with an idea, a request or a comment, or send a "
-        "pull request with a change of your own.</p>"
+        "<p>The tutorials are listed in the order the course teaches them. That "
+        "is the main way in, and a series is meant to be read from the top.</p>"
+        "<p>Two other pages help when the course order is not the one you "
+        'need. The <a href="tree.html">topic tree</a> shows what a tutorial '
+        'usually expects you to know already. <a href="topics.html">Browse by '
+        "topic</a> gathers everything on one subject — trigonometry, say — in "
+        "one place. That one is useful when you are practising a single topic "
+        "rather than working through in order.</p>"
+        "<p>Most tutorials come with a practice page. It holds more problems on "
+        "the same idea, and the answer usually sits right below each one. We "
+        "are not trying to hide the right answer. What we are learning is the "
+        "steps that get us there.</p>"
+        '<p><a href="compose/dewmini.html">dewmini</a> is an open Python '
+        "workspace with no tutorial attached. Open it when you just want to try "
+        "something out.</p>"
+        "<h2>Your work</h2>"
+        "<p>A tutorial saves your edits as you go, along with any cells you add "
+        "yourself. Everything stays in this browser, on this device.</p>"
+        "<p>You can also take a copy with you. There are three ways to do it: a "
+        "single HTML file, a printed or PDF copy, or your cells saved as a "
+        "Jupyter notebook.</p>"
+        "<h2>Helping out</h2>"
+        "<p>We would be glad of help with the material. You can open an issue "
+        "with an idea, a request or a comment. You can also send a pull request "
+        "with a change of your own.</p>"
+        "<p>If you have found a mistake, please open a GitHub issue. If you "
+        "would rather fix it yourself, send a pull request and we will review "
+        "it and merge it.</p>"
         '<p><strong>Project repository:</strong> <a href="https://github.com/deweydex/dewlab">'
         "github.com/deweydex/dewlab</a></p>"
-        "<p><strong>Found an error?</strong> Please report it in a GitHub issue, "
-        "or fix it directly and open a pull request so it can be reviewed and "
-        "merged.</p>"
         '<p><strong>Contact:</strong> <a href="mailto:deweydex@jsaaron.com">'
         "deweydex@jsaaron.com</a></p>"
     )
