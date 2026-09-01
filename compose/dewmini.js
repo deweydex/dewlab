@@ -1273,7 +1273,7 @@ function renderSiteView() {
 
   const note = document.createElement("p");
   note.className = "dm-fileview-note";
-  note.textContent = `A small website: ${notebook.path}`
+  note.textContent = `This site is ${notebook.path}`
     + (notebook.siteCssPath ? `, ${notebook.siteCssPath}` : "")
     + (notebook.siteJsPath ? ` and ${notebook.siteJsPath}` : "")
     + ". The preview on the right updates as you type.";
