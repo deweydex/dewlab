@@ -59,11 +59,11 @@ which ones have been answered; in a section that says "answer any ten of
 twelve", the panel counts the attempts, for example "9 answered of
 choose 10". Clicking a question in the panel jumps to it.
 
-The side panel also holds whatever reference material the exam file
-provides — a formula sheet, a guide to typing symbols, a list of the
-data files in a Python exam — and nothing else. The reference material
-comes from the exam file, so students in the room and students
-practising at home see exactly the same support.
+The side panel also holds whatever support the exam file provides — a
+formula sheet, a guide to typing symbols, a list of the data files in
+a Python exam, and, where the file asks for one, a calculator — and
+nothing else. The support comes from the exam file, so students in the
+room and students practising at home see exactly the same panel.
 
 Each question type from the catalogue
 ([QUESTION_TYPES_AND_MARKING.md](QUESTION_TYPES_AND_MARKING.md))
