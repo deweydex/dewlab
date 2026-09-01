@@ -319,25 +319,72 @@ p code, li code {
 
 .dl-cell-id { letter-spacing: 0.03em; }
 
-/* Run time, next to the cell's id — small and muted on purpose: a
-   nice-to-know, not something that should compete with the id itself.
-   Empty (nothing run yet, or the Settings "Run time" toggle is off)
-   collapses to nothing via :empty, same trick .dl-progress-summary uses.
-   Ported from dewmini's .dm-cell-stats (DECISIONS_LOG.md 7.105). */
-.dl-cell-stats { margin-left: 0.5rem; }
-.dl-cell-stats:empty { display: none; }
-.dl-cell-stats::before { content: "\2014\0020"; } /* — */
+/* The identity pill — "Cell N" plus its type, coloured
+   (planning/CELL_IDENTITY.md §2, ported from dewmini's own .dm-cell-pill
+   in 7.111). No drag handle here: unlike a dewmini cell, an authored
+   cell's order is fixed at build time, so there's nothing to drag. */
+.dl-cell-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border: 1px solid var(--dl-cell-border);
+  border-radius: 999px;
+  padding: 0.15rem 0.6rem;
+}
+.dl-cell-pill-num { white-space: nowrap; }
+.dl-cell-pill-type {
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: bold;
+}
+.dl-cell-pill-type[data-type="python"] { color: var(--dl-type-python); }
 
-/* "Edited since last run" — see updateCellStaleness()/isStale() in
-   tutorial-runtime.js, ported from dewmini's .dm-cell-stale-badge. Quiet
-   on purpose: this is a fact worth noticing, not an error, so it stays in
-   the bar's own muted colour with only italics to set it apart, rather
-   than reaching for the error red a few lines below. */
-.dl-cell-stale-badge {
-  margin-left: 0.5rem;
+/* The run-line: order, duration, and staleness folded into one
+   (planning/CELL_IDENTITY.md §3, ported from dewmini's own
+   .dm-cell-runline in 7.111 — replaces the separate stats span and
+   "edited since" badge 7.105/7.109 first shipped here). Empty before a
+   cell has ever built its first line (buildCells() paints it
+   immediately, so this is only ever a flash before that) collapses to
+   nothing via :empty, same trick .dl-progress-summary uses. */
+.dl-cell-runline { margin-left: 0.5rem; }
+.dl-cell-runline:empty { display: none; }
+.dl-cell-runline.dl-cell-runline-notrun {
+  color: var(--dl-muted);
   font-style: italic;
 }
-.dl-cell-stale-badge[hidden] { display: none; }
+.dl-run-order { color: var(--dl-fg); }
+.dl-run-duration { color: var(--dl-muted); }
+/* "— edited since" — a fact worth noticing, not an error, so it borrows
+   the accent rather than reaching for the error red a few lines below. */
+.dl-run-flag { color: var(--dl-orange); }
+.dl-cell-runline.dl-cell-runline-queued {
+  color: var(--dl-muted);
+  font-style: italic;
+}
+/* Ticking live while a cell actually runs (startRunLineTicker() in
+   tutorial-runtime.js) — a plain setTimeout loop, not an aria-live
+   region: a number changing ten times a second would be noise, not
+   news, to a screen reader. The pulsing dot is the only part that's
+   pure animation, so it's the only part prefers-reduced-motion turns
+   off. */
+.dl-cell-runline.dl-cell-runline-active { color: var(--dl-orange); }
+.dl-cell-runline.dl-cell-runline-active::before {
+  content: "";
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--dl-orange);
+  margin-right: 0.4em;
+  animation: dl-runline-pulse 1.2s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .dl-cell-runline.dl-cell-runline-active::before { animation: none; }
+}
+@keyframes dl-runline-pulse {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 1; }
+}
 
 .dl-cell-spacer { flex: 1; }
 

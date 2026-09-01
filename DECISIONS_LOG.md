@@ -4806,3 +4806,41 @@ than several scattered ones. `lastRunMs` is no longer persisted to
 `localStorage` (only `collapsed` is, alongside the existing fields) since
 it's meaningless without `ranOrder`, which was never persisted either;
 nothing reads the old field back, so no migration was needed.*
+
+**7.111 — The pill and the run line, ported onto tutorial and practice
+pages too.** 7.110 built the numbered pill and the merged run-line in
+dewmini and explicitly left tutorial/practice pages on 7.109's narrower
+slice. This carries both over: `build.py`'s `render_cell()` now renders
+a `.dl-cell-pill` (`Cell N`, a coloured "Python" type badge) and a single
+`.dl-cell-runline` span in place of the old bare `.dl-cell-id` text and
+the separate `.dl-cell-stats`/`.dl-cell-stale-badge` pair; the run-line
+machinery in `assets/tutorial-runtime.js` — `runSequenceCounter`,
+`renderCellRunLine()`, `resetRunSequence()`, the live ticker, "Running
+next" for a queued batch cell — is a close copy of dewmini's own, adapted
+the same way 7.109's staleness code already was: these cells ask their
+CodeMirror editor for its code directly rather than comparing against a
+mirrored `.content` field.
+
+**The pill's number is static, not live.** dewmini recomputes a cell's
+position on every drag, since its cells can be reordered. A tutorial
+page's authored cells can't be — `build.py` generates static HTML once,
+at build time — so `render_cell()` just takes the cell's fixed 1-based
+position as a `number` argument. No drag handle exists here for the same
+reason: there is nothing to pick up.
+
+**No new colour token, and no drag/collapse/Duplicate/footer-move.** The
+pill's type badge always reads "Python", coloured with the
+`--dl-type-python` token 7.110 already defined — every authored cell on
+a tutorial page is Python, so there was nothing new to colour. Custom
+cells (the reader's own, added on the page) were left out of this port
+entirely; they keep their old plain-text `.dl-cell-id` label and no run
+line, since they're a separate system from authored cells
+(`docs/tutorial-runtime-explained.md`) and the user's own request was
+scoped to "the pill and run-line design," not the fuller anatomy 7.110
+also built — collapse, the header→footer layout move, and Duplicate stay
+dewmini-only for now.
+
+*Cost to change: small. Both files' run-line functions name what they
+were ported from, the same convention 7.109 established; the only real
+new surface is `render_cell()`'s `number` parameter, a single call-site
+change in `place_blocks()`.*
