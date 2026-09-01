@@ -1,8 +1,8 @@
 # A database module, and the bigger things Jupyter does badly
 
-A companion to `planning/JUPYTER_FEATURES_NEXT.md`. That document covers five
-small-to-medium features borrowed from Jupyter. This one covers the larger,
-more speculative ground: where the notebook *form* fails, what a database
+A companion to `planning/EXECUTION_COUNTERS.md`. That document covers the one
+near-term feature still to build. This one covers the larger, more speculative
+ground: where the notebook *form* fails, what a database
 module specifically needs, and what dewlab could do that no notebook does.
 
 Written to be read cold in a different session. Nothing here is
@@ -44,7 +44,7 @@ not help, because the `.db` on disk still carries whatever the deleted cell
 did to it three sessions ago.
 
 This is why the execution-counter and stale-marker features in
-`JUPYTER_FEATURES_NEXT.md` change character here. For a Python notebook they
+`EXECUTION_COUNTERS.md` change character here. For a Python notebook they
 are good hygiene. For a database notebook they are close to a precondition:
 without them, the two kinds of hidden state are indistinguishable from each
 other and from an actual bug in the student's SQL.
@@ -330,7 +330,7 @@ output.
 content is SQL, syntax-highlighted, run against a chosen connection,
 rendering a result table.
 
-**Why it is not a magic.** `JUPYTER_FEATURES_NEXT.md` §7 argues against
+**Why it is not a magic.** `EXECUTION_COUNTERS.md` argues against
 `%%sql` on the grounds that it teaches invisible non-Python syntax that
 breaks the moment a student writes a real `.py` file. A cell *type* escapes
 that objection: it is visibly a different kind of cell, it does not pretend
@@ -416,7 +416,7 @@ For two of the three current modules this outranks everything in §5.
 
 ### 6.2 Provenance, bounded carefully
 
-The execution counters in `JUPYTER_FEATURES_NEXT.md` §1 record *when* each
+The execution counters in `EXECUTION_COUNTERS.md` record *when* each
 cell last ran. The natural extension is a record of the order things
 happened — which would let a student see, and a teacher discuss, the actual
 history of a session rather than its final state.
@@ -504,4 +504,4 @@ would rather build that than any three things in §5.
 ---
 
 *Written 2026-08-31 against `main` at `e3229b6`. Companion to
-`planning/JUPYTER_FEATURES_NEXT.md`. Nothing in it is implemented.*
+`planning/EXECUTION_COUNTERS.md`. Nothing in it is implemented.*
