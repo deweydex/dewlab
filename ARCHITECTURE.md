@@ -385,6 +385,18 @@ available either, so `pyodide-engine.js` falls back to running Pyodide
 on the main thread when it is reachable at all: same interpreter, same
 `tutorial_tools.py`, just without a genuine Stop button.
 
+A JavaScript cell (`DECISIONS_LOG.md` 7.119) runs through neither of
+those — `compose/js-cell-engine.js` is a second, much smaller engine of
+its own: one persistent sandboxed `<iframe sandbox="allow-scripts">` per
+notebook, with no Worker at all, since a sandboxed iframe with no
+`allow-same-origin` is already a separate, isolated realm and every
+browser already has a JS engine sitting inside it. A SQL cell, by
+contrast, needs no engine of its own: `compose/dewmini.js` generates a
+call to `tutorial_tools.py`'s own `_run_sql_cell()` against a shared
+`sqlite3` connection (`db`) and runs it through `pyodide-engine.js` like
+any other Python code — SQL and Python share one engine; only
+JavaScript gets a second.
+
 **dewmini is a workbench, not one column** (`DECISIONS_LOG.md` 7.99;
 design and reasoning in `planning/DEWMINI_WORKBENCH.md`). Notebooks open
 in tabs — `notebooks[]` in `dewmini.js`, with `cells` re-pointed at

@@ -63,8 +63,13 @@ of the file: two engines, one dispatcher, one shared public interface.
 2. **`configure()` and status/output plumbing** — how the calling page
    hands this module a way to find a cell's output element and show
    status text, plus `dataBase`, and `applyOutputEvent()`, which turns
-   one "something happened in Python" event into real DOM, shared by
-   both engines.
+   one "something happened" event into real DOM, shared by the worker
+   and main-thread paths below — and, exported for exactly this reason,
+   by `compose/js-cell-engine.js` too: a JavaScript cell's own output
+   arrives as the identical `stream`/`append`/`clear` event shape, so
+   there is no reason for a second copy of this logic to exist just
+   because the code producing the events isn't Python (see that file's
+   own explanation for why the reuse is safe).
 3. **Worker path** — `workerRequest()` (the request/reply pattern over
    `postMessage`), `ensureWorker()` (creates the worker, and is the *one*
    place this file listens for messages from it), `bootWorker()`,

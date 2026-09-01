@@ -887,6 +887,145 @@ def test_a_bad_sql_statement_shows_an_error_not_a_silent_failure(dewmini):
     assert "dm-error" in (cell.get_attribute("class") or "")
 
 
+# ----------------------------------------------------------- javascript cells
+
+
+def add_js_cell(page, code: str) -> None:
+    """Adds a JavaScript cell and types `code` into it — the JS counterpart
+    of add_python_cell()/add_sql_cell() above. Python-shaped chrome, like
+    SQL: no blur, nothing renders until Run."""
+    page.locator(".dm-insert-btn", has_text="JS").last.click()
+    editor = page.locator(".dm-cell-javascript .cm-content").last
+    editor.click()
+    page.keyboard.insert_text(code)
+
+
+def test_a_js_cells_chrome_is_never_hidden(dewmini):
+    """Python-shaped chrome, same reasoning as SQL's own version of this
+    test — a JavaScript cell runs against a shared session too, so
+    quiet-until-touched does not apply to it."""
+    add_js_cell(dewmini, "1 + 1")
+    dewmini.mouse.move(5, 5)
+    cell = dewmini.locator(".dm-cell-javascript").last
+    assert head_opacity(dewmini, cell) == "1"
+    assert cell.locator(".dm-icon-preview").count() == 0
+    assert cell.locator(".dm-cell-runline").count() == 1
+
+
+def test_console_log_is_captured_as_the_cells_output(dewmini):
+    add_js_cell(dewmini, "console.log('hello from JS', 6 * 7);")
+    dewmini.locator(".dm-cell-javascript .dm-icon-run").last.click()
+    dewmini.wait_for_selector(".dm-cell-javascript .dm-cell-output:not(.dm-empty)", timeout=30_000)
+    text = dewmini.locator(".dm-cell-javascript .dm-cell-output").last.inner_text()
+    assert "hello from JS 42" in text
+
+
+def test_rerunning_a_let_declaring_cell_does_not_throw(dewmini):
+    """The whole reason a JS cell's code runs through indirect eval rather
+    than an inserted <script> tag (compose/js-cell-engine.js's own file
+    banner, DECISIONS_LOG.md 7.119): a top-level `let` declared by a
+    <script> tag joins the realm's one permanent global lexical scope, so
+    re-running an edited cell — an entirely ordinary thing to do — would
+    throw "Identifier has already been declared" on its second run.
+    Indirect eval's own top-level `let` lives in a scope private to that
+    one call, so this must never happen."""
+    add_js_cell(dewmini, "let total = 0;\nfor (let i = 1; i <= 5; i++) { total += i; }\nconsole.log('total', total);")
+    cell = dewmini.locator(".dm-cell-javascript").last
+    cell.locator(".dm-icon-run").click()
+    dewmini.wait_for_selector(".dm-cell-javascript .dm-cell-output:not(.dm-empty)", timeout=30_000)
+    assert "total 15" in cell.locator(".dm-cell-output").inner_text()
+    assert "dm-error" not in (cell.get_attribute("class") or "")
+
+    cell.locator(".dm-icon-run").click()
+    dewmini.wait_for_timeout(500)
+    assert "total 15" in cell.locator(".dm-cell-output").inner_text()
+    assert "dm-error" not in (cell.get_attribute("class") or ""), \
+        "re-running an unchanged `let`-declaring cell must not throw"
+
+
+def test_var_declared_in_one_cell_is_visible_to_a_later_one(dewmini):
+    """The one form of cross-cell persistence indirect eval still gives —
+    var/function declarations become real global-object properties, the
+    same as a <script> tag's own would, just without the redeclaration
+    risk `let`/`const` carry (see the test above)."""
+    add_js_cell(dewmini, "var shared = 10;")
+    dewmini.locator(".dm-cell-javascript .dm-icon-run").last.click()
+    dewmini.wait_for_timeout(500)
+
+    add_js_cell(dewmini, "console.log('shared is', shared + 1);")
+    dewmini.locator(".dm-cell-javascript .dm-icon-run").last.click()
+    dewmini.wait_for_selector(".dm-cell-javascript .dm-cell-output:not(.dm-empty)", timeout=30_000)
+    assert "shared is 11" in dewmini.locator(".dm-cell-javascript .dm-cell-output").last.inner_text()
+
+
+def test_a_thrown_error_shows_in_the_cells_output(dewmini):
+    add_js_cell(dewmini, "thisNameDoesNotExist();")
+    cell = dewmini.locator(".dm-cell-javascript").last
+    cell.locator(".dm-icon-run").click()
+    dewmini.wait_for_selector(".dm-cell-javascript .dm-cell-output:not(.dm-empty)", timeout=30_000)
+    assert "dm-error" in (cell.get_attribute("class") or "")
+    assert "thisNameDoesNotExist" in cell.locator(".dm-cell-output").inner_text()
+
+
+def test_a_js_cells_output_survives_a_reload(dewmini):
+    add_js_cell(dewmini, "console.log('reload me');")
+    dewmini.locator(".dm-cell-javascript .dm-icon-run").last.click()
+    dewmini.wait_for_selector(".dm-cell-javascript .dm-cell-output:not(.dm-empty)", timeout=30_000)
+
+    dewmini.reload()
+    dewmini.wait_for_selector(".dm-toolbar")
+    assert dewmini.locator(".dm-cell-javascript").count() == 1
+    assert "reload me" in dewmini.locator(".dm-cell-javascript .dm-cell-output").last.inner_text()
+
+
+def test_a_js_cell_can_be_collapsed_and_duplicated(dewmini):
+    add_js_cell(dewmini, "1;")
+    cell = dewmini.locator(".dm-cell-javascript").last
+    cell.locator(".dm-collapse-toggle").click()
+    assert cell.locator(".dm-cell-content").is_hidden()
+    assert cell.locator(".dm-cell-collapsed-summary").is_visible()
+
+    cell.locator(".dm-icon-duplicate").click()
+    assert dewmini.locator(".dm-cell-javascript").count() == 2
+
+
+def test_restart_python_tears_down_the_js_session_too(dewmini):
+    """planning/CELL_IDENTITY.md §8 — the JS session is torn down and
+    recreated on Restart Python exactly like the Pyodide interpreter is.
+    A var surviving a restart would mean it wasn't really recreated."""
+    add_js_cell(dewmini, "var survivesRestart = 42;")
+    dewmini.locator(".dm-cell-javascript .dm-icon-run").last.click()
+    dewmini.wait_for_timeout(500)
+
+    dewmini.click("#dl-settings-toggle")
+    dewmini.wait_for_selector("#settings-restart-python")
+    dewmini.once("dialog", lambda d: d.accept())
+    dewmini.click("#settings-restart-python")
+    dewmini.wait_for_timeout(1000)
+    dewmini.click("#dl-settings-toggle")
+
+    add_js_cell(dewmini, "console.log('survivesRestart is', typeof survivesRestart);")
+    cell = dewmini.locator(".dm-cell-javascript").last
+    cell.locator(".dm-icon-run").click()
+    dewmini.wait_for_selector(".dm-cell-javascript .dm-cell-output:not(.dm-empty)", timeout=30_000)
+    assert "survivesRestart is undefined" in cell.locator(".dm-cell-output").last.inner_text()
+
+
+def test_run_all_runs_python_and_javascript_cells_together(dewmini):
+    """RUNS_AGAINST_SESSION covers both — "Run all" should not silently
+    skip one type just because the two run through different engines."""
+    add_js_cell(dewmini, "console.log('js ran');")
+    add_python_cell(dewmini, "print('py ran')")
+    dewmini.locator("#run-all").click()
+    dewmini.wait_for_function(
+        "document.querySelectorAll('.dm-cell-output')[1]?.innerText.trim().length > 0",
+        timeout=90_000,
+    )
+    texts = dewmini.locator(".dm-cell-output").all_inner_texts()
+    assert any("js ran" in t for t in texts)
+    assert any("py ran" in t for t in texts)
+
+
 # ---------------------------------------------------------------- variables
 
 

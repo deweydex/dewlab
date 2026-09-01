@@ -221,20 +221,23 @@ carrying the state rather than its shape.
   `runCellBatch()`/`runAbove()`/`runBelow()` (7.106), and
   `restartPython()` (7.108) turned out to be exactly the groundwork this
   needed, unchanged.
-- **SQL, HTML, CSS, JavaScript: designed in §8, being built from there
-  outward, in dewmini only, one type at a time. HTML (7.116), CSS
-  (7.117), and SQL (7.118) are built; JavaScript is not, yet.** This
+- **SQL, HTML, CSS, JavaScript: designed in §8, built from there outward,
+  in dewmini only, one type at a time. All four are built now — HTML
+  (7.116), CSS (7.117), SQL (7.118), JavaScript (7.119).** This
   document's own multi-type table was a design for when they exist, not
   a claim that they do — §8 is where "when they exist" turns into an
   actual execution model per type, since the table alone only ever
   answered *what chrome a cell gets*, never *what running one does*.
   `--dl-type-python`/`--dl-type-text` were the only colour tokens
-  defined until §8 added four more, three of them (`--dl-type-html`,
-  `--dl-type-css`, `--dl-type-sql`) now in real use. SQL's own §8 entry
-  changed underneath it before it was built — the *sql.js* engine it
-  originally specified was set aside for Python's own `sqlite3` once
-  the work actually started (7.118) — which is why that subsection
-  reads as revised rather than as first written.
+  defined until §8 added four more, all four now in real use. Two of
+  §8's own entries changed underneath it before their type was actually
+  built, both caught by starting the work rather than only reasoning
+  about the design on paper: SQL's *sql.js* engine was set aside for
+  Python's own `sqlite3` (7.118); JavaScript's own `<script>`-tag
+  execution model was set aside for indirect `eval`, once re-running an
+  edited `let`-declaring cell turned out to throw under the original
+  plan (7.119). Both subsections read as revised rather than as first
+  written for that reason.
 - **Tutorial and practice pages: the pill and the run line are now ported
   too (7.113).** 7.109 ported the run-line-adjacent pieces (staleness,
   run above/below, restart & run all) onto `build.py`'s
@@ -432,16 +435,58 @@ kind to Python than to HTML/CSS's read-only rendering, so
 persistent sandboxed iframe for the whole notebook (`sandbox=
 "allow-scripts"`, no `allow-same-origin`, the same isolation HTML's
 preview uses), created lazily on first run and torn down and recreated
-on Restart Python exactly like the Pyodide interpreter is. Each cell's
-code is posted into that iframe and evaluated there, so a `var`/
-function/`const` declared in one cell is still there for a later one to
-read, the same persistent-namespace feel Python's own session already
-has. `console.log`, its arguments serialised the way `tutorial_tools.py`
-already serialises a Python `print()`'s, and a thrown error, both
-`postMessage` back to the parent as this cell's output — the same
-"emit as you go" shape `run_cell()`'s own `emit` callback already uses
-for Python, just crossing a `postMessage` boundary instead of a Pyodide
-one.
+on Restart Python exactly like the Pyodide interpreter is. `console.log`,
+its arguments serialised the way `tutorial_tools.py` already serialises a
+Python `print()`'s, and a thrown error, both `postMessage` back to the
+parent as this cell's output — the same "emit as you go" shape
+`run_cell()`'s own `emit` callback already uses for Python, just crossing
+a `postMessage` boundary instead of a Pyodide one.
+
+**Built on indirect `eval`, not a `<script>` tag, and only `var`/
+`function` persist across cells — not `let`/`const` (7.119).** This
+section originally said code is "posted into that iframe and evaluated
+there, so a `var`/function/`const` declared in one cell is still there
+for a later one to read" — that description assumed inserting each
+cell's code as a fresh `<script>` element, the obvious way to run text as
+JavaScript. It turned out to have a real bug: a `<script>` tag's own
+top-level `let`/`const` declarations join the realm's *one, permanent*
+global lexical environment, so re-running an edited cell a second time —
+an entirely ordinary thing to do in a notebook — would throw
+`SyntaxError: Identifier 'x' has already been declared` the moment it
+tried to redeclare its own `let`. Caught before it shipped by actually
+re-running a `let`-declaring cell in a real browser during verification,
+not by reasoning about it in the abstract.
+
+The fix: each cell's code runs through indirect eval —
+`(0, eval)(code)`, called from the iframe's own top level — instead. Per
+spec, indirect eval's top-level `let`/`const` bindings live in a fresh
+scope private to *that one call*, not the realm's shared global lexical
+environment, so a cell can always be re-run safely. The cost is that
+those bindings are gone once the call returns — a later cell can no
+longer read a `let`/`const` from an earlier one, only `var` and
+`function` declarations, which indirect eval still attaches to the real
+global object exactly like a `<script>` tag would. A real fix (parsing
+each cell to hoist its own top-level `let`/`const` onto the shared
+session by hand) would need an actual JS parser vendored in for it —
+out of scope here, the same way SQL's own multi-statement split is a
+plain string split rather than a real SQL parser. Documented plainly in
+the cell's own help text (`compose/dewmini.html`) rather than left for a
+reader to discover the hard way.
+
+One further consequence of indirect eval over a `<script>` tag: a
+synchronous error is now caught directly around the `eval()` call itself
+(an ordinary `try`/`catch`, no `window.onerror` needed) — simpler than
+this section's own first draft assumed, and it is what actually answers
+whether the run's own `ok` was true or false. An *unhandled promise
+rejection* (async work a cell scheduled but didn't itself catch) still
+needs `window.addEventListener("unhandledrejection", …)`, since it can
+only fire after the triggering `eval()` call has already returned; it is
+reported into the cell's output the same way, but arrives too late to
+change the `ok` that run already reported. Top-level `await` is not
+supported for the same reason: wrapping a cell's code in an `async`
+function to allow it would swallow its own top-level `var`/`function`
+declarations into that function's scope instead of the global one,
+losing the one form of cross-cell persistence this design does have.
 
 Chrome: the Python-shaped set, same as SQL — pill, Duplicate/Delete,
 collapse, run line, no Edit/View, no quiet-until-touched.
@@ -467,10 +512,17 @@ with the reader's rule in a `<style>` tag ahead of it.
 SQL next. **Built (7.118)**, and — once the sql.js plan above was set
 aside for Python's own `sqlite3` — needing no genuinely new execution
 engine after all, only a generated-code path through the one Pyodide
-already booted for everything else. JavaScript still does: a persistent
-sandboxed session is a real second runtime, not a different string
-handed to the one dewmini already has, and comes after, in whichever
-order the work actually lands.
+already booted for everything else.
+
+JavaScript last. **Built (7.119)** — the one type that did need a
+genuinely new engine, a persistent sandboxed session with no Pyodide
+underneath it at all. The sandboxed-iframe pattern HTML/CSS already
+proved carried over directly (`sandbox="allow-scripts"`, no
+`allow-same-origin`); what was new was everything about running code
+inside it safely across repeated re-runs — see this section's own
+"Built on indirect `eval`" entry above for the redeclaration bug that
+caught, and the persistence trade-off (`var`/`function` only, not
+`let`/`const`) it settled on.
 
 Not attempted here, on purpose: none of the four get a drag-and-drop
 keyboard equivalent (§6 already flags this as owed to every cell type,

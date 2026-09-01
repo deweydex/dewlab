@@ -5303,3 +5303,130 @@ no new engine, no new sandboxing model, mostly a generated string and a
 JavaScript is what's left, and it does not get this same discount: a
 persistent sandboxed session is a real second runtime, the one thing
 SQL turned out not to need after all.*
+
+**7.119 — JavaScript, the fourth and last of the four new cell types,
+built in dewmini — and a redeclaration bug in its own design doc, caught
+by actually running the code rather than by reasoning about it.** A new
+file, `compose/js-cell-engine.js`, plays the same role for a JS cell that
+`assets/pyodide-engine.js` plays for Python: one persistent session the
+whole notebook shares, created lazily on first run. Unlike Python's, it
+needs no Worker and no interpreter download — a sandboxed `<iframe
+sandbox="allow-scripts">` with no `allow-same-origin` (the same isolation
+HTML's own preview iframe already uses, planning/CELL_IDENTITY.md §8) is
+already a separate, memory-isolated realm, and every browser already has
+a JS engine sitting inside it. What Python's Worker buys — a genuine Stop
+button, via a shared interrupt buffer — has no equivalent here: this
+iframe still runs on the tab's own main thread, so `canStop()` is always
+false, the same limitation Pyodide's own main-thread fallback already
+has.
+
+**The bug, and how it was found.** `planning/CELL_IDENTITY.md` §8's own
+first draft of this design said a cell's code gets "posted into that
+iframe and evaluated there" — read as "inserted as a `<script>` tag,"
+the obvious way to run arbitrary JS text. Implementation started that
+way. It was wrong: a `<script>` tag's own top-level `let`/`const`
+declarations join the realm's *one, permanent* global lexical
+environment, and re-running the exact same declaration a second time —
+which is to say, re-running an edited cell, an entirely ordinary
+notebook action — throws `SyntaxError: Identifier 'x' has already been
+declared`. This was not caught by reading the design or the code; it was
+caught by actually re-running a `let`-declaring cell in a real browser
+during this build's own verification pass and watching it break. No
+amount of re-reading the plan would have surfaced it, because the plan
+itself was the thing that was wrong — the same lesson 7.96/7.97 already
+drew about defects only a browser can catch, applied here to a design
+document's own assumption rather than to an implementation bug.
+
+**The fix: indirect `eval` in place of a `<script>` tag.** `(0,
+eval)(code)`, called from the iframe's own top level. Per spec, indirect
+eval's top-level `let`/`const` bindings live in a scope private to that
+one call, not the realm's shared global environment — so a cell can
+always be re-run safely, at the cost of those bindings no longer being
+visible to a *later* cell. Only `var` and `function` declarations still
+persist across cells, since indirect eval attaches those to the real
+global object exactly like a `<script>` tag would. This is a real,
+user-visible gap from what §8 originally promised ("a `var`/function/
+`const` declared in one cell is still there for a later one to read") —
+worth naming honestly rather than quietly narrowing the design doc's own
+wording to match what shipped. A proper fix (parsing each cell to hoist
+its own top-level `let`/`const` onto the shared session by hand) would
+need an actual JS parser vendored in for it, out of scope here the same
+way SQL's own multi-statement split is a plain string split rather than
+a real SQL parser. Documented in three places a reader could reasonably
+look: `planning/CELL_IDENTITY.md` §8 itself, `compose/js-cell-engine.js`'s
+own file banner, and dewmini's own help panel (`compose/dewmini.html`) —
+plainly, without naming `let`/`const` by their JS jargon, since a reader
+who has never met either term still deserves to know a cell can always
+be safely re-run.
+
+Indirect eval turned out to simplify the error path too, not only fix the
+redeclaration bug: a synchronous error is now caught directly around the
+`eval()` call itself (a plain `try`/`catch`), which is what answers the
+run's own `ok` — no `window.onerror` handler needed, unlike the
+`<script>`-tag design this replaced would have required. An unhandled
+promise rejection (async work a cell scheduled but didn't itself catch)
+still needs `window.addEventListener("unhandledrejection", …)`, since it
+can only fire after the triggering `eval()` call already returned; it
+still reports into the cell's output, just too late to change the `ok`
+that run already recorded. Top-level `await` stays unsupported for the
+same underlying reason: wrapping a cell's code in an `async` function to
+permit it would swallow its own top-level `var`/`function` declarations
+into that function's scope instead of the global one — trading away the
+one persistence guarantee this design does keep.
+
+**Everything else in dewmini.js's own wiring.** `CELL_TYPES.JAVASCRIPT`,
+Python-shaped chrome via `RUNS_AGAINST_SESSION` (now three members, not
+two), an insert-divider button and a code-braces icon, a CodeMirror
+editor (`language: "javascript"`, already vendored — no new build-time
+work). `console.log`'s arguments are serialised inside the iframe's own
+runtime script the way `tutorial_tools.py` already serialises a Python
+`print()`'s (a string passes through as-is; everything else gets a short
+`JSON.stringify` rendering rather than `"[object Object]"`), and both
+that and a reported error `postMessage` back to the parent as `stream`/
+`append` events — the exact same event shape Python/SQL output already
+produces. Rather than duplicating the ~25 lines that turn those events
+into real DOM (`applyOutputEvent()`, previously private to
+`assets/pyodide-engine.js`), that function was exported and reused
+directly: both engines run in the same JS realm as `compose/dewmini.js`
+itself (no Worker boundary between them), and both are configured with
+the same cellId → output-element lookup anyway, so there was no reason
+for a second copy of "how does a cell's output area get updated" to
+exist.
+
+Because `executeCell()` now dispatches to two genuinely different
+engines rather than one, several functions that used to read
+`engine.canStop()`/call `engine.requestInterrupt()` unconditionally now
+go through `canStopFor(cell)`/`requestInterruptFor(cell)` instead —
+small, mechanical, and covered by the same reasoning `RUNS_AGAINST_SESSION`
+already established: one Set membership check, not scattered
+special-casing, wherever "which engine does this cell actually run
+against" matters. `runCellBatch()` (behind "Run all"/"Run above"/"Run
+below") no longer boots Pyodide unconditionally before the whole batch
+either — each cell's own session is ensured right before its own turn,
+so a batch of JavaScript cells alone never pays to download Python at
+all; a `reset` batch ("Run all"/"Run above") still tears the JS session
+down too (`jsEngine.restart()`, no cheaper reset exists for it, alongside
+`engine.resetPageState()`), for the same "what's on screen matches what
+the code actually did" reason Python's own reset already exists.
+
+**Verified in a real browser**, the same discipline that caught the
+redeclaration bug in the first place: creating a cell, running it,
+re-running an unmodified `let`-declaring cell without error,
+`var`-declared state surviving into a later cell, an uncaught error
+rendering with `dm-error`, Restart Python genuinely tearing the session
+down (confirmed by checking a previously-`var`-declared name reads back
+`undefined` afterward, not by trusting that `restart()` was called), and
+a mixed Python+JavaScript "Run all" running both. Nine new e2e tests in
+`tests/e2e/test_dewmini_workbench.py` cover the same ground, including
+the exact re-run-a-`let`-cell scenario that caught the bug, so it can't
+silently come back.
+
+*Cost to change: real, unlike SQL's — a persistent sandboxed session
+plus its own message protocol is genuinely new surface, not a generated
+string handed to an engine dewmini already had. The redeclaration bug is
+the clearest evidence yet, across all four of these new cell types, for
+why "verify in a real browser" is not optional the moment a genuinely
+new execution model is involved: every earlier catch this document
+records of the same shape (7.96, 7.97, this one) was invisible from the
+code and the design doc alike, and visible immediately the moment the
+feature actually ran.*

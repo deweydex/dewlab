@@ -189,8 +189,20 @@ const openStreams = new Map(); // cellId -> {el, cssClass}
  *     a new thing, not more of the same printed text.
  *   - "clear": wipe the cell's output area completely (used when a cell
  *     starts running again).
+ *
+ * Exported (unlike the rest of this file's private helpers) because
+ * compose/js-cell-engine.js reuses it for exactly the same job — a JS
+ * cell's output is "stream"/"append"/"clear" events into a cellId's own
+ * `.dm-cell-output`, the identical shape Python/SQL already produce, so
+ * there is no reason for a second copy of this DOM-writing logic to
+ * exist just because the code producing the events isn't Python. Safe to
+ * share: `getOutputEl` is wired once, by compose/dewmini.js's own
+ * `engine.configure({getOutputEl, ...})` call, to the same cellId → DOM
+ * lookup either engine would use anyway, and `openStreams` is keyed by
+ * cellId, which is never running through both engines at once (a cell
+ * has exactly one type).
  */
-function applyOutputEvent(cellId, kind, cssClass, text, markup) {
+export function applyOutputEvent(cellId, kind, cssClass, text, markup) {
   const el = getOutputEl ? getOutputEl(cellId) : null;
   if (!el) return;
   if (kind === "stream") {

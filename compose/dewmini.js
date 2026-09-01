@@ -12,6 +12,7 @@
 import { createCodeEditor, setEditorTheme } from "../assets/vendor/codemirror.bundle.js";
 import * as dfs from "./dewmini-fs.js";
 import * as engine from "../assets/pyodide-engine.js";
+import * as jsEngine from "./js-cell-engine.js";
 
 const PYODIDE_VERSION = "0.28.3";
 // The pre-tabs key: one notebook, stored as a bare array of cells. Still read
@@ -37,7 +38,7 @@ const DM_PACKAGES = ["numpy", "pandas", "matplotlib", "sqlite3", "Pillow"];
 // file the reader actually saved and sent to someone.
 const DM_NETWORK_PATCH = "try:\n    import pyodide_http\n    pyodide_http.patch_all()\nexcept Exception:\n    pass\n";
 
-const CELL_TYPES = { PYTHON: "python", TEXT: "text", HTML: "html", CSS: "css", SQL: "sql" };
+const CELL_TYPES = { PYTHON: "python", TEXT: "text", HTML: "html", CSS: "css", SQL: "sql", JAVASCRIPT: "javascript" };
 
 /* The fixed little "page" a CSS cell's own preview renders — a heading, a
  * paragraph with a link, a button, a list: enough ordinary elements that a
@@ -54,25 +55,26 @@ const IMPORTS_SNIPPET = "import numpy as np\nimport pandas as pd\nimport matplot
 
 /* The cell types meant to be read, not run — rendered by default, with
  * an explicit Edit/View toggle and chrome that stays quiet until
- * touched (planning/CELL_IDENTITY.md §4/§8). Python and SQL sit outside
- * this set: both run against the shared session, so both keep
- * Python-shaped chrome (a run line, not a rendered/editor toggle) —
- * see RUNS_AGAINST_SESSION below.
- * JavaScript will join READ_NOT_RUN_TYPES once it exists: unlike SQL,
- * a JS cell's own point is to be read as a small live page, the same
- * as HTML/CSS. */
+ * touched (planning/CELL_IDENTITY.md §4/§8). Python, SQL, and
+ * JavaScript sit outside this set: all three run against a shared
+ * session, so all three keep Python-shaped chrome (a run line, not a
+ * rendered/editor toggle) — see RUNS_AGAINST_SESSION below. */
 const READ_NOT_RUN_TYPES = new Set([CELL_TYPES.TEXT, CELL_TYPES.HTML, CELL_TYPES.CSS]);
 
-/* The cell types that run against the shared Pyodide session and so get
+/* The cell types that run against a shared session and so get
  * Python-shaped chrome: a run line, a Run/Stop button, "Clear output",
- * and inclusion in "Run all"/"Run above"/"Run below". A SQL cell's own
- * code is not Python — executeCell() below wraps it into a call to
- * tutorial_tools._run_sql_cell() before handing it to the engine — but
- * everything about *how* it runs (one shared interpreter, one cell at a
- * time, staleness relative to its own last run) is identical to a
- * Python cell's, so it shares this set rather than duplicating the
- * logic that reads it. */
-const RUNS_AGAINST_SESSION = new Set([CELL_TYPES.PYTHON, CELL_TYPES.SQL]);
+ * and inclusion in "Run all"/"Run above"/"Run below". Two of these
+ * three don't hand a cell's own raw text to the engine unchanged: a SQL
+ * cell's code is not Python — executeCell() below wraps it into a call
+ * to tutorial_tools._run_sql_cell() before handing it to
+ * assets/pyodide-engine.js — and a JavaScript cell runs through a
+ * different engine and session entirely (./js-cell-engine.js's own
+ * sandboxed iframe, not Pyodide at all). What all three share, and why
+ * they share this one Set rather than three separate checks, is
+ * everything about *how* a run behaves regardless of what actually
+ * executes it: one session at a time, staleness relative to a cell's
+ * own last run, the same footer chrome. */
+const RUNS_AGAINST_SESSION = new Set([CELL_TYPES.PYTHON, CELL_TYPES.SQL, CELL_TYPES.JAVASCRIPT]);
 
 /* Seeds the namespace for the *standalone export* only — a downloaded copy
  * carries its own tiny runtime rather than pyodide-engine.js, which is what
@@ -1183,7 +1185,14 @@ function createInsertDivider(index) {
   addSql.innerHTML = '<span class="dm-tool-icon dm-tool-icon-sql" aria-hidden="true"></span>SQL';
   addSql.addEventListener("click", () => insertCellAt(index, CELL_TYPES.SQL));
 
-  actions.append(addPy, addTxt, addHtml, addCss, addSql);
+  const addJs = document.createElement("button");
+  addJs.type = "button";
+  addJs.className = "dm-insert-btn";
+  addJs.title = "Insert a JavaScript cell here";
+  addJs.innerHTML = '<span class="dm-tool-icon dm-tool-icon-js" aria-hidden="true"></span>JS';
+  addJs.addEventListener("click", () => insertCellAt(index, CELL_TYPES.JAVASCRIPT));
+
+  actions.append(addPy, addTxt, addHtml, addCss, addSql, addJs);
   row.append(line, actions);
   return row;
 }
@@ -1438,6 +1447,7 @@ function createCellElement(cell) {
   const PILL_LABELS = {
     [CELL_TYPES.PYTHON]: "Python", [CELL_TYPES.TEXT]: "Text",
     [CELL_TYPES.HTML]: "HTML", [CELL_TYPES.CSS]: "CSS", [CELL_TYPES.SQL]: "SQL",
+    [CELL_TYPES.JAVASCRIPT]: "JavaScript",
   };
   pill.innerHTML =
     '<span class="dm-cell-pill-dots" aria-hidden="true">&#8942;</span>' +
@@ -1829,6 +1839,38 @@ function createCellElement(cell) {
       }
     }, true);
     cell.editor = editor;
+  } else if (cell.type === CELL_TYPES.JAVASCRIPT) {
+    // Same shape as SQL just above — Python-shaped chrome, a bare
+    // editor, nothing to preview until it runs — with the language mode
+    // the only real difference. Unlike SQL, a JavaScript cell's own code
+    // needs no wrapping before it runs: executeCell() hands it to
+    // ./js-cell-engine.js's runCell() exactly as written.
+    const editorEl = document.createElement("div");
+    editorEl.className = "dm-editor";
+    contentRegion.appendChild(editorEl);
+
+    const editor = createCodeEditor(editorEl, cell.content, {
+      dark: isDarkNow(),
+      language: "javascript",
+      onChange: (text) => {
+        cell.content = text;
+        saveState();
+        updateCellChrome(cell.id);
+      },
+    });
+    editorEl.addEventListener("keydown", (e) => {
+      if (e.key !== "Enter") return;
+      if (e.shiftKey) {
+        e.preventDefault();
+        e.stopPropagation();
+        runCell(cell.id).then(() => focusNextCellAfter(cell.id));
+      } else if (e.ctrlKey || e.metaKey) {
+        e.preventDefault();
+        e.stopPropagation();
+        runCell(cell.id);
+      }
+    }, true);
+    cell.editor = editor;
   }
 
   setCollapsed(!!cell.collapsed);
@@ -1962,6 +2004,56 @@ async function ensurePyodide() {
   }
 }
 
+/* The JavaScript counterpart of ensurePyodide() above — starts
+ * ./js-cell-engine.js's own sandboxed session the first time a
+ * JavaScript cell actually runs, and announces it once the same way
+ * ensurePyodide() announces "Python ready." the first time. No
+ * filesystem to mount, no engine mode to report: a JS cell's session has
+ * neither. */
+async function ensureJsSession() {
+  const alreadyReady = jsEngine.sessionReady();
+  await jsEngine.ensureSession();
+  if (!alreadyReady) {
+    updateStatus("JavaScript ready.", "ok");
+    // Settings' own execution-status line only mentions the JS session
+    // once sessionReady() is true (see updateExecutionStatus() below) —
+    // ensurePyodide() already re-paints that line itself on every boot;
+    // this is the JS-session equivalent, needed here too or the line
+    // would sit stale until something Python-related happened to touch it.
+    updateExecutionStatus();
+  }
+}
+
+/* Boots whichever session `cell` actually needs before it runs — Pyodide
+ * for Python and SQL (a SQL cell's generated code still runs through
+ * Pyodide, see buildSqlCellCode() below), the sandboxed iframe session
+ * for JavaScript. The one place runCell()/runCellBatch() have to know
+ * that RUNS_AGAINST_SESSION covers two genuinely different engines, not
+ * one — everywhere else, the Set membership check alone is enough. */
+async function ensureSessionFor(cell) {
+  if (cell.type === CELL_TYPES.JAVASCRIPT) { await ensureJsSession(); return; }
+  await ensurePyodide();
+}
+
+/* Whether Stop could genuinely interrupt `cell` if it were running right
+ * now — engine.canStop() for Python/SQL (worker mode, cross-origin
+ * isolated), always false for JavaScript (js-cell-engine.js's own
+ * canStop() — see that file's banner for why a same-thread sandboxed
+ * iframe has no equivalent to Pyodide's interrupt buffer). */
+function canStopFor(cell) {
+  return cell.type === CELL_TYPES.JAVASCRIPT ? jsEngine.canStop() : engine.canStop();
+}
+
+/* Sends a Stop request to whichever engine `cell` is actually running
+ * against. A no-op for JavaScript (jsEngine.requestInterrupt()), which
+ * exists only so this can be called unconditionally rather than
+ * special-cased — canStopFor() above is what actually decides whether
+ * Stop was ever offered in the first place. */
+function requestInterruptFor(cell) {
+  if (cell.type === CELL_TYPES.JAVASCRIPT) jsEngine.requestInterrupt();
+  else engine.requestInterrupt();
+}
+
 /* Autocomplete, hover docs, and signature help all come straight from the
  * shared engine now (engine.pageNamesCompletion/hoverDoc/signatureHelp,
  * DECISIONS_LOG.md 7.89). New capability for dewmini as a side effect of
@@ -1993,21 +2085,25 @@ function buildSqlCellCode(sql) {
   return `import tutorial_tools as _dm_tt\n_ = _dm_tt._run_sql_cell(db, ${JSON.stringify(sql)})`;
 }
 
-/* Runs one cell's code through the shared engine's runCell() (dispatching
- * to tutorial_tools.py's own run_cell(), the same function every dewlab
- * tutorial cell runs through, wherever Pyodide actually lives) and
- * records what happened: the rendered output HTML (so it can be saved
- * and shown again without re-running), and whether it errored. Returns
- * whether the run succeeded, the same true/false run_cell() itself
- * returns.
+/* Runs one cell's code and records what happened: the rendered output
+ * HTML (so it can be saved and shown again without re-running), and
+ * whether it errored. Returns whether the run succeeded.
  *
- * No "Running…" placeholder injected into the output area here anymore
- * (the previous main-thread-only version did) — engine.runCell() already
- * clears the cell's output the moment it starts, and the run/stop state
- * now shows on the cell's own Run button instead (setRunButtonRunning()
- * below). */
+ * Dispatches to one of two genuinely different engines depending on
+ * cell type — assets/pyodide-engine.js's runCell() (which reaches
+ * tutorial_tools.py's own run_cell(), the same function every dewlab
+ * tutorial cell runs through) for Python and SQL, or
+ * ./js-cell-engine.js's own runCell() for JavaScript — but the
+ * bookkeeping below (ranContent, lastRunMs, ranOrder, output/error,
+ * saveState()) is identical either way: both engines return the same
+ * `{ok}` shape, and both already wrote whatever the cell produced into
+ * outputEl by the time they resolve.
+ *
+ * No "Running…" placeholder injected into the output area here — both
+ * engines already clear a cell's own output the moment its run starts,
+ * and the run/stop state shows on the cell's own Run button instead
+ * (setRunButtonRunning() below). */
 async function executeCell(cell) {
-  await ensurePyodide();
   const outputEl = cell.outputEl;
   if (!outputEl) return true;
   outputEl.classList.remove("dm-empty");
@@ -2015,11 +2111,16 @@ async function executeCell(cell) {
   // Captured before the run, not after: the whole point of the run-line's
   // "edited since" flag is "does this output belong to what the cell says
   // right now", so this has to be the content that was actually handed to
-  // Python, even in the unusual case where an editor kept accepting
+  // the engine, even in the unusual case where an editor kept accepting
   // keystrokes while a slow cell was still running.
   cell.ranContent = cell.content;
-  const code = cell.type === CELL_TYPES.SQL ? buildSqlCellCode(cell.content) : cell.content;
-  const { ok } = await engine.runCell(cell.id, code);
+  let ok;
+  if (cell.type === CELL_TYPES.JAVASCRIPT) {
+    ({ ok } = await jsEngine.runCell(cell.id, cell.content));
+  } else {
+    const code = cell.type === CELL_TYPES.SQL ? buildSqlCellCode(cell.content) : cell.content;
+    ({ ok } = await engine.runCell(cell.id, code));
+  }
   cell.lastRunMs = performance.now() - startedAt;
   cell.ranOrder = ++runSequenceCounter;
   cell.output = outputEl.innerHTML;
@@ -2028,22 +2129,28 @@ async function executeCell(cell) {
   if (!outputEl.innerHTML.trim()) outputEl.classList.add("dm-empty");
   updateCellChrome(cell.id);
   saveState();
-  // Fire-and-forget: a cell's own code may have written straight to the
-  // mounted filesystem (dfs.sync()'s own docstring explains why that
-  // needs this rather than relying on writeFile()'s debounced sync or
-  // the best-effort unload flush alone) — not awaited, so a slow sync
-  // never makes a fast cell feel slower than it is.
-  dfs.sync()
-    // A cell that wrote a file is exactly when the Files list is wrong, and
-    // nothing else was redrawing it: a student could write shapes.py, open
-    // Files, and not see it until some unrelated thing refreshed the panel.
-    .then(() => renderFileList())
-    .catch((err) => console.warn("dewmini: filesystem sync after cell run failed", err));
-  // Same treatment for the Workbench's variable list: a run is exactly
-  // when the namespace changed, so this is when it needs redrawing — but
-  // it is a panel a reader may not even have open, and never worth making
-  // a cell feel slower for.
-  refreshVariables().catch((err) => console.warn("dewmini: refreshing variables failed", err));
+  // Neither is meaningful for a JavaScript cell: its own sandboxed
+  // session has no mounted filesystem to sync, and refreshVariables()
+  // reads Pyodide's own namespace, which a JS cell's run never touches.
+  if (cell.type !== CELL_TYPES.JAVASCRIPT) {
+    // Fire-and-forget: a cell's own code may have written straight to
+    // the mounted filesystem (dfs.sync()'s own docstring explains why
+    // that needs this rather than relying on writeFile()'s debounced
+    // sync or the best-effort unload flush alone) — not awaited, so a
+    // slow sync never makes a fast cell feel slower than it is.
+    dfs.sync()
+      // A cell that wrote a file is exactly when the Files list is
+      // wrong, and nothing else was redrawing it: a student could write
+      // shapes.py, open Files, and not see it until some unrelated
+      // thing refreshed the panel.
+      .then(() => renderFileList())
+      .catch((err) => console.warn("dewmini: filesystem sync after cell run failed", err));
+    // Same treatment for the Workbench's variable list: a run is
+    // exactly when the namespace changed, so this is when it needs
+    // redrawing — but it is a panel a reader may not even have open,
+    // and never worth making a cell feel slower for.
+    refreshVariables().catch((err) => console.warn("dewmini: refreshing variables failed", err));
+  }
   return ok;
 }
 
@@ -2076,22 +2183,26 @@ function resetCellOutput(id) {
 }
 
 /* Toolbar-level "Clear output" — resets every cell that runs against the
- * session (Python, SQL), keeping every cell and its code. Distinct from
- * the existing "Clear" button, which deletes every cell. */
+ * session (Python, SQL, JavaScript), keeping every cell and its code.
+ * Distinct from the existing "Clear" button, which deletes every cell. */
 function clearAllOutputs() {
   cells.forEach((cell) => { if (RUNS_AGAINST_SESSION.has(cell.type)) resetCellOutput(cell.id); });
   updateStatus("Output cleared.");
 }
 
-/* Toggles a cell's own Run button into its running/Stop state. When a
- * genuine interrupt buffer is available (worker mode, cross-origin
- * isolated — engine.canStop()) the button becomes a real Stop; otherwise
- * it just shows the cell is busy, since there is nothing to interrupt
- * (a main-thread fallback blocks this same thread completely once a
- * cell starts, with no opportunity for an interrupt to even be noticed). */
-function setRunButtonRunning(runBtn) {
+/* Toggles a cell's own Run button into its running/Stop state.
+ * `canStop` — canStopFor(cell), resolved by the caller rather than read
+ * in here, since which engine's own canStop() answers the question
+ * depends on the cell's type. When true (worker mode, cross-origin
+ * isolated, and never for a JavaScript cell — see canStopFor()) the
+ * button becomes a real Stop; otherwise it just shows the cell is busy,
+ * since there is nothing to interrupt (a main-thread fallback, or a
+ * JavaScript cell's own sandboxed iframe, blocks this same thread
+ * completely once a cell starts, with no opportunity for an interrupt to
+ * even be noticed). */
+function setRunButtonRunning(runBtn, canStop) {
   if (!runBtn) return;
-  if (engine.canStop()) {
+  if (canStop) {
     runBtn.disabled = false;
     runBtn.textContent = "■";
     runBtn.title = "Stop this cell";
@@ -2115,38 +2226,46 @@ function resetRunButton(runBtn) {
 /* Runs a single cell by id, in response to its own Run button or
  * Shift+Enter. A second click on the cell that is already running sends
  * a Stop (interrupt) request instead of starting a new run — the same
- * button in its Stop state. `running` guards against
- * overlapping runs from two different cells: dewmini has one Python
- * interpreter, so only one cell can actually be executing at a time; a
- * click on a *different* cell while one is already running is ignored
- * rather than queued. */
+ * button in its Stop state. `running` guards against overlapping runs
+ * from two different cells: dewmini has one Python interpreter and one
+ * JavaScript session, so only one cell can actually be executing at a
+ * time across *either* of them; a click on a different cell while one is
+ * already running is ignored rather than queued.
+ *
+ * The cell is looked up first, before deciding interrupt-vs-run, since
+ * both branches need to know its type either way — requestInterruptFor()
+ * to reach the right engine, ensureSessionFor()/canStopFor() to boot and
+ * read the right one. */
 async function runCell(id) {
+  const cell = cells.find((c) => c.id === id);
+  if (!cell || !RUNS_AGAINST_SESSION.has(cell.type)) return;
   if (runningCellId === id) {
-    engine.requestInterrupt();
+    requestInterruptFor(cell);
     return;
   }
   if (running) return;
-  const cell = cells.find((c) => c.id === id);
-  if (!cell || !RUNS_AGAINST_SESSION.has(cell.type)) return;
   running = true;
   runningCellId = id;
   try {
-    // Boot (or reconnect to an already-booted) engine *before* deciding
-    // what the Run button should look like — engine.canStop(), which
+    // Boot (or reconnect to an already-booted) session *before* deciding
+    // what the Run button should look like — canStopFor(), which
     // setRunButtonRunning() reads, only knows worker-vs-main-thread once
     // ensureBooted() has actually resolved, so the await has to come
     // first, not only inside executeCell() below.
     // Skipping this step showed up as a real bug in testing: canStop()
     // read false (its pre-boot default) on every cell's first-ever run,
     // showing the *non-stoppable* "…" busy state even in worker mode.
-    await ensurePyodide();
-    await checkImportedFiles();
-    setRunButtonRunning(cell.runBtn);
+    await ensureSessionFor(cell);
+    // Meaningless for a JavaScript cell: changedImportedModules() reads
+    // Pyodide's own module registry, which a JS cell's session never
+    // touches.
+    if (cell.type !== CELL_TYPES.JAVASCRIPT) await checkImportedFiles();
+    setRunButtonRunning(cell.runBtn, canStopFor(cell));
     startRunLineTicker(cell);
     const ok = await executeCell(cell);
     updateStatus(ok ? "Ran." : "Error — see the cell.", ok ? "ok" : "error");
   } catch (err) {
-    updateStatus(`Python isn't available: ${err.message}`, "error");
+    updateStatus(`Couldn't run this cell: ${err.message}`, "error");
   } finally {
     running = false;
     runningCellId = null;
@@ -2155,25 +2274,33 @@ async function runCell(id) {
   }
 }
 
-/* Runs a batch of cells (Python and/or SQL — RUNS_AGAINST_SESSION) in
- * order — the shared engine behind "Run all", "Run above", and "Run
- * below" below, which differ only in *which* cells they hand it and
- * whether the namespace gets cleared first.
+/* Runs a batch of cells (Python, SQL, and/or JavaScript —
+ * RUNS_AGAINST_SESSION) in order — the shared logic behind "Run all",
+ * "Run above", and "Run below" below, which differ only in *which*
+ * cells they hand it and whether each cell's own session gets cleared
+ * first.
  *
  * `reset` matters more than it looks: "Run all" and "Run above" both
- * start from `engine.resetPageState()` (clearing and re-seeding the
- * shared namespace, cheaper than a full restart), because the whole point
- * of running from the top is that "what's on screen matches what the code
- * actually did" — without the reset, a stale value from a previous run
- * could linger and mask a cell that no longer defines something it used
- * to. "Run below" must *not* reset: its whole point is to keep what the
- * cells above it already defined, so resetting first would throw away
- * exactly the state it exists to preserve.
+ * start from a clean slate for *every* session a cell in the batch
+ * might need — `engine.resetPageState()` (clearing and re-seeding
+ * Pyodide's shared namespace, cheaper than a full restart) and
+ * `jsEngine.restart()` (there is no equivalent cheap reset for the JS
+ * session; tearing the iframe down and letting the next cell recreate
+ * it is the only way to clear it) — because the whole point of running
+ * from the top is that "what's on screen matches what the code actually
+ * did." Without this, a stale value from a previous run could linger
+ * and mask a cell that no longer defines something it used to. "Run
+ * below" must *not* reset either session: its whole point is to keep
+ * what the cells above it already defined, so resetting first would
+ * throw away exactly the state it exists to preserve.
  *
- * Each cell's own Run button becomes a Stop button while it's its turn,
- * the same as running it individually, so a runaway cell partway through
- * a batch can still be interrupted without losing the cells that already
- * ran. */
+ * Each cell's own session is booted right before its own turn, not once
+ * for the whole batch up front — a batch of JavaScript cells alone never
+ * needs Pyodide at all, and vice versa. Each cell's own Run button
+ * becomes a Stop button while it's its turn, the same as running it
+ * individually, so a runaway cell partway through a batch can still be
+ * interrupted without losing the cells that already ran (Python/SQL
+ * only — see canStopFor()). */
 async function runCellBatch(runnableCells, { reset, emptyMessage, describe }) {
   if (running) return;
   if (!runnableCells.length) { updateStatus(emptyMessage); return; }
@@ -2183,12 +2310,23 @@ async function runCellBatch(runnableCells, { reset, emptyMessage, describe }) {
   if (btn) btn.disabled = true;
 
   try {
-    await ensurePyodide();
-    // Once for the whole batch, not once per cell: the answer would be
-    // the same every time and each ask is a round trip.
-    await checkImportedFiles();
+    // Skipped for a batch that is entirely JavaScript: forcing a Pyodide
+    // boot (and a round trip only Python/SQL cells could ever answer)
+    // for a batch that will never touch it is wasted work.
+    if (runnableCells.some((c) => c.type !== CELL_TYPES.JAVASCRIPT)) {
+      await ensurePyodide();
+      // Once for the whole batch, not once per cell: the answer would be
+      // the same every time and each ask is a round trip.
+      await checkImportedFiles();
+    }
     if (reset) {
+      // resetPageState() itself assumes Pyodide has already booted at
+      // least once, so that has to come first — unconditionally, even
+      // if the batch turns out to be all JavaScript cells, the same cost
+      // this already paid before JavaScript cells existed.
+      await ensurePyodide();
       await engine.resetPageState();
+      jsEngine.restart();
       resetRunSequence();
     }
     updateStatus(describe(runnableCells.length));
@@ -2201,7 +2339,8 @@ async function runCellBatch(runnableCells, { reset, emptyMessage, describe }) {
     for (let i = 0; i < runnableCells.length; i++) {
       const cell = runnableCells[i];
       runningCellId = cell.id;
-      setRunButtonRunning(cell.runBtn);
+      await ensureSessionFor(cell);
+      setRunButtonRunning(cell.runBtn, canStopFor(cell));
       startRunLineTicker(cell);
       /* try/finally per cell: if a
        * run rejects rather than returning false — which is exactly what
@@ -2223,7 +2362,7 @@ async function runCellBatch(runnableCells, { reset, emptyMessage, describe }) {
       errors ? "error" : "ok"
     );
   } catch (err) {
-    updateStatus(`Python isn't available: ${err.message}`, "error");
+    updateStatus(`Couldn't run these cells: ${err.message}`, "error");
   } finally {
     running = false;
     runningCellId = null;
@@ -3821,29 +3960,41 @@ function updateExecutionStatus() {
   const el = document.getElementById("settings-execution-status");
   if (!el) return;
   const mode = engine.engineMode();
+  let text;
   if (!mode) {
-    el.textContent = "Not started yet — run a cell to start Python.";
-    return;
+    text = "Not started yet — run a cell to start Python.";
+  } else {
+    const where = mode === "worker"
+      ? "a background worker, so the page stays responsive"
+      : "the main thread (no background worker available here) — a runaway cell will freeze the page until it finishes";
+    const stop = engine.canStop()
+      ? "Stop can genuinely interrupt a running cell."
+      : "Stop can't interrupt a running cell in this mode.";
+    text = `Running in ${where}. ${stop}`;
   }
-  const where = mode === "worker"
-    ? "a background worker, so the page stays responsive"
-    : "the main thread (no background worker available here) — a runaway cell will freeze the page until it finishes";
-  const stop = engine.canStop()
-    ? "Stop can genuinely interrupt a running cell."
-    : "Stop can't interrupt a running cell in this mode.";
-  el.textContent = `Running in ${where}. ${stop}`;
+  // Only once a reader has actually run a JavaScript cell — mentioning a
+  // second session nobody has touched yet would just be noise.
+  if (jsEngine.sessionReady()) {
+    text += " JavaScript cells run in their own sandboxed frame, on the same main thread — Stop can't interrupt one either.";
+  }
+  el.textContent = text;
 }
 
-/* Tears the engine down entirely (engine.restart()) and forgets that a
- * filesystem was ever mounted (dfs.reset(), since a fresh interpreter has
- * nothing mounted into it yet), then boots a clean one right away so
- * Settings reflects real status immediately rather than waiting for the
- * next Run click. Shared by both "Restart Python" and "Restart & run
- * all" below — the run-all button needs exactly this same teardown before
- * its own extra step. Returns whether the restart itself succeeded, so a
- * caller that runs cells afterwards knows whether to bother. */
+/* Tears both engines down entirely (engine.restart(), jsEngine.restart())
+ * and forgets that a filesystem was ever mounted (dfs.reset(), since a
+ * fresh interpreter has nothing mounted into it yet), then boots Pyodide
+ * back up right away so Settings reflects real status immediately rather
+ * than waiting for the next Run click. The JavaScript session is left
+ * torn down rather than eagerly recreated too — unlike Pyodide, there is
+ * no slow download for Settings to get ahead of, and creating it stays
+ * lazy (ensureJsSession()) the same as it is on a fresh page load.
+ * Shared by both "Restart Python" and "Restart & run all" below — the
+ * run-all button needs exactly this same teardown before its own extra
+ * step. Returns whether the restart itself succeeded, so a caller that
+ * runs cells afterwards knows whether to bother. */
 async function restartPython() {
   engine.restart();
+  jsEngine.restart();
   dfs.reset();
   resetRunSequence();
   updateStatus("Restarting Python…");

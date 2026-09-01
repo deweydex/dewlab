@@ -66,19 +66,22 @@ whitelist generalised to `Object.values(CELL_TYPES)` while HTML was
 built, rather than needing another hand-edit the next time a type is
 added.
 
-The SQL branch looks nothing like HTML/CSS's, because a SQL cell isn't a
-read-not-run type — it runs against the shared Pyodide session, the same
-as Python. `RUNS_AGAINST_SESSION` (`python`, `sql`) is the sibling set
-to `READ_NOT_RUN_TYPES`: every place that used to check
-`cell.type === CELL_TYPES.PYTHON` to mean "does this cell run against
-the session" (the footer/footbar build, `isStale()`, `resetCellOutput()`,
-`clearAllOutputs()`, `runCell()`'s own guard, the "Run all"/"Run
-above"/"Run below" filters) now checks `RUNS_AGAINST_SESSION.has(cell.type)`
-instead, so a SQL cell gets the identical run line, Run/Stop button, and
-staleness tracking a Python cell already had, unmodified. Its own
-`createCellElement()` branch is closer to Python's than to HTML/CSS's: a
-bare CodeMirror editor (`language: "sql"`), no rendered/editor toggle at
-all. What makes it a SQL cell rather than a second Python cell type is
+The SQL and JavaScript branches look nothing like HTML/CSS's, because
+neither is a read-not-run type — both run against a shared session, the
+same as Python. `RUNS_AGAINST_SESSION` (`python`, `sql`, `javascript`)
+is the sibling set to `READ_NOT_RUN_TYPES`: every place that used to
+check `cell.type === CELL_TYPES.PYTHON` to mean "does this cell run
+against a session" (the footer/footbar build, `isStale()`,
+`resetCellOutput()`, `clearAllOutputs()`, `runCell()`'s own guard, the
+"Run all"/"Run above"/"Run below" filters) now checks
+`RUNS_AGAINST_SESSION.has(cell.type)` instead, so a SQL or JavaScript
+cell gets the identical run line, Run/Stop button, and staleness
+tracking a Python cell already had, unmodified. Both cells' own
+`createCellElement()` branches are closer to Python's than to HTML/CSS's:
+a bare CodeMirror editor (`language: "sql"`/`"javascript"`), no
+rendered/editor toggle at all.
+
+What makes a SQL cell a SQL cell rather than a second Python cell type is
 entirely in `executeCell()`: `buildSqlCellCode()` wraps the cell's raw
 SQL into one generated Python line —
 `tutorial_tools._run_sql_cell(db, <the SQL as a JSON-encoded string
@@ -89,6 +92,22 @@ in-memory `sqlite3` connection dewmini seeds at boot and on every reset
 where); the same connection is reachable from an ordinary Python cell
 under that name, which is the whole point of building SQL on Python's
 own `sqlite3` rather than a second engine (DECISIONS_LOG.md 7.118).
+
+A JavaScript cell dispatches to a different engine entirely —
+`executeCell()` hands its content, unwrapped, to
+[`compose/js-cell-engine.js`](js-cell-engine-explained.md)'s own `runCell()`,
+never `assets/pyodide-engine.js`. `ensureSessionFor(cell)`,
+`canStopFor(cell)`, and `requestInterruptFor(cell)` are the three small
+dispatcher functions this required: everywhere `runCell()`/
+`runCellBatch()` used to call `ensurePyodide()`/read `engine.canStop()`/
+call `engine.requestInterrupt()` unconditionally, they now ask one of
+these three which engine `cell` actually needs first. `restartPython()`
+tears the JS session down too (`jsEngine.restart()`) alongside Pyodide's
+own restart, and a `reset` batch ("Run all"/"Run above") does the same —
+there is no cheaper reset for a JS session the way `resetPageState()` is
+for Pyodide's, so a full teardown is what "Run all" pays for a
+JavaScript cell too, matching Python and SQL's own "what's on screen
+matches what the code did" guarantee.
 
 ### …and `cells` belongs to a notebook
 
