@@ -789,6 +789,104 @@ def test_a_css_cell_can_be_collapsed_and_duplicated(dewmini):
     assert dewmini.locator(".dm-cell-css").count() == 2
 
 
+# ---------------------------------------------------------------- sql cells
+
+
+def add_sql_cell(page, script: str) -> None:
+    """Adds a SQL cell and types `script` into it — the SQL counterpart of
+    add_python_cell() above. Unlike _html_cell()/_css_cell(), no blur: a
+    SQL cell has no rendered/editor toggle to fall into (it keeps
+    Python-shaped chrome, RUNS_AGAINST_SESSION), so there is nothing to
+    render until the reader actually clicks Run."""
+    page.locator(".dm-insert-btn", has_text="SQL").last.click()
+    editor = page.locator(".dm-cell-sql .cm-content").last
+    editor.click()
+    page.keyboard.insert_text(script)
+
+
+def test_a_sql_cells_chrome_is_never_hidden(dewmini):
+    """Python-shaped chrome, not HTML/CSS-shaped: a SQL cell runs against
+    the shared session, so quiet-until-touched (a read-not-run affordance)
+    does not apply to it — the same rule test_a_python_cells_chrome_is_
+    never_hidden() above checks for Python."""
+    add_sql_cell(dewmini, "select 1")
+    dewmini.mouse.move(5, 5)
+    cell = dewmini.locator(".dm-cell-sql").last
+    assert head_opacity(dewmini, cell) == "1"
+    assert cell.locator(".dm-icon-preview").count() == 0
+    assert cell.locator(".dm-cell-runline").count() == 1
+
+
+def test_a_multi_statement_sql_script_renders_only_its_last_statement(dewmini):
+    """planning/CELL_IDENTITY.md §8 — a SQL cell is a script (CREATE,
+    INSERT, ..., SELECT), not a single query the way run_query() is; only
+    the final statement's own result renders, here the SELECT's table."""
+    add_sql_cell(
+        dewmini,
+        "CREATE TABLE t (id INTEGER, name TEXT);\n"
+        "INSERT INTO t VALUES (1, 'ada'), (2, 'alan');\n"
+        "SELECT * FROM t ORDER BY id;",
+    )
+    dewmini.locator(".dm-cell-sql .dm-icon-run").last.click()
+    dewmini.wait_for_selector(".dm-cell-sql .dm-cell-output table", timeout=90_000)
+    text = dewmini.locator(".dm-cell-sql .dm-cell-output").last.inner_text()
+    assert "ada" in text and "alan" in text
+
+
+def test_a_non_select_sql_statement_reports_rows_affected(dewmini):
+    """The console-style fallback _run_sql_cell() gives a script that ends
+    in a CREATE/INSERT/UPDATE/DELETE rather than a SELECT."""
+    add_sql_cell(dewmini, "CREATE TABLE t (id INTEGER);\nINSERT INTO t VALUES (1), (2), (3);")
+    dewmini.locator(".dm-cell-sql .dm-icon-run").last.click()
+    dewmini.wait_for_selector(".dm-cell-sql .dm-cell-output:not(.dm-empty)", timeout=90_000)
+    assert "3 rows affected" in dewmini.locator(".dm-cell-sql .dm-cell-output").last.inner_text()
+
+
+def test_a_python_cell_can_read_what_a_sql_cell_wrote(dewmini):
+    """The whole reason SQL cells run on Python's own sqlite3 rather than a
+    separate engine (DECISIONS_LOG.md, the sql.js → Python/sqlite3 pivot):
+    the shared `db` connection is available to an ordinary Python cell
+    under the same name, with no plumbing of its own."""
+    add_sql_cell(dewmini, "CREATE TABLE t (id INTEGER, name TEXT);\nINSERT INTO t VALUES (1, 'grace');")
+    dewmini.locator(".dm-cell-sql .dm-icon-run").last.click()
+    dewmini.wait_for_selector(".dm-cell-sql .dm-cell-output:not(.dm-empty)", timeout=90_000)
+
+    add_python_cell(dewmini, "import pandas as pd\npd.read_sql('select * from t', db)")
+    dewmini.locator(".dm-cell-python .dm-icon-run").last.click()
+    dewmini.wait_for_selector(".dm-cell-python .dm-cell-output table", timeout=90_000)
+    assert "grace" in dewmini.locator(".dm-cell-python .dm-cell-output").last.inner_text()
+
+
+def test_a_sql_cells_output_survives_a_reload(dewmini):
+    add_sql_cell(dewmini, "select 6 * 7 as answer;")
+    dewmini.locator(".dm-cell-sql .dm-icon-run").last.click()
+    dewmini.wait_for_selector(".dm-cell-sql .dm-cell-output table", timeout=90_000)
+
+    dewmini.reload()
+    dewmini.wait_for_selector(".dm-toolbar")
+    assert dewmini.locator(".dm-cell-sql").count() == 1
+    assert "42" in dewmini.locator(".dm-cell-sql .dm-cell-output").last.inner_text()
+
+
+def test_a_sql_cell_can_be_collapsed_and_duplicated(dewmini):
+    add_sql_cell(dewmini, "select 1;")
+    cell = dewmini.locator(".dm-cell-sql").last
+    cell.locator(".dm-collapse-toggle").click()
+    assert cell.locator(".dm-cell-content").is_hidden()
+    assert cell.locator(".dm-cell-collapsed-summary").is_visible()
+
+    cell.locator(".dm-icon-duplicate").click()
+    assert dewmini.locator(".dm-cell-sql").count() == 2
+
+
+def test_a_bad_sql_statement_shows_an_error_not_a_silent_failure(dewmini):
+    add_sql_cell(dewmini, "select * from a_table_that_does_not_exist;")
+    dewmini.locator(".dm-cell-sql .dm-icon-run").last.click()
+    dewmini.wait_for_selector(".dm-cell-sql .dm-cell-output:not(.dm-empty)", timeout=90_000)
+    cell = dewmini.locator(".dm-cell-sql").last
+    assert "dm-error" in (cell.get_attribute("class") or "")
+
+
 # ---------------------------------------------------------------- variables
 
 

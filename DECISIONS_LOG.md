@@ -5165,3 +5165,141 @@ new code than HTML did, most of it copied and adapted rather than
 designed from scratch, which is roughly what §8's own build order bet
 on. SQL and JavaScript won't get to make the same bet: both need a
 genuinely new execution engine, not another coat of the same pattern.*
+
+**7.118 — SQL, the third of the four new cell types, built in dewmini —
+on Python's own `sqlite3`, not the *sql.js* engine `planning/
+CELL_IDENTITY.md` §8 had specified.** That plan (SQLite compiled to
+WebAssembly, a second interpreter alongside Pyodide) was where
+implementation started — `sql.js` pinned in `vendor-src/package.json`,
+`build-vendor.mjs` copying its WASM into `assets/vendor/`, the
+groundwork any of §8's other three types didn't need. It was set aside
+mid-build on a direct question: is a second engine actually the better
+choice here, or just the first one that came to mind? The honest answer
+was the latter. dewmini already runs a real Python interpreter, and
+Python already ships `sqlite3` — unvendored as an ordinary loadable
+Pyodide package as of Pyodide 0.28, not bundled into core, and already
+in `compose/dewmini.js`'s `DM_PACKAGES` from `run_query()`'s own earlier
+work (7.78). Two engines booting in the same tab would have meant two
+data models with nothing bridging them — a SQL cell's own table
+invisible to a pandas DataFrame, unless something translated between
+them by hand. One engine, with the `db` global sqlite3 already gives it
+for free, means a SQL cell's `CREATE TABLE` is a table a Python cell can
+already read with `pd.read_sql("select * from t", db)`, no plumbing of
+its own — friendlier for a student who has never opened a terminal, and
+genuinely interoperable with the pandas/numpy tooling every other cell
+already uses, rather than a second island next to it. Every sql.js file
+change was reverted before anything was committed (`git checkout --` on
+`vendor-src/package.json`/`build-vendor.mjs`/`package-lock.json`,
+`rm -rf assets/vendor/sqljs`) — cheap, since it was caught before
+`npm run build` even ran once against it.
+
+**What actually got built.** `assets/tutorial_tools.py` gained
+`_run_sql_cell(conn, script, max_rows=20)` — internal, not in
+`__all__`, sitting right after `run_query()` (7.78) as its multi-
+statement counterpart: `run_query()` runs exactly one query and is meant
+to be called by name from a tutorial's own Python; `_run_sql_cell()` is
+what a generated wrapper line reaches, never something a reader is
+expected to type themselves. It splits a script on a bare `;` (a plain
+split, not a real parser — a semicolon inside a string literal would
+split somewhere it shouldn't, good enough for what a teaching notebook's
+SQL cell needs), runs every statement but the last with `conn.execute()`,
+and only renders the *last* statement's own result: a table via the same
+`_table_html()` a Python DataFrame already renders through, if it has
+columns; otherwise `cursor.rowcount` as "N rows affected" — the SQL
+equivalent of a Python statement that prints nothing. Every statement
+commits at the end, the same friendlier-than-raw-sqlite3 default
+`run_query()` already chose. Six new tests in `tests/test_tutorial_tools.py`
+(`TestRunSqlCell`) cover the split, the two render paths, state
+persisting across separate calls on the same connection, and a bad
+statement raising rather than rendering nothing.
+
+`compose/dewmini.js` gained `CELL_TYPES.SQL`, an insert-divider button
+and icon, a pill label and colour (`--dl-type-sql`, already defined
+7.117 in preparation), and a `createCellElement()` branch — but unlike
+HTML/CSS, a SQL cell's branch is Python-shaped: a bare CodeMirror editor
+(`language: "sql"`, `@codemirror/lang-sql` — syntax highlighting only,
+no Jedi-style semantic tooling, same as HTML/CSS's editors), no Edit/
+View toggle, no quiet-until-touched. `READ_NOT_RUN_TYPES` (7.117) stayed
+untouched — SQL was never a candidate for it — and gained a sibling,
+`RUNS_AGAINST_SESSION` (`python`, `sql`), which replaced every
+`cell.type === CELL_TYPES.PYTHON` check that actually meant "cells that
+run against the shared session": the footer/footbar build, `isStale()`,
+`resetCellOutput()`, `clearAllOutputs()`, `runCell()`'s own guard, and
+the "Run all"/"Run above"/"Run below" filters. A SQL cell's raw content
+is never handed to Pyodide as Python source — `executeCell()`'s new
+`buildSqlCellCode()` wraps it into one generated line,
+`tutorial_tools._run_sql_cell(db, <script>)`, with the script embedded
+as a `JSON.stringify()`-encoded string literal rather than a hand-rolled
+triple-quoted one (JSON's escaping — `\"`, `\\`, `\n`, control
+characters as `\u00XX` — is a strict subset of what a Python
+double-quoted literal accepts, so this is safe for any SQL text a reader
+could type, including one containing its own quotes or backslashes,
+where a raw triple-quoted string would simply break). The call is
+assigned (`_ = tutorial_tools._run_sql_cell(...)`) rather than left as
+the cell's own last expression on purpose: `_run_sql_cell()` already
+renders its result directly into the cell's output, and the normal
+auto-display of a cell's last value would otherwise render the same
+table a second time underneath it.
+
+**`db` itself: a fresh, in-memory `sqlite3.connect(":memory:")`
+connection**, created once at boot and again on every reset, dewmini-
+only per the scoping this whole phase of work was given. `assets/
+pyodide-engine.js`'s `RESEED_GLOBALS_SOURCE` (the main-thread fallback
+path, `bootMainThread()`/`resetPageStateMT()`) got it directly, closing
+any previous connection first rather than leaving it to garbage
+collection.
+
+**The bug this caught before it shipped: that edit alone would have done
+nothing for almost every reader.** `assets/pyodide-engine.js` is
+dewmini's own file, but the path most sessions actually take is not its
+main-thread fallback — it is `assets/pyodide-worker.js`, a Worker file
+genuinely *shared* with the hosted tutorial pages
+(`assets/tutorial-runtime.js` boots through the exact same file). That
+worker carries its own separate copy of `RESEED_GLOBALS_SOURCE` (a
+Worker cannot reach a JS constant defined in a different file's module
+scope), which the first pass of this work never touched — meaning `db`
+would have existed only on the rare main-thread fallback (no Worker
+support, or no cross-origin isolation) and been silently absent
+everywhere else, including this environment's own Playwright
+verification, had that verification not caught it. The fix keeps the
+worker file "purely additive" for dewmini the same way its filesystem-
+mounting section already is (its own comment: "dewmini only … Tutorial
+pages never send these message types, so this section is purely
+additive"): `pyodide-worker.js` gained its own
+`SEED_DEWMINI_DB_SOURCE` and a module-level `seedDewminiDb` flag, read
+once from the boot message (`msg.seedDb`) and reused on every
+`reset-page-state`; `assets/pyodide-engine.js`'s `bootWorker()` is the
+only caller that ever sets `seedDb: true`, so a tutorial page's own boot
+message — which never sets it — leaves the flag false and `db` never
+created there.
+
+**Verified in a real browser, not just unit tests**, since the whole
+point of the Python/sqlite3 design was interoperability between a SQL
+cell and a Python cell, which no Python-only test could actually prove.
+This environment had no route to the sqlite3 wheel's usual home
+(`cdn.jsdelivr.net`, blocked by egress policy) but did have one to
+`github.com`'s own release assets, so the wheel came from Pyodide's own
+GitHub release tarball instead, extracted without downloading the full
+~350 MB archive to disk. Playwright against a locally staged build
+confirmed: a multi-statement script (`CREATE TABLE` / `INSERT` /
+`SELECT`) renders only the final `SELECT`'s table, with no duplicate
+render; a non-`SELECT` script reports rows affected; a Python cell
+reading `db` via `pd.read_sql()` after a SQL cell ran sees exactly what
+that cell wrote; output and cell type both survive a reload without
+re-running; Duplicate/Delete/collapse all work; and — the one that would
+have been silent otherwise — the worker-mode `db` wiring actually took
+effect, not only the main-thread fallback. `dev/fetch_pyodide.py`'s own
+`BASELINE` gained `sqlite3` too, so the e2e suite's self-hosted Pyodide
+(`dev/pyodide/`, gitignored, fetched fresh by anyone who needs it) keeps
+having it without a special case; the seven new e2e tests in
+`tests/e2e/test_dewmini_workbench.py` run against that same local
+Pyodide, no CDN required.
+
+*Cost to change: the redirect away from sql.js cost nothing already
+spent (caught before a single build ran against it), and the corrected
+design turned out to need noticeably less new surface than HTML did —
+no new engine, no new sandboxing model, mostly a generated string and a
+`Set` membership change threaded through code that already existed.
+JavaScript is what's left, and it does not get this same discount: a
+persistent sandboxed session is a real second runtime, the one thing
+SQL turned out not to need after all.*

@@ -43,10 +43,10 @@ carry this same anatomy now too (7.113–7.115), by way of `build.py`'s
 `render_cell()` and `assets/tutorial-runtime.js` rather than this file —
 see `docs/tutorial-runtime-explained.md` for that side.
 
-Two more `CELL_TYPES` values, `html` and `css` (DECISIONS_LOG.md
-7.116/7.117, `planning/CELL_IDENTITY.md` §8), are dewmini-only — the
-first two of four new cell types that document designs (SQL, HTML, CSS,
-JavaScript are the full set; SQL and JavaScript aren't built yet).
+Three more `CELL_TYPES` values, `html`, `css`, and `sql` (DECISIONS_LOG.md
+7.116/7.117/7.118, `planning/CELL_IDENTITY.md` §8), are dewmini-only —
+three of four new cell types that document designs (SQL, HTML, CSS,
+JavaScript are the full set; JavaScript isn't built yet).
 `createCellElement()`'s HTML branch mirrors Text's shape (an editor, a
 rendered view, the same quiet-until-touched/Edit-View chrome) but a
 CodeMirror editor (`language: "html"`) in place of a plain `<textarea>`,
@@ -65,6 +65,30 @@ logic actually check now, in place of an accumulating `||` chain across
 whitelist generalised to `Object.values(CELL_TYPES)` while HTML was
 built, rather than needing another hand-edit the next time a type is
 added.
+
+The SQL branch looks nothing like HTML/CSS's, because a SQL cell isn't a
+read-not-run type — it runs against the shared Pyodide session, the same
+as Python. `RUNS_AGAINST_SESSION` (`python`, `sql`) is the sibling set
+to `READ_NOT_RUN_TYPES`: every place that used to check
+`cell.type === CELL_TYPES.PYTHON` to mean "does this cell run against
+the session" (the footer/footbar build, `isStale()`, `resetCellOutput()`,
+`clearAllOutputs()`, `runCell()`'s own guard, the "Run all"/"Run
+above"/"Run below" filters) now checks `RUNS_AGAINST_SESSION.has(cell.type)`
+instead, so a SQL cell gets the identical run line, Run/Stop button, and
+staleness tracking a Python cell already had, unmodified. Its own
+`createCellElement()` branch is closer to Python's than to HTML/CSS's: a
+bare CodeMirror editor (`language: "sql"`), no rendered/editor toggle at
+all. What makes it a SQL cell rather than a second Python cell type is
+entirely in `executeCell()`: `buildSqlCellCode()` wraps the cell's raw
+SQL into one generated Python line —
+`tutorial_tools._run_sql_cell(db, <the SQL as a JSON-encoded string
+literal>)` — and *that* is what actually gets handed to
+`engine.runCell()`, never the reader's own SQL text. `db` is a shared,
+in-memory `sqlite3` connection dewmini seeds at boot and on every reset
+(see [`pyodide-engine-explained.md`](pyodide-engine-explained.md) for
+where); the same connection is reachable from an ordinary Python cell
+under that name, which is the whole point of building SQL on Python's
+own `sqlite3` rather than a second engine (DECISIONS_LOG.md 7.118).
 
 ### …and `cells` belongs to a notebook
 

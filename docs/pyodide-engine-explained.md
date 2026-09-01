@@ -69,10 +69,20 @@ of the file: two engines, one dispatcher, one shared public interface.
    `postMessage`), `ensureWorker()` (creates the worker, and is the *one*
    place this file listens for messages from it), `bootWorker()`,
    `requestInterrupt()` (how Stop actually stops something), and
-   `runCellWorker()`.
+   `runCellWorker()`. `bootWorker()`'s boot message always sets
+   `seedDb: true` — the signal `assets/pyodide-worker.js`'s own boot()
+   reads to decide whether to seed the dewmini-only `db` global (SQL
+   cells, DECISIONS_LOG.md 7.118); see
+   [`pyodide-worker-explained.md`](pyodide-worker-explained.md) for why
+   that flag has to exist at all rather than the worker just always
+   doing it.
 4. **Main-thread fallback** — the Jedi-based autocomplete helpers, the
    filesystem mirror functions (`fs*MT`), and `bootMainThread()`/
-   `runCellMainThread()`.
+   `runCellMainThread()`. `RESEED_GLOBALS_SOURCE` here is this path's own
+   copy of the always-available-names seeding, `db` included — a
+   Worker can't reach a constant defined in this file's module scope, so
+   `assets/pyodide-worker.js` keeps a second copy for the path most
+   sessions actually take.
 5. **The dispatcher** — `boot()`, `ensureBooted()`, `restart()`,
    `engineMode()`, `canStop()`.
 6. **The exported API** — `runCell()`, `hoverDoc()`, `signatureHelp()`,

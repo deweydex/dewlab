@@ -1297,6 +1297,51 @@ def run_query(conn_or_path, sql: str, params=None, max_rows: int = 20, caption: 
     return frame
 
 
+def _run_sql_cell(conn, script: str, max_rows: int = 20):
+    """dewmini's own SQL cell type (planning/CELL_IDENTITY.md §8) —
+    internal plumbing a generated cell call reaches, not something a
+    reader is expected to call by name themselves; `run_query()` above
+    is the public, one-statement version of the same idea.
+
+    Splits `script` into statements on a bare `;` and runs each in
+    turn against `conn` — a script, not a single query, is the normal
+    shape of a SQL *cell* (`CREATE TABLE` here, `INSERT` there,
+    `SELECT` at the end), where `run_query()` only ever runs one
+    statement. Only the *last* statement's own result renders: if it
+    returned rows (a `SELECT`), as a table; otherwise, how many rows it
+    touched, the way a database console reports a `CREATE`/`INSERT`/
+    `UPDATE`/`DELETE`. Every statement commits at the end, same
+    friendlier default `run_query()` already made.
+
+    The split is a bare `;`, not a real SQL parser — a semicolon inside
+    a string literal would split somewhere it shouldn't. Good enough
+    for what a teaching notebook's SQL cell is for; reach for
+    `run_query()` directly, one statement at a time, for anything that
+    needs to be exact about it.
+    """
+    import pandas as pd  # noqa: PLC0415
+
+    cell = _require_cell()
+    statements = [s.strip() for s in script.split(";") if s.strip()]
+    if not statements:
+        return None
+
+    for statement in statements[:-1]:
+        conn.execute(statement)
+
+    cursor = conn.execute(statements[-1])
+    columns = [description[0] for description in cursor.description or []]
+    frame = None
+    if columns:
+        frame = pd.DataFrame(cursor.fetchall(), columns=columns)
+        cell.sink.append_html(_table_html(frame, max_rows=max_rows))
+    elif cursor.rowcount >= 0:
+        noun = "row" if cursor.rowcount == 1 else "rows"
+        cell.sink.append_html(f'<pre class="dl-repr">{cursor.rowcount} {noun} affected.</pre>')
+    conn.commit()
+    return frame
+
+
 # --------------------------------------------------------------------------
 # Describing the namespace
 # --------------------------------------------------------------------------

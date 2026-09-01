@@ -294,16 +294,30 @@
       uploaded anywhere.
     </p>
     <p class="dm-panel-note">
-      The seam between any two cells (or before the first, or after the
-      last) inserts exactly there — a blank Python cell, a text cell, or
-      an HTML cell. It's faint until you hover or tap it, not invisible;
-      run a finger or a cursor down the page and you'll find every seam.
+      The seam between any two cells inserts a new one exactly there —
+      before the first, after the last, or anywhere between. Choose
+      Python, Text, HTML, CSS, or SQL. It's faint until you hover or tap
+      it, not invisible; run a finger or a cursor down the page and
+      you'll find every seam.
     </p>
     <p class="dm-panel-note">
       An HTML cell renders whatever markup you write, in its own
       sandboxed frame — a script inside it can run, but it can't reach
       the rest of the page. Hover it and click Edit in its header to see
       the source again; View switches back to the rendered page.
+    </p>
+    <p class="dm-panel-note">
+      A CSS cell shows what your rule does to a small fixed page — a
+      heading, a paragraph, a button, a list. Hover it and click Edit to
+      change the rule; View switches back to the preview.
+    </p>
+    <p class="dm-panel-note">
+      A SQL cell runs against one shared database, called <code>db</code>.
+      Write more than one statement in a cell — create a table, then
+      insert rows, then select from it. Only the last statement's result
+      shows: a table for a SELECT, or how many rows changed for anything
+      else. A Python cell can read <code>db</code> too, under the same
+      name.
     </p>
     <p class="dm-panel-note">
       Cleared everything and want to see it work again? <a href="#" id="dm-help-example-link">Load the example</a>.

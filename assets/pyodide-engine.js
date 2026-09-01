@@ -37,10 +37,25 @@ import { importPathSource, importedModuleTimesSource, reloadModulesSource, worki
 const DEFAULT_PACKAGES = ["numpy", "pandas", "matplotlib", "sqlite3"];
 
 /* Puts every name in tutorial_tools.__all__ into the shared namespace,
- * plus __name__ — run once at the end of boot, and again by
- * resetPageStateMT()/the worker's own "reset-page-state" handler after
- * reset_page_state() clears that namespace out, so the always-available
- * names come right back without needing a full re-boot. */
+ * plus __name__ and `db` — run once at the end of bootMT() below, and
+ * again by resetPageStateMT() after reset_page_state() clears that
+ * namespace out, so the always-available names come right back without
+ * needing a full re-boot. This is the main-thread fallback's own copy;
+ * assets/pyodide-worker.js — the path most sessions actually take —
+ * carries a separate copy of the same idea (its own RESEED_GLOBALS_SOURCE
+ * plus a dewmini-gated SEED_DEWMINI_DB_SOURCE), since a Worker can't reach
+ * a constant defined in this file.
+ *
+ * `db` is a fresh, in-memory sqlite3 connection, dewmini-only
+ * (planning/CELL_IDENTITY.md §8): what a SQL cell runs against, and
+ * available to a Python cell under the same name for exactly the
+ * interoperability that was the point of building SQL cells on
+ * Python's own sqlite3 rather than a separate engine — `pd.read_sql(
+ * "select * from my_table", db)` works with no plumbing of its own.
+ * A previous `db`, if this is a reset rather than the first boot, is
+ * closed first rather than just dropped — sqlite3 would eventually
+ * close it on garbage collection either way, but not closing it
+ * explicitly here would leave it open for however long that takes. */
 const RESEED_GLOBALS_SOURCE = `
 import tutorial_tools
 tutorial_tools._page_globals.update({
@@ -48,6 +63,12 @@ tutorial_tools._page_globals.update({
     for name in tutorial_tools.__all__
 })
 tutorial_tools._page_globals["__name__"] = "__dewlab__"
+
+import sqlite3
+_dewmini_previous_db = tutorial_tools._page_globals.get("db")
+if _dewmini_previous_db is not None:
+    _dewmini_previous_db.close()
+tutorial_tools._page_globals["db"] = sqlite3.connect(":memory:")
 `;
 
 /* Lets ordinary Python HTTP code work here, by pointing it at the browser's
@@ -291,6 +312,12 @@ async function bootWorker() {
     packages,
     toolsSourceUrl: assetUrl("tutorial_tools.py"),
     dataBase,
+    // Always true: this module is dewmini's own worker client (see the
+    // file banner above) — assets/pyodide-worker.js reads this to decide
+    // whether to seed the dewmini-only `db` global, since it's the same
+    // worker file the hosted tutorial pages boot through and they must
+    // never get one.
+    seedDb: true,
   });
 
   if (globalThis.crossOriginIsolated && typeof SharedArrayBuffer !== "undefined") {

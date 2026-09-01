@@ -35,11 +35,13 @@ RELEASE = (
     "https://github.com/pyodide/pyodide/releases/download/"
     "{v}/pyodide-{v}.tar.bz2"
 )
-BASELINE = ["numpy", "pandas", "matplotlib", "jedi", "pyodide-http"]
+BASELINE = ["numpy", "pandas", "matplotlib", "jedi", "pyodide-http", "sqlite3"]
 # parso comes along as jedi's own dependency. pyodide-http is 9.6 KB and is
 # what lets pandas read a URL at all here (assets/pyodide-engine.js's
 # NETWORK_PATCH_SOURCE) — a self-hosted copy without it still boots, just
-# without that.
+# without that. sqlite3 is dewmini's own default package (compose/dewmini.js's
+# DM_PACKAGES) — its own e2e tests need it here too, for the SQL cell type
+# (planning/CELL_IDENTITY.md §8).
 CORE = [
     "pyodide.js",
     "pyodide.mjs",

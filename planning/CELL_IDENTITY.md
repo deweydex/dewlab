@@ -222,15 +222,19 @@ carrying the state rather than its shape.
   `restartPython()` (7.108) turned out to be exactly the groundwork this
   needed, unchanged.
 - **SQL, HTML, CSS, JavaScript: designed in §8, being built from there
-  outward, in dewmini only, one type at a time. HTML (7.116) and CSS
-  (7.117) are built; SQL and JavaScript are not, yet.** This document's
-  own multi-type table was a design for when they exist, not a claim
-  that they do — §8 is where "when they exist" turns into an actual
-  execution model per type, since the table alone only ever answered
-  *what chrome a cell gets*, never *what running one does*.
+  outward, in dewmini only, one type at a time. HTML (7.116), CSS
+  (7.117), and SQL (7.118) are built; JavaScript is not, yet.** This
+  document's own multi-type table was a design for when they exist, not
+  a claim that they do — §8 is where "when they exist" turns into an
+  actual execution model per type, since the table alone only ever
+  answered *what chrome a cell gets*, never *what running one does*.
   `--dl-type-python`/`--dl-type-text` were the only colour tokens
-  defined until §8 added four more, two of them (`--dl-type-html`,
-  `--dl-type-css`) now in real use.
+  defined until §8 added four more, three of them (`--dl-type-html`,
+  `--dl-type-css`, `--dl-type-sql`) now in real use. SQL's own §8 entry
+  changed underneath it before it was built — the *sql.js* engine it
+  originally specified was set aside for Python's own `sqlite3` once
+  the work actually started (7.118) — which is why that subsection
+  reads as revised rather than as first written.
 - **Tutorial and practice pages: the pill and the run line are now ported
   too (7.113).** 7.109 ported the run-line-adjacent pieces (staleness,
   run above/below, restart & run all) onto `build.py`'s
@@ -354,23 +358,67 @@ Python's own — `RUNS_AGAINST_SESSION` gains `sql` alongside `python`,
 and every piece of machinery that already exists for that reason
 (`runCellBatch()`, Run above/below, Restart & run all, the run-line's
 order/duration/staleness) applies to a SQL cell exactly as built,
-unmodified. The database itself is *sql.js* (SQLite compiled to
-WebAssembly) — the same category of choice Pyodide already made for
-Python, a real interpreter running entirely in the reader's own tab, no
-server. One shared, in-memory database for the whole notebook, created
-lazily on the first SQL cell's first run; `CREATE TABLE` in one cell and
-`SELECT` from it in a later one work exactly the way defining a variable
-in one Python cell and reading it in a later one already does. Restart
-Python (renamed, in spirit, to cover this) discards and recreates the
-database the same way it discards and recreates the Pyodide interpreter.
+unmodified.
 
-Output: a `SELECT`'s rows render as an HTML table, reusing the exact
-markup and CSS `tutorial_tools.py`'s own `show_table()` already produces
-for a Python DataFrame, so a SQL result and a pandas result look like
-the same kind of thing on the page, because they are. A statement with
-no rows to return (`CREATE`/`INSERT`/`UPDATE`/`DELETE`) reports what it
-did in a short line — "3 rows inserted," "Table created" — the SQL
-equivalent of a Python statement that prints nothing.
+**Built on Python's own `sqlite3`, not a second engine (7.118).** This
+section originally specified *sql.js* (SQLite compiled to WebAssembly) —
+a second interpreter alongside Pyodide, the way a first read of "SQL
+needs a database" suggests. It was reconsidered before any of it was
+built: dewmini already runs a real Python, and Python already ships
+`sqlite3`, unvendored as an ordinary loadable Pyodide package rather
+than bundled into core (`compose/dewmini.js`'s `DM_PACKAGES` already
+carried it, from `run_query()`'s own earlier work, 7.78). Two engines
+booting in the same tab would have meant two data models that don't
+talk to each other — a SQL cell's own table invisible to a pandas
+DataFrame, and vice versa, unless something bridged them by hand. One
+engine, with the shared `db` global sqlite3 already gives it, means a
+SQL cell's `CREATE TABLE` is a table `pd.read_sql("select * from t",
+db)` can already see from an ordinary Python cell, with no plumbing of
+its own — friendlier for a student who has never opened a terminal, and
+interoperable with the pandas/numpy tooling every other cell already
+uses. Nothing about *building* a SQL cell type needed sql.js in the
+first place, once `sqlite3` and `run_query()` already existed to lean on.
+
+A SQL cell's own code is never handed to Pyodide as-is — a cell's raw
+SQL is not Python. `executeCell()`'s `buildSqlCellCode()` wraps it into
+one generated line, `tutorial_tools._run_sql_cell(db, <the SQL as a
+JSON-encoded string literal>)`, and that line is what actually runs
+through the same `engine.runCell()` a Python cell's own code goes
+through — no second code path through the engine, only a different
+string handed to the one that already exists. `db` is a fresh, in-memory
+`sqlite3.connect(":memory:")` connection, created once at boot and again
+on every reset (`assets/pyodide-engine.js`'s `RESEED_GLOBALS_SOURCE` for
+the main-thread fallback, `assets/pyodide-worker.js`'s own duplicate —
+gated on a `seedDb` flag dewmini's own boot message sets, since that
+worker file is shared with the hosted tutorial pages and they must never
+get one) — `CREATE TABLE` in one cell and `SELECT` from it in a later
+one work exactly the way defining a variable in one Python cell and
+reading it in a later one already does, and Restart Python discards and
+recreates `db` the same way it discards and recreates the Pyodide
+interpreter itself.
+
+`tutorial_tools._run_sql_cell(conn, script)` — internal, not in
+`__all__`, since a reader is never meant to call it by name; `run_query()`
+stays the public, single-statement version of the same idea, for a
+tutorial page. It splits `script` on a bare `;` (a plain split, not a
+real SQL parser — good enough for what a teaching notebook's cell needs,
+not for a semicolon buried inside a string literal) and runs every
+statement but the last directly, so a cell reads as an ordinary SQL
+script — `CREATE TABLE` here, `INSERT` there, `SELECT` at the end — the
+way `run_query()`'s single-statement shape never could. Only the last
+statement's own result renders: a `SELECT`'s rows as an HTML table,
+reusing the exact markup and CSS `tutorial_tools.py`'s own
+`_table_html()` already produces for a Python DataFrame, so a SQL result
+and a pandas result look like the same kind of thing on the page,
+because they are; anything else (`CREATE`/`INSERT`/`UPDATE`/`DELETE`)
+reports how many rows it touched in a short line — "3 rows affected" —
+the SQL equivalent of a Python statement that prints nothing. Every
+statement commits at the end, the same friendlier default `run_query()`
+already chose. The generated wrapper line assigns its own return value
+(`_ = tutorial_tools._run_sql_cell(...)`) rather than leaving it as the
+cell's last expression, on purpose: `_run_sql_cell()` already renders its
+result directly, and letting it also be the auto-displayed last value
+would render the same table twice.
 
 Chrome: the Python-shaped set — pill, Duplicate/Delete, collapse, run
 line. No Edit/View toggle, no quiet-until-touched: like Python, a SQL
@@ -416,17 +464,24 @@ CSS cell's behaviour depend on cell order and type, which nothing else
 here does. Its preview is `CSS_PREVIEW_MARKUP`, a fixed little "page,"
 with the reader's rule in a `<style>` tag ahead of it.
 
-SQL and JavaScript both need a genuinely new execution engine (*sql.js*;
-the persistent sandboxed session) and come after, in whichever order the
-work actually lands.
+SQL next. **Built (7.118)**, and — once the sql.js plan above was set
+aside for Python's own `sqlite3` — needing no genuinely new execution
+engine after all, only a generated-code path through the one Pyodide
+already booted for everything else. JavaScript still does: a persistent
+sandboxed session is a real second runtime, not a different string
+handed to the one dewmini already has, and comes after, in whichever
+order the work actually lands.
 
 Not attempted here, on purpose: none of the four get a drag-and-drop
 keyboard equivalent (§6 already flags this as owed to every cell type,
 not something new these four add to); SQL and JavaScript get no
 autocomplete or hover-doc the way Python's Jedi-backed tooling does —
-real, but a second project once the execution model itself is proven;
-and tutorial/practice pages get none of this in this pass — §7's own
-"dewmini only" scoping decisions for the pill/run-line/collapse/
+real, but a second project once the execution model itself is proven
+(a SQL cell's CodeMirror editor uses `@codemirror/lang-sql` for syntax
+highlighting only, the same "structure, not semantics" a Python cell's
+editor would have with Jedi turned off); and tutorial/practice pages get
+none of this in this pass — §7's own "dewmini only" scoping decisions for
+the pill/run-line/collapse/
 Duplicate work apply here for the same reason: these are genuinely new
 engines, not a port of something dewmini already proved, and the
 tutorial runtime has never needed anything but Python.

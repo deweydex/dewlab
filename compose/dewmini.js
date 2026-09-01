@@ -37,7 +37,7 @@ const DM_PACKAGES = ["numpy", "pandas", "matplotlib", "sqlite3", "Pillow"];
 // file the reader actually saved and sent to someone.
 const DM_NETWORK_PATCH = "try:\n    import pyodide_http\n    pyodide_http.patch_all()\nexcept Exception:\n    pass\n";
 
-const CELL_TYPES = { PYTHON: "python", TEXT: "text", HTML: "html", CSS: "css" };
+const CELL_TYPES = { PYTHON: "python", TEXT: "text", HTML: "html", CSS: "css", SQL: "sql" };
 
 /* The fixed little "page" a CSS cell's own preview renders — a heading, a
  * paragraph with a link, a button, a list: enough ordinary elements that a
@@ -54,10 +54,25 @@ const IMPORTS_SNIPPET = "import numpy as np\nimport pandas as pd\nimport matplot
 
 /* The cell types meant to be read, not run — rendered by default, with
  * an explicit Edit/View toggle and chrome that stays quiet until
- * touched (planning/CELL_IDENTITY.md §4/§8). Python is the one type
- * outside this set that still runs against the shared session; SQL and
- * JavaScript will join it once they exist. */
+ * touched (planning/CELL_IDENTITY.md §4/§8). Python and SQL sit outside
+ * this set: both run against the shared session, so both keep
+ * Python-shaped chrome (a run line, not a rendered/editor toggle) —
+ * see RUNS_AGAINST_SESSION below.
+ * JavaScript will join READ_NOT_RUN_TYPES once it exists: unlike SQL,
+ * a JS cell's own point is to be read as a small live page, the same
+ * as HTML/CSS. */
 const READ_NOT_RUN_TYPES = new Set([CELL_TYPES.TEXT, CELL_TYPES.HTML, CELL_TYPES.CSS]);
+
+/* The cell types that run against the shared Pyodide session and so get
+ * Python-shaped chrome: a run line, a Run/Stop button, "Clear output",
+ * and inclusion in "Run all"/"Run above"/"Run below". A SQL cell's own
+ * code is not Python — executeCell() below wraps it into a call to
+ * tutorial_tools._run_sql_cell() before handing it to the engine — but
+ * everything about *how* it runs (one shared interpreter, one cell at a
+ * time, staleness relative to its own last run) is identical to a
+ * Python cell's, so it shares this set rather than duplicating the
+ * logic that reads it. */
+const RUNS_AGAINST_SESSION = new Set([CELL_TYPES.PYTHON, CELL_TYPES.SQL]);
 
 /* Seeds the namespace for the *standalone export* only — a downloaded copy
  * carries its own tiny runtime rather than pyodide-engine.js, which is what
@@ -1161,7 +1176,14 @@ function createInsertDivider(index) {
   addCss.innerHTML = '<span class="dm-tool-icon dm-tool-icon-css" aria-hidden="true"></span>CSS';
   addCss.addEventListener("click", () => insertCellAt(index, CELL_TYPES.CSS));
 
-  actions.append(addPy, addTxt, addHtml, addCss);
+  const addSql = document.createElement("button");
+  addSql.type = "button";
+  addSql.className = "dm-insert-btn";
+  addSql.title = "Insert a SQL cell here";
+  addSql.innerHTML = '<span class="dm-tool-icon dm-tool-icon-sql" aria-hidden="true"></span>SQL';
+  addSql.addEventListener("click", () => insertCellAt(index, CELL_TYPES.SQL));
+
+  actions.append(addPy, addTxt, addHtml, addCss, addSql);
   row.append(line, actions);
   return row;
 }
@@ -1175,14 +1197,15 @@ function createInsertDivider(index) {
  * this to understand what a *meaningful* change is, which is exactly the
  * judgement call it exists to avoid making on a reader's behalf. */
 function isStale(cell) {
-  return cell.type === CELL_TYPES.PYTHON && cell.ranContent !== undefined && cell.ranContent !== cell.content;
+  return RUNS_AGAINST_SESSION.has(cell.type) && cell.ranContent !== undefined && cell.ranContent !== cell.content;
 }
 
-/* Updates a cell's on-page "chrome" — the error styling, and (for a
- * Python cell) the run-line — to match its data, without a full re-render
- * of the whole notebook. Called after running a cell (error and staleness
- * both just became current) and on every edit of a cell that has already
- * run once (staleness is the only thing an edit alone can change). */
+/* Updates a cell's on-page "chrome" — the error styling, and (for a cell
+ * that runs against the session, RUNS_AGAINST_SESSION) the run-line — to
+ * match its data, without a full re-render of the whole notebook. Called
+ * after running a cell (error and staleness both just became current) and
+ * on every edit of a cell that has already run once (staleness is the
+ * only thing an edit alone can change). */
 function updateCellChrome(id) {
   const el = cellsContainer?.querySelector(`.dm-cell[data-id="${id}"]`);
   const cell = cells.find((c) => c.id === id);
@@ -1414,7 +1437,7 @@ function createCellElement(cell) {
   pill.title = "Click, hold, and drag — or tap and hold, then drag — to move this cell.";
   const PILL_LABELS = {
     [CELL_TYPES.PYTHON]: "Python", [CELL_TYPES.TEXT]: "Text",
-    [CELL_TYPES.HTML]: "HTML", [CELL_TYPES.CSS]: "CSS",
+    [CELL_TYPES.HTML]: "HTML", [CELL_TYPES.CSS]: "CSS", [CELL_TYPES.SQL]: "SQL",
   };
   pill.innerHTML =
     '<span class="dm-cell-pill-dots" aria-hidden="true">&#8942;</span>' +
@@ -1772,6 +1795,40 @@ function createCellElement(cell) {
     // straight to its rendered preview.
     if (cell.content.trim()) showRendered();
     else syncPreviewBtn();
+  } else if (cell.type === CELL_TYPES.SQL) {
+    // Python-shaped, not HTML/CSS-shaped: a SQL cell runs against the
+    // same shared session a Python cell does (RUNS_AGAINST_SESSION), so
+    // its editor is the only thing in contentRegion — no rendered/editor
+    // toggle, no sandboxed preview, because there is nothing to preview
+    // until it actually runs. executeCell() below is what turns this
+    // cell's raw SQL into the tutorial_tools._run_sql_cell() call that
+    // actually executes it.
+    const editorEl = document.createElement("div");
+    editorEl.className = "dm-editor";
+    contentRegion.appendChild(editorEl);
+
+    const editor = createCodeEditor(editorEl, cell.content, {
+      dark: isDarkNow(),
+      language: "sql",
+      onChange: (text) => {
+        cell.content = text;
+        saveState();
+        updateCellChrome(cell.id);
+      },
+    });
+    editorEl.addEventListener("keydown", (e) => {
+      if (e.key !== "Enter") return;
+      if (e.shiftKey) {
+        e.preventDefault();
+        e.stopPropagation();
+        runCell(cell.id).then(() => focusNextCellAfter(cell.id));
+      } else if (e.ctrlKey || e.metaKey) {
+        e.preventDefault();
+        e.stopPropagation();
+        runCell(cell.id);
+      }
+    }, true);
+    cell.editor = editor;
   }
 
   setCollapsed(!!cell.collapsed);
@@ -1779,14 +1836,14 @@ function createCellElement(cell) {
   // ------------------------------------------------------------ footer
   //
   // Run, clear-output, the "⋯" run-above/below menu, and the run-line —
-  // Python only, since these are the only cells that run against the
-  // shared session. Sits between the code and the output, at the
-  // bottom-left of the cell: a reader's cursor is at the bottom of what
-  // they just wrote, not back up at the top, so that's where the next
-  // action should be waiting.
+  // RUNS_AGAINST_SESSION only (Python and SQL), since those are the only
+  // cells that run against the shared session. Sits between the code and
+  // the output, at the bottom-left of the cell: a reader's cursor is at
+  // the bottom of what they just wrote, not back up at the top, so
+  // that's where the next action should be waiting.
 
   let footbar = null;
-  if (cell.type === CELL_TYPES.PYTHON) {
+  if (RUNS_AGAINST_SESSION.has(cell.type)) {
     footbar = document.createElement("div");
     footbar.className = "dm-cell-footbar";
 
@@ -1912,6 +1969,30 @@ async function ensurePyodide() {
  * yet, and a signature-help popup, neither of which its own previous
  * live-namespace-only implementation could offer without a Worker. */
 
+/* Turns a SQL cell's own content into the Python source that actually
+ * runs it: a call to tutorial_tools' internal _run_sql_cell() against
+ * the shared `db` connection (assets/pyodide-engine.js's own
+ * RESEED_GLOBALS_SOURCE, planning/CELL_IDENTITY.md §8) — SQL cells have
+ * no execution path of their own, only this one line of generated
+ * Python handed to the same engine.runCell() every Python cell uses.
+ *
+ * The script is embedded as a JSON string literal, not a Python
+ * triple-quoted one: JSON's escaping (\", \\, \n, control characters as
+ * \u00XX) is a subset of what a Python double-quoted string literal
+ * accepts, so this is safe for any SQL text a reader could type,
+ * including one that itself contains quotes or backslashes — a raw
+ * triple-quoted string would break the moment the SQL did.
+ *
+ * The call is assigned rather than left as the cell's last expression on
+ * purpose: _run_sql_cell() already renders its own result table (or its
+ * "N rows affected" line) directly into the cell's output, and returns
+ * the same DataFrame for a reader's own use from Python — if that
+ * return value were also the last expression here, run_cell()'s normal
+ * auto-display would render the same table a second time underneath it. */
+function buildSqlCellCode(sql) {
+  return `import tutorial_tools as _dm_tt\n_ = _dm_tt._run_sql_cell(db, ${JSON.stringify(sql)})`;
+}
+
 /* Runs one cell's code through the shared engine's runCell() (dispatching
  * to tutorial_tools.py's own run_cell(), the same function every dewlab
  * tutorial cell runs through, wherever Pyodide actually lives) and
@@ -1937,7 +2018,8 @@ async function executeCell(cell) {
   // Python, even in the unusual case where an editor kept accepting
   // keystrokes while a slow cell was still running.
   cell.ranContent = cell.content;
-  const { ok } = await engine.runCell(cell.id, cell.content);
+  const code = cell.type === CELL_TYPES.SQL ? buildSqlCellCode(cell.content) : cell.content;
+  const { ok } = await engine.runCell(cell.id, code);
   cell.lastRunMs = performance.now() - startedAt;
   cell.ranOrder = ++runSequenceCounter;
   cell.output = outputEl.innerHTML;
@@ -1977,7 +2059,7 @@ function formatRunDuration(ms) {
  * output the running cell is actively writing. */
 function resetCellOutput(id) {
   const cell = cells.find((c) => c.id === id);
-  if (!cell || cell.type !== CELL_TYPES.PYTHON || running) return;
+  if (!cell || !RUNS_AGAINST_SESSION.has(cell.type) || running) return;
   const outputEl = cell.outputEl;
   if (outputEl) {
     outputEl.replaceChildren();
@@ -1993,11 +2075,11 @@ function resetCellOutput(id) {
   saveState();
 }
 
-/* Toolbar-level "Clear output" — resets every Python cell's output,
- * keeping every cell and its code. Distinct from the existing "Clear"
- * button, which deletes every cell. */
+/* Toolbar-level "Clear output" — resets every cell that runs against the
+ * session (Python, SQL), keeping every cell and its code. Distinct from
+ * the existing "Clear" button, which deletes every cell. */
 function clearAllOutputs() {
-  cells.forEach((cell) => { if (cell.type === CELL_TYPES.PYTHON) resetCellOutput(cell.id); });
+  cells.forEach((cell) => { if (RUNS_AGAINST_SESSION.has(cell.type)) resetCellOutput(cell.id); });
   updateStatus("Output cleared.");
 }
 
@@ -2045,7 +2127,7 @@ async function runCell(id) {
   }
   if (running) return;
   const cell = cells.find((c) => c.id === id);
-  if (!cell || cell.type !== CELL_TYPES.PYTHON) return;
+  if (!cell || !RUNS_AGAINST_SESSION.has(cell.type)) return;
   running = true;
   runningCellId = id;
   try {
@@ -2073,9 +2155,10 @@ async function runCell(id) {
   }
 }
 
-/* Runs a batch of Python cells in order — the shared engine behind "Run
- * all", "Run above", and "Run below" below, which differ only in *which*
- * cells they hand it and whether the namespace gets cleared first.
+/* Runs a batch of cells (Python and/or SQL — RUNS_AGAINST_SESSION) in
+ * order — the shared engine behind "Run all", "Run above", and "Run
+ * below" below, which differ only in *which* cells they hand it and
+ * whether the namespace gets cleared first.
  *
  * `reset` matters more than it looks: "Run all" and "Run above" both
  * start from `engine.resetPageState()` (clearing and re-seeding the
@@ -2091,9 +2174,9 @@ async function runCell(id) {
  * the same as running it individually, so a runaway cell partway through
  * a batch can still be interrupted without losing the cells that already
  * ran. */
-async function runCellBatch(pythonCells, { reset, emptyMessage, describe }) {
+async function runCellBatch(runnableCells, { reset, emptyMessage, describe }) {
   if (running) return;
-  if (!pythonCells.length) { updateStatus(emptyMessage); return; }
+  if (!runnableCells.length) { updateStatus(emptyMessage); return; }
 
   running = true;
   const btn = document.getElementById("run-all");
@@ -2108,15 +2191,15 @@ async function runCellBatch(pythonCells, { reset, emptyMessage, describe }) {
       await engine.resetPageState();
       resetRunSequence();
     }
-    updateStatus(describe(pythonCells.length));
+    updateStatus(describe(runnableCells.length));
     // Only ever the one cell right after whichever is about to run, kept
     // current as the batch moves along below — not the whole remaining
     // list marked "next" at once.
-    if (pythonCells[1]) setRunLineQueued(pythonCells[1]);
+    if (runnableCells[1]) setRunLineQueued(runnableCells[1]);
 
     let errors = 0;
-    for (let i = 0; i < pythonCells.length; i++) {
-      const cell = pythonCells[i];
+    for (let i = 0; i < runnableCells.length; i++) {
+      const cell = runnableCells[i];
       runningCellId = cell.id;
       setRunButtonRunning(cell.runBtn);
       startRunLineTicker(cell);
@@ -2132,7 +2215,7 @@ async function runCellBatch(pythonCells, { reset, emptyMessage, describe }) {
         resetRunButton(cell.runBtn);
         clearRunLineTicker(cell);
       }
-      const next = pythonCells[i + 1];
+      const next = runnableCells[i + 1];
       if (next) setRunLineQueued(next);
     }
     updateStatus(
@@ -2148,34 +2231,35 @@ async function runCellBatch(pythonCells, { reset, emptyMessage, describe }) {
   }
 }
 
-/* Runs every Python cell in order, top to bottom — "Run all." */
+/* Runs every cell that runs against the session, in order, top to bottom
+ * — "Run all." */
 async function runAllCells() {
   // In the file view there are no cells on screen to run one at a time,
   // and the file runs top to bottom as one thing.
   if (currentView() === VIEWS.FILE) { await runWholeFile(); return; }
-  await runCellBatch(cells.filter((c) => c.type === CELL_TYPES.PYTHON), {
+  await runCellBatch(cells.filter((c) => RUNS_AGAINST_SESSION.has(c.type)), {
     reset: true,
-    emptyMessage: "No Python cells to run.",
+    emptyMessage: "No cells to run.",
     describe: (n) => `Running ${n} cell${n === 1 ? "" : "s"}…`,
   });
 }
 
-/* "Run above": every Python cell from the top through (and including)
+/* "Run above": every runnable cell from the top through (and including)
  * `id`, from a clean namespace — the honest fix once a cell partway down
  * has been edited and everything before it needs re-proving, without
  * paying to re-run whatever comes after it too. */
 async function runAbove(id) {
   const idx = cells.findIndex((c) => c.id === id);
   if (idx === -1) return;
-  const slice = cells.slice(0, idx + 1).filter((c) => c.type === CELL_TYPES.PYTHON);
+  const slice = cells.slice(0, idx + 1).filter((c) => RUNS_AGAINST_SESSION.has(c.type));
   await runCellBatch(slice, {
     reset: true,
-    emptyMessage: "No Python cells above this one to run.",
+    emptyMessage: "No cells above this one to run.",
     describe: (n) => `Running the ${n} cell${n === 1 ? "" : "s"} above and including this one…`,
   });
 }
 
-/* "Run below": `id` and every Python cell after it, keeping whatever
+/* "Run below": `id` and every runnable cell after it, keeping whatever
  * earlier cells already defined — the way to redo a slow computation's
  * downstream steps without paying to redo the computation itself. See
  * runCellBatch()'s own comment for why this is the one caller that must
@@ -2183,10 +2267,10 @@ async function runAbove(id) {
 async function runBelow(id) {
   const idx = cells.findIndex((c) => c.id === id);
   if (idx === -1) return;
-  const slice = cells.slice(idx).filter((c) => c.type === CELL_TYPES.PYTHON);
+  const slice = cells.slice(idx).filter((c) => RUNS_AGAINST_SESSION.has(c.type));
   await runCellBatch(slice, {
     reset: false,
-    emptyMessage: "No Python cells here or below to run.",
+    emptyMessage: "No cells here or below to run.",
     describe: (n) => `Running the ${n} cell${n === 1 ? "" : "s"} from here on…`,
   });
 }
