@@ -1954,6 +1954,207 @@ function splitLines(text) {
   return lines.map((line, i) => (i < lines.length - 1 ? `${line}\n` : line));
 }
 
+/* ------------------------------------------------ outputs in a .ipynb
+ *
+ * dewmini keeps a cell's output as HTML — the contents of its output area
+ * when the cell finished. The Jupyter notebook format keeps a list of
+ * typed output objects instead: `stream` for text a cell printed, `error`
+ * for an exception, and `display_data` or `execute_result` for a value,
+ * carried as alternative representations labelled by MIME type.
+ *
+ * Neither direction used to be attempted. downloadAsIpynb() wrote
+ * `outputs: []` for every code cell and parseIpynbCells() set every
+ * imported cell's output to the empty string, so a student who imported
+ * a notebook silently lost every result it arrived with. These two
+ * functions are the translation that fixes it. */
+
+/* dewmini's own output HTML, turned into nbformat output objects.
+ *
+ * Translated child by child rather than as one blob, because the output
+ * area is already a sequence of separate things: applyOutputEvent() in
+ * pyodide-engine.js appends a `<pre>` per run of printed text and
+ * ready-made HTML for anything else. A figure therefore survives as a
+ * real `image/png`, which is what any other notebook tool expects, while
+ * a table stays HTML because that is genuinely what it is.
+ *
+ * An error becomes a `stderr` stream rather than an nbformat `error`
+ * object. An `error` requires an exception name and value as separate
+ * fields, and what dewmini has kept is the rendered message. Splitting
+ * that back apart would be guessing, and a wrong exception name in a file
+ * is worse than an honest stream of the text that was actually shown. */
+function cellOutputsForIpynb(cell) {
+  if (!cell.output) return [];
+  const holder = document.createElement("template");
+  holder.innerHTML = cell.output;
+
+  const outputs = [];
+  for (const node of holder.content.childNodes) {
+    if (node.nodeType === Node.TEXT_NODE) {
+      if (node.textContent.trim()) {
+        outputs.push({ output_type: "stream", name: "stdout", text: splitLines(node.textContent) });
+      }
+      continue;
+    }
+    if (node.nodeType !== Node.ELEMENT_NODE) continue;
+
+    const classes = node.getAttribute("class") || "";
+    if (node.tagName === "PRE") {
+      outputs.push({
+        output_type: "stream",
+        name: classes.includes("dl-error") ? "stderr" : "stdout",
+        text: splitLines(node.textContent),
+      });
+      continue;
+    }
+
+    const png = lonePngDataUrl(node);
+    if (png) {
+      outputs.push({
+        output_type: "display_data",
+        // The base64 payload only, without the "data:image/png;base64,"
+        // prefix — nbformat stores the data, and every reader adds its
+        // own prefix back when it builds an <img>.
+        data: { "image/png": png },
+        metadata: {},
+      });
+      continue;
+    }
+
+    outputs.push({
+      output_type: "display_data",
+      data: {
+        "text/html": splitLines(node.outerHTML),
+        // A plain-text alternative for any reader that will not show
+        // HTML. Cheap, and the difference between a table appearing as
+        // its numbers and appearing as nothing at all.
+        "text/plain": splitLines(node.textContent),
+      },
+      metadata: {},
+    });
+  }
+  return outputs;
+}
+
+/* The base64 of a PNG data URL when `node` is an image and nothing else
+ * — either an <img> itself or a wrapper whose only content is one. Null
+ * for anything more complicated, which then travels as HTML. */
+function lonePngDataUrl(node) {
+  const img = node.tagName === "IMG" ? node : node.querySelector("img");
+  if (!img) return null;
+  if (node !== img && (node.querySelectorAll("img").length !== 1 || node.textContent.trim())) return null;
+  const match = /^data:image\/png;base64,(.+)$/.exec(img.getAttribute("src") || "");
+  return match ? match[1] : null;
+}
+
+/* Elements an imported notebook's HTML output may keep. Everything else
+ * is dropped, contents and all.
+ *
+ * An imported .ipynb is a file from anywhere — a classmate, a download, a
+ * repository — and its outputs are HTML that would otherwise be put
+ * straight into the page. An allow-list is the safe shape for this: a
+ * list of things to remove is only ever as good as its author's
+ * imagination, while a list of things to keep fails closed. */
+const IMPORTED_HTML_TAGS = new Set([
+  "P", "DIV", "SPAN", "PRE", "CODE", "BR", "HR", "EM", "STRONG", "B", "I", "U", "SMALL", "SUB", "SUP",
+  "UL", "OL", "LI", "DL", "DT", "DD", "BLOCKQUOTE",
+  "TABLE", "THEAD", "TBODY", "TFOOT", "TR", "TH", "TD", "CAPTION", "COLGROUP", "COL",
+  "H1", "H2", "H3", "H4", "H5", "H6", "IMG",
+]);
+
+/* Rebuilds `html` keeping only the elements above, `class` as their only
+ * attribute, and an <img> only when its source is an embedded image.
+ *
+ * Rebuilding rather than editing in place: every attribute is dropped by
+ * default and the few that survive are copied across deliberately, so an
+ * attribute nobody thought of — an event handler, a `style` carrying a
+ * URL, an `srcset` — cannot survive by not having been considered.
+ *
+ * Parsing happens inside a <template>, whose contents are inert: no
+ * script runs and no image is fetched while this is deciding what to
+ * keep. */
+function sanitizeImportedHtml(html) {
+  const source = document.createElement("template");
+  source.innerHTML = html;
+  const out = document.createElement("div");
+
+  const copy = (from, to) => {
+    for (const node of from.childNodes) {
+      if (node.nodeType === Node.TEXT_NODE) {
+        to.appendChild(document.createTextNode(node.textContent));
+        continue;
+      }
+      if (node.nodeType !== Node.ELEMENT_NODE) continue;
+      if (!IMPORTED_HTML_TAGS.has(node.tagName)) continue;
+
+      const clean = document.createElement(node.tagName.toLowerCase());
+      const className = node.getAttribute("class");
+      if (className) clean.setAttribute("class", className);
+      if (node.tagName === "IMG") {
+        const src = node.getAttribute("src") || "";
+        // Only an embedded image. A remote URL would make opening a
+        // notebook fetch from wherever its author chose, which is a
+        // request the reader never made.
+        if (!/^data:image\/(png|jpeg|gif|webp);base64,/.test(src)) continue;
+        clean.setAttribute("src", src);
+        const alt = node.getAttribute("alt");
+        if (alt) clean.setAttribute("alt", alt);
+      }
+      copy(node, clean);
+      to.appendChild(clean);
+    }
+  };
+
+  copy(source.content, out);
+  return out.innerHTML;
+}
+
+/* nbformat output objects, turned back into the HTML dewmini shows.
+ *
+ * `text/html` from a file is put through sanitizeImportedHtml() above.
+ * `image/png` becomes an <img> built here rather than trusted as markup.
+ * An `error` keeps its exception name and value, and its traceback with
+ * the terminal colour codes real Jupyter leaves in it stripped out —
+ * those are escape sequences meant for a terminal, and shown in a browser
+ * they are line noise around the message a student needs to read. */
+function htmlForIpynbOutputs(outputs) {
+  if (!Array.isArray(outputs)) return "";
+  const text = (value) => (Array.isArray(value) ? value.join("") : String(value ?? ""));
+  const escape = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  const parts = [];
+
+  for (const output of outputs) {
+    if (!output || typeof output !== "object") continue;
+    if (output.output_type === "stream") {
+      const cssClass = output.name === "stderr" ? "dl-error" : "dl-stdout";
+      parts.push(`<pre class="${cssClass}">${escape(text(output.text))}</pre>`);
+      continue;
+    }
+    if (output.output_type === "error") {
+      const trace = text(Array.isArray(output.traceback) ? output.traceback.join("\n") : output.traceback);
+      // eslint-disable-next-line no-control-regex
+      const plain = trace.replace(/\u001b\[[0-9;]*m/g, "");
+      const heading = [output.ename, output.evalue].filter(Boolean).join(": ");
+      parts.push(`<pre class="dl-error">${escape(plain || heading)}</pre>`);
+      continue;
+    }
+    const data = output.data || {};
+    if (typeof data["image/png"] === "string" || Array.isArray(data["image/png"])) {
+      const base64 = text(data["image/png"]).replace(/\s+/g, "");
+      parts.push(`<img src="data:image/png;base64,${base64}" alt="">`);
+      continue;
+    }
+    if (data["text/html"] !== undefined) {
+      const clean = sanitizeImportedHtml(text(data["text/html"]));
+      if (clean) parts.push(clean);
+      continue;
+    }
+    if (data["text/plain"] !== undefined) {
+      parts.push(`<pre class="dl-stdout">${escape(text(data["text/plain"]))}</pre>`);
+    }
+  }
+  return parts.join("");
+}
+
 /* Builds a real Jupyter notebook (nbformat 4) file: a Python cell becomes
  * a "code" cell, a text cell becomes a "markdown" cell, in the exact JSON
  * shape Jupyter, JupyterLab, and Colab all expect — so the file this
@@ -1970,9 +2171,21 @@ function downloadAsIpynb() {
     },
     cells: cells.map((cell) => ({
       cell_type: cell.type === CELL_TYPES.PYTHON ? "code" : "markdown",
-      metadata: {},
+      // nbformat requires a tool to preserve metadata keys it does not
+      // recognise rather than discard them, so a cell's metadata is where
+      // dewmini's own information belongs. The file stays a valid Jupyter
+      // notebook that Jupyter, JupyterLab, Colab and VS Code all open
+      // normally — which is why dewlab needs no notebook format of its
+      // own. Only what is read back on import is written: a name nothing
+      // reads would be a claim in the file that nothing keeps true.
+      metadata: typeof cell.lastRunMs === "number" ? { dewmini: { lastRunMs: cell.lastRunMs } } : {},
       source: splitLines(cell.content),
-      ...(cell.type === CELL_TYPES.PYTHON ? { execution_count: null, outputs: [] } : {}),
+      ...(cell.type === CELL_TYPES.PYTHON
+        // No execution_count: dewmini does not number runs, and writing a
+        // number it did not measure would be a claim about the order this
+        // notebook was run in that nothing here can support.
+        ? { execution_count: null, outputs: cellOutputsForIpynb(cell) }
+        : {}),
     })),
   };
   triggerDownload(`${getFilenameBase()}.ipynb`, JSON.stringify(notebook, null, 2), "application/json");
@@ -2802,13 +3015,22 @@ function notebookNameFor(sourceLabel) {
 function parseIpynbCells(text) {
   const notebook = JSON.parse(text);
   if (!Array.isArray(notebook.cells)) throw new Error("that file has no cells array");
-  return notebook.cells.map((c) => ({
-    id: generateId(),
-    type: c.cell_type === "code" ? CELL_TYPES.PYTHON : CELL_TYPES.TEXT,
-    content: Array.isArray(c.source) ? c.source.join("") : c.source || "",
-    output: "",
-    error: false,
-  }));
+  return notebook.cells.map((c) => {
+    const output = c.cell_type === "code" ? htmlForIpynbOutputs(c.outputs) : "";
+    const dewmini = (c.metadata && c.metadata.dewmini) || {};
+    return {
+      id: generateId(),
+      type: c.cell_type === "code" ? CELL_TYPES.PYTHON : CELL_TYPES.TEXT,
+      content: Array.isArray(c.source) ? c.source.join("") : c.source || "",
+      output,
+      // An imported cell has not been run here, so it has no code that
+      // its output belongs to yet — `ranContent` stays unset and the
+      // stale badge stays quiet until this cell is actually run.
+      error: Array.isArray(c.outputs)
+        && c.outputs.some((o) => o && (o.output_type === "error" || o.name === "stderr")),
+      ...(typeof dewmini.lastRunMs === "number" ? { lastRunMs: dewmini.lastRunMs } : {}),
+    };
+  });
 }
 
 /* Parses a .py file in the percent format into dewmini's cell shape —
