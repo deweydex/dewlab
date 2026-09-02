@@ -135,6 +135,13 @@ html[data-dl-panel-right] .dm-page .dl-crumbs {
   border-bottom: 1px solid var(--dl-rule);
 }
 .dm-toolbar-group { display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; }
+/* display:flex above beats the browser's own [hidden] rule (an author
+ * stylesheet always wins over the user-agent one for the same property,
+ * regardless of specificity) — the same reason every other conditionally-
+ * hidden element in this file needs its own [hidden] override. Without
+ * this, hiding .dm-cellview-only for a site tab (updateViewSwitch())
+ * would set the attribute and change nothing on screen. */
+.dm-toolbar-group[hidden] { display: none; }
 .dm-toolbar-group-end { margin-left: auto; }
 
 .dm-tool {
@@ -191,6 +198,21 @@ html[data-dl-panel-right] .dm-page .dl-crumbs {
   background: currentColor;
   mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M8 5v14l11-7z'/%3E%3C/svg%3E") center/contain no-repeat;
   -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M8 5v14l11-7z'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+.dm-tool-icon-html {
+  background: currentColor;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6z'/%3E%3C/svg%3E") center/contain no-repeat;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6z'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+.dm-tool-icon-sql {
+  background: currentColor;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 3C7.58 3 4 4.79 4 7s3.58 4 8 4 8-1.79 8-4-3.58-4-8-4zM4 9v3c0 2.21 3.58 4 8 4s8-1.79 8-4V9c0 2.21-3.58 4-8 4S4 11.21 4 9zm0 5v3c0 2.21 3.58 4 8 4s8-1.79 8-4v-3c0 2.21-3.58 4-8 4s-8-1.79-8-4z'/%3E%3C/svg%3E") center/contain no-repeat;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 3C7.58 3 4 4.79 4 7s3.58 4 8 4 8-1.79 8-4-3.58-4-8-4zM4 9v3c0 2.21 3.58 4 8 4s8-1.79 8-4V9c0 2.21-3.58 4-8 4S4 11.21 4 9zm0 5v3c0 2.21 3.58 4 8 4s8-1.79 8-4v-3c0 2.21-3.58 4-8 4s-8-1.79-8-4z'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+.dm-tool-icon-js {
+  background: currentColor;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M8,3A2,2 0 0,0 6,5V8L4,10L6,12V15A2,2 0 0,0 8,17H9V15H8V11.9L6.6,10.5L8,9.1V5H9V3H8M16,3A2,2 0 0,1 18,5V8L20,10L18,12V15A2,2 0 0,1 16,17H15V15H16V11.9L17.4,10.5L16,9.1V5H15V3H16Z'/%3E%3C/svg%3E") center/contain no-repeat;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M8,3A2,2 0 0,0 6,5V8L4,10L6,12V15A2,2 0 0,0 8,17H9V15H8V11.9L6.6,10.5L8,9.1V5H9V3H8M16,3A2,2 0 0,1 18,5V8L20,10L18,12V15A2,2 0 0,1 16,17H15V15H16V11.9L17.4,10.5L16,9.1V5H15V3H16Z'/%3E%3C/svg%3E") center/contain no-repeat;
 }
 .dm-tool-icon-image {
   background: currentColor;
@@ -362,6 +384,15 @@ html[data-dl-panel-right] .dm-page .dl-crumbs {
 }
 .dm-cell-pill-type[data-type="python"] { color: var(--dl-type-python); }
 .dm-cell-pill-type[data-type="text"] { color: var(--dl-type-text); }
+/* "web" (the merged HTML+CSS cell, DECISIONS_LOG.md 7.120) keeps HTML's
+ * own colour token — one type, one colour, and violet was the more
+ * structural of the two the retired separate types had.
+ * --dl-type-css stays defined in assets/tutorial-style.css but is no
+ * longer used by anything; removing the token itself would touch a file
+ * dewmini doesn't otherwise need to for this change. */
+.dm-cell-pill-type[data-type="web"] { color: var(--dl-type-html); }
+.dm-cell-pill-type[data-type="sql"] { color: var(--dl-type-sql); }
+.dm-cell-pill-type[data-type="javascript"] { color: var(--dl-type-js); }
 
 .dm-cell-spacer { flex: 1; }
 
@@ -376,6 +407,33 @@ html[data-dl-panel-right] .dm-page .dl-crumbs {
 }
 .dm-cell:hover .dm-cell-header-end,
 .dm-cell:focus-within .dm-cell-header-end { opacity: 1; }
+
+/* A text or web (HTML+CSS) cell renders by default and is meant to be
+ * read, not run (planning/CELL_IDENTITY.md §4/§8, DECISIONS_LOG.md
+ * 7.115, 7.120) — its pill, Duplicate/Delete/Render, and collapse
+ * triangle stay invisible until a reader actually touches the cell, so
+ * a rendered note or a rendered web cell reads like part of the page
+ * rather than sitting open and code-shaped among cells that are.
+ * `opacity: 0; pointer-events: none`, never `display: none`: the
+ * elements stay in the tab order, so a keyboard user tabbing onto one
+ * reveals it via :focus-within the same moment it receives focus — only
+ * a mouse user needs to hover the cell first. A touch device has no
+ * hover to reveal anything with, so it gets the chrome on
+ * unconditionally. */
+:is(.dm-cell-text, .dm-cell-web) :is(.dm-cell-head, .dm-cell-collapse-col) {
+  transition: opacity 0.1s ease;
+}
+:is(.dm-cell-text, .dm-cell-web):not(:hover):not(:focus-within)
+  :is(.dm-cell-head, .dm-cell-collapse-col) {
+  opacity: 0;
+  pointer-events: none;
+}
+@media (hover: none) {
+  :is(.dm-cell-text, .dm-cell-web) :is(.dm-cell-head, .dm-cell-collapse-col) {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
 
 .dm-icon-btn {
   display: inline-flex;
@@ -444,6 +502,10 @@ html[data-dl-panel-right] .dm-page .dl-crumbs {
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
 }
 .dm-cell-run-menu[hidden] { display: none; }
+/* The default right: 0 above grows the menu leftward from the button;
+ * openMenu() (dewmini.js) adds this once that would run off the left
+ * edge of the viewport, so it grows rightward from the button instead. */
+.dm-cell-run-menu-left { right: auto; left: 0; }
 .dm-cell-run-menu-item {
   display: block;
   width: 100%;
@@ -464,11 +526,12 @@ html[data-dl-panel-right] .dm-page .dl-crumbs {
   outline: none;
 }
 
-/* The one .dm-icon-btn with a word on it rather than a glyph — "Edit"/
- * "View" needs more room than the fixed icon square, and there's no
- * single symbol for "toggle between editing and reading this note" that
- * reads clearly at a glance the way a pencil or an eye alone might not. */
-.dm-icon-preview {
+/* The few .dm-icon-btns with a word on them rather than a glyph —
+ * "Edit"/"View" (a text cell's rendered/editor toggle) and "Render" (a
+ * web cell's own explicit render button, DECISIONS_LOG.md 7.120) — all
+ * need more room than the fixed icon square, and no single symbol reads
+ * clearly at a glance for either. */
+.dm-icon-preview, .dm-icon-render {
   width: auto;
   padding: 0 0.5rem;
   font-family: var(--dl-mono);
@@ -592,6 +655,48 @@ html[data-dl-panel-right] .dm-page .dl-crumbs {
 .dm-doc-render em { color: var(--dl-muted); }
 .dm-doc-render img { display: block; max-width: 100%; height: auto; border-radius: 6px; margin: 0.4rem 0; }
 .dm-doc-empty { color: var(--dl-muted); font-style: italic; margin: 0; }
+
+/* A web cell's two source panels, stacked rather than side by side
+ * (DECISIONS_LOG.md 7.120) — a notebook cell's own column is narrow
+ * enough that two side-by-side editors would each be too cramped to
+ * read comfortably, the same width constraint that already keeps every
+ * other cell type to one editor at a time. */
+.dm-web-split {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.dm-web-pane-label {
+  font-family: var(--dl-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--dl-muted);
+  margin-bottom: 0.25rem;
+}
+
+/* A web cell's rendered view (planning/CELL_IDENTITY.md §8) — the
+ * iframe itself carries the sandboxing; this is just its frame on the
+ * page. resize:vertical, the same affordance .dm-textarea already gives
+ * a Text cell's own editor, so a reader can drag it taller for content
+ * that needs it rather than the page reaching into a cross-origin frame
+ * to measure it. A fixed white background regardless of theme: a
+ * reader's own HTML is written assuming a page, not dewlab's own dark
+ * mode, the same reason a code editor's syntax theme does not follow
+ * dewlab's light/dark toggle for the *page* it is styling. */
+.dm-html-render[hidden] { display: none; }
+.dm-web-split + .dm-html-render { margin-top: 0.5rem; }
+.dm-html-frame {
+  display: block;
+  width: 100%;
+  height: 8rem;
+  min-height: 3rem;
+  resize: vertical;
+  overflow: auto;
+  border: 1px solid var(--dl-cell-border);
+  border-radius: 4px;
+  background: #fff;
+}
 
 .dm-cell-output {
   margin-top: 0.6rem;
@@ -746,7 +851,11 @@ html[data-dl-panel-right] .dm-page .dl-crumbs {
   top: var(--dl-chrome-h);
   bottom: 0;
   z-index: 50;
-  width: min(24rem, 100vw);
+  /* Matches .dl-settings' own default (tutorial-style.css) — Library,
+     Workbench and Settings all open at the same width until a reader
+     drags one, rather than Settings alone starting 3rem narrower
+     (DECISIONS_LOG.md 7.122). */
+  width: min(21rem, 100vw);
   min-width: 16rem;
   max-width: min(40rem, 100vw);
   overflow-y: auto;
@@ -1329,6 +1438,64 @@ kbd {
 
 .dm-fileview-output { margin: 0; }
 .dm-fileview-output.dm-empty { display: none; }
+
+/* A site tab (planning/DEWMINI_WORKBENCH.md §10): editors on the left,
+ * a live preview on the right, split screen the way an ordinary
+ * code-and-preview IDE lays the two out — unlike a Web cell's own
+ * Render button, a site is what a reader keeps looking at while they
+ * work rather than a one-shot question. Below the same width a panel
+ * becomes a bottom sheet at, there isn't room for the split either, so
+ * the preview drops beneath the editors instead of beside them. */
+.dm-siteview { display: flex; flex-direction: column; gap: 0.75rem; }
+
+/* Its own class rather than reusing .dm-fileview-note: that one carries
+ * flex: 1 1 20rem, meant for a *row* flex parent (.dm-fileview-head) —
+ * inside .dm-siteview's *column* flex, the same rule flex-grows the note
+ * to absorb the whole column's extra height instead, leaving a few
+ * words of text sitting in a box hundreds of pixels tall. Same look,
+ * without that. */
+.dm-siteview-note {
+  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--dl-muted);
+}
+
+.dm-siteview-split {
+  display: flex;
+  gap: 0.75rem;
+  align-items: stretch;
+}
+@media (max-width: 48rem) {
+  .dm-siteview-split { flex-direction: column; }
+}
+
+.dm-siteview-editors {
+  flex: 1 1 50%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.dm-siteview-pane .dm-editor {
+  border: 1px solid var(--dl-rule);
+  border-radius: 6px;
+  overflow: hidden;
+  min-height: 8rem;
+}
+
+/* Fixed white background regardless of theme, the same reasoning as a
+ * Web cell's own .dm-html-frame: a reader's page is written assuming a
+ * page, not dewlab's dark mode. */
+.dm-siteview-frame {
+  flex: 1 1 50%;
+  min-width: 0;
+  min-height: 24rem;
+  border: 1px solid var(--dl-cell-border);
+  border-radius: 6px;
+  background: #fff;
+}
 
 /* On the tab, so a reader can tell at a glance which of two open
  * notebooks is showing as a file. */

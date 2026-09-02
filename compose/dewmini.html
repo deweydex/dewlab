@@ -33,6 +33,14 @@
      with no separate step to wire up first. -->
 <link rel="stylesheet" href="../assets/vendor/katex.min.css">
 
+<!-- Two accessible reading fonts, self-hosted rather than a Google Fonts
+     CDN link — the same reasoning as the KaTeX CSS above: this is exactly
+     the offline copy (write_dewmini_bundle()) a CDN would leave broken.
+     Cheap enough (~500 KB total, four faces each) to carry unconditionally
+     rather than only once a reader actually turns one on in Settings
+     (DECISIONS_LOG.md 7.123). -->
+<link rel="stylesheet" href="../assets/vendor/accessible-fonts.css">
+
 <link rel="stylesheet" href="../assets/tutorial-style.css">
 <link rel="stylesheet" href="dewmini-style.css">
 
@@ -122,13 +130,18 @@
            in a menu: a tool that behaves differently depending on a
            setting the reader cannot see is one they get lost in. The tab
            carries the same word once more than one notebook is open. -->
-      <div class="dm-toolbar-group dm-viewswitch" role="group" aria-label="How to show this notebook">
+      <!-- .dm-cellview-only: meaningless for a Site tab (planning/
+           DEWMINI_WORKBENCH.md §10) — there are no Python cells to show as
+           a file, run, or seed with an example — so updateViewSwitch()
+           hides every group carrying this class whenever the active tab
+           is showing a site rather than a notebook. -->
+      <div class="dm-toolbar-group dm-viewswitch dm-cellview-only" role="group" aria-label="How to show this notebook">
         <button id="dm-view-cells" class="dm-tool dm-viewswitch-btn" aria-pressed="true"
                 title="Show this notebook as a list of cells">Cells</button>
         <button id="dm-view-file" class="dm-tool dm-viewswitch-btn" aria-pressed="false"
                 title="Show this notebook as one Python file">File</button>
       </div>
-      <div class="dm-toolbar-group">
+      <div class="dm-toolbar-group dm-cellview-only">
         <button id="dm-show-example" class="dm-tool dm-tool-accent" title="Fill the notebook with a short worked example">
           <span class="dm-tool-icon dm-tool-icon-run" aria-hidden="true"></span>See an example
         </button>
@@ -139,7 +152,7 @@
           <span class="dm-tool-icon dm-tool-icon-text" aria-hidden="true"></span>Practice
         </button>
       </div>
-      <div class="dm-toolbar-group">
+      <div class="dm-toolbar-group dm-cellview-only">
         <button id="run-all" class="dm-tool dm-tool-accent" title="Run every cell in order">
           <span class="dm-tool-icon dm-tool-icon-run" aria-hidden="true"></span>Run all
         </button>
@@ -294,10 +307,34 @@
       uploaded anywhere.
     </p>
     <p class="dm-panel-note">
-      The seam between any two cells (or before the first, or after the
-      last) inserts exactly there — a blank Python cell or a text cell.
-      It's faint until you hover or tap it, not invisible; run a finger or
-      a cursor down the page and you'll find every seam.
+      The seam between any two cells inserts a new one exactly there:
+      before the first, after the last, or anywhere between. Choose
+      Python, Text, Web (HTML+CSS), SQL, or JavaScript. It's faint until
+      you hover or tap it, not invisible. Run a finger or a cursor down
+      the page and you'll find every seam.
+    </p>
+    <p class="dm-panel-note">
+      A Web cell has two editors, HTML and CSS, one above the other.
+      Click Render to see them together. Your CSS styles your own HTML.
+      It renders inside its own sandboxed frame. A script inside it can
+      run, but it can't reach the rest of the page. With no HTML yet,
+      your CSS still has a small fixed page to style.
+    </p>
+    <p class="dm-panel-note">
+      A SQL cell runs against one shared database, called <code>db</code>.
+      Write more than one statement in a cell: create a table, then
+      insert rows, then select from it. Only the last statement's result
+      shows: a table for a SELECT, or how many rows changed for anything
+      else. A Python cell can read <code>db</code> too, under the same
+      name.
+    </p>
+    <p class="dm-panel-note">
+      A JavaScript cell keeps its own values between runs, the same way a
+      Python cell does. A variable set in one cell is still there for a
+      later one to read. <code>console.log()</code> shows its arguments as
+      the cell's output. A thrown error shows there too. Run an edited
+      cell again and it still works, even if it declares the same name
+      twice.
     </p>
     <p class="dm-panel-note">
       Cleared everything and want to see it work again? <a href="#" id="dm-help-example-link">Load the example</a>.
@@ -425,6 +462,17 @@
        fallback, whichever the browser allows (DECISIONS_LOG.md 7.88). -->
   <section class="dm-panel-section" id="dm-files-section">
     <h3>Files</h3>
+
+    <!-- Open notebooks, even though none of them are a file here
+         (renderNotebookList()). A notebook lives in this browser's own
+         storage, not on the mounted filesystem below — listed anyway,
+         so a reader can still see where it is. -->
+    <p class="dl-panel-note">
+      Your open notebooks live in this browser, not as files below.
+      Keep a copy in Settings saves one as a real file.
+    </p>
+    <ul class="dm-filelist" id="settings-notebook-list"></ul>
+
     <p class="dl-panel-note" id="settings-storage-status">Not started yet — run a cell to start Python.</p>
     <div class="dl-progress-actions">
       <button type="button" class="dl-btn dl-btn-secondary" id="settings-choose-folder" hidden>Use a folder on my computer</button>
@@ -534,6 +582,27 @@
       </div>
     </div>
 
+    <!-- Same data-texture="font" as the row above — a second .dl-seg
+         group sharing one key works with no JS change (initTexture()'s
+         own sync loop matches every group with this attribute, not one
+         specific element), which is what lets these sit on their own
+         line below the first three rather than crowding a six-wide row. -->
+    <div class="dl-texture-row">
+      <span></span>
+      <div class="dl-seg" data-texture="font">
+        <button type="button" data-value="atkinson">Atkinson Hyperlegible</button>
+        <button type="button" data-value="opendyslexic">OpenDyslexic</button>
+      </div>
+    </div>
+
+    <div class="dl-texture-row">
+      <span>High contrast</span>
+      <div class="dl-seg" data-texture="contrast">
+        <button type="button" data-value="normal">off</button>
+        <button type="button" data-value="high">on</button>
+      </div>
+    </div>
+
     <div class="dl-texture-row">
       <span>Size</span>
       <input type="range" id="dl-texture-size" min="16" max="24" step="1" aria-label="Text size">
@@ -607,6 +676,39 @@
     </div>
 
     <button type="button" class="dl-texture-reset" id="dm-editor-reset">reset to defaults</button>
+  </section>
+
+  <!-- Which cell types offer themselves on the insert seam
+       (initCellTypeSettings(), createInsertDivider()). A cell already in
+       the notebook keeps working even with its own type turned off here
+       — this only changes what a reader can add next. -->
+  <section class="dl-settings-section" id="dl-settings-cell-types">
+    <h3>Cell types</h3>
+    <p class="dl-panel-note">
+      Turn a cell type off to hide it from the seam between cells. A cell
+      you already have still works, even with its type turned off.
+    </p>
+    <div class="dl-texture-row">
+      <span>Web (HTML+CSS)</span>
+      <div class="dl-seg" data-dm="celltype-web">
+        <button type="button" data-value="on">on</button>
+        <button type="button" data-value="off">off</button>
+      </div>
+    </div>
+    <div class="dl-texture-row">
+      <span>SQL</span>
+      <div class="dl-seg" data-dm="celltype-sql">
+        <button type="button" data-value="on">on</button>
+        <button type="button" data-value="off">off</button>
+      </div>
+    </div>
+    <div class="dl-texture-row">
+      <span>JavaScript</span>
+      <div class="dl-seg" data-dm="celltype-javascript">
+        <button type="button" data-value="on">on</button>
+        <button type="button" data-value="off">off</button>
+      </div>
+    </div>
   </section>
 </div>
 

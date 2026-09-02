@@ -53,7 +53,7 @@ const AUTOSAVE_DELAY = 500;
 const NON_TUTORIAL_PAGES = new Set(["index", "tree", "about", "topics"]);
 const TEXTURE_DEFAULTS = {
   theme: "system", font: "serif", size: 18, width: 34,
-  link: "#d4692a", header: "full",
+  link: "#d4692a", header: "full", contrast: "normal",
 };
 
 /* The size slider's minimum, which has to be known here as well as in the
@@ -933,6 +933,8 @@ function applyTexture(state) {
   else root.setAttribute("data-font", state.font);
   if (state.header === "full") root.removeAttribute("data-header");
   else root.setAttribute("data-header", state.header);
+  if (state.contrast === "normal") root.removeAttribute("data-contrast");
+  else root.setAttribute("data-contrast", state.contrast);
   root.style.setProperty("--dl-font-size", state.size + "px");
   root.style.setProperty("--dl-line-width", state.width + "rem");
   root.style.setProperty("--dl-link", state.link);

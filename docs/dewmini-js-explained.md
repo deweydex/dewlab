@@ -34,10 +34,91 @@ live session survives a reload, so neither should any claim about one.
 actually lives now — the numbered, coloured identity pill, the merged
 run-line (order, duration, staleness, and the live "Running…"/"Running
 next" states), the collapse triangle (every cell type, not only
-code-bearing ones — an amendment past that document's own §4), and the
-header-end group (Edit for text, Duplicate, Delete). Not yet ported:
-tutorial and practice pages still show the plainer, four-feature slice
-from 7.109, not this full anatomy.
+code-bearing ones — an amendment past that document's own §4), the
+header-end group (Edit for text, Duplicate, Delete), and a text cell's
+chrome going quiet — `opacity: 0; pointer-events: none` on
+`.dm-cell-head`/`.dm-cell-collapse-col` — until a reader hovers or
+focuses the cell (DECISIONS_LOG.md 7.115). Tutorial and practice pages
+carry this same anatomy now too (7.113–7.115), by way of `build.py`'s
+`render_cell()` and `assets/tutorial-runtime.js` rather than this file —
+see `docs/tutorial-runtime-explained.md` for that side.
+
+Three more `CELL_TYPES` values are dewmini-only: `web`, `sql`, and
+`javascript` (DECISIONS_LOG.md 7.116–7.120, `planning/CELL_IDENTITY.md`
+§8) — the shipped set, not the four separate types §8 originally
+designed. HTML and CSS shipped as separate types first and were merged
+into one, `web`, once both existed to show the merge was the right call
+(7.120) — this file's own history briefly had separate `HTML`/`CSS`
+members on `CELL_TYPES` and a matching pair of near-identical
+`createCellElement()` branches; neither exists anymore.
+
+A web cell's own branch has two CodeMirror editors, HTML and CSS
+(`language: "html"`/`"css"`), both always visible and always editable —
+unlike Text, nothing here ever swaps an editor out for a rendered view,
+so there is no Edit/View toggle to wire up. `READ_NOT_RUN_TYPES`
+narrowed to `text` alone for that reason: it used to gate the
+Edit/View-toggle button (`previewBtn`) for three types, and now only
+Text still wants one. A web cell gets its own separate button instead,
+`renderBtn`, built unconditionally for `CELL_TYPES.WEB` right beside
+where `previewBtn` is built — clicking it (not either editor's own
+`focusout`, the way HTML and CSS separately used to auto-render) reads
+both `cell.content` (HTML) and `cell.style` (CSS, the one field no
+other cell type has) and combines them into one sandboxed `<iframe
+sandbox="allow-scripts" srcdoc="…">`, falling back to
+`CSS_PREVIEW_MARKUP` (a fixed little "page") when the HTML half is
+empty — the old standalone-CSS cell's own use case, preserved.
+`destroyCellEditors(cell)` replaced six separate `cell.editor?.destroy()`
+call sites for this reason: a web cell's second editor lives in
+`cell.cssEditor`, and every place that tears a cell down (deleting it,
+switching notebooks, replacing the whole list) needs to destroy both,
+not just `cell.editor`. `readCells()`'s own migration,
+`migrateLegacyCellType()`, turns a notebook's old standalone `html`/
+`css` cells into independent `web` cells on load — each old cell
+becomes its own new one, never merged with a neighbour; see
+DECISIONS_LOG.md 7.120 for why guessing at a pairing was rejected.
+
+The SQL and JavaScript branches look nothing like a web cell's, because
+neither is a read-not-run type — both run against a shared session, the
+same as Python. `RUNS_AGAINST_SESSION` (`python`, `sql`, `javascript`)
+is the sibling set to `READ_NOT_RUN_TYPES`: every place that used to
+check `cell.type === CELL_TYPES.PYTHON` to mean "does this cell run
+against a session" (the footer/footbar build, `isStale()`,
+`resetCellOutput()`, `clearAllOutputs()`, `runCell()`'s own guard, the
+"Run all"/"Run above"/"Run below" filters) now checks
+`RUNS_AGAINST_SESSION.has(cell.type)` instead, so a SQL or JavaScript
+cell gets the identical run line, Run/Stop button, and staleness
+tracking a Python cell already had, unmodified. Both cells' own
+`createCellElement()` branches are closer to Python's than to a web
+cell's: a bare CodeMirror editor (`language: "sql"`/`"javascript"`), no
+rendered/editor toggle at all.
+
+What makes a SQL cell a SQL cell rather than a second Python cell type is
+entirely in `executeCell()`: `buildSqlCellCode()` wraps the cell's raw
+SQL into one generated Python line —
+`tutorial_tools._run_sql_cell(db, <the SQL as a JSON-encoded string
+literal>)` — and *that* is what actually gets handed to
+`engine.runCell()`, never the reader's own SQL text. `db` is a shared,
+in-memory `sqlite3` connection dewmini seeds at boot and on every reset
+(see [`pyodide-engine-explained.md`](pyodide-engine-explained.md) for
+where); the same connection is reachable from an ordinary Python cell
+under that name, which is the whole point of building SQL on Python's
+own `sqlite3` rather than a second engine (DECISIONS_LOG.md 7.118).
+
+A JavaScript cell dispatches to a different engine entirely —
+`executeCell()` hands its content, unwrapped, to
+[`compose/js-cell-engine.js`](js-cell-engine-explained.md)'s own `runCell()`,
+never `assets/pyodide-engine.js`. `ensureSessionFor(cell)`,
+`canStopFor(cell)`, and `requestInterruptFor(cell)` are the three small
+dispatcher functions this required: everywhere `runCell()`/
+`runCellBatch()` used to call `ensurePyodide()`/read `engine.canStop()`/
+call `engine.requestInterrupt()` unconditionally, they now ask one of
+these three which engine `cell` actually needs first. `restartPython()`
+tears the JS session down too (`jsEngine.restart()`) alongside Pyodide's
+own restart, and a `reset` batch ("Run all"/"Run above") does the same —
+there is no cheaper reset for a JS session the way `resetPageState()` is
+for Pyodide's, so a full teardown is what "Run all" pays for a
+JavaScript cell too, matching Python and SQL's own "what's on screen
+matches what the code did" guarantee.
 
 ### …and `cells` belongs to a notebook
 
@@ -107,6 +188,16 @@ for `load_csv()`).
    `runAllCells`/`runAbove`/`runBelow` — see below), `restartPython`
    (factored out of "Restart Python", also the first half of "Restart &
    run all" — resets the run sequence too, via `resetRunSequence()`).
+
+   A tab need not be a notebook of cells at all. `openWorkspaceFile`
+   opens a real file from the mounted filesystem into a tab of its own —
+   a `.py` as one editor (`renderFileView`, `VIEWS.FILE`), a `.ipynb` as
+   cells, an `.html` as a site (`renderSiteView`, `VIEWS.SITE`:
+   `planning/DEWMINI_WORKBENCH.md` §10) — and `writeNotebookToWorkspace`
+   is the debounced write back the other way, called from `saveState()`
+   whenever the tab's `.path` is set. A site tab has no cells; its three
+   files' live text sits directly on the notebook object
+   (`siteHtml`/`siteCss`/`siteJs`) instead.
 5. **Downloads** — `triggerDownload` (the shared Blob-download trick),
    then `downloadAsPython`/`downloadAsIpynb`/`downloadAsHtml`, the last
    of which builds an entire second, self-contained HTML page as a

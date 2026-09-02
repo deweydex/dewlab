@@ -302,3 +302,51 @@ than buried here: remote dataset fetching (§6, and in
 `tests/MANUAL_CHECKLIST.md`), and the two `test_stop_button.py` failures
 that were already failing on `main` before any of this — an interrupt
 timing out under this sandbox's CPU, not a regression.
+
+---
+
+## 10. Site: an `.html` file opens as a small website (added later, `DECISIONS_LOG.md` 7.121)
+
+Not part of the original instruction above — added afterward, once the
+notebook's own HTML/CSS/JavaScript cell types existed and raised an
+obvious follow-on question: since dewmini can already run all three, can
+it also *serve* them together, the way a real static site is three real
+files rather than three cells?
+
+**A tab kind, not a fourth panel.** The first design for this put three
+fixed editors in their own Workbench section. It was built, worked, and
+was thrown away before it was ever committed, because `main` had by then
+already given Files (§2) the thing that section was reinventing in
+miniature: `openWorkspaceFile()` opens a real file into a tab of its own,
+with a debounced write back to the file it came from. A second copy of
+that mechanism next to the one Files already has is duplication, not a
+feature — so Site is instead a third value of `VIEWS`, the same enum
+`.py`'s File view already introduced, alongside `CELLS` and `FILE`.
+Opening an `.html` from Files opens it as a site the same way opening a
+`.py` opens it as a file.
+
+**No fixed three files.** An `.html` file pairs with a `.css` and a
+`.js` that share its own base name — not three fixed names — and
+neither has to exist: a site with no styling and no script is still a
+site. Files' own flat
+list (§2's "a compact Settings section is the wrong place for a full
+recursive tree," `DECISIONS_LOG.md` 7.88) shows these as the ordinary
+files they are; nothing about Site hides them from it, unlike the first
+design's now-abandoned `site/` subfolder.
+
+**Split screen, not a Render button.** Editors on one side, a live
+sandboxed `<iframe sandbox="allow-scripts">` on the other (the same
+isolation the Web cell already uses), updating on every keystroke. A Web
+cell's own Render button suits a notebook cell answering a one-shot
+question inside a wider document; a site is what a reader keeps looking
+at continuously while they build it, closer to an ordinary
+code-and-preview IDE than to a cell — argued for directly, not assumed.
+
+Verified in a real browser: opening an `.html` from Files renders a
+split-screen tab reflecting its real content; a same-base-name `.css`/
+`.js` pair opens beside it, including a script mutating the DOM the HTML
+half produced; a lone `.html` with no siblings still opens; typing in
+any pane updates the preview without a separate press; the CSS and JS
+halves each write back to their own file, readable from a Python cell in
+another tab; the toolbar's cell-only controls hide for a site tab and
+reappear on a notebook tab; and a site tab survives a full page reload.

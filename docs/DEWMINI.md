@@ -301,9 +301,10 @@ their own line, so your own variables stay at the top.
 you work. It stays with this browser rather than with any one
 notebook.
 
-**Files** is a real filesystem a cell can read from and write to. It is
-separate from the notebook itself, which lives under "Keep a copy" in
-Settings.
+**Files** is a real filesystem a cell can read from and write to. Your
+open notebooks list here too, so you can always see where they are. A
+notebook lives in this browser, not as a file. "Keep a copy" in
+Settings saves one as a real file.
 
 By default it is private storage inside your browser, which you cannot
 see from outside. **Use a folder on my computer** switches to a real
@@ -323,9 +324,11 @@ cross to delete it.
 
 A `.py` opens as a file, so you see the thing you are learning to write.
 A `.ipynb` opens as cells, because that format carries the results each
-one produced. Editing either one saves straight back to the file. Other
-kinds of file stay in the list for a cell to read, since dewmini would
-have to guess how to show them as code.
+one produced. A `.html` opens as a small website. Its matching `.css` and
+`.js` files open beside it, and the page updates as you type. Editing any
+of these saves straight back to its file. Other kinds of file stay in the
+list for a cell to read, since dewmini would have to guess how to show
+them as code.
 
 **Your own Python files live here too, and you can import them.** Write
 shapes.py into this storage. A cell can then say `import shapes` and
@@ -399,9 +402,11 @@ Each one is a runnable dewlab tutorial in miniature.
 **Practice** holds the order switch described above.
 
 **Texture** holds the same reading preferences every dewlab page has:
-theme, font, text size, page width and link color. A choice you make
-here follows you to the tutorials, and a choice you make on a tutorial
-page follows you back here.
+theme, font, text size, page width and link color. Two of the font
+choices are built for easier reading. High contrast turns on
+black-and-white and a clearer font together. A choice you make here
+follows you to the tutorials, and a choice you make on a tutorial page
+follows you back here.
 
 **Editor** holds the settings for a page you write code on rather than
 read. You can set how large the code is and how much room a cell gives

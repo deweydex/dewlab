@@ -22,6 +22,7 @@ from __future__ import annotations
 import json
 
 import pytest
+from playwright.sync_api import expect
 
 # The page under test, relative to the built site root.
 DEWMINI = "compose/dewmini.html"
@@ -61,14 +62,25 @@ def dewmini_url(site_dir, base_url) -> str:
 
 @pytest.fixture
 def dewmini(page, dewmini_url):
-    """A fresh dewmini with no saved state.
+    """A fresh dewmini with no saved state, and Web and SQL cells turned on.
 
     Storage is cleared *before* the real load, on a blank page from the
     same origin: clearing after dewmini has already read localStorage
     would leave the page showing state this test then thinks is gone.
+
+    Web and SQL default off (DECISIONS_LOG.md 7.122) — seeded on here,
+    before the real load reads them, because the great majority of this
+    suite is testing something else entirely and would otherwise have to
+    turn each on for itself. The default-off behaviour, and the toggle
+    itself, get their own tests below against a page that does *not* go
+    through this fixture.
     """
     page.goto(dewmini_url)
-    page.evaluate("localStorage.clear()")
+    page.evaluate("""() => {
+        localStorage.clear();
+        localStorage.setItem('dewmini:celltype-web', 'on');
+        localStorage.setItem('dewmini:celltype-sql', 'on');
+    }""")
     page.goto(dewmini_url)
     # The toolbar, not #cells-container: an empty notebook's cell
     # container has zero height, which Playwright counts as hidden.
@@ -569,6 +581,493 @@ def test_maths_survives_a_dollar_sign_that_is_not_maths(dewmini):
     rendered = dewmini.locator(".dm-doc-render").last
     assert "$5 or $6" in rendered.inner_text()
     assert rendered.locator(".dl-math").count() == 0
+
+
+# -------------------------------------------------------- quiet until touched
+
+
+def _quiet_text_cell(page):
+    """Adds a text cell, gives it content, and blurs it so it renders —
+    the same setup test_a_text_cell_renders_maths uses."""
+    page.locator(".dm-insert-btn", has_text="Text").last.click()
+    textarea = page.locator(".dm-textarea").last
+    textarea.click()
+    page.keyboard.insert_text("A note for the reader.")
+    textarea.evaluate("el => el.blur()")
+    return page.locator(".dm-cell-text").last
+
+
+def head_opacity(page, cell) -> str:
+    """The cell's .dm-cell-head opacity, after its 0.1s CSS transition has
+    had time to settle — reading it immediately after a hover/mouse-move
+    can still catch it mid-animation."""
+    page.wait_for_timeout(150)
+    return cell.locator(".dm-cell-head").evaluate("el => getComputedStyle(el).opacity")
+
+
+def hover_cell(page, cell):
+    """A real mouse move to a point near the cell's own top-left corner
+    — inside its header row, above wherever a rendered HTML cell's own
+    sandboxed iframe sits. :hover on the outer page does not reliably
+    propagate to a cell's ancestors when the cursor sits over a
+    cross-origin/sandboxed <iframe> under synthetic (CDP-driven) input,
+    even though elementFromPoint confirms the coordinate is genuinely
+    inside the cell's own box — a real user's mouse does not have this
+    problem, but a test hovering the geometric centre of an HTML cell
+    can land squarely inside its iframe and this call needs to be
+    reliable regardless of cell type."""
+    box = cell.bounding_box()
+    page.mouse.move(box["x"] + 15, box["y"] + 15, steps=5)
+
+
+def test_a_rendered_text_cells_chrome_is_invisible_until_touched(dewmini):
+    """DECISIONS_LOG.md 7.115, planning/CELL_IDENTITY.md §4 — a rendered
+    text cell reads like part of the page, not a code widget, until a
+    reader actually touches it."""
+    cell = _quiet_text_cell(dewmini)
+    dewmini.mouse.move(5, 5)  # away from the cell entirely
+    assert head_opacity(dewmini, cell) == "0"
+
+
+def test_hovering_the_cell_reveals_its_chrome(dewmini):
+    cell = _quiet_text_cell(dewmini)
+    dewmini.mouse.move(5, 5)
+    assert head_opacity(dewmini, cell) == "0"
+
+    cell.hover()
+    assert head_opacity(dewmini, cell) == "1"
+
+
+def test_tabbing_onto_a_hidden_control_reveals_it_too(dewmini):
+    """opacity/pointer-events, not display:none (planning/CELL_IDENTITY.md
+    §4) — a keyboard user never needs to hover first."""
+    cell = _quiet_text_cell(dewmini)
+    dewmini.mouse.move(5, 5)
+    assert head_opacity(dewmini, cell) == "0"
+
+    cell.locator(".dm-icon-delete").focus()
+    assert head_opacity(dewmini, cell) == "1"
+
+
+def test_a_python_cells_chrome_is_never_hidden(dewmini):
+    """Quiet-until-touched is a text-cell-only affordance — a Python cell
+    is meant to be worked on, not read past."""
+    add_python_cell(dewmini, "1 + 1")
+    dewmini.mouse.move(5, 5)
+    cell = dewmini.locator(".dm-cell-python").last
+    assert head_opacity(dewmini, cell) == "1"
+
+
+# ---------------------------------------------------------------- web cells
+
+
+def _web_cell(page, html="", css=""):
+    """Adds a web (merged HTML+CSS) cell, types into whichever of its two
+    editors was given content, and clicks Render if there's anything to
+    render — the split-view replacement for the old separate
+    _html_cell()/_css_cell() helpers (DECISIONS_LOG.md 7.120). Both
+    editors are always visible at once, so unlike those helpers there is
+    no blur-to-render step; Render is the one explicit trigger."""
+    page.locator(".dm-insert-btn", has_text="Web").last.click()
+    cell = page.locator(".dm-cell-web").last
+    editors = cell.locator(".cm-content")
+    if html:
+        editors.nth(0).click()
+        page.keyboard.insert_text(html)
+    if css:
+        editors.nth(1).click()
+        page.keyboard.insert_text(css)
+    if html or css:
+        cell.locator(".dm-icon-render").click()
+    return cell
+
+
+def test_a_web_cells_two_editors_are_both_always_visible(dewmini):
+    """No Edit/View toggle, unlike the read-not-run types that keep one
+    — both the HTML and the CSS editor stay visible and editable
+    together, the whole point of merging the two old separate cell
+    types (DECISIONS_LOG.md 7.120)."""
+    dewmini.locator(".dm-insert-btn", has_text="Web").last.click()
+    cell = dewmini.locator(".dm-cell-web").last
+    assert cell.locator(".cm-content").count() == 2
+    assert cell.locator(".dm-icon-preview").count() == 0
+    assert cell.locator(".dm-html-render").is_hidden()
+
+
+def test_a_web_cells_html_renders_in_a_sandboxed_iframe(dewmini):
+    """DECISIONS_LOG.md 7.116/7.120, planning/CELL_IDENTITY.md §8."""
+    cell = _web_cell(dewmini, html="<h2>Hello from HTML</h2>")
+    frame_el = cell.locator(".dm-html-frame")
+    assert frame_el.get_attribute("sandbox") == "allow-scripts"
+
+    frame = frame_el.content_frame
+    assert frame.locator("h2").text_content() == "Hello from HTML"
+
+
+def test_a_web_cells_script_cannot_reach_the_parent_page(dewmini):
+    """The whole point of sandbox="allow-scripts" with no
+    allow-same-origin: a script inside the cell runs, but in an
+    opaque-origin document that cannot touch this page's own window,
+    localStorage, or DOM — including a cell imported from a shared
+    file, not only one the reader wrote themselves."""
+    cell = _web_cell(
+        dewmini,
+        html='<script>try { window.parent.document.title = "hijacked"; } catch (e) {}</script>',
+    )
+    dewmini.wait_for_timeout(300)
+    assert dewmini.title() != "hijacked"
+
+
+def test_a_web_cells_css_styles_its_own_html(dewmini):
+    """The capability merging the two types unlocks that neither could
+    do alone: a CSS rule styling the *same* cell's own markup, not a
+    fixed sample page — the pairing the old separate CSS cell's own
+    design note explicitly declined to guess at, now not a guess at
+    all (DECISIONS_LOG.md 7.120)."""
+    cell = _web_cell(
+        dewmini,
+        html="<h2>Styled</h2><button>Go</button>",
+        css="h2 { color: rebeccapurple; } button { background: gold; }",
+    )
+    frame = cell.locator(".dm-html-frame").content_frame
+    assert frame.locator("h2").text_content() == "Styled"
+    assert frame.locator("h2").evaluate("el => getComputedStyle(el).color") == "rgb(102, 51, 153)"
+    assert frame.locator("button").evaluate(
+        "el => getComputedStyle(el).backgroundColor"
+    ) == "rgb(255, 215, 0)"
+
+
+def test_an_empty_html_half_falls_back_to_the_fixed_preview(dewmini):
+    """A CSS-only web cell — the old standalone CSS cell's own use case
+    — still has something real to style before the reader has written
+    any markup of their own (DECISIONS_LOG.md 7.117/7.120)."""
+    cell = _web_cell(dewmini, css="h2 { color: rebeccapurple; }")
+    frame = cell.locator(".dm-html-frame").content_frame
+    assert frame.locator("h2").evaluate("el => getComputedStyle(el).color") == "rgb(102, 51, 153)"
+
+
+def test_rendering_a_web_cell_only_happens_on_render_click(dewmini):
+    """Explicit, not on blur, unlike the two types this replaces — two
+    editors both auto-rendering on their own focusout would fire twice
+    for one edit (DECISIONS_LOG.md 7.120)."""
+    dewmini.locator(".dm-insert-btn", has_text="Web").last.click()
+    cell = dewmini.locator(".dm-cell-web").last
+    editor = cell.locator(".cm-content").first
+    editor.click()
+    dewmini.keyboard.insert_text("<p>Not rendered yet</p>")
+    editor.evaluate("el => el.blur()")
+    assert cell.locator(".dm-html-render").is_hidden()
+
+    cell.locator(".dm-icon-render").click()
+    assert cell.locator(".dm-html-render").is_visible()
+
+
+def test_a_web_cells_chrome_is_also_quiet_until_touched(dewmini):
+    cell = _web_cell(dewmini, html="<p>Hi</p>")
+    # _web_cell() leaves focus inside whichever editor it typed into —
+    # there's no blur-to-render step to do that for it here, unlike the
+    # old _html_cell()/_css_cell() helpers. :focus-within keeps the
+    # chrome visible while focus is still there, correctly, so this has
+    # to move focus away itself before checking quiet-until-touched.
+    dewmini.evaluate("document.activeElement.blur()")
+    dewmini.mouse.move(5, 5)
+    assert head_opacity(dewmini, cell) == "0"
+
+    hover_cell(dewmini, cell)
+    assert head_opacity(dewmini, cell) == "1"
+
+
+def test_a_web_cell_survives_a_reload(dewmini):
+    _web_cell(dewmini, html="<p>Saved HTML</p>", css="p { color: teal; }")
+    dewmini.reload()
+    dewmini.wait_for_selector(".dm-toolbar")
+    assert dewmini.locator(".dm-cell-web").count() == 1
+    frame = dewmini.locator(".dm-cell-web .dm-html-frame").content_frame
+    assert "Saved HTML" in frame.locator("p").text_content()
+    assert frame.locator("p").evaluate("el => getComputedStyle(el).color") == "rgb(0, 128, 128)"
+
+
+def test_a_web_cell_can_be_collapsed_and_duplicated(dewmini):
+    cell = _web_cell(dewmini, html="<p>Some markup</p>")
+    hover_cell(dewmini, cell)
+    cell.locator(".dm-collapse-toggle").click()
+    assert cell.locator(".dm-cell-content").is_hidden()
+    assert cell.locator(".dm-cell-collapsed-summary").is_visible()
+
+    cell.locator(".dm-icon-duplicate").click()
+    assert dewmini.locator(".dm-cell-web").count() == 2
+
+
+def test_old_html_and_css_cells_migrate_to_web_cells_on_load(dewmini):
+    """A notebook saved before 7.120 could hold standalone `html`/`css`
+    cells — both retired in favour of the merged `web` type. Each old
+    cell becomes its own new `web` cell independently: an old HTML
+    cell's markup becomes the new cell's HTML half with an empty CSS
+    half, and vice versa — never merged into one cell, since guessing
+    which HTML an old CSS cell was written to style is exactly the
+    ambiguity DECISIONS_LOG.md 7.120 declines to resolve."""
+    dewmini.evaluate(
+        """() => {
+            localStorage.setItem("dewmini:notebooks:v1", JSON.stringify({
+                active: "nb-1",
+                notebooks: [{
+                    id: "nb-1", name: "Notebook",
+                    cells: [
+                        { id: "c1", type: "html", content: "<p>Old HTML cell</p>", output: "", error: false },
+                        { id: "c2", type: "css", content: "h2 { color: rebeccapurple; }", output: "", error: false },
+                    ],
+                }],
+            }));
+        }"""
+    )
+    dewmini.reload()
+    dewmini.wait_for_selector(".dm-toolbar")
+
+    cells = dewmini.locator(".dm-cell-web")
+    assert cells.count() == 2
+
+    first_frame = cells.nth(0).locator(".dm-html-frame").content_frame
+    assert "Old HTML cell" in first_frame.locator("p").text_content()
+
+    second_frame = cells.nth(1).locator(".dm-html-frame").content_frame
+    assert second_frame.locator("h2").evaluate("el => getComputedStyle(el).color") == "rgb(102, 51, 153)"
+
+
+# ---------------------------------------------------------------- sql cells
+
+
+def add_sql_cell(page, script: str) -> None:
+    """Adds a SQL cell and types `script` into it — the SQL counterpart of
+    add_python_cell() above. Unlike _html_cell()/_css_cell(), no blur: a
+    SQL cell has no rendered/editor toggle to fall into (it keeps
+    Python-shaped chrome, RUNS_AGAINST_SESSION), so there is nothing to
+    render until the reader actually clicks Run."""
+    page.locator(".dm-insert-btn", has_text="SQL").last.click()
+    editor = page.locator(".dm-cell-sql .cm-content").last
+    editor.click()
+    page.keyboard.insert_text(script)
+
+
+def test_a_sql_cells_chrome_is_never_hidden(dewmini):
+    """Python-shaped chrome, not HTML/CSS-shaped: a SQL cell runs against
+    the shared session, so quiet-until-touched (a read-not-run affordance)
+    does not apply to it — the same rule test_a_python_cells_chrome_is_
+    never_hidden() above checks for Python."""
+    add_sql_cell(dewmini, "select 1")
+    dewmini.mouse.move(5, 5)
+    cell = dewmini.locator(".dm-cell-sql").last
+    assert head_opacity(dewmini, cell) == "1"
+    assert cell.locator(".dm-icon-preview").count() == 0
+    assert cell.locator(".dm-cell-runline").count() == 1
+
+
+def test_a_multi_statement_sql_script_renders_only_its_last_statement(dewmini):
+    """planning/CELL_IDENTITY.md §8 — a SQL cell is a script (CREATE,
+    INSERT, ..., SELECT), not a single query the way run_query() is; only
+    the final statement's own result renders, here the SELECT's table."""
+    add_sql_cell(
+        dewmini,
+        "CREATE TABLE t (id INTEGER, name TEXT);\n"
+        "INSERT INTO t VALUES (1, 'ada'), (2, 'alan');\n"
+        "SELECT * FROM t ORDER BY id;",
+    )
+    dewmini.locator(".dm-cell-sql .dm-icon-run").last.click()
+    dewmini.wait_for_selector(".dm-cell-sql .dm-cell-output table", timeout=90_000)
+    text = dewmini.locator(".dm-cell-sql .dm-cell-output").last.inner_text()
+    assert "ada" in text and "alan" in text
+
+
+def test_a_non_select_sql_statement_reports_rows_affected(dewmini):
+    """The console-style fallback _run_sql_cell() gives a script that ends
+    in a CREATE/INSERT/UPDATE/DELETE rather than a SELECT."""
+    add_sql_cell(dewmini, "CREATE TABLE t (id INTEGER);\nINSERT INTO t VALUES (1), (2), (3);")
+    dewmini.locator(".dm-cell-sql .dm-icon-run").last.click()
+    dewmini.wait_for_selector(".dm-cell-sql .dm-cell-output:not(.dm-empty)", timeout=90_000)
+    assert "3 rows affected" in dewmini.locator(".dm-cell-sql .dm-cell-output").last.inner_text()
+
+
+def test_a_python_cell_can_read_what_a_sql_cell_wrote(dewmini):
+    """The whole reason SQL cells run on Python's own sqlite3 rather than a
+    separate engine (DECISIONS_LOG.md, the sql.js → Python/sqlite3 pivot):
+    the shared `db` connection is available to an ordinary Python cell
+    under the same name, with no plumbing of its own."""
+    add_sql_cell(dewmini, "CREATE TABLE t (id INTEGER, name TEXT);\nINSERT INTO t VALUES (1, 'grace');")
+    dewmini.locator(".dm-cell-sql .dm-icon-run").last.click()
+    dewmini.wait_for_selector(".dm-cell-sql .dm-cell-output:not(.dm-empty)", timeout=90_000)
+
+    add_python_cell(dewmini, "import pandas as pd\npd.read_sql('select * from t', db)")
+    dewmini.locator(".dm-cell-python .dm-icon-run").last.click()
+    dewmini.wait_for_selector(".dm-cell-python .dm-cell-output table", timeout=90_000)
+    assert "grace" in dewmini.locator(".dm-cell-python .dm-cell-output").last.inner_text()
+
+
+def test_a_sql_cells_output_survives_a_reload(dewmini):
+    add_sql_cell(dewmini, "select 6 * 7 as answer;")
+    dewmini.locator(".dm-cell-sql .dm-icon-run").last.click()
+    dewmini.wait_for_selector(".dm-cell-sql .dm-cell-output table", timeout=90_000)
+
+    dewmini.reload()
+    dewmini.wait_for_selector(".dm-toolbar")
+    assert dewmini.locator(".dm-cell-sql").count() == 1
+    assert "42" in dewmini.locator(".dm-cell-sql .dm-cell-output").last.inner_text()
+
+
+def test_a_sql_cell_can_be_collapsed_and_duplicated(dewmini):
+    add_sql_cell(dewmini, "select 1;")
+    cell = dewmini.locator(".dm-cell-sql").last
+    cell.locator(".dm-collapse-toggle").click()
+    assert cell.locator(".dm-cell-content").is_hidden()
+    assert cell.locator(".dm-cell-collapsed-summary").is_visible()
+
+    cell.locator(".dm-icon-duplicate").click()
+    assert dewmini.locator(".dm-cell-sql").count() == 2
+
+
+def test_a_bad_sql_statement_shows_an_error_not_a_silent_failure(dewmini):
+    add_sql_cell(dewmini, "select * from a_table_that_does_not_exist;")
+    dewmini.locator(".dm-cell-sql .dm-icon-run").last.click()
+    dewmini.wait_for_selector(".dm-cell-sql .dm-cell-output:not(.dm-empty)", timeout=90_000)
+    cell = dewmini.locator(".dm-cell-sql").last
+    assert "dm-error" in (cell.get_attribute("class") or "")
+
+
+# ----------------------------------------------------------- javascript cells
+
+
+def add_js_cell(page, code: str) -> None:
+    """Adds a JavaScript cell and types `code` into it — the JS counterpart
+    of add_python_cell()/add_sql_cell() above. Python-shaped chrome, like
+    SQL: no blur, nothing renders until Run."""
+    page.locator(".dm-insert-btn", has_text="JS").last.click()
+    editor = page.locator(".dm-cell-javascript .cm-content").last
+    editor.click()
+    page.keyboard.insert_text(code)
+
+
+def test_a_js_cells_chrome_is_never_hidden(dewmini):
+    """Python-shaped chrome, same reasoning as SQL's own version of this
+    test — a JavaScript cell runs against a shared session too, so
+    quiet-until-touched does not apply to it."""
+    add_js_cell(dewmini, "1 + 1")
+    dewmini.mouse.move(5, 5)
+    cell = dewmini.locator(".dm-cell-javascript").last
+    assert head_opacity(dewmini, cell) == "1"
+    assert cell.locator(".dm-icon-preview").count() == 0
+    assert cell.locator(".dm-cell-runline").count() == 1
+
+
+def test_console_log_is_captured_as_the_cells_output(dewmini):
+    add_js_cell(dewmini, "console.log('hello from JS', 6 * 7);")
+    dewmini.locator(".dm-cell-javascript .dm-icon-run").last.click()
+    dewmini.wait_for_selector(".dm-cell-javascript .dm-cell-output:not(.dm-empty)", timeout=30_000)
+    text = dewmini.locator(".dm-cell-javascript .dm-cell-output").last.inner_text()
+    assert "hello from JS 42" in text
+
+
+def test_rerunning_a_let_declaring_cell_does_not_throw(dewmini):
+    """The whole reason a JS cell's code runs through indirect eval rather
+    than an inserted <script> tag (compose/js-cell-engine.js's own file
+    banner, DECISIONS_LOG.md 7.119): a top-level `let` declared by a
+    <script> tag joins the realm's one permanent global lexical scope, so
+    re-running an edited cell — an entirely ordinary thing to do — would
+    throw "Identifier has already been declared" on its second run.
+    Indirect eval's own top-level `let` lives in a scope private to that
+    one call, so this must never happen."""
+    add_js_cell(dewmini, "let total = 0;\nfor (let i = 1; i <= 5; i++) { total += i; }\nconsole.log('total', total);")
+    cell = dewmini.locator(".dm-cell-javascript").last
+    cell.locator(".dm-icon-run").click()
+    dewmini.wait_for_selector(".dm-cell-javascript .dm-cell-output:not(.dm-empty)", timeout=30_000)
+    assert "total 15" in cell.locator(".dm-cell-output").inner_text()
+    assert "dm-error" not in (cell.get_attribute("class") or "")
+
+    cell.locator(".dm-icon-run").click()
+    dewmini.wait_for_timeout(500)
+    assert "total 15" in cell.locator(".dm-cell-output").inner_text()
+    assert "dm-error" not in (cell.get_attribute("class") or ""), \
+        "re-running an unchanged `let`-declaring cell must not throw"
+
+
+def test_var_declared_in_one_cell_is_visible_to_a_later_one(dewmini):
+    """The one form of cross-cell persistence indirect eval still gives —
+    var/function declarations become real global-object properties, the
+    same as a <script> tag's own would, just without the redeclaration
+    risk `let`/`const` carry (see the test above)."""
+    add_js_cell(dewmini, "var shared = 10;")
+    dewmini.locator(".dm-cell-javascript .dm-icon-run").last.click()
+    dewmini.wait_for_timeout(500)
+
+    add_js_cell(dewmini, "console.log('shared is', shared + 1);")
+    dewmini.locator(".dm-cell-javascript .dm-icon-run").last.click()
+    dewmini.wait_for_selector(".dm-cell-javascript .dm-cell-output:not(.dm-empty)", timeout=30_000)
+    assert "shared is 11" in dewmini.locator(".dm-cell-javascript .dm-cell-output").last.inner_text()
+
+
+def test_a_thrown_error_shows_in_the_cells_output(dewmini):
+    add_js_cell(dewmini, "thisNameDoesNotExist();")
+    cell = dewmini.locator(".dm-cell-javascript").last
+    cell.locator(".dm-icon-run").click()
+    dewmini.wait_for_selector(".dm-cell-javascript .dm-cell-output:not(.dm-empty)", timeout=30_000)
+    assert "dm-error" in (cell.get_attribute("class") or "")
+    assert "thisNameDoesNotExist" in cell.locator(".dm-cell-output").inner_text()
+
+
+def test_a_js_cells_output_survives_a_reload(dewmini):
+    add_js_cell(dewmini, "console.log('reload me');")
+    dewmini.locator(".dm-cell-javascript .dm-icon-run").last.click()
+    dewmini.wait_for_selector(".dm-cell-javascript .dm-cell-output:not(.dm-empty)", timeout=30_000)
+
+    dewmini.reload()
+    dewmini.wait_for_selector(".dm-toolbar")
+    assert dewmini.locator(".dm-cell-javascript").count() == 1
+    assert "reload me" in dewmini.locator(".dm-cell-javascript .dm-cell-output").last.inner_text()
+
+
+def test_a_js_cell_can_be_collapsed_and_duplicated(dewmini):
+    add_js_cell(dewmini, "1;")
+    cell = dewmini.locator(".dm-cell-javascript").last
+    cell.locator(".dm-collapse-toggle").click()
+    assert cell.locator(".dm-cell-content").is_hidden()
+    assert cell.locator(".dm-cell-collapsed-summary").is_visible()
+
+    cell.locator(".dm-icon-duplicate").click()
+    assert dewmini.locator(".dm-cell-javascript").count() == 2
+
+
+def test_restart_python_tears_down_the_js_session_too(dewmini):
+    """planning/CELL_IDENTITY.md §8 — the JS session is torn down and
+    recreated on Restart Python exactly like the Pyodide interpreter is.
+    A var surviving a restart would mean it wasn't really recreated."""
+    add_js_cell(dewmini, "var survivesRestart = 42;")
+    dewmini.locator(".dm-cell-javascript .dm-icon-run").last.click()
+    dewmini.wait_for_timeout(500)
+
+    dewmini.click("#dl-settings-toggle")
+    dewmini.wait_for_selector("#settings-restart-python")
+    dewmini.once("dialog", lambda d: d.accept())
+    dewmini.click("#settings-restart-python")
+    dewmini.wait_for_timeout(1000)
+    dewmini.click("#dl-settings-toggle")
+
+    add_js_cell(dewmini, "console.log('survivesRestart is', typeof survivesRestart);")
+    cell = dewmini.locator(".dm-cell-javascript").last
+    cell.locator(".dm-icon-run").click()
+    dewmini.wait_for_selector(".dm-cell-javascript .dm-cell-output:not(.dm-empty)", timeout=30_000)
+    assert "survivesRestart is undefined" in cell.locator(".dm-cell-output").last.inner_text()
+
+
+def test_run_all_runs_python_and_javascript_cells_together(dewmini):
+    """RUNS_AGAINST_SESSION covers both — "Run all" should not silently
+    skip one type just because the two run through different engines."""
+    add_js_cell(dewmini, "console.log('js ran');")
+    add_python_cell(dewmini, "print('py ran')")
+    dewmini.locator("#run-all").click()
+    dewmini.wait_for_function(
+        "document.querySelectorAll('.dm-cell-output')[1]?.innerText.trim().length > 0",
+        timeout=90_000,
+    )
+    texts = dewmini.locator(".dm-cell-output").all_inner_texts()
+    assert any("js ran" in t for t in texts)
+    assert any("py ran" in t for t in texts)
 
 
 # ---------------------------------------------------------------- variables
@@ -1326,7 +1825,7 @@ def test_a_file_dewmini_cannot_open_says_so_and_stays_put(dewmini):
     tabs_before = dewmini.locator(".dm-tab").count()
     dewmini.locator(".dm-filelist-item-name", has_text="readings.csv").click()
 
-    assert "opens .py and .ipynb" in dewmini.locator("#dm-status").inner_text()
+    assert "opens .py, .ipynb and .html" in dewmini.locator("#dm-status").inner_text()
     assert dewmini.locator(".dm-tab").count() == tabs_before
 
 
@@ -1369,3 +1868,201 @@ def test_the_project_is_on_the_left_and_the_reference_on_the_right(dewmini):
     assert dewmini.locator("#dm-workbench #settings-file-list").count() == 1
     assert dewmini.locator("#dm-workbench #dm-variables").count() == 1
     assert dewmini.locator("#dm-library #dm-reference-section").count() == 1
+
+
+# --------------------------------------------------------------------- site
+
+
+def test_an_html_file_in_the_workspace_opens_as_a_site(dewmini):
+    """A .html opens split-screen: its own editor plus a live preview,
+    not as a file view or as cells (planning/DEWMINI_WORKBENCH.md §10)."""
+    write_workspace_file(dewmini, "index.html", "<h1>Hello site</h1>")
+    open_files_panel(dewmini)
+
+    dewmini.locator(".dm-filelist-item-name", has_text="index.html").click()
+    dewmini.wait_for_selector(".dm-siteview")
+
+    assert dewmini.locator(".dm-siteview-pane").count() == 3
+    frame = dewmini.locator(".dm-siteview-frame").content_frame
+    assert frame.locator("h1").text_content() == "Hello site"
+
+
+def test_a_site_discovers_matching_css_and_js_files(dewmini):
+    """No fixed three names — a same-base-name .css and .js beside the
+    .html open with it, because a site can be built from nothing, not
+    only from index.html/style.css/script.js."""
+    write_workspace_file(dewmini, "page.css", "h1 { color: rebeccapurple; }")
+    write_workspace_file(dewmini, "page.js", "document.querySelector('h1').textContent += '!';")
+    write_workspace_file(dewmini, "page.html", "<h1>Hi</h1>")
+    open_files_panel(dewmini)
+
+    dewmini.locator(".dm-filelist-item-name", has_text="page.html").click()
+    dewmini.wait_for_selector(".dm-siteview")
+
+    panes = dewmini.locator(".dm-siteview-pane")
+    assert "rebeccapurple" in panes.nth(1).locator(".cm-content").inner_text()
+    assert "textContent" in panes.nth(2).locator(".cm-content").inner_text()
+
+    frame = dewmini.locator(".dm-siteview-frame").content_frame
+    assert frame.locator("h1").text_content() == "Hi!"
+    assert frame.locator("h1").evaluate(
+        "el => getComputedStyle(el).color"
+    ) == "rgb(102, 51, 153)"
+
+
+def test_a_site_with_no_css_or_js_still_opens(dewmini):
+    """A lone .html is still a whole site — the CSS and JS panes are
+    just empty, not an error and not a reason to refuse opening it."""
+    write_workspace_file(dewmini, "lonely.html", "<p>Just me</p>")
+    open_files_panel(dewmini)
+
+    dewmini.locator(".dm-filelist-item-name", has_text="lonely.html").click()
+    dewmini.wait_for_selector(".dm-siteview")
+
+    panes = dewmini.locator(".dm-siteview-pane")
+    assert panes.nth(1).locator(".cm-content").inner_text().strip() == ""
+    assert panes.nth(2).locator(".cm-content").inner_text().strip() == ""
+    frame = dewmini.locator(".dm-siteview-frame").content_frame
+    assert frame.locator("p").text_content() == "Just me"
+
+
+def test_editing_a_sites_html_updates_the_preview_live(dewmini):
+    """Split-screen means the preview follows typing, not a separate
+    Render press the way a Web cell needs — a site is what a reader
+    keeps looking at while they work, not a one-shot question."""
+    write_workspace_file(dewmini, "index.html", "<p>Before</p>")
+    open_files_panel(dewmini)
+    dewmini.locator(".dm-filelist-item-name", has_text="index.html").click()
+    dewmini.wait_for_selector(".dm-siteview")
+
+    editor = dewmini.locator(".dm-siteview-pane").nth(0).locator(".cm-content")
+    editor.click()
+    dewmini.keyboard.press("Control+A")
+    dewmini.keyboard.insert_text("<p>After</p>")
+
+    # Not el.contentDocument from the parent page's own JS: the sandboxed
+    # iframe has no allow-same-origin, so it is a genuinely different,
+    # opaque origin, and the parent cannot read into it that way (it just
+    # sees null, forever). Playwright's own content_frame reaches inside
+    # via the DevTools protocol instead, which real page script cannot do.
+    frame = dewmini.locator(".dm-siteview-frame").content_frame
+    expect(frame.locator("p")).to_have_text("After")
+
+
+def test_editing_a_sites_css_writes_back_to_its_own_file(dewmini):
+    """The CSS and JS halves each save to their own file, not into the
+    HTML file or into localStorage alone."""
+    write_workspace_file(dewmini, "index.html", "<h1>Hi</h1>")
+    open_files_panel(dewmini)
+    dewmini.locator(".dm-filelist-item-name", has_text="index.html").click()
+    dewmini.wait_for_selector(".dm-siteview")
+
+    css_editor = dewmini.locator(".dm-siteview-pane").nth(1).locator(".cm-content")
+    css_editor.click()
+    dewmini.keyboard.insert_text("h1 { color: gold; }")
+
+    # Two debounces stack before this is durable: scheduleWorkspaceWrite()'s
+    # own 600ms, then dewmini-fs.js's internal sync debounce on top of that
+    # (the same reasoning the earlier standalone Site design noted, and
+    # discarded along with it — DECISIONS_LOG.md 7.121).
+    dewmini.wait_for_timeout(3000)
+
+    dewmini.locator("#new-notebook").click()
+    add_python_cell(dewmini, "print(open('index.css').read())")
+    shown = run_first_cell_and_wait(dewmini)
+    assert "gold" in shown
+
+
+def test_a_site_survives_a_reload(dewmini, dewmini_url):
+    """A site tab is still open, on the same three files, after a reload —
+    the same durability every other workspace-backed tab already has."""
+    write_workspace_file(dewmini, "index.html", "<h1>Hi</h1>")
+    open_files_panel(dewmini)
+    dewmini.locator(".dm-filelist-item-name", has_text="index.html").click()
+    dewmini.wait_for_selector(".dm-siteview")
+    dewmini.wait_for_timeout(3000)
+
+    dewmini.goto(dewmini_url)
+    dewmini.wait_for_selector(".dm-siteview")
+    frame = dewmini.locator(".dm-siteview-frame").content_frame
+    assert frame.locator("h1").text_content() == "Hi"
+
+
+def test_the_cell_toolbar_hides_for_a_site_tab(dewmini):
+    """Cells/File, Run all and the rest are about a notebook of Python
+    cells, which a site tab does not have."""
+    write_workspace_file(dewmini, "index.html", "<h1>Hi</h1>")
+    open_files_panel(dewmini)
+    dewmini.locator(".dm-filelist-item-name", has_text="index.html").click()
+    dewmini.wait_for_selector(".dm-siteview")
+
+    assert dewmini.locator("#run-all").is_hidden()
+    assert dewmini.locator("#dm-view-cells").is_hidden()
+
+    dewmini.locator(".dm-tab-label", has_text="Notebook").first.click()
+    assert dewmini.locator("#run-all").is_visible()
+
+
+# ---------------------------------------------------------------- cell types
+
+
+def fresh_page(page, dewmini_url):
+    """A page with truly empty storage — unlike the `dewmini` fixture,
+    which seeds Web and SQL on for the rest of this suite's convenience
+    (DECISIONS_LOG.md 7.122). The default-off behaviour can only be seen
+    from a page that fixture never touched."""
+    page.goto(dewmini_url)
+    page.evaluate("localStorage.clear()")
+    page.goto(dewmini_url)
+    page.wait_for_selector(".dm-toolbar")
+    return page
+
+
+def open_cell_type_settings(page):
+    page.click("#dl-settings-toggle")
+    page.wait_for_selector("#dl-settings-cell-types")
+
+
+def test_web_and_sql_default_off_javascript_defaults_on(page, dewmini_url):
+    """A reader turns on what they mean to use, rather than finding
+    every cell type dewmini knows about crowded onto every seam."""
+    fresh_page(page, dewmini_url)
+    buttons = page.locator(".dm-insert-btn").all_inner_texts()
+    assert "Web" not in buttons
+    assert "SQL" not in buttons
+    assert "JS" in buttons
+
+
+def test_turning_on_a_cell_type_adds_it_to_the_seam(page, dewmini_url):
+    fresh_page(page, dewmini_url)
+    open_cell_type_settings(page)
+    page.click('.dl-seg[data-dm="celltype-web"] button[data-value="on"]')
+    page.click("#dl-settings-close")
+
+    assert "Web" in page.locator(".dm-insert-btn").all_inner_texts()
+
+
+def test_turning_a_type_off_does_not_touch_a_cell_already_there(dewmini):
+    """Only what a reader can *add* changes — a cell already in the
+    notebook keeps showing and keeps running."""
+    cell = _web_cell(dewmini, html="<p>Still here</p>")
+    frame = cell.locator(".dm-html-frame").content_frame
+    assert frame.locator("p").text_content() == "Still here"
+
+    open_cell_type_settings(dewmini)
+    dewmini.click('.dl-seg[data-dm="celltype-web"] button[data-value="off"]')
+    dewmini.click("#dl-settings-close")
+
+    assert dewmini.locator(".dm-cell-web").count() == 1
+    assert "Web" not in dewmini.locator(".dm-insert-btn").all_inner_texts()
+    assert cell.locator(".dm-html-frame").content_frame.locator("p").text_content() == "Still here"
+
+
+def test_a_cell_type_toggle_survives_a_reload(dewmini, dewmini_url):
+    open_cell_type_settings(dewmini)
+    dewmini.click('.dl-seg[data-dm="celltype-sql"] button[data-value="off"]')
+    dewmini.click("#dl-settings-close")
+
+    dewmini.goto(dewmini_url)
+    dewmini.wait_for_selector(".dm-toolbar")
+    assert "SQL" not in dewmini.locator(".dm-insert-btn").all_inner_texts()

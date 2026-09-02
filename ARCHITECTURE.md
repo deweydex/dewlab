@@ -385,14 +385,36 @@ available either, so `pyodide-engine.js` falls back to running Pyodide
 on the main thread when it is reachable at all: same interpreter, same
 `tutorial_tools.py`, just without a genuine Stop button.
 
+A JavaScript cell (`DECISIONS_LOG.md` 7.119) runs through neither of
+those — `compose/js-cell-engine.js` is a second, much smaller engine of
+its own: one persistent sandboxed `<iframe sandbox="allow-scripts">` per
+notebook, with no Worker at all, since a sandboxed iframe with no
+`allow-same-origin` is already a separate, isolated realm and every
+browser already has a JS engine sitting inside it. A SQL cell, by
+contrast, needs no engine of its own: `compose/dewmini.js` generates a
+call to `tutorial_tools.py`'s own `_run_sql_cell()` against a shared
+`sqlite3` connection (`db`) and runs it through `pyodide-engine.js` like
+any other Python code — SQL and Python share one engine; only
+JavaScript gets a second.
+
 **dewmini is a workbench, not one column** (`DECISIONS_LOG.md` 7.99;
 design and reasoning in `planning/DEWMINI_WORKBENCH.md`). Notebooks open
 in tabs — `notebooks[]` in `dewmini.js`, with `cells` re-pointed at
 whichever is active rather than every function being routed through an
-index — and two docked rails sit either side of them: a **Library**
-(left) carrying the cross-tutorial reference, a dataset catalogue and
-the help text, and a **Workbench** (right) carrying a live variable
-inspector, notes and files, with Settings sharing that right edge.
+index — and two docked rails sit either side of them: a **Workbench**
+(left) carrying a live variable inspector, notes and a real file
+manager, and a **Library** (right) carrying the cross-tutorial
+reference, a dataset catalogue and the help text, with Settings sharing
+that right edge (`DECISIONS_LOG.md` 7.99, 7.121 — the sides swapped
+after the layout first shipped).
+
+A tab need not hold a notebook of cells at all. Files' own file manager
+(`openWorkspaceFile()`) can open a real workspace file directly: a `.py`
+as one editor, a `.ipynb` as cells, and an `.html` as a small website —
+its own editor split-screen against a live sandboxed preview, discovering
+whatever `.css`/`.js` of the same base name sit beside it rather than
+requiring three fixed names (`DECISIONS_LOG.md` 7.121,
+`planning/DEWMINI_WORKBENCH.md` §10).
 
 Two pieces of that reach outside `compose/`. `write_reference_index()`
 in `build.py` emits `assets/reference-index.json`, the union of every

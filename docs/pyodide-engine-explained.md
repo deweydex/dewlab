@@ -63,16 +63,31 @@ of the file: two engines, one dispatcher, one shared public interface.
 2. **`configure()` and status/output plumbing** — how the calling page
    hands this module a way to find a cell's output element and show
    status text, plus `dataBase`, and `applyOutputEvent()`, which turns
-   one "something happened in Python" event into real DOM, shared by
-   both engines.
+   one "something happened" event into real DOM, shared by the worker
+   and main-thread paths below — and, exported for exactly this reason,
+   by `compose/js-cell-engine.js` too: a JavaScript cell's own output
+   arrives as the identical `stream`/`append`/`clear` event shape, so
+   there is no reason for a second copy of this logic to exist just
+   because the code producing the events isn't Python (see that file's
+   own explanation for why the reuse is safe).
 3. **Worker path** — `workerRequest()` (the request/reply pattern over
    `postMessage`), `ensureWorker()` (creates the worker, and is the *one*
    place this file listens for messages from it), `bootWorker()`,
    `requestInterrupt()` (how Stop actually stops something), and
-   `runCellWorker()`.
+   `runCellWorker()`. `bootWorker()`'s boot message always sets
+   `seedDb: true` — the signal `assets/pyodide-worker.js`'s own boot()
+   reads to decide whether to seed the dewmini-only `db` global (SQL
+   cells, DECISIONS_LOG.md 7.118); see
+   [`pyodide-worker-explained.md`](pyodide-worker-explained.md) for why
+   that flag has to exist at all rather than the worker just always
+   doing it.
 4. **Main-thread fallback** — the Jedi-based autocomplete helpers, the
    filesystem mirror functions (`fs*MT`), and `bootMainThread()`/
-   `runCellMainThread()`.
+   `runCellMainThread()`. `RESEED_GLOBALS_SOURCE` here is this path's own
+   copy of the always-available-names seeding, `db` included — a
+   Worker can't reach a constant defined in this file's module scope, so
+   `assets/pyodide-worker.js` keeps a second copy for the path most
+   sessions actually take.
 5. **The dispatcher** — `boot()`, `ensureBooted()`, `restart()`,
    `engineMode()`, `canStop()`.
 6. **The exported API** — `runCell()`, `hoverDoc()`, `signatureHelp()`,

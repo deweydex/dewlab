@@ -12,6 +12,7 @@
 import { createCodeEditor, setEditorTheme } from "../assets/vendor/codemirror.bundle.js";
 import * as dfs from "./dewmini-fs.js";
 import * as engine from "../assets/pyodide-engine.js";
+import * as jsEngine from "./js-cell-engine.js";
 
 const PYODIDE_VERSION = "0.28.3";
 // The pre-tabs key: one notebook, stored as a bare array of cells. Still read
@@ -37,8 +38,69 @@ const DM_PACKAGES = ["numpy", "pandas", "matplotlib", "sqlite3", "Pillow"];
 // file the reader actually saved and sent to someone.
 const DM_NETWORK_PATCH = "try:\n    import pyodide_http\n    pyodide_http.patch_all()\nexcept Exception:\n    pass\n";
 
-const CELL_TYPES = { PYTHON: "python", TEXT: "text" };
+const CELL_TYPES = { PYTHON: "python", TEXT: "text", WEB: "web", SQL: "sql", JAVASCRIPT: "javascript" };
+
+/* Which of the newer cell types (planning/CELL_IDENTITY.md §8) offer
+ * themselves on the insert seam between cells — a Settings → "Cell
+ * types" toggle per type, checked by createInsertDivider() below. Web
+ * and SQL default off, JavaScript defaults on (DECISIONS_LOG.md 7.122):
+ * a reader turns on what they mean to use rather than finding every
+ * cell type dewmini knows about crowded onto every seam. Python and
+ * Text carry no toggle — they are the notebook, not an extra a reader
+ * opts into. Turning a type off never touches a cell of that type
+ * already in the notebook: it still shows, still runs, still exports —
+ * only what a reader can *add* changes. */
+const CELL_TYPE_TOGGLES = [
+  { type: CELL_TYPES.WEB, dm: "celltype-web", key: "dewmini:celltype-web", defaultOn: false },
+  { type: CELL_TYPES.SQL, dm: "celltype-sql", key: "dewmini:celltype-sql", defaultOn: false },
+  { type: CELL_TYPES.JAVASCRIPT, dm: "celltype-javascript", key: "dewmini:celltype-javascript", defaultOn: true },
+];
+
+let enabledCellTypes = new Set([CELL_TYPES.PYTHON, CELL_TYPES.TEXT]);
+
+/* The fixed little "page" a web cell's own preview falls back to when its
+ * HTML half is empty — a heading, a paragraph with a link, a button, a
+ * list: enough ordinary elements that a reader's own CSS selectors (h2,
+ * p, a, button, li, …) land on something real, without asking them to
+ * write any HTML of their own first (planning/CELL_IDENTITY.md §8's own
+ * reasoning for why a CSS rule doesn't simply style whatever markup sits
+ * above it in a *different* cell — that would make its behaviour depend
+ * on cell order, which nothing else in dewmini's model does; a web cell
+ * folding both halves into one cell, DECISIONS_LOG.md 7.120, sidesteps
+ * the question rather than answering it differently). */
+const CSS_PREVIEW_MARKUP = `<h2>Heading</h2>
+<p>A paragraph of text, with a <a href="#">link</a> inside it.</p>
+<button>A button</button>
+<ul><li>One item</li><li>Another item</li></ul>`;
 const IMPORTS_SNIPPET = "import numpy as np\nimport pandas as pd\nimport matplotlib.pyplot as plt\n";
+
+/* The cell types meant to be read, not run — rendered by default, with
+ * chrome that stays quiet until touched (planning/CELL_IDENTITY.md
+ * §4/§8). Python, SQL, and JavaScript sit outside this set: all three
+ * run against a shared session, so all three keep Python-shaped chrome
+ * (a run line, not a rendered view) — see RUNS_AGAINST_SESSION below.
+ * Text is the only member with an actual Edit/View toggle now — a web
+ * cell's own HTML and CSS editors are always both visible
+ * (DECISIONS_LOG.md 7.120), so there is nothing for a toggle to switch
+ * between; this Set still exists for Text alone rather than being
+ * inlined as a single `=== CELL_TYPES.TEXT` check, since a future
+ * read-not-run type may want the same toggle Text already has. */
+const READ_NOT_RUN_TYPES = new Set([CELL_TYPES.TEXT]);
+
+/* The cell types that run against a shared session and so get
+ * Python-shaped chrome: a run line, a Run/Stop button, "Clear output",
+ * and inclusion in "Run all"/"Run above"/"Run below". Two of these
+ * three don't hand a cell's own raw text to the engine unchanged: a SQL
+ * cell's code is not Python — executeCell() below wraps it into a call
+ * to tutorial_tools._run_sql_cell() before handing it to
+ * assets/pyodide-engine.js — and a JavaScript cell runs through a
+ * different engine and session entirely (./js-cell-engine.js's own
+ * sandboxed iframe, not Pyodide at all). What all three share, and why
+ * they share this one Set rather than three separate checks, is
+ * everything about *how* a run behaves regardless of what actually
+ * executes it: one session at a time, staleness relative to a cell's
+ * own last run, the same footer chrome. */
+const RUNS_AGAINST_SESSION = new Set([CELL_TYPES.PYTHON, CELL_TYPES.SQL, CELL_TYPES.JAVASCRIPT]);
 
 /* Seeds the namespace for the *standalone export* only — a downloaded copy
  * carries its own tiny runtime rather than pyodide-engine.js, which is what
@@ -77,7 +139,7 @@ let cells = [];
  * empty cell. A blank page asks a beginner to decide what the whole
  * program will be before writing anything, and a cell asks for one line.
  * A student can start in cells and move to a file when they are ready. */
-const VIEWS = { CELLS: "cells", FILE: "file" };
+const VIEWS = { CELLS: "cells", FILE: "file", SITE: "site" };
 
 /* Output from a whole-file run is not any cell's, so it needs an id of
  * its own for the engine to route by. Prefixed like a real cell id and
@@ -88,6 +150,11 @@ const FILE_RUN_ID = "cell-file-run";
 let fileEditor = null;
 let fileRunOutputEl = null;
 let fileParseTimer = null;
+// A site tab's three CodeMirror editors, live while it is the notebook on
+// screen — destroyed and re-created on every tab switch the same as
+// fileEditor above, for the same reason (a CodeMirror instance holds its
+// own DOM and listeners; nothing here is meant to outlive its render).
+let siteEditors = null;
 let cellsContainer, emptyEl, statusEl, tabsEl;
 let statusClearTimer = null;
 
@@ -132,8 +199,31 @@ function generateId() {
 function readCells(saved) {
   if (!Array.isArray(saved)) return [];
   return saved
-    .filter((c) => c && c.id && [CELL_TYPES.PYTHON, CELL_TYPES.TEXT].includes(c.type))
-    .map((c) => ({ id: c.id, type: c.type, content: c.content || "", output: c.output || "", error: !!c.error, collapsed: !!c.collapsed }));
+    .filter((c) => c && c.id)
+    .map(migrateLegacyCellType)
+    .filter((c) => Object.values(CELL_TYPES).includes(c.type))
+    .map((c) => ({
+      id: c.id, type: c.type, content: c.content || "", style: c.style || "",
+      output: c.output || "", error: !!c.error, collapsed: !!c.collapsed,
+    }));
+}
+
+/* A notebook saved before 7.120 could hold standalone `html`/`css`
+ * cells — both retired in favour of one merged type, CELL_TYPES.WEB,
+ * with an HTML half (`content`, same field every other type already
+ * uses) and a CSS half (`style`). Each old cell becomes its own new
+ * `web` cell, independently: an old HTML cell's markup becomes the new
+ * cell's `content` with an empty `style`; an old CSS cell's rule
+ * becomes the new cell's `style` with an empty `content`. Two old cells
+ * a reader had built as a matching pair are *not* merged into one —
+ * guessing which HTML an old CSS cell was written to style is exactly
+ * the ambiguity a real fix would need to resolve, and nothing here
+ * attempts it; the reader's own two cells just both become `web` cells,
+ * each exactly where it already was. */
+function migrateLegacyCellType(c) {
+  if (c.type === "html") return { ...c, type: CELL_TYPES.WEB, content: c.content || "", style: "" };
+  if (c.type === "css") return { ...c, type: CELL_TYPES.WEB, content: "", style: c.content || "" };
+  return c;
 }
 
 /* A notebook with nothing in it yet. Named rather than numbered-only so a
@@ -175,11 +265,25 @@ function loadSavedState() {
     notebooks = saved.notebooks
       .filter((nb) => nb && nb.id)
       .map((nb) => ({ id: nb.id, name: nb.name || "Notebook", cells: readCells(nb.cells),
-                      view: nb.view === VIEWS.FILE ? VIEWS.FILE : VIEWS.CELLS,
+                      view: nb.view === VIEWS.FILE ? VIEWS.FILE
+                          : nb.view === VIEWS.SITE ? VIEWS.SITE : VIEWS.CELLS,
                       // Which workspace file this tab is, when it is one.
                       // Without this a reload would quietly turn it into an
                       // ordinary notebook and stop saving the file.
-                      ...(typeof nb.path === "string" && nb.path ? { path: nb.path } : {}) }));
+                      ...(typeof nb.path === "string" && nb.path ? { path: nb.path } : {}),
+                      // A site tab's own three files, and where its CSS and
+                      // JavaScript live when they exist. Restored here
+                      // rather than re-read from disk on every reload —
+                      // the same "localStorage is the fast-path cache, the
+                      // real file is the debounced write" pattern every
+                      // other workspace-backed tab already follows.
+                      ...(nb.view === VIEWS.SITE ? {
+                        siteCssPath: typeof nb.siteCssPath === "string" ? nb.siteCssPath : "",
+                        siteJsPath: typeof nb.siteJsPath === "string" ? nb.siteJsPath : "",
+                        siteHtml: typeof nb.siteHtml === "string" ? nb.siteHtml : "",
+                        siteCss: typeof nb.siteCss === "string" ? nb.siteCss : "",
+                        siteJs: typeof nb.siteJs === "string" ? nb.siteJs : "",
+                      } : {}) }));
   }
   if (!notebooks.length) notebooks = migrateLegacyCells();
   if (!notebooks.length) notebooks = [makeNotebook("Notebook")];
@@ -218,17 +322,18 @@ let warnedDroppedOutputs = 0;
  * Returns false when it did not fit (or when storage is unavailable at
  * all, as in a browser with site data blocked), true when it did.
  *
- * Note the `.map(({ id, type, content, output, error }) => ({...}))`
+ * Note the `.map(({ id, type, content, style, output, error }) => ({...}))`
  * step: by the time a cell has been rendered, it also carries live things
  * like `.editor` (a CodeMirror instance) and `.outputEl` (a DOM element)
  * — objects that `JSON.stringify` can't handle (they contain circular
  * references back to themselves) and that don't belong in storage anyway,
  * since they get rebuilt fresh every time the notebook renders. This
  * picks out only the plain-data fields worth keeping — build a fresh
- * plain object rather than serializing the live one directly. */
+ * plain object rather than serializing the live one directly. `style` is
+ * a Web cell's CSS half; every other type simply never sets it. */
 function writeSavedState(skipOutputFor) {
-  const plainCells = (list) => list.map(({ id, type, content, output, error, collapsed }) => ({
-    id, type, content,
+  const plainCells = (list) => list.map(({ id, type, content, style, output, error, collapsed }) => ({
+    id, type, content, style: style || "",
     output: skipOutputFor.has(id) ? "" : (output || ""),
     error: !!error,
     collapsed: !!collapsed
@@ -238,6 +343,10 @@ function writeSavedState(skipOutputFor) {
       active: activeNotebookId,
       notebooks: notebooks.map((nb) => ({ id: nb.id, name: nb.name, view: nb.view || VIEWS.CELLS,
                                          ...(nb.path ? { path: nb.path } : {}),
+                                         ...(nb.view === VIEWS.SITE ? {
+                                           siteCssPath: nb.siteCssPath || "", siteJsPath: nb.siteJsPath || "",
+                                           siteHtml: nb.siteHtml || "", siteCss: nb.siteCss || "", siteJs: nb.siteJs || "",
+                                         } : {}),
                                          cells: plainCells(nb.cells) })),
     }));
     return true;
@@ -371,7 +480,7 @@ function showNotebook(id) {
   const target = notebooks.find((nb) => nb.id === id);
   if (!target) return;
   flushFileEditor();
-  cells.forEach((c) => c.editor?.destroy());
+  cells.forEach(destroyCellEditors);
   activeNotebookId = id;
   cells = target.cells;
   saveState();
@@ -385,7 +494,7 @@ function showNotebook(id) {
 /* Adds a notebook and switches to it — the shared tail of "+ New", an
  * import, and anything else that arrives as a whole notebook. */
 function openNotebook(notebook) {
-  cells.forEach((c) => c.editor?.destroy());
+  cells.forEach(destroyCellEditors);
   notebooks.push(notebook);
   activeNotebookId = notebook.id;
   cells = notebook.cells;
@@ -407,7 +516,7 @@ function closeNotebook(id) {
   const notebook = notebooks[index];
   if (notebook.cells.length && !confirm(`Close "${notebook.name}"? Its ${notebook.cells.length} cell${notebook.cells.length === 1 ? "" : "s"} will be gone.`)) return;
 
-  if (id === activeNotebookId) cells.forEach((c) => c.editor?.destroy());
+  if (id === activeNotebookId) cells.forEach(destroyCellEditors);
   notebooks.splice(index, 1);
   if (id === activeNotebookId) {
     const next = notebooks[Math.min(index, notebooks.length - 1)];
@@ -441,6 +550,11 @@ function renameNotebook(id) {
  * (the "+" lives in the toolbar, so there is still a way to get a second
  * one). */
 function renderTabs() {
+  // Every call site that redraws the tab strip is exactly when the
+  // Files panel's own notebook list needs redrawing too — a notebook
+  // opened, closed, or renamed changes both at once.
+  renderNotebookList();
+
   if (!tabsEl) return;
   tabsEl.replaceChildren();
   tabsEl.hidden = notebooks.length < 2;
@@ -455,14 +569,16 @@ function renderTabs() {
     label.type = "button";
     label.className = "dm-tab-label";
     label.textContent = notebook.name;
-    if (notebook.view === VIEWS.FILE) {
+    if (notebook.view === VIEWS.FILE || notebook.view === VIEWS.SITE) {
       const badge = document.createElement("span");
       badge.className = "dm-tab-view";
-      badge.textContent = "file";
+      badge.textContent = notebook.view === VIEWS.SITE ? "site" : "file";
       label.append(" ", badge);
     }
-    const shown = notebook.view === VIEWS.FILE ? "shown as a file" : "shown as cells";
-    label.title = `${notebook.name}, ${shown} — ${notebook.cells.length} cell${notebook.cells.length === 1 ? "" : "s"} (double-click to rename)`;
+    label.title = notebook.view === VIEWS.SITE
+      ? `${notebook.name}, a small website (double-click to rename)`
+      : `${notebook.name}, ${notebook.view === VIEWS.FILE ? "shown as a file" : "shown as cells"} — `
+        + `${notebook.cells.length} cell${notebook.cells.length === 1 ? "" : "s"} (double-click to rename)`;
     label.setAttribute("aria-current", String(notebook.id === activeNotebookId));
     label.addEventListener("click", () => showNotebook(notebook.id));
     label.addEventListener("dblclick", () => renameNotebook(notebook.id));
@@ -487,8 +603,8 @@ function renderTabs() {
  * used everywhere in this file that changes `cells`: update the array,
  * save it, re-render the page to match, then focus the thing that
  * changed. */
-function insertCellAt(index, type, content = "") {
-  const cell = { id: generateId(), type, content, output: "", error: false };
+function insertCellAt(index, type, content = "", style = "") {
+  const cell = { id: generateId(), type, content, style, output: "", error: false };
   cells.splice(index, 0, cell);
   saveState();
   renderCells();
@@ -498,8 +614,8 @@ function insertCellAt(index, type, content = "") {
 /* Adds a cell at the very end — what the toolbar's own "+ Python"/"+ Text"
  * buttons call, as opposed to insertCellAt() directly for an in-between
  * insert. */
-function addCell(type, content = "") {
-  insertCellAt(cells.length, type, content);
+function addCell(type, content = "", style = "") {
+  insertCellAt(cells.length, type, content, style);
 }
 
 /* A small, real tour rather than placeholder text — print, an expression,
@@ -520,10 +636,22 @@ const EXAMPLE_CELLS = [
   },
 ];
 
+/* Destroys every CodeMirror editor a cell owns — `.editor` always, plus
+ * `.cssEditor` for a web cell's second (CSS) pane (DECISIONS_LOG.md
+ * 7.120). A CodeMirror instance holds its own DOM and listeners that
+ * removing the wrapping element alone doesn't clean up, so every place
+ * that gets rid of a cell — deleting it, switching notebooks, replacing
+ * the whole list — has to call this rather than reach for `.editor`
+ * directly, or a web cell would leak its CSS editor's own instance. */
+function destroyCellEditors(cell) {
+  cell.editor?.destroy();
+  cell.cssEditor?.destroy();
+}
+
 async function loadExampleCells() {
   if (cells.length && !confirm("Replace the current cells with the example? This can't be undone.")) return;
-  cells.forEach((c) => c.editor?.destroy());
-  setCells(EXAMPLE_CELLS.map((c) => ({ id: generateId(), type: c.type, content: c.content, output: "", error: false })));
+  cells.forEach(destroyCellEditors);
+  setCells(EXAMPLE_CELLS.map((c) => ({ id: generateId(), type: c.type, content: c.content, style: c.style || "", output: "", error: false })));
   saveState();
   renderCells();
   updateStatus("Example loaded — running it now…");
@@ -561,14 +689,14 @@ function disarmDeleteButton(btn) {
   btn.title = "Delete this cell";
 }
 
-/* Removes a cell. `.editor?.destroy()` matters: CodeMirror editors hold
+/* Removes a cell. destroyCellEditors() matters: CodeMirror editors hold
  * their own internal state and DOM listeners, and simply removing the
  * wrapping element from the page wouldn't clean those up on its own —
  * calling `.destroy()` first releases them properly. */
 function deleteCell(id) {
   const idx = cells.findIndex((c) => c.id === id);
   if (idx === -1) return;
-  cells[idx].editor?.destroy();
+  destroyCellEditors(cells[idx]);
   cells.splice(idx, 1);
   saveState();
   renderCells();
@@ -587,6 +715,7 @@ function duplicateCell(id) {
     id: generateId(),
     type: original.type,
     content: original.content,
+    style: original.style || "",
     output: "",
     error: false,
     collapsed: !!original.collapsed,
@@ -855,9 +984,12 @@ async function renderMathsIn(container) {
  * A .py opens in the file view, because a file is what it is, and the
  * reader should see the thing they are learning to write. A .ipynb opens
  * as cells, because that format carries outputs and cells are what shows
- * them. Anything else stays where it is: dewmini would have to guess how
- * to read a .csv as code, and guessing wrong turns a data file into one
- * long broken cell.
+ * them. A .html opens as a site (planning/DEWMINI_WORKBENCH.md §10):
+ * dewmini already runs HTML, CSS and JavaScript separately (the Web and
+ * JavaScript cell types), so the obvious follow-on is showing them as the
+ * three real files a static site actually is. Anything else stays where
+ * it is: dewmini would have to guess how to read a .csv as code, and
+ * guessing wrong turns a data file into one long broken cell.
  *
  * The tab remembers which file it came from, so editing it writes back to
  * the workspace rather than to a download. That is the difference between
@@ -866,13 +998,16 @@ async function openWorkspaceFile(name) {
   const lower = name.toLowerCase();
   const isPy = lower.endsWith(".py");
   const isIpynb = lower.endsWith(".ipynb");
-  if (!isPy && !isIpynb) {
-    updateStatus(`dewmini opens .py and .ipynb files. ${name} stays in the workspace for a cell to read.`, "error");
+  const isHtml = lower.endsWith(".html") || lower.endsWith(".htm");
+  if (!isPy && !isIpynb && !isHtml) {
+    updateStatus(`dewmini opens .py, .ipynb and .html files. ${name} stays in the workspace for a cell to read.`, "error");
     return;
   }
 
   const already = notebooks.find((nb) => nb.path === name);
   if (already) { showNotebook(already.id); return; }
+
+  if (isHtml) { await openSiteFile(name); return; }
 
   let text;
   try {
@@ -898,6 +1033,49 @@ async function openWorkspaceFile(name) {
   updateStatus(`Opened ${name}. Edits here save back to the workspace.`, "ok");
 }
 
+/* Reads a file's text back, or "" if it does not exist yet — the read a
+ * site's optional CSS or JavaScript half needs, where "not written yet"
+ * is the ordinary case rather than an error worth reporting. */
+async function readFileIfExists(name) {
+  try {
+    return await dfs.readFile(name, "utf8");
+  } catch {
+    return "";
+  }
+}
+
+/* Opens an .html file as a site tab: the HTML itself, plus whichever of
+ * the matching .css and .js (same base name — `page.html` pairs with
+ * `page.css` and `page.js`) already exist alongside it. Nothing is
+ * required to exist but the HTML — a site with no styling and no script
+ * is still a site, and forcing three files where a reader wants one is
+ * exactly the fixed-three-files rule §10 argues against. */
+async function openSiteFile(name) {
+  let html;
+  try {
+    html = await dfs.readFile(name, "utf8");
+  } catch (err) {
+    updateStatus(`Couldn't open ${name}: ${err.message}`, "error");
+    return;
+  }
+
+  const base = name.replace(/\.html?$/i, "");
+  const cssPath = `${base}.css`;
+  const jsPath = `${base}.js`;
+  const [css, js] = await Promise.all([readFileIfExists(cssPath), readFileIfExists(jsPath)]);
+
+  const notebook = makeNotebook(notebookNameFor(name), [], VIEWS.SITE);
+  notebook.path = name;
+  notebook.siteCssPath = cssPath;
+  notebook.siteJsPath = jsPath;
+  notebook.siteHtml = html;
+  notebook.siteCss = css;
+  notebook.siteJs = js;
+  openNotebook(notebook);
+  updateViewSwitch();
+  updateStatus(`Opened ${name}. Edits here save back to the workspace.`, "ok");
+}
+
 /* Writes a tab that came from the workspace back to the file it came
  * from, in the format that file already is.
  *
@@ -913,6 +1091,7 @@ function scheduleWorkspaceWrite(notebook) {
 
 async function writeNotebookToWorkspace(notebook) {
   if (!notebook?.path) return;
+  if (notebook.view === VIEWS.SITE) { await writeSiteToWorkspace(notebook); return; }
   const text = notebook.path.toLowerCase().endsWith(".ipynb")
     ? JSON.stringify(cellsToIpynb(notebook.cells), null, 2)
     : cellsToPercentText(notebook.cells);
@@ -925,8 +1104,26 @@ async function writeNotebookToWorkspace(notebook) {
   renderFileList();
 }
 
+/* Writes a site tab's own three files back to the workspace. The HTML
+ * half always gets written — it is the file this tab is — but the CSS
+ * and JavaScript halves only when there is something in them: a reader
+ * who never touched the CSS pane should not find an empty page.css
+ * littering their workspace afterward. */
+async function writeSiteToWorkspace(notebook) {
+  try {
+    await dfs.writeFile(notebook.path, notebook.siteHtml || "");
+    if ((notebook.siteCss || "").trim()) await dfs.writeFile(notebook.siteCssPath, notebook.siteCss);
+    if ((notebook.siteJs || "").trim()) await dfs.writeFile(notebook.siteJsPath, notebook.siteJs);
+  } catch (err) {
+    updateStatus(`Couldn't save ${notebook.path}: ${err.message}`, "error");
+    return;
+  }
+  renderFileList();
+}
+
 function currentView() {
-  return activeNotebook()?.view === VIEWS.FILE ? VIEWS.FILE : VIEWS.CELLS;
+  const view = activeNotebook()?.view;
+  return view === VIEWS.FILE ? VIEWS.FILE : view === VIEWS.SITE ? VIEWS.SITE : VIEWS.CELLS;
 }
 
 /* Parsed cells, carrying forward the id and output of every cell the edit
@@ -992,7 +1189,10 @@ function setView(view) {
   updateViewSwitch();
 }
 
-/* Keeps the toolbar's two buttons showing which view is on. */
+/* Keeps the toolbar's two buttons showing which view is on, and hides
+ * every cell-notebook toolbar group (.dm-cellview-only) while a site tab
+ * is active — Cells/File, "See an example", "Run all" and the rest are
+ * all about a notebook of Python cells, which a site tab does not have. */
 function updateViewSwitch() {
   const view = currentView();
   const cellsBtn = document.getElementById("dm-view-cells");
@@ -1001,6 +1201,7 @@ function updateViewSwitch() {
   fileBtn?.setAttribute("aria-pressed", String(view === VIEWS.FILE));
   cellsBtn?.classList.toggle("dm-viewswitch-on", view === VIEWS.CELLS);
   fileBtn?.classList.toggle("dm-viewswitch-on", view === VIEWS.FILE);
+  document.querySelectorAll(".dm-cellview-only").forEach((el) => { el.hidden = view === VIEWS.SITE; });
 }
 
 /* The notebook as one Python document: a single editor over the whole
@@ -1078,11 +1279,93 @@ async function runWholeFile() {
   }
 }
 
+/* A site tab: three editors and a live preview, split-screen, the way an
+ * ordinary code-and-preview IDE lays the two out — not a separate button
+ * press away, the way a Web cell's Render is. A site is what a reader
+ * came to look at continuously while they work on it, not a one-shot
+ * question a cell asks and answers (planning/DEWMINI_WORKBENCH.md §10).
+ *
+ * The CSS and JavaScript panes are always shown, whether or not their
+ * file exists yet on disk — a reader building a site from nothing needs
+ * somewhere to start typing a stylesheet before writeSiteToWorkspace()
+ * has anything to write. */
+function renderSiteView() {
+  const notebook = activeNotebook();
+  const wrap = document.createElement("div");
+  wrap.className = "dm-siteview";
+
+  const note = document.createElement("p");
+  note.className = "dm-siteview-note";
+  note.textContent = `This site is ${notebook.path}`
+    + (notebook.siteCssPath ? `, ${notebook.siteCssPath}` : "")
+    + (notebook.siteJsPath ? ` and ${notebook.siteJsPath}` : "")
+    + ". The preview on the right updates as you type.";
+  wrap.appendChild(note);
+
+  const split = document.createElement("div");
+  split.className = "dm-siteview-split";
+  wrap.appendChild(split);
+
+  const editors = document.createElement("div");
+  editors.className = "dm-siteview-editors";
+  split.appendChild(editors);
+
+  const iframe = document.createElement("iframe");
+  iframe.className = "dm-siteview-frame";
+  iframe.setAttribute("sandbox", "allow-scripts");
+  iframe.title = `${notebook.name}'s rendered page`;
+  split.appendChild(iframe);
+
+  // Combines the three editors' own live text, not a fresh disk read —
+  // the same choice the Web cell's own preview makes, so typing shows up
+  // straight away rather than waiting on the debounced write to land.
+  const render = () => {
+    iframe.srcdoc = `<style>${notebook.siteCss}</style>${notebook.siteHtml}`
+      + `<script>${notebook.siteJs}</script>`;
+  };
+
+  const pane = (label, content, language, onChange) => {
+    const paneEl = document.createElement("div");
+    paneEl.className = "dm-siteview-pane";
+    const labelEl = document.createElement("div");
+    labelEl.className = "dm-web-pane-label";
+    labelEl.textContent = label;
+    const editorEl = document.createElement("div");
+    editorEl.className = "dm-editor";
+    paneEl.append(labelEl, editorEl);
+    editors.appendChild(paneEl);
+    return createCodeEditor(editorEl, content, {
+      dark: isDarkNow(), language,
+      onChange: (text) => { onChange(text); saveState(); render(); },
+    });
+  };
+
+  siteEditors = {
+    html: pane("HTML", notebook.siteHtml, "html", (text) => { notebook.siteHtml = text; }),
+    css: pane("CSS", notebook.siteCss, "css", (text) => { notebook.siteCss = text; }),
+    js: pane("JavaScript", notebook.siteJs, "javascript", (text) => { notebook.siteJs = text; }),
+  };
+
+  cellsContainer.appendChild(wrap);
+  render();
+}
+
+function destroySiteEditors() {
+  if (!siteEditors) return;
+  siteEditors.html?.destroy();
+  siteEditors.css?.destroy();
+  siteEditors.js?.destroy();
+  siteEditors = null;
+}
+
 function renderCells() {
   if (!cellsContainer) return;
   destroyFileEditor();
+  destroySiteEditors();
   cellsContainer.innerHTML = "";
+  if (emptyEl) emptyEl.hidden = true;
   if (currentView() === VIEWS.FILE) { renderFileView(); return; }
+  if (currentView() === VIEWS.SITE) { renderSiteView(); return; }
   // The first seam is drawn even over an empty notebook. It used to be
   // suppressed, because the toolbar carried its own Python/Text buttons and
   // a seam with nothing on either side of it looked like debris. Those
@@ -1129,6 +1412,40 @@ function createInsertDivider(index) {
   addTxt.addEventListener("click", () => insertCellAt(index, CELL_TYPES.TEXT));
 
   actions.append(addPy, addTxt);
+
+  // Web, SQL and JavaScript only offer themselves here once their own
+  // Settings → "Cell types" toggle is on (CELL_TYPE_TOGGLES) — Web and
+  // SQL start off, JavaScript starts on.
+  if (enabledCellTypes.has(CELL_TYPES.WEB)) {
+    const addWeb = document.createElement("button");
+    addWeb.type = "button";
+    addWeb.className = "dm-insert-btn";
+    addWeb.title = "Insert an HTML+CSS cell here";
+    addWeb.innerHTML = '<span class="dm-tool-icon dm-tool-icon-html" aria-hidden="true"></span>Web';
+    addWeb.addEventListener("click", () => insertCellAt(index, CELL_TYPES.WEB));
+    actions.append(addWeb);
+  }
+
+  if (enabledCellTypes.has(CELL_TYPES.SQL)) {
+    const addSql = document.createElement("button");
+    addSql.type = "button";
+    addSql.className = "dm-insert-btn";
+    addSql.title = "Insert a SQL cell here";
+    addSql.innerHTML = '<span class="dm-tool-icon dm-tool-icon-sql" aria-hidden="true"></span>SQL';
+    addSql.addEventListener("click", () => insertCellAt(index, CELL_TYPES.SQL));
+    actions.append(addSql);
+  }
+
+  if (enabledCellTypes.has(CELL_TYPES.JAVASCRIPT)) {
+    const addJs = document.createElement("button");
+    addJs.type = "button";
+    addJs.className = "dm-insert-btn";
+    addJs.title = "Insert a JavaScript cell here";
+    addJs.innerHTML = '<span class="dm-tool-icon dm-tool-icon-js" aria-hidden="true"></span>JS';
+    addJs.addEventListener("click", () => insertCellAt(index, CELL_TYPES.JAVASCRIPT));
+    actions.append(addJs);
+  }
+
   row.append(line, actions);
   return row;
 }
@@ -1142,14 +1459,15 @@ function createInsertDivider(index) {
  * this to understand what a *meaningful* change is, which is exactly the
  * judgement call it exists to avoid making on a reader's behalf. */
 function isStale(cell) {
-  return cell.type === CELL_TYPES.PYTHON && cell.ranContent !== undefined && cell.ranContent !== cell.content;
+  return RUNS_AGAINST_SESSION.has(cell.type) && cell.ranContent !== undefined && cell.ranContent !== cell.content;
 }
 
-/* Updates a cell's on-page "chrome" — the error styling, and (for a
- * Python cell) the run-line — to match its data, without a full re-render
- * of the whole notebook. Called after running a cell (error and staleness
- * both just became current) and on every edit of a cell that has already
- * run once (staleness is the only thing an edit alone can change). */
+/* Updates a cell's on-page "chrome" — the error styling, and (for a cell
+ * that runs against the session, RUNS_AGAINST_SESSION) the run-line — to
+ * match its data, without a full re-render of the whole notebook. Called
+ * after running a cell (error and staleness both just became current) and
+ * on every edit of a cell that has already run once (staleness is the
+ * only thing an edit alone can change). */
 function updateCellChrome(id) {
   const el = cellsContainer?.querySelector(`.dm-cell[data-id="${id}"]`);
   const cell = cells.find((c) => c.id === id);
@@ -1199,7 +1517,15 @@ function createRunMoreMenu(cell) {
     }
   };
   const openMenu = () => {
+    menu.classList.remove("dm-cell-run-menu-left");
     menu.hidden = false;
+    // Anchored from the button's right edge by default (see the
+    // stylesheet), which runs the menu off the left of the viewport once
+    // the button sits close enough to it — reachable more often now that
+    // Workbench docks left (DECISIONS_LOG.md 7.122), but always possible
+    // on a narrow screen. Measured after becoming visible, since a
+    // hidden element's rect is always zero.
+    if (menu.getBoundingClientRect().left < 0) menu.classList.add("dm-cell-run-menu-left");
     moreBtn.setAttribute("aria-expanded", "true");
     outsideHandler = (e) => { if (!wrap.contains(e.target)) closeMenu(); };
     // Added after this click has finished bubbling, same trick
@@ -1379,10 +1705,15 @@ function createCellElement(cell) {
   // there's no reason the hit target should be smaller than the label.
   pill.draggable = true;
   pill.title = "Click, hold, and drag — or tap and hold, then drag — to move this cell.";
+  const PILL_LABELS = {
+    [CELL_TYPES.PYTHON]: "Python", [CELL_TYPES.TEXT]: "Text",
+    [CELL_TYPES.WEB]: "HTML/CSS", [CELL_TYPES.SQL]: "SQL",
+    [CELL_TYPES.JAVASCRIPT]: "JavaScript",
+  };
   pill.innerHTML =
     '<span class="dm-cell-pill-dots" aria-hidden="true">&#8942;</span>' +
     `<span class="dm-cell-pill-num">Cell ${cellNumber}</span>` +
-    `<span class="dm-cell-pill-type" data-type="${cell.type}">${cell.type === CELL_TYPES.PYTHON ? "Python" : "Text"}</span>`;
+    `<span class="dm-cell-pill-type" data-type="${cell.type}">${PILL_LABELS[cell.type]}</span>`;
 
   const spacer = document.createElement("span");
   spacer.className = "dm-cell-spacer";
@@ -1401,12 +1732,29 @@ function createCellElement(cell) {
   // no hover to reveal that the note is clickable at all. Its label is
   // kept in sync by showEditor()/showRendered().
   let previewBtn = null;
-  if (cell.type === CELL_TYPES.TEXT) {
+  if (READ_NOT_RUN_TYPES.has(cell.type)) {
     previewBtn = document.createElement("button");
     previewBtn.type = "button";
     previewBtn.className = "dm-icon-btn dm-icon-preview";
     headerEnd.appendChild(previewBtn);
-
+  }
+  // A web cell's own explicit render trigger (DECISIONS_LOG.md 7.120) —
+  // filled in by that branch below, same "built here so it sits in the
+  // header row regardless of where the branch runs" reasoning as
+  // insertDocImage above, since it needs closures that only exist there.
+  let renderBtn = null;
+  if (cell.type === CELL_TYPES.WEB) {
+    renderBtn = document.createElement("button");
+    renderBtn.type = "button";
+    renderBtn.className = "dm-icon-btn dm-icon-render";
+    renderBtn.textContent = "Render";
+    renderBtn.title = "Render this cell's HTML and CSS together";
+    headerEnd.appendChild(renderBtn);
+  }
+  // Attaching an image from disk only makes sense for a Text cell's own
+  // markdown-image syntax — an HTML cell's reader can already write an
+  // <img> tag directly, so this stays Text-only.
+  if (cell.type === CELL_TYPES.TEXT) {
     const imgBtn = document.createElement("button");
     imgBtn.type = "button";
     imgBtn.className = "dm-icon-btn dm-icon-image";
@@ -1527,7 +1875,7 @@ function createCellElement(cell) {
       }
     }, true);
     cell.editor = editor;
-  } else {
+  } else if (cell.type === CELL_TYPES.TEXT) {
     const textarea = document.createElement("textarea");
     textarea.className = "dm-textarea";
     textarea.value = cell.content;
@@ -1596,6 +1944,161 @@ function createCellElement(cell) {
 
     if (cell.content.trim()) showRendered();
     else syncPreviewBtn();
+  } else if (cell.type === CELL_TYPES.WEB) {
+    // The merged replacement for the old separate HTML and CSS cell
+    // types (DECISIONS_LOG.md 7.120) — one cell, two source panels,
+    // stacked, and a rendered preview below both. Unlike the types it
+    // replaces, both editors are always visible and always editable —
+    // nothing is ever swapped out for anything else — so there is no
+    // Edit/View toggle here despite the shared quiet-until-touched
+    // chrome (`.dm-cell-web` sits in that CSS rule alongside
+    // `.dm-cell-text`). Rendering is instead the header's own explicit
+    // Render button (renderBtn, built above): two editors both
+    // auto-rendering on their own focusout, the way HTML and CSS used to
+    // separately, would fire the same preview update twice for one edit,
+    // and would mean a reader tabbing from one editor into the other
+    // sees a half-finished render flash by in between.
+    const split = document.createElement("div");
+    split.className = "dm-web-split";
+
+    const htmlLabel = document.createElement("div");
+    htmlLabel.className = "dm-web-pane-label";
+    htmlLabel.textContent = "HTML";
+    const htmlEditorEl = document.createElement("div");
+    htmlEditorEl.className = "dm-editor";
+
+    const cssLabel = document.createElement("div");
+    cssLabel.className = "dm-web-pane-label";
+    cssLabel.textContent = "CSS";
+    const cssEditorEl = document.createElement("div");
+    cssEditorEl.className = "dm-editor";
+
+    split.append(htmlLabel, htmlEditorEl, cssLabel, cssEditorEl);
+    contentRegion.appendChild(split);
+
+    const renderEl = document.createElement("div");
+    renderEl.className = "dm-html-render";
+    renderEl.hidden = true;
+    contentRegion.appendChild(renderEl);
+
+    // sandbox="allow-scripts" only — no allow-same-origin. Whatever this
+    // cell's HTML does, including a <script> tag, it does inside an
+    // opaque-origin document that cannot reach this page's own DOM,
+    // localStorage, or any other cell — the same isolation a reader's
+    // HTML deserves whether they wrote it themselves or it arrived
+    // through Settings' "Load a shared cell/notebook" (planning/
+    // CELL_IDENTITY.md §8). resize:vertical (see the stylesheet) rather
+    // than measuring the frame's own content height: that would need a
+    // postMessage handshake from inside the sandboxed document, not
+    // worth the complexity for a first version.
+    const iframe = document.createElement("iframe");
+    iframe.className = "dm-html-frame";
+    iframe.setAttribute("sandbox", "allow-scripts");
+    iframe.title = `Cell ${cellNumber}'s rendered page`;
+    renderEl.appendChild(iframe);
+
+    // An empty HTML half falls back to CSS_PREVIEW_MARKUP — the same
+    // fixed little "page" the old standalone CSS cell always rendered
+    // against — so a reader who has only written a rule still has
+    // something real to see it styling, before they've written any
+    // markup of their own.
+    const render = () => {
+      const html = cell.content.trim() ? cell.content : CSS_PREVIEW_MARKUP;
+      iframe.srcdoc = `<style>${cell.style}</style>${html}`;
+      renderEl.hidden = false;
+    };
+
+    const htmlEditor = createCodeEditor(htmlEditorEl, cell.content, {
+      dark: isDarkNow(),
+      language: "html",
+      onChange: (text) => { cell.content = text; saveState(); },
+    });
+    const cssEditor = createCodeEditor(cssEditorEl, cell.style, {
+      dark: isDarkNow(),
+      language: "css",
+      onChange: (text) => { cell.style = text; saveState(); },
+    });
+    cell.editor = htmlEditor;
+    cell.cssEditor = cssEditor;
+
+    renderBtn.addEventListener("mousedown", (e) => e.preventDefault());
+    renderBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      render();
+    });
+
+    // A brand-new cell shows no preview at all until the reader actually
+    // asks for one — only a cell restored with existing content (from a
+    // save, or a migrated old HTML/CSS cell) renders straight away, the
+    // same "picks up where it left off" behaviour the types it replaces
+    // already had.
+    if (cell.content.trim() || cell.style.trim()) render();
+  } else if (cell.type === CELL_TYPES.SQL) {
+    // Python-shaped, not HTML/CSS-shaped: a SQL cell runs against the
+    // same shared session a Python cell does (RUNS_AGAINST_SESSION), so
+    // its editor is the only thing in contentRegion — no rendered/editor
+    // toggle, no sandboxed preview, because there is nothing to preview
+    // until it actually runs. executeCell() below is what turns this
+    // cell's raw SQL into the tutorial_tools._run_sql_cell() call that
+    // actually executes it.
+    const editorEl = document.createElement("div");
+    editorEl.className = "dm-editor";
+    contentRegion.appendChild(editorEl);
+
+    const editor = createCodeEditor(editorEl, cell.content, {
+      dark: isDarkNow(),
+      language: "sql",
+      onChange: (text) => {
+        cell.content = text;
+        saveState();
+        updateCellChrome(cell.id);
+      },
+    });
+    editorEl.addEventListener("keydown", (e) => {
+      if (e.key !== "Enter") return;
+      if (e.shiftKey) {
+        e.preventDefault();
+        e.stopPropagation();
+        runCell(cell.id).then(() => focusNextCellAfter(cell.id));
+      } else if (e.ctrlKey || e.metaKey) {
+        e.preventDefault();
+        e.stopPropagation();
+        runCell(cell.id);
+      }
+    }, true);
+    cell.editor = editor;
+  } else if (cell.type === CELL_TYPES.JAVASCRIPT) {
+    // Same shape as SQL just above — Python-shaped chrome, a bare
+    // editor, nothing to preview until it runs — with the language mode
+    // the only real difference. Unlike SQL, a JavaScript cell's own code
+    // needs no wrapping before it runs: executeCell() hands it to
+    // ./js-cell-engine.js's runCell() exactly as written.
+    const editorEl = document.createElement("div");
+    editorEl.className = "dm-editor";
+    contentRegion.appendChild(editorEl);
+
+    const editor = createCodeEditor(editorEl, cell.content, {
+      dark: isDarkNow(),
+      language: "javascript",
+      onChange: (text) => {
+        cell.content = text;
+        saveState();
+        updateCellChrome(cell.id);
+      },
+    });
+    editorEl.addEventListener("keydown", (e) => {
+      if (e.key !== "Enter") return;
+      if (e.shiftKey) {
+        e.preventDefault();
+        e.stopPropagation();
+        runCell(cell.id).then(() => focusNextCellAfter(cell.id));
+      } else if (e.ctrlKey || e.metaKey) {
+        e.preventDefault();
+        e.stopPropagation();
+        runCell(cell.id);
+      }
+    }, true);
+    cell.editor = editor;
   }
 
   setCollapsed(!!cell.collapsed);
@@ -1603,14 +2106,14 @@ function createCellElement(cell) {
   // ------------------------------------------------------------ footer
   //
   // Run, clear-output, the "⋯" run-above/below menu, and the run-line —
-  // Python only, since these are the only cells that run against the
-  // shared session. Sits between the code and the output, at the
-  // bottom-left of the cell: a reader's cursor is at the bottom of what
-  // they just wrote, not back up at the top, so that's where the next
-  // action should be waiting.
+  // RUNS_AGAINST_SESSION only (Python and SQL), since those are the only
+  // cells that run against the shared session. Sits between the code and
+  // the output, at the bottom-left of the cell: a reader's cursor is at
+  // the bottom of what they just wrote, not back up at the top, so
+  // that's where the next action should be waiting.
 
   let footbar = null;
-  if (cell.type === CELL_TYPES.PYTHON) {
+  if (RUNS_AGAINST_SESSION.has(cell.type)) {
     footbar = document.createElement("div");
     footbar.className = "dm-cell-footbar";
 
@@ -1729,6 +2232,56 @@ async function ensurePyodide() {
   }
 }
 
+/* The JavaScript counterpart of ensurePyodide() above — starts
+ * ./js-cell-engine.js's own sandboxed session the first time a
+ * JavaScript cell actually runs, and announces it once the same way
+ * ensurePyodide() announces "Python ready." the first time. No
+ * filesystem to mount, no engine mode to report: a JS cell's session has
+ * neither. */
+async function ensureJsSession() {
+  const alreadyReady = jsEngine.sessionReady();
+  await jsEngine.ensureSession();
+  if (!alreadyReady) {
+    updateStatus("JavaScript ready.", "ok");
+    // Settings' own execution-status line only mentions the JS session
+    // once sessionReady() is true (see updateExecutionStatus() below) —
+    // ensurePyodide() already re-paints that line itself on every boot;
+    // this is the JS-session equivalent, needed here too or the line
+    // would sit stale until something Python-related happened to touch it.
+    updateExecutionStatus();
+  }
+}
+
+/* Boots whichever session `cell` actually needs before it runs — Pyodide
+ * for Python and SQL (a SQL cell's generated code still runs through
+ * Pyodide, see buildSqlCellCode() below), the sandboxed iframe session
+ * for JavaScript. The one place runCell()/runCellBatch() have to know
+ * that RUNS_AGAINST_SESSION covers two genuinely different engines, not
+ * one — everywhere else, the Set membership check alone is enough. */
+async function ensureSessionFor(cell) {
+  if (cell.type === CELL_TYPES.JAVASCRIPT) { await ensureJsSession(); return; }
+  await ensurePyodide();
+}
+
+/* Whether Stop could genuinely interrupt `cell` if it were running right
+ * now — engine.canStop() for Python/SQL (worker mode, cross-origin
+ * isolated), always false for JavaScript (js-cell-engine.js's own
+ * canStop() — see that file's banner for why a same-thread sandboxed
+ * iframe has no equivalent to Pyodide's interrupt buffer). */
+function canStopFor(cell) {
+  return cell.type === CELL_TYPES.JAVASCRIPT ? jsEngine.canStop() : engine.canStop();
+}
+
+/* Sends a Stop request to whichever engine `cell` is actually running
+ * against. A no-op for JavaScript (jsEngine.requestInterrupt()), which
+ * exists only so this can be called unconditionally rather than
+ * special-cased — canStopFor() above is what actually decides whether
+ * Stop was ever offered in the first place. */
+function requestInterruptFor(cell) {
+  if (cell.type === CELL_TYPES.JAVASCRIPT) jsEngine.requestInterrupt();
+  else engine.requestInterrupt();
+}
+
 /* Autocomplete, hover docs, and signature help all come straight from the
  * shared engine now (engine.pageNamesCompletion/hoverDoc/signatureHelp,
  * DECISIONS_LOG.md 7.89). New capability for dewmini as a side effect of
@@ -1736,21 +2289,49 @@ async function ensurePyodide() {
  * yet, and a signature-help popup, neither of which its own previous
  * live-namespace-only implementation could offer without a Worker. */
 
-/* Runs one cell's code through the shared engine's runCell() (dispatching
- * to tutorial_tools.py's own run_cell(), the same function every dewlab
- * tutorial cell runs through, wherever Pyodide actually lives) and
- * records what happened: the rendered output HTML (so it can be saved
- * and shown again without re-running), and whether it errored. Returns
- * whether the run succeeded, the same true/false run_cell() itself
- * returns.
+/* Turns a SQL cell's own content into the Python source that actually
+ * runs it: a call to tutorial_tools' internal _run_sql_cell() against
+ * the shared `db` connection (assets/pyodide-engine.js's own
+ * RESEED_GLOBALS_SOURCE, planning/CELL_IDENTITY.md §8) — SQL cells have
+ * no execution path of their own, only this one line of generated
+ * Python handed to the same engine.runCell() every Python cell uses.
  *
- * No "Running…" placeholder injected into the output area here anymore
- * (the previous main-thread-only version did) — engine.runCell() already
- * clears the cell's output the moment it starts, and the run/stop state
- * now shows on the cell's own Run button instead (setRunButtonRunning()
- * below). */
+ * The script is embedded as a JSON string literal, not a Python
+ * triple-quoted one: JSON's escaping (\", \\, \n, control characters as
+ * \u00XX) is a subset of what a Python double-quoted string literal
+ * accepts, so this is safe for any SQL text a reader could type,
+ * including one that itself contains quotes or backslashes — a raw
+ * triple-quoted string would break the moment the SQL did.
+ *
+ * The call is assigned rather than left as the cell's last expression on
+ * purpose: _run_sql_cell() already renders its own result table (or its
+ * "N rows affected" line) directly into the cell's output, and returns
+ * the same DataFrame for a reader's own use from Python — if that
+ * return value were also the last expression here, run_cell()'s normal
+ * auto-display would render the same table a second time underneath it. */
+function buildSqlCellCode(sql) {
+  return `import tutorial_tools as _dm_tt\n_ = _dm_tt._run_sql_cell(db, ${JSON.stringify(sql)})`;
+}
+
+/* Runs one cell's code and records what happened: the rendered output
+ * HTML (so it can be saved and shown again without re-running), and
+ * whether it errored. Returns whether the run succeeded.
+ *
+ * Dispatches to one of two genuinely different engines depending on
+ * cell type — assets/pyodide-engine.js's runCell() (which reaches
+ * tutorial_tools.py's own run_cell(), the same function every dewlab
+ * tutorial cell runs through) for Python and SQL, or
+ * ./js-cell-engine.js's own runCell() for JavaScript — but the
+ * bookkeeping below (ranContent, lastRunMs, ranOrder, output/error,
+ * saveState()) is identical either way: both engines return the same
+ * `{ok}` shape, and both already wrote whatever the cell produced into
+ * outputEl by the time they resolve.
+ *
+ * No "Running…" placeholder injected into the output area here — both
+ * engines already clear a cell's own output the moment its run starts,
+ * and the run/stop state shows on the cell's own Run button instead
+ * (setRunButtonRunning() below). */
 async function executeCell(cell) {
-  await ensurePyodide();
   const outputEl = cell.outputEl;
   if (!outputEl) return true;
   outputEl.classList.remove("dm-empty");
@@ -1758,10 +2339,16 @@ async function executeCell(cell) {
   // Captured before the run, not after: the whole point of the run-line's
   // "edited since" flag is "does this output belong to what the cell says
   // right now", so this has to be the content that was actually handed to
-  // Python, even in the unusual case where an editor kept accepting
+  // the engine, even in the unusual case where an editor kept accepting
   // keystrokes while a slow cell was still running.
   cell.ranContent = cell.content;
-  const { ok } = await engine.runCell(cell.id, cell.content);
+  let ok;
+  if (cell.type === CELL_TYPES.JAVASCRIPT) {
+    ({ ok } = await jsEngine.runCell(cell.id, cell.content));
+  } else {
+    const code = cell.type === CELL_TYPES.SQL ? buildSqlCellCode(cell.content) : cell.content;
+    ({ ok } = await engine.runCell(cell.id, code));
+  }
   cell.lastRunMs = performance.now() - startedAt;
   cell.ranOrder = ++runSequenceCounter;
   cell.output = outputEl.innerHTML;
@@ -1770,22 +2357,28 @@ async function executeCell(cell) {
   if (!outputEl.innerHTML.trim()) outputEl.classList.add("dm-empty");
   updateCellChrome(cell.id);
   saveState();
-  // Fire-and-forget: a cell's own code may have written straight to the
-  // mounted filesystem (dfs.sync()'s own docstring explains why that
-  // needs this rather than relying on writeFile()'s debounced sync or
-  // the best-effort unload flush alone) — not awaited, so a slow sync
-  // never makes a fast cell feel slower than it is.
-  dfs.sync()
-    // A cell that wrote a file is exactly when the Files list is wrong, and
-    // nothing else was redrawing it: a student could write shapes.py, open
-    // Files, and not see it until some unrelated thing refreshed the panel.
-    .then(() => renderFileList())
-    .catch((err) => console.warn("dewmini: filesystem sync after cell run failed", err));
-  // Same treatment for the Workbench's variable list: a run is exactly
-  // when the namespace changed, so this is when it needs redrawing — but
-  // it is a panel a reader may not even have open, and never worth making
-  // a cell feel slower for.
-  refreshVariables().catch((err) => console.warn("dewmini: refreshing variables failed", err));
+  // Neither is meaningful for a JavaScript cell: its own sandboxed
+  // session has no mounted filesystem to sync, and refreshVariables()
+  // reads Pyodide's own namespace, which a JS cell's run never touches.
+  if (cell.type !== CELL_TYPES.JAVASCRIPT) {
+    // Fire-and-forget: a cell's own code may have written straight to
+    // the mounted filesystem (dfs.sync()'s own docstring explains why
+    // that needs this rather than relying on writeFile()'s debounced
+    // sync or the best-effort unload flush alone) — not awaited, so a
+    // slow sync never makes a fast cell feel slower than it is.
+    dfs.sync()
+      // A cell that wrote a file is exactly when the Files list is
+      // wrong, and nothing else was redrawing it: a student could write
+      // shapes.py, open Files, and not see it until some unrelated
+      // thing refreshed the panel.
+      .then(() => renderFileList())
+      .catch((err) => console.warn("dewmini: filesystem sync after cell run failed", err));
+    // Same treatment for the Workbench's variable list: a run is
+    // exactly when the namespace changed, so this is when it needs
+    // redrawing — but it is a panel a reader may not even have open,
+    // and never worth making a cell feel slower for.
+    refreshVariables().catch((err) => console.warn("dewmini: refreshing variables failed", err));
+  }
   return ok;
 }
 
@@ -1801,7 +2394,7 @@ function formatRunDuration(ms) {
  * output the running cell is actively writing. */
 function resetCellOutput(id) {
   const cell = cells.find((c) => c.id === id);
-  if (!cell || cell.type !== CELL_TYPES.PYTHON || running) return;
+  if (!cell || !RUNS_AGAINST_SESSION.has(cell.type) || running) return;
   const outputEl = cell.outputEl;
   if (outputEl) {
     outputEl.replaceChildren();
@@ -1817,23 +2410,27 @@ function resetCellOutput(id) {
   saveState();
 }
 
-/* Toolbar-level "Clear output" — resets every Python cell's output,
- * keeping every cell and its code. Distinct from the existing "Clear"
- * button, which deletes every cell. */
+/* Toolbar-level "Clear output" — resets every cell that runs against the
+ * session (Python, SQL, JavaScript), keeping every cell and its code.
+ * Distinct from the existing "Clear" button, which deletes every cell. */
 function clearAllOutputs() {
-  cells.forEach((cell) => { if (cell.type === CELL_TYPES.PYTHON) resetCellOutput(cell.id); });
+  cells.forEach((cell) => { if (RUNS_AGAINST_SESSION.has(cell.type)) resetCellOutput(cell.id); });
   updateStatus("Output cleared.");
 }
 
-/* Toggles a cell's own Run button into its running/Stop state. When a
- * genuine interrupt buffer is available (worker mode, cross-origin
- * isolated — engine.canStop()) the button becomes a real Stop; otherwise
- * it just shows the cell is busy, since there is nothing to interrupt
- * (a main-thread fallback blocks this same thread completely once a
- * cell starts, with no opportunity for an interrupt to even be noticed). */
-function setRunButtonRunning(runBtn) {
+/* Toggles a cell's own Run button into its running/Stop state.
+ * `canStop` — canStopFor(cell), resolved by the caller rather than read
+ * in here, since which engine's own canStop() answers the question
+ * depends on the cell's type. When true (worker mode, cross-origin
+ * isolated, and never for a JavaScript cell — see canStopFor()) the
+ * button becomes a real Stop; otherwise it just shows the cell is busy,
+ * since there is nothing to interrupt (a main-thread fallback, or a
+ * JavaScript cell's own sandboxed iframe, blocks this same thread
+ * completely once a cell starts, with no opportunity for an interrupt to
+ * even be noticed). */
+function setRunButtonRunning(runBtn, canStop) {
   if (!runBtn) return;
-  if (engine.canStop()) {
+  if (canStop) {
     runBtn.disabled = false;
     runBtn.textContent = "■";
     runBtn.title = "Stop this cell";
@@ -1857,38 +2454,46 @@ function resetRunButton(runBtn) {
 /* Runs a single cell by id, in response to its own Run button or
  * Shift+Enter. A second click on the cell that is already running sends
  * a Stop (interrupt) request instead of starting a new run — the same
- * button in its Stop state. `running` guards against
- * overlapping runs from two different cells: dewmini has one Python
- * interpreter, so only one cell can actually be executing at a time; a
- * click on a *different* cell while one is already running is ignored
- * rather than queued. */
+ * button in its Stop state. `running` guards against overlapping runs
+ * from two different cells: dewmini has one Python interpreter and one
+ * JavaScript session, so only one cell can actually be executing at a
+ * time across *either* of them; a click on a different cell while one is
+ * already running is ignored rather than queued.
+ *
+ * The cell is looked up first, before deciding interrupt-vs-run, since
+ * both branches need to know its type either way — requestInterruptFor()
+ * to reach the right engine, ensureSessionFor()/canStopFor() to boot and
+ * read the right one. */
 async function runCell(id) {
+  const cell = cells.find((c) => c.id === id);
+  if (!cell || !RUNS_AGAINST_SESSION.has(cell.type)) return;
   if (runningCellId === id) {
-    engine.requestInterrupt();
+    requestInterruptFor(cell);
     return;
   }
   if (running) return;
-  const cell = cells.find((c) => c.id === id);
-  if (!cell || cell.type !== CELL_TYPES.PYTHON) return;
   running = true;
   runningCellId = id;
   try {
-    // Boot (or reconnect to an already-booted) engine *before* deciding
-    // what the Run button should look like — engine.canStop(), which
+    // Boot (or reconnect to an already-booted) session *before* deciding
+    // what the Run button should look like — canStopFor(), which
     // setRunButtonRunning() reads, only knows worker-vs-main-thread once
     // ensureBooted() has actually resolved, so the await has to come
     // first, not only inside executeCell() below.
     // Skipping this step showed up as a real bug in testing: canStop()
     // read false (its pre-boot default) on every cell's first-ever run,
     // showing the *non-stoppable* "…" busy state even in worker mode.
-    await ensurePyodide();
-    await checkImportedFiles();
-    setRunButtonRunning(cell.runBtn);
+    await ensureSessionFor(cell);
+    // Meaningless for a JavaScript cell: changedImportedModules() reads
+    // Pyodide's own module registry, which a JS cell's session never
+    // touches.
+    if (cell.type !== CELL_TYPES.JAVASCRIPT) await checkImportedFiles();
+    setRunButtonRunning(cell.runBtn, canStopFor(cell));
     startRunLineTicker(cell);
     const ok = await executeCell(cell);
     updateStatus(ok ? "Ran." : "Error — see the cell.", ok ? "ok" : "error");
   } catch (err) {
-    updateStatus(`Python isn't available: ${err.message}`, "error");
+    updateStatus(`Couldn't run this cell: ${err.message}`, "error");
   } finally {
     running = false;
     runningCellId = null;
@@ -1897,52 +2502,73 @@ async function runCell(id) {
   }
 }
 
-/* Runs a batch of Python cells in order — the shared engine behind "Run
- * all", "Run above", and "Run below" below, which differ only in *which*
- * cells they hand it and whether the namespace gets cleared first.
+/* Runs a batch of cells (Python, SQL, and/or JavaScript —
+ * RUNS_AGAINST_SESSION) in order — the shared logic behind "Run all",
+ * "Run above", and "Run below" below, which differ only in *which*
+ * cells they hand it and whether each cell's own session gets cleared
+ * first.
  *
  * `reset` matters more than it looks: "Run all" and "Run above" both
- * start from `engine.resetPageState()` (clearing and re-seeding the
- * shared namespace, cheaper than a full restart), because the whole point
- * of running from the top is that "what's on screen matches what the code
- * actually did" — without the reset, a stale value from a previous run
- * could linger and mask a cell that no longer defines something it used
- * to. "Run below" must *not* reset: its whole point is to keep what the
- * cells above it already defined, so resetting first would throw away
- * exactly the state it exists to preserve.
+ * start from a clean slate for *every* session a cell in the batch
+ * might need — `engine.resetPageState()` (clearing and re-seeding
+ * Pyodide's shared namespace, cheaper than a full restart) and
+ * `jsEngine.restart()` (there is no equivalent cheap reset for the JS
+ * session; tearing the iframe down and letting the next cell recreate
+ * it is the only way to clear it) — because the whole point of running
+ * from the top is that "what's on screen matches what the code actually
+ * did." Without this, a stale value from a previous run could linger
+ * and mask a cell that no longer defines something it used to. "Run
+ * below" must *not* reset either session: its whole point is to keep
+ * what the cells above it already defined, so resetting first would
+ * throw away exactly the state it exists to preserve.
  *
- * Each cell's own Run button becomes a Stop button while it's its turn,
- * the same as running it individually, so a runaway cell partway through
- * a batch can still be interrupted without losing the cells that already
- * ran. */
-async function runCellBatch(pythonCells, { reset, emptyMessage, describe }) {
+ * Each cell's own session is booted right before its own turn, not once
+ * for the whole batch up front — a batch of JavaScript cells alone never
+ * needs Pyodide at all, and vice versa. Each cell's own Run button
+ * becomes a Stop button while it's its turn, the same as running it
+ * individually, so a runaway cell partway through a batch can still be
+ * interrupted without losing the cells that already ran (Python/SQL
+ * only — see canStopFor()). */
+async function runCellBatch(runnableCells, { reset, emptyMessage, describe }) {
   if (running) return;
-  if (!pythonCells.length) { updateStatus(emptyMessage); return; }
+  if (!runnableCells.length) { updateStatus(emptyMessage); return; }
 
   running = true;
   const btn = document.getElementById("run-all");
   if (btn) btn.disabled = true;
 
   try {
-    await ensurePyodide();
-    // Once for the whole batch, not once per cell: the answer would be
-    // the same every time and each ask is a round trip.
-    await checkImportedFiles();
+    // Skipped for a batch that is entirely JavaScript: forcing a Pyodide
+    // boot (and a round trip only Python/SQL cells could ever answer)
+    // for a batch that will never touch it is wasted work.
+    if (runnableCells.some((c) => c.type !== CELL_TYPES.JAVASCRIPT)) {
+      await ensurePyodide();
+      // Once for the whole batch, not once per cell: the answer would be
+      // the same every time and each ask is a round trip.
+      await checkImportedFiles();
+    }
     if (reset) {
+      // resetPageState() itself assumes Pyodide has already booted at
+      // least once, so that has to come first — unconditionally, even
+      // if the batch turns out to be all JavaScript cells, the same cost
+      // this already paid before JavaScript cells existed.
+      await ensurePyodide();
       await engine.resetPageState();
+      jsEngine.restart();
       resetRunSequence();
     }
-    updateStatus(describe(pythonCells.length));
+    updateStatus(describe(runnableCells.length));
     // Only ever the one cell right after whichever is about to run, kept
     // current as the batch moves along below — not the whole remaining
     // list marked "next" at once.
-    if (pythonCells[1]) setRunLineQueued(pythonCells[1]);
+    if (runnableCells[1]) setRunLineQueued(runnableCells[1]);
 
     let errors = 0;
-    for (let i = 0; i < pythonCells.length; i++) {
-      const cell = pythonCells[i];
+    for (let i = 0; i < runnableCells.length; i++) {
+      const cell = runnableCells[i];
       runningCellId = cell.id;
-      setRunButtonRunning(cell.runBtn);
+      await ensureSessionFor(cell);
+      setRunButtonRunning(cell.runBtn, canStopFor(cell));
       startRunLineTicker(cell);
       /* try/finally per cell: if a
        * run rejects rather than returning false — which is exactly what
@@ -1956,7 +2582,7 @@ async function runCellBatch(pythonCells, { reset, emptyMessage, describe }) {
         resetRunButton(cell.runBtn);
         clearRunLineTicker(cell);
       }
-      const next = pythonCells[i + 1];
+      const next = runnableCells[i + 1];
       if (next) setRunLineQueued(next);
     }
     updateStatus(
@@ -1964,7 +2590,7 @@ async function runCellBatch(pythonCells, { reset, emptyMessage, describe }) {
       errors ? "error" : "ok"
     );
   } catch (err) {
-    updateStatus(`Python isn't available: ${err.message}`, "error");
+    updateStatus(`Couldn't run these cells: ${err.message}`, "error");
   } finally {
     running = false;
     runningCellId = null;
@@ -1972,34 +2598,35 @@ async function runCellBatch(pythonCells, { reset, emptyMessage, describe }) {
   }
 }
 
-/* Runs every Python cell in order, top to bottom — "Run all." */
+/* Runs every cell that runs against the session, in order, top to bottom
+ * — "Run all." */
 async function runAllCells() {
   // In the file view there are no cells on screen to run one at a time,
   // and the file runs top to bottom as one thing.
   if (currentView() === VIEWS.FILE) { await runWholeFile(); return; }
-  await runCellBatch(cells.filter((c) => c.type === CELL_TYPES.PYTHON), {
+  await runCellBatch(cells.filter((c) => RUNS_AGAINST_SESSION.has(c.type)), {
     reset: true,
-    emptyMessage: "No Python cells to run.",
+    emptyMessage: "No cells to run.",
     describe: (n) => `Running ${n} cell${n === 1 ? "" : "s"}…`,
   });
 }
 
-/* "Run above": every Python cell from the top through (and including)
+/* "Run above": every runnable cell from the top through (and including)
  * `id`, from a clean namespace — the honest fix once a cell partway down
  * has been edited and everything before it needs re-proving, without
  * paying to re-run whatever comes after it too. */
 async function runAbove(id) {
   const idx = cells.findIndex((c) => c.id === id);
   if (idx === -1) return;
-  const slice = cells.slice(0, idx + 1).filter((c) => c.type === CELL_TYPES.PYTHON);
+  const slice = cells.slice(0, idx + 1).filter((c) => RUNS_AGAINST_SESSION.has(c.type));
   await runCellBatch(slice, {
     reset: true,
-    emptyMessage: "No Python cells above this one to run.",
+    emptyMessage: "No cells above this one to run.",
     describe: (n) => `Running the ${n} cell${n === 1 ? "" : "s"} above and including this one…`,
   });
 }
 
-/* "Run below": `id` and every Python cell after it, keeping whatever
+/* "Run below": `id` and every runnable cell after it, keeping whatever
  * earlier cells already defined — the way to redo a slow computation's
  * downstream steps without paying to redo the computation itself. See
  * runCellBatch()'s own comment for why this is the one caller that must
@@ -2007,10 +2634,10 @@ async function runAbove(id) {
 async function runBelow(id) {
   const idx = cells.findIndex((c) => c.id === id);
   if (idx === -1) return;
-  const slice = cells.slice(idx).filter((c) => c.type === CELL_TYPES.PYTHON);
+  const slice = cells.slice(idx).filter((c) => RUNS_AGAINST_SESSION.has(c.type));
   await runCellBatch(slice, {
     reset: false,
-    emptyMessage: "No Python cells here or below to run.",
+    emptyMessage: "No cells here or below to run.",
     describe: (n) => `Running the ${n} cell${n === 1 ? "" : "s"} from here on…`,
   });
 }
@@ -2165,6 +2792,20 @@ function triggerDownload(filename, content, mime) {
   URL.revokeObjectURL(url);
 }
 
+/* Every export below (.py, .ipynb) only ever reads one field, `content`
+ * — fine for every type except `web` (DECISIONS_LOG.md 7.120), whose
+ * CSS half lives in a second field, `style`, that would otherwise be
+ * silently dropped from a downloaded file with no way to notice short of
+ * comparing it against the cell still on screen. Not a concern the
+ * types `web` replaced ever had: an old CSS cell's whole content *was*
+ * `cell.content`, so nothing was lost exporting it the same generic way
+ * every other non-Python type already was. */
+function cellExportContent(cell) {
+  if (cell.type !== CELL_TYPES.WEB) return cell.content;
+  if (!cell.style.trim()) return cell.content;
+  return `${cell.content}\n\n<style>\n${cell.style}\n</style>`;
+}
+
 /* Joins every cell into one plain .py file: a Python cell's code goes in
  * as-is, and a text cell's content gets turned into `#`-prefixed comment
  * lines, so the whole notebook reads as one ordinary, runnable Python
@@ -2210,7 +2851,7 @@ function cellsToPercentText(cellList) {
       parts.push(PY_TEXT_MARKER);
       cell.content.split("\n").forEach((line) => parts.push(`# ${line}`.trimEnd()));
     } else {
-      parts.push(PY_CELL_MARKER, cell.content);
+      parts.push(PY_CELL_MARKER, cellExportContent(cell));
     }
     parts.push("");
   });
@@ -2477,7 +3118,7 @@ function cellsToIpynb(cellList) {
       // own. Only what is read back on import is written: a name nothing
       // reads would be a claim in the file that nothing keeps true.
       metadata: typeof cell.lastRunMs === "number" ? { dewmini: { lastRunMs: cell.lastRunMs } } : {},
-      source: splitLines(cell.content),
+      source: splitLines(cellExportContent(cell)),
       ...(cell.type === CELL_TYPES.PYTHON
         // No execution_count: dewmini does not number runs, and writing a
         // number it did not measure would be a claim about the order this
@@ -2540,7 +3181,7 @@ async function downloadAsHtml() {
   updateStatus("Building the standalone file…");
   try {
     const toolsSource = await getToolsSource();
-    const cellsData = cells.map((c) => ({ id: c.id, type: c.type, content: c.content }));
+    const cellsData = cells.map((c) => ({ id: c.id, type: c.type, content: c.content, style: c.style || "" }));
     const name = getFilenameBase();
     const html = buildStandaloneHtml(toolsSource, cellsData, isDarkNow(), name);
     triggerDownload(`${name}.html`, html, "text/html");
@@ -2615,7 +3256,9 @@ async function main() {
     } else {
       const body = document.createElement("div");
       body.className = "text-body";
-      body.textContent = cell.content;
+      body.textContent = cell.type === "web" && cell.style
+        ? cell.content + "\\n\\n<style>\\n" + cell.style + "\\n</style>"
+        : cell.content;
       wrap.appendChild(body);
     }
     container.appendChild(wrap);
@@ -3561,29 +4204,41 @@ function updateExecutionStatus() {
   const el = document.getElementById("settings-execution-status");
   if (!el) return;
   const mode = engine.engineMode();
+  let text;
   if (!mode) {
-    el.textContent = "Not started yet — run a cell to start Python.";
-    return;
+    text = "Not started yet — run a cell to start Python.";
+  } else {
+    const where = mode === "worker"
+      ? "a background worker, so the page stays responsive"
+      : "the main thread (no background worker available here) — a runaway cell will freeze the page until it finishes";
+    const stop = engine.canStop()
+      ? "Stop can genuinely interrupt a running cell."
+      : "Stop can't interrupt a running cell in this mode.";
+    text = `Running in ${where}. ${stop}`;
   }
-  const where = mode === "worker"
-    ? "a background worker, so the page stays responsive"
-    : "the main thread (no background worker available here) — a runaway cell will freeze the page until it finishes";
-  const stop = engine.canStop()
-    ? "Stop can genuinely interrupt a running cell."
-    : "Stop can't interrupt a running cell in this mode.";
-  el.textContent = `Running in ${where}. ${stop}`;
+  // Only once a reader has actually run a JavaScript cell — mentioning a
+  // second session nobody has touched yet would just be noise.
+  if (jsEngine.sessionReady()) {
+    text += " JavaScript cells run in their own sandboxed frame, on the same main thread — Stop can't interrupt one either.";
+  }
+  el.textContent = text;
 }
 
-/* Tears the engine down entirely (engine.restart()) and forgets that a
- * filesystem was ever mounted (dfs.reset(), since a fresh interpreter has
- * nothing mounted into it yet), then boots a clean one right away so
- * Settings reflects real status immediately rather than waiting for the
- * next Run click. Shared by both "Restart Python" and "Restart & run
- * all" below — the run-all button needs exactly this same teardown before
- * its own extra step. Returns whether the restart itself succeeded, so a
- * caller that runs cells afterwards knows whether to bother. */
+/* Tears both engines down entirely (engine.restart(), jsEngine.restart())
+ * and forgets that a filesystem was ever mounted (dfs.reset(), since a
+ * fresh interpreter has nothing mounted into it yet), then boots Pyodide
+ * back up right away so Settings reflects real status immediately rather
+ * than waiting for the next Run click. The JavaScript session is left
+ * torn down rather than eagerly recreated too — unlike Pyodide, there is
+ * no slow download for Settings to get ahead of, and creating it stays
+ * lazy (ensureJsSession()) the same as it is on a fresh page load.
+ * Shared by both "Restart Python" and "Restart & run all" below — the
+ * run-all button needs exactly this same teardown before its own extra
+ * step. Returns whether the restart itself succeeded, so a caller that
+ * runs cells afterwards knows whether to bother. */
 async function restartPython() {
   engine.restart();
+  jsEngine.restart();
   dfs.reset();
   resetRunSequence();
   updateStatus("Restarting Python…");
@@ -3656,6 +4311,45 @@ async function updateStorageStatus() {
   if (forgetBtn) forgetBtn.hidden = backend !== "native";
 
   renderFileList();
+}
+
+/* Lists every open notebook in the Files panel too, even though none of
+ * them are a file on the mounted filesystem. A notebook lives in this
+ * browser's own storage — the Files section is where a reader already
+ * looks to answer "where is my work", and until this a plain notebook
+ * had no answer there at all, unlike a file a cell's own code writes
+ * (DECISIONS_LOG.md 7.122). No filesystem read, so this needs no
+ * ticket-guard the way renderFileList() does, and draws instantly
+ * regardless of whether Python has ever booted.
+ *
+ * A notebook already backed by a real workspace file (`.path` is set —
+ * opened from Files as a `.py`/`.ipynb`/`.html`) is skipped: it already
+ * appears in the ordinary file list below under its own name, and
+ * listing it here too would be the same notebook claiming two homes. */
+function renderNotebookList() {
+  const listEl = document.getElementById("settings-notebook-list");
+  if (!listEl) return;
+  listEl.replaceChildren();
+
+  for (const nb of notebooks) {
+    if (nb.path) continue;
+    const item = document.createElement("li");
+    item.className = "dm-filelist-item";
+
+    const nameEl = document.createElement("button");
+    nameEl.type = "button";
+    nameEl.className = "dm-filelist-item-name";
+    nameEl.textContent = nb.name;
+    nameEl.title = `Switch to ${nb.name}`;
+    nameEl.addEventListener("click", () => showNotebook(nb.id));
+
+    const badge = document.createElement("span");
+    badge.className = "dm-filelist-item-size";
+    badge.textContent = "notebook";
+
+    item.append(nameEl, badge);
+    listEl.append(item);
+  }
 }
 
 /* Re-lists the mounted filesystem's root and redraws the "Files" list —
@@ -3820,7 +4514,7 @@ async function newFsFile() {
   let name = asked.trim();
   if (!name) return;
   if (name.includes("/")) { updateStatus("A name cannot contain a slash.", "error"); return; }
-  if (!/\.(py|ipynb)$/i.test(name)) name += ".py";
+  if (!/\.(py|ipynb|html?)$/i.test(name)) name += ".py";
 
   try {
     const existing = await dfs.listDir("");
@@ -4192,7 +4886,7 @@ function initPanels() {
  * functions there (the try/catch-around-localStorage convention, the
  * `{...a, ...b}` merge-with-defaults pattern) for more detail than
  * repeated here — the code is close to line-for-line the same. */
-const TEXTURE_DEFAULTS = { theme: "system", font: "serif", size: 18, width: 34, link: "#d4692a" };
+const TEXTURE_DEFAULTS = { theme: "system", font: "serif", size: 18, width: 34, link: "#d4692a", contrast: "normal" };
 
 function loadTexture() {
   try {
@@ -4210,6 +4904,7 @@ function applyTexture(state) {
   const root = document.documentElement;
   if (state.theme === "system") root.removeAttribute("data-theme"); else root.setAttribute("data-theme", state.theme);
   if (state.font === "serif") root.removeAttribute("data-font"); else root.setAttribute("data-font", state.font);
+  if (state.contrast === "normal") root.removeAttribute("data-contrast"); else root.setAttribute("data-contrast", state.contrast);
   root.style.setProperty("--dl-font-size", `${state.size}px`);
   root.style.setProperty("--dl-line-width", `${state.width}rem`);
   root.style.setProperty("--dl-link", state.link);
@@ -4392,6 +5087,58 @@ function initPracticeOrderSettings() {
   sync();
 }
 
+/* Reads the saved on/off state for every toggle in CELL_TYPE_TOGGLES into
+ * enabledCellTypes. Called before the first renderCells() (see init()),
+ * since createInsertDivider() reads enabledCellTypes on every render. */
+function loadCellTypeToggles() {
+  enabledCellTypes = new Set([CELL_TYPES.PYTHON, CELL_TYPES.TEXT]);
+  for (const t of CELL_TYPE_TOGGLES) {
+    let on = t.defaultOn;
+    try {
+      const saved = localStorage.getItem(t.key);
+      if (saved === "on") on = true;
+      else if (saved === "off") on = false;
+    } catch {}
+    if (on) enabledCellTypes.add(t.type);
+  }
+}
+
+/* Wires up Settings → "Cell types". A toggle here only changes which
+ * insert-seam buttons createInsertDivider() draws — flipping one off
+ * re-renders the seams (via renderCells()) so the change is visible
+ * straight away, but touches nothing already in the notebook. */
+function initCellTypeSettings() {
+  loadCellTypeToggles();
+
+  const panel = document.getElementById("dl-settings-cell-types");
+  if (!panel) return;
+
+  const sync = () => {
+    for (const t of CELL_TYPE_TOGGLES) {
+      const group = panel.querySelector(`.dl-seg[data-dm="${t.dm}"]`);
+      if (!group) continue;
+      const on = enabledCellTypes.has(t.type);
+      for (const btn of group.querySelectorAll("button")) {
+        btn.setAttribute("aria-pressed", String(btn.dataset.value === (on ? "on" : "off")));
+      }
+    }
+  };
+
+  for (const t of CELL_TYPE_TOGGLES) {
+    const group = panel.querySelector(`.dl-seg[data-dm="${t.dm}"]`);
+    group?.addEventListener("click", (ev) => {
+      const btn = ev.target.closest("button");
+      if (!btn) return;
+      const on = btn.dataset.value === "on";
+      if (on) enabledCellTypes.add(t.type); else enabledCellTypes.delete(t.type);
+      try { localStorage.setItem(t.key, on ? "on" : "off"); } catch {}
+      sync();
+      renderCells();
+    });
+  }
+  sync();
+}
+
 /* Wires up the Settings → Run time "on / off" switch — applied as a
  * data-dm-runstats attribute on <html> (read by renderCellRunLine()),
  * re-painted on every already-rendered cell immediately on toggle, not
@@ -4461,6 +5208,9 @@ function observeThemeChanges() {
     const dark = isDarkNow();
     cells.forEach((c) => { if (c.editor) { try { setEditorTheme(c.editor, dark); } catch {} } });
     if (fileEditor) { try { setEditorTheme(fileEditor, dark); } catch {} }
+    if (siteEditors) {
+      for (const ed of Object.values(siteEditors)) { try { setEditorTheme(ed, dark); } catch {} }
+    }
   });
   observer.observe(document.documentElement, { attributes: true });
 }
@@ -4485,7 +5235,7 @@ function wireToolbar() {
   document.getElementById("clear-all")?.addEventListener("click", () => {
     if (!cells.length) return;
     if (!confirm("Clear every cell? This can't be undone.")) return;
-    cells.forEach((c) => c.editor?.destroy());
+    cells.forEach(destroyCellEditors);
     setCells([]);
     saveState();
     renderCells();
@@ -4533,12 +5283,16 @@ async function init() {
   initTexture((dark) => {
     cells.forEach((c) => { if (c.editor) { try { setEditorTheme(c.editor, dark); } catch {} } });
     if (fileEditor) { try { setEditorTheme(fileEditor, dark); } catch {} }
+    if (siteEditors) {
+      for (const ed of Object.values(siteEditors)) { try { setEditorTheme(ed, dark); } catch {} }
+    }
   });
   initEditorSettings();
   initNotes();
   initFilename();
   initPracticeOrderSettings();
   initRunStatsSetting();
+  initCellTypeSettings();
   initStorageSection();
   initExecutionSection();
   initReferenceSection();

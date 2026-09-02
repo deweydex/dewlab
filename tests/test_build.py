@@ -1002,7 +1002,16 @@ class TestTheDownloadableCopy:
     def test_a_tutorial_without_maths_does_not_carry_them(self, repo_with_assets):
         write(repo_with_assets, "No maths at all.\n")
         b.build(standalone=True)
-        assert "data:font/woff2;base64," not in self.standalone(repo_with_assets)
+        # Not "no base64 font data at all": the two accessible reading
+        # fonts (DECISIONS_LOG.md 7.123) are inlined unconditionally,
+        # maths or not, so that base64 marker alone no longer says
+        # whether KaTeX specifically travelled. ".katex-html" is
+        # katex.min.css's own class, unlike "KaTeX_Main" — that font
+        # family name is also referenced from tutorial-style.css's own
+        # .dl-math fallback rule, present on every page regardless.
+        page = self.standalone(repo_with_assets)
+        assert ".katex-html" not in page
+        assert "data:font/woff2;base64," in page  # the accessible fonts still do
 
     def test_navigation_is_dropped_rather_than_left_broken(self, repo_with_assets):
         for n in (1, 2):

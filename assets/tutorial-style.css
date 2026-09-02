@@ -24,13 +24,19 @@
   --dl-link: var(--dl-orange);
 
   /* A cell type's colour, layered onto its label rather than standing in
-     for it — planning/CELL_IDENTITY.md §2. References --dl-orange/--dl-
-     muted rather than fixed hex, so both already track the theme and the
-     texture panel's own choices for free; only a genuinely new hue (SQL,
-     HTML, CSS, JavaScript, once those cell types are real) needs a literal
-     value of its own, added here when it's built. */
+     for it — planning/CELL_IDENTITY.md §2/§8. Python/Text reference
+     --dl-orange/--dl-muted, so both already track the theme and the
+     texture panel's own choices for free. SQL/HTML/CSS/JavaScript needed
+     literal hues of their own instead — light-legible values here,
+     redefined for dark below the same way --dl-error-fg/--dl-pass-fg
+     already are, since a colour picked for the light cell background is
+     not automatically legible against the dark one. */
   --dl-type-python: var(--dl-orange);
   --dl-type-text: var(--dl-muted);
+  --dl-type-sql: #0d7a72;
+  --dl-type-html: #7c3aed;
+  --dl-type-css: #2563eb;
+  --dl-type-js: #b8228f;
 
   /* Light palette. The dark block below redefines only these. */
   --dl-bg: #fdfcfa;
@@ -74,6 +80,10 @@
   --dl-pass-bg: #16261d;
   --dl-panel-bg: #1b2129;
   --dl-shadow: rgba(0, 0, 0, 0.5);
+  --dl-type-sql: #5eead4;
+  --dl-type-html: #c4b5fd;
+  --dl-type-css: #93c5fd;
+  --dl-type-js: #f0a8db;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -92,6 +102,10 @@
     --dl-pass-bg: #16261d;
     --dl-panel-bg: #1b2129;
     --dl-shadow: rgba(0, 0, 0, 0.5);
+    --dl-type-sql: #5eead4;
+    --dl-type-html: #c4b5fd;
+    --dl-type-css: #93c5fd;
+    --dl-type-js: #f0a8db;
   }
 }
 
@@ -101,6 +115,51 @@
 }
 :root[data-font="mono"] {
   --dl-font-family: var(--dl-mono);
+}
+/* Two accessible reading fonts (assets/vendor/accessible-fonts.css,
+ * DECISIONS_LOG.md 7.123): Atkinson Hyperlegible (Braille Institute of
+ * America — designed for low-vision legibility) and OpenDyslexic. Real
+ * fallback fonts after each, not just the family name, for the one
+ * moment before the self-hosted @font-face has actually loaded. */
+:root[data-font="atkinson"] {
+  --dl-font-family: "Atkinson Hyperlegible", "Helvetica Neue", Arial, sans-serif;
+}
+:root[data-font="opendyslexic"] {
+  --dl-font-family: "OpenDyslexic", "Comic Sans MS", sans-serif;
+}
+
+/* High contrast: a toggle of its own, not a sixth font choice — it
+ * changes both the font and the colour palette together
+ * (DECISIONS_LOG.md 7.123), independent of whichever of the five fonts
+ * above (or light/dark theme) a reader separately picked, because
+ * neither of those questions is "can I tell this text from its
+ * background". Forces Atkinson Hyperlegible regardless of the Font
+ * row's own choice, and near-maximum text/background contrast in
+ * whichever theme is active — --dl-muted is the one most rules here
+ * lean on for secondary text, and the value it takes elsewhere is
+ * nowhere near AAA contrast on purpose (it is meant to recede), so
+ * high contrast redefines it to nearly --dl-fg rather than leaving it
+ * at its normal value. */
+:root[data-contrast="high"] {
+  --dl-font-family: "Atkinson Hyperlegible", "Helvetica Neue", Arial, sans-serif;
+  --dl-fg: #000000;
+  --dl-bg: #ffffff;
+  --dl-muted: #1a1a1a;
+  --dl-rule: #000000;
+}
+:root[data-theme="dark"][data-contrast="high"] {
+  --dl-fg: #ffffff;
+  --dl-bg: #000000;
+  --dl-muted: #f2f2f2;
+  --dl-rule: #ffffff;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"])[data-contrast="high"] {
+    --dl-fg: #ffffff;
+    --dl-bg: #000000;
+    --dl-muted: #f2f2f2;
+    --dl-rule: #ffffff;
+  }
 }
 
 /* ------------------------------------------------------------ page frame */
@@ -604,6 +663,29 @@ p code, li code {
  * no output, just a textarea that turns into rendered text on blur. Same
  * click-to-edit/blur-to-render shape as compose/dewmini.js's own text
  * cells (.dm-textarea/.dm-doc-render), ported here rather than reinvented. */
+
+/* Rendered, it reads like part of the page, not a code widget — its bar
+ * (the "your own note" label, view/duplicate/share/delete) and its
+ * collapse triangle stay invisible until a reader actually touches the
+ * cell (planning/CELL_IDENTITY.md §4, DECISIONS_LOG.md 7.115, ported
+ * from compose/dewmini-style.css's own .dm-cell-text rule).
+ * `opacity: 0; pointer-events: none`, never `display: none`, so the
+ * controls stay in the tab order — a keyboard user tabbing onto one
+ * reveals it via :focus-within the moment it receives focus, and only a
+ * mouse user needs to hover the cell first. A touch device has no hover
+ * to reveal anything with, so it gets the chrome on unconditionally. */
+.dl-cell-text .dl-cell-bar,
+.dl-cell-text .dl-cell-collapse-col { transition: opacity 0.1s ease; }
+.dl-cell-text:not(:hover):not(:focus-within) .dl-cell-bar,
+.dl-cell-text:not(:hover):not(:focus-within) .dl-cell-collapse-col {
+  opacity: 0;
+  pointer-events: none;
+}
+@media (hover: none) {
+  .dl-cell-text .dl-cell-bar,
+  .dl-cell-text .dl-cell-collapse-col { opacity: 1; pointer-events: auto; }
+}
+
 .dl-doc-editor {
   display: block;
   width: 100%;

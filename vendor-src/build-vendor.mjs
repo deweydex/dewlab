@@ -122,6 +122,60 @@ for (const file of fonts.filter((f) => f.endsWith(".woff2"))) {
   await cp(join(katex, "fonts", file), join(outDir, "fonts", file));
 }
 
+/* Two accessible reading fonts (planning/DEWMINI_WORKBENCH.md's texture
+ * settings; DECISIONS_LOG.md 7.123): Atkinson Hyperlegible (Braille
+ * Institute of America) and OpenDyslexic, both SIL OFL 1.1. Self-hosted
+ * from the @fontsource packages — matching every other vendored asset
+ * here rather than a Google Fonts CDN `<link>`, which this repository's
+ * own offline bundle (write_dewmini_bundle(), DECISIONS_LOG.md 7.92)
+ * could never reach anyway. Regular and bold, roman and italic — four
+ * faces per font, the minimum for a page's own bold/italic markdown to
+ * render as a real face rather than a synthetic one.
+ *
+ * @fontsource ships one CSS file and one woff2 per face; concatenated
+ * into a single accessible-fonts.css here rather than linked separately,
+ * so a page adds one stylesheet regardless of how many of these faces it
+ * ends up using.
+ *
+ * The woff2 files land directly in fonts/, flat, beside KaTeX's own —
+ * not fonts/accessible/ — so build.py's standalone_html() can find them
+ * with the exact same FONT_URL_RE it already uses to inline KaTeX's own
+ * fonts into a downloaded single-file tutorial page, rather than needing
+ * a second copy of that regex and inlining step. Collision with a KaTeX
+ * file name is not a real risk: the two projects share no naming
+ * convention at all. */
+const ACCESSIBLE_FONTS = [
+  { pkg: "@fontsource/atkinson-hyperlegible", slug: "atkinson-hyperlegible" },
+  { pkg: "@fontsource/opendyslexic", slug: "opendyslexic" },
+];
+const FACES = ["latin-400", "latin-400-italic", "latin-700", "latin-700-italic"];
+
+let accessibleCss = "";
+for (const { pkg, slug } of ACCESSIBLE_FONTS) {
+  const pkgDir = join(here, "node_modules", pkg);
+  for (const face of FACES) {
+    // The package's own file names are "<slug>-<face>-normal.woff2" for a
+    // roman face ("latin-400" -> "...-latin-400-normal.woff2") and
+    // "<slug>-<face>.woff2" for an italic one, since "face" already ends
+    // "-italic" there — two different suffix rules, not a typo.
+    const isItalic = face.endsWith("-italic");
+    const srcFile = isItalic ? `${slug}-${face}.woff2` : `${slug}-${face}-normal.woff2`;
+    const outFile = `${slug}-${face}.woff2`;
+    await cp(join(pkgDir, "files", srcFile), join(outDir, "fonts", outFile));
+
+    const css = await readFile(join(pkgDir, `${face}.css`), "utf8");
+    // Only woff2 (every browser dewlab targets supports it, the same call
+    // katex's own fonts above already made), and pointed at where this
+    // copies the file to rather than the package's own relative path.
+    accessibleCss += css
+      .replace(/src: url\([^)]+\) format\('woff2'\),\s*url\([^)]*\) format\('woff'\);/,
+                `src: url('fonts/${outFile}') format('woff2');`)
+      + "\n";
+  }
+}
+await writeFile(join(outDir, "accessible-fonts.css"), accessibleCss);
+
 console.log(`vendor/ rebuilt: codemirror.bundle.js, katex.bundle.js, standalone.bundle.js, ` +
   `milkdown.bundle.js, milkdown.bundle.css, katex.min.css, coi-serviceworker.js, ${
-  fonts.filter((f) => f.endsWith(".woff2")).length} fonts`);
+  fonts.filter((f) => f.endsWith(".woff2")).length} fonts, accessible-fonts.css (${
+  ACCESSIBLE_FONTS.length * FACES.length} faces)`);

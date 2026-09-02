@@ -5016,3 +5016,789 @@ change: any new way to mutate `cell.collapsed` needs an immediate save
 call alongside it, not the debounced one — that mistake is easy to
 reintroduce by copying the pattern every other cell mutation in this
 file already follows.*
+
+**7.115 — A text cell's chrome finally goes quiet until touched, in
+dewmini and on tutorial and practice pages both.** `planning/CELL_IDENTITY.md`
+§4 described this from the start — a Text cell renders by default and
+hides its own chrome until a reader deliberately touches it, `opacity: 0;
+pointer-events: none` rather than `display: none` so a keyboard user
+tabbing onto a hidden control still reveals it. 7.110's own text ("built
+this way in dewmini") and 7.114's ("the same instinct... has not been
+carried over here") both said or implied dewmini already had this. It
+never did — no `.dm-cell-text`-specific rule of any kind existed in
+`compose/dewmini-style.css` before this entry, checked directly rather
+than assumed. The design was real; the claim that it shipped wasn't.
+Built now, in both places it was claimed for.
+
+**One rule, no JavaScript, on either side.** `.dm-cell-text:not(:hover):not(:focus-within)`
+fades `.dm-cell-head` and `.dm-cell-collapse-col` to `opacity: 0` (the
+tutorial side does the same to `.dl-cell-bar`/`.dl-cell-collapse-col`,
+its own equivalents); a plain `@media (hover: none)` keeps the chrome on
+for a touch device, which has no hover to reveal anything with. No JS
+class-toggling needed: a reader focusing the textarea to edit already
+makes the whole cell match `:focus-within`, which is exactly when the
+chrome should be back. `:not(:hover):not(:focus-within)` on the cell
+covers hovering the rendered text itself too, not only the chrome —
+reasonable, since a reader's cursor being anywhere in the cell is itself
+a sign they're paying it attention.
+
+**Deliberately not changed: the interaction that opens a Text cell for
+editing.** The design doc's original mockup describes "a click to reveal
+the chrome, a double-click to edit" — but the version that actually
+shipped, in both dewmini and tutorial pages, has always used a single
+click on the rendered view to start editing directly, with an explicit
+Edit/View toggle as the keyboard- and touch-accessible alternative. That
+behaviour is established, tested, and outside what was asked here; this
+entry only fixes the chrome's own visibility, not the click semantics
+the mockup separately described.
+
+*Cost to change: trivial. Pure CSS on both sides, no new class, no new
+JS state — a future cell type that also wants this only needs its own
+selector added to the same rule.*
+
+**7.116 — HTML, the first of the four new cell types
+`planning/CELL_IDENTITY.md` §8 designed, built in dewmini.** `CELL_TYPES`
+gains `html`; the insert seam gets a third button; `createCellElement()`
+gets a third branch. An HTML cell's source is a CodeMirror editor (the
+`@codemirror/lang-html` support 7.115's own groundwork commit added,
+finally with a consumer) rather than Text's plain `<textarea>` — real
+code deserves real highlighting, and nothing about the Edit/View
+mechanism cared which kind of editor sat behind it. Rendering is a
+sandboxed `<iframe sandbox="allow-scripts" srcdoc="…">`, `resize:
+vertical` rather than measuring the frame's own content height, exactly
+as §8 designed it, no `allow-same-origin` — a reader's own HTML, or one
+they imported from somewhere else entirely, cannot reach this page's own
+window, storage, or DOM, script tag or not.
+
+**Rendering, not source, is the click target — unlike Text.** Text's
+`renderEl.addEventListener("click", showEditor)` cannot work for HTML:
+a click inside a cross-origin iframe is a click inside a different
+document, and it never bubbles out to a listener on this one. The
+header's own Edit/View toggle, already revealed by the same
+quiet-until-touched hover this entry extends to `.dm-cell-html`, is the
+one way in — not a regression from Text's affordance, a genuine
+difference in what the two documents can tell each other.
+
+**A real bug, caught by the browser rather than by `node --check`:
+`if {} else {} else if {}` is invalid JavaScript, and this file's own
+`.js` extension hid it.** The third branch was added after an existing
+`if (PYTHON) {…} else {…text…}`, which needed to become `if (PYTHON) {…}
+else if (TEXT) {…} else if (HTML) {…}` — an easy mistake, adding an
+`else if` after a bare `else` that already closed the chain. `node
+--check compose/dewmini.js` reported no error; `dewmini.js` loads in the
+browser as an ES module (`<script type="module">`), and copying it to a
+`.mjs` extension before checking reproduces the browser's own
+`SyntaxError: Unexpected token 'else'` immediately — `node --check` on a
+plain `.js` file parses it as a CommonJS script, and that parse did not
+catch it here. `node --check` against a temporary `.mjs` copy (or
+`--input-type=module`) is the check that actually matches how this file
+runs, for `dewmini.js` and `tutorial-runtime.js` alike, and is worth
+reaching for on every future change to either.
+
+**Another real bug, caught by a browser-driven e2e test, not by
+inspection: `readCells()`'s own type whitelist would have silently
+dropped every saved HTML cell on reload.** `.filter((c) => c && c.id &&
+[CELL_TYPES.PYTHON, CELL_TYPES.TEXT].includes(c.type))` — a deliberate
+defense against a stray bad value crashing the notebook, written when
+only two types existed and never revisited when a third arrived. Fixed
+to `Object.values(CELL_TYPES).includes(c.type)`, so it stays correct the
+next time a type gets added rather than needing another manual edit
+found only by testing reload.
+
+**A genuine test-tooling wrinkle, not a product bug: hovering a cell's
+own geometric centre is not a reliable way to trigger CSS `:hover` when
+that centre sits inside a sandboxed iframe.** `elementFromPoint` at that
+coordinate correctly returns the iframe — the point genuinely is inside
+the cell's box — but under Playwright's CDP-driven synthetic mouse
+input, the outer document's `:hover` state did not consistently follow
+the cursor across that particular boundary, confirmed by hovering the
+same coordinate with a raw `page.mouse.move()` in an interactive
+Chromium session both with and without success across repeated runs. A
+real user's mouse does not appear to have this problem; the test suite's
+own `hover_cell()` helper now moves to a point inside the cell's header
+row instead, above where an HTML cell's iframe sits, which is reliable
+for every cell type.
+
+*Cost to change: small. `createCellElement()`'s HTML branch mirrors
+Text's shape closely enough that a future CSS type (§8's next type in
+line) should be a similarly small addition, not a redesign. The
+`if`/`else if` chain bug is exactly the kind of mistake worth a linter
+catching automatically rather than relying on remembering to check
+against `.mjs`; not set up here, left as a known gap.*
+
+**7.117 — CSS, the second of the four new cell types, built in dewmini.**
+Close to a copy of 7.116's HTML branch — CodeMirror with
+`@codemirror/lang-css`, a sandboxed `<iframe sandbox="allow-scripts">`
+for the preview, the same Edit/View toggle, the same quiet-until-touched
+chrome — with two differences, both settled in `planning/CELL_IDENTITY.md`
+§8 before this was built: the iframe's `srcdoc` is
+`CSS_PREVIEW_MARKUP` (a fixed little "page" — a heading, a paragraph
+with a link, a button, a list) with the reader's own rule in a
+`<style>` tag ahead of it, not the reader's own markup; and styling the
+HTML cell sitting above it was considered and set aside, since that
+would make a CSS cell's behaviour depend on cell order and type in a
+way nothing else in dewmini's model does.
+
+**A UX bug caught before it shipped, not after: a brand-new CSS cell
+opened with its editor already hidden.** The first pass called
+`showRendered()` unconditionally at the end of the branch, reasoning
+that a CSS cell's preview "always has something to show, empty rule or
+not" — true, but beside the point: every other cell type opens ready to
+type, and a fixed preview with nothing to look at yet is worse than an
+empty editor waiting for the reader's first keystroke. Fixed to the same
+`if (cell.content.trim()) showRendered(); else syncPreviewBtn();` HTML
+and Text already use — only a cell restored with existing content opens
+straight to its preview.
+
+The `READ_NOT_RUN_TYPES` set (`text`, `html`, `css`) replaced the
+`cell.type === CELL_TYPES.TEXT || cell.type === CELL_TYPES.HTML` check
+7.116 left behind — a third `||` clause for CSS would have worked, but
+the set reads as what it actually means ("the types meant to be read,
+not run") rather than an accumulating list of exceptions, and a fourth
+type (JavaScript, which *does* run) won't need touching it at all. The
+quiet-until-touched CSS rule got the same treatment, `:is(.dm-cell-text,
+.dm-cell-html, .dm-cell-css)` in place of three separate comma-joined
+selector lists.
+
+*Cost to change: small, and getting smaller — CSS took noticeably less
+new code than HTML did, most of it copied and adapted rather than
+designed from scratch, which is roughly what §8's own build order bet
+on. SQL and JavaScript won't get to make the same bet: both need a
+genuinely new execution engine, not another coat of the same pattern.*
+
+**7.118 — SQL, the third of the four new cell types, built in dewmini —
+on Python's own `sqlite3`, not the *sql.js* engine `planning/
+CELL_IDENTITY.md` §8 had specified.** That plan (SQLite compiled to
+WebAssembly, a second interpreter alongside Pyodide) was where
+implementation started — `sql.js` pinned in `vendor-src/package.json`,
+`build-vendor.mjs` copying its WASM into `assets/vendor/`, the
+groundwork any of §8's other three types didn't need. It was set aside
+mid-build on a direct question: is a second engine actually the better
+choice here, or just the first one that came to mind? The honest answer
+was the latter. dewmini already runs a real Python interpreter, and
+Python already ships `sqlite3` — unvendored as an ordinary loadable
+Pyodide package as of Pyodide 0.28, not bundled into core, and already
+in `compose/dewmini.js`'s `DM_PACKAGES` from `run_query()`'s own earlier
+work (7.78). Two engines booting in the same tab would have meant two
+data models with nothing bridging them — a SQL cell's own table
+invisible to a pandas DataFrame, unless something translated between
+them by hand. One engine, with the `db` global sqlite3 already gives it
+for free, means a SQL cell's `CREATE TABLE` is a table a Python cell can
+already read with `pd.read_sql("select * from t", db)`, no plumbing of
+its own — friendlier for a student who has never opened a terminal, and
+genuinely interoperable with the pandas/numpy tooling every other cell
+already uses, rather than a second island next to it. Every sql.js file
+change was reverted before anything was committed (`git checkout --` on
+`vendor-src/package.json`/`build-vendor.mjs`/`package-lock.json`,
+`rm -rf assets/vendor/sqljs`) — cheap, since it was caught before
+`npm run build` even ran once against it.
+
+**What actually got built.** `assets/tutorial_tools.py` gained
+`_run_sql_cell(conn, script, max_rows=20)` — internal, not in
+`__all__`, sitting right after `run_query()` (7.78) as its multi-
+statement counterpart: `run_query()` runs exactly one query and is meant
+to be called by name from a tutorial's own Python; `_run_sql_cell()` is
+what a generated wrapper line reaches, never something a reader is
+expected to type themselves. It splits a script on a bare `;` (a plain
+split, not a real parser — a semicolon inside a string literal would
+split somewhere it shouldn't, good enough for what a teaching notebook's
+SQL cell needs), runs every statement but the last with `conn.execute()`,
+and only renders the *last* statement's own result: a table via the same
+`_table_html()` a Python DataFrame already renders through, if it has
+columns; otherwise `cursor.rowcount` as "N rows affected" — the SQL
+equivalent of a Python statement that prints nothing. Every statement
+commits at the end, the same friendlier-than-raw-sqlite3 default
+`run_query()` already chose. Six new tests in `tests/test_tutorial_tools.py`
+(`TestRunSqlCell`) cover the split, the two render paths, state
+persisting across separate calls on the same connection, and a bad
+statement raising rather than rendering nothing.
+
+`compose/dewmini.js` gained `CELL_TYPES.SQL`, an insert-divider button
+and icon, a pill label and colour (`--dl-type-sql`, already defined
+7.117 in preparation), and a `createCellElement()` branch — but unlike
+HTML/CSS, a SQL cell's branch is Python-shaped: a bare CodeMirror editor
+(`language: "sql"`, `@codemirror/lang-sql` — syntax highlighting only,
+no Jedi-style semantic tooling, same as HTML/CSS's editors), no Edit/
+View toggle, no quiet-until-touched. `READ_NOT_RUN_TYPES` (7.117) stayed
+untouched — SQL was never a candidate for it — and gained a sibling,
+`RUNS_AGAINST_SESSION` (`python`, `sql`), which replaced every
+`cell.type === CELL_TYPES.PYTHON` check that actually meant "cells that
+run against the shared session": the footer/footbar build, `isStale()`,
+`resetCellOutput()`, `clearAllOutputs()`, `runCell()`'s own guard, and
+the "Run all"/"Run above"/"Run below" filters. A SQL cell's raw content
+is never handed to Pyodide as Python source — `executeCell()`'s new
+`buildSqlCellCode()` wraps it into one generated line,
+`tutorial_tools._run_sql_cell(db, <script>)`, with the script embedded
+as a `JSON.stringify()`-encoded string literal rather than a hand-rolled
+triple-quoted one (JSON's escaping — `\"`, `\\`, `\n`, control
+characters as `\u00XX` — is a strict subset of what a Python
+double-quoted literal accepts, so this is safe for any SQL text a reader
+could type, including one containing its own quotes or backslashes,
+where a raw triple-quoted string would simply break). The call is
+assigned (`_ = tutorial_tools._run_sql_cell(...)`) rather than left as
+the cell's own last expression on purpose: `_run_sql_cell()` already
+renders its result directly into the cell's output, and the normal
+auto-display of a cell's last value would otherwise render the same
+table a second time underneath it.
+
+**`db` itself: a fresh, in-memory `sqlite3.connect(":memory:")`
+connection**, created once at boot and again on every reset, dewmini-
+only per the scoping this whole phase of work was given. `assets/
+pyodide-engine.js`'s `RESEED_GLOBALS_SOURCE` (the main-thread fallback
+path, `bootMainThread()`/`resetPageStateMT()`) got it directly, closing
+any previous connection first rather than leaving it to garbage
+collection.
+
+**The bug this caught before it shipped: that edit alone would have done
+nothing for almost every reader.** `assets/pyodide-engine.js` is
+dewmini's own file, but the path most sessions actually take is not its
+main-thread fallback — it is `assets/pyodide-worker.js`, a Worker file
+genuinely *shared* with the hosted tutorial pages
+(`assets/tutorial-runtime.js` boots through the exact same file). That
+worker carries its own separate copy of `RESEED_GLOBALS_SOURCE` (a
+Worker cannot reach a JS constant defined in a different file's module
+scope), which the first pass of this work never touched — meaning `db`
+would have existed only on the rare main-thread fallback (no Worker
+support, or no cross-origin isolation) and been silently absent
+everywhere else, including this environment's own Playwright
+verification, had that verification not caught it. The fix keeps the
+worker file "purely additive" for dewmini the same way its filesystem-
+mounting section already is (its own comment: "dewmini only … Tutorial
+pages never send these message types, so this section is purely
+additive"): `pyodide-worker.js` gained its own
+`SEED_DEWMINI_DB_SOURCE` and a module-level `seedDewminiDb` flag, read
+once from the boot message (`msg.seedDb`) and reused on every
+`reset-page-state`; `assets/pyodide-engine.js`'s `bootWorker()` is the
+only caller that ever sets `seedDb: true`, so a tutorial page's own boot
+message — which never sets it — leaves the flag false and `db` never
+created there.
+
+**Verified in a real browser, not just unit tests**, since the whole
+point of the Python/sqlite3 design was interoperability between a SQL
+cell and a Python cell, which no Python-only test could actually prove.
+This environment had no route to the sqlite3 wheel's usual home
+(`cdn.jsdelivr.net`, blocked by egress policy) but did have one to
+`github.com`'s own release assets, so the wheel came from Pyodide's own
+GitHub release tarball instead, extracted without downloading the full
+~350 MB archive to disk. Playwright against a locally staged build
+confirmed: a multi-statement script (`CREATE TABLE` / `INSERT` /
+`SELECT`) renders only the final `SELECT`'s table, with no duplicate
+render; a non-`SELECT` script reports rows affected; a Python cell
+reading `db` via `pd.read_sql()` after a SQL cell ran sees exactly what
+that cell wrote; output and cell type both survive a reload without
+re-running; Duplicate/Delete/collapse all work; and — the one that would
+have been silent otherwise — the worker-mode `db` wiring actually took
+effect, not only the main-thread fallback. `dev/fetch_pyodide.py`'s own
+`BASELINE` gained `sqlite3` too, so the e2e suite's self-hosted Pyodide
+(`dev/pyodide/`, gitignored, fetched fresh by anyone who needs it) keeps
+having it without a special case; the seven new e2e tests in
+`tests/e2e/test_dewmini_workbench.py` run against that same local
+Pyodide, no CDN required.
+
+*Cost to change: the redirect away from sql.js cost nothing already
+spent (caught before a single build ran against it), and the corrected
+design turned out to need noticeably less new surface than HTML did —
+no new engine, no new sandboxing model, mostly a generated string and a
+`Set` membership change threaded through code that already existed.
+JavaScript is what's left, and it does not get this same discount: a
+persistent sandboxed session is a real second runtime, the one thing
+SQL turned out not to need after all.*
+
+**7.119 — JavaScript, the fourth and last of the four new cell types,
+built in dewmini — and a redeclaration bug in its own design doc, caught
+by actually running the code rather than by reasoning about it.** A new
+file, `compose/js-cell-engine.js`, plays the same role for a JS cell that
+`assets/pyodide-engine.js` plays for Python: one persistent session the
+whole notebook shares, created lazily on first run. Unlike Python's, it
+needs no Worker and no interpreter download — a sandboxed `<iframe
+sandbox="allow-scripts">` with no `allow-same-origin` (the same isolation
+HTML's own preview iframe already uses, planning/CELL_IDENTITY.md §8) is
+already a separate, memory-isolated realm, and every browser already has
+a JS engine sitting inside it. What Python's Worker buys — a genuine Stop
+button, via a shared interrupt buffer — has no equivalent here: this
+iframe still runs on the tab's own main thread, so `canStop()` is always
+false, the same limitation Pyodide's own main-thread fallback already
+has.
+
+**The bug, and how it was found.** `planning/CELL_IDENTITY.md` §8's own
+first draft of this design said a cell's code gets "posted into that
+iframe and evaluated there" — read as "inserted as a `<script>` tag,"
+the obvious way to run arbitrary JS text. Implementation started that
+way. It was wrong: a `<script>` tag's own top-level `let`/`const`
+declarations join the realm's *one, permanent* global lexical
+environment, and re-running the exact same declaration a second time —
+which is to say, re-running an edited cell, an entirely ordinary
+notebook action — throws `SyntaxError: Identifier 'x' has already been
+declared`. This was not caught by reading the design or the code; it was
+caught by actually re-running a `let`-declaring cell in a real browser
+during this build's own verification pass and watching it break. No
+amount of re-reading the plan would have surfaced it, because the plan
+itself was the thing that was wrong — the same lesson 7.96/7.97 already
+drew about defects only a browser can catch, applied here to a design
+document's own assumption rather than to an implementation bug.
+
+**The fix: indirect `eval` in place of a `<script>` tag.** `(0,
+eval)(code)`, called from the iframe's own top level. Per spec, indirect
+eval's top-level `let`/`const` bindings live in a scope private to that
+one call, not the realm's shared global environment — so a cell can
+always be re-run safely, at the cost of those bindings no longer being
+visible to a *later* cell. Only `var` and `function` declarations still
+persist across cells, since indirect eval attaches those to the real
+global object exactly like a `<script>` tag would. This is a real,
+user-visible gap from what §8 originally promised ("a `var`/function/
+`const` declared in one cell is still there for a later one to read") —
+worth naming honestly rather than quietly narrowing the design doc's own
+wording to match what shipped. A proper fix (parsing each cell to hoist
+its own top-level `let`/`const` onto the shared session by hand) would
+need an actual JS parser vendored in for it, out of scope here the same
+way SQL's own multi-statement split is a plain string split rather than
+a real SQL parser. Documented in three places a reader could reasonably
+look: `planning/CELL_IDENTITY.md` §8 itself, `compose/js-cell-engine.js`'s
+own file banner, and dewmini's own help panel (`compose/dewmini.html`) —
+plainly, without naming `let`/`const` by their JS jargon, since a reader
+who has never met either term still deserves to know a cell can always
+be safely re-run.
+
+Indirect eval turned out to simplify the error path too, not only fix the
+redeclaration bug: a synchronous error is now caught directly around the
+`eval()` call itself (a plain `try`/`catch`), which is what answers the
+run's own `ok` — no `window.onerror` handler needed, unlike the
+`<script>`-tag design this replaced would have required. An unhandled
+promise rejection (async work a cell scheduled but didn't itself catch)
+still needs `window.addEventListener("unhandledrejection", …)`, since it
+can only fire after the triggering `eval()` call already returned; it
+still reports into the cell's output, just too late to change the `ok`
+that run already recorded. Top-level `await` stays unsupported for the
+same underlying reason: wrapping a cell's code in an `async` function to
+permit it would swallow its own top-level `var`/`function` declarations
+into that function's scope instead of the global one — trading away the
+one persistence guarantee this design does keep.
+
+**Everything else in dewmini.js's own wiring.** `CELL_TYPES.JAVASCRIPT`,
+Python-shaped chrome via `RUNS_AGAINST_SESSION` (now three members, not
+two), an insert-divider button and a code-braces icon, a CodeMirror
+editor (`language: "javascript"`, already vendored — no new build-time
+work). `console.log`'s arguments are serialised inside the iframe's own
+runtime script the way `tutorial_tools.py` already serialises a Python
+`print()`'s (a string passes through as-is; everything else gets a short
+`JSON.stringify` rendering rather than `"[object Object]"`), and both
+that and a reported error `postMessage` back to the parent as `stream`/
+`append` events — the exact same event shape Python/SQL output already
+produces. Rather than duplicating the ~25 lines that turn those events
+into real DOM (`applyOutputEvent()`, previously private to
+`assets/pyodide-engine.js`), that function was exported and reused
+directly: both engines run in the same JS realm as `compose/dewmini.js`
+itself (no Worker boundary between them), and both are configured with
+the same cellId → output-element lookup anyway, so there was no reason
+for a second copy of "how does a cell's output area get updated" to
+exist.
+
+Because `executeCell()` now dispatches to two genuinely different
+engines rather than one, several functions that used to read
+`engine.canStop()`/call `engine.requestInterrupt()` unconditionally now
+go through `canStopFor(cell)`/`requestInterruptFor(cell)` instead —
+small, mechanical, and covered by the same reasoning `RUNS_AGAINST_SESSION`
+already established: one Set membership check, not scattered
+special-casing, wherever "which engine does this cell actually run
+against" matters. `runCellBatch()` (behind "Run all"/"Run above"/"Run
+below") no longer boots Pyodide unconditionally before the whole batch
+either — each cell's own session is ensured right before its own turn,
+so a batch of JavaScript cells alone never pays to download Python at
+all; a `reset` batch ("Run all"/"Run above") still tears the JS session
+down too (`jsEngine.restart()`, no cheaper reset exists for it, alongside
+`engine.resetPageState()`), for the same "what's on screen matches what
+the code actually did" reason Python's own reset already exists.
+
+**Verified in a real browser**, the same discipline that caught the
+redeclaration bug in the first place: creating a cell, running it,
+re-running an unmodified `let`-declaring cell without error,
+`var`-declared state surviving into a later cell, an uncaught error
+rendering with `dm-error`, Restart Python genuinely tearing the session
+down (confirmed by checking a previously-`var`-declared name reads back
+`undefined` afterward, not by trusting that `restart()` was called), and
+a mixed Python+JavaScript "Run all" running both. Nine new e2e tests in
+`tests/e2e/test_dewmini_workbench.py` cover the same ground, including
+the exact re-run-a-`let`-cell scenario that caught the bug, so it can't
+silently come back.
+
+*Cost to change: real, unlike SQL's — a persistent sandboxed session
+plus its own message protocol is genuinely new surface, not a generated
+string handed to an engine dewmini already had. The redeclaration bug is
+the clearest evidence yet, across all four of these new cell types, for
+why "verify in a real browser" is not optional the moment a genuinely
+new execution model is involved: every earlier catch this document
+records of the same shape (7.96, 7.97, this one) was invisible from the
+code and the design doc alike, and visible immediately the moment the
+feature actually ran.*
+
+**7.120 — HTML and CSS, retired as separate types and merged into one:
+Web.** Not a bug fix the way 7.118's and 7.119's own mid-build design
+corrections were — HTML and CSS worked exactly as designed, each on its
+own. The merge came from actually using both once they existed: a CSS
+cell could only ever style `CSS_PREVIEW_MARKUP`, a fixed sample page
+that was never the reader's own markup, and an HTML cell had no CSS of
+its own reachable at all — the pairing planning/CELL_IDENTITY.md §8's
+own CSS design explicitly declined to guess at ("CSS styling an HTML
+cell right above it… would make a CSS cell's behaviour depend on cell
+order and type"), because that reasoning assumed two separate cells
+where "which HTML is this CSS for" has no clean answer. One cell with
+both halves removes the question rather than answering it differently.
+
+**What changed.** `CELL_TYPES.HTML`/`CELL_TYPES.CSS` are gone;
+`CELL_TYPES.WEB` replaces both. A cell object gains a second content
+field, `style` (CSS), alongside the `content` field every type already
+had (now HTML, for a web cell) — the first time any dewmini cell has
+needed two independent source fields rather than one, which touched
+more of `compose/dewmini.js` than the type's own `createCellElement()`
+branch: `insertCellAt()`/`addCell()`/`duplicateCell()` all needed to
+carry the second field through, `saveState()`/`readCells()` needed to
+persist and restore it, and a new `destroyCellEditors(cell)` helper
+replaced six separate `cell.editor?.destroy()` call sites so a web
+cell's *second* CodeMirror instance (`cell.cssEditor`) stops leaking
+too, not only its first.
+
+**The cell itself: two editors, always both visible, one Render
+button.** Neither editor swaps out for a rendered view the way HTML's
+and CSS's own Edit/View toggle used to — both stay editable at once, so
+`READ_NOT_RUN_TYPES` (compose/dewmini.js) narrowed to Text alone, the
+only type left with an actual toggle. Rendering is the header's own
+explicit Render button instead of either editor's own `focusout`: two
+editors both auto-rendering on blur, the way HTML and CSS separately
+did, would have fired the same preview update twice for one edit, and
+shown a half-finished render mid-tab between the two. An empty HTML
+half still falls back to `CSS_PREVIEW_MARKUP`, so the old standalone-CSS
+use case — style a fixed little page, no markup of the reader's own
+needed — still works exactly as it did.
+
+**Migration: each old cell becomes its own new web cell, never merged
+with a neighbour.** A notebook saved under the two-type model still
+loads — `readCells()` runs every stored cell through a new
+`migrateLegacyCellType()` first, mapping a standalone `type: "html"`
+cell to a web cell with an empty CSS half, and a standalone `type:
+"css"` cell to one with an empty HTML half. Deliberately not smarter
+than that: guessing that an HTML cell and the CSS cell sitting next to
+it were meant as a pair is exactly the ambiguity the new design exists
+to no longer need, and a wrong guess would silently combine two things
+a reader may not have intended combined. Two old cells just become two
+new ones, each exactly where it already was — a reader who did mean
+them as a pair can copy one CSS rule into the other cell's own CSS half
+by hand, which costs one paste, not a filesystem-scale migration risk.
+
+**Export paths that would have silently dropped the CSS half.**
+`downloadAsPython()`, `downloadAsIpynb()`, and the standalone HTML
+export's own generic non-Python rendering all used to read only
+`cell.content` for every non-Python type — harmless before, since an
+old CSS cell's *entire* content was `cell.content`, but a real,
+silent data-loss bug for a web cell's separate `style` field if left
+unchanged. A new `cellExportContent(cell)` helper folds a non-empty CSS
+half into the exported text (wrapped in a `<style>` tag, clearly
+labelled) for all three call sites, so a reader downloading a notebook
+never loses the CSS half of a cell they can still see on screen.
+
+**Verified in a real browser**: both editors visible and independently
+editable with no toggle; a script inside the rendered iframe still
+cannot reach the parent page (the sandboxing itself untouched by the
+merge); a CSS rule now genuinely styling the *same* cell's own HTML,
+not a fixed sample; the CSS-only fallback still rendering
+`CSS_PREVIEW_MARKUP`; Render staying inert until clicked, confirming
+no accidental auto-render survived the rewrite; reload persistence for
+both halves at once; collapse/duplicate; and the migration path itself,
+seeding raw `type: "html"`/`type: "css"` localStorage data and
+confirming it becomes two independent web cells on load. Ten e2e tests
+replace the eleven the two old types had (net one fewer, covering more:
+the old suites never had a test proving CSS could style a cell's own
+HTML, because until this change it never could).
+
+*Cost to change: smaller than either SQL's or JavaScript's — no new
+engine, no new sandboxing model, the same iframe HTML already used with
+a second editor and one field threaded through the cell data model. The
+real cost was breadth, not depth: six call sites for editor teardown,
+three export paths, a data migration, and every doc/design surface that
+named "HTML" and "CSS" as two things rather than one — more files
+touched than either of the two harder builds that came before it, for a
+change with no new runtime behaviour to speak of beyond the merge
+itself.*
+
+**7.121 — Site: an .html file opens as a small website, on the same
+mounted filesystem — and a first design for it, built and then thrown
+away before it was ever committed, because `main` had moved underneath
+it.** The question 7.116–7.120 raised on the way past: dewmini can now
+run HTML, CSS and JavaScript separately (the Web and JavaScript cell
+types); the obvious follow-on is showing them together the way a real
+static site actually is — three real files, not three cells.
+
+A first version was built directly on this branch's own base
+(`57c6604`): a fixed `site/index.html`/`style.css`/`script.js`, a
+bespoke Workbench section of its own with its own load/save/debounce
+plumbing, and the three files hidden inside their own `site/` subfolder
+so Files' flat list (`DECISIONS_LOG.md` 7.88) would not show them
+directly. Before it was committed, `origin/main` was checked against —
+prompted directly, not discovered — and had moved three commits past
+this branch's base while this and the Web-cell merge were being built:
+`290829c` (a notebook shown as one Python file, `VIEWS.FILE`), `574d5c3`
+(Files becomes a real file manager — `openWorkspaceFile`, a debounced
+`writeNotebookToWorkspace`, rename, "New file…"), and `3325694`
+(Workbench moved to the left rail, Library to the right). Rebasing onto
+it produced real textual conflicts in `compose/dewmini.js`, `dewmini.html`
+and `dewmini-style.css` — not just adjacency, competing edits to the same
+functions (`runCellBatch`, `executeCell`'s post-run cleanup, the ipynb/
+percent-text export helpers) — resolved by hand, kept whichever side had
+since become the more complete version of each (main's dropped-output
+save mechanism, this branch's per-engine `ensureSessionFor`/`canStopFor`
+dispatch) rather than picking one side wholesale.
+
+**Why the first version was abandoned rather than merged forward.**
+`574d5c3` already builds almost exactly the mechanism a bespoke Site
+panel was reinventing in miniature: open a workspace file into a tab,
+edit it, debounce a write back to the real mounted filesystem, redraw
+the file list without a race. Building Site as its own section, with its
+own copy of that plumbing, made sense only while Files could not open
+anything — the moment it can, a second "open, edit, save" path next to
+it is duplication, not a feature. The `site/` subfolder-hiding trick
+existed only to keep those three files out of a Files list that could not
+do anything with them anyway; once Files can open an `.html` directly,
+hiding it from that same list stops making sense.
+
+**What shipped instead: a third tab kind, not a fourth panel.**
+`VIEWS` gains `SITE` alongside `CELLS` and `FILE` — the same enum
+`290829c` already introduced, extended rather than duplicated.
+`openWorkspaceFile()`'s guard, which used to refuse anything but `.py`/
+`.ipynb`, now also accepts `.html`: it reads the file, looks for a
+same-base-name `.css` and `.js` beside it (`page.html` pairs with
+`page.css`/`page.js` — Josh's own correction to the first design, which
+had fixed on three exact names), and opens a tab with no cells at all.
+The site's own three files' live text sits directly on the notebook
+object (`siteHtml`/`siteCss`/`siteJs`, `siteCssPath`/`siteJsPath`),
+persisted through `writeSavedState()`/`loadSavedState()` the same way
+`.path` already is for a File-view tab — the same "localStorage is the
+fast-path cache, the real file is the debounced write" pattern the rest
+of the file manager already uses, not a new one. `writeNotebookToWorkspace()`
+gained a Site branch (`writeSiteToWorkspace()`): the HTML file is always
+written, since it is the file the tab is; the CSS and JS files are
+written only once there is something in them, so a reader who never
+touched the CSS pane does not find an empty `page.css` in their
+workspace afterward. Neither file needs to exist for the tab to open — a
+site with no styling and no script is still a site, and requiring all
+three would reintroduce the fixed-files problem the base-name pairing
+was meant to solve.
+
+**Split screen, not a Render button.** Editors on one side, a live
+sandboxed `<iframe sandbox="allow-scripts">` (no `allow-same-origin`,
+the same isolation the Web cell already uses) on the other, updating on
+every keystroke across all three panes rather than waiting for an
+explicit press. Argued for directly: a Web cell's Render button suits a
+notebook cell answering a one-shot question inside a wider document; a
+site is what a reader keeps looking at continuously while they build it,
+closer to an ordinary code-and-preview IDE than to a cell. `renderCells()`
+gained a `VIEWS.SITE` branch (`renderSiteView()`) alongside the existing
+`VIEWS.FILE` one; the Cells/File toggle and every Python-notebook-only
+toolbar button (`See an example`, `Start with imports`, `Practice`,
+`Run all`, `Clear output`, `Clear`) hide themselves for a site tab behind
+one shared class, `.dm-cellview-only`, toggled in `updateViewSwitch()` —
+none of them mean anything for a tab with no cells.
+
+**One CSS bug worth naming, because it will recur.** The first attempt
+at hiding those toolbar groups set their `hidden` attribute and nothing
+happened — `.dm-toolbar-group { display: flex; }`, an author-stylesheet
+rule, always wins over the browser's own `[hidden] { display: none }`
+user-agent rule for the same property, regardless of selector
+specificity or source order, because origin (author vs. user-agent)
+decides before specificity does. Every other conditionally-hidden
+element in `dewmini-style.css` already carries its own explicit
+`.foo[hidden] { display: none; }` override for exactly this reason
+(`.dm-panel[hidden]`, `.dm-tabs[hidden]`, six others) — `.dm-toolbar-group`
+now does too. Caught by the e2e test written for it, not by inspection.
+
+**Verified in a real browser**, not asserted: opening an `.html` from
+Files renders a split-screen tab with a live preview of its actual
+content; a same-base-name `.css`/`.js` pair opens beside it with the
+preview reflecting all three (a JS cell mutating the DOM the HTML half
+produced, not just running inertly); a lone `.html` with no siblings
+still opens, its CSS/JS panes empty rather than erroring; typing in any
+of the three panes updates the preview without a separate press; the CSS
+and JS halves each write back to their own real file, readable from a
+Python cell in another tab; the toolbar's cell-only controls hide for a
+site tab and reappear switching back to a notebook tab; and a site tab
+survives a full page reload. Seven new e2e tests in
+`tests/e2e/test_dewmini_workbench.py` cover this ground — one of them
+(the CSS write-back test) needing a 3-second wait rather than 1.5,
+because two debounces still stack before a site's own file is durable on
+disk: `scheduleWorkspaceWrite()`'s 600ms, then `dewmini-fs.js`'s own
+internal sync debounce on top of that — the same discovery the abandoned
+first design made about its own, differently-shaped debounce stack,
+carried forward rather than rediscovered.
+
+*Cost to change: mostly absorbed by `574d5c3` already having built the
+file-open/write-back mechanism this reuses rather than reinvents — the
+net new surface is `VIEWS.SITE` itself, the sibling-discovery logic, and
+`renderSiteView()`'s split layout. The real cost was the false start:
+a working, tested implementation built and then discarded whole, because
+it was designed against a base three commits behind the one it needed
+to ship against. The lesson worth keeping is not "check `main` before
+building" in the abstract — that was already the working assumption —
+it is that a design decision made while a *sibling* branch is still
+landing large, overlapping surface area (the same `compose/dewmini.js`
+regions, in this case) has a short shelf life, and is worth holding
+loosely until both have actually met.*
+
+**7.122 — Five smaller things, from actually using what 7.116–7.121
+built: a cell-type toggle, a real notebook location, two layout bugs,
+and one CSS trap caught twice in one session.** Not one build — a run
+of small, direct fixes and one real feature, each found by looking at
+what had just shipped rather than by planning ahead.
+
+**Web and SQL cells default off, behind a per-type Settings toggle.**
+Four cell types shipped in 7.116–7.120; not every reader wants all four
+offered on every seam. Settings gains "Cell types": Web and SQL start
+off, JavaScript starts on, Python and Text carry no toggle at all —
+they are the notebook, not an extra. `enabledCellTypes`, read once at
+boot and on every toggle click, gates which buttons
+`createInsertDivider()` builds; nothing about a cell already in the
+notebook changes when its type is later turned off — it still shows,
+still runs, still exports, since the toggle only answers "what can be
+added next," never "what already exists." The existing e2e suite
+assumed all types were always offered, so the shared `dewmini` fixture
+now seeds Web and SQL on before the rest of the suite loads — the
+default-off behaviour, and the toggle itself, get their own tests
+against a page that fixture never touches.
+
+**A notebook now shows up in Files, without writing it to disk.**
+Raised directly: a file a cell's own code writes already appears in
+Files, but the notebook holding that cell had nowhere it showed up at
+all — not even the default one, on a first-ever visit. The tempting fix
+— write every notebook out as a real `.py` on the mounted filesystem —
+has a real cost this repository has already ruled against once: mounting
+that filesystem means booting Pyodide, and doing that on every page
+load, before a reader has touched Python, is exactly what
+`planning/DEWMINI_WORKBENCH.md` §1's "nothing opens on a first visit"
+rule exists to prevent. `renderNotebookList()` instead lists every open
+notebook with no `.path` directly in the Files panel, labelled as living
+in this browser rather than as a file, switching to it on click — no
+filesystem read, so it draws instantly regardless of whether Python has
+ever booted, piggybacked on `renderTabs()` so it can never drift out of
+sync with what is actually open. A notebook already backed by a real
+file (opened `.py`/`.ipynb`/`.html` from Files) is left out of this list
+on purpose — it already appears in the ordinary file list under its own
+name, and listing it twice would be the same notebook claiming two
+homes.
+
+**Two layout bugs, both found by looking at a screenshot rather than
+by reading the CSS.** Library and Workbench opened 3rem wider than
+Settings by default (`.dm-panel`'s `min(24rem, 100vw)` against
+`.dl-settings`' own `min(21rem, 100vw)` in the shared
+`tutorial-style.css`) — fixed on dewmini's own side, matching `.dm-panel`
+down to 21rem, rather than touching the shared rule and every tutorial
+page's own Settings width along with it. And the per-cell "⋯" run
+menu, right-anchored and growing left with no notion of the viewport's
+own edge, could run itself off-screen once the button sat close enough
+to it — increasingly reachable now that Workbench docks left (7.99).
+`openMenu()` now measures its own `getBoundingClientRect()` after
+becoming visible and flips to a left-anchored class when it would
+overflow, rather than trying to predict in advance when that will
+happen.
+
+**The same CSS trap, twice.** The Site tab's own note picked up
+`.dm-fileview-note`'s `flex: 1 1 20rem` by reusing that class outright
+— a rule written for a *row* flex parent (`.dm-fileview-head`) that,
+inside the Site tab's *column* flex wrapper, flex-grew the note to
+absorb the entire column's spare height instead, leaving a sentence of
+text sitting in a box hundreds of pixels tall. Given its own class,
+`.dm-siteview-note`, with the same look and none of that. And
+`.dm-toolbar-group`'s own `display: flex` was found, separately, to
+silently beat the browser's `[hidden] { display: none }` rule for the
+cell-type toggle's Settings groups — an author stylesheet always wins
+over the user-agent one for the same property regardless of specificity
+or order — fixed the same way every other conditionally-hidden element
+in this file already is, with its own explicit `[hidden]` override.
+Two different symptoms, the same one-line category of CSS mistake,
+caught by a test in one case and a screenshot in the other — neither
+readable from the rule that caused it.
+
+*Cost to change: each of these was small in isolation and none touched
+architecture — the toggle reuses `renderCells()`'s existing render
+path, the notebook list reuses `renderTabs()`'s existing trigger points,
+and both layout fixes are one CSS rule apiece. What is worth keeping is
+the pattern behind all five: every one of them was found by using the
+feature that had just shipped, in a real browser, rather than by
+re-reading the code that built it — the same lesson 7.96, 7.97 and
+7.119 already drew about defects invisible from the source and visible
+immediately once a reader (or a screenshot) actually meets them.*
+
+**7.123 — Two accessible reading fonts, and a High contrast switch that
+is its own toggle rather than a sixth font choice.** Josh's own framing
+settled the shape before any code did: "high contrast means font and
+colours as a toggle" — one switch changing two things together, not a
+new entry in the Font row asking a reader to somehow pick "high
+contrast" as if it were a typeface. The two fonts (Atkinson Hyperlegible,
+from the Braille Institute of America, and OpenDyslexic) sit in the Font
+row as two ordinary choices; High contrast is a second, independent
+row that forces both a black-on-white (or white-on-black in dark theme)
+palette and Atkinson Hyperlegible specifically, regardless of whichever
+of the five fonts a reader separately picked — legibility and contrast
+are two different questions from "which typeface", and bundling all
+three into one six-wide button group would have answered none of them
+cleanly.
+
+**Self-hosted, not a Google Fonts `<link>`.** The same reasoning KaTeX's
+own fonts already settled here: this is exactly the offline bundle
+(`write_dewmini_bundle()`, `DECISIONS_LOG.md` 7.92) a CDN link would
+leave broken, and this sandbox's own network policy blocks
+`fonts.googleapis.com` outright — confirmed with a direct `curl`, not
+assumed. `npm`'s own registry was reachable where the CDN was not, so
+both fonts come from `@fontsource/atkinson-hyperlegible` and
+`@fontsource/opendyslexic` (SIL OFL 1.1, same license family as most of
+the web's open fonts), vendored through `vendor-src/build-vendor.mjs`
+exactly like every other pinned asset in that directory — four faces
+each (regular/bold × roman/italic), the minimum for a page's own bold or
+italic markdown to render as a real face rather than a synthetic one.
+The woff2 files land flat in `vendor/fonts/`, beside KaTeX's own, rather
+than in a subfolder of their own — a deliberate choice, once it became
+clear `build.py`'s `standalone_html()` already has a `FONT_URL_RE`-based
+inlining step for KaTeX's fonts (folding them into the single-file
+tutorial download as base64 data) that a flat layout could reuse
+unchanged rather than needing a second copy of the same regex.
+
+**Shared with every tutorial page, not dewmini-only.** `data-font`/
+`data-contrast` and the CSS behind them live in `tutorial-style.css`
+and `tutorial-runtime.js` — the same reading-preference system every
+dewlab page already shares (`TEXTURE_DEFAULTS`, `applyTexture()`) — so
+the two new fonts and the contrast switch had to go in `assets/shell.html`
+(the tutorial pages' own Settings markup) as well as
+`compose/dewmini.html`, and `build.py` gained an
+`{{ACCESSIBLE_FONTS_CSS_URL}}` template token linked from every one of
+its six page-writing functions. **dewmini.js duplicates this whole
+mechanism rather than importing it** (documented already, in the
+duplicated code's own comment) — the first attempt at wiring the
+contrast toggle only touched the shared `tutorial-runtime.js` copy and
+did nothing in a real dewmini page, caught by watching `--dl-fg`/
+`--dl-bg` stay unchanged after clicking the toggle in a real browser
+rather than by re-reading the (correct) shared-file change and assuming
+it was enough.
+
+**One real test broken by a real behaviour change, both times fixed by
+narrowing what the test actually checks rather than by changing the
+behaviour.** `test_nothing_is_left_pointing_outside_the_file` failed
+outright — an unhandled `<link>` this new stylesheet added, exactly
+what that test exists to catch — fixed by giving
+`standalone_html()` an `inline_accessible_fonts_css()` alongside
+`inline_katex_css()`. `test_a_tutorial_without_maths_does_not_carry_them`
+failed more subtly: it asserted no `data:font/woff2;base64,` at all for
+a maths-free page, which was true only because KaTeX's own fonts were
+the sole source of that marker — now that the accessible fonts are
+inlined unconditionally, every standalone page carries some, maths or
+not. The fix looks for `.katex-html` specifically (a class only
+`katex.min.css` itself defines) rather than the family name `KaTeX_Main`,
+which a first attempt reached for and which the very page under test
+was already carrying anyway — `tutorial-style.css`'s own `.dl-math`
+fallback rule names it, whether or not KaTeX's fonts travelled.
+
+*Cost to change: real but contained. The vendoring step and the two new
+CSS rules are genuinely new surface; wiring the toggle itself rode
+entirely on a mechanism (`TEXTURE_DEFAULTS`, the generic `.dl-seg`
+sync loop) that already existed and needed no change beyond one new
+key — the same reason the two new font buttons could share the *same*
+`data-texture="font"` group, on a second `.dl-texture-row`, and just
+work. The one real trap, and worth remembering past this feature: a
+shared mechanism that has been duplicated (dewmini.js's own texture
+functions) needs the fix applied twice, and only a real browser catches
+the copy that was missed.*

@@ -2603,6 +2603,7 @@ def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "",
         "{{ASSET_BASE}}": f"{up}assets/",
         "{{STYLE_URL}}": versioned(f"{up}assets/", "tutorial-style.css"),
         "{{KATEX_CSS_URL}}": versioned(f"{up}assets/", "vendor/katex.min.css"),
+        "{{ACCESSIBLE_FONTS_CSS_URL}}": versioned(f"{up}assets/", "vendor/accessible-fonts.css"),
         "{{RUNTIME_URL}}": versioned(f"{up}assets/", "tutorial-runtime.js"),
         "{{ROOT_BASE}}": up,
         "{{CRUMBS}}": html.escape(f"{tutorial.module_title} · {tutorial.meta['year']}"),
@@ -2668,6 +2669,25 @@ def inline_katex_css() -> str:
     return FONT_URL_RE.sub(one, css)
 
 
+def inline_accessible_fonts_css() -> str:
+    """The two accessible reading fonts' stylesheet, with its own fonts
+    folded in as data — same shape as inline_katex_css() above, and able
+    to reuse its FONT_URL_RE unchanged because vendor-src/build-vendor.mjs
+    writes these woff2 files flat into vendor/fonts/ beside KaTeX's own
+    rather than into a subfolder of their own.
+    """
+    css = (ASSETS / "vendor" / "accessible-fonts.css").read_text()
+
+    def one(match: re.Match) -> str:
+        font = ASSETS / "vendor" / "fonts" / match.group("name")
+        if not font.is_file():
+            return match.group(0)
+        data = base64.b64encode(font.read_bytes()).decode("ascii")
+        return f"url(data:font/woff2;base64,{data})"
+
+    return FONT_URL_RE.sub(one, css)
+
+
 def replace_once(page: str, needle: str, replacement: str, what: str) -> str:
     """Substitute, and fail if there was nothing to substitute.
 
@@ -2702,6 +2722,12 @@ def standalone_html(tutorial: Tutorial, page: str) -> str:
         f'<link rel="stylesheet" href="{versioned(up, "vendor/katex.min.css")}">',
         f"<style>{inline_katex_css()}</style>" if tutorial.has_math else "",
         "the maths stylesheet",
+    )
+    page = replace_once(
+        page,
+        f'<link rel="stylesheet" href="{versioned(up, "vendor/accessible-fonts.css")}">',
+        f"<style>{inline_accessible_fonts_css()}</style>",
+        "the accessible-fonts stylesheet",
     )
     page = replace_once(
         page,
@@ -3089,6 +3115,7 @@ DEWMINI_ASSET_FILES = (
     "vendor/codemirror.bundle.js",
     "vendor/katex.min.css",
     "vendor/katex.bundle.js",
+    "vendor/accessible-fonts.css",
     "examples/sql-owid.ipynb",
     "examples/data-investigation.ipynb",
     "examples/math-and-charts.ipynb",
@@ -3181,8 +3208,9 @@ def write_dewmini_bundle() -> Path | None:
     if DATA.is_dir():
         shutil.copytree(DATA, target / "data")
 
-    # KaTeX's font files, whole — see DEWMINI_ASSET_FILES's own comment on
-    # why these are a directory copy rather than twenty named entries there.
+    # KaTeX's own font files and the two accessible fonts (both live under
+    # vendor/fonts/), whole — see DEWMINI_ASSET_FILES's own comment on why
+    # these are a directory copy rather than dozens of named entries there.
     fonts_dir = ASSETS / "vendor" / "fonts"
     if fonts_dir.is_dir():
         shutil.copytree(fonts_dir, target / "assets" / "vendor" / "fonts")
@@ -3287,6 +3315,7 @@ def write_index(
         "{{ASSET_BASE}}": "assets/",
         "{{STYLE_URL}}": versioned("assets/", "tutorial-style.css"),
         "{{KATEX_CSS_URL}}": versioned("assets/", "vendor/katex.min.css"),
+        "{{ACCESSIBLE_FONTS_CSS_URL}}": versioned("assets/", "vendor/accessible-fonts.css"),
         "{{RUNTIME_URL}}": versioned("assets/", "tutorial-runtime.js"),
         "{{ROOT_BASE}}": "",
         "{{NAV_PREV_NEXT}}": "",
@@ -3419,6 +3448,7 @@ def write_tree_page(shell: str, tutorials: list[Tutorial]) -> Path | None:
         "{{ASSET_BASE}}": "assets/",
         "{{STYLE_URL}}": versioned("assets/", "tutorial-style.css"),
         "{{KATEX_CSS_URL}}": versioned("assets/", "vendor/katex.min.css"),
+        "{{ACCESSIBLE_FONTS_CSS_URL}}": versioned("assets/", "vendor/accessible-fonts.css"),
         "{{RUNTIME_URL}}": versioned("assets/", "tutorial-runtime.js"),
         "{{ROOT_BASE}}": "",
         "{{NAV_PREV_NEXT}}": '<a class="dl-nav-up" href="index.html">All tutorials</a>',
@@ -3541,6 +3571,7 @@ def write_topics_page(
         "{{ASSET_BASE}}": "assets/",
         "{{STYLE_URL}}": versioned("assets/", "tutorial-style.css"),
         "{{KATEX_CSS_URL}}": versioned("assets/", "vendor/katex.min.css"),
+        "{{ACCESSIBLE_FONTS_CSS_URL}}": versioned("assets/", "vendor/accessible-fonts.css"),
         "{{RUNTIME_URL}}": versioned("assets/", "tutorial-runtime.js"),
         "{{ROOT_BASE}}": "",
         "{{NAV_PREV_NEXT}}": '<a class="dl-nav-up" href="index.html">All tutorials</a>',
@@ -3825,6 +3856,7 @@ def write_about_page(shell: str) -> Path:
         "{{ASSET_BASE}}": "assets/",
         "{{STYLE_URL}}": versioned("assets/", "tutorial-style.css"),
         "{{KATEX_CSS_URL}}": versioned("assets/", "vendor/katex.min.css"),
+        "{{ACCESSIBLE_FONTS_CSS_URL}}": versioned("assets/", "vendor/accessible-fonts.css"),
         "{{RUNTIME_URL}}": versioned("assets/", "tutorial-runtime.js"),
         "{{ROOT_BASE}}": "",
         "{{NAV_PREV_NEXT}}": '<a class="dl-nav-up" href="index.html">All tutorials</a>',
@@ -3882,6 +3914,7 @@ def write_editor_page(shell: str) -> Path:
         "{{ASSET_BASE}}": "assets/",
         "{{STYLE_URL}}": versioned("assets/", "tutorial-style.css"),
         "{{KATEX_CSS_URL}}": versioned("assets/", "vendor/katex.min.css"),
+        "{{ACCESSIBLE_FONTS_CSS_URL}}": versioned("assets/", "vendor/accessible-fonts.css"),
         "{{RUNTIME_URL}}": versioned("assets/", "tutorial-runtime.js"),
         "{{ROOT_BASE}}": "",
         "{{NAV_PREV_NEXT}}": '<a class="dl-nav-up" href="index.html">All tutorials</a>',

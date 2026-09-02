@@ -261,6 +261,32 @@ tutorial_tools._page_globals.update({
 tutorial_tools._page_globals["__name__"] = "__dewlab__"
 `;
 
+/* dewmini only (planning/CELL_IDENTITY.md §8) — a fresh, in-memory
+ * sqlite3 connection under the name `db`, what a SQL cell runs against
+ * and, under the same name, what a Python cell can reach it by too
+ * (`pd.read_sql("select * from my_table", db)`), with no plumbing of
+ * its own. Tutorial pages never set `seedDb` on their boot message (see
+ * boot() below), so this never runs for one — the same "purely
+ * additive, gated on who actually asks" shape the filesystem section
+ * further down uses for its own dewmini-only messages.
+ *
+ * A previous `db`, on a reset rather than the first boot, is closed
+ * first rather than just dropped — sqlite3 would eventually close it on
+ * garbage collection either way, but not closing it explicitly here
+ * would leave it open for however long that takes. */
+const SEED_DEWMINI_DB_SOURCE = `
+import sqlite3
+_dewmini_previous_db = tutorial_tools._page_globals.get("db")
+if _dewmini_previous_db is not None:
+    _dewmini_previous_db.close()
+tutorial_tools._page_globals["db"] = sqlite3.connect(":memory:")
+`;
+
+/* Whether this session's boot message asked for the dewmini-only `db`
+ * global — set once in boot() below, read again by resetPageState()
+ * so a reset re-seeds `db` the same way it re-seeds everything else. */
+let seedDewminiDb = false;
+
 /* Starts Python from scratch: downloads and initializes Pyodide, loads
  * the requested packages, loads tutorial_tools.py (giving cells access to
  * show()/show_table()/check()/etc.), and sets up the shared page
@@ -295,7 +321,9 @@ async function boot(msg) {
   builtinsModule = pyodide.pyimport("builtins");
   tools.configure(msg.dataBase);
 
+  seedDewminiDb = !!msg.seedDb;
   await pyodide.runPythonAsync(RESEED_GLOBALS_SOURCE);
+  if (seedDewminiDb) await pyodide.runPythonAsync(SEED_DEWMINI_DB_SOURCE);
 
   post({ type: "status", text: "" });
 
@@ -330,6 +358,7 @@ async function runCell(cellId, code) {
 async function resetPageState() {
   tools.reset_page_state();
   await pyodide.runPythonAsync(RESEED_GLOBALS_SOURCE);
+  if (seedDewminiDb) await pyodide.runPythonAsync(SEED_DEWMINI_DB_SOURCE);
 }
 
 /* ---------------------------------------------------------------------

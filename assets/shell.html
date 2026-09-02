@@ -48,6 +48,7 @@
 {{CANONICAL}}
 
 <link rel="stylesheet" href="{{KATEX_CSS_URL}}">
+<link rel="stylesheet" href="{{ACCESSIBLE_FONTS_CSS_URL}}">
 <link rel="stylesheet" href="{{STYLE_URL}}">
 
 <script>
@@ -336,6 +337,27 @@
         <button type="button" data-value="serif">serif</button>
         <button type="button" data-value="sans">sans</button>
         <button type="button" data-value="mono">mono</button>
+      </div>
+    </div>
+
+    <!-- Same data-texture="font" as the row above — a second .dl-seg
+         group sharing one key works with no JS change (initTexture()'s
+         own sync loop matches every group with this attribute, not one
+         specific element), which is what lets these sit on their own
+         line below the first three rather than crowding a six-wide row. -->
+    <div class="dl-texture-row">
+      <span></span>
+      <div class="dl-seg" data-texture="font">
+        <button type="button" data-value="atkinson">Atkinson Hyperlegible</button>
+        <button type="button" data-value="opendyslexic">OpenDyslexic</button>
+      </div>
+    </div>
+
+    <div class="dl-texture-row">
+      <span>High contrast</span>
+      <div class="dl-seg" data-texture="contrast">
+        <button type="button" data-value="normal">off</button>
+        <button type="button" data-value="high">on</button>
       </div>
     </div>
 

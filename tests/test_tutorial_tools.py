@@ -347,6 +347,54 @@ class TestRunQuery:
         assert cell.html == ""
 
 
+@needs_pandas
+class TestRunSqlCell:
+    """_run_sql_cell() — the dewmini SQL cell type's own internal
+    plumbing (planning/CELL_IDENTITY.md §8, DECISIONS_LOG.md 7.118),
+    as opposed to run_query()'s public, one-statement API above."""
+
+    @pytest.fixture()
+    def conn(self):
+        connection = sqlite3.connect(":memory:")
+        yield connection
+        connection.close()
+
+    def test_a_script_of_several_statements_only_renders_the_last(self, cell, conn):
+        result = tt._run_sql_cell(
+            conn,
+            "create table t (a, b); insert into t values (1, 2); select * from t",
+        )
+        assert list(result["a"]) == [1]
+        assert "<table" in cell.html
+        assert cell.html.count("<table") == 1
+
+    def test_a_script_ending_in_a_non_select_reports_rows_affected(self, cell, conn):
+        result = tt._run_sql_cell(conn, "create table t (a); insert into t values (1), (2)")
+        assert result is None
+        assert "2 rows affected" in cell.html
+        assert conn.execute("select count(*) from t").fetchone()[0] == 2
+
+    def test_state_persists_across_separate_calls_same_connection(self, cell, conn):
+        tt._run_sql_cell(conn, "create table t (a)")
+        tt._run_sql_cell(conn, "insert into t values (1)")
+        result = tt._run_sql_cell(conn, "select * from t")
+        assert list(result["a"]) == [1]
+
+    def test_blank_and_trailing_semicolons_are_ignored(self, cell, conn):
+        result = tt._run_sql_cell(conn, "create table t (a); ; insert into t values (1); ;")
+        assert result is None
+        assert "1 row affected" in cell.html
+
+    def test_an_empty_script_does_nothing(self, cell, conn):
+        assert tt._run_sql_cell(conn, "   ;  ;  ") is None
+        assert cell.html == ""
+
+    def test_a_bad_statement_raises_rather_than_rendering_anything(self, cell, conn):
+        with pytest.raises(sqlite3.OperationalError):
+            tt._run_sql_cell(conn, "select * from a_table_that_does_not_exist")
+        assert cell.html == ""
+
+
 try:
     import numpy as np
 except ImportError:  # pragma: no cover - exercised only where numpy is absent
