@@ -4079,7 +4079,6 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
     if DEWMARK_WORKBENCH.is_dir():
         shutil.rmtree(OUT / "dewmark", ignore_errors=True)
         shutil.copytree(DEWMARK_WORKBENCH, OUT / "dewmark")
-        written.append(OUT / "dewmark")
 
     # dewmini's own downloadable, offline-capable copy (DECISIONS_LOG.md
     # 7.92) — after the hosted compose/ copy just above, since
