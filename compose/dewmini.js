@@ -1094,7 +1094,7 @@ async function writeNotebookToWorkspace(notebook) {
   if (notebook.view === VIEWS.SITE) { await writeSiteToWorkspace(notebook); return; }
   const text = notebook.path.toLowerCase().endsWith(".ipynb")
     ? JSON.stringify(cellsToIpynb(notebook.cells), null, 2)
-    : cellsToPercentText(notebook.cells);
+    : cellsToPercentText(notebook.cells, { bare: true });
   try {
     await dfs.writeFile(notebook.path, text);
   } catch (err) {
@@ -1235,7 +1235,7 @@ function renderFileView() {
   wrap.append(head, editorEl, output);
   cellsContainer.appendChild(wrap);
 
-  fileEditor = createCodeEditor(editorEl, cellsToPercentText(cells), {
+  fileEditor = createCodeEditor(editorEl, cellsToPercentText(cells, { bare: true }), {
     dark: isDarkNow(),
     /* Committed on a pause rather than on every keystroke. Parsing
      * half-typed text would churn the cells for no gain, and the editor
@@ -2844,7 +2844,25 @@ const PY_HEADER_OPENING = "# dewmini export";
  * file *view* deliberately does without: its header would carry today's
  * date, so regenerating it on every switch between the two views would
  * look to the reader like an edit they did not make. */
-function cellsToPercentText(cellList) {
+function cellsToPercentText(cellList, { bare = false } = {}) {
+  // A lone Python cell writes as a plain script, no `# %%` marker, when
+  // `bare` is set. The marker exists to tell two or more cells apart; on a
+  // single cell it marks nothing, and parsePyCells()'s own "no markers
+  // found" fallback already reads a markerless block back as one Python
+  // cell, so nothing is lost by leaving it off. Leaving it *on* was the
+  // actual bug this guards against: a plain .py a reader's own
+  // open(name, "w") wrote, or one they brought in from outside dewmini,
+  // has no marker in it — the moment it was so much as opened in the file
+  // view, let alone edited and saved, it silently grew one, turning an
+  // ordinary script into something that looks like a notebook export the
+  // reader never asked for (DECISIONS_LOG.md 7.125).
+  //
+  // downloadAsPython() asks for the marked form instead: its header sits
+  // above the first marker so isOwnHeader() can recognise and strip it on
+  // reimport, and that only works when a marker exists to bound it.
+  if (bare && cellList.length === 1 && cellList[0].type === CELL_TYPES.PYTHON) {
+    return cellExportContent(cellList[0]);
+  }
   const parts = [];
   cellList.forEach((cell) => {
     if (cell.type === CELL_TYPES.TEXT) {
