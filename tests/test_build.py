@@ -3246,3 +3246,17 @@ class TestWhatTheReferenceCanBeFilteredBy:
             "intermediate",
             "advanced", "advanced", "advanced",
         ]
+
+
+def test_the_marking_workbench_is_published(tmp_path):
+    """dewmark's workbench reaches the site at /dewmark/.
+
+    It is a teacher's tool and nothing on the site links to it, so a
+    missing copy step would go unnoticed until somebody typed the address.
+    """
+    import build
+
+    assert (build.OUT / "dewmark" / "index.html").is_file()
+    published = (build.OUT / "dewmark" / "index.html").read_text()
+    source = (build.ROOT / "dewmark" / "workbench" / "index.html").read_text()
+    assert published == source

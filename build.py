@@ -84,6 +84,7 @@ SETUP = ROOT / "setup"
 DATA = ROOT / "data"
 ASSETS = ROOT / "assets"
 COMPOSE = ROOT / "compose"
+DEWMARK_WORKBENCH = ROOT / "dewmark" / "workbench"
 SHELL = ASSETS / "shell.html"
 OUT = ROOT / "site"
 
@@ -4070,6 +4071,15 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
     if COMPOSE.is_dir():
         shutil.rmtree(OUT / "compose", ignore_errors=True)
         shutil.copytree(COMPOSE, OUT / "compose")
+
+    # dewmark's marking workbench. One self-contained page with nothing
+    # linked from it, so it copies as it is. It is a teacher's tool rather
+    # than a student's, and nothing on the site links to it: a teacher goes
+    # to /dewmark/ directly.
+    if DEWMARK_WORKBENCH.is_dir():
+        shutil.rmtree(OUT / "dewmark", ignore_errors=True)
+        shutil.copytree(DEWMARK_WORKBENCH, OUT / "dewmark")
+        written.append(OUT / "dewmark")
 
     # dewmini's own downloadable, offline-capable copy (DECISIONS_LOG.md
     # 7.92) — after the hosted compose/ copy just above, since
