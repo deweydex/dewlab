@@ -4899,6 +4899,53 @@ function initPanels() {
   });
 }
 
+// -------------------------------------------------------- .dl-seg radiogroups
+
+/* Every .dl-seg is a mutually-exclusive single-choice group — the WAI-ARIA
+ * APG radiogroup pattern, not a row of independent toggle buttons. role and
+ * the group's accessible name are static (dewmini.html); what changes at
+ * runtime is which button is aria-checked and, per the pattern's roving
+ * tabindex, which one is a tab stop. Each group's own sync() below calls
+ * this once per button in place of the old aria-pressed line, then
+ * syncSegRoving() once per group to settle the tab stop. */
+function setSegChecked(btn, checked) {
+  btn.setAttribute("aria-checked", String(checked));
+}
+
+/* Exactly one button in a group is ever a tab stop: the checked one, or —
+ * for a group like Width that can sit between its presets with none of
+ * them checked — the first, so the group is never skipped entirely. */
+function syncSegRoving(group) {
+  const buttons = [...group.querySelectorAll("button")];
+  const checked = buttons.find((btn) => btn.getAttribute("aria-checked") === "true");
+  for (const btn of buttons) btn.tabIndex = btn === (checked || buttons[0]) ? 0 : -1;
+}
+
+/* One keydown listener per group covers every .dl-seg on the page, rather
+ * than repeating it at each of the several places a group gets wired up
+ * below. Arrow keys move focus and selection together, per the radiogroup
+ * pattern, wrapping at the ends; Home/End jump to the first/last. Calling
+ * .click() reuses whatever that particular group's own click handler does,
+ * so this never needs to know what a selection *means* for any given group. */
+function initSegKeyboardNav() {
+  for (const group of document.querySelectorAll(".dl-seg")) {
+    group.addEventListener("keydown", (ev) => {
+      const buttons = [...group.querySelectorAll("button:not(:disabled)")];
+      const i = buttons.indexOf(document.activeElement);
+      if (i === -1) return;
+      let next;
+      if (ev.key === "ArrowRight" || ev.key === "ArrowDown") next = buttons[(i + 1) % buttons.length];
+      else if (ev.key === "ArrowLeft" || ev.key === "ArrowUp") next = buttons[(i - 1 + buttons.length) % buttons.length];
+      else if (ev.key === "Home") next = buttons[0];
+      else if (ev.key === "End") next = buttons[buttons.length - 1];
+      else return;
+      ev.preventDefault();
+      next.click();
+      next.focus();
+    });
+  }
+}
+
 // ----------------------------------------------------------- shared texture
 
 /* This whole section — loadTexture/saveTexture/applyTexture/initTexture —
@@ -4958,7 +5005,8 @@ function initTexture(onThemeChange) {
     for (const group of panel.querySelectorAll(".dl-seg")) {
       const key = group.dataset.texture;
       const current = group.hasAttribute("data-number") ? String(state[key]) : state[key];
-      for (const btn of group.querySelectorAll("button")) btn.setAttribute("aria-pressed", String(btn.dataset.value === current));
+      for (const btn of group.querySelectorAll("button")) setSegChecked(btn, btn.dataset.value === current);
+      syncSegRoving(group);
     }
     if (sizeEl) sizeEl.value = state.size;
     if (widthEl) widthEl.value = state.width;
@@ -5042,7 +5090,8 @@ function initEditorSettings() {
     for (const group of panel.querySelectorAll(".dl-seg")) {
       const stateKey = EDITOR_KEY_MAP[group.dataset.dm];
       const current = state[stateKey];
-      for (const btn of group.querySelectorAll("button")) btn.setAttribute("aria-pressed", String(btn.dataset.value === current));
+      for (const btn of group.querySelectorAll("button")) setSegChecked(btn, btn.dataset.value === current);
+      syncSegRoving(group);
     }
     if (sizeEl) sizeEl.value = state.codeSize;
   }
@@ -5109,7 +5158,8 @@ function initPracticeOrderSettings() {
   if (!group) return;
   const sync = () => {
     const mode = loadPracticeOrder();
-    for (const btn of group.querySelectorAll("button")) btn.setAttribute("aria-pressed", String(btn.dataset.value === mode));
+    for (const btn of group.querySelectorAll("button")) setSegChecked(btn, btn.dataset.value === mode);
+    syncSegRoving(group);
   };
   group.addEventListener("click", (ev) => {
     const btn = ev.target.closest("button");
@@ -5152,8 +5202,9 @@ function initCellTypeSettings() {
       if (!group) continue;
       const on = enabledCellTypes.has(t.type);
       for (const btn of group.querySelectorAll("button")) {
-        btn.setAttribute("aria-pressed", String(btn.dataset.value === (on ? "on" : "off")));
+        setSegChecked(btn, btn.dataset.value === (on ? "on" : "off"));
       }
+      syncSegRoving(group);
     }
   };
 
@@ -5193,7 +5244,8 @@ function initRunStatsSetting() {
   const group = document.querySelector('#dl-settings-execution .dl-seg[data-dm="runstats"]');
   if (!group) return;
   const sync = () => {
-    for (const btn of group.querySelectorAll("button")) btn.setAttribute("aria-pressed", String(btn.dataset.value === (show ? "on" : "off")));
+    for (const btn of group.querySelectorAll("button")) setSegChecked(btn, btn.dataset.value === (show ? "on" : "off"));
+    syncSegRoving(group);
   };
   group.addEventListener("click", (ev) => {
     const btn = ev.target.closest("button");
@@ -5326,6 +5378,7 @@ async function init() {
   initPracticeOrderSettings();
   initRunStatsSetting();
   initCellTypeSettings();
+  initSegKeyboardNav();
   initStorageSection();
   initExecutionSection();
   initReferenceSection();

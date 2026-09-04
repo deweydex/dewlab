@@ -505,10 +505,10 @@
               title="Throw away everything Python currently holds, then run every cell from the top — the way to prove a notebook still works from a clean start">Restart &amp; run all</button>
     </div>
     <div class="dl-texture-row">
-      <span>Run time</span>
-      <div class="dl-seg" data-dm="runstats">
-        <button type="button" data-value="on">on</button>
-        <button type="button" data-value="off">off</button>
+      <span id="dl-seg-runstats-label">Run time</span>
+      <div class="dl-seg" data-dm="runstats" role="radiogroup" aria-labelledby="dl-seg-runstats-label">
+        <button type="button" data-value="on" role="radio">on</button>
+        <button type="button" data-value="off" role="radio">off</button>
       </div>
     </div>
   </section>
@@ -553,10 +553,10 @@
   <section class="dl-settings-section" id="dl-settings-practice">
     <h3>Practice</h3>
     <div class="dl-texture-row">
-      <span>Order</span>
-      <div class="dl-seg" data-dm="practice-order">
-        <button type="button" data-value="sequential">in order</button>
-        <button type="button" data-value="random">random</button>
+      <span id="dl-seg-practice-order-label">Order</span>
+      <div class="dl-seg" data-dm="practice-order" role="radiogroup" aria-labelledby="dl-seg-practice-order-label">
+        <button type="button" data-value="sequential" role="radio">in order</button>
+        <button type="button" data-value="random" role="radio">random</button>
       </div>
     </div>
   </section>
@@ -565,20 +565,20 @@
     <h3>Texture</h3>
 
     <div class="dl-texture-row">
-      <span>Theme</span>
-      <div class="dl-seg" data-texture="theme">
-        <button type="button" data-value="system">auto</button>
-        <button type="button" data-value="light">light</button>
-        <button type="button" data-value="dark">dark</button>
+      <span id="dl-seg-theme-label">Theme</span>
+      <div class="dl-seg" data-texture="theme" role="radiogroup" aria-labelledby="dl-seg-theme-label">
+        <button type="button" data-value="system" role="radio">auto</button>
+        <button type="button" data-value="light" role="radio">light</button>
+        <button type="button" data-value="dark" role="radio">dark</button>
       </div>
     </div>
 
     <div class="dl-texture-row">
-      <span>Font</span>
-      <div class="dl-seg" data-texture="font">
-        <button type="button" data-value="serif">serif</button>
-        <button type="button" data-value="sans">sans</button>
-        <button type="button" data-value="mono">mono</button>
+      <span id="dl-seg-font-label">Font</span>
+      <div class="dl-seg" data-texture="font" role="radiogroup" aria-labelledby="dl-seg-font-label">
+        <button type="button" data-value="serif" role="radio">serif</button>
+        <button type="button" data-value="sans" role="radio">sans</button>
+        <button type="button" data-value="mono" role="radio">mono</button>
       </div>
     </div>
 
@@ -589,17 +589,17 @@
          line below the first three rather than crowding a six-wide row. -->
     <div class="dl-texture-row">
       <span></span>
-      <div class="dl-seg" data-texture="font">
-        <button type="button" data-value="lexend">Lexend</button>
-        <button type="button" data-value="opendyslexic">OpenDyslexic</button>
+      <div class="dl-seg" data-texture="font" role="radiogroup" aria-label="Font, further options">
+        <button type="button" data-value="lexend" role="radio">Lexend</button>
+        <button type="button" data-value="opendyslexic" role="radio">OpenDyslexic</button>
       </div>
     </div>
 
     <div class="dl-texture-row">
-      <span>High contrast</span>
-      <div class="dl-seg" data-texture="contrast">
-        <button type="button" data-value="normal">off</button>
-        <button type="button" data-value="high">on</button>
+      <span id="dl-seg-contrast-label">High contrast</span>
+      <div class="dl-seg" data-texture="contrast" role="radiogroup" aria-labelledby="dl-seg-contrast-label">
+        <button type="button" data-value="normal" role="radio">off</button>
+        <button type="button" data-value="high" role="radio">on</button>
       </div>
     </div>
 
@@ -609,11 +609,11 @@
     </div>
 
     <div class="dl-texture-row">
-      <span>Width</span>
-      <div class="dl-seg" data-texture="width" data-number>
-        <button type="button" data-value="34">narrow</button>
-        <button type="button" data-value="44">medium</button>
-        <button type="button" data-value="56">wide</button>
+      <span id="dl-seg-width-label">Width</span>
+      <div class="dl-seg" data-texture="width" data-number role="radiogroup" aria-labelledby="dl-seg-width-label">
+        <button type="button" data-value="34" role="radio">narrow</button>
+        <button type="button" data-value="44" role="radio">medium</button>
+        <button type="button" data-value="56" role="radio">wide</button>
       </div>
     </div>
 
@@ -642,36 +642,36 @@
     </div>
 
     <div class="dl-texture-row">
-      <span>Spacing</span>
-      <div class="dl-seg" data-dm="density">
-        <button type="button" data-value="compact">compact</button>
-        <button type="button" data-value="cozy">cozy</button>
-        <button type="button" data-value="relaxed">relaxed</button>
+      <span id="dl-seg-density-label">Spacing</span>
+      <div class="dl-seg" data-dm="density" role="radiogroup" aria-labelledby="dl-seg-density-label">
+        <button type="button" data-value="compact" role="radio">compact</button>
+        <button type="button" data-value="cozy" role="radio">cozy</button>
+        <button type="button" data-value="relaxed" role="radio">relaxed</button>
       </div>
     </div>
 
     <div class="dl-texture-row">
-      <span>Cursor</span>
-      <div class="dl-seg" data-dm="cursor">
-        <button type="button" data-value="thin">thin</button>
-        <button type="button" data-value="medium">medium</button>
-        <button type="button" data-value="thick">thick</button>
+      <span id="dl-seg-cursor-label">Cursor</span>
+      <div class="dl-seg" data-dm="cursor" role="radiogroup" aria-labelledby="dl-seg-cursor-label">
+        <button type="button" data-value="thin" role="radio">thin</button>
+        <button type="button" data-value="medium" role="radio">medium</button>
+        <button type="button" data-value="thick" role="radio">thick</button>
       </div>
     </div>
 
     <div class="dl-texture-row">
-      <span>Line numbers</span>
-      <div class="dl-seg" data-dm="gutter">
-        <button type="button" data-value="on">on</button>
-        <button type="button" data-value="off">off</button>
+      <span id="dl-seg-gutter-label">Line numbers</span>
+      <div class="dl-seg" data-dm="gutter" role="radiogroup" aria-labelledby="dl-seg-gutter-label">
+        <button type="button" data-value="on" role="radio">on</button>
+        <button type="button" data-value="off" role="radio">off</button>
       </div>
     </div>
 
     <div class="dl-texture-row">
-      <span>Active line</span>
-      <div class="dl-seg" data-dm="activeline">
-        <button type="button" data-value="on">on</button>
-        <button type="button" data-value="off">off</button>
+      <span id="dl-seg-activeline-label">Active line</span>
+      <div class="dl-seg" data-dm="activeline" role="radiogroup" aria-labelledby="dl-seg-activeline-label">
+        <button type="button" data-value="on" role="radio">on</button>
+        <button type="button" data-value="off" role="radio">off</button>
       </div>
     </div>
 
@@ -689,24 +689,24 @@
       you already have still works, even with its type turned off.
     </p>
     <div class="dl-texture-row dl-texture-row-wide">
-      <span>Web (HTML+CSS)</span>
-      <div class="dl-seg" data-dm="celltype-web">
-        <button type="button" data-value="on">on</button>
-        <button type="button" data-value="off">off</button>
+      <span id="dl-seg-celltype-web-label">Web (HTML+CSS)</span>
+      <div class="dl-seg" data-dm="celltype-web" role="radiogroup" aria-labelledby="dl-seg-celltype-web-label">
+        <button type="button" data-value="on" role="radio">on</button>
+        <button type="button" data-value="off" role="radio">off</button>
       </div>
     </div>
     <div class="dl-texture-row">
-      <span>SQL</span>
-      <div class="dl-seg" data-dm="celltype-sql">
-        <button type="button" data-value="on">on</button>
-        <button type="button" data-value="off">off</button>
+      <span id="dl-seg-celltype-sql-label">SQL</span>
+      <div class="dl-seg" data-dm="celltype-sql" role="radiogroup" aria-labelledby="dl-seg-celltype-sql-label">
+        <button type="button" data-value="on" role="radio">on</button>
+        <button type="button" data-value="off" role="radio">off</button>
       </div>
     </div>
     <div class="dl-texture-row">
-      <span>JavaScript</span>
-      <div class="dl-seg" data-dm="celltype-javascript">
-        <button type="button" data-value="on">on</button>
-        <button type="button" data-value="off">off</button>
+      <span id="dl-seg-celltype-javascript-label">JavaScript</span>
+      <div class="dl-seg" data-dm="celltype-javascript" role="radiogroup" aria-labelledby="dl-seg-celltype-javascript-label">
+        <button type="button" data-value="on" role="radio">on</button>
+        <button type="button" data-value="off" role="radio">off</button>
       </div>
     </div>
   </section>

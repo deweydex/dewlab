@@ -1502,7 +1502,7 @@ p code, li code {
   color: var(--dl-fg);
   cursor: pointer;
 }
-.dl-seg button[aria-pressed="true"] {
+.dl-seg button[aria-checked="true"] {
   background: var(--dl-navy);
   border-color: var(--dl-navy);
   color: #fff;

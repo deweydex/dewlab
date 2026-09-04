@@ -6119,3 +6119,74 @@ content" as "no cell" is only safe when there is truly no other signal
 available — the moment a format has an explicit marker for where a
 cell starts, that marker is the one thing to trust, not a guess from
 whatever ended up between two of them.*
+
+**7.129 — Every segmented control in Settings announced itself to a
+screen reader as a row of independent toggle buttons, when picking one
+option always deselects the others.** An accessibility review flagged
+it: Theme, Font, Width, Density, Cursor, and every other `.dl-seg`
+group — about two dozen of them across `assets/shell.html` and
+`compose/dewmini.html` — read out as "toggle button, pressed" or "not
+pressed" for each button in turn, with nothing telling a screen reader
+the buttons belonged to one group or that only one of them could ever
+be true at once. A sighted reader sees the group at a glance; a screen
+reader user had to infer it from context, one button announcement at
+a time.
+
+**The cause was `aria-pressed`, the correct attribute for an
+independent on/off toggle button and the wrong one for a set of
+mutually exclusive options.** `.dl-seg` has only ever had one shape —
+a row of `<button data-value="...">`, exactly one carrying the
+"current" choice — and every one of the half-dozen places that wire
+it up (`initTexture()`'s own sync loop, plus a separate one for each
+of Run time, Notes nudge, Progress badges, Versions, Practice order,
+and Cell types, split across `assets/tutorial-runtime.js` and
+`compose/dewmini.js`) copied the same `aria-pressed` line, because the
+first one written did and nothing since had reason to question it.
+WAI-ARIA has a purpose-built pattern for exactly this shape — a
+radiogroup — and none of these groups used it.
+
+**Fixed by moving every `.dl-seg` onto the APG radiogroup pattern.**
+`role="radiogroup"` on the container and `role="radio"` on each button
+are static and went straight into the HTML, alongside a label: an
+`aria-labelledby` pointing at the row's own visible `<span>` (given an
+`id` where it didn't already have one) where there was text to point
+at, or an `aria-label` for the two rows that share a label with the
+row above them (the second Font row) and so have an empty `<span>` of
+their own. What changes at runtime — which button is checked — moved
+from `aria-pressed` to `aria-checked`, through two small shared
+helpers (`setSegChecked()`, `syncSegRoving()`) added once in each JS
+file rather than repeated at every call site, the second of which also
+keeps the roving tabindex the pattern calls for: the checked button is
+the group's one tab stop, or the first button when nothing is checked
+yet (Width's slider can sit between its three presets with none of
+them lit). A single `initSegKeyboardNav()`, wired once per file over
+every `.dl-seg` on the page rather than once per group, adds
+ArrowLeft/Right, ArrowUp/Down, and Home/End: each calls `.click()` on
+the target button before focusing it, so keyboard selection runs
+through the exact same code path a mouse click already did and the two
+can never disagree about what a selection means. `tutorial-style.css`'s
+`.dl-seg button[aria-pressed="true"]` became
+`[aria-checked="true"]`; the unrelated `[aria-pressed="true"]` rules
+for the editor-status picker and dewmini's reference filter chips —
+genuinely independent toggles, not this pattern — were left alone.
+
+**Verified in a real browser.** `python3 build.py --clean` and
+`python3 -m pytest --ignore=tests/e2e -q` both clean, and two new e2e
+tests against dewmini's Theme group
+(`test_the_theme_group_announces_itself_as_a_radiogroup`,
+`test_arrow_right_moves_focus_and_selection_together`, plus a third,
+`test_arrow_right_wraps_from_the_last_option_to_the_first`) — `role`,
+`aria-checked`, and an ArrowRight press moving both focus and the
+checked state to the next button, wrapping past the last one back to
+the first. Full `tests/e2e/test_dewmini_workbench.py` (103 tests,
+three more than before this entry) clean.
+
+*Cost to change: two roles and a label per group in the HTML, one
+attribute rename and one small roving-tabindex helper in the JS,
+written once and reused rather than copied per group. The lesson:
+`aria-pressed` and a radiogroup's `aria-checked` render almost
+identically on screen — the same row of buttons, the same highlighted
+one — which is exactly why the first `.dl-seg` written with the wrong
+one went unnoticed long enough for every later group to copy it rather
+than question it. A widget's accessibility tree is not implied by its
+CSS.*
