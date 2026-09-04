@@ -6061,3 +6061,61 @@ of it; the real content is `ACCESSIBLE_FONTS` no longer assuming every
 accessible font ships the same four faces the first two happened to
 share — an assumption a font added later could just as easily have
 broken again if this hadn't been noticed and fixed at the source now.*
+
+**7.128 — A cell left blank vanished the moment the File view was
+opened and closed again, with nothing said about it.** Found during an
+open-ended UI review, not reported first-hand: insert a fresh Python
+cell from the seam, glance at the File view, switch back to Cells, and
+the cell one had just added was gone. The same thing happened to a
+cell a reader had cleared out mid-edit, which is the more worrying
+case — the notebook lost work the reader could see they still had.
+
+**The cause sat in `parsePyCells()`'s own `flush()`, the routine that
+turns one stretch of the file's text back into a cell.** It kept a
+cell only `if (content.trim())` — true for a genuinely empty document
+(a plain, brand-new `.py` file has no cells to speak of, and that part
+is correct), but also true for a stretch that sits between two real
+`# %%` markers and simply has nothing typed into it yet. `flush()` had
+no way to tell those two apart: "nothing here because no cell asked
+for one" and "nothing here because this cell is blank right now" both
+trimmed to the empty string. `commitFileText()` calls
+`mergeParsedCells(cells, parsePyCells(text))` on every path that
+leaves the File view (`setView()`, by way of `flushFileEditor()`), and
+`mergeParsedCells()` only ever looks at what `parsePyCells()` handed
+it — a cell `flush()` never pushed was never a candidate to survive,
+however carefully the merge itself was written.
+
+**Fixed by making the marker itself the signal, not the content.** A
+`# %%` (or `# %% [markdown]`) line sets `currentType` away from
+`null`; `flush()` now keeps whatever it collected once that has
+happened, blank or not, and only drops a blank stretch when
+`currentType` is still `null` — the one case with no marker of its own
+asking for a cell to exist there, which is the leading segment before
+the first marker in the file, or the whole file when it has no marker
+at all. One line changed, from checking `content.trim()` alone to
+`content.trim() || currentType !== null`.
+
+**A narrower edge case was left alone, on purpose.** A notebook of
+exactly one blank Python cell, serialized `bare` (7.125's own case —
+no marker at all for a lone cell), still reads back as zero cells: an
+empty file and "one cell with nothing in it" are genuinely the same
+bytes with no marker to tell them apart, unlike the marked case this
+entry fixes. Left as a known gap rather than papered over, since
+closing it would mean deciding what an empty `.py` file *means* by
+convention rather than reading a marker that says so.
+
+**Verified with a new e2e test**
+(`test_a_blank_cell_survives_a_round_trip_through_the_file_view`,
+alongside the existing `test_a_round_trip_through_the_file_view_keeps
+_outputs`, which exercises the same File→Cells path with a non-blank
+cell and still passes): add one real cell, add one left blank, switch
+to File and back, and the blank one is still there. Full
+`tests/e2e/test_dewmini_workbench.py` (168 tests, one more than
+7.125's count) and the rest of the suite both clean.
+
+*Cost to change: one condition in one function, once the two "nothing
+here" cases were told apart. The lesson: a parser that reads "no
+content" as "no cell" is only safe when there is truly no other signal
+available — the moment a format has an explicit marker for where a
+cell starts, that marker is the one thing to trust, not a guess from
+whatever ended up between two of them.*
