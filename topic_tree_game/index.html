@@ -149,6 +149,58 @@ const IDS = Object.keys(T);
 const KEY = "dewlab:topicpairs:v1";
 
 let S = load();
+let DB = null, WHO = null, syncNote = "this device only";
+
+/* Judgements batch into one document per topic rather than one per pair.
+ * An artifact database holds 5,000 documents and there are 4,186 pairs, so a
+ * document each would all but fill it. A document per topic is 92, and two
+ * people writing different keys of the same document merge rather than
+ * clobber, which is what update() does with nested objects. */
+async function connect(){
+  try { DB = await claude.use("db"); } catch(e){ DB = null; }
+  if(!DB){ syncNote = "this device only"; render(); return; }
+  WHO = S.who || null;
+  if(!WHO){
+    WHO = (prompt("Your name, so two people's answers can be told apart:") || "").trim().slice(0,24);
+    if(WHO){ S.who = WHO; save(); }
+  }
+  syncNote = "shared" + (WHO ? " · " + WHO : "");
+  render();
+  try {
+    const snap = await DB.collection("judgements").get();
+    snap.docs.forEach(d => {
+      const a = d.id, body = d.data() || {};
+      Object.keys(body).forEach(b => {
+        const r = body[b]; if(!r || !r.k) return;
+        S.v[pk(a,b)] = {k:r.k, f:r.f||null, a:a, b:b, by:r.by};
+      });
+    });
+    const meta = await DB.collection("topics").get();
+    meta.docs.forEach(d => {
+      const m = d.data() || {};
+      if(m.name) S.names[d.id] = m.name;
+      if(Array.isArray(m.groups) && m.groups.length) S.groups[d.id] = m.groups;
+      if(m.work && !S.work.includes(d.id)) S.work.push(d.id);
+    });
+    save(); render();
+  } catch(e){ syncNote = "shared · could not load"; render(); }
+}
+
+async function pushJudgement(a, b, rec){
+  if(!DB) return;
+  const ref = DB.doc("judgements/" + a);
+  const patch = {}; patch[b] = rec;
+  try { await ref.update(patch); }
+  catch(e){ try { await ref.set(patch); } catch(e2){} }
+}
+
+async function pushTopic(id){
+  if(!DB) return;
+  const body = {name: S.names[id] || null,
+                groups: S.groups[id] || [],
+                work: S.work.includes(id)};
+  try { await DB.doc("topics/" + id).set(body); } catch(e){}
+}
 function load(){
   try { return Object.assign({v:{},names:{},groups:{},work:[],log:[]}, JSON.parse(localStorage.getItem(KEY)||"{}")); }
   catch(e){ return {v:{},names:{},groups:{},work:[],log:[]}; }
@@ -199,8 +251,9 @@ function nameOf(id){ return S.names[id] || T[id].n; }
 function render(){
   cur = nextPair();
   const done = Object.keys(S.v).length;
+  const left = Math.max(0, TOTAL_HIGH - done);
   document.getElementById("count").textContent =
-    done + " judged · " + Math.max(0, TOTAL_HIGH-done) + " left that matter";
+    done + " judged · " + (left ? left + " to go" : "long tail now") + " · " + syncNote;
   document.getElementById("fill").style.width = Math.min(100, done/TOTAL_HIGH*100) + "%";
   if(!cur){
     document.getElementById("alldone").classList.remove("hide");
@@ -223,9 +276,12 @@ function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;"); }
 function judge(kind, first){
   if(!cur) return;
   const key = pk(cur.a, cur.b);
-  S.v[key] = {k:kind, f:first||null, a:cur.a, b:cur.b};
+  const rec = {k:kind, f:first||null, by:WHO||"anon", at:Date.now()};
+  S.v[key] = Object.assign({a:cur.a, b:cur.b}, rec);
   S.log.push(key);
-  save(); render();
+  save();
+  pushJudgement(cur.a, cur.b, rec);
+  render();
 }
 document.getElementById("cardA").onclick = () => judge("order", cur.a);
 document.getElementById("cardB").onclick = () => judge("order", cur.b);
@@ -256,7 +312,7 @@ function openSheet(id){
     const g = GROUPS[+c.dataset.g];
     const set = new Set(S.groups[id] || []);
     set.has(g) ? set.delete(g) : set.add(g);
-    S.groups[id] = [...set]; save();
+    S.groups[id] = [...set]; save(); pushTopic(id);
     c.classList.toggle("on");
   });
   const nw = document.getElementById("needswork");
@@ -268,13 +324,16 @@ document.getElementById("fixB").onclick = () => cur && openSheet(cur.b);
 document.getElementById("needswork").onclick = () => {
   const i = S.work.indexOf(sheetFor);
   i<0 ? S.work.push(sheetFor) : S.work.splice(i,1);
-  save();
+  save(); pushTopic(sheetFor);
   document.getElementById("needswork").style.borderColor =
     S.work.includes(sheetFor) ? "var(--brand)" : "var(--rule)";
 };
 document.getElementById("sheet").addEventListener("close", () => {
   const v = document.getElementById("rename").value.trim();
-  if(sheetFor){ v ? S.names[sheetFor] = v : delete S.names[sheetFor]; save(); }
+  if(sheetFor){
+    v ? S.names[sheetFor] = v : delete S.names[sheetFor];
+    save(); pushTopic(sheetFor);
+  }
   sheetFor = null; render();
 });
 
@@ -302,6 +361,7 @@ document.getElementById("reset").onclick = () => {
 };
 
 render();
+connect();
 </script>
 </body>
 </html>
