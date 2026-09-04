@@ -108,17 +108,17 @@ graph. Either they are taught together, or they are one topic under
 two names. Neither is a fault to fix.
 
 - The circle of radius one (was The unit circle) and Degrees and radians — the arrow between them runs both ways once these judgements go in
-- Computer simulation and What a model is, and what running one shows (was Modelling versus simulation) — judged so (2 judgements, pointing opposite ways)
-- Data types in an object oriented program and The building blocks every program shares (was The instructions a program is built from) — judged so (2 judgements, pointing opposite ways)
-- Data types in an object oriented program and Classes and objects — judged so (2 judgements, pointing opposite ways)
-- The building blocks every program shares (was The instructions a program is built from) and The parts of a program — judged so (2 judgements, pointing opposite ways)
-- The building blocks every program shares (was The instructions a program is built from) and Choosing and repeating (was Selection and iteration) — judged so (2 judgements, pointing opposite ways)
-- Equations of lines and Slope, parallel and perpendicular — judged so (2 judgements, pointing opposite ways)
-- What an algorithm is and Algorithms in the real world — judged so (2 judgements, pointing opposite ways)
-- Writing a whole sum in one line (the sigma sign) (was Index and sigma notation) and Walking through a list position by position (was Iterating by index) — judged so (2 judgements, pointing opposite ways)
-- The history of programming and Comparing programming languages (was Comparing languages) — judged so (2 judgements, pointing opposite ways)
-- Naming and laying out code so it can be read (was Coding standards) and Writing code somebody else can read (was Documented programs) — judged so (2 judgements, pointing opposite ways)
-- Algorithms in the real world and Putting the steps in order (was Solving in sequence) — judged so (2 judgements, pointing opposite ways)
+- Computer simulation and What a model is, and what running one shows (was Modelling versus simulation) — every judge said so (2 judgements)
+- Data types in an object oriented program and The building blocks every program shares (was The instructions a program is built from) — every judge said so (2 judgements)
+- Data types in an object oriented program and Classes and objects — one judge said so, another saw an order (2 judgements)
+- The building blocks every program shares (was The instructions a program is built from) and The parts of a program — every judge said so (2 judgements)
+- The building blocks every program shares (was The instructions a program is built from) and Choosing and repeating (was Selection and iteration) — every judge said so (2 judgements)
+- Equations of lines and Slope, parallel and perpendicular — one judge said so, another saw an order (2 judgements)
+- What an algorithm is and Algorithms in the real world — every judge said so (2 judgements)
+- Writing a whole sum in one line (the sigma sign) (was Index and sigma notation) and Walking through a list position by position (was Iterating by index) — every judge said so (2 judgements)
+- The history of programming and Comparing programming languages (was Comparing languages) — every judge said so (2 judgements)
+- Naming and laying out code so it can be read (was Coding standards) and Writing code somebody else can read (was Documented programs) — every judge said so (2 judgements)
+- Algorithms in the real world and Putting the steps in order (was Solving in sequence) — every judge said so (2 judgements)
 
 ## Loops of three or more
 

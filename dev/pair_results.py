@@ -246,7 +246,7 @@ def build_report(topics: dict, batches: list[dict]) -> str:
         directions = {v["first"] for v in cast if v["verdict"] == "needs"}
         if (not agreed and len(directions) > 1
                 and all(v["verdict"] == "needs" for v in cast)):
-            both_ways.append((key, len(cast)))
+            both_ways.append((key, len(cast), "opposite"))
             continue
 
         if not agreed:
@@ -262,7 +262,7 @@ def build_report(topics: dict, batches: list[dict]) -> str:
                 if edge in existing:
                     dropped.append((edge, len(cast), agreed))
         elif verdict == "both":
-            both_ways.append((key, len(cast)))
+            both_ways.append((key, len(cast), "said" if agreed else "one judge"))
         elif verdict == "unsure":
             unsure.append(key)
 
@@ -336,9 +336,12 @@ def build_report(topics: dict, batches: list[dict]) -> str:
         for loop in levels:
             A(f"- {nm(loop[0])} and {nm(loop[1])} — the arrow between them runs "
               "both ways once these judgements go in")
-        for key, n in both_ways:
-            A(f"- {nm(key[0])} and {nm(key[1])} — judged so "
-              f"({n} judgement{'' if n == 1 else 's'}, pointing opposite ways)")
+        how = {"opposite": "judges pointed opposite ways, which between them says this",
+               "said": "every judge said so",
+               "one judge": "one judge said so, another saw an order"}
+        for key, n, why in both_ways:
+            A(f"- {nm(key[0])} and {nm(key[1])} — {how[why]} "
+              f"({n} judgement{'' if n == 1 else 's'})")
     else:
         A("None.")
     A("")

@@ -46,6 +46,13 @@ page stops them noticing that the two topics are mutual. It does not talk them
 into the arrow's direction. That is worth knowing, because it says which half
 of the first run can be trusted and which half has to be redone blind.
 
+**No judge ever contradicted the other on direction.** Across all 475 pairs
+there is not one where both said "this comes first" and named different
+topics. When two judges differ it is always one seeing an arrow where the
+other sees none, never the two of them pointing opposite ways. So a rule for
+resolving contradictions is not what this exercise needed; every level here
+was reached by a judge choosing "both" outright.
+
 Six levels were found independently by both blind judges:
 
 - What an algorithm is + Algorithms in the real world

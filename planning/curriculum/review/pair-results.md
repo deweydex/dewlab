@@ -74,14 +74,14 @@ graph. Either they are taught together, or they are one topic under
 two names. Neither is a fault to fix.
 
 - The unit circle and Degrees and radians — the arrow between them runs both ways once these judgements go in
-- Writing down a sum over a whole list (was Index and sigma notation) and Iterating by index — judged so (2 judgements, pointing opposite ways)
+- Writing down a sum over a whole list (was Index and sigma notation) and Iterating by index — judges pointed opposite ways, which between them says this (2 judgements)
 
 ## Loops of three or more
 
 A loop this long cannot be taught in any order, and teaching the
 topics together does not fix it. Each has to be broken.
 
-- Counting values into bands (was Frequency tables and histograms) → Averages and spread → Kinds of data → Counting values into bands (was Frequency tables and histograms)
+- Kinds of data → Counting values into bands (was Frequency tables and histograms) → Averages and spread → Kinds of data
 
 ## Pairs where one judge saw an arrow and the other did not
 
