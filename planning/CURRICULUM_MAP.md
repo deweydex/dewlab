@@ -15,14 +15,14 @@ so this doubles as a way of finding where anything is taught.
 
 ## Where we stand
 
-**70 of 80** outcomes are in place.
+**72 of 91** outcomes are in place.
 
-- 🟩 **68 taught** — a tutorial section teaches it.
+- 🟩 **70 taught** — a tutorial section teaches it.
 - 🟦 **2 taught in part** — deliberately narrowed, and the narrowed version is written.
 - 🟨 **2 used but not taught** — students meet it in passing without it ever being the subject. These are the quiet gaps: they look covered from a distance.
-- 🟥 **8 not covered** — nothing in dewlab touches it.
+- 🟥 **17 not covered** — nothing in dewlab touches it.
 
-**10 of the 10 outcomes still to write have no proposal**: `CMPS-LO1`, `CMPS-LO10`, `CMPS-LO11`, `CMPS-LO12`, `CMPS-LO13`, `CMPS-LO5`, `CMPS-LO6`, `CMPS-LO7`, `CMPS-LO8`, `CMPS-LO9`. These are the ones nobody has decided how to teach yet.
+**19 of the 19 outcomes still to write have no proposal**: `CMPS-LO1`, `CMPS-LO10`, `CMPS-LO11`, `CMPS-LO12`, `CMPS-LO13`, `CMPS-LO5`, `CMPS-LO6`, `CMPS-LO7`, `CMPS-LO8`, `CMPS-LO9`, `FOOP-LO10`, `FOOP-LO11`, `FOOP-LO2`, `FOOP-LO4`, `FOOP-LO5`, `FOOP-LO6`, `FOOP-LO7`, `FOOP-LO8`, `FOOP-LO9`. These are the ones nobody has decided how to teach yet.
 
 ### By strand
 
@@ -39,9 +39,10 @@ so this doubles as a way of finding where anything is taught.
 | **logic** | 2 | 0 | 0 | 0 | 0 |
 | **modelling** | 0 | 0 | 0 | 2 | 0 |
 | **number** | 2 | 0 | 0 | 0 | 0 |
+| **oop** | 2 | 0 | 0 | 2 | 0 |
 | **probability** | 9 | 0 | 0 | 1 | 0 |
 | **problem-solving** | 0 | 0 | 0 | 3 | 0 |
-| **programming** | 11 | 0 | 0 | 0 | 0 |
+| **programming** | 11 | 0 | 0 | 7 | 0 |
 | **reflection** | 0 | 0 | 1 | 0 | 0 |
 | **sets** | 3 | 0 | 0 | 0 | 0 |
 | **simulation** | 1 | 0 | 0 | 0 | 0 |
@@ -61,9 +62,10 @@ graph LR
   logic["logic<br/>2 of 2 in place"]
   modelling["modelling<br/>0 of 2 in place"]
   number["number<br/>2 of 2 in place"]
+  oop["oop<br/>2 of 4 in place"]
   probability["probability<br/>9 of 10 in place"]
   problem_solving["problem-solving<br/>0 of 3 in place"]
-  programming["programming<br/>11 of 11 in place"]
+  programming["programming<br/>11 of 18 in place"]
   reflection["reflection<br/>0 of 1 in place"]
   sets["sets<br/>3 of 3 in place"]
   simulation["simulation<br/>1 of 1 in place"]
@@ -73,8 +75,8 @@ graph LR
   classDef full fill:#edf7f0,stroke:#1f6b3f,color:#1f6b3f;
   classDef part fill:#fdf6ec,stroke:#b5651d,color:#7a4310;
   classDef none fill:#fdf0ef,stroke:#9b2226,color:#9b2226;
-  class algebra,algorithms,calculus,functions,geometry,linear_algebra,logic,number,programming,sets,simulation,statistics,trigonometry full;
-  class probability part;
+  class algebra,algorithms,calculus,functions,geometry,linear_algebra,logic,number,sets,simulation,statistics,trigonometry full;
+  class oop,probability,programming part;
   class complexity,data_structures,modelling,problem_solving,reflection none;
 ```
 
@@ -387,6 +389,22 @@ graph TD
 | `CMPS-LO11` An iterative process of model creation and validation against the real-world situation being modelled | 🟥 | — |
 | `CMPS-LO12` The role of personal attributes — initiative, a methodical approach, logical reasoning, persistence, lateral thinking — in preventing and resolving problems | 🟥 | — |
 | `CMPS-LO13` Reflect on the impact of numerical and logical thinking in the real world: accuracy, precision, and decisions made from computational models and simulations | 🟨 | _used in:_ [Counting Darts — More Is Not Reliably Better](https://deweydex.github.io/dewlab/tutorials/computational-methods/counting-darts.html#more-is-not-reliably-better) |
+
+### Fundamentals of Object Oriented Programming 5N0541
+
+| Outcome | | Where |
+|---|---|---|
+| `FOOP-LO1` Data types used in object oriented programs | 🟩 | [Objects and Classes — One Thing, Many Parts](https://deweydex.github.io/dewlab/tutorials/fundamentals-of-oop/objects-and-classes.html#one-thing-many-parts) |
+| `FOOP-LO2` The fundamental set of instructions in a program, and using them to design and construct programs that solve problems | 🟥 | — |
+| `FOOP-LO3` Basic object oriented constructs: classes, objects, methods, fields, encapsulation, abstraction, inheritance | 🟩 | [Objects and Classes — One Thing, Many Parts](https://deweydex.github.io/dewlab/tutorials/fundamentals-of-oop/objects-and-classes.html#one-thing-many-parts)<br/>[Objects and Classes — Keeping Details to Itself](https://deweydex.github.io/dewlab/tutorials/fundamentals-of-oop/objects-and-classes.html#keeping-details-to-itself)<br/>[Objects and Classes — Building on What Already Exists](https://deweydex.github.io/dewlab/tutorials/fundamentals-of-oop/objects-and-classes.html#building-on-what-already-exists) |
+| `FOOP-LO4` Design and construct modular, reusable code blocks | 🟥 | — |
+| `FOOP-LO5` Work within a modern integrated development environment | 🟥 | — |
+| `FOOP-LO6` Construct larger programs from smaller ones | 🟥 | — |
+| `FOOP-LO7` Model real-world objects to build object oriented programs that model real-world activities | 🟥 | — |
+| `FOOP-LO8` Ways to organise and structure data | 🟥 | — |
+| `FOOP-LO9` Document program code properly | 🟥 | — |
+| `FOOP-LO10` Debug and test programs | 🟥 | — |
+| `FOOP-LO11` Deploy a program to the end user via a front end | 🟥 | — |
 
 ## Vocabulary
 

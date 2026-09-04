@@ -1,0 +1,12 @@
+# The reading order of this series.
+#
+# Moving a tutorial is moving a line. Inserting one is adding a line, and
+# nothing else changes — which is the whole reason this file exists rather
+# than an `order:` in each tutorial's own frontmatter.
+#
+# Every tutorial in the series must appear here exactly once, and every
+# slug here must belong to a tutorial. The build checks both.
+
+series: Programming with objects
+order:
+  - objects-and-classes
