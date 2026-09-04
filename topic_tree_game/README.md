@@ -1,8 +1,13 @@
 # Topic pairs
 
-A phone-sized page for judging the topic graph two topics at a time. Open
-`index.html`, and it asks the same question over and over: of these two, which
-one does a student need first?
+A phone-sized page for judging the topic graph two topics at a time. It asks
+the same question over and over: of these two, which one does a student need
+first?
+
+It is published at <https://deweydex.github.io/dewlab/topic_tree_game/>.
+Nothing on the site links to it, so you reach it by typing the address or
+following a link somebody sent you. `index.html` also opens straight from a
+checkout, with no build step.
 
 ## The loop
 
