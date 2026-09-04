@@ -20,6 +20,9 @@ Three things decide what is drawn, and all three need two judges to agree:
 
 Where a judge stood alone the pair is left as it is. One judge is an opinion.
 
+`decisions.yaml` is applied last and overrules all of it. Two judges can be
+wrong together, and the graph belongs to whoever teaches from it.
+
 The page does not draw all 117 arrows at once. A layered graph this wide is a
 hairball when every edge is inked, and the question a reader actually has is
 about one topic at a time: what does this need, and what needs it. So arrows
@@ -41,6 +44,7 @@ import yaml
 ROOT = Path(__file__).resolve().parent.parent
 TOPICS = ROOT / "planning" / "curriculum" / "topics.yaml"
 BLIND = ROOT / "planning" / "curriculum" / "review" / "blind"
+DECISIONS = ROOT / "planning" / "curriculum" / "review" / "decisions.yaml"
 
 
 def judgements() -> dict[str, dict]:
@@ -78,8 +82,22 @@ def revise(topics: dict, runs: dict) -> dict:
     edges = (existing - dropped - turned) | arrows
     for pair in levels:
         edges -= {pair, pair[::-1]}
-    return {"edges": edges, "levels": levels, "dropped": dropped,
-            "turned": turned, "added": arrows - existing, "existing": existing}
+
+    decided = 0
+    for entry in (yaml.safe_load(DECISIONS.read_text()) or {}).get("decisions") or []:
+        x, y = entry["pair"]
+        edges -= {(x, y), (y, x)}
+        levels.discard((x, y))
+        levels.discard((y, x))
+        if entry["verdict"] == "needs":
+            first = entry["first"]
+            edges.add((first, y if first == x else x))
+        elif entry["verdict"] == "level":
+            levels.add(tuple(sorted((x, y))))
+        decided += 1
+
+    return {"edges": edges, "levels": levels, "dropped": dropped, "turned": turned,
+            "added": arrows - existing, "existing": existing, "decided": decided}
 
 
 def layers(topics: dict, edges: set, levels: set) -> tuple[dict, dict]:
@@ -118,8 +136,27 @@ def layers(topics: dict, edges: set, levels: set) -> tuple[dict, dict]:
         if not moved:
             break
     if len(depth) != len(group):
-        raise SystemExit(f"{len(group) - len(depth)} units sit in a loop and "
-                         "cannot be layered; fix the loop first")
+        # Naming the loop matters more than counting what it blocks: one
+        # two-unit loop can strand a third of the graph behind it.
+        stuck = set(group) - set(depth)
+        found, path, on, seen = [], [], set(), set()
+
+        def walk(node):
+            path.append(node); on.add(node); seen.add(node)
+            for nxt in (u for u in stuck if node in above[u]):
+                if nxt in on:
+                    found.append(path[path.index(nxt):] + [nxt])
+                elif nxt not in seen:
+                    walk(nxt)
+            on.discard(node); path.pop()
+
+        for unit in list(stuck):
+            if unit not in seen:
+                walk(unit)
+        say = lambda u: " + ".join(topics[c]["name"] for c in sorted(group[u]))
+        loops = "\n".join("  " + " -> ".join(say(u) for u in lp) for lp in found[:4])
+        raise SystemExit(f"{len(stuck)} units cannot be layered, behind "
+                         f"{len(found)} loop(s):\n{loops}")
     return depth, group
 
 
@@ -164,7 +201,7 @@ def page(topics: dict, g: dict, depth: dict, group: dict) -> str:
                    .replace("__COUNTS__", counts) \
                    .replace("__WAS__", f'{len(g["existing"])} arrows before, '
                             f'{len(g["dropped"])} dropped, {len(g["added"])} added, '
-                            f'{len(g["turned"])} turned round')
+                            f'{len(g["turned"])} turned round, {g["decided"]} settled by hand')
 
 
 TEMPLATE = """<!doctype html>

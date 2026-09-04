@@ -1,0 +1,199 @@
+# Decisions taken on the topic graph, over the top of what the judges said.
+#
+# The judges in `blind/` propose; this file decides. A judgement is evidence
+# and two judges can be wrong together, so nothing here has to agree with
+# them — an entry stands on its own and `dev/draw_topic_graph.py` applies
+# these last, after everything the judges agreed on.
+#
+# Each entry is one pair and one verdict:
+#
+#   needs   — `first` comes before the other. If the graph has that arrow
+#             pointing the other way, this turns it round.
+#   level   — the two need each other and sit at one level.
+#   unrelated — no arrow either way, and any existing one is removed.
+#
+# `why` is for whoever reads this next, including you in a year.
+
+decisions:
+  - pair: [PRE-1, MIT-4.4]
+    verdict: needs
+    first: PRE-1
+    why: >
+      Pythagoras opens with the words "right-angled triangle". A student who
+      has not been told which triangle that is has nothing to attach the
+      statement to.
+
+  - pair: [MIT-6.3, MIT-5.12]
+    verdict: needs
+    first: MIT-6.3
+    why: >
+      A mean is a sum over a collection divided by how many there are. This
+      course teaches through running Python, so the collection has to exist
+      before the average can be taken.
+
+  - pair: [MIT-1.5, MIT-2.1]
+    verdict: needs
+    first: MIT-1.5
+    why: >
+      A student can write and evaluate an expression knowing only ordinary
+      numbers, and meets the wider families when a quadratic first demands
+      one.
+
+  - pair: [MIT-2.2, MIT-2.1]
+    verdict: needs
+    first: MIT-2.2
+    why: >
+      Turns round the arrow the graph had. The nested families are described
+      by one collection sitting inside another, so the operations that
+      describe nesting come first. The two judges split on this pair.
+
+  - pair: [MIT-1.1, MIT-1.4]
+    verdict: needs
+    first: MIT-1.1
+    why: >
+      A positional numeral system is powers of the base, and hexadecimal as a
+      shorthand rests on sixteen being two to the fourth. Rescues both topics
+      from sitting outside the graph. Note that the tutorial currently teaches
+      binary by doubling, well before powers arrive, so the reading order and
+      the graph disagree here.
+
+  - pair: [MIT-4.5, MIT-4.9]
+    verdict: needs
+    first: MIT-4.5
+    why: >
+      Takes the executable reading. Every cell in this course feeds a degree
+      value through math.radians, so a student who has not met the distinction
+      gets a plausible wrong number and no warning.
+
+  - pair: [MIT-5.11, MIT-5.10]
+    verdict: level
+    why: >
+      Choosing between charts and knowing what a histogram does arrive
+      together. One section of pictures-worth-numbers.md teaches both.
+
+  - pair: [CMPS-LO9, CMPS-LO5]
+    verdict: needs
+    first: CMPS-LO9
+    why: >
+      The other way round from what the mathematics suggests. A student needs
+      a few strategies in hand before asking how the cost of each one grows.
+
+  # Trigonometry: several things are required at once, which is fine.
+  - pair: [MIT-4.5, MIT-4.8]
+    verdict: needs
+    first: MIT-4.5
+    why: The area of any triangle requires radians.
+
+  - pair: [MIT-4.9, MIT-4.8]
+    verdict: needs
+    first: MIT-4.9
+    why: The area of any triangle requires right-angled-triangle trigonometry.
+
+  - pair: [MIT-4.6, MIT-4.8]
+    verdict: needs
+    first: MIT-4.6
+    why: >
+      The area of any triangle needs the unit circle and it needs right-angled
+      triangle trigonometry. Those two together give sine and cosine as
+      functions, and sine and cosine are how the area is reached.
+
+  - pair: [MIT-3.1, MIT-4.10]
+    verdict: needs
+    first: MIT-3.1
+    why: The Sine and Cosine Rules need functions.
+
+  - pair: [MIT-4.6, MIT-4.10]
+    verdict: needs
+    first: MIT-4.6
+    why: The Sine and Cosine Rules need the unit circle.
+
+  # The object-oriented chain: types, then choosing and repeating, then lists,
+  # then one class, then several.
+  - pair: [FOOP-LO1, FOOP-LO2]
+    verdict: needs
+    first: FOOP-LO1
+    why: >
+      Breaks the five-topic box. The basic data types do not include lists, so
+      types come before the instructions a program is built from.
+
+  - pair: [FOOP-LO1, PDP-LO6]
+    verdict: needs
+    first: FOOP-LO1
+    why: Types before choosing and repeating, for the same reason.
+
+  - pair: [FOOP-LO1, MIT-6.3]
+    verdict: needs
+    first: FOOP-LO1
+    why: Lists and arrays need the basic data types first.
+
+  - pair: [MIT-6.3, FOOP-LO3]
+    verdict: needs
+    first: MIT-6.3
+    why: Once there are lists, objects in one class can be talked about.
+
+  - pair: [MIT-6.3, MIT-6.7]
+    verdict: level
+    why: Lists and arrays are interdependent with iterating over them.
+
+  - pair: [MIT-6.3, MIT-2.4]
+    verdict: unrelated
+    why: >
+      Truth tables belong with Booleans, which is not directly part of the
+      lists chain.
+
+  - pair: [FOOP-LO1, FOOP-LO3]
+    verdict: needs
+    first: FOOP-LO1
+    why: >
+      Breaks the level the judges found. The chain is types, then choosing and
+      repeating, then lists, then one class, so types come first.
+
+  - pair: [MIT-4.1, MIT-1.12]
+    verdict: needs
+    first: MIT-4.1
+    why: >
+      Two simultaneous equations in two unknowns are two lines, and the
+      solution is where they cross. Having the line first gives the solution a
+      picture.
+
+  - pair: [MIT-1.11, MIT-1.12]
+    verdict: unrelated
+    why: >
+      One is a range from a single statement, the other a point satisfying
+      several. Neither needs the other.
+
+  # The programming chain, split out of the box the judges found.
+  - pair: [PDP-LO4, FOOP-LO2]
+    verdict: needs
+    first: PDP-LO4
+    why: Parts of a program, then data types, then choosing and repeating.
+
+  - pair: [PDP-LO4, PDP-LO6]
+    verdict: needs
+    first: PDP-LO4
+    why: Same chain. Breaks the box the judges found into an order.
+
+  - pair: [FOOP-LO2, PDP-LO6]
+    verdict: needs
+    first: FOOP-LO2
+    why: Same chain.
+
+  - pair: [MIT-3.1, MIT-4.1]
+    verdict: needs
+    first: MIT-3.1
+    why: >
+      A line is a function: give it an x and it returns one y. Meeting the
+      machine first makes the line an instance of something already understood.
+
+  - pair: [FOOP-LO8, FOOP-LO7]
+    verdict: level
+    why: >
+      Grouping an object's fields and deciding what a real thing should
+      remember arrive together. Both judges flagged these as at risk of being
+      one topic under two names.
+
+  - pair: [MIT-2.3, MIT-2.4]
+    verdict: level
+    why: >
+      Two notations for one idea: overlapping circles, and the same
+      combinations written out in full.
