@@ -312,6 +312,28 @@ decisions:
 # them. An arrow can only say how two topics stand to each other; some of what
 # the judging turned up is that a topic is the wrong shape. Nothing here is
 # applied by any script — `topics.yaml` is edited by hand.
+  - pair: [MIT-5.12, MIT-5.11]
+    verdict: level
+    why: >
+      Summarising a distribution with numbers and drawing it are one lesson.
+      With the level between frequency tables and choosing a chart, this puts
+      all three at one level.
+
+  - pair: [CMPS-LO13, CMPS-LO11]
+    verdict: needs
+    first: CMPS-LO13
+    why: >
+      Turns round the arrow both judges kept. Knowing what accuracy and
+      precision mean is what tells you whether another round of the model is
+      called for.
+
+  - pair: [MIT-5.12, MIT-5.9]
+    verdict: unrelated
+    why: >
+      Overrules both judges, who agreed averages come before kinds of data.
+      Keeping their arrow alongside the existing one from kinds of data into
+      frequency tables put kinds of data above and below the same box.
+
 topic_changes:
   - topic: MIT-2.1
     change: split
@@ -330,3 +352,80 @@ topic_changes:
       Moving an equation around is what solving a quadratic actually needs,
       and rearranging formulae is not it. There are other things between the
       two, and this is the one the list is missing.
+
+  - topic: MIT-1.10
+    change: split
+    into: [Solving quadratics, Complex roots]
+    why: >
+      Two topics taught weeks apart, in cracking-equations and complex-roots.
+      Both judges said so independently. Once split, only the second needs the
+      complex family, and the quadratic formula stops dragging it along.
+
+  - topic: CMPS-LO12
+    change: leave outside the graph
+    why: >
+      Kept as an island on purpose. A list of habits has no prerequisites and
+      is a prerequisite for nothing, and that is an honest picture of it.
+
+  - topic: MIT-1.1
+    change: split
+    into: [Powers, Logarithms]
+    why: >
+      Powers are needed early, by the quadratics and by binary place value.
+      Nothing on the list needs logarithms. As one topic it drags logarithms
+      into every arrow that only wanted powers.
+
+  - topic: CMPS-LO1
+    change: split
+    into: [Grids, Trees, Recursion]
+    why: >
+      Four things under one code, with different prerequisites and different
+      things depending on each. Matrices needs only the grid; divide and
+      conquer leads only to the recursion.
+
+  - topic: MIT-5.8
+    change: split
+    into: [Combining with and, Combining with or, Conditional probability]
+    why: >
+      Five rules under one name. The tutorial already gives it two sections,
+      and says outright that it does not go deep into conditional probability.
+
+  - topic: CMPS-LO2
+    change: split
+    into: [Probability, Sampling, Dependence, Pseudorandom numbers, Information theory]
+    order: >
+      A chain: probability, then sampling, then dependence, then pseudorandom
+      numbers. Information theory sits at the same level as pseudorandom
+      numbers and also depends on dependence.
+    why: >
+      One code holding basic probability, sample statistics, independence and
+      random number generation. The basic probability duplicates three MIT
+      topics. The name also promises information theory, which the split makes
+      real rather than dropping.
+
+  - topic: CMPS-LO4
+    change: split
+    into: [Matrices, and one topic per application]
+    order: >
+      Every application depends on the matrix topic, and likely on other
+      things too, such as functions.
+    why: >
+      Six tutorials under one code, from image transforms to page ranking.
+      Splitting lets each application carry its own prerequisites instead of
+      the topic carrying the union of all of them.
+
+  - topic: MIT-6.8
+    change: split
+    into: [Searching, Sorting]
+    order: >
+      Both stay at one level with divide and conquer: binary search and merge
+      sort are both halving.
+    why: Two tutorials under one code.
+
+  - topic: MIT-4.10
+    change: split
+    into: [The Cosine Rule, The Sine Rule, The ambiguous case]
+    why: >
+      Two rules with different footings. The Cosine Rule extends Pythagoras.
+      The Sine Rule needs the fact that sine cannot tell an angle from 180
+      minus it, and that ambiguous case is a substantial idea on its own.
