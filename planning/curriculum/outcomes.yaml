@@ -1,4 +1,4 @@
-# The two QQI Level 5 module descriptors, one entry per learning outcome.
+# The QQI Level 5 module descriptors, one entry per learning outcome.
 #
 # This is the spine of the curriculum map. Every tutorial declares which of
 # these codes it covers, in its `covers:` frontmatter, and dev/curriculum_map.py
@@ -11,8 +11,9 @@
 # diagram. The descriptors themselves are the authority:
 #   Maths for Information Technology 5N18396
 #   Programming and Design Principles 5N2927
-# Both PDFs live in the everlearning repository, under
-# PDP_MIT_2026_2027_Integrated/.
+#   Computational Methods and Problem Solving 5N0554
+#   Fundamentals of Object Oriented Programming 5N0541
+# All four PDFs live in this repository, under planning/curriculum/descriptors/.
 #
 # `strand` groups an outcome for the map's colouring, and is our word rather
 # than the descriptor's: it answers "what kind of thing is this?" in a way a
@@ -43,6 +44,11 @@ modules:
   CMPS:
     title: "Computational Methods and Problem Solving"
     code: "5N0554"
+    sections:
+      LO: "Learning outcomes"
+  FOOP:
+    title: "Fundamentals of Object Oriented Programming"
+    code: "5N0541"
     sections:
       LO: "Learning outcomes"
 
@@ -260,6 +266,44 @@ outcomes:
     strand: programming
   - code: PDP-LO12
     title: "Team programming: design, develop, release and review over time, in teams of three to five"
+    strand: programming
+
+  # ------------------------------------------------------------------ FOOP
+  # Fundamentals of Object Oriented Programming, 5N0541. Eleven outcomes —
+  # one fewer than PDP's twelve, not a typo; the descriptor's own numbered
+  # list stops at 11.
+  - code: FOOP-LO1
+    title: "Data types used in object oriented programs"
+    strand: oop
+  - code: FOOP-LO2
+    title: "The fundamental set of instructions in a program, and using them to design and construct programs that solve problems"
+    strand: programming
+  - code: FOOP-LO3
+    title: "Basic object oriented constructs: classes, objects, methods, fields, encapsulation, abstraction, inheritance"
+    strand: oop
+  - code: FOOP-LO4
+    title: "Design and construct modular, reusable code blocks"
+    strand: programming
+  - code: FOOP-LO5
+    title: "Work within a modern integrated development environment"
+    strand: programming
+  - code: FOOP-LO6
+    title: "Construct larger programs from smaller ones"
+    strand: oop
+  - code: FOOP-LO7
+    title: "Model real-world objects to build object oriented programs that model real-world activities"
+    strand: oop
+  - code: FOOP-LO8
+    title: "Ways to organise and structure data"
+    strand: programming
+  - code: FOOP-LO9
+    title: "Document program code properly"
+    strand: programming
+  - code: FOOP-LO10
+    title: "Debug and test programs"
+    strand: programming
+  - code: FOOP-LO11
+    title: "Deploy a program to the end user via a front end"
     strand: programming
 
   # ---------------------------------------------------------------- CMPS 5N0554

@@ -123,7 +123,7 @@ for (const file of fonts.filter((f) => f.endsWith(".woff2"))) {
 }
 
 /* Two accessible reading fonts (planning/DEWMINI_WORKBENCH.md's texture
- * settings; DECISIONS_LOG.md 7.123, 7.125): Lexend (Google Fonts, designed
+ * settings; DECISIONS_LOG.md 7.123, 7.127): Lexend (Google Fonts, designed
  * to reduce the visual complexity linked to reading difficulty) and
  * OpenDyslexic, both SIL OFL 1.1. Self-hosted
  * from the @fontsource packages — matching every other vendored asset
