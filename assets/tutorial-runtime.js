@@ -945,7 +945,15 @@ function applyTexture(state) {
   // regardless of selector specificity. Skipping the inline write while
   // high contrast is on lets that rule apply instead of being shadowed
   // by whatever the reader last picked (including dewlab's own default).
-  if (state.contrast === "normal") root.style.setProperty("--dl-link", state.link);
+  // The same reasoning applies to the default colour itself. No single
+  // inline value can serve both themes: the brand orange is 4.96:1 on the
+  // dark background and 3.5:1 on the light one, and a value dark enough
+  // for light (4.74:1) drops to 3.66:1 on dark. The stylesheet already
+  // carries a value per theme, so a reader who has not picked a colour of
+  // their own gets no inline write at all and the right one applies.
+  const chosen = state.contrast === "normal" && state.link
+                 && state.link.toLowerCase() !== TEXTURE_DEFAULTS.link.toLowerCase();
+  if (chosen) root.style.setProperty("--dl-link", state.link);
   else root.style.removeProperty("--dl-link");
 }
 

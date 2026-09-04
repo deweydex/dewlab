@@ -21,7 +21,14 @@
   --dl-font-family: Georgia, "Iowan Old Style", "Times New Roman", serif;
   --dl-font-size: 18px;
   --dl-line-width: 34rem;
-  --dl-link: var(--dl-orange);
+  /* Darker than --dl-orange, and deliberately not the brand hue itself.
+   * The brand orange is 3.5:1 on this background, under the 4.5:1 that
+   * ordinary AA asks for at this text size, and links are most of the
+   * text on the contents page. This clears it at 4.74:1 while still
+   * reading as the same orange. The brand hue keeps its own value for
+   * everything that is not body-sized text. Dark theme sets its own,
+   * below: --dl-orange is 4.96:1 there and needs no darkening. */
+  --dl-link: #b8541a;
 
   /* A cell type's colour, layered onto its label rather than standing in
      for it — planning/CELL_IDENTITY.md §2/§8. Python/Text reference
@@ -66,6 +73,7 @@
 }
 
 :root[data-theme="dark"] {
+  --dl-link: var(--dl-orange);
   --dl-bg: #14181f;
   --dl-fg: #e6e3dd;
   --dl-muted: #98a2b3;
@@ -88,6 +96,7 @@
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
+    --dl-link: var(--dl-orange);
     --dl-bg: #14181f;
     --dl-fg: #e6e3dd;
     --dl-muted: #98a2b3;
