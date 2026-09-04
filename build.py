@@ -85,6 +85,7 @@ DATA = ROOT / "data"
 ASSETS = ROOT / "assets"
 COMPOSE = ROOT / "compose"
 DEWMARK_WORKBENCH = ROOT / "dewmark" / "workbench"
+TOPIC_GAME = ROOT / "topic_tree_game"
 SHELL = ASSETS / "shell.html"
 OUT = ROOT / "site"
 
@@ -4079,6 +4080,16 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
     if DEWMARK_WORKBENCH.is_dir():
         shutil.rmtree(OUT / "dewmark", ignore_errors=True)
         shutil.copytree(DEWMARK_WORKBENCH, OUT / "dewmark")
+
+    # The topic pair game, the same way: one self-contained page, nothing on
+    # the site linking to it, reached by typing /topic_tree_game/. It is a
+    # tool for whoever is checking the topic graph rather than anything a
+    # student would open. Its README is for a reader of the repository and
+    # has no business on the site.
+    if TOPIC_GAME.is_dir():
+        shutil.rmtree(OUT / "topic_tree_game", ignore_errors=True)
+        shutil.copytree(TOPIC_GAME, OUT / "topic_tree_game",
+                        ignore=shutil.ignore_patterns("README.md"))
 
     # dewmini's own downloadable, offline-capable copy (DECISIONS_LOG.md
     # 7.92) — after the hosted compose/ copy just above, since
