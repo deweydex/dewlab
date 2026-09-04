@@ -10,3 +10,4 @@
 series: Programming with objects
 order:
   - objects-and-classes
+  - one-class-many-methods
