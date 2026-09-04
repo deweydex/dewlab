@@ -1,7 +1,6 @@
 # What the pair judgements say about the graph
 
-Written by `dev/pair_results.py` from the saved batches in `pairs/`.
-Nothing here has been applied to `topics.yaml`.
+Written by `dev/pair_results.py` from the saved batches in `pairs/`. Nothing here has been applied to `topics.yaml`.
 
 8 saved batches · 291 pairs judged · 582 judgements in total
 

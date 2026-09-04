@@ -1,6 +1,7 @@
 """Turn the pair-game judgements into a report on the topic graph.
 
     python3 dev/pair_results.py                 # write the report
+    python3 dev/pair_results.py --from blind    # ... over the blind judgements
     python3 dev/pair_results.py --check         # fail if the report is stale
 
 The pair game (`topic_tree_game/index.html`) writes one JSON file per save
@@ -46,8 +47,16 @@ import yaml
 
 ROOT = Path(__file__).resolve().parent.parent
 TOPICS = ROOT / "planning" / "curriculum" / "topics.yaml"
-PAIRS = ROOT / "planning" / "curriculum" / "review" / "pairs"
-REPORT = ROOT / "planning" / "curriculum" / "review" / "pair-results.md"
+REVIEW = ROOT / "planning" / "curriculum" / "review"
+PAIRS = REVIEW / "pairs"
+REPORT = REVIEW / "pair-results.md"
+
+# Judgements made while the judge could see the graph, and judgements made
+# blind, are two different piles and are reported separately. Mixing them
+# would lose the comparison that is the point of having both. `blind/README.md`
+# has what the comparison showed.
+SOURCES = {"pairs": (PAIRS, REPORT),
+           "blind": (REVIEW / "blind", REVIEW / "pair-results-blind.md")}
 
 
 def load_topics() -> dict:
@@ -269,8 +278,8 @@ def build_report(topics: dict, batches: list[dict]) -> str:
     A = L.append
     A("# What the pair judgements say about the graph")
     A("")
-    A("Written by `dev/pair_results.py` from the saved batches in `pairs/`.")
-    A("Nothing here has been applied to `topics.yaml`.")
+    A(f"Written by `dev/pair_results.py` from the saved batches in "
+      f"`{PAIRS.name}/`. Nothing here has been applied to `topics.yaml`.")
     A("")
     A(f"{len(batches)} saved batches · {len(votes)} pairs judged · "
       f"{sum(len(c) for c in votes.values())} judgements in total")
@@ -411,7 +420,12 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--check", action="store_true",
                     help="fail if the report is out of date")
+    ap.add_argument("--from", dest="source", default="pairs", choices=sorted(SOURCES),
+                    help="which pile of judgements to report on (default: pairs)")
     args = ap.parse_args()
+
+    global PAIRS, REPORT
+    PAIRS, REPORT = SOURCES[args.source]
 
     report = build_report(load_topics(), load_batches())
     if args.check:
