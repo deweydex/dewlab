@@ -820,6 +820,129 @@ topics:
       - How essentially all professional software is made.
     needs: [PDP-LO10, PDP-LO11]
 
+  # ------------------------------------------------------------------ FOOP
+  FOOP-LO1:
+    name: Data types in an object oriented program
+    plain: >
+      The kinds of value a program stores and works with — whole numbers,
+      decimals, text, true or false — plus the ones a class defines for
+      itself, built out of those.
+    uses:
+      - Choosing the right container for a value before you choose what to do
+        with it, since a decimal and a whole number behave differently in
+        division.
+    needs: [PDP-LO4]
+
+  FOOP-LO2:
+    name: The instructions a program is built from
+    plain: >
+      The small, shared vocabulary of any program: storing a value, running
+      steps in order, choosing between paths, and repeating a step. Object
+      oriented programming adds new ways to organise these, not new ones to
+      learn.
+    uses:
+      - Recognising the same handful of moves inside every class method you
+        will ever write.
+    needs: [PDP-LO4, PDP-LO6]
+
+  FOOP-LO3:
+    name: Classes and objects
+    plain: >
+      A class is a blueprint: it says what an object of that kind has (its
+      fields) and what it can do (its methods). An object is one thing built
+      from that blueprint. Encapsulation keeps an object's own details to
+      itself; inheritance lets one class reuse and extend another.
+    uses:
+      - Every library import that hands you a ready-made object rather than a
+        bag of loose functions.
+    needs: [FOOP-LO2]
+
+  FOOP-LO4:
+    name: Modular, reusable code
+    plain: >
+      Writing a method once and calling it from anywhere an object of that
+      class exists, instead of copying the same steps out by hand each time
+      they are needed.
+    uses:
+      - The difference between fixing a bug in one place and hunting down
+        every copy of it.
+    needs: [FOOP-LO3, PDP-LO8]
+
+  FOOP-LO5:
+    name: Working in a development environment
+    plain: >
+      The tools that sit around the code itself: an editor with autocomplete,
+      a way to run a program and see what it did, and a debugger for
+      following a program step by step when reading it is not enough.
+    uses:
+      - Working faster once the tool is doing the typing and the remembering
+        it is good at, leaving the thinking to you.
+    needs: []
+
+  FOOP-LO6:
+    name: Building bigger programs from smaller ones
+    plain: >
+      Putting several classes to work together, each one responsible for a
+      single piece, rather than writing one long program that does
+      everything itself.
+    uses:
+      - Any real application, which is nearly always many small, cooperating
+        objects rather than one large one.
+    needs: [FOOP-LO4]
+
+  FOOP-LO7:
+    name: Modelling the real world
+    plain: >
+      Deciding what an object needs to remember about itself and what it
+      needs to be able to do, starting from a real thing — a customer, a
+      shape, a game character — rather than from the code.
+    uses:
+      - Turning a problem statement written in English into a first sketch of
+        which classes a program needs.
+    needs: [FOOP-LO3]
+
+  FOOP-LO8:
+    name: Organising data
+    plain: >
+      Grouping the values that belong together into one object's own fields,
+      instead of tracking them as separate, disconnected variables.
+    uses:
+      - Passing one object around a program instead of five loose values that
+        have to travel together by convention.
+    needs: [FOOP-LO1, FOOP-LO3]
+
+  FOOP-LO9:
+    name: Documenting object oriented code
+    plain: >
+      Writing a class so that somebody meeting it for the first time —
+      including you, later — can tell what it represents and what each of
+      its methods does, without reading every line.
+    uses:
+      - Every docstring that lets an editor show you what a method does
+        before you call it.
+    needs: [PDP-LO7]
+
+  FOOP-LO10:
+    name: Debugging and testing an object oriented program
+    plain: >
+      Finding out whether an object behaves the way its class promises it
+      will, and tracking down why when it does not.
+    uses:
+      - Catching a bug in one class before it reaches every other class that
+        relies on it.
+    needs: [PDP-LO9, PDP-LO10]
+
+  FOOP-LO11:
+    name: Deploying a program
+    plain: >
+      Giving a finished program a way for somebody other than its author to
+      actually use it, rather than leaving it runnable only from inside an
+      editor.
+    uses:
+      - The difference between a program that works on your machine and one
+        anyone else can open and use.
+    needs: [FOOP-LO4]
+
   # ---------------------------------------------------------------- CMPS 5N0554
   CMPS-LO1:
     name: Data structures and recursion

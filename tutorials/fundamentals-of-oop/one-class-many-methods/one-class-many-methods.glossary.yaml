@@ -1,0 +1,22 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# Second tutorial of the series (Programming with objects), after
+# objects-and-classes. Checked its glossary as the cumulative list — none
+# of these terms overlap. "reusable" is emphasised once in the Wrapping Up
+# bullets but is ordinary English doing ordinary work here, not a new
+# named term, so it is left out (dev/curriculum_map.py's terms_of()
+# confirms it is not used anywhere else in the curriculum either).
+entries:
+  - term: degree
+    kind: concept
+    definition: >
+      A polynomial's degree is the highest power of x in it. A quadratic
+      has degree two; a cubic has degree three.
+    example: "Polynomial([1, 0, -3, 2]).degree()  # 3"
+
+  - term: leading coefficient
+    kind: concept
+    definition: >
+      A polynomial's leading coefficient is the coefficient attached to
+      its highest power of x — the last entry in its coefficient list.
+    example: "Polynomial([1, 0, -3, 2]).leading_coefficient()  # 2"
