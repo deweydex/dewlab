@@ -93,10 +93,10 @@ your work, load one back in, or start the tutorial over.
 **This tutorial** — the ways to take the page with you, described below.
 
 **Texture** — how the page looks and reads: light or dark, serif or sans or
-mono (plus two fonts built for easier reading, Atkinson Hyperlegible and
-OpenDyslexic), text size, how wide the lines run, and the colour of links.
+mono (plus two fonts built for easier reading, Lexend and OpenDyslexic),
+text size, how wide the lines run, and the colour of links.
 **High contrast** switches to black text on white, or white on black in dark
-mode. It turns on Atkinson Hyperlegible too, whatever font you had chosen.
+mode. It turns on Lexend too, whatever font you had chosen.
 There is also **Header: full or minimal**, which tightens the bar at the top
 and is worth knowing about if you are reading on a phone.
 

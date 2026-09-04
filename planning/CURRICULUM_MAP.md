@@ -15,14 +15,14 @@ so this doubles as a way of finding where anything is taught.
 
 ## Where we stand
 
-**74 of 91** outcomes are in place.
+**77 of 91** outcomes are in place.
 
-- 🟩 **72 taught** — a tutorial section teaches it.
+- 🟩 **75 taught** — a tutorial section teaches it.
 - 🟦 **2 taught in part** — deliberately narrowed, and the narrowed version is written.
 - 🟨 **2 used but not taught** — students meet it in passing without it ever being the subject. These are the quiet gaps: they look covered from a distance.
-- 🟥 **15 not covered** — nothing in dewlab touches it.
+- 🟥 **12 not covered** — nothing in dewlab touches it.
 
-**17 of the 17 outcomes still to write have no proposal**: `CMPS-LO1`, `CMPS-LO10`, `CMPS-LO11`, `CMPS-LO12`, `CMPS-LO13`, `CMPS-LO5`, `CMPS-LO6`, `CMPS-LO7`, `CMPS-LO8`, `CMPS-LO9`, `FOOP-LO10`, `FOOP-LO11`, `FOOP-LO2`, `FOOP-LO5`, `FOOP-LO6`, `FOOP-LO7`, `FOOP-LO9`. These are the ones nobody has decided how to teach yet.
+**14 of the 14 outcomes still to write have no proposal**: `CMPS-LO1`, `CMPS-LO10`, `CMPS-LO11`, `CMPS-LO12`, `CMPS-LO13`, `CMPS-LO5`, `CMPS-LO6`, `CMPS-LO7`, `CMPS-LO8`, `CMPS-LO9`, `FOOP-LO11`, `FOOP-LO2`, `FOOP-LO5`, `FOOP-LO9`. These are the ones nobody has decided how to teach yet.
 
 ### By strand
 
@@ -39,10 +39,10 @@ so this doubles as a way of finding where anything is taught.
 | **logic** | 2 | 0 | 0 | 0 | 0 |
 | **modelling** | 0 | 0 | 0 | 2 | 0 |
 | **number** | 2 | 0 | 0 | 0 | 0 |
-| **oop** | 2 | 0 | 0 | 2 | 0 |
+| **oop** | 4 | 0 | 0 | 0 | 0 |
 | **probability** | 9 | 0 | 0 | 1 | 0 |
 | **problem-solving** | 0 | 0 | 0 | 3 | 0 |
-| **programming** | 13 | 0 | 0 | 5 | 0 |
+| **programming** | 14 | 0 | 0 | 4 | 0 |
 | **reflection** | 0 | 0 | 1 | 0 | 0 |
 | **sets** | 3 | 0 | 0 | 0 | 0 |
 | **simulation** | 1 | 0 | 0 | 0 | 0 |
@@ -62,10 +62,10 @@ graph LR
   logic["logic<br/>2 of 2 in place"]
   modelling["modelling<br/>0 of 2 in place"]
   number["number<br/>2 of 2 in place"]
-  oop["oop<br/>2 of 4 in place"]
+  oop["oop<br/>4 of 4 in place"]
   probability["probability<br/>9 of 10 in place"]
   problem_solving["problem-solving<br/>0 of 3 in place"]
-  programming["programming<br/>13 of 18 in place"]
+  programming["programming<br/>14 of 18 in place"]
   reflection["reflection<br/>0 of 1 in place"]
   sets["sets<br/>3 of 3 in place"]
   simulation["simulation<br/>1 of 1 in place"]
@@ -75,8 +75,8 @@ graph LR
   classDef full fill:#edf7f0,stroke:#1f6b3f,color:#1f6b3f;
   classDef part fill:#fdf6ec,stroke:#b5651d,color:#7a4310;
   classDef none fill:#fdf0ef,stroke:#9b2226,color:#9b2226;
-  class algebra,algorithms,calculus,functions,geometry,linear_algebra,logic,number,sets,simulation,statistics,trigonometry full;
-  class oop,probability,programming part;
+  class algebra,algorithms,calculus,functions,geometry,linear_algebra,logic,number,oop,sets,simulation,statistics,trigonometry full;
+  class probability,programming part;
   class complexity,data_structures,modelling,problem_solving,reflection none;
 ```
 
@@ -399,11 +399,11 @@ graph TD
 | `FOOP-LO3` Basic object oriented constructs: classes, objects, methods, fields, encapsulation, abstraction, inheritance | 🟩 | [Objects and Classes — One Thing, Many Parts](https://deweydex.github.io/dewlab/tutorials/fundamentals-of-oop/objects-and-classes.html#one-thing-many-parts)<br/>[Objects and Classes — Keeping Details to Itself](https://deweydex.github.io/dewlab/tutorials/fundamentals-of-oop/objects-and-classes.html#keeping-details-to-itself)<br/>[Objects and Classes — Building on What Already Exists](https://deweydex.github.io/dewlab/tutorials/fundamentals-of-oop/objects-and-classes.html#building-on-what-already-exists) |
 | `FOOP-LO4` Design and construct modular, reusable code blocks | 🟩 | [One Class, Many Methods — From Loose Functions to One Class](https://deweydex.github.io/dewlab/tutorials/fundamentals-of-oop/one-class-many-methods.html#from-loose-functions-to-one-class)<br/>[One Class, Many Methods — Giving It More to Do](https://deweydex.github.io/dewlab/tutorials/fundamentals-of-oop/one-class-many-methods.html#giving-it-more-to-do) |
 | `FOOP-LO5` Work within a modern integrated development environment | 🟥 | — |
-| `FOOP-LO6` Construct larger programs from smaller ones | 🟥 | — |
-| `FOOP-LO7` Model real-world objects to build object oriented programs that model real-world activities | 🟥 | — |
+| `FOOP-LO6` Construct larger programs from smaller ones | 🟩 | [One Parent, Many Children — Another Kind of Account](https://deweydex.github.io/dewlab/tutorials/fundamentals-of-oop/one-parent-many-children.html#another-kind-of-account)<br/>[One Parent, Many Children — Many Kinds, One Loop](https://deweydex.github.io/dewlab/tutorials/fundamentals-of-oop/one-parent-many-children.html#many-kinds-one-loop) |
+| `FOOP-LO7` Model real-world objects to build object oriented programs that model real-world activities | 🟩 | [One Parent, Many Children — Many Kinds, One Loop](https://deweydex.github.io/dewlab/tutorials/fundamentals-of-oop/one-parent-many-children.html#many-kinds-one-loop)<br/>[One Parent, Many Children — A Bank Holds Its Accounts](https://deweydex.github.io/dewlab/tutorials/fundamentals-of-oop/one-parent-many-children.html#a-bank-holds-its-accounts) |
 | `FOOP-LO8` Ways to organise and structure data | 🟩 | [One Class, Many Methods — Data That Belongs Together](https://deweydex.github.io/dewlab/tutorials/fundamentals-of-oop/one-class-many-methods.html#data-that-belongs-together) |
 | `FOOP-LO9` Document program code properly | 🟥 | — |
-| `FOOP-LO10` Debug and test programs | 🟥 | — |
+| `FOOP-LO10` Debug and test programs | 🟩 | [Testing What a Class Does — A Bug That Hides in Another Class](https://deweydex.github.io/dewlab/tutorials/fundamentals-of-oop/testing-what-a-class-does.html#a-bug-that-hides-in-another-class)<br/>[Testing What a Class Does — Writing a Test for One Method](https://deweydex.github.io/dewlab/tutorials/fundamentals-of-oop/testing-what-a-class-does.html#writing-a-test-for-one-method)<br/>[Testing What a Class Does — A Few Tests, Run Together](https://deweydex.github.io/dewlab/tutorials/fundamentals-of-oop/testing-what-a-class-does.html#a-few-tests-run-together) |
 | `FOOP-LO11` Deploy a program to the end user via a front end | 🟥 | — |
 
 ## Vocabulary

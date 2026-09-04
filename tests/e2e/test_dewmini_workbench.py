@@ -1684,6 +1684,28 @@ def test_a_round_trip_through_the_file_view_keeps_outputs(dewmini):
     assert dewmini.locator(".dm-cell-output").first.inner_text().strip() == "kept"
 
 
+def test_a_blank_cell_survives_a_round_trip_through_the_file_view(dewmini):
+    """A cell with nothing in it yet is not "no cell" — parsePyCells() must
+    not read an empty stretch between two `# %%` markers as absent.
+
+    Regression test: flush() inside parsePyCells() used to skip any cell
+    whose content was blank after trimming, with no way to tell "no marker
+    asked for a cell here" apart from "a marker did, and it is just empty
+    right now". A reader who inserted a fresh cell and glanced at the file
+    view, or cleared one out while editing, lost it the moment the view
+    switched back.
+    """
+    add_python_cell(dewmini, "x = 1")
+    dewmini.locator(".dm-insert-btn", has_text="Python").last.click()  # left blank
+
+    assert dewmini.locator(".dm-cell").count() == 2
+
+    switch_view(dewmini, "file")
+    switch_view(dewmini, "cells")
+
+    assert dewmini.locator(".dm-cell").count() == 2
+
+
 def test_editing_in_the_file_view_reaches_the_cells(dewmini):
     """Text typed into the file becomes a cell when the view switches back."""
     add_python_cell(dewmini, "x = 1")

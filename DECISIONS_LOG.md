@@ -6007,3 +6007,150 @@ one-word label) needs a second look the moment real content is longer
 than the case it was designed around, and the way to find every place
 that happens is to read the data the component renders, not to eyeball
 the finished page and hope nothing else is affected.*
+
+**7.127 — Atkinson Hyperlegible swapped for Lexend, on Josh's own call
+after using both.** Not a bug: 7.123 shipped Atkinson Hyperlegible
+(Braille Institute of America, built for low-vision legibility) as one
+of the two accessible reading fonts, alongside OpenDyslexic. Asked
+directly while looking at the rest of the texture panel for other small
+issues, Josh preferred Lexend instead — Google's own font built to
+reduce the visual complexity linked to reading difficulty — and, asked
+separately, wanted **High contrast** to force Lexend too rather than
+keep forcing the font it was replacing.
+
+**Vendored the same way, with one real difference the switch surfaced:
+Lexend ships no italic face at all.** Atkinson Hyperlegible and
+OpenDyslexic both come from `@fontsource` as four static faces —
+regular, bold, and an italic of each — copied by `build-vendor.mjs`'s
+`ACCESSIBLE_FONTS` loop under one shared `FACES` list applied to every
+font. Lexend's own `@fontsource` package has only two: regular and
+bold, no italic files in it to copy at all — the upstream family never
+drew one. `ACCESSIBLE_FONTS` now lists each font's own faces rather
+than assuming one list fits both; a page asking for italic Lexend gets
+the browser's own synthetic slant, the same fallback any font missing
+that face gets, not a build failure or a silently absent font.
+
+**The rest was a name swapped in four places once the CSS rule itself
+was renamed.** `:root[data-font="atkinson"]` became
+`:root[data-font="lexend"]`; the Font row's own button, in both
+`compose/dewmini.html` and `assets/shell.html`, changed its
+`data-value` and label to match; `:root[data-contrast="high"]`'s own
+forced `--dl-font-family` changed the same way, per Josh's answer on
+scope. No JavaScript changed — `data-font` is read and set generically
+off whichever button was clicked, with no fixed list of valid values to
+extend, the same design that let 7.123 add two fonts to a three-font
+row with no logic change either. A reader who had Atkinson Hyperlegible
+selected before this shipped keeps that value in their own saved
+`dewlab:texture` state; it no longer matches a `data-font` rule, so
+their page quietly falls back to the family the base rule sets, the
+same graceful path any unrecognised `data-font` value already took —
+not a migration this change needed to write by hand.
+
+**Verified in a real browser.** Lexend loads and applies as the body
+font from the Font row, confirmed via `document.fonts` rather than
+assumed from the CSS alone; High contrast forces it regardless of
+which font was active first; OpenDyslexic, untouched by this change,
+still applies correctly on its own button. `python3 -m pytest tests
+--ignore=tests/e2e` and the full `tests/e2e/test_dewmini_workbench.py`
+suite both re-run clean — neither exercises font rendering directly,
+so the browser check is what this entry's own verification rests on.
+
+*Cost to change: small, once the italic gap was found. A CSS rule
+renamed in five places and a vendor-pin swap would have been the whole
+of it; the real content is `ACCESSIBLE_FONTS` no longer assuming every
+accessible font ships the same four faces the first two happened to
+share — an assumption a font added later could just as easily have
+broken again if this hadn't been noticed and fixed at the source now.*
+
+**7.128 — A cell left blank vanished the moment the File view was
+opened and closed again, with nothing said about it.** Found during an
+open-ended UI review, not reported first-hand: insert a fresh Python
+cell from the seam, glance at the File view, switch back to Cells, and
+the cell one had just added was gone. The same thing happened to a
+cell a reader had cleared out mid-edit, which is the more worrying
+case — the notebook lost work the reader could see they still had.
+
+**The cause sat in `parsePyCells()`'s own `flush()`, the routine that
+turns one stretch of the file's text back into a cell.** It kept a
+cell only `if (content.trim())` — true for a genuinely empty document
+(a plain, brand-new `.py` file has no cells to speak of, and that part
+is correct), but also true for a stretch that sits between two real
+`# %%` markers and simply has nothing typed into it yet. `flush()` had
+no way to tell those two apart: "nothing here because no cell asked
+for one" and "nothing here because this cell is blank right now" both
+trimmed to the empty string. `commitFileText()` calls
+`mergeParsedCells(cells, parsePyCells(text))` on every path that
+leaves the File view (`setView()`, by way of `flushFileEditor()`), and
+`mergeParsedCells()` only ever looks at what `parsePyCells()` handed
+it — a cell `flush()` never pushed was never a candidate to survive,
+however carefully the merge itself was written.
+
+**Fixed by making the marker itself the signal, not the content.** A
+`# %%` (or `# %% [markdown]`) line sets `currentType` away from
+`null`; `flush()` now keeps whatever it collected once that has
+happened, blank or not, and only drops a blank stretch when
+`currentType` is still `null` — the one case with no marker of its own
+asking for a cell to exist there, which is the leading segment before
+the first marker in the file, or the whole file when it has no marker
+at all. One line changed, from checking `content.trim()` alone to
+`content.trim() || currentType !== null`.
+
+**A narrower edge case was left alone, on purpose.** A notebook of
+exactly one blank Python cell, serialized `bare` (7.125's own case —
+no marker at all for a lone cell), still reads back as zero cells: an
+empty file and "one cell with nothing in it" are genuinely the same
+bytes with no marker to tell them apart, unlike the marked case this
+entry fixes. Left as a known gap rather than papered over, since
+closing it would mean deciding what an empty `.py` file *means* by
+convention rather than reading a marker that says so.
+
+**Verified with a new e2e test**
+(`test_a_blank_cell_survives_a_round_trip_through_the_file_view`,
+alongside the existing `test_a_round_trip_through_the_file_view_keeps
+_outputs`, which exercises the same File→Cells path with a non-blank
+cell and still passes): add one real cell, add one left blank, switch
+to File and back, and the blank one is still there. Full
+`tests/e2e/test_dewmini_workbench.py` (168 tests, one more than
+7.125's count) and the rest of the suite both clean.
+
+*Cost to change: one condition in one function, once the two "nothing
+here" cases were told apart. The lesson: a parser that reads "no
+content" as "no cell" is only safe when there is truly no other signal
+available — the moment a format has an explicit marker for where a
+cell starts, that marker is the one thing to trust, not a guess from
+whatever ended up between two of them.*
+
+**7.129 — Three comments in `compose/dewmini.html` described the
+Library/Workbench/Settings panels' own docking backwards.** Also found
+during the same open-ended UI review as 7.128, not a bug a reader could
+see. The toolbar-order comment claimed toggles were ordered "left-docked
+rail first, then the two right-docked ones"; the Library panel's own
+comment claimed it was "docked left, and independent of the two
+right-docked panels"; the Workbench panel's claimed it was "docked right
+and mutually exclusive with Settings, which shares that edge." Read
+against the actual CSS and the `wirePanel()` call in `dewmini.js` that
+wires the real conflicts, all three have it backwards: Library and
+Settings are the two right-docked panels sharing an edge (`.dm-panel`'s
+own default is `right: 0`; `.dl-settings` matches it), and Workbench is
+the one left-docked panel (`.dm-panel-left`), free to stay open beside
+either. `CLAUDE.md` calls a stale comment worse than no comment, and
+this is the case in point: a comment that reads as confidently correct
+prose is exactly the one nobody re-checks against the code once it no
+longer matches.
+
+**Fixed by rewriting each to describe what the code actually does,**
+citing the specific mechanism rather than restating a claim: the
+toolbar-order comment now says the order follows what a reader does
+with each panel (look something up, work, configure), not which edge
+it opens on; the Library and Workbench comments each name `wirePanel()`
+and its `conflicts` list as the actual thing enforcing "these two close
+each other, this one doesn't." No behaviour changed — CSS classes,
+`wirePanel()` calls and `watchPanelOverlap()`'s own `{left, right}` map
+were already correct; only the prose describing them was wrong.
+
+*Cost to change: three comments, once actually checked against the CSS
+classes and the `wirePanel()` conflict lists on the elements they sit
+above, rather than trusted on read. Comment review like this has no
+test to catch it — nothing here changes what runs — which is exactly
+why a comment that claims a wrong thing confidently can sit uncorrected
+for a long time.*

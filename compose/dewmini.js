@@ -4062,7 +4062,13 @@ function parsePyCells(text) {
     const type = currentType === null ? CELL_TYPES.PYTHON : currentType;
     const raw = type === CELL_TYPES.TEXT ? buffer.map(unescapeNoteLine).join("\n") : buffer.join("\n");
     const content = raw.replace(/\n+$/, "");
-    if (content.trim()) cells.push({ id: generateId(), type, content, output: "", error: false });
+    // A blank stretch with its own `# %%` marker (currentType set) is a
+    // real cell the reader left empty, or just inserted — keep it, the
+    // same as a cell with content. Only the implicit segment before the
+    // first marker is dropped when blank, since nothing asked for a cell
+    // to exist there; dropping every blank cell here is what silently
+    // deleted an empty one on a Cells-to-File-and-back round trip.
+    if (content.trim() || currentType !== null) cells.push({ id: generateId(), type, content, output: "", error: false });
     buffer = [];
   };
   for (const line of lines) {

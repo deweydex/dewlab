@@ -1,34 +1,18 @@
-/* atkinson-hyperlegible-latin-400-normal */
+/* lexend-latin-400-normal */
 @font-face {
-  font-family: 'Atkinson Hyperlegible';
+  font-family: 'Lexend';
   font-style: normal;
   font-display: swap;
   font-weight: 400;
-  src: url('fonts/atkinson-hyperlegible-latin-400.woff2') format('woff2');
+  src: url('fonts/lexend-latin-400.woff2') format('woff2');
 }
-/* atkinson-hyperlegible-latin-400-italic */
+/* lexend-latin-700-normal */
 @font-face {
-  font-family: 'Atkinson Hyperlegible';
-  font-style: italic;
-  font-display: swap;
-  font-weight: 400;
-  src: url('fonts/atkinson-hyperlegible-latin-400-italic.woff2') format('woff2');
-}
-/* atkinson-hyperlegible-latin-700-normal */
-@font-face {
-  font-family: 'Atkinson Hyperlegible';
+  font-family: 'Lexend';
   font-style: normal;
   font-display: swap;
   font-weight: 700;
-  src: url('fonts/atkinson-hyperlegible-latin-700.woff2') format('woff2');
-}
-/* atkinson-hyperlegible-latin-700-italic */
-@font-face {
-  font-family: 'Atkinson Hyperlegible';
-  font-style: italic;
-  font-display: swap;
-  font-weight: 700;
-  src: url('fonts/atkinson-hyperlegible-latin-700-italic.woff2') format('woff2');
+  src: url('fonts/lexend-latin-700.woff2') format('woff2');
 }
 /* opendyslexic-latin-400-normal */
 @font-face {
