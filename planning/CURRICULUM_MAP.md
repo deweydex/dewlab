@@ -15,14 +15,14 @@ so this doubles as a way of finding where anything is taught.
 
 ## Where we stand
 
-**78 of 91** outcomes are in place.
+**79 of 91** outcomes are in place.
 
-- 🟩 **76 taught** — a tutorial section teaches it.
+- 🟩 **77 taught** — a tutorial section teaches it.
 - 🟦 **2 taught in part** — deliberately narrowed, and the narrowed version is written.
 - 🟨 **2 used but not taught** — students meet it in passing without it ever being the subject. These are the quiet gaps: they look covered from a distance.
-- 🟥 **11 not covered** — nothing in dewlab touches it.
+- 🟥 **10 not covered** — nothing in dewlab touches it.
 
-**13 of the 13 outcomes still to write have no proposal**: `CMPS-LO1`, `CMPS-LO10`, `CMPS-LO11`, `CMPS-LO12`, `CMPS-LO13`, `CMPS-LO5`, `CMPS-LO6`, `CMPS-LO7`, `CMPS-LO8`, `CMPS-LO9`, `FOOP-LO11`, `FOOP-LO2`, `FOOP-LO5`. These are the ones nobody has decided how to teach yet.
+**12 of the 12 outcomes still to write have no proposal**: `CMPS-LO1`, `CMPS-LO10`, `CMPS-LO11`, `CMPS-LO12`, `CMPS-LO13`, `CMPS-LO5`, `CMPS-LO6`, `CMPS-LO7`, `CMPS-LO8`, `CMPS-LO9`, `FOOP-LO2`, `FOOP-LO5`. These are the ones nobody has decided how to teach yet.
 
 ### By strand
 
@@ -42,7 +42,7 @@ so this doubles as a way of finding where anything is taught.
 | **oop** | 4 | 0 | 0 | 0 | 0 |
 | **probability** | 9 | 0 | 0 | 1 | 0 |
 | **problem-solving** | 0 | 0 | 0 | 3 | 0 |
-| **programming** | 15 | 0 | 0 | 3 | 0 |
+| **programming** | 16 | 0 | 0 | 2 | 0 |
 | **reflection** | 0 | 0 | 1 | 0 | 0 |
 | **sets** | 3 | 0 | 0 | 0 | 0 |
 | **simulation** | 1 | 0 | 0 | 0 | 0 |
@@ -65,7 +65,7 @@ graph LR
   oop["oop<br/>4 of 4 in place"]
   probability["probability<br/>9 of 10 in place"]
   problem_solving["problem-solving<br/>0 of 3 in place"]
-  programming["programming<br/>15 of 18 in place"]
+  programming["programming<br/>16 of 18 in place"]
   reflection["reflection<br/>0 of 1 in place"]
   sets["sets<br/>3 of 3 in place"]
   simulation["simulation<br/>1 of 1 in place"]
@@ -404,7 +404,7 @@ graph TD
 | `FOOP-LO8` Ways to organise and structure data | 🟩 | [One Class, Many Methods — Data That Belongs Together](https://deweydex.github.io/dewlab/tutorials/fundamentals-of-oop/one-class-many-methods.html#data-that-belongs-together) |
 | `FOOP-LO9` Document program code properly | 🟩 | [Documenting a Class — A Class Docstring](https://deweydex.github.io/dewlab/tutorials/fundamentals-of-oop/documenting-a-class.html#a-class-docstring)<br/>[Documenting a Class — Documenting Each Method](https://deweydex.github.io/dewlab/tutorials/fundamentals-of-oop/documenting-a-class.html#documenting-each-method)<br/>[Documenting a Class — Keeping Documentation Honest](https://deweydex.github.io/dewlab/tutorials/fundamentals-of-oop/documenting-a-class.html#keeping-documentation-honest) |
 | `FOOP-LO10` Debug and test programs | 🟩 | [Testing What a Class Does — A Bug That Hides in Another Class](https://deweydex.github.io/dewlab/tutorials/fundamentals-of-oop/testing-what-a-class-does.html#a-bug-that-hides-in-another-class)<br/>[Testing What a Class Does — Writing a Test for One Method](https://deweydex.github.io/dewlab/tutorials/fundamentals-of-oop/testing-what-a-class-does.html#writing-a-test-for-one-method)<br/>[Testing What a Class Does — A Few Tests, Run Together](https://deweydex.github.io/dewlab/tutorials/fundamentals-of-oop/testing-what-a-class-does.html#a-few-tests-run-together) |
-| `FOOP-LO11` Deploy a program to the end user via a front end | 🟥 | — |
+| `FOOP-LO11` Deploy a program to the end user via a front end | 🟩 | [A Front End for a Class — A Program Only Its Author Can Use](https://deweydex.github.io/dewlab/tutorials/fundamentals-of-oop/a-front-end-for-a-class.html#a-program-only-its-author-can-use)<br/>[A Front End for a Class — A Menu Loop](https://deweydex.github.io/dewlab/tutorials/fundamentals-of-oop/a-front-end-for-a-class.html#a-menu-loop)<br/>[A Front End for a Class — Leaving the Loop Cleanly](https://deweydex.github.io/dewlab/tutorials/fundamentals-of-oop/a-front-end-for-a-class.html#leaving-the-loop-cleanly) |
 
 ## Vocabulary
 
