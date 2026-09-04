@@ -3266,6 +3266,33 @@ def test_the_marking_workbench_is_published(repo, monkeypatch):
     assert published.read_text() == (workbench / "index.html").read_text()
 
 
+def test_the_topic_pair_game_is_published_without_its_readme(repo, monkeypatch):
+    """The pair game reaches the site at /topic_tree_game/.
+
+    Nothing on the site links to it either, and its README is written for
+    somebody reading the repository rather than for a visitor.
+    """
+    game = repo / "topic_tree_game"
+    game.mkdir(parents=True)
+    (game / "index.html").write_text("<h1>topic pairs</h1>")
+    (game / "README.md").write_text("how the loop works")
+    monkeypatch.setattr(b, "TOPIC_GAME", game)
+
+    b.build()
+
+    assert (b.OUT / "topic_tree_game" / "index.html").is_file()
+    assert not (b.OUT / "topic_tree_game" / "README.md").exists()
+
+
+def test_no_topic_game_folder_is_not_an_error(repo, monkeypatch):
+    """A checkout without topic_tree_game/ still builds."""
+    monkeypatch.setattr(b, "TOPIC_GAME", repo / "topic_tree_game")
+
+    b.build()
+
+    assert not (b.OUT / "topic_tree_game").exists()
+
+
 def test_no_workbench_folder_is_not_an_error(repo, monkeypatch):
     """A checkout without dewmark/ still builds."""
     monkeypatch.setattr(b, "DEWMARK_WORKBENCH", repo / "dewmark" / "workbench")
