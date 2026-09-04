@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Topic pairs — dewlab</title>
+<style>
+:root{
+  --bg:#fdfcfa; --card:#fff; --ink:#1a1a1a; --muted:#5f6b7a; --navy:#1b2a4a;
+  --brand:#d4692a; --link:#b8541a; --rule:#e3ddd2; --panel:#f6f3ee;
+  --ok:#1a5b36; --serif:Georgia,"Iowan Old Style",serif;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#14181f; --card:#1b2129; --ink:#e6e3dd; --muted:#98a2b3; --navy:#b9c8e6;
+  --brand:#d4692a; --link:#e08a52; --rule:#2a3140; --panel:#1b2129; --ok:#86d6a5;}}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);
+     -webkit-text-size-adjust:100%;
+     padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+.wrap{max-width:34rem;margin:0 auto;padding:.75rem .75rem 2rem;display:flex;flex-direction:column;gap:.7rem}
+
+header{display:flex;align-items:center;justify-content:space-between;gap:.5rem}
+.mark{font-family:var(--serif);font-weight:700;color:var(--navy);font-size:1.05rem}
+.mark i{color:var(--brand);font-style:normal}
+.hbtns{display:flex;gap:.35rem}
+.mini{font-family:var(--mono);font-size:.7rem;padding:.4rem .55rem;border:1px solid var(--rule);
+      background:var(--card);color:var(--muted);border-radius:6px;cursor:pointer;min-height:2rem}
+.mini:active{background:var(--panel)}
+
+.bar{height:5px;background:var(--rule);border-radius:3px;overflow:hidden}
+.bar>div{height:100%;background:var(--brand);width:0}
+.stats{font-family:var(--mono);font-size:.68rem;color:var(--muted);display:flex;
+       justify-content:space-between;gap:.5rem;flex-wrap:wrap}
+.tier{font-family:var(--mono);font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;
+      color:var(--brand)}
+
+.q{font-family:var(--serif);font-size:1.1rem;color:var(--navy);text-align:center;margin:.2rem 0 0}
+.q small{display:block;font-family:var(--sans);font-size:.72rem;color:var(--muted);
+         font-weight:400;margin-top:.15rem}
+
+.cards{display:flex;flex-direction:column;gap:.5rem}
+.card{background:var(--card);border:2px solid var(--rule);border-radius:10px;
+      padding:.85rem .9rem;text-align:left;cursor:pointer;width:100%;
+      display:flex;flex-direction:column;gap:.25rem;min-height:5.2rem;
+      font:inherit;color:inherit}
+.card:active{border-color:var(--brand);background:var(--panel)}
+.card b{font-family:var(--serif);font-size:1.05rem;line-height:1.25;color:var(--navy)}
+.card span{font-size:.76rem;color:var(--muted);line-height:1.35}
+.card .id{font-family:var(--mono);font-size:.6rem;color:var(--muted);opacity:.75}
+.mid{text-align:center;font-family:var(--mono);font-size:.65rem;color:var(--muted);
+     letter-spacing:.1em;text-transform:uppercase}
+
+.row{display:grid;grid-template-columns:1fr 1fr;gap:.45rem}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.45rem}
+.b{background:var(--card);border:1px solid var(--rule);border-radius:9px;padding:.7rem .4rem;
+   font:inherit;font-size:.82rem;color:var(--ink);cursor:pointer;min-height:3rem}
+.b:active{background:var(--panel);border-color:var(--brand)}
+.b small{display:block;font-size:.62rem;color:var(--muted);margin-top:.1rem}
+
+.tools{display:grid;grid-template-columns:1fr 1fr;gap:.45rem}
+
+dialog{border:none;border-radius:12px;padding:0;background:var(--card);color:var(--ink);
+       max-width:30rem;width:calc(100% - 1.5rem)}
+dialog::backdrop{background:rgba(0,0,0,.45)}
+.sheet{padding:1rem;display:flex;flex-direction:column;gap:.6rem}
+.sheet h2{margin:0;font-family:var(--serif);font-size:1.05rem;color:var(--navy)}
+.sheet label{font-size:.75rem;color:var(--muted)}
+input[type=text]{width:100%;padding:.6rem;border:1px solid var(--rule);border-radius:8px;
+                 background:var(--bg);color:var(--ink);font:inherit;font-size:1rem}
+.chips{display:flex;flex-wrap:wrap;gap:.35rem}
+.chip{border:1px solid var(--rule);background:var(--bg);color:var(--muted);border-radius:999px;
+      padding:.4rem .65rem;font-size:.75rem;cursor:pointer;font:inherit}
+.chip.on{background:var(--brand);border-color:var(--brand);color:#fff}
+.done{color:var(--ok);font-family:var(--mono);font-size:.7rem;text-align:center}
+textarea{width:100%;height:11rem;font-family:var(--mono);font-size:.65rem;
+         border:1px solid var(--rule);border-radius:8px;background:var(--bg);color:var(--ink);padding:.5rem}
+.hide{display:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <span class="mark">dewlab <i>&bull;</i> topic pairs</span>
+    <span class="hbtns">
+      <button class="mini" id="undo">undo</button>
+      <button class="mini" id="menu">save</button>
+    </span>
+  </header>
+
+  <div class="bar"><div id="fill"></div></div>
+  <div class="stats">
+    <span id="count">&nbsp;</span>
+    <span class="tier" id="tier">&nbsp;</span>
+  </div>
+
+  <p class="q" id="question">Which one do you need first?
+    <small>Tap the one that has to come first. It becomes a prerequisite of the other.</small></p>
+
+  <div class="cards">
+    <button class="card" id="cardA"></button>
+    <div class="mid">or</div>
+    <button class="card" id="cardB"></button>
+  </div>
+
+  <div class="row3">
+    <button class="b" id="unrelated">Unrelated<small>neither needs the other</small></button>
+    <button class="b" id="both">Both ways<small>they need each other</small></button>
+    <button class="b" id="unsure">Not sure<small>come back to it</small></button>
+  </div>
+
+  <div class="tools">
+    <button class="b" id="fixA">Refine the first<small id="fixAn"></small></button>
+    <button class="b" id="fixB">Refine the second<small id="fixBn"></small></button>
+  </div>
+
+  <p class="done hide" id="alldone">That tier is finished. Tap save to export.</p>
+</div>
+
+<dialog id="sheet"><form method="dialog" class="sheet">
+  <h2 id="sheetTitle"></h2>
+  <label for="rename">A name a student would recognise</label>
+  <input type="text" id="rename" autocomplete="off" placeholder="leave blank to keep the current name">
+  <label>Which group does it belong to?</label>
+  <div class="chips" id="chips"></div>
+  <div class="row">
+    <button class="b" id="needswork" type="button">Needs work</button>
+    <button class="b" value="save" style="border-color:var(--brand);color:var(--brand)">Save</button>
+  </div>
+</form></dialog>
+
+<dialog id="exp"><form method="dialog" class="sheet">
+  <h2>Your judgements</h2>
+  <p style="font-size:.78rem;color:var(--muted);margin:0">Everything is saved on this device as you go. Copy this out, or send it to Josh.</p>
+  <textarea id="expText" readonly></textarea>
+  <div class="row">
+    <button class="b" type="button" id="copy">Copy</button>
+    <button class="b" value="ok" style="border-color:var(--brand);color:var(--brand)">Close</button>
+  </div>
+  <button class="mini" type="button" id="reset" style="margin-top:.4rem">Start over (clears everything)</button>
+</form></dialog>
+
+<script>
+const DATA = {"topics":{"MIT-1.1":{"n":"Powers and logarithms","s":"MIT-1","p":"Multiplying a number by itself over and over, and the operation that undoes it. A logarithm answers the question \"how many times did I multiply?\" Anything that grows or shrinks by a factor, rather tha","d":[]},"MIT-1.2":{"n":"Area and perimeter","s":"MIT-1","p":"How much surface a flat shape covers, and how far it is around the edge. Square, rectangle, triangle, circle.","d":[]},"MIT-1.3":{"n":"Volume and surface area","s":"MIT-1","p":"The same question in three dimensions: how much a solid holds, and how much surface covers the outside. Cube, cylinder, cone, sphere.","d":["MIT-1.2"]},"MIT-1.4":{"n":"Binary and hexadecimal","s":"MIT-1","p":"Counting with only two digits, and counting with sixteen. A computer has only \"on\" and \"off\" to work with, so every number it holds is written in twos; hexadecimal is a shorthand that makes long binar","d":[]},"MIT-1.5":{"n":"Expressions and equations","s":"MIT-1","p":"An expression is something you can work out \u2014 it has a value. An equation is a claim that two expressions are equal, which you can solve. Knowing which one you are holding tells you what to do with it","d":[]},"MIT-1.6":{"n":"Expanding and simplifying","s":"MIT-1","p":"Rewriting an expression so it says the same thing in a more useful shape \u2014 multiplying out brackets, collecting like terms.","d":["MIT-1.5"]},"MIT-1.7":{"n":"Rearranging formulae","s":"MIT-1","p":"Taking a formula written to find one thing and getting it to find another. Speed, distance and time are one formula in three shapes, and being able to move between them is the skill.","d":["MIT-1.6"]},"MIT-1.8":{"n":"Multiplying out to quadratics","s":"MIT-1","p":"What happens when you multiply two simple expressions together: the squared terms that appear, and why the middle term is what it is.","d":["MIT-1.6"]},"MIT-1.9":{"n":"Factorising quadratics","s":"MIT-1","p":"Running the multiplication backwards \u2014 finding the two simple expressions that were multiplied together. Once you have them, the solutions are obvious.","d":["MIT-1.8"]},"MIT-1.10":{"n":"Solving quadratics, including complex roots","s":"MIT-1","p":"The formula that solves any quadratic, and what to do when it asks for the square root of a negative number. The answers still exist \u2014 they are just not on the number line you have been using.","d":["MIT-1.9","MIT-2.1"]},"MIT-1.11":{"n":"Linear inequalities","s":"MIT-1","p":"Solving for a range rather than a value: not \"x is 5\" but \"x is anything above 5\". The one surprise is that multiplying by a negative flips the direction.","d":["MIT-1.5"]},"MIT-1.12":{"n":"Simultaneous equations","s":"MIT-1","p":"Two or three facts that have to be true at once, and finding the values that satisfy all of them together.","d":["MIT-1.5"]},"MIT-2.1":{"n":"Number families","s":"MIT-2","p":"The nested families numbers live in \u2014 counting numbers, then negatives, then fractions, then everything on the number line, then a family that includes the square roots of negatives. Each one exists b","d":[]},"MIT-2.2":{"n":"Set operations","s":"MIT-2","p":"Combining collections: everything in either, everything in both, everything in one but not the other. A set has no order and no repeats, which is exactly what makes these operations clean.","d":["MIT-2.1"]},"MIT-2.3":{"n":"Venn diagrams","s":"MIT-2","p":"Drawing sets as overlapping circles so that the combinations can be pointed at rather than described.","d":["MIT-2.2"]},"MIT-2.4":{"n":"Truth tables","s":"MIT-2","p":"Writing down what a logical statement gives for every possible input. With two inputs there are only four cases, so \"every possible input\" is a table you can actually finish.","d":[]},"MIT-2.5":{"n":"De Morgan's Laws","s":"MIT-2","p":"Two rules for turning a negation inside out. \"Not (A and B)\" is the same as \"not A, or not B\" \u2014 and once you have noticed it, you will start seeing it in other people's conditions.","d":["MIT-2.4"]},"MIT-3.1":{"n":"Functions and inverses","s":"MIT-3","p":"A function is a machine: put a value in, get exactly one value out. An inverse is the machine that undoes it. Not every function has one, and the reason why is worth knowing.","d":["MIT-1.5"]},"MIT-3.2":{"n":"Graphing functions","s":"MIT-3","p":"Drawing a function as a picture, and reading answers off the picture. Where the curve crosses the axis is where the function is zero; where two curves cross is where they are equal.","d":["MIT-3.1"]},"MIT-3.3":{"n":"Graphing sine and cosine","s":"MIT-3","p":"The two wave-shaped functions, and what each number in front of them does \u2014 how tall the wave is, how often it repeats, and where it starts.","d":["MIT-3.2","MIT-4.6"]},"MIT-3.4":{"n":"Completing the square","s":"MIT-3","p":"Rewriting a quadratic so that its highest or lowest point can simply be read off. The algebra is fiddly; the payoff is that the answer is sitting there in the new form.","d":["MIT-1.9","MIT-3.2"]},"MIT-3.5":{"n":"Limits","s":"MIT-3","p":"What a function is heading towards, as opposed to what it does when it gets there. The two can differ, and the gap between them is where calculus starts.","d":["MIT-3.2"]},"MIT-3.6":{"n":"The derivative","s":"MIT-3","p":"How fast something is changing, right now rather than on average. On a graph it is the steepness at a single point.","d":["MIT-3.5","MIT-1.8"]},"MIT-3.7":{"n":"Rules for differentiating","s":"MIT-3","p":"Shortcuts that let you find a derivative without going back to the limit each time \u2014 one for adding functions, one for multiplying them.","d":["MIT-3.6"]},"MIT-4.1":{"n":"Equations of lines","s":"MIT-4","p":"Writing a straight line as an equation, so that \"is this point on the line?\" becomes arithmetic rather than looking.","d":["MIT-1.5"]},"MIT-4.2":{"n":"Slope, parallel and perpendicular","s":"MIT-4","p":"How steep a line is, and what the steepness tells you about two lines' relationship. Parallel lines share a slope; perpendicular ones have slopes that multiply to minus one.","d":["MIT-4.1"]},"MIT-4.3":{"n":"Midpoint and distance","s":"MIT-4","p":"How far apart two points are, and what sits exactly halfway between them. Both fall straight out of Pythagoras once you treat the gap across and the gap up as the two short sides of a triangle.","d":["MIT-4.4"]},"MIT-4.4":{"n":"Pythagoras","s":"MIT-4","p":"In a right-angled triangle, the two short sides squared add up to the long side squared. Probably the single most useful fact in this whole list.","d":[]},"MIT-4.5":{"n":"Degrees and radians","s":"MIT-4","p":"Two ways of measuring an angle. Degrees are the familiar one; radians measure how far you have walked around the circle, which is why every maths library expects them.","d":[]},"MIT-4.6":{"n":"The unit circle","s":"MIT-4","p":"A circle of radius one, and the observation that the coordinates of a point going round it are exactly sine and cosine. It turns two functions you have to memorise into one picture you can reconstruct","d":["MIT-4.5","MIT-4.4","MIT-4.1"]},"MIT-4.7":{"n":"Exact trigonometric values","s":"MIT-4","p":"The handful of angles whose sine and cosine can be written exactly with square roots, rather than as a decimal that goes on forever.","d":["MIT-4.6"]},"MIT-4.8":{"n":"Area of any triangle","s":"MIT-4","p":"A formula for a triangle's area that needs two sides and the angle between them, rather than a base and a height you may not have.","d":["MIT-4.6"]},"MIT-4.9":{"n":"Right-triangle trigonometry","s":"MIT-4","p":"Given one angle and one side of a right-angled triangle, finding the rest. The three ratios and when to reach for each.","d":["MIT-4.4","PRE-1"]},"PRE-1":{"n":"Kinds of triangle","s":"PRE","p":"Telling triangles apart by their sides and angles \u2014 three equal sides, two equal sides, none equal, and the right angle that makes one of them special. Naming them is what lets any later rule say whic","d":[]},"MIT-4.10":{"n":"The Sine and Cosine Rules","s":"MIT-4","p":"What to do when the triangle is not right-angled. Two rules that between them solve any triangle from three pieces of information.","d":["MIT-4.9"]},"MIT-5.1":{"n":"Listing outcomes","s":"MIT-5","p":"Writing down everything that could happen, carefully enough that nothing is missed and nothing is counted twice.","d":[]},"MIT-5.2":{"n":"The counting principle","s":"MIT-5","p":"If one choice has three options and the next has four, together they have twelve. Multiply the choices.","d":["MIT-5.1"]},"MIT-5.3":{"n":"Factorials","s":"MIT-5","p":"How many ways a set of things can be put in order. It grows alarmingly fast \u2014 ten items already have over three million arrangements.","d":["MIT-5.2"]},"MIT-5.4":{"n":"Permutations","s":"MIT-5","p":"Choosing some of a set when the order matters. Picking a first, second and third from eight runners is a different count from picking any three to go through, because first place and second place are ","d":["MIT-5.3"]},"MIT-5.5":{"n":"Combinations","s":"MIT-5","p":"Choosing some of a set when the order does not matter \u2014 a committee rather than a podium. Take the permutation count and divide it by the number of ways the chosen ones could be reordered, because all","d":["MIT-5.4"]},"MIT-5.6":{"n":"Probability as a scale","s":"MIT-5","p":"Every probability is a number between zero and one. Zero cannot happen, one is certain, and everything real is in between.","d":[]},"MIT-5.7":{"n":"Equally likely outcomes","s":"MIT-5","p":"Sometimes every outcome is as likely as every other. Then the probability of something is just the number of outcomes that count, divided by how many outcomes there are altogether.","d":["MIT-5.6","MIT-5.1"]},"MIT-5.8":{"n":"Combining probabilities","s":"MIT-5","p":"What happens when you want two things to happen, or either of two things. The rules differ depending on whether the events affect each other.","d":["MIT-5.7"]},"MIT-5.9":{"n":"Kinds of data","s":"MIT-5","p":"Data comes in kinds: labels with no order, labels with an order, whole counts, and measurements that can take any value. What you are allowed to do with a column depends on which it is.","d":[]},"MIT-5.10":{"n":"Choosing a display","s":"MIT-5","p":"Which chart actually shows the thing you are trying to show, and which ones quietly argue for something else. A pie chart of twelve categories and a bar chart whose axis starts at ninety are both tech","d":["MIT-5.9"]},"MIT-5.11":{"n":"Frequency tables and histograms","s":"MIT-5","p":"Counting how many values fall into each band, and drawing the result. The shape that appears tells you things no average can.","d":["MIT-5.9","MIT-6.3"]},"MIT-5.12":{"n":"Averages and spread","s":"MIT-5","p":"Middle and scatter. Three different ideas of \"typical\", and two of how far from typical things usually are.","d":["MIT-5.11"]},"MIT-5.13":{"n":"When averages mislead","s":"MIT-5","p":"What the mean, median and mode each hide, and which to distrust when the data is lopsided or has a few extreme values.","d":["MIT-5.12"]},"MIT-6.1":{"n":"What an algorithm is","s":"MIT-6","p":"A set of steps precise enough that following them requires no judgement. That precision is the whole difficulty and the whole point.","d":[]},"MIT-6.2":{"n":"Algorithms as functions","s":"MIT-6","p":"Thinking of an algorithm as a machine with a defined set of allowed inputs and one output for each. What it should do with an input outside that set is a decision you have to make deliberately.","d":["MIT-6.1","MIT-3.1"]},"MIT-6.3":{"n":"Lists and arrays","s":"MIT-6","p":"Holding many values under one name, in order, and doing things to all of them at once.","d":[]},"MIT-6.4":{"n":"Index and sigma notation","s":"MIT-6","p":"A compact way of writing \"add up all of these\" or \"multiply all of these\", with a counter that walks through the positions.","d":["MIT-6.3"]},"MIT-6.5":{"n":"Lists applied to problems","s":"MIT-6","p":"Using a list to model something real \u2014 a shopping list, a queue, a set of readings \u2014 and choosing the operations the problem actually needs.","d":["MIT-6.3"]},"MIT-6.6":{"n":"Divide and conquer","s":"MIT-6","p":"Cutting a problem in half, solving each half, and combining the answers. Halving repeatedly is enormously fast, which is why this idea keeps appearing.","d":["MIT-6.7"]},"MIT-6.7":{"n":"Iterating by index","s":"MIT-6","p":"Walking through a list one position at a time, using the position itself as well as the value.","d":["MIT-6.4"]},"MIT-6.8":{"n":"Searching and sorting","s":"MIT-6","p":"The classic algorithms for finding something in a collection and for putting a collection in order \u2014 and why some are dramatically faster than others.","d":["MIT-6.7"]},"PDP-LO1":{"n":"The history of programming","s":"PDP","p":"How programming got from punched cards to here, and why the languages we use look the way they do.","d":[]},"PDP-LO2":{"n":"Algorithms in the real world","s":"PDP","p":"Spotting the algorithms already running in ordinary life: how post is sorted, how a queue is served, how change is counted out. Then describing one precisely enough that somebody else could build it w","d":["MIT-6.1"]},"PDP-LO3":{"n":"Comparing languages","s":"PDP","p":"What really differs between programming languages, once you look past the punctuation. Do they check types before running? How do they manage memory? What do they make easy? Choosing a language is mos","d":["PDP-LO1","PDP-LO4"]},"PDP-LO4":{"n":"The parts of a program","s":"PDP","p":"Variables, expressions, statements, input and output \u2014 the small vocabulary that nearly every language shares. Learn it once and a new language is mostly a matter of new spelling rather than new ideas","d":[]},"PDP-LO5":{"n":"Solving in sequence","s":"PDP","p":"Breaking a task into ordered steps, and noticing which steps really depend on which. The dependencies are what fix the order. Everything else could be done in any sequence, and seeing the difference i","d":["MIT-6.1"]},"PDP-LO6":{"n":"Selection and iteration","s":"PDP","p":"Making a program choose between paths, and making it repeat. With sequence, these two are enough to express any computation at all.","d":["PDP-LO4","MIT-2.4"]},"PDP-LO7":{"n":"Documented programs","s":"PDP","p":"Writing programs somebody else can pick up and change \u2014 including you, in a month, having forgotten every decision you made. Names, comments and structure are the whole of it, and none of them change ","d":["PDP-LO6"]},"PDP-LO8":{"n":"Functions and scope","s":"PDP","p":"Packaging a piece of a program so it can be used again, and understanding which names are visible where.","d":["PDP-LO6","MIT-3.1"]},"PDP-LO9":{"n":"Reading error messages","s":"PDP","p":"What the computer is telling you when it refuses to run your code, and what to do about it. Error messages are written for people who already know Python. This is how to become one of them.","d":["PDP-LO4"]},"PDP-LO10":{"n":"Testing and debugging","s":"PDP","p":"Deciding what a program should do before checking whether it does, and finding out why when it does not.","d":["PDP-LO7"]},"PDP-LO11":{"n":"Coding standards","s":"PDP","p":"Naming, spacing and commenting conventions \u2014 the things that have no effect on whether a program runs and a large effect on whether anyone can read it.","d":["PDP-LO4"]},"PDP-LO12":{"n":"Working as a team","s":"PDP","p":"Designing, building and releasing software with other people over time. That includes reviewing each other's work and shipping more than one version.","d":["PDP-LO10","PDP-LO11"]},"FOOP-LO1":{"n":"Data types in an object oriented program","s":"FOOP","p":"The kinds of value a program stores and works with \u2014 whole numbers, decimals, text, true or false \u2014 plus the ones a class defines for itself, built out of those.","d":["PDP-LO4"]},"FOOP-LO2":{"n":"The instructions a program is built from","s":"FOOP","p":"The small, shared vocabulary of any program: storing a value, running steps in order, choosing between paths, and repeating a step. Object oriented programming adds new ways to organise these, not new","d":["PDP-LO4","PDP-LO6"]},"FOOP-LO3":{"n":"Classes and objects","s":"FOOP","p":"A class is a blueprint: it says what an object of that kind has (its fields) and what it can do (its methods). An object is one thing built from that blueprint. Encapsulation keeps an object's own det","d":["FOOP-LO2"]},"FOOP-LO4":{"n":"Modular, reusable code","s":"FOOP","p":"Writing a method once and calling it from anywhere an object of that class exists, instead of copying the same steps out by hand each time they are needed.","d":["FOOP-LO3","PDP-LO8"]},"FOOP-LO5":{"n":"Working in a development environment","s":"FOOP","p":"The tools that sit around the code itself: an editor with autocomplete, a way to run a program and see what it did, and a debugger for following a program step by step when reading it is not enough.","d":[]},"FOOP-LO6":{"n":"Building bigger programs from smaller ones","s":"FOOP","p":"Putting several classes to work together, each one responsible for a single piece, rather than writing one long program that does everything itself.","d":["FOOP-LO4"]},"FOOP-LO7":{"n":"Modelling the real world","s":"FOOP","p":"Deciding what an object needs to remember about itself and what it needs to be able to do, starting from a real thing \u2014 a customer, a shape, a game character \u2014 rather than from the code.","d":["FOOP-LO3"]},"FOOP-LO8":{"n":"Organising data","s":"FOOP","p":"Grouping the values that belong together into one object's own fields, instead of tracking them as separate, disconnected variables.","d":["FOOP-LO1","FOOP-LO3"]},"FOOP-LO9":{"n":"Documenting object oriented code","s":"FOOP","p":"Writing a class so that somebody meeting it for the first time \u2014 including you, later \u2014 can tell what it represents and what each of its methods does, without reading every line.","d":["PDP-LO7"]},"FOOP-LO10":{"n":"Debugging and testing an object oriented program","s":"FOOP","p":"Finding out whether an object behaves the way its class promises it will, and tracking down why when it does not.","d":["PDP-LO9","PDP-LO10"]},"FOOP-LO11":{"n":"Deploying a program","s":"FOOP","p":"Giving a finished program a way for somebody other than its author to actually use it, rather than leaving it runnable only from inside an editor.","d":["FOOP-LO4"]},"CMPS-LO1":{"n":"Data structures and recursion","s":"CMPS","p":"Ways of arranging many values so a program can find and change them quickly: a flat row, a grid with rows and columns, or a tree that branches. It also covers the choice between repeating a step in a ","d":["MIT-6.7"]},"CMPS-LO2":{"n":"Probability and information","s":"CMPS","p":"How likely something is, written as a number between zero and one. The idea extends to statistics taken from a sample, and to events that do or do not affect each other. It also covers the random numb","d":["MIT-5.6","MIT-5.7"]},"CMPS-LO3":{"n":"Computer simulation","s":"CMPS","p":"Working out what would happen, instead of running the real thing when that would be slow, expensive or impossible. You repeat a calculation many times, often with randomness in it, until the results s","d":["CMPS-LO2"]},"CMPS-LO4":{"n":"Matrices in practice","s":"CMPS","p":"What a grid of numbers is good for once you leave the data-structures course. A matrix is the machinery behind a graphics transformation, a game's state, a web search ranking, and comparing one thing ","d":["MIT-6.3","MIT-3.2"]},"CMPS-LO5":{"n":"Algorithmic complexity","s":"CMPS","p":"Judging an algorithm by how its cost grows as the input grows, not by how fast it feels on one small example. You separate the best case, the case you should expect, and the worst case you have to pla","d":["MIT-6.8"]},"CMPS-LO6":{"n":"Probability applied to computing","s":"CMPS","p":"Using probability on computing itself. How often does an algorithm meet its average case rather than its worst? How likely is a part to fail? What does network traffic look like when some of it goes m","d":["CMPS-LO2","CMPS-LO5"]},"CMPS-LO7":{"n":"Modelling versus simulation","s":"CMPS","p":"Two related things that are easy to confuse. A model is a simplified description of a real system, cut down to the parts that matter. A simulation runs that description forward in time to see what it ","d":["CMPS-LO3"]},"CMPS-LO8":{"n":"Problem definition and design","s":"CMPS","p":"The work that comes before any code is written. You pin down what the problem actually is, sketch a solution, and decide in advance how you will test it and how you will know it worked.","d":["PDP-LO7"]},"CMPS-LO9":{"n":"Problem-solving strategies","s":"CMPS","p":"The few general approaches to a hard problem, and which one suits which situation. You can try everything, split the problem in half and combine the answers, or accept a good-enough answer quickly.","d":["MIT-6.6"]},"CMPS-LO10":{"n":"Symptoms versus root cause","s":"CMPS","p":"The difference between a fix that makes the error message go away and a fix that deals with why the program produced it. It means reading a problem for its logic instead of patching the first thing th","d":["CMPS-LO8"]},"CMPS-LO11":{"n":"Iterating a model","s":"CMPS","p":"Building a model, checking it against what really happens, and adjusting it. You do this as a loop rather than once, because the first version of a model is almost never the one you end up using.","d":["CMPS-LO7"]},"CMPS-LO12":{"n":"Personal attributes in problem-solving","s":"CMPS","p":"The habits that make someone good at solving problems, none of which is a technique you can be taught. Starting before every detail is settled, working methodically, reasoning logically, keeping going","d":[]},"CMPS-LO13":{"n":"What a model's numbers are worth","s":"CMPS","p":"How far a computational model can be trusted. You ask how accurate and how precise its numbers really are, and what it means to make a real decision on the strength of what a simulation says.","d":["CMPS-LO11"]}},"groups":["Numbers, expressions, and equations","Quadratics, polynomials, and graphing functions","Trigonometry \u2014 triangles, circles, and waves","Rates of change and limits","Counting, probability, and chance","Logic, sets, and decisions","Working with data, and picturing it","Matrices and linear algebra","Programming foundations","Objects, classes, and building bigger programs","How it all fits together","Chance and simulation"]};
+const T = DATA.topics, GROUPS = DATA.groups;
+const IDS = Object.keys(T);
+const KEY = "dewlab:topicpairs:v1";
+
+let S = load();
+function load(){
+  try { return Object.assign({v:{},names:{},groups:{},work:[],log:[]}, JSON.parse(localStorage.getItem(KEY)||"{}")); }
+  catch(e){ return {v:{},names:{},groups:{},work:[],log:[]}; }
+}
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
+
+const pk = (a,b) => a<b ? a+"|"+b : b+"|"+a;
+
+/* The queue is tiered, because all 4,186 pairs is over four hours and most of
+   them are two topics with nothing to do with each other. Tier 1 checks the 95
+   edges that already exist. Tier 2 is every pair inside one section of a
+   descriptor, where a real prerequisite is most likely to be hiding. Tier 3 is
+   everything else, shuffled, for whenever you feel like it. */
+function buildQueue(){
+  const seen = new Set(), tier1 = [], tier2 = [], tier3 = [];
+  IDS.forEach(k => T[k].d.forEach(p => {
+    const key = pk(k,p); if(!seen.has(key)){ seen.add(key); tier1.push([p,k]); }
+  }));
+  for(let i=0;i<IDS.length;i++) for(let j=i+1;j<IDS.length;j++){
+    const a=IDS[i], b=IDS[j], key=pk(a,b);
+    if(seen.has(key)) continue;
+    seen.add(key);
+    (T[a].s===T[b].s ? tier2 : tier3).push([a,b]);
+  }
+  let s=20260904;
+  const rnd = () => (s = s*1103515245 % 2147483647) / 2147483647;
+  tier3.sort(() => rnd()-0.5);
+  return [{name:"checking the links you already have",items:tier1},
+          {name:"pairs inside one section",items:tier2},
+          {name:"the long tail",items:tier3}];
+}
+const QUEUE = buildQueue();
+const TOTAL_HIGH = QUEUE[0].items.length + QUEUE[1].items.length;
+
+let cur = null;
+function nextPair(){
+  for(let t=0;t<QUEUE.length;t++){
+    for(const [a,b] of QUEUE[t].items){
+      const key = pk(a,b);
+      if(!S.v[key]) return {a,b,tier:t};
+    }
+  }
+  return null;
+}
+
+function nameOf(id){ return S.names[id] || T[id].n; }
+
+function render(){
+  cur = nextPair();
+  const done = Object.keys(S.v).length;
+  document.getElementById("count").textContent =
+    done + " judged · " + Math.max(0, TOTAL_HIGH-done) + " left that matter";
+  document.getElementById("fill").style.width = Math.min(100, done/TOTAL_HIGH*100) + "%";
+  if(!cur){
+    document.getElementById("alldone").classList.remove("hide");
+    document.getElementById("tier").textContent = "all done";
+    return;
+  }
+  document.getElementById("alldone").classList.add("hide");
+  document.getElementById("tier").textContent = QUEUE[cur.tier].name;
+  fill("cardA", cur.a); fill("cardB", cur.b);
+  document.getElementById("fixAn").textContent = nameOf(cur.a);
+  document.getElementById("fixBn").textContent = nameOf(cur.b);
+}
+function fill(el, id){
+  const c = document.getElementById(el);
+  c.innerHTML = "<b>"+esc(nameOf(id))+"</b><span>"+esc(T[id].p)+"</span>"
+              + "<span class='id'>"+id+(S.names[id]?" · renamed":"")+"</span>";
+}
+function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;"); }
+
+function judge(kind, first){
+  if(!cur) return;
+  const key = pk(cur.a, cur.b);
+  S.v[key] = {k:kind, f:first||null, a:cur.a, b:cur.b};
+  S.log.push(key);
+  save(); render();
+}
+document.getElementById("cardA").onclick = () => judge("order", cur.a);
+document.getElementById("cardB").onclick = () => judge("order", cur.b);
+document.getElementById("unrelated").onclick = () => judge("unrelated");
+document.getElementById("both").onclick = () => judge("both");
+document.getElementById("unsure").onclick = () => judge("unsure");
+document.getElementById("undo").onclick = () => {
+  const last = S.log.pop(); if(last){ delete S.v[last]; save(); render(); }
+};
+addEventListener("keydown", e => {
+  const m = {"1":()=>judge("order",cur.a),"2":()=>judge("order",cur.b),
+             "3":()=>judge("unrelated"),"4":()=>judge("both"),"5":()=>judge("unsure")};
+  if(m[e.key] && cur && !document.querySelector("dialog[open]")) m[e.key]();
+});
+
+/* Refining one topic: a name a student would know, the groups it belongs to,
+   and a flag for "this one needs thinking about". */
+let sheetFor = null;
+function openSheet(id){
+  sheetFor = id;
+  document.getElementById("sheetTitle").textContent = T[id].n;
+  document.getElementById("rename").value = S.names[id] || "";
+  const chips = document.getElementById("chips");
+  const mine = S.groups[id] || [];
+  chips.innerHTML = GROUPS.map((g,i) =>
+    "<button type='button' class='chip"+(mine.includes(g)?" on":"")+"' data-g='"+i+"'>"+esc(g)+"</button>").join("");
+  chips.querySelectorAll(".chip").forEach(c => c.onclick = () => {
+    const g = GROUPS[+c.dataset.g];
+    const set = new Set(S.groups[id] || []);
+    set.has(g) ? set.delete(g) : set.add(g);
+    S.groups[id] = [...set]; save();
+    c.classList.toggle("on");
+  });
+  const nw = document.getElementById("needswork");
+  nw.style.borderColor = S.work.includes(id) ? "var(--brand)" : "var(--rule)";
+  document.getElementById("sheet").showModal();
+}
+document.getElementById("fixA").onclick = () => cur && openSheet(cur.a);
+document.getElementById("fixB").onclick = () => cur && openSheet(cur.b);
+document.getElementById("needswork").onclick = () => {
+  const i = S.work.indexOf(sheetFor);
+  i<0 ? S.work.push(sheetFor) : S.work.splice(i,1);
+  save();
+  document.getElementById("needswork").style.borderColor =
+    S.work.includes(sheetFor) ? "var(--brand)" : "var(--rule)";
+};
+document.getElementById("sheet").addEventListener("close", () => {
+  const v = document.getElementById("rename").value.trim();
+  if(sheetFor){ v ? S.names[sheetFor] = v : delete S.names[sheetFor]; save(); }
+  sheetFor = null; render();
+});
+
+document.getElementById("menu").onclick = () => {
+  const rows = Object.values(S.v).map(x => {
+    if(x.k === "order") return {pair:[x.a,x.b], verdict:"needs", first:x.f};
+    return {pair:[x.a,x.b], verdict:x.k};
+  });
+  document.getElementById("expText").value = JSON.stringify(
+    {judged: rows.length, judgements: rows, renamed: S.names,
+     groups: S.groups, needs_work: S.work}, null, 1);
+  document.getElementById("exp").showModal();
+};
+document.getElementById("copy").onclick = () => {
+  const t = document.getElementById("expText");
+  t.select(); try{ document.execCommand("copy"); }catch(e){}
+  document.getElementById("copy").textContent = "Copied";
+  setTimeout(()=>document.getElementById("copy").textContent="Copy", 1200);
+};
+document.getElementById("reset").onclick = () => {
+  if(confirm("Clear every judgement on this device?")){
+    S = {v:{},names:{},groups:{},work:[],log:[]}; save();
+    document.getElementById("exp").close(); render();
+  }
+};
+
+render();
+</script>
+</body>
+</html>
