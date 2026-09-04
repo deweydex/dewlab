@@ -5890,3 +5890,69 @@ named for a different feature: a claim about what a toggle does is
 worth nothing until the toggle has actually been turned on and looked
 at, and a mechanism that has been duplicated stays duplicated for every
 fix aimed at it, not only its first one.*
+
+**7.125 — Opening a plain `.py` file in the File view silently turned
+it into something that looks like a dewmini export.** Found while
+checking around the Cells/File switch for the bugs it seemed likely to
+be hiding: write a script from inside a running cell with
+`open("plain.py", "w").write("x = 1")`, no `# %%` anywhere, then open
+it in the File view. It showed up *with* a `# %%` marker already on
+it, before a single keystroke — and saving from there wrote that
+marker to disk for good. The cause was `cellsToPercentText()`, the
+function both the File view's own display and every save-back to a
+notebook's `.path` route through: it always put a marker before every
+cell, single cell or not, on the reasonable-looking assumption that a
+marker is how dewmini tells cells apart. `parsePyCells()`'s own
+markerless-file fallback — read a whole file with no marker in it back
+as one Python cell — already made the marker unnecessary on a single
+cell; the File view was adding a mark of ownership to a file that was
+never dewmini's to begin with, the moment a reader so much as looked
+at it.
+
+**Fixed at the two call sites that show or persist what is really on
+disk, not at the function itself.** `cellsToPercentText()` took a
+`bare` option: on, a lone Python cell serializes with no marker at
+all; off (the default), unchanged. `writeNotebookToWorkspace()` and
+`renderFileView()`'s editor seed both pass `bare: true`, since both
+exist to reflect a real file back at its reader — round-tripping a
+markerless file through either should leave it markerless.
+`downloadAsPython()` was left on the default. It looked at first like
+the same fix should apply there too, uniformly; it doesn't, because
+that path carries its own second mechanism the marker is load-bearing
+for. It writes a short explanatory header above the first `# %%`
+before handing the file to a reader who has never seen the convention,
+and strips that same header back out on reimport by checking for it
+(`isOwnHeader()`, inside `parsePyCells()`) — a check that only makes
+sense with a marker there to say where the header ends and the first
+cell begins. Applying `bare` there too passed the fix's own new tests
+cleanly and only broke on the full suite:
+`test_exporting_twice_does_not_grow_the_notebook` failed because, with
+no marker anywhere in the reimported file, the *whole file* — header
+included — fell into `parsePyCells()`'s single-cell fallback and came
+back as one cell's content, header and all, ready to be written out
+again above a second copy of itself on the next export. Scoping `bare`
+to the two call sites that reflect an existing file, and leaving the
+one call site that fabricates a new file with its own header
+untouched, keeps both fixed at once.
+
+**Verified in a real browser and in the suite.** A markerless `.py`
+opened and edited in the File view stays markerless, on disk and on
+redisplay (`test_a_markerless_file_stays_markerless_after_editing`,
+plus a live Playwright check); a file with genuine multiple cells
+keeps every one of its markers through an open/edit/save round trip
+(`test_a_multi_cell_file_keeps_its_markers`); the pre-existing
+export/reimport/export/reimport regression test that first caught the
+overreach passed again once `downloadAsPython()` was excluded. Full
+`tests/e2e/test_dewmini_workbench.py` (167 tests) and the rest of the
+suite both clean.
+
+*Cost to change: one parameter and two call sites, once the two false
+alarms found alongside it (output apparently lost across a File→Cells
+switch; a tab returning to `.dm-cell` count 0) were run down and ruled
+out as flaws in the test script checking them, not in the product. The
+lesson worth carrying forward: a single serialization function fed by
+more than one caller does not mean one call-site's needs generalize to
+the others — `downloadAsPython()` and the save-back path look alike
+from inside `cellsToPercentText()` but carry different downstream
+contracts, and the fix that is correct for one broke a working test
+for the other.*
