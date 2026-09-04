@@ -19,7 +19,10 @@ graph stays a decision a person makes.
 
 Four things it looks for:
 
-  * **New edges** — a pair judged "needs" that the graph does not have.
+  * **New edges** — a pair judged "needs" that the graph does not have. An
+    arrow the graph already gives you through a chain is listed apart from one
+    that changes anything: both judges kept flagging that distinction by hand,
+    and confirming a path is a different finding from adding one.
   * **Edges nobody kept** — an existing arrow that judges called unrelated.
   * **Disagreements** — one pair, two judges, two answers.
   * **Levels** — two topics that each need the other. They are not a defect.
@@ -71,14 +74,45 @@ def load_batches() -> list[dict]:
     return out
 
 
+def names_in(value) -> list[str]:
+    """A list of names out of whatever a batch put in the field.
+
+    A batch is written by whoever was judging, through a page or by hand, so a
+    field can arrive in a shape this script did not picture. One judge wrote
+    each new group as an object carrying a name and the topics it covers,
+    which is more thought than a bare string and no reason to lose the lot.
+    Anything with no name in it is skipped rather than fatal.
+    """
+    out = []
+    for item in value if isinstance(value, list) else []:
+        if isinstance(item, str) and item.strip():
+            out.append(item.strip())
+        elif isinstance(item, dict):
+            name = item.get("name") or item.get("group") or item.get("key")
+            if isinstance(name, str) and name.strip():
+                out.append(name.strip())
+    return out
+
+
+def text_map(value) -> dict[str, str]:
+    """The string-to-string pairs of a field, ignoring anything else."""
+    if not isinstance(value, dict):
+        return {}
+    return {k: v for k, v in value.items()
+            if isinstance(k, str) and isinstance(v, str)}
+
+
 def tally(batches: list[dict]) -> dict[tuple, list[dict]]:
     """Group every judgement by the unordered pair it is about."""
     votes: dict[tuple, list[dict]] = defaultdict(list)
     for batch in batches:
         who = batch.get("by") or "anon"
         for j in batch.get("judgements") or []:
+            if not isinstance(j, dict):
+                continue
             pair = j.get("pair") or []
-            if len(pair) != 2:
+            if not isinstance(pair, list) or len(pair) != 2 \
+                    or not all(isinstance(c, str) for c in pair):
                 continue
             key = tuple(sorted(pair))
             votes[key].append({"by": who, "verdict": j.get("verdict"),
@@ -100,6 +134,36 @@ def settled(cast: list[dict]) -> tuple[str, str | None, bool]:
         counts[(v["verdict"], v["first"] if v["verdict"] == "needs" else None)] += 1
     best = max(counts.items(), key=lambda kv: kv[1])[0]
     return best[0], best[1], False
+
+
+def reachable_from(edges: set[tuple]) -> dict[str, set[str]]:
+    """For each topic, everything a chain of arrows already leads to.
+
+    An arrow from A to B is news only when B is not already downstream of A.
+    A judge saying "factorials before combinations" is right and tells us
+    nothing new when the graph runs factorials to permutations to
+    combinations already.
+    """
+    ahead: dict[str, list[str]] = defaultdict(list)
+    for early, late in edges:
+        ahead[early].append(late)
+
+    memo: dict[str, set[str]] = {}
+
+    def walk(node: str, on_path: frozenset) -> set[str]:
+        if node in memo:
+            return memo[node]
+        # A graph with a loop in it is one of the things this report exists to
+        # find, so this walk has to survive one rather than recurse forever.
+        out: set[str] = set()
+        for nxt in ahead.get(node, []):
+            out.add(nxt)
+            if nxt not in on_path:
+                out |= walk(nxt, on_path | {nxt})
+        memo[node] = out
+        return out
+
+    return {node: walk(node, frozenset([node])) for node in ahead}
 
 
 def cycles(edges: set[tuple]) -> list[list[str]]:
@@ -149,13 +213,17 @@ def build_report(topics: dict, batches: list[dict]) -> str:
     new_groups: set[str] = set()
     needs_work: set[str] = set()
     for batch in batches:
-        renames.update(batch.get("renamed") or {})
-        groups.update(batch.get("groups") or {})
-        new_groups.update(batch.get("new_groups") or [])
-        needs_work.update(batch.get("needs_work") or [])
+        renames.update(text_map(batch.get("renamed")))
+        for code, gs in (batch.get("groups") or {}).items() \
+                if isinstance(batch.get("groups"), dict) else []:
+            if isinstance(code, str):
+                groups[code] = names_in(gs)
+        new_groups.update(names_in(batch.get("new_groups")))
+        needs_work.update(n for n in names_in(batch.get("needs_work")))
 
+    downstream = reachable_from(existing)
     judged_edges: set[tuple] = set()
-    added, dropped, disputed, both_ways, unsure = [], [], [], [], []
+    added, implied, dropped, disputed, both_ways, unsure = [], [], [], [], [], []
 
     for key, cast in sorted(votes.items()):
         verdict, first, agreed = settled(cast)
@@ -177,7 +245,9 @@ def build_report(topics: dict, batches: list[dict]) -> str:
         if verdict == "needs" and first:
             judged_edges.add((first, second))
             if (first, second) not in existing:
-                added.append((first, second, len(cast), agreed))
+                where = (implied if second in downstream.get(first, set())
+                         else added)
+                where.append((first, second, len(cast), agreed))
         elif verdict == "unrelated":
             for edge in ((a, b), (b, a)):
                 if edge in existing:
@@ -208,6 +278,10 @@ def build_report(topics: dict, batches: list[dict]) -> str:
 
     A("## Arrows to add")
     A("")
+    A("Pairs judged to need each other in one direction, where no chain of")
+    A("existing arrows already leads from the first to the second. These are")
+    A("the ones that change the graph.")
+    A("")
     if added:
         A("| Comes first | Comes after | Judgements | Agreed |")
         A("|---|---|---|---|")
@@ -215,6 +289,21 @@ def build_report(topics: dict, batches: list[dict]) -> str:
             A(f"| {nm(first)} | {nm(second)} | {n} | {'yes' if agreed else 'no'} |")
     else:
         A("Nothing new.")
+    A("")
+
+    A("## Arrows the graph already gives you")
+    A("")
+    A("Judged the same way, but a chain of existing arrows already runs from")
+    A("the first to the second. Drawing these would change nothing. They are")
+    A("here because they confirm the chain rather than because they add to it.")
+    A("")
+    if implied:
+        A("| Comes first | Comes after | Judgements | Agreed |")
+        A("|---|---|---|---|")
+        for first, second, n, agreed in sorted(implied):
+            A(f"| {nm(first)} | {nm(second)} | {n} | {'yes' if agreed else 'no'} |")
+    else:
+        A("None.")
     A("")
 
     A("## Arrows the judges did not keep")
