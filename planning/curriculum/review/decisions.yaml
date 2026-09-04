@@ -334,6 +334,149 @@ decisions:
       Keeping their arrow alongside the existing one from kinds of data into
       frequency tables put kinds of data above and below the same box.
 
+  - pair: [MIT-1.5, MIT-1.6]
+    verdict: needs
+    first: MIT-1.5
+    why: >
+      Josh's own judgement, played blind in the pair game.
+
+  - pair: [MIT-1.6, MIT-1.7]
+    verdict: level
+    why: >
+      Josh's own judgement, played blind in the pair game.
+
+  - pair: [MIT-1.6, MIT-1.8]
+    verdict: needs
+    first: MIT-1.6
+    why: >
+      Josh's own judgement, played blind in the pair game.
+
+  - pair: [MIT-1.8, MIT-1.9]
+    verdict: needs
+    first: MIT-1.8
+    why: >
+      Josh's own judgement, played blind in the pair game.
+
+  - pair: [MIT-1.9, MIT-1.10]
+    verdict: needs
+    first: MIT-1.9
+    why: >
+      Josh's own judgement, played blind in the pair game.
+
+  - pair: [MIT-2.1, MIT-1.10]
+    verdict: needs
+    first: MIT-2.1
+    why: >
+      Josh's own judgement, played blind in the pair game.
+
+  - pair: [MIT-1.5, MIT-1.11]
+    verdict: needs
+    first: MIT-1.5
+    why: >
+      Josh's own judgement, played blind in the pair game.
+
+  - pair: [MIT-1.5, MIT-1.12]
+    verdict: needs
+    first: MIT-1.5
+    why: >
+      Josh's own judgement, played blind in the pair game.
+
+  - pair: [MIT-2.2, MIT-2.3]
+    verdict: needs
+    first: MIT-2.2
+    why: >
+      Josh's own judgement, played blind in the pair game.
+
+  - pair: [MIT-2.4, MIT-2.5]
+    verdict: needs
+    first: MIT-2.4
+    why: >
+      Josh's own judgement, played blind in the pair game.
+
+  - pair: [MIT-1.5, MIT-3.1]
+    verdict: needs
+    first: MIT-1.5
+    why: >
+      Josh's own judgement, played blind in the pair game.
+
+  - pair: [MIT-3.1, MIT-3.2]
+    verdict: needs
+    first: MIT-3.1
+    why: >
+      Josh's own judgement, played blind in the pair game.
+
+  - pair: [MIT-3.2, MIT-3.3]
+    verdict: needs
+    first: MIT-3.2
+    why: >
+      Josh's own judgement, played blind in the pair game.
+
+  - pair: [MIT-4.6, MIT-3.3]
+    verdict: needs
+    first: MIT-4.6
+    why: >
+      Josh's own judgement, played blind in the pair game.
+
+  - pair: [MIT-3.2, MIT-3.4]
+    verdict: needs
+    first: MIT-3.2
+    why: >
+      Josh's own judgement, played blind in the pair game.
+
+  - pair: [MIT-3.2, MIT-3.5]
+    verdict: needs
+    first: MIT-3.2
+    why: >
+      Josh's own judgement, played blind in the pair game.
+
+  - pair: [MIT-3.6, MIT-3.7]
+    verdict: needs
+    first: MIT-3.6
+    why: >
+      Josh's own judgement, played blind in the pair game.
+
+  - pair: [MIT-1.5, MIT-4.1]
+    verdict: needs
+    first: MIT-1.5
+    why: >
+      Josh's own judgement, played blind in the pair game.
+
+  - pair: [MIT-4.1, MIT-4.2]
+    verdict: needs
+    first: MIT-4.1
+    why: >
+      Josh's own judgement, played blind in the pair game.
+
+  - pair: [MIT-4.4, MIT-4.3]
+    verdict: needs
+    first: MIT-4.4
+    why: >
+      Josh's own judgement, played blind in the pair game.
+
+  - pair: [MIT-4.5, MIT-4.6]
+    verdict: needs
+    first: MIT-4.6
+    why: >
+      Josh's own judgement, played blind in the pair game.
+
+  - pair: [MIT-4.4, MIT-4.6]
+    verdict: needs
+    first: MIT-4.4
+    why: >
+      Josh's own judgement, played blind in the pair game.
+
+  - pair: [MIT-4.1, MIT-4.6]
+    verdict: needs
+    first: MIT-4.1
+    why: >
+      Josh's own judgement, played blind in the pair game.
+
+  - pair: [MIT-4.6, MIT-4.7]
+    verdict: needs
+    first: MIT-4.6
+    why: >
+      Josh's own judgement, played blind in the pair game.
+
 topic_changes:
   - topic: MIT-2.1
     change: split
