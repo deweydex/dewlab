@@ -132,6 +132,12 @@
     <span class="dl-boot-dots" id="dl-boot-dots" aria-hidden="true" hidden><span></span><span></span><span></span></span>
   </div>
 
+  <!-- Announces once a cell finishes running — the ticking "Running… Xs"
+       run-line deliberately isn't itself a live region (tutorial-runtime.js,
+       startRunLineTicker()); this is the one announcement a screen reader
+       gets, the moment there's an actual result to hear about. -->
+  <div class="dl-sr-only" id="dl-run-announcer" role="status" aria-live="polite"></div>
+
   <main id="dl-body">
 {{BODY}}
   </main>

@@ -6225,3 +6225,62 @@ one — which is exactly why the first `.dl-seg` written with the wrong
 one went unnoticed long enough for every later group to copy it rather
 than question it. A widget's accessibility tree is not implied by its
 CSS.*
+
+**7.131 — Three more small accessibility gaps in the reader's own
+runtime, found in the same review that turned up 7.130.** None crashed
+anything or looked wrong on screen — all three only showed up once a
+keyboard or a screen reader, rather than a mouse and eyes, was the way
+of using the page.
+
+**A collapsed cell's one-line summary was a `<div>` pretending to be a
+button.** `.dl-cell-collapsed-summary` (`build.py`, plus the two custom-
+cell markup strings in `tutorial-runtime.js`) had `tabindex="0"` and a
+click handler, so a mouse and a sighted Tab-and-Enter user could both
+use it — but no `role="button"`, so a screen reader announced it as
+plain text, and its own keydown handler only checked `"Enter"`, so
+Space — the other key any real `<button>` answers to — did nothing.
+Fixed by adding `role="button"` at all three markup sites and `" "` to
+both keydown checks, with `ev.preventDefault()` alongside it so Space
+opens the cell instead of scrolling the page.
+
+**The "⋯" run menu (Run above / Run below) was the one panel on the
+page that didn't close on Escape.** Settings, Reference and SeriesNav
+each already have their own `document.addEventListener("keydown", ...)`
+checking `ev.key === "Escape"`, closing the panel and returning focus
+to whichever button opened it. `initCellRunMenu()` had an outside-click
+handler doing the closing half, but no Escape handler at all — the one
+way every other dismissible panel here can be closed without a mouse
+was missing from this one. Added the same pattern: Escape closes the
+menu and returns focus to `.dl-btn-more`.
+
+**A cell finishing a run said nothing to a screen reader.** The
+"Running… Xs" run-line is deliberately not a live region — its own
+comment already explains why, ticking ten times a second would be
+noise, not news — but nothing replaced it with an announcement once a
+run actually finished. A screen reader user pressing Run had no signal
+anything happened at all, short of manually re-finding the output
+region afterward. Added one shared `#dl-run-announcer`
+(`role="status" aria-live="polite"`, visually hidden with a new
+`.dl-sr-only` class rather than `hidden`, which would also pull it out
+of the accessibility tree), updated once a run completes: "Ran — output
+below" or "Ran — error", checked via `.dl-error` in the cell's own
+output, the same way the e2e tests already do. Cleared to empty text
+first, with the real message set a tick later — a live region only
+announces on an actual change, and running the same cell twice in a
+row would otherwise go silent the second time.
+
+**Verified in a real browser.** New e2e tests: two on the collapsed-
+summary (`role="button"` present, Space expands it), one confirming
+Escape closes the run menu and returns focus, and three on the
+announcer (a successful run, an errored one, and the same cell run
+twice in a row, each polling for the expected text rather than assuming
+the announcer's own next-tick update has already landed).
+`python3 -m pytest tests/e2e/test_cell_collapse_duplicate.py
+tests/e2e/test_cell_run_menu.py -q` and the rest of the suite both
+clean.
+
+*Cost to change: an attribute and a key check for the fake button, one
+keydown listener matching three already-written ones for the menu, one
+hidden live region and a handful of lines for the announcer. None of
+the three needed new UI — every one of them was a real interactive
+element already, just one that only fully worked for a mouse.*
