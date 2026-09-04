@@ -78,6 +78,10 @@ input[type=text]{width:100%;padding:.6rem;border:1px solid var(--rule);border-ra
 textarea{width:100%;height:11rem;font-family:var(--mono);font-size:.65rem;
          border:1px solid var(--rule);border-radius:8px;background:var(--bg);color:var(--ink);padding:.5rem}
 .hide{display:none}
+.note{font-size:.75rem;color:var(--muted);margin:0;line-height:1.4}
+summary{font-size:.75rem;color:var(--muted);cursor:pointer}
+.mini.nudge{border-color:var(--brand);color:var(--brand)}
+.addgroup{display:grid;grid-template-columns:1fr auto;gap:.35rem}
 </style>
 </head>
 <body>
@@ -125,6 +129,10 @@ textarea{width:100%;height:11rem;font-family:var(--mono);font-size:.65rem;
   <input type="text" id="rename" autocomplete="off" placeholder="leave blank to keep the current name">
   <label>Which group does it belong to?</label>
   <div class="chips" id="chips"></div>
+  <div class="addgroup">
+    <input type="text" id="newgroup" autocomplete="off" placeholder="a group that is not on the list">
+    <button class="b" type="button" id="addgroup">Add</button>
+  </div>
   <div class="row">
     <button class="b" id="needswork" type="button">Needs work</button>
     <button class="b" value="save" style="border-color:var(--brand);color:var(--brand)">Save</button>
@@ -132,14 +140,23 @@ textarea{width:100%;height:11rem;font-family:var(--mono);font-size:.65rem;
 </form></dialog>
 
 <dialog id="exp"><form method="dialog" class="sheet">
-  <h2>Your judgements</h2>
-  <p style="font-size:.78rem;color:var(--muted);margin:0">Everything is saved on this device as you go. Copy this out, or send it to Josh.</p>
-  <textarea id="expText" readonly></textarea>
+  <h2>Save your work</h2>
+  <label for="who">Who is judging?</label>
+  <input type="text" id="who" autocomplete="off" placeholder="a first name is enough">
+  <p class="note" id="expWhat"></p>
+  <button class="b" type="button" id="push"
+          style="border-color:var(--brand);color:var(--brand)">Send them to GitHub</button>
+  <p class="note">GitHub opens with the file already written. Sign in, scroll down, then tap
+     <b>Commit changes</b>. Nothing leaves this phone until you do.</p>
+  <details>
+    <summary>Copy it out instead</summary>
+    <textarea id="expText" readonly></textarea>
+    <button class="b" type="button" id="copy">Copy everything</button>
+  </details>
   <div class="row">
-    <button class="b" type="button" id="copy">Copy</button>
-    <button class="b" value="ok" style="border-color:var(--brand);color:var(--brand)">Close</button>
+    <button class="mini" type="button" id="reset">Start over</button>
+    <button class="b" value="ok">Close</button>
   </div>
-  <button class="mini" type="button" id="reset" style="margin-top:.4rem">Start over (clears everything)</button>
 </form></dialog>
 
 <script>
@@ -148,66 +165,70 @@ const T = DATA.topics, GROUPS = DATA.groups;
 const IDS = Object.keys(T);
 const KEY = "dewlab:topicpairs:v1";
 
-let S = load();
-let DB = null, WHO = null, syncNote = "this device only";
-
-/* Judgements batch into one document per topic rather than one per pair.
- * An artifact database holds 5,000 documents and there are 4,186 pairs, so a
- * document each would all but fill it. A document per topic is 92, and two
- * people writing different keys of the same document merge rather than
- * clobber, which is what update() does with nested objects. */
-async function connect(){
-  try { DB = await claude.use("db"); } catch(e){ DB = null; }
-  if(!DB){ syncNote = "this device only"; render(); return; }
-  WHO = S.who || null;
-  if(!WHO){
-    WHO = (prompt("Your name, so two people's answers can be told apart:") || "").trim().slice(0,24);
-    if(WHO){ S.who = WHO; save(); }
-  }
-  syncNote = "shared" + (WHO ? " · " + WHO : "");
-  render();
-  try {
-    const snap = await DB.collection("judgements").get();
-    snap.docs.forEach(d => {
-      const a = d.id, body = d.data() || {};
-      Object.keys(body).forEach(b => {
-        const r = body[b]; if(!r || !r.k) return;
-        S.v[pk(a,b)] = {k:r.k, f:r.f||null, a:a, b:b, by:r.by};
-      });
-    });
-    const meta = await DB.collection("topics").get();
-    meta.docs.forEach(d => {
-      const m = d.data() || {};
-      if(m.name) S.names[d.id] = m.name;
-      if(Array.isArray(m.groups) && m.groups.length) S.groups[d.id] = m.groups;
-      if(m.work && !S.work.includes(d.id)) S.work.push(d.id);
-    });
-    save(); render();
-  } catch(e){ syncNote = "shared · could not load"; render(); }
-}
-
-async function pushJudgement(a, b, rec){
-  if(!DB) return;
-  const ref = DB.doc("judgements/" + a);
-  const patch = {}; patch[b] = rec;
-  try { await ref.update(patch); }
-  catch(e){ try { await ref.set(patch); } catch(e2){} }
-}
-
-async function pushTopic(id){
-  if(!DB) return;
-  const body = {name: S.names[id] || null,
-                groups: S.groups[id] || [],
-                work: S.work.includes(id)};
-  try { await DB.doc("topics/" + id).set(body); } catch(e){}
-}
+const BLANK = {v:{}, names:{}, groups:{}, work:[], log:[], sent:{}, extra:[], who:""};
 function load(){
-  try { return Object.assign({v:{},names:{},groups:{},work:[],log:[]}, JSON.parse(localStorage.getItem(KEY)||"{}")); }
-  catch(e){ return {v:{},names:{},groups:{},work:[],log:[]}; }
+  try{ return Object.assign({}, BLANK, JSON.parse(localStorage.getItem(KEY) || "{}")); }
+  catch(e){ return Object.assign({}, BLANK); }
 }
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
 
+let S = load();
+let WHO = S.who || "";
+
+/* Where a batch of judgements goes. GitHub prefills a commit from a URL and
+ * the reader is already signed in, so the page needs no token of its own: it
+ * hands them a ready-made file and they tap commit, under their own account.
+ * A token in a static page would be a write credential to the repository for
+ * anyone who viewed source. */
+const REPO = "deweydex/dewlab";
+const BRANCH = "main";
+const DIR = "planning/curriculum/review/pairs";
+/* Twelve judgements is about 2.6 KB once url-encoded, well inside what a URL
+ * carries. A hundred would be 21 KB and would not arrive. */
+const BATCH = 12;
+
 const pk = (a,b) => a<b ? a+"|"+b : b+"|"+a;
+
+/* Judgements this device has made and not yet handed to GitHub. */
+function unsent(){ return Object.keys(S.v).filter(k => !S.sent[k]); }
+
+function slug(s){
+  return (String(s).toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"") || "anon").slice(0,24);
+}
+
+/* One save is one new file, named for whoever made it and the moment they
+   saved. Two people judging at the same time never touch the same file, so
+   their commits cannot conflict. */
+function batchFor(keys){
+  return {
+    by: WHO || "anon",
+    saved_at: new Date().toISOString(),
+    judgements: keys.map(k => {
+      const x = S.v[k];
+      return x.k === "order"
+        ? {pair:[x.a, x.b], verdict:"needs", first:x.f}
+        : {pair:[x.a, x.b], verdict:x.k};
+    }),
+    renamed: S.names, groups: S.groups, new_groups: S.extra, needs_work: S.work
+  };
+}
+
+/* A browser will carry a URL of a few thousand characters and quietly drop a
+   much longer one. Twelve judgements come to about 2.6 KB encoded, so a batch
+   that size always arrives. If more are waiting we send the oldest that fit
+   and leave the rest for the next save. */
+const URL_ROOM = 7000;
+function fitBatch(keys){
+  let take = keys.slice();
+  while(take.length > 1 && ghUrl(take).length > URL_ROOM) take = take.slice(0, take.length - 1);
+  return take;
+}
+function ghUrl(keys){
+  const name = DIR + "/" + slug(WHO) + "-" + Date.now() + ".json";
+  return "https://github.com/" + REPO + "/new/" + BRANCH
+       + "?filename=" + encodeURIComponent(name)
+       + "&value=" + encodeURIComponent(JSON.stringify(batchFor(keys), null, 1));
+}
 
 /* The queue is tiered, because all 4,186 pairs is over four hours and most of
    them are two topics with nothing to do with each other. Tier 1 checks the 95
@@ -252,8 +273,11 @@ function render(){
   cur = nextPair();
   const done = Object.keys(S.v).length;
   const left = Math.max(0, TOTAL_HIGH - done);
+  const waiting = unsent().length;
   document.getElementById("count").textContent =
-    done + " judged · " + (left ? left + " to go" : "long tail now") + " · " + syncNote;
+    done + " judged · " + (left ? left + " to go" : "long tail now") + " · "
+    + (waiting ? waiting + " to send" : "all sent");
+  document.getElementById("menu").classList.toggle("nudge", waiting >= BATCH);
   document.getElementById("fill").style.width = Math.min(100, done/TOTAL_HIGH*100) + "%";
   if(!cur){
     document.getElementById("alldone").classList.remove("hide");
@@ -280,7 +304,7 @@ function judge(kind, first){
   S.v[key] = Object.assign({a:cur.a, b:cur.b}, rec);
   S.log.push(key);
   save();
-  pushJudgement(cur.a, cur.b, rec);
+  
   render();
 }
 document.getElementById("cardA").onclick = () => judge("order", cur.a);
@@ -300,31 +324,50 @@ addEventListener("keydown", e => {
 /* Refining one topic: a name a student would know, the groups it belongs to,
    and a flag for "this one needs thinking about". */
 let sheetFor = null;
+/* The twelve groups the curriculum already names, plus any this device has
+   invented. A new group is added to the topic that prompted it. */
+function allGroups(){ return GROUPS.concat(S.extra); }
+
+function drawChips(id){
+  const chips = document.getElementById("chips");
+  const mine = S.groups[id] || [];
+  chips.innerHTML = allGroups().map((g,i) =>
+    "<button type='button' class='chip"+(mine.includes(g)?" on":"")+"' data-g='"+i+"'>"+esc(g)+"</button>").join("");
+  chips.querySelectorAll(".chip").forEach(c => c.onclick = () => {
+    const g = allGroups()[+c.dataset.g];
+    const set = new Set(S.groups[id] || []);
+    set.has(g) ? set.delete(g) : set.add(g);
+    S.groups[id] = [...set]; save();
+    c.classList.toggle("on");
+  });
+}
+
 function openSheet(id){
   sheetFor = id;
   document.getElementById("sheetTitle").textContent = T[id].n;
   document.getElementById("rename").value = S.names[id] || "";
-  const chips = document.getElementById("chips");
-  const mine = S.groups[id] || [];
-  chips.innerHTML = GROUPS.map((g,i) =>
-    "<button type='button' class='chip"+(mine.includes(g)?" on":"")+"' data-g='"+i+"'>"+esc(g)+"</button>").join("");
-  chips.querySelectorAll(".chip").forEach(c => c.onclick = () => {
-    const g = GROUPS[+c.dataset.g];
-    const set = new Set(S.groups[id] || []);
-    set.has(g) ? set.delete(g) : set.add(g);
-    S.groups[id] = [...set]; save(); pushTopic(id);
-    c.classList.toggle("on");
-  });
+  drawChips(id);
+  document.getElementById("newgroup").value = "";
   const nw = document.getElementById("needswork");
   nw.style.borderColor = S.work.includes(id) ? "var(--brand)" : "var(--rule)";
   document.getElementById("sheet").showModal();
 }
+document.getElementById("addgroup").onclick = () => {
+  const box = document.getElementById("newgroup");
+  const g = box.value.trim();
+  if(!g || !sheetFor) return;
+  if(!allGroups().includes(g)){ S.extra.push(g); }
+  const set = new Set(S.groups[sheetFor] || []);
+  set.add(g);
+  S.groups[sheetFor] = [...set];
+  save(); box.value = ""; drawChips(sheetFor);
+};
 document.getElementById("fixA").onclick = () => cur && openSheet(cur.a);
 document.getElementById("fixB").onclick = () => cur && openSheet(cur.b);
 document.getElementById("needswork").onclick = () => {
   const i = S.work.indexOf(sheetFor);
   i<0 ? S.work.push(sheetFor) : S.work.splice(i,1);
-  save(); pushTopic(sheetFor);
+  save();
   document.getElementById("needswork").style.borderColor =
     S.work.includes(sheetFor) ? "var(--brand)" : "var(--rule)";
 };
@@ -332,36 +375,67 @@ document.getElementById("sheet").addEventListener("close", () => {
   const v = document.getElementById("rename").value.trim();
   if(sheetFor){
     v ? S.names[sheetFor] = v : delete S.names[sheetFor];
-    save(); pushTopic(sheetFor);
+    save();
   }
   sheetFor = null; render();
 });
 
 document.getElementById("menu").onclick = () => {
-  const rows = Object.values(S.v).map(x => {
-    if(x.k === "order") return {pair:[x.a,x.b], verdict:"needs", first:x.f};
-    return {pair:[x.a,x.b], verdict:x.k};
-  });
-  document.getElementById("expText").value = JSON.stringify(
-    {judged: rows.length, judgements: rows, renamed: S.names,
-     groups: S.groups, needs_work: S.work}, null, 1);
+  const w = document.getElementById("who");
+  w.value = WHO;
+  w.oninput = () => { WHO = w.value.trim(); S.who = WHO; save(); describe(); };
+  document.getElementById("expText").value =
+    JSON.stringify(batchFor(Object.keys(S.v)), null, 1);
+  describe();
   document.getElementById("exp").showModal();
 };
-document.getElementById("copy").onclick = () => {
-  const t = document.getElementById("expText");
-  t.select(); try{ document.execCommand("copy"); }catch(e){}
-  document.getElementById("copy").textContent = "Copied";
-  setTimeout(()=>document.getElementById("copy").textContent="Copy", 1200);
+
+function describe(){
+  const waiting = unsent().length;
+  const fits = waiting ? fitBatch(unsent()).length : 0;
+  const push = document.getElementById("push");
+  let t;
+  if(!waiting) t = "Everything you have judged is already sent. Judge a few more first.";
+  else if(fits < waiting) t = waiting + " judgements are waiting. This save sends the first "
+    + fits + ", and the rest go next time.";
+  else t = waiting + (waiting === 1 ? " judgement is" : " judgements are") + " waiting to be sent.";
+  document.getElementById("expWhat").textContent = t;
+  push.disabled = !waiting;
+  push.style.opacity = waiting ? "1" : ".5";
+}
+
+document.getElementById("push").onclick = () => {
+  const waiting = unsent();
+  if(!waiting.length) return;
+  const batch = fitBatch(waiting);
+  window.open(ghUrl(batch), "_blank", "noopener");
+  /* The commit happens on GitHub, in their tab, so this page never learns
+     whether it went through. Marking them sent here is a claim about what was
+     handed over, not about what landed. Everything stays on the device, and
+     "Copy everything" still gives the full set if a commit is abandoned. */
+  batch.forEach(k => S.sent[k] = 1);
+  save();
+  describe(); render();
 };
+
+document.getElementById("copy").onclick = () => {
+  const t = document.getElementById("expText").value;
+  const done = () => {
+    document.getElementById("copy").textContent = "Copied";
+    setTimeout(() => document.getElementById("copy").textContent = "Copy everything", 1200);
+  };
+  if(navigator.clipboard) navigator.clipboard.writeText(t).then(done, () => {});
+  else { document.getElementById("expText").select(); document.execCommand("copy"); done(); }
+};
+
 document.getElementById("reset").onclick = () => {
   if(confirm("Clear every judgement on this device?")){
-    S = {v:{},names:{},groups:{},work:[],log:[]}; save();
+    S = Object.assign({}, BLANK); save();
     document.getElementById("exp").close(); render();
   }
 };
 
 render();
-connect();
 </script>
 </body>
 </html>
