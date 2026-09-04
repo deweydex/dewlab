@@ -6120,7 +6120,42 @@ available — the moment a format has an explicit marker for where a
 cell starts, that marker is the one thing to trust, not a guess from
 whatever ended up between two of them.*
 
-**7.129 — Every segmented control in Settings announced itself to a
+**7.129 — Three comments in `compose/dewmini.html` described the
+Library/Workbench/Settings panels' own docking backwards.** Also found
+during the same open-ended UI review as 7.128, not a bug a reader could
+see. The toolbar-order comment claimed toggles were ordered "left-docked
+rail first, then the two right-docked ones"; the Library panel's own
+comment claimed it was "docked left, and independent of the two
+right-docked panels"; the Workbench panel's claimed it was "docked right
+and mutually exclusive with Settings, which shares that edge." Read
+against the actual CSS and the `wirePanel()` call in `dewmini.js` that
+wires the real conflicts, all three have it backwards: Library and
+Settings are the two right-docked panels sharing an edge (`.dm-panel`'s
+own default is `right: 0`; `.dl-settings` matches it), and Workbench is
+the one left-docked panel (`.dm-panel-left`), free to stay open beside
+either. `CLAUDE.md` calls a stale comment worse than no comment, and
+this is the case in point: a comment that reads as confidently correct
+prose is exactly the one nobody re-checks against the code once it no
+longer matches.
+
+**Fixed by rewriting each to describe what the code actually does,**
+citing the specific mechanism rather than restating a claim: the
+toolbar-order comment now says the order follows what a reader does
+with each panel (look something up, work, configure), not which edge
+it opens on; the Library and Workbench comments each name `wirePanel()`
+and its `conflicts` list as the actual thing enforcing "these two close
+each other, this one doesn't." No behaviour changed — CSS classes,
+`wirePanel()` calls and `watchPanelOverlap()`'s own `{left, right}` map
+were already correct; only the prose describing them was wrong.
+
+*Cost to change: three comments, once actually checked against the CSS
+classes and the `wirePanel()` conflict lists on the elements they sit
+above, rather than trusted on read. Comment review like this has no
+test to catch it — nothing here changes what runs — which is exactly
+why a comment that claims a wrong thing confidently can sit uncorrected
+for a long time.*
+
+**7.130 — Every segmented control in Settings announced itself to a
 screen reader as a row of independent toggle buttons, when picking one
 option always deselects the others.** An accessibility review flagged
 it: Theme, Font, Width, Density, Cursor, and every other `.dl-seg`

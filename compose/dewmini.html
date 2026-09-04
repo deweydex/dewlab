@@ -78,9 +78,10 @@
     <header class="dl-masthead">
       <a class="dl-wordmark" href="../index.html">dewlab</a>
       <span class="dl-crumbs">compose</span>
-      <!-- Toggle order mirrors docking order: the left-docked rail first,
-           then the two right-docked ones, the same left-pair-then-right
-           convention assets/shell.html uses. Every label is wrapped in
+      <!-- Order here is "what you look up, then what you're working on,
+           then how it's configured" — not docking side: Library and
+           Settings are both right-docked, Workbench is the one left-docked
+           panel, and it sits between them. Every label is wrapped in
            .dl-toggle-label so the shared phone rule can drop them and leave
            icon-only buttons, with aria-label carrying the name — dewmini
            previously had bare label text, which that rule could not reach. -->
@@ -228,9 +229,11 @@
 </div>
 
 <!-- Library: everything you look *up* — the reference, the datasets you can
-     load, and how this page itself works. Docked left, and independent of
-     the two right-docked panels, so a reader can keep a definition open
-     beside their own variables (planning/DEWMINI_WORKBENCH.md §2).
+     load, and how this page itself works. Docked right, sharing that edge
+     with Settings — wirePanel() (dewmini.js) lists each as the other's
+     conflict, so opening one closes the other. Workbench is the one
+     left-docked panel, so a reader can keep it open beside either
+     (planning/DEWMINI_WORKBENCH.md §2).
 
      Help used to be a panel of its own; it is these last five sections now,
      on planning/SIDEBAR_CONTENT.md §4's reasoning — extend a panel rather
@@ -419,10 +422,11 @@
 </div>
 
 <!-- Workbench: everything about the work in front of you — what your code
-     made, what you wrote down, and the files it can reach. Docked right and
-     mutually exclusive with Settings, which shares that edge. Notes and
-     Files used to live inside Settings; they are here now, because they are
-     your work rather than your configuration
+     made, what you wrote down, and the files it can reach. Docked left, the
+     one panel on that edge, so it can stay open beside Library or Settings
+     rather than close either. Notes and Files used to live inside Settings;
+     they are here now, because they are your work rather than your
+     configuration
      (planning/DEWMINI_WORKBENCH.md §2). -->
 <div class="dm-panel dm-panel-left dm-workbench" id="dm-workbench" role="dialog" aria-modal="false"
      aria-labelledby="dm-workbench-title" hidden>
