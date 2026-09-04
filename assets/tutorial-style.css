@@ -1483,6 +1483,13 @@ p code, li code {
   margin-bottom: 0.65rem;
 }
 .dl-texture-row > span { color: var(--dl-muted); font-size: 0.78rem; }
+/* The 4.6rem label column fits a one-word label ("Theme", "Size") on one
+ * line. A longer label ("Show progress on the tutorials list") wraps into
+ * a narrow ribbon instead, several lines tall, with most of the row's own
+ * width sitting empty next to a two-button toggle that needs none of it.
+ * This modifier drops to one column, so a long label reads as a normal
+ * line of text above its toggle rather than a cramped one beside it. */
+.dl-texture-row-wide { grid-template-columns: 1fr; }
 .dl-seg { display: flex; gap: 0.25rem; }
 .dl-seg button {
   flex: 1;

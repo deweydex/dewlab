@@ -5957,6 +5957,57 @@ from inside `cellsToPercentText()` but carry different downstream
 contracts, and the fix that is correct for one broke a working test
 for the other.*
 
+**7.126 — A long Settings label wrapped into a narrow ribbon, most of
+its own row sitting empty beside it.** Josh flagged it from a
+screenshot: "Show progress on the tutorials list", in the contents
+page's own Settings panel, broken across four cramped lines while the
+on/off toggle beside it had most of the row's width to itself and used
+none of it. The cause was `.dl-texture-row`'s own grid —
+`grid-template-columns: 4.6rem 1fr` — sized for the one-word labels
+("Theme", "Font", "Size") every other row in the panel actually has.
+A label long enough to need more than 4.6rem simply wraps inside that
+column instead of claiming any of the wide one beside it, since CSS
+grid tracks don't borrow room from each other that way.
+
+**Two more turned up the same way, once the shape of the bug was
+known.** Grepping `.dl-texture-row` across both templates
+(`assets/shell.html`, `compose/dewmini.html`) for every row's own
+label found "Remind me to export new notes" (the same panel, "Your
+work" section) and "Web (HTML+CSS)" (dewmini's own cell-type toggles)
+wrapping the identical way — three rows, two files, one shared cause.
+
+**Fixed with a modifier rather than widening the column.** A `.dl-
+texture-row-wide` class drops `grid-template-columns` to a single
+`1fr`, so the row's two children — the label `<span>` and the `<div
+class="dl-seg">` toggle — stack as two lines instead of two columns.
+Widening the shared 4.6rem column instead was the other option
+considered and rejected: every short label in the panel currently
+lines up in that same left column, and widening it to fit three
+outliers would have pushed every other row's toggle rightward for no
+reason of its own. Applied only to the three rows actually affected,
+found by reading every `.dl-texture-row`'s own label rather than
+guessing which looked long enough — a "does this look short" judgment
+would have been exactly the kind of assumption 7.124 and 7.125 both
+warn against making without looking.
+
+**Verified in a real browser**, at the width the original screenshot
+was taken from and at dewmini's own default width: all three rows now
+read as a normal line of label text above a comfortably-sized toggle,
+and every untouched row in the same panels still lines up exactly as
+it did before. `python3 -m pytest tests --ignore=tests/e2e` clean —
+nothing here is behaviour a test suite would catch, since the grid
+still parses and the toggle still works either way; only a screenshot
+shows the difference.
+
+*Cost to change: five lines of CSS and three class attributes, once
+the three affected rows were actually found rather than guessed at.
+The lesson is the same one this project keeps re-learning from a
+different angle each time: a component built for the common case (a
+one-word label) needs a second look the moment real content is longer
+than the case it was designed around, and the way to find every place
+that happens is to read the data the component renders, not to eyeball
+the finished page and hope nothing else is affected.*
+
 **7.127 — Atkinson Hyperlegible swapped for Lexend, on Josh's own call
 after using both.** Not a bug: 7.123 shipped Atkinson Hyperlegible
 (Braille Institute of America, built for low-vision legibility) as one
