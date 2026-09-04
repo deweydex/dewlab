@@ -164,6 +164,7 @@ groups:
       - { module: fundamentals-of-oop, slug: one-parent-many-children }
       - { module: fundamentals-of-oop, slug: testing-what-a-class-does }
       - { module: fundamentals-of-oop, slug: documenting-a-class }
+      - { module: fundamentals-of-oop, slug: a-front-end-for-a-class }
       - { module: fundamentals-of-oop, slug: mixed-programming-with-objects }
 
   - key: big-picture
