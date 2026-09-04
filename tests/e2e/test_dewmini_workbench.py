@@ -2135,3 +2135,54 @@ def test_a_cell_type_toggle_survives_a_reload(dewmini, dewmini_url):
     dewmini.goto(dewmini_url)
     dewmini.wait_for_selector(".dm-toolbar")
     assert "SQL" not in dewmini.locator(".dm-insert-btn").all_inner_texts()
+
+
+# ---------------------------------------------------- settings radiogroups
+
+
+def open_texture_settings(page):
+    page.click("#dl-settings-toggle")
+    page.wait_for_selector('.dl-seg[data-texture="theme"]')
+
+
+def test_the_theme_group_announces_itself_as_a_radiogroup(dewmini):
+    """Every .dl-seg is a mutually-exclusive single-choice group, not a row
+    of independent toggle buttons — DECISIONS_LOG.md 7.130."""
+    open_texture_settings(dewmini)
+    group = dewmini.locator('.dl-seg[data-texture="theme"]')
+    expect(group).to_have_attribute("role", "radiogroup")
+
+    buttons = group.locator("button")
+    for i in range(buttons.count()):
+        expect(buttons.nth(i)).to_have_attribute("role", "radio")
+
+    # "auto" (system) is the default theme, so it starts out checked.
+    expect(group.locator('button[data-value="system"]')).to_have_attribute("aria-checked", "true")
+    expect(group.locator('button[data-value="light"]')).to_have_attribute("aria-checked", "false")
+
+
+def test_arrow_right_moves_focus_and_selection_together(dewmini):
+    open_texture_settings(dewmini)
+    group = dewmini.locator('.dl-seg[data-texture="theme"]')
+    group.locator('button[data-value="system"]').focus()
+
+    dewmini.keyboard.press("ArrowRight")
+
+    light = group.locator('button[data-value="light"]')
+    expect(light).to_have_attribute("aria-checked", "true")
+    expect(light).to_be_focused()
+    expect(group.locator('button[data-value="system"]')).to_have_attribute("aria-checked", "false")
+
+
+def test_arrow_right_wraps_from_the_last_option_to_the_first(dewmini):
+    open_texture_settings(dewmini)
+    group = dewmini.locator('.dl-seg[data-texture="theme"]')
+    last = group.locator('button[data-value="dark"]')
+    last.click()
+    last.focus()
+
+    dewmini.keyboard.press("ArrowRight")
+
+    first = group.locator('button[data-value="system"]')
+    expect(first).to_have_attribute("aria-checked", "true")
+    expect(first).to_be_focused()
