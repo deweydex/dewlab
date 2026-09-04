@@ -28,6 +28,11 @@
 __pycache__/
 *.py[cod]
 
+# Git worktrees the harness creates for background agents (each one is a
+# .git pointer file, not real content — the actual work lands as commits on
+# its own branch instead).
+/.claude/worktrees/
+
 # Design canvases. The .dc.html artboards and canvas.json under /.design/ ARE
 # committed — they are the editable source, and a later change re-seeds from
 # them. The assembled page is not: it carries a ~2.5 MB copy of the canvas
