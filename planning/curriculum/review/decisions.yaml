@@ -429,3 +429,45 @@ topic_changes:
       Two rules with different footings. The Cosine Rule extends Pythagoras.
       The Sine Rule needs the fact that sine cannot tell an angle from 180
       minus it, and that ambiguous case is a substantial idea on its own.
+
+  - topic: PDP-LO6
+    change: split
+    into: [Selection, Iteration]
+    order: >
+      The two do not depend on each other. Lists depends on both: selection
+      here means selecting within a list, and iteration assumes one. Refines
+      the earlier chain, which had this topic as a single step before lists.
+    why: >
+      Two ideas in one outcome, taught in two separate tutorials, Making
+      Decisions and Repeating Yourself. A list is really a data structure with
+      these two at its heart.
+
+  - topic: MIT-5.12
+    change: split
+    into: [Centre, Simple spread, Standard deviation]
+    why: >
+      Three measures of centre plus range plus standard deviation under one
+      name. Standard deviation is a markedly harder idea with its own formula
+      and its own motivation.
+
+  - topic: MIT-4.6
+    change: split
+    into: [Sine and cosine defined, The identity sin squared plus cos squared, Tangent as slope]
+    why: >
+      The definition of sine and cosine is the load-bearing idea and takes
+      most of this topic's six arrows. "Unit circle" names the picture rather
+      than the content.
+
+  - topic: MIT-6.5
+    change: fold into MIT-6.3
+    why: >
+      No material of its own: it shares one section with iterating by index.
+      Folding it in also shrinks the lists level, which currently holds four
+      topics.
+
+  - topic: MIT-6.3
+    change: split
+    into: [Lists, Arrays]
+    why: >
+      The topic promises arrays that nothing teaches. Splitting makes the gap
+      visible instead of hiding it inside a topic that looks covered.
