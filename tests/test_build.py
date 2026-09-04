@@ -3246,3 +3246,28 @@ class TestWhatTheReferenceCanBeFilteredBy:
             "intermediate",
             "advanced", "advanced", "advanced",
         ]
+
+
+def test_the_marking_workbench_is_published(repo, monkeypatch):
+    """dewmark's workbench reaches the site at /dewmark/.
+
+    Nothing on the site links to it, so a broken copy step would go
+    unnoticed until somebody typed the address.
+    """
+    workbench = repo / "dewmark" / "workbench"
+    workbench.mkdir(parents=True)
+    (workbench / "index.html").write_text("<h1>dewmark marking workbench</h1>")
+    monkeypatch.setattr(b, "DEWMARK_WORKBENCH", workbench)
+
+    b.build()
+
+    published = b.OUT / "dewmark" / "index.html"
+    assert published.is_file()
+    assert published.read_text() == (workbench / "index.html").read_text()
+
+
+def test_no_workbench_folder_is_not_an_error(repo, monkeypatch):
+    """A checkout without dewmark/ still builds."""
+    monkeypatch.setattr(b, "DEWMARK_WORKBENCH", repo / "dewmark" / "workbench")
+    b.build()
+    assert not (b.OUT / "dewmark").exists()
