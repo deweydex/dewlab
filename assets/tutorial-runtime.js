@@ -937,7 +937,16 @@ function applyTexture(state) {
   else root.setAttribute("data-contrast", state.contrast);
   root.style.setProperty("--dl-font-size", state.size + "px");
   root.style.setProperty("--dl-line-width", state.width + "rem");
-  root.style.setProperty("--dl-link", state.link);
+  // High contrast overrides a reader's own link colour the same way it
+  // already overrides their font choice (DECISIONS_LOG.md 7.124) — but
+  // font-family only ever comes from the stylesheet's [data-contrast]
+  // rule, while link colour is normally also written here as an inline
+  // style, and an inline style always wins over any stylesheet rule
+  // regardless of selector specificity. Skipping the inline write while
+  // high contrast is on lets that rule apply instead of being shadowed
+  // by whatever the reader last picked (including dewlab's own default).
+  if (state.contrast === "normal") root.style.setProperty("--dl-link", state.link);
+  else root.style.removeProperty("--dl-link");
 }
 
 /* Wires up every control in the Texture settings section: the segmented
