@@ -71,7 +71,10 @@ student receives changed — the built site was byte-identical afterwards.
   or correct the promise.
 - `tests/MANUAL_CHECKLIST.md` still says later sections are stubs for
   phases that have all shipped.
-- The three empty module folders under `tutorials/` are still there.
+- Of the three empty module folders under `tutorials/`, the two the
+  integrated module covers (`mathematics-for-it`,
+  `programming-design-principles`) are gone. `database-methods` stays,
+  empty, until its tutorials are written.
 
 ## Phase 2 — Write the remaining tutorials — **in progress**
 

@@ -84,10 +84,11 @@ GENERATED = ("site/", "dev/pyodide/", "assets/vendor/pyodide/",
 GENERATED_PAGES = {"index.html", "tree.html", "topics.html", "about.html",
                    "editor.html", "search-index.json", "reference-index.json"}
 
-# Documents whose subject is material in another repository: the QQI module
-# descriptors in `deweydex/everlearning` and the worksheets in
-# `deweydex/Mathematics`. They name files by their real names, which are simply
-# not names in this repository.
+# Documents whose subject is material in another repository: the notebooks in
+# `deweydex/everlearning` and the worksheets in `deweydex/Mathematics`. They
+# name files by their real names, which are simply not names in this
+# repository. (The QQI module descriptors themselves now live here, under
+# planning/curriculum/descriptors/.)
 ELSEWHERE = ("planning/curriculum/", "planning/outlines/")
 
 # Referred to by name in prose about other projects, or as a shape rather than

@@ -5803,7 +5803,95 @@ shared mechanism that has been duplicated (dewmini.js's own texture
 functions) needs the fix applied twice, and only a real browser catches
 the copy that was missed.*
 
-**7.124 — Opening a plain `.py` file in the File view silently turned
+**7.124 — High contrast redefined four variables and called it done;
+turning it on and looking said otherwise.** Josh's own report, the day
+after 7.123 shipped: "the high contrast doesn't appear to work for all
+the elements." Right, and measurable — `[data-contrast="high"]`
+touched `--dl-fg`/`--dl-bg`/`--dl-muted`/`--dl-rule` and the font, on
+the unstated assumption that body text was the whole of "can I read
+this." A heading, a link, a cell-type pill, a cell's own border, a
+pass/fail message: every one of those is its own variable, so the
+toggle changed nothing about any of them. Measured with WCAG's own
+contrast-ratio formula rather than eyeballed screenshots: `--dl-link`
+at 3.6:1 against white was failing the *ordinary* AA minimum (4.5:1)
+that applies with the toggle off entirely, let alone the near-7:1 AAA
+this toggle exists to promise — the one thing it is for, not working,
+while it was on. `--dl-cell-border` was worse: 1.4:1, against a 3:1
+floor WCAG sets for a graphical boundary rather than text, meaning a
+code cell's own edge was close to invisible.
+
+**Fixed by moving each colour, not replacing it.** Asked directly
+rather than assumed: flatten every one of these to black and white
+too, or keep the hue and fix the ratio? Josh's answer was to keep it —
+a returning reader who has learned "teal is SQL, purple is HTML" keeps
+that under high contrast too, the same way the design already keeps it
+across light and dark theme, rather than losing every cell-type signal
+the moment the one toggle meant to help them is on. So each failing
+colour was darkened (light theme) or lightened (dark) along its own
+hue, in HSL, until it cleared 7:1 against the background it actually
+sits on — not 4.5, even though that alone would satisfy plain AA,
+because "high contrast" promising AAA and then quietly settling for
+AA the moment a colour needed real work is exactly the kind of gap
+this entry exists to close. `--dl-cell-border` is the one exception:
+a boundary carries no signal worth preserving the way a cell-type hue
+does, so it borrows `--dl-rule` outright — already pure black or white
+under this same toggle — rather than getting a darkened beige of its
+own that would have been muddy and still low-contrast at any
+reasonable target.
+
+**The bug worth naming for next time: an inline style beats a
+stylesheet, always, regardless of specificity.** `--dl-link`'s new
+high-contrast rule did nothing at first, in a real browser, despite
+being syntactically correct and more specific than the rule it was
+meant to override. The reason: dewlab's texture panel has its own
+reader-settable link colour, `state.link` in `TEXTURE_DEFAULTS`, and
+`applyTexture()` writes it with `root.style.setProperty(...)` — an
+inline style on `<html>`, which the cascade always prefers over any
+selector in a stylesheet, `:root[data-contrast="high"]` included. Font
+family never had this problem, because it is *only* ever set from the
+stylesheet's own `[data-contrast]`/`[data-font]` rules; link colour was
+the one property with a second, higher-priority writer nothing else in
+this feature touched. Fixed at the source: `applyTexture()` now skips
+the inline `--dl-link` write while `state.contrast === "high"`, and
+removes it if switching into high contrast from a state that had
+already set one, so the stylesheet rule is free to apply. The general
+lesson, not just this one property's: before trusting a stylesheet
+override to work, check whether anything *also* sets that same custom
+property as an inline style — a specificity fight a CSS-only reading
+never reveals, because nothing in the CSS itself is wrong.
+
+**The second copy, found the same way the first one was (7.123).**
+`assets/tutorial-runtime.js` carries the identical `applyTexture()`,
+for the same reason dewmini.js's own copy exists — needed the identical
+fix, found by testing a tutorial page in a real browser after fixing
+dewmini and discovering its link colour was *still* wrong there.
+Grepping for the pattern once it was known would have found both at
+once; reading the stylesheet fix and assuming a shared mechanism was
+therefore also fixed would have shipped exactly the same half-repaired
+state 7.123 itself shipped.
+
+**Verified in a real browser**, WCAG ratios computed rather than
+guessed: every corrected colour re-measured against the background it
+actually renders on (`--dl-link`, the four `--dl-type-*` colours, and
+`--dl-pass-fg` on its own `--dl-pass-bg`) and confirmed at or above
+7:1; `--dl-cell-border` confirmed pure black/white via computed style,
+not just read from the source; the fix checked in both light and dark
+high contrast, and confirmed the reader's own separately-picked link
+colour is respected again the moment high contrast is turned back off.
+`tests/test_build.py` and the full `tests/e2e/test_dewmini_workbench.py`
+suite both re-run clean — neither exercises contrast ratios directly,
+so a real browser is what this entry's own finding rests on, not the
+suites.
+
+*Cost to change: small in lines, real in the lesson. Nine colour
+values and a five-line JS guard, duplicated once. What actually cost
+time was rediscovering, from scratch, the two things 7.96/7.97 already
+named for a different feature: a claim about what a toggle does is
+worth nothing until the toggle has actually been turned on and looked
+at, and a mechanism that has been duplicated stays duplicated for every
+fix aimed at it, not only its first one.*
+
+**7.125 — Opening a plain `.py` file in the File view silently turned
 it into something that looks like a dewmini export.** Found while
 checking around the Cells/File switch for the bugs it seemed likely to
 be hiding: write a script from inside a running cell with
