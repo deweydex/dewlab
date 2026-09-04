@@ -80,6 +80,7 @@ textarea{width:100%;height:11rem;font-family:var(--mono);font-size:.65rem;
 .hide{display:none}
 .note{font-size:.75rem;color:var(--muted);margin:0;line-height:1.4}
 summary{font-size:.75rem;color:var(--muted);cursor:pointer}
+.mono{font-family:var(--mono);font-size:.68rem}
 .mini.nudge{border-color:var(--brand);color:var(--brand)}
 .addgroup{display:grid;grid-template-columns:1fr auto;gap:.35rem}
 </style>
@@ -146,10 +147,16 @@ summary{font-size:.75rem;color:var(--muted);cursor:pointer}
   <p class="note" id="expWhat"></p>
   <button class="b" type="button" id="push"
           style="border-color:var(--brand);color:var(--brand)">Send them to GitHub</button>
-  <p class="note">GitHub opens with the file already written. Sign in, scroll down, then tap
-     <b>Commit changes</b>. Nothing leaves this phone until you do.</p>
+  <p class="note">GitHub opens with the file already written. Sign in, scroll down,
+     then tap <b>Commit changes</b> and <b>Propose changes</b>. Nothing leaves this
+     phone until you do. If you cannot write to the repository, GitHub turns your
+     commit into a request for Josh to approve. Any message will do; the file says
+     who judged and when.</p>
   <details>
-    <summary>Copy it out instead</summary>
+    <summary>Other ways to send it</summary>
+    <p class="note">Saving a file works too, and has no size limit. Upload it to
+       <span class="mono">planning/curriculum/review/pairs/</span> on GitHub.</p>
+    <button class="b" type="button" id="dl">Save a file</button>
     <textarea id="expText" readonly></textarea>
     <button class="b" type="button" id="copy">Copy everything</button>
   </details>
@@ -416,6 +423,19 @@ document.getElementById("push").onclick = () => {
   batch.forEach(k => S.sent[k] = 1);
   save();
   describe(); render();
+};
+
+/* A file has no length limit, so this one carries everything, not a batch.
+   On a phone it costs a trip through the file picker; the GitHub button is
+   quicker for a normal-sized batch. */
+document.getElementById("dl").onclick = () => {
+  const blob = new Blob([JSON.stringify(batchFor(Object.keys(S.v)), null, 1)],
+                        {type:"application/json"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = slug(WHO) + "-" + Date.now() + ".json";
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 5000);
 };
 
 document.getElementById("copy").onclick = () => {
