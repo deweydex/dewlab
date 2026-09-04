@@ -36,14 +36,20 @@ Nothing here has been applied to `topics.yaml`.
 | Documented programs | Problem definition and design | 2 | yes |
 | Documented programs | Testing and debugging | 2 | yes |
 
-## Loops
+## Pairs that turn out to be one level
 
-A prerequisite graph that loops cannot be taught in any order.
-Each of these has to be broken before its arrows go in.
+Two topics that each need the other sit at the same level of the
+graph. Either they are taught together, or they are one topic under
+two names. Neither is a fault to fix.
 
-- The unit circle → Degrees and radians → The unit circle
+- The unit circle and Degrees and radians — the arrow between them runs both ways once these judgements go in
+- Writing down a sum over a whole list (was Index and sigma notation) and Iterating by index — judged so (2 judgements, pointing opposite ways)
 
-## Pairs the judges disagreed about
+## Loops of three or more
+
+None.
+
+## Pairs where one judge saw an arrow and the other did not
 
 - **Iterating a model** and **What a model's numbers are worth**
   - ruth: Iterating a model first
@@ -60,16 +66,9 @@ Each of these has to be broken before its arrows go in.
 - **Frequency tables and histograms** and **Lists and arrays**
   - ruth: unrelated
   - tom: Lists and arrays first
-- **Writing down a sum over a whole list (was Index and sigma notation)** and **Iterating by index**
-  - ruth: Writing down a sum over a whole list (was Index and sigma notation) first
-  - tom: Iterating by index first
 - **Cutting a problem in half (was Divide and conquer)** and **Iterating by index**
   - ruth: unrelated
   - tom: Iterating by index first
-
-## Pairs judged as needing each other
-
-None.
 
 ## Topics with a suggested new name
 

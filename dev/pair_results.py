@@ -22,9 +22,13 @@ Four things it looks for:
   * **New edges** — a pair judged "needs" that the graph does not have.
   * **Edges nobody kept** — an existing arrow that judges called unrelated.
   * **Disagreements** — one pair, two judges, two answers.
-  * **Cycles** — a set of new edges that would make the graph loop back on
-    itself. A prerequisite graph that loops cannot be taught in any order, so
-    these have to be broken before the edges go in.
+  * **Levels** — two topics that each need the other. They are not a defect.
+    They are one level of the graph: two things taught together, or one topic
+    wearing two names. A longer loop is different, and does have to be broken.
+
+Two judges who pick opposite directions on the same pair have between them
+said what the game's "both ways" button says. The report treats that as a
+level rather than as a disagreement to settle.
 """
 
 from __future__ import annotations
@@ -100,7 +104,11 @@ def settled(cast: list[dict]) -> tuple[str, str | None, bool]:
 
 def cycles(edges: set[tuple]) -> list[list[str]]:
     """Every loop the edge set contains, found by walking depth-first and
-    watching for a node that is still on the current path."""
+    watching for a node that is still on the current path.
+
+    A loop of two topics and a loop of five are different findings, so the
+    caller separates them; this only finds them.
+    """
     ahead: dict[str, list[str]] = defaultdict(list)
     for early, late in edges:
         ahead[early].append(late)
@@ -153,6 +161,17 @@ def build_report(topics: dict, batches: list[dict]) -> str:
         verdict, first, agreed = settled(cast)
         a, b = key
         second = b if first == a else a
+
+        # Two judges who both saw a prerequisite and pointed it opposite ways
+        # have between them said the pair is a level. That is the "both ways"
+        # answer, arrived at by two people instead of one, so it belongs with
+        # the levels rather than in a list of things to settle.
+        directions = {v["first"] for v in cast if v["verdict"] == "needs"}
+        if (not agreed and len(directions) > 1
+                and all(v["verdict"] == "needs" for v in cast)):
+            both_ways.append((key, len(cast)))
+            continue
+
         if not agreed:
             disputed.append((key, cast))
         if verdict == "needs" and first:
@@ -169,6 +188,11 @@ def build_report(topics: dict, batches: list[dict]) -> str:
             unsure.append(key)
 
     loops = cycles(existing | judged_edges)
+    # A two-topic loop says those two are a level. A longer one is a real
+    # problem: it cannot be taught in any order and no amount of teaching
+    # them together fixes it.
+    levels = [lp for lp in loops if len(lp) == 3]
+    tangles = [lp for lp in loops if len(lp) > 3]
 
     nm = lambda code: name_of(topics, code, renames)
     L = []
@@ -204,19 +228,36 @@ def build_report(topics: dict, batches: list[dict]) -> str:
         A("None. Every existing arrow survived the pairs that were judged.")
     A("")
 
-    A("## Loops")
+    A("## Pairs that turn out to be one level")
     A("")
-    if loops:
-        A("A prerequisite graph that loops cannot be taught in any order.")
-        A("Each of these has to be broken before its arrows go in.")
+    if levels or both_ways:
+        A("Two topics that each need the other sit at the same level of the")
+        A("graph. Either they are taught together, or they are one topic under")
+        A("two names. Neither is a fault to fix.")
         A("")
-        for loop in loops:
-            A("- " + " → ".join(nm(c) for c in loop))
+        for loop in levels:
+            A(f"- {nm(loop[0])} and {nm(loop[1])} — the arrow between them runs "
+              "both ways once these judgements go in")
+        for key, n in both_ways:
+            A(f"- {nm(key[0])} and {nm(key[1])} — judged so "
+              f"({n} judgement{'' if n == 1 else 's'}, pointing opposite ways)")
     else:
-        A("None. The graph these judgements imply can still be taught in order.")
+        A("None.")
     A("")
 
-    A("## Pairs the judges disagreed about")
+    A("## Loops of three or more")
+    A("")
+    if tangles:
+        A("A loop this long cannot be taught in any order, and teaching the")
+        A("topics together does not fix it. Each has to be broken.")
+        A("")
+        for loop in tangles:
+            A("- " + " → ".join(nm(c) for c in loop))
+    else:
+        A("None.")
+    A("")
+
+    A("## Pairs where one judge saw an arrow and the other did not")
     A("")
     if disputed:
         for key, cast in disputed:
@@ -225,19 +266,6 @@ def build_report(topics: dict, batches: list[dict]) -> str:
                 said = (f"{nm(v['first'])} first" if v["verdict"] == "needs"
                         else v["verdict"])
                 A(f"  - {v['by']}: {said}")
-    else:
-        A("None.")
-    A("")
-
-    A("## Pairs judged as needing each other")
-    A("")
-    if both_ways:
-        A("Two topics that each need the other cannot both come first.")
-        A("Either one of them splits in two, or they are taught together.")
-        A("")
-        for key, n in both_ways:
-            A(f"- {nm(key[0])} and {nm(key[1])} "
-              f"({n} judgement{'' if n == 1 else 's'})")
     else:
         A("None.")
     A("")
