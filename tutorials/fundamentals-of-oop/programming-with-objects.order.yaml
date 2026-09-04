@@ -12,3 +12,4 @@ order:
   - objects-and-classes
   - one-class-many-methods
   - one-parent-many-children
+  - testing-what-a-class-does

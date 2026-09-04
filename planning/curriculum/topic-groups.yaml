@@ -162,6 +162,7 @@ groups:
       - { module: fundamentals-of-oop, slug: objects-and-classes }
       - { module: fundamentals-of-oop, slug: one-class-many-methods }
       - { module: fundamentals-of-oop, slug: one-parent-many-children }
+      - { module: fundamentals-of-oop, slug: testing-what-a-class-does }
 
   - key: big-picture
     name: How it all fits together
