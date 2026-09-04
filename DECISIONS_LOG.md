@@ -6284,3 +6284,38 @@ keydown listener matching three already-written ones for the menu, one
 hidden live region and a handful of lines for the announcer. None of
 the three needed new UI — every one of them was a real interactive
 element already, just one that only fully worked for a mouse.*
+
+**7.132 — dewmini's own run announcement had 7.131's "same result
+twice in a row" bug, not 7.131's original gap.** Checking dewmini for
+the same missing-announcement problem found it was already covered:
+`runCell()` and `runCellBatch()` in `compose/dewmini.js` both call
+`updateStatus()`, which writes straight into `#dm-status`
+(`role="status" aria-live="polite"` in `dewmini.html`) — dewmini has
+announced "Ran." (or an error) after every run for as long as that
+function has existed. What it did not have was 7.131's fix for the
+narrower bug underneath: `updateStatus()` just set
+`statusEl.textContent = message` directly, so running the same cell
+twice in a row, both times ending in the identical "Ran.", changed
+nothing a live region could detect — the second announcement went
+silent. Fixed inside `updateStatus()` itself, not at its ~30 call
+sites: when the incoming message equals what is already showing, clear
+it and set the real text a tick later, the same pattern 7.131 used for
+`#dl-run-announcer`. Every other call — the large majority, where the
+new message differs from the last one — keeps its exact previous
+synchronous behaviour, so nothing timing-sensitive elsewhere in the UI
+had to change.
+
+**Verified in a real browser.** `python3 build.py --clean` and
+`python3 -m pytest --ignore=tests/e2e -q` both clean. One new e2e test,
+`TestStatusAnnouncer::test_running_the_same_cell_twice_announces_both_times`
+in `tests/e2e/test_dewmini_workbench.py`, running one cell twice in a
+row and polling `#dm-status` for "Ran." after each — clean, along with
+the rest of that file.
+
+*Cost to change: one branch inside one already-existing function,
+because the bug lived in the one place every status message already
+passes through. The lesson from re-checking rather than assuming: the
+task this was filed as ("dewmini has no run announcement") was wrong —
+it already had one — and the real gap only turned up by reading
+`runCell()` and `updateStatus()` directly instead of trusting the
+title on the task.*
