@@ -123,14 +123,18 @@ for (const file of fonts.filter((f) => f.endsWith(".woff2"))) {
 }
 
 /* Two accessible reading fonts (planning/DEWMINI_WORKBENCH.md's texture
- * settings; DECISIONS_LOG.md 7.123): Atkinson Hyperlegible (Braille
- * Institute of America) and OpenDyslexic, both SIL OFL 1.1. Self-hosted
+ * settings; DECISIONS_LOG.md 7.123, 7.124): Lexend (Google Fonts, designed
+ * to reduce the visual complexity linked to reading difficulty) and
+ * OpenDyslexic, both SIL OFL 1.1. Self-hosted
  * from the @fontsource packages — matching every other vendored asset
  * here rather than a Google Fonts CDN `<link>`, which this repository's
  * own offline bundle (write_dewmini_bundle(), DECISIONS_LOG.md 7.92)
  * could never reach anyway. Regular and bold, roman and italic — four
  * faces per font, the minimum for a page's own bold/italic markdown to
- * render as a real face rather than a synthetic one.
+ * render as a real face rather than a synthetic one — except Lexend,
+ * which @fontsource ships with no italic face at all (upstream doesn't
+ * draw one); its two faces fall back to the browser's own synthetic
+ * slant for italic text, same as any other font missing that face.
  *
  * @fontsource ships one CSS file and one woff2 per face; concatenated
  * into a single accessible-fonts.css here rather than linked separately,
@@ -145,15 +149,15 @@ for (const file of fonts.filter((f) => f.endsWith(".woff2"))) {
  * file name is not a real risk: the two projects share no naming
  * convention at all. */
 const ACCESSIBLE_FONTS = [
-  { pkg: "@fontsource/atkinson-hyperlegible", slug: "atkinson-hyperlegible" },
-  { pkg: "@fontsource/opendyslexic", slug: "opendyslexic" },
+  { pkg: "@fontsource/lexend", slug: "lexend", faces: ["latin-400", "latin-700"] },
+  { pkg: "@fontsource/opendyslexic", slug: "opendyslexic",
+    faces: ["latin-400", "latin-400-italic", "latin-700", "latin-700-italic"] },
 ];
-const FACES = ["latin-400", "latin-400-italic", "latin-700", "latin-700-italic"];
 
 let accessibleCss = "";
-for (const { pkg, slug } of ACCESSIBLE_FONTS) {
+for (const { pkg, slug, faces } of ACCESSIBLE_FONTS) {
   const pkgDir = join(here, "node_modules", pkg);
-  for (const face of FACES) {
+  for (const face of faces) {
     // The package's own file names are "<slug>-<face>-normal.woff2" for a
     // roman face ("latin-400" -> "...-latin-400-normal.woff2") and
     // "<slug>-<face>.woff2" for an italic one, since "face" already ends
@@ -178,4 +182,4 @@ await writeFile(join(outDir, "accessible-fonts.css"), accessibleCss);
 console.log(`vendor/ rebuilt: codemirror.bundle.js, katex.bundle.js, standalone.bundle.js, ` +
   `milkdown.bundle.js, milkdown.bundle.css, katex.min.css, coi-serviceworker.js, ${
   fonts.filter((f) => f.endsWith(".woff2")).length} fonts, accessible-fonts.css (${
-  ACCESSIBLE_FONTS.length * FACES.length} faces)`);
+  ACCESSIBLE_FONTS.reduce((n, f) => n + f.faces.length, 0)} faces)`);
