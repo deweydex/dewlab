@@ -117,12 +117,12 @@
   --dl-font-family: var(--dl-mono);
 }
 /* Two accessible reading fonts (assets/vendor/accessible-fonts.css,
- * DECISIONS_LOG.md 7.123): Atkinson Hyperlegible (Braille Institute of
- * America — designed for low-vision legibility) and OpenDyslexic. Real
+ * DECISIONS_LOG.md 7.123, 7.127): Lexend (designed to reduce the visual
+ * complexity linked to reading difficulty) and OpenDyslexic. Real
  * fallback fonts after each, not just the family name, for the one
  * moment before the self-hosted @font-face has actually loaded. */
-:root[data-font="atkinson"] {
-  --dl-font-family: "Atkinson Hyperlegible", "Helvetica Neue", Arial, sans-serif;
+:root[data-font="lexend"] {
+  --dl-font-family: "Lexend", "Helvetica Neue", Arial, sans-serif;
 }
 :root[data-font="opendyslexic"] {
   --dl-font-family: "OpenDyslexic", "Comic Sans MS", sans-serif;
@@ -133,9 +133,9 @@
  * (DECISIONS_LOG.md 7.123), independent of whichever of the five fonts
  * above (or light/dark theme) a reader separately picked, because
  * neither of those questions is "can I tell this text from its
- * background". Forces Atkinson Hyperlegible regardless of the Font
- * row's own choice, and near-maximum text/background contrast in
- * whichever theme is active — --dl-muted is the one most rules here
+ * background". Forces Lexend regardless of the Font row's own choice
+ * (DECISIONS_LOG.md 7.127), and near-maximum text/background contrast
+ * in whichever theme is active — --dl-muted is the one most rules here
  * lean on for secondary text, and the value it takes elsewhere is
  * nowhere near AAA contrast on purpose (it is meant to recede), so
  * high contrast redefines it to nearly --dl-fg rather than leaving it
@@ -162,7 +162,7 @@
  * (it is a boundary, not a signal), so it borrows --dl-rule outright
  * rather than getting a colour of its own. */
 :root[data-contrast="high"] {
-  --dl-font-family: "Atkinson Hyperlegible", "Helvetica Neue", Arial, sans-serif;
+  --dl-font-family: "Lexend", "Helvetica Neue", Arial, sans-serif;
   --dl-fg: #000000;
   --dl-bg: #ffffff;
   --dl-muted: #1a1a1a;

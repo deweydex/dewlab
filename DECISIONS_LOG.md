@@ -6007,3 +6007,57 @@ one-word label) needs a second look the moment real content is longer
 than the case it was designed around, and the way to find every place
 that happens is to read the data the component renders, not to eyeball
 the finished page and hope nothing else is affected.*
+
+**7.127 — Atkinson Hyperlegible swapped for Lexend, on Josh's own call
+after using both.** Not a bug: 7.123 shipped Atkinson Hyperlegible
+(Braille Institute of America, built for low-vision legibility) as one
+of the two accessible reading fonts, alongside OpenDyslexic. Asked
+directly while looking at the rest of the texture panel for other small
+issues, Josh preferred Lexend instead — Google's own font built to
+reduce the visual complexity linked to reading difficulty — and, asked
+separately, wanted **High contrast** to force Lexend too rather than
+keep forcing the font it was replacing.
+
+**Vendored the same way, with one real difference the switch surfaced:
+Lexend ships no italic face at all.** Atkinson Hyperlegible and
+OpenDyslexic both come from `@fontsource` as four static faces —
+regular, bold, and an italic of each — copied by `build-vendor.mjs`'s
+`ACCESSIBLE_FONTS` loop under one shared `FACES` list applied to every
+font. Lexend's own `@fontsource` package has only two: regular and
+bold, no italic files in it to copy at all — the upstream family never
+drew one. `ACCESSIBLE_FONTS` now lists each font's own faces rather
+than assuming one list fits both; a page asking for italic Lexend gets
+the browser's own synthetic slant, the same fallback any font missing
+that face gets, not a build failure or a silently absent font.
+
+**The rest was a name swapped in four places once the CSS rule itself
+was renamed.** `:root[data-font="atkinson"]` became
+`:root[data-font="lexend"]`; the Font row's own button, in both
+`compose/dewmini.html` and `assets/shell.html`, changed its
+`data-value` and label to match; `:root[data-contrast="high"]`'s own
+forced `--dl-font-family` changed the same way, per Josh's answer on
+scope. No JavaScript changed — `data-font` is read and set generically
+off whichever button was clicked, with no fixed list of valid values to
+extend, the same design that let 7.123 add two fonts to a three-font
+row with no logic change either. A reader who had Atkinson Hyperlegible
+selected before this shipped keeps that value in their own saved
+`dewlab:texture` state; it no longer matches a `data-font` rule, so
+their page quietly falls back to the family the base rule sets, the
+same graceful path any unrecognised `data-font` value already took —
+not a migration this change needed to write by hand.
+
+**Verified in a real browser.** Lexend loads and applies as the body
+font from the Font row, confirmed via `document.fonts` rather than
+assumed from the CSS alone; High contrast forces it regardless of
+which font was active first; OpenDyslexic, untouched by this change,
+still applies correctly on its own button. `python3 -m pytest tests
+--ignore=tests/e2e` and the full `tests/e2e/test_dewmini_workbench.py`
+suite both re-run clean — neither exercises font rendering directly,
+so the browser check is what this entry's own verification rests on.
+
+*Cost to change: small, once the italic gap was found. A CSS rule
+renamed in five places and a vendor-pin swap would have been the whole
+of it; the real content is `ACCESSIBLE_FONTS` no longer assuming every
+accessible font ships the same four faces the first two happened to
+share — an assumption a font added later could just as easily have
+broken again if this hadn't been noticed and fixed at the source now.*
