@@ -1,94 +1,92 @@
 # dewlab
 
-dewlab turns a markdown file into a web page where students read an
-explanation, edit the Python underneath it, and run it. The Python runs inside
-the browser tab, on the student's own machine. Nothing is installed, nothing is
-submitted, and no server ever sees their code.
+dewlab brings explanations, maths, and Python code together on a web page.
+Learners can read about an idea, change an example, and run it in their
+browser. The tutorials need no account or software installation.
 
-It exists to remove the first-week cost of teaching programming. Instead of an
-hour spent installing an interpreter, an editor and a package or two across
-four operating systems, a student opens a link and starts writing Python.
+The [tutorials page](https://deweydex.github.io/dewlab/) is the place to
+begin learning. This README is an overview for teachers and contributors.
 
----
+We use small examples to explore an idea before naming it. Hints, worked
+answers, and earlier explanations give learners ways to continue when a
+step is unclear. Tutorial and practice answers are not graded by dewlab.
 
 ## Where to go next
 
-This page is an overview. The detail lives in one document per reader, so you
-only have to read the one that matches what you are here to do.
-
-| If you are… | Read |
+| What you want to do | Where to read |
 |---|---|
-| A student or anyone reading a tutorial | [`docs/FOR_STUDENTS.md`](docs/FOR_STUDENTS.md) |
-| Looking for a quick answer before you start | [`docs/FAQ.md`](docs/FAQ.md) |
-| Writing or editing a tutorial | [`docs/WRITING_TUTORIALS.md`](docs/WRITING_TUTORIALS.md) |
-| Changing the code | [`CONTRIBUTING.md`](CONTRIBUTING.md), then [`ARCHITECTURE.md`](ARCHITECTURE.md) |
-| Reporting a mistake or a bug | [`docs/REPORTING_A_PROBLEM.md`](docs/REPORTING_A_PROBLEM.md) |
-| Using the standalone Python workspace | [`docs/DEWMINI.md`](docs/DEWMINI.md) |
-| Deciding whether to teach with dewlab | keep reading here |
+| Use a tutorial | [Using dewlab](docs/FOR_STUDENTS.md) |
+| Find an answer about getting started | [Frequently asked questions](docs/FAQ.md) |
+| Write or edit a tutorial | [Writing a tutorial](docs/WRITING_TUTORIALS.md) |
+| Change the site's code | [Contributing](CONTRIBUTING.md), then [Architecture](ARCHITECTURE.md) |
+| Report a mistake or unclear explanation | [Reporting a problem](docs/REPORTING_A_PROBLEM.md) |
+| Run Python outside a tutorial | [dewmini](docs/DEWMINI.md) |
+| Consider using dewlab in a class | This overview and the [licence](LICENSE.md) |
 
-Three more documents sit behind those.
-[`planning/PEDAGOGICAL_STYLE_GUIDE.md`](planning/PEDAGOGICAL_STYLE_GUIDE.md)
-settles how a tutorial is written and why — anyone writing prose for the site
-should read it, and section 4's "Plain language" rules govern every word a
-student sees. [`planning/PLAIN_LANGUAGE_PASS.md`](planning/PLAIN_LANGUAGE_PASS.md)
-says which parts of the site have been through those rules and which have not.
-[`planning/README.md`](planning/README.md) indexes the design notes and
-decision records for the rest.
+The [pedagogical style guide](planning/PEDAGOGICAL_STYLE_GUIDE.md)
+explains how tutorials are written and why. The
+[plain-language review record](planning/PLAIN_LANGUAGE_PASS.md) describes
+the work completed and what still needs review. The
+[planning index](planning/README.md) links to design notes and decisions.
+[CLAUDE.md](CLAUDE.md) gives repository instructions for coding assistants.
 
-[`CLAUDE.md`](CLAUDE.md) is the short version of all of it, written for an
-assistant working in this repository rather than for a person, and kept to what
-is easy to get wrong here.
+## What dewlab offers
 
----
+**Examples learners can change.** A cell is a code box with a Run button.
+The result appears below it as text, a number, a table, or a chart.
+An error message helps identify something that did not work. Cells on a
+page share the values created by running code, in the order they run.
+Each tutorial has its own Python session.
 
-## What dewlab does
+**Work saved in the browser.** Edits to the tutorial's cells, notes, and results
+are saved when browser storage is available. Large results may be left
+out if storage is full. A saved result does not restore Python's values;
+the code needs to run again in a new session. Clearing browser data
+removes the saved work.
 
-**Tutorials that run.** A tutorial is prose with editable Python cells set into
-it. A cell shows whatever the code printed, the value of its last line, a table
-drawn as a table and a chart drawn as a picture — and if something goes wrong,
-an error trimmed down to the student's own line. Cells on one page share their
-variables in order, the way a notebook does. Pages start fresh, and share
-nothing with each other.
+**Reading settings.** Learners can change the colours, font, text size,
+line width, and link colour. Reference, Series, and Settings open beside
+the reading on a wide screen, or at the bottom on a phone.
 
-**Work that stays.** Everything a student writes is saved in their own browser,
-keyed to the tutorial and its version. Close the tab, come back next week, and
-the code and its last output are still there. Nothing is scored and nothing
-leaves the machine.
+**Practice with support.** Many tutorials have a practice page with
+hints and worked answers. Learners can try an idea, open a hint, or read
+an answer. Mixed practice sets bring several topics together.
 
-**A reading surface a student can adjust.** Three buttons in every page's
-masthead open docked, resizable sidebars: Reference, the whole series, and
-Settings — theme, typeface, text size, line width and link colour, plus the
-buttons to export or reload work. A sidebar is meant to be left open and worked
-beside, and stays open while a reader pages through a series. The choices follow
-them from page to page.
+**Ways to keep a copy.** Export a copy saves code, results, and notes
+as a file. Load a copy opens that file in the same tutorial. Download
+to keep provides the published reading and starter code, separately from
+current edits. A page can also be printed or saved as PDF.
 
-**Practice beside every tutorial.** Each tutorial has a practice page of
-problems, with hints and answers behind folds so a stuck student gets a route
-before an answer. Mixed problem sets draw on several tutorials at once.
+**Space for learners' own examples.** On pages with runnable cells,
+learners can add Python cells or text notes. These are saved separately
+from the tutorial's cells. Their Share control exports an individual
+cell. The Jupyter notebook export keeps the code and text from all cells,
+including added cells, without results or the tutorial's reading.
 
-**Ways to take it away.** A tutorial can be downloaded as one HTML file that
-works by double-clicking it, printed or saved as PDF, or saved as a Jupyter
-notebook. A whole series downloads as a zip.
+**Ways to find an explanation.** The tutorials page lists series in
+teaching order and offers search. The topic tree shows which ideas build
+on earlier ones and which topics are not taught here yet. Browse by topic
+brings pages about one subject together.
 
-**Cells a reader adds themselves.** On any page with cells, a reader can add
-their own Python or a text note under any cell, and share one as a small file
-someone else can load. Those stay separate from the tutorial's own saved work,
-so a tutorial update leaves them alone.
+**A workspace for independent work.** dewmini supports Python code,
+notes, files, and SQL databases outside a tutorial. It can open notebooks
+and Python files and has a Stop button for running code.
 
-**Three ways to find something.** Tutorials are listed in teaching order on the
-contents page, which also has a search box. The topic tree maps every topic in
-the course descriptors by what has to come first, and marks the ones dewlab
-does not teach yet. Browse by topic gathers everything on one subject in one
-place.
+**A course coverage map.** Tutorials declare which learning outcomes
+their sections teach. The build checks those section references. The
+curriculum map shows outcomes that still need material.
 
-**A Python workspace with no tutorial attached.** dewmini is a blank page for
-trying a few lines out, with a file manager, uploads, SQLite, notebook import,
-and a Stop button that interrupts code that is stuck, all in its own smaller,
-quieter shape.
+## Sharing and saved work
 
-**Coverage you can check.** Each tutorial declares which learning outcomes it
-teaches, per section. The build refuses to accept a section that does not
-exist, and a generated map reports every outcome nobody has written for yet.
+Tutorials run Python in the browser and do not automatically submit
+answers to a teacher. Learners can choose to export and share files.
+A cell's report link can send its current code and result to a GitHub
+form. Opening that form sends the details to GitHub; submitting posts
+the report. Code a learner chooses to run may also make internet requests.
+
+[Using dewlab](docs/FOR_STUDENTS.md) explains saving and reset controls.
+[Reporting a problem](docs/REPORTING_A_PROBLEM.md) explains what reports
+include and offers ways to ask for help.
 
 ---
 
@@ -96,16 +94,15 @@ exist, and a generated map reports every outcome nobody has written for yet.
 
 `build.py` reads the markdown in `tutorials/`, renders each file into the page
 template at `assets/shell.html`, and writes a plain static site into `site/`.
-There is no server and no database. Publishing is a build: GitHub Actions runs
-the same command on every push to `main` and deploys the result to GitHub
-Pages, so a published page cannot drift from the markdown it came from.
+GitHub Pages hosts the built files. GitHub Actions runs the build on
+pushes to `main` and publishes the result. Python runs on the learner's
+device rather than on an application server.
 
-In the browser, `assets/tutorial-runtime.js` starts Pyodide — a build of real
-CPython compiled for the browser — mounts a CodeMirror editor into each cell,
-and runs cells against it. On the hosted site Python runs in a Web Worker, off
-the page's own thread, which is what makes a real Stop button possible.
-Everything a student's code can call beyond ordinary Python is defined in
-`assets/tutorial_tools.py`.
+In the browser, `assets/tutorial-runtime.js` starts Pyodide, a version of
+Python built for browsers. CodeMirror provides the cell editors. On the
+hosted site, Python runs in a Web Worker, separately from the page's
+interface. This lets the page offer a Stop button. The tutorial helpers
+are defined in `assets/tutorial_tools.py`.
 
 ```text
 tutorials/       one folder per module, then one folder per tutorial
@@ -121,16 +118,17 @@ docs/            reader documentation, plus one <file>-explained.md per code fil
 planning/        design notes, decision records, and the curriculum data
 ```
 
-[`ARCHITECTURE.md`](ARCHITECTURE.md) covers all of this properly: the build
-stage by stage, what the browser does, how the authoring editor talks to
-GitHub, and where to start reading for a given kind of change.
+[Architecture](ARCHITECTURE.md) explains the build stages, browser
+behaviour, and how the authoring editor connects to GitHub. It also
+suggests where to begin reading the code for different kinds of changes.
 
 ---
 
 ## Running it on your own machine
 
-Students need none of this. It is for authors and contributors. You need
-Python 3.12 or later.
+These steps are for authors and contributors who want a local copy of
+the site. They need Python 3.12 or later. Learners can use the published
+site without this setup.
 
 ```sh
 git clone https://github.com/deweydex/dewlab
@@ -140,35 +138,28 @@ python3 build.py --clean
 python3 -m http.server -d site 8000
 ```
 
-Then open `http://localhost:8000`. The built site in `site/` is never
-committed; it is regenerated on every push.
+The local site is then available at `http://localhost:8000`. The build
+writes `site/`, which is excluded from Git.
 
-Downloadable copies are the slow part of a build, so
-`python3 build.py --no-standalone` skips them while you are working on
-content. Run the tests with `python3 -m pytest`.
+`python3 build.py --no-standalone` skips downloadable copies for a faster
+content preview. The full build checks those copies too. The test command
+is `python3 -m pytest`; [Contributing](CONTRIBUTING.md) explains test setup.
 
 ---
 
 ## Where the project stands
 
-The reading and running experience, practice pages, versioned releases,
-curriculum coverage, the topic tree, both Python workspaces, the authoring
-editor and the build-and-publish pipeline are all built and live.
+The site includes tutorials, practice pages, saved work, version choices,
+and a topic tree. Content is still being written and reviewed.
 
-Content is still being written. There are 83 published pages — 41 tutorials, 38
-practice pages and 4 mixed sets. *Mathematics for IT* and *Programming and
-Design Principles* are complete. *Computational Methods and Problem Solving*
-has its linear algebra strand finished; Monte Carlo methods, algorithmic
-complexity and systems modelling are not written yet.
-
-[`planning/STATUS.md`](planning/STATUS.md) has the current detail.
-[`QUESTIONS.md`](QUESTIONS.md) holds the decisions still open, and is the right
-place to raise one.
+[Status](planning/STATUS.md) records progress on content and features.
+The [curriculum map](planning/CURRICULUM_MAP.md) shows which learning
+outcomes the tutorials cover. [Questions](QUESTIONS.md) records decisions
+that remain open.
 
 ---
 
 ## Licence
 
-See [`LICENSE.md`](LICENSE.md). Reading and learning from the material is free;
-adapting it asks for credit, and using it with a class asks that you get in
-touch first.
+The [licence](LICENSE.md) explains personal learning, adaptation,
+classroom use, and other uses. It includes how to contact the author.

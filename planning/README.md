@@ -7,6 +7,9 @@ the record of why it works the way it does.
 ## Document index
 
 ### Writing tutorials
+
+- **[Learner language review](LEARNER_LANGUAGE_REVIEW.md)** records the
+  entry-page and help review, checked behaviour, and remaining batches.
 - **[`PEDAGOGICAL_STYLE_GUIDE.md`](./PEDAGOGICAL_STYLE_GUIDE.md)** — the
   teaching philosophy ("discover first, name afterwards"), what a good
   tutorial looks like, code-and-maths examples, and the author checklist.

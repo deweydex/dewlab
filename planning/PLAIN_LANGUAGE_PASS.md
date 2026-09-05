@@ -4,6 +4,19 @@ What has been rewritten to `PEDAGOGICAL_STYLE_GUIDE.md` section 4 "Plain
 language", what has not, and what to do next. Written so that a session
 picking this up months later does not have to rediscover the pattern.
 
+## Entry pages and learner help, 2026-09-05
+
+A coordinated review now covers the contents and About pages, README,
+student guide, FAQ, reporting guide, shared saving help, and selected
+First Steps passages. It uses learner questions about purpose, starting,
+meaning, trying, help, choice, and saved work. The
+[review record](LEARNER_LANGUAGE_REVIEW.md) lists the changes, checked
+behaviour, validation, and remaining batches.
+
+The figures below describe earlier passes. They are not current counts
+of this batch's sentences or a claim that the remaining tutorials have
+been reviewed.
+
 ---
 
 ## Why this exists
@@ -125,22 +138,21 @@ written as *"we usually want…"* could get wearing where a reader is scanning
 for a fact, and the glossary may want to stay closer to plain statement than
 the tree descriptions do.
 
-**A vocabulary sweep, against the ninth rule.** No surface has been checked
-against it yet, including the ones already done for sentence architecture. A
+**A vocabulary sweep, against the ninth rule.** The entry-page batch
+above has now been reviewed for vocabulary. The remaining tutorials and glossary definitions still need this pass. A
 mechanical first pass is possible — a list of the roughly two thousand most
 common English words, flagged the way `tools/measure_sentences.py` (dewstack)
 flags a sentence over the limit — but it still needs reading afterward, the
 same way that script's own docstring says of itself.
 
-**Tutorial body prose.** The largest surface, untouched by any of this, and the
+**Tutorial body prose.** Beyond the selected First Steps passages above,
+this is still the largest outstanding surface, and the
 one where flattening would cost the most. Worth doing deliberately, tutorial by
 tutorial, rather than in a sweep.
 
-**A tracked pass for the struggle/self-efficacy framing**, if it turns out to
-need one. For now it is being added opportunistically wherever a page is
-already being touched for another reason, not swept on its own — a larger,
-dedicated set of pages on this was raised and deliberately deferred, to keep
-this addition small until that decision is made.
+**Struggle and learner choice.** The entry-page review now tracks this
+alongside clarity and vocabulary. Remaining tutorial batches need the same
+checks, especially whether a stuck learner has a practical next step.
 
 **Bibliographies.** Unrelated to readability but still the largest outstanding
 piece of style work — see section 8 of the style guide.
