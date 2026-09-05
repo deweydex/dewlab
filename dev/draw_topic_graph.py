@@ -54,6 +54,25 @@ OWN = REVIEW / "pairs"            # Josh's own, played in the game
 DECISIONS = REVIEW / "decisions.yaml"
 
 
+# A split leaves every judgement and every decision naming a code that is gone.
+# Each old code stands for the child that took over its arrows — the same child
+# the parent's `needs` references were pointed at — so a judgement about the old
+# topic still lands on the part of it that judgement was about. Where that is
+# wrong the pair simply wants judging again, which the report will show as a
+# pair nobody has an answer for.
+GONE = {
+    "MIT-6.3": "MIT-6.3a", "MIT-1.1": "MIT-1.1a", "MIT-6.8": "MIT-6.8a",
+    "PDP-LO6": "PDP-LO6a", "MIT-1.10": "MIT-1.10a", "MIT-4.10": "MIT-4.10a",
+    "MIT-5.12": "MIT-5.12a", "CMPS-LO1": "CMPS-LO1a", "MIT-5.8": "MIT-5.8a",
+    "MIT-4.6": "MIT-4.6a", "CMPS-LO4": "CMPS-LO4a", "CMPS-LO2": "CMPS-LO2a",
+    "MIT-2.1": "MIT-2.1a",
+}
+
+
+def live(code: str) -> str:
+    return GONE.get(code, code)
+
+
 def owner_judgements() -> dict[tuple, tuple]:
     """Every pair Josh has judged himself, a newer file winning a repeat."""
     out: dict[tuple, tuple] = {}
@@ -62,7 +81,11 @@ def owner_judgements() -> dict[tuple, tuple]:
         for j in batch.get("judgements") or []:
             pair = j.get("pair") or []
             if len(pair) == 2:
-                out[tuple(sorted(pair))] = (j["verdict"], j.get("first"))
+                a, b = live(pair[0]), live(pair[1])
+                if a == b:
+                    continue          # both halves of a pair went into one child
+                first = live(j["first"]) if j.get("first") else None
+                out[tuple(sorted((a, b)))] = (j["verdict"], first)
     return out
 
 
@@ -73,7 +96,11 @@ def judgements() -> dict[str, dict]:
         for j in batch.get("judgements") or []:
             pair = j.get("pair") or []
             if len(pair) == 2:
-                runs[batch["by"]][tuple(sorted(pair))] = (j["verdict"], j.get("first"))
+                a, b = live(pair[0]), live(pair[1])
+                if a == b:
+                    continue
+                first = live(j["first"]) if j.get("first") else None
+                runs[batch["by"]][tuple(sorted((a, b)))] = (j["verdict"], first)
     return runs
 
 
@@ -114,9 +141,12 @@ def revise(topics: dict, runs: dict) -> dict:
     decided = 0
     clashes = []
     for entry in (yaml.safe_load(DECISIONS.read_text()) or {}).get("decisions") or []:
-        x, y = entry["pair"]
+        x, y = live(entry["pair"][0]), live(entry["pair"][1])
+        if x == y:
+            continue
         key = tuple(sorted((x, y)))
-        settled = (entry["verdict"], entry.get("first"))
+        settled = (entry["verdict"],
+                   live(entry["first"]) if entry.get("first") else None)
         if key in own and own[key] != settled and not (
                 own[key][0] == "both" and entry["verdict"] == "level"):
             clashes.append((key, own[key], settled))
@@ -124,7 +154,7 @@ def revise(topics: dict, runs: dict) -> dict:
         levels.discard((x, y))
         levels.discard((y, x))
         if entry["verdict"] == "needs":
-            first = entry["first"]
+            first = live(entry["first"])
             edges.add((first, y if first == x else x))
         elif entry["verdict"] == "level":
             levels.add(tuple(sorted((x, y))))

@@ -910,7 +910,7 @@ topics:
 
   MIT-6.3a:
     name: Lists
-    outcome: MIT-6.3
+    outcome: [MIT-6.3, MIT-6.5]
     plain: >
       Holding many values under one name, in order. You can reach any one
       of them by its position, and you can do the same thing to all of them
@@ -946,17 +946,6 @@ topics:
     uses:
       - Reading a formula in a paper or a specification and turning it into a
         loop, which is largely a matter of recognising this notation.
-    needs: [MIT-6.3a]
-
-  MIT-6.5:
-    name: Lists applied to problems
-    outcome: MIT-6.5
-    plain: >
-      Using a list to model something real — a shopping list, a queue, a set of
-      readings — and choosing the operations the problem actually needs.
-    uses:
-      - Almost any small program. The first design decision is usually what goes
-        in the list.
     needs: [MIT-6.3a]
 
   MIT-6.6:

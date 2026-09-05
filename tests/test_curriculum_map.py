@@ -289,7 +289,7 @@ class TestTheTopicGlossary:
         ideas a student meets weeks apart, and cutting the topic finer is how
         the map says so; cutting the descriptor is not ours to do."""
         outcomes, _ = cm.load_outcomes()
-        served = {t.get("outcome") for t in self.topics().values()}
+        served = {o for t in self.topics().values() for o in cm.outcomes_of(t)}
         missing = sorted(set(outcomes) - served)
         assert not missing, f"no topic claims {missing}"
 
@@ -300,14 +300,15 @@ class TestTheTopicGlossary:
         `PRE-` codes carry no outcome at all — see the next test."""
         outcomes, _ = cm.load_outcomes()
         for code, topic in self.topics().items():
-            claimed = topic.get("outcome")
+            claimed = cm.outcomes_of(topic)
             if code.startswith("PRE-"):
-                assert claimed is None, f"{code} is groundwork and claims {claimed}"
+                assert not claimed, f"{code} is groundwork and claims {claimed}"
                 continue
             assert claimed, f"{code} names no outcome"
-            assert claimed in outcomes, (
-                f"{code} claims {claimed}, which is in no module descriptor"
-            )
+            for one in claimed:
+                assert one in outcomes, (
+                    f"{code} claims {one}, which is in no module descriptor"
+                )
 
     def test_groundwork_is_marked_as_groundwork_and_says_as_much(self):
         """Not everything a student needs is a numbered outcome. Naming the

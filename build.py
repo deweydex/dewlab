@@ -1455,10 +1455,16 @@ def outcome_of(topics: dict, code: str) -> str:
 
     A topic code and an outcome code were once the same string. They are not
     any more: several topics may serve one outcome where the descriptor bundles
-    ideas a student meets weeks apart. Falling back to the topic's own code
-    keeps `PRE-` groundwork, which serves no outcome, working as it did.
+    ideas a student meets weeks apart, and one topic may serve several where it
+    folds in what a thin neighbouring outcome asked for. Where a topic serves
+    several, the first is the one the tree colours and links by. Falling back
+    to the topic's own code keeps `PRE-` groundwork, which serves none, working
+    as it did.
     """
-    return (topics.get(code) or {}).get("outcome") or code
+    claimed = (topics.get(code) or {}).get("outcome")
+    if not claimed:
+        return code
+    return claimed if isinstance(claimed, str) else claimed[0]
 
 
 def topic_layout(topics: dict, strands: dict[str, str]) -> tuple[dict, float, float]:
