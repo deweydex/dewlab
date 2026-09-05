@@ -1,9 +1,10 @@
 # Generated per .claude/skills/tutorial-glossary/SKILL.md.
 #
-# First tutorial of its series (Programming with objects) and its module
-# (Fundamentals of Object Oriented Programming), so there is no cumulative
-# glossary to check against yet. None of these terms are emphasised
-# anywhere else in the curriculum either (checked via
+# Second tutorial of its series (Programming with objects) and its module
+# (Fundamentals of Object Oriented Programming) — the-moves-you-already-know
+# comes first, but introduces only sequence/selection/iteration, none of
+# which this tutorial's own terms below overlap with. None of these terms
+# are emphasised anywhere else in the curriculum either (checked via
 # dev/curriculum_map.py's terms_of()).
 entries:
   - term: class

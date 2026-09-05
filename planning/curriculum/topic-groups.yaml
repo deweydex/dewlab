@@ -159,7 +159,9 @@ groups:
       characters — without a separate variable name for every one of
       them.
     tutorials:
+      - { module: fundamentals-of-oop, slug: the-moves-you-already-know }
       - { module: fundamentals-of-oop, slug: objects-and-classes }
+      - { module: fundamentals-of-oop, slug: the-tools-around-your-code }
       - { module: fundamentals-of-oop, slug: one-class-many-methods }
       - { module: fundamentals-of-oop, slug: one-parent-many-children }
       - { module: fundamentals-of-oop, slug: testing-what-a-class-does }
