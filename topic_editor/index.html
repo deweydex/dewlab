@@ -1,0 +1,674 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Topic editor</title>
+<style>
+:root{
+  --ink:#1b1b1f; --dim:#6b6b76; --line:#cfcfd8; --paper:#fbfbfd;
+  --box:#fff; --mark:#1b5cff; --soft:#eef2ff; --panel:#fff; --bad:#c0392b; --badsoft:#fdecea;
+  --req:#5b5b66; --help:#7b8fb5; --tool:#4f9a6e; --inter:#b8860b; --inv:#c9a85a;
+  --c0:#e8eef9; --c1:#f6e9e3; --c2:#e6f3ea; --c3:#f4ecf7; --c4:#fbf3dc; --c5:#e6f3f5; --c6:#ededed;
+}
+@media (prefers-color-scheme: dark){
+  :root{ --ink:#e9e9ef; --dim:#9a9aa6; --line:#3a3a44; --paper:#141418;
+         --box:#1e1e25; --mark:#7aa2ff; --soft:#22283a; --panel:#1a1a20; --bad:#ff6b5e;
+         --badsoft:#3a2220; --req:#a3a3ae; --help:#8fa4cf; --tool:#7fc59a; --inter:#e0b552; --inv:#b39a5a;
+         --c0:#22283a; --c1:#3a2a24; --c2:#213328; --c3:#31263a; --c4:#3a3320; --c5:#203236; --c6:#2a2a2e; }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);
+  font:14px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif;
+  display:flex;flex-direction:column;height:100dvh;overflow:hidden}
+header{padding:.5rem .8rem;border-bottom:1px solid var(--line);flex:none}
+.bar{display:flex;gap:.4rem;align-items:center}
+h1{margin:0 .5rem 0 0;font-size:.95rem;font-weight:600;white-space:nowrap}
+input,select,textarea{font:inherit;color:inherit;background:var(--box);
+  border:1px solid var(--line);border-radius:7px;padding:.4rem .55rem}
+input[type=search]{flex:1;min-width:0}
+textarea{width:100%;resize:vertical;min-height:4.5rem}
+button{font:inherit;padding:.4rem .6rem;border:1px solid var(--line);
+  border-radius:7px;background:var(--box);color:inherit;cursor:pointer;white-space:nowrap}
+button:disabled{opacity:.4;cursor:default}
+a.btn{font:inherit;padding:.4rem .6rem;border:1px solid var(--line);border-radius:7px;
+  background:var(--box);color:inherit;text-decoration:none;white-space:nowrap}
+button.act{border-color:var(--mark);color:var(--mark)}
+button.warn{border-color:var(--bad);color:var(--bad)}
+button[aria-pressed=true]{background:var(--soft);border-color:var(--mark);color:var(--mark)}
+button.tiny{padding:.1rem .4rem;font-size:.75rem;border-radius:5px}
+.hits{display:flex;flex-wrap:wrap;gap:.3rem;margin-top:.35rem}
+.hits:empty{display:none}
+.cols{display:flex;flex-wrap:wrap;gap:.3rem;margin-top:.35rem;align-items:center}
+.cols small{color:var(--dim);font-size:.75rem}
+.cols button{padding:.15rem .5rem;font-size:.78rem;border-radius:999px}
+.cols button[aria-pressed=false]{opacity:.45}
+.status{font-size:.75rem;color:var(--dim);white-space:nowrap}
+.status.unsaved{color:var(--bad)}
+#stage{cursor:grab}
+#stage.panning{cursor:grabbing}
+.node.hush rect,.node.hush text{opacity:.18}
+.link.hush{opacity:.08}
+.count{font-size:9.5px;fill:var(--dim)}
+.hits button{padding:.2rem .5rem;font-size:.8rem;border-radius:999px}
+#mode{margin-top:.4rem;padding:.45rem .7rem;border-radius:7px;background:var(--soft);
+  color:var(--mark);font-weight:600;display:none;align-items:center;gap:.6rem}
+#mode.on{display:flex}
+#mode button{margin-left:auto}
+#warn{margin-top:.4rem;padding:.45rem .7rem;border-radius:7px;background:var(--badsoft);
+  color:var(--bad);display:none}
+#warn.on{display:block}
+main{flex:1;display:flex;min-height:0}
+#stage{flex:1;min-width:0;overflow:auto;position:relative;
+  background:radial-gradient(var(--line) 1px, transparent 1px);background-size:24px 24px}
+aside{width:360px;flex:none;border-left:1px solid var(--line);background:var(--panel);
+  overflow:auto;padding:.8rem}
+aside h2{margin:0 0 .1rem;font-size:1.05rem}
+aside .code{color:var(--dim);font-size:.78rem;margin:0 0 .6rem}
+aside h3{margin:.8rem 0 .25rem;font-size:.7rem;text-transform:uppercase;
+  letter-spacing:.05em;color:var(--dim);display:flex;align-items:center;gap:.4rem}
+aside h3 button{margin-left:auto}
+aside ul{margin:0;padding:0;list-style:none}
+aside li{display:flex;align-items:center;gap:.4rem;padding:.2rem 0;
+  border-bottom:1px solid var(--line);font-size:.85rem}
+aside li:last-child{border-bottom:0}
+aside li a{flex:1;cursor:pointer;color:inherit;text-decoration:none}
+aside li a:hover{color:var(--mark)}
+aside li select{padding:.1rem .3rem;font-size:.75rem}
+aside .none{color:var(--dim);font-size:.8rem;margin:.1rem 0}
+aside label{display:block;font-size:.72rem;color:var(--dim);margin:.6rem 0 .15rem}
+aside .field{width:100%}
+aside .row{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.7rem}
+aside p{margin:.3rem 0 .6rem}
+aside kbd{font:inherit;font-size:.8em;padding:0 .3em;border:1px solid var(--line);border-radius:4px}
+.log{font-size:.78rem;color:var(--dim)}
+.log li{border:0;padding:.1rem 0;display:block}
+.swatch{display:inline-block;width:.8em;height:.8em;border-radius:3px;border:1px solid var(--line);vertical-align:-1px;margin-right:.3em}
+svg#map{display:block;user-select:none}
+.node rect{stroke:var(--line);stroke-width:1.2}
+.node text{font-size:11.5px;fill:var(--ink);text-anchor:middle;dominant-baseline:middle;pointer-events:none}
+.node{cursor:grab}
+.node.here rect{stroke:var(--mark);stroke-width:3}
+.node.pinned rect{stroke-dasharray:0;stroke:var(--dim);stroke-width:1.8}
+.node.focus rect{stroke:var(--inter);stroke-width:3.5}
+.node.found rect{stroke:var(--inter);stroke-width:2.4}
+.node.dim rect,.node.dim text{opacity:.3}
+.link{fill:none;stroke-width:1.6;cursor:pointer}
+.link.hit{stroke:transparent;stroke-width:14}
+.link.requires{stroke:var(--req)}
+.link.helps{stroke:var(--help);stroke-dasharray:7 4}
+.link.applied{stroke:var(--tool);stroke-dasharray:2 4}
+.link.inter{stroke:var(--inter);stroke-width:2.2}
+.link.involves{stroke:var(--inv);stroke-dasharray:3 5}
+.link.on{stroke-width:3}
+.link.dim{opacity:.15}
+.tag{font-size:10px;fill:var(--dim)}
+dialog{border:1px solid var(--line);border-radius:10px;background:var(--panel);
+  color:inherit;padding:1rem 1.1rem;max-width:32rem}
+dialog::backdrop{background:rgba(0,0,0,.35)}
+dialog h2{margin:0 0 .5rem;font-size:1rem}
+dialog label{display:block;font-size:.75rem;color:var(--dim);margin:.6rem 0 .15rem}
+dialog input{width:100%}
+dialog .row{display:flex;gap:.4rem;justify-content:flex-end;margin-top:1rem}
+.key{display:flex;flex-wrap:wrap;gap:.2rem .9rem;margin-top:.35rem;font-size:.75rem;color:var(--dim)}
+.key b{font-weight:400;display:flex;align-items:center;gap:.3rem}
+.key path{fill:none;stroke-width:1.8}
+</style></head><body>
+<header>
+  <div class="bar">
+    <h1>Topic editor</h1>
+    <input type="search" id="find" placeholder="Find a topic  ( / ) — with one chosen, a hit links to it" autocomplete="off">
+    <span id="status" class="status"></span>
+    <button id="undo" title="Ctrl+Z">Undo</button>
+    <button id="redo" title="Ctrl+Shift+Z">Redo</button>
+    <button id="out" title="Smaller">−</button>
+    <button id="in" title="Bigger">+</button>
+    <button id="fit">Fit</button>
+    <button id="flow" aria-pressed="true" title="One-way links lean downward, so an order can appear">Flow down</button>
+    <button id="tidy" title="Let go of every topic you dragged, so the links arrange them again">Let go</button>
+    <button id="loadGraph" title="Add every link the repo's graph has, keeping yours">Bring in repo links</button>
+    <button id="export" class="act">Export</button>
+    <label><input type="file" id="import" accept=".json" hidden><button id="importBtn">Import</button></label>
+    <button id="reset" class="warn">Start again</button>
+    <a class="btn" href="help.html" target="_blank" rel="noopener" title="How the editor works">Help</a>
+  </div>
+  <div class="hits" id="hits"></div>
+  <div class="cols" id="cols"></div>
+  <div id="mode"><span id="modeText"></span><button id="cancel">Cancel (Esc)</button></div>
+  <div id="warn"></div>
+  <p class="key">
+    <b><svg width="26" height="11"><path d="M1 6 L25 6" style="stroke:var(--req)"/></svg> requires</b>
+    <b><svg width="26" height="11"><path d="M1 6 L25 6" style="stroke:var(--help);stroke-dasharray:7 4"/></svg> helps</b>
+    <b><svg width="26" height="11"><path d="M1 6 L25 6" style="stroke:var(--tool);stroke-dasharray:2 4"/></svg> applied in</b>
+    <b><svg width="26" height="11"><path d="M1 6 L25 6" style="stroke:var(--inter);stroke-width:2.4"/></svg> interdependent</b>
+    <b><svg width="26" height="11"><path d="M1 6 L25 6" style="stroke:var(--inv);stroke-dasharray:3 5"/></svg> involves</b>
+    <b>Tap one topic, then another, to link them. Tap the second again, or press 1–5, to change the kind. Drag empty space to move around; Ctrl+wheel zooms.</b>
+  </p>
+</header>
+<main>
+  <div id="stage"><svg id="map"></svg></div>
+  <aside id="panel"></aside>
+</main>
+<dialog id="dlg"></dialog>
+<script>
+const DATA = {"applied":[],"columns":[{"id":"sets-and-number","name":"Sets and number systems"},{"id":"equations-and-functions","name":"Equations and functions"},{"id":"geometry","name":"Geometry"},{"id":"chance-and-data","name":"Probability and statistics"},{"id":"programming","name":"Programming"},{"id":"software-development","name":"Software development"}],"helps":[],"level":[["CMPS-LO3","CMPS-LO4a"],["CMPS-LO3","CMPS-LO5"],["CMPS-LO4a","MIT-1.12"],["CMPS-LO5","CMPS-LO6"],["CMPS-LO5","MIT-6.8a"],["CMPS-LO8","PDP-LO7"],["FOOP-LO1","PDP-LO4"],["FOOP-LO7","PDP-LO1"],["MIT-1.6","MIT-1.7"],["MIT-3.1","PDP-LO8"],["MIT-3.3","MIT-4.7"],["MIT-4.4","MIT-4.5"],["MIT-5.11","MIT-5.12a"],["PDP-LO1","PDP-LO2"],["PDP-LO11","PDP-LO7"],["PDP-LO12","PDP-LO7"]],"modules":{"CMPS":"Computational Methods","FOOP":"Object Oriented","MIT":"Maths for IT","PDP":"Programming and Design","PRE":"Groundwork"},"pos":null,"requires":[["CMPS-LO10","CMPS-LO11"],["CMPS-LO10","CMPS-LO13"],["CMPS-LO10","CMPS-LO3"],["CMPS-LO10","CMPS-LO4a"],["CMPS-LO10","CMPS-LO6"],["CMPS-LO10","CMPS-LO7"],["CMPS-LO12","CMPS-LO10"],["CMPS-LO12","CMPS-LO11"],["CMPS-LO12","CMPS-LO13"],["CMPS-LO12","CMPS-LO3"],["CMPS-LO12","CMPS-LO4a"],["CMPS-LO12","CMPS-LO6"],["CMPS-LO12","CMPS-LO7"],["CMPS-LO12","MIT-1.4"],["CMPS-LO13","CMPS-LO11"],["CMPS-LO13","CMPS-LO1a"],["CMPS-LO13","CMPS-LO3"],["CMPS-LO13","CMPS-LO5"],["CMPS-LO13","CMPS-LO7"],["CMPS-LO1a","CMPS-LO3"],["CMPS-LO1a","CMPS-LO5"],["CMPS-LO1c","CMPS-LO1b"],["CMPS-LO2b","CMPS-LO2c"],["CMPS-LO2c","CMPS-LO2d"],["CMPS-LO2c","CMPS-LO2e"],["CMPS-LO3","CMPS-LO7"],["CMPS-LO4a","CMPS-LO4b"],["CMPS-LO4a","CMPS-LO4c"],["CMPS-LO4a","CMPS-LO4d"],["CMPS-LO5","CMPS-LO7"],["CMPS-LO6","CMPS-LO11"],["CMPS-LO6","CMPS-LO13"],["CMPS-LO6","CMPS-LO3"],["CMPS-LO6","CMPS-LO7"],["CMPS-LO6","CMPS-LO9"],["CMPS-LO7","CMPS-LO11"],["CMPS-LO8","CMPS-LO10"],["CMPS-LO8","CMPS-LO11"],["CMPS-LO8","CMPS-LO12"],["CMPS-LO8","CMPS-LO13"],["CMPS-LO8","CMPS-LO3"],["CMPS-LO8","CMPS-LO4a"],["CMPS-LO8","CMPS-LO6"],["CMPS-LO8","CMPS-LO7"],["CMPS-LO9","CMPS-LO1a"],["CMPS-LO9","CMPS-LO3"],["CMPS-LO9","CMPS-LO4a"],["CMPS-LO9","CMPS-LO5"],["CMPS-LO9","CMPS-LO7"],["CMPS-LO9","MIT-6.6"],["FOOP-LO1","FOOP-LO3"],["FOOP-LO1","FOOP-LO4"],["FOOP-LO1","FOOP-LO7"],["FOOP-LO1","FOOP-LO8"],["FOOP-LO1","MIT-6.3a"],["FOOP-LO1","PDP-LO10"],["FOOP-LO1","PDP-LO6a"],["FOOP-LO1","PDP-LO7"],["FOOP-LO11","PDP-LO10"],["FOOP-LO11","PDP-LO12"],["FOOP-LO11","PDP-LO7"],["FOOP-LO3","FOOP-LO4"],["FOOP-LO3","FOOP-LO6"],["FOOP-LO3","FOOP-LO7"],["FOOP-LO3","FOOP-LO8"],["FOOP-LO3","PDP-LO10"],["FOOP-LO4","FOOP-LO6"],["FOOP-LO4","FOOP-LO7"],["FOOP-LO4","PDP-LO10"],["FOOP-LO5","FOOP-LO11"],["FOOP-LO5","PDP-LO10"],["FOOP-LO5","PDP-LO7"],["FOOP-LO6","FOOP-LO7"],["FOOP-LO6","PDP-LO10"],["FOOP-LO8","FOOP-LO4"],["FOOP-LO8","FOOP-LO6"],["FOOP-LO8","FOOP-LO7"],["FOOP-LO8","PDP-LO10"],["MIT-1.10a","MIT-1.10b"],["MIT-1.11","MIT-1.12"],["MIT-1.1a","MIT-1.10a"],["MIT-1.1a","MIT-1.1b"],["MIT-1.1a","MIT-1.4"],["MIT-1.1a","MIT-1.8"],["MIT-1.1a","MIT-1.9"],["MIT-1.1a","MIT-3.3"],["MIT-1.2","MIT-1.3"],["MIT-1.5","MIT-1.10a"],["MIT-1.5","MIT-1.11"],["MIT-1.5","MIT-1.12"],["MIT-1.5","MIT-1.1a"],["MIT-1.5","MIT-1.2"],["MIT-1.5","MIT-1.6"],["MIT-1.5","MIT-1.7"],["MIT-1.5","MIT-1.8"],["MIT-1.5","MIT-1.9"],["MIT-1.5","MIT-2.1a"],["MIT-1.5","MIT-3.1"],["MIT-1.5","MIT-4.1"],["MIT-1.5","MIT-5.4"],["MIT-1.5","MIT-5.6"],["MIT-1.5","PRE-2"],["MIT-1.6","MIT-1.10a"],["MIT-1.6","MIT-1.11"],["MIT-1.6","MIT-1.12"],["MIT-1.6","MIT-1.1a"],["MIT-1.6","MIT-1.8"],["MIT-1.6","MIT-1.9"],["MIT-1.6","MIT-4.4"],["MIT-1.7","MIT-1.10a"],["MIT-1.7","MIT-1.11"],["MIT-1.7","MIT-1.12"],["MIT-1.7","MIT-1.1a"],["MIT-1.7","MIT-1.8"],["MIT-1.7","MIT-1.9"],["MIT-1.8","MIT-1.10a"],["MIT-1.8","MIT-1.9"],["MIT-1.8","MIT-3.6"],["MIT-1.9","MIT-1.10a"],["MIT-1.9","MIT-3.4"],["MIT-2.1a","MIT-1.10a"],["MIT-2.1a","MIT-2.1b"],["MIT-2.1a","MIT-6.8a"],["MIT-2.1b","MIT-2.1c"],["MIT-2.1c","MIT-2.1d"],["MIT-2.1d","MIT-2.1e"],["MIT-2.1e","MIT-2.1f"],["MIT-2.1f","MIT-2.1g"],["MIT-2.1g","MIT-1.10b"],["MIT-2.2","MIT-2.1a"],["MIT-2.2","MIT-2.3"],["MIT-2.2","MIT-2.4"],["MIT-2.2","MIT-2.5"],["MIT-2.2","MIT-5.6"],["MIT-2.4","MIT-2.3"],["MIT-2.4","MIT-2.5"],["MIT-2.5","MIT-2.3"],["MIT-3.1","MIT-3.2"],["MIT-3.1","MIT-3.3"],["MIT-3.1","MIT-3.4"],["MIT-3.1","MIT-3.5"],["MIT-3.1","MIT-3.6"],["MIT-3.1","MIT-3.7"],["MIT-3.1","MIT-4.1"],["MIT-3.1","MIT-4.10a"],["MIT-3.1","MIT-6.2"],["MIT-3.2","CMPS-LO4a"],["MIT-3.2","MIT-3.3"],["MIT-3.2","MIT-3.4"],["MIT-3.2","MIT-3.5"],["MIT-3.2","MIT-3.6"],["MIT-3.2","MIT-3.7"],["MIT-3.5","MIT-3.6"],["MIT-3.5","MIT-3.7"],["MIT-3.6","MIT-3.7"],["MIT-4.1","MIT-1.12"],["MIT-4.1","MIT-4.10a"],["MIT-4.1","MIT-4.2"],["MIT-4.1","MIT-4.3"],["MIT-4.1","MIT-4.6a"],["MIT-4.1","MIT-4.7"],["MIT-4.1","MIT-4.8"],["MIT-4.1","MIT-4.9"],["MIT-4.1","MIT-5.10"],["MIT-4.10a","MIT-4.8"],["MIT-4.10b","MIT-4.10c"],["MIT-4.2","MIT-4.3"],["MIT-4.2","MIT-4.6c"],["MIT-4.3","MIT-4.10a"],["MIT-4.3","MIT-4.5"],["MIT-4.3","MIT-4.6a"],["MIT-4.3","MIT-4.7"],["MIT-4.3","MIT-4.8"],["MIT-4.3","MIT-4.9"],["MIT-4.4","MIT-4.10a"],["MIT-4.4","MIT-4.3"],["MIT-4.4","MIT-4.6a"],["MIT-4.4","MIT-4.7"],["MIT-4.4","MIT-4.8"],["MIT-4.4","MIT-4.9"],["MIT-4.5","MIT-4.10a"],["MIT-4.5","MIT-4.7"],["MIT-4.5","MIT-4.8"],["MIT-4.5","MIT-4.9"],["MIT-4.6a","CMPS-LO4b"],["MIT-4.6a","MIT-3.3"],["MIT-4.6a","MIT-4.10a"],["MIT-4.6a","MIT-4.5"],["MIT-4.6a","MIT-4.6b"],["MIT-4.6a","MIT-4.7"],["MIT-4.6a","MIT-4.8"],["MIT-4.6a","MIT-4.9"],["MIT-4.7","MIT-4.10a"],["MIT-4.7","MIT-4.8"],["MIT-4.7","MIT-4.9"],["MIT-4.9","MIT-4.10a"],["MIT-4.9","MIT-4.10b"],["MIT-4.9","MIT-4.8"],["MIT-5.1","MIT-2.3"],["MIT-5.1","MIT-5.10"],["MIT-5.1","MIT-5.11"],["MIT-5.1","MIT-5.12a"],["MIT-5.1","MIT-5.13"],["MIT-5.1","MIT-5.2"],["MIT-5.1","MIT-5.3"],["MIT-5.1","MIT-5.4"],["MIT-5.1","MIT-5.5"],["MIT-5.1","MIT-5.7"],["MIT-5.1","MIT-5.8a"],["MIT-5.1","MIT-5.9"],["MIT-5.10","MIT-5.13"],["MIT-5.11","MIT-5.10"],["MIT-5.11","MIT-5.13"],["MIT-5.12a","MIT-5.10"],["MIT-5.12a","MIT-5.12b"],["MIT-5.12a","MIT-5.13"],["MIT-5.12b","MIT-5.12c"],["MIT-5.2","MIT-5.10"],["MIT-5.2","MIT-5.11"],["MIT-5.2","MIT-5.12a"],["MIT-5.2","MIT-5.13"],["MIT-5.2","MIT-5.3"],["MIT-5.2","MIT-5.4"],["MIT-5.2","MIT-5.5"],["MIT-5.2","MIT-5.7"],["MIT-5.2","MIT-5.8a"],["MIT-5.2","MIT-5.9"],["MIT-5.3","MIT-5.4"],["MIT-5.3","MIT-5.5"],["MIT-5.4","MIT-5.5"],["MIT-5.6","CMPS-LO2b"],["MIT-5.6","CMPS-LO3"],["MIT-5.6","CMPS-LO4c"],["MIT-5.6","CMPS-LO5"],["MIT-5.6","CMPS-LO6"],["MIT-5.6","MIT-5.1"],["MIT-5.6","MIT-5.10"],["MIT-5.6","MIT-5.11"],["MIT-5.6","MIT-5.12a"],["MIT-5.6","MIT-5.13"],["MIT-5.6","MIT-5.2"],["MIT-5.6","MIT-5.7"],["MIT-5.6","MIT-5.8a"],["MIT-5.6","MIT-5.9"],["MIT-5.7","MIT-5.10"],["MIT-5.7","MIT-5.11"],["MIT-5.7","MIT-5.12a"],["MIT-5.7","MIT-5.13"],["MIT-5.7","MIT-5.8a"],["MIT-5.7","MIT-5.8b"],["MIT-5.7","MIT-5.9"],["MIT-5.8a","MIT-5.10"],["MIT-5.8a","MIT-5.11"],["MIT-5.8a","MIT-5.12a"],["MIT-5.8a","MIT-5.13"],["MIT-5.8a","MIT-5.8c"],["MIT-5.8b","MIT-5.8c"],["MIT-5.9","MIT-5.10"],["MIT-5.9","MIT-5.11"],["MIT-5.9","MIT-5.12a"],["MIT-5.9","MIT-5.13"],["MIT-5.9","MIT-5.8a"],["MIT-6.1","CMPS-LO8"],["MIT-6.1","MIT-6.2"],["MIT-6.1","MIT-6.3a"],["MIT-6.1","MIT-6.4"],["MIT-6.1","MIT-6.6"],["MIT-6.1","MIT-6.7"],["MIT-6.1","MIT-6.8a"],["MIT-6.1","PDP-LO2"],["MIT-6.1","PDP-LO5"],["MIT-6.1","PDP-LO8"],["MIT-6.2","MIT-6.3a"],["MIT-6.2","MIT-6.6"],["MIT-6.2","MIT-6.8a"],["MIT-6.3a","CMPS-LO4a"],["MIT-6.3a","FOOP-LO3"],["MIT-6.3a","MIT-5.11"],["MIT-6.3a","MIT-5.12a"],["MIT-6.3a","MIT-6.3b"],["MIT-6.3a","MIT-6.6"],["MIT-6.3a","MIT-6.8a"],["MIT-6.6","CMPS-LO1a"],["MIT-6.7","CMPS-LO1a"],["MIT-6.7","CMPS-LO1b"],["MIT-6.7","CMPS-LO1c"],["MIT-6.7","MIT-6.3a"],["MIT-6.7","MIT-6.4"],["MIT-6.7","MIT-6.6"],["MIT-6.7","MIT-6.8a"],["MIT-6.7","MIT-6.8b"],["MIT-6.8a","MIT-6.6"],["PDP-LO1","PDP-LO3"],["PDP-LO10","CMPS-LO10"],["PDP-LO10","PDP-LO11"],["PDP-LO10","PDP-LO12"],["PDP-LO11","PDP-LO12"],["PDP-LO2","PDP-LO10"],["PDP-LO2","PDP-LO11"],["PDP-LO2","PDP-LO12"],["PDP-LO2","PDP-LO3"],["PDP-LO2","PDP-LO6a"],["PDP-LO2","PDP-LO7"],["PDP-LO2","PDP-LO8"],["PDP-LO2","PDP-LO9"],["PDP-LO4","FOOP-LO11"],["PDP-LO4","FOOP-LO3"],["PDP-LO4","FOOP-LO4"],["PDP-LO4","FOOP-LO6"],["PDP-LO4","FOOP-LO7"],["PDP-LO4","FOOP-LO8"],["PDP-LO4","PDP-LO1"],["PDP-LO4","PDP-LO10"],["PDP-LO4","PDP-LO11"],["PDP-LO4","PDP-LO12"],["PDP-LO4","PDP-LO2"],["PDP-LO4","PDP-LO3"],["PDP-LO4","PDP-LO5"],["PDP-LO4","PDP-LO6a"],["PDP-LO4","PDP-LO6b"],["PDP-LO4","PDP-LO7"],["PDP-LO4","PDP-LO8"],["PDP-LO4","PDP-LO9"],["PDP-LO5","PDP-LO1"],["PDP-LO5","PDP-LO10"],["PDP-LO5","PDP-LO11"],["PDP-LO5","PDP-LO12"],["PDP-LO5","PDP-LO2"],["PDP-LO5","PDP-LO3"],["PDP-LO5","PDP-LO6a"],["PDP-LO5","PDP-LO7"],["PDP-LO5","PDP-LO8"],["PDP-LO5","PDP-LO9"],["PDP-LO6a","MIT-2.4"],["PDP-LO6a","MIT-5.5"],["PDP-LO6a","MIT-6.3a"],["PDP-LO6a","PDP-LO1"],["PDP-LO6a","PDP-LO10"],["PDP-LO6a","PDP-LO11"],["PDP-LO6a","PDP-LO12"],["PDP-LO6a","PDP-LO7"],["PDP-LO6a","PDP-LO8"],["PDP-LO6a","PDP-LO9"],["PDP-LO6b","MIT-6.3a"],["PDP-LO7","CMPS-LO6"],["PDP-LO7","PDP-LO10"],["PDP-LO8","FOOP-LO4"],["PDP-LO8","PDP-LO10"],["PDP-LO8","PDP-LO11"],["PDP-LO8","PDP-LO12"],["PDP-LO8","PDP-LO7"],["PDP-LO9","PDP-LO10"],["PDP-LO9","PDP-LO11"],["PDP-LO9","PDP-LO12"],["PRE-1","MIT-1.2"],["PRE-1","MIT-4.4"],["PRE-1","MIT-4.9"],["PRE-2","MIT-1.10a"]],"topics":{"CMPS-LO10":{"c":"software-development","m":"CMPS","n":"Symptoms versus root cause","o":["CMPS-LO10"],"p":"The difference between a fix that makes the error message go away and a fix that deals with why the program produced it. It means reading a problem for its logic instead of patching the first thing that looks wrong.","t":[],"w":["Debugging \u2014 a crash on line 40 is often caused by a bad value created on line 12.","Any support ticket where the reported symptom and the actual defect are two different things."],"x":{}},"CMPS-LO11":{"c":"chance-and-data","m":"CMPS","n":"Iterating a model","o":["CMPS-LO11"],"p":"Building a model, checking it against what really happens, and adjusting it. You do this as a loop rather than once, because the first version of a model is almost never the one you end up using.","t":[],"w":["Traffic flow at a single intersection, refined against observed queue lengths until the model's predictions hold up.","Any simulation used to make a real decision, which has to earn trust by matching reality before it is relied on."],"x":{}},"CMPS-LO12":{"c":"software-development","m":"CMPS","n":"Personal attributes in problem-solving","o":["CMPS-LO12"],"p":"The habits that make someone good at solving problems, none of which is a technique you can be taught. Starting before every detail is settled, working methodically, reasoning logically, keeping going when the first idea fails, and now and then trying the unlikely one.","t":[],"w":["Debugging a stubborn fault, which usually rewards persistence over any particular tool.","Approaching an unfamiliar problem with no worked example to copy."],"x":{}},"CMPS-LO13":{"c":"chance-and-data","m":"CMPS","n":"What a model's numbers are worth","o":["CMPS-LO13"],"p":"How far a computational model can be trusted. You ask how accurate and how precise its numbers really are, and what it means to make a real decision on the strength of what a simulation says.","t":[],"w":["Deciding whether a weather or climate model's forecast is precise enough to act on.","Knowing the difference between a model being wrong and a model being usefully approximate."],"x":{}},"CMPS-LO1a":{"c":"programming","m":"CMPS","n":"Grids","o":["CMPS-LO1"],"p":"Arranging values in rows and columns rather than in a single row. You reach one value by giving two positions, first which row and then which column.","t":[],"w":["ASCII art and computer graphics, where a grid of characters or of pixels is exactly this.","Any table of numbers a program works on, such as a spreadsheet or a set of readings taken at several places over several days."],"x":{}},"CMPS-LO1b":{"c":"programming","m":"CMPS","n":"Trees","o":["CMPS-LO1"],"p":"Arranging values so that each one can lead to several others, and none of them leads back. Following the branches gets you to any value quickly, because each step rules out most of what is left.","t":[],"w":["Folders on a disk, and the structure of a web page, both of which branch this way.","Deciding something in stages, where each answer narrows what you ask next."],"x":{}},"CMPS-LO1c":{"c":"programming","m":"CMPS","n":"Recursion","o":["CMPS-LO1"],"p":"Writing a function that calls itself on a smaller piece of the problem. It needs a case small enough to answer outright, or it never stops.","t":[],"w":["Walking a tree or a folder structure, where each branch is the same problem again on something smaller.","Any method that splits a problem in half and combines the two answers."],"x":{}},"CMPS-LO2b":{"c":"chance-and-data","m":"CMPS","n":"Sampling","o":["CMPS-LO2"],"p":"Measuring a few things and saying something about the many you did not measure. How much you can claim depends on how many you took and on how you chose them.","t":[],"w":["Load testing, where a few thousand requests stand in for a day's traffic.","Any survey or poll, and the reason its result comes with a margin either side."],"x":{}},"CMPS-LO2c":{"c":"chance-and-data","m":"CMPS","n":"Dependence","o":["CMPS-LO2"],"p":"Whether one event changes how likely another is. Two events that do not affect each other are much easier to reason about, and assuming that wrongly is a common way to get an answer badly wrong.","t":[],"w":["Reliability, where two parts that fail for the same reason are not the independent pair the sum assumed.","Spam filters and recommendation engines, which are built on chances that shift as each new fact arrives."],"x":{}},"CMPS-LO2d":{"c":"chance-and-data","m":"CMPS","n":"Random numbers a computer makes","o":["CMPS-LO2"],"p":"A computer follows instructions, so it cannot be truly unpredictable on its own. What it produces instead is a sequence that looks random and repeats exactly if you start it from the same place.","t":[],"w":["Repeating a simulation exactly, by starting it from the same place twice.","Public-key infrastructure, which depends on numbers a system can generate but an attacker cannot predict."],"x":{}},"CMPS-LO2e":{"c":"chance-and-data","m":"CMPS","n":"Information","o":["CMPS-LO2"],"p":"How much you learn from being told something. A result you already expected tells you little, and a surprising one tells you a lot, which is why the two can be measured on one scale.","t":[],"w":["Compression, which works by spending fewer bits on the things that happen often.","Choosing what to ask next, where the best question is the one whose answer you can predict least."],"x":{}},"CMPS-LO3":{"c":"chance-and-data","m":"CMPS","n":"Computer simulation","o":["CMPS-LO3"],"p":"Working out what would happen, instead of running the real thing when that would be slow, expensive or impossible. You repeat a calculation many times, often with randomness in it, until the results settle on an answer you can trust.","t":[],"w":["Monte Carlo estimation, which turns a geometric or physical question into a counting exercise a computer can just run.","Testing a design against thousands of random scenarios before it is built."],"x":{}},"CMPS-LO4a":{"c":"equations-and-functions","m":"CMPS","n":"Matrices","o":["CMPS-LO4"],"p":"A grid of numbers treated as one object. You can add two of them, multiply one by another, and the rules for doing so are what make everything below possible.","t":[],"w":["Holding a set of related numbers where the position of each one carries meaning, such as how much of each ingredient each recipe needs."],"x":{}},"CMPS-LO4b":{"c":"geometry","m":"CMPS","n":"Moving and turning a picture","o":["CMPS-LO4"],"p":"Every rotation, scale and camera move in graphics is one matrix multiplied by the points of the thing you are moving. Combining two moves is multiplying their two matrices.","t":[],"w":["Computer graphics and game engines.","Image editing, where a crop, a rotation and a resize can be folded into one step."],"x":{}},"CMPS-LO4c":{"c":"chance-and-data","m":"CMPS","n":"Ranking by following links","o":["CMPS-LO4"],"p":"Write down who links to whom as a grid, then multiply by it over and over. The numbers settle towards a ranking, and the pages that many linked pages point at come out on top.","t":[],"w":["Web search ranking, which began as exactly this calculation.","Working out who matters in any network, such as which account in a social graph reaches the most people."],"x":{}},"CMPS-LO4d":{"c":"equations-and-functions","m":"CMPS","n":"Comparing rows of numbers","o":["CMPS-LO4"],"p":"Two things described by numbers can be compared by how close their rows are. Doing that for every pair at once is a matrix calculation.","t":[],"w":["Nearest-neighbour search, which is how a recommendation finds things like the one you chose.","Sequence alignment, where two strands are lined up by scoring every way of matching them."],"x":{}},"CMPS-LO5":{"c":"programming","m":"CMPS","n":"Algorithmic complexity","o":["CMPS-LO5"],"p":"Judging an algorithm by how its cost grows as the input grows, not by how fast it feels on one small example. You separate the best case, the case you should expect, and the worst case you have to plan for.","t":[],"w":["Choosing between two libraries that solve the same problem, where the real difference only shows up at scale.","Capacity planning \u2014 knowing before you ship that a correct answer will become too slow."],"x":{}},"CMPS-LO6":{"c":"chance-and-data","m":"CMPS","n":"Probability applied to computing","o":["CMPS-LO6"],"p":"Using probability on computing itself. How often does an algorithm meet its average case rather than its worst? How likely is a part to fail? What does network traffic look like when some of it goes missing?","t":[],"w":["Average-case analysis of an algorithm, which is often the number that actually matters in production.","Failure prediction and reliability engineering, and branch prediction inside a processor.","Analysing packet loss and jitter on a network link."],"x":{}},"CMPS-LO7":{"c":"chance-and-data","m":"CMPS","n":"Modelling versus simulation","o":["CMPS-LO7"],"p":"Two related things that are easy to confuse. A model is a simplified description of a real system, cut down to the parts that matter. A simulation runs that description forward in time to see what it predicts.","t":[],"w":["A server room's cooling system, described as a model and then simulated to test a heatwave before it happens.","Robot control and autonomous-vehicle software, both of which simulate a model of the world many times before it meets the real one."],"x":{}},"CMPS-LO8":{"c":"software-development","m":"CMPS","n":"Problem definition and design","o":["CMPS-LO8"],"p":"The work that comes before any code is written. You pin down what the problem actually is, sketch a solution, and decide in advance how you will test it and how you will know it worked.","t":[],"w":["Writing a specification or an assessment brief that someone else could implement without asking you what you meant.","Deciding what \"done\" means before starting, rather than after."],"x":{}},"CMPS-LO9":{"c":"programming","m":"CMPS","n":"Problem-solving strategies","o":["CMPS-LO9"],"p":"The few general approaches to a hard problem, and which one suits which situation. You can try everything, split the problem in half and combine the answers, or accept a good-enough answer quickly.","t":[],"w":["Brute force where the input is small enough that cleverness is not worth the risk of a bug.","Divide-and-conquer in sorting, searching, and any problem that shrinks cleanly.","Heuristic strategies where an exact answer would take too long and an approximate one is good enough."],"x":{}},"FOOP-LO1":{"c":"programming","m":"FOOP","n":"Data types in an object oriented program","o":["FOOP-LO1"],"p":"The kinds of value a program stores and works with \u2014 whole numbers, decimals, text, true or false \u2014 plus the ones a class defines for itself, built out of those.","t":[],"w":["Choosing the right container for a value before you choose what to do with it, since a decimal and a whole number behave differently in division."],"x":{}},"FOOP-LO11":{"c":"software-development","m":"FOOP","n":"Deploying a program","o":["FOOP-LO11"],"p":"Giving a finished program a way for somebody other than its author to actually use it, rather than leaving it runnable only from inside an editor.","t":[],"w":["The difference between a program that works on your machine and one anyone else can open and use."],"x":{}},"FOOP-LO3":{"c":"programming","m":"FOOP","n":"Classes and objects","o":["FOOP-LO3"],"p":"A class is a blueprint: it says what an object of that kind has (its fields) and what it can do (its methods). An object is one thing built from that blueprint. Encapsulation keeps an object's own details to itself; inheritance lets one class reuse and extend another.","t":[],"w":["Every library import that hands you a ready-made object rather than a bag of loose functions."],"x":{}},"FOOP-LO4":{"c":"programming","m":"FOOP","n":"Modular, reusable code","o":["FOOP-LO4"],"p":"Writing a method once and calling it from anywhere an object of that class exists, instead of copying the same steps out by hand each time they are needed.","t":[],"w":["The difference between fixing a bug in one place and hunting down every copy of it."],"x":{}},"FOOP-LO5":{"c":"software-development","m":"FOOP","n":"Working in a development environment","o":["FOOP-LO5"],"p":"The tools that sit around the code itself: an editor with autocomplete, a way to run a program and see what it did, and a debugger for following a program step by step when reading it is not enough.","t":[],"w":["Working faster once the tool is doing the typing and the remembering it is good at, leaving the thinking to you."],"x":{}},"FOOP-LO6":{"c":"programming","m":"FOOP","n":"Building bigger programs from smaller ones","o":["FOOP-LO6"],"p":"Putting several classes to work together, each one responsible for a single piece, rather than writing one long program that does everything itself.","t":[],"w":["Any real application, which is nearly always many small, cooperating objects rather than one large one."],"x":{}},"FOOP-LO7":{"c":"programming","m":"FOOP","n":"Modelling the real world","o":["FOOP-LO7"],"p":"Deciding what an object needs to remember about itself and what it needs to be able to do, starting from a real thing \u2014 a customer, a shape, a game character \u2014 rather than from the code.","t":[],"w":["Turning a problem statement written in English into a first sketch of which classes a program needs."],"x":{}},"FOOP-LO8":{"c":"programming","m":"FOOP","n":"Organising data","o":["FOOP-LO8"],"p":"Grouping the values that belong together into one object's own fields, instead of tracking them as separate, disconnected variables.","t":[],"w":["Passing one object around a program instead of five loose values that have to travel together by convention."],"x":{}},"MIT-1.10a":{"c":"equations-and-functions","m":"MIT","n":"Solving quadratics","o":["MIT-1.10"],"p":"The formula that solves any quadratic equation. You put the three numbers in and it gives you the values that make the equation true.","t":[],"w":["Working out where something lands, or when it arrives, whenever the quantity changes at a changing rate.","Finding where two curves meet, which is how a program answers a question like whether two moving objects collide."],"x":{}},"MIT-1.10b":{"c":"equations-and-functions","m":"MIT","n":"Complex roots","o":["MIT-1.10"],"p":"What to do when the formula asks for the square root of a negative number. The answers still exist. They sit off the number line you have been using, on a second axis at right angles to it.","t":[],"w":["Signal processing and anything involving a wave. Complex numbers hold how big and how far shifted in one value.","Working out whether a system settles down or oscillates, which is the difference between a control loop that works and one that shakes itself apart."],"x":{}},"MIT-1.11":{"c":"equations-and-functions","m":"MIT","n":"Linear inequalities","o":["MIT-1.11"],"p":"Solving for a range rather than a value: not \"x is 5\" but \"x is anything above 5\". The one surprise is that multiplying by a negative flips the direction.","t":[],"w":["Validation. Every \"must be at least 8 characters\" is an inequality.","Setting bounds in a loop or a search, where getting the direction wrong is an off-by-one that runs forever."],"x":{}},"MIT-1.12":{"c":"equations-and-functions","m":"MIT","n":"Simultaneous equations","o":["MIT-1.12"],"p":"Two or three facts that have to be true at once, and finding the values that satisfy all of them together.","t":[],"w":["Where two lines cross, which is collision detection, route planning and the intersection of any two constraints.","Balancing a set of resources against a set of demands \u2014 the shape behind most scheduling and allocation code."],"x":{}},"MIT-1.1a":{"c":"sets-and-number","m":"MIT","n":"Powers","o":["MIT-1.1"],"p":"Multiplying a number by itself over and over. The small raised number counts how many times, so three to the fourth means three multiplied by itself four times.","t":[],"w":["Place value in binary. Each column of a binary number is the next power of two, which is why the columns read 1, 2, 4, 8, 16.","File sizes and storage. A kilobyte, a megabyte and a gigabyte are each about a thousand times the last.","Anything that doubles. A program that doubles its work at each step is described by a power of two."],"x":{}},"MIT-1.1b":{"c":"sets-and-number","m":"MIT","n":"Logarithms","o":["MIT-1.1"],"p":"The operation that undoes a power. A logarithm answers the question \"how many times did I multiply?\" Anything that grows or shrinks by a factor, rather than by a fixed amount, is usually described this way.","t":[],"w":["Measuring how much slower a program gets as its input grows. An algorithm that halves the problem at each step takes a logarithmic number of steps.","Audio and image processing, where loudness and brightness are perceived as ratios rather than as differences."],"x":{}},"MIT-1.2":{"c":"geometry","m":"MIT","n":"Area and perimeter","o":["MIT-1.2"],"p":"How much surface a flat shape covers, and how far it is around the edge. Square, rectangle, triangle, circle.","t":[],"w":["Laying out anything on a screen \u2014 a button's hit area, whether two windows overlap, how much of an image a crop keeps.","Estimating cost or time from a drawing, which is what most spreadsheet models of physical work are doing."],"x":{}},"MIT-1.3":{"c":"geometry","m":"MIT","n":"Volume and surface area","o":["MIT-1.3"],"p":"The same question in three dimensions: how much a solid holds, and how much surface covers the outside. Cube, cylinder, cone, sphere.","t":[],"w":["3D graphics and games, where every object needs a bounding volume before anything can be drawn or collided.","Packing and logistics problems, which are volume arithmetic with rules."],"x":{}},"MIT-1.4":{"c":"sets-and-number","m":"MIT","n":"Binary and hexadecimal","o":["MIT-1.4"],"p":"Counting with only two digits, and counting with sixteen. A computer has only \"on\" and \"off\" to work with, so every number it holds is written in twos; hexadecimal is a shorthand that makes long binary readable.","t":[],"w":["Colours on a screen. `#d4692a` is three hexadecimal numbers \u2014 how much red, how much green, how much blue.","File permissions, network masks, and anything described as a \"flag\" \u2014 each bit is a separate yes or no.","Understanding why a number can suddenly go negative when it gets too big, which is a whole category of real bug."],"x":{}},"MIT-1.5":{"c":"equations-and-functions","m":"MIT","n":"Expressions and equations","o":["MIT-1.5"],"p":"An expression is something you can work out \u2014 it has a value. An equation is a claim that two expressions are equal, which you can solve. Knowing which one you are holding tells you what to do with it.","t":[],"w":["Every line of code is one or the other. `total = price * 1.23` is an expression assigned to a name; `if total == 100` is a claim being tested.","Spreadsheet formulas, where the distinction is the difference between a cell that displays and a goal-seek that solves."],"x":{}},"MIT-1.6":{"c":"equations-and-functions","m":"MIT","n":"Expanding and simplifying","o":["MIT-1.6"],"p":"Rewriting an expression so it says the same thing in a more useful shape \u2014 multiplying out brackets, collecting like terms.","t":[],"w":["Making a slow calculation fast. The same arithmetic in a different shape can mean far fewer operations, which is what query optimisation does on a much larger scale.","Reading someone else's formula and satisfying yourself it does what they claim."],"x":{}},"MIT-1.7":{"c":"equations-and-functions","m":"MIT","n":"Rearranging formulae","o":["MIT-1.7"],"p":"Taking a formula written to find one thing and getting it to find another. Speed, distance and time are one formula in three shapes, and being able to move between them is the skill.","t":[],"w":["Turning a specification into code. The formula in the documentation is rarely the one you need.","Working backwards from a target \u2014 \"what interest rate would I need?\" is the same formula solved for a different letter."],"x":{}},"MIT-1.8":{"c":"equations-and-functions","m":"MIT","n":"Multiplying out to quadratics","o":["MIT-1.8"],"p":"What happens when you multiply two simple expressions together: the squared terms that appear, and why the middle term is what it is.","t":[],"w":["Predicting how a program scales. Two nested loops over the same list is a quadratic, and it is the most common reason something fast on ten items is unusable on ten thousand."],"x":{}},"MIT-1.9":{"c":"equations-and-functions","m":"MIT","n":"Factorising quadratics","o":["MIT-1.9"],"p":"Running the multiplication backwards \u2014 finding the two simple expressions that were multiplied together. Once you have them, the solutions are obvious.","t":[],"w":["Breaking a problem into independent pieces, which is the same instinct as factorising and the reason both are called that."],"x":{}},"MIT-2.1a":{"c":"sets-and-number","m":"MIT","n":"Counting numbers","o":["MIT-2.1"],"p":"One, two, three, and on upwards. These are the numbers you count with, and every other family is built by asking a question these cannot answer.","t":[],"w":["How many of anything, which is what most of a program's numbers are.","The position of an item in a list, and how many times a loop has run."],"x":{}},"MIT-2.1b":{"c":"sets-and-number","m":"MIT","n":"Integers","o":["MIT-2.1"],"p":"The counting numbers, zero, and the negatives. This family exists because taking a larger number from a smaller one has no answer without it.","t":[],"w":["Anything that can go both ways, such as a temperature, a balance, or a scroll position.","The `int` type in a program, and the bugs that come from a value going below zero when nothing expected it to."],"x":{}},"MIT-2.1c":{"c":"sets-and-number","m":"MIT","n":"Rational numbers","o":["MIT-2.1"],"p":"Anything you can write as one whole number over another. This family exists because dividing two integers usually lands between them.","t":[],"w":["Money, ratios, and percentages.","Exact arithmetic in a program, where a fraction type avoids the small errors a decimal introduces."],"x":{}},"MIT-2.1d":{"c":"sets-and-number","m":"MIT","n":"Irrational numbers","o":["MIT-2.1"],"p":"Numbers no fraction can write exactly, such as the square root of two, or pi. Their decimals run on forever without ever settling into a repeat.","t":[],"w":["Any measurement round a circle, or a diagonal across a square.","Knowing why a program stores an approximation of pi rather than pi."],"x":{}},"MIT-2.1e":{"c":"sets-and-number","m":"MIT","n":"Computable numbers","o":["MIT-2.1"],"p":"The numbers a program could work out to as many decimal places as you asked for, given enough time. Almost every number anybody names is one, and almost every number that exists is not.","t":[],"w":["Understanding what a maths library actually gives you, which is a value correct to a stated number of places.","Seeing where the limits of computing sit, since a number no program can produce is a limit of a different kind from a slow one."],"x":{}},"MIT-2.1f":{"c":"sets-and-number","m":"MIT","n":"Real numbers","o":["MIT-2.1"],"p":"Everything on the number line, the fractions and the endless decimals together. This is the family most maths written for people quietly assumes.","t":[],"w":["The `float` type in a program, which holds an approximation of one of these.","Knowing that 0.1 plus 0.2 is not exactly 0.3 in most languages, and that this is a fact about the storage rather than a mistake."],"x":{}},"MIT-2.1g":{"c":"sets-and-number","m":"MIT","n":"Complex numbers","o":["MIT-2.1"],"p":"A family that includes the square roots of negatives. It exists because no number on the line multiplies by itself to give a negative, and some equations ask for one that does.","t":[],"w":["Signal processing and anything involving a wave.","Working out whether a system settles down or oscillates."],"x":{}},"MIT-2.2":{"c":"sets-and-number","m":"MIT","n":"Set operations","o":["MIT-2.2"],"p":"Combining collections: everything in either, everything in both, everything in one but not the other. A set has no order and no repeats, which is exactly what makes these operations clean.","t":[],"w":["Database queries. A join is an intersection, a union is a union, and \"everyone who has not paid\" is a difference.","Permissions \u2014 what a user can do is usually the intersection of what their role allows and what the resource permits."],"x":{}},"MIT-2.3":{"c":"sets-and-number","m":"MIT","n":"Venn diagrams","o":["MIT-2.3"],"p":"Drawing sets as overlapping circles so that the combinations can be pointed at rather than described.","t":[],"w":["Explaining a filter to somebody who does not write code."],"x":{}},"MIT-2.4":{"c":"sets-and-number","m":"MIT","n":"Truth tables","o":["MIT-2.4"],"p":"Writing down what a logical statement gives for every possible input. With two inputs there are only four cases, so \"every possible input\" is a table you can actually finish.","t":[],"w":["Checking a condition in code really means what you intended, especially once it has three clauses and a `not` in the middle.","How a processor is built. AND, OR and NOT gates are these tables in silicon."],"x":{}},"MIT-2.5":{"c":"sets-and-number","m":"MIT","n":"De Morgan's Laws","o":["MIT-2.5"],"p":"Two rules for turning a negation inside out. \"Not (A and B)\" is the same as \"not A, or not B\" \u2014 and once you have noticed it, you will start seeing it in other people's conditions.","t":[],"w":["Simplifying a tangled `if`. Most conditions that need a comment to explain them are one De Morgan away from not needing one.","Search queries and database `WHERE` clauses, where the same rewrite can turn a slow query into a fast one."],"x":{}},"MIT-3.1":{"c":"equations-and-functions","m":"MIT","n":"Functions and inverses","o":["MIT-3.1"],"p":"A function is a machine: put a value in, get exactly one value out. An inverse is the machine that undoes it. Not every function has one, and the reason why is worth knowing.","t":[],"w":["Encoding and decoding, compressing and decompressing, encrypting and decrypting \u2014 each pair is a function and its inverse.","Hashing, which is deliberately a function with no inverse, and that is the entire point of it."],"x":{}},"MIT-3.2":{"c":"equations-and-functions","m":"MIT","n":"Graphing functions","o":["MIT-3.2"],"p":"Drawing a function as a picture, and reading answers off the picture. Where the curve crosses the axis is where the function is zero; where two curves cross is where they are equal.","t":[],"w":["Every chart in every dashboard is this.","Seeing at a glance whether an algorithm's running time is levelling off or about to run away from you."],"x":{}},"MIT-3.3":{"c":"geometry","m":"MIT","n":"Graphing sine and cosine","o":["MIT-3.3"],"p":"The two wave-shaped functions, and what each number in front of them does \u2014 how tall the wave is, how often it repeats, and where it starts.","t":[],"w":["Sound. A note is a wave, and the numbers that describe it are exactly these.","Animation and easing, where a smooth back-and-forth is a sine curve.","Anything that repeats on a cycle \u2014 daily traffic, seasonal demand."],"x":{}},"MIT-3.4":{"c":"equations-and-functions","m":"MIT","n":"Completing the square","o":["MIT-3.4"],"p":"Rewriting a quadratic so that its highest or lowest point can simply be read off. The algebra is fiddly; the payoff is that the answer is sitting there in the new form.","t":[],"w":["Finding the best setting for something \u2014 the cheapest, the fastest, the least wasteful \u2014 when the thing behaves like a quadratic."],"x":{}},"MIT-3.5":{"c":"equations-and-functions","m":"MIT","n":"Limits","o":["MIT-3.5"],"p":"What a function is heading towards, as opposed to what it does when it gets there. The two can differ, and the gap between them is where calculus starts.","t":[],"w":["Reasoning about very large inputs \u2014 what happens \"in the limit\" is what Big-O notation is describing.","Numerical methods that get closer and closer to an answer and have to decide when close enough is close enough."],"x":{}},"MIT-3.6":{"c":"equations-and-functions","m":"MIT","n":"The derivative","o":["MIT-3.6"],"p":"How fast something is changing, right now rather than on average. On a graph it is the steepness at a single point.","t":[],"w":["Training a model. Machine learning is largely the business of nudging numbers in whichever direction the derivative says is downhill.","Physics in games \u2014 velocity is the derivative of position, and acceleration the derivative of velocity.","Detecting a spike in monitoring data, which is asking when the derivative got large."],"x":{}},"MIT-3.7":{"c":"equations-and-functions","m":"MIT","n":"Rules for differentiating","o":["MIT-3.7"],"p":"Shortcuts that let you find a derivative without going back to the limit each time \u2014 one for adding functions, one for multiplying them.","t":[],"w":["Any optimisation done symbolically rather than by trial and error.","Understanding what an automatic differentiation library is doing on your behalf, which matters the first time it gives an answer you did not expect."],"x":{}},"MIT-4.1":{"c":"geometry","m":"MIT","n":"Equations of lines","o":["MIT-4.1"],"p":"Writing a straight line as an equation, so that \"is this point on the line?\" becomes arithmetic rather than looking.","t":[],"w":["Drawing anything. A line on a screen is this equation walked one pixel at a time.","Fitting a trend through data, which is finding the line that misses by the least."],"x":{}},"MIT-4.10a":{"c":"geometry","m":"MIT","n":"The Cosine Rule","o":["MIT-4.10"],"p":"A rule for a triangle that has no right angle. It is Pythagoras with a correction term, and the correction depends on how far the angle is from a right angle.","t":[],"w":["Working out a distance you cannot measure directly, given two sides and the angle between them.","Robot arms and animation rigs, where the question is what angles put the hand in the right place."],"x":{}},"MIT-4.10b":{"c":"geometry","m":"MIT","n":"The Sine Rule","o":["MIT-4.10"],"p":"A second rule for a triangle with no right angle. It relates each side to the angle opposite it, so knowing one such pair lets you find the others.","t":[],"w":["Navigation and positioning, where you work out where you are from the angles to two known landmarks.","Surveying a distance across something you cannot walk over, such as a river."],"x":{}},"MIT-4.10c":{"c":"geometry","m":"MIT","n":"The ambiguous case","o":["MIT-4.10"],"p":"Sine cannot tell an angle from 180 degrees minus that angle, so the Sine Rule sometimes gives two triangles that both fit. You then have to decide which one the problem meant.","t":[],"w":["Any program that solves triangles from measurements and has to choose an answer rather than return both.","Reading a result from a library and knowing when it has quietly picked one of two."],"x":{}},"MIT-4.2":{"c":"geometry","m":"MIT","n":"Slope, parallel and perpendicular","o":["MIT-4.2"],"p":"How steep a line is, and what the steepness tells you about two lines' relationship. Parallel lines share a slope; perpendicular ones have slopes that multiply to minus one.","t":[],"w":["Snapping and alignment in any drawing tool.","Working out which way a surface faces, which is how lighting is calculated in 3D."],"x":{}},"MIT-4.3":{"c":"geometry","m":"MIT","n":"Midpoint and distance","o":["MIT-4.3"],"p":"How far apart two points are, and what sits exactly halfway between them. Both fall straight out of Pythagoras once you treat the gap across and the gap up as the two short sides of a triangle.","t":[],"w":["Finding the nearest anything \u2014 the closest shop, the most similar image, the matching fingerprint. All of them are a distance calculation.","Hit detection in games, and clustering in data analysis."],"x":{}},"MIT-4.4":{"c":"geometry","m":"MIT","n":"Pythagoras","o":["MIT-4.4"],"p":"In a right-angled triangle, the two short sides squared add up to the long side squared. Probably the single most useful fact in this whole list.","t":[],"w":["Distance between two points on a screen or a map.","Comparing two things described by several numbers at once, where the \"distance\" between them is the same sum of squares."],"x":{}},"MIT-4.5":{"c":"geometry","m":"MIT","n":"Degrees and radians","o":["MIT-4.5"],"p":"Two ways of measuring an angle. Degrees are the familiar one; radians measure how far you have walked around the circle, which is why every maths library expects them.","t":[],"w":["Rotating anything. Feed degrees to a function expecting radians and your sprite spins the wrong amount \u2014 a classic first bug in graphics code."],"x":{}},"MIT-4.6a":{"c":"geometry","m":"MIT","n":"Sine and cosine defined","o":["MIT-4.6"],"p":"Walk a point around a circle of radius one. Its two coordinates, across and up, are exactly cosine and sine of the angle you have turned through. Two functions you would otherwise memorise become one picture you can rebuild.","t":[],"w":["Circular motion, orbits, and anything on a dial.","The maths underneath rotating an image or a three-dimensional model."],"x":{}},"MIT-4.6b":{"c":"geometry","m":"MIT","n":"The identity that links them","o":["MIT-4.6"],"p":"Sine squared plus cosine squared is always one, whatever the angle. It is Pythagoras applied to the point on the circle, since the two coordinates are the short sides and the radius is the long one.","t":[],"w":["Checking that a calculation involving angles has not drifted, which is how graphics code catches rounding error.","Getting one of the two values when you have the other and know which quarter of the circle you are in."],"x":{}},"MIT-4.6c":{"c":"geometry","m":"MIT","n":"Tangent as slope","o":["MIT-4.6"],"p":"How steep a line is, said as an angle rather than as a ratio. A slope and an angle are two ways of describing the same thing, and tangent is what turns either one into the other.","t":[],"w":["Turning a direction into an angle, which is what a program does to point something at a target.","Reading a gradient off a graph and saying what angle it makes with the horizontal."],"x":{}},"MIT-4.7":{"c":"geometry","m":"MIT","n":"Exact trigonometric values","o":["MIT-4.7"],"p":"The handful of angles whose sine and cosine can be written exactly with square roots, rather than as a decimal that goes on forever.","t":[],"w":["Hand-checking that a calculation is right before trusting the code."],"x":{}},"MIT-4.8":{"c":"geometry","m":"MIT","n":"Area of any triangle","o":["MIT-4.8"],"p":"A formula for a triangle's area that needs two sides and the angle between them, rather than a base and a height you may not have.","t":[],"w":["Measuring an irregular area from surveyed points, by cutting it into triangles.","Rendering. Every 3D surface is triangles, and their areas decide how much of anything lands on them."],"x":{}},"MIT-4.9":{"c":"geometry","m":"MIT","n":"Right-triangle trigonometry","o":["MIT-4.9"],"p":"Given one angle and one side of a right-angled triangle, finding the rest. The three ratios and when to reach for each.","t":[],"w":["Working out a height you cannot measure \u2014 a mast, a building, the angle of a camera.","Splitting a movement into how far across and how far up, which is what every \"move at this angle\" in a game does."],"x":{}},"MIT-5.1":{"c":"chance-and-data","m":"MIT","n":"Listing outcomes","o":["MIT-5.1"],"p":"Writing down everything that could happen, carefully enough that nothing is missed and nothing is counted twice.","t":[],"w":["Testing. The set of cases worth testing is the set of things that can happen, and finding it is this skill."],"x":{}},"MIT-5.10":{"c":"chance-and-data","m":"MIT","n":"Choosing a display","o":["MIT-5.10"],"p":"Which chart actually shows the thing you are trying to show, and which ones quietly argue for something else. A pie chart of twelve categories and a bar chart whose axis starts at ninety are both technically honest and practically misleading.","t":[],"w":["Every report anyone will read. A badly chosen chart is not neutral \u2014 it argues for the wrong conclusion."],"x":{}},"MIT-5.11":{"c":"chance-and-data","m":"MIT","n":"Frequency tables and histograms","o":["MIT-5.11"],"p":"Counting how many values fall into each band, and drawing the result. The shape that appears tells you things no average can.","t":[],"w":["Performance monitoring. The average response time hides the slow tail; the histogram shows it."],"x":{}},"MIT-5.12a":{"c":"chance-and-data","m":"MIT","n":"The middle of a set of numbers","o":["MIT-5.12"],"p":"Three different ideas of what counts as typical. The mean adds everything up and shares it out, the median takes the one in the middle, and the mode takes the one that appears most.","t":[],"w":["Any summary of anything. Which one to use is a real decision rather than a formality.","Reporting a response time. The mean and the median can tell very different stories about the same server."],"x":{}},"MIT-5.12b":{"c":"chance-and-data","m":"MIT","n":"How spread out the numbers are","o":["MIT-5.12"],"p":"How far from typical the values usually sit. The simplest measure is the range, which is the largest value minus the smallest.","t":[],"w":["Saying how reliable a measurement is. Two sets of readings can share a mean and still be nothing alike.","Setting a sensible limit. A threshold is easier to choose once you know how much the values move about."],"x":{}},"MIT-5.12c":{"c":"chance-and-data","m":"MIT","n":"Standard deviation","o":["MIT-5.12"],"p":"A measure of spread that uses every value rather than only the two extremes. It is roughly the average distance from the mean, worked out in a way that keeps larger distances counting for more.","t":[],"w":["Spotting anomalies. An alert that fires at three standard deviations from the mean is this arithmetic.","Comparing two sets of measurements taken in different units, once each is expressed in standard deviations."],"x":{}},"MIT-5.13":{"c":"chance-and-data","m":"MIT","n":"When averages mislead","o":["MIT-5.13"],"p":"What the mean, median and mode each hide, and which to distrust when the data is lopsided or has a few extreme values.","t":[],"w":["Salary and response-time figures, both of which are routinely reported using whichever average looks best."],"x":{}},"MIT-5.2":{"c":"chance-and-data","m":"MIT","n":"The counting principle","o":["MIT-5.2"],"p":"If one choice has three options and the next has four, together they have twelve. Multiply the choices.","t":[],"w":["Password strength, which is exactly this multiplication and is why length beats cleverness.","Working out how many combinations of settings a system has, which is usually far more than anyone expected."],"x":{}},"MIT-5.3":{"c":"chance-and-data","m":"MIT","n":"Factorials","o":["MIT-5.3"],"p":"How many ways a set of things can be put in order. It grows alarmingly fast \u2014 ten items already have over three million arrangements.","t":[],"w":["Knowing when brute force is hopeless. If your plan is \"try every order\", the factorial tells you whether to abandon it."],"x":{}},"MIT-5.4":{"c":"chance-and-data","m":"MIT","n":"Permutations","o":["MIT-5.4"],"p":"Choosing some of a set when the order matters. Picking a first, second and third from eight runners is a different count from picking any three to go through, because first place and second place are different places.","t":[],"w":["Ranking and scheduling problems, where first and second are different from second and first."],"x":{}},"MIT-5.5":{"c":"chance-and-data","m":"MIT","n":"Combinations","o":["MIT-5.5"],"p":"Choosing some of a set when the order does not matter \u2014 a committee rather than a podium. Take the permutation count and divide it by the number of ways the chosen ones could be reordered, because all of those orders now count as one choice.","t":[],"w":["Sampling \u2014 how many different groups of five could be drawn from a class of thirty.","Working out how many pairs of anything exist, which is what tells you a comparison of everything with everything is quadratic."],"x":{}},"MIT-5.6":{"c":"chance-and-data","m":"MIT","n":"Probability","o":["MIT-5.6","CMPS-LO2"],"p":"How likely something is, written as a number between zero and one. Zero cannot happen, one is certain, and everything real sits in between.","t":[],"w":["Reading a model's confidence honestly. A classifier that says 0.51 is not really making a prediction; it is saying it does not know.","Games of chance, and any feature that needs a fair-seeming shuffle or deal."],"x":{}},"MIT-5.7":{"c":"chance-and-data","m":"MIT","n":"Equally likely outcomes","o":["MIT-5.7"],"p":"Sometimes every outcome is as likely as every other. Then the probability of something is just the number of outcomes that count, divided by how many outcomes there are altogether.","t":[],"w":["Random number generation, shuffling, and load balancing \u2014 all of which assume this and break interestingly when the assumption is false."],"x":{}},"MIT-5.8a":{"c":"chance-and-data","m":"MIT","n":"Both things happening","o":["MIT-5.8"],"p":"The chance that two things both happen. When neither one affects the other, you multiply the two chances together, and the answer is always smaller than either.","t":[],"w":["Reliability. A system that needs five parts all working has the product of their five chances, which is worse than most people expect.","Retry logic, where the chance that three attempts all fail is one multiplication."],"x":{}},"MIT-5.8b":{"c":"chance-and-data","m":"MIT","n":"Either thing happening","o":["MIT-5.8"],"p":"The chance that at least one of two things happens. You add the two chances, then take away the chance of both, because otherwise the overlap is counted twice.","t":[],"w":["Working out whether any one of several alerts fires.","Counting how many records match one condition or another without double-counting the ones that match both."],"x":{}},"MIT-5.8c":{"c":"chance-and-data","m":"MIT","n":"When one event changes another","o":["MIT-5.8"],"p":"The chance of something given that something else has already happened. Learning one fact can change how likely the next one is, and the multiplication rule has to account for that.","t":[],"w":["Reading a medical or a security test result, where the chance of a true alarm depends on how common the thing is.","Spam filters and other classifiers, which are built on chances that shift as each new word is read."],"x":{}},"MIT-5.9":{"c":"chance-and-data","m":"MIT","n":"Kinds of data","o":["MIT-5.9"],"p":"Data comes in kinds: labels with no order, labels with an order, whole counts, and measurements that can take any value. What you are allowed to do with a column depends on which it is.","t":[],"w":["Choosing a chart. Averaging a column of postcodes is meaningless, and knowing the kind is what stops you.","Database schema design, which is this decision made permanent."],"x":{}},"MIT-6.1":{"c":"programming","m":"MIT","n":"What an algorithm is","o":["MIT-6.1"],"p":"A set of steps precise enough that following them requires no judgement. That precision is the whole difficulty and the whole point.","t":[],"w":["Everything in this course. Also every recipe, every assembly instruction, and every legal procedure."],"x":{}},"MIT-6.2":{"c":"programming","m":"MIT","n":"Algorithms as functions","o":["MIT-6.2"],"p":"Thinking of an algorithm as a machine with a defined set of allowed inputs and one output for each. What it should do with an input outside that set is a decision you have to make deliberately.","t":[],"w":["API design. Most of what a specification says is which inputs are allowed."],"x":{}},"MIT-6.3a":{"c":"programming","m":"MIT","n":"Lists","o":["MIT-6.3","MIT-6.5"],"p":"Holding many values under one name, in order. You can reach any one of them by its position, and you can do the same thing to all of them at once.","t":[],"w":["Every collection of anything, from rows out of a database to pixels in an image to people waiting in a queue.","Reading a file. A program usually takes the lines in one at a time and keeps them together under one name."],"x":{}},"MIT-6.3b":{"c":"programming","m":"MIT","n":"Arrays","o":["MIT-6.3"],"p":"A list where every value is the same kind of thing, and the computer knows in advance how much room each one takes. Knowing that is what lets it jump straight to a position instead of counting along.","t":[],"w":["Working with numbers in bulk. The libraries for data and for images store their values this way, which is part of why they are so much faster than a plain list.","Talking to hardware, or to a file format, where the bytes have to sit in a fixed shape."],"x":{}},"MIT-6.4":{"c":"programming","m":"MIT","n":"Index and sigma notation","o":["MIT-6.4"],"p":"A compact way of writing \"add up all of these\" or \"multiply all of these\", with a counter that walks through the positions.","t":[],"w":["Reading a formula in a paper or a specification and turning it into a loop, which is largely a matter of recognising this notation."],"x":{}},"MIT-6.6":{"c":"programming","m":"MIT","n":"Divide and conquer","o":["MIT-6.6"],"p":"Cutting a problem in half, solving each half, and combining the answers. Halving repeatedly is enormously fast, which is why this idea keeps appearing.","t":[],"w":["Binary search, the fast sorting algorithms, and the way large files are processed in parallel."],"x":{}},"MIT-6.7":{"c":"programming","m":"MIT","n":"Iterating by index","o":["MIT-6.7"],"p":"Walking through a list one position at a time, using the position itself as well as the value.","t":[],"w":["Comparing each item with the next, which is what every sorting algorithm does at its core."],"x":{}},"MIT-6.8a":{"c":"programming","m":"MIT","n":"Searching","o":["MIT-6.8"],"p":"Finding one thing in a collection. You can look at every item in turn, or, if the collection is already in order, throw away half of it at each step.","t":[],"w":["Almost every \"find\" a program does, from a lookup in a table to a word in a document.","Understanding why a database index exists, and what it costs to keep one."],"x":{}},"MIT-6.8b":{"c":"programming","m":"MIT","n":"Sorting","o":["MIT-6.8"],"p":"Putting a collection in order. Several methods do it, and they differ enormously in how long they take on a large collection.","t":[],"w":["The most used non-trivial algorithm there is. A results page, a leaderboard and a merge of two files all sort first.","Making searching cheap. Once a collection is in order, finding something in it is much faster."],"x":{}},"PDP-LO1":{"c":"programming","m":"PDP","n":"The history of programming","o":["PDP-LO1"],"p":"How programming got from punched cards to here, and why the languages we use look the way they do.","t":[],"w":["Understanding why a language has a feature that seems strange, which is usually a decision made for a machine that no longer exists."],"x":{}},"PDP-LO10":{"c":"software-development","m":"PDP","n":"Testing and debugging","o":["PDP-LO10","FOOP-LO10"],"p":"Deciding what a program should do before checking whether it does, and finding out why when it does not.","t":[],"w":["Changing code without breaking it, which is the difference between a program that can grow and one that cannot.","Catching a bug in one class before it reaches every other class that relies on it."],"x":{}},"PDP-LO11":{"c":"software-development","m":"PDP","n":"Coding standards","o":["PDP-LO11"],"p":"Naming, spacing and commenting conventions \u2014 the things that have no effect on whether a program runs and a large effect on whether anyone can read it.","t":[],"w":["Working with other people, and being able to read your own work later."],"x":{}},"PDP-LO12":{"c":"software-development","m":"PDP","n":"Working as a team","o":["PDP-LO12"],"p":"Designing, building and releasing software with other people over time. That includes reviewing each other's work and shipping more than one version.","t":[],"w":["How essentially all professional software is made."],"x":{}},"PDP-LO2":{"c":"programming","m":"PDP","n":"Algorithms in the real world","o":["PDP-LO2"],"p":"Spotting the algorithms already running in ordinary life: how post is sorted, how a queue is served, how change is counted out. Then describing one precisely enough that somebody else could build it without asking you a single question.","t":[],"w":["Turning \"how we do it at the moment\" into something a computer can do, which is most of the job."],"x":{}},"PDP-LO3":{"c":"programming","m":"PDP","n":"Comparing languages","o":["PDP-LO3"],"p":"What really differs between programming languages, once you look past the punctuation. Do they check types before running? How do they manage memory? What do they make easy? Choosing a language is mostly choosing which problems you would rather have.","t":[],"w":["Reading code in a language you do not know, which is easier than it sounds once you know what to expect."],"x":{}},"PDP-LO4":{"c":"programming","m":"PDP","n":"The parts of a program","o":["PDP-LO4","FOOP-LO2"],"p":"Variables, expressions, statements, input and output \u2014 the small vocabulary that nearly every language shares. Learn it once and a new language is mostly a matter of new spelling rather than new ideas.","t":[],"w":["Everything. This is the alphabet.","Recognising the same handful of moves inside every class method you will ever write."],"x":{}},"PDP-LO5":{"c":"programming","m":"PDP","n":"Solving in sequence","o":["PDP-LO5"],"p":"Breaking a task into ordered steps, and noticing which steps really depend on which. The dependencies are what fix the order. Everything else could be done in any sequence, and seeing the difference is what lets work be shared out.","t":[],"w":["Planning before coding, which is the difference between an hour's work and an afternoon's."],"x":{}},"PDP-LO6a":{"c":"programming","m":"PDP","n":"Choosing between paths","o":["PDP-LO6"],"p":"Making a program take one route or another, depending on whether something is true. The program asks a question, and the answer decides which steps run next.","t":[],"w":["Any program that treats one case differently from another, such as a form that accepts a valid entry and asks again for an invalid one."],"x":{}},"PDP-LO6b":{"c":"programming","m":"PDP","n":"Repeating a step","o":["PDP-LO6"],"p":"Making a program do the same thing again, either a fixed number of times or until something changes. Together with choosing between paths, this is enough to express any computation at all.","t":[],"w":["Every program that handles more than one of anything, such as sending the same email to a hundred addresses."],"x":{}},"PDP-LO7":{"c":"software-development","m":"PDP","n":"Documented programs","o":["PDP-LO7","FOOP-LO9"],"p":"Writing programs somebody else can pick up and change \u2014 including you, in a month, having forgotten every decision you made. Names, comments and structure are the whole of it, and none of them change whether the program runs.","t":[],"w":["Any code that outlives the afternoon it was written in.","Every docstring that lets an editor show you what a method does before you call it."],"x":{}},"PDP-LO8":{"c":"programming","m":"PDP","n":"Functions and scope","o":["PDP-LO8"],"p":"Packaging a piece of a program so it can be used again, and understanding which names are visible where.","t":[],"w":["Every library you have ever imported is this, done well.","Most confusing bugs in a beginner's program are a scope misunderstanding."],"x":{}},"PDP-LO9":{"c":"software-development","m":"PDP","n":"Reading error messages","o":["PDP-LO9"],"p":"What the computer is telling you when it refuses to run your code, and what to do about it. Error messages are written for people who already know Python. This is how to become one of them.","t":[],"w":["The single most useful skill a beginner can acquire, measured in hours saved."],"x":{}},"PRE-1":{"c":"geometry","m":"PRE","n":"Kinds of triangle","o":[],"p":"Telling triangles apart by their sides and angles \u2014 three equal sides, two equal sides, none equal, and the right angle that makes one of them special. Naming them is what lets any later rule say which triangles it applies to.","t":[],"w":["Collision detection and hit-testing in games, which is mostly deciding which shape you are dealing with before measuring anything.","Mesh generation for 3D graphics, where a surface is cut into triangles and their shape decides how well it renders."],"x":{"strand":"geometry"}},"PRE-2":{"c":"equations-and-functions","m":"PRE","n":"Moving an equation around","o":[],"p":"Doing the same thing to both sides of an equation so that it still says the same thing. Add to both sides, multiply both sides, take the same term off both sides. Every method of solving anything rests on this one move, repeated.","t":[],"w":["Rearranging any formula in code so it gives you the value you actually want, rather than the one it was written to give.","Checking your own work. If a step did not do the same thing to both sides, the two lines are not equal and everything after is wrong."],"x":{"strand":"algebra"}}}};
+// ------------------------------------------------------------------ kinds
+// One way: a before b. Two ways: stored with a < b.
+const KINDS = ["requires", "helps", "applied", "inter", "involves"];
+const TWO_WAY = new Set(["inter", "involves"]);
+const SAY = {requires: "requires", helps: "helps", applied: "applied in",
+             inter: "interdependent", involves: "involves"};
+
+// ------------------------------------------------------------------ state
+const STORE = "dewlab-topic-editor";
+const clone = x => JSON.parse(JSON.stringify(x));
+const FIELD = {w: 2600, h: 1800};
+function fresh(withLinks){
+  const s = {topics: clone(DATA.topics), links: [], columns: clone(DATA.columns),
+             pos: {}, pinned: {}, gone: {}, log: [], flow: true};
+  if(withLinks){
+    for(const [a, b] of DATA.requires) s.links.push({a, b, k: "requires"});
+    for(const [a, b] of DATA.level) s.links.push({a: a < b ? a : b, b: a < b ? b : a, k: "inter"});
+    for(const [a, b] of DATA.helps || []) s.links.push({a, b, k: "helps"});
+    for(const [a, b] of DATA.applied || []) s.links.push({a, b, k: "applied"});
+  }
+  s.pos = scatter(s);
+  if(DATA.pos && DATA.pos.pos){ for(const c in DATA.pos.pos) if(s.topics[c]) s.pos[c] = clone(DATA.pos.pos[c]); s.pinned = clone(DATA.pos.pinned || {}); }
+  return s;
+}
+let state, past = [], future = [], here = null, pick = null;
+try {
+  const saved = JSON.parse(localStorage.getItem(STORE) || "null");
+  state = saved && saved.topics && saved.links ? saved : fresh(false);
+} catch(e){ state = fresh(false); }
+if(!state.pinned) state.pinned = {};
+if(state.flow === undefined) state.flow = true;
+
+function save(){ try { localStorage.setItem(STORE, JSON.stringify(state)); } catch(e){} }
+function commit(label, fn){
+  past.push(JSON.stringify(state)); future = [];
+  if(past.length > 300) past.shift();
+  fn();
+  state.log.push(label);
+  save(); render(); showPanel(); heat(); status(); drawCols();
+  if(lastLink && /requires|helps|applied|interdependent|involves/.test(label)) crowded();
+}
+let exportedAt = Number(localStorage.getItem(STORE + ":exported") || 0);
+function status(){
+  const el = document.getElementById("status"), n = state.log.length, since = n - exportedAt;
+  el.textContent = since > 0 ? `Saved here · ${since} change${since === 1 ? "" : "s"} not exported` : n ? "Saved here · exported" : "";
+  el.classList.toggle("unsaved", since > 0);
+}
+addEventListener("beforeunload", e => { if(state.log.length - exportedAt > 0){ e.preventDefault(); e.returnValue = ""; } });
+function undo(){ if(!past.length) return; future.push(JSON.stringify(state));
+  state = JSON.parse(past.pop()); save(); render(); showPanel(); heat(); }
+function redo(){ if(!future.length) return; past.push(JSON.stringify(state));
+  state = JSON.parse(future.pop()); save(); render(); showPanel(); heat(); }
+
+const T = () => state.topics;
+const name = c => T()[c] ? T()[c].n : c;
+const esc = s => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+function anyLink(a, b){ return state.links.find(l => (l.a === a && l.b === b) || (l.a === b && l.b === a)); }
+function setLink(a, b, k){
+  state.links = state.links.filter(l => !((l.a === a && l.b === b) || (l.a === b && l.b === a)));
+  if(k) state.links.push(TWO_WAY.has(k) ? {a: a < b ? a : b, b: a < b ? b : a, k} : {a, b, k});
+}
+function path(from, to){
+  const nxt = {}; for(const c in T()) nxt[c] = [];
+  for(const l of state.links) if(l.k === "requires" && nxt[l.a] && nxt[l.b]) nxt[l.a].push(l.b);
+  const prev = {[from]: null}, q = [from];
+  while(q.length){ const c = q.shift();
+    if(c === to){ const p = []; for(let x = to; x !== null; x = prev[x]) p.unshift(x); return p; }
+    for(const d of nxt[c]) if(!(d in prev)){ prev[d] = c; q.push(d); } }
+  return null;
+}
+
+// ------------------------------------------------------------------ the field
+// No order is assumed. Topics start scattered near a spot for their column,
+// then the links do the arranging: every topic pushes every other away, a
+// link pulls its two ends together, and a one-way link nudges its far end a
+// little lower than its near end, so that an order can appear as you draw
+// it without a row ever being imposed. A topic you have dragged stays put.
+const NODE_W = 150, NODE_H = 46, PAD = 40;
+function seat(colId){
+  const i = Math.max(0, state.columns.findIndex(c => c.id === colId)), n = Math.max(1, state.columns.length);
+  const cols = Math.ceil(Math.sqrt(n)), rows = Math.ceil(n / cols);
+  return {x: FIELD.w * ((i % cols) + 0.5) / cols, y: FIELD.h * (Math.floor(i / cols) + 0.5) / rows};
+}
+function scatter(s){
+  const pos = {}; let seed = 7;
+  const rnd = () => { seed = (seed * 48271) % 2147483647; return seed / 2147483647; };
+  for(const c of Object.keys(s.topics).sort()){
+    const at = (function(){ const i = Math.max(0, s.columns.findIndex(x => x.id === s.topics[c].c)), n = Math.max(1, s.columns.length);
+      const cols = Math.ceil(Math.sqrt(n)), rows = Math.ceil(n / cols);
+      return {x: FIELD.w * ((i % cols) + 0.5) / cols, y: FIELD.h * (Math.floor(i / cols) + 0.5) / rows}; })();
+    pos[c] = {x: Math.round(at.x + (rnd() - 0.5) * 520), y: Math.round(at.y + (rnd() - 0.5) * 420)};
+  }
+  return pos;
+}
+let vel = {}, alpha = 0, ticking = false, drag = null;
+function ringSlots(){
+  const linked = new Set(); for(const l of state.links){ linked.add(l.a); linked.add(l.b); }
+  const waiting = Object.keys(T()).filter(c => !linked.has(c) && c !== state.focus)
+    .sort((a, b) => (state.columns.findIndex(x => x.id === T()[a].c) - state.columns.findIndex(x => x.id === T()[b].c)) || name(a).localeCompare(name(b)));
+  const slots = {}; let i = 0, k = 1;
+  const cx = FIELD.w / 2 - NODE_W / 2, cy = FIELD.h / 2 - NODE_H / 2;
+  while(i < waiting.length){
+    const r = 300 + 205 * k, n = Math.max(6, Math.round(2 * Math.PI * r / 215));
+    for(let j = 0; j < n && i < waiting.length; j++, i++){
+      const th = -Math.PI / 2 + 2 * Math.PI * j / n + (k % 2 ? 0 : Math.PI / n);
+      slots[waiting[i]] = {x: Math.round(cx + r * Math.cos(th)), y: Math.round(cy + r * 0.6 * Math.sin(th))};
+    }
+    k++;
+  }
+  return slots;
+}
+function heat(){ alpha = Math.max(alpha, 0.6); if(!ticking){ ticking = true; requestAnimationFrame(tick); } }
+function tick(){
+  const codes = Object.keys(T()), P = state.pos;
+  for(const c of codes){ if(!P[c]) P[c] = {x: FIELD.w / 2, y: FIELD.h / 2}; if(!vel[c]) vel[c] = {x: 0, y: 0}; }
+  const f = {}; for(const c of codes) f[c] = {x: 0, y: 0};
+  // push apart
+  for(let i = 0; i < codes.length; i++) for(let j = i + 1; j < codes.length; j++){
+    const a = codes[i], b = codes[j];
+    let dx = (P[a].x - P[b].x), dy = (P[a].y - P[b].y) * 1.6;
+    let d2 = dx * dx + dy * dy; if(d2 < 1) { dx = 1; d2 = 1; }
+    if(d2 > 700 * 700) continue;
+    const k = 58000 / d2; const d = Math.sqrt(d2);
+    f[a].x += k * dx / d; f[a].y += k * dy / d; f[b].x -= k * dx / d; f[b].y -= k * dy / d;
+  }
+  // pull together, and lean one-way links downward
+  for(const l of state.links){ if(!P[l.a] || !P[l.b]) continue;
+    const rest = l.k === "inter" ? 150 : l.k === "involves" ? 210 : 220;
+    const dx = P[l.b].x - P[l.a].x, dy = P[l.b].y - P[l.a].y, d = Math.max(1, Math.hypot(dx, dy));
+    const pull = (d - rest) * (l.k === "inter" ? 0.09 : l.k === "requires" ? 0.06 : 0.03);
+    f[l.a].x += pull * dx / d; f[l.a].y += pull * dy / d; f[l.b].x -= pull * dx / d; f[l.b].y -= pull * dy / d;
+    if(state.flow && !TWO_WAY.has(l.k)){ const want = 110, lean = (want - dy) * 0.05; f[l.a].y -= lean; f[l.b].y += lean; }
+  }
+  // drift toward the column's spot, so unlinked topics keep their subject
+  for(const c of codes){ const s = seat(T()[c].c); f[c].x += (s.x - P[c].x) * 0.004; f[c].y += (s.y - P[c].y) * 0.004; }
+  // Building out: the focus sits in the centre, everything with no links yet
+  // waits in rings around it, and everything linked is left to the springs.
+  const ring = state.focus && T()[state.focus] ? ringSlots() : null;
+  if(ring){ P[state.focus].x = FIELD.w / 2 - NODE_W / 2; P[state.focus].y = FIELD.h / 2 - NODE_H / 2; vel[state.focus] = {x: 0, y: 0};
+    for(const c in ring){ P[c].x += (ring[c].x - P[c].x) * 0.25; P[c].y += (ring[c].y - P[c].y) * 0.25; vel[c] = {x: 0, y: 0}; } }
+  let moving = 0;
+  for(const c of codes){
+    if(state.pinned[c] || (drag && drag.u === c) || (ring && (ring[c] || c === state.focus))){ vel[c] = {x: 0, y: 0}; continue; }
+    vel[c].x = (vel[c].x + f[c].x * alpha) * 0.6; vel[c].y = (vel[c].y + f[c].y * alpha) * 0.6;
+    P[c].x = Math.min(FIELD.w - NODE_W, Math.max(0, P[c].x + vel[c].x));
+    P[c].y = Math.min(FIELD.h - NODE_H, Math.max(0, P[c].y + vel[c].y));
+    moving += Math.abs(vel[c].x) + Math.abs(vel[c].y);
+  }
+  place();
+  alpha *= 0.985;
+  if(alpha > 0.005 && moving > 0.5) requestAnimationFrame(tick);
+  else { ticking = false; for(const c of codes){ P[c].x = Math.round(P[c].x); P[c].y = Math.round(P[c].y); } save(); }
+}
+
+// ------------------------------------------------------------------ drawing
+const map = document.getElementById("map"), stage = document.getElementById("stage");
+let scale = 1;
+function wrap(text, chars = 21, lines = 2){
+  const out = []; let line = "";
+  for(const w of String(text).split(/\s+/)){ const n = (line + " " + w).trim();
+    if(n.length > chars && line){ out.push(line); line = w; } else line = n; }
+  out.push(line);
+  if(out.length > lines){ out.length = lines; out[lines - 1] = out[lines - 1].slice(0, chars - 1) + "…"; }
+  return out;
+}
+const colourOf = c => "var(--c" + Math.min(6, Math.max(0, state.columns.findIndex(x => x.id === c))) + ")";
+function anchor(a, b){
+  const pa = state.pos[a], pb = state.pos[b];
+  const ax = pa.x + NODE_W / 2, ay = pa.y + NODE_H / 2, bx = pb.x + NODE_W / 2, by = pb.y + NODE_H / 2;
+  const dx = bx - ax, dy = by - ay;
+  if(Math.abs(dx) * NODE_H > Math.abs(dy) * NODE_W){ const s = Math.sign(dx) || 1; return [ax + s * NODE_W / 2, ay, bx - s * NODE_W / 2, by]; }
+  const s = Math.sign(dy) || 1; return [ax, ay + s * NODE_H / 2, bx, by - s * NODE_H / 2];
+}
+const wire = (a, b) => { const [x1, y1, x2, y2] = anchor(a, b), mx = (x1 + x2) / 2, my = (y1 + y2) / 2;
+  return Math.abs(x2 - x1) > Math.abs(y2 - y1) ? `M${x1} ${y1} C${mx} ${y1} ${mx} ${y2} ${x2} ${y2}` : `M${x1} ${y1} C${x1} ${my} ${x2} ${my} ${x2} ${y2}`; };
+function render(){
+  let html = `<defs>
+    <marker id="head" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="var(--req)"/></marker>
+    <marker id="head-help" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="var(--help)"/></marker>
+    <marker id="head-tool" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="var(--tool)"/></marker>
+  </defs>`;
+  for(const l of state.links){
+    if(!T()[l.a] || !T()[l.b]) continue;
+    const head = l.k === "requires" ? ' marker-end="url(#head)"' : l.k === "helps" ? ' marker-end="url(#head-help)"' : l.k === "applied" ? ' marker-end="url(#head-tool)"' : "";
+    html += `<path class="link hit" data-a="${l.a}" data-b="${l.b}"><title>${esc(name(l.a))} ${SAY[l.k]} ${esc(name(l.b))}</title></path><path class="link ${l.k}" data-a="${l.a}" data-b="${l.b}"${head}/>`;
+  }
+  const inn = {}, out = {}; for(const c in T()){ inn[c] = 0; out[c] = 0; }
+  for(const l of state.links){ if(!T()[l.a] || !T()[l.b]) continue;
+    if(TWO_WAY.has(l.k)){ inn[l.a]++; inn[l.b]++; } else { out[l.a]++; inn[l.b]++; } }
+  for(const c of Object.keys(T()).sort()){
+    const t = T()[c], ls = wrap(t.n), top = NODE_H / 2 - (ls.length - 1) * 6.5;
+    html += `<g class="node${state.pinned[c] ? " pinned" : ""}" data-u="${c}"><title>${esc(t.n)}\n${esc(t.p)}</title><rect width="${NODE_W}" height="${NODE_H}" rx="8" style="fill:${colourOf(t.c)}"/><text>` +
+      ls.map((l, i) => `<tspan x="${NODE_W / 2}" y="${(top + i * 13).toFixed(1)}">${esc(l)}</tspan>`).join("") + "</text>" +
+      (inn[c] ? `<text class="count" x="5" y="9">${inn[c]}</text>` : "") +
+      (out[c] ? `<text class="count" x="${NODE_W - 5}" y="9" text-anchor="end">${out[c]}</text>` : "") + "</g>";
+  }
+  map.setAttribute("viewBox", `0 0 ${FIELD.w} ${FIELD.h}`);
+  map.innerHTML = html;
+  applyScale(); place(); light();
+}
+function place(){
+  for(const n of map.querySelectorAll(".node")){ const p = state.pos[n.dataset.u]; if(p) n.setAttribute("transform", `translate(${p.x},${p.y})`); }
+  for(const l of map.querySelectorAll(".link")) if(state.pos[l.dataset.a] && state.pos[l.dataset.b]) l.setAttribute("d", wire(l.dataset.a, l.dataset.b));
+}
+function applyScale(){ map.setAttribute("width", Math.round(FIELD.w * scale)); map.setAttribute("height", Math.round(FIELD.h * scale)); }
+function fit(){ scale = Math.min(1.3, (stage.clientWidth - 8) / FIELD.w, (stage.clientHeight - 8) / FIELD.h); applyScale(); }
+let shownCols = null;   // null means every column
+function light(){
+  const chosen = here && T()[here];
+  for(const n of map.querySelectorAll(".node")) n.classList.toggle("hush", Boolean(shownCols) && !shownCols.has(T()[n.dataset.u].c));
+  for(const l of map.querySelectorAll(".link")) l.classList.toggle("hush", Boolean(shownCols) && !(shownCols.has(T()[l.dataset.a].c) || shownCols.has(T()[l.dataset.b].c)));
+  for(const n of map.querySelectorAll(".node")){ n.classList.toggle("here", n.dataset.u === here); n.classList.toggle("focus", n.dataset.u === state.focus);
+    n.classList.toggle("dim", Boolean(chosen) && n.dataset.u !== here && !anyLink(here, n.dataset.u)); }
+  for(const l of map.querySelectorAll(".link:not(.hit)")){ const near = chosen && (l.dataset.a === here || l.dataset.b === here);
+    l.classList.toggle("on", Boolean(near)); l.classList.toggle("dim", Boolean(chosen) && !near); }
+}
+
+// ------------------------------------------------------------------ panel
+const panel = document.getElementById("panel");
+function kindSelect(l, other){
+  return `<select data-kind="${other}">${KINDS.map(k => `<option value="${k}"${k === l.k ? " selected" : ""}>${SAY[k]}</option>`).join("")}</select>`;
+}
+function list(title, rows, remover){
+  let h = `<h3>${title}</h3>`;
+  if(!rows.length) return h + `<p class="none">Nothing.</p>`;
+  return h + "<ul>" + rows.map(({c, l}) => `<li><a data-go="${c}">${esc(name(c))}</a>${kindSelect(l, c)}${TWO_WAY.has(l.k) ? "" : `<button class="tiny" data-flip="${c}" title="Turn it round">⇄</button>`}<button class="tiny" data-unlink="${c}" title="Remove">×</button></li>`).join("") + "</ul>";
+}
+function showPanel(){
+  if(!here || !T()[here]){ here = null;
+    panel.innerHTML = `<h2>Nothing chosen</h2>
+      <p>Tap a topic. Tap another and they are linked; tap the second again to change what kind of link it is, and a fifth tap removes it. Drag a topic to move it. Tap empty space to let go.</p>
+      <p>Everything a topic has is listed here once it is chosen, and can be changed here too. <kbd>Ctrl</kbd>+<kbd>Z</kbd> undoes anything.</p>
+      <p>Nothing here assumes an order. Topics push each other apart, a link pulls its two ends together, and a one-way link leans its far end a little lower, so an order appears as you draw it. A topic you drag stays where you put it; <b>Let go</b> releases them all.</p>
+      <p>It opens with the topics and no links. <b>Bring in repo links</b> adds the graph as it stands, and you can take any of it apart.</p>
+      <p>To build from a starting point, choose a topic and press <b>Build out from here</b>. It goes to the centre, every topic with no links yet waits in rings around it, and one tap on any of them links it to the centre and brings it in. Tap a linked topic to make it the new centre from its panel.</p>
+      <p><b>Export</b> saves your changes as a file; <code>python3 dev/apply_topic_edits.py that-file.json</code> writes them into the YAML.</p>
+      <h3>Columns</h3><ul>${state.columns.map(c => `<li><span class="swatch" style="background:${colourOf(c.id)}"></span>${esc(c.name)}</li>`).join("")}</ul>
+      <h3>Changes so far (${state.log.length})</h3><ul class="log">${state.log.slice(-40).reverse().map(l => `<li>${esc(l)}</li>`).join("") || "<li>None.</li>"}</ul>`;
+    return; }
+  const t = T()[here];
+  const out = [], inn = [], two = [];
+  for(const l of state.links){
+    if(TWO_WAY.has(l.k)){ if(l.a === here) two.push({c: l.b, l}); else if(l.b === here) two.push({c: l.a, l}); }
+    else if(l.a === here) out.push({c: l.b, l}); else if(l.b === here) inn.push({c: l.a, l});
+  }
+  const byName = (p, q) => name(p.c).localeCompare(name(q.c));
+  inn.sort(byName); out.sort(byName); two.sort(byName);
+  panel.innerHTML = `
+    <h2>${esc(t.n)}</h2><p class="code">${esc(here)} · ${esc((DATA.modules || {})[t.m] || t.m)} · outcome ${esc(t.o.join(", ") || "none")}</p>
+    <p class="none">Tap another topic to link it to this one.</p>
+    ${list("Comes before this", inn)}
+    ${list("This comes before", out)}
+    ${list("Goes both ways", two)}
+    <div class="row">
+      <button data-do="cut" class="warn" ${inn.length ? "" : "disabled"} title="Remove every one-way link into this topic">Cut everything before</button>
+      <button data-pick="merge" class="act">Merge another into this…</button>
+      <button data-do="split" class="act">Split this…</button>
+      <button data-do="focus" class="act">${state.focus === here ? "Stop building here" : "Build out from here"}</button>
+    </div>
+    <label>Name</label><input class="field" data-edit="n" value="${esc(t.n)}">
+    <label>Column</label><select class="field" data-edit="c">${state.columns.map(c => `<option value="${c.id}"${c.id === t.c ? " selected" : ""}>${esc(c.name)}</option>`).join("")}<option value="__new">New column…</option></select>
+    <label>Tags (comma separated)</label><input class="field" data-edit="t" value="${esc(t.t.join(", "))}">
+    <label>What it is</label><textarea class="field" data-edit="p">${esc(t.p)}</textarea>`;
+}
+
+// ------------------------------------------------------------------ actions
+const warn = msg => { const w = document.getElementById("warn"); w.textContent = msg || ""; w.classList.toggle("on", Boolean(msg)); if(msg) setTimeout(() => w.classList.remove("on"), 7000); };
+let lastLink = null;
+function crowded(){
+  // Nine links in or nine out is about as many as a student can hold, and
+  // the map's close-up stops being readable past it.
+  for(const c of [lastLink.a, lastLink.b]){ let inn = 0, out = 0;
+    for(const l of state.links){ if(TWO_WAY.has(l.k)){ if(l.a === c || l.b === c) inn++; } else if(l.a === c) out++; else if(l.b === c) inn++; }
+    if(inn >= 9 || out >= 9) warn(`${name(c)} now has ${inn} links in and ${out} out. Nine either way is about the most a student can hold.`); }
+}
+function tapLink(a, b){
+  lastLink = {a, b};
+  const l = anyLink(a, b);
+  if(!l){
+    const p = path(b, a);
+    if(p){ warn("Requires would make a loop: " + p.map(name).join(" → ") + " → " + name(a) + ". Made it “helps” instead.");
+      commit(`${name(a)} helps ${name(b)}`, () => setLink(a, b, "helps")); return; }
+    commit(`${name(a)} requires-before ${name(b)}`, () => setLink(a, b, "requires")); return;
+  }
+  const i = KINDS.indexOf(l.k), next = KINDS[i + 1];
+  if(!next){ commit(`unlink ${name(a)} / ${name(b)}`, () => setLink(a, b, null)); return; }
+  if(next === "requires"){ const p = path(b, a); if(p){ warn("Requires would make a loop; skipped it."); commit(`${name(a)} helps ${name(b)}`, () => setLink(a, b, "helps")); return; } }
+  const x = TWO_WAY.has(next) ? a : l.a, y = TWO_WAY.has(next) ? b : l.b;
+  commit(`${name(x)} ${SAY[next]} ${name(y)}`, () => setLink(x, y, next));
+}
+function changeKind(other, k){
+  const l = anyLink(here, other); if(!l) return;
+  if(k === "requires"){ const p = path(l.b, l.a); if(p){ warn("That would make a loop: " + p.map(name).join(" → ")); showPanel(); return; } }
+  commit(`${name(l.a)} ${SAY[k]} ${name(l.b)}`, () => setLink(l.a, l.b, k));
+}
+function merge(keep, gone){
+  commit(`merge ${name(gone)} into ${name(keep)}`, () => {
+    const k = T()[keep], g = T()[gone];
+    for(const o of g.o) if(!k.o.includes(o)) k.o.push(o);
+    for(const w of g.w) if(!k.w.includes(w)) k.w.push(w);
+    for(const x of g.t) if(!k.t.includes(x)) k.t.push(x);
+    const out = [];
+    for(const l of state.links){ const a = l.a === gone ? keep : l.a, b = l.b === gone ? keep : l.b;
+      if(a === b || out.some(m => (m.a === a && m.b === b) || (m.a === b && m.b === a))) continue;
+      out.push(TWO_WAY.has(l.k) ? {a: a < b ? a : b, b: a < b ? b : a, k: l.k} : {a, b, k: l.k}); }
+    state.links = out;
+    delete T()[gone]; delete state.pos[gone];
+    for(const c in state.gone) if(state.gone[c] === gone) state.gone[c] = keep;
+    state.gone[gone] = keep;
+  });
+}
+function cutBefore(){ commit(`cut everything before ${name(here)}`, () => { state.links = state.links.filter(l => TWO_WAY.has(l.k) || l.b !== here); }); }
+function split(){
+  const t = T()[here], old = here;
+  const suggest = n => /[a-z]$/.test(old) ? old + n : old + "ab"[n - 1];
+  const dlg = document.getElementById("dlg");
+  dlg.innerHTML = `<h2>Split “${esc(t.n)}”</h2>
+    <p class="none">Both halves keep every link this topic has; remove what does not belong afterwards. The first half takes over the old code's saved work and judgements.</p>
+    <label>First half — name</label><input id="s1n" value="${esc(t.n)} (part 1)">
+    <label>First half — code</label><input id="s1c" value="${esc(suggest(1))}">
+    <label>Second half — name</label><input id="s2n" value="${esc(t.n)} (part 2)">
+    <label>Second half — code</label><input id="s2c" value="${esc(suggest(2))}">
+    <div class="row"><button id="sNo">Cancel</button><button id="sOk" class="act">Split</button></div>`;
+  dlg.showModal();
+  dlg.querySelector("#sNo").onclick = () => dlg.close();
+  dlg.querySelector("#sOk").onclick = () => {
+    const c1 = dlg.querySelector("#s1c").value.trim(), c2 = dlg.querySelector("#s2c").value.trim();
+    const n1 = dlg.querySelector("#s1n").value.trim(), n2 = dlg.querySelector("#s2n").value.trim();
+    if(!c1 || !c2 || c1 === c2 || T()[c1] || T()[c2]){ warn("Each half needs its own new code."); return; }
+    dlg.close();
+    commit(`split ${name(old)} into ${n1} and ${n2}`, () => {
+      T()[c1] = Object.assign(clone(t), {n: n1}); T()[c2] = Object.assign(clone(t), {n: n2, o: []});
+      const p = state.pos[old]; state.pos[c1] = {x: p.x - NODE_W / 2 - 8, y: p.y}; state.pos[c2] = {x: p.x + NODE_W / 2 + 8, y: p.y};
+      const out = [];
+      for(const l of state.links){ const xs = l.a === old ? [c1, c2] : [l.a], ys = l.b === old ? [c1, c2] : [l.b];
+        for(const a of xs) for(const b of ys){ if(a === b || out.some(m => (m.a === a && m.b === b) || (m.a === b && m.b === a))) continue;
+          out.push(TWO_WAY.has(l.k) ? {a: a < b ? a : b, b: a < b ? b : a, k: l.k} : {a, b, k: l.k}); } }
+      state.links = out;
+      delete T()[old]; delete state.pos[old]; state.gone[old] = c1;
+      for(const c in state.gone) if(state.gone[c] === old) state.gone[c] = c1;
+    });
+    here = c1; light(); showPanel();
+  };
+}
+function edit(field, value){
+  const t = T()[here];
+  if(field === "c" && value === "__new"){
+    const nm = prompt("Name of the new column"); if(!nm){ showPanel(); return; }
+    const id = nm.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+    commit(`new column ${nm}`, () => { if(!state.columns.some(c => c.id === id)) state.columns.push({id, name: nm}); t.c = id; });
+    return;
+  }
+  const v = field === "t" ? value.split(",").map(s => s.trim()).filter(Boolean) : value;
+  if(JSON.stringify(t[field]) === JSON.stringify(v)) return;
+  commit(`${field === "n" ? "rename" : "edit " + field} ${name(here)}`, () => { t[field] = v; });
+}
+function startPick(kind){
+  pick = kind;
+  document.getElementById("modeText").textContent = `Tap the topic to merge into “${name(here)}” — or search for it.`;
+  document.getElementById("mode").classList.add("on");
+}
+function endPick(){ pick = null; document.getElementById("mode").classList.remove("on"); }
+
+// ------------------------------------------------------------------ wiring
+function choose(code, plain){
+  if(pick){ const k = pick; endPick(); if(k === "merge" && code !== here) merge(here, code); return; }
+  if(state.focus && T()[state.focus] && !plain && code !== state.focus && !anyLink(state.focus, code)
+     && !state.links.some(l => l.a === code || l.b === code)){
+    // A topic still waiting in the ring: the first tap links it straight to
+    // the centre, centre first, and lets it come in.
+    here = state.focus; tapLink(state.focus, code); return; }
+  if(here && here !== code && !plain && T()[here]){ tapLink(here, code); return; }
+  here = code; light(); showPanel();
+}
+map.addEventListener("pointerdown", e => {
+  const n = e.target.closest(".node"); if(!n) return;
+  const p = state.pos[n.dataset.u];
+  drag = {u: n.dataset.u, x0: e.clientX, y0: e.clientY, px: p.x, py: p.y, moved: false};
+  n.setPointerCapture(e.pointerId);
+});
+map.addEventListener("pointermove", e => {
+  if(!drag) return;
+  const dx = (e.clientX - drag.x0) / scale, dy = (e.clientY - drag.y0) / scale;
+  if(!drag.moved && Math.hypot(dx, dy) < 4) return;
+  drag.moved = true;
+  const p = state.pos[drag.u];
+  p.x = Math.min(FIELD.w - NODE_W, Math.max(0, Math.round(drag.px + dx)));
+  p.y = Math.min(FIELD.h - NODE_H, Math.max(0, Math.round(drag.py + dy)));
+  place(); heat();
+});
+map.addEventListener("pointerup", e => {
+  if(!drag) return;
+  const d = drag; drag = null;
+  if(d.moved){ const p = state.pos[d.u]; const nx = p.x, ny = p.y; p.x = d.px; p.y = d.py;
+    commit(`move ${name(d.u)}`, () => { state.pos[d.u] = {x: nx, y: ny}; state.pinned[d.u] = true; }); return; }
+  choose(d.u, e.shiftKey);
+});
+let pan = null;
+stage.addEventListener("pointerdown", e => {
+  if(e.target.closest(".node") || e.target.closest(".link")) return;
+  pan = {x: e.clientX, y: e.clientY, l: stage.scrollLeft, t: stage.scrollTop, moved: false};
+  stage.classList.add("panning");
+});
+stage.addEventListener("pointermove", e => {
+  if(!pan) return;
+  const dx = e.clientX - pan.x, dy = e.clientY - pan.y;
+  if(Math.hypot(dx, dy) > 3) pan.moved = true;
+  stage.scrollLeft = pan.l - dx; stage.scrollTop = pan.t - dy;
+});
+addEventListener("pointerup", e => {
+  if(!pan) return;
+  const moved = pan.moved; pan = null; stage.classList.remove("panning");
+  if(moved || e.target.closest(".node")) return;
+  const l = e.target.closest(".link"); if(l){ here = l.dataset.a; light(); showPanel(); return; }
+  if(!pick){ here = null; light(); showPanel(); }
+});
+stage.addEventListener("wheel", e => {
+  if(!e.ctrlKey && !e.metaKey) return;
+  e.preventDefault();
+  const r = stage.getBoundingClientRect(), fx = (stage.scrollLeft + e.clientX - r.left) / scale, fy = (stage.scrollTop + e.clientY - r.top) / scale;
+  scale = Math.min(3, Math.max(0.15, scale * (e.deltaY < 0 ? 1.15 : 1 / 1.15))); applyScale();
+  stage.scrollLeft = fx * scale - (e.clientX - r.left); stage.scrollTop = fy * scale - (e.clientY - r.top);
+}, {passive: false});
+panel.addEventListener("click", e => {
+  const go = e.target.closest("[data-go]"); if(go){ here = go.dataset.go; light(); showPanel(); return; }
+  const un = e.target.closest("[data-unlink]"); if(un){ const o = un.dataset.unlink; commit(`unlink ${name(here)} / ${name(o)}`, () => setLink(here, o, null)); return; }
+  const pk = e.target.closest("[data-pick]"); if(pk){ startPick(pk.dataset.pick); return; }
+  const flip = e.target.closest("[data-flip]"); if(flip){ const o = flip.dataset.flip, l = anyLink(here, o);
+    if(l){ if(l.k === "requires"){ const p = path(l.a, l.b); if(p && p.length > 2){ warn("Turning it round would make a loop: " + p.map(name).join(" → ")); return; } }
+      commit(`turn round ${name(l.a)} / ${name(l.b)}`, () => setLink(l.b, l.a, l.k)); } return; }
+  const act = e.target.closest("[data-do]"); if(act){
+    if(act.dataset.do === "cut") cutBefore();
+    if(act.dataset.do === "split") split();
+    if(act.dataset.do === "focus"){ const on = state.focus !== here;
+      commit(on ? `build out from ${name(here)}` : "stop building out", () => { state.focus = on ? here : null; if(on) state.pinned[here] = true; });
+      alpha = 1; heat(); if(on){ const el = map.querySelector(`.node[data-u="${CSS.escape(here)}"]`); setTimeout(() => el && el.scrollIntoView({block: "center", inline: "center"}), 400); } }
+  }
+});
+panel.addEventListener("change", e => {
+  const k = e.target.closest("[data-kind]"); if(k){ changeKind(k.dataset.kind, k.value); return; }
+  const f = e.target.closest("[data-edit]"); if(f) edit(f.dataset.edit, f.value);
+});
+document.getElementById("cancel").addEventListener("click", endPick);
+document.getElementById("undo").addEventListener("click", undo);
+document.getElementById("redo").addEventListener("click", redo);
+document.getElementById("in").addEventListener("click", () => { scale *= 1.3; applyScale(); });
+document.getElementById("out").addEventListener("click", () => { scale /= 1.3; applyScale(); });
+document.getElementById("fit").addEventListener("click", fit);
+document.getElementById("tidy").addEventListener("click", () => {
+  commit("let go of every pinned topic", () => { state.pinned = {}; }); alpha = 1; heat();
+});
+document.getElementById("flow").addEventListener("click", e => {
+  state.flow = !state.flow; e.currentTarget.setAttribute("aria-pressed", String(state.flow)); save(); heat();
+});
+document.getElementById("export").addEventListener("click", () => {
+  const out = Object.assign({exported: new Date().toISOString()}, state);
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([JSON.stringify(out, null, 1)], {type: "application/json"}));
+  a.download = "topic-graph-edits.json"; a.click();
+  exportedAt = state.log.length; localStorage.setItem(STORE + ":exported", String(exportedAt)); status();
+});
+document.getElementById("importBtn").addEventListener("click", () => document.getElementById("import").click());
+document.getElementById("import").addEventListener("change", e => {
+  const f = e.target.files[0]; if(!f) return;
+  f.text().then(txt => { const s = JSON.parse(txt); if(!s.topics || !s.links){ warn("Not an export from this editor."); return; }
+    past.push(JSON.stringify(state)); state = s; here = null; save(); render(); fit(); showPanel(); });
+});
+document.getElementById("reset").addEventListener("click", () => {
+  const withLinks = confirm("Start again from the graph as it is in the repo?\n\nOK: yes, with all its links.\nCancel: no — just the topics, no links at all.");
+  if(!confirm("This throws away every change here. Sure?")) return;
+  past.push(JSON.stringify(state)); state = fresh(withLinks); here = null; save(); render(); fit(); showPanel(); alpha = 1; heat();
+});
+document.getElementById("loadGraph").addEventListener("click", () => {
+  commit("bring in the repo's links", () => {
+    for(const [a, b] of DATA.requires) if(!anyLink(a, b) && T()[a] && T()[b]) setLink(a, b, "requires");
+    for(const [a, b] of DATA.level) if(!anyLink(a, b) && T()[a] && T()[b]) setLink(a, b, "inter");
+  }); alpha = 1; heat();
+});
+const find = document.getElementById("find"), hits = document.getElementById("hits");
+find.addEventListener("input", () => {
+  const q = find.value.trim().toLowerCase();
+  const found = q.length < 2 ? [] : Object.keys(T()).filter(c => T()[c].n.toLowerCase().includes(q) || c.toLowerCase().includes(q))
+    .sort((a, b) => name(a).length - name(b).length).slice(0, 10);
+  hits.innerHTML = found.map(c => `<button data-u="${c}">${esc(name(c))}</button>`).join("");
+  for(const n of map.querySelectorAll(".node")) n.classList.toggle("found", found.includes(n.dataset.u));
+});
+function jump(code, plain){
+  if(here && T()[here] && code !== here && !plain && !pick) tapLink(here, code); else choose(code, true);
+  find.value = ""; hits.innerHTML = ""; find.blur();   // so 1–5 reach the map, not the box
+  for(const n of map.querySelectorAll(".node")) n.classList.remove("found");
+  const el = map.querySelector(`.node[data-u="${CSS.escape(code)}"]`); if(el) el.scrollIntoView({block: "center", inline: "center"});
+}
+find.addEventListener("keydown", e => { if(e.key === "Enter"){ const b = hits.querySelector("button"); if(b) jump(b.dataset.u, e.shiftKey); } });
+hits.addEventListener("click", e => { const b = e.target.closest("button"); if(b){ if(pick) choose(b.dataset.u); else jump(b.dataset.u, e.shiftKey); } });
+addEventListener("keydown", e => {
+  if(e.key === "Escape"){ endPick(); here = null; light(); showPanel(); return; }
+  if(e.target.matches("input,textarea,select")) return;
+  if(e.key === "/"){ e.preventDefault(); find.focus(); }
+  if((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "z"){ e.preventDefault(); e.shiftKey ? redo() : undo(); }
+  if(/^[1-5]$/.test(e.key) && lastLink && anyLink(lastLink.a, lastLink.b)){
+    const k = KINDS[Number(e.key) - 1], l = anyLink(lastLink.a, lastLink.b);
+    if(k === "requires"){ const p = path(l.b, l.a); if(p){ warn("Requires would make a loop: " + p.map(name).join(" → ")); return; } }
+    commit(`${name(l.a)} ${SAY[k]} ${name(l.b)}`, () => setLink(l.a, l.b, k));
+  }
+});
+addEventListener("resize", () => fit());
+function drawCols(){
+  const el = document.getElementById("cols");
+  el.innerHTML = "<small>Show</small>" + state.columns.map(c => `<button data-c="${c.id}" aria-pressed="${!shownCols || shownCols.has(c.id)}"><span class="swatch" style="background:${colourOf(c.id)}"></span>${esc(c.name)}</button>`).join("")
+    + (shownCols ? ` <button data-c="*">All</button>` : "");
+}
+document.getElementById("cols").addEventListener("click", e => {
+  const b = e.target.closest("button[data-c]"); if(!b) return;
+  if(b.dataset.c === "*") shownCols = null;
+  else { if(!shownCols) shownCols = new Set(state.columns.map(c => c.id));
+    shownCols.has(b.dataset.c) ? shownCols.delete(b.dataset.c) : shownCols.add(b.dataset.c);
+    if(shownCols.size === state.columns.length) shownCols = null; }
+  drawCols(); light();
+});
+render(); fit(); showPanel(); drawCols(); status(); alpha = 1; heat();
+document.getElementById("flow").setAttribute("aria-pressed", String(state.flow));
+</script></body></html>

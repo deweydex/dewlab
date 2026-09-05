@@ -748,14 +748,17 @@ topics:
     needs: [MIT-5.4]
 
   MIT-5.6:
-    name: Probability as a scale
-    outcome: MIT-5.6
+    name: Probability
+    outcome: [MIT-5.6, CMPS-LO2]
     plain: >
-      Every probability is a number between zero and one. Zero cannot happen,
-      one is certain, and everything real is in between.
+      How likely something is, written as a number between zero and one.
+      Zero cannot happen, one is certain, and everything real sits in
+      between.
     uses:
       - Reading a model's confidence honestly. A classifier that says 0.51 is
         not really making a prediction; it is saying it does not know.
+      - Games of chance, and any feature that needs a fair-seeming shuffle
+        or deal.
     needs: []
 
   MIT-5.7:
@@ -1055,13 +1058,15 @@ topics:
 
   PDP-LO4:
     name: The parts of a program
-    outcome: PDP-LO4
+    outcome: [PDP-LO4, FOOP-LO2]
     plain: >
       Variables, expressions, statements, input and output — the small vocabulary
       that nearly every language shares. Learn it once and a new language is
       mostly a matter of new spelling rather than new ideas.
     uses:
       - Everything. This is the alphabet.
+      - Recognising the same handful of moves inside every class method you
+        will ever write.
     needs: []
 
   PDP-LO5:
@@ -1104,7 +1109,7 @@ topics:
 
   PDP-LO7:
     name: Documented programs
-    outcome: PDP-LO7
+    outcome: [PDP-LO7, FOOP-LO9]
     plain: >
       Writing programs somebody else can pick up and change — including you,
       in a month, having forgotten every decision you made. Names, comments
@@ -1112,6 +1117,8 @@ topics:
       program runs.
     uses:
       - Any code that outlives the afternoon it was written in.
+      - Every docstring that lets an editor show you what a method does
+        before you call it.
     needs: [PDP-LO6a]
 
   PDP-LO8:
@@ -1139,14 +1146,16 @@ topics:
 
   PDP-LO10:
     name: Testing and debugging
-    outcome: PDP-LO10
+    outcome: [PDP-LO10, FOOP-LO10]
     plain: >
       Deciding what a program should do before checking whether it does, and
       finding out why when it does not.
     uses:
       - Changing code without breaking it, which is the difference between a
         program that can grow and one that cannot.
-    needs: [PDP-LO7]
+      - Catching a bug in one class before it reaches every other class that
+        relies on it.
+    needs: [PDP-LO7, PDP-LO9]
 
   PDP-LO11:
     name: Coding standards
@@ -1184,19 +1193,6 @@ topics:
         division.
     needs: [PDP-LO4]
 
-  FOOP-LO2:
-    name: The instructions a program is built from
-    outcome: FOOP-LO2
-    plain: >
-      The small, shared vocabulary of any program: storing a value, running
-      steps in order, choosing between paths, and repeating a step. Object
-      oriented programming adds new ways to organise these, not new ones to
-      learn.
-    uses:
-      - Recognising the same handful of moves inside every class method you
-        will ever write.
-    needs: [PDP-LO4, PDP-LO6a]
-
   FOOP-LO3:
     name: Classes and objects
     outcome: FOOP-LO3
@@ -1208,7 +1204,7 @@ topics:
     uses:
       - Every library import that hands you a ready-made object rather than a
         bag of loose functions.
-    needs: [FOOP-LO2]
+    needs: [PDP-LO4]
 
   FOOP-LO4:
     name: Modular, reusable code
@@ -1269,29 +1265,6 @@ topics:
         have to travel together by convention.
     needs: [FOOP-LO1, FOOP-LO3]
 
-  FOOP-LO9:
-    name: Documenting object oriented code
-    outcome: FOOP-LO9
-    plain: >
-      Writing a class so that somebody meeting it for the first time —
-      including you, later — can tell what it represents and what each of
-      its methods does, without reading every line.
-    uses:
-      - Every docstring that lets an editor show you what a method does
-        before you call it.
-    needs: [PDP-LO7]
-
-  FOOP-LO10:
-    name: Debugging and testing an object oriented program
-    outcome: FOOP-LO10
-    plain: >
-      Finding out whether an object behaves the way its class promises it
-      will, and tracking down why when it does not.
-    uses:
-      - Catching a bug in one class before it reaches every other class that
-        relies on it.
-    needs: [PDP-LO9, PDP-LO10]
-
   FOOP-LO11:
     name: Deploying a program
     outcome: FOOP-LO11
@@ -1347,18 +1320,6 @@ topics:
         answers.
     needs: [MIT-6.7]
 
-  CMPS-LO2a:
-    name: Probability
-    outcome: CMPS-LO2
-    plain: >
-      How likely something is, written as a number between zero and one.
-      Zero cannot happen, one is certain, and everything real sits in
-      between.
-    uses:
-      - Games of chance, and any feature that needs a fair-seeming shuffle
-        or deal.
-    needs: [MIT-5.6, MIT-5.7]
-
   CMPS-LO2b:
     name: Sampling
     outcome: CMPS-LO2
@@ -1371,7 +1332,7 @@ topics:
         traffic.
       - Any survey or poll, and the reason its result comes with a margin
         either side.
-    needs: [CMPS-LO2a]
+    needs: [MIT-5.6]
 
   CMPS-LO2c:
     name: Dependence
@@ -1428,7 +1389,7 @@ topics:
         into a counting exercise a computer can just run.
       - Testing a design against thousands of random scenarios before it is
         built.
-    needs: [CMPS-LO2a]
+    needs: [MIT-5.6]
 
   CMPS-LO4a:
     name: Matrices
@@ -1467,7 +1428,7 @@ topics:
       - Web search ranking, which began as exactly this calculation.
       - Working out who matters in any network, such as which account in a
         social graph reaches the most people.
-    needs: [CMPS-LO4a, CMPS-LO2a]
+    needs: [CMPS-LO4a, MIT-5.6]
 
   CMPS-LO4d:
     name: Comparing rows of numbers
@@ -1509,7 +1470,7 @@ topics:
       - Failure prediction and reliability engineering, and branch prediction
         inside a processor.
       - Analysing packet loss and jitter on a network link.
-    needs: [CMPS-LO2a, CMPS-LO5]
+    needs: [MIT-5.6, CMPS-LO5]
 
   CMPS-LO7:
     name: Modelling versus simulation

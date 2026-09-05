@@ -86,6 +86,7 @@ ASSETS = ROOT / "assets"
 COMPOSE = ROOT / "compose"
 DEWMARK_WORKBENCH = ROOT / "dewmark" / "workbench"
 TOPIC_GAME = ROOT / "topic_tree_game"
+TOPIC_EDITOR = ROOT / "topic_editor"
 SHELL = ASSETS / "shell.html"
 OUT = ROOT / "site"
 
@@ -4123,6 +4124,13 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
     if TOPIC_GAME.is_dir():
         shutil.rmtree(OUT / "topic_tree_game", ignore_errors=True)
         shutil.copytree(TOPIC_GAME, OUT / "topic_tree_game",
+                        ignore=shutil.ignore_patterns("README.md"))
+
+    # And the topic editor, on the same terms: reached by typing
+    # /topic_editor/, for whoever is drawing the graph, and never linked.
+    if TOPIC_EDITOR.is_dir():
+        shutil.rmtree(OUT / "topic_editor", ignore_errors=True)
+        shutil.copytree(TOPIC_EDITOR, OUT / "topic_editor",
                         ignore=shutil.ignore_patterns("README.md"))
 
     # dewmini's own downloadable, offline-capable copy (DECISIONS_LOG.md

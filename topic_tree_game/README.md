@@ -7,7 +7,8 @@ first?
 It is published at <https://deweydex.github.io/dewlab/topic_tree_game/>.
 Nothing on the site links to it, so you reach it by typing the address or
 following a link somebody sent you. `index.html` also opens straight from a
-checkout, with no build step.
+checkout, with no build step. `help.html` beside it is the guide, and the
+**help** button at the top opens it.
 
 ## The loop
 
@@ -33,8 +34,8 @@ it never edits `topics.yaml`.
 
 ## The queue
 
-All 120 topics make 7,140 pairs, and most of them are two topics with nothing
-to do with each other. The page works through them in three tiers:
+Every topic paired with every other is several thousand pairs, and most of
+them are two topics with nothing to do with each other. The page works through them in three tiers:
 
 1. The arrows the graph already has, to check they are real.
 2. Every pair inside one section of a descriptor, where a missing prerequisite

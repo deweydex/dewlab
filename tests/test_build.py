@@ -3309,12 +3309,14 @@ def test_the_topic_pair_game_is_published_without_its_readme(repo, monkeypatch):
     game = repo / "topic_tree_game"
     game.mkdir(parents=True)
     (game / "index.html").write_text("<h1>topic pairs</h1>")
+    (game / "help.html").write_text("<h1>how to play</h1>")
     (game / "README.md").write_text("how the loop works")
     monkeypatch.setattr(b, "TOPIC_GAME", game)
 
     b.build()
 
     assert (b.OUT / "topic_tree_game" / "index.html").is_file()
+    assert (b.OUT / "topic_tree_game" / "help.html").is_file()
     assert not (b.OUT / "topic_tree_game" / "README.md").exists()
 
 
@@ -3325,6 +3327,32 @@ def test_no_topic_game_folder_is_not_an_error(repo, monkeypatch):
     b.build()
 
     assert not (b.OUT / "topic_tree_game").exists()
+
+
+def test_the_topic_editor_is_published_beside_the_game(repo, monkeypatch):
+    """The topic editor reaches the site at /topic_editor/, on the same terms
+    as the pair game: one page, nothing linking to it."""
+    editor = repo / "topic_editor"
+    editor.mkdir(parents=True)
+    (editor / "index.html").write_text("<h1>topic editor</h1>")
+    (editor / "help.html").write_text("<h1>how it works</h1>")
+    (editor / "README.md").write_text("for a reader of the repository")
+    monkeypatch.setattr(b, "TOPIC_EDITOR", editor)
+
+    b.build()
+
+    assert (b.OUT / "topic_editor" / "index.html").read_text() == "<h1>topic editor</h1>"
+    assert (b.OUT / "topic_editor" / "help.html").is_file()
+    assert not (b.OUT / "topic_editor" / "README.md").exists()
+
+
+def test_no_topic_editor_folder_is_not_an_error(repo, monkeypatch):
+    """A checkout without topic_editor/ still builds."""
+    monkeypatch.setattr(b, "TOPIC_EDITOR", repo / "topic_editor")
+
+    b.build()
+
+    assert not (b.OUT / "topic_editor").exists()
 
 
 def test_no_workbench_folder_is_not_an_error(repo, monkeypatch):

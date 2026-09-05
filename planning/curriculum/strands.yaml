@@ -1,0 +1,88 @@
+# The six columns the topic map is drawn in.
+#
+# `outcomes.yaml` already gives every outcome a fine strand, twenty-one of
+# them, which is too many to read as columns. This file gathers those into
+# six, and names the handful of topics that belong somewhere other than where
+# their fine strand would put them.
+#
+# A column is a place to draw a topic, not a claim about what it depends on.
+# Columns branch, rejoin and reach into each other, and an arrow crossing from
+# one column to another is drawn in the accent colour precisely because those
+# are the interesting ones.
+
+columns:
+  - id: sets-and-number
+    name: Sets and number systems
+  - id: equations-and-functions
+    name: Equations and functions
+  - id: geometry
+    name: Geometry
+  - id: chance-and-data
+    name: Probability and statistics
+  - id: programming
+    name: Programming
+  - id: software-development
+    name: Software development
+
+# Every fine strand in outcomes.yaml, and the column it falls in.
+from_strand:
+  number: sets-and-number
+  sets: sets-and-number
+  logic: sets-and-number
+
+  algebra: equations-and-functions
+  functions: equations-and-functions
+  calculus: equations-and-functions
+  linear-algebra: equations-and-functions
+
+  geometry: geometry
+  trigonometry: geometry
+
+  probability: chance-and-data
+  statistics: chance-and-data
+  simulation: chance-and-data
+  modelling: chance-and-data
+  reflection: chance-and-data
+
+  algorithms: programming
+  oop: programming
+  data-structures: programming
+  complexity: programming
+  programming: programming
+
+  problem-solving: software-development
+
+# Topics that sit somewhere other than their fine strand would put them.
+# `why` is for whoever reads this next.
+topics:
+  PRE-1: {column: geometry, why: A triangle is a shape before it is anything else.}
+  PRE-2: {column: equations-and-functions, why: It is a thing you do to an equation.}
+
+  CMPS-LO4b: {column: geometry, why: Rotating and translating a shape is geometry done with a matrix.}
+  CMPS-LO4c: {column: chance-and-data, why: Ranking pages is a random walk over the links.}
+
+  FOOP-LO5: {column: software-development, why: The environment is where the work happens, not part of the language.}
+  FOOP-LO9: {column: software-development, why: Documenting is a practice rather than a way of writing code.}
+  FOOP-LO10: {column: software-development, why: Testing is a practice rather than a way of writing code.}
+  FOOP-LO11: {column: software-development, why: Deploying is what happens to a program after it is written.}
+  PDP-LO7: {column: software-development, why: Documenting is a practice rather than a way of writing code.}
+  PDP-LO9: {column: software-development, why: Reading an error message is part of debugging.}
+  PDP-LO10: {column: software-development, why: Testing is a practice rather than a way of writing code.}
+  PDP-LO11: {column: software-development, why: A standard is an agreement between people.}
+  PDP-LO12: {column: software-development, why: Working together is the practice itself.}
+
+# A wall between two columns, in one direction.
+#
+# Software development is the practice of building software: testing it,
+# documenting it, deploying it, agreeing standards, working together.
+# Programming is learning to write code. A student writes code before there is
+# anything to test or deploy, so the practice never comes before the basics.
+#
+# Twenty-nine arrows said otherwise, and ten pairs said the two are one
+# lesson. They come from the two module descriptors covering the same ground
+# in their own order rather than from anything a student needs, so they are
+# dropped here rather than argued one at a time. Arrows the other way, from
+# programming into software development, are kept: there are thirty-two, and
+# every one of them says you write the thing before you look after it.
+no_arrow_from:
+  software-development: [programming]

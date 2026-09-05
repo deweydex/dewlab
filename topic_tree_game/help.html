@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Topic pairs · how to play — dewlab</title>
+<style>
+:root{
+  --bg:#fdfcfa; --card:#fff; --ink:#1a1a1a; --muted:#5f6b7a; --navy:#1b2a4a;
+  --brand:#d4692a; --link:#b8541a; --rule:#e3ddd2; --panel:#f6f3ee;
+  --serif:Georgia,"Iowan Old Style",serif;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#14181f; --card:#1b2129; --ink:#e6e3dd; --muted:#98a2b3; --navy:#b9c8e6;
+  --brand:#d4692a; --link:#e08a52; --rule:#2a3140; --panel:#1b2129;}}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.5;
+     padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+.wrap{max-width:34rem;margin:0 auto;padding:.75rem .9rem 3rem}
+header{display:flex;align-items:center;justify-content:space-between;gap:.5rem;margin-bottom:1rem}
+.mark{font-family:var(--serif);font-weight:700;color:var(--navy);font-size:1.05rem}
+.mark i{color:var(--brand);font-style:normal}
+a.mini{font-family:var(--mono);font-size:.7rem;padding:.4rem .55rem;border:1px solid var(--rule);
+  border-radius:6px;background:var(--card);color:var(--ink);text-decoration:none}
+h1{font-family:var(--serif);color:var(--navy);font-size:1.5rem;margin:.2rem 0 .3rem}
+.lede{color:var(--muted);margin:0 0 1.4rem}
+h2{font-family:var(--serif);color:var(--navy);font-size:1.1rem;margin:1.6rem 0 .4rem;padding-top:1rem;border-top:1px solid var(--rule)}
+p{margin:.4rem 0 .7rem}
+dl{margin:.4rem 0 .8rem}
+dt{font-weight:600;margin-top:.6rem}
+dd{margin:.1rem 0 0}
+b.btn{font-weight:600;color:var(--brand)}
+a{color:var(--link)}
+code{font-family:var(--mono);font-size:.85em;background:var(--panel);padding:.05em .3em;border-radius:4px}
+</style></head>
+<body><div class="wrap">
+<header>
+  <span class="mark">dewlab <i>&bull;</i> topic pairs</span>
+  <a class="mini" href="index.html">back to the game</a>
+</header>
+
+<h1>How to play</h1>
+<p class="lede">The game shows two topics and asks one question. Your answers help draw the map of what a student needs to learn first.</p>
+
+<h2>The question</h2>
+<p>Each turn shows two topics. Tap the one a student has to learn first. That topic becomes something the other one needs.</p>
+<p>Read the short description under each name if you are not sure what it means. Do not tap the one that is easier or comes earlier in the course. Tap the one you could not do the other without.</p>
+
+<h2>The other answers</h2>
+<dl>
+<dt><b class="btn">Unrelated</b></dt>
+<dd>Neither topic needs the other. This is the most common answer, and it is a useful one.</dd>
+<dt><b class="btn">Both ways</b></dt>
+<dd>Each topic needs the other. That cannot be taught in any order, so it is a sign the two should be taught together or split apart.</dd>
+<dt><b class="btn">Not sure</b></dt>
+<dd>Skips this pair. It comes back later.</dd>
+<dt><b class="btn">Refine the first</b> or <b class="btn">Refine the second</b></dt>
+<dd>Opens a sheet for that topic. You can give it a name a student would recognise, tick the groups it belongs to, add a group that is not there yet, or flag it as needing work.</dd>
+</dl>
+<p><b class="btn">undo</b>, at the top, takes back your last answer.</p>
+
+<h2>The counter</h2>
+<p>The bar and the number at the top say how far you are through the pairs worth judging. The game asks the most useful pairs first: the ones the map already claims, then pairs from the same part of a module. Everything else comes after, in a random order. Stop whenever you like. Your answers stay on this device.</p>
+
+<h2>Saving</h2>
+<p>After a dozen or so answers, tap <b class="btn">save</b>. Three ways are offered.</p>
+<dl>
+<dt>Send to GitHub</dt>
+<dd>GitHub opens with a file already written. Sign in and tap <em>Commit changes</em>. A web address can only carry about a dozen answers, so a long session takes more than one tap. The sheet says how many.</dd>
+<dt>Save a file</dt>
+<dd>Downloads all your answers as one file. Send it on, or upload it to the folder the sheet names.</dd>
+<dt>Copy everything</dt>
+<dd>Copies your answers as text, for anyone without a GitHub account. Paste it into a message.</dd>
+</dl>
+<p>Nothing is sent anywhere until you choose one of these.</p>
+
+<h2>What happens next</h2>
+<p>Every saved batch is read by a script that writes a report. The report says what the answers imply. A person reads it and decides what changes on the map. Your answers are evidence, and they are always welcome, even when they disagree with what the map says now.</p>
+
+<p style="margin-top:2rem"><a class="mini" href="index.html">back to the game</a></p>
+</div></body></html>
