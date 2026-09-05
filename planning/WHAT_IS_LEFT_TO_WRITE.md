@@ -9,22 +9,18 @@ taught. Nothing below should be trusted over either.
 
 ## What is actually left
 
-`CURRICULUM_MAP.md`'s own generated summary is the honest count: **68 of
-80** outcomes are in place, and the twelve still missing are all in the
-`CMPS` module — *Computational Methods and Problem Solving 5N0554* — with
-no proposal written for any of them yet:
-
-`CMPS-LO1`, `CMPS-LO2`, `CMPS-LO3`, `CMPS-LO5`, `CMPS-LO6`, `CMPS-LO7`,
-`CMPS-LO8`, `CMPS-LO9`, `CMPS-LO10`, `CMPS-LO11`, `CMPS-LO12`, `CMPS-LO13`.
-
-`STATUS.md` §2, Phase 7, carries this in prose: the first target strand
-(linear algebra) is written; the second and third folded into it. The
-fourth — discrete simulation and Monte Carlo methods — and the fifth —
-algorithmic complexity and systems modelling — are not started, and
-between them cover the twelve outcomes above.
-
-Practice pages for those strands, once written, are tracked in
-[`EXERCISES.md`](./EXERCISES.md) §4 rather than here.
+Nothing. `CURRICULUM_MAP.md`'s own generated summary is the honest
+count: **91 of 91** outcomes are in place, across all four accredited
+modules — *Mathematics for IT*, *Programming and Design Principles*,
+*Fundamentals of Object Oriented Programming*, and *Computational
+Methods and Problem Solving*. The twelve `CMPS-LO*` outcomes this file
+used to list as missing were closed across five new tutorials (a
+perceptron, a queue simulation, a coin-change strategy comparison, a
+folder-tree recursion tutorial, and a debugging tutorial) plus small
+additions to two existing ones — `planning/STATUS.md` §2 has the detail,
+including a few loose ends (no tutorial uses real data yet; the
+link-graph strand's crawl is still just a worked example) that don't
+block the outcome count but are worth knowing about.
 
 ## Why this file stops here
 

@@ -128,15 +128,28 @@ requirement for future changes, the same way the build already enforces
 that links and folds can't go stale.
 
 ### Curriculum modules (`tutorials/`)
-- **83 published tutorial and practice pages** — 41 tutorials, 38
-  practice pages (one per tutorial, except the three that are already
-  problems or reflection), and 4 mixed sets drawing on several tutorials
-  at once. See `EXERCISES.md` for where the problems came from.
-  - `computational-methods` (8 tutorials, 8 practice pages):
-    `first-steps.md`, `working-with-tables.md`, and the `matrices`
-    series — `grid-of-numbers.md`, `multiplying-grids.md`,
+- **113 published tutorial and practice pages** across three modules —
+  see `EXERCISES.md` for where the problems came from.
+  - `computational-methods` (15 tutorials, 15 practice pages): `first-steps.md`,
+    `working-with-tables.md`; the `matrices` series —
+    `grid-of-numbers.md`, `multiplying-grids.md`,
     `what-a-matrix-does-to-a-picture.md`, `undoing-it.md`,
-    `solving-systems.md`, `where-chains-lead.md`.
+    `solving-systems.md`, `where-chains-lead.md`; the `simulation`
+    series — `leaving-it-to-chance.md`, `counting-darts.md`,
+    `a-model-that-corrects-itself.md` (a from-scratch perceptron),
+    `when-a-queue-never-clears.md`; the `algorithms` series —
+    `three-ways-to-make-change.md` (brute force, memoization, a greedy
+    heuristic), `finding-everything-inside-a-folder.md` (trees,
+    recursion vs. iteration); and the `problem-solving` series —
+    `finding-where-it-went-wrong.md` (problem definition, symptom vs.
+    root cause, the personal attributes behind debugging).
+  - `fundamentals-of-oop` (9 tutorials, 7 practice pages, 1 mixed
+    practice-across page): the `programming-with-objects` series —
+    `the-moves-you-already-know.md`, `objects-and-classes.md`,
+    `the-tools-around-your-code.md`, `one-class-many-methods.md`,
+    `one-parent-many-children.md`, `testing-what-a-class-does.md`,
+    `documenting-a-class.md`, `a-front-end-for-a-class.md`, and
+    `mixed-programming-with-objects.md` (the practice-across page).
   - `mit-pdp-maths-prog-integration` (67 tutorial and practice files):
     - *Foundations & Programming Spine*: `first-steps.md`,
       `storing-and-computing.md`, `making-decisions.md`,
@@ -165,63 +178,64 @@ that links and folds can't go stale.
       `mixed-trigonometry.md`, `mixed-data.md`.
 
 ### Curriculum coverage (`CURRICULUM_MAP.md`)
-All 67 learning outcomes across *Mathematics for IT (5N18396)* and
-*Programming and Design Principles (5N2927)* are written, mapped, and
-tested — no gaps in either descriptor.
+**All 91 learning outcomes across all four accredited modules are
+written, mapped, and tested** — *Mathematics for IT (5N18396)*,
+*Programming and Design Principles (5N2927)*, *Fundamentals of Object
+Oriented Programming (5N0541)*, and *Computational Methods and Problem
+Solving (5N0554)*. No gaps in any descriptor. `CURRICULUM_MAP.md` is
+regenerated from the tutorials themselves and is the source of truth;
+this file only narrates it.
 
 ---
 
 ## 2. What's still open
 
-### Computational Methods (5N0554) curriculum
-Full curriculum specification, mapping, and authoring for
-*Computational Methods and Problem Solving 5N0554* (15 credits, 13
-learning outcomes across 7 sections).
+### Computational Methods (5N0554) curriculum — **all 13 outcomes now taught**
+Every outcome in *Computational Methods and Problem Solving 5N0554*
+now has a tutorial section teaching it, per `CURRICULUM_MAP.md`. What
+actually closed each one, strand by strand:
 
-As of the run that closed the first strand: all 13 outcomes are
-transcribed into `outcomes.yaml` under a new `CMPS` module, with the
-descriptor's own "e.g." examples moved to `topics.yaml`'s `uses:` rather
-than folded into what coverage is measured against (DECISIONS_LOG.md
-7.55). The first target strand is written and released; the other four
-are not.
+1. **Linear Algebra & Matrix Operations** — six tutorials (*A Grid of
+   Numbers* through *Where Chains Lead*), series `matrices`. `CMPS-LO4`
+   fully taught; `CMPS-LO1` and `CMPS-LO2`'s data-structures/randomness
+   halves surfaced here first but weren't the whole outcome yet.
+2. **Discrete Simulation & Monte Carlo Methods** — *Leaving It to
+   Chance* and *Counting Darts* (estimating $\pi$, why more samples
+   isn't reliably better — now with an added section distinguishing
+   *accuracy* from *precision*, closing `CMPS-LO13`); *A Model That
+   Corrects Itself* (a from-scratch perceptron, closing `CMPS-LO7` and
+   `CMPS-LO11`); *When a Queue Never Clears* (queueing stability,
+   closing `CMPS-LO6`). Series `simulation`.
+3. **Algorithms** (new series) — *Three Ways to Make Change* (brute
+   force vs. memoization vs. a greedy heuristic, closing `CMPS-LO9`,
+   and tagging `finding-things.md`/`putting-things-in-order.md`'s
+   existing search/sort complexity coverage as `CMPS-LO5`, already
+   taught there in substance); *Finding Everything Inside a Folder*
+   (trees, recursion vs. iteration, closing `CMPS-LO1`).
+4. **Problem Solving** (new series) — *Finding Where It Went Wrong*
+   (one buggy pipeline carrying problem definition/testing `CMPS-LO8`,
+   symptom-vs-root-cause `CMPS-LO10`, and the personal attributes
+   behind debugging `CMPS-LO12`).
 
-1. **Linear Algebra & Matrix Operations** — **done.** Six tutorials —
-   *A Grid of Numbers*, *Multiplying Grids*, *What a Matrix Does to a
-   Picture*, *Undoing It*, *Solving Systems*, *Where Chains Lead* —
-   under `tutorials/computational-methods/`, series `matrices`, each
-   with a practice page. *Where Chains Lead* folds in Markov chains,
-   word-level text generation, and a worked small-scale PageRank,
-   closing what were planned as strands 1 and 2 (and part of 3) into one
-   series — see `outlines/matrices.md`'s resolved open question and
-   DECISIONS_LOG.md 7.56. `CMPS-LO4` is fully taught; `CMPS-LO1` and
-   `CMPS-LO2` are touched but not taught, since only the
-   data-structures half of LO1 and the randomness half of LO2 came up
-   along the way.
-2. **Markov Chains & Text Generation** — **folded into strand 1**, above,
-   rather than written as its own strand.
-3. **Link Graph Analysis & PageRank** — **partly done**, as the closing
-   section of *Where Chains Lead* — a hand-checkable three-page example
-   rather than a dedicated tutorial on crawling or a real link graph,
-   which remains unwritten.
-4. **Discrete Simulation & Monte Carlo Methods** — **half written.**
-   Two of the four tutorials in `planning/outlines/monte-carlo.md` are
-   released, as the `simulation` series under
-   `tutorials/computational-methods/`: *Leaving It to Chance* (randomness,
-   seeds and reproducibility) and *Counting Darts* (Monte Carlo estimation
-   of $\pi$, and why more samples is not reliably better). `CMPS-LO3` and
-   `CMPS-LO2` are both fully taught and green on the curriculum map.
-
-   Still to write: *How Wrong Are We?* (the $1/\sqrt{n}$ law, and bootstrap
-   resampling on `life-expectancy.csv` — the first use of a real dataset
-   anywhere in dewlab, which needs `data/life-expectancy.yaml` written
-   first) and *The Queue* (discrete-event simulation, and what happens to
-   waiting time as utilisation approaches one). `CMPS-LO6` stays red until
-   *The Queue* lands, and even then only half of it is reachable without
-   the complexity strand — see the outline's own note.
-5. **Algorithmic Complexity & Systems Modeling** — **not started.**
-   Complexity bounds, cache prediction, thermal simulation —
-   `CMPS-LO5`, `CMPS-LO7` through `CMPS-LO13`, all still red on the
-   curriculum map.
+**Loose ends the outcome closure didn't resolve, worth knowing about
+even though nothing blocks on them:**
+- **No tutorial anywhere uses a real dataset yet.** `data/`,
+  `load_csv()`, the `datasets:` frontmatter, `check_datasets()` and the
+  sidebar attribution are all built and still used by nothing;
+  `co2-emissions.csv` and `life-expectancy.csv` are licensed, cited,
+  and sitting idle. Every CMPS tutorial this round used a small,
+  hand-crafted example instead (temperature readings, coin tokens, a
+  photo folder) — genuinely enough to teach the outcome, but the
+  real-dataset milestone from Phase 2 below is still unclaimed.
+- **The link-graph strand's crawl is still just the worked three-page
+  PageRank example** inside *Where Chains Lead*. A dedicated tutorial
+  on a real link graph or an actual crawl was never written; `CMPS-LO4`
+  doesn't need it, but it's a gap in ambition rather than in coverage.
+- **`CMPS-LO2` and `CMPS-LO1`'s topics.yaml sub-parts** (grids, trees,
+  recursion) are each taught in the tutorial that introduces that
+  specific representation, not gathered into one dedicated "data
+  structures" tutorial — worth a look if a QQI verification visit ever
+  wants to see them side by side.
 
 ### Automated worksheet-to-practice converter (unwritten)
 On hold, and possibly not needed. The worksheets whose material is
