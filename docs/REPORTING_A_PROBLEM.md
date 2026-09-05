@@ -12,6 +12,24 @@ more useful than starting a new one.
 
 ---
 
+## The quick way: from the page itself
+
+Most pages carry a link at the foot, "Something wrong on this page? Tell
+us." It opens the same issue tracker, on GitHub's own form, with the page
+and its version already filled in for you. All you need to add is the one
+thing that matters: what happened.
+
+If that link is missing, or your report has no one page attached to it
+(an idea, a question, something about the site as a whole), opening an
+issue yourself works the same way. The rest of this page covers what is
+useful to include either way.
+
+The link can be turned off for a while if reports need to pause, for
+example while something is being fixed. When it is off, this page and the
+issue tracker itself still work exactly as before.
+
+---
+
 ## Three kinds of problem
 
 It helps to know which one you are looking at, because what is useful to include

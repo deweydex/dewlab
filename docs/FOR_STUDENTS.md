@@ -239,5 +239,7 @@ got stuck all come with it too.
 
 If a tutorial has a mistake in it, or something on the site does not work,
 please tell us. You do not need to be certain it is a bug to say something.
-[`REPORTING_A_PROBLEM.md`](REPORTING_A_PROBLEM.md) explains where to report it
-and what is helpful to include.
+Most pages carry a link at the foot for exactly this, "Something wrong on
+this page? Tell us." [`REPORTING_A_PROBLEM.md`](REPORTING_A_PROBLEM.md)
+covers the rest: where to report something without a link handy, and what
+is helpful to include.

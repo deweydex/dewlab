@@ -1,0 +1,47 @@
+name: "Report something about a tutorial"
+description: "A mistake, something that does not work, or something you found hard to follow."
+title: "[report] "
+labels: ["source: page"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for saying something. You do not need to be sure this is a
+        mistake before you post — half of what turns out to be real starts
+        as somebody saying "this looked odd to me".
+
+        The **Page** and **Version** fields below are filled in for you. Leave
+        them as they are; they say exactly which page you were reading.
+
+  - type: dropdown
+    id: kind
+    attributes:
+      label: What kind of thing is this?
+      options:
+        - "It gives an error, and I have tried resetting the cell, running the cells above it, and reloading the page"
+        - "The page is wrong, or I could not follow it"
+        - "A question, an idea, or something else"
+    validations:
+      required: true
+
+  - type: input
+    id: page
+    attributes:
+      label: Page
+      description: "Filled in for you."
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: "Filled in for you."
+
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened
+      description: "A sentence is enough. Paste any error text rather than describing it."
+    validations:
+      required: true

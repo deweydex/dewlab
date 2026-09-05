@@ -118,6 +118,17 @@ The pipeline, roughly in the order the code runs it:
    only this one blob of JSON, read once at `readManifest()` (runtime.js) and
    trusted from then on.
 
+8. **Stamp the footer.** `site_footer()` builds the `{{FOOTER}}` token every
+   page fills: the copyright line, and — unless `feedback_enabled()` says
+   otherwise — a link to report something about that specific page.
+   `report_issue_url(page, version)` builds that link: a GitHub "new issue"
+   address, `page` and `version` filled in as query parameters that GitHub's
+   own issue form (`.github/ISSUE_TEMPLATE/report.yml`) reads back out and
+   shows to the reader before anything is submitted. `feedback_enabled()`
+   reads `planning/feedback.yaml` fresh on every call, the same reasoning as
+   `module_order()` above (step 5) — a constant computed at import time
+   would not see a test's temporary `ROOT`. See DECISIONS_LOG.md, Phase 8.
+
 Two supporting scripts worth knowing about: `dev/curriculum_map.py`
 regenerates `planning/CURRICULUM_MAP.md` from `outcomes.yaml`, `topics.yaml`
 and every tutorial's `covers:` frontmatter, and is what the `tests` CI job
