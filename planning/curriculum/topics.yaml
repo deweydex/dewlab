@@ -331,7 +331,7 @@ topics:
         these.
       - Animation and easing, where a smooth back-and-forth is a sine curve.
       - Anything that repeats on a cycle — daily traffic, seasonal demand.
-    needs: [MIT-3.2, MIT-4.6]
+    needs: [MIT-3.2, MIT-4.6a]
 
   MIT-3.4:
     name: Completing the square
@@ -451,17 +451,47 @@ topics:
         sprite spins the wrong amount — a classic first bug in graphics code.
     needs: []
 
-  MIT-4.6:
-    name: The unit circle
+  MIT-4.6a:
+    name: Sine and cosine defined
     outcome: MIT-4.6
     plain: >
-      A circle of radius one, and the observation that the coordinates of a
-      point going round it are exactly sine and cosine. It turns two functions
-      you have to memorise into one picture you can reconstruct.
+      Walk a point around a circle of radius one. Its two coordinates,
+      across and up, are exactly cosine and sine of the angle you have
+      turned through. Two functions you would otherwise memorise become one
+      picture you can rebuild.
     uses:
       - Circular motion, orbits, and anything on a dial.
-      - The maths underneath rotating an image or a 3D model.
+      - The maths underneath rotating an image or a three-dimensional
+        model.
     needs: [MIT-4.5, MIT-4.4, MIT-4.1]
+
+  MIT-4.6b:
+    name: The identity that links them
+    outcome: MIT-4.6
+    plain: >
+      Sine squared plus cosine squared is always one, whatever the angle.
+      It is Pythagoras applied to the point on the circle, since the two
+      coordinates are the short sides and the radius is the long one.
+    uses:
+      - Checking that a calculation involving angles has not drifted, which
+        is how graphics code catches rounding error.
+      - Getting one of the two values when you have the other and know
+        which quarter of the circle you are in.
+    needs: [MIT-4.6a]
+
+  MIT-4.6c:
+    name: Tangent as slope
+    outcome: MIT-4.6
+    plain: >
+      Sine divided by cosine, which is how steep the line from the centre
+      to the point is. It is the same number a straight line's slope gives
+      you, so an angle and a slope become two ways of saying one thing.
+    uses:
+      - Turning a direction into an angle, which is what a program does to
+        point something at a target.
+      - Reading a gradient off a graph and saying what angle it makes with
+        the horizontal.
+    needs: [MIT-4.6a, MIT-4.2]
 
   MIT-4.7:
     name: Exact trigonometric values
@@ -471,7 +501,7 @@ topics:
       square roots, rather than as a decimal that goes on forever.
     uses:
       - Hand-checking that a calculation is right before trusting the code.
-    needs: [MIT-4.6]
+    needs: [MIT-4.6a]
 
   MIT-4.8:
     name: Area of any triangle
@@ -484,7 +514,7 @@ topics:
         triangles.
       - Rendering. Every 3D surface is triangles, and their areas decide how much
         of anything lands on them.
-    needs: [MIT-4.6]
+    needs: [MIT-4.6a]
 
   MIT-4.9:
     name: Right-triangle trigonometry
