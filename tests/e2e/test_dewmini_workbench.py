@@ -2186,3 +2186,27 @@ def test_arrow_right_wraps_from_the_last_option_to_the_first(dewmini):
     first = group.locator('button[data-value="system"]')
     expect(first).to_have_attribute("aria-checked", "true")
     expect(first).to_be_focused()
+
+
+class TestStatusAnnouncer:
+    """#dm-status is `role="status" aria-live="polite"` — a live region
+    only announces on an actual text change, so running the same cell
+    twice in a row, both times ending "Ran.", needs updateStatus()'s
+    clear-then-set-on-next-tick to be heard the second time too."""
+
+    def wait_for_status(self, page, text: str, timeout: int = 5_000):
+        page.wait_for_function(
+            "text => document.getElementById('dm-status').textContent === text",
+            arg=text,
+            timeout=timeout,
+        )
+
+    def test_running_the_same_cell_twice_announces_both_times(self, dewmini):
+        page = dewmini
+        add_python_cell(page, "print('hi')")
+        run_first_cell_and_wait(page)
+        self.wait_for_status(page, "Ran.")
+
+        page.evaluate("document.getElementById('dm-status').textContent = 'sentinel'")
+        run_first_cell_and_wait(page)
+        self.wait_for_status(page, "Ran.")
