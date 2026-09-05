@@ -1384,9 +1384,9 @@ def download_section(tutorial: Tutorial) -> str:
     return (
         "<h3>This tutorial</h3>"
         f"{download_link_html(href, 'Download to keep')}"
-        '<p class="dl-panel-note">One file with the reading and the cells inside '
-        "it. It needs an internet connection the first time you open it, and "
-        "then it is yours.</p>"
+        '<p class="dl-panel-note">This file holds the published reading and '
+        "starter code. Your edits use the separate export options. Python "
+        "needs an internet connection to load the first time you run code.</p>"
     )
 
 
@@ -1907,52 +1907,48 @@ def render_index(
             if member.meta.get("module_title"):
                 names.setdefault(member.module, member.module_title)
 
-    # An introduction rather than a diagram. The map moved to its own page,
-    # where it can have the whole window; this page's job is to say what dewlab
-    # is to somebody who has just arrived, in as few lines as that takes, and
-    # then leave them to the list they came for. One paragraph and six points,
-    # deliberately: PEDAGOGICAL_STYLE_GUIDE.md section 4 asks for prose over
-    # bullets in an *explanation*, and this is not one — it is the separate
-    # things a reader wants answered before they choose a tutorial (what a cell
-    # is, whether they can break it, where their work goes, how the list below
-    # is organised, where to start), and no answer follows from another. Prose
-    # made the reader hunt for their own question.
+    # The opening gives a starting route, an example of learning here, and
+    # practical help. Keep controls and saving claims aligned with the runtime;
+    # docs/FOR_STUDENTS.md carries the detail behind this short introduction.
     out = [
         "<h1>Tutorials</h1>",
         '<div class="dl-intro">',
-        "<p>dewlab is a set of tutorials where we learn maths and programming "
-        "together. Everything runs in your browser, so there is nothing to "
-        "install and no account to make. Open any tutorial and start.</p>",
+        ("<p>Welcome to dewlab. Here we explore maths and programming together. "
+        "You can read an explanation and try code on the same page. There is "
+        "nothing to install, and you do not need an account to use the tutorials.</p>"),
+        ('<p>The <a href="#dl-search">list below</a> is grouped by subject. '
+        "Each subject has groups of tutorials called <em>series</em>. The first "
+        "page of a series is a useful place to begin. If you are learning in "
+        "class, your teacher can help you choose.</p>"),
         '<ul class="dl-intro-points">',
-        "<li><strong>Tutorials are made of cells.</strong> A cell is a small "
-        "box of Python set into the reading. We can change what is in it and "
-        "run it. The result appears just underneath.</li>",
-        "<li><strong>First we explore, then we name what we found.</strong> A "
-        "tutorial usually opens with a problem or an idea to try out. Then we "
-        "look at the general principle behind it. Then we learn the name "
-        "people give it, so that we can talk to other people about the same "
-        "idea.</li>",
-        "<li><strong>Practice problems run all the way through.</strong> Most "
-        "tutorials have a page of them as well, linked as <em>practice</em> "
-        "beside the title. The answer usually sits right below each problem. "
-        "We are not trying to hide the right answer. What we are learning is "
-        "the steps that get us there. The first problems are small. Later ones "
-        "take several steps. Later ones again are more abstract.</li>",
-        "<li><strong>Getting something wrong costs nothing.</strong> An error "
-        "message is usually telling us something useful. Nothing here is "
-        "scored. Nothing you write leaves your browser.</li>",
-        "<li><strong>Your work is saved on this device as you go.</strong> You "
-        "can also download any tutorial as a single file and keep it.</li>",
-        "<li><strong>The list below is grouped into modules, and each module "
-        "into series.</strong> A series is meant to be read in order, from the "
-        'top. If you are not sure where to start, the <a href="tree.html">topic '
-        "tree</a> shows what the course covers and what usually comes first. "
-        '<a href="topics.html">Browse by topic</a> gathers one subject — '
-        "trigonometry, say — in one place.</li>",
+        ("<li><strong>You can try a small example.</strong> Many tutorials have "
+        "code boxes called <em>cells</em>. You can change the code and use "
+        "<strong>Run</strong> to see the result below. We can change one thing "
+        "and look at what happens.</li>"),
+        ("<li><strong>We explore an idea, then learn its name.</strong> The "
+        "explanation connects the result to the idea behind it. Its name "
+        "helps us talk about it and find more examples.</li>"),
+        ("<li><strong>Hints and answers are available to help.</strong> Many "
+        "tutorials have a <em>practice</em> page beside the title. You can try "
+        "your own idea, open a hint, or read an answer. After reading an "
+        "answer, you could try the problem again with the answer closed.</li>"),
+        ("<li><strong>You can ask for help or return later.</strong> Some ideas "
+        "need more time or another example. Reference can explain a term; "
+        "an earlier page or your teacher may help with a step. Tutorial and "
+        "practice answers are not graded by dewlab.</li>"),
+        ("<li><strong>Your work is saved in this browser when storage is "
+        "available.</strong> Settings shows the saving status and offers "
+        "ways to keep a copy. Clearing browser data removes saved work. "
+        '<a href="https://github.com/deweydex/dewlab/blob/main/docs/FOR_STUDENTS.md">'
+        "Using dewlab</a> explains saving, resetting, and downloading.</li>"),
+        ("<li><strong>You can find another way to explore a topic.</strong> The "
+        '<a href="tree.html">topic tree</a> shows earlier ideas a tutorial '
+        'builds on. <a href="topics.html">Browse by topic</a> brings pages '
+        "about one subject together.</li>"),
         "</ul>",
-        '<p class="dl-intro-tree">This project is open and still growing. '
-        '<a href="about.html">About this project</a> explains how to suggest a '
-        "change or report a mistake.</p>",
+        ('<p class="dl-intro-tree">This project is still growing. '
+        '<a href="about.html">About this project</a> explains how to ask a '
+        "question or suggest a change.</p>"),
         "</div>",
         # A section of its own, not one more paragraph among the intro's —
         # this is not a tutorial and doesn't belong on the numbered list
@@ -1969,9 +1965,9 @@ def render_index(
         "<h2>Want to experiment on your own, outside a tutorial?</h2>",
         '<a class="dl-workspace-card" href="compose/dewmini.html" target="_blank">',
         "<h3>dewmini</h3>",
-        "<p>An open Python workspace with no tutorial attached. The same "
-        "cells and the same Python, plus files, SQLite and a Stop button. "
-        "Useful when we just want to try something out.</p>",
+        ("<p>dewmini gives you space to write and run your own Python. "
+        "You can try an idea, work on a practice problem, or build a small "
+        "project. This link opens a new tab.</p>"),
         "</a>",
         "</div>",
         render_search_box("Search by topic — e.g. loops, probability, sorting…"),
@@ -3968,48 +3964,54 @@ def write_about_page(shell: str) -> Path:
     """
     body = (
         "<h1>About this project</h1>"
-        "<p>dewlab is an open educational project. We put writing, maths and "
-        "runnable Python on the same page, so that you can read about an idea "
-        "and try it out in the same place.</p>"
-        "<p>It began for one classroom, and it is free for anyone who wants to "
-        "use it. There is no account, and nothing is scored. What you write "
-        "stays on your own device, and a wrong answer here is information "
-        "about a method, not a mark against you.</p>"
-        "<h2>What's here</h2>"
-        "<p>The tutorials are listed in the order the course teaches them. That "
-        "is the main way in, and a series is meant to be read from the top.</p>"
-        "<p>Two other pages help when the course order is not the one you "
-        'need. The <a href="tree.html">topic tree</a> shows what a tutorial '
-        'usually expects you to know already. <a href="topics.html">Browse by '
-        "topic</a> gathers everything on one subject — trigonometry, say — in "
-        "one place. That one is useful when you are practising a single topic "
-        "rather than working through in order.</p>"
-        "<p>Most tutorials come with a practice page. It holds more problems on "
-        "the same idea, and the answer usually sits right below each one. We "
-        "are not trying to hide the right answer. What we are learning is the "
-        "steps that get us there.</p>"
-        '<p><a href="compose/dewmini.html">dewmini</a> is an open Python '
-        "workspace with no tutorial attached. Open it when you just want to try "
-        "something out.</p>"
-        '<p>New here, or stuck on something? '
-        '<a href="https://github.com/deweydex/dewlab/blob/main/docs/FOR_STUDENTS.md">'
-        "Using dewlab</a> walks through the reading page, and the "
+        "<p>dewlab brings explanations, maths, and Python code together. You "
+        "can read about an idea and try it on the same page.</p>"
+        "<p>It began as a classroom project. You can use the tutorials for "
+        "personal learning without paying or making an account. There is "
+        "nothing to install, and dewlab does not grade tutorial or practice answers.</p>"
+        "<h2>Where you can begin</h2>"
+        '<p>The <a href="index.html">tutorials page</a> lists pages by subject '
+        "and in teaching order. Each series is a group of related tutorials. "
+        "The first page of a series is a useful place to begin.</p>"
+        '<p>The <a href="tree.html">topic tree</a> shows earlier ideas a '
+        'tutorial builds on. <a href="topics.html">Browse by topic</a> brings '
+        "pages about one subject together. You can use either to find another "
+        "example or an earlier explanation.</p>"
+        "<p>Many tutorials have a practice page with hints and answers. You "
+        "can try an idea, read an answer, or return to the explanation. Some "
+        "ideas need more time. If you feel stuck, you can ask your teacher "
+        "to look with you or pause and return later.</p>"
+        '<p><a href="compose/dewmini.html">dewmini</a> gives you space to '
+        "write and run Python outside a tutorial.</p>"
+        '<p><a href="https://github.com/deweydex/dewlab/blob/main/docs/FOR_STUDENTS.md">'
+        "Using dewlab</a> explains the page controls. The "
         '<a href="https://github.com/deweydex/dewlab/blob/main/docs/FAQ.md">FAQ</a> '
-        "answers the questions people ask most.</p>"
+        "answers questions about getting started.</p>"
         "<h2>Your work</h2>"
-        "<p>A tutorial saves your edits as you go, along with any cells you add "
-        "yourself. Everything stays in this browser, on this device.</p>"
-        "<p>You can also take a copy with you. There are three ways to do it: a "
-        "single HTML file, a printed or PDF copy, or your cells saved as a "
-        "Jupyter notebook.</p>"
-        "<h2>Helping out</h2>"
-        "<p>We would be glad of help with the material. You can open an issue "
-        "with an idea, a request or a comment. You can also send a pull request "
-        "with a change of your own.</p>"
-        "<p>If you have found a mistake, the quickest way is the line at the "
-        "foot of the page it is on. Without that, opening a GitHub issue "
-        "works too. If you would rather fix it yourself, send a pull "
-        "request and we will review it and merge it.</p>"
+        "<p>Python runs in your browser. Tutorials save cell edits and notes "
+        "there when storage is available. Saved work stays on that device. "
+        "Clearing browser data removes it.</p>"
+        "<p>Settings shows the saving status. Export a copy keeps saved "
+        "code, results, and notes in a file. Cells you add yourself have "
+        "their own Share control. The student guide explains these options.</p>"
+        "<p>Download to keep gives you the published reading and starter code. "
+        "Your current edits use the separate export options. You can also "
+        "print a page or save cell code as a Jupyter notebook.</p>"
+        "<h2>Questions and changes</h2>"
+        "<p>An unclear explanation is worth asking about. Most pages have a "
+        "report link at the bottom. A cell's report link can include its "
+        "code and last result. Opening the report form sends those details "
+        "to GitHub; submitting posts the report. A free GitHub account is "
+        "needed to report there. You can also contact us by email below.</p>"
+        '<p>The <a href="https://github.com/deweydex/dewlab/blob/main/docs/REPORTING_A_PROBLEM.md">'
+        "reporting guide</a> explains the options. You do not need to know "
+        "the cause before asking for help.</p>"
+        "<p>You can also propose a correction through a <em>pull request</em>. "
+        "This shares changes to the project's files for review. We can "
+        "discuss the change before deciding whether to include it.</p>"
+        '<p>The <a href="https://github.com/deweydex/dewlab/blob/main/LICENSE.md">'
+        "licence</a> explains using and adapting the materials, including "
+        "contacting the author before classroom use.</p>"
         '<p><strong>Project repository:</strong> <a href="https://github.com/deweydex/dewlab">'
         "github.com/deweydex/dewlab</a></p>"
         '<p><strong>Contact:</strong> <a href="mailto:deweydex@jsaaron.com">'

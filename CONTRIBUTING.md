@@ -1,6 +1,6 @@
 # Contributing code to dewlab
 
-Thanks for your interest in contributing to dewlap! This page is about what you need to know before recommending changes and additions to the site's own code — the
+Thanks for your interest in contributing to dewlab! This page is about what you need to know before recommending changes and additions to the site's own code — the
 build, the runtime, and the editor, dewmini. It covers getting
 set up, what to run before you open a pull request, and the one standing
 requirement this repository has: that documentation and comments stay accurate
@@ -117,9 +117,11 @@ longer has is worse than confusing.
 
 **Student-facing pages** (`docs/FOR_STUDENTS.md`,
 `docs/DEWMINI.md`, the homepage, in-app help text): plain, friendly, welcoming
-language, written for a teenage student. No jargon without explaining it, no
-metaphor for its own sake. If you would not say it that way to a fifteen-year-old
-sitting next to you, rewrite it.
+language for adult learners, including readers working at about B1 English
+level. Technical terms need explanations where they first appear. Activities
+use concrete invitations, and a stuck learner needs a practical route to help.
+The [learner language review](planning/LEARNER_LANGUAGE_REVIEW.md) offers
+questions to use when reviewing a page.
 
 **Contributor and maintainer documentation** (`README.md`, `ARCHITECTURE.md`,
 `docs/WRITING_TUTORIALS.md`, `planning/*.md`): plain and direct in the same way,

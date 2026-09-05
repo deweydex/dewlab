@@ -1,250 +1,192 @@
 # Using dewlab
 
-dewlab is a set of tutorials you read in a browser. Each one mixes an
-explanation with small boxes of Python you can change and run yourself, so you
-can try an idea out in the same place you are reading about it.
+Welcome to dewlab. Here we explore maths and programming together. You
+can read an explanation and try code on the same page. There is nothing
+to install, and you do not need an account to use the tutorials.
 
-You do not need to install anything, and you do not need an account. The Python
-runs on your own computer, inside the browser tab. Nothing you write is sent
-anywhere, nothing is marked, and nobody is watching how you get on.
+## Where you can begin
 
----
+The [tutorials page](https://deweydex.github.io/dewlab/) lists the pages
+by subject. A *series* is a group of tutorials in teaching order. The
+first page of a series is a useful place to begin.
 
-## The reading page
+If you are learning in class, your teacher can help you choose a starting
+point. You can also use the **topic tree** to find earlier ideas that a
+tutorial builds on. **Browse by topic** brings pages about one subject
+together.
 
-A tutorial looks like a page of writing, because most of it is. Set into the
-writing are **cells**: small editable boxes of Python with a **Run** button.
-Press Run, or Ctrl-Enter, and the result appears directly underneath.
+## Trying a code cell
 
-What comes back is whatever the code printed, the value of the last line if it
-is an expression, a table drawn as a table, and a chart drawn as a picture. If
-something goes wrong, you get an error message trimmed down to your own line
-rather than a wall of machinery you did not write.
+Many tutorials have small code boxes called *cells*. You can change the
+code in a cell. Its **Run** button runs the code and shows the result
+below. `Ctrl+Enter` also runs the cell while you are editing it.
 
-The cells on one page share their variables from top to bottom, so a cell near
-the end can use something a cell near the start set up. Each page starts fresh,
-though, so nothing carries over from one tutorial to the next.
+We can begin with an example, change one thing, and run it again. What
+changes in the result? The result might be text, a number, a table, or a
+chart. An error message gives information about something that did not work.
 
-If a code box has no Run button, it is there to be read rather than run. That
-is the only difference, and it is meant to be visible at a glance.
+Cells on one page share values created by running code. A later cell may
+need an earlier cell to run first. After reopening a page, saved results
+may still be visible, but Python needs to run the code again to create
+those values. Each tutorial has its own Python session.
 
-Some cells have a small **?** beside them. That is a hint, tucked out of the
-way until you want it.
+A code box with no Run button is an example to read. Some tutorials have
+no runnable code. You can still use them to explore an idea and make notes.
 
-Every cell has a **reset** button. It brings back the code the tutorial
-started with. If you get stuck, or a cell stops making sense, press reset.
-Getting stuck and using reset is a normal part of learning to code, not a
-mistake. Only that one cell changes — everything else on the page stays as it
-was.
+## If an explanation becomes unclear
 
-Some tutorials have no code at all. Those are ordinary dewlab tutorials too,
-and they open instantly, because a page with nothing to run never starts Python.
+Some ideas need more time or another example. You can pause, return to an
+earlier page, or ask your teacher to look with you.
 
----
+**Reference** explains terms and shows useful code and formulas from
+this series. If a word has a reference entry, selecting it offers a
+**Look up** button. This opens the entry beside the reading. Some entries
+also link to an earlier explanation.
 
-## Your work is saved
+If the word is not in Reference, the search box on the tutorials page
+may help you find the topic. The topic tree can help you find earlier
+ideas to revisit. You do not need to know the cause of a problem before
+asking for help.
 
-Everything you type is saved in your own browser as you go, along with the last
-output each cell produced. Close the tab, come back a week later, and your work
-is waiting.
+## Using hints and answers
 
-Because it is saved in the browser, it lives on the machine you were using. It
-will not follow you to a different computer, and clearing your browser data
-will clear it. If you want a copy you can keep or move, use the export button
-described below.
+Some cells have a **?** button that opens a hint. Many tutorials also
+have a practice page, linked beside the title and at the end of the
+reading. Some practice sets use ideas from several tutorials.
 
-If a tutorial is updated after you have worked on it, your answers carry over
-cell by cell wherever the cell has not been replaced. Where a tutorial has more
-than one published version, a small picker on the page lets you move between
-them, and you stay in the version you were working in rather than being moved
-without being asked.
+Many problems have a hint and an answer showing the steps. You can begin
+with your own idea, open a hint, or read the answer. After reading an
+answer, you could try the problem again with the answer closed.
 
----
+If your result is different, we can compare the steps. Where do they
+first change? This may help us decide what to try next. These tutorial
+and practice activities are not graded by dewlab.
 
-## Looking a word up
+## Your notes and saved work
 
-If a word in the reading is one the Reference knows, selecting it offers a
-small **Look up** button. Press it and the Reference opens, already filtered
-to that word, so you do not have to leave the sentence you were reading to go
-and find it.
+**Settings** opens a panel with a **Your work** section. **Your notes**
+is a place to write a question, record what you tried, or leave a reminder
+for your next visit.
 
-Selecting anything else — a phrase you are copying, a line you are just
-following with the cursor — does nothing at all. The button only appears when
-there is genuinely something to show you.
+The page saves edits to the tutorial's cells and your notes in this
+browser. It also saves cell results when storage allows. **Your work**
+shows the saving status. A large chart may be left out of the saved copy;
+running its cell again can recreate it.
 
-Anything in the Reference you met in an earlier tutorial also says where you
-met it, with a link straight back to that section. Coming back to a tutorial
-after a while, half recognising a word, is an ordinary way to read, and this
-is the way back.
+Saved work stays in this browser on this device. It does not move to
+another computer. Clearing browser data removes it. Browser settings or
+full storage can also prevent saving. If a saving message reports a
+problem, you can copy your code and notes into a separate file before leaving.
 
----
+### Keeping a copy of your work
 
-## Settings
+In **Your work**, **Export a copy** downloads saved code, results,
+and notes as a `.json` file. **Load a copy** opens that file
+in the same tutorial. Loading replaces the matching cell edits and notes
+with the saved copy, so exporting first lets you keep the current version.
 
-Every page has a **Settings** button in the bar at the top, and that bar follows
-you down the page, so it is always one tap away. It opens as a panel docked down
-the right-hand side of the screen, full height, and it stays open while you read
-and run cells — you do not have to close it to get back to the page. Drag its
-left edge to make it wider or narrower.
+Cells you add yourself are saved separately. Their **Share** button
+makes a file of an individual cell. **Save as a Jupyter notebook**, under
+**Export**, keeps the code and text in all cells, including your own,
+as a `.ipynb` file. It does not include results or the tutorial's reading.
 
-What is behind it is grouped in three parts.
+### Returning after a tutorial changes
 
-**Your work** — whether the page is saving, and buttons to export a copy of
-your work, load one back in, or start the tutorial over.
+Saved code is matched to cells by their identifiers. If a tutorial has
+changed, a notice explains how the saved work fits that version. Some
+pages offer a choice of versions. You can return to the version you were
+using, or choose a newer one.
 
-**This tutorial** — the ways to take the page with you, described below.
+## Resetting code or restarting Python
 
-**Texture** — how the page looks and reads: light or dark, serif or sans or
-mono (plus two fonts built for easier reading, Lexend and OpenDyslexic),
-text size, how wide the lines run, and the colour of links.
-**High contrast** switches to black text on white, or white on black in dark
-mode. It turns on Lexend too, whatever font you had chosen.
-There is also **Header: full or minimal**, which tightens the bar at the top
-and is worth knowing about if you are reading on a phone.
+A tutorial cell's **reset** button restores its original code and clears
+its visible result. This replaces your edits in that cell. It does not
+clear the values Python already holds. An exported copy lets you keep
+edits before resetting.
 
-These choices follow you from page to page and from visit to visit. If the
-default is uncomfortable to read, change it — that is what it is for.
+**Restart Python**, in Settings under **Running Python**, starts a fresh
+Python session. Your code stays in the editors. Earlier cells may need
+to run again before a later cell can use their values.
 
----
+**Start again**, under **Your work**, asks for confirmation before
+restoring the tutorial's cells and clearing your notes. Cells you added
+yourself are kept separately and remain. This control also does not
+restart Python.
 
-## Finding your way around
+These are different options for different needs. You can ask for help
+before choosing one, and you can keep a copy of your work first.
 
-The bar at the top carries three buttons: **Reference**, **Series** and
-**Settings**. Each opens a panel docked down one side of the screen, full
-height, meant to be left open beside what you are reading rather than closed
-again straight away. On a narrow screen the labels drop away and you get the
-icons alone, so they still fit one row.
+## Making the page comfortable to read
 
-**Reference** is the definitions, functions and formulas this tutorial — and
-everything before it in its series — has covered. Nothing appears in it that you
-have not been taught yet. If a tutorial has nothing to show there, the button
-does not appear at all.
+**Settings** lets you change the colours, font, text size, and line
+width. Font choices include Lexend and OpenDyslexic. **High contrast**
+uses black and white and switches to Lexend. **Header: full or minimal**
+changes how much space the top bar uses.
 
-**Series** is every tutorial in this one's series, so you can jump to any of
-them from wherever you are, not only to the one immediately before or after.
+Your choices are saved in this browser. On a wide screen, Settings opens
+beside the reading. On a phone, it opens at the bottom of the screen.
 
-Reference and Series both dock to the left, so opening one closes the other.
-Settings docks to the right and is independent of both. Whichever you leave
-open stays open as you page through a series, so opening the Reference once is
-enough — you do not have to reopen it on every tutorial.
+## Finding your way around a page
 
-All three can be made wider or narrower: Settings by dragging its left edge,
-Reference and Series by the grip in their bottom corner. The page moves over to
-make room rather than being covered up.
+**Series** lists the tutorials in the current series. **Reference**
+shows its available definitions, code, and formulas. A page with no
+reference entries has no Reference button.
 
-On a phone, all three open as a sheet across the bottom of the screen instead,
-and they close as you move on rather than following you from page to page.
+On a wide screen, these panels open on the left. Opening one closes the
+other. Settings opens on the right. The panels can stay open while you
+read. Their resize handles let you change their width. On a phone, they
+open at the bottom and close when you move to another page.
 
-Underneath the bar, the **previous / All tutorials / next** row sits with it, so
-moving on never means scrolling to find the link. Any tutorial with more than
-one section also has a **Contents** list, closed until you open it, showing the
-page's headings with sub-headings nested underneath.
+The **previous / All tutorials / next** links let you move between pages.
+The **Contents** list, where available, links to sections of the page.
 
-The contents page lists everything in teaching order and has a search box. Two
-other pages cut across that order. The **topic tree** shows every topic in the
-course and what each one needs before it; you can drag to move around it, scroll
-to zoom, and choose any topic to read what it is and where it turns up. Topics
-that are not taught here yet are drawn with a dashed outline, so the tree is
-straight with you about its gaps. **Browse by topic** gathers everything on one
-subject in one place, which is the better page when you already know what you
-want to practise.
-
-On the contents page, a small badge next to a tutorial you have opened shows how
-many of its cells you have run, turning red only if a cell's last run failed. It
-is read from your own browser, and you can turn it off in Settings.
-
----
-
-## If a Page Stops Making Sense
-
-This happens to everyone, and it is not a sign you are doing something wrong.
-A few real places can help, instead of guessing.
-
-You can look up any unfamiliar word in the Reference panel. You can check the
-topic tree to see what this page expects you to know already. If you have not
-met something yet, going back to that page first can help. Or you can search
-the contents page for another tutorial on the same idea, explained in a
-different way.
-
-None of this is a detour. Going back a step is a normal way forward here, not
-a setback.
-
----
-
-## Practice
-
-Nearly every tutorial has a practice page beside it, linked from the contents
-page and from the end of the tutorial. Some pages are mixed sets that draw on
-several tutorials at once, for when you want to practise across a few topics
-rather than one.
-
-Problems come with two folds, in that order. The first fold is a hint: a few
-steps, something to think about, and a related problem to try. The second
-fold is the full answer, with every step shown.
-
-Try the hint first. Getting an answer wrong along the way is a normal part of
-trying, not a failure. It usually teaches you more than reading the answer
-straight away. The answer is always there when you want to check your work.
-
----
+On the tutorials page, a small badge can show how many cells you have run.
+Red means a cell's last run gave an error. These badges use information
+saved in your browser. You can turn them off in Settings.
 
 ## Adding your own cells
 
-On any page that already has cells, you can add your own — a Python cell or a
-short text note — directly below any cell on the page, not only at the bottom.
-Use them for working something out, leaving yourself a note, or trying a
-variation on what the tutorial just showed you.
+On pages with runnable cells, you can add a Python cell or text note
+below an existing cell. This gives you space to test another example or
+write an explanation in your own words.
 
-Your own cells are kept separately from the tutorial's, so updating the
-tutorial leaves them alone. You can also save one as a small file and send it to
-someone else, who can load it into their copy of the same page.
-
----
+Your own cells are saved separately from the tutorial's cells. Tutorial
+updates leave them in place. Like other browser data, they can be lost
+if storage is cleared or unavailable. The export options above let you
+keep copies outside the browser.
 
 ## Taking a tutorial with you
 
-Settings offers a few ways to keep a copy.
+**Download to keep** gives you an HTML file with the published reading
+and starter code. It does not include your current edits. Python needs
+an internet connection to load the first time you run code in this file.
+The reading is available without running Python.
 
-**Download to keep** gives you one HTML file — on a memory stick, in your
-downloads folder, wherever you like — that you open by double-clicking. The
-reading, the cells, the editor and the mathematics are all inside it, and it
-behaves like the page you downloaded it from. One thing worth knowing: the
-first time you open it, it needs an internet connection, because Python itself
-is fetched then. Without one, the reading still works and the cells say so
-rather than failing quietly.
+**Print — or save as PDF** gives you a document to read. The browser's
+print preview shows what will be included.
 
-**Print — or save as PDF** gives you the reading as a document.
+**Save as a Jupyter notebook** keeps your current cell code and text for
+use in another notebook program. The **Your work** export keeps the
+saved code, results, and notes that you can load back into dewlab.
 
-**Save as a Jupyter notebook** gives you the page's cells, including any you
-added yourself, as a `.ipynb` file you can open elsewhere.
+The tutorials page also offers whole-series downloads as zip files.
+These contain the published tutorials, ready to open separately.
 
-The contents page also offers **Download all N as single files** for a whole
-series at once, as a zip. That is the one to use if you are filling a memory
-stick or taking a set of tutorials home.
+## Trying Python outside a tutorial
 
----
+[dewmini](DEWMINI.md) is a workspace for your own Python code. You can use
+it to try an idea, work on a practice problem, or build a small project.
 
-## When you want Python without a tutorial
+## Questions and mistakes on the site
 
-**[dewmini](DEWMINI.md)** comes with dewlab for when you just want somewhere
-to write code: a blank page, add a cell, run it. Good for testing an idea,
-working a problem away from the tutorial it came from, or a project that
-grows past a few cells — a file manager, a real SQL database, importing a
-notebook or a `.py` file, and a Stop button that can interrupt code that has
-got stuck all come with it too.
+You can ask about an unclear explanation or report something that does
+not work. Most pages have a link at the bottom labelled "Something wrong
+on this page? Tell us." Some tutorial cells also have a report control.
 
----
+A cell report can include the code in that cell and its last result.
+Opening a GitHub report form sends those details to GitHub in the link.
+Submitting the form posts the report. Reporting needs a free GitHub account.
 
-## Something wrong?
-
-If a tutorial has a mistake in it, or something on the site does not work,
-please tell us. You do not need to be certain it is a bug to say something.
-Most pages carry a line at the foot for exactly this, "Something wrong on
-this page? Tell us." Click it and pick the one that fits: a question, an
-error, or something wrong or hard to follow. A cell giving trouble has its
-own small circle for the same three choices, in its own bar. Pick that one
-instead, and your code and its last output are already included, with
-nothing left for you to copy.
-[`REPORTING_A_PROBLEM.md`](REPORTING_A_PROBLEM.md) covers the rest: where
-to report something without that line handy, and what is helpful to
-include.
+[Reporting a mistake or a bug](REPORTING_A_PROBLEM.md) explains the
+options, including contacting your teacher. You do not need to be certain
+the page has a mistake before asking about it.

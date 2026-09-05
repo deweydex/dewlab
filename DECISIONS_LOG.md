@@ -6501,3 +6501,26 @@ link now (`build.py`'s markup, `tutorial-runtime.js`'s
 `updateCellReportLinks()`), and the `dl-report-issue-link` class is the
 seam between them — rename or restructure one without the other, and the
 runtime silently stops finding anything to update.*
+
+
+**8.6 — Review entry pages through learner questions, and describe saving
+and sharing per control.** Prepared 2026-09-05. The contents and About
+pages, README, student guide, FAQ, reporting guide, selected First Steps
+passages, and shared saving help now use the approach recorded in
+`planning/LEARNER_LANGUAGE_REVIEW.md`. The intended readers are adults,
+including B1 English learners. Concrete invitations and routes to help
+replace commands, idioms, and promises about the ease of recovering.
+
+Saving and privacy reassurance is specific to an action: tutorial-cell
+exports differ from added-cell exports; published downloads differ from
+current edits; reset does not restart Python; opening a cell report link
+sends code and output to GitHub before a report is submitted. These are
+documentation corrections checked against the existing runtime, not
+changes to storage or reporting behaviour. Runnable cells and their ids
+are unchanged. Learners may use hints and answers without first proving
+that they have tried another route.
+
+*Cost to change: low for wording, but saving and sharing explanations
+must remain consistent across the generated pages, shared Settings text,
+and guides. Changing what a control does would require a separate runtime
+change and corresponding documentation update.*

@@ -406,7 +406,7 @@ graph TD
 
 ## Vocabulary
 
-The tutorials mark a term being introduced by putting it in italics the first time it means something particular. **107 terms** are marked that way, and asking two questions of them is free.
+The tutorials mark a term being introduced by putting it in italics the first time it means something particular. **111 terms** are marked that way, and asking two questions of them is free.
 
 ### Introduced more than once
 
@@ -419,6 +419,7 @@ The same word presented as new in two places. Either it is being introduced twic
 | *drawing functions* | 24, 25, 27, 28 |
 | *expressions come alive* | 20, 21, 23, 31 |
 | *finding things* | 9, 15 |
+| *function* | 1, 23 |
 | *index* | 6, 7, 18 |
 | *lines and distances* | 26, 27, 28, 30 |
 | *making sense of data* | 14, 25 |
@@ -445,13 +446,12 @@ A word appearing in an earlier tutorial than the one that stops to explain it. S
 | *design* | 8 | 10 |
 | *drawing functions* | 23 | 24 |
 | *equation* | 15 | 19 |
-| *expression* | 1 | 19 |
+| *expression* | 6 | 19 |
 | *expressions come alive* | 19 | 20 |
 | *finding things* | 8 | 9 |
 | *first steps* | 1 | 31 |
-| *function* | 2 | 23 |
-| *functions* | 2 | 7 |
-| *how* | 2 | 3 |
+| *functions* | 1 | 7 |
+| *how* | 1 | 3 |
 | *independent* | 10 | 12 |
 | *inside* | 4 | 28 |
 | *lines and distances* | 23 | 26 |
@@ -470,16 +470,18 @@ A word appearing in an earlier tutorial than the one that stops to explain it. S
 | *repeating yourself* | 6 | 11 |
 | *repetition* | 4 | 11 |
 | *representation* | 2 | 19 |
+| *return* | 1 | 7 |
 | *return values* | 7 | 10 |
-| *see* | 1 | 17 |
+| *see* | 4 | 17 |
 | *set* | 1 | 15 |
 | *sets as sorted lists* | 15 | 16 |
 | *solve* | 7 | 19 |
+| *store* | 1 | 2 |
 | *storing and computing* | 2 | 3 |
 | *the unit circle* | 25 | 28 |
-| *tools* | 3 | 10 |
+| *tools* | 1 | 10 |
 | *what* | 1 | 3 |
-| *wrong* | 1 | 26 |
+| *wrong* | 3 | 26 |
 
 ## Scope questions, settled
 

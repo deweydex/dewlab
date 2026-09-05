@@ -19,30 +19,42 @@ covers:
 
 **Programming Design Principles / Maths for IT**
 
-Welcome. Over the coming weeks we are going to learn to program and to think mathematically, and we are going to discover that these two activities are much more closely related than most people realise. A program is just an algorithm written precisely enough for a computer to follow. A mathematical formula is just an algorithm written precisely enough for a person to follow. Same idea, different audience.
+Welcome. Here we explore programming and maths together. In this first
+tutorial, we can run a small program, try calculations, and plan a set
+of steps for a computer to follow.
 
-This first tutorial is about getting comfortable with the tools and the way of thinking. We will take it a step at a time, and everyone who can do this had a first week too.
+We will meet the tools one at a time. You can return to an example or
+ask for help whenever a step is unclear.
 
 ## How this page works
 
-You are looking at a page you can run. Most of it is ordinary reading — like
-this paragraph. Interleaved with the reading are *cells*: small boxes of Python
-that you can edit and run, with the result appearing directly underneath.
+Many examples are in *cells*: code boxes you can change and run. A cell's
+**Run** button shows the result below. `Ctrl+Enter` also runs the cell
+while you are editing it.
 
-The Python runs inside this browser tab, on the machine in front of you.
-Nothing is installed, nothing is sent anywhere, and nobody else can see what
-you type. If you make a mess of a cell, the **reset** button on it puts back
-the version you started with.
+Python runs in your browser. You do not need to install anything or make
+an account. Settings has a **Your work** section with notes, saving
+information, and ways to keep a copy of your work.
 
-To run a cell, press its **Run** button, or hold Ctrl and press Enter. Try it
-with the cell below.
+A tutorial cell's **reset** button restores its original code and clears
+its result. This replaces your edits in that cell. It does not clear
+values already held by Python. You can keep a copy before resetting.
+
+We could begin with the cell below. What appears when you use **Run**?
 
 ```python exec
 id: how-this-page-works-1
 print("Hello, world!")
 ```
 
-If you saw `Hello, world!` appear below the cell, everything is working. That single line is a complete Python program -- it tells the computer to display a message. The `print()` part is a *function* (we will learn much more about functions later), and the text in quotes is what we want it to display.
+The result should be `Hello, world!` below the cell. This program asks
+Python to display a message. `print()` is a *function*, a named piece of
+code that performs a task. Here, its task is to display the text in quotes.
+We will explore functions in more detail later.
+
+If the result does not appear, Python may still be loading. The page's
+status message can help explain what is happening. You can also ask your
+teacher to look with you.
 
 Let's try a few more things.
 
@@ -62,7 +74,9 @@ Notice that Python can work with numbers directly -- no quotes needed. The four 
 
 ### Your turn
 
-In the cell below, try a few calculations of your own. Maybe work out how many hours there are in a week, or how many seconds in a day. Use `print()` to display the results, and use comments to explain what each calculation does.
+What calculation could we try next? You could work out the hours in a
+week or choose numbers of your own. `print()` displays the result. A
+comment can explain what your calculation means.
 
 ```python exec
 id: your-turn-1
@@ -88,7 +102,7 @@ Programming is the art of writing algorithms precisely enough that a computer ca
 
 What is a simple everyday task you could write out as a numbered sequence of steps? Making breakfast, getting to college, logging into a computer -- anything you like. How specific would it have to be for someone who had never done it before to follow along?
 
-Double-click this cell and write your algorithm below:
+You can write the steps in **Your notes**, under Settings, or on paper.
 
 ## Pseudocode: Planning Before Coding
 
@@ -155,7 +169,11 @@ That last operator, `%` (called modulo), gives us the remainder after division. 
 
 ### Your turn
 
-Before running the cell below, what do you think each line will print? Predictions can go in as comments, and then the cell will settle it. Getting a prediction wrong is the useful case — that is the moment you find out what Python is actually doing rather than what you assumed.
+What do you think each line below will print? You could write a
+prediction in a comment, then run the cell to compare. You can also run
+it first and use the results to explore what each operator does. If a
+result is different from your prediction, an earlier example may help
+explain it.
 
 ```python exec
 id: your-turn-3
@@ -183,9 +201,9 @@ That is a solid foundation. In the next tutorial we will learn about *variables*
 
 ### Reflection
 
-A few sentences about this tutorial, whenever you are ready. What made sense? What was confusing? What are you curious about?
-
-Double-click this cell to write your thoughts:
+What made sense? What would you like another example of? You can choose
+one question to write about in **Your notes**, under Settings, or leave
+it for another visit.
 
 ## Where to Read More
 

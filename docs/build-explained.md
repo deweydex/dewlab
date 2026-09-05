@@ -10,6 +10,12 @@ standalone copy). This document is a map through it; the file's own
 docstrings on almost every function already cover the details of what
 each one does and why.
 
+The learner-facing introductions live in `render_index()` and
+`write_about_page()`. `download_section()` explains the published HTML
+copy; saved-work exports are separate runtime controls. The
+[learner language review](../planning/LEARNER_LANGUAGE_REVIEW.md) records
+the wording review and the behaviour checked behind those explanations.
+
 ---
 
 ## The big idea: one tutorial file becomes several finished pages
