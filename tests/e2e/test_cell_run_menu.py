@@ -154,6 +154,59 @@ class TestRunMenu:
         page.mouse.click(5, 5)
         assert page.locator(".dl-cell[data-cell-id='plain-python'] .dl-cell-run-menu").is_hidden()
 
+    def test_escape_closes_the_menu_and_returns_focus(self, clean_storage):
+        """Same Escape-closes-and-returns-focus pattern as Settings/
+        Reference/SeriesNav — this menu was the one panel missing it."""
+        page = clean_storage
+        open_run_menu(page, "plain-python")
+        assert page.locator(".dl-cell[data-cell-id='plain-python'] .dl-cell-run-menu").is_visible()
+
+        page.keyboard.press("Escape")
+        assert page.locator(".dl-cell[data-cell-id='plain-python'] .dl-cell-run-menu").is_hidden()
+        assert page.locator(".dl-cell[data-cell-id='plain-python'] .dl-btn-more").evaluate(
+            "el => el === document.activeElement"
+        )
+
+
+class TestRunAnnouncer:
+    """DECISIONS_LOG.md 7.131: the ticking run-line is deliberately not a
+    live region, so this is the one thing a screen reader hears once a
+    run actually finishes."""
+
+    def wait_for_announcement(self, page, text: str):
+        # announceCellRun() clears the region then sets the real text on
+        # the next tick (a live region only announces on a genuine change),
+        # so the text can lag a beat behind the Run button's own state.
+        page.wait_for_function(
+            "text => document.getElementById('dl-run-announcer').textContent === text",
+            arg=text,
+            timeout=5_000,
+        )
+
+    def test_a_successful_run_is_announced(self, clean_storage):
+        page = clean_storage
+        run_cell(page, "plain-python")
+        self.wait_for_announcement(page, "Ran — output below")
+
+    def test_an_errored_run_is_announced_differently(self, clean_storage):
+        page = clean_storage
+        page.click(".dl-cell[data-cell-id='plain-python'] .cm-content")
+        page.keyboard.press("Control+End")
+        page.keyboard.insert_text("\nraise ValueError('boom')")
+        run_cell(page, "plain-python")
+        self.wait_for_announcement(page, "Ran — error")
+
+    def test_running_the_same_cell_twice_announces_both_times(self, clean_storage):
+        """A live region only announces on a text change — the same result
+        twice in a row must not go silent the second time."""
+        page = clean_storage
+        run_cell(page, "plain-python")
+        self.wait_for_announcement(page, "Ran — output below")
+
+        page.evaluate("document.getElementById('dl-run-announcer').textContent = 'sentinel'")
+        run_cell(page, "plain-python")
+        self.wait_for_announcement(page, "Ran — output below")
+
 
 class TestRestartAndRunAll:
     def test_restart_and_run_all_from_settings(self, clean_storage):

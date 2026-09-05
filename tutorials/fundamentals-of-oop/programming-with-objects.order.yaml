@@ -9,7 +9,9 @@
 
 series: Programming with objects
 order:
+  - the-moves-you-already-know
   - objects-and-classes
+  - the-tools-around-your-code
   - one-class-many-methods
   - one-parent-many-children
   - testing-what-a-class-does

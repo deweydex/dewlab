@@ -47,6 +47,12 @@ const NOTES_NUDGE_KEY = "dewlab:notes-nudge";
 const NOTES_NUDGE_THRESHOLD = 120;
 const RUN_STATS_KEY = "dewlab:run-stats";
 const AUTOSAVE_DELAY = 500;
+/* A base64-embedded figure (tutorial_tools.py's _figure_html()) is easily
+ * a few hundred KB in one cell's output_html, next to a typical printed
+ * result's few dozen bytes — this is "that cell's own output is the odd
+ * one out," not a real content-size judgement. Past this, saveNow()'s
+ * retry below treats it as the thing to drop first if storage is full. */
+const SAVED_OUTPUT_STRIP_THRESHOLD = 100_000;
 /* The build.py write_*_page() slugs that are not a tutorial at all —
  * nothing here has "your work" to save, cells or notes alike, the way an
  * actual tutorial page does. */
@@ -1082,6 +1088,7 @@ function initTexture(onThemeChange) {
 
 /* ---------------------------------------------------------------- status */
 
+const runAnnouncerEl = document.getElementById("dl-run-announcer");
 const statusEl = document.getElementById("dl-status");
 /* The status text lives in its own child rather than directly in statusEl,
  * so setStatus() can rewrite it on every boot-progress message without
@@ -1232,7 +1239,10 @@ function buildCells(manifest) {
     if (collapsedSummary) {
       collapsedSummary.addEventListener("click", () => { setCellCollapsed(cell, false); saveNow(); });
       collapsedSummary.addEventListener("keydown", (ev) => {
-        if (ev.key === "Enter") { setCellCollapsed(cell, false); saveNow(); }
+        if (ev.key !== "Enter" && ev.key !== " ") return;
+        ev.preventDefault();
+        setCellCollapsed(cell, false);
+        saveNow();
       });
     }
     if (duplicateBtn) {
@@ -1461,6 +1471,14 @@ function initCellRunMenu(cell, host) {
   moreBtn.addEventListener("click", (e) => {
     e.stopPropagation();
     if (menu.hidden) openMenu(); else closeMenu();
+  });
+
+  // Same Escape-closes-and-returns-focus pattern as Settings/Reference/
+  // SeriesNav above — this menu was the one panel on the page missing it.
+  document.addEventListener("keydown", (ev) => {
+    if (ev.key !== "Escape" || menu.hidden) return;
+    closeMenu();
+    moreBtn.focus();
   });
 
   const aboveItem = menu.querySelector('[data-run-menu="above"]');
@@ -1697,7 +1715,7 @@ function createCustomCellElement(id, type) {
       + '<textarea class="dl-doc-editor" placeholder="Notes… (# heading, **bold**, - bullets)"></textarea>'
       + '<div class="dl-doc-render" tabindex="0" hidden></div>'
       + "</div>"
-      + '<div class="dl-cell-collapsed-summary" tabindex="0" hidden></div>'
+      + '<div class="dl-cell-collapsed-summary" role="button" tabindex="0" hidden></div>'
       + "</div>"
       + '<div class="dl-cell-bar">'
       + '<span class="dl-cell-id">your own note</span>'
@@ -1716,7 +1734,7 @@ function createCustomCellElement(id, type) {
       '<div class="dl-cell-body-row">'
       + collapseCol
       + '<div class="dl-cell-content"><div class="dl-editor"></div></div>'
-      + '<div class="dl-cell-collapsed-summary" tabindex="0" hidden></div>'
+      + '<div class="dl-cell-collapsed-summary" role="button" tabindex="0" hidden></div>'
       + "</div>"
       + '<div class="dl-output"></div>'
       + '<div class="dl-cell-bar">'
@@ -1912,7 +1930,10 @@ function mountCustomCellAfter(afterNode, id, type, code, anchor) {
   if (collapsedSummary) {
     collapsedSummary.addEventListener("click", () => { setCellCollapsed(cell, false); saveCustomCells(); });
     collapsedSummary.addEventListener("keydown", (ev) => {
-      if (ev.key === "Enter") { setCellCollapsed(cell, false); saveCustomCells(); }
+      if (ev.key !== "Enter" && ev.key !== " ") return;
+      ev.preventDefault();
+      setCellCollapsed(cell, false);
+      saveCustomCells();
     });
   }
 
@@ -2799,6 +2820,24 @@ function clearCellRunning(cell, previousLabel) {
     previousLabel === "Running…" || previousLabel === "Stop" ? "Run" : previousLabel;
 }
 
+/* The one announcement a screen reader gets once a cell finishes — not the
+ * ticking "Running… Xs" run-line, deliberately (startRunLineTicker()'s own
+ * comment above explains why), just the result once there is one. Checked
+ * the same way the e2e tests already do: a `.dl-error` in the cell's own
+ * output means the run errored. */
+function announceCellRun(cell) {
+  if (!runAnnouncerEl) return;
+  const errored = !!cell.outputEl?.querySelector(".dl-error");
+  // A live region only announces on a genuine text change — running the
+  // same cell twice in a row would say nothing the second time without
+  // this. Clearing first, then setting the real text next tick, makes
+  // every run its own change even when the result reads identically.
+  runAnnouncerEl.textContent = "";
+  setTimeout(() => {
+    runAnnouncerEl.textContent = errored ? "Ran — error" : "Ran — output below";
+  }, 0);
+}
+
 async function runCell(cell) {
   /* A second click on the cell that is already running is a Stop request,
    * not a second Run — the same button does both, per
@@ -2814,6 +2853,7 @@ async function runCell(cell) {
   const previousLabel = setCellRunning(cell);
   startRunLineTicker(cell);
 
+  let completed = false;
   try {
     await ensureBooted(currentManifest);
 
@@ -2823,6 +2863,7 @@ async function runCell(cell) {
      * a Stop click included — is normal traffic and is rendered in the cell,
      * not thrown up here. */
     await executeCell(cell);
+    completed = true;
   } catch (err) {
     /* Boot failure. Already surfaced in the status bar; nothing useful to add
      * inside the cell. */
@@ -2830,6 +2871,7 @@ async function runCell(cell) {
     running = null;
     clearCellRunning(cell, previousLabel);
     clearRunLineTicker(cell);
+    if (completed) announceCellRun(cell);
   }
 }
 
@@ -3207,7 +3249,40 @@ function saveNow() {
     rememberVersion();
     showSaveState(record.saved_at);
   } catch (err) {
-    /* Storage full or refused. Say so rather than pretending it saved. */
+    /* Storage full or refused — usually one cell's output_html, a large
+     * embedded figure most likely, pushing the whole record over this
+     * browser's quota. A reader's own code and notes matter far more to
+     * keep than a picture a cell can just regenerate by running again,
+     * so retry once with any outsized output_html dropped before giving
+     * up and admitting nothing saved at all. */
+    const oversized = record.cells.some(
+      (cell) => cell.output_html.length > SAVED_OUTPUT_STRIP_THRESHOLD,
+    );
+    if (oversized) {
+      const slimmed = {
+        ...record,
+        cells: record.cells.map((cell) => (
+          cell.output_html.length > SAVED_OUTPUT_STRIP_THRESHOLD
+            ? { ...cell, output_html: "" }
+            : cell
+        )),
+      };
+      try {
+        localStorage.setItem(progressKey(), JSON.stringify(slimmed));
+        rememberVersion();
+        showSaveState(
+          record.saved_at,
+          "Saved your code and notes, but this browser ran out of room "
+            + "for a large figure. Run that cell again after reloading "
+            + "to see it.",
+        );
+        updateProgressSummary();
+        return;
+      } catch (err2) {
+        /* Still too big even without it — fall through to the plain
+         * failure message below. */
+      }
+    }
     showSaveState(null, "Your browser would not let this page save your work.");
   }
   updateProgressSummary();

@@ -1,0 +1,21 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# Fourth tutorial of the Simulation series. Checked against the earlier
+# three tutorials' cumulative glossary -- no overlap. leaving-it-to-chance
+# foreshadows this tutorial by name ("the simulation in tutorial 4 of this
+# series produces a bizarre result -- a queue that never clears").
+entries:
+  - term: stable (queue)
+    kind: concept
+    definition: >
+      A queue is stable when it never grows without limit, however bad
+      its luck. Average arrivals per step stay below what the server can
+      clear, so a run of bad luck drains away again rather than piling up
+      forever.
+
+  - term: unstable (queue)
+    kind: concept
+    definition: >
+      A queue is unstable when average arrivals per step are at or above
+      what the server can clear. It does not have to grow fast to be
+      unstable, only to never turn around and shrink for good.
