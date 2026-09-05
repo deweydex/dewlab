@@ -5,8 +5,8 @@ module: computational-methods
 module_title: "Computational Methods"
 year: "2026-2027"
 series: text-generation
-version: 2026.09.05.1
-datasets: [pride-and-prejudice]
+version: 2026.09.05.2
+datasets: [the-time-machine]
 covers:
   loading-a-real-book:
     touches: [CMPS-LO1]
@@ -20,9 +20,8 @@ covers:
 
 *Words That Follow Words*, in *Where Chains Lead*, built a chain from one
 repeated sentence, ten words long. This tutorial builds the same kind of
-chain from an entire novel instead, Jane Austen's *Pride and Prejudice*,
-and immediately hits a real technical problem the ten-word version never
-had.
+chain from an entire novel instead, H. G. Wells's *The Time Machine*, and
+immediately hits a real technical problem the ten-word version never had.
 
 ## Loading a Real Book
 
@@ -32,23 +31,23 @@ what comes back: a table for `load_csv()`, one long string for `load_text()`.
 
 ```python exec
 id: loading-a-real-book-1
-raw = await load_text("pride-and-prejudice.txt")
+raw = await load_text("the-time-machine.txt")
 print(len(raw), "characters")
 print(raw[:300])
 ```
 
-The text you just loaded includes more than *Pride and Prejudice* itself.
+The text you just loaded includes more than *The Time Machine* itself.
 Project Gutenberg, the library this copy comes from, adds its own header
 to the top of every file it distributes, and a long licence to the bottom.
 Look near the top of what printed above: a few lines down sits
-`*** START OF THIS PROJECT GUTENBERG EBOOK PRIDE AND PREJUDICE ***`.
+`*** START OF THIS PROJECT GUTENBERG EBOOK THE TIME MACHINE ***`.
 Everything from there up to the matching `*** END OF...` line, further down
 in the file, is the actual novel.
 
 ```python exec
 id: loading-a-real-book-2
-start_marker = "*** START OF THIS PROJECT GUTENBERG EBOOK PRIDE AND PREJUDICE ***"
-end_marker = "*** END OF THIS PROJECT GUTENBERG EBOOK PRIDE AND PREJUDICE ***"
+start_marker = "*** START OF THIS PROJECT GUTENBERG EBOOK THE TIME MACHINE ***"
+end_marker = "*** END OF THIS PROJECT GUTENBERG EBOOK THE TIME MACHINE ***"
 start = raw.find(start_marker)
 end = raw.find(end_marker)
 book = raw[raw.index("\n", start):end].strip()
@@ -85,11 +84,11 @@ print(len(states), "distinct words")
 print(len(states) ** 2, "cells a dense grid would need")
 ```
 
-Picture a grid with more than 170 million cells, almost all of them holding
+Picture a grid with more than 48 million cells, almost all of them holding
 a zero — one for every pair of words that never actually sits next to each
 other anywhere in the book. That is not something a browser tab can
-comfortably hold in memory, and building it would mean writing well over a
-hundred million zeros before a single real count goes in.
+comfortably hold in memory, and building it would mean writing tens of
+millions of zeros before a single real count goes in.
 
 A different way to write the same idea down solves this: keep one
 dictionary for each word, with an entry only for the words that actually
@@ -110,8 +109,13 @@ for word, next_word in zip(words, words[1:]):
     next_words[word][next_word] = next_words[word].get(next_word, 0) + 1
 
 print(len(next_words), "words have at least one dictionary of their own")
-print(len(next_words["Elizabeth"]), "different words follow 'Elizabeth' somewhere in the book")
+print(len(next_words["Weena"]), "different words follow 'Weena' somewhere in the book")
 ```
+
+`"Weena"` is the one companion the Time Traveller names in the whole book,
+a good word to ask about because it appears often enough in the story to
+have many neighbours already, without being one of the handful of words
+("the", "and", "I") whose dictionaries grow huge from sheer repetition.
 
 Each inner dictionary's values are plain counts, not probabilities — how
 many times that word actually followed. *Words That Follow Words* had to
@@ -135,38 +139,42 @@ def generate(start_word, steps):
         result.append(current)
     return " ".join(result)
 
-print(generate("Elizabeth", 20))
+print(generate("Weena", 20))
 ```
 
 Run that cell a few times. One run produced this:
 
-> Elizabeth had been complete victory over stiles and then be nothing to be
-> otherwise I am not but love and had
+> Weena was Weena would still remained one by their features, I left her to
+> speak of putrefaction and grew visible. "I
 
 Another produced this:
 
-> Elizabeth felt. Poor Reynolds, pointing out of her present party; but
-> little conversation instead of the power to Longbourn, and more
+> Weena lay awake most of intense relief, I was free from which I thought
+> of increasing apprehensions drew her hands, and
 
 Your own run will almost certainly read differently. Every run reshuffles
-the same 121,584 words according to what genuinely follows what, word by
+the same 32,467 words according to what genuinely follows what, word by
 word, in this one particular book.
 
 ### Your turn
 
-Pick a character's name that appears often in the book, `"Darcy"`, say,
-and generate 20 words starting from it. How many different words follow
-your chosen name somewhere in the book?
+Pick a word that appears often in the book, `"Morlocks"`, say, and generate
+20 words starting from it. How many different words follow your chosen
+word somewhere in the book?
 
 ```python exec
 id: a-dictionary-of-dictionaries-3
-hint: len(next_words["Darcy"]) counts how many different words follow "Darcy" anywhere in the book — the same thing len(next_words["Elizabeth"]) counted above.
+hint: len(next_words["Morlocks"]) counts how many different words follow "Morlocks" anywhere in the book — the same thing len(next_words["Weena"]) counted above.
 ```
 
 ## Reflection
 
-A grid worked for ten words. A dictionary of dictionaries works for over a
-hundred thousand, because it only ever writes down what genuinely happens —
-never the millions of pairs that do not. *How Much It Remembers*, next in
-this series, asks a different question: how much of the sentence so far
-should the chain actually remember?
+A grid worked for ten words. A dictionary of dictionaries works for tens
+of thousands, because it only ever writes down what genuinely happens,
+never the millions of pairs that do not. This series bundles five other
+real books alongside this one, too: *The War of the Worlds*,
+*Frankenstein*, *A Princess of Mars*, *The Lost World*, and Jane Austen's
+*Pride and Prejudice*. The practice page lets you build a chain from any
+of them. *How Much It Remembers*, next in this series, asks a different
+question: how much of the sentence so far should the chain actually
+remember?

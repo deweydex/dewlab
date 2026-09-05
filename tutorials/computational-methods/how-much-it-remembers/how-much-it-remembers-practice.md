@@ -6,16 +6,16 @@ module: computational-methods
 module_title: "Computational Methods"
 year: "2026-2027"
 series: text-generation
-version: 2026.09.05.1
+version: 2026.09.05.2
 ---
 
 # How Much It Remembers — Practice
 
 ```python exec
 id: setup-1
-raw = await load_text("pride-and-prejudice.txt")
-start_marker = "*** START OF THIS PROJECT GUTENBERG EBOOK PRIDE AND PREJUDICE ***"
-end_marker = "*** END OF THIS PROJECT GUTENBERG EBOOK PRIDE AND PREJUDICE ***"
+raw = await load_text("the-time-machine.txt")
+start_marker = "*** START OF THIS PROJECT GUTENBERG EBOOK THE TIME MACHINE ***"
+end_marker = "*** END OF THIS PROJECT GUTENBERG EBOOK THE TIME MACHINE ***"
 start = raw.find(start_marker)
 end = raw.find(end_marker)
 book = raw[raw.index("\n", start):end].strip()
@@ -57,31 +57,32 @@ print(len(single1) / len(order1))
 print(len(single2) / len(order2))
 ```
 
-About 57% of `order1`'s keys have only ever had one recorded follower.
-For `order2`, that climbs to about 81%. Remembering one more word of
-context does not just add detail — it turns a majority of situations the
+About 67% of `order1`'s keys have only ever had one recorded follower.
+For `order2`, that climbs to about 87%. Remembering one more word of
+context does not just add detail — it turns most of the situations the
 chain has ever seen into ones with only a single recorded outcome.
 
 </details>
 
 **2.** Find three real two-word pairs in `order2` that each have exactly
-one recorded follower, appearing at least ten times.
+one recorded follower, appearing at least four times.
 
 <details class="dl-answer"><summary>answer</summary>
 
 ```python
 common_single = {
     k: v for k, v in order2.items()
-    if len(v) == 1 and list(v.values())[0] >= 10
+    if len(v) == 1 and list(v.values())[0] >= 4
 }
 print(list(common_single.items())[:5])
 ```
 
-`("in", "spite")` is always followed by `"of"`, 19 times: the fixed
-phrase `"in spite of"`. `("Mr.", "and")` is always followed by `"Mrs."`,
-also 19 times. `("be", "able")` is always followed by `"to"`, 18 times.
-None of these are surprising once you say them aloud: each pair is half of
-an English phrase that essentially never continues any other way.
+`("a", "kind")` is always followed by `"of"`, 11 times: the fixed phrase
+`"a kind of"`. `("Palace", "of")` is always followed by `"Green"`, 10
+times — not an idiom this time, but a real place in the story, the
+*Palace of Green Porcelain*, named the same way every time it comes up.
+`("I", "determined")` is always followed by `"to"`, 8 times: another
+fixed phrase, `"I determined to"`.
 
 </details>
 
@@ -116,9 +117,8 @@ def generate2(w1, w2, steps):
 ```
 
 **3.** Generate 25 words from `order1` and 25 words from `order2`, both
-starting from the same character's name. Which one contains a longer
-unbroken run of words that also appears, in the same order, somewhere in
-`book`?
+starting from the same word. Which one contains a longer unbroken run of
+words that also appears, in the same order, somewhere in `book`?
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
@@ -156,8 +156,7 @@ different reason?
    and keeping the two newest, plus the word just chosen — the same idea
    `generate2` used, one word longer.
 
-**Think about:** `order2` already had 66,016 keys from one book. What do
+**Think about:** `order2` already had 22,457 keys from one book. What do
 you expect `order3` to have — more, fewer, or about the same?
 
 </details>
-

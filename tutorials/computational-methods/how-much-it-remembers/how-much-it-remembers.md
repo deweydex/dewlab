@@ -5,8 +5,8 @@ module: computational-methods
 module_title: "Computational Methods"
 year: "2026-2027"
 series: text-generation
-version: 2026.09.05.1
-datasets: [pride-and-prejudice]
+version: 2026.09.05.2
+datasets: [the-time-machine]
 covers:
   keying-on-more-than-one-word:
     covers: [CMPS-LO4]
@@ -27,9 +27,9 @@ This is the same book, loaded and cleaned the same way as before.
 
 ```python exec
 id: keying-on-more-than-one-word-1
-raw = await load_text("pride-and-prejudice.txt")
-start_marker = "*** START OF THIS PROJECT GUTENBERG EBOOK PRIDE AND PREJUDICE ***"
-end_marker = "*** END OF THIS PROJECT GUTENBERG EBOOK PRIDE AND PREJUDICE ***"
+raw = await load_text("the-time-machine.txt")
+start_marker = "*** START OF THIS PROJECT GUTENBERG EBOOK THE TIME MACHINE ***"
+end_marker = "*** END OF THIS PROJECT GUTENBERG EBOOK THE TIME MACHINE ***"
 start = raw.find(start_marker)
 end = raw.find(end_marker)
 book = raw[raw.index("\n", start):end].strip()
@@ -47,7 +47,7 @@ for word, next_word in zip(words, words[1:]):
     order1.setdefault(word, {})
     order1[word][next_word] = order1[word].get(next_word, 0) + 1
 
-print(len(order1["Darcy"]), "different words have ever followed just 'Darcy'")
+print(len(order1["Morlocks"]), "different words have ever followed just 'Morlocks'")
 ```
 
 Nothing about a dictionary's key has to be a single word. It can just as
@@ -63,19 +63,20 @@ for w1, w2, w3 in zip(words, words[1:], words[2:]):
     order2[key][w3] = order2[key].get(w3, 0) + 1
 
 print(len(order2), "distinct two-word keys")
-print(len(order2[("Mr.", "Darcy")]), "different words have ever followed 'Mr. Darcy' specifically")
+print(len(order2[("the", "Morlocks")]), "different words have ever followed 'the Morlocks' specifically")
 ```
 
-`order1["Darcy"]` has 110 different words that have ever followed the bare
-word `"Darcy"`: sometimes he is `Mr.` Darcy, sometimes `Miss` Darcy,
-sometimes the sentence is just about something Darcy did or said. Narrow
-the question to `"Mr. Darcy"` specifically and the field drops to 84. The
-extra word of context does more than add memory: it removes some of the
-choices that only made sense for a different `"Darcy"`.
+`order1["Morlocks"]` has 24 different words that have ever followed the
+bare word `"Morlocks"`: sometimes the sentence is about what they did,
+sometimes about where they live, sometimes just `"and"` or `"were"`.
+Narrow the question to `"the Morlocks"` specifically and the field drops
+to 17. The extra word of context does more than add memory: it removes
+some of the choices that only made sense after a different word than
+`"the"`.
 
 ### Your turn
 
-`order1` has 13,067 keys — one for every distinct word in the book.
+`order1` has 6,991 keys — one for every distinct word in the book.
 Predict whether `order2` has more keys, fewer keys, or the same number,
 before running the cell to check.
 
@@ -118,26 +119,27 @@ def generate2(w1, w2, steps):
         current = (current[1], next_word)
     return " ".join(result)
 
-print("order1:", generate1("Mr.", 20))
-print("order2:", generate2("Mr.", "Darcy", 20))
+print("order1:", generate1("the", 20))
+print("order2:", generate2("the", "Morlocks", 20))
 ```
 
 Run that cell a few times. One pair of runs produced this:
 
-> order1: Elizabeth looked that it no hint to know when the smallest idea
-> of youth and should have time here; and putting
+> order1: the machine below grew scattered, as the eyes glared at work as
+> the heavy smell, the appearances of fire. Upon these
 >
-> order2: Mr. Darcy to me, to promote sisterly affection or delicacy of
-> mind.” They were then, that they are first invited to join
+> order2: the Morlocks their mechanical servants: but that this is what is
+> meant by the Morlocks, subterranean for innumerable generations, had
+> come to
 
 The `order2` line reads far more like real English — because for long
-stretches of it, `("Mr.", "Darcy")` and the pairs that follow only ever had
-one recorded continuation in the whole book, so the chain is not really
-choosing at all. "to promote sisterly affection or delicacy of mind" is not
-a coincidence: that exact phrase appears in the book, word for word. The
-more context an `order2` chain remembers, the more often it ends up
-reciting a piece of the book it has already seen, rather than genuinely
-recombining it.
+stretches of it, `("the", "Morlocks")` and the pairs that follow only ever
+had one recorded continuation in the whole book, so the chain is not
+really choosing at all. "the Morlocks their mechanical servants: but that"
+is not a coincidence: that exact phrase appears in the book, word for
+word. The more context an `order2` chain remembers, the more often it ends
+up reciting a piece of the book it has already seen, rather than
+genuinely recombining it.
 
 ### Your turn
 

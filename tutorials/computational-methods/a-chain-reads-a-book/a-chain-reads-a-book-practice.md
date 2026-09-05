@@ -6,7 +6,8 @@ module: computational-methods
 module_title: "Computational Methods"
 year: "2026-2027"
 series: text-generation
-version: 2026.09.05.1
+version: 2026.09.05.2
+datasets: [the-time-machine, the-war-of-the-worlds, frankenstein, a-princess-of-mars, the-lost-world, pride-and-prejudice]
 ---
 
 # A Chain Reads a Book — Practice
@@ -18,9 +19,9 @@ it. Load it once at the top of each section, the way the tutorial did.
 
 ```python exec
 id: cleaning-setup-1
-raw = await load_text("pride-and-prejudice.txt")
-start_marker = "*** START OF THIS PROJECT GUTENBERG EBOOK PRIDE AND PREJUDICE ***"
-end_marker = "*** END OF THIS PROJECT GUTENBERG EBOOK PRIDE AND PREJUDICE ***"
+raw = await load_text("the-time-machine.txt")
+start_marker = "*** START OF THIS PROJECT GUTENBERG EBOOK THE TIME MACHINE ***"
+end_marker = "*** END OF THIS PROJECT GUTENBERG EBOOK THE TIME MACHINE ***"
 start = raw.find(start_marker)
 end = raw.find(end_marker)
 book = raw[raw.index("\n", start):end].strip()
@@ -35,39 +36,46 @@ difference actually represent?
 print(len(raw) - len(book))
 ```
 
-19,293 — roughly how many characters of Project Gutenberg's own header and
+19,377 — roughly how many characters of Project Gutenberg's own header and
 licence text sat around the real novel, on both ends of the file. Nothing
-in that difference is Jane Austen's writing.
+in that difference is H. G. Wells's writing.
 
 </details>
 
-**2.** *Pride and Prejudice* is divided into numbered chapters, each one
-starting with a line like `Chapter 12`. Count how many chapter headings
-appear in `book`.
+**2.** *The Time Machine* is divided into sixteen numbered chapters. Each
+real chapter heading is a line holding nothing but a Roman numeral, like
+`XII`, on a line of its own — different from the table of contents near
+the top of the book, where the same numeral shares a line with the
+chapter's title. Count how many real chapter headings appear in `book`.
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
 1. `book.split("\n")` gives every line as a separate string.
-2. A chapter heading is a line that starts with the word `"Chapter"` —
-   `line.startswith("Chapter")` tests exactly that.
-3. Count how many lines pass that test.
-
-**Think about:** would `"Chapter" in line` count anything extra that
-`line.startswith("Chapter")` would not?
+2. A real chapter heading, once you strip its surrounding spaces, is made
+   up only of the letters `I`, `V`, `X`, `L`, `C` — the same letters Roman
+   numerals use. `set(line.strip()) <= set("IVXLC")` tests exactly that,
+   using set membership instead of comparing letter by letter.
+3. An empty line passes that test too, since an empty set counts as a
+   subset of anything — check `line.strip()` is not empty first.
 
 </details>
 
 <details class="dl-answer"><summary>answer</summary>
 
 ```python
+roman = set("IVXLC")
 lines = book.split("\n")
-chapter_lines = [line for line in lines if line.startswith("Chapter")]
+chapter_lines = [
+    line for line in lines
+    if line.strip() and set(line.strip()) <= roman
+]
 print(len(chapter_lines))
 ```
 
-61 — the real number of chapters in the novel. `"Chapter" in line` would
-also have matched any sentence that happened to mention the word
-`"Chapter"` in passing, not only the headings themselves.
+16 — the real number of chapters in the novel. The table of contents lines
+never pass the test, because each one also has the chapter's title on the
+same line, and a title's letters are not all drawn from `I`, `V`, `X`, `L`,
+`C`.
 
 </details>
 
@@ -104,7 +112,7 @@ busiest = max(next_words, key=lambda w: len(next_words[w]))
 print(busiest, len(next_words[busiest]))
 ```
 
-`"the"`, with 1,685 different words following it somewhere in the book. That
+`"the"`, with 1,162 different words following it somewhere in the book. That
 makes sense once you think about it: `"the"` is one of the most common words
 in English, sitting in front of almost any noun, so it has had a chance to
 be followed by almost every noun the book ever uses.
@@ -113,7 +121,7 @@ be followed by almost every noun the book ever uses.
 
 **4.** Some words in the book are followed by exactly one other word, every
 single time — never anything else. Find one where that single follower
-appears at least ten times, and say what the pair is.
+appears at least five times, and say what the pair is.
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
@@ -122,7 +130,7 @@ appears at least ten times, and say what the pair is.
    that one follower actually appeared.
 3. Filter for words meeting both conditions, then look at a few.
 
-**Try this next:** why might a word like `"obliged"` almost always be
+**Try this next:** why might a word like `"determined"` almost always be
 followed by the same next word?
 
 </details>
@@ -132,14 +140,14 @@ followed by the same next word?
 ```python
 single = {
     w: d for w, d in next_words.items()
-    if len(d) == 1 and list(d.values())[0] >= 10
+    if len(d) == 1 and list(d.values())[0] >= 5
 }
 print(sorted(single.items(), key=lambda kv: -list(kv[1].values())[0])[:5])
 ```
 
-`"obliged"` is followed only by `"to"`, 26 times: every single occurrence
-in the book. `"spite"` is followed only by `"of"`, 23 times. Both are half
-of a fixed phrase, `"obliged to"` and `"in spite of"`, where English
+`"sense"` is followed only by `"of"`, 11 times: every single occurrence
+in the book. `"determined"` is followed only by `"to"`, 9 times. Both are
+half of a fixed phrase, `"sense of"` and `"determined to"`, where English
 almost never allows a different word in second place, so the chain never
 sees one either.
 
@@ -163,9 +171,9 @@ def generate(start_word, steps):
     return " ".join(result)
 ```
 
-**5.** Pick any character's name that appears in the book and generate 25
-words starting from it. Run it three times. How different are the three
-results from each other?
+**5.** Pick any word that appears often in the book and generate 25 words
+starting from it. Run it three times. How different are the three results
+from each other?
 
 ```python exec
 id: generating-1
@@ -192,7 +200,7 @@ missing = set(words) - set(next_words.keys())
 print(missing)
 ```
 
-An empty set. Every one of the 13,067 distinct words in the book has at
+An empty set. Every one of the 6,991 distinct words in the book has at
 least one recorded follower, so `generate()`'s early-exit line never
 actually runs on this particular text. It is still worth having: a
 shorter piece of text, or one cleaned differently, could easily end on a
@@ -200,12 +208,43 @@ word that never appears anywhere else in it, and without that check
 `generate()` would crash instead of simply stopping.
 
 There is a small, honest wrinkle even in `words[-1]`, the very last word.
-It reads `"Austen"`, not from the novel itself, but from Project
-Gutenberg's own closing line, `"...by Jane Austen"`, which sits inside the
-`*** END OF... ***` marker along with the real text. `"Austen"` also
+It reads `"Wells"`, not from the novel itself, but from Project
+Gutenberg's own closing line, `"...by H. G. Wells"`, which sits inside the
+`*** END OF... ***` marker along with the real text. `"Wells"` also
 appears earlier, on the title page, so it still has a recorded follower.
 That is a reminder that the cleaning step earlier in this tutorial finds
 the *edges* Gutenberg marks, not a guarantee that every trace of
 Gutenberg's own text is gone from inside them.
+
+</details>
+
+## A Different Book
+
+This series bundles six real books: *The Time Machine*, *The War of the
+Worlds*, *Frankenstein*, *A Princess of Mars*, *The Lost World*, and
+*Pride and Prejudice* — each one a real filename in `data/`
+(`the-war-of-the-worlds.txt`, `frankenstein.txt`, `a-princess-of-mars.txt`,
+`the-lost-world.txt`, `pride-and-prejudice.txt`).
+
+**7.** Pick a different book from that list. Every one of them is a real
+Project Gutenberg release, so it carries the same
+`*** START OF THIS PROJECT GUTENBERG EBOOK <TITLE> ***` and
+`*** END OF THIS PROJECT GUTENBERG EBOOK <TITLE> ***` markers, just with
+its own title in place of `THE TIME MACHINE`. Load it, clean it, build a
+chain from it, and generate 25 words.
+
+<details class="dl-hint"><summary>stuck? here are some steps</summary>
+
+1. `raw = await load_text("frankenstein.txt")` (or whichever filename you
+   picked).
+2. Print the first few hundred characters of `raw` to find that book's
+   exact marker text — it always follows the same shape, but the title in
+   the middle changes.
+3. Everything else — cleaning, building `next_words`, `generate()` — is
+   identical code to what this page already uses.
+
+**Think about:** does this book's dense vocabulary size (distinct words
+squared) turn out bigger or smaller than *The Time Machine*'s? Bigger or
+smaller than *Pride and Prejudice*'s from the tutorial's own numbers?
 
 </details>

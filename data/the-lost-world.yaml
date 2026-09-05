@@ -1,0 +1,17 @@
+# Attribution for data/the-lost-world.txt — planning/SIDEBAR_CONTENT.md §2.
+# Shown in the reference sidebar of any tutorial that declares this dataset,
+# so a reader can trace the text they are working with back to its source.
+
+source: >
+  Project Gutenberg EBook of The Lost World, by Arthur Conan Doyle
+  (EBook #139). https://www.gutenberg.org/ebooks/139
+
+license: >
+  Public domain in the United States. Project Gutenberg's own licence terms
+  apply to redistribution — see the file itself, which carries them in full.
+  https://www.gutenberg.org/policy/license.html
+
+description: >
+  The complete novel, first published in 1912, exactly as Project
+  Gutenberg distributes it — including its own header and licence footer,
+  which a tutorial strips out before treating the file as prose.
