@@ -126,7 +126,7 @@ but that nothing about it ever turns around.
 
 ### Your turn
 
-Run `simulate_queue` for 2,000 steps instead of 200, with the same
+Try `simulate_queue` for 2,000 steps instead of 200, with the same
 `arrival_prob=0.6` and `service_capacity=1`. Does the queue length look
 like it is settling toward some value, or still climbing?
 
@@ -170,7 +170,7 @@ become a real problem. Those numbers only come from running it.
 
 The demo above already called `arrival_prob=0.5` "unstable" — average
 arrivals of exactly `1` never fall strictly below a service capacity of
-`1`, so the rule's `<` never fires. Run `simulate_queue` at this setting
+`1`, so the rule's `<` never fires. Try `simulate_queue` at this setting
 for 1,000 steps and watch the queue length over the whole run, not just
 the final value. Does it behave like the clearly stable run, the clearly
 unstable one, or something in between?

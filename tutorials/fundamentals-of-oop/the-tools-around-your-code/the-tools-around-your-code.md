@@ -54,16 +54,18 @@ basket.add("bread", 2.50)
 print(basket.items)
 ```
 
-Run that cell. It fails, and the message on screen is worth reading
-slowly rather than skimming past. It names the line and the mistake:
-`Basket` objects have no method called `appendd`, and it usually names
-something close to what you meant. A development environment's whole
-job, in this moment, is to get you to that sentence as fast as
-possible. What's on screen is trimmed down to your own code, not
-buried in everything Python did to get there.
+Try running that cell. It fails — and that is the point here, not a
+problem. The message on screen is worth reading slowly rather than
+skimming past. It names the line and the mistake: `Basket` objects have
+no method called `appendd`, and it usually names something close to
+what you meant. A development environment's whole job, in this moment,
+is to get you to that sentence as fast as possible. What is on screen is
+trimmed down to your own code, not buried in everything Python did to
+get there.
 
-Fix `appendd` back to `append` and run the cell again. The empty list
-was never the problem. One misspelled call was.
+Now try changing `appendd` back to `append` and running the cell again.
+The empty list was never the problem. One misspelled word was the
+problem, and now you can see exactly why.
 
 ## What the Editor Already Knows
 

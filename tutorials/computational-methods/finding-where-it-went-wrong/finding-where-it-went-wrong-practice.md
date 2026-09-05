@@ -88,8 +88,8 @@ def summarize_q3(raw_lines):
 print(summarize_q3(["212.0"]))
 ```
 
-Check each stage by hand, the way the tutorial checked `fahrenheit_to_celsius`
-directly, to find exactly where this one goes wrong.
+See if you can find exactly where this one goes wrong, by checking each
+stage by hand the way the tutorial checked `fahrenheit_to_celsius` directly.
 
 ```python exec
 id: bisecting-a-different-bug-2

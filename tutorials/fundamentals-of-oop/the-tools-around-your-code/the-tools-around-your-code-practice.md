@@ -47,8 +47,8 @@ counter.add(3)
 print(counter.totall)
 ```
 
-**2.** Run the cell above. Before reading the error message closely,
-predict which word in the code is wrong.
+**2.** Try running the cell above. Before reading the error message
+closely, see if you can guess which word in the code is wrong.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -59,8 +59,8 @@ rest of the traceback.
 
 </details>
 
-**3.** Fix the typo and run the cell again. What does it print, and why
-not `5` or `3` alone?
+**3.** Now try fixing the typo and running the cell again. What does it
+print, and why not `5` or `3` alone?
 
 <details class="dl-answer"><summary>answer</summary>
 

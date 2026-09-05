@@ -97,9 +97,9 @@ smaller one again, and never stop.
 
 ### Your turn
 
-Write `deepest_level(folder, level=0)`, returning how many levels down
-the deepest subfolder sits. `photos` itself is level `0`; `"trip"` is
-level `2`.
+Try writing `deepest_level(folder, level=0)`, returning how many levels
+down the deepest subfolder sits. `photos` itself is level `0`; `"trip"`
+is level `2`.
 
 ```python exec
 id: walking-it-with-recursion-2
@@ -140,9 +140,9 @@ the final total does not.
 
 ### Your turn
 
-Rewrite `count_files_iterative` so it counts subfolders in the order they
-appear in `folder["subfolders"]`, first added first visited, rather than
-last added first visited. One line needs to change.
+Try rewriting `count_files_iterative` so it counts subfolders in the
+order they appear in `folder["subfolders"]`, first added first visited,
+rather than last added first visited. One line needs to change.
 
 ```python exec
 id: walking-it-without-recursion-2

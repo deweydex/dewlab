@@ -59,8 +59,8 @@ because it never skips a possibility.
 
 ### Your turn
 
-Call `fewest_tokens_brute_force` with a target of `10` and confirm the result
-by hand: which three tokens from `[1, 3, 4]` add up to `10`?
+Try calling `fewest_tokens_brute_force` with a target of `10`, then check
+the result by hand: which three tokens from `[1, 3, 4]` add up to `10`?
 
 ```python exec
 id: trying-every-combination-2
@@ -184,9 +184,10 @@ greedy shortcut can be wrong, quietly, without ever announcing it.
 
 ### Your turn
 
-Find a target amount, using `TOKENS = [1, 3, 4]`, where the greedy shortcut
-and the cached method disagree by more than one token. Start from the
-disagreement already shown at `amount=6` and try nearby amounts.
+See if you can find a target amount, using `TOKENS = [1, 3, 4]`, where the
+greedy shortcut and the cached method disagree by more than one token.
+Start from the disagreement already shown at `amount=6` and try nearby
+amounts.
 
 ```python exec
 id: the-greedy-shortcut-3
