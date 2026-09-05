@@ -6371,3 +6371,61 @@ task this was filed as ("dewmini has no run announcement") was wrong —
 it already had one — and the real gap only turned up by reading
 `runCell()` and `updateStatus()` directly instead of trusting the
 title on the task.*
+
+
+## Phase 8 — Student feedback pathway
+
+Planned in an artifact worked through with Josh before any code existed:
+GitHub already has the receiving end (Issues, an issue form, labels, a
+Project), so the gap was at the student's end, and the further choice to
+teach the account rather than route around it, since dewstack's students
+already make one and dewlab's own reporting document already assumed one.
+This phase is the first slice of that plan: a link on every page, the
+issue form it opens, and a switch to turn the link off. The "three doors"
+panel, the cell-level report button with code capture, and the two new
+debugging/GitHub-reading tutorials are deliberately not part of this
+slice — see the artifact for the fuller design and why they were held
+back.
+
+**8.1 — The kill switch is a YAML file, read fresh on every call, not a
+`build.py` constant.** `planning/feedback.yaml` holds one key,
+`enabled:`. The alternative, a `FEEDBACK_ENABLED = True` constant near
+the top of `build.py`, would work exactly as well for the build itself,
+but it asks whoever needs to turn the link off in a hurry to find one
+line inside a 4,000-line file rather than one line inside a file whose
+whole content is that line and a comment explaining it. It is read fresh
+from `ROOT` on every call, matching `module_order()`'s own reasoning
+(ARCHITECTURE.md §1, step 5): a module-level constant computed at
+import time would not see a test's temporary `ROOT`. Missing
+the file, or missing `enabled:` inside it, both mean on — the switch
+exists to make turning the link off fast, not to make on the careful
+path.
+*Cost to change: trivial. One file, one function, six call sites of
+`site_footer()` that already pass it a page.*
+
+**8.2 — Every page gets a report link, not only tutorial pages.** The
+contents page, the topic tree, "browse by topic," the About page and the
+editor all call `site_footer()` with their own slug and a version of
+`"1"`, the same as their existing `{{SLUG}}`/`{{VERSION}}` tokens. The
+plan's own Treatment 2 asked for the link "on every page," and there was
+no reason a bug on the topic tree or in the editor should be harder to
+report than one in a tutorial.
+*Cost to change: small — dropping a page from the list is removing one
+call site's arguments.*
+
+**8.3 — The prefilled link carries only `page` and `version`; browser and
+the cell's code are not captured yet.** `report_issue_url()` builds a
+GitHub "new issue" address from two query parameters, matching the two
+fields in `.github/ISSUE_TEMPLATE/report.yml` that are marked "filled in
+for you." Browser and device, and a cell's current code and last output,
+are both real fields the reporting document already asks students to
+include by hand — but capturing them automatically needs JavaScript
+running on the page, which is the report panel from the plan's
+Treatment 1, not yet built. The issue template's `kind:` dropdown already
+has a "gives an error" option that names the checks a student should have
+tried, so a student reporting a cell bug today writes one sentence and
+picks that option, rather than the panel doing it for them.
+*Cost to change: small on its own — adding fields to `report_issue_url()`
+and the template is additive — but real work follows from it: the report
+panel and the cell-level button both need to exist for the extra fields
+to fill themselves in, which is the deferred half of this plan.*

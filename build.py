@@ -33,6 +33,7 @@ import os
 import re
 import shutil
 import sys
+import urllib.parse
 import zipfile
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -2556,15 +2557,58 @@ def practice_link(tutorial: Tutorial, practice: Tutorial | None,
 
 
 _LICENCE_URL = "https://github.com/deweydex/dewlab/blob/main/LICENSE.md"
+_REPORT_REPO_URL = "https://github.com/deweydex/dewlab"
+FEEDBACK_CONFIG_FILE = "feedback.yaml"
 
 
-def site_footer() -> str:
-    """Copyright line and licence link, stamped with the current year."""
+def feedback_enabled() -> bool:
+    """Whether the "report something about this page" link appears anywhere
+    on the site, read fresh from `planning/feedback.yaml` on every call —
+    the same reasoning as `module_order()`: a constant computed at import
+    time would not see a test's temporary ROOT.
+
+    Missing the file, or the file missing `enabled:`, both mean on. The
+    switch exists to turn the link off in a hurry — one line, editable from
+    GitHub's own web editor, no code to find — not to make on the fussy
+    path. See DECISIONS_LOG.md, Phase 8.
+    """
+    path = ROOT / "planning" / FEEDBACK_CONFIG_FILE
+    if not path.is_file():
+        return True
+    data = yaml.safe_load(path.read_text()) or {}
+    return bool(data.get("enabled", True))
+
+
+def report_issue_url(page: str, version: str) -> str:
+    """The prefilled GitHub issue link the footer's report line opens.
+
+    `page` and `version` only fill in fields on GitHub's own form — nothing
+    is sent until the reader presses GitHub's own Submit, and every field is
+    still theirs to edit or clear first. See docs/REPORTING_A_PROBLEM.md.
+    """
+    query = urllib.parse.urlencode(
+        {"template": "report.yml", "page": page, "version": str(version)}
+    )
+    return f"{_REPORT_REPO_URL}/issues/new?{query}"
+
+
+def site_footer(page: str = "", version: str = "") -> str:
+    """Copyright line and licence link, stamped with the current year, plus
+    a link to report something about this page unless `feedback_enabled()`
+    says the link is switched off, or the caller passed no `page` to report
+    against.
+    """
     year = datetime.date.today().year
-    return (
+    footer = (
         f'© {year} J. S. Aaron · '
         f'<a href="{_LICENCE_URL}">Licence</a>'
     )
+    if page and feedback_enabled():
+        footer += (
+            f' · <a href="{report_issue_url(page, version)}">'
+            "Something wrong on this page? Tell us.</a>"
+        )
+    return footer
 
 
 def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "",
@@ -2654,7 +2698,7 @@ def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "",
         ),
         # `<` escaped so nothing in a cell can close the surrounding <script>.
         "{{MANIFEST_JSON}}": json.dumps(manifest).replace("<", "\\u003c"),
-        "{{FOOTER}}": site_footer(),
+        "{{FOOTER}}": site_footer(f"{tutorial.module}/{tutorial.slug}", tutorial.meta["version"]),
     }
     page = shell
     for token, value in tokens.items():
@@ -3362,7 +3406,7 @@ def write_index(
         "{{SERIES_NAV}}": "",
         "{{BODY}}": render_index(groups, archives, retired, practice, mixed, module_archives),
         "{{MANIFEST_JSON}}": json.dumps(manifest).replace("<", "\\u003c"),
-        "{{FOOTER}}": site_footer(),
+        "{{FOOTER}}": site_footer("index", "1"),
     }
     page = shell
     for token, value in tokens.items():
@@ -3496,7 +3540,7 @@ def write_tree_page(shell: str, tutorials: list[Tutorial]) -> Path | None:
         "{{SERIES_NAV}}": "",
         "{{BODY}}": body,
         "{{MANIFEST_JSON}}": json.dumps(manifest).replace("<", "\\u003c"),
-        "{{FOOTER}}": site_footer(),
+        "{{FOOTER}}": site_footer("tree", "1"),
     }
     page = shell
     for token, value in tokens.items():
@@ -3614,7 +3658,7 @@ def write_topics_page(
         "{{SERIES_NAV}}": "",
         "{{BODY}}": "".join(body),
         "{{MANIFEST_JSON}}": json.dumps(manifest).replace("<", "\\u003c"),
-        "{{FOOTER}}": site_footer(),
+        "{{FOOTER}}": site_footer("topics", "1"),
     }
     page = shell
     for token, value in tokens.items():
@@ -3876,9 +3920,10 @@ def write_about_page(shell: str) -> Path:
         "<p>We would be glad of help with the material. You can open an issue "
         "with an idea, a request or a comment. You can also send a pull request "
         "with a change of your own.</p>"
-        "<p>If you have found a mistake, please open a GitHub issue. If you "
-        "would rather fix it yourself, send a pull request and we will review "
-        "it and merge it.</p>"
+        "<p>If you have found a mistake, the quickest way is the link at the "
+        "foot of the page it is on. Without that, opening a GitHub issue "
+        "works too. If you would rather fix it yourself, send a pull "
+        "request and we will review it and merge it.</p>"
         '<p><strong>Project repository:</strong> <a href="https://github.com/deweydex/dewlab">'
         "github.com/deweydex/dewlab</a></p>"
         '<p><strong>Contact:</strong> <a href="mailto:deweydex@jsaaron.com">'
@@ -3908,7 +3953,7 @@ def write_about_page(shell: str) -> Path:
         "{{SERIES_NAV}}": "",
         "{{BODY}}": body,
         "{{MANIFEST_JSON}}": json.dumps(manifest).replace("<", "\\u003c"),
-        "{{FOOTER}}": site_footer(),
+        "{{FOOTER}}": site_footer("about", "1"),
     }
     page = shell
     for token, value in tokens.items():
@@ -3969,7 +4014,7 @@ def write_editor_page(shell: str) -> Path:
         "{{SERIES_NAV}}": "",
         "{{BODY}}": body,
         "{{MANIFEST_JSON}}": json.dumps(manifest).replace("<", "\\u003c"),
-        "{{FOOTER}}": site_footer(),
+        "{{FOOTER}}": site_footer("editor", "1"),
     }
     page = shell
     for token, value in tokens.items():

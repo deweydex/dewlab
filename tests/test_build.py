@@ -3379,3 +3379,51 @@ def test_no_workbench_folder_is_not_an_error(repo, monkeypatch):
     monkeypatch.setattr(b, "DEWMARK_WORKBENCH", repo / "dewmark" / "workbench")
     b.build()
     assert not (b.OUT / "dewmark").exists()
+
+
+class TestFeedbackFooter:
+    """The footer's "report something about this page" link — DECISIONS_LOG
+    Phase 8. On by default; planning/feedback.yaml is the kill switch."""
+
+    def test_report_link_on_a_tutorial_page_by_default(self, repo, monkeypatch):
+        write(repo, "# Sample\n\nSome text.")
+        b.build()
+
+        page = built(repo)
+        assert "Something wrong on this page? Tell us." in page
+        assert "github.com/deweydex/dewlab/issues/new?" in page
+        assert "template=report.yml" in page
+        assert "page=computational-methods%2Fsample" in page
+        assert "version=2026.08.23.1" in page
+
+    def test_report_link_gone_when_switched_off(self, repo, monkeypatch):
+        (repo / "planning").mkdir(parents=True, exist_ok=True)
+        (repo / "planning" / "feedback.yaml").write_text("enabled: false\n")
+        write(repo, "# Sample\n\nSome text.")
+        b.build()
+
+        page = built(repo)
+        assert "Something wrong on this page?" not in page
+        assert "issues/new" not in page
+
+    def test_report_link_also_appears_on_the_contents_page(self, repo, monkeypatch):
+        write(repo, "# Sample\n\nSome text.")
+        b.build()
+
+        index = (repo / "site" / "index.html").read_text()
+        assert "Something wrong on this page? Tell us." in index
+
+    def test_report_issue_url_carries_page_and_version(self):
+        url = b.report_issue_url("computational-methods/first-steps", "2026.09.01.2")
+        assert url.startswith("https://github.com/deweydex/dewlab/issues/new?")
+        assert "page=computational-methods%2Ffirst-steps" in url
+        assert "version=2026.09.01.2" in url
+        assert "template=report.yml" in url
+
+    def test_feedback_enabled_defaults_true_without_a_config_file(self, repo):
+        assert b.feedback_enabled() is True
+
+    def test_feedback_enabled_reads_the_config_file(self, repo):
+        (repo / "planning").mkdir(parents=True, exist_ok=True)
+        (repo / "planning" / "feedback.yaml").write_text("enabled: false\n")
+        assert b.feedback_enabled() is False
