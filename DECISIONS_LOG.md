@@ -6501,3 +6501,27 @@ link now (`build.py`'s markup, `tutorial-runtime.js`'s
 `updateCellReportLinks()`), and the `dl-report-issue-link` class is the
 seam between them — rename or restructure one without the other, and the
 runtime silently stops finding anything to update.*
+
+**8.6 — A written triage procedure, and a one-shot scheduled off switch,
+both added before the first real report arrives rather than after.**
+`.claude/skills/triage-report/SKILL.md` exists so working the inbox does
+not have to be reinvented each session: read before acting, re-sort the
+student's guessed `kind` rather than trusting it, reproduce an error
+report from `code`/`output` before touching anything, and the two hard
+stops the plan always intended — a maths or curriculum question is
+Josh's call, and nothing closes without a person having looked.
+
+`.github/workflows/auto-disable-feedback.yml` is a direct request: the
+doors stay on, but turn themselves off on Tuesday, 2026-09-08, without
+anyone having to remember to. It is a genuine one-shot rather than a
+recurring weekly job — the date is cron's day-of-month/month fields, not
+day-of-week — and its last step deletes its own workflow file in the
+same commit that flips `planning/feedback.yaml`, so nothing is left
+behind to misfire on the same date next year. `workflow_dispatch` on the
+same workflow doubles as a manual "turn it off right now" trigger, which
+does the same thing early rather than rehearsing it safely — a real
+alternative to editing `planning/feedback.yaml` by hand, not a test mode.
+*Cost to change: trivial for the switch itself (edit or delete the
+workflow file, the same as any other scheduled job). Extending the
+deadline means editing the cron date before it fires, since the file
+that would let you edit it again is gone once it has.*

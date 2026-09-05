@@ -85,6 +85,7 @@ update it when you finish one.
 | Writing or editing a tutorial | `docs/WRITING_TUTORIALS.md`, then the style guide |
 | Writing a glossary file | `.claude/skills/tutorial-glossary/SKILL.md` |
 | Reviewing a tutorial's cell code | `.claude/skills/cell-code-review/SKILL.md` |
+| Working an issue opened through the report doors | `.claude/skills/triage-report/SKILL.md` |
 | Changing the build or the runtime | `CONTRIBUTING.md`, then `ARCHITECTURE.md` |
 | Wondering why something works the way it does | `DECISIONS_LOG.md` |
 
