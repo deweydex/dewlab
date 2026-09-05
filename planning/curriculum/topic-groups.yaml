@@ -148,6 +148,7 @@ groups:
       - { module: mit-pdp-maths-prog-integration, slug: finding-things }
       - { module: mit-pdp-maths-prog-integration, slug: putting-things-in-order }
       - { module: computational-methods, slug: three-ways-to-make-change }
+      - { module: computational-methods, slug: finding-everything-inside-a-folder }
       - { module: mit-pdp-maths-prog-integration, slug: building-reusable-tools }
       - { module: mit-pdp-maths-prog-integration, slug: when-it-goes-wrong }
       - { module: mit-pdp-maths-prog-integration, slug: mixed-programming }
