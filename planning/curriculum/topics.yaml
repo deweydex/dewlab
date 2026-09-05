@@ -713,7 +713,7 @@ topics:
         in an image to people waiting in a queue.
       - Reading a file. A program usually takes the lines in one at a time
         and keeps them together under one name.
-    needs: []
+    needs: [PDP-LO6a, PDP-LO6b]
 
   MIT-6.3b:
     name: Arrays
@@ -864,15 +864,30 @@ topics:
         and an afternoon's.
     needs: [MIT-6.1]
 
-  PDP-LO6:
-    name: Selection and iteration
+  PDP-LO6a:
+    name: Choosing between paths
     outcome: PDP-LO6
     plain: >
-      Making a program choose between paths, and making it repeat. With
-      sequence, these two are enough to express any computation at all.
+      Making a program take one route or another, depending on whether
+      something is true. The program asks a question, and the answer
+      decides which steps run next.
     uses:
-      - Every non-trivial program ever written.
-    needs: [PDP-LO4, MIT-2.4]
+      - Any program that treats one case differently from another, such as
+        a form that accepts a valid entry and asks again for an invalid
+        one.
+    needs: [PDP-LO4]
+
+  PDP-LO6b:
+    name: Repeating a step
+    outcome: PDP-LO6
+    plain: >
+      Making a program do the same thing again, either a fixed number of
+      times or until something changes. Together with choosing between
+      paths, this is enough to express any computation at all.
+    uses:
+      - Every program that handles more than one of anything, such as
+        sending the same email to a hundred addresses.
+    needs: [PDP-LO4]
 
   PDP-LO7:
     name: Documented programs
@@ -884,7 +899,7 @@ topics:
       program runs.
     uses:
       - Any code that outlives the afternoon it was written in.
-    needs: [PDP-LO6]
+    needs: [PDP-LO6a]
 
   PDP-LO8:
     name: Functions and scope
@@ -895,7 +910,7 @@ topics:
     uses:
       - Every library you have ever imported is this, done well.
       - Most confusing bugs in a beginner's program are a scope misunderstanding.
-    needs: [PDP-LO6, MIT-3.1]
+    needs: [PDP-LO6a, MIT-3.1]
 
   PDP-LO9:
     name: Reading error messages
@@ -967,7 +982,7 @@ topics:
     uses:
       - Recognising the same handful of moves inside every class method you
         will ever write.
-    needs: [PDP-LO4, PDP-LO6]
+    needs: [PDP-LO4, PDP-LO6a]
 
   FOOP-LO3:
     name: Classes and objects
