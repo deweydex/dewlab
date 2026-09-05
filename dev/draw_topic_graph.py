@@ -551,6 +551,12 @@ svg.picked .wire.on{opacity:1;stroke:var(--mark);stroke-width:1.8}
 #card ul{margin:0;padding:0;list-style:none;display:flex;flex-wrap:wrap;gap:.3rem}
 #card li button{padding:.3rem .5rem;font-size:.85rem}
 .none{color:var(--dim);font-size:.85rem;margin:0}
+.key{display:flex;flex-wrap:wrap;align-items:center;gap:.15rem .9rem;
+  margin:.45rem 0 0;font-size:.78rem;color:var(--dim)}
+.key b{font-weight:400;display:flex;align-items:center;gap:.3rem}
+.key path{fill:none;stroke-width:1.6}
+.key .one{stroke:var(--dim)}
+.key .two{stroke:var(--two);stroke-dasharray:3 4}
 </style></head><body>
 <header>
   <h1>The topic map <span>__COUNT__ topics · __ARROWS__ arrows · __ROWS__ rows</span></h1>
@@ -560,6 +566,13 @@ svg.picked .wire.on{opacity:1;stroke:var(--mark);stroke-width:1.8}
     <button id="in" title="Bigger">+</button>
     <button id="fit">Fit</button>
   </div>
+  <p class="key">
+    <b><svg width="26" height="11" aria-hidden="true"><path class="one"
+      d="M1 1 C10 1 16 10 25 10"/></svg> one comes before the other</b>
+    <b><svg width="26" height="11" aria-hidden="true"><path class="two"
+      d="M1 6 L25 6"/></svg> neither comes first</b>
+    <b>Left to right means nothing.</b>
+  </p>
 </header>
 <div id="stage">
 <svg id="map" viewBox="0 0 __W__ __H__" width="__W__" height="__H__">
