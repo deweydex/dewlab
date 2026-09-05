@@ -775,17 +775,31 @@ topics:
         does at its core.
     needs: [MIT-6.4]
 
-  MIT-6.8:
-    name: Searching and sorting
+  MIT-6.8a:
+    name: Searching
     outcome: MIT-6.8
     plain: >
-      The classic algorithms for finding something in a collection and for
-      putting a collection in order — and why some are dramatically faster than
-      others.
+      Finding one thing in a collection. You can look at every item in
+      turn, or, if the collection is already in order, throw away half of
+      it at each step.
     uses:
-      - Sorting is the most-used non-trivial algorithm there is, and almost
-        every "find" is faster on sorted data.
-      - Understanding why a database index exists, and what it costs.
+      - Almost every "find" a program does, from a lookup in a table to a
+        word in a document.
+      - Understanding why a database index exists, and what it costs to
+        keep one.
+    needs: [MIT-6.7]
+
+  MIT-6.8b:
+    name: Sorting
+    outcome: MIT-6.8
+    plain: >
+      Putting a collection in order. Several methods do it, and they differ
+      enormously in how long they take on a large collection.
+    uses:
+      - The most used non-trivial algorithm there is. A results page, a
+        leaderboard and a merge of two files all sort first.
+      - Making searching cheap. Once a collection is in order, finding
+        something in it is much faster.
     needs: [MIT-6.7]
 
   # ------------------------------------------------------------------- PDP
@@ -1142,7 +1156,7 @@ topics:
         real difference only shows up at scale.
       - Capacity planning — knowing before you ship that a correct answer will
         become too slow.
-    needs: [MIT-6.8]
+    needs: [MIT-6.8a]
 
   CMPS-LO6:
     name: Probability applied to computing
