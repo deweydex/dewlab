@@ -402,6 +402,37 @@ def lessons() -> dict:
     return found
 
 
+def current(topics: dict) -> dict:
+    """The graph as it stands, by whichever route topics.yaml says.
+
+    Until the graph has been authored in the editor, it is what the judges
+    agreed on, what the decisions settled, and the wall in strands.yaml. Once
+    it has been, the YAML is the graph and those three are how it got there:
+    `authored: true` at the top of topics.yaml says which.
+
+    Four kinds of link come back. `edges` and `levels` are what the map is
+    drawn from. `helps` and `applied` only exist once authored, and the map
+    draws them lighter because they do not decide the order.
+    """
+    doc = yaml.safe_load(TOPICS.read_text())
+    if doc.get("authored"):
+        g = {"edges": set(), "levels": set(), "helps": set(), "applied": set()}
+        for code, entry in topics.items():
+            for need in entry.get("needs") or []:
+                g["edges"].add((need, code))
+            for other in entry.get("interdependent") or []:
+                g["levels"].add(tuple(sorted((code, other))))
+            for other in entry.get("helps") or []:
+                g["helps"].add((code, other))
+            for other in entry.get("applied_in") or []:
+                g["applied"].add((code, other))
+        return g
+    g = revise(topics, judgements())
+    separate(g, bands(topics))
+    g["helps"], g["applied"] = set(), set()
+    return g
+
+
 def bands(topics: dict) -> dict:
     """Which column each topic is drawn in.
 
@@ -1044,15 +1075,11 @@ wideOn();
 def main() -> int:
     out = Path(sys.argv[1] if len(sys.argv) > 1 else "topic-graph.html")
     topics = yaml.safe_load(TOPICS.read_text())["topics"]
-    g = revise(topics, judgements())
-    walled, straddling = separate(g, bands(topics))
+    g = current(topics)
     depth, group = layers(topics, g["edges"], g["levels"])
     out.write_text(page(topics, g, depth, group))
     print(f"wrote {out} — {len(topics)} topics, {len(g['edges'])} arrows, "
           f"{len(g['levels'])} two-way pairs, {max(depth.values()) + 1} layers")
-    if walled or straddling:
-        print(f"  a wall in {STRANDS.name} dropped {walled} arrows and "
-              f"{straddling} two-way pairs")
     return 0
 
 

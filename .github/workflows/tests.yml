@@ -53,6 +53,9 @@ jobs:
       # The pair reports are generated from the judgement files and checked in,
       # so a run that reported different loops each time would show up as noise
       # in every diff.
+      - name: Fail if the topic editor's graph is out of date
+        run: python3 dev/build_topic_editor.py --check
+
       - name: Fail if a pair report is out of date
         run: |
           python3 dev/pair_results.py
