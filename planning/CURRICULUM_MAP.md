@@ -15,14 +15,14 @@ so this doubles as a way of finding where anything is taught.
 
 ## Where we stand
 
-**70 of 80** outcomes are in place.
+**91 of 91** outcomes are in place.
 
-- 🟩 **68 taught** — a tutorial section teaches it.
+- 🟩 **89 taught** — a tutorial section teaches it.
 - 🟦 **2 taught in part** — deliberately narrowed, and the narrowed version is written.
-- 🟨 **2 used but not taught** — students meet it in passing without it ever being the subject. These are the quiet gaps: they look covered from a distance.
-- 🟥 **8 not covered** — nothing in dewlab touches it.
+- 🟨 **0 used but not taught** — students meet it in passing without it ever being the subject. These are the quiet gaps: they look covered from a distance.
+- 🟥 **0 not covered** — nothing in dewlab touches it.
 
-**10 of the 10 outcomes still to write have no proposal**: `CMPS-LO1`, `CMPS-LO10`, `CMPS-LO11`, `CMPS-LO12`, `CMPS-LO13`, `CMPS-LO5`, `CMPS-LO6`, `CMPS-LO7`, `CMPS-LO8`, `CMPS-LO9`. These are the ones nobody has decided how to teach yet.
+**Everything in both descriptors is written.** Nothing is outstanding.
 
 ### By strand
 
@@ -31,18 +31,19 @@ so this doubles as a way of finding where anything is taught.
 | **algebra** | 7 | 1 | 0 | 0 | 0 |
 | **algorithms** | 9 | 0 | 0 | 0 | 0 |
 | **calculus** | 2 | 1 | 0 | 0 | 0 |
-| **complexity** | 0 | 0 | 0 | 2 | 0 |
-| **data-structures** | 0 | 0 | 1 | 0 | 0 |
+| **complexity** | 2 | 0 | 0 | 0 | 0 |
+| **data-structures** | 1 | 0 | 0 | 0 | 0 |
 | **functions** | 3 | 0 | 0 | 0 | 0 |
 | **geometry** | 6 | 0 | 0 | 0 | 0 |
 | **linear-algebra** | 1 | 0 | 0 | 0 | 0 |
 | **logic** | 2 | 0 | 0 | 0 | 0 |
-| **modelling** | 0 | 0 | 0 | 2 | 0 |
+| **modelling** | 2 | 0 | 0 | 0 | 0 |
 | **number** | 2 | 0 | 0 | 0 | 0 |
-| **probability** | 9 | 0 | 0 | 1 | 0 |
-| **problem-solving** | 0 | 0 | 0 | 3 | 0 |
-| **programming** | 11 | 0 | 0 | 0 | 0 |
-| **reflection** | 0 | 0 | 1 | 0 | 0 |
+| **oop** | 4 | 0 | 0 | 0 | 0 |
+| **probability** | 10 | 0 | 0 | 0 | 0 |
+| **problem-solving** | 3 | 0 | 0 | 0 | 0 |
+| **programming** | 18 | 0 | 0 | 0 | 0 |
+| **reflection** | 1 | 0 | 0 | 0 | 0 |
 | **sets** | 3 | 0 | 0 | 0 | 0 |
 | **simulation** | 1 | 0 | 0 | 0 | 0 |
 | **statistics** | 5 | 0 | 0 | 0 | 0 |
@@ -53,18 +54,19 @@ graph LR
   algebra["algebra<br/>8 of 8 in place"]
   algorithms["algorithms<br/>9 of 9 in place"]
   calculus["calculus<br/>3 of 3 in place"]
-  complexity["complexity<br/>0 of 2 in place"]
-  data_structures["data-structures<br/>0 of 1 in place"]
+  complexity["complexity<br/>2 of 2 in place"]
+  data_structures["data-structures<br/>1 of 1 in place"]
   functions["functions<br/>3 of 3 in place"]
   geometry["geometry<br/>6 of 6 in place"]
   linear_algebra["linear-algebra<br/>1 of 1 in place"]
   logic["logic<br/>2 of 2 in place"]
-  modelling["modelling<br/>0 of 2 in place"]
+  modelling["modelling<br/>2 of 2 in place"]
   number["number<br/>2 of 2 in place"]
-  probability["probability<br/>9 of 10 in place"]
-  problem_solving["problem-solving<br/>0 of 3 in place"]
-  programming["programming<br/>11 of 11 in place"]
-  reflection["reflection<br/>0 of 1 in place"]
+  oop["oop<br/>4 of 4 in place"]
+  probability["probability<br/>10 of 10 in place"]
+  problem_solving["problem-solving<br/>3 of 3 in place"]
+  programming["programming<br/>18 of 18 in place"]
+  reflection["reflection<br/>1 of 1 in place"]
   sets["sets<br/>3 of 3 in place"]
   simulation["simulation<br/>1 of 1 in place"]
   statistics["statistics<br/>5 of 5 in place"]
@@ -73,9 +75,7 @@ graph LR
   classDef full fill:#edf7f0,stroke:#1f6b3f,color:#1f6b3f;
   classDef part fill:#fdf6ec,stroke:#b5651d,color:#7a4310;
   classDef none fill:#fdf0ef,stroke:#9b2226,color:#9b2226;
-  class algebra,algorithms,calculus,functions,geometry,linear_algebra,logic,number,programming,sets,simulation,statistics,trigonometry full;
-  class probability part;
-  class complexity,data_structures,modelling,problem_solving,reflection none;
+  class algebra,algorithms,calculus,complexity,data_structures,functions,geometry,linear_algebra,logic,modelling,number,oop,probability,problem_solving,programming,reflection,sets,simulation,statistics,trigonometry full;
 ```
 
 ## The series as it stands
@@ -374,19 +374,35 @@ graph TD
 
 | Outcome | | Where |
 |---|---|---|
-| `CMPS-LO1` Data structures and representations — arrays, lists, matrices, trees — and the difference between iterative and recursive algorithms | 🟨 | _used in:_ [A Grid of Numbers — Nine Numbers That Draw a Picture](https://deweydex.github.io/dewlab/tutorials/computational-methods/grid-of-numbers.html#nine-numbers-that-draw-a-picture)<br/>_used in:_ [Where Chains Lead — Words That Follow Words](https://deweydex.github.io/dewlab/tutorials/computational-methods/where-chains-lead.html#words-that-follow-words) |
+| `CMPS-LO1` Data structures and representations — arrays, lists, matrices, trees — and the difference between iterative and recursive algorithms | 🟩 | [Finding Everything Inside a Folder — A Structure That Branches](https://deweydex.github.io/dewlab/tutorials/computational-methods/finding-everything-inside-a-folder.html#a-structure-that-branches)<br/>[Finding Everything Inside a Folder — Walking It With Recursion](https://deweydex.github.io/dewlab/tutorials/computational-methods/finding-everything-inside-a-folder.html#walking-it-with-recursion)<br/>[Finding Everything Inside a Folder — Walking It Without Recursion](https://deweydex.github.io/dewlab/tutorials/computational-methods/finding-everything-inside-a-folder.html#walking-it-without-recursion)<br/>_used in:_ [A Grid of Numbers — Nine Numbers That Draw a Picture](https://deweydex.github.io/dewlab/tutorials/computational-methods/grid-of-numbers.html#nine-numbers-that-draw-a-picture)<br/>_used in:_ [Where Chains Lead — Words That Follow Words](https://deweydex.github.io/dewlab/tutorials/computational-methods/where-chains-lead.html#words-that-follow-words) |
 | `CMPS-LO2` Elementary probability and information theory: distributions, sample statistics, dependent and independent events, conditional probability, and randomness in computing | 🟩 | [Leaving It to Chance — Asking the Machine for a Number](https://deweydex.github.io/dewlab/tutorials/computational-methods/leaving-it-to-chance.html#asking-the-machine-for-a-number)<br/>[Leaving It to Chance — The Same Numbers Twice](https://deweydex.github.io/dewlab/tutorials/computational-methods/leaving-it-to-chance.html#the-same-numbers-twice)<br/>[Leaving It to Chance — What Random Is Good Enough For](https://deweydex.github.io/dewlab/tutorials/computational-methods/leaving-it-to-chance.html#what-random-is-good-enough-for)<br/>[Leaving It to Chance — Choosing From a List](https://deweydex.github.io/dewlab/tutorials/computational-methods/leaving-it-to-chance.html#choosing-from-a-list)<br/>_used in:_ [Where Chains Lead — A Weather Machine](https://deweydex.github.io/dewlab/tutorials/computational-methods/where-chains-lead.html#a-weather-machine) |
 | `CMPS-LO3` Basic computational and numerical methods for computer simulation | 🟩 | [Counting Darts — A Question You Can Answer by Throwing Things](https://deweydex.github.io/dewlab/tutorials/computational-methods/counting-darts.html#a-question-you-can-answer-by-throwing-things)<br/>[Counting Darts — One Dart at a Time](https://deweydex.github.io/dewlab/tutorials/computational-methods/counting-darts.html#one-dart-at-a-time)<br/>[Counting Darts — Watching It Settle](https://deweydex.github.io/dewlab/tutorials/computational-methods/counting-darts.html#watching-it-settle)<br/>[Counting Darts — More Is Not Reliably Better](https://deweydex.github.io/dewlab/tutorials/computational-methods/counting-darts.html#more-is-not-reliably-better)<br/>_used in:_ [Leaving It to Chance — What Random Is Good Enough For](https://deweydex.github.io/dewlab/tutorials/computational-methods/leaving-it-to-chance.html#what-random-is-good-enough-for) |
 | `CMPS-LO4` Apply array and matrix representations to real-world computational problems | 🟩 | [Solving Systems — Three Unknowns, Row by Row](https://deweydex.github.io/dewlab/tutorials/computational-methods/solving-systems.html#three-unknowns-row-by-row)<br/>[Solving Systems — Reading Off the Answer](https://deweydex.github.io/dewlab/tutorials/computational-methods/solving-systems.html#reading-off-the-answer)<br/>[Solving Systems — Checking Your Work](https://deweydex.github.io/dewlab/tutorials/computational-methods/solving-systems.html#checking-your-work)<br/>[Undoing It — Undoing a Transformation](https://deweydex.github.io/dewlab/tutorials/computational-methods/undoing-it.html#undoing-a-transformation)<br/>[Undoing It — Which Ones Can Be Undone](https://deweydex.github.io/dewlab/tutorials/computational-methods/undoing-it.html#which-ones-can-be-undone)<br/>[What a Matrix Does to a Picture — Where Do the Corners Go?](https://deweydex.github.io/dewlab/tutorials/computational-methods/what-a-matrix-does-to-a-picture.html#where-do-the-corners-go)<br/>[What a Matrix Does to a Picture — A Small Gallery](https://deweydex.github.io/dewlab/tutorials/computational-methods/what-a-matrix-does-to-a-picture.html#a-small-gallery)<br/>[What a Matrix Does to a Picture — Guess the Matrix](https://deweydex.github.io/dewlab/tutorials/computational-methods/what-a-matrix-does-to-a-picture.html#guess-the-matrix)<br/>[Where Chains Lead — A Weather Machine](https://deweydex.github.io/dewlab/tutorials/computational-methods/where-chains-lead.html#a-weather-machine)<br/>[Where Chains Lead — Watching It Settle](https://deweydex.github.io/dewlab/tutorials/computational-methods/where-chains-lead.html#watching-it-settle)<br/>[Where Chains Lead — Words That Follow Words](https://deweydex.github.io/dewlab/tutorials/computational-methods/where-chains-lead.html#words-that-follow-words)<br/>[Where Chains Lead — Ranking a Small Web](https://deweydex.github.io/dewlab/tutorials/computational-methods/where-chains-lead.html#ranking-a-small-web)<br/>_used in:_ [A Grid of Numbers — Two Grids, Added Together](https://deweydex.github.io/dewlab/tutorials/computational-methods/grid-of-numbers.html#two-grids-added-together)<br/>_used in:_ [A Grid of Numbers — Scaling and the Shape Rule](https://deweydex.github.io/dewlab/tutorials/computational-methods/grid-of-numbers.html#scaling-and-the-shape-rule)<br/>_used in:_ [A Grid of Numbers — Turning It Sideways: the Transpose](https://deweydex.github.io/dewlab/tutorials/computational-methods/grid-of-numbers.html#turning-it-sideways-the-transpose)<br/>_used in:_ [Multiplying Grids — The Dot Product, First](https://deweydex.github.io/dewlab/tutorials/computational-methods/multiplying-grids.html#the-dot-product-first)<br/>_used in:_ [Multiplying Grids — Multiplying Two Grids](https://deweydex.github.io/dewlab/tutorials/computational-methods/multiplying-grids.html#multiplying-two-grids)<br/>_used in:_ [Multiplying Grids — Order Matters](https://deweydex.github.io/dewlab/tutorials/computational-methods/multiplying-grids.html#order-matters)<br/>_used in:_ [Multiplying Grids — The Matrix That Does Nothing](https://deweydex.github.io/dewlab/tutorials/computational-methods/multiplying-grids.html#the-matrix-that-does-nothing)<br/>_used in:_ [Solving Systems — A System You Can Already Solve](https://deweydex.github.io/dewlab/tutorials/computational-methods/solving-systems.html#a-system-you-can-already-solve)<br/>_used in:_ [Undoing It — Measuring the Square](https://deweydex.github.io/dewlab/tutorials/computational-methods/undoing-it.html#measuring-the-square)<br/>_used in:_ [Undoing It — When the Square Collapses](https://deweydex.github.io/dewlab/tutorials/computational-methods/undoing-it.html#when-the-square-collapses) |
-| `CMPS-LO5` Assess an algorithm or computational approach for speed, efficiency, and best/expected/worst-case behaviour | 🟥 | — |
-| `CMPS-LO6` Apply probability and information theory to computational approaches to real-world problems | 🟥 | — |
-| `CMPS-LO7` Differentiate modelling from simulation, and the abstraction that lets a machine address a real-world problem | 🟥 | — |
-| `CMPS-LO8` Identify approaches to problem definition, solution design, testing and evaluation | 🟥 | — |
-| `CMPS-LO9` Strengths, weaknesses and areas of application of contemporary problem definition and analysis techniques | 🟥 | — |
-| `CMPS-LO10` Distinguish pragmatic problem-solving (treating the symptom) from semantic analysis (finding the root cause) | 🟥 | — |
-| `CMPS-LO11` An iterative process of model creation and validation against the real-world situation being modelled | 🟥 | — |
-| `CMPS-LO12` The role of personal attributes — initiative, a methodical approach, logical reasoning, persistence, lateral thinking — in preventing and resolving problems | 🟥 | — |
-| `CMPS-LO13` Reflect on the impact of numerical and logical thinking in the real world: accuracy, precision, and decisions made from computational models and simulations | 🟨 | _used in:_ [Counting Darts — More Is Not Reliably Better](https://deweydex.github.io/dewlab/tutorials/computational-methods/counting-darts.html#more-is-not-reliably-better) |
+| `CMPS-LO5` Assess an algorithm or computational approach for speed, efficiency, and best/expected/worst-case behaviour | 🟩 | [Finding Things — Linear Search: The Straightforward Approach](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/finding-things.html#linear-search-the-straightforward-approach)<br/>[Finding Things — Binary Search: The Power of Sorted Data](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/finding-things.html#binary-search-the-power-of-sorted-data)<br/>[Finding Things — Putting It Together](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/finding-things.html#putting-it-together)<br/>[Putting Things in Order — Comparing Our Sorts](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/putting-things-in-order.html#comparing-our-sorts)<br/>_used in:_ [Three Ways to Make Change — Remembering What We Already Worked Out](https://deweydex.github.io/dewlab/tutorials/computational-methods/three-ways-to-make-change.html#remembering-what-we-already-worked-out)<br/>_used in:_ [Three Ways to Make Change — The Greedy Shortcut](https://deweydex.github.io/dewlab/tutorials/computational-methods/three-ways-to-make-change.html#the-greedy-shortcut) |
+| `CMPS-LO6` Apply probability and information theory to computational approaches to real-world problems | 🟩 | [When a Queue Never Clears — Arrivals You Cannot Predict, One at a Time](https://deweydex.github.io/dewlab/tutorials/computational-methods/when-a-queue-never-clears.html#arrivals-you-cannot-predict-one-at-a-time)<br/>[When a Queue Never Clears — A Queue That Clears](https://deweydex.github.io/dewlab/tutorials/computational-methods/when-a-queue-never-clears.html#a-queue-that-clears)<br/>[When a Queue Never Clears — A Queue That Never Clears](https://deweydex.github.io/dewlab/tutorials/computational-methods/when-a-queue-never-clears.html#a-queue-that-never-clears)<br/>[When a Queue Never Clears — Predicting It Before Running It](https://deweydex.github.io/dewlab/tutorials/computational-methods/when-a-queue-never-clears.html#predicting-it-before-running-it) |
+| `CMPS-LO7` Differentiate modelling from simulation, and the abstraction that lets a machine address a real-world problem | 🟩 | [A Model That Corrects Itself — A Model That Starts Out Wrong](https://deweydex.github.io/dewlab/tutorials/computational-methods/a-model-that-corrects-itself.html#a-model-that-starts-out-wrong)<br/>[A Model That Corrects Itself — Running It Again and Again](https://deweydex.github.io/dewlab/tutorials/computational-methods/a-model-that-corrects-itself.html#running-it-again-and-again)<br/>[A Model That Corrects Itself — What the Model Actually Learned](https://deweydex.github.io/dewlab/tutorials/computational-methods/a-model-that-corrects-itself.html#what-the-model-actually-learned) |
+| `CMPS-LO8` Identify approaches to problem definition, solution design, testing and evaluation | 🟩 | [Finding Where It Went Wrong — Deciding What Done Means](https://deweydex.github.io/dewlab/tutorials/computational-methods/finding-where-it-went-wrong.html#deciding-what-done-means)<br/>[Finding Where It Went Wrong — Building the Pipeline](https://deweydex.github.io/dewlab/tutorials/computational-methods/finding-where-it-went-wrong.html#building-the-pipeline) |
+| `CMPS-LO9` Strengths, weaknesses and areas of application of contemporary problem definition and analysis techniques | 🟩 | [Three Ways to Make Change — Trying Every Combination](https://deweydex.github.io/dewlab/tutorials/computational-methods/three-ways-to-make-change.html#trying-every-combination)<br/>[Three Ways to Make Change — Remembering What We Already Worked Out](https://deweydex.github.io/dewlab/tutorials/computational-methods/three-ways-to-make-change.html#remembering-what-we-already-worked-out)<br/>[Three Ways to Make Change — The Greedy Shortcut](https://deweydex.github.io/dewlab/tutorials/computational-methods/three-ways-to-make-change.html#the-greedy-shortcut)<br/>[Three Ways to Make Change — Choosing a Strategy](https://deweydex.github.io/dewlab/tutorials/computational-methods/three-ways-to-make-change.html#choosing-a-strategy) |
+| `CMPS-LO10` Distinguish pragmatic problem-solving (treating the symptom) from semantic analysis (finding the root cause) | 🟩 | [Finding Where It Went Wrong — The Symptom Is Not the Cause](https://deweydex.github.io/dewlab/tutorials/computational-methods/finding-where-it-went-wrong.html#the-symptom-is-not-the-cause)<br/>_used in:_ [Finding Where It Went Wrong — Building the Pipeline](https://deweydex.github.io/dewlab/tutorials/computational-methods/finding-where-it-went-wrong.html#building-the-pipeline) |
+| `CMPS-LO11` An iterative process of model creation and validation against the real-world situation being modelled | 🟩 | [A Model That Corrects Itself — Checking It Against Patterns It Has Never Seen](https://deweydex.github.io/dewlab/tutorials/computational-methods/a-model-that-corrects-itself.html#checking-it-against-patterns-it-has-never-seen)<br/>_used in:_ [A Model That Corrects Itself — Running It Again and Again](https://deweydex.github.io/dewlab/tutorials/computational-methods/a-model-that-corrects-itself.html#running-it-again-and-again) |
+| `CMPS-LO12` The role of personal attributes — initiative, a methodical approach, logical reasoning, persistence, lateral thinking — in preventing and resolving problems | 🟩 | [Finding Where It Went Wrong — What Finding It Actually Took](https://deweydex.github.io/dewlab/tutorials/computational-methods/finding-where-it-went-wrong.html#what-finding-it-actually-took) |
+| `CMPS-LO13` Reflect on the impact of numerical and logical thinking in the real world: accuracy, precision, and decisions made from computational models and simulations | 🟩 | [Counting Darts — More Is Not Reliably Better](https://deweydex.github.io/dewlab/tutorials/computational-methods/counting-darts.html#more-is-not-reliably-better) |
+
+### Fundamentals of Object Oriented Programming 5N0541
+
+| Outcome | | Where |
+|---|---|---|
+| `FOOP-LO1` Data types used in object oriented programs | 🟩 | [Objects and Classes — One Thing, Many Parts](https://deweydex.github.io/dewlab/tutorials/fundamentals-of-oop/objects-and-classes.html#one-thing-many-parts) |
+| `FOOP-LO2` The fundamental set of instructions in a program, and using them to design and construct programs that solve problems | 🟩 | [The Moves You Already Know — The Handful of Moves](https://deweydex.github.io/dewlab/tutorials/fundamentals-of-oop/the-moves-you-already-know.html#the-handful-of-moves)<br/>[The Moves You Already Know — The Same Moves, Inside a Class](https://deweydex.github.io/dewlab/tutorials/fundamentals-of-oop/the-moves-you-already-know.html#the-same-moves-inside-a-class)<br/>[The Moves You Already Know — One Method, Several Moves](https://deweydex.github.io/dewlab/tutorials/fundamentals-of-oop/the-moves-you-already-know.html#one-method-several-moves) |
+| `FOOP-LO3` Basic object oriented constructs: classes, objects, methods, fields, encapsulation, abstraction, inheritance | 🟩 | [Objects and Classes — One Thing, Many Parts](https://deweydex.github.io/dewlab/tutorials/fundamentals-of-oop/objects-and-classes.html#one-thing-many-parts)<br/>[Objects and Classes — Keeping Details to Itself](https://deweydex.github.io/dewlab/tutorials/fundamentals-of-oop/objects-and-classes.html#keeping-details-to-itself)<br/>[Objects and Classes — Building on What Already Exists](https://deweydex.github.io/dewlab/tutorials/fundamentals-of-oop/objects-and-classes.html#building-on-what-already-exists) |
+| `FOOP-LO4` Design and construct modular, reusable code blocks | 🟩 | [One Class, Many Methods — From Loose Functions to One Class](https://deweydex.github.io/dewlab/tutorials/fundamentals-of-oop/one-class-many-methods.html#from-loose-functions-to-one-class)<br/>[One Class, Many Methods — Giving It More to Do](https://deweydex.github.io/dewlab/tutorials/fundamentals-of-oop/one-class-many-methods.html#giving-it-more-to-do) |
+| `FOOP-LO5` Work within a modern integrated development environment | 🟩 | [The Tools Around Your Code — An Environment You Are Already In](https://deweydex.github.io/dewlab/tutorials/fundamentals-of-oop/the-tools-around-your-code.html#an-environment-you-are-already-in)<br/>[The Tools Around Your Code — Errors Worth Reading](https://deweydex.github.io/dewlab/tutorials/fundamentals-of-oop/the-tools-around-your-code.html#errors-worth-reading)<br/>[The Tools Around Your Code — What the Editor Already Knows](https://deweydex.github.io/dewlab/tutorials/fundamentals-of-oop/the-tools-around-your-code.html#what-the-editor-already-knows)<br/>[The Tools Around Your Code — Where a Bigger Project Lives](https://deweydex.github.io/dewlab/tutorials/fundamentals-of-oop/the-tools-around-your-code.html#where-a-bigger-project-lives) |
+| `FOOP-LO6` Construct larger programs from smaller ones | 🟩 | [One Parent, Many Children — Another Kind of Account](https://deweydex.github.io/dewlab/tutorials/fundamentals-of-oop/one-parent-many-children.html#another-kind-of-account)<br/>[One Parent, Many Children — Many Kinds, One Loop](https://deweydex.github.io/dewlab/tutorials/fundamentals-of-oop/one-parent-many-children.html#many-kinds-one-loop) |
+| `FOOP-LO7` Model real-world objects to build object oriented programs that model real-world activities | 🟩 | [One Parent, Many Children — Many Kinds, One Loop](https://deweydex.github.io/dewlab/tutorials/fundamentals-of-oop/one-parent-many-children.html#many-kinds-one-loop)<br/>[One Parent, Many Children — A Bank Holds Its Accounts](https://deweydex.github.io/dewlab/tutorials/fundamentals-of-oop/one-parent-many-children.html#a-bank-holds-its-accounts) |
+| `FOOP-LO8` Ways to organise and structure data | 🟩 | [One Class, Many Methods — Data That Belongs Together](https://deweydex.github.io/dewlab/tutorials/fundamentals-of-oop/one-class-many-methods.html#data-that-belongs-together) |
+| `FOOP-LO9` Document program code properly | 🟩 | [Documenting a Class — A Class Docstring](https://deweydex.github.io/dewlab/tutorials/fundamentals-of-oop/documenting-a-class.html#a-class-docstring)<br/>[Documenting a Class — Documenting Each Method](https://deweydex.github.io/dewlab/tutorials/fundamentals-of-oop/documenting-a-class.html#documenting-each-method)<br/>[Documenting a Class — Keeping Documentation Honest](https://deweydex.github.io/dewlab/tutorials/fundamentals-of-oop/documenting-a-class.html#keeping-documentation-honest) |
+| `FOOP-LO10` Debug and test programs | 🟩 | [Testing What a Class Does — A Bug That Hides in Another Class](https://deweydex.github.io/dewlab/tutorials/fundamentals-of-oop/testing-what-a-class-does.html#a-bug-that-hides-in-another-class)<br/>[Testing What a Class Does — Writing a Test for One Method](https://deweydex.github.io/dewlab/tutorials/fundamentals-of-oop/testing-what-a-class-does.html#writing-a-test-for-one-method)<br/>[Testing What a Class Does — A Few Tests, Run Together](https://deweydex.github.io/dewlab/tutorials/fundamentals-of-oop/testing-what-a-class-does.html#a-few-tests-run-together) |
+| `FOOP-LO11` Deploy a program to the end user via a front end | 🟩 | [A Front End for a Class — A Program Only Its Author Can Use](https://deweydex.github.io/dewlab/tutorials/fundamentals-of-oop/a-front-end-for-a-class.html#a-program-only-its-author-can-use)<br/>[A Front End for a Class — A Menu Loop](https://deweydex.github.io/dewlab/tutorials/fundamentals-of-oop/a-front-end-for-a-class.html#a-menu-loop)<br/>[A Front End for a Class — Leaving the Loop Cleanly](https://deweydex.github.io/dewlab/tutorials/fundamentals-of-oop/a-front-end-for-a-class.html#leaving-the-loop-cleanly) |
 
 ## Vocabulary
 

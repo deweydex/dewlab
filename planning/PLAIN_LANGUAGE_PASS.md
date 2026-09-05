@@ -34,6 +34,22 @@ what changing any of it would cost. Section 3 says what a name is *for* — a st
 talking to somebody else about the thing they just did — which is the reason
 the explore-then-name order matters and not only its ordering.
 
+A ninth was added later, in the "Vocabulary" subsection: the first eight
+govern sentence architecture and dialect-specific idiom, and none of them
+catches a rare word or an idiom common to more than one dialect — *having a
+go*, *with the working* — that a B1-level reader still has to stop and guess
+at. The test it sets is a reader with a working vocabulary of about two
+thousand English words. Nothing has been swept against it yet; see "Not done"
+below.
+
+Alongside the plain-language pass, and not tracked by it, prose in a few
+places has started naming struggle and mistakes directly rather than only
+assuming them in the design (no scores, hints before answers, a resettable
+cell). `docs/FOR_STUDENTS.md`'s reset-button and practice-fold paragraphs are
+the first two; both also happened to fix rule 7 idiom violations from before
+the ninth rule existed. This is a second, smaller axis than readability, and
+it has no ledger of its own yet — see "Not done."
+
 ---
 
 ## Done
@@ -56,6 +72,13 @@ knowledge-map caption.
 **25 of 81 topic descriptions** in `planning/curriculum/topics.yaml`, and
 **64 of 251 glossary definitions**, being the ones that breached the
 sentence-length or metaphor rules. Descriptions already plain were left alone.
+
+**35 topic descriptions written fresh** when thirteen topics were split into
+the parts a student actually meets separately. Each child was written to the
+eight checks rather than cut out of its parent's sentences, so none of them
+carries the fragments or the em-dash definitions the pass exists to remove.
+Fourteen of the older descriptions in the same file are still on the list
+below.
 
 ---
 
@@ -87,9 +110,22 @@ written as *"we usually want…"* could get wearing where a reader is scanning
 for a fact, and the glossary may want to stay closer to plain statement than
 the tree descriptions do.
 
+**A vocabulary sweep, against the ninth rule.** No surface has been checked
+against it yet, including the ones already done for sentence architecture. A
+mechanical first pass is possible — a list of the roughly two thousand most
+common English words, flagged the way `tools/measure_sentences.py` (dewstack)
+flags a sentence over the limit — but it still needs reading afterward, the
+same way that script's own docstring says of itself.
+
 **Tutorial body prose.** The largest surface, untouched by any of this, and the
 one where flattening would cost the most. Worth doing deliberately, tutorial by
 tutorial, rather than in a sweep.
+
+**A tracked pass for the struggle/self-efficacy framing**, if it turns out to
+need one. For now it is being added opportunistically wherever a page is
+already being touched for another reason, not swept on its own — a larger,
+dedicated set of pages on this was raised and deliberately deferred, to keep
+this addition small until that decision is made.
 
 **Bibliographies.** Unrelated to readability but still the largest outstanding
 piece of style work — see section 8 of the style guide.

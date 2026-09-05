@@ -47,6 +47,12 @@ const NOTES_NUDGE_KEY = "dewlab:notes-nudge";
 const NOTES_NUDGE_THRESHOLD = 120;
 const RUN_STATS_KEY = "dewlab:run-stats";
 const AUTOSAVE_DELAY = 500;
+/* A base64-embedded figure (tutorial_tools.py's _figure_html()) is easily
+ * a few hundred KB in one cell's output_html, next to a typical printed
+ * result's few dozen bytes — this is "that cell's own output is the odd
+ * one out," not a real content-size judgement. Past this, saveNow()'s
+ * retry below treats it as the thing to drop first if storage is full. */
+const SAVED_OUTPUT_STRIP_THRESHOLD = 100_000;
 /* The build.py write_*_page() slugs that are not a tutorial at all —
  * nothing here has "your work" to save, cells or notes alike, the way an
  * actual tutorial page does. */
@@ -869,6 +875,53 @@ function initSeriesNav() {
   });
 }
 
+/* -------------------------------------------------- .dl-seg radiogroups */
+
+/* Every .dl-seg is a mutually-exclusive single-choice group — the WAI-ARIA
+ * APG radiogroup pattern, not a row of independent toggle buttons. role and
+ * the group's accessible name are static (shell.html); what changes at
+ * runtime is which button is aria-checked and, per the pattern's roving
+ * tabindex, which one is a tab stop. Each group's own sync() below calls
+ * this once per button in place of the old aria-pressed line, then
+ * syncSegRoving() once per group to settle the tab stop. */
+function setSegChecked(btn, checked) {
+  btn.setAttribute("aria-checked", String(checked));
+}
+
+/* Exactly one button in a group is ever a tab stop: the checked one, or —
+ * for a group like Width that can sit between its presets with none of
+ * them checked — the first, so the group is never skipped entirely. */
+function syncSegRoving(group) {
+  const buttons = [...group.querySelectorAll("button")];
+  const checked = buttons.find((btn) => btn.getAttribute("aria-checked") === "true");
+  for (const btn of buttons) btn.tabIndex = btn === (checked || buttons[0]) ? 0 : -1;
+}
+
+/* One keydown listener per group covers every .dl-seg on the page, rather
+ * than repeating it at each of the half-dozen places a group gets wired up
+ * below. Arrow keys move focus and selection together, per the radiogroup
+ * pattern, wrapping at the ends; Home/End jump to the first/last. Calling
+ * .click() reuses whatever that particular group's own click handler does,
+ * so this never needs to know what a selection *means* for any given group. */
+function initSegKeyboardNav() {
+  for (const group of document.querySelectorAll(".dl-seg")) {
+    group.addEventListener("keydown", (ev) => {
+      const buttons = [...group.querySelectorAll("button:not(:disabled)")];
+      const i = buttons.indexOf(document.activeElement);
+      if (i === -1) return;
+      let next;
+      if (ev.key === "ArrowRight" || ev.key === "ArrowDown") next = buttons[(i + 1) % buttons.length];
+      else if (ev.key === "ArrowLeft" || ev.key === "ArrowUp") next = buttons[(i - 1 + buttons.length) % buttons.length];
+      else if (ev.key === "Home") next = buttons[0];
+      else if (ev.key === "End") next = buttons[buttons.length - 1];
+      else return;
+      ev.preventDefault();
+      next.click();
+      next.focus();
+    });
+  }
+}
+
 /* --------------------------------------------------------- texture panel */
 
 function isDarkNow() {
@@ -937,7 +990,24 @@ function applyTexture(state) {
   else root.setAttribute("data-contrast", state.contrast);
   root.style.setProperty("--dl-font-size", state.size + "px");
   root.style.setProperty("--dl-line-width", state.width + "rem");
-  root.style.setProperty("--dl-link", state.link);
+  // High contrast overrides a reader's own link colour the same way it
+  // already overrides their font choice (DECISIONS_LOG.md 7.124) — but
+  // font-family only ever comes from the stylesheet's [data-contrast]
+  // rule, while link colour is normally also written here as an inline
+  // style, and an inline style always wins over any stylesheet rule
+  // regardless of selector specificity. Skipping the inline write while
+  // high contrast is on lets that rule apply instead of being shadowed
+  // by whatever the reader last picked (including dewlab's own default).
+  // The same reasoning applies to the default colour itself. No single
+  // inline value can serve both themes: the brand orange is 4.96:1 on the
+  // dark background and 3.5:1 on the light one, and a value dark enough
+  // for light (4.74:1) drops to 3.66:1 on dark. The stylesheet already
+  // carries a value per theme, so a reader who has not picked a colour of
+  // their own gets no inline write at all and the right one applies.
+  const chosen = state.contrast === "normal" && state.link
+                 && state.link.toLowerCase() !== TEXTURE_DEFAULTS.link.toLowerCase();
+  if (chosen) root.style.setProperty("--dl-link", state.link);
+  else root.style.removeProperty("--dl-link");
 }
 
 /* Wires up every control in the Texture settings section: the segmented
@@ -970,8 +1040,9 @@ function initTexture(onThemeChange) {
        * of the three pressed, which is the honest way to show it. */
       const current = group.hasAttribute("data-number") ? String(state[key]) : state[key];
       for (const btn of group.querySelectorAll("button")) {
-        btn.setAttribute("aria-pressed", String(btn.dataset.value === current));
+        setSegChecked(btn, btn.dataset.value === current);
       }
+      syncSegRoving(group);
     }
     sizeEl.value = state.size;
     widthEl.value = state.width;
@@ -1017,6 +1088,7 @@ function initTexture(onThemeChange) {
 
 /* ---------------------------------------------------------------- status */
 
+const runAnnouncerEl = document.getElementById("dl-run-announcer");
 const statusEl = document.getElementById("dl-status");
 /* The status text lives in its own child rather than directly in statusEl,
  * so setStatus() can rewrite it on every boot-progress message without
@@ -1167,7 +1239,10 @@ function buildCells(manifest) {
     if (collapsedSummary) {
       collapsedSummary.addEventListener("click", () => { setCellCollapsed(cell, false); saveNow(); });
       collapsedSummary.addEventListener("keydown", (ev) => {
-        if (ev.key === "Enter") { setCellCollapsed(cell, false); saveNow(); }
+        if (ev.key !== "Enter" && ev.key !== " ") return;
+        ev.preventDefault();
+        setCellCollapsed(cell, false);
+        saveNow();
       });
     }
     if (duplicateBtn) {
@@ -1396,6 +1471,14 @@ function initCellRunMenu(cell, host) {
   moreBtn.addEventListener("click", (e) => {
     e.stopPropagation();
     if (menu.hidden) openMenu(); else closeMenu();
+  });
+
+  // Same Escape-closes-and-returns-focus pattern as Settings/Reference/
+  // SeriesNav above — this menu was the one panel on the page missing it.
+  document.addEventListener("keydown", (ev) => {
+    if (ev.key !== "Escape" || menu.hidden) return;
+    closeMenu();
+    moreBtn.focus();
   });
 
   const aboveItem = menu.querySelector('[data-run-menu="above"]');
@@ -1632,7 +1715,7 @@ function createCustomCellElement(id, type) {
       + '<textarea class="dl-doc-editor" placeholder="Notes… (# heading, **bold**, - bullets)"></textarea>'
       + '<div class="dl-doc-render" tabindex="0" hidden></div>'
       + "</div>"
-      + '<div class="dl-cell-collapsed-summary" tabindex="0" hidden></div>'
+      + '<div class="dl-cell-collapsed-summary" role="button" tabindex="0" hidden></div>'
       + "</div>"
       + '<div class="dl-cell-bar">'
       + '<span class="dl-cell-id">your own note</span>'
@@ -1651,7 +1734,7 @@ function createCustomCellElement(id, type) {
       '<div class="dl-cell-body-row">'
       + collapseCol
       + '<div class="dl-cell-content"><div class="dl-editor"></div></div>'
-      + '<div class="dl-cell-collapsed-summary" tabindex="0" hidden></div>'
+      + '<div class="dl-cell-collapsed-summary" role="button" tabindex="0" hidden></div>'
       + "</div>"
       + '<div class="dl-output"></div>'
       + '<div class="dl-cell-bar">'
@@ -1847,7 +1930,10 @@ function mountCustomCellAfter(afterNode, id, type, code, anchor) {
   if (collapsedSummary) {
     collapsedSummary.addEventListener("click", () => { setCellCollapsed(cell, false); saveCustomCells(); });
     collapsedSummary.addEventListener("keydown", (ev) => {
-      if (ev.key === "Enter") { setCellCollapsed(cell, false); saveCustomCells(); }
+      if (ev.key !== "Enter" && ev.key !== " ") return;
+      ev.preventDefault();
+      setCellCollapsed(cell, false);
+      saveCustomCells();
     });
   }
 
@@ -2734,6 +2820,24 @@ function clearCellRunning(cell, previousLabel) {
     previousLabel === "Running…" || previousLabel === "Stop" ? "Run" : previousLabel;
 }
 
+/* The one announcement a screen reader gets once a cell finishes — not the
+ * ticking "Running… Xs" run-line, deliberately (startRunLineTicker()'s own
+ * comment above explains why), just the result once there is one. Checked
+ * the same way the e2e tests already do: a `.dl-error` in the cell's own
+ * output means the run errored. */
+function announceCellRun(cell) {
+  if (!runAnnouncerEl) return;
+  const errored = !!cell.outputEl?.querySelector(".dl-error");
+  // A live region only announces on a genuine text change — running the
+  // same cell twice in a row would say nothing the second time without
+  // this. Clearing first, then setting the real text next tick, makes
+  // every run its own change even when the result reads identically.
+  runAnnouncerEl.textContent = "";
+  setTimeout(() => {
+    runAnnouncerEl.textContent = errored ? "Ran — error" : "Ran — output below";
+  }, 0);
+}
+
 async function runCell(cell) {
   /* A second click on the cell that is already running is a Stop request,
    * not a second Run — the same button does both, per
@@ -2749,6 +2853,7 @@ async function runCell(cell) {
   const previousLabel = setCellRunning(cell);
   startRunLineTicker(cell);
 
+  let completed = false;
   try {
     await ensureBooted(currentManifest);
 
@@ -2758,6 +2863,7 @@ async function runCell(cell) {
      * a Stop click included — is normal traffic and is rendered in the cell,
      * not thrown up here. */
     await executeCell(cell);
+    completed = true;
   } catch (err) {
     /* Boot failure. Already surfaced in the status bar; nothing useful to add
      * inside the cell. */
@@ -2765,6 +2871,7 @@ async function runCell(cell) {
     running = null;
     clearCellRunning(cell, previousLabel);
     clearRunLineTicker(cell);
+    if (completed) announceCellRun(cell);
   }
 }
 
@@ -2983,8 +3090,9 @@ function initRunStatsToggle() {
   function sync() {
     const on = readRunStats();
     for (const btn of group.querySelectorAll("button")) {
-      btn.setAttribute("aria-pressed", String((btn.dataset.value === "on") === on));
+      setSegChecked(btn, (btn.dataset.value === "on") === on);
     }
+    syncSegRoving(group);
   }
 
   group.addEventListener("click", (ev) => {
@@ -3141,7 +3249,40 @@ function saveNow() {
     rememberVersion();
     showSaveState(record.saved_at);
   } catch (err) {
-    /* Storage full or refused. Say so rather than pretending it saved. */
+    /* Storage full or refused — usually one cell's output_html, a large
+     * embedded figure most likely, pushing the whole record over this
+     * browser's quota. A reader's own code and notes matter far more to
+     * keep than a picture a cell can just regenerate by running again,
+     * so retry once with any outsized output_html dropped before giving
+     * up and admitting nothing saved at all. */
+    const oversized = record.cells.some(
+      (cell) => cell.output_html.length > SAVED_OUTPUT_STRIP_THRESHOLD,
+    );
+    if (oversized) {
+      const slimmed = {
+        ...record,
+        cells: record.cells.map((cell) => (
+          cell.output_html.length > SAVED_OUTPUT_STRIP_THRESHOLD
+            ? { ...cell, output_html: "" }
+            : cell
+        )),
+      };
+      try {
+        localStorage.setItem(progressKey(), JSON.stringify(slimmed));
+        rememberVersion();
+        showSaveState(
+          record.saved_at,
+          "Saved your code and notes, but this browser ran out of room "
+            + "for a large figure. Run that cell again after reloading "
+            + "to see it.",
+        );
+        updateProgressSummary();
+        return;
+      } catch (err2) {
+        /* Still too big even without it — fall through to the plain
+         * failure message below. */
+      }
+    }
     showSaveState(null, "Your browser would not let this page save your work.");
   }
   updateProgressSummary();
@@ -3559,8 +3700,9 @@ function initProgressBadgesToggle() {
   function sync() {
     const on = readProgressBadges();
     for (const btn of group.querySelectorAll("button")) {
-      btn.setAttribute("aria-pressed", String((btn.dataset.value === "on") === on));
+      setSegChecked(btn, (btn.dataset.value === "on") === on);
     }
+    syncSegRoving(group);
   }
 
   group.addEventListener("click", (ev) => {
@@ -3584,8 +3726,9 @@ function initNotesNudgeToggle() {
   function sync() {
     const on = readNotesNudge();
     for (const btn of group.querySelectorAll("button")) {
-      btn.setAttribute("aria-pressed", String((btn.dataset.value === "on") === on));
+      setSegChecked(btn, (btn.dataset.value === "on") === on);
     }
+    syncSegRoving(group);
   }
 
   group.addEventListener("click", (ev) => {
@@ -3929,8 +4072,9 @@ function initVersionsSection() {
   function sync() {
     const mode = readFollow();
     for (const btn of group.querySelectorAll("button")) {
-      btn.setAttribute("aria-pressed", String(btn.dataset.value === mode));
+      setSegChecked(btn, btn.dataset.value === mode);
     }
+    syncSegRoving(group);
     fillVersionList(list);
   }
 
@@ -3977,6 +4121,7 @@ initTexture((dark) => {
   for (const cell of [...cells, ...customCells]) { if (cell.editor) setEditorTheme(cell.editor, dark); }
   for (const block of readOnlyBlocks) setEditorTheme(block, dark);
 });
+initSegKeyboardNav();
 
 buildCells(currentManifest);
 initProgressSection();

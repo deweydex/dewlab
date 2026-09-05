@@ -13,11 +13,13 @@ covers:
   scope-where-variables-live:
     covers: [PDP-LO8]
   linear-search-the-straightforward-approach:
-    covers: [MIT-6.8]
+    covers: [MIT-6.8, CMPS-LO5]
   binary-search-the-power-of-sorted-data:
-    covers: [MIT-6.8]
+    covers: [MIT-6.8, CMPS-LO5]
   divide-and-conquer:
     covers: [MIT-6.6]
+  putting-it-together:
+    covers: [CMPS-LO5]
 ---
 
 # Finding Things

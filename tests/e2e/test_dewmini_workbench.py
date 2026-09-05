@@ -1684,6 +1684,28 @@ def test_a_round_trip_through_the_file_view_keeps_outputs(dewmini):
     assert dewmini.locator(".dm-cell-output").first.inner_text().strip() == "kept"
 
 
+def test_a_blank_cell_survives_a_round_trip_through_the_file_view(dewmini):
+    """A cell with nothing in it yet is not "no cell" — parsePyCells() must
+    not read an empty stretch between two `# %%` markers as absent.
+
+    Regression test: flush() inside parsePyCells() used to skip any cell
+    whose content was blank after trimming, with no way to tell "no marker
+    asked for a cell here" apart from "a marker did, and it is just empty
+    right now". A reader who inserted a fresh cell and glanced at the file
+    view, or cleared one out while editing, lost it the moment the view
+    switched back.
+    """
+    add_python_cell(dewmini, "x = 1")
+    dewmini.locator(".dm-insert-btn", has_text="Python").last.click()  # left blank
+
+    assert dewmini.locator(".dm-cell").count() == 2
+
+    switch_view(dewmini, "file")
+    switch_view(dewmini, "cells")
+
+    assert dewmini.locator(".dm-cell").count() == 2
+
+
 def test_editing_in_the_file_view_reaches_the_cells(dewmini):
     """Text typed into the file becomes a cell when the view switches back."""
     add_python_cell(dewmini, "x = 1")
@@ -1799,7 +1821,54 @@ def test_editing_an_opened_file_writes_back_to_the_workspace(dewmini):
     dewmini.locator("#new-notebook").click()
     add_python_cell(dewmini, "print(open('notes.py').read())")
     shown = run_first_cell_and_wait(dewmini)
-    assert "y = 2" in shown
+    # Exact, not a substring: the bug this guards against (DECISIONS_LOG.md
+    # 7.125) left "y = 2" present too, just sitting under an unasked-for
+    # "# %%" the file never had before dewmini opened it.
+    assert shown == "x = 1\ny = 2"
+
+
+def test_a_markerless_file_stays_markerless_after_editing(dewmini):
+    """A plain script a cell's own open(name, "w") wrote — no "# %%" in
+    it anywhere — keeps it that way after a round trip through the file
+    view. Opening or editing it must not turn it into something that
+    looks like a notebook export the reader never asked for."""
+    write_workspace_file(dewmini, "plain.py", "x = 1\n")
+    open_files_panel(dewmini)
+    dewmini.locator(".dm-filelist-item-name", has_text="plain.py").click()
+    dewmini.wait_for_selector(".dm-fileview-editor")
+
+    # The marker must be absent the moment the file is only *opened*,
+    # before any edit — parsePyCells()'s markerless fallback and
+    # cellsToPercentText()'s single-cell case are meant to agree on this,
+    # and the file view seeds itself from the latter.
+    assert "# %%" not in dewmini.locator(".dm-fileview-editor .cm-content").inner_text()
+
+    editor = dewmini.locator(".dm-fileview-editor .cm-content")
+    editor.click()
+    dewmini.keyboard.press("Control+End")
+    dewmini.keyboard.insert_text("\ny = 2\n")
+    dewmini.wait_for_timeout(1500)
+
+    dewmini.locator("#new-notebook").click()
+    add_python_cell(dewmini, "print(open('plain.py').read())")
+    shown = run_first_cell_and_wait(dewmini)
+    assert shown == "x = 1\ny = 2"
+
+
+def test_a_multi_cell_file_keeps_its_markers(dewmini):
+    """The marker is load-bearing the moment there is more than one
+    cell to tell apart — omitting it there would merge two cells back
+    into one on the next open."""
+    write_workspace_file(dewmini, "multi.py", "# %%\nx = 1\n\n# %%\ny = 2\n")
+    open_files_panel(dewmini)
+    dewmini.locator(".dm-filelist-item-name", has_text="multi.py").click()
+    dewmini.wait_for_selector(".dm-fileview-editor")
+    dewmini.wait_for_timeout(1500)  # settle any debounced write before re-reading
+
+    dewmini.locator("#new-notebook").click()
+    add_python_cell(dewmini, "print(open('multi.py').read())")
+    shown = run_first_cell_and_wait(dewmini)
+    assert shown.count("# %%") == 2
 
 
 def test_renaming_a_file_follows_the_tab_that_is_open_on_it(dewmini):
@@ -2066,3 +2135,78 @@ def test_a_cell_type_toggle_survives_a_reload(dewmini, dewmini_url):
     dewmini.goto(dewmini_url)
     dewmini.wait_for_selector(".dm-toolbar")
     assert "SQL" not in dewmini.locator(".dm-insert-btn").all_inner_texts()
+
+
+# ---------------------------------------------------- settings radiogroups
+
+
+def open_texture_settings(page):
+    page.click("#dl-settings-toggle")
+    page.wait_for_selector('.dl-seg[data-texture="theme"]')
+
+
+def test_the_theme_group_announces_itself_as_a_radiogroup(dewmini):
+    """Every .dl-seg is a mutually-exclusive single-choice group, not a row
+    of independent toggle buttons — DECISIONS_LOG.md 7.130."""
+    open_texture_settings(dewmini)
+    group = dewmini.locator('.dl-seg[data-texture="theme"]')
+    expect(group).to_have_attribute("role", "radiogroup")
+
+    buttons = group.locator("button")
+    for i in range(buttons.count()):
+        expect(buttons.nth(i)).to_have_attribute("role", "radio")
+
+    # "auto" (system) is the default theme, so it starts out checked.
+    expect(group.locator('button[data-value="system"]')).to_have_attribute("aria-checked", "true")
+    expect(group.locator('button[data-value="light"]')).to_have_attribute("aria-checked", "false")
+
+
+def test_arrow_right_moves_focus_and_selection_together(dewmini):
+    open_texture_settings(dewmini)
+    group = dewmini.locator('.dl-seg[data-texture="theme"]')
+    group.locator('button[data-value="system"]').focus()
+
+    dewmini.keyboard.press("ArrowRight")
+
+    light = group.locator('button[data-value="light"]')
+    expect(light).to_have_attribute("aria-checked", "true")
+    expect(light).to_be_focused()
+    expect(group.locator('button[data-value="system"]')).to_have_attribute("aria-checked", "false")
+
+
+def test_arrow_right_wraps_from_the_last_option_to_the_first(dewmini):
+    open_texture_settings(dewmini)
+    group = dewmini.locator('.dl-seg[data-texture="theme"]')
+    last = group.locator('button[data-value="dark"]')
+    last.click()
+    last.focus()
+
+    dewmini.keyboard.press("ArrowRight")
+
+    first = group.locator('button[data-value="system"]')
+    expect(first).to_have_attribute("aria-checked", "true")
+    expect(first).to_be_focused()
+
+
+class TestStatusAnnouncer:
+    """#dm-status is `role="status" aria-live="polite"` — a live region
+    only announces on an actual text change, so running the same cell
+    twice in a row, both times ending "Ran.", needs updateStatus()'s
+    clear-then-set-on-next-tick to be heard the second time too."""
+
+    def wait_for_status(self, page, text: str, timeout: int = 5_000):
+        page.wait_for_function(
+            "text => document.getElementById('dm-status').textContent === text",
+            arg=text,
+            timeout=timeout,
+        )
+
+    def test_running_the_same_cell_twice_announces_both_times(self, dewmini):
+        page = dewmini
+        add_python_cell(page, "print('hi')")
+        run_first_cell_and_wait(page)
+        self.wait_for_status(page, "Ran.")
+
+        page.evaluate("document.getElementById('dm-status').textContent = 'sentinel'")
+        run_first_cell_and_wait(page)
+        self.wait_for_status(page, "Ran.")

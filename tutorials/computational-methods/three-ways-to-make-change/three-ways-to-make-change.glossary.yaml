@@ -1,0 +1,43 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# First tutorial of the new Algorithms series. Checked against every other
+# glossary file in computational-methods (python-fundamentals, matrices,
+# simulation) -- no overlap with brute force, cache, memoization, greedy,
+# or heuristic.
+entries:
+  - term: brute force
+    kind: concept
+    definition: >
+      Brute force solves a problem by checking every possibility rather
+      than reasoning about which ones are worth checking. It is often
+      slow, but it can never miss the real answer, because it never
+      skips one.
+
+  - term: cache
+    kind: concept
+    definition: >
+      A cache is a place to store an answer the first time it is worked
+      out, so a repeated question can be answered by looking it up
+      instead of reworking it.
+
+  - term: memoization
+    kind: concept
+    definition: >
+      Memoization is the practice of caching the result of each smaller
+      version of a problem, so solving a bigger version never reworks a
+      smaller one it has already solved.
+
+  - term: greedy (algorithm)
+    kind: concept
+    definition: >
+      A greedy algorithm builds an answer by making the choice that
+      looks best at each step, and never revisiting that choice
+      afterwards. It is fast, but a choice that looked best at the time
+      can turn out not to have been.
+
+  - term: heuristic
+    kind: concept
+    definition: >
+      A heuristic is a rule of thumb that reaches an answer quickly
+      without checking every possibility. It trades away the guarantee
+      of correctness that brute force and caching both keep.

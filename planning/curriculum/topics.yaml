@@ -1,11 +1,19 @@
 # The topics on the knowledge map, in plain English.
 #
-# One entry per learning outcome in `outcomes.yaml`, saying what the topic
-# actually is and where it turns up in computing. This is the file the map page
-# reads, and it doubles as a glossary: everything a student would want to know
-# about a topic before deciding whether to open the tutorial.
+# What each topic actually is and where it turns up in computing. This is the
+# file the map page reads, and it doubles as a glossary: everything a student
+# would want to know about a topic before deciding whether to open the tutorial.
 #
-# Three fields carry the weight:
+# A topic is not the same thing as a learning outcome. `outcomes.yaml` holds
+# the four QQI module descriptors, which are the awarding body's and are not
+# ours to cut up; a topic is ours, and several may serve one outcome where the
+# descriptor bundles ideas a student meets separately. So each topic carries
+# an `outcome:` naming the one it serves, and every outcome must still be
+# claimed by at least one topic — otherwise something would go untaught with
+# nobody noticing. A `PRE-` code is groundwork no descriptor asked for and
+# carries no outcome at all.
+#
+# Four fields carry the weight:
 #
 #   `plain`  — what it is, in a sentence or two, assuming no prior knowledge and
 #              no jargon that has not been introduced. If a student reads only
@@ -15,31 +23,48 @@
 #   `needs`  — the topics that have to come first. These are the arrows on the
 #              map, and they are about the mathematics rather than about the
 #              order we happen to teach in.
+#   `outcome`— which learning outcome in `outcomes.yaml` this topic serves.
+#              Absent on a `PRE-` topic, which serves none.
 #
 # `needs` may name a topic that is not taught yet. That is the point: an arrow
 # into a gap is how the map shows what is missing.
 
 topics:
   # ------------------------------------------ MIT 1: arithmetic and algebra
-  MIT-1.1:
-    name: Powers and logarithms
+  MIT-1.1a:
+    name: Powers
+    outcome: MIT-1.1
     plain: >
-      Multiplying a number by itself over and over, and the operation that
-      undoes it. A logarithm answers the question "how many times did I
-      multiply?" Anything that grows or shrinks by a factor, rather than by a
-      fixed amount, is most naturally described that way.
+      Multiplying a number by itself over and over. The small raised number
+      counts how many times, so three to the fourth means three multiplied
+      by itself four times.
     uses:
-      - Measuring how much slower a program gets as its input grows — an
-        algorithm that halves the problem each step takes a logarithmic number
-        of steps.
-      - File sizes and storage. A kilobyte, megabyte and gigabyte are each about
-        a thousand times the last, so their exponents are what you compare.
-      - Audio and image processing, where loudness and brightness are perceived
-        as ratios rather than differences.
+      - Place value in binary. Each column of a binary number is the next
+        power of two, which is why the columns read 1, 2, 4, 8, 16.
+      - File sizes and storage. A kilobyte, a megabyte and a gigabyte are
+        each about a thousand times the last.
+      - Anything that doubles. A program that doubles its work at each step
+        is described by a power of two.
     needs: []
+
+  MIT-1.1b:
+    name: Logarithms
+    outcome: MIT-1.1
+    plain: >
+      The operation that undoes a power. A logarithm answers the question
+      "how many times did I multiply?" Anything that grows or shrinks by a
+      factor, rather than by a fixed amount, is usually described this way.
+    uses:
+      - Measuring how much slower a program gets as its input grows. An
+        algorithm that halves the problem at each step takes a logarithmic
+        number of steps.
+      - Audio and image processing, where loudness and brightness are
+        perceived as ratios rather than as differences.
+    needs: [MIT-1.1a]
 
   MIT-1.2:
     name: Area and perimeter
+    outcome: MIT-1.2
     plain: >
       How much surface a flat shape covers, and how far it is around the edge.
       Square, rectangle, triangle, circle.
@@ -52,6 +77,7 @@ topics:
 
   MIT-1.3:
     name: Volume and surface area
+    outcome: MIT-1.3
     plain: >
       The same question in three dimensions: how much a solid holds, and how
       much surface covers the outside. Cube, cylinder, cone, sphere.
@@ -63,6 +89,7 @@ topics:
 
   MIT-1.4:
     name: Binary and hexadecimal
+    outcome: MIT-1.4
     plain: >
       Counting with only two digits, and counting with sixteen. A computer has
       only "on" and "off" to work with, so every number it holds is written in
@@ -78,6 +105,7 @@ topics:
 
   MIT-1.5:
     name: Expressions and equations
+    outcome: MIT-1.5
     plain: >
       An expression is something you can work out — it has a value. An equation
       is a claim that two expressions are equal, which you can solve. Knowing
@@ -92,6 +120,7 @@ topics:
 
   MIT-1.6:
     name: Expanding and simplifying
+    outcome: MIT-1.6
     plain: >
       Rewriting an expression so it says the same thing in a more useful shape —
       multiplying out brackets, collecting like terms.
@@ -105,6 +134,7 @@ topics:
 
   MIT-1.7:
     name: Rearranging formulae
+    outcome: MIT-1.7
     plain: >
       Taking a formula written to find one thing and getting it to find another.
       Speed, distance and time are one formula in three shapes, and being able
@@ -118,6 +148,7 @@ topics:
 
   MIT-1.8:
     name: Multiplying out to quadratics
+    outcome: MIT-1.8
     plain: >
       What happens when you multiply two simple expressions together: the
       squared terms that appear, and why the middle term is what it is.
@@ -129,6 +160,7 @@ topics:
 
   MIT-1.9:
     name: Factorising quadratics
+    outcome: MIT-1.9
     plain: >
       Running the multiplication backwards — finding the two simple expressions
       that were multiplied together. Once you have them, the solutions are
@@ -138,22 +170,37 @@ topics:
         as factorising and the reason both are called that.
     needs: [MIT-1.8]
 
-  MIT-1.10:
-    name: Solving quadratics, including complex roots
+  MIT-1.10a:
+    name: Solving quadratics
+    outcome: MIT-1.10
     plain: >
-      The formula that solves any quadratic, and what to do when it asks for the
-      square root of a negative number. The answers still exist — they are just
-      not on the number line you have been using.
+      The formula that solves any quadratic equation. You put the three
+      numbers in and it gives you the values that make the equation true.
     uses:
-      - Signal processing and anything involving a wave. Complex numbers are the
-        natural language for "how big" and "how far shifted" at once.
-      - Working out whether a system settles down or oscillates, which is the
-        difference between a control loop that works and one that shakes itself
-        apart.
-    needs: [MIT-1.9, MIT-2.1]
+      - Working out where something lands, or when it arrives, whenever the
+        quantity changes at a changing rate.
+      - Finding where two curves meet, which is how a program answers a
+        question like whether two moving objects collide.
+    needs: [MIT-1.9, PRE-2]
+
+  MIT-1.10b:
+    name: Complex roots
+    outcome: MIT-1.10
+    plain: >
+      What to do when the formula asks for the square root of a negative
+      number. The answers still exist. They sit off the number line you
+      have been using, on a second axis at right angles to it.
+    uses:
+      - Signal processing and anything involving a wave. Complex numbers
+        hold how big and how far shifted in one value.
+      - Working out whether a system settles down or oscillates, which is
+        the difference between a control loop that works and one that
+        shakes itself apart.
+    needs: [MIT-1.10a, MIT-2.1g]
 
   MIT-1.11:
     name: Linear inequalities
+    outcome: MIT-1.11
     plain: >
       Solving for a range rather than a value: not "x is 5" but "x is anything
       above 5". The one surprise is that multiplying by a negative flips the
@@ -166,6 +213,7 @@ topics:
 
   MIT-1.12:
     name: Simultaneous equations
+    outcome: MIT-1.12
     plain: >
       Two or three facts that have to be true at once, and finding the values
       that satisfy all of them together.
@@ -177,22 +225,101 @@ topics:
     needs: [MIT-1.5]
 
   # -------------------------------------------- MIT 2: sets and boolean logic
-  MIT-2.1:
-    name: Number families
+  MIT-2.1a:
+    name: Counting numbers
+    outcome: MIT-2.1
     plain: >
-      The nested families numbers live in — counting numbers, then negatives,
-      then fractions, then everything on the number line, then a family that
-      includes the square roots of negatives. Each one exists because the
-      previous one could not answer some question.
+      One, two, three, and on upwards. These are the numbers you count
+      with, and every other family is built by asking a question these
+      cannot answer.
     uses:
-      - Choosing a type. `int` and `float` in a program are two of these
-        families, and the bugs come from forgetting which one you are in.
-      - Knowing that 0.1 + 0.2 is not exactly 0.3 in most languages, and why
-        that is a fact about the family and not a mistake.
+      - How many of anything, which is what most of a program's numbers
+        are.
+      - The position of an item in a list, and how many times a loop has
+        run.
     needs: []
+
+  MIT-2.1b:
+    name: Integers
+    outcome: MIT-2.1
+    plain: >
+      The counting numbers, zero, and the negatives. This family exists
+      because taking a larger number from a smaller one has no answer
+      without it.
+    uses:
+      - Anything that can go both ways, such as a temperature, a balance,
+        or a scroll position.
+      - The `int` type in a program, and the bugs that come from a value
+        going below zero when nothing expected it to.
+    needs: [MIT-2.1a]
+
+  MIT-2.1c:
+    name: Rational numbers
+    outcome: MIT-2.1
+    plain: >
+      Anything you can write as one whole number over another. This family
+      exists because dividing two integers usually lands between them.
+    uses:
+      - Money, ratios, and percentages.
+      - Exact arithmetic in a program, where a fraction type avoids the
+        small errors a decimal introduces.
+    needs: [MIT-2.1b]
+
+  MIT-2.1d:
+    name: Irrational numbers
+    outcome: MIT-2.1
+    plain: >
+      Numbers no fraction can write exactly, such as the square root of
+      two, or pi. Their decimals run on forever without ever settling into
+      a repeat.
+    uses:
+      - Any measurement round a circle, or a diagonal across a square.
+      - Knowing why a program stores an approximation of pi rather than pi.
+    needs: [MIT-2.1c]
+
+  MIT-2.1e:
+    name: Computable numbers
+    outcome: MIT-2.1
+    plain: >
+      The numbers a program could work out to as many decimal places as you
+      asked for, given enough time. Almost every number anybody names is
+      one, and almost every number that exists is not.
+    uses:
+      - Understanding what a maths library actually gives you, which is a
+        value correct to a stated number of places.
+      - Seeing where the limits of computing sit, since a number no program
+        can produce is a limit of a different kind from a slow one.
+    needs: [MIT-2.1d]
+
+  MIT-2.1f:
+    name: Real numbers
+    outcome: MIT-2.1
+    plain: >
+      Everything on the number line, the fractions and the endless decimals
+      together. This is the family most maths written for people quietly
+      assumes.
+    uses:
+      - The `float` type in a program, which holds an approximation of one
+        of these.
+      - Knowing that 0.1 plus 0.2 is not exactly 0.3 in most languages, and
+        that this is a fact about the storage rather than a mistake.
+    needs: [MIT-2.1e]
+
+  MIT-2.1g:
+    name: Complex numbers
+    outcome: MIT-2.1
+    plain: >
+      A family that includes the square roots of negatives. It exists
+      because no number on the line multiplies by itself to give a
+      negative, and some equations ask for one that does.
+    uses:
+      - Signal processing and anything involving a wave.
+      - Working out whether a system settles down or oscillates.
+    needs: [MIT-2.1f]
 
   MIT-2.2:
     name: Set operations
+    outcome: MIT-2.2
     plain: >
       Combining collections: everything in either, everything in both,
       everything in one but not the other. A set has no order and no repeats,
@@ -202,10 +329,11 @@ topics:
         "everyone who has not paid" is a difference.
       - Permissions — what a user can do is usually the intersection of what
         their role allows and what the resource permits.
-    needs: [MIT-2.1]
+    needs: [MIT-2.1a]
 
   MIT-2.3:
     name: Venn diagrams
+    outcome: MIT-2.3
     plain: >
       Drawing sets as overlapping circles so that the combinations can be
       pointed at rather than described.
@@ -215,6 +343,7 @@ topics:
 
   MIT-2.4:
     name: Truth tables
+    outcome: MIT-2.4
     plain: >
       Writing down what a logical statement gives for every possible input.
       With two inputs there are only four cases, so "every possible input" is a
@@ -228,6 +357,7 @@ topics:
 
   MIT-2.5:
     name: De Morgan's Laws
+    outcome: MIT-2.5
     plain: >
       Two rules for turning a negation inside out. "Not (A and B)" is the same
       as "not A, or not B" — and once you have noticed it, you will start
@@ -242,6 +372,7 @@ topics:
   # ---------------------------------------------- MIT 3: functions and calculus
   MIT-3.1:
     name: Functions and inverses
+    outcome: MIT-3.1
     plain: >
       A function is a machine: put a value in, get exactly one value out. An
       inverse is the machine that undoes it. Not every function has one, and
@@ -255,6 +386,7 @@ topics:
 
   MIT-3.2:
     name: Graphing functions
+    outcome: MIT-3.2
     plain: >
       Drawing a function as a picture, and reading answers off the picture.
       Where the curve crosses the axis is where the function is zero; where two
@@ -267,6 +399,7 @@ topics:
 
   MIT-3.3:
     name: Graphing sine and cosine
+    outcome: MIT-3.3
     plain: >
       The two wave-shaped functions, and what each number in front of them
       does — how tall the wave is, how often it repeats, and where it starts.
@@ -275,10 +408,11 @@ topics:
         these.
       - Animation and easing, where a smooth back-and-forth is a sine curve.
       - Anything that repeats on a cycle — daily traffic, seasonal demand.
-    needs: [MIT-3.2, MIT-4.6]
+    needs: [MIT-3.2, MIT-4.6a]
 
   MIT-3.4:
     name: Completing the square
+    outcome: MIT-3.4
     plain: >
       Rewriting a quadratic so that its highest or lowest point can simply be
       read off. The algebra is fiddly; the payoff is that the answer is sitting
@@ -290,6 +424,7 @@ topics:
 
   MIT-3.5:
     name: Limits
+    outcome: MIT-3.5
     plain: >
       What a function is heading towards, as opposed to what it does when it
       gets there. The two can differ, and the gap between them is where calculus
@@ -303,6 +438,7 @@ topics:
 
   MIT-3.6:
     name: The derivative
+    outcome: MIT-3.6
     plain: >
       How fast something is changing, right now rather than on average. On a
       graph it is the steepness at a single point.
@@ -317,6 +453,7 @@ topics:
 
   MIT-3.7:
     name: Rules for differentiating
+    outcome: MIT-3.7
     plain: >
       Shortcuts that let you find a derivative without going back to the limit
       each time — one for adding functions, one for multiplying them.
@@ -330,6 +467,7 @@ topics:
   # ------------------------------------------- MIT 4: geometry and trigonometry
   MIT-4.1:
     name: Equations of lines
+    outcome: MIT-4.1
     plain: >
       Writing a straight line as an equation, so that "is this point on the
       line?" becomes arithmetic rather than looking.
@@ -342,6 +480,7 @@ topics:
 
   MIT-4.2:
     name: Slope, parallel and perpendicular
+    outcome: MIT-4.2
     plain: >
       How steep a line is, and what the steepness tells you about two lines'
       relationship. Parallel lines share a slope; perpendicular ones have
@@ -354,6 +493,7 @@ topics:
 
   MIT-4.3:
     name: Midpoint and distance
+    outcome: MIT-4.3
     plain: >
       How far apart two points are, and what sits exactly halfway between them.
       Both fall straight out of Pythagoras once you treat the gap across and the
@@ -366,6 +506,7 @@ topics:
 
   MIT-4.4:
     name: Pythagoras
+    outcome: MIT-4.4
     plain: >
       In a right-angled triangle, the two short sides squared add up to the long
       side squared. Probably the single most useful fact in this whole list.
@@ -377,6 +518,7 @@ topics:
 
   MIT-4.5:
     name: Degrees and radians
+    outcome: MIT-4.5
     plain: >
       Two ways of measuring an angle. Degrees are the familiar one; radians
       measure how far you have walked around the circle, which is why every
@@ -386,28 +528,61 @@ topics:
         sprite spins the wrong amount — a classic first bug in graphics code.
     needs: []
 
-  MIT-4.6:
-    name: The unit circle
+  MIT-4.6a:
+    name: Sine and cosine defined
+    outcome: MIT-4.6
     plain: >
-      A circle of radius one, and the observation that the coordinates of a
-      point going round it are exactly sine and cosine. It turns two functions
-      you have to memorise into one picture you can reconstruct.
+      Walk a point around a circle of radius one. Its two coordinates,
+      across and up, are exactly cosine and sine of the angle you have
+      turned through. Two functions you would otherwise memorise become one
+      picture you can rebuild.
     uses:
       - Circular motion, orbits, and anything on a dial.
-      - The maths underneath rotating an image or a 3D model.
+      - The maths underneath rotating an image or a three-dimensional
+        model.
     needs: [MIT-4.5, MIT-4.4, MIT-4.1]
+
+  MIT-4.6b:
+    name: The identity that links them
+    outcome: MIT-4.6
+    plain: >
+      Sine squared plus cosine squared is always one, whatever the angle.
+      It is Pythagoras applied to the point on the circle, since the two
+      coordinates are the short sides and the radius is the long one.
+    uses:
+      - Checking that a calculation involving angles has not drifted, which
+        is how graphics code catches rounding error.
+      - Getting one of the two values when you have the other and know
+        which quarter of the circle you are in.
+    needs: [MIT-4.6a]
+
+  MIT-4.6c:
+    name: Tangent as slope
+    outcome: MIT-4.6
+    plain: >
+      How steep a line is, said as an angle rather than as a ratio. A slope
+      and an angle are two ways of describing the same thing, and tangent is
+      what turns either one into the other.
+    uses:
+      - Turning a direction into an angle, which is what a program does to
+        point something at a target.
+      - Reading a gradient off a graph and saying what angle it makes with
+        the horizontal.
+    needs: [MIT-4.2]
 
   MIT-4.7:
     name: Exact trigonometric values
+    outcome: MIT-4.7
     plain: >
       The handful of angles whose sine and cosine can be written exactly with
       square roots, rather than as a decimal that goes on forever.
     uses:
       - Hand-checking that a calculation is right before trusting the code.
-    needs: [MIT-4.6]
+    needs: [MIT-4.6a]
 
   MIT-4.8:
     name: Area of any triangle
+    outcome: MIT-4.8
     plain: >
       A formula for a triangle's area that needs two sides and the angle between
       them, rather than a base and a height you may not have.
@@ -416,10 +591,11 @@ topics:
         triangles.
       - Rendering. Every 3D surface is triangles, and their areas decide how much
         of anything lands on them.
-    needs: [MIT-4.6]
+    needs: [MIT-4.6a]
 
   MIT-4.9:
     name: Right-triangle trigonometry
+    outcome: MIT-4.9
     plain: >
       Given one angle and one side of a right-angled triangle, finding the rest.
       The three ratios and when to reach for each.
@@ -429,6 +605,23 @@ topics:
       - Splitting a movement into how far across and how far up, which is what
         every "move at this angle" in a game does.
     needs: [MIT-4.4, PRE-1]
+
+  PRE-2:
+    # Groundwork, like PRE-1: no descriptor asks for it, and the algebra
+    # outcomes all quietly assume it.
+    strand: algebra
+    name: Moving an equation around
+    plain: >
+      Doing the same thing to both sides of an equation so that it still says
+      the same thing. Add to both sides, multiply both sides, take the same
+      term off both sides. Every method of solving anything rests on this one
+      move, repeated.
+    uses:
+      - Rearranging any formula in code so it gives you the value you actually
+        want, rather than the one it was written to give.
+      - Checking your own work. If a step did not do the same thing to both
+        sides, the two lines are not equal and everything after is wrong.
+    needs: []
 
   PRE-1:
     # Groundwork carries its own strand: strands otherwise come from
@@ -448,21 +641,52 @@ topics:
         and their shape decides how well it renders.
     needs: []
 
-  MIT-4.10:
-    name: The Sine and Cosine Rules
+  MIT-4.10a:
+    name: The Cosine Rule
+    outcome: MIT-4.10
     plain: >
-      What to do when the triangle is not right-angled. Two rules that between
-      them solve any triangle from three pieces of information.
+      A rule for a triangle that has no right angle. It is Pythagoras with
+      a correction term, and the correction depends on how far the angle is
+      from a right angle.
     uses:
-      - Navigation and positioning — working out where you are from angles to
-        two known landmarks.
-      - Robot arms and animation rigs, where the question is what angles put the
-        hand in the right place.
+      - Working out a distance you cannot measure directly, given two sides
+        and the angle between them.
+      - Robot arms and animation rigs, where the question is what angles
+        put the hand in the right place.
     needs: [MIT-4.9]
+
+  MIT-4.10b:
+    name: The Sine Rule
+    outcome: MIT-4.10
+    plain: >
+      A second rule for a triangle with no right angle. It relates each
+      side to the angle opposite it, so knowing one such pair lets you find
+      the others.
+    uses:
+      - Navigation and positioning, where you work out where you are from
+        the angles to two known landmarks.
+      - Surveying a distance across something you cannot walk over, such as
+        a river.
+    needs: [MIT-4.9]
+
+  MIT-4.10c:
+    name: The ambiguous case
+    outcome: MIT-4.10
+    plain: >
+      Sine cannot tell an angle from 180 degrees minus that angle, so the
+      Sine Rule sometimes gives two triangles that both fit. You then have
+      to decide which one the problem meant.
+    uses:
+      - Any program that solves triangles from measurements and has to
+        choose an answer rather than return both.
+      - Reading a result from a library and knowing when it has quietly
+        picked one of two.
+    needs: [MIT-4.10b]
 
   # ----------------------------------------- MIT 5: probability and statistics
   MIT-5.1:
     name: Listing outcomes
+    outcome: MIT-5.1
     plain: >
       Writing down everything that could happen, carefully enough that nothing
       is missed and nothing is counted twice.
@@ -473,6 +697,7 @@ topics:
 
   MIT-5.2:
     name: The counting principle
+    outcome: MIT-5.2
     plain: >
       If one choice has three options and the next has four, together they have
       twelve. Multiply the choices.
@@ -485,6 +710,7 @@ topics:
 
   MIT-5.3:
     name: Factorials
+    outcome: MIT-5.3
     plain: >
       How many ways a set of things can be put in order. It grows
       alarmingly fast — ten items already have over three million arrangements.
@@ -495,6 +721,7 @@ topics:
 
   MIT-5.4:
     name: Permutations
+    outcome: MIT-5.4
     plain: >
       Choosing some of a set when the order matters. Picking a first, second
       and third from eight runners is a different count from picking any three
@@ -507,6 +734,7 @@ topics:
 
   MIT-5.5:
     name: Combinations
+    outcome: MIT-5.5
     plain: >
       Choosing some of a set when the order does not matter — a committee
       rather than a podium. Take the permutation count and divide it by the
@@ -521,6 +749,7 @@ topics:
 
   MIT-5.6:
     name: Probability as a scale
+    outcome: MIT-5.6
     plain: >
       Every probability is a number between zero and one. Zero cannot happen,
       one is certain, and everything real is in between.
@@ -531,6 +760,7 @@ topics:
 
   MIT-5.7:
     name: Equally likely outcomes
+    outcome: MIT-5.7
     plain: >
       Sometimes every outcome is as likely as every other. Then the
       probability of something is just the number of outcomes that count,
@@ -540,19 +770,51 @@ topics:
         assume this and break interestingly when the assumption is false.
     needs: [MIT-5.6, MIT-5.1]
 
-  MIT-5.8:
-    name: Combining probabilities
+  MIT-5.8a:
+    name: Both things happening
+    outcome: MIT-5.8
     plain: >
-      What happens when you want two things to happen, or either of two things.
-      The rules differ depending on whether the events affect each other.
+      The chance that two things both happen. When neither one affects the
+      other, you multiply the two chances together, and the answer is
+      always smaller than either.
     uses:
-      - Reliability. If a system needs five parts all working, its chance of
-        working is the product, which is always worse than people expect.
-      - Retry logic — the chance that three attempts all fail.
+      - Reliability. A system that needs five parts all working has the
+        product of their five chances, which is worse than most people
+        expect.
+      - Retry logic, where the chance that three attempts all fail is one
+        multiplication.
     needs: [MIT-5.7]
+
+  MIT-5.8b:
+    name: Either thing happening
+    outcome: MIT-5.8
+    plain: >
+      The chance that at least one of two things happens. You add the two
+      chances, then take away the chance of both, because otherwise the
+      overlap is counted twice.
+    uses:
+      - Working out whether any one of several alerts fires.
+      - Counting how many records match one condition or another without
+        double-counting the ones that match both.
+    needs: [MIT-5.7]
+
+  MIT-5.8c:
+    name: When one event changes another
+    outcome: MIT-5.8
+    plain: >
+      The chance of something given that something else has already
+      happened. Learning one fact can change how likely the next one is,
+      and the multiplication rule has to account for that.
+    uses:
+      - Reading a medical or a security test result, where the chance of a
+        true alarm depends on how common the thing is.
+      - Spam filters and other classifiers, which are built on chances that
+        shift as each new word is read.
+    needs: [MIT-5.8a, MIT-5.8b]
 
   MIT-5.9:
     name: Kinds of data
+    outcome: MIT-5.9
     plain: >
       Data comes in kinds: labels with no order, labels with an order, whole
       counts, and measurements that can take any value. What you are allowed to
@@ -565,6 +827,7 @@ topics:
 
   MIT-5.10:
     name: Choosing a display
+    outcome: MIT-5.10
     plain: >
       Which chart actually shows the thing you are trying to show, and which
       ones quietly argue for something else. A pie chart of twelve categories
@@ -577,39 +840,71 @@ topics:
 
   MIT-5.11:
     name: Frequency tables and histograms
+    outcome: MIT-5.11
     plain: >
       Counting how many values fall into each band, and drawing the result. The
       shape that appears tells you things no average can.
     uses:
       - Performance monitoring. The average response time hides the slow tail;
         the histogram shows it.
-    needs: [MIT-5.9, MIT-6.3]
+    needs: [MIT-5.9, MIT-6.3a]
 
-  MIT-5.12:
-    name: Averages and spread
+  MIT-5.12a:
+    name: The middle of a set of numbers
+    outcome: MIT-5.12
     plain: >
-      Middle and scatter. Three different ideas of "typical", and two of how far
-      from typical things usually are.
+      Three different ideas of what counts as typical. The mean adds
+      everything up and shares it out, the median takes the one in the
+      middle, and the mode takes the one that appears most.
     uses:
-      - Any summary of anything. Which average to use is a real decision, not a
-        formality.
-      - Spotting anomalies — an alert that fires at three standard deviations is
-        this arithmetic.
+      - Any summary of anything. Which one to use is a real decision rather
+        than a formality.
+      - Reporting a response time. The mean and the median can tell very
+        different stories about the same server.
     needs: [MIT-5.11]
+
+  MIT-5.12b:
+    name: How spread out the numbers are
+    outcome: MIT-5.12
+    plain: >
+      How far from typical the values usually sit. The simplest measure is
+      the range, which is the largest value minus the smallest.
+    uses:
+      - Saying how reliable a measurement is. Two sets of readings can
+        share a mean and still be nothing alike.
+      - Setting a sensible limit. A threshold is easier to choose once you
+        know how much the values move about.
+    needs: [MIT-5.12a]
+
+  MIT-5.12c:
+    name: Standard deviation
+    outcome: MIT-5.12
+    plain: >
+      A measure of spread that uses every value rather than only the two
+      extremes. It is roughly the average distance from the mean, worked
+      out in a way that keeps larger distances counting for more.
+    uses:
+      - Spotting anomalies. An alert that fires at three standard
+        deviations from the mean is this arithmetic.
+      - Comparing two sets of measurements taken in different units, once
+        each is expressed in standard deviations.
+    needs: [MIT-5.12b]
 
   MIT-5.13:
     name: When averages mislead
+    outcome: MIT-5.13
     plain: >
       What the mean, median and mode each hide, and which to distrust when the
       data is lopsided or has a few extreme values.
     uses:
       - Salary and response-time figures, both of which are routinely reported
         using whichever average looks best.
-    needs: [MIT-5.12]
+    needs: [MIT-5.12a]
 
   # ------------------------------------------ MIT 6: algorithms and computation
   MIT-6.1:
     name: What an algorithm is
+    outcome: MIT-6.1
     plain: >
       A set of steps precise enough that following them requires no judgement.
       That precision is the whole difficulty and the whole point.
@@ -620,6 +915,7 @@ topics:
 
   MIT-6.2:
     name: Algorithms as functions
+    outcome: MIT-6.2
     plain: >
       Thinking of an algorithm as a machine with a defined set of allowed
       inputs and one output for each. What it should do with an input outside
@@ -629,38 +925,49 @@ topics:
         allowed.
     needs: [MIT-6.1, MIT-3.1]
 
-  MIT-6.3:
-    name: Lists and arrays
+  MIT-6.3a:
+    name: Lists
+    outcome: [MIT-6.3, MIT-6.5]
     plain: >
-      Holding many values under one name, in order, and doing things to all of
-      them at once.
+      Holding many values under one name, in order. You can reach any one
+      of them by its position, and you can do the same thing to all of them
+      at once.
     uses:
-      - Every collection of anything — rows from a database, pixels in an
-        image, users in a queue.
-    needs: []
+      - Every collection of anything, from rows out of a database to pixels
+        in an image to people waiting in a queue.
+      - Reading a file. A program usually takes the lines in one at a time
+        and keeps them together under one name.
+    needs: [PDP-LO6a, PDP-LO6b]
+
+  MIT-6.3b:
+    name: Arrays
+    outcome: MIT-6.3
+    plain: >
+      A list where every value is the same kind of thing, and the computer
+      knows in advance how much room each one takes. Knowing that is what
+      lets it jump straight to a position instead of counting along.
+    uses:
+      - Working with numbers in bulk. The libraries for data and for images
+        store their values this way, which is part of why they are so much
+        faster than a plain list.
+      - Talking to hardware, or to a file format, where the bytes have to
+        sit in a fixed shape.
+    needs: [MIT-6.3a]
 
   MIT-6.4:
     name: Index and sigma notation
+    outcome: MIT-6.4
     plain: >
       A compact way of writing "add up all of these" or "multiply all of these",
       with a counter that walks through the positions.
     uses:
       - Reading a formula in a paper or a specification and turning it into a
         loop, which is largely a matter of recognising this notation.
-    needs: [MIT-6.3]
-
-  MIT-6.5:
-    name: Lists applied to problems
-    plain: >
-      Using a list to model something real — a shopping list, a queue, a set of
-      readings — and choosing the operations the problem actually needs.
-    uses:
-      - Almost any small program. The first design decision is usually what goes
-        in the list.
-    needs: [MIT-6.3]
+    needs: [MIT-6.3a]
 
   MIT-6.6:
     name: Divide and conquer
+    outcome: MIT-6.6
     plain: >
       Cutting a problem in half, solving each half, and combining the answers.
       Halving repeatedly is enormously fast, which is why this idea keeps
@@ -672,6 +979,7 @@ topics:
 
   MIT-6.7:
     name: Iterating by index
+    outcome: MIT-6.7
     plain: >
       Walking through a list one position at a time, using the position itself
       as well as the value.
@@ -680,21 +988,37 @@ topics:
         does at its core.
     needs: [MIT-6.4]
 
-  MIT-6.8:
-    name: Searching and sorting
+  MIT-6.8a:
+    name: Searching
+    outcome: MIT-6.8
     plain: >
-      The classic algorithms for finding something in a collection and for
-      putting a collection in order — and why some are dramatically faster than
-      others.
+      Finding one thing in a collection. You can look at every item in
+      turn, or, if the collection is already in order, throw away half of
+      it at each step.
     uses:
-      - Sorting is the most-used non-trivial algorithm there is, and almost
-        every "find" is faster on sorted data.
-      - Understanding why a database index exists, and what it costs.
+      - Almost every "find" a program does, from a lookup in a table to a
+        word in a document.
+      - Understanding why a database index exists, and what it costs to
+        keep one.
+    needs: [MIT-6.7]
+
+  MIT-6.8b:
+    name: Sorting
+    outcome: MIT-6.8
+    plain: >
+      Putting a collection in order. Several methods do it, and they differ
+      enormously in how long they take on a large collection.
+    uses:
+      - The most used non-trivial algorithm there is. A results page, a
+        leaderboard and a merge of two files all sort first.
+      - Making searching cheap. Once a collection is in order, finding
+        something in it is much faster.
     needs: [MIT-6.7]
 
   # ------------------------------------------------------------------- PDP
   PDP-LO1:
     name: The history of programming
+    outcome: PDP-LO1
     plain: >
       How programming got from punched cards to here, and why the languages we
       use look the way they do.
@@ -705,6 +1029,7 @@ topics:
 
   PDP-LO2:
     name: Algorithms in the real world
+    outcome: PDP-LO2
     plain: >
       Spotting the algorithms already running in ordinary life: how post is
       sorted, how a queue is served, how change is counted out. Then
@@ -717,6 +1042,7 @@ topics:
 
   PDP-LO3:
     name: Comparing languages
+    outcome: PDP-LO3
     plain: >
       What really differs between programming languages, once you look past
       the punctuation. Do they check types before running? How do they manage
@@ -729,6 +1055,7 @@ topics:
 
   PDP-LO4:
     name: The parts of a program
+    outcome: PDP-LO4
     plain: >
       Variables, expressions, statements, input and output — the small vocabulary
       that nearly every language shares. Learn it once and a new language is
@@ -739,6 +1066,7 @@ topics:
 
   PDP-LO5:
     name: Solving in sequence
+    outcome: PDP-LO5
     plain: >
       Breaking a task into ordered steps, and noticing which steps really
       depend on which. The dependencies are what fix the order. Everything
@@ -749,17 +1077,34 @@ topics:
         and an afternoon's.
     needs: [MIT-6.1]
 
-  PDP-LO6:
-    name: Selection and iteration
+  PDP-LO6a:
+    name: Choosing between paths
+    outcome: PDP-LO6
     plain: >
-      Making a program choose between paths, and making it repeat. With
-      sequence, these two are enough to express any computation at all.
+      Making a program take one route or another, depending on whether
+      something is true. The program asks a question, and the answer
+      decides which steps run next.
     uses:
-      - Every non-trivial program ever written.
-    needs: [PDP-LO4, MIT-2.4]
+      - Any program that treats one case differently from another, such as
+        a form that accepts a valid entry and asks again for an invalid
+        one.
+    needs: [PDP-LO4]
+
+  PDP-LO6b:
+    name: Repeating a step
+    outcome: PDP-LO6
+    plain: >
+      Making a program do the same thing again, either a fixed number of
+      times or until something changes. Together with choosing between
+      paths, this is enough to express any computation at all.
+    uses:
+      - Every program that handles more than one of anything, such as
+        sending the same email to a hundred addresses.
+    needs: [PDP-LO4]
 
   PDP-LO7:
     name: Documented programs
+    outcome: PDP-LO7
     plain: >
       Writing programs somebody else can pick up and change — including you,
       in a month, having forgotten every decision you made. Names, comments
@@ -767,20 +1112,22 @@ topics:
       program runs.
     uses:
       - Any code that outlives the afternoon it was written in.
-    needs: [PDP-LO6]
+    needs: [PDP-LO6a]
 
   PDP-LO8:
     name: Functions and scope
+    outcome: PDP-LO8
     plain: >
       Packaging a piece of a program so it can be used again, and understanding
       which names are visible where.
     uses:
       - Every library you have ever imported is this, done well.
       - Most confusing bugs in a beginner's program are a scope misunderstanding.
-    needs: [PDP-LO6, MIT-3.1]
+    needs: [PDP-LO6a, MIT-3.1]
 
   PDP-LO9:
     name: Reading error messages
+    outcome: PDP-LO9
     plain: >
       What the computer is telling you when it refuses to run your code, and
       what to do about it. Error messages are written for people who already
@@ -792,6 +1139,7 @@ topics:
 
   PDP-LO10:
     name: Testing and debugging
+    outcome: PDP-LO10
     plain: >
       Deciding what a program should do before checking whether it does, and
       finding out why when it does not.
@@ -802,6 +1150,7 @@ topics:
 
   PDP-LO11:
     name: Coding standards
+    outcome: PDP-LO11
     plain: >
       Naming, spacing and commenting conventions — the things that have no
       effect on whether a program runs and a large effect on whether anyone can
@@ -812,6 +1161,7 @@ topics:
 
   PDP-LO12:
     name: Working as a team
+    outcome: PDP-LO12
     plain: >
       Designing, building and releasing software with other people over time.
       That includes reviewing each other's work and shipping more than one
@@ -820,42 +1170,254 @@ topics:
       - How essentially all professional software is made.
     needs: [PDP-LO10, PDP-LO11]
 
-  # ---------------------------------------------------------------- CMPS 5N0554
-  CMPS-LO1:
-    name: Data structures and recursion
+  # ------------------------------------------------------------------ FOOP
+  FOOP-LO1:
+    name: Data types in an object oriented program
+    outcome: FOOP-LO1
     plain: >
-      Ways of arranging many values so a program can find and change them
-      quickly: a flat row, a grid with rows and columns, or a tree that
-      branches. It also covers the choice between repeating a step in a loop
-      and having a function call itself.
+      The kinds of value a program stores and works with — whole numbers,
+      decimals, text, true or false — plus the ones a class defines for
+      itself, built out of those.
     uses:
-      - ASCII art and computer graphics, where a grid of characters or pixels
-        is a matrix in the plainest possible sense.
-      - Gaussian elimination for solving simultaneous equations, and decision
-        matrices for weighing several options against several criteria at
-        once.
-      - Classical searching, sorting and filtering, all of which walk one of
-        these structures.
+      - Choosing the right container for a value before you choose what to do
+        with it, since a decimal and a whole number behave differently in
+        division.
+    needs: [PDP-LO4]
+
+  FOOP-LO2:
+    name: The instructions a program is built from
+    outcome: FOOP-LO2
+    plain: >
+      The small, shared vocabulary of any program: storing a value, running
+      steps in order, choosing between paths, and repeating a step. Object
+      oriented programming adds new ways to organise these, not new ones to
+      learn.
+    uses:
+      - Recognising the same handful of moves inside every class method you
+        will ever write.
+    needs: [PDP-LO4, PDP-LO6a]
+
+  FOOP-LO3:
+    name: Classes and objects
+    outcome: FOOP-LO3
+    plain: >
+      A class is a blueprint: it says what an object of that kind has (its
+      fields) and what it can do (its methods). An object is one thing built
+      from that blueprint. Encapsulation keeps an object's own details to
+      itself; inheritance lets one class reuse and extend another.
+    uses:
+      - Every library import that hands you a ready-made object rather than a
+        bag of loose functions.
+    needs: [FOOP-LO2]
+
+  FOOP-LO4:
+    name: Modular, reusable code
+    outcome: FOOP-LO4
+    plain: >
+      Writing a method once and calling it from anywhere an object of that
+      class exists, instead of copying the same steps out by hand each time
+      they are needed.
+    uses:
+      - The difference between fixing a bug in one place and hunting down
+        every copy of it.
+    needs: [FOOP-LO3, PDP-LO8]
+
+  FOOP-LO5:
+    name: Working in a development environment
+    outcome: FOOP-LO5
+    plain: >
+      The tools that sit around the code itself: an editor with autocomplete,
+      a way to run a program and see what it did, and a debugger for
+      following a program step by step when reading it is not enough.
+    uses:
+      - Working faster once the tool is doing the typing and the remembering
+        it is good at, leaving the thinking to you.
+    needs: []
+
+  FOOP-LO6:
+    name: Building bigger programs from smaller ones
+    outcome: FOOP-LO6
+    plain: >
+      Putting several classes to work together, each one responsible for a
+      single piece, rather than writing one long program that does
+      everything itself.
+    uses:
+      - Any real application, which is nearly always many small, cooperating
+        objects rather than one large one.
+    needs: [FOOP-LO4]
+
+  FOOP-LO7:
+    name: Modelling the real world
+    outcome: FOOP-LO7
+    plain: >
+      Deciding what an object needs to remember about itself and what it
+      needs to be able to do, starting from a real thing — a customer, a
+      shape, a game character — rather than from the code.
+    uses:
+      - Turning a problem statement written in English into a first sketch of
+        which classes a program needs.
+    needs: [FOOP-LO3]
+
+  FOOP-LO8:
+    name: Organising data
+    outcome: FOOP-LO8
+    plain: >
+      Grouping the values that belong together into one object's own fields,
+      instead of tracking them as separate, disconnected variables.
+    uses:
+      - Passing one object around a program instead of five loose values that
+        have to travel together by convention.
+    needs: [FOOP-LO1, FOOP-LO3]
+
+  FOOP-LO9:
+    name: Documenting object oriented code
+    outcome: FOOP-LO9
+    plain: >
+      Writing a class so that somebody meeting it for the first time —
+      including you, later — can tell what it represents and what each of
+      its methods does, without reading every line.
+    uses:
+      - Every docstring that lets an editor show you what a method does
+        before you call it.
+    needs: [PDP-LO7]
+
+  FOOP-LO10:
+    name: Debugging and testing an object oriented program
+    outcome: FOOP-LO10
+    plain: >
+      Finding out whether an object behaves the way its class promises it
+      will, and tracking down why when it does not.
+    uses:
+      - Catching a bug in one class before it reaches every other class that
+        relies on it.
+    needs: [PDP-LO9, PDP-LO10]
+
+  FOOP-LO11:
+    name: Deploying a program
+    outcome: FOOP-LO11
+    plain: >
+      Giving a finished program a way for somebody other than its author to
+      actually use it, rather than leaving it runnable only from inside an
+      editor.
+    uses:
+      - The difference between a program that works on your machine and one
+        anyone else can open and use.
+    needs: [FOOP-LO4]
+
+  # ---------------------------------------------------------------- CMPS 5N0554
+  CMPS-LO1a:
+    name: Grids
+    outcome: CMPS-LO1
+    plain: >
+      Arranging values in rows and columns rather than in a single row. You
+      reach one value by giving two positions, first which row and then
+      which column.
+    uses:
+      - ASCII art and computer graphics, where a grid of characters or of
+        pixels is exactly this.
+      - Any table of numbers a program works on, such as a spreadsheet or a
+        set of readings taken at several places over several days.
     needs: [MIT-6.7]
 
-  CMPS-LO2:
-    name: Probability and information
+  CMPS-LO1b:
+    name: Trees
+    outcome: CMPS-LO1
     plain: >
-      How likely something is, written as a number between zero and one. The
-      idea extends to statistics taken from a sample, and to events that do or
-      do not affect each other. It also covers the random numbers a computer
-      needs but cannot truly produce on its own.
+      Arranging values so that each one can lead to several others, and
+      none of them leads back. Following the branches gets you to any value
+      quickly, because each step rules out most of what is left.
     uses:
-      - Games of chance, and any feature that needs a fair-seeming shuffle or
-        deal.
-      - Conditional probability in spam filters, medical testing, and
-        recommendation engines.
+      - Folders on a disk, and the structure of a web page, both of which
+        branch this way.
+      - Deciding something in stages, where each answer narrows what you
+        ask next.
+    needs: [MIT-6.7, CMPS-LO1c]
+
+  CMPS-LO1c:
+    name: Recursion
+    outcome: CMPS-LO1
+    plain: >
+      Writing a function that calls itself on a smaller piece of the
+      problem. It needs a case small enough to answer outright, or it never
+      stops.
+    uses:
+      - Walking a tree or a folder structure, where each branch is the same
+        problem again on something smaller.
+      - Any method that splits a problem in half and combines the two
+        answers.
+    needs: [MIT-6.7]
+
+  CMPS-LO2a:
+    name: Probability
+    outcome: CMPS-LO2
+    plain: >
+      How likely something is, written as a number between zero and one.
+      Zero cannot happen, one is certain, and everything real sits in
+      between.
+    uses:
+      - Games of chance, and any feature that needs a fair-seeming shuffle
+        or deal.
+    needs: [MIT-5.6, MIT-5.7]
+
+  CMPS-LO2b:
+    name: Sampling
+    outcome: CMPS-LO2
+    plain: >
+      Measuring a few things and saying something about the many you did
+      not measure. How much you can claim depends on how many you took and
+      on how you chose them.
+    uses:
+      - Load testing, where a few thousand requests stand in for a day's
+        traffic.
+      - Any survey or poll, and the reason its result comes with a margin
+        either side.
+    needs: [CMPS-LO2a]
+
+  CMPS-LO2c:
+    name: Dependence
+    outcome: CMPS-LO2
+    plain: >
+      Whether one event changes how likely another is. Two events that do
+      not affect each other are much easier to reason about, and assuming
+      that wrongly is a common way to get an answer badly wrong.
+    uses:
+      - Reliability, where two parts that fail for the same reason are not
+        the independent pair the sum assumed.
+      - Spam filters and recommendation engines, which are built on chances
+        that shift as each new fact arrives.
+    needs: [CMPS-LO2b]
+
+  CMPS-LO2d:
+    name: Random numbers a computer makes
+    outcome: CMPS-LO2
+    plain: >
+      A computer follows instructions, so it cannot be truly unpredictable
+      on its own. What it produces instead is a sequence that looks random
+      and repeats exactly if you start it from the same place.
+    uses:
+      - Repeating a simulation exactly, by starting it from the same place
+        twice.
       - Public-key infrastructure, which depends on numbers a system can
         generate but an attacker cannot predict.
-    needs: [MIT-5.6, MIT-5.7]
+    needs: [CMPS-LO2c]
+
+  CMPS-LO2e:
+    name: Information
+    outcome: CMPS-LO2
+    plain: >
+      How much you learn from being told something. A result you already
+      expected tells you little, and a surprising one tells you a lot,
+      which is why the two can be measured on one scale.
+    uses:
+      - Compression, which works by spending fewer bits on the things that
+        happen often.
+      - Choosing what to ask next, where the best question is the one whose
+        answer you can predict least.
+    needs: [CMPS-LO2c]
 
   CMPS-LO3:
     name: Computer simulation
+    outcome: CMPS-LO3
     plain: >
       Working out what would happen, instead of running the real thing when
       that would be slow, expensive or impossible. You repeat a calculation
@@ -866,26 +1428,63 @@ topics:
         into a counting exercise a computer can just run.
       - Testing a design against thousands of random scenarios before it is
         built.
-    needs: [CMPS-LO2]
+    needs: [CMPS-LO2a]
 
-  CMPS-LO4:
-    name: Matrices in practice
+  CMPS-LO4a:
+    name: Matrices
+    outcome: CMPS-LO4
     plain: >
-      What a grid of numbers is good for once you leave the data-structures
-      course. A matrix is the machinery behind a graphics transformation, a
-      game's state, a web search ranking, and comparing one thing with its
-      nearest neighbours.
+      A grid of numbers treated as one object. You can add two of them,
+      multiply one by another, and the rules for doing so are what make
+      everything below possible.
     uses:
-      - Computer graphics and game engines, where every rotation, scale and
-        camera move is a matrix multiplication.
-      - Google's PageRank algorithm, which ranks the entire web by repeatedly
-        multiplying a matrix of links.
-      - Sequence alignment and nearest-neighbour search, both of which compare
-        rows of numbers to find the closest match.
-    needs: [MIT-6.3, MIT-3.2]
+      - Holding a set of related numbers where the position of each one
+        carries meaning, such as how much of each ingredient each recipe
+        needs.
+    needs: [CMPS-LO1a, MIT-3.2]
+
+  CMPS-LO4b:
+    name: Moving and turning a picture
+    outcome: CMPS-LO4
+    plain: >
+      Every rotation, scale and camera move in graphics is one matrix
+      multiplied by the points of the thing you are moving. Combining two
+      moves is multiplying their two matrices.
+    uses:
+      - Computer graphics and game engines.
+      - Image editing, where a crop, a rotation and a resize can be folded
+        into one step.
+    needs: [CMPS-LO4a, MIT-4.6a]
+
+  CMPS-LO4c:
+    name: Ranking by following links
+    outcome: CMPS-LO4
+    plain: >
+      Write down who links to whom as a grid, then multiply by it over and
+      over. The numbers settle towards a ranking, and the pages that many
+      linked pages point at come out on top.
+    uses:
+      - Web search ranking, which began as exactly this calculation.
+      - Working out who matters in any network, such as which account in a
+        social graph reaches the most people.
+    needs: [CMPS-LO4a, CMPS-LO2a]
+
+  CMPS-LO4d:
+    name: Comparing rows of numbers
+    outcome: CMPS-LO4
+    plain: >
+      Two things described by numbers can be compared by how close their
+      rows are. Doing that for every pair at once is a matrix calculation.
+    uses:
+      - Nearest-neighbour search, which is how a recommendation finds
+        things like the one you chose.
+      - Sequence alignment, where two strands are lined up by scoring every
+        way of matching them.
+    needs: [CMPS-LO4a]
 
   CMPS-LO5:
     name: Algorithmic complexity
+    outcome: CMPS-LO5
     plain: >
       Judging an algorithm by how its cost grows as the input grows, not by
       how fast it feels on one small example. You separate the best case, the
@@ -895,10 +1494,11 @@ topics:
         real difference only shows up at scale.
       - Capacity planning — knowing before you ship that a correct answer will
         become too slow.
-    needs: [MIT-6.8]
+    needs: [MIT-6.8a]
 
   CMPS-LO6:
     name: Probability applied to computing
+    outcome: CMPS-LO6
     plain: >
       Using probability on computing itself. How often does an algorithm meet
       its average case rather than its worst? How likely is a part to fail?
@@ -909,10 +1509,11 @@ topics:
       - Failure prediction and reliability engineering, and branch prediction
         inside a processor.
       - Analysing packet loss and jitter on a network link.
-    needs: [CMPS-LO2, CMPS-LO5]
+    needs: [CMPS-LO2a, CMPS-LO5]
 
   CMPS-LO7:
     name: Modelling versus simulation
+    outcome: CMPS-LO7
     plain: >
       Two related things that are easy to confuse. A model is a simplified
       description of a real system, cut down to the parts that matter. A
@@ -927,6 +1528,7 @@ topics:
 
   CMPS-LO8:
     name: Problem definition and design
+    outcome: CMPS-LO8
     plain: >
       The work that comes before any code is written. You pin down what the
       problem actually is, sketch a solution, and decide in advance how you
@@ -939,6 +1541,7 @@ topics:
 
   CMPS-LO9:
     name: Problem-solving strategies
+    outcome: CMPS-LO9
     plain: >
       The few general approaches to a hard problem, and which one suits which
       situation. You can try everything, split the problem in half and combine
@@ -954,6 +1557,7 @@ topics:
 
   CMPS-LO10:
     name: Symptoms versus root cause
+    outcome: CMPS-LO10
     plain: >
       The difference between a fix that makes the error message go away and a
       fix that deals with why the program produced it. It means reading a
@@ -968,6 +1572,7 @@ topics:
 
   CMPS-LO11:
     name: Iterating a model
+    outcome: CMPS-LO11
     plain: >
       Building a model, checking it against what really happens, and adjusting
       it. You do this as a loop rather than once, because the first version of
@@ -981,6 +1586,7 @@ topics:
 
   CMPS-LO12:
     name: Personal attributes in problem-solving
+    outcome: CMPS-LO12
     plain: >
       The habits that make someone good at solving problems, none of which is
       a technique you can be taught. Starting before every detail is settled,
@@ -994,6 +1600,7 @@ topics:
 
   CMPS-LO13:
     name: What a model's numbers are worth
+    outcome: CMPS-LO13
     plain: >
       How far a computational model can be trusted. You ask how accurate and
       how precise its numbers really are, and what it means to make a real

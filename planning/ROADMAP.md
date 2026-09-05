@@ -76,53 +76,54 @@ student receives changed — the built site was byte-identical afterwards.
   `programming-design-principles`) are gone. `database-methods` stays,
   empty, until its tutorials are written.
 
-## Phase 2 — Write the remaining tutorials — **in progress**
+## Phase 2 — Write the remaining tutorials — **done**
 
-The bulk of the term's effort. Three of the five Computational Methods
-strands were unwritten, and every planned platform feature is worth less
-than these pages existing.
+The bulk of the term's effort. All five Computational Methods strands
+are now written, and `CURRICULUM_MAP.md` reports 91 of 91 outcomes in
+place across all four accredited modules — nothing outstanding in any
+descriptor.
 
-**Done so far:** the simulation strand is half written —
-*Leaving It to Chance* and *Counting Darts*, released as the `simulation`
-series, taking `CMPS-LO2` and `CMPS-LO3` green on the curriculum map.
-`planning/outlines/monte-carlo.md` has the plan for the two that remain,
-and `planning/STATUS.md` §2 tracks where it stands.
+**What shipped, on top of the simulation strand's first two tutorials:**
+*A Model That Corrects Itself* (a from-scratch perceptron — model vs.
+simulation, `CMPS-LO7`/`LO11`), *When a Queue Never Clears* (queueing
+stability, `CMPS-LO6`), *Three Ways to Make Change* (brute force,
+memoization, a greedy heuristic — `CMPS-LO9`, plus tagging existing
+search/sort coverage for `CMPS-LO5` rather than re-teaching it),
+*Finding Everything Inside a Folder* (trees and recursion, `CMPS-LO1`),
+*Finding Where It Went Wrong* (problem definition, symptom vs. root
+cause, and the personal attributes behind debugging — `CMPS-LO8`,
+`LO10`, `LO12`), and a short addition to *Counting Darts* distinguishing
+accuracy from precision (`CMPS-LO13`). `planning/STATUS.md` §2 has the
+per-outcome detail, including what a QQI verification visit might still
+want gathered up even though nothing is red.
 
-**The work:**
+**What this phase's own open questions decided, in hindsight:** every
+strand shipped as a from-scratch worked example (a perceptron, a queue
+simulation, a coin-change problem, a folder tree, a buggy unit-conversion
+pipeline) rather than the originally-planned thermal model or cache
+predictor — each swapped for something more engaging once a concrete
+alternative existed. None ran long enough to need the "this cell takes
+ten seconds" convention floated below; the question is still open, just
+never forced.
 
-1. *Discrete Simulation & Monte Carlo Methods* — estimating π, queuing
-   models, randomness (`CMPS-LO3`, `CMPS-LO6`, the randomness half of
-   `CMPS-LO2`).
-2. *Algorithmic Complexity & Systems Modeling* — complexity bounds,
-   cache prediction, thermal simulation (`CMPS-LO5`, `CMPS-LO7`–`LO13`).
-3. The remaining half of the link-graph strand: a real crawl or link
-   graph beyond the worked three-page PageRank example.
-4. Make at least one of these the first tutorial to use real data. The
-   entire dataset apparatus — `data/`, `load_csv()`, the `datasets:`
-   frontmatter, `check_datasets()`, the sidebar attribution — is built
-   and used by nothing. `co2-emissions.csv` and `life-expectancy.csv`
-   are sitting there licensed and cited.
-5. Per tutorial as it ships, as already practised: an outline in
-   `planning/outlines/`, the glossary skill, the cell-review skill, and
-   `covers:` mapping checked against the curriculum map.
+**Left undone, on purpose — not blocking, but real:**
 
-**Open questions:**
+1. **No tutorial anywhere uses real data.** The entire dataset apparatus
+   — `data/`, `load_csv()`, `datasets:` frontmatter, `check_datasets()`,
+   sidebar attribution — is built and still used by nothing.
+   `co2-emissions.csv` and `life-expectancy.csv` are licensed, cited,
+   and idle. This was Phase 2's own item 4, never claimed by any of the
+   six tutorials that shipped.
+2. **The link-graph strand's crawl** is still only the worked
+   three-page PageRank example inside *Where Chains Lead* — no
+   dedicated tutorial on a real link graph or an actual crawl.
+3. **Does the worksheet converter revive?** Still on hold, unchanged
+   from when this phase started; hand conversion hasn't become the
+   bottleneck.
 
-- **Which strand first?** *Assumed:* Monte Carlo — it builds on
-  randomness the matrices series already touched, and it is the most
-  immediately engaging material for a January-tired cohort. *Blocks:*
-  nothing; the strands are independent.
-- **Do long-running simulations need a tutorial convention of their
-  own?** Thermal models and queue simulations run longer than any
-  existing cell; the Stop button exists, but nothing in the tutorial
-  format says "this cell takes ten seconds, that is normal." *Assumed:*
-  a sentence of prose suffices until proven otherwise. *Cost:* a
-  convention added later touches only new tutorials.
-- **Does the worksheet converter revive?** It was never written. The
-  unconverted worksheets
-  (Bayes, distributions, the matrices set) cover material these strands
-  will teach. *Assumed:* still on hold; convert by hand as before, and
-  revisit only if hand conversion is the bottleneck in practice.
+Whether either of the first two is worth doing now that every outcome
+is covered — versus moving straight to Phase 3 — is an open question in
+its own right, not answered by finishing the outcome count.
 
 ---
 

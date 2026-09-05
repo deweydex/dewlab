@@ -1,0 +1,88 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# Second tutorial of its series (Programming with objects) and its module
+# (Fundamentals of Object Oriented Programming) — the-moves-you-already-know
+# comes first, but introduces only sequence/selection/iteration, none of
+# which this tutorial's own terms below overlap with. None of these terms
+# are emphasised anywhere else in the curriculum either (checked via
+# dev/curriculum_map.py's terms_of()).
+entries:
+  - term: class
+    kind: concept
+    definition: >
+      A class is a blueprint that says what an object of that kind has and
+      what it can do, without being an object itself.
+    example: "class BankAccount:"
+
+  - term: object
+    kind: concept
+    definition: >
+      An object is one specific thing built from a class, with its own
+      values for the fields the class describes.
+    example: "alice = BankAccount(\"Alice\", 100.0)"
+
+  - term: field
+    kind: concept
+    definition: >
+      A field is a piece of data that belongs to one particular object,
+      set when the object is built and read or changed through it.
+    example: "self.balance = 100.0"
+
+  - term: method
+    kind: concept
+    definition: >
+      A method is a function that belongs to a class and acts on one
+      particular object's own fields.
+    example: "account.deposit(50.0)"
+
+  - term: constructor
+    kind: concept
+    definition: >
+      The constructor is the method Python runs automatically when a new
+      object is built. Its job is to set up that object's fields.
+    example: "def __init__(self, owner, balance):"
+
+  - term: self
+    kind: concept
+    definition: >
+      self is the name a method uses for the one object it was called on,
+      so a line inside the method can reach that object's own fields.
+    example: "self.balance = self.balance + amount"
+
+  - term: encapsulation
+    kind: concept
+    definition: >
+      Encapsulation is keeping an object's own data behind its methods, so
+      every change to it passes through code that can enforce a rule.
+
+  - term: abstraction
+    kind: concept
+    definition: >
+      Abstraction is what a class shows the rest of a program: what each
+      method does, not how it does it inside.
+
+  - term: inheritance
+    kind: concept
+    definition: >
+      Inheritance lets one class reuse everything another class already
+      does, and add only what is different.
+    example: "class SavingsAccount(BankAccount):"
+
+  - term: parent class
+    kind: concept
+    definition: >
+      The parent class is the existing class a new class is built on. It
+      supplies its own fields and methods to the new class for free.
+
+  - term: child class
+    kind: concept
+    definition: >
+      The child class is the new class built on a parent. It can add
+      fields or methods of its own on top of what it inherits.
+
+  - term: "super()"
+    kind: function
+    definition: >
+      Calls a method from the parent class instead of writing it again,
+      most often the parent's own constructor.
+    example: "super().__init__(owner, balance)"

@@ -1,0 +1,32 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# Third tutorial of the series (Programming with objects), after
+# objects-and-classes and one-class-many-methods. Checked both earlier
+# glossaries as the cumulative list — none of these terms overlap.
+# dev/curriculum_map.py's terms_of() also found "has" and "is a" emphasised
+# here, and the other two tutorials' own titles in italics; none of those
+# are terms — the first two are grammatical emphasis contrasting
+# inheritance and composition, and the titles are ordinary cross-references
+# to earlier tutorials, not new vocabulary.
+entries:
+  - term: overdraft
+    kind: concept
+    definition: >
+      An overdraft lets an account's balance go below zero, up to some
+      limit, rather than refusing a withdrawal that would empty it.
+    example: "CheckingAccount('Ben', 200.0, 100.0)  # a 100.0 overdraft limit"
+
+  - term: polymorphism
+    kind: concept
+    definition: >
+      Polymorphism is one method name doing a different thing depending on
+      which class the object it was called on belongs to. A caller does
+      not need to check the class first.
+    example: "account.withdraw(amount)  # runs whichever withdraw() fits account"
+
+  - term: composition
+    kind: concept
+    definition: >
+      Composition builds one class out of objects of another class, held
+      as fields, rather than by inheriting from it. A `Bank` has accounts;
+      it is not a kind of account itself.

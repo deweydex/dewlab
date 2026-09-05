@@ -2012,6 +2012,40 @@ class TestTheTopicTree:
         assert node["uses"]
         assert node["strand"] == "number"
 
+    def test_a_topic_takes_its_strand_and_coverage_from_the_outcome_it_serves(
+        self, repo, monkeypatch
+    ):
+        """A topic code and an outcome code used to be the same string.
+
+        They are not any more: a descriptor sometimes bundles ideas a student
+        meets weeks apart, so several topics may serve one outcome. Everything
+        keyed by outcome — the strand, whether a tutorial teaches it, whether
+        it is out of scope — has to follow the `outcome:` field rather than the
+        topic's own code, or a split topic silently shows as untaught.
+        """
+        real = b.load_topics()
+        split = {
+            "SPLIT-A": {
+                "name": "The first half",
+                "outcome": "MIT-1.4",
+                "plain": "One half of what the descriptor asks for.",
+                "uses": ["Somewhere it comes up."],
+                "needs": [],
+            }
+        }
+        monkeypatch.setattr(b, "load_topics", lambda: {**real, **split})
+        write(repo, "Some prose.\n")
+        b.build()
+
+        node = next(n for n in self.data(repo)["nodes"] if n["code"] == "SPLIT-A")
+        original = next(n for n in self.data(repo)["nodes"] if n["code"] == "MIT-1.4")
+        assert node["strand"] == original["strand"], (
+            "a split topic lost the strand of the outcome it serves"
+        )
+        assert node["state"] == original["state"], (
+            "a split topic lost the coverage of the outcome it serves"
+        )
+
     def test_nothing_needs_something_below_it(self, repo):
         """The whole layout rests on this: top to bottom is dependency, so an
         arrow that pointed upwards would be a lie about the tree."""
@@ -3246,3 +3280,55 @@ class TestWhatTheReferenceCanBeFilteredBy:
             "intermediate",
             "advanced", "advanced", "advanced",
         ]
+
+
+def test_the_marking_workbench_is_published(repo, monkeypatch):
+    """dewmark's workbench reaches the site at /dewmark/.
+
+    Nothing on the site links to it, so a broken copy step would go
+    unnoticed until somebody typed the address.
+    """
+    workbench = repo / "dewmark" / "workbench"
+    workbench.mkdir(parents=True)
+    (workbench / "index.html").write_text("<h1>dewmark marking workbench</h1>")
+    monkeypatch.setattr(b, "DEWMARK_WORKBENCH", workbench)
+
+    b.build()
+
+    published = b.OUT / "dewmark" / "index.html"
+    assert published.is_file()
+    assert published.read_text() == (workbench / "index.html").read_text()
+
+
+def test_the_topic_pair_game_is_published_without_its_readme(repo, monkeypatch):
+    """The pair game reaches the site at /topic_tree_game/.
+
+    Nothing on the site links to it either, and its README is written for
+    somebody reading the repository rather than for a visitor.
+    """
+    game = repo / "topic_tree_game"
+    game.mkdir(parents=True)
+    (game / "index.html").write_text("<h1>topic pairs</h1>")
+    (game / "README.md").write_text("how the loop works")
+    monkeypatch.setattr(b, "TOPIC_GAME", game)
+
+    b.build()
+
+    assert (b.OUT / "topic_tree_game" / "index.html").is_file()
+    assert not (b.OUT / "topic_tree_game" / "README.md").exists()
+
+
+def test_no_topic_game_folder_is_not_an_error(repo, monkeypatch):
+    """A checkout without topic_tree_game/ still builds."""
+    monkeypatch.setattr(b, "TOPIC_GAME", repo / "topic_tree_game")
+
+    b.build()
+
+    assert not (b.OUT / "topic_tree_game").exists()
+
+
+def test_no_workbench_folder_is_not_an_error(repo, monkeypatch):
+    """A checkout without dewmark/ still builds."""
+    monkeypatch.setattr(b, "DEWMARK_WORKBENCH", repo / "dewmark" / "workbench")
+    b.build()
+    assert not (b.OUT / "dewmark").exists()

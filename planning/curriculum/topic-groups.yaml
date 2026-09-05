@@ -147,9 +147,29 @@ groups:
       - { module: mit-pdp-maths-prog-integration, slug: making-decisions }
       - { module: mit-pdp-maths-prog-integration, slug: finding-things }
       - { module: mit-pdp-maths-prog-integration, slug: putting-things-in-order }
+      - { module: computational-methods, slug: three-ways-to-make-change }
+      - { module: computational-methods, slug: finding-everything-inside-a-folder }
       - { module: mit-pdp-maths-prog-integration, slug: building-reusable-tools }
       - { module: mit-pdp-maths-prog-integration, slug: when-it-goes-wrong }
       - { module: mit-pdp-maths-prog-integration, slug: mixed-programming }
+
+  - key: object-oriented-programming
+    name: Objects, classes, and building bigger programs
+    intro: >
+      Keeping a thing's data and the operations on it together as one
+      unit, so a program can have many of something — accounts, shapes,
+      characters — without a separate variable name for every one of
+      them.
+    tutorials:
+      - { module: fundamentals-of-oop, slug: the-moves-you-already-know }
+      - { module: fundamentals-of-oop, slug: objects-and-classes }
+      - { module: fundamentals-of-oop, slug: the-tools-around-your-code }
+      - { module: fundamentals-of-oop, slug: one-class-many-methods }
+      - { module: fundamentals-of-oop, slug: one-parent-many-children }
+      - { module: fundamentals-of-oop, slug: testing-what-a-class-does }
+      - { module: fundamentals-of-oop, slug: documenting-a-class }
+      - { module: fundamentals-of-oop, slug: a-front-end-for-a-class }
+      - { module: fundamentals-of-oop, slug: mixed-programming-with-objects }
 
   - key: big-picture
     name: How it all fits together
@@ -173,3 +193,14 @@ groups:
       - { module: mit-pdp-maths-prog-integration, slug: what-are-the-chances }
       - { module: computational-methods, slug: leaving-it-to-chance }
       - { module: computational-methods, slug: counting-darts }
+      - { module: computational-methods, slug: a-model-that-corrects-itself }
+      - { module: computational-methods, slug: when-a-queue-never-clears }
+
+  - key: problem-solving-and-debugging
+    name: Solving problems and finding faults
+    intro: >
+      What happens before any code gets written, and what to do once a
+      program runs but still gives the wrong answer — the habits and
+      strategies behind fixing something, not any one language or tool.
+    tutorials:
+      - { module: computational-methods, slug: finding-where-it-went-wrong }

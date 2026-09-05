@@ -1,0 +1,536 @@
+{
+  "by": "tom",
+  "saved_at": "2026-09-04T22:00:00Z",
+  "judgements": [
+    {
+      "pair": [
+        "CMPS-LO1",
+        "CMPS-LO10"
+      ],
+      "verdict": "unrelated"
+    },
+    {
+      "pair": [
+        "CMPS-LO1",
+        "CMPS-LO11"
+      ],
+      "verdict": "unrelated"
+    },
+    {
+      "pair": [
+        "CMPS-LO1",
+        "CMPS-LO12"
+      ],
+      "verdict": "unrelated"
+    },
+    {
+      "pair": [
+        "CMPS-LO1",
+        "CMPS-LO13"
+      ],
+      "verdict": "unrelated"
+    },
+    {
+      "pair": [
+        "CMPS-LO1",
+        "CMPS-LO2"
+      ],
+      "verdict": "unrelated"
+    },
+    {
+      "pair": [
+        "CMPS-LO1",
+        "CMPS-LO3"
+      ],
+      "verdict": "unrelated"
+    },
+    {
+      "pair": [
+        "CMPS-LO1",
+        "CMPS-LO4"
+      ],
+      "verdict": "unrelated"
+    },
+    {
+      "pair": [
+        "CMPS-LO1",
+        "CMPS-LO5"
+      ],
+      "verdict": "unrelated"
+    },
+    {
+      "pair": [
+        "CMPS-LO1",
+        "CMPS-LO6"
+      ],
+      "verdict": "unrelated"
+    },
+    {
+      "pair": [
+        "CMPS-LO1",
+        "CMPS-LO7"
+      ],
+      "verdict": "unrelated"
+    },
+    {
+      "pair": [
+        "CMPS-LO1",
+        "CMPS-LO8"
+      ],
+      "verdict": "unrelated"
+    },
+    {
+      "pair": [
+        "CMPS-LO1",
+        "CMPS-LO9"
+      ],
+      "verdict": "unrelated"
+    },
+    {
+      "pair": [
+        "CMPS-LO10",
+        "CMPS-LO11"
+      ],
+      "verdict": "unrelated"
+    },
+    {
+      "pair": [
+        "CMPS-LO10",
+        "CMPS-LO12"
+      ],
+      "verdict": "unrelated"
+    },
+    {
+      "pair": [
+        "CMPS-LO10",
+        "CMPS-LO13"
+      ],
+      "verdict": "unrelated"
+    },
+    {
+      "pair": [
+        "CMPS-LO10",
+        "CMPS-LO2"
+      ],
+      "verdict": "unrelated"
+    },
+    {
+      "pair": [
+        "CMPS-LO10",
+        "CMPS-LO3"
+      ],
+      "verdict": "unrelated"
+    },
+    {
+      "pair": [
+        "CMPS-LO10",
+        "CMPS-LO4"
+      ],
+      "verdict": "unrelated"
+    },
+    {
+      "pair": [
+        "CMPS-LO10",
+        "CMPS-LO5"
+      ],
+      "verdict": "unrelated"
+    },
+    {
+      "pair": [
+        "CMPS-LO10",
+        "CMPS-LO6"
+      ],
+      "verdict": "unrelated"
+    },
+    {
+      "pair": [
+        "CMPS-LO10",
+        "CMPS-LO7"
+      ],
+      "verdict": "unrelated"
+    },
+    {
+      "pair": [
+        "CMPS-LO10",
+        "CMPS-LO9"
+      ],
+      "verdict": "unrelated"
+    },
+    {
+      "pair": [
+        "CMPS-LO11",
+        "CMPS-LO12"
+      ],
+      "verdict": "unrelated"
+    },
+    {
+      "pair": [
+        "CMPS-LO11",
+        "CMPS-LO2"
+      ],
+      "verdict": "needs",
+      "first": "CMPS-LO2"
+    },
+    {
+      "pair": [
+        "CMPS-LO11",
+        "CMPS-LO3"
+      ],
+      "verdict": "needs",
+      "first": "CMPS-LO3"
+    },
+    {
+      "pair": [
+        "CMPS-LO11",
+        "CMPS-LO4"
+      ],
+      "verdict": "unrelated"
+    },
+    {
+      "pair": [
+        "CMPS-LO11",
+        "CMPS-LO5"
+      ],
+      "verdict": "unrelated"
+    },
+    {
+      "pair": [
+        "CMPS-LO11",
+        "CMPS-LO6"
+      ],
+      "verdict": "unrelated"
+    },
+    {
+      "pair": [
+        "CMPS-LO11",
+        "CMPS-LO8"
+      ],
+      "verdict": "unrelated"
+    },
+    {
+      "pair": [
+        "CMPS-LO11",
+        "CMPS-LO9"
+      ],
+      "verdict": "unrelated"
+    },
+    {
+      "pair": [
+        "CMPS-LO12",
+        "CMPS-LO13"
+      ],
+      "verdict": "unrelated"
+    },
+    {
+      "pair": [
+        "CMPS-LO12",
+        "CMPS-LO2"
+      ],
+      "verdict": "unrelated"
+    },
+    {
+      "pair": [
+        "CMPS-LO12",
+        "CMPS-LO3"
+      ],
+      "verdict": "unrelated"
+    },
+    {
+      "pair": [
+        "CMPS-LO12",
+        "CMPS-LO4"
+      ],
+      "verdict": "unrelated"
+    },
+    {
+      "pair": [
+        "CMPS-LO12",
+        "CMPS-LO5"
+      ],
+      "verdict": "unrelated"
+    },
+    {
+      "pair": [
+        "CMPS-LO12",
+        "CMPS-LO6"
+      ],
+      "verdict": "unrelated"
+    },
+    {
+      "pair": [
+        "CMPS-LO12",
+        "CMPS-LO7"
+      ],
+      "verdict": "unrelated"
+    },
+    {
+      "pair": [
+        "CMPS-LO12",
+        "CMPS-LO8"
+      ],
+      "verdict": "unrelated"
+    },
+    {
+      "pair": [
+        "CMPS-LO12",
+        "CMPS-LO9"
+      ],
+      "verdict": "unrelated"
+    },
+    {
+      "pair": [
+        "CMPS-LO13",
+        "CMPS-LO2"
+      ],
+      "verdict": "needs",
+      "first": "CMPS-LO2"
+    },
+    {
+      "pair": [
+        "CMPS-LO13",
+        "CMPS-LO3"
+      ],
+      "verdict": "needs",
+      "first": "CMPS-LO3"
+    },
+    {
+      "pair": [
+        "CMPS-LO13",
+        "CMPS-LO4"
+      ],
+      "verdict": "unrelated"
+    },
+    {
+      "pair": [
+        "CMPS-LO13",
+        "CMPS-LO5"
+      ],
+      "verdict": "unrelated"
+    },
+    {
+      "pair": [
+        "CMPS-LO13",
+        "CMPS-LO6"
+      ],
+      "verdict": "unrelated"
+    },
+    {
+      "pair": [
+        "CMPS-LO13",
+        "CMPS-LO7"
+      ],
+      "verdict": "needs",
+      "first": "CMPS-LO7"
+    },
+    {
+      "pair": [
+        "CMPS-LO13",
+        "CMPS-LO8"
+      ],
+      "verdict": "unrelated"
+    },
+    {
+      "pair": [
+        "CMPS-LO13",
+        "CMPS-LO9"
+      ],
+      "verdict": "unrelated"
+    },
+    {
+      "pair": [
+        "CMPS-LO2",
+        "CMPS-LO4"
+      ],
+      "verdict": "unrelated"
+    },
+    {
+      "pair": [
+        "CMPS-LO2",
+        "CMPS-LO5"
+      ],
+      "verdict": "unrelated"
+    },
+    {
+      "pair": [
+        "CMPS-LO2",
+        "CMPS-LO7"
+      ],
+      "verdict": "needs",
+      "first": "CMPS-LO2"
+    },
+    {
+      "pair": [
+        "CMPS-LO2",
+        "CMPS-LO8"
+      ],
+      "verdict": "unrelated"
+    },
+    {
+      "pair": [
+        "CMPS-LO2",
+        "CMPS-LO9"
+      ],
+      "verdict": "unrelated"
+    },
+    {
+      "pair": [
+        "CMPS-LO3",
+        "CMPS-LO4"
+      ],
+      "verdict": "unrelated"
+    },
+    {
+      "pair": [
+        "CMPS-LO3",
+        "CMPS-LO5"
+      ],
+      "verdict": "unrelated"
+    },
+    {
+      "pair": [
+        "CMPS-LO3",
+        "CMPS-LO6"
+      ],
+      "verdict": "unrelated"
+    },
+    {
+      "pair": [
+        "CMPS-LO3",
+        "CMPS-LO8"
+      ],
+      "verdict": "unrelated"
+    },
+    {
+      "pair": [
+        "CMPS-LO3",
+        "CMPS-LO9"
+      ],
+      "verdict": "unrelated"
+    },
+    {
+      "pair": [
+        "CMPS-LO4",
+        "CMPS-LO5"
+      ],
+      "verdict": "unrelated"
+    },
+    {
+      "pair": [
+        "CMPS-LO4",
+        "CMPS-LO6"
+      ],
+      "verdict": "unrelated"
+    },
+    {
+      "pair": [
+        "CMPS-LO4",
+        "CMPS-LO7"
+      ],
+      "verdict": "unrelated"
+    },
+    {
+      "pair": [
+        "CMPS-LO4",
+        "CMPS-LO8"
+      ],
+      "verdict": "unrelated"
+    },
+    {
+      "pair": [
+        "CMPS-LO4",
+        "CMPS-LO9"
+      ],
+      "verdict": "unrelated"
+    },
+    {
+      "pair": [
+        "CMPS-LO5",
+        "CMPS-LO7"
+      ],
+      "verdict": "unrelated"
+    },
+    {
+      "pair": [
+        "CMPS-LO5",
+        "CMPS-LO8"
+      ],
+      "verdict": "unrelated"
+    },
+    {
+      "pair": [
+        "CMPS-LO5",
+        "CMPS-LO9"
+      ],
+      "verdict": "unrelated"
+    },
+    {
+      "pair": [
+        "CMPS-LO6",
+        "CMPS-LO7"
+      ],
+      "verdict": "unrelated"
+    },
+    {
+      "pair": [
+        "CMPS-LO6",
+        "CMPS-LO8"
+      ],
+      "verdict": "unrelated"
+    },
+    {
+      "pair": [
+        "CMPS-LO6",
+        "CMPS-LO9"
+      ],
+      "verdict": "unrelated"
+    },
+    {
+      "pair": [
+        "CMPS-LO7",
+        "CMPS-LO8"
+      ],
+      "verdict": "unrelated"
+    },
+    {
+      "pair": [
+        "CMPS-LO7",
+        "CMPS-LO9"
+      ],
+      "verdict": "unrelated"
+    },
+    {
+      "pair": [
+        "CMPS-LO8",
+        "CMPS-LO9"
+      ],
+      "verdict": "unrelated"
+    }
+  ],
+  "renamed": {
+    "CMPS-LO2": "Chance, and the random numbers a computer makes",
+    "CMPS-LO5": "How an algorithm's cost grows",
+    "CMPS-LO7": "Models, and running a model forward",
+    "CMPS-LO10": "Finding what actually caused the error",
+    "CMPS-LO12": "The habits that help you solve problems",
+    "CMPS-LO13": "How far you can trust a model's numbers"
+  },
+  "groups": {},
+  "new_groups": [
+    {
+      "key": "how-to-approach-a-problem",
+      "name": "How to approach a problem",
+      "topics": [
+        "CMPS-LO8",
+        "CMPS-LO9",
+        "CMPS-LO10",
+        "CMPS-LO12"
+      ],
+      "why": "These four are about the way a person works rather than about any piece of maths or any library. They have almost no prerequisites among themselves, so they read as one family sitting side by side rather than as a chain. Grouping them would say that out loud, instead of leaving somebody to hunt for arrows that are not there."
+    }
+  ],
+  "needs_work": [
+    "CMPS-LO2",
+    "CMPS-LO12",
+    "CMPS-LO1"
+  ]
+}

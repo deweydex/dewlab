@@ -21,7 +21,14 @@
   --dl-font-family: Georgia, "Iowan Old Style", "Times New Roman", serif;
   --dl-font-size: 18px;
   --dl-line-width: 34rem;
-  --dl-link: var(--dl-orange);
+  /* Darker than --dl-orange, and deliberately not the brand hue itself.
+   * The brand orange is 3.5:1 on this background, under the 4.5:1 that
+   * ordinary AA asks for at this text size, and links are most of the
+   * text on the contents page. This clears it at 4.74:1 while still
+   * reading as the same orange. The brand hue keeps its own value for
+   * everything that is not body-sized text. Dark theme sets its own,
+   * below: --dl-orange is 4.96:1 there and needs no darkening. */
+  --dl-link: #b8541a;
 
   /* A cell type's colour, layered onto its label rather than standing in
      for it — planning/CELL_IDENTITY.md §2/§8. Python/Text reference
@@ -66,6 +73,7 @@
 }
 
 :root[data-theme="dark"] {
+  --dl-link: var(--dl-orange);
   --dl-bg: #14181f;
   --dl-fg: #e6e3dd;
   --dl-muted: #98a2b3;
@@ -88,6 +96,7 @@
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
+    --dl-link: var(--dl-orange);
     --dl-bg: #14181f;
     --dl-fg: #e6e3dd;
     --dl-muted: #98a2b3;
@@ -117,12 +126,12 @@
   --dl-font-family: var(--dl-mono);
 }
 /* Two accessible reading fonts (assets/vendor/accessible-fonts.css,
- * DECISIONS_LOG.md 7.123): Atkinson Hyperlegible (Braille Institute of
- * America — designed for low-vision legibility) and OpenDyslexic. Real
+ * DECISIONS_LOG.md 7.123, 7.127): Lexend (designed to reduce the visual
+ * complexity linked to reading difficulty) and OpenDyslexic. Real
  * fallback fonts after each, not just the family name, for the one
  * moment before the self-hosted @font-face has actually loaded. */
-:root[data-font="atkinson"] {
-  --dl-font-family: "Atkinson Hyperlegible", "Helvetica Neue", Arial, sans-serif;
+:root[data-font="lexend"] {
+  --dl-font-family: "Lexend", "Helvetica Neue", Arial, sans-serif;
 }
 :root[data-font="opendyslexic"] {
   --dl-font-family: "OpenDyslexic", "Comic Sans MS", sans-serif;
@@ -133,25 +142,57 @@
  * (DECISIONS_LOG.md 7.123), independent of whichever of the five fonts
  * above (or light/dark theme) a reader separately picked, because
  * neither of those questions is "can I tell this text from its
- * background". Forces Atkinson Hyperlegible regardless of the Font
- * row's own choice, and near-maximum text/background contrast in
- * whichever theme is active — --dl-muted is the one most rules here
+ * background". Forces Lexend regardless of the Font row's own choice
+ * (DECISIONS_LOG.md 7.127), and near-maximum text/background contrast
+ * in whichever theme is active — --dl-muted is the one most rules here
  * lean on for secondary text, and the value it takes elsewhere is
  * nowhere near AAA contrast on purpose (it is meant to recede), so
  * high contrast redefines it to nearly --dl-fg rather than leaving it
- * at its normal value. */
+ * at its normal value.
+ *
+ * The first version of this (DECISIONS_LOG.md 7.123) redefined only
+ * --dl-fg/--dl-bg/--dl-muted/--dl-rule, on the assumption that a
+ * reader's own body text was the whole of "can I read this" — found
+ * wrong by actually turning the toggle on and looking, not by auditing
+ * the variable list first (7.124). A heading, a link, a cell-type pill,
+ * a cell's own border, a pass/fail message: every one of those is its
+ * *own* variable, so the toggle changed nothing about any of them.
+ * Measured with WCAG's own contrast-ratio formula rather than eyeballed
+ * — --dl-link at 3.6:1 against white was failing the *ordinary* AA
+ * minimum (4.5:1) that applies with the toggle off, let alone the
+ * near-7:1 AAA this toggle exists to promise; --dl-cell-border was
+ * effectively invisible (1.4:1, against a 3:1 floor for a graphical
+ * boundary). Fixed by darkening (light theme) or lightening (dark) each
+ * colour along its own hue until it clears 7:1 against the background it
+ * actually sits on, not by replacing it with black or grey — a returning
+ * reader who has learned "teal is SQL, purple is HTML" keeps that under
+ * high contrast too, the same way the design already keeps it across
+ * light and dark theme. --dl-cell-border has no hue worth preserving
+ * (it is a boundary, not a signal), so it borrows --dl-rule outright
+ * rather than getting a colour of its own. */
 :root[data-contrast="high"] {
-  --dl-font-family: "Atkinson Hyperlegible", "Helvetica Neue", Arial, sans-serif;
+  --dl-font-family: "Lexend", "Helvetica Neue", Arial, sans-serif;
   --dl-fg: #000000;
   --dl-bg: #ffffff;
   --dl-muted: #1a1a1a;
   --dl-rule: #000000;
+  --dl-link: #8c451c;
+  --dl-cell-border: var(--dl-rule);
+  --dl-type-python: #8c451c;
+  --dl-type-sql: #0b635c;
+  --dl-type-html: #691eea;
+  --dl-type-css: #134cca;
+  --dl-type-js: #9e1d7b;
+  --dl-pass-fg: #1a5b36;
 }
 :root[data-theme="dark"][data-contrast="high"] {
   --dl-fg: #ffffff;
   --dl-bg: #000000;
   --dl-muted: #f2f2f2;
   --dl-rule: #ffffff;
+  --dl-link: #db7e47;
+  --dl-cell-border: var(--dl-rule);
+  --dl-type-python: #db7e47;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"])[data-contrast="high"] {
@@ -159,6 +200,9 @@
     --dl-bg: #000000;
     --dl-muted: #f2f2f2;
     --dl-rule: #ffffff;
+    --dl-link: #db7e47;
+    --dl-cell-border: var(--dl-rule);
+    --dl-type-python: #db7e47;
   }
 }
 
@@ -919,6 +963,21 @@ p code, li code {
 
 /* ---------------------------------------------------------- runtime status */
 
+/* Present to a screen reader, invisible on screen — the standard
+   clip-to-1px pattern, not `display: none` or `hidden`, either of which
+   would pull it out of the accessibility tree along with the page. */
+.dl-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 .dl-status {
   position: sticky;
   /* Below the masthead rather than behind it: both stick, and this one is the
@@ -1448,6 +1507,13 @@ p code, li code {
   margin-bottom: 0.65rem;
 }
 .dl-texture-row > span { color: var(--dl-muted); font-size: 0.78rem; }
+/* The 4.6rem label column fits a one-word label ("Theme", "Size") on one
+ * line. A longer label ("Show progress on the tutorials list") wraps into
+ * a narrow ribbon instead, several lines tall, with most of the row's own
+ * width sitting empty next to a two-button toggle that needs none of it.
+ * This modifier drops to one column, so a long label reads as a normal
+ * line of text above its toggle rather than a cramped one beside it. */
+.dl-texture-row-wide { grid-template-columns: 1fr; }
 .dl-seg { display: flex; gap: 0.25rem; }
 .dl-seg button {
   flex: 1;
@@ -1460,7 +1526,7 @@ p code, li code {
   color: var(--dl-fg);
   cursor: pointer;
 }
-.dl-seg button[aria-pressed="true"] {
+.dl-seg button[aria-checked="true"] {
   background: var(--dl-navy);
   border-color: var(--dl-navy);
   color: #fff;

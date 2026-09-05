@@ -1,0 +1,4040 @@
+{
+ "by": "Josh",
+ "saved_at": "2026-09-04T23:32:50.641Z",
+ "judgements": [
+  {
+   "pair": [
+    "MIT-1.2",
+    "MIT-1.3"
+   ],
+   "verdict": "needs",
+   "first": "MIT-1.2"
+  },
+  {
+   "pair": [
+    "MIT-1.5",
+    "MIT-1.6"
+   ],
+   "verdict": "needs",
+   "first": "MIT-1.5"
+  },
+  {
+   "pair": [
+    "MIT-1.6",
+    "MIT-1.7"
+   ],
+   "verdict": "both"
+  },
+  {
+   "pair": [
+    "MIT-1.6",
+    "MIT-1.8"
+   ],
+   "verdict": "needs",
+   "first": "MIT-1.6"
+  },
+  {
+   "pair": [
+    "MIT-1.8",
+    "MIT-1.9"
+   ],
+   "verdict": "needs",
+   "first": "MIT-1.8"
+  },
+  {
+   "pair": [
+    "MIT-1.9",
+    "MIT-1.10"
+   ],
+   "verdict": "needs",
+   "first": "MIT-1.9"
+  },
+  {
+   "pair": [
+    "MIT-2.1",
+    "MIT-1.10"
+   ],
+   "verdict": "needs",
+   "first": "MIT-2.1"
+  },
+  {
+   "pair": [
+    "MIT-1.5",
+    "MIT-1.11"
+   ],
+   "verdict": "needs",
+   "first": "MIT-1.5"
+  },
+  {
+   "pair": [
+    "MIT-1.5",
+    "MIT-1.12"
+   ],
+   "verdict": "needs",
+   "first": "MIT-1.5"
+  },
+  {
+   "pair": [
+    "MIT-2.1",
+    "MIT-2.2"
+   ],
+   "verdict": "needs",
+   "first": "MIT-2.2"
+  },
+  {
+   "pair": [
+    "MIT-2.2",
+    "MIT-2.3"
+   ],
+   "verdict": "needs",
+   "first": "MIT-2.2"
+  },
+  {
+   "pair": [
+    "MIT-2.4",
+    "MIT-2.5"
+   ],
+   "verdict": "needs",
+   "first": "MIT-2.4"
+  },
+  {
+   "pair": [
+    "MIT-1.5",
+    "MIT-3.1"
+   ],
+   "verdict": "needs",
+   "first": "MIT-1.5"
+  },
+  {
+   "pair": [
+    "MIT-3.1",
+    "MIT-3.2"
+   ],
+   "verdict": "needs",
+   "first": "MIT-3.1"
+  },
+  {
+   "pair": [
+    "MIT-3.2",
+    "MIT-3.3"
+   ],
+   "verdict": "needs",
+   "first": "MIT-3.2"
+  },
+  {
+   "pair": [
+    "MIT-4.6",
+    "MIT-3.3"
+   ],
+   "verdict": "needs",
+   "first": "MIT-4.6"
+  },
+  {
+   "pair": [
+    "MIT-1.9",
+    "MIT-3.4"
+   ],
+   "verdict": "needs",
+   "first": "MIT-1.9"
+  },
+  {
+   "pair": [
+    "MIT-3.2",
+    "MIT-3.4"
+   ],
+   "verdict": "needs",
+   "first": "MIT-3.2"
+  },
+  {
+   "pair": [
+    "MIT-3.2",
+    "MIT-3.5"
+   ],
+   "verdict": "needs",
+   "first": "MIT-3.2"
+  },
+  {
+   "pair": [
+    "MIT-3.5",
+    "MIT-3.6"
+   ],
+   "verdict": "needs",
+   "first": "MIT-3.5"
+  },
+  {
+   "pair": [
+    "MIT-1.8",
+    "MIT-3.6"
+   ],
+   "verdict": "needs",
+   "first": "MIT-1.8"
+  },
+  {
+   "pair": [
+    "MIT-3.6",
+    "MIT-3.7"
+   ],
+   "verdict": "needs",
+   "first": "MIT-3.6"
+  },
+  {
+   "pair": [
+    "MIT-1.5",
+    "MIT-4.1"
+   ],
+   "verdict": "needs",
+   "first": "MIT-1.5"
+  },
+  {
+   "pair": [
+    "MIT-4.1",
+    "MIT-4.2"
+   ],
+   "verdict": "needs",
+   "first": "MIT-4.1"
+  },
+  {
+   "pair": [
+    "MIT-4.4",
+    "MIT-4.3"
+   ],
+   "verdict": "needs",
+   "first": "MIT-4.4"
+  },
+  {
+   "pair": [
+    "MIT-4.5",
+    "MIT-4.6"
+   ],
+   "verdict": "needs",
+   "first": "MIT-4.6"
+  },
+  {
+   "pair": [
+    "MIT-4.4",
+    "MIT-4.6"
+   ],
+   "verdict": "needs",
+   "first": "MIT-4.4"
+  },
+  {
+   "pair": [
+    "MIT-4.1",
+    "MIT-4.6"
+   ],
+   "verdict": "needs",
+   "first": "MIT-4.1"
+  },
+  {
+   "pair": [
+    "MIT-4.6",
+    "MIT-4.7"
+   ],
+   "verdict": "needs",
+   "first": "MIT-4.6"
+  },
+  {
+   "pair": [
+    "MIT-4.6",
+    "MIT-4.8"
+   ],
+   "verdict": "needs",
+   "first": "MIT-4.6"
+  },
+  {
+   "pair": [
+    "MIT-4.4",
+    "MIT-4.9"
+   ],
+   "verdict": "needs",
+   "first": "MIT-4.4"
+  },
+  {
+   "pair": [
+    "PRE-1",
+    "MIT-4.9"
+   ],
+   "verdict": "needs",
+   "first": "PRE-1"
+  },
+  {
+   "pair": [
+    "MIT-4.9",
+    "MIT-4.10"
+   ],
+   "verdict": "needs",
+   "first": "MIT-4.9"
+  },
+  {
+   "pair": [
+    "MIT-5.1",
+    "MIT-5.2"
+   ],
+   "verdict": "needs",
+   "first": "MIT-5.1"
+  },
+  {
+   "pair": [
+    "MIT-5.2",
+    "MIT-5.3"
+   ],
+   "verdict": "needs",
+   "first": "MIT-5.2"
+  },
+  {
+   "pair": [
+    "MIT-5.3",
+    "MIT-5.4"
+   ],
+   "verdict": "needs",
+   "first": "MIT-5.3"
+  },
+  {
+   "pair": [
+    "MIT-5.4",
+    "MIT-5.5"
+   ],
+   "verdict": "needs",
+   "first": "MIT-5.4"
+  },
+  {
+   "pair": [
+    "MIT-5.6",
+    "MIT-5.7"
+   ],
+   "verdict": "needs",
+   "first": "MIT-5.6"
+  },
+  {
+   "pair": [
+    "MIT-5.1",
+    "MIT-5.7"
+   ],
+   "verdict": "needs",
+   "first": "MIT-5.1"
+  },
+  {
+   "pair": [
+    "MIT-5.7",
+    "MIT-5.8"
+   ],
+   "verdict": "needs",
+   "first": "MIT-5.7"
+  },
+  {
+   "pair": [
+    "MIT-5.9",
+    "MIT-5.10"
+   ],
+   "verdict": "needs",
+   "first": "MIT-5.9"
+  },
+  {
+   "pair": [
+    "MIT-5.9",
+    "MIT-5.11"
+   ],
+   "verdict": "needs",
+   "first": "MIT-5.9"
+  },
+  {
+   "pair": [
+    "MIT-6.3",
+    "MIT-5.11"
+   ],
+   "verdict": "needs",
+   "first": "MIT-6.3"
+  },
+  {
+   "pair": [
+    "MIT-5.11",
+    "MIT-5.12"
+   ],
+   "verdict": "needs",
+   "first": "MIT-5.12"
+  },
+  {
+   "pair": [
+    "MIT-5.12",
+    "MIT-5.13"
+   ],
+   "verdict": "needs",
+   "first": "MIT-5.12"
+  },
+  {
+   "pair": [
+    "MIT-6.1",
+    "MIT-6.2"
+   ],
+   "verdict": "needs",
+   "first": "MIT-6.1"
+  },
+  {
+   "pair": [
+    "MIT-3.1",
+    "MIT-6.2"
+   ],
+   "verdict": "needs",
+   "first": "MIT-3.1"
+  },
+  {
+   "pair": [
+    "MIT-6.3",
+    "MIT-6.4"
+   ],
+   "verdict": "needs",
+   "first": "MIT-6.3"
+  },
+  {
+   "pair": [
+    "MIT-6.3",
+    "MIT-6.5"
+   ],
+   "verdict": "needs",
+   "first": "MIT-6.3"
+  },
+  {
+   "pair": [
+    "MIT-6.7",
+    "MIT-6.6"
+   ],
+   "verdict": "needs",
+   "first": "MIT-6.7"
+  },
+  {
+   "pair": [
+    "MIT-6.4",
+    "MIT-6.7"
+   ],
+   "verdict": "needs",
+   "first": "MIT-6.7"
+  },
+  {
+   "pair": [
+    "MIT-6.7",
+    "MIT-6.8"
+   ],
+   "verdict": "needs",
+   "first": "MIT-6.7"
+  },
+  {
+   "pair": [
+    "MIT-6.1",
+    "PDP-LO2"
+   ],
+   "verdict": "needs",
+   "first": "MIT-6.1"
+  },
+  {
+   "pair": [
+    "PDP-LO1",
+    "PDP-LO3"
+   ],
+   "verdict": "needs",
+   "first": "PDP-LO1"
+  },
+  {
+   "pair": [
+    "PDP-LO4",
+    "PDP-LO3"
+   ],
+   "verdict": "needs",
+   "first": "PDP-LO4"
+  },
+  {
+   "pair": [
+    "MIT-6.1",
+    "PDP-LO5"
+   ],
+   "verdict": "needs",
+   "first": "MIT-6.1"
+  },
+  {
+   "pair": [
+    "PDP-LO4",
+    "PDP-LO6"
+   ],
+   "verdict": "needs",
+   "first": "PDP-LO4"
+  },
+  {
+   "pair": [
+    "MIT-2.4",
+    "PDP-LO6"
+   ],
+   "verdict": "needs",
+   "first": "PDP-LO6"
+  },
+  {
+   "pair": [
+    "PDP-LO6",
+    "PDP-LO7"
+   ],
+   "verdict": "needs",
+   "first": "PDP-LO7"
+  },
+  {
+   "pair": [
+    "PDP-LO6",
+    "PDP-LO8"
+   ],
+   "verdict": "needs",
+   "first": "PDP-LO6"
+  },
+  {
+   "pair": [
+    "MIT-3.1",
+    "PDP-LO8"
+   ],
+   "verdict": "both"
+  },
+  {
+   "pair": [
+    "PDP-LO4",
+    "PDP-LO9"
+   ],
+   "verdict": "needs",
+   "first": "PDP-LO4"
+  },
+  {
+   "pair": [
+    "PDP-LO7",
+    "PDP-LO10"
+   ],
+   "verdict": "needs",
+   "first": "PDP-LO7"
+  },
+  {
+   "pair": [
+    "PDP-LO4",
+    "PDP-LO11"
+   ],
+   "verdict": "needs",
+   "first": "PDP-LO4"
+  },
+  {
+   "pair": [
+    "PDP-LO10",
+    "PDP-LO12"
+   ],
+   "verdict": "needs",
+   "first": "PDP-LO10"
+  },
+  {
+   "pair": [
+    "PDP-LO11",
+    "PDP-LO12"
+   ],
+   "verdict": "needs",
+   "first": "PDP-LO11"
+  },
+  {
+   "pair": [
+    "PDP-LO4",
+    "FOOP-LO1"
+   ],
+   "verdict": "needs",
+   "first": "PDP-LO4"
+  },
+  {
+   "pair": [
+    "PDP-LO4",
+    "FOOP-LO2"
+   ],
+   "verdict": "both"
+  },
+  {
+   "pair": [
+    "PDP-LO6",
+    "FOOP-LO2"
+   ],
+   "verdict": "needs",
+   "first": "FOOP-LO2"
+  },
+  {
+   "pair": [
+    "FOOP-LO2",
+    "FOOP-LO3"
+   ],
+   "verdict": "needs",
+   "first": "FOOP-LO2"
+  },
+  {
+   "pair": [
+    "FOOP-LO3",
+    "FOOP-LO4"
+   ],
+   "verdict": "needs",
+   "first": "FOOP-LO4"
+  },
+  {
+   "pair": [
+    "PDP-LO8",
+    "FOOP-LO4"
+   ],
+   "verdict": "needs",
+   "first": "PDP-LO8"
+  },
+  {
+   "pair": [
+    "FOOP-LO4",
+    "FOOP-LO6"
+   ],
+   "verdict": "needs",
+   "first": "FOOP-LO4"
+  },
+  {
+   "pair": [
+    "FOOP-LO3",
+    "FOOP-LO7"
+   ],
+   "verdict": "needs",
+   "first": "FOOP-LO3"
+  },
+  {
+   "pair": [
+    "FOOP-LO1",
+    "FOOP-LO8"
+   ],
+   "verdict": "needs",
+   "first": "FOOP-LO1"
+  },
+  {
+   "pair": [
+    "FOOP-LO3",
+    "FOOP-LO8"
+   ],
+   "verdict": "needs",
+   "first": "FOOP-LO3"
+  },
+  {
+   "pair": [
+    "PDP-LO7",
+    "FOOP-LO9"
+   ],
+   "verdict": "needs",
+   "first": "PDP-LO7"
+  },
+  {
+   "pair": [
+    "PDP-LO9",
+    "FOOP-LO10"
+   ],
+   "verdict": "needs",
+   "first": "PDP-LO9"
+  },
+  {
+   "pair": [
+    "PDP-LO10",
+    "FOOP-LO10"
+   ],
+   "verdict": "needs",
+   "first": "PDP-LO10"
+  },
+  {
+   "pair": [
+    "FOOP-LO4",
+    "FOOP-LO11"
+   ],
+   "verdict": "needs",
+   "first": "FOOP-LO11"
+  },
+  {
+   "pair": [
+    "MIT-6.7",
+    "CMPS-LO1"
+   ],
+   "verdict": "needs",
+   "first": "MIT-6.7"
+  },
+  {
+   "pair": [
+    "MIT-5.6",
+    "CMPS-LO2"
+   ],
+   "verdict": "both"
+  },
+  {
+   "pair": [
+    "MIT-5.7",
+    "CMPS-LO2"
+   ],
+   "verdict": "needs",
+   "first": "CMPS-LO2"
+  },
+  {
+   "pair": [
+    "CMPS-LO2",
+    "CMPS-LO3"
+   ],
+   "verdict": "needs",
+   "first": "CMPS-LO2"
+  },
+  {
+   "pair": [
+    "MIT-6.3",
+    "CMPS-LO4"
+   ],
+   "verdict": "needs",
+   "first": "MIT-6.3"
+  },
+  {
+   "pair": [
+    "MIT-3.2",
+    "CMPS-LO4"
+   ],
+   "verdict": "needs",
+   "first": "MIT-3.2"
+  },
+  {
+   "pair": [
+    "MIT-6.8",
+    "CMPS-LO5"
+   ],
+   "verdict": "both"
+  },
+  {
+   "pair": [
+    "CMPS-LO2",
+    "CMPS-LO6"
+   ],
+   "verdict": "needs",
+   "first": "CMPS-LO2"
+  },
+  {
+   "pair": [
+    "CMPS-LO5",
+    "CMPS-LO6"
+   ],
+   "verdict": "both"
+  },
+  {
+   "pair": [
+    "CMPS-LO3",
+    "CMPS-LO7"
+   ],
+   "verdict": "needs",
+   "first": "CMPS-LO3"
+  },
+  {
+   "pair": [
+    "PDP-LO7",
+    "CMPS-LO8"
+   ],
+   "verdict": "both"
+  },
+  {
+   "pair": [
+    "MIT-6.6",
+    "CMPS-LO9"
+   ],
+   "verdict": "needs",
+   "first": "CMPS-LO9"
+  },
+  {
+   "pair": [
+    "CMPS-LO8",
+    "CMPS-LO10"
+   ],
+   "verdict": "needs",
+   "first": "CMPS-LO8"
+  },
+  {
+   "pair": [
+    "CMPS-LO7",
+    "CMPS-LO11"
+   ],
+   "verdict": "needs",
+   "first": "CMPS-LO7"
+  },
+  {
+   "pair": [
+    "CMPS-LO11",
+    "CMPS-LO13"
+   ],
+   "verdict": "needs",
+   "first": "CMPS-LO13"
+  },
+  {
+   "pair": [
+    "MIT-1.1",
+    "MIT-1.2"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-1.1",
+    "MIT-1.3"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-1.1",
+    "MIT-1.4"
+   ],
+   "verdict": "needs",
+   "first": "MIT-1.1"
+  },
+  {
+   "pair": [
+    "MIT-1.1",
+    "MIT-1.5"
+   ],
+   "verdict": "needs",
+   "first": "MIT-1.5"
+  },
+  {
+   "pair": [
+    "MIT-1.1",
+    "MIT-1.6"
+   ],
+   "verdict": "needs",
+   "first": "MIT-1.6"
+  },
+  {
+   "pair": [
+    "MIT-1.1",
+    "MIT-1.7"
+   ],
+   "verdict": "needs",
+   "first": "MIT-1.7"
+  },
+  {
+   "pair": [
+    "MIT-1.1",
+    "MIT-1.8"
+   ],
+   "verdict": "needs",
+   "first": "MIT-1.1"
+  },
+  {
+   "pair": [
+    "MIT-1.1",
+    "MIT-1.9"
+   ],
+   "verdict": "needs",
+   "first": "MIT-1.1"
+  },
+  {
+   "pair": [
+    "MIT-1.1",
+    "MIT-1.10"
+   ],
+   "verdict": "needs",
+   "first": "MIT-1.1"
+  },
+  {
+   "pair": [
+    "MIT-1.1",
+    "MIT-1.11"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-1.1",
+    "MIT-1.12"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-1.2",
+    "MIT-1.4"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-1.2",
+    "MIT-1.5"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-1.2",
+    "MIT-1.6"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-1.2",
+    "MIT-1.7"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-1.2",
+    "MIT-1.8"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-1.2",
+    "MIT-1.9"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-1.2",
+    "MIT-1.10"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-1.2",
+    "MIT-1.11"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-1.2",
+    "MIT-1.12"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-1.3",
+    "MIT-1.4"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-1.3",
+    "MIT-1.5"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-1.3",
+    "MIT-1.6"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-1.3",
+    "MIT-1.7"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-1.3",
+    "MIT-1.8"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-1.3",
+    "MIT-1.9"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-1.3",
+    "MIT-1.10"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-1.3",
+    "MIT-1.11"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-1.3",
+    "MIT-1.12"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-1.4",
+    "MIT-1.5"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-1.4",
+    "MIT-1.6"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-1.4",
+    "MIT-1.7"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-1.4",
+    "MIT-1.8"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-1.4",
+    "MIT-1.9"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-1.4",
+    "MIT-1.10"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-1.4",
+    "MIT-1.11"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-1.4",
+    "MIT-1.12"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-1.5",
+    "MIT-1.7"
+   ],
+   "verdict": "needs",
+   "first": "MIT-1.5"
+  },
+  {
+   "pair": [
+    "MIT-1.5",
+    "MIT-1.8"
+   ],
+   "verdict": "needs",
+   "first": "MIT-1.5"
+  },
+  {
+   "pair": [
+    "MIT-1.5",
+    "MIT-1.9"
+   ],
+   "verdict": "needs",
+   "first": "MIT-1.5"
+  },
+  {
+   "pair": [
+    "MIT-1.5",
+    "MIT-1.10"
+   ],
+   "verdict": "needs",
+   "first": "MIT-1.5"
+  },
+  {
+   "pair": [
+    "MIT-1.6",
+    "MIT-1.9"
+   ],
+   "verdict": "needs",
+   "first": "MIT-1.6"
+  },
+  {
+   "pair": [
+    "MIT-1.6",
+    "MIT-1.10"
+   ],
+   "verdict": "needs",
+   "first": "MIT-1.6"
+  },
+  {
+   "pair": [
+    "MIT-1.6",
+    "MIT-1.11"
+   ],
+   "verdict": "needs",
+   "first": "MIT-1.6"
+  },
+  {
+   "pair": [
+    "MIT-1.6",
+    "MIT-1.12"
+   ],
+   "verdict": "needs",
+   "first": "MIT-1.6"
+  },
+  {
+   "pair": [
+    "MIT-1.7",
+    "MIT-1.8"
+   ],
+   "verdict": "needs",
+   "first": "MIT-1.7"
+  },
+  {
+   "pair": [
+    "MIT-1.7",
+    "MIT-1.9"
+   ],
+   "verdict": "needs",
+   "first": "MIT-1.7"
+  },
+  {
+   "pair": [
+    "MIT-1.7",
+    "MIT-1.10"
+   ],
+   "verdict": "needs",
+   "first": "MIT-1.7"
+  },
+  {
+   "pair": [
+    "MIT-1.7",
+    "MIT-1.11"
+   ],
+   "verdict": "needs",
+   "first": "MIT-1.7"
+  },
+  {
+   "pair": [
+    "MIT-1.7",
+    "MIT-1.12"
+   ],
+   "verdict": "needs",
+   "first": "MIT-1.7"
+  },
+  {
+   "pair": [
+    "MIT-1.8",
+    "MIT-1.10"
+   ],
+   "verdict": "needs",
+   "first": "MIT-1.8"
+  },
+  {
+   "pair": [
+    "MIT-1.8",
+    "MIT-1.11"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-1.8",
+    "MIT-1.12"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-1.9",
+    "MIT-1.11"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-1.9",
+    "MIT-1.12"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-1.10",
+    "MIT-1.11"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-1.10",
+    "MIT-1.12"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-1.11",
+    "MIT-1.12"
+   ],
+   "verdict": "needs",
+   "first": "MIT-1.11"
+  },
+  {
+   "pair": [
+    "MIT-2.1",
+    "MIT-2.3"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-2.1",
+    "MIT-2.4"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-2.1",
+    "MIT-2.5"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-2.2",
+    "MIT-2.4"
+   ],
+   "verdict": "needs",
+   "first": "MIT-2.2"
+  },
+  {
+   "pair": [
+    "MIT-2.2",
+    "MIT-2.5"
+   ],
+   "verdict": "needs",
+   "first": "MIT-2.2"
+  },
+  {
+   "pair": [
+    "MIT-2.3",
+    "MIT-2.4"
+   ],
+   "verdict": "needs",
+   "first": "MIT-2.4"
+  },
+  {
+   "pair": [
+    "MIT-2.3",
+    "MIT-2.5"
+   ],
+   "verdict": "needs",
+   "first": "MIT-2.5"
+  },
+  {
+   "pair": [
+    "MIT-3.1",
+    "MIT-3.3"
+   ],
+   "verdict": "needs",
+   "first": "MIT-3.1"
+  },
+  {
+   "pair": [
+    "MIT-3.1",
+    "MIT-3.4"
+   ],
+   "verdict": "needs",
+   "first": "MIT-3.1"
+  },
+  {
+   "pair": [
+    "MIT-3.1",
+    "MIT-3.5"
+   ],
+   "verdict": "needs",
+   "first": "MIT-3.1"
+  },
+  {
+   "pair": [
+    "MIT-3.1",
+    "MIT-3.6"
+   ],
+   "verdict": "needs",
+   "first": "MIT-3.1"
+  },
+  {
+   "pair": [
+    "MIT-3.1",
+    "MIT-3.7"
+   ],
+   "verdict": "needs",
+   "first": "MIT-3.1"
+  },
+  {
+   "pair": [
+    "MIT-3.2",
+    "MIT-3.6"
+   ],
+   "verdict": "needs",
+   "first": "MIT-3.2"
+  },
+  {
+   "pair": [
+    "MIT-3.2",
+    "MIT-3.7"
+   ],
+   "verdict": "needs",
+   "first": "MIT-3.2"
+  },
+  {
+   "pair": [
+    "MIT-3.3",
+    "MIT-3.4"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-3.3",
+    "MIT-3.5"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-3.3",
+    "MIT-3.6"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-3.3",
+    "MIT-3.7"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-3.4",
+    "MIT-3.5"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-3.4",
+    "MIT-3.6"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-3.4",
+    "MIT-3.7"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-3.5",
+    "MIT-3.7"
+   ],
+   "verdict": "needs",
+   "first": "MIT-3.5"
+  },
+  {
+   "pair": [
+    "MIT-4.1",
+    "MIT-4.3"
+   ],
+   "verdict": "needs",
+   "first": "MIT-4.1"
+  },
+  {
+   "pair": [
+    "MIT-4.1",
+    "MIT-4.4"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-4.1",
+    "MIT-4.5"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-4.1",
+    "MIT-4.7"
+   ],
+   "verdict": "needs",
+   "first": "MIT-4.1"
+  },
+  {
+   "pair": [
+    "MIT-4.1",
+    "MIT-4.8"
+   ],
+   "verdict": "needs",
+   "first": "MIT-4.1"
+  },
+  {
+   "pair": [
+    "MIT-4.1",
+    "MIT-4.9"
+   ],
+   "verdict": "needs",
+   "first": "MIT-4.1"
+  },
+  {
+   "pair": [
+    "MIT-4.1",
+    "MIT-4.10"
+   ],
+   "verdict": "needs",
+   "first": "MIT-4.1"
+  },
+  {
+   "pair": [
+    "MIT-4.2",
+    "MIT-4.3"
+   ],
+   "verdict": "needs",
+   "first": "MIT-4.2"
+  },
+  {
+   "pair": [
+    "MIT-4.2",
+    "MIT-4.4"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-4.2",
+    "MIT-4.5"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-4.2",
+    "MIT-4.6"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-4.2",
+    "MIT-4.7"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-4.2",
+    "MIT-4.8"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-4.2",
+    "MIT-4.9"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-4.2",
+    "MIT-4.10"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-4.3",
+    "MIT-4.5"
+   ],
+   "verdict": "needs",
+   "first": "MIT-4.3"
+  },
+  {
+   "pair": [
+    "MIT-4.3",
+    "MIT-4.6"
+   ],
+   "verdict": "needs",
+   "first": "MIT-4.3"
+  },
+  {
+   "pair": [
+    "MIT-4.3",
+    "MIT-4.7"
+   ],
+   "verdict": "needs",
+   "first": "MIT-4.3"
+  },
+  {
+   "pair": [
+    "MIT-4.3",
+    "MIT-4.8"
+   ],
+   "verdict": "needs",
+   "first": "MIT-4.3"
+  },
+  {
+   "pair": [
+    "MIT-4.3",
+    "MIT-4.9"
+   ],
+   "verdict": "needs",
+   "first": "MIT-4.3"
+  },
+  {
+   "pair": [
+    "MIT-4.3",
+    "MIT-4.10"
+   ],
+   "verdict": "needs",
+   "first": "MIT-4.3"
+  },
+  {
+   "pair": [
+    "MIT-4.4",
+    "MIT-4.5"
+   ],
+   "verdict": "both"
+  },
+  {
+   "pair": [
+    "MIT-4.4",
+    "MIT-4.7"
+   ],
+   "verdict": "needs",
+   "first": "MIT-4.4"
+  },
+  {
+   "pair": [
+    "MIT-4.4",
+    "MIT-4.8"
+   ],
+   "verdict": "needs",
+   "first": "MIT-4.4"
+  },
+  {
+   "pair": [
+    "MIT-4.4",
+    "MIT-4.10"
+   ],
+   "verdict": "needs",
+   "first": "MIT-4.4"
+  },
+  {
+   "pair": [
+    "MIT-4.5",
+    "MIT-4.7"
+   ],
+   "verdict": "needs",
+   "first": "MIT-4.5"
+  },
+  {
+   "pair": [
+    "MIT-4.5",
+    "MIT-4.8"
+   ],
+   "verdict": "needs",
+   "first": "MIT-4.5"
+  },
+  {
+   "pair": [
+    "MIT-4.5",
+    "MIT-4.9"
+   ],
+   "verdict": "needs",
+   "first": "MIT-4.5"
+  },
+  {
+   "pair": [
+    "MIT-4.5",
+    "MIT-4.10"
+   ],
+   "verdict": "needs",
+   "first": "MIT-4.5"
+  },
+  {
+   "pair": [
+    "MIT-4.6",
+    "MIT-4.9"
+   ],
+   "verdict": "needs",
+   "first": "MIT-4.6"
+  },
+  {
+   "pair": [
+    "MIT-4.6",
+    "MIT-4.10"
+   ],
+   "verdict": "needs",
+   "first": "MIT-4.6"
+  },
+  {
+   "pair": [
+    "MIT-4.7",
+    "MIT-4.8"
+   ],
+   "verdict": "needs",
+   "first": "MIT-4.7"
+  },
+  {
+   "pair": [
+    "MIT-4.7",
+    "MIT-4.9"
+   ],
+   "verdict": "needs",
+   "first": "MIT-4.7"
+  },
+  {
+   "pair": [
+    "MIT-4.7",
+    "MIT-4.10"
+   ],
+   "verdict": "needs",
+   "first": "MIT-4.7"
+  },
+  {
+   "pair": [
+    "MIT-4.8",
+    "MIT-4.9"
+   ],
+   "verdict": "needs",
+   "first": "MIT-4.9"
+  },
+  {
+   "pair": [
+    "MIT-4.8",
+    "MIT-4.10"
+   ],
+   "verdict": "needs",
+   "first": "MIT-4.10"
+  },
+  {
+   "pair": [
+    "MIT-5.1",
+    "MIT-5.3"
+   ],
+   "verdict": "needs",
+   "first": "MIT-5.1"
+  },
+  {
+   "pair": [
+    "MIT-5.1",
+    "MIT-5.4"
+   ],
+   "verdict": "needs",
+   "first": "MIT-5.1"
+  },
+  {
+   "pair": [
+    "MIT-5.1",
+    "MIT-5.5"
+   ],
+   "verdict": "needs",
+   "first": "MIT-5.1"
+  },
+  {
+   "pair": [
+    "MIT-5.1",
+    "MIT-5.6"
+   ],
+   "verdict": "needs",
+   "first": "MIT-5.6"
+  },
+  {
+   "pair": [
+    "MIT-5.1",
+    "MIT-5.8"
+   ],
+   "verdict": "needs",
+   "first": "MIT-5.1"
+  },
+  {
+   "pair": [
+    "MIT-5.1",
+    "MIT-5.9"
+   ],
+   "verdict": "needs",
+   "first": "MIT-5.1"
+  },
+  {
+   "pair": [
+    "MIT-5.1",
+    "MIT-5.10"
+   ],
+   "verdict": "needs",
+   "first": "MIT-5.1"
+  },
+  {
+   "pair": [
+    "MIT-5.1",
+    "MIT-5.11"
+   ],
+   "verdict": "needs",
+   "first": "MIT-5.1"
+  },
+  {
+   "pair": [
+    "MIT-5.1",
+    "MIT-5.12"
+   ],
+   "verdict": "needs",
+   "first": "MIT-5.1"
+  },
+  {
+   "pair": [
+    "MIT-5.1",
+    "MIT-5.13"
+   ],
+   "verdict": "needs",
+   "first": "MIT-5.1"
+  },
+  {
+   "pair": [
+    "MIT-5.2",
+    "MIT-5.4"
+   ],
+   "verdict": "needs",
+   "first": "MIT-5.2"
+  },
+  {
+   "pair": [
+    "MIT-5.2",
+    "MIT-5.5"
+   ],
+   "verdict": "needs",
+   "first": "MIT-5.2"
+  },
+  {
+   "pair": [
+    "MIT-5.2",
+    "MIT-5.6"
+   ],
+   "verdict": "needs",
+   "first": "MIT-5.6"
+  },
+  {
+   "pair": [
+    "MIT-5.2",
+    "MIT-5.7"
+   ],
+   "verdict": "needs",
+   "first": "MIT-5.2"
+  },
+  {
+   "pair": [
+    "MIT-5.2",
+    "MIT-5.8"
+   ],
+   "verdict": "needs",
+   "first": "MIT-5.2"
+  },
+  {
+   "pair": [
+    "MIT-5.2",
+    "MIT-5.9"
+   ],
+   "verdict": "needs",
+   "first": "MIT-5.2"
+  },
+  {
+   "pair": [
+    "MIT-5.2",
+    "MIT-5.10"
+   ],
+   "verdict": "needs",
+   "first": "MIT-5.2"
+  },
+  {
+   "pair": [
+    "MIT-5.2",
+    "MIT-5.11"
+   ],
+   "verdict": "needs",
+   "first": "MIT-5.2"
+  },
+  {
+   "pair": [
+    "MIT-5.2",
+    "MIT-5.12"
+   ],
+   "verdict": "needs",
+   "first": "MIT-5.2"
+  },
+  {
+   "pair": [
+    "MIT-5.2",
+    "MIT-5.13"
+   ],
+   "verdict": "needs",
+   "first": "MIT-5.2"
+  },
+  {
+   "pair": [
+    "MIT-5.3",
+    "MIT-5.5"
+   ],
+   "verdict": "needs",
+   "first": "MIT-5.3"
+  },
+  {
+   "pair": [
+    "MIT-5.3",
+    "MIT-5.6"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-5.3",
+    "MIT-5.7"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-5.3",
+    "MIT-5.8"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-5.3",
+    "MIT-5.9"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-5.3",
+    "MIT-5.10"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-5.3",
+    "MIT-5.11"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-5.3",
+    "MIT-5.12"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-5.3",
+    "MIT-5.13"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-5.4",
+    "MIT-5.6"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-5.4",
+    "MIT-5.7"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-5.4",
+    "MIT-5.8"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-5.4",
+    "MIT-5.9"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-5.4",
+    "MIT-5.10"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-5.4",
+    "MIT-5.11"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-5.4",
+    "MIT-5.12"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-5.4",
+    "MIT-5.13"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-5.5",
+    "MIT-5.6"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-5.5",
+    "MIT-5.7"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-5.5",
+    "MIT-5.8"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-5.5",
+    "MIT-5.9"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-5.5",
+    "MIT-5.10"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-5.5",
+    "MIT-5.11"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-5.5",
+    "MIT-5.12"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-5.5",
+    "MIT-5.13"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-5.6",
+    "MIT-5.8"
+   ],
+   "verdict": "needs",
+   "first": "MIT-5.6"
+  },
+  {
+   "pair": [
+    "MIT-5.6",
+    "MIT-5.9"
+   ],
+   "verdict": "needs",
+   "first": "MIT-5.6"
+  },
+  {
+   "pair": [
+    "MIT-5.6",
+    "MIT-5.10"
+   ],
+   "verdict": "needs",
+   "first": "MIT-5.6"
+  },
+  {
+   "pair": [
+    "MIT-5.6",
+    "MIT-5.11"
+   ],
+   "verdict": "needs",
+   "first": "MIT-5.6"
+  },
+  {
+   "pair": [
+    "MIT-5.6",
+    "MIT-5.12"
+   ],
+   "verdict": "needs",
+   "first": "MIT-5.6"
+  },
+  {
+   "pair": [
+    "MIT-5.6",
+    "MIT-5.13"
+   ],
+   "verdict": "needs",
+   "first": "MIT-5.6"
+  },
+  {
+   "pair": [
+    "MIT-5.7",
+    "MIT-5.9"
+   ],
+   "verdict": "needs",
+   "first": "MIT-5.7"
+  },
+  {
+   "pair": [
+    "MIT-5.7",
+    "MIT-5.10"
+   ],
+   "verdict": "needs",
+   "first": "MIT-5.7"
+  },
+  {
+   "pair": [
+    "MIT-5.7",
+    "MIT-5.11"
+   ],
+   "verdict": "needs",
+   "first": "MIT-5.7"
+  },
+  {
+   "pair": [
+    "MIT-5.7",
+    "MIT-5.12"
+   ],
+   "verdict": "needs",
+   "first": "MIT-5.7"
+  },
+  {
+   "pair": [
+    "MIT-5.7",
+    "MIT-5.13"
+   ],
+   "verdict": "needs",
+   "first": "MIT-5.7"
+  },
+  {
+   "pair": [
+    "MIT-5.8",
+    "MIT-5.9"
+   ],
+   "verdict": "needs",
+   "first": "MIT-5.9"
+  },
+  {
+   "pair": [
+    "MIT-5.8",
+    "MIT-5.10"
+   ],
+   "verdict": "needs",
+   "first": "MIT-5.8"
+  },
+  {
+   "pair": [
+    "MIT-5.8",
+    "MIT-5.11"
+   ],
+   "verdict": "needs",
+   "first": "MIT-5.8"
+  },
+  {
+   "pair": [
+    "MIT-5.8",
+    "MIT-5.12"
+   ],
+   "verdict": "needs",
+   "first": "MIT-5.8"
+  },
+  {
+   "pair": [
+    "MIT-5.8",
+    "MIT-5.13"
+   ],
+   "verdict": "needs",
+   "first": "MIT-5.8"
+  },
+  {
+   "pair": [
+    "MIT-5.9",
+    "MIT-5.12"
+   ],
+   "verdict": "needs",
+   "first": "MIT-5.9"
+  },
+  {
+   "pair": [
+    "MIT-5.9",
+    "MIT-5.13"
+   ],
+   "verdict": "needs",
+   "first": "MIT-5.9"
+  },
+  {
+   "pair": [
+    "MIT-5.10",
+    "MIT-5.11"
+   ],
+   "verdict": "needs",
+   "first": "MIT-5.11"
+  },
+  {
+   "pair": [
+    "MIT-5.10",
+    "MIT-5.12"
+   ],
+   "verdict": "needs",
+   "first": "MIT-5.12"
+  },
+  {
+   "pair": [
+    "MIT-5.10",
+    "MIT-5.13"
+   ],
+   "verdict": "needs",
+   "first": "MIT-5.10"
+  },
+  {
+   "pair": [
+    "MIT-5.11",
+    "MIT-5.13"
+   ],
+   "verdict": "needs",
+   "first": "MIT-5.11"
+  },
+  {
+   "pair": [
+    "MIT-6.1",
+    "MIT-6.3"
+   ],
+   "verdict": "needs",
+   "first": "MIT-6.1"
+  },
+  {
+   "pair": [
+    "MIT-6.1",
+    "MIT-6.4"
+   ],
+   "verdict": "needs",
+   "first": "MIT-6.1"
+  },
+  {
+   "pair": [
+    "MIT-6.1",
+    "MIT-6.5"
+   ],
+   "verdict": "needs",
+   "first": "MIT-6.1"
+  },
+  {
+   "pair": [
+    "MIT-6.1",
+    "MIT-6.6"
+   ],
+   "verdict": "needs",
+   "first": "MIT-6.1"
+  },
+  {
+   "pair": [
+    "MIT-6.1",
+    "MIT-6.7"
+   ],
+   "verdict": "needs",
+   "first": "MIT-6.1"
+  },
+  {
+   "pair": [
+    "MIT-6.1",
+    "MIT-6.8"
+   ],
+   "verdict": "needs",
+   "first": "MIT-6.1"
+  },
+  {
+   "pair": [
+    "MIT-6.2",
+    "MIT-6.3"
+   ],
+   "verdict": "needs",
+   "first": "MIT-6.3"
+  },
+  {
+   "pair": [
+    "MIT-6.2",
+    "MIT-6.4"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-6.2",
+    "MIT-6.5"
+   ],
+   "verdict": "needs",
+   "first": "MIT-6.2"
+  },
+  {
+   "pair": [
+    "MIT-6.2",
+    "MIT-6.6"
+   ],
+   "verdict": "needs",
+   "first": "MIT-6.2"
+  },
+  {
+   "pair": [
+    "MIT-6.2",
+    "MIT-6.7"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-6.2",
+    "MIT-6.8"
+   ],
+   "verdict": "needs",
+   "first": "MIT-6.2"
+  },
+  {
+   "pair": [
+    "MIT-6.3",
+    "MIT-6.6"
+   ],
+   "verdict": "needs",
+   "first": "MIT-6.3"
+  },
+  {
+   "pair": [
+    "MIT-6.3",
+    "MIT-6.7"
+   ],
+   "verdict": "needs",
+   "first": "MIT-6.3"
+  },
+  {
+   "pair": [
+    "MIT-6.3",
+    "MIT-6.8"
+   ],
+   "verdict": "needs",
+   "first": "MIT-6.3"
+  },
+  {
+   "pair": [
+    "MIT-6.4",
+    "MIT-6.5"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-6.4",
+    "MIT-6.6"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-6.4",
+    "MIT-6.8"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-6.5",
+    "MIT-6.6"
+   ],
+   "verdict": "needs",
+   "first": "MIT-6.5"
+  },
+  {
+   "pair": [
+    "MIT-6.5",
+    "MIT-6.7"
+   ],
+   "verdict": "needs",
+   "first": "MIT-6.7"
+  },
+  {
+   "pair": [
+    "MIT-6.5",
+    "MIT-6.8"
+   ],
+   "verdict": "needs",
+   "first": "MIT-6.5"
+  },
+  {
+   "pair": [
+    "MIT-6.6",
+    "MIT-6.8"
+   ],
+   "verdict": "needs",
+   "first": "MIT-6.8"
+  },
+  {
+   "pair": [
+    "PDP-LO1",
+    "PDP-LO2"
+   ],
+   "verdict": "both"
+  },
+  {
+   "pair": [
+    "PDP-LO1",
+    "PDP-LO4"
+   ],
+   "verdict": "needs",
+   "first": "PDP-LO4"
+  },
+  {
+   "pair": [
+    "PDP-LO1",
+    "PDP-LO5"
+   ],
+   "verdict": "needs",
+   "first": "PDP-LO5"
+  },
+  {
+   "pair": [
+    "PDP-LO1",
+    "PDP-LO6"
+   ],
+   "verdict": "needs",
+   "first": "PDP-LO6"
+  },
+  {
+   "pair": [
+    "PDP-LO1",
+    "PDP-LO7"
+   ],
+   "verdict": "both"
+  },
+  {
+   "pair": [
+    "PDP-LO1",
+    "PDP-LO8"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "PDP-LO1",
+    "PDP-LO9"
+   ],
+   "verdict": "both"
+  },
+  {
+   "pair": [
+    "PDP-LO1",
+    "PDP-LO10"
+   ],
+   "verdict": "both"
+  },
+  {
+   "pair": [
+    "PDP-LO1",
+    "PDP-LO11"
+   ],
+   "verdict": "both"
+  },
+  {
+   "pair": [
+    "PDP-LO1",
+    "PDP-LO12"
+   ],
+   "verdict": "both"
+  },
+  {
+   "pair": [
+    "PDP-LO2",
+    "PDP-LO3"
+   ],
+   "verdict": "needs",
+   "first": "PDP-LO2"
+  },
+  {
+   "pair": [
+    "PDP-LO2",
+    "PDP-LO4"
+   ],
+   "verdict": "needs",
+   "first": "PDP-LO4"
+  },
+  {
+   "pair": [
+    "PDP-LO2",
+    "PDP-LO5"
+   ],
+   "verdict": "needs",
+   "first": "PDP-LO5"
+  },
+  {
+   "pair": [
+    "PDP-LO2",
+    "PDP-LO6"
+   ],
+   "verdict": "needs",
+   "first": "PDP-LO2"
+  },
+  {
+   "pair": [
+    "PDP-LO2",
+    "PDP-LO7"
+   ],
+   "verdict": "needs",
+   "first": "PDP-LO2"
+  },
+  {
+   "pair": [
+    "PDP-LO2",
+    "PDP-LO8"
+   ],
+   "verdict": "needs",
+   "first": "PDP-LO2"
+  },
+  {
+   "pair": [
+    "PDP-LO2",
+    "PDP-LO9"
+   ],
+   "verdict": "needs",
+   "first": "PDP-LO2"
+  },
+  {
+   "pair": [
+    "PDP-LO2",
+    "PDP-LO10"
+   ],
+   "verdict": "needs",
+   "first": "PDP-LO2"
+  },
+  {
+   "pair": [
+    "PDP-LO2",
+    "PDP-LO11"
+   ],
+   "verdict": "needs",
+   "first": "PDP-LO2"
+  },
+  {
+   "pair": [
+    "PDP-LO2",
+    "PDP-LO12"
+   ],
+   "verdict": "needs",
+   "first": "PDP-LO2"
+  },
+  {
+   "pair": [
+    "PDP-LO3",
+    "PDP-LO5"
+   ],
+   "verdict": "needs",
+   "first": "PDP-LO5"
+  },
+  {
+   "pair": [
+    "PDP-LO3",
+    "PDP-LO6"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "PDP-LO3",
+    "PDP-LO7"
+   ],
+   "verdict": "both"
+  },
+  {
+   "pair": [
+    "PDP-LO3",
+    "PDP-LO8"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "PDP-LO3",
+    "PDP-LO9"
+   ],
+   "verdict": "both"
+  },
+  {
+   "pair": [
+    "PDP-LO3",
+    "PDP-LO10"
+   ],
+   "verdict": "both"
+  },
+  {
+   "pair": [
+    "PDP-LO3",
+    "PDP-LO11"
+   ],
+   "verdict": "both"
+  },
+  {
+   "pair": [
+    "PDP-LO3",
+    "PDP-LO12"
+   ],
+   "verdict": "both"
+  },
+  {
+   "pair": [
+    "PDP-LO4",
+    "PDP-LO5"
+   ],
+   "verdict": "needs",
+   "first": "PDP-LO4"
+  },
+  {
+   "pair": [
+    "PDP-LO4",
+    "PDP-LO7"
+   ],
+   "verdict": "needs",
+   "first": "PDP-LO4"
+  },
+  {
+   "pair": [
+    "PDP-LO4",
+    "PDP-LO8"
+   ],
+   "verdict": "needs",
+   "first": "PDP-LO4"
+  },
+  {
+   "pair": [
+    "PDP-LO4",
+    "PDP-LO10"
+   ],
+   "verdict": "needs",
+   "first": "PDP-LO4"
+  },
+  {
+   "pair": [
+    "PDP-LO4",
+    "PDP-LO12"
+   ],
+   "verdict": "needs",
+   "first": "PDP-LO4"
+  },
+  {
+   "pair": [
+    "PDP-LO5",
+    "PDP-LO6"
+   ],
+   "verdict": "needs",
+   "first": "PDP-LO5"
+  },
+  {
+   "pair": [
+    "PDP-LO5",
+    "PDP-LO7"
+   ],
+   "verdict": "needs",
+   "first": "PDP-LO5"
+  },
+  {
+   "pair": [
+    "PDP-LO5",
+    "PDP-LO8"
+   ],
+   "verdict": "needs",
+   "first": "PDP-LO5"
+  },
+  {
+   "pair": [
+    "PDP-LO5",
+    "PDP-LO9"
+   ],
+   "verdict": "needs",
+   "first": "PDP-LO5"
+  },
+  {
+   "pair": [
+    "PDP-LO5",
+    "PDP-LO10"
+   ],
+   "verdict": "needs",
+   "first": "PDP-LO5"
+  },
+  {
+   "pair": [
+    "PDP-LO5",
+    "PDP-LO11"
+   ],
+   "verdict": "needs",
+   "first": "PDP-LO5"
+  },
+  {
+   "pair": [
+    "PDP-LO5",
+    "PDP-LO12"
+   ],
+   "verdict": "needs",
+   "first": "PDP-LO5"
+  },
+  {
+   "pair": [
+    "PDP-LO6",
+    "PDP-LO9"
+   ],
+   "verdict": "needs",
+   "first": "PDP-LO6"
+  },
+  {
+   "pair": [
+    "PDP-LO6",
+    "PDP-LO10"
+   ],
+   "verdict": "needs",
+   "first": "PDP-LO6"
+  },
+  {
+   "pair": [
+    "PDP-LO6",
+    "PDP-LO11"
+   ],
+   "verdict": "needs",
+   "first": "PDP-LO6"
+  },
+  {
+   "pair": [
+    "PDP-LO6",
+    "PDP-LO12"
+   ],
+   "verdict": "needs",
+   "first": "PDP-LO6"
+  },
+  {
+   "pair": [
+    "PDP-LO7",
+    "PDP-LO8"
+   ],
+   "verdict": "needs",
+   "first": "PDP-LO8"
+  },
+  {
+   "pair": [
+    "PDP-LO7",
+    "PDP-LO9"
+   ],
+   "verdict": "needs",
+   "first": "PDP-LO7"
+  },
+  {
+   "pair": [
+    "PDP-LO7",
+    "PDP-LO11"
+   ],
+   "verdict": "both"
+  },
+  {
+   "pair": [
+    "PDP-LO7",
+    "PDP-LO12"
+   ],
+   "verdict": "both"
+  },
+  {
+   "pair": [
+    "PDP-LO8",
+    "PDP-LO9"
+   ],
+   "verdict": "needs",
+   "first": "PDP-LO9"
+  },
+  {
+   "pair": [
+    "PDP-LO8",
+    "PDP-LO10"
+   ],
+   "verdict": "unsure"
+  },
+  {
+   "pair": [
+    "PDP-LO8",
+    "PDP-LO11"
+   ],
+   "verdict": "needs",
+   "first": "PDP-LO8"
+  },
+  {
+   "pair": [
+    "PDP-LO8",
+    "PDP-LO12"
+   ],
+   "verdict": "needs",
+   "first": "PDP-LO8"
+  },
+  {
+   "pair": [
+    "PDP-LO9",
+    "PDP-LO10"
+   ],
+   "verdict": "needs",
+   "first": "PDP-LO9"
+  },
+  {
+   "pair": [
+    "PDP-LO9",
+    "PDP-LO11"
+   ],
+   "verdict": "needs",
+   "first": "PDP-LO9"
+  },
+  {
+   "pair": [
+    "PDP-LO9",
+    "PDP-LO12"
+   ],
+   "verdict": "needs",
+   "first": "PDP-LO9"
+  },
+  {
+   "pair": [
+    "PDP-LO10",
+    "PDP-LO11"
+   ],
+   "verdict": "needs",
+   "first": "PDP-LO10"
+  },
+  {
+   "pair": [
+    "FOOP-LO1",
+    "FOOP-LO2"
+   ],
+   "verdict": "needs",
+   "first": "FOOP-LO2"
+  },
+  {
+   "pair": [
+    "FOOP-LO1",
+    "FOOP-LO3"
+   ],
+   "verdict": "needs",
+   "first": "FOOP-LO3"
+  },
+  {
+   "pair": [
+    "FOOP-LO1",
+    "FOOP-LO4"
+   ],
+   "verdict": "needs",
+   "first": "FOOP-LO1"
+  },
+  {
+   "pair": [
+    "FOOP-LO1",
+    "FOOP-LO5"
+   ],
+   "verdict": "needs",
+   "first": "FOOP-LO5"
+  },
+  {
+   "pair": [
+    "FOOP-LO1",
+    "FOOP-LO6"
+   ],
+   "verdict": "needs",
+   "first": "FOOP-LO6"
+  },
+  {
+   "pair": [
+    "FOOP-LO1",
+    "FOOP-LO7"
+   ],
+   "verdict": "needs",
+   "first": "FOOP-LO1"
+  },
+  {
+   "pair": [
+    "FOOP-LO1",
+    "FOOP-LO9"
+   ],
+   "verdict": "needs",
+   "first": "FOOP-LO1"
+  },
+  {
+   "pair": [
+    "FOOP-LO1",
+    "FOOP-LO10"
+   ],
+   "verdict": "needs",
+   "first": "FOOP-LO1"
+  },
+  {
+   "pair": [
+    "FOOP-LO1",
+    "FOOP-LO11"
+   ],
+   "verdict": "needs",
+   "first": "FOOP-LO11"
+  },
+  {
+   "pair": [
+    "FOOP-LO2",
+    "FOOP-LO4"
+   ],
+   "verdict": "needs",
+   "first": "FOOP-LO2"
+  },
+  {
+   "pair": [
+    "FOOP-LO2",
+    "FOOP-LO5"
+   ],
+   "verdict": "needs",
+   "first": "FOOP-LO5"
+  },
+  {
+   "pair": [
+    "FOOP-LO2",
+    "FOOP-LO6"
+   ],
+   "verdict": "needs",
+   "first": "FOOP-LO2"
+  },
+  {
+   "pair": [
+    "FOOP-LO2",
+    "FOOP-LO7"
+   ],
+   "verdict": "needs",
+   "first": "FOOP-LO2"
+  },
+  {
+   "pair": [
+    "FOOP-LO2",
+    "FOOP-LO8"
+   ],
+   "verdict": "needs",
+   "first": "FOOP-LO2"
+  },
+  {
+   "pair": [
+    "FOOP-LO2",
+    "FOOP-LO9"
+   ],
+   "verdict": "needs",
+   "first": "FOOP-LO2"
+  },
+  {
+   "pair": [
+    "FOOP-LO2",
+    "FOOP-LO10"
+   ],
+   "verdict": "needs",
+   "first": "FOOP-LO2"
+  },
+  {
+   "pair": [
+    "FOOP-LO2",
+    "FOOP-LO11"
+   ],
+   "verdict": "needs",
+   "first": "FOOP-LO2"
+  },
+  {
+   "pair": [
+    "FOOP-LO3",
+    "FOOP-LO5"
+   ],
+   "verdict": "needs",
+   "first": "FOOP-LO5"
+  },
+  {
+   "pair": [
+    "FOOP-LO3",
+    "FOOP-LO6"
+   ],
+   "verdict": "needs",
+   "first": "FOOP-LO3"
+  },
+  {
+   "pair": [
+    "FOOP-LO3",
+    "FOOP-LO9"
+   ],
+   "verdict": "needs",
+   "first": "FOOP-LO3"
+  },
+  {
+   "pair": [
+    "FOOP-LO3",
+    "FOOP-LO10"
+   ],
+   "verdict": "needs",
+   "first": "FOOP-LO3"
+  },
+  {
+   "pair": [
+    "FOOP-LO3",
+    "FOOP-LO11"
+   ],
+   "verdict": "needs",
+   "first": "FOOP-LO11"
+  },
+  {
+   "pair": [
+    "FOOP-LO4",
+    "FOOP-LO5"
+   ],
+   "verdict": "needs",
+   "first": "FOOP-LO5"
+  },
+  {
+   "pair": [
+    "FOOP-LO4",
+    "FOOP-LO7"
+   ],
+   "verdict": "needs",
+   "first": "FOOP-LO4"
+  },
+  {
+   "pair": [
+    "FOOP-LO4",
+    "FOOP-LO8"
+   ],
+   "verdict": "needs",
+   "first": "FOOP-LO8"
+  },
+  {
+   "pair": [
+    "FOOP-LO4",
+    "FOOP-LO9"
+   ],
+   "verdict": "needs",
+   "first": "FOOP-LO4"
+  },
+  {
+   "pair": [
+    "FOOP-LO4",
+    "FOOP-LO10"
+   ],
+   "verdict": "needs",
+   "first": "FOOP-LO4"
+  },
+  {
+   "pair": [
+    "FOOP-LO5",
+    "FOOP-LO6"
+   ],
+   "verdict": "needs",
+   "first": "FOOP-LO5"
+  },
+  {
+   "pair": [
+    "FOOP-LO5",
+    "FOOP-LO7"
+   ],
+   "verdict": "needs",
+   "first": "FOOP-LO5"
+  },
+  {
+   "pair": [
+    "FOOP-LO5",
+    "FOOP-LO8"
+   ],
+   "verdict": "needs",
+   "first": "FOOP-LO5"
+  },
+  {
+   "pair": [
+    "FOOP-LO5",
+    "FOOP-LO9"
+   ],
+   "verdict": "needs",
+   "first": "FOOP-LO5"
+  },
+  {
+   "pair": [
+    "FOOP-LO5",
+    "FOOP-LO10"
+   ],
+   "verdict": "needs",
+   "first": "FOOP-LO5"
+  },
+  {
+   "pair": [
+    "FOOP-LO5",
+    "FOOP-LO11"
+   ],
+   "verdict": "needs",
+   "first": "FOOP-LO5"
+  },
+  {
+   "pair": [
+    "FOOP-LO6",
+    "FOOP-LO7"
+   ],
+   "verdict": "needs",
+   "first": "FOOP-LO6"
+  },
+  {
+   "pair": [
+    "FOOP-LO6",
+    "FOOP-LO8"
+   ],
+   "verdict": "needs",
+   "first": "FOOP-LO8"
+  },
+  {
+   "pair": [
+    "FOOP-LO6",
+    "FOOP-LO9"
+   ],
+   "verdict": "needs",
+   "first": "FOOP-LO6"
+  },
+  {
+   "pair": [
+    "FOOP-LO6",
+    "FOOP-LO10"
+   ],
+   "verdict": "needs",
+   "first": "FOOP-LO6"
+  },
+  {
+   "pair": [
+    "FOOP-LO6",
+    "FOOP-LO11"
+   ],
+   "verdict": "needs",
+   "first": "FOOP-LO11"
+  },
+  {
+   "pair": [
+    "FOOP-LO7",
+    "FOOP-LO8"
+   ],
+   "verdict": "needs",
+   "first": "FOOP-LO8"
+  },
+  {
+   "pair": [
+    "FOOP-LO7",
+    "FOOP-LO9"
+   ],
+   "verdict": "needs",
+   "first": "FOOP-LO9"
+  },
+  {
+   "pair": [
+    "FOOP-LO7",
+    "FOOP-LO10"
+   ],
+   "verdict": "needs",
+   "first": "FOOP-LO10"
+  },
+  {
+   "pair": [
+    "FOOP-LO7",
+    "FOOP-LO11"
+   ],
+   "verdict": "needs",
+   "first": "FOOP-LO11"
+  },
+  {
+   "pair": [
+    "FOOP-LO8",
+    "FOOP-LO9"
+   ],
+   "verdict": "needs",
+   "first": "FOOP-LO8"
+  },
+  {
+   "pair": [
+    "FOOP-LO8",
+    "FOOP-LO10"
+   ],
+   "verdict": "needs",
+   "first": "FOOP-LO8"
+  },
+  {
+   "pair": [
+    "FOOP-LO8",
+    "FOOP-LO11"
+   ],
+   "verdict": "needs",
+   "first": "FOOP-LO11"
+  },
+  {
+   "pair": [
+    "FOOP-LO9",
+    "FOOP-LO10"
+   ],
+   "verdict": "needs",
+   "first": "FOOP-LO9"
+  },
+  {
+   "pair": [
+    "FOOP-LO9",
+    "FOOP-LO11"
+   ],
+   "verdict": "needs",
+   "first": "FOOP-LO11"
+  },
+  {
+   "pair": [
+    "FOOP-LO10",
+    "FOOP-LO11"
+   ],
+   "verdict": "needs",
+   "first": "FOOP-LO11"
+  },
+  {
+   "pair": [
+    "CMPS-LO1",
+    "CMPS-LO2"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "CMPS-LO1",
+    "CMPS-LO3"
+   ],
+   "verdict": "needs",
+   "first": "CMPS-LO1"
+  },
+  {
+   "pair": [
+    "CMPS-LO1",
+    "CMPS-LO4"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "CMPS-LO1",
+    "CMPS-LO5"
+   ],
+   "verdict": "both"
+  },
+  {
+   "pair": [
+    "CMPS-LO1",
+    "CMPS-LO6"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "CMPS-LO1",
+    "CMPS-LO7"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "CMPS-LO1",
+    "CMPS-LO8"
+   ],
+   "verdict": "needs",
+   "first": "CMPS-LO8"
+  },
+  {
+   "pair": [
+    "CMPS-LO1",
+    "CMPS-LO9"
+   ],
+   "verdict": "needs",
+   "first": "CMPS-LO9"
+  },
+  {
+   "pair": [
+    "CMPS-LO1",
+    "CMPS-LO10"
+   ],
+   "verdict": "needs",
+   "first": "CMPS-LO10"
+  },
+  {
+   "pair": [
+    "CMPS-LO1",
+    "CMPS-LO11"
+   ],
+   "verdict": "needs",
+   "first": "CMPS-LO11"
+  },
+  {
+   "pair": [
+    "CMPS-LO1",
+    "CMPS-LO12"
+   ],
+   "verdict": "needs",
+   "first": "CMPS-LO12"
+  },
+  {
+   "pair": [
+    "CMPS-LO1",
+    "CMPS-LO13"
+   ],
+   "verdict": "needs",
+   "first": "CMPS-LO13"
+  },
+  {
+   "pair": [
+    "CMPS-LO2",
+    "CMPS-LO4"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "CMPS-LO2",
+    "CMPS-LO5"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "CMPS-LO2",
+    "CMPS-LO7"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "CMPS-LO2",
+    "CMPS-LO8"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "CMPS-LO2",
+    "CMPS-LO9"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "CMPS-LO2",
+    "CMPS-LO10"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "CMPS-LO2",
+    "CMPS-LO11"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "CMPS-LO2",
+    "CMPS-LO12"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "CMPS-LO2",
+    "CMPS-LO13"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "CMPS-LO3",
+    "CMPS-LO4"
+   ],
+   "verdict": "both"
+  },
+  {
+   "pair": [
+    "CMPS-LO3",
+    "CMPS-LO5"
+   ],
+   "verdict": "both"
+  },
+  {
+   "pair": [
+    "CMPS-LO3",
+    "CMPS-LO6"
+   ],
+   "verdict": "needs",
+   "first": "CMPS-LO6"
+  },
+  {
+   "pair": [
+    "CMPS-LO3",
+    "CMPS-LO8"
+   ],
+   "verdict": "needs",
+   "first": "CMPS-LO8"
+  },
+  {
+   "pair": [
+    "CMPS-LO3",
+    "CMPS-LO9"
+   ],
+   "verdict": "needs",
+   "first": "CMPS-LO9"
+  },
+  {
+   "pair": [
+    "CMPS-LO3",
+    "CMPS-LO10"
+   ],
+   "verdict": "needs",
+   "first": "CMPS-LO10"
+  },
+  {
+   "pair": [
+    "CMPS-LO3",
+    "CMPS-LO11"
+   ],
+   "verdict": "needs",
+   "first": "CMPS-LO11"
+  },
+  {
+   "pair": [
+    "CMPS-LO3",
+    "CMPS-LO12"
+   ],
+   "verdict": "needs",
+   "first": "CMPS-LO12"
+  },
+  {
+   "pair": [
+    "CMPS-LO3",
+    "CMPS-LO13"
+   ],
+   "verdict": "needs",
+   "first": "CMPS-LO13"
+  },
+  {
+   "pair": [
+    "CMPS-LO4",
+    "CMPS-LO5"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "CMPS-LO4",
+    "CMPS-LO6"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "CMPS-LO4",
+    "CMPS-LO7"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "CMPS-LO4",
+    "CMPS-LO8"
+   ],
+   "verdict": "needs",
+   "first": "CMPS-LO8"
+  },
+  {
+   "pair": [
+    "CMPS-LO4",
+    "CMPS-LO9"
+   ],
+   "verdict": "needs",
+   "first": "CMPS-LO9"
+  },
+  {
+   "pair": [
+    "CMPS-LO4",
+    "CMPS-LO10"
+   ],
+   "verdict": "needs",
+   "first": "CMPS-LO10"
+  },
+  {
+   "pair": [
+    "CMPS-LO4",
+    "CMPS-LO11"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "CMPS-LO4",
+    "CMPS-LO12"
+   ],
+   "verdict": "needs",
+   "first": "CMPS-LO12"
+  },
+  {
+   "pair": [
+    "CMPS-LO4",
+    "CMPS-LO13"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "CMPS-LO5",
+    "CMPS-LO7"
+   ],
+   "verdict": "needs",
+   "first": "CMPS-LO5"
+  },
+  {
+   "pair": [
+    "CMPS-LO5",
+    "CMPS-LO8"
+   ],
+   "verdict": "needs",
+   "first": "CMPS-LO8"
+  },
+  {
+   "pair": [
+    "CMPS-LO5",
+    "CMPS-LO9"
+   ],
+   "verdict": "needs",
+   "first": "CMPS-LO5"
+  },
+  {
+   "pair": [
+    "CMPS-LO5",
+    "CMPS-LO10"
+   ],
+   "verdict": "needs",
+   "first": "CMPS-LO10"
+  },
+  {
+   "pair": [
+    "CMPS-LO5",
+    "CMPS-LO11"
+   ],
+   "verdict": "needs",
+   "first": "CMPS-LO11"
+  },
+  {
+   "pair": [
+    "CMPS-LO5",
+    "CMPS-LO12"
+   ],
+   "verdict": "needs",
+   "first": "CMPS-LO12"
+  },
+  {
+   "pair": [
+    "CMPS-LO5",
+    "CMPS-LO13"
+   ],
+   "verdict": "needs",
+   "first": "CMPS-LO13"
+  },
+  {
+   "pair": [
+    "CMPS-LO6",
+    "CMPS-LO7"
+   ],
+   "verdict": "needs",
+   "first": "CMPS-LO6"
+  },
+  {
+   "pair": [
+    "CMPS-LO6",
+    "CMPS-LO8"
+   ],
+   "verdict": "needs",
+   "first": "CMPS-LO8"
+  },
+  {
+   "pair": [
+    "CMPS-LO6",
+    "CMPS-LO9"
+   ],
+   "verdict": "needs",
+   "first": "CMPS-LO6"
+  },
+  {
+   "pair": [
+    "CMPS-LO6",
+    "CMPS-LO10"
+   ],
+   "verdict": "needs",
+   "first": "CMPS-LO10"
+  },
+  {
+   "pair": [
+    "CMPS-LO6",
+    "CMPS-LO11"
+   ],
+   "verdict": "needs",
+   "first": "CMPS-LO6"
+  },
+  {
+   "pair": [
+    "CMPS-LO6",
+    "CMPS-LO12"
+   ],
+   "verdict": "needs",
+   "first": "CMPS-LO12"
+  },
+  {
+   "pair": [
+    "CMPS-LO6",
+    "CMPS-LO13"
+   ],
+   "verdict": "needs",
+   "first": "CMPS-LO6"
+  },
+  {
+   "pair": [
+    "CMPS-LO7",
+    "CMPS-LO8"
+   ],
+   "verdict": "needs",
+   "first": "CMPS-LO8"
+  },
+  {
+   "pair": [
+    "CMPS-LO7",
+    "CMPS-LO9"
+   ],
+   "verdict": "needs",
+   "first": "CMPS-LO9"
+  },
+  {
+   "pair": [
+    "CMPS-LO7",
+    "CMPS-LO10"
+   ],
+   "verdict": "needs",
+   "first": "CMPS-LO10"
+  },
+  {
+   "pair": [
+    "CMPS-LO7",
+    "CMPS-LO12"
+   ],
+   "verdict": "needs",
+   "first": "CMPS-LO12"
+  },
+  {
+   "pair": [
+    "CMPS-LO7",
+    "CMPS-LO13"
+   ],
+   "verdict": "needs",
+   "first": "CMPS-LO13"
+  },
+  {
+   "pair": [
+    "CMPS-LO8",
+    "CMPS-LO9"
+   ],
+   "verdict": "needs",
+   "first": "CMPS-LO8"
+  },
+  {
+   "pair": [
+    "CMPS-LO8",
+    "CMPS-LO11"
+   ],
+   "verdict": "needs",
+   "first": "CMPS-LO8"
+  },
+  {
+   "pair": [
+    "CMPS-LO8",
+    "CMPS-LO12"
+   ],
+   "verdict": "needs",
+   "first": "CMPS-LO8"
+  },
+  {
+   "pair": [
+    "CMPS-LO8",
+    "CMPS-LO13"
+   ],
+   "verdict": "needs",
+   "first": "CMPS-LO8"
+  },
+  {
+   "pair": [
+    "CMPS-LO9",
+    "CMPS-LO10"
+   ],
+   "verdict": "needs",
+   "first": "CMPS-LO10"
+  },
+  {
+   "pair": [
+    "CMPS-LO9",
+    "CMPS-LO11"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "CMPS-LO9",
+    "CMPS-LO12"
+   ],
+   "verdict": "needs",
+   "first": "CMPS-LO12"
+  },
+  {
+   "pair": [
+    "CMPS-LO9",
+    "CMPS-LO13"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "CMPS-LO10",
+    "CMPS-LO11"
+   ],
+   "verdict": "needs",
+   "first": "CMPS-LO10"
+  },
+  {
+   "pair": [
+    "CMPS-LO10",
+    "CMPS-LO12"
+   ],
+   "verdict": "needs",
+   "first": "CMPS-LO12"
+  },
+  {
+   "pair": [
+    "CMPS-LO10",
+    "CMPS-LO13"
+   ],
+   "verdict": "needs",
+   "first": "CMPS-LO10"
+  },
+  {
+   "pair": [
+    "CMPS-LO11",
+    "CMPS-LO12"
+   ],
+   "verdict": "needs",
+   "first": "CMPS-LO12"
+  },
+  {
+   "pair": [
+    "CMPS-LO12",
+    "CMPS-LO13"
+   ],
+   "verdict": "needs",
+   "first": "CMPS-LO12"
+  },
+  {
+   "pair": [
+    "MIT-4.5",
+    "MIT-5.6"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "PDP-LO6",
+    "CMPS-LO12"
+   ],
+   "verdict": "needs",
+   "first": "CMPS-LO12"
+  },
+  {
+   "pair": [
+    "MIT-4.8",
+    "MIT-6.3"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-6.1",
+    "PDP-LO8"
+   ],
+   "verdict": "needs",
+   "first": "MIT-6.1"
+  },
+  {
+   "pair": [
+    "MIT-4.1",
+    "MIT-5.10"
+   ],
+   "verdict": "needs",
+   "first": "MIT-4.1"
+  },
+  {
+   "pair": [
+    "FOOP-LO3",
+    "CMPS-LO2"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-1.6",
+    "MIT-4.4"
+   ],
+   "verdict": "needs",
+   "first": "MIT-1.6"
+  },
+  {
+   "pair": [
+    "MIT-4.1",
+    "FOOP-LO8"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-1.2",
+    "CMPS-LO2"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-2.4",
+    "MIT-4.1"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-1.2",
+    "FOOP-LO4"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-1.7",
+    "CMPS-LO7"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-1.4",
+    "CMPS-LO12"
+   ],
+   "verdict": "needs",
+   "first": "CMPS-LO12"
+  },
+  {
+   "pair": [
+    "MIT-1.5",
+    "PDP-LO2"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "PDP-LO7",
+    "FOOP-LO3"
+   ],
+   "verdict": "needs",
+   "first": "PDP-LO7"
+  },
+  {
+   "pair": [
+    "MIT-4.10",
+    "CMPS-LO7"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-1.10",
+    "MIT-2.5"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-5.7",
+    "MIT-6.1"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-2.5",
+    "PDP-LO1"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-2.5",
+    "PDP-LO12"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "PDP-LO6",
+    "CMPS-LO6"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-3.6",
+    "PDP-LO9"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-5.6",
+    "CMPS-LO5"
+   ],
+   "verdict": "needs",
+   "first": "MIT-5.6"
+  },
+  {
+   "pair": [
+    "MIT-4.4",
+    "MIT-6.5"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-5.6",
+    "PDP-LO4"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "PDP-LO12",
+    "CMPS-LO6"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "PDP-LO1",
+    "FOOP-LO7"
+   ],
+   "verdict": "both"
+  },
+  {
+   "pair": [
+    "MIT-2.5",
+    "MIT-6.5"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-5.5",
+    "PDP-LO6"
+   ],
+   "verdict": "needs",
+   "first": "PDP-LO6"
+  },
+  {
+   "pair": [
+    "MIT-1.3",
+    "MIT-4.8"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-2.3",
+    "MIT-5.1"
+   ],
+   "verdict": "needs",
+   "first": "MIT-5.1"
+  },
+  {
+   "pair": [
+    "MIT-5.8",
+    "PDP-LO8"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-6.5",
+    "FOOP-LO5"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-3.2",
+    "MIT-4.8"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-1.11",
+    "FOOP-LO10"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-5.13",
+    "FOOP-LO3"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-1.9",
+    "PDP-LO3"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-5.7",
+    "FOOP-LO9"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-2.3",
+    "CMPS-LO1"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-5.8",
+    "MIT-6.2"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-3.3",
+    "MIT-5.4"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "PDP-LO7",
+    "CMPS-LO6"
+   ],
+   "verdict": "needs",
+   "first": "PDP-LO7"
+  },
+  {
+   "pair": [
+    "MIT-1.8",
+    "CMPS-LO10"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-1.1",
+    "MIT-3.3"
+   ],
+   "verdict": "needs",
+   "first": "MIT-1.1"
+  },
+  {
+   "pair": [
+    "MIT-1.5",
+    "MIT-5.4"
+   ],
+   "verdict": "needs",
+   "first": "MIT-1.5"
+  },
+  {
+   "pair": [
+    "MIT-3.6",
+    "MIT-4.7"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-5.8",
+    "CMPS-LO8"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-2.4",
+    "PDP-LO7"
+   ],
+   "verdict": "unrelated"
+  },
+  {
+   "pair": [
+    "MIT-2.1",
+    "MIT-6.8"
+   ],
+   "verdict": "needs",
+   "first": "MIT-2.1"
+  }
+ ],
+ "renamed": {
+  "MIT-2.1": "Natural numbers"
+ },
+ "groups": {
+  "MIT-2.1": [
+   "Numbers, expressions, and equations"
+  ]
+ },
+ "new_groups": [],
+ "needs_work": []
+}

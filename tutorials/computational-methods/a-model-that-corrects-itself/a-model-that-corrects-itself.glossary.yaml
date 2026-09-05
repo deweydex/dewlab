@@ -1,0 +1,50 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# Third tutorial of the Simulation series. Checked against
+# leaving-it-to-chance's and counting-darts' own cumulative glossaries --
+# no overlap. "model" and "simulation" are used loosely in earlier
+# tutorials' prose but never emphasised or defined there; this is their
+# first formal introduction as terms in this curriculum.
+entries:
+  - term: model
+    kind: concept
+    definition: >
+      A model is a rule for turning some numbers into a decision or a
+      prediction. It stays fixed once built, unless something outside it
+      deliberately corrects it.
+
+  - term: simulation
+    kind: concept
+    definition: >
+      A simulation is a model run forward, over and over, letting each
+      run change what the next run sees. Running a fixed formula once is
+      not a simulation; running it repeatedly, with feedback between
+      runs, is.
+
+  - term: weight
+    kind: concept
+    definition: >
+      A weight is the number a model multiplies one input by before
+      adding everything together. A larger weight means that input
+      matters more to the model's decision.
+
+  - term: bias
+    kind: concept
+    definition: >
+      A bias is the one extra number a model adds on top of every
+      weighted input, shifting its decision up or down regardless of
+      what came in.
+
+  - term: epoch
+    kind: concept
+    definition: >
+      An epoch is one full pass through every training example, checking
+      and correcting the model once against each.
+
+  - term: learning rate
+    kind: concept
+    definition: >
+      The learning rate is the one number that sets how large a
+      correction a mistake produces. A larger learning rate corrects
+      faster but less precisely; a smaller one takes more epochs to
+      reach the same place.

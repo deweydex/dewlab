@@ -132,6 +132,12 @@
     <span class="dl-boot-dots" id="dl-boot-dots" aria-hidden="true" hidden><span></span><span></span><span></span></span>
   </div>
 
+  <!-- Announces once a cell finishes running — the ticking "Running… Xs"
+       run-line deliberately isn't itself a live region (tutorial-runtime.js,
+       startRunLineTicker()); this is the one announcement a screen reader
+       gets, the moment there's an actual result to hear about. -->
+  <div class="dl-sr-only" id="dl-run-announcer" role="status" aria-live="polite"></div>
+
   <main id="dl-body">
 {{BODY}}
   </main>
@@ -196,11 +202,11 @@
          export (updateNotesNudge(), tutorial-runtime.js). Opt-out here for
          the same reason the progress badges toggle below is one: ambient,
          seen without asking for it, unlike the rest of this panel. -->
-    <div class="dl-texture-row">
-      <span>Remind me to export new notes</span>
-      <div class="dl-seg" data-notes-nudge>
-        <button type="button" data-value="on">on</button>
-        <button type="button" data-value="off">off</button>
+    <div class="dl-texture-row dl-texture-row-wide">
+      <span id="dl-seg-notes-nudge-label">Remind me to export new notes</span>
+      <div class="dl-seg" data-notes-nudge role="radiogroup" aria-labelledby="dl-seg-notes-nudge-label">
+        <button type="button" data-value="on" role="radio">on</button>
+        <button type="button" data-value="off" role="radio">off</button>
       </div>
     </div>
   </section>
@@ -219,10 +225,10 @@
               title="Throw away everything Python currently holds, then run every cell on this page from the top — the way to prove the page still works from a clean start">Restart &amp; run all</button>
     </div>
     <div class="dl-texture-row">
-      <span>Run time</span>
-      <div class="dl-seg" data-run-stats>
-        <button type="button" data-value="on">on</button>
-        <button type="button" data-value="off">off</button>
+      <span id="dl-seg-run-stats-label">Run time</span>
+      <div class="dl-seg" data-run-stats role="radiogroup" aria-labelledby="dl-seg-run-stats-label">
+        <button type="button" data-value="on" role="radio">on</button>
+        <button type="button" data-value="off" role="radio">off</button>
       </div>
     </div>
   </section>
@@ -267,11 +273,11 @@
 
     <p class="dl-panel-note" id="dl-progress-summary" hidden></p>
 
-    <div class="dl-texture-row">
-      <span>Show progress on the tutorials list</span>
-      <div class="dl-seg" data-progress-badges>
-        <button type="button" data-value="on">on</button>
-        <button type="button" data-value="off">off</button>
+    <div class="dl-texture-row dl-texture-row-wide">
+      <span id="dl-seg-progress-badges-label">Show progress on the tutorials list</span>
+      <div class="dl-seg" data-progress-badges role="radiogroup" aria-labelledby="dl-seg-progress-badges-label">
+        <button type="button" data-value="on" role="radio">on</button>
+        <button type="button" data-value="off" role="radio">off</button>
       </div>
     </div>
   </section>
@@ -285,10 +291,10 @@
     <p class="dl-panel-note" id="dl-versions-note"></p>
 
     <div class="dl-texture-row">
-      <span>Show me</span>
-      <div class="dl-seg" data-versions-follow>
-        <button type="button" data-value="started">where I left off</button>
-        <button type="button" data-value="newest">the newest</button>
+      <span id="dl-seg-versions-follow-label">Show me</span>
+      <div class="dl-seg" data-versions-follow role="radiogroup" aria-labelledby="dl-seg-versions-follow-label">
+        <button type="button" data-value="started" role="radio">where I left off</button>
+        <button type="button" data-value="newest" role="radio">the newest</button>
       </div>
     </div>
 
@@ -323,20 +329,20 @@
     <h3>Texture</h3>
 
     <div class="dl-texture-row">
-      <span>Theme</span>
-      <div class="dl-seg" data-texture="theme">
-        <button type="button" data-value="system">auto</button>
-        <button type="button" data-value="light">light</button>
-        <button type="button" data-value="dark">dark</button>
+      <span id="dl-seg-theme-label">Theme</span>
+      <div class="dl-seg" data-texture="theme" role="radiogroup" aria-labelledby="dl-seg-theme-label">
+        <button type="button" data-value="system" role="radio">auto</button>
+        <button type="button" data-value="light" role="radio">light</button>
+        <button type="button" data-value="dark" role="radio">dark</button>
       </div>
     </div>
 
     <div class="dl-texture-row">
-      <span>Font</span>
-      <div class="dl-seg" data-texture="font">
-        <button type="button" data-value="serif">serif</button>
-        <button type="button" data-value="sans">sans</button>
-        <button type="button" data-value="mono">mono</button>
+      <span id="dl-seg-font-label">Font</span>
+      <div class="dl-seg" data-texture="font" role="radiogroup" aria-labelledby="dl-seg-font-label">
+        <button type="button" data-value="serif" role="radio">serif</button>
+        <button type="button" data-value="sans" role="radio">sans</button>
+        <button type="button" data-value="mono" role="radio">mono</button>
       </div>
     </div>
 
@@ -347,17 +353,17 @@
          line below the first three rather than crowding a six-wide row. -->
     <div class="dl-texture-row">
       <span></span>
-      <div class="dl-seg" data-texture="font">
-        <button type="button" data-value="atkinson">Atkinson Hyperlegible</button>
-        <button type="button" data-value="opendyslexic">OpenDyslexic</button>
+      <div class="dl-seg" data-texture="font" role="radiogroup" aria-label="Font, further options">
+        <button type="button" data-value="lexend" role="radio">Lexend</button>
+        <button type="button" data-value="opendyslexic" role="radio">OpenDyslexic</button>
       </div>
     </div>
 
     <div class="dl-texture-row">
-      <span>High contrast</span>
-      <div class="dl-seg" data-texture="contrast">
-        <button type="button" data-value="normal">off</button>
-        <button type="button" data-value="high">on</button>
+      <span id="dl-seg-contrast-label">High contrast</span>
+      <div class="dl-seg" data-texture="contrast" role="radiogroup" aria-labelledby="dl-seg-contrast-label">
+        <button type="button" data-value="normal" role="radio">off</button>
+        <button type="button" data-value="high" role="radio">on</button>
       </div>
     </div>
 
@@ -367,11 +373,11 @@
     </div>
 
     <div class="dl-texture-row">
-      <span>Width</span>
-      <div class="dl-seg" data-texture="width" data-number>
-        <button type="button" data-value="34">narrow</button>
-        <button type="button" data-value="44">medium</button>
-        <button type="button" data-value="56">wide</button>
+      <span id="dl-seg-width-label">Width</span>
+      <div class="dl-seg" data-texture="width" data-number role="radiogroup" aria-labelledby="dl-seg-width-label">
+        <button type="button" data-value="34" role="radio">narrow</button>
+        <button type="button" data-value="44" role="radio">medium</button>
+        <button type="button" data-value="56" role="radio">wide</button>
       </div>
     </div>
 
@@ -382,10 +388,10 @@
     </div>
 
     <div class="dl-texture-row">
-      <span>Header</span>
-      <div class="dl-seg" data-texture="header">
-        <button type="button" data-value="full">full</button>
-        <button type="button" data-value="minimal">minimal</button>
+      <span id="dl-seg-header-label">Header</span>
+      <div class="dl-seg" data-texture="header" role="radiogroup" aria-labelledby="dl-seg-header-label">
+        <button type="button" data-value="full" role="radio">full</button>
+        <button type="button" data-value="minimal" role="radio">minimal</button>
       </div>
     </div>
 

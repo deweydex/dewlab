@@ -1,0 +1,23 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# Fourth tutorial of the series (Programming with objects). Checked all
+# three earlier glossaries as the cumulative list — none overlap.
+# dev/curriculum_map.py's terms_of() found only this tutorial's own section
+# heading and the other tutorials' titles, in italics as cross-references;
+# neither is a term. "assert" itself is never emphasised in the prose (it
+# is a keyword, referenced in code style throughout, the same convention
+# other keyword entries in the curriculum follow), so the mechanical pass
+# does not surface it — added from a manual read instead, since the whole
+# tutorial teaches it and no earlier PDP or FOOP tutorial defines it
+# (checked term_findings() for "assert" and "traceback" against the whole
+# curriculum; "traceback" is already taught in
+# mit-pdp-maths-prog-integration/when-it-goes-wrong, a FOOP-LO10
+# prerequisite, so it is used here without a repeat entry).
+entries:
+  - term: assert
+    kind: keyword
+    definition: >
+      Checks a claim, and stops the program with an AssertionError the
+      moment that claim is false. An optional message after a comma names
+      what the claim was checking.
+    example: "assert account.balance == 0.0, \"withdrawing the full balance should leave 0.0\""

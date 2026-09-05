@@ -87,6 +87,74 @@ class TestAutosave:
         assert "counting:" in page.inner_text(output_of("plain-python"))
 
 
+class TestOversizedOutputFallback:
+    """DECISIONS_LOG.md 7.133: a large embedded figure (tutorial_tools.py's
+    _figure_html(), a base64 PNG) can be big enough on its own to blow this
+    browser's storage quota — saveNow() must not let that cost a reader
+    their code and notes too. Storage.prototype.setItem is overridden here
+    to throw past a size deterministically, standing in for a browser's own
+    quota rather than trying to actually fill one up."""
+
+    def fail_past(self, page, limit: int):
+        page.evaluate(
+            """(limit) => {
+                 const real = Storage.prototype.setItem;
+                 Storage.prototype.setItem = function (key, value) {
+                   if (value.length > limit) {
+                     throw new DOMException("full", "QuotaExceededError");
+                   }
+                   return real.call(this, key, value);
+                 };
+               }""",
+            limit,
+        )
+
+    def inflate_output(self, page, cell_id: str, size: int):
+        page.evaluate(
+            """([cellId, size]) => {
+                 document.querySelector(
+                   `.dl-cell[data-cell-id='${cellId}'] .dl-output`
+                 ).innerHTML = "x".repeat(size);
+               }""",
+            [cell_id, size],
+        )
+
+    def test_a_too_large_cell_output_is_dropped_so_the_rest_still_saves(self, clean_storage):
+        page = clean_storage
+        self.fail_past(page, 150_000)
+        page.click(".dl-cell[data-cell-id='numpy-basics'] .cm-content")
+        page.keyboard.type("# keep me\n")
+        self.inflate_output(page, "plain-python", 200_000)
+
+        page.evaluate("globalThis.dewlab.saveNow()")
+
+        saved = page.evaluate("globalThis.dewlab.readSaved()")
+        big = next(c for c in saved["cells"] if c["task_id"] == "plain-python")
+        kept = next(c for c in saved["cells"] if c["task_id"] == "numpy-basics")
+        assert big["output_html"] == ""
+        assert "keep me" in kept["student_code"]
+
+    def test_it_says_so_rather_than_claiming_a_normal_save(self, clean_storage):
+        page = clean_storage
+        self.fail_past(page, 150_000)
+        self.inflate_output(page, "plain-python", 200_000)
+
+        page.evaluate("globalThis.dewlab.saveNow()")
+
+        state = page.inner_text("#dl-progress-state")
+        assert "ran out of room" in state
+        assert "large figure" in state
+
+    def test_a_reload_shows_no_output_for_the_dropped_cell(self, clean_storage):
+        page = clean_storage
+        self.fail_past(page, 150_000)
+        self.inflate_output(page, "plain-python", 200_000)
+        page.evaluate("globalThis.dewlab.saveNow()")
+
+        reload_and_wait(page)
+        assert page.inner_text(output_of("plain-python")).strip() == ""
+
+
 class TestStudentNotes:
     """planning/STUDENT_NOTES.md — a student's own free-text notes, distinct
     from SIDEBAR_CONTENT.md's author-written pedagogical notes, riding along

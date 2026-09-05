@@ -14,7 +14,7 @@ covers:
   selection-sort-find-the-smallest:
     covers: [MIT-6.8]
   comparing-our-sorts:
-    covers: [MIT-6.8]
+    covers: [MIT-6.8, CMPS-LO5]
   optional-challenges:
     touches: [MIT-6.8]
 ---

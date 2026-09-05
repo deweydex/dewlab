@@ -5802,3 +5802,572 @@ work. The one real trap, and worth remembering past this feature: a
 shared mechanism that has been duplicated (dewmini.js's own texture
 functions) needs the fix applied twice, and only a real browser catches
 the copy that was missed.*
+
+**7.124 — High contrast redefined four variables and called it done;
+turning it on and looking said otherwise.** Josh's own report, the day
+after 7.123 shipped: "the high contrast doesn't appear to work for all
+the elements." Right, and measurable — `[data-contrast="high"]`
+touched `--dl-fg`/`--dl-bg`/`--dl-muted`/`--dl-rule` and the font, on
+the unstated assumption that body text was the whole of "can I read
+this." A heading, a link, a cell-type pill, a cell's own border, a
+pass/fail message: every one of those is its own variable, so the
+toggle changed nothing about any of them. Measured with WCAG's own
+contrast-ratio formula rather than eyeballed screenshots: `--dl-link`
+at 3.6:1 against white was failing the *ordinary* AA minimum (4.5:1)
+that applies with the toggle off entirely, let alone the near-7:1 AAA
+this toggle exists to promise — the one thing it is for, not working,
+while it was on. `--dl-cell-border` was worse: 1.4:1, against a 3:1
+floor WCAG sets for a graphical boundary rather than text, meaning a
+code cell's own edge was close to invisible.
+
+**Fixed by moving each colour, not replacing it.** Asked directly
+rather than assumed: flatten every one of these to black and white
+too, or keep the hue and fix the ratio? Josh's answer was to keep it —
+a returning reader who has learned "teal is SQL, purple is HTML" keeps
+that under high contrast too, the same way the design already keeps it
+across light and dark theme, rather than losing every cell-type signal
+the moment the one toggle meant to help them is on. So each failing
+colour was darkened (light theme) or lightened (dark) along its own
+hue, in HSL, until it cleared 7:1 against the background it actually
+sits on — not 4.5, even though that alone would satisfy plain AA,
+because "high contrast" promising AAA and then quietly settling for
+AA the moment a colour needed real work is exactly the kind of gap
+this entry exists to close. `--dl-cell-border` is the one exception:
+a boundary carries no signal worth preserving the way a cell-type hue
+does, so it borrows `--dl-rule` outright — already pure black or white
+under this same toggle — rather than getting a darkened beige of its
+own that would have been muddy and still low-contrast at any
+reasonable target.
+
+**The bug worth naming for next time: an inline style beats a
+stylesheet, always, regardless of specificity.** `--dl-link`'s new
+high-contrast rule did nothing at first, in a real browser, despite
+being syntactically correct and more specific than the rule it was
+meant to override. The reason: dewlab's texture panel has its own
+reader-settable link colour, `state.link` in `TEXTURE_DEFAULTS`, and
+`applyTexture()` writes it with `root.style.setProperty(...)` — an
+inline style on `<html>`, which the cascade always prefers over any
+selector in a stylesheet, `:root[data-contrast="high"]` included. Font
+family never had this problem, because it is *only* ever set from the
+stylesheet's own `[data-contrast]`/`[data-font]` rules; link colour was
+the one property with a second, higher-priority writer nothing else in
+this feature touched. Fixed at the source: `applyTexture()` now skips
+the inline `--dl-link` write while `state.contrast === "high"`, and
+removes it if switching into high contrast from a state that had
+already set one, so the stylesheet rule is free to apply. The general
+lesson, not just this one property's: before trusting a stylesheet
+override to work, check whether anything *also* sets that same custom
+property as an inline style — a specificity fight a CSS-only reading
+never reveals, because nothing in the CSS itself is wrong.
+
+**The second copy, found the same way the first one was (7.123).**
+`assets/tutorial-runtime.js` carries the identical `applyTexture()`,
+for the same reason dewmini.js's own copy exists — needed the identical
+fix, found by testing a tutorial page in a real browser after fixing
+dewmini and discovering its link colour was *still* wrong there.
+Grepping for the pattern once it was known would have found both at
+once; reading the stylesheet fix and assuming a shared mechanism was
+therefore also fixed would have shipped exactly the same half-repaired
+state 7.123 itself shipped.
+
+**Verified in a real browser**, WCAG ratios computed rather than
+guessed: every corrected colour re-measured against the background it
+actually renders on (`--dl-link`, the four `--dl-type-*` colours, and
+`--dl-pass-fg` on its own `--dl-pass-bg`) and confirmed at or above
+7:1; `--dl-cell-border` confirmed pure black/white via computed style,
+not just read from the source; the fix checked in both light and dark
+high contrast, and confirmed the reader's own separately-picked link
+colour is respected again the moment high contrast is turned back off.
+`tests/test_build.py` and the full `tests/e2e/test_dewmini_workbench.py`
+suite both re-run clean — neither exercises contrast ratios directly,
+so a real browser is what this entry's own finding rests on, not the
+suites.
+
+*Cost to change: small in lines, real in the lesson. Nine colour
+values and a five-line JS guard, duplicated once. What actually cost
+time was rediscovering, from scratch, the two things 7.96/7.97 already
+named for a different feature: a claim about what a toggle does is
+worth nothing until the toggle has actually been turned on and looked
+at, and a mechanism that has been duplicated stays duplicated for every
+fix aimed at it, not only its first one.*
+
+**7.125 — Opening a plain `.py` file in the File view silently turned
+it into something that looks like a dewmini export.** Found while
+checking around the Cells/File switch for the bugs it seemed likely to
+be hiding: write a script from inside a running cell with
+`open("plain.py", "w").write("x = 1")`, no `# %%` anywhere, then open
+it in the File view. It showed up *with* a `# %%` marker already on
+it, before a single keystroke — and saving from there wrote that
+marker to disk for good. The cause was `cellsToPercentText()`, the
+function both the File view's own display and every save-back to a
+notebook's `.path` route through: it always put a marker before every
+cell, single cell or not, on the reasonable-looking assumption that a
+marker is how dewmini tells cells apart. `parsePyCells()`'s own
+markerless-file fallback — read a whole file with no marker in it back
+as one Python cell — already made the marker unnecessary on a single
+cell; the File view was adding a mark of ownership to a file that was
+never dewmini's to begin with, the moment a reader so much as looked
+at it.
+
+**Fixed at the two call sites that show or persist what is really on
+disk, not at the function itself.** `cellsToPercentText()` took a
+`bare` option: on, a lone Python cell serializes with no marker at
+all; off (the default), unchanged. `writeNotebookToWorkspace()` and
+`renderFileView()`'s editor seed both pass `bare: true`, since both
+exist to reflect a real file back at its reader — round-tripping a
+markerless file through either should leave it markerless.
+`downloadAsPython()` was left on the default. It looked at first like
+the same fix should apply there too, uniformly; it doesn't, because
+that path carries its own second mechanism the marker is load-bearing
+for. It writes a short explanatory header above the first `# %%`
+before handing the file to a reader who has never seen the convention,
+and strips that same header back out on reimport by checking for it
+(`isOwnHeader()`, inside `parsePyCells()`) — a check that only makes
+sense with a marker there to say where the header ends and the first
+cell begins. Applying `bare` there too passed the fix's own new tests
+cleanly and only broke on the full suite:
+`test_exporting_twice_does_not_grow_the_notebook` failed because, with
+no marker anywhere in the reimported file, the *whole file* — header
+included — fell into `parsePyCells()`'s single-cell fallback and came
+back as one cell's content, header and all, ready to be written out
+again above a second copy of itself on the next export. Scoping `bare`
+to the two call sites that reflect an existing file, and leaving the
+one call site that fabricates a new file with its own header
+untouched, keeps both fixed at once.
+
+**Verified in a real browser and in the suite.** A markerless `.py`
+opened and edited in the File view stays markerless, on disk and on
+redisplay (`test_a_markerless_file_stays_markerless_after_editing`,
+plus a live Playwright check); a file with genuine multiple cells
+keeps every one of its markers through an open/edit/save round trip
+(`test_a_multi_cell_file_keeps_its_markers`); the pre-existing
+export/reimport/export/reimport regression test that first caught the
+overreach passed again once `downloadAsPython()` was excluded. Full
+`tests/e2e/test_dewmini_workbench.py` (167 tests) and the rest of the
+suite both clean.
+
+*Cost to change: one parameter and two call sites, once the two false
+alarms found alongside it (output apparently lost across a File→Cells
+switch; a tab returning to `.dm-cell` count 0) were run down and ruled
+out as flaws in the test script checking them, not in the product. The
+lesson worth carrying forward: a single serialization function fed by
+more than one caller does not mean one call-site's needs generalize to
+the others — `downloadAsPython()` and the save-back path look alike
+from inside `cellsToPercentText()` but carry different downstream
+contracts, and the fix that is correct for one broke a working test
+for the other.*
+
+**7.126 — A long Settings label wrapped into a narrow ribbon, most of
+its own row sitting empty beside it.** Josh flagged it from a
+screenshot: "Show progress on the tutorials list", in the contents
+page's own Settings panel, broken across four cramped lines while the
+on/off toggle beside it had most of the row's width to itself and used
+none of it. The cause was `.dl-texture-row`'s own grid —
+`grid-template-columns: 4.6rem 1fr` — sized for the one-word labels
+("Theme", "Font", "Size") every other row in the panel actually has.
+A label long enough to need more than 4.6rem simply wraps inside that
+column instead of claiming any of the wide one beside it, since CSS
+grid tracks don't borrow room from each other that way.
+
+**Two more turned up the same way, once the shape of the bug was
+known.** Grepping `.dl-texture-row` across both templates
+(`assets/shell.html`, `compose/dewmini.html`) for every row's own
+label found "Remind me to export new notes" (the same panel, "Your
+work" section) and "Web (HTML+CSS)" (dewmini's own cell-type toggles)
+wrapping the identical way — three rows, two files, one shared cause.
+
+**Fixed with a modifier rather than widening the column.** A `.dl-
+texture-row-wide` class drops `grid-template-columns` to a single
+`1fr`, so the row's two children — the label `<span>` and the `<div
+class="dl-seg">` toggle — stack as two lines instead of two columns.
+Widening the shared 4.6rem column instead was the other option
+considered and rejected: every short label in the panel currently
+lines up in that same left column, and widening it to fit three
+outliers would have pushed every other row's toggle rightward for no
+reason of its own. Applied only to the three rows actually affected,
+found by reading every `.dl-texture-row`'s own label rather than
+guessing which looked long enough — a "does this look short" judgment
+would have been exactly the kind of assumption 7.124 and 7.125 both
+warn against making without looking.
+
+**Verified in a real browser**, at the width the original screenshot
+was taken from and at dewmini's own default width: all three rows now
+read as a normal line of label text above a comfortably-sized toggle,
+and every untouched row in the same panels still lines up exactly as
+it did before. `python3 -m pytest tests --ignore=tests/e2e` clean —
+nothing here is behaviour a test suite would catch, since the grid
+still parses and the toggle still works either way; only a screenshot
+shows the difference.
+
+*Cost to change: five lines of CSS and three class attributes, once
+the three affected rows were actually found rather than guessed at.
+The lesson is the same one this project keeps re-learning from a
+different angle each time: a component built for the common case (a
+one-word label) needs a second look the moment real content is longer
+than the case it was designed around, and the way to find every place
+that happens is to read the data the component renders, not to eyeball
+the finished page and hope nothing else is affected.*
+
+**7.127 — Atkinson Hyperlegible swapped for Lexend, on Josh's own call
+after using both.** Not a bug: 7.123 shipped Atkinson Hyperlegible
+(Braille Institute of America, built for low-vision legibility) as one
+of the two accessible reading fonts, alongside OpenDyslexic. Asked
+directly while looking at the rest of the texture panel for other small
+issues, Josh preferred Lexend instead — Google's own font built to
+reduce the visual complexity linked to reading difficulty — and, asked
+separately, wanted **High contrast** to force Lexend too rather than
+keep forcing the font it was replacing.
+
+**Vendored the same way, with one real difference the switch surfaced:
+Lexend ships no italic face at all.** Atkinson Hyperlegible and
+OpenDyslexic both come from `@fontsource` as four static faces —
+regular, bold, and an italic of each — copied by `build-vendor.mjs`'s
+`ACCESSIBLE_FONTS` loop under one shared `FACES` list applied to every
+font. Lexend's own `@fontsource` package has only two: regular and
+bold, no italic files in it to copy at all — the upstream family never
+drew one. `ACCESSIBLE_FONTS` now lists each font's own faces rather
+than assuming one list fits both; a page asking for italic Lexend gets
+the browser's own synthetic slant, the same fallback any font missing
+that face gets, not a build failure or a silently absent font.
+
+**The rest was a name swapped in four places once the CSS rule itself
+was renamed.** `:root[data-font="atkinson"]` became
+`:root[data-font="lexend"]`; the Font row's own button, in both
+`compose/dewmini.html` and `assets/shell.html`, changed its
+`data-value` and label to match; `:root[data-contrast="high"]`'s own
+forced `--dl-font-family` changed the same way, per Josh's answer on
+scope. No JavaScript changed — `data-font` is read and set generically
+off whichever button was clicked, with no fixed list of valid values to
+extend, the same design that let 7.123 add two fonts to a three-font
+row with no logic change either. A reader who had Atkinson Hyperlegible
+selected before this shipped keeps that value in their own saved
+`dewlab:texture` state; it no longer matches a `data-font` rule, so
+their page quietly falls back to the family the base rule sets, the
+same graceful path any unrecognised `data-font` value already took —
+not a migration this change needed to write by hand.
+
+**Verified in a real browser.** Lexend loads and applies as the body
+font from the Font row, confirmed via `document.fonts` rather than
+assumed from the CSS alone; High contrast forces it regardless of
+which font was active first; OpenDyslexic, untouched by this change,
+still applies correctly on its own button. `python3 -m pytest tests
+--ignore=tests/e2e` and the full `tests/e2e/test_dewmini_workbench.py`
+suite both re-run clean — neither exercises font rendering directly,
+so the browser check is what this entry's own verification rests on.
+
+*Cost to change: small, once the italic gap was found. A CSS rule
+renamed in five places and a vendor-pin swap would have been the whole
+of it; the real content is `ACCESSIBLE_FONTS` no longer assuming every
+accessible font ships the same four faces the first two happened to
+share — an assumption a font added later could just as easily have
+broken again if this hadn't been noticed and fixed at the source now.*
+
+**7.128 — A cell left blank vanished the moment the File view was
+opened and closed again, with nothing said about it.** Found during an
+open-ended UI review, not reported first-hand: insert a fresh Python
+cell from the seam, glance at the File view, switch back to Cells, and
+the cell one had just added was gone. The same thing happened to a
+cell a reader had cleared out mid-edit, which is the more worrying
+case — the notebook lost work the reader could see they still had.
+
+**The cause sat in `parsePyCells()`'s own `flush()`, the routine that
+turns one stretch of the file's text back into a cell.** It kept a
+cell only `if (content.trim())` — true for a genuinely empty document
+(a plain, brand-new `.py` file has no cells to speak of, and that part
+is correct), but also true for a stretch that sits between two real
+`# %%` markers and simply has nothing typed into it yet. `flush()` had
+no way to tell those two apart: "nothing here because no cell asked
+for one" and "nothing here because this cell is blank right now" both
+trimmed to the empty string. `commitFileText()` calls
+`mergeParsedCells(cells, parsePyCells(text))` on every path that
+leaves the File view (`setView()`, by way of `flushFileEditor()`), and
+`mergeParsedCells()` only ever looks at what `parsePyCells()` handed
+it — a cell `flush()` never pushed was never a candidate to survive,
+however carefully the merge itself was written.
+
+**Fixed by making the marker itself the signal, not the content.** A
+`# %%` (or `# %% [markdown]`) line sets `currentType` away from
+`null`; `flush()` now keeps whatever it collected once that has
+happened, blank or not, and only drops a blank stretch when
+`currentType` is still `null` — the one case with no marker of its own
+asking for a cell to exist there, which is the leading segment before
+the first marker in the file, or the whole file when it has no marker
+at all. One line changed, from checking `content.trim()` alone to
+`content.trim() || currentType !== null`.
+
+**A narrower edge case was left alone, on purpose.** A notebook of
+exactly one blank Python cell, serialized `bare` (7.125's own case —
+no marker at all for a lone cell), still reads back as zero cells: an
+empty file and "one cell with nothing in it" are genuinely the same
+bytes with no marker to tell them apart, unlike the marked case this
+entry fixes. Left as a known gap rather than papered over, since
+closing it would mean deciding what an empty `.py` file *means* by
+convention rather than reading a marker that says so.
+
+**Verified with a new e2e test**
+(`test_a_blank_cell_survives_a_round_trip_through_the_file_view`,
+alongside the existing `test_a_round_trip_through_the_file_view_keeps
+_outputs`, which exercises the same File→Cells path with a non-blank
+cell and still passes): add one real cell, add one left blank, switch
+to File and back, and the blank one is still there. Full
+`tests/e2e/test_dewmini_workbench.py` (168 tests, one more than
+7.125's count) and the rest of the suite both clean.
+
+*Cost to change: one condition in one function, once the two "nothing
+here" cases were told apart. The lesson: a parser that reads "no
+content" as "no cell" is only safe when there is truly no other signal
+available — the moment a format has an explicit marker for where a
+cell starts, that marker is the one thing to trust, not a guess from
+whatever ended up between two of them.*
+
+**7.129 — Three comments in `compose/dewmini.html` described the
+Library/Workbench/Settings panels' own docking backwards.** Also found
+during the same open-ended UI review as 7.128, not a bug a reader could
+see. The toolbar-order comment claimed toggles were ordered "left-docked
+rail first, then the two right-docked ones"; the Library panel's own
+comment claimed it was "docked left, and independent of the two
+right-docked panels"; the Workbench panel's claimed it was "docked right
+and mutually exclusive with Settings, which shares that edge." Read
+against the actual CSS and the `wirePanel()` call in `dewmini.js` that
+wires the real conflicts, all three have it backwards: Library and
+Settings are the two right-docked panels sharing an edge (`.dm-panel`'s
+own default is `right: 0`; `.dl-settings` matches it), and Workbench is
+the one left-docked panel (`.dm-panel-left`), free to stay open beside
+either. `CLAUDE.md` calls a stale comment worse than no comment, and
+this is the case in point: a comment that reads as confidently correct
+prose is exactly the one nobody re-checks against the code once it no
+longer matches.
+
+**Fixed by rewriting each to describe what the code actually does,**
+citing the specific mechanism rather than restating a claim: the
+toolbar-order comment now says the order follows what a reader does
+with each panel (look something up, work, configure), not which edge
+it opens on; the Library and Workbench comments each name `wirePanel()`
+and its `conflicts` list as the actual thing enforcing "these two close
+each other, this one doesn't." No behaviour changed — CSS classes,
+`wirePanel()` calls and `watchPanelOverlap()`'s own `{left, right}` map
+were already correct; only the prose describing them was wrong.
+
+*Cost to change: three comments, once actually checked against the CSS
+classes and the `wirePanel()` conflict lists on the elements they sit
+above, rather than trusted on read. Comment review like this has no
+test to catch it — nothing here changes what runs — which is exactly
+why a comment that claims a wrong thing confidently can sit uncorrected
+for a long time.*
+
+**7.130 — Every segmented control in Settings announced itself to a
+screen reader as a row of independent toggle buttons, when picking one
+option always deselects the others.** An accessibility review flagged
+it: Theme, Font, Width, Density, Cursor, and every other `.dl-seg`
+group — about two dozen of them across `assets/shell.html` and
+`compose/dewmini.html` — read out as "toggle button, pressed" or "not
+pressed" for each button in turn, with nothing telling a screen reader
+the buttons belonged to one group or that only one of them could ever
+be true at once. A sighted reader sees the group at a glance; a screen
+reader user had to infer it from context, one button announcement at
+a time.
+
+**The cause was `aria-pressed`, the correct attribute for an
+independent on/off toggle button and the wrong one for a set of
+mutually exclusive options.** `.dl-seg` has only ever had one shape —
+a row of `<button data-value="...">`, exactly one carrying the
+"current" choice — and every one of the half-dozen places that wire
+it up (`initTexture()`'s own sync loop, plus a separate one for each
+of Run time, Notes nudge, Progress badges, Versions, Practice order,
+and Cell types, split across `assets/tutorial-runtime.js` and
+`compose/dewmini.js`) copied the same `aria-pressed` line, because the
+first one written did and nothing since had reason to question it.
+WAI-ARIA has a purpose-built pattern for exactly this shape — a
+radiogroup — and none of these groups used it.
+
+**Fixed by moving every `.dl-seg` onto the APG radiogroup pattern.**
+`role="radiogroup"` on the container and `role="radio"` on each button
+are static and went straight into the HTML, alongside a label: an
+`aria-labelledby` pointing at the row's own visible `<span>` (given an
+`id` where it didn't already have one) where there was text to point
+at, or an `aria-label` for the two rows that share a label with the
+row above them (the second Font row) and so have an empty `<span>` of
+their own. What changes at runtime — which button is checked — moved
+from `aria-pressed` to `aria-checked`, through two small shared
+helpers (`setSegChecked()`, `syncSegRoving()`) added once in each JS
+file rather than repeated at every call site, the second of which also
+keeps the roving tabindex the pattern calls for: the checked button is
+the group's one tab stop, or the first button when nothing is checked
+yet (Width's slider can sit between its three presets with none of
+them lit). A single `initSegKeyboardNav()`, wired once per file over
+every `.dl-seg` on the page rather than once per group, adds
+ArrowLeft/Right, ArrowUp/Down, and Home/End: each calls `.click()` on
+the target button before focusing it, so keyboard selection runs
+through the exact same code path a mouse click already did and the two
+can never disagree about what a selection means. `tutorial-style.css`'s
+`.dl-seg button[aria-pressed="true"]` became
+`[aria-checked="true"]`; the unrelated `[aria-pressed="true"]` rules
+for the editor-status picker and dewmini's reference filter chips —
+genuinely independent toggles, not this pattern — were left alone.
+
+**Verified in a real browser.** `python3 build.py --clean` and
+`python3 -m pytest --ignore=tests/e2e -q` both clean, and two new e2e
+tests against dewmini's Theme group
+(`test_the_theme_group_announces_itself_as_a_radiogroup`,
+`test_arrow_right_moves_focus_and_selection_together`, plus a third,
+`test_arrow_right_wraps_from_the_last_option_to_the_first`) — `role`,
+`aria-checked`, and an ArrowRight press moving both focus and the
+checked state to the next button, wrapping past the last one back to
+the first. Full `tests/e2e/test_dewmini_workbench.py` (103 tests,
+three more than before this entry) clean.
+
+*Cost to change: two roles and a label per group in the HTML, one
+attribute rename and one small roving-tabindex helper in the JS,
+written once and reused rather than copied per group. The lesson:
+`aria-pressed` and a radiogroup's `aria-checked` render almost
+identically on screen — the same row of buttons, the same highlighted
+one — which is exactly why the first `.dl-seg` written with the wrong
+one went unnoticed long enough for every later group to copy it rather
+than question it. A widget's accessibility tree is not implied by its
+CSS.*
+
+**7.133 — A large plotted figure could blow this browser's storage
+quota and cost a reader their code and notes along with it, not just
+the figure.** `tutorial_tools.py`'s `_figure_html()` embeds every
+matplotlib figure as a base64 PNG straight into a cell's output HTML —
+easily a few hundred KB from one cell, next to a typical printed
+result's few dozen bytes. `saveNow()` (`tutorial-runtime.js`) builds
+one JSON record covering every cell's code, output and the reader's own
+notes, and writes it with a single `localStorage.setItem()`. When that
+throws — the record now too big for what this browser will hold —
+the whole call failed, and the *only* sign of it was a line inside the
+Settings panel a reader would have to go looking for. Nothing about the
+storage itself was actually wiped: `setItem()` leaves the previous
+saved value alone on failure, so what was lost was ongoing —
+every future autosave kept failing the same way for as long as that
+oversized output stayed part of the record, silently discarding new
+code and notes from that point on, not the reader's whole saved history
+in one shot as first suspected.
+
+Fixed with a retry inside `saveNow()`'s existing `catch`: on failure,
+check whether any one cell's `output_html` is over
+`SAVED_OUTPUT_STRIP_THRESHOLD` (100,000 characters — comfortably below
+a real figure, comfortably above ordinary printed output) and, if so,
+save again with just that cell's `output_html` blanked rather than the
+whole record dropped. A blanked `output_html` already restores as "not
+run" (the same path a cell that has never run takes), so a reader gets
+their figure back with one more Run press after a reload — the code
+that produced it was never at risk. Only if the slimmed record still
+does not fit does this fall through to the original message admitting
+nothing saved at all. The new message names what happened rather than
+repeating the generic one: "Saved your code and notes, but this browser
+ran out of room for a large figure. Run that cell again after reloading
+to see it."
+
+**Verified in a real browser.** `python3 build.py --clean` and
+`python3 -m pytest --ignore=tests/e2e -q` both clean. Three new e2e
+tests in `tests/e2e/test_saved_progress.py`
+(`TestOversizedOutputFallback`), overriding `Storage.prototype.setItem`
+to throw past a size deterministically rather than trying to actually
+fill a browser's real quota: the oversized cell's own output is dropped
+while a second cell's freshly-typed code still saves, the status line
+names the reason rather than claiming an ordinary save, and a reload
+shows no output for the dropped cell (ready to be run again). Full
+`tests/e2e/test_saved_progress.py` clean.
+
+*Cost to change: one length check and one map inside an already-
+existing `catch`, no new UI. The lesson: `localStorage.setItem()`
+either writes the whole new value or leaves the old one alone — it is
+not the transaction most code assumes it to be until a failure path
+actually gets read closely, and "silently wipes everything" and "silently
+stops saving anything new" look identical from a glance at the code but
+call for different fixes.*
+
+**7.131 — Three more small accessibility gaps in the reader's own
+runtime, found in the same review that turned up 7.130.** None crashed
+anything or looked wrong on screen — all three only showed up once a
+keyboard or a screen reader, rather than a mouse and eyes, was the way
+of using the page.
+
+**A collapsed cell's one-line summary was a `<div>` pretending to be a
+button.** `.dl-cell-collapsed-summary` (`build.py`, plus the two custom-
+cell markup strings in `tutorial-runtime.js`) had `tabindex="0"` and a
+click handler, so a mouse and a sighted Tab-and-Enter user could both
+use it — but no `role="button"`, so a screen reader announced it as
+plain text, and its own keydown handler only checked `"Enter"`, so
+Space — the other key any real `<button>` answers to — did nothing.
+Fixed by adding `role="button"` at all three markup sites and `" "` to
+both keydown checks, with `ev.preventDefault()` alongside it so Space
+opens the cell instead of scrolling the page.
+
+**The "⋯" run menu (Run above / Run below) was the one panel on the
+page that didn't close on Escape.** Settings, Reference and SeriesNav
+each already have their own `document.addEventListener("keydown", ...)`
+checking `ev.key === "Escape"`, closing the panel and returning focus
+to whichever button opened it. `initCellRunMenu()` had an outside-click
+handler doing the closing half, but no Escape handler at all — the one
+way every other dismissible panel here can be closed without a mouse
+was missing from this one. Added the same pattern: Escape closes the
+menu and returns focus to `.dl-btn-more`.
+
+**A cell finishing a run said nothing to a screen reader.** The
+"Running… Xs" run-line is deliberately not a live region — its own
+comment already explains why, ticking ten times a second would be
+noise, not news — but nothing replaced it with an announcement once a
+run actually finished. A screen reader user pressing Run had no signal
+anything happened at all, short of manually re-finding the output
+region afterward. Added one shared `#dl-run-announcer`
+(`role="status" aria-live="polite"`, visually hidden with a new
+`.dl-sr-only` class rather than `hidden`, which would also pull it out
+of the accessibility tree), updated once a run completes: "Ran — output
+below" or "Ran — error", checked via `.dl-error` in the cell's own
+output, the same way the e2e tests already do. Cleared to empty text
+first, with the real message set a tick later — a live region only
+announces on an actual change, and running the same cell twice in a
+row would otherwise go silent the second time.
+
+**Verified in a real browser.** New e2e tests: two on the collapsed-
+summary (`role="button"` present, Space expands it), one confirming
+Escape closes the run menu and returns focus, and three on the
+announcer (a successful run, an errored one, and the same cell run
+twice in a row, each polling for the expected text rather than assuming
+the announcer's own next-tick update has already landed).
+`python3 -m pytest tests/e2e/test_cell_collapse_duplicate.py
+tests/e2e/test_cell_run_menu.py -q` and the rest of the suite both
+clean.
+
+*Cost to change: an attribute and a key check for the fake button, one
+keydown listener matching three already-written ones for the menu, one
+hidden live region and a handful of lines for the announcer. None of
+the three needed new UI — every one of them was a real interactive
+element already, just one that only fully worked for a mouse.*
+
+**7.132 — dewmini's own run announcement had 7.131's "same result
+twice in a row" bug, not 7.131's original gap.** Checking dewmini for
+the same missing-announcement problem found it was already covered:
+`runCell()` and `runCellBatch()` in `compose/dewmini.js` both call
+`updateStatus()`, which writes straight into `#dm-status`
+(`role="status" aria-live="polite"` in `dewmini.html`) — dewmini has
+announced "Ran." (or an error) after every run for as long as that
+function has existed. What it did not have was 7.131's fix for the
+narrower bug underneath: `updateStatus()` just set
+`statusEl.textContent = message` directly, so running the same cell
+twice in a row, both times ending in the identical "Ran.", changed
+nothing a live region could detect — the second announcement went
+silent. Fixed inside `updateStatus()` itself, not at its ~30 call
+sites: when the incoming message equals what is already showing, clear
+it and set the real text a tick later, the same pattern 7.131 used for
+`#dl-run-announcer`. Every other call — the large majority, where the
+new message differs from the last one — keeps its exact previous
+synchronous behaviour, so nothing timing-sensitive elsewhere in the UI
+had to change.
+
+**Verified in a real browser.** `python3 build.py --clean` and
+`python3 -m pytest --ignore=tests/e2e -q` both clean. One new e2e test,
+`TestStatusAnnouncer::test_running_the_same_cell_twice_announces_both_times`
+in `tests/e2e/test_dewmini_workbench.py`, running one cell twice in a
+row and polling `#dm-status` for "Ran." after each — clean, along with
+the rest of that file.
+
+*Cost to change: one branch inside one already-existing function,
+because the bug lived in the one place every status message already
+passes through. The lesson from re-checking rather than assuming: the
+task this was filed as ("dewmini has no run announcement") was wrong —
+it already had one — and the real gap only turned up by reading
+`runCell()` and `updateStatus()` directly instead of trusting the
+title on the task.*

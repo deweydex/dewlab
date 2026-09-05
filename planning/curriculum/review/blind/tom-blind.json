@@ -1,0 +1,772 @@
+{
+  "by": "tom-blind",
+  "saved_at": "2026-09-04T23:00:00Z",
+  "judgements": [
+    {
+      "pair": [
+        "PDP-LO2",
+        "MIT-6.1"
+      ],
+      "verdict": "both"
+    },
+    {
+      "pair": [
+        "MIT-6.7",
+        "MIT-6.8"
+      ],
+      "verdict": "needs",
+      "first": "MIT-6.7"
+    },
+    {
+      "pair": [
+        "MIT-1.6",
+        "MIT-1.8"
+      ],
+      "verdict": "needs",
+      "first": "MIT-1.6"
+    },
+    {
+      "pair": [
+        "MIT-3.1",
+        "PDP-LO8"
+      ],
+      "verdict": "unrelated"
+    },
+    {
+      "pair": [
+        "CMPS-LO4",
+        "MIT-6.3"
+      ],
+      "verdict": "needs",
+      "first": "MIT-6.3"
+    },
+    {
+      "pair": [
+        "MIT-3.2",
+        "MIT-3.3"
+      ],
+      "verdict": "needs",
+      "first": "MIT-3.2"
+    },
+    {
+      "pair": [
+        "MIT-6.3",
+        "MIT-6.5"
+      ],
+      "verdict": "needs",
+      "first": "MIT-6.3"
+    },
+    {
+      "pair": [
+        "MIT-5.7",
+        "MIT-5.1"
+      ],
+      "verdict": "needs",
+      "first": "MIT-5.1"
+    },
+    {
+      "pair": [
+        "MIT-5.3",
+        "MIT-5.4"
+      ],
+      "verdict": "needs",
+      "first": "MIT-5.3"
+    },
+    {
+      "pair": [
+        "PDP-LO4",
+        "FOOP-LO2"
+      ],
+      "verdict": "both"
+    },
+    {
+      "pair": [
+        "PDP-LO12",
+        "PDP-LO10"
+      ],
+      "verdict": "needs",
+      "first": "PDP-LO10"
+    },
+    {
+      "pair": [
+        "MIT-5.8",
+        "MIT-5.7"
+      ],
+      "verdict": "needs",
+      "first": "MIT-5.7"
+    },
+    {
+      "pair": [
+        "MIT-2.4",
+        "MIT-2.5"
+      ],
+      "verdict": "needs",
+      "first": "MIT-2.4"
+    },
+    {
+      "pair": [
+        "FOOP-LO3",
+        "FOOP-LO2"
+      ],
+      "verdict": "needs",
+      "first": "FOOP-LO2"
+    },
+    {
+      "pair": [
+        "MIT-3.4",
+        "MIT-3.2"
+      ],
+      "verdict": "needs",
+      "first": "MIT-3.2"
+    },
+    {
+      "pair": [
+        "MIT-3.2",
+        "MIT-3.5"
+      ],
+      "verdict": "needs",
+      "first": "MIT-3.2"
+    },
+    {
+      "pair": [
+        "FOOP-LO4",
+        "FOOP-LO11"
+      ],
+      "verdict": "unrelated"
+    },
+    {
+      "pair": [
+        "MIT-2.1",
+        "MIT-2.2"
+      ],
+      "verdict": "unrelated"
+    },
+    {
+      "pair": [
+        "FOOP-LO3",
+        "FOOP-LO8"
+      ],
+      "verdict": "needs",
+      "first": "FOOP-LO3"
+    },
+    {
+      "pair": [
+        "MIT-4.1",
+        "MIT-4.2"
+      ],
+      "verdict": "needs",
+      "first": "MIT-4.1"
+    },
+    {
+      "pair": [
+        "MIT-1.8",
+        "MIT-3.6"
+      ],
+      "verdict": "unrelated"
+    },
+    {
+      "pair": [
+        "CMPS-LO6",
+        "CMPS-LO2"
+      ],
+      "verdict": "needs",
+      "first": "CMPS-LO2"
+    },
+    {
+      "pair": [
+        "PDP-LO6",
+        "PDP-LO7"
+      ],
+      "verdict": "unrelated"
+    },
+    {
+      "pair": [
+        "MIT-5.3",
+        "MIT-5.2"
+      ],
+      "verdict": "needs",
+      "first": "MIT-5.2"
+    },
+    {
+      "pair": [
+        "MIT-4.9",
+        "MIT-4.10"
+      ],
+      "verdict": "needs",
+      "first": "MIT-4.9"
+    },
+    {
+      "pair": [
+        "MIT-4.6",
+        "MIT-4.7"
+      ],
+      "verdict": "needs",
+      "first": "MIT-4.6"
+    },
+    {
+      "pair": [
+        "MIT-3.2",
+        "MIT-3.1"
+      ],
+      "verdict": "needs",
+      "first": "MIT-3.1"
+    },
+    {
+      "pair": [
+        "MIT-5.9",
+        "MIT-5.11"
+      ],
+      "verdict": "needs",
+      "first": "MIT-5.9"
+    },
+    {
+      "pair": [
+        "MIT-1.5",
+        "MIT-3.1"
+      ],
+      "verdict": "unrelated"
+    },
+    {
+      "pair": [
+        "MIT-3.2",
+        "CMPS-LO4"
+      ],
+      "verdict": "unrelated"
+    },
+    {
+      "pair": [
+        "CMPS-LO3",
+        "CMPS-LO7"
+      ],
+      "verdict": "both"
+    },
+    {
+      "pair": [
+        "CMPS-LO5",
+        "MIT-6.8"
+      ],
+      "verdict": "needs",
+      "first": "MIT-6.8"
+    },
+    {
+      "pair": [
+        "MIT-4.6",
+        "MIT-4.8"
+      ],
+      "verdict": "needs",
+      "first": "MIT-4.6"
+    },
+    {
+      "pair": [
+        "MIT-2.2",
+        "MIT-2.3"
+      ],
+      "verdict": "needs",
+      "first": "MIT-2.2"
+    },
+    {
+      "pair": [
+        "MIT-4.9",
+        "PRE-1"
+      ],
+      "verdict": "needs",
+      "first": "PRE-1"
+    },
+    {
+      "pair": [
+        "PDP-LO3",
+        "PDP-LO4"
+      ],
+      "verdict": "needs",
+      "first": "PDP-LO4"
+    },
+    {
+      "pair": [
+        "MIT-2.1",
+        "MIT-1.10"
+      ],
+      "verdict": "needs",
+      "first": "MIT-2.1"
+    },
+    {
+      "pair": [
+        "PDP-LO7",
+        "PDP-LO10"
+      ],
+      "verdict": "unrelated"
+    },
+    {
+      "pair": [
+        "PDP-LO5",
+        "MIT-6.1"
+      ],
+      "verdict": "both"
+    },
+    {
+      "pair": [
+        "PDP-LO10",
+        "FOOP-LO10"
+      ],
+      "verdict": "needs",
+      "first": "PDP-LO10"
+    },
+    {
+      "pair": [
+        "PDP-LO6",
+        "FOOP-LO2"
+      ],
+      "verdict": "both"
+    },
+    {
+      "pair": [
+        "FOOP-LO4",
+        "FOOP-LO3"
+      ],
+      "verdict": "needs",
+      "first": "FOOP-LO3"
+    },
+    {
+      "pair": [
+        "MIT-6.7",
+        "MIT-6.6"
+      ],
+      "verdict": "needs",
+      "first": "MIT-6.7"
+    },
+    {
+      "pair": [
+        "PDP-LO1",
+        "PDP-LO3"
+      ],
+      "verdict": "both"
+    },
+    {
+      "pair": [
+        "PDP-LO7",
+        "FOOP-LO9"
+      ],
+      "verdict": "needs",
+      "first": "PDP-LO7"
+    },
+    {
+      "pair": [
+        "MIT-1.6",
+        "MIT-1.7"
+      ],
+      "verdict": "unrelated"
+    },
+    {
+      "pair": [
+        "MIT-2.4",
+        "PDP-LO6"
+      ],
+      "verdict": "needs",
+      "first": "PDP-LO6"
+    },
+    {
+      "pair": [
+        "FOOP-LO10",
+        "PDP-LO9"
+      ],
+      "verdict": "needs",
+      "first": "PDP-LO9"
+    },
+    {
+      "pair": [
+        "CMPS-LO6",
+        "CMPS-LO5"
+      ],
+      "verdict": "needs",
+      "first": "CMPS-LO5"
+    },
+    {
+      "pair": [
+        "MIT-1.11",
+        "MIT-1.5"
+      ],
+      "verdict": "needs",
+      "first": "MIT-1.5"
+    },
+    {
+      "pair": [
+        "CMPS-LO13",
+        "CMPS-LO11"
+      ],
+      "verdict": "unrelated"
+    },
+    {
+      "pair": [
+        "MIT-5.1",
+        "MIT-5.2"
+      ],
+      "verdict": "unrelated"
+    },
+    {
+      "pair": [
+        "MIT-5.7",
+        "CMPS-LO2"
+      ],
+      "verdict": "needs",
+      "first": "MIT-5.7"
+    },
+    {
+      "pair": [
+        "PDP-LO4",
+        "FOOP-LO1"
+      ],
+      "verdict": "needs",
+      "first": "PDP-LO4"
+    },
+    {
+      "pair": [
+        "FOOP-LO7",
+        "FOOP-LO3"
+      ],
+      "verdict": "needs",
+      "first": "FOOP-LO3"
+    },
+    {
+      "pair": [
+        "MIT-1.12",
+        "MIT-1.5"
+      ],
+      "verdict": "needs",
+      "first": "MIT-1.5"
+    },
+    {
+      "pair": [
+        "PDP-LO4",
+        "PDP-LO6"
+      ],
+      "verdict": "needs",
+      "first": "PDP-LO4"
+    },
+    {
+      "pair": [
+        "MIT-4.4",
+        "MIT-4.3"
+      ],
+      "verdict": "needs",
+      "first": "MIT-4.4"
+    },
+    {
+      "pair": [
+        "MIT-5.12",
+        "MIT-5.11"
+      ],
+      "verdict": "unrelated"
+    },
+    {
+      "pair": [
+        "MIT-4.6",
+        "MIT-4.4"
+      ],
+      "verdict": "needs",
+      "first": "MIT-4.4"
+    },
+    {
+      "pair": [
+        "CMPS-LO2",
+        "CMPS-LO3"
+      ],
+      "verdict": "needs",
+      "first": "CMPS-LO2"
+    },
+    {
+      "pair": [
+        "MIT-6.3",
+        "MIT-5.11"
+      ],
+      "verdict": "needs",
+      "first": "MIT-6.3"
+    },
+    {
+      "pair": [
+        "PDP-LO8",
+        "PDP-LO6"
+      ],
+      "verdict": "needs",
+      "first": "PDP-LO6"
+    },
+    {
+      "pair": [
+        "CMPS-LO10",
+        "CMPS-LO8"
+      ],
+      "verdict": "unrelated"
+    },
+    {
+      "pair": [
+        "MIT-6.2",
+        "MIT-6.1"
+      ],
+      "verdict": "needs",
+      "first": "MIT-6.1"
+    },
+    {
+      "pair": [
+        "MIT-4.1",
+        "MIT-1.5"
+      ],
+      "verdict": "needs",
+      "first": "MIT-1.5"
+    },
+    {
+      "pair": [
+        "CMPS-LO8",
+        "PDP-LO7"
+      ],
+      "verdict": "unrelated"
+    },
+    {
+      "pair": [
+        "PDP-LO9",
+        "PDP-LO4"
+      ],
+      "verdict": "needs",
+      "first": "PDP-LO4"
+    },
+    {
+      "pair": [
+        "CMPS-LO11",
+        "CMPS-LO7"
+      ],
+      "verdict": "needs",
+      "first": "CMPS-LO7"
+    },
+    {
+      "pair": [
+        "FOOP-LO8",
+        "FOOP-LO1"
+      ],
+      "verdict": "needs",
+      "first": "FOOP-LO1"
+    },
+    {
+      "pair": [
+        "MIT-1.10",
+        "MIT-1.9"
+      ],
+      "verdict": "unrelated"
+    },
+    {
+      "pair": [
+        "MIT-5.9",
+        "MIT-5.10"
+      ],
+      "verdict": "needs",
+      "first": "MIT-5.9"
+    },
+    {
+      "pair": [
+        "MIT-4.6",
+        "MIT-4.5"
+      ],
+      "verdict": "needs",
+      "first": "MIT-4.6"
+    },
+    {
+      "pair": [
+        "MIT-5.12",
+        "MIT-5.13"
+      ],
+      "verdict": "needs",
+      "first": "MIT-5.12"
+    },
+    {
+      "pair": [
+        "MIT-6.3",
+        "MIT-6.4"
+      ],
+      "verdict": "unrelated"
+    },
+    {
+      "pair": [
+        "MIT-1.9",
+        "MIT-1.8"
+      ],
+      "verdict": "needs",
+      "first": "MIT-1.8"
+    },
+    {
+      "pair": [
+        "MIT-4.1",
+        "MIT-4.6"
+      ],
+      "verdict": "unrelated"
+    },
+    {
+      "pair": [
+        "CMPS-LO2",
+        "MIT-5.6"
+      ],
+      "verdict": "needs",
+      "first": "MIT-5.6"
+    },
+    {
+      "pair": [
+        "MIT-5.5",
+        "MIT-5.4"
+      ],
+      "verdict": "needs",
+      "first": "MIT-5.4"
+    },
+    {
+      "pair": [
+        "MIT-1.3",
+        "MIT-1.2"
+      ],
+      "verdict": "needs",
+      "first": "MIT-1.2"
+    },
+    {
+      "pair": [
+        "PDP-LO11",
+        "PDP-LO4"
+      ],
+      "verdict": "needs",
+      "first": "PDP-LO4"
+    },
+    {
+      "pair": [
+        "MIT-6.7",
+        "CMPS-LO1"
+      ],
+      "verdict": "needs",
+      "first": "MIT-6.7"
+    },
+    {
+      "pair": [
+        "MIT-3.3",
+        "MIT-4.6"
+      ],
+      "verdict": "needs",
+      "first": "MIT-4.6"
+    },
+    {
+      "pair": [
+        "MIT-3.7",
+        "MIT-3.6"
+      ],
+      "verdict": "needs",
+      "first": "MIT-3.6"
+    },
+    {
+      "pair": [
+        "CMPS-LO9",
+        "MIT-6.6"
+      ],
+      "verdict": "needs",
+      "first": "MIT-6.6"
+    },
+    {
+      "pair": [
+        "MIT-3.5",
+        "MIT-3.6"
+      ],
+      "verdict": "needs",
+      "first": "MIT-3.5"
+    },
+    {
+      "pair": [
+        "MIT-4.9",
+        "MIT-4.4"
+      ],
+      "verdict": "needs",
+      "first": "MIT-4.4"
+    },
+    {
+      "pair": [
+        "MIT-5.6",
+        "MIT-5.7"
+      ],
+      "verdict": "both"
+    },
+    {
+      "pair": [
+        "MIT-3.4",
+        "MIT-1.9"
+      ],
+      "verdict": "unrelated"
+    },
+    {
+      "pair": [
+        "FOOP-LO6",
+        "FOOP-LO4"
+      ],
+      "verdict": "needs",
+      "first": "FOOP-LO4"
+    },
+    {
+      "pair": [
+        "MIT-1.6",
+        "MIT-1.5"
+      ],
+      "verdict": "needs",
+      "first": "MIT-1.5"
+    },
+    {
+      "pair": [
+        "MIT-6.2",
+        "MIT-3.1"
+      ],
+      "verdict": "both"
+    },
+    {
+      "pair": [
+        "MIT-6.4",
+        "MIT-6.7"
+      ],
+      "verdict": "both"
+    },
+    {
+      "pair": [
+        "PDP-LO12",
+        "PDP-LO11"
+      ],
+      "verdict": "needs",
+      "first": "PDP-LO11"
+    },
+    {
+      "pair": [
+        "FOOP-LO4",
+        "PDP-LO8"
+      ],
+      "verdict": "needs",
+      "first": "PDP-LO8"
+    }
+  ],
+  "renamed": {
+    "MIT-1.8": "Multiplying two brackets together",
+    "MIT-1.11": "Solving for a range, not a single value",
+    "MIT-2.2": "Combining sets",
+    "MIT-2.5": "Turning a \"not\" inside out (De Morgan's Laws)",
+    "MIT-4.7": "The angles whose sine and cosine are exact",
+    "MIT-5.2": "Multiplying the choices",
+    "MIT-5.10": "Choosing the right chart",
+    "MIT-6.4": "Writing a whole sum in one line (the sigma sign)",
+    "MIT-6.6": "Cutting a problem in half",
+    "MIT-6.7": "Walking through a list position by position",
+    "MIT-3.7": "Shortcuts for finding a derivative",
+    "PDP-LO5": "Putting the steps in order",
+    "PDP-LO7": "Writing code somebody else can read",
+    "CMPS-LO1": "Arranging data, and functions that call themselves",
+    "CMPS-LO2": "Probability, and the random numbers a program makes",
+    "CMPS-LO5": "How an algorithm's cost grows",
+    "CMPS-LO10": "Fixing the cause, not the error message",
+    "CMPS-LO12": "The habits of a good problem-solver",
+    "CMPS-LO13": "How far to trust a model's numbers"
+  },
+  "groups": {},
+  "new_groups": [],
+  "needs_work": [
+    "CMPS-LO12",
+    "CMPS-LO2",
+    "CMPS-LO4",
+    "CMPS-LO7",
+    "CMPS-LO9",
+    "FOOP-LO2",
+    "MIT-3.1",
+    "MIT-6.4"
+  ]
+}

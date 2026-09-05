@@ -1094,7 +1094,7 @@ async function writeNotebookToWorkspace(notebook) {
   if (notebook.view === VIEWS.SITE) { await writeSiteToWorkspace(notebook); return; }
   const text = notebook.path.toLowerCase().endsWith(".ipynb")
     ? JSON.stringify(cellsToIpynb(notebook.cells), null, 2)
-    : cellsToPercentText(notebook.cells);
+    : cellsToPercentText(notebook.cells, { bare: true });
   try {
     await dfs.writeFile(notebook.path, text);
   } catch (err) {
@@ -1235,7 +1235,7 @@ function renderFileView() {
   wrap.append(head, editorEl, output);
   cellsContainer.appendChild(wrap);
 
-  fileEditor = createCodeEditor(editorEl, cellsToPercentText(cells), {
+  fileEditor = createCodeEditor(editorEl, cellsToPercentText(cells, { bare: true }), {
     dark: isDarkNow(),
     /* Committed on a pause rather than on every keystroke. Parsing
      * half-typed text would churn the cells for no gain, and the editor
@@ -2844,7 +2844,25 @@ const PY_HEADER_OPENING = "# dewmini export";
  * file *view* deliberately does without: its header would carry today's
  * date, so regenerating it on every switch between the two views would
  * look to the reader like an edit they did not make. */
-function cellsToPercentText(cellList) {
+function cellsToPercentText(cellList, { bare = false } = {}) {
+  // A lone Python cell writes as a plain script, no `# %%` marker, when
+  // `bare` is set. The marker exists to tell two or more cells apart; on a
+  // single cell it marks nothing, and parsePyCells()'s own "no markers
+  // found" fallback already reads a markerless block back as one Python
+  // cell, so nothing is lost by leaving it off. Leaving it *on* was the
+  // actual bug this guards against: a plain .py a reader's own
+  // open(name, "w") wrote, or one they brought in from outside dewmini,
+  // has no marker in it — the moment it was so much as opened in the file
+  // view, let alone edited and saved, it silently grew one, turning an
+  // ordinary script into something that looks like a notebook export the
+  // reader never asked for (DECISIONS_LOG.md 7.125).
+  //
+  // downloadAsPython() asks for the marked form instead: its header sits
+  // above the first marker so isOwnHeader() can recognise and strip it on
+  // reimport, and that only works when a marker exists to bound it.
+  if (bare && cellList.length === 1 && cellList[0].type === CELL_TYPES.PYTHON) {
+    return cellExportContent(cellList[0]);
+  }
   const parts = [];
   cellList.forEach((cell) => {
     if (cell.type === CELL_TYPES.TEXT) {
@@ -4044,7 +4062,13 @@ function parsePyCells(text) {
     const type = currentType === null ? CELL_TYPES.PYTHON : currentType;
     const raw = type === CELL_TYPES.TEXT ? buffer.map(unescapeNoteLine).join("\n") : buffer.join("\n");
     const content = raw.replace(/\n+$/, "");
-    if (content.trim()) cells.push({ id: generateId(), type, content, output: "", error: false });
+    // A blank stretch with its own `# %%` marker (currentType set) is a
+    // real cell the reader left empty, or just inserted — keep it, the
+    // same as a cell with content. Only the implicit segment before the
+    // first marker is dropped when blank, since nothing asked for a cell
+    // to exist there; dropping every blank cell here is what silently
+    // deleted an empty one on a Cells-to-File-and-back round trip.
+    if (content.trim() || currentType !== null) cells.push({ id: generateId(), type, content, output: "", error: false });
     buffer = [];
   };
   for (const line of lines) {
@@ -4175,11 +4199,23 @@ function setupDragAndDrop() {
  * `if (statusEl.textContent === message)` check inside the timeout
  * guards against a subtle bug: if a second status message arrives before
  * the first one's timer fires, the first timer would otherwise clear the
- * *second* message instead of leaving it alone. */
+ * *second* message instead of leaving it alone.
+ *
+ * `#dm-status` is a live region (`role="status" aria-live="polite"` in
+ * dewmini.html), and a live region only announces on an actual text
+ * change — running the same cell twice in a row, both times ending in
+ * "Ran.", would go silent the second time without the clear-then-set-on-
+ * next-tick below. */
 function updateStatus(message, kind = "") {
   if (!statusEl) return;
-  statusEl.textContent = message;
-  statusEl.className = "dm-status" + (kind ? ` dm-status-${kind}` : "");
+  const className = "dm-status" + (kind ? ` dm-status-${kind}` : "");
+  if (statusEl.textContent === message) {
+    statusEl.textContent = "";
+    setTimeout(() => { statusEl.textContent = message; }, 0);
+  } else {
+    statusEl.textContent = message;
+  }
+  statusEl.className = className;
   clearTimeout(statusClearTimer);
   if (kind !== "error") {
     statusClearTimer = setTimeout(() => {
@@ -4875,6 +4911,53 @@ function initPanels() {
   });
 }
 
+// -------------------------------------------------------- .dl-seg radiogroups
+
+/* Every .dl-seg is a mutually-exclusive single-choice group — the WAI-ARIA
+ * APG radiogroup pattern, not a row of independent toggle buttons. role and
+ * the group's accessible name are static (dewmini.html); what changes at
+ * runtime is which button is aria-checked and, per the pattern's roving
+ * tabindex, which one is a tab stop. Each group's own sync() below calls
+ * this once per button in place of the old aria-pressed line, then
+ * syncSegRoving() once per group to settle the tab stop. */
+function setSegChecked(btn, checked) {
+  btn.setAttribute("aria-checked", String(checked));
+}
+
+/* Exactly one button in a group is ever a tab stop: the checked one, or —
+ * for a group like Width that can sit between its presets with none of
+ * them checked — the first, so the group is never skipped entirely. */
+function syncSegRoving(group) {
+  const buttons = [...group.querySelectorAll("button")];
+  const checked = buttons.find((btn) => btn.getAttribute("aria-checked") === "true");
+  for (const btn of buttons) btn.tabIndex = btn === (checked || buttons[0]) ? 0 : -1;
+}
+
+/* One keydown listener per group covers every .dl-seg on the page, rather
+ * than repeating it at each of the several places a group gets wired up
+ * below. Arrow keys move focus and selection together, per the radiogroup
+ * pattern, wrapping at the ends; Home/End jump to the first/last. Calling
+ * .click() reuses whatever that particular group's own click handler does,
+ * so this never needs to know what a selection *means* for any given group. */
+function initSegKeyboardNav() {
+  for (const group of document.querySelectorAll(".dl-seg")) {
+    group.addEventListener("keydown", (ev) => {
+      const buttons = [...group.querySelectorAll("button:not(:disabled)")];
+      const i = buttons.indexOf(document.activeElement);
+      if (i === -1) return;
+      let next;
+      if (ev.key === "ArrowRight" || ev.key === "ArrowDown") next = buttons[(i + 1) % buttons.length];
+      else if (ev.key === "ArrowLeft" || ev.key === "ArrowUp") next = buttons[(i - 1 + buttons.length) % buttons.length];
+      else if (ev.key === "Home") next = buttons[0];
+      else if (ev.key === "End") next = buttons[buttons.length - 1];
+      else return;
+      ev.preventDefault();
+      next.click();
+      next.focus();
+    });
+  }
+}
+
 // ----------------------------------------------------------- shared texture
 
 /* This whole section — loadTexture/saveTexture/applyTexture/initTexture —
@@ -4907,7 +4990,24 @@ function applyTexture(state) {
   if (state.contrast === "normal") root.removeAttribute("data-contrast"); else root.setAttribute("data-contrast", state.contrast);
   root.style.setProperty("--dl-font-size", `${state.size}px`);
   root.style.setProperty("--dl-line-width", `${state.width}rem`);
-  root.style.setProperty("--dl-link", state.link);
+  // High contrast overrides a reader's own link colour the same way it
+  // already overrides their font choice (DECISIONS_LOG.md 7.124) — but
+  // font-family only ever comes from the stylesheet's [data-contrast]
+  // rule, while link colour is normally also written here as an inline
+  // style, and an inline style always wins over any stylesheet rule
+  // regardless of selector specificity. Skipping the inline write while
+  // high contrast is on lets that rule apply instead of being shadowed
+  // by whatever the reader last picked (including dewlab's own default).
+  // The same reasoning applies to the default colour itself. No single
+  // inline value can serve both themes: the brand orange is 4.96:1 on the
+  // dark background and 3.5:1 on the light one, and a value dark enough
+  // for light (4.74:1) drops to 3.66:1 on dark. The stylesheet already
+  // carries a value per theme, so a reader who has not picked a colour of
+  // their own gets no inline write at all and the right one applies.
+  const chosen = state.contrast === "normal" && state.link
+                 && state.link.toLowerCase() !== TEXTURE_DEFAULTS.link.toLowerCase();
+  if (chosen) root.style.setProperty("--dl-link", state.link);
+  else root.style.removeProperty("--dl-link");
 }
 
 function initTexture(onThemeChange) {
@@ -4925,7 +5025,8 @@ function initTexture(onThemeChange) {
     for (const group of panel.querySelectorAll(".dl-seg")) {
       const key = group.dataset.texture;
       const current = group.hasAttribute("data-number") ? String(state[key]) : state[key];
-      for (const btn of group.querySelectorAll("button")) btn.setAttribute("aria-pressed", String(btn.dataset.value === current));
+      for (const btn of group.querySelectorAll("button")) setSegChecked(btn, btn.dataset.value === current);
+      syncSegRoving(group);
     }
     if (sizeEl) sizeEl.value = state.size;
     if (widthEl) widthEl.value = state.width;
@@ -5009,7 +5110,8 @@ function initEditorSettings() {
     for (const group of panel.querySelectorAll(".dl-seg")) {
       const stateKey = EDITOR_KEY_MAP[group.dataset.dm];
       const current = state[stateKey];
-      for (const btn of group.querySelectorAll("button")) btn.setAttribute("aria-pressed", String(btn.dataset.value === current));
+      for (const btn of group.querySelectorAll("button")) setSegChecked(btn, btn.dataset.value === current);
+      syncSegRoving(group);
     }
     if (sizeEl) sizeEl.value = state.codeSize;
   }
@@ -5076,7 +5178,8 @@ function initPracticeOrderSettings() {
   if (!group) return;
   const sync = () => {
     const mode = loadPracticeOrder();
-    for (const btn of group.querySelectorAll("button")) btn.setAttribute("aria-pressed", String(btn.dataset.value === mode));
+    for (const btn of group.querySelectorAll("button")) setSegChecked(btn, btn.dataset.value === mode);
+    syncSegRoving(group);
   };
   group.addEventListener("click", (ev) => {
     const btn = ev.target.closest("button");
@@ -5119,8 +5222,9 @@ function initCellTypeSettings() {
       if (!group) continue;
       const on = enabledCellTypes.has(t.type);
       for (const btn of group.querySelectorAll("button")) {
-        btn.setAttribute("aria-pressed", String(btn.dataset.value === (on ? "on" : "off")));
+        setSegChecked(btn, btn.dataset.value === (on ? "on" : "off"));
       }
+      syncSegRoving(group);
     }
   };
 
@@ -5160,7 +5264,8 @@ function initRunStatsSetting() {
   const group = document.querySelector('#dl-settings-execution .dl-seg[data-dm="runstats"]');
   if (!group) return;
   const sync = () => {
-    for (const btn of group.querySelectorAll("button")) btn.setAttribute("aria-pressed", String(btn.dataset.value === (show ? "on" : "off")));
+    for (const btn of group.querySelectorAll("button")) setSegChecked(btn, btn.dataset.value === (show ? "on" : "off"));
+    syncSegRoving(group);
   };
   group.addEventListener("click", (ev) => {
     const btn = ev.target.closest("button");
@@ -5293,6 +5398,7 @@ async function init() {
   initPracticeOrderSettings();
   initRunStatsSetting();
   initCellTypeSettings();
+  initSegKeyboardNav();
   initStorageSection();
   initExecutionSection();
   initReferenceSection();
