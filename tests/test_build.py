@@ -3327,6 +3327,28 @@ def test_no_topic_game_folder_is_not_an_error(repo, monkeypatch):
     assert not (b.OUT / "topic_tree_game").exists()
 
 
+def test_the_topic_editor_is_published_beside_the_game(repo, monkeypatch):
+    """The topic editor reaches the site at /topic_editor/, on the same terms
+    as the pair game: one page, nothing linking to it."""
+    editor = repo / "topic_editor"
+    editor.mkdir(parents=True)
+    (editor / "index.html").write_text("<h1>topic editor</h1>")
+    monkeypatch.setattr(b, "TOPIC_EDITOR", editor)
+
+    b.build()
+
+    assert (b.OUT / "topic_editor" / "index.html").read_text() == "<h1>topic editor</h1>"
+
+
+def test_no_topic_editor_folder_is_not_an_error(repo, monkeypatch):
+    """A checkout without topic_editor/ still builds."""
+    monkeypatch.setattr(b, "TOPIC_EDITOR", repo / "topic_editor")
+
+    b.build()
+
+    assert not (b.OUT / "topic_editor").exists()
+
+
 def test_no_workbench_folder_is_not_an_error(repo, monkeypatch):
     """A checkout without dewmark/ still builds."""
     monkeypatch.setattr(b, "DEWMARK_WORKBENCH", repo / "dewmark" / "workbench")
