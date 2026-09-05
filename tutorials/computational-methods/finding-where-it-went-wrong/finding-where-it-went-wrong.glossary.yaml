@@ -1,0 +1,58 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# First tutorial of the new Problem Solving series. Checked against every
+# other glossary file in computational-methods (python-fundamentals,
+# matrices, simulation, algorithms) -- no overlap. "binary search" is
+# reused, already taught in mit-pdp-maths-prog-integration's
+# finding-things.glossary.yaml, so it is used in prose here without
+# emphasis rather than re-glossaried.
+entries:
+  - term: pragmatic problem-solving
+    kind: concept
+    definition: >
+      Pragmatic problem-solving fixes whatever a symptom points at
+      directly, without asking why the symptom appeared. It can make one
+      failing case pass while leaving the actual fault untouched, ready
+      to surface differently somewhere else.
+
+  - term: semantic analysis
+    kind: concept
+    definition: >
+      Semantic analysis traces a wrong result back to the specific step
+      that produced it, rather than adjusting whatever step the result
+      happened to come out of. It answers why something went wrong, not
+      only where it became visible.
+
+  - term: initiative
+    kind: concept
+    definition: >
+      Initiative is starting a check nobody required, such as testing
+      against a known answer before anything has gone visibly wrong.
+
+  - term: methodical approach
+    kind: concept
+    definition: >
+      A methodical approach checks the same kind of question at each
+      stage of a problem, in order, rather than jumping straight to a
+      guess.
+
+  - term: logical reasoning
+    kind: concept
+    definition: >
+      Logical reasoning is using what one check ruled out to decide what
+      to check next, so each step narrows down where a fault can still
+      be.
+
+  - term: persistence
+    kind: concept
+    definition: >
+      Persistence is continuing past the point where a quick fix would
+      already look finished, until the actual cause is found.
+
+  - term: lateral thinking
+    kind: concept
+    definition: >
+      Lateral thinking is choosing a test or an approach nothing in the
+      problem statement suggested, the way testing at freezing and
+      boiling point is not an obvious first choice for a temperature
+      pipeline, and yet turns out to be the one worth having.

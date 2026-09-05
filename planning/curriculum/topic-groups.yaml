@@ -194,3 +194,12 @@ groups:
       - { module: computational-methods, slug: counting-darts }
       - { module: computational-methods, slug: a-model-that-corrects-itself }
       - { module: computational-methods, slug: when-a-queue-never-clears }
+
+  - key: problem-solving-and-debugging
+    name: Solving problems and finding faults
+    intro: >
+      What happens before any code gets written, and what to do once a
+      program runs but still gives the wrong answer — the habits and
+      strategies behind fixing something, not any one language or tool.
+    tutorials:
+      - { module: computational-methods, slug: finding-where-it-went-wrong }

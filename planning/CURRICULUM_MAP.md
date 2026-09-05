@@ -15,14 +15,14 @@ so this doubles as a way of finding where anything is taught.
 
 ## Where we stand
 
-**86 of 91** outcomes are in place.
+**89 of 91** outcomes are in place.
 
-- 🟩 **84 taught** — a tutorial section teaches it.
+- 🟩 **87 taught** — a tutorial section teaches it.
 - 🟦 **2 taught in part** — deliberately narrowed, and the narrowed version is written.
 - 🟨 **2 used but not taught** — students meet it in passing without it ever being the subject. These are the quiet gaps: they look covered from a distance.
-- 🟥 **3 not covered** — nothing in dewlab touches it.
+- 🟥 **0 not covered** — nothing in dewlab touches it.
 
-**5 of the 5 outcomes still to write have no proposal**: `CMPS-LO1`, `CMPS-LO10`, `CMPS-LO12`, `CMPS-LO13`, `CMPS-LO8`. These are the ones nobody has decided how to teach yet.
+**2 of the 2 outcomes still to write have no proposal**: `CMPS-LO1`, `CMPS-LO13`. These are the ones nobody has decided how to teach yet.
 
 ### By strand
 
@@ -41,7 +41,7 @@ so this doubles as a way of finding where anything is taught.
 | **number** | 2 | 0 | 0 | 0 | 0 |
 | **oop** | 4 | 0 | 0 | 0 | 0 |
 | **probability** | 10 | 0 | 0 | 0 | 0 |
-| **problem-solving** | 0 | 0 | 0 | 3 | 0 |
+| **problem-solving** | 3 | 0 | 0 | 0 | 0 |
 | **programming** | 18 | 0 | 0 | 0 | 0 |
 | **reflection** | 0 | 0 | 1 | 0 | 0 |
 | **sets** | 3 | 0 | 0 | 0 | 0 |
@@ -64,7 +64,7 @@ graph LR
   number["number<br/>2 of 2 in place"]
   oop["oop<br/>4 of 4 in place"]
   probability["probability<br/>10 of 10 in place"]
-  problem_solving["problem-solving<br/>0 of 3 in place"]
+  problem_solving["problem-solving<br/>3 of 3 in place"]
   programming["programming<br/>18 of 18 in place"]
   reflection["reflection<br/>0 of 1 in place"]
   sets["sets<br/>3 of 3 in place"]
@@ -75,8 +75,8 @@ graph LR
   classDef full fill:#edf7f0,stroke:#1f6b3f,color:#1f6b3f;
   classDef part fill:#fdf6ec,stroke:#b5651d,color:#7a4310;
   classDef none fill:#fdf0ef,stroke:#9b2226,color:#9b2226;
-  class algebra,algorithms,calculus,complexity,functions,geometry,linear_algebra,logic,modelling,number,oop,probability,programming,sets,simulation,statistics,trigonometry full;
-  class data_structures,problem_solving,reflection none;
+  class algebra,algorithms,calculus,complexity,functions,geometry,linear_algebra,logic,modelling,number,oop,probability,problem_solving,programming,sets,simulation,statistics,trigonometry full;
+  class data_structures,reflection none;
 ```
 
 ## The series as it stands
@@ -382,11 +382,11 @@ graph TD
 | `CMPS-LO5` Assess an algorithm or computational approach for speed, efficiency, and best/expected/worst-case behaviour | 🟩 | [Finding Things — Linear Search: The Straightforward Approach](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/finding-things.html#linear-search-the-straightforward-approach)<br/>[Finding Things — Binary Search: The Power of Sorted Data](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/finding-things.html#binary-search-the-power-of-sorted-data)<br/>[Finding Things — Putting It Together](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/finding-things.html#putting-it-together)<br/>[Putting Things in Order — Comparing Our Sorts](https://deweydex.github.io/dewlab/tutorials/mit-pdp-maths-prog-integration/putting-things-in-order.html#comparing-our-sorts)<br/>_used in:_ [Three Ways to Make Change — Remembering What We Already Worked Out](https://deweydex.github.io/dewlab/tutorials/computational-methods/three-ways-to-make-change.html#remembering-what-we-already-worked-out)<br/>_used in:_ [Three Ways to Make Change — The Greedy Shortcut](https://deweydex.github.io/dewlab/tutorials/computational-methods/three-ways-to-make-change.html#the-greedy-shortcut) |
 | `CMPS-LO6` Apply probability and information theory to computational approaches to real-world problems | 🟩 | [When a Queue Never Clears — Arrivals You Cannot Predict, One at a Time](https://deweydex.github.io/dewlab/tutorials/computational-methods/when-a-queue-never-clears.html#arrivals-you-cannot-predict-one-at-a-time)<br/>[When a Queue Never Clears — A Queue That Clears](https://deweydex.github.io/dewlab/tutorials/computational-methods/when-a-queue-never-clears.html#a-queue-that-clears)<br/>[When a Queue Never Clears — A Queue That Never Clears](https://deweydex.github.io/dewlab/tutorials/computational-methods/when-a-queue-never-clears.html#a-queue-that-never-clears)<br/>[When a Queue Never Clears — Predicting It Before Running It](https://deweydex.github.io/dewlab/tutorials/computational-methods/when-a-queue-never-clears.html#predicting-it-before-running-it) |
 | `CMPS-LO7` Differentiate modelling from simulation, and the abstraction that lets a machine address a real-world problem | 🟩 | [A Model That Corrects Itself — A Model That Starts Out Wrong](https://deweydex.github.io/dewlab/tutorials/computational-methods/a-model-that-corrects-itself.html#a-model-that-starts-out-wrong)<br/>[A Model That Corrects Itself — Running It Again and Again](https://deweydex.github.io/dewlab/tutorials/computational-methods/a-model-that-corrects-itself.html#running-it-again-and-again)<br/>[A Model That Corrects Itself — What the Model Actually Learned](https://deweydex.github.io/dewlab/tutorials/computational-methods/a-model-that-corrects-itself.html#what-the-model-actually-learned) |
-| `CMPS-LO8` Identify approaches to problem definition, solution design, testing and evaluation | 🟥 | — |
+| `CMPS-LO8` Identify approaches to problem definition, solution design, testing and evaluation | 🟩 | [Finding Where It Went Wrong — Deciding What Done Means](https://deweydex.github.io/dewlab/tutorials/computational-methods/finding-where-it-went-wrong.html#deciding-what-done-means)<br/>[Finding Where It Went Wrong — Building the Pipeline](https://deweydex.github.io/dewlab/tutorials/computational-methods/finding-where-it-went-wrong.html#building-the-pipeline) |
 | `CMPS-LO9` Strengths, weaknesses and areas of application of contemporary problem definition and analysis techniques | 🟩 | [Three Ways to Make Change — Trying Every Combination](https://deweydex.github.io/dewlab/tutorials/computational-methods/three-ways-to-make-change.html#trying-every-combination)<br/>[Three Ways to Make Change — Remembering What We Already Worked Out](https://deweydex.github.io/dewlab/tutorials/computational-methods/three-ways-to-make-change.html#remembering-what-we-already-worked-out)<br/>[Three Ways to Make Change — The Greedy Shortcut](https://deweydex.github.io/dewlab/tutorials/computational-methods/three-ways-to-make-change.html#the-greedy-shortcut)<br/>[Three Ways to Make Change — Choosing a Strategy](https://deweydex.github.io/dewlab/tutorials/computational-methods/three-ways-to-make-change.html#choosing-a-strategy) |
-| `CMPS-LO10` Distinguish pragmatic problem-solving (treating the symptom) from semantic analysis (finding the root cause) | 🟥 | — |
+| `CMPS-LO10` Distinguish pragmatic problem-solving (treating the symptom) from semantic analysis (finding the root cause) | 🟩 | [Finding Where It Went Wrong — The Symptom Is Not the Cause](https://deweydex.github.io/dewlab/tutorials/computational-methods/finding-where-it-went-wrong.html#the-symptom-is-not-the-cause)<br/>_used in:_ [Finding Where It Went Wrong — Building the Pipeline](https://deweydex.github.io/dewlab/tutorials/computational-methods/finding-where-it-went-wrong.html#building-the-pipeline) |
 | `CMPS-LO11` An iterative process of model creation and validation against the real-world situation being modelled | 🟩 | [A Model That Corrects Itself — Checking It Against Patterns It Has Never Seen](https://deweydex.github.io/dewlab/tutorials/computational-methods/a-model-that-corrects-itself.html#checking-it-against-patterns-it-has-never-seen)<br/>_used in:_ [A Model That Corrects Itself — Running It Again and Again](https://deweydex.github.io/dewlab/tutorials/computational-methods/a-model-that-corrects-itself.html#running-it-again-and-again) |
-| `CMPS-LO12` The role of personal attributes — initiative, a methodical approach, logical reasoning, persistence, lateral thinking — in preventing and resolving problems | 🟥 | — |
+| `CMPS-LO12` The role of personal attributes — initiative, a methodical approach, logical reasoning, persistence, lateral thinking — in preventing and resolving problems | 🟩 | [Finding Where It Went Wrong — What Finding It Actually Took](https://deweydex.github.io/dewlab/tutorials/computational-methods/finding-where-it-went-wrong.html#what-finding-it-actually-took) |
 | `CMPS-LO13` Reflect on the impact of numerical and logical thinking in the real world: accuracy, precision, and decisions made from computational models and simulations | 🟨 | _used in:_ [Counting Darts — More Is Not Reliably Better](https://deweydex.github.io/dewlab/tutorials/computational-methods/counting-darts.html#more-is-not-reliably-better) |
 
 ### Fundamentals of Object Oriented Programming 5N0541
