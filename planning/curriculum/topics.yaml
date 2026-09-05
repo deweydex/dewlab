@@ -695,18 +695,46 @@ topics:
         the histogram shows it.
     needs: [MIT-5.9, MIT-6.3a]
 
-  MIT-5.12:
-    name: Averages and spread
+  MIT-5.12a:
+    name: The middle of a set of numbers
     outcome: MIT-5.12
     plain: >
-      Middle and scatter. Three different ideas of "typical", and two of how far
-      from typical things usually are.
+      Three different ideas of what counts as typical. The mean adds
+      everything up and shares it out, the median takes the one in the
+      middle, and the mode takes the one that appears most.
     uses:
-      - Any summary of anything. Which average to use is a real decision, not a
-        formality.
-      - Spotting anomalies — an alert that fires at three standard deviations is
-        this arithmetic.
+      - Any summary of anything. Which one to use is a real decision rather
+        than a formality.
+      - Reporting a response time. The mean and the median can tell very
+        different stories about the same server.
     needs: [MIT-5.11]
+
+  MIT-5.12b:
+    name: How spread out the numbers are
+    outcome: MIT-5.12
+    plain: >
+      How far from typical the values usually sit. The simplest measure is
+      the range, which is the largest value minus the smallest.
+    uses:
+      - Saying how reliable a measurement is. Two sets of readings can
+        share a mean and still be nothing alike.
+      - Setting a sensible limit. A threshold is easier to choose once you
+        know how much the values move about.
+    needs: [MIT-5.12a]
+
+  MIT-5.12c:
+    name: Standard deviation
+    outcome: MIT-5.12
+    plain: >
+      A measure of spread that uses every value rather than only the two
+      extremes. It is roughly the average distance from the mean, worked
+      out in a way that keeps larger distances counting for more.
+    uses:
+      - Spotting anomalies. An alert that fires at three standard
+        deviations from the mean is this arithmetic.
+      - Comparing two sets of measurements taken in different units, once
+        each is expressed in standard deviations.
+    needs: [MIT-5.12b]
 
   MIT-5.13:
     name: When averages mislead
@@ -717,7 +745,7 @@ topics:
     uses:
       - Salary and response-time figures, both of which are routinely reported
         using whichever average looks best.
-    needs: [MIT-5.12]
+    needs: [MIT-5.12a]
 
   # ------------------------------------------ MIT 6: algorithms and computation
   MIT-6.1:
