@@ -29,6 +29,7 @@ header{display:flex;align-items:center;justify-content:space-between;gap:.5rem}
 .mini{font-family:var(--mono);font-size:.7rem;padding:.4rem .55rem;border:1px solid var(--rule);
       background:var(--card);color:var(--muted);border-radius:6px;cursor:pointer;min-height:2rem}
 .mini:active{background:var(--panel)}
+a.mini{text-decoration:none;display:inline-block;line-height:1.2}
 
 .bar{height:5px;background:var(--rule);border-radius:3px;overflow:hidden}
 .bar>div{height:100%;background:var(--brand);width:0}
@@ -91,6 +92,7 @@ summary{font-size:.75rem;color:var(--muted);cursor:pointer}
   <header>
     <span class="mark">dewlab <i>&bull;</i> topic pairs</span>
     <span class="hbtns">
+      <a class="mini" href="help.html">help</a>
       <button class="mini" id="undo">undo</button>
       <button class="mini" id="menu">save</button>
     </span>

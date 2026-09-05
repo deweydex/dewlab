@@ -3309,12 +3309,14 @@ def test_the_topic_pair_game_is_published_without_its_readme(repo, monkeypatch):
     game = repo / "topic_tree_game"
     game.mkdir(parents=True)
     (game / "index.html").write_text("<h1>topic pairs</h1>")
+    (game / "help.html").write_text("<h1>how to play</h1>")
     (game / "README.md").write_text("how the loop works")
     monkeypatch.setattr(b, "TOPIC_GAME", game)
 
     b.build()
 
     assert (b.OUT / "topic_tree_game" / "index.html").is_file()
+    assert (b.OUT / "topic_tree_game" / "help.html").is_file()
     assert not (b.OUT / "topic_tree_game" / "README.md").exists()
 
 
