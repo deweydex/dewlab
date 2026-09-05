@@ -1,0 +1,15 @@
+# The order this module's series accumulate a reference in.
+#
+# These five used to be one series, so a reader reaching Capstone Project
+# already has every earlier series' vocabulary behind them — this file is
+# what keeps that true now that they are five files instead of one.
+# Optional: a module with no file here gets series-only accumulation.
+# A series left off this list keeps that series-only behaviour even where
+# the file does exist — see reflections-and-review below, which has no
+# fixed position in this module on purpose and so is never listed.
+order:
+  - programming-foundations
+  - data-chance-and-logic
+  - algebra-and-functions
+  - trigonometry-and-calculus
+  - capstone-project

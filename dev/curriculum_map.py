@@ -41,9 +41,19 @@ SITE = "https://deweydex.github.io/dewlab"
 # The series this report is about. It used to be enough to name the module,
 # because the module had one series — and then reflections moved into their own,
 # `order` started at 1 twice, and the mermaid graph came out with two nodes
-# called T1 and an arrow from one of them to itself.
+# called T1 and an arrow from one of them to itself. The same 31 tutorials
+# later split again, into five small series that still read as one main
+# sequence (see `series.yaml` beside them), so this is now the reading
+# order of that sequence rather than a single series' name — `load_tutorials()`
+# renumbers `order` globally across it for exactly the same reason.
 MAIN_MODULE = "mit-pdp-maths-prog-integration"
-MAIN_SERIES = "maths-and-programming"
+MAIN_SERIES = (
+    "programming-foundations",
+    "data-chance-and-logic",
+    "algebra-and-functions",
+    "trigonometry-and-calculus",
+    "capstone-project",
+)
 
 
 def in_the_main_series(tutorial) -> bool:
@@ -53,12 +63,12 @@ def in_the_main_series(tutorial) -> bool:
     (`tutorial.order` is 0, falsy, for anything a series' `.order.yaml`
     file doesn't list). Used to filter out reflections, practice pages,
     and anything from a different module before drawing the sequence
-    graph, so it only ever shows the one series it's meant to describe.
+    graph, so it only ever shows the main sequence it's meant to describe.
     """
     return bool(
         tutorial.order
         and tutorial.module == MAIN_MODULE
-        and tutorial.series == MAIN_SERIES
+        and tutorial.series in MAIN_SERIES
     )
 
 
@@ -258,6 +268,22 @@ def load_tutorials(known: dict[str, Outcome]) -> list[Tutorial]:
         for tutorial in tutorials:
             if tutorial.module == module and tutorial.slug in position:
                 tutorial.order = position[tutorial.slug]
+
+    # `order` above is a position within one series file. Five of those
+    # series feed the one main sequence diagram (MAIN_SERIES) — renumber
+    # those globally, 1..N in series.yaml's order, so node ids and
+    # back-references stay a single consistent line the way they were
+    # before that sequence was split into more than one series file.
+    main = sorted(
+        (
+            t for t in tutorials
+            if t.module == MAIN_MODULE and t.series in MAIN_SERIES and t.order
+        ),
+        key=lambda t: (MAIN_SERIES.index(t.series), t.order),
+    )
+    for position, tutorial in enumerate(main, start=1):
+        tutorial.order = position
+
     return tutorials
 
 
@@ -293,11 +319,17 @@ def back_references(tutorials: list[Tutorial]) -> dict[str, set[int]]:
         refs[tutorial.slug] = {
             earlier.order
             for earlier in tutorials
-            # Series as well as module: order restarts at 1 in each series, so
-            # comparing across them would read a reflections tutorial's 1 as
-            # coming before everything in the main sequence.
+            # Series as well as module: order restarts at 1 in each series
+            # outside the main sequence, so comparing across those would read
+            # a reflections tutorial's 1 as coming before everything in the
+            # main sequence. Within the main sequence itself `order` is
+            # already renumbered globally (see MAIN_SERIES), so tutorials in
+            # different main-sequence series can still be compared.
             if earlier.module == tutorial.module
-            and earlier.series == tutorial.series
+            and (
+                (earlier.series in MAIN_SERIES and tutorial.series in MAIN_SERIES)
+                or earlier.series == tutorial.series
+            )
             and 0 < earlier.order < tutorial.order
             and len(earlier.title) > 6
             and earlier.title in body

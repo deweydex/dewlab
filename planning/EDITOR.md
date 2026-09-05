@@ -20,8 +20,8 @@ gives one interface for both editing content and managing releases.
 ## 2. Order files
 
 ```yaml
-# tutorials/mit-pdp-maths-prog-integration/maths-and-programming.order.yaml
-series: Maths and programming
+# tutorials/mit-pdp-maths-prog-integration/programming-foundations.order.yaml
+series: Programming Foundations
 order:
   - first-steps
   - storing-and-computing

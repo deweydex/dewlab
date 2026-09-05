@@ -1,0 +1,14 @@
+# The reading order of this series.
+#
+# Its own series rather than the last item of a bigger one, same reasoning
+# as reflections-and-review.order.yaml: it draws on every earlier series
+# in this module (algebra, sets, verification), so it needs the module's
+# series.yaml chain to reach that vocabulary rather than sitting inside
+# any one of them.
+#
+# Every tutorial in the series must appear here exactly once, and every
+# slug here must belong to a tutorial. The build checks both.
+
+series: Capstone Project
+order:
+  - bringing-it-all-together
