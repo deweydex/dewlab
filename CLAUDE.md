@@ -37,8 +37,12 @@ Eight checks. Run them over anything you write before you commit it:
    exception is a function or operator glossary entry, where the house form
    drops the subject and leads with the verb: *Displays whatever is inside its
    parentheses.*
-2. **Is any sentence over twenty-five words?** Twenty is the target. Past
-   thirty it has two ideas in it and wants to be two sentences.
+2. **Does every clause earn its place?** Read the sentence back, then try a
+   shorter version. If it still says the same thing, the clause that vanished
+   was never necessary — whatever the sentence's length was. Length itself
+   isn't the target; a list of four things may run long because the reader is
+   counting, and a short sentence can still hide a clause that doesn't survive
+   the trim.
 3. **Is the meaning after an em dash?** A short main clause plus a dash
    carrying the real content reads well to somebody who already understands it
    and costs everybody else a re-read. One dash to a paragraph, never the one
