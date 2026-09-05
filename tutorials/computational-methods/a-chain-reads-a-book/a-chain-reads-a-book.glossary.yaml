@@ -5,7 +5,7 @@ entries:
     definition: >
       Fetches a plain-text file — from dewlab's shared data folder, or a
       full web address — and returns its contents as one string.
-    example: 'book = await load_text("pride-and-prejudice.txt")'
+    example: 'book = await load_text("the-time-machine.txt")'
   - term: dictionary of dictionaries
     kind: concept
     definition: >
