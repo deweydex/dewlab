@@ -4,7 +4,7 @@ slug: solving-triangles
 module: mit-pdp-maths-prog-integration
 module_title: "Programming and Maths, Integrated"
 year: "2026-2027"
-series: maths-and-programming
+series: trigonometry-and-calculus
 version: 2026.08.23.1
 covers:
   when-there-is-a-right-angle:

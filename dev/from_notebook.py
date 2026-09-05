@@ -19,7 +19,7 @@ heading, and `order` from the number in its filename where there is one.
 
     python3 dev/from_notebook.py notebooks/*.ipynb \\
         --module mit-pdp-maths-prog-integration \\
-        --series maths-and-programming \\
+        --series programming-foundations \\
         --year 2026-2027
 
 Writes into tutorials/<module>/ unless --out says otherwise. Existing files are

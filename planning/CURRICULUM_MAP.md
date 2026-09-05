@@ -103,14 +103,14 @@ graph TD
   T12["12. What Are the Chances?"]
   T13["13. Making Sense of Data"]
   T14["14. Pictures Worth Numbers"]
-  T15["15. Numbers and Their Families"]
-  T16["16. Expressions Come Alive"]
-  T17["17. Rearranging Formulae"]
-  T18["18. Cracking Equations"]
-  T19["19. When There Is No Answer"]
-  T20["20. Sets as Sorted Lists"]
-  T21["21. Logic and Truth"]
-  T22["22. Drawing Sets"]
+  T15["15. Sets as Sorted Lists"]
+  T16["16. Logic and Truth"]
+  T17["17. Drawing Sets"]
+  T18["18. Numbers and Their Families"]
+  T19["19. Expressions Come Alive"]
+  T20["20. Rearranging Formulae"]
+  T21["21. Cracking Equations"]
+  T22["22. When There Is No Answer"]
   T23["23. Drawing Functions"]
   T24["24. Parabolas"]
   T25["25. Lines and Distances"]
@@ -153,19 +153,19 @@ graph TD
   T30 --> T31
 
   T11 -.->|builds on| T6
-  T17 -.->|builds on| T2
-  T18 -.->|builds on| T16
-  T19 -.->|builds on| T15
-  T20 -.->|builds on| T8
-  T20 -.->|builds on| T9
-  T21 -.->|builds on| T4
-  T22 -.->|builds on| T20
+  T15 -.->|builds on| T8
+  T15 -.->|builds on| T9
+  T16 -.->|builds on| T4
+  T17 -.->|builds on| T15
+  T20 -.->|builds on| T2
+  T21 -.->|builds on| T19
+  T22 -.->|builds on| T18
   T23 -.->|builds on| T10
   T23 -.->|builds on| T14
-  T23 -.->|builds on| T16
-  T23 -.->|builds on| T18
-  T24 -.->|builds on| T18
-  T24 -.->|builds on| T19
+  T23 -.->|builds on| T19
+  T23 -.->|builds on| T21
+  T24 -.->|builds on| T21
+  T24 -.->|builds on| T22
   T25 -.->|builds on| T13
   T25 -.->|builds on| T14
   T25 -.->|builds on| T23
@@ -180,9 +180,9 @@ graph TD
   T30 -.->|builds on| T25
   T31 -.->|builds on| T1
   T31 -.->|builds on| T15
-  T31 -.->|builds on| T16
   T31 -.->|builds on| T18
-  T31 -.->|builds on| T20
+  T31 -.->|builds on| T19
+  T31 -.->|builds on| T21
 ```
 
 ## What is missing, and where it would go
@@ -207,14 +207,14 @@ graph TD
   T12["12. What Are the Chances?"]
   T13["13. Making Sense of Data"]
   T14["14. Pictures Worth Numbers"]
-  T15["15. Numbers and Their Families"]
-  T16["16. Expressions Come Alive"]
-  T17["17. Rearranging Formulae"]
-  T18["18. Cracking Equations"]
-  T19["19. When There Is No Answer"]
-  T20["20. Sets as Sorted Lists"]
-  T21["21. Logic and Truth"]
-  T22["22. Drawing Sets"]
+  T15["15. Sets as Sorted Lists"]
+  T16["16. Logic and Truth"]
+  T17["17. Drawing Sets"]
+  T18["18. Numbers and Their Families"]
+  T19["19. Expressions Come Alive"]
+  T20["20. Rearranging Formulae"]
+  T21["21. Cracking Equations"]
+  T22["22. When There Is No Answer"]
   T23["23. Drawing Functions"]
   T24["24. Parabolas"]
   T25["25. Lines and Distances"]
@@ -415,23 +415,23 @@ The same word presented as new in two places. Either it is being introduced twic
 | Term | Introduced in tutorials |
 |---|---|
 | *building reusable tools* | 5, 23 |
-| *cracking equations* | 16, 19, 23, 24, 31 |
+| *cracking equations* | 19, 22, 23, 24, 31 |
 | *drawing functions* | 24, 25, 27, 28 |
-| *expressions come alive* | 17, 18, 23, 31 |
-| *finding things* | 9, 20 |
+| *expressions come alive* | 20, 21, 23, 31 |
+| *finding things* | 9, 15 |
 | *function* | 1, 23 |
-| *index* | 6, 7, 15 |
+| *index* | 6, 7, 18 |
 | *lines and distances* | 26, 27, 28, 30 |
 | *making sense of data* | 14, 25 |
-| *numbers and their families* | 19, 31 |
+| *numbers and their families* | 22, 31 |
 | *parabolas* | 27, 30 |
 | *pictures worth numbers* | 23, 25 |
-| *see* | 22, 29 |
-| *set* | 18, 20 |
-| *sets as sorted lists* | 21, 22, 31 |
-| *solve* | 16, 18 |
-| *storing and computing* | 3, 17, 29 |
-| *zahlen* | 2, 15 |
+| *see* | 17, 29 |
+| *set* | 15, 21 |
+| *sets as sorted lists* | 16, 17, 31 |
+| *solve* | 19, 21 |
+| *storing and computing* | 3, 20, 29 |
+| *zahlen* | 2, 18 |
 
 ### Used before it was introduced
 
@@ -445,8 +445,9 @@ A word appearing in an earlier tutorial than the one that stops to explain it. S
 | *counting carefully* | 11 | 12 |
 | *design* | 8 | 10 |
 | *drawing functions* | 23 | 24 |
-| *expression* | 6 | 16 |
-| *expressions come alive* | 16 | 17 |
+| *equation* | 15 | 19 |
+| *expression* | 6 | 19 |
+| *expressions come alive* | 19 | 20 |
 | *finding things* | 8 | 9 |
 | *first steps* | 1 | 31 |
 | *functions* | 1 | 7 |
@@ -455,26 +456,26 @@ A word appearing in an earlier tutorial than the one that stops to explain it. S
 | *inside* | 4 | 28 |
 | *lines and distances* | 23 | 26 |
 | *local* | 8 | 30 |
-| *logic and truth* | 21 | 22 |
-| *making decisions* | 4 | 21 |
+| *logic and truth* | 16 | 17 |
+| *making decisions* | 4 | 16 |
 | *making sense of data* | 13 | 14 |
-| *numbers and their families* | 15 | 19 |
-| *opposite* | 19 | 28 |
+| *numbers and their families* | 18 | 22 |
+| *opposite* | 22 | 28 |
 | *parabolas* | 24 | 27 |
 | *parameters* | 7 | 10 |
 | *pictures worth numbers* | 14 | 23 |
-| *power* | 2 | 15 |
-| *putting things in order* | 9 | 20 |
+| *power* | 2 | 18 |
+| *putting things in order* | 9 | 15 |
 | *reaches* | 5 | 29 |
 | *repeating yourself* | 6 | 11 |
 | *repetition* | 4 | 11 |
-| *representation* | 2 | 16 |
+| *representation* | 2 | 19 |
 | *return* | 1 | 7 |
 | *return values* | 7 | 10 |
-| *see* | 4 | 22 |
-| *set* | 1 | 18 |
-| *sets as sorted lists* | 20 | 21 |
-| *solve* | 7 | 16 |
+| *see* | 4 | 17 |
+| *set* | 1 | 15 |
+| *sets as sorted lists* | 15 | 16 |
+| *solve* | 7 | 19 |
 | *store* | 1 | 2 |
 | *storing and computing* | 2 | 3 |
 | *the unit circle* | 25 | 28 |

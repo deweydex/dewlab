@@ -1,0 +1,18 @@
+# The reading order of this series.
+#
+# Split out of what used to be one 31-tutorial "Maths and programming"
+# series, so the contents page can show small groups instead of one
+# unbroken list. Moving a tutorial is moving a line, same as before.
+#
+# Every tutorial in the series must appear here exactly once, and every
+# slug here must belong to a tutorial. The build checks both.
+
+series: Data, Chance and Logic
+order:
+  - counting-carefully
+  - what-are-the-chances
+  - making-sense-of-data
+  - pictures-worth-numbers
+  - sets-as-sorted-lists
+  - logic-and-truth
+  - venn-diagrams

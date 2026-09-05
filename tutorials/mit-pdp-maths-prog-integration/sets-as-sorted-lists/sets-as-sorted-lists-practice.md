@@ -5,7 +5,7 @@ practice_for: sets-as-sorted-lists
 module: mit-pdp-maths-prog-integration
 module_title: "Programming and Maths, Integrated"
 year: "2026-2027"
-series: maths-and-programming
+series: data-chance-and-logic
 version: 2026.08.23.1
 ---
 
