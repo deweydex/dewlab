@@ -88,7 +88,7 @@ class TestAutosave:
 
 
 class TestOversizedOutputFallback:
-    """DECISIONS_LOG.md 7.131: a large embedded figure (tutorial_tools.py's
+    """DECISIONS_LOG.md 7.133: a large embedded figure (tutorial_tools.py's
     _figure_html(), a base64 PNG) can be big enough on its own to blow this
     browser's storage quota — saveNow() must not let that cost a reader
     their code and notes too. Storage.prototype.setItem is overridden here

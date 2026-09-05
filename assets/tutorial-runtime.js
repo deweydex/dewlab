@@ -1088,6 +1088,7 @@ function initTexture(onThemeChange) {
 
 /* ---------------------------------------------------------------- status */
 
+const runAnnouncerEl = document.getElementById("dl-run-announcer");
 const statusEl = document.getElementById("dl-status");
 /* The status text lives in its own child rather than directly in statusEl,
  * so setStatus() can rewrite it on every boot-progress message without
@@ -1238,7 +1239,10 @@ function buildCells(manifest) {
     if (collapsedSummary) {
       collapsedSummary.addEventListener("click", () => { setCellCollapsed(cell, false); saveNow(); });
       collapsedSummary.addEventListener("keydown", (ev) => {
-        if (ev.key === "Enter") { setCellCollapsed(cell, false); saveNow(); }
+        if (ev.key !== "Enter" && ev.key !== " ") return;
+        ev.preventDefault();
+        setCellCollapsed(cell, false);
+        saveNow();
       });
     }
     if (duplicateBtn) {
@@ -1467,6 +1471,14 @@ function initCellRunMenu(cell, host) {
   moreBtn.addEventListener("click", (e) => {
     e.stopPropagation();
     if (menu.hidden) openMenu(); else closeMenu();
+  });
+
+  // Same Escape-closes-and-returns-focus pattern as Settings/Reference/
+  // SeriesNav above — this menu was the one panel on the page missing it.
+  document.addEventListener("keydown", (ev) => {
+    if (ev.key !== "Escape" || menu.hidden) return;
+    closeMenu();
+    moreBtn.focus();
   });
 
   const aboveItem = menu.querySelector('[data-run-menu="above"]');
@@ -1703,7 +1715,7 @@ function createCustomCellElement(id, type) {
       + '<textarea class="dl-doc-editor" placeholder="Notes… (# heading, **bold**, - bullets)"></textarea>'
       + '<div class="dl-doc-render" tabindex="0" hidden></div>'
       + "</div>"
-      + '<div class="dl-cell-collapsed-summary" tabindex="0" hidden></div>'
+      + '<div class="dl-cell-collapsed-summary" role="button" tabindex="0" hidden></div>'
       + "</div>"
       + '<div class="dl-cell-bar">'
       + '<span class="dl-cell-id">your own note</span>'
@@ -1722,7 +1734,7 @@ function createCustomCellElement(id, type) {
       '<div class="dl-cell-body-row">'
       + collapseCol
       + '<div class="dl-cell-content"><div class="dl-editor"></div></div>'
-      + '<div class="dl-cell-collapsed-summary" tabindex="0" hidden></div>'
+      + '<div class="dl-cell-collapsed-summary" role="button" tabindex="0" hidden></div>'
       + "</div>"
       + '<div class="dl-output"></div>'
       + '<div class="dl-cell-bar">'
@@ -1918,7 +1930,10 @@ function mountCustomCellAfter(afterNode, id, type, code, anchor) {
   if (collapsedSummary) {
     collapsedSummary.addEventListener("click", () => { setCellCollapsed(cell, false); saveCustomCells(); });
     collapsedSummary.addEventListener("keydown", (ev) => {
-      if (ev.key === "Enter") { setCellCollapsed(cell, false); saveCustomCells(); }
+      if (ev.key !== "Enter" && ev.key !== " ") return;
+      ev.preventDefault();
+      setCellCollapsed(cell, false);
+      saveCustomCells();
     });
   }
 
@@ -2805,6 +2820,24 @@ function clearCellRunning(cell, previousLabel) {
     previousLabel === "Running…" || previousLabel === "Stop" ? "Run" : previousLabel;
 }
 
+/* The one announcement a screen reader gets once a cell finishes — not the
+ * ticking "Running… Xs" run-line, deliberately (startRunLineTicker()'s own
+ * comment above explains why), just the result once there is one. Checked
+ * the same way the e2e tests already do: a `.dl-error` in the cell's own
+ * output means the run errored. */
+function announceCellRun(cell) {
+  if (!runAnnouncerEl) return;
+  const errored = !!cell.outputEl?.querySelector(".dl-error");
+  // A live region only announces on a genuine text change — running the
+  // same cell twice in a row would say nothing the second time without
+  // this. Clearing first, then setting the real text next tick, makes
+  // every run its own change even when the result reads identically.
+  runAnnouncerEl.textContent = "";
+  setTimeout(() => {
+    runAnnouncerEl.textContent = errored ? "Ran — error" : "Ran — output below";
+  }, 0);
+}
+
 async function runCell(cell) {
   /* A second click on the cell that is already running is a Stop request,
    * not a second Run — the same button does both, per
@@ -2820,6 +2853,7 @@ async function runCell(cell) {
   const previousLabel = setCellRunning(cell);
   startRunLineTicker(cell);
 
+  let completed = false;
   try {
     await ensureBooted(currentManifest);
 
@@ -2829,6 +2863,7 @@ async function runCell(cell) {
      * a Stop click included — is normal traffic and is rendered in the cell,
      * not thrown up here. */
     await executeCell(cell);
+    completed = true;
   } catch (err) {
     /* Boot failure. Already surfaced in the status bar; nothing useful to add
      * inside the cell. */
@@ -2836,6 +2871,7 @@ async function runCell(cell) {
     running = null;
     clearCellRunning(cell, previousLabel);
     clearRunLineTicker(cell);
+    if (completed) announceCellRun(cell);
   }
 }
 

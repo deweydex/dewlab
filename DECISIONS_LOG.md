@@ -6226,7 +6226,7 @@ one went unnoticed long enough for every later group to copy it rather
 than question it. A widget's accessibility tree is not implied by its
 CSS.*
 
-**7.131 — A large plotted figure could blow this browser's storage
+**7.133 — A large plotted figure could blow this browser's storage
 quota and cost a reader their code and notes along with it, not just
 the figure.** `tutorial_tools.py`'s `_figure_html()` embeds every
 matplotlib figure as a base64 PNG straight into a cell's output HTML —
@@ -6277,3 +6277,97 @@ not the transaction most code assumes it to be until a failure path
 actually gets read closely, and "silently wipes everything" and "silently
 stops saving anything new" look identical from a glance at the code but
 call for different fixes.*
+
+**7.131 — Three more small accessibility gaps in the reader's own
+runtime, found in the same review that turned up 7.130.** None crashed
+anything or looked wrong on screen — all three only showed up once a
+keyboard or a screen reader, rather than a mouse and eyes, was the way
+of using the page.
+
+**A collapsed cell's one-line summary was a `<div>` pretending to be a
+button.** `.dl-cell-collapsed-summary` (`build.py`, plus the two custom-
+cell markup strings in `tutorial-runtime.js`) had `tabindex="0"` and a
+click handler, so a mouse and a sighted Tab-and-Enter user could both
+use it — but no `role="button"`, so a screen reader announced it as
+plain text, and its own keydown handler only checked `"Enter"`, so
+Space — the other key any real `<button>` answers to — did nothing.
+Fixed by adding `role="button"` at all three markup sites and `" "` to
+both keydown checks, with `ev.preventDefault()` alongside it so Space
+opens the cell instead of scrolling the page.
+
+**The "⋯" run menu (Run above / Run below) was the one panel on the
+page that didn't close on Escape.** Settings, Reference and SeriesNav
+each already have their own `document.addEventListener("keydown", ...)`
+checking `ev.key === "Escape"`, closing the panel and returning focus
+to whichever button opened it. `initCellRunMenu()` had an outside-click
+handler doing the closing half, but no Escape handler at all — the one
+way every other dismissible panel here can be closed without a mouse
+was missing from this one. Added the same pattern: Escape closes the
+menu and returns focus to `.dl-btn-more`.
+
+**A cell finishing a run said nothing to a screen reader.** The
+"Running… Xs" run-line is deliberately not a live region — its own
+comment already explains why, ticking ten times a second would be
+noise, not news — but nothing replaced it with an announcement once a
+run actually finished. A screen reader user pressing Run had no signal
+anything happened at all, short of manually re-finding the output
+region afterward. Added one shared `#dl-run-announcer`
+(`role="status" aria-live="polite"`, visually hidden with a new
+`.dl-sr-only` class rather than `hidden`, which would also pull it out
+of the accessibility tree), updated once a run completes: "Ran — output
+below" or "Ran — error", checked via `.dl-error` in the cell's own
+output, the same way the e2e tests already do. Cleared to empty text
+first, with the real message set a tick later — a live region only
+announces on an actual change, and running the same cell twice in a
+row would otherwise go silent the second time.
+
+**Verified in a real browser.** New e2e tests: two on the collapsed-
+summary (`role="button"` present, Space expands it), one confirming
+Escape closes the run menu and returns focus, and three on the
+announcer (a successful run, an errored one, and the same cell run
+twice in a row, each polling for the expected text rather than assuming
+the announcer's own next-tick update has already landed).
+`python3 -m pytest tests/e2e/test_cell_collapse_duplicate.py
+tests/e2e/test_cell_run_menu.py -q` and the rest of the suite both
+clean.
+
+*Cost to change: an attribute and a key check for the fake button, one
+keydown listener matching three already-written ones for the menu, one
+hidden live region and a handful of lines for the announcer. None of
+the three needed new UI — every one of them was a real interactive
+element already, just one that only fully worked for a mouse.*
+
+**7.132 — dewmini's own run announcement had 7.131's "same result
+twice in a row" bug, not 7.131's original gap.** Checking dewmini for
+the same missing-announcement problem found it was already covered:
+`runCell()` and `runCellBatch()` in `compose/dewmini.js` both call
+`updateStatus()`, which writes straight into `#dm-status`
+(`role="status" aria-live="polite"` in `dewmini.html`) — dewmini has
+announced "Ran." (or an error) after every run for as long as that
+function has existed. What it did not have was 7.131's fix for the
+narrower bug underneath: `updateStatus()` just set
+`statusEl.textContent = message` directly, so running the same cell
+twice in a row, both times ending in the identical "Ran.", changed
+nothing a live region could detect — the second announcement went
+silent. Fixed inside `updateStatus()` itself, not at its ~30 call
+sites: when the incoming message equals what is already showing, clear
+it and set the real text a tick later, the same pattern 7.131 used for
+`#dl-run-announcer`. Every other call — the large majority, where the
+new message differs from the last one — keeps its exact previous
+synchronous behaviour, so nothing timing-sensitive elsewhere in the UI
+had to change.
+
+**Verified in a real browser.** `python3 build.py --clean` and
+`python3 -m pytest --ignore=tests/e2e -q` both clean. One new e2e test,
+`TestStatusAnnouncer::test_running_the_same_cell_twice_announces_both_times`
+in `tests/e2e/test_dewmini_workbench.py`, running one cell twice in a
+row and polling `#dm-status` for "Ran." after each — clean, along with
+the rest of that file.
+
+*Cost to change: one branch inside one already-existing function,
+because the bug lived in the one place every status message already
+passes through. The lesson from re-checking rather than assuming: the
+task this was filed as ("dewmini has no run announcement") was wrong —
+it already had one — and the real gap only turned up by reading
+`runCell()` and `updateStatus()` directly instead of trusting the
+title on the task.*

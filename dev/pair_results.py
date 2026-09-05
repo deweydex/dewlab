@@ -1,6 +1,7 @@
 """Turn the pair-game judgements into a report on the topic graph.
 
     python3 dev/pair_results.py                 # write the report
+    python3 dev/pair_results.py --from blind    # ... over the blind judgements
     python3 dev/pair_results.py --check         # fail if the report is stale
 
 The pair game (`topic_tree_game/index.html`) writes one JSON file per save
@@ -19,12 +20,19 @@ graph stays a decision a person makes.
 
 Four things it looks for:
 
-  * **New edges** — a pair judged "needs" that the graph does not have.
+  * **New edges** — a pair judged "needs" that the graph does not have. An
+    arrow the graph already gives you through a chain is listed apart from one
+    that changes anything: both judges kept flagging that distinction by hand,
+    and confirming a path is a different finding from adding one.
   * **Edges nobody kept** — an existing arrow that judges called unrelated.
   * **Disagreements** — one pair, two judges, two answers.
-  * **Cycles** — a set of new edges that would make the graph loop back on
-    itself. A prerequisite graph that loops cannot be taught in any order, so
-    these have to be broken before the edges go in.
+  * **Levels** — two topics that each need the other. They are not a defect.
+    They are one level of the graph: two things taught together, or one topic
+    wearing two names. A longer loop is different, and does have to be broken.
+
+Two judges who pick opposite directions on the same pair have between them
+said what the game's "both ways" button says. The report treats that as a
+level rather than as a disagreement to settle.
 """
 
 from __future__ import annotations
@@ -39,8 +47,16 @@ import yaml
 
 ROOT = Path(__file__).resolve().parent.parent
 TOPICS = ROOT / "planning" / "curriculum" / "topics.yaml"
-PAIRS = ROOT / "planning" / "curriculum" / "review" / "pairs"
-REPORT = ROOT / "planning" / "curriculum" / "review" / "pair-results.md"
+REVIEW = ROOT / "planning" / "curriculum" / "review"
+PAIRS = REVIEW / "pairs"
+REPORT = REVIEW / "pair-results.md"
+
+# Judgements made while the judge could see the graph, and judgements made
+# blind, are two different piles and are reported separately. Mixing them
+# would lose the comparison that is the point of having both. `blind/README.md`
+# has what the comparison showed.
+SOURCES = {"pairs": (PAIRS, REPORT),
+           "blind": (REVIEW / "blind", REVIEW / "pair-results-blind.md")}
 
 
 def load_topics() -> dict:
@@ -67,14 +83,45 @@ def load_batches() -> list[dict]:
     return out
 
 
+def names_in(value) -> list[str]:
+    """A list of names out of whatever a batch put in the field.
+
+    A batch is written by whoever was judging, through a page or by hand, so a
+    field can arrive in a shape this script did not picture. One judge wrote
+    each new group as an object carrying a name and the topics it covers,
+    which is more thought than a bare string and no reason to lose the lot.
+    Anything with no name in it is skipped rather than fatal.
+    """
+    out = []
+    for item in value if isinstance(value, list) else []:
+        if isinstance(item, str) and item.strip():
+            out.append(item.strip())
+        elif isinstance(item, dict):
+            name = item.get("name") or item.get("group") or item.get("key")
+            if isinstance(name, str) and name.strip():
+                out.append(name.strip())
+    return out
+
+
+def text_map(value) -> dict[str, str]:
+    """The string-to-string pairs of a field, ignoring anything else."""
+    if not isinstance(value, dict):
+        return {}
+    return {k: v for k, v in value.items()
+            if isinstance(k, str) and isinstance(v, str)}
+
+
 def tally(batches: list[dict]) -> dict[tuple, list[dict]]:
     """Group every judgement by the unordered pair it is about."""
     votes: dict[tuple, list[dict]] = defaultdict(list)
     for batch in batches:
         who = batch.get("by") or "anon"
         for j in batch.get("judgements") or []:
+            if not isinstance(j, dict):
+                continue
             pair = j.get("pair") or []
-            if len(pair) != 2:
+            if not isinstance(pair, list) or len(pair) != 2 \
+                    or not all(isinstance(c, str) for c in pair):
                 continue
             key = tuple(sorted(pair))
             votes[key].append({"by": who, "verdict": j.get("verdict"),
@@ -98,9 +145,43 @@ def settled(cast: list[dict]) -> tuple[str, str | None, bool]:
     return best[0], best[1], False
 
 
+def reachable_from(edges: set[tuple]) -> dict[str, set[str]]:
+    """For each topic, everything a chain of arrows already leads to.
+
+    An arrow from A to B is news only when B is not already downstream of A.
+    A judge saying "factorials before combinations" is right and tells us
+    nothing new when the graph runs factorials to permutations to
+    combinations already.
+    """
+    ahead: dict[str, list[str]] = defaultdict(list)
+    for early, late in edges:
+        ahead[early].append(late)
+
+    memo: dict[str, set[str]] = {}
+
+    def walk(node: str, on_path: frozenset) -> set[str]:
+        if node in memo:
+            return memo[node]
+        # A graph with a loop in it is one of the things this report exists to
+        # find, so this walk has to survive one rather than recurse forever.
+        out: set[str] = set()
+        for nxt in ahead.get(node, []):
+            out.add(nxt)
+            if nxt not in on_path:
+                out |= walk(nxt, on_path | {nxt})
+        memo[node] = out
+        return out
+
+    return {node: walk(node, frozenset([node])) for node in ahead}
+
+
 def cycles(edges: set[tuple]) -> list[list[str]]:
     """Every loop the edge set contains, found by walking depth-first and
-    watching for a node that is still on the current path."""
+    watching for a node that is still on the current path.
+
+    A loop of two topics and a loop of five are different findings, so the
+    caller separates them; this only finds them.
+    """
     ahead: dict[str, list[str]] = defaultdict(list)
     for early, late in edges:
         ahead[early].append(late)
@@ -141,48 +222,74 @@ def build_report(topics: dict, batches: list[dict]) -> str:
     new_groups: set[str] = set()
     needs_work: set[str] = set()
     for batch in batches:
-        renames.update(batch.get("renamed") or {})
-        groups.update(batch.get("groups") or {})
-        new_groups.update(batch.get("new_groups") or [])
-        needs_work.update(batch.get("needs_work") or [])
+        renames.update(text_map(batch.get("renamed")))
+        for code, gs in (batch.get("groups") or {}).items() \
+                if isinstance(batch.get("groups"), dict) else []:
+            if isinstance(code, str):
+                groups[code] = names_in(gs)
+        new_groups.update(names_in(batch.get("new_groups")))
+        needs_work.update(n for n in names_in(batch.get("needs_work")))
 
+    downstream = reachable_from(existing)
     judged_edges: set[tuple] = set()
-    added, dropped, disputed, both_ways, unsure = [], [], [], [], []
+    added, implied, dropped, disputed, both_ways, unsure = [], [], [], [], [], []
 
     for key, cast in sorted(votes.items()):
         verdict, first, agreed = settled(cast)
         a, b = key
         second = b if first == a else a
+
+        # Two judges who both saw a prerequisite and pointed it opposite ways
+        # have between them said the pair is a level. That is the "both ways"
+        # answer, arrived at by two people instead of one, so it belongs with
+        # the levels rather than in a list of things to settle.
+        directions = {v["first"] for v in cast if v["verdict"] == "needs"}
+        if (not agreed and len(directions) > 1
+                and all(v["verdict"] == "needs" for v in cast)):
+            both_ways.append((key, len(cast), "opposite"))
+            continue
+
         if not agreed:
             disputed.append((key, cast))
         if verdict == "needs" and first:
             judged_edges.add((first, second))
             if (first, second) not in existing:
-                added.append((first, second, len(cast), agreed))
+                where = (implied if second in downstream.get(first, set())
+                         else added)
+                where.append((first, second, len(cast), agreed))
         elif verdict == "unrelated":
             for edge in ((a, b), (b, a)):
                 if edge in existing:
                     dropped.append((edge, len(cast), agreed))
         elif verdict == "both":
-            both_ways.append((key, len(cast)))
+            both_ways.append((key, len(cast), "said" if agreed else "one judge"))
         elif verdict == "unsure":
             unsure.append(key)
 
     loops = cycles(existing | judged_edges)
+    # A two-topic loop says those two are a level. A longer one is a real
+    # problem: it cannot be taught in any order and no amount of teaching
+    # them together fixes it.
+    levels = [lp for lp in loops if len(lp) == 3]
+    tangles = [lp for lp in loops if len(lp) > 3]
 
     nm = lambda code: name_of(topics, code, renames)
     L = []
     A = L.append
     A("# What the pair judgements say about the graph")
     A("")
-    A("Written by `dev/pair_results.py` from the saved batches in `pairs/`.")
-    A("Nothing here has been applied to `topics.yaml`.")
+    A(f"Written by `dev/pair_results.py` from the saved batches in "
+      f"`{PAIRS.name}/`. Nothing here has been applied to `topics.yaml`.")
     A("")
     A(f"{len(batches)} saved batches · {len(votes)} pairs judged · "
       f"{sum(len(c) for c in votes.values())} judgements in total")
     A("")
 
     A("## Arrows to add")
+    A("")
+    A("Pairs judged to need each other in one direction, where no chain of")
+    A("existing arrows already leads from the first to the second. These are")
+    A("the ones that change the graph.")
     A("")
     if added:
         A("| Comes first | Comes after | Judgements | Agreed |")
@@ -191,6 +298,21 @@ def build_report(topics: dict, batches: list[dict]) -> str:
             A(f"| {nm(first)} | {nm(second)} | {n} | {'yes' if agreed else 'no'} |")
     else:
         A("Nothing new.")
+    A("")
+
+    A("## Arrows the graph already gives you")
+    A("")
+    A("Judged the same way, but a chain of existing arrows already runs from")
+    A("the first to the second. Drawing these would change nothing. They are")
+    A("here because they confirm the chain rather than because they add to it.")
+    A("")
+    if implied:
+        A("| Comes first | Comes after | Judgements | Agreed |")
+        A("|---|---|---|---|")
+        for first, second, n, agreed in sorted(implied):
+            A(f"| {nm(first)} | {nm(second)} | {n} | {'yes' if agreed else 'no'} |")
+    else:
+        A("None.")
     A("")
 
     A("## Arrows the judges did not keep")
@@ -204,19 +326,39 @@ def build_report(topics: dict, batches: list[dict]) -> str:
         A("None. Every existing arrow survived the pairs that were judged.")
     A("")
 
-    A("## Loops")
+    A("## Pairs that turn out to be one level")
     A("")
-    if loops:
-        A("A prerequisite graph that loops cannot be taught in any order.")
-        A("Each of these has to be broken before its arrows go in.")
+    if levels or both_ways:
+        A("Two topics that each need the other sit at the same level of the")
+        A("graph. Either they are taught together, or they are one topic under")
+        A("two names. Neither is a fault to fix.")
         A("")
-        for loop in loops:
-            A("- " + " → ".join(nm(c) for c in loop))
+        for loop in levels:
+            A(f"- {nm(loop[0])} and {nm(loop[1])} — the arrow between them runs "
+              "both ways once these judgements go in")
+        how = {"opposite": "judges pointed opposite ways, which between them says this",
+               "said": "every judge said so",
+               "one judge": "one judge said so, another saw an order"}
+        for key, n, why in both_ways:
+            A(f"- {nm(key[0])} and {nm(key[1])} — {how[why]} "
+              f"({n} judgement{'' if n == 1 else 's'})")
     else:
-        A("None. The graph these judgements imply can still be taught in order.")
+        A("None.")
     A("")
 
-    A("## Pairs the judges disagreed about")
+    A("## Loops of three or more")
+    A("")
+    if tangles:
+        A("A loop this long cannot be taught in any order, and teaching the")
+        A("topics together does not fix it. Each has to be broken.")
+        A("")
+        for loop in tangles:
+            A("- " + " → ".join(nm(c) for c in loop))
+    else:
+        A("None.")
+    A("")
+
+    A("## Pairs where one judge saw an arrow and the other did not")
     A("")
     if disputed:
         for key, cast in disputed:
@@ -225,19 +367,6 @@ def build_report(topics: dict, batches: list[dict]) -> str:
                 said = (f"{nm(v['first'])} first" if v["verdict"] == "needs"
                         else v["verdict"])
                 A(f"  - {v['by']}: {said}")
-    else:
-        A("None.")
-    A("")
-
-    A("## Pairs judged as needing each other")
-    A("")
-    if both_ways:
-        A("Two topics that each need the other cannot both come first.")
-        A("Either one of them splits in two, or they are taught together.")
-        A("")
-        for key, n in both_ways:
-            A(f"- {nm(key[0])} and {nm(key[1])} "
-              f"({n} judgement{'' if n == 1 else 's'})")
     else:
         A("None.")
     A("")
@@ -294,7 +423,12 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--check", action="store_true",
                     help="fail if the report is out of date")
+    ap.add_argument("--from", dest="source", default="pairs", choices=sorted(SOURCES),
+                    help="which pile of judgements to report on (default: pairs)")
     args = ap.parse_args()
+
+    global PAIRS, REPORT
+    PAIRS, REPORT = SOURCES[args.source]
 
     report = build_report(load_topics(), load_batches())
     if args.check:

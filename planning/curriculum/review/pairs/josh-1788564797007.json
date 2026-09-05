@@ -1,0 +1,247 @@
+{
+ "by": "Josh",
+ "saved_at": "2026-09-04T23:33:17.007Z",
+ "judgements": [
+  {
+   "pair": [
+    "MIT-1.2",
+    "MIT-1.3"
+   ],
+   "verdict": "needs",
+   "first": "MIT-1.2"
+  },
+  {
+   "pair": [
+    "MIT-1.5",
+    "MIT-1.6"
+   ],
+   "verdict": "needs",
+   "first": "MIT-1.5"
+  },
+  {
+   "pair": [
+    "MIT-1.6",
+    "MIT-1.7"
+   ],
+   "verdict": "both"
+  },
+  {
+   "pair": [
+    "MIT-1.6",
+    "MIT-1.8"
+   ],
+   "verdict": "needs",
+   "first": "MIT-1.6"
+  },
+  {
+   "pair": [
+    "MIT-1.8",
+    "MIT-1.9"
+   ],
+   "verdict": "needs",
+   "first": "MIT-1.8"
+  },
+  {
+   "pair": [
+    "MIT-1.9",
+    "MIT-1.10"
+   ],
+   "verdict": "needs",
+   "first": "MIT-1.9"
+  },
+  {
+   "pair": [
+    "MIT-2.1",
+    "MIT-1.10"
+   ],
+   "verdict": "needs",
+   "first": "MIT-2.1"
+  },
+  {
+   "pair": [
+    "MIT-1.5",
+    "MIT-1.11"
+   ],
+   "verdict": "needs",
+   "first": "MIT-1.5"
+  },
+  {
+   "pair": [
+    "MIT-1.5",
+    "MIT-1.12"
+   ],
+   "verdict": "needs",
+   "first": "MIT-1.5"
+  },
+  {
+   "pair": [
+    "MIT-2.1",
+    "MIT-2.2"
+   ],
+   "verdict": "needs",
+   "first": "MIT-2.2"
+  },
+  {
+   "pair": [
+    "MIT-2.2",
+    "MIT-2.3"
+   ],
+   "verdict": "needs",
+   "first": "MIT-2.2"
+  },
+  {
+   "pair": [
+    "MIT-2.4",
+    "MIT-2.5"
+   ],
+   "verdict": "needs",
+   "first": "MIT-2.4"
+  },
+  {
+   "pair": [
+    "MIT-1.5",
+    "MIT-3.1"
+   ],
+   "verdict": "needs",
+   "first": "MIT-1.5"
+  },
+  {
+   "pair": [
+    "MIT-3.1",
+    "MIT-3.2"
+   ],
+   "verdict": "needs",
+   "first": "MIT-3.1"
+  },
+  {
+   "pair": [
+    "MIT-3.2",
+    "MIT-3.3"
+   ],
+   "verdict": "needs",
+   "first": "MIT-3.2"
+  },
+  {
+   "pair": [
+    "MIT-4.6",
+    "MIT-3.3"
+   ],
+   "verdict": "needs",
+   "first": "MIT-4.6"
+  },
+  {
+   "pair": [
+    "MIT-1.9",
+    "MIT-3.4"
+   ],
+   "verdict": "needs",
+   "first": "MIT-1.9"
+  },
+  {
+   "pair": [
+    "MIT-3.2",
+    "MIT-3.4"
+   ],
+   "verdict": "needs",
+   "first": "MIT-3.2"
+  },
+  {
+   "pair": [
+    "MIT-3.2",
+    "MIT-3.5"
+   ],
+   "verdict": "needs",
+   "first": "MIT-3.2"
+  },
+  {
+   "pair": [
+    "MIT-3.5",
+    "MIT-3.6"
+   ],
+   "verdict": "needs",
+   "first": "MIT-3.5"
+  },
+  {
+   "pair": [
+    "MIT-1.8",
+    "MIT-3.6"
+   ],
+   "verdict": "needs",
+   "first": "MIT-1.8"
+  },
+  {
+   "pair": [
+    "MIT-3.6",
+    "MIT-3.7"
+   ],
+   "verdict": "needs",
+   "first": "MIT-3.6"
+  },
+  {
+   "pair": [
+    "MIT-1.5",
+    "MIT-4.1"
+   ],
+   "verdict": "needs",
+   "first": "MIT-1.5"
+  },
+  {
+   "pair": [
+    "MIT-4.1",
+    "MIT-4.2"
+   ],
+   "verdict": "needs",
+   "first": "MIT-4.1"
+  },
+  {
+   "pair": [
+    "MIT-4.4",
+    "MIT-4.3"
+   ],
+   "verdict": "needs",
+   "first": "MIT-4.4"
+  },
+  {
+   "pair": [
+    "MIT-4.5",
+    "MIT-4.6"
+   ],
+   "verdict": "needs",
+   "first": "MIT-4.6"
+  },
+  {
+   "pair": [
+    "MIT-4.4",
+    "MIT-4.6"
+   ],
+   "verdict": "needs",
+   "first": "MIT-4.4"
+  },
+  {
+   "pair": [
+    "MIT-4.1",
+    "MIT-4.6"
+   ],
+   "verdict": "needs",
+   "first": "MIT-4.1"
+  },
+  {
+   "pair": [
+    "MIT-4.6",
+    "MIT-4.7"
+   ],
+   "verdict": "needs",
+   "first": "MIT-4.6"
+  }
+ ],
+ "renamed": {
+  "MIT-2.1": "Natural numbers"
+ },
+ "groups": {
+  "MIT-2.1": [
+   "Numbers, expressions, and equations"
+  ]
+ },
+ "new_groups": [],
+ "needs_work": []
+}
