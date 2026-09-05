@@ -31,23 +31,36 @@
 
 topics:
   # ------------------------------------------ MIT 1: arithmetic and algebra
-  MIT-1.1:
-    name: Powers and logarithms
+  MIT-1.1a:
+    name: Powers
     outcome: MIT-1.1
     plain: >
-      Multiplying a number by itself over and over, and the operation that
-      undoes it. A logarithm answers the question "how many times did I
-      multiply?" Anything that grows or shrinks by a factor, rather than by a
-      fixed amount, is most naturally described that way.
+      Multiplying a number by itself over and over. The small raised number
+      counts how many times, so three to the fourth means three multiplied
+      by itself four times.
     uses:
-      - Measuring how much slower a program gets as its input grows — an
-        algorithm that halves the problem each step takes a logarithmic number
-        of steps.
-      - File sizes and storage. A kilobyte, megabyte and gigabyte are each about
-        a thousand times the last, so their exponents are what you compare.
-      - Audio and image processing, where loudness and brightness are perceived
-        as ratios rather than differences.
+      - Place value in binary. Each column of a binary number is the next
+        power of two, which is why the columns read 1, 2, 4, 8, 16.
+      - File sizes and storage. A kilobyte, a megabyte and a gigabyte are
+        each about a thousand times the last.
+      - Anything that doubles. A program that doubles its work at each step
+        is described by a power of two.
     needs: []
+
+  MIT-1.1b:
+    name: Logarithms
+    outcome: MIT-1.1
+    plain: >
+      The operation that undoes a power. A logarithm answers the question
+      "how many times did I multiply?" Anything that grows or shrinks by a
+      factor, rather than by a fixed amount, is usually described this way.
+    uses:
+      - Measuring how much slower a program gets as its input grows. An
+        algorithm that halves the problem at each step takes a logarithmic
+        number of steps.
+      - Audio and image processing, where loudness and brightness are
+        perceived as ratios rather than as differences.
+    needs: [MIT-1.1a]
 
   MIT-1.2:
     name: Area and perimeter
