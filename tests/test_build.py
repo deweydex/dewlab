@@ -131,11 +131,15 @@ def asset(repo: Path, slug: str, name: str, content: bytes = b"x",
 
 def dataset(repo: Path, name: str, source: str = "Some source",
             license: str = "CC0", description: str = "A dataset.",
-            with_csv: bool = True, with_attribution: bool = True) -> None:
+            with_csv: bool = True, with_txt: bool = False,
+            with_attribution: bool = True) -> None:
     """A dataset's files — planning/SIDEBAR_CONTENT.md §2: `data/<name>.csv`
-    plus its beside-the-file attribution, `data/<name>.yaml`."""
+    (or `data/<name>.txt`) plus its beside-the-file attribution,
+    `data/<name>.yaml`."""
     if with_csv:
         (repo / "data" / f"{name}.csv").write_text("a,b\n1,2\n")
+    if with_txt:
+        (repo / "data" / f"{name}.txt").write_text("Some plain text.\n")
     if with_attribution:
         (repo / "data" / f"{name}.yaml").write_text(
             f'source: "{source}"\nlicense: "{license}"\ndescription: "{description}"\n'
@@ -2796,8 +2800,9 @@ class TestNotes:
 
 class TestDatasets:
     """Dataset attribution — planning/SIDEBAR_CONTENT.md §2: a `datasets:`
-    frontmatter list, cross-referenced against `data/<name>.csv` and its
-    beside-the-file `data/<name>.yaml` attribution."""
+    frontmatter list, cross-referenced against `data/<name>.csv` or
+    `data/<name>.txt` and its beside-the-file `data/<name>.yaml`
+    attribution."""
 
     def test_a_declared_dataset_appears_in_the_manifest(self, repo):
         path = write(repo, "Prose.\n", slug="one")
@@ -2810,6 +2815,20 @@ class TestDatasets:
             "source": "World Bank",
             "license": "CC-BY-4.0",
             "description": "Life expectancy by country and year.",
+        }]
+
+    def test_a_declared_dataset_can_be_a_text_file(self, repo):
+        path = write(repo, "Prose.\n", slug="one")
+        add_frontmatter(path, "datasets:\n  - a-book\n")
+        dataset(repo, "a-book", with_csv=False, with_txt=True,
+                source="Some author", license="Public domain",
+                description="A plain-text dataset, loaded with load_text().")
+        b.build()
+        assert manifest(built(repo, "one"))["datasets"] == [{
+            "name": "a-book",
+            "source": "Some author",
+            "license": "Public domain",
+            "description": "A plain-text dataset, loaded with load_text().",
         }]
 
     def test_a_tutorial_with_no_datasets_has_no_datasets_key(self, repo):

@@ -1,0 +1,20 @@
+# Attribution for data/democracy-and-education.txt — planning/SIDEBAR_CONTENT.md §2.
+# Shown in the reference sidebar of any tutorial that declares this dataset,
+# so a reader can trace the text they are working with back to its source.
+
+source: >
+  "Democracy and Education: An Introduction to the Philosophy of Education,"
+  by John Dewey. First published by The Macmillan Company, 1916.
+
+license: >
+  Public domain in the United States — published in 1916, well before the
+  cutoff for automatic public-domain status. This particular file is a
+  scanned, OCR'd copy; its front matter (a publisher's catalogue of other
+  titles) and back-matter index carry visible OCR errors, which is why a
+  tutorial using this file trims down to the chapters themselves before
+  treating it as prose.
+
+description: >
+  The complete text of Dewey's 1916 book, front matter and index intact —
+  a tutorial strips both away, the same kind of real cleaning step a
+  scanned text always needs before use.

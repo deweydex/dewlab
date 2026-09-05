@@ -307,9 +307,10 @@ class Tutorial:
 
     @property
     def datasets(self) -> tuple[str, ...]:
-        """The names this tutorial's cells load via `load_csv()` —
-        declared, not scraped, the same reasoning `covers:`/`practice_for`
-        already use (planning/SIDEBAR_CONTENT.md §2)."""
+        """The names this tutorial's cells load via `load_csv()` or
+        `load_text()` — declared, not scraped, the same reasoning
+        `covers:`/`practice_for` already use
+        (planning/SIDEBAR_CONTENT.md §2)."""
         value = self.meta.get("datasets") or []
         if isinstance(value, str):
             value = [value]
@@ -2076,22 +2077,25 @@ def check_folds(tutorial: Tutorial) -> None:
 
 
 DATASET_ATTRIBUTION_FIELDS = ("source", "license", "description")
+DATASET_EXTENSIONS = (".csv", ".txt")
 
 
 def dataset_attribution(tutorial: Tutorial, name: str) -> dict:
     """A declared dataset's own attribution file —
-    `data/<name>.yaml` beside `data/<name>.csv`, the same
+    `data/<name>.yaml` beside `data/<name>.csv` (loaded with `load_csv()`)
+    or `data/<name>.txt` (loaded with `load_text()`), the same
     beside-the-file pattern `<slug>.glossary.yaml` already established
     (planning/SIDEBAR_CONTENT.md §2). Both files are required: an
     undocumented dataset defeats the point of declaring one at all, so a
-    missing csv or a missing/incomplete attribution file fails the build
-    the same way a `practice_for` naming no real tutorial does, rather than
-    silently shipping a dataset nobody can trace.
+    missing data file or a missing/incomplete attribution file fails the
+    build the same way a `practice_for` naming no real tutorial does,
+    rather than silently shipping a dataset nobody can trace.
     """
-    csv_path = DATA / f"{name}.csv"
-    if not csv_path.is_file():
-        fail(tutorial.path, f"declares datasets: {name}, and data/{name}.csv "
-                            "does not exist.")
+    has_data_file = any((DATA / f"{name}{ext}").is_file() for ext in DATASET_EXTENSIONS)
+    if not has_data_file:
+        extensions = " or ".join(f"data/{name}{ext}" for ext in DATASET_EXTENSIONS)
+        fail(tutorial.path, f"declares datasets: {name}, and neither "
+                            f"{extensions} exists.")
     yaml_path = DATA / f"{name}.yaml"
     if not yaml_path.is_file():
         fail(tutorial.path, f"declares datasets: {name}, and data/{name}.yaml "

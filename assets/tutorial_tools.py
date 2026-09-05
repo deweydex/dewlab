@@ -60,6 +60,7 @@ __all__ = [
     "show_table",
     "check",
     "load_csv",
+    "load_text",
     "run_query",
 ]
 
@@ -1255,6 +1256,53 @@ async def load_csv(name: str, **read_csv_kwargs):
             f"{name} is not in the shared data folder (HTTP {response.status})"
         )
     return pd.read_csv(io.BytesIO(await response.bytes()), **read_csv_kwargs)
+
+
+async def load_text(name: str) -> str:
+    """Fetch a plain-text file and return its contents as a string.
+
+    `name` is either a file in the shared `/data/` folder, or a full URL to
+    a text file somewhere else on the web:
+
+        book = await load_text("pride-and-prejudice.txt")
+        page = await load_text("https://example.org/some-page.txt")
+
+    Same shared-folder-or-remote-URL split as `load_csv`, and the same
+    reason a remote failure gets an honest message instead of a bare
+    traceback — see `load_csv`, just above, for the full explanation.
+    """
+    from pyodide.http import pyfetch  # pragma: no cover - browser only
+
+    remote = name.startswith("http://") or name.startswith("https://")
+    url = name if remote else _data_base + name
+
+    try:
+        response = await pyfetch(url)
+    except Exception as exc:  # pragma: no cover - browser-only failure path
+        if not remote:
+            raise
+        raise ConnectionError(
+            f"Couldn't fetch {name}.\n\n"
+            "That file is on another website, and a browser only allows this "
+            "page to read it if that site permits it — many do not. Nothing "
+            "is wrong with your code.\n\n"
+            "What does always work: download the file yourself, then add it "
+            "through Files in the Workbench panel, and load it by name "
+            "instead."
+        ) from exc
+
+    if response.status != 200:
+        if remote:
+            raise ConnectionError(
+                f"{name} returned HTTP {response.status}.\n\n"
+                "The address may have changed, or that site may not be "
+                "handing this file out any more. Downloading it yourself and "
+                "adding it through Files in the Workbench panel always works."
+            )
+        raise FileNotFoundError(
+            f"{name} is not in the shared data folder (HTTP {response.status})"
+        )
+    return await response.string()
 
 
 def run_query(conn_or_path, sql: str, params=None, max_rows: int = 20, caption: str | None = None):

@@ -1,0 +1,5 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+# Nothing new: this tutorial reuses load_text(), dictionaries of
+# dictionaries, and str.find()/str.index() as already introduced in
+# A Chain Reads a Book, this series' first tutorial.
+entries: []

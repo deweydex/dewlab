@@ -56,19 +56,20 @@ This one does not need an authoring-mechanism decision, because a dataset
 is not prose bound to a point in a tutorial's flow — it is a fact about a
 file. Two small additions, neither touching the fence/cell machinery:
 
-- **One `.yaml` per dataset** — `data/<name>.yaml` beside `data/<name>.csv`,
-  the same beside-the-file pattern `<slug>.glossary.yaml` already
-  established for tutorials: source, license, and a one-line description
-  per file. (One shared attribution file listing every dataset was the
-  other option weighed here; the per-dataset file is what shipped, in
-  `dataset_attribution()`.) One place attribution lives once,
+- **One `.yaml` per dataset** — `data/<name>.yaml` beside `data/<name>.csv`
+  (loaded with `load_csv()`) or `data/<name>.txt` (loaded with
+  `load_text()`), the same beside-the-file pattern `<slug>.glossary.yaml`
+  already established for tutorials: source, license, and a one-line
+  description per file. (One shared attribution file listing every
+  dataset was the other option weighed here; the per-dataset file is what
+  shipped, in `dataset_attribution()`.) One place attribution lives once,
   however many tutorials end up using that file.
 - **A `datasets:` frontmatter list** on a tutorial (`datasets: [life-expectancy]`),
   the same shape `covers:`/`practice_for` already are — explicit and
   declarative, not scraped from cell code (grepping cells for
-  `load_csv("...")` calls would work today, but breaks the moment a dataset
-  name is built from a variable instead of a literal, and frontmatter never
-  has that problem).
+  `load_csv("...")`/`load_text("...")` calls would work today, but breaks
+  the moment a dataset name is built from a variable instead of a
+  literal, and frontmatter never has that problem).
 
 `build.py` cross-references the two — the same `fail()`-on-mismatch pattern
 `practice_pairs()` already uses for `practice_for` — and a tutorial's

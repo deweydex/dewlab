@@ -131,6 +131,18 @@ groups:
       - { module: computational-methods, slug: undoing-it }
       - { module: computational-methods, slug: where-chains-lead }
 
+  - key: text-generation
+    name: Generating text with Markov chains
+    intro: >
+      This is the same chain *Matrices* introduces, grown up. Instead of
+      three toy pages or one repeated sentence, it learns from an entire
+      real book — closely enough to write sentences no one has read
+      before.
+    tutorials:
+      - { module: computational-methods, slug: a-chain-reads-a-book }
+      - { module: computational-methods, slug: how-much-it-remembers }
+      - { module: computational-methods, slug: whose-voice-is-this }
+
   - key: programming-foundations
     name: Programming foundations
     intro: >
