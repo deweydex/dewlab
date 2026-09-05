@@ -1264,22 +1264,73 @@ topics:
         answers.
     needs: [MIT-6.7]
 
-  CMPS-LO2:
-    name: Probability and information
+  CMPS-LO2a:
+    name: Probability
     outcome: CMPS-LO2
     plain: >
-      How likely something is, written as a number between zero and one. The
-      idea extends to statistics taken from a sample, and to events that do or
-      do not affect each other. It also covers the random numbers a computer
-      needs but cannot truly produce on its own.
+      How likely something is, written as a number between zero and one.
+      Zero cannot happen, one is certain, and everything real sits in
+      between.
     uses:
-      - Games of chance, and any feature that needs a fair-seeming shuffle or
-        deal.
-      - Conditional probability in spam filters, medical testing, and
-        recommendation engines.
+      - Games of chance, and any feature that needs a fair-seeming shuffle
+        or deal.
+    needs: [MIT-5.6, MIT-5.7]
+
+  CMPS-LO2b:
+    name: Sampling
+    outcome: CMPS-LO2
+    plain: >
+      Measuring a few things and saying something about the many you did
+      not measure. How much you can claim depends on how many you took and
+      on how you chose them.
+    uses:
+      - Load testing, where a few thousand requests stand in for a day's
+        traffic.
+      - Any survey or poll, and the reason its result comes with a margin
+        either side.
+    needs: [CMPS-LO2a]
+
+  CMPS-LO2c:
+    name: Dependence
+    outcome: CMPS-LO2
+    plain: >
+      Whether one event changes how likely another is. Two events that do
+      not affect each other are much easier to reason about, and assuming
+      that wrongly is a common way to get an answer badly wrong.
+    uses:
+      - Reliability, where two parts that fail for the same reason are not
+        the independent pair the sum assumed.
+      - Spam filters and recommendation engines, which are built on chances
+        that shift as each new fact arrives.
+    needs: [CMPS-LO2b]
+
+  CMPS-LO2d:
+    name: Random numbers a computer makes
+    outcome: CMPS-LO2
+    plain: >
+      A computer follows instructions, so it cannot be truly unpredictable
+      on its own. What it produces instead is a sequence that looks random
+      and repeats exactly if you start it from the same place.
+    uses:
+      - Repeating a simulation exactly, by starting it from the same place
+        twice.
       - Public-key infrastructure, which depends on numbers a system can
         generate but an attacker cannot predict.
-    needs: [MIT-5.6, MIT-5.7]
+    needs: [CMPS-LO2c]
+
+  CMPS-LO2e:
+    name: Information
+    outcome: CMPS-LO2
+    plain: >
+      How much you learn from being told something. A result you already
+      expected tells you little, and a surprising one tells you a lot,
+      which is why the two can be measured on one scale.
+    uses:
+      - Compression, which works by spending fewer bits on the things that
+        happen often.
+      - Choosing what to ask next, where the best question is the one whose
+        answer you can predict least.
+    needs: [CMPS-LO2c]
 
   CMPS-LO3:
     name: Computer simulation
@@ -1294,7 +1345,7 @@ topics:
         into a counting exercise a computer can just run.
       - Testing a design against thousands of random scenarios before it is
         built.
-    needs: [CMPS-LO2]
+    needs: [CMPS-LO2a]
 
   CMPS-LO4a:
     name: Matrices
@@ -1333,7 +1384,7 @@ topics:
       - Web search ranking, which began as exactly this calculation.
       - Working out who matters in any network, such as which account in a
         social graph reaches the most people.
-    needs: [CMPS-LO4a, CMPS-LO2]
+    needs: [CMPS-LO4a, CMPS-LO2a]
 
   CMPS-LO4d:
     name: Comparing rows of numbers
@@ -1375,7 +1426,7 @@ topics:
       - Failure prediction and reliability engineering, and branch prediction
         inside a processor.
       - Analysing packet loss and jitter on a network link.
-    needs: [CMPS-LO2, CMPS-LO5]
+    needs: [CMPS-LO2a, CMPS-LO5]
 
   CMPS-LO7:
     name: Modelling versus simulation
