@@ -6226,6 +6226,58 @@ one went unnoticed long enough for every later group to copy it rather
 than question it. A widget's accessibility tree is not implied by its
 CSS.*
 
+**7.133 — A large plotted figure could blow this browser's storage
+quota and cost a reader their code and notes along with it, not just
+the figure.** `tutorial_tools.py`'s `_figure_html()` embeds every
+matplotlib figure as a base64 PNG straight into a cell's output HTML —
+easily a few hundred KB from one cell, next to a typical printed
+result's few dozen bytes. `saveNow()` (`tutorial-runtime.js`) builds
+one JSON record covering every cell's code, output and the reader's own
+notes, and writes it with a single `localStorage.setItem()`. When that
+throws — the record now too big for what this browser will hold —
+the whole call failed, and the *only* sign of it was a line inside the
+Settings panel a reader would have to go looking for. Nothing about the
+storage itself was actually wiped: `setItem()` leaves the previous
+saved value alone on failure, so what was lost was ongoing —
+every future autosave kept failing the same way for as long as that
+oversized output stayed part of the record, silently discarding new
+code and notes from that point on, not the reader's whole saved history
+in one shot as first suspected.
+
+Fixed with a retry inside `saveNow()`'s existing `catch`: on failure,
+check whether any one cell's `output_html` is over
+`SAVED_OUTPUT_STRIP_THRESHOLD` (100,000 characters — comfortably below
+a real figure, comfortably above ordinary printed output) and, if so,
+save again with just that cell's `output_html` blanked rather than the
+whole record dropped. A blanked `output_html` already restores as "not
+run" (the same path a cell that has never run takes), so a reader gets
+their figure back with one more Run press after a reload — the code
+that produced it was never at risk. Only if the slimmed record still
+does not fit does this fall through to the original message admitting
+nothing saved at all. The new message names what happened rather than
+repeating the generic one: "Saved your code and notes, but this browser
+ran out of room for a large figure. Run that cell again after reloading
+to see it."
+
+**Verified in a real browser.** `python3 build.py --clean` and
+`python3 -m pytest --ignore=tests/e2e -q` both clean. Three new e2e
+tests in `tests/e2e/test_saved_progress.py`
+(`TestOversizedOutputFallback`), overriding `Storage.prototype.setItem`
+to throw past a size deterministically rather than trying to actually
+fill a browser's real quota: the oversized cell's own output is dropped
+while a second cell's freshly-typed code still saves, the status line
+names the reason rather than claiming an ordinary save, and a reload
+shows no output for the dropped cell (ready to be run again). Full
+`tests/e2e/test_saved_progress.py` clean.
+
+*Cost to change: one length check and one map inside an already-
+existing `catch`, no new UI. The lesson: `localStorage.setItem()`
+either writes the whole new value or leaves the old one alone — it is
+not the transaction most code assumes it to be until a failure path
+actually gets read closely, and "silently wipes everything" and "silently
+stops saving anything new" look identical from a glance at the code but
+call for different fixes.*
+
 **7.131 — Three more small accessibility gaps in the reader's own
 runtime, found in the same review that turned up 7.130.** None crashed
 anything or looked wrong on screen — all three only showed up once a

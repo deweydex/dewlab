@@ -47,6 +47,12 @@ const NOTES_NUDGE_KEY = "dewlab:notes-nudge";
 const NOTES_NUDGE_THRESHOLD = 120;
 const RUN_STATS_KEY = "dewlab:run-stats";
 const AUTOSAVE_DELAY = 500;
+/* A base64-embedded figure (tutorial_tools.py's _figure_html()) is easily
+ * a few hundred KB in one cell's output_html, next to a typical printed
+ * result's few dozen bytes — this is "that cell's own output is the odd
+ * one out," not a real content-size judgement. Past this, saveNow()'s
+ * retry below treats it as the thing to drop first if storage is full. */
+const SAVED_OUTPUT_STRIP_THRESHOLD = 100_000;
 /* The build.py write_*_page() slugs that are not a tutorial at all —
  * nothing here has "your work" to save, cells or notes alike, the way an
  * actual tutorial page does. */
@@ -3243,7 +3249,40 @@ function saveNow() {
     rememberVersion();
     showSaveState(record.saved_at);
   } catch (err) {
-    /* Storage full or refused. Say so rather than pretending it saved. */
+    /* Storage full or refused — usually one cell's output_html, a large
+     * embedded figure most likely, pushing the whole record over this
+     * browser's quota. A reader's own code and notes matter far more to
+     * keep than a picture a cell can just regenerate by running again,
+     * so retry once with any outsized output_html dropped before giving
+     * up and admitting nothing saved at all. */
+    const oversized = record.cells.some(
+      (cell) => cell.output_html.length > SAVED_OUTPUT_STRIP_THRESHOLD,
+    );
+    if (oversized) {
+      const slimmed = {
+        ...record,
+        cells: record.cells.map((cell) => (
+          cell.output_html.length > SAVED_OUTPUT_STRIP_THRESHOLD
+            ? { ...cell, output_html: "" }
+            : cell
+        )),
+      };
+      try {
+        localStorage.setItem(progressKey(), JSON.stringify(slimmed));
+        rememberVersion();
+        showSaveState(
+          record.saved_at,
+          "Saved your code and notes, but this browser ran out of room "
+            + "for a large figure. Run that cell again after reloading "
+            + "to see it.",
+        );
+        updateProgressSummary();
+        return;
+      } catch (err2) {
+        /* Still too big even without it — fall through to the plain
+         * failure message below. */
+      }
+    }
     showSaveState(null, "Your browser would not let this page save your work.");
   }
   updateProgressSummary();
