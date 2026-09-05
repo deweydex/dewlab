@@ -579,7 +579,7 @@ def render_cell(cell: Cell, number: int) -> str:
         "</button>"
         "</div>"
         '<div class="dl-cell-content"><div class="dl-editor"></div></div>'
-        '<div class="dl-cell-collapsed-summary" tabindex="0" hidden></div>'
+        '<div class="dl-cell-collapsed-summary" role="button" tabindex="0" hidden></div>'
         "</div>"
         '<div class="dl-output"></div>'
         '<div class="dl-cell-bar">'

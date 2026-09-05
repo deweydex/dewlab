@@ -4199,11 +4199,23 @@ function setupDragAndDrop() {
  * `if (statusEl.textContent === message)` check inside the timeout
  * guards against a subtle bug: if a second status message arrives before
  * the first one's timer fires, the first timer would otherwise clear the
- * *second* message instead of leaving it alone. */
+ * *second* message instead of leaving it alone.
+ *
+ * `#dm-status` is a live region (`role="status" aria-live="polite"` in
+ * dewmini.html), and a live region only announces on an actual text
+ * change — running the same cell twice in a row, both times ending in
+ * "Ran.", would go silent the second time without the clear-then-set-on-
+ * next-tick below. */
 function updateStatus(message, kind = "") {
   if (!statusEl) return;
-  statusEl.textContent = message;
-  statusEl.className = "dm-status" + (kind ? ` dm-status-${kind}` : "");
+  const className = "dm-status" + (kind ? ` dm-status-${kind}` : "");
+  if (statusEl.textContent === message) {
+    statusEl.textContent = "";
+    setTimeout(() => { statusEl.textContent = message; }, 0);
+  } else {
+    statusEl.textContent = message;
+  }
+  statusEl.className = className;
   clearTimeout(statusClearTimer);
   if (kind !== "error") {
     statusClearTimer = setTimeout(() => {
