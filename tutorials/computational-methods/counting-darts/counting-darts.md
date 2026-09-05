@@ -14,8 +14,7 @@ covers:
   watching-it-settle:
     covers: [CMPS-LO3]
   more-is-not-reliably-better:
-    covers: [CMPS-LO3]
-    touches: [CMPS-LO13]
+    covers: [CMPS-LO3, CMPS-LO13]
 ---
 
 # Counting Darts
@@ -199,6 +198,25 @@ work bought a slightly worse answer on this particular run, and that is a
 completely ordinary thing for this method to do. Run it with another seed and
 the numbers will differ; the pattern of a stubbornly slow, unreliable
 improvement will not.
+
+```python exec
+id: more-is-not-reliably-better-3
+for seed in [0, 1, 2, 3]:
+    estimate = estimate_pi(100000, seed=seed)
+    print(f"seed = {seed}   estimate = {estimate:.5f}")
+```
+
+Four runs, all one hundred thousand darts, produce four different second
+decimal places. This is the difference between two separate questions a
+model's numbers get asked. *Accuracy* is how close an estimate is to the
+true answer — the "off by" column above. *Precision* is how much of an
+estimate stays the same if the whole thing is run again.
+
+A hundred thousand darts here is reasonably accurate, off by well under a
+hundredth. It is not especially precise, since a fresh run can produce a
+different second decimal place entirely. Knowing which one is missing
+decides what fixing it actually needs: more darts, a better method, or a
+clearer sense of how far the number can be trusted.
 
 The underlying rule, which the next tutorial takes apart properly, is that
 the typical error shrinks in proportion to $1/\sqrt{n}$. Squeezing one more

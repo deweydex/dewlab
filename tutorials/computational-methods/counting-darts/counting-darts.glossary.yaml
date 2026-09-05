@@ -42,3 +42,17 @@ entries:
       The answer recomputed after every new sample, and kept as a list. That
       way the path it takes as it settles can be plotted, rather than only
       its final value read.
+
+  - term: "accuracy"
+    kind: concept
+    definition: >
+      How close an estimate is to the true answer. A model can be
+      accurate on one run and less accurate on the next, since each run
+      of a Monte Carlo method uses different random numbers.
+
+  - term: "precision"
+    kind: concept
+    definition: >
+      How much of an estimate stays the same if the whole thing is run
+      again. A number can be precise without being accurate, accurate
+      without being precise, or neither.

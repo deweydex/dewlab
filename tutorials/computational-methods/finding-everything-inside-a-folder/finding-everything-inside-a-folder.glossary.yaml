@@ -1,0 +1,23 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# Second tutorial of the Algorithms series, after three-ways-to-make-change.
+# Checked against every other glossary file in computational-methods
+# (python-fundamentals, matrices, simulation, algorithms, problem-solving)
+# -- no overlap. "iterative" is used in prose but not glossaried here:
+# it is already taught, as a named term, in mit-pdp-maths-prog-integration's
+# repeating-yourself.glossary.yaml.
+entries:
+  - term: tree
+    kind: concept
+    definition: >
+      A tree is a structure where each value can lead to several others,
+      and following it never leads back to where it started. A folder
+      holding files and other folders is a tree; so is a family tree, or
+      a table of contents with sections and subsections.
+
+  - term: recursion
+    kind: concept
+    definition: >
+      Recursion is a function calling itself on a smaller version of the
+      same problem. It needs a case simple enough to answer without
+      calling itself again, or it never stops.
