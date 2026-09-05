@@ -439,7 +439,7 @@ A word appearing in an earlier tutorial than the one that stops to explain it. S
 | Term | First appears in | Introduced in |
 |---|---:|---:|
 | *argument* | 5 | 7 |
-| *before* | 2 | 3 |
+| *before* | 1 | 3 |
 | *between* | 2 | 28 |
 | *counting carefully* | 11 | 12 |
 | *design* | 8 | 10 |
@@ -471,14 +471,14 @@ A word appearing in an earlier tutorial than the one that stops to explain it. S
 | *representation* | 2 | 16 |
 | *return values* | 7 | 10 |
 | *see* | 1 | 22 |
-| *set* | 3 | 18 |
+| *set* | 1 | 18 |
 | *sets as sorted lists* | 20 | 21 |
 | *solve* | 7 | 16 |
 | *storing and computing* | 2 | 3 |
 | *the unit circle* | 25 | 28 |
 | *tools* | 3 | 10 |
-| *what* | 2 | 3 |
-| *wrong* | 3 | 26 |
+| *what* | 1 | 3 |
+| *wrong* | 1 | 26 |
 
 ## Scope questions, settled
 
