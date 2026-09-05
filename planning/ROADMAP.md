@@ -108,15 +108,27 @@ never forced.
 
 **Left undone, on purpose — not blocking, but real:**
 
-1. **No tutorial anywhere uses real data.** The entire dataset apparatus
-   — `data/`, `load_csv()`, `datasets:` frontmatter, `check_datasets()`,
-   sidebar attribution — is built and still used by nothing.
-   `co2-emissions.csv` and `life-expectancy.csv` are licensed, cited,
-   and idle. This was Phase 2's own item 4, never claimed by any of the
-   six tutorials that shipped.
-2. **The link-graph strand's crawl** is still only the worked
-   three-page PageRank example inside *Where Chains Lead* — no
-   dedicated tutorial on a real link graph or an actual crawl.
+1. **Half-closed (2026-09-05).** A new *Text Generation* series
+   (*A Chain Reads a Book*, *How Much It Remembers*, *Whose Voice Is
+   This*, in `computational-methods`) is the first tutorial content to
+   actually exercise the dataset apparatus: `datasets:` frontmatter,
+   `check_datasets()`, sidebar attribution, and a new sibling to
+   `load_csv()` — `load_text()` — all genuinely used, across six
+   bundled public-domain books (*The Time Machine* as the tutorials'
+   own worked example; *The War of the Worlds*, *Frankenstein*, *A
+   Princess of Mars*, *The Lost World*, and *Pride and Prejudice*
+   offered on the practice pages). `load_csv()` itself, and
+   `co2-emissions.csv`/`life-expectancy.csv` specifically, are still
+   unclaimed by any tutorial — the apparatus is proven, but not yet
+   for tabular data.
+2. **The link-graph strand's crawl is still open, on purpose.** A
+   first attempt at growing *Where Chains Lead*'s toy three-page
+   PageRank example into a real crawl was designed and then set aside
+   as too advanced for where the curriculum currently sits; item 1's
+   Markov-chain series was built instead, extending the same
+   tutorial's other worked example (*Words That Follow Words*). The
+   toy PageRank example remains the only content on this topic; a
+   dedicated crawl tutorial is still unwritten.
 3. **Does the worksheet converter revive?** Still on hold, unchanged
    from when this phase started; hand conversion hasn't become the
    bottleneck.

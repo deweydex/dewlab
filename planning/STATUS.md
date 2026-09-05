@@ -219,18 +219,22 @@ actually closed each one, strand by strand:
 
 **Loose ends the outcome closure didn't resolve, worth knowing about
 even though nothing blocks on them:**
-- **No tutorial anywhere uses a real dataset yet.** `data/`,
-  `load_csv()`, the `datasets:` frontmatter, `check_datasets()` and the
-  sidebar attribution are all built and still used by nothing;
-  `co2-emissions.csv` and `life-expectancy.csv` are licensed, cited,
-  and sitting idle. Every CMPS tutorial this round used a small,
-  hand-crafted example instead (temperature readings, coin tokens, a
-  photo folder) — genuinely enough to teach the outcome, but the
-  real-dataset milestone from Phase 2 below is still unclaimed.
+- **Half-closed: a real dataset is finally in use.** The new *Text
+  Generation* series (`computational-methods`; *A Chain Reads a Book*,
+  *How Much It Remembers*, *Whose Voice Is This*) genuinely exercises
+  `data/`, the `datasets:` frontmatter, `check_datasets()`, and sidebar
+  attribution, via a new sibling to `load_csv()` — `load_text()` —
+  across six bundled public-domain books. `load_csv()` itself, and
+  `co2-emissions.csv`/`life-expectancy.csv` specifically, are still
+  unclaimed — the apparatus is proven, but not yet for tabular data.
+  ROADMAP.md's Phase 2 has the fuller account.
 - **The link-graph strand's crawl is still just the worked three-page
-  PageRank example** inside *Where Chains Lead*. A dedicated tutorial
-  on a real link graph or an actual crawl was never written; `CMPS-LO4`
-  doesn't need it, but it's a gap in ambition rather than in coverage.
+  PageRank example** inside *Where Chains Lead*, deliberately: a first
+  design for a real crawl was set aside as too advanced for now, and
+  the Markov-chain series above was built in its place, extending the
+  same tutorial's other worked example instead. `CMPS-LO4` doesn't
+  need the crawl, but it's still a gap in ambition rather than in
+  coverage.
 - **`CMPS-LO2` and `CMPS-LO1`'s topics.yaml sub-parts** (grids, trees,
   recursion) are each taught in the tutorial that introduces that
   specific representation, not gathered into one dedicated "data
