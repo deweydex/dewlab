@@ -71,6 +71,9 @@ GONE = {
     "MIT-4.6": "MIT-4.6a", "CMPS-LO4": "CMPS-LO4a", "CMPS-LO2": "CMPS-LO2a",
     "MIT-2.1": "MIT-2.1a", "MIT-6.5": "MIT-6.3a",
     "CMPS-LO2a": "MIT-5.6",
+    # the same lesson from two module descriptors, told once now
+    "FOOP-LO2": "PDP-LO4", "FOOP-LO9": "PDP-LO7",
+    "FOOP-LO10": "PDP-LO10",
 }
 
 

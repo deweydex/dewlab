@@ -67,51 +67,57 @@ the ones that change the graph.
 | Problem-solving strategies | Matrices | 1 | yes |
 | Problem-solving strategies | Modelling versus simulation | 1 | yes |
 | Problem-solving strategies | Divide and conquer | 1 | yes |
-| Data types in an object oriented program | Debugging and testing an object oriented program | 1 | yes |
+| Data types in an object oriented program | Testing and debugging | 1 | yes |
 | Data types in an object oriented program | Modular, reusable code | 1 | yes |
 | Data types in an object oriented program | Modelling the real world | 1 | yes |
-| Data types in an object oriented program | Documenting object oriented code | 1 | yes |
-| Debugging and testing an object oriented program | Modelling the real world | 1 | yes |
+| Data types in an object oriented program | Documented programs | 1 | yes |
+| Testing and debugging | Modelling the real world | 1 | yes |
 | Deploying a program | Data types in an object oriented program | 1 | yes |
-| Deploying a program | Debugging and testing an object oriented program | 1 | yes |
+| Deploying a program | Testing and debugging | 1 | yes |
 | Deploying a program | Classes and objects | 1 | yes |
 | Deploying a program | Modular, reusable code | 1 | yes |
 | Deploying a program | Building bigger programs from smaller ones | 1 | yes |
 | Deploying a program | Modelling the real world | 1 | yes |
 | Deploying a program | Organising data | 1 | yes |
-| Deploying a program | Documenting object oriented code | 1 | yes |
-| The instructions a program is built from | Data types in an object oriented program | 1 | yes |
-| The instructions a program is built from | Debugging and testing an object oriented program | 1 | yes |
-| The instructions a program is built from | Documenting object oriented code | 1 | yes |
-| The instructions a program is built from | Choosing between paths | 1 | yes |
+| Deploying a program | Documented programs | 1 | yes |
+| The parts of a program | Data types in an object oriented program | 1 | yes |
+| The parts of a program | Testing and debugging | 1 | yes |
+| The parts of a program | Deploying a program | 1 | yes |
+| The parts of a program | Classes and objects | 1 | yes |
+| The parts of a program | Modular, reusable code | 1 | yes |
+| The parts of a program | Building bigger programs from smaller ones | 1 | yes |
+| The parts of a program | Modelling the real world | 1 | yes |
+| The parts of a program | Organising data | 1 | yes |
+| The parts of a program | Documented programs | 1 | yes |
+| The parts of a program | Choosing between paths | 1 | yes |
 | Classes and objects | Data types in an object oriented program | 1 | yes |
-| Classes and objects | Debugging and testing an object oriented program | 1 | yes |
-| Classes and objects | Documenting object oriented code | 1 | yes |
-| Modular, reusable code | Debugging and testing an object oriented program | 1 | yes |
+| Classes and objects | Testing and debugging | 1 | yes |
+| Classes and objects | Documented programs | 1 | yes |
+| Modular, reusable code | Testing and debugging | 1 | yes |
 | Modular, reusable code | Classes and objects | 1 | yes |
 | Modular, reusable code | Modelling the real world | 1 | yes |
-| Modular, reusable code | Documenting object oriented code | 1 | yes |
+| Modular, reusable code | Documented programs | 1 | yes |
 | Working in a development environment | Data types in an object oriented program | 1 | yes |
-| Working in a development environment | Debugging and testing an object oriented program | 1 | yes |
+| Working in a development environment | Testing and debugging | 1 | yes |
 | Working in a development environment | Deploying a program | 1 | yes |
-| Working in a development environment | The instructions a program is built from | 1 | yes |
+| Working in a development environment | The parts of a program | 1 | yes |
 | Working in a development environment | Classes and objects | 1 | yes |
 | Working in a development environment | Modular, reusable code | 1 | yes |
 | Working in a development environment | Building bigger programs from smaller ones | 1 | yes |
 | Working in a development environment | Modelling the real world | 1 | yes |
 | Working in a development environment | Organising data | 1 | yes |
-| Working in a development environment | Documenting object oriented code | 1 | yes |
+| Working in a development environment | Documented programs | 1 | yes |
 | Building bigger programs from smaller ones | Data types in an object oriented program | 1 | yes |
-| Building bigger programs from smaller ones | Debugging and testing an object oriented program | 1 | yes |
+| Building bigger programs from smaller ones | Testing and debugging | 1 | yes |
 | Building bigger programs from smaller ones | Modelling the real world | 1 | yes |
-| Building bigger programs from smaller ones | Documenting object oriented code | 1 | yes |
-| Organising data | Debugging and testing an object oriented program | 1 | yes |
+| Building bigger programs from smaller ones | Documented programs | 1 | yes |
+| Organising data | Testing and debugging | 1 | yes |
 | Organising data | Modular, reusable code | 1 | yes |
 | Organising data | Building bigger programs from smaller ones | 1 | yes |
 | Organising data | Modelling the real world | 1 | yes |
-| Organising data | Documenting object oriented code | 1 | yes |
-| Documenting object oriented code | Debugging and testing an object oriented program | 1 | yes |
-| Documenting object oriented code | Modelling the real world | 1 | yes |
+| Organising data | Documented programs | 1 | yes |
+| Documented programs | Testing and debugging | 1 | yes |
+| Documented programs | Modelling the real world | 1 | yes |
 | Powers | Solving quadratics | 1 | yes |
 | Powers | Binary and hexadecimal | 1 | yes |
 | Powers | Multiplying out to quadratics | 1 | yes |
@@ -235,6 +241,7 @@ the ones that change the graph.
 | Iterating by index | Lists | 1 | yes |
 | Iterating by index | Searching | 1 | yes |
 | Searching | Divide and conquer | 1 | yes |
+| Testing and debugging | Testing and debugging | 1 | yes |
 | Testing and debugging | Coding standards | 1 | yes |
 | Algorithms in the real world | Testing and debugging | 1 | yes |
 | Algorithms in the real world | Coding standards | 1 | yes |
@@ -268,6 +275,7 @@ the ones that change the graph.
 | Choosing between paths | Reading error messages | 1 | yes |
 | Documented programs | Probability applied to computing | 1 | yes |
 | Documented programs | Classes and objects | 1 | yes |
+| Documented programs | Documented programs | 1 | yes |
 | Documented programs | Choosing between paths | 1 | yes |
 | Documented programs | Reading error messages | 1 | yes |
 | Functions and scope | Coding standards | 1 | yes |
@@ -275,7 +283,6 @@ the ones that change the graph.
 | Functions and scope | Documented programs | 1 | yes |
 | Reading error messages | Testing and debugging | 1 | yes |
 | Reading error messages | Coding standards | 1 | yes |
-| Reading error messages | Working as a team | 1 | yes |
 | Reading error messages | Functions and scope | 1 | yes |
 
 ## Arrows the graph already gives you
@@ -286,11 +293,6 @@ here because they confirm the chain rather than because they add to it.
 
 | Comes first | Comes after | Judgements | Agreed |
 |---|---|---|---|
-| The instructions a program is built from | Deploying a program | 1 | yes |
-| The instructions a program is built from | Modular, reusable code | 1 | yes |
-| The instructions a program is built from | Building bigger programs from smaller ones | 1 | yes |
-| The instructions a program is built from | Modelling the real world | 1 | yes |
-| The instructions a program is built from | Organising data | 1 | yes |
 | Classes and objects | Building bigger programs from smaller ones | 1 | yes |
 | Expressions and equations | Rearranging formulae | 1 | yes |
 | Expressions and equations | Multiplying out to quadratics | 1 | yes |
@@ -322,6 +324,7 @@ here because they confirm the chain rather than because they add to it.
 | The parts of a program | Working as a team | 1 | yes |
 | The parts of a program | Documented programs | 1 | yes |
 | The parts of a program | Functions and scope | 1 | yes |
+| Reading error messages | Working as a team | 1 | yes |
 
 ## Arrows the judges did not keep
 
@@ -344,7 +347,7 @@ two names. Neither is a fault to fix.
 - Algorithmic complexity and Probability applied to computing — every judge said so (1 judgement)
 - Algorithmic complexity and Searching — every judge said so (1 judgement)
 - Problem definition and design and Documented programs — every judge said so (1 judgement)
-- The instructions a program is built from and The parts of a program — every judge said so (1 judgement)
+- The parts of a program and The parts of a program — every judge said so (1 judgement)
 - Modelling the real world and The history of programming — every judge said so (1 judgement)
 - Expanding and simplifying and Rearranging formulae — every judge said so (2 judgements)
 - Functions and inverses and Functions and scope — every judge said so (1 judgement)

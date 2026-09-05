@@ -16,6 +16,7 @@ the ones that change the graph.
 | Chance, and the random numbers a computer makes (was Probability) | Computer simulation | 2 | yes |
 | Chance, and the random numbers a computer makes (was Probability) | Probability applied to computing | 2 | yes |
 | How an algorithm's cost grows (was Algorithmic complexity) | Problem-solving strategies | 2 | no |
+| The parts of a program | Classes and objects | 2 | yes |
 | Powers | How a computer counts: base two and base sixteen (was Binary and hexadecimal) | 2 | no |
 | Powers | Multiplying two brackets together (was Multiplying out to quadratics) | 2 | yes |
 | Expressions and equations | Solving any quadratic, and the answers that are off the number line (was Solving quadratics) | 2 | yes |
@@ -42,8 +43,12 @@ the ones that change the graph.
 | Iterating by index | Lists, grids and trees (was Grids) | 2 | yes |
 | Iterating by index | Searching | 2 | yes |
 | Searching | How an algorithm's cost grows (was Algorithmic complexity) | 2 | yes |
+| Testing and debugging | Testing and debugging | 2 | yes |
+| The parts of a program | The parts of a program | 2 | yes |
 | The parts of a program | Choosing between paths | 2 | yes |
-| Choosing between paths | The instructions a program is built from | 2 | yes |
+| Choosing between paths | The parts of a program | 2 | yes |
+| Documented programs | Documented programs | 2 | yes |
+| Reading error messages | Testing and debugging | 2 | yes |
 
 ## Arrows the graph already gives you
 
@@ -195,7 +200,7 @@ No topic has been put in a group yet.
 - Habits that help when you are stuck (was Personal attributes in problem-solving)
 - Chance, and the random numbers a computer makes (was Probability)
 - How an algorithm's cost grows (was Algorithmic complexity)
-- The instructions a program is built from
+- The parts of a program
 - Powers
 - Solving any quadratic, and the answers that are off the number line (was Solving quadratics)
 - Expressions and equations

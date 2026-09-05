@@ -74,6 +74,9 @@ GONE = {
     "MIT-6.5": "MIT-6.3a",
     # the same sentence twice, once from each module descriptor
     "CMPS-LO2a": "MIT-5.6",
+    # the same lesson from two module descriptors, told once now
+    "FOOP-LO2": "PDP-LO4", "FOOP-LO9": "PDP-LO7",
+    "FOOP-LO10": "PDP-LO10",
 }
 
 

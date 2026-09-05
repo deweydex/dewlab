@@ -815,6 +815,57 @@ decisions:
       Defining and designing a problem is designing an algorithm for it, so
       knowing what an algorithm is comes first.
 
+  - pair: [PDP-LO8, FOOP-LO4]
+    verdict: needs
+    first: PDP-LO8
+    why: >
+      Josh's call, and what topics.yaml already said. The judges made it a
+      level. Packaging a piece of a program and knowing which names are
+      visible where comes before writing a method once and calling it
+      wherever an object of that class exists.
+
+
+  - pair: [PDP-LO4, PDP-LO6a]
+    verdict: needs
+    first: PDP-LO4
+    why: >
+      A correction the merge asks for. The judges made this a level against
+      FOOP-LO2, "the instructions a program is built from", where choosing
+      between paths really is the same lesson. Read against "the parts of a
+      program" it says the wrong thing, because choosing between paths is
+      one of those parts.
+
+  - pair: [PDP-LO4, PDP-LO6b]
+    verdict: needs
+    first: PDP-LO4
+    why: >
+      The same correction for repeating a step.
+
+
+  - pair: [PDP-LO7, FOOP-LO4]
+    verdict: needs
+    first: PDP-LO7
+    why: >
+      A correction the merge asks for, and the one that breaks a circle of
+      five. Folding FOOP-LO9 into PDP-LO7 brought three arrows with it that
+      were about documenting a class, so they pointed at documenting from
+      topics that documenting already came before. The merged topic is the
+      general practice, which a student meets on plain functions, so it
+      comes first.
+
+  - pair: [PDP-LO7, FOOP-LO6]
+    verdict: needs
+    first: PDP-LO7
+    why: >
+      The same correction for building bigger programs from smaller ones.
+
+  - pair: [PDP-LO7, FOOP-LO8]
+    verdict: needs
+    first: PDP-LO7
+    why: >
+      The same correction for organising data.
+
+
 topic_changes:
   - topic: MIT-2.1
     change: split

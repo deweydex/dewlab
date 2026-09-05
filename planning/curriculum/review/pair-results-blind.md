@@ -17,11 +17,17 @@ the ones that change the graph.
 | Probability, and the random numbers a program makes (was Probability) | Computer simulation | 2 | yes |
 | Probability, and the random numbers a program makes (was Probability) | Probability inside computing itself (was Probability applied to computing) | 2 | yes |
 | How an algorithm's cost grows (was Algorithmic complexity) | Problem-solving strategies | 2 | no |
-| The building blocks every program shares (was The instructions a program is built from) | Debugging and testing an object oriented program | 2 | yes |
-| The building blocks every program shares (was The instructions a program is built from) | The tools you write code with (was Working in a development environment) | 2 | yes |
-| The building blocks every program shares (was The instructions a program is built from) | Writing a class somebody else can understand (was Documenting object oriented code) | 2 | yes |
-| Classes and objects | Debugging and testing an object oriented program | 2 | yes |
-| Classes and objects | Writing a class somebody else can understand (was Documenting object oriented code) | 2 | yes |
+| The building blocks every program shares (was The parts of a program) | Testing and debugging | 2 | yes |
+| The building blocks every program shares (was The parts of a program) | Handing your program to somebody else to use (was Deploying a program) | 2 | yes |
+| The building blocks every program shares (was The parts of a program) | Classes and objects | 2 | yes |
+| The building blocks every program shares (was The parts of a program) | Writing a method once and using it again (was Modular, reusable code) | 2 | yes |
+| The building blocks every program shares (was The parts of a program) | The tools you write code with (was Working in a development environment) | 2 | yes |
+| The building blocks every program shares (was The parts of a program) | Building bigger programs from smaller ones | 2 | yes |
+| The building blocks every program shares (was The parts of a program) | Turning a real thing into an object (was Modelling the real world) | 2 | yes |
+| The building blocks every program shares (was The parts of a program) | Keeping related values together in one object (was Organising data) | 2 | yes |
+| The building blocks every program shares (was The parts of a program) | Writing a class somebody else can understand (was Documented programs) | 2 | yes |
+| Classes and objects | Testing and debugging | 2 | yes |
+| Classes and objects | Writing a class somebody else can understand (was Documented programs) | 2 | yes |
 | Turning a real thing into an object (was Modelling the real world) | Building bigger programs from smaller ones | 2 | no |
 | Keeping related values together in one object (was Organising data) | Turning a real thing into an object (was Modelling the real world) | 2 | no |
 | Powers | Binary and hexadecimal | 2 | no |
@@ -59,9 +65,11 @@ the ones that change the graph.
 | Walking through a list position by position (was Iterating by index) | Arranging data, and functions that call themselves (was Grids) | 2 | yes |
 | Walking through a list position by position (was Iterating by index) | Searching | 2 | yes |
 | Searching | How an algorithm's cost grows (was Algorithmic complexity) | 2 | yes |
+| Testing and debugging | Testing and debugging | 2 | yes |
 | The parts of a program | Choosing and repeating (was Choosing between paths) | 2 | yes |
 | Putting the steps in order (was Solving in sequence) | Working as a team | 2 | yes |
 | Putting the steps in order (was Solving in sequence) | Choosing and repeating (was Choosing between paths) | 2 | yes |
+| Writing code somebody else can read (was Documented programs) | Writing a class somebody else can understand (was Documented programs) | 2 | yes |
 | Reading error messages | Testing and debugging | 2 | yes |
 
 ## Arrows the graph already gives you
@@ -74,11 +82,6 @@ here because they confirm the chain rather than because they add to it.
 |---|---|---|---|
 | Computer simulation | How far to trust a model's numbers (was What a model's numbers are worth) | 2 | yes |
 | What a model is, and what running one shows (was Modelling versus simulation) | How far to trust a model's numbers (was What a model's numbers are worth) | 2 | yes |
-| The building blocks every program shares (was The instructions a program is built from) | Handing your program to somebody else to use (was Deploying a program) | 2 | yes |
-| The building blocks every program shares (was The instructions a program is built from) | Writing a method once and using it again (was Modular, reusable code) | 2 | yes |
-| The building blocks every program shares (was The instructions a program is built from) | Building bigger programs from smaller ones | 2 | yes |
-| The building blocks every program shares (was The instructions a program is built from) | Turning a real thing into an object (was Modelling the real world) | 2 | yes |
-| The building blocks every program shares (was The instructions a program is built from) | Keeping related values together in one object (was Organising data) | 2 | yes |
 | Classes and objects | Building bigger programs from smaller ones | 2 | yes |
 | Expressions and equations | Rearranging formulae | 2 | yes |
 | Expressions and equations | Multiplying two brackets together (was Multiplying out to quadratics) | 2 | yes |
@@ -118,10 +121,10 @@ graph. Either they are taught together, or they are one topic under
 two names. Neither is a fault to fix.
 
 - Computer simulation and What a model is, and what running one shows (was Modelling versus simulation) — every judge said so (2 judgements)
-- Data types in an object oriented program and The building blocks every program shares (was The instructions a program is built from) — every judge said so (2 judgements)
+- Data types in an object oriented program and The building blocks every program shares (was The parts of a program) — every judge said so (2 judgements)
 - Data types in an object oriented program and Classes and objects — one judge said so, another saw an order (2 judgements)
-- The building blocks every program shares (was The instructions a program is built from) and The parts of a program — every judge said so (2 judgements)
-- The building blocks every program shares (was The instructions a program is built from) and Choosing and repeating (was Choosing between paths) — every judge said so (2 judgements)
+- The building blocks every program shares (was The parts of a program) and The parts of a program — every judge said so (2 judgements)
+- The building blocks every program shares (was The parts of a program) and Choosing and repeating (was Choosing between paths) — every judge said so (2 judgements)
 - Equations of lines and Slope, parallel and perpendicular — one judge said so, another saw an order (2 judgements)
 - What an algorithm is and Algorithms in the real world — every judge said so (2 judgements)
 - Writing a whole sum in one line (the sigma sign) (was Index and sigma notation) and Walking through a list position by position (was Iterating by index) — every judge said so (2 judgements)
@@ -245,12 +248,12 @@ None.
 | Modelling versus simulation | What a model is, and what running one shows |
 | Problem definition and design | Deciding what the problem is before you code |
 | Deploying a program | Handing your program to somebody else to use |
-| The instructions a program is built from | The building blocks every program shares |
+| FOOP-LO2 | The building blocks every program shares |
 | Modular, reusable code | Writing a method once and using it again |
 | Working in a development environment | The tools you write code with |
 | Modelling the real world | Turning a real thing into an object |
 | Organising data | Keeping related values together in one object |
-| Documenting object oriented code | Writing a class somebody else can understand |
+| FOOP-LO9 | Writing a class somebody else can understand |
 | MIT-1.10 | Solving quadratics, even when there is no real answer |
 | Linear inequalities | Solving for a range, not a single value |
 | Simultaneous equations | Two equations that are true at once |
@@ -305,7 +308,7 @@ No topic has been put in a group yet.
 - Problem-solving strategies
 - Data types in an object oriented program
 - Handing your program to somebody else to use (was Deploying a program)
-- The building blocks every program shares (was The instructions a program is built from)
+- The building blocks every program shares (was The parts of a program)
 - The tools you write code with (was Working in a development environment)
 - Keeping related values together in one object (was Organising data)
 - Powers
