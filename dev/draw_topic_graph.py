@@ -66,6 +66,8 @@ GONE = {
     "MIT-5.12": "MIT-5.12a", "CMPS-LO1": "CMPS-LO1a", "MIT-5.8": "MIT-5.8a",
     "MIT-4.6": "MIT-4.6a", "CMPS-LO4": "CMPS-LO4a", "CMPS-LO2": "CMPS-LO2a",
     "MIT-2.1": "MIT-2.1a",
+    # folded away rather than split: its material sits inside lists
+    "MIT-6.5": "MIT-6.3a",
 }
 
 
