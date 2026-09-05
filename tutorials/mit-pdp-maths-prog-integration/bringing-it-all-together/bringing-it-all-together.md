@@ -4,7 +4,7 @@ slug: bringing-it-all-together
 module: mit-pdp-maths-prog-integration
 module_title: "Programming and Maths, Integrated"
 year: "2026-2027"
-series: maths-and-programming
+series: capstone-project
 version: 2026.08.23.1
 covers:
   problem-1-the-polynomial-workshop:

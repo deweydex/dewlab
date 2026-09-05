@@ -4,7 +4,7 @@ slug: drawing-functions
 module: mit-pdp-maths-prog-integration
 module_title: "Programming and Maths, Integrated"
 year: "2026-2027"
-series: maths-and-programming
+series: algebra-and-functions
 version: 2026.08.23.1
 covers:
   a-function-is-a-machine:

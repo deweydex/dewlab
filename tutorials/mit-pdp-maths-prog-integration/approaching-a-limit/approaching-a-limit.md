@@ -4,7 +4,7 @@ slug: approaching-a-limit
 module: mit-pdp-maths-prog-integration
 module_title: "Programming and Maths, Integrated"
 year: "2026-2027"
-series: maths-and-programming
+series: trigonometry-and-calculus
 version: 2026.08.23.1
 covers:
   a-hole-in-a-line:
