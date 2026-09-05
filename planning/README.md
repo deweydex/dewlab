@@ -104,6 +104,9 @@ written before the thing it describes was built.
   questions, the tradeoffs weighed, and how each was resolved.
 - **[`curriculum/`](./curriculum/)** — the machine-readable outcome
   descriptors, scope limits, and topic dependency graph.
+- **[`curriculum/review/contradictions.md`](./curriculum/review/contradictions.md)**
+  — the pairs where a decision still disagrees with Josh's own game answer,
+  and why the graph kept the decision.
 - **[`curriculum/review/pair-results.md`](./curriculum/review/pair-results.md)**
   — generated; what the pair game's judgements say about the dependency
   graph. Run `python3 dev/pair_results.py` after new batches land in

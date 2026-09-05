@@ -19,17 +19,17 @@ decisions:
     verdict: needs
     first: PRE-1
     why: >
-      Pythagoras opens with the words "right-angled triangle". A student who
-      has not been told which triangle that is has nothing to attach the
-      statement to.
+      Pythagoras opens with the words "right-angled triangle". A student
+      who has not been told which triangle that is has nothing to attach
+      the statement to.
 
   - pair: [MIT-6.3, MIT-5.12]
     verdict: needs
     first: MIT-6.3
     why: >
-      A mean is a sum over a collection divided by how many there are. This
-      course teaches through running Python, so the collection has to exist
-      before the average can be taken.
+      A mean is a sum over a collection divided by how many there are.
+      This course teaches through running Python, so the collection has to
+      exist before the average can be taken.
 
   - pair: [MIT-1.5, MIT-2.1]
     verdict: needs
@@ -43,97 +43,109 @@ decisions:
     verdict: needs
     first: MIT-2.2
     why: >
-      Turns round the arrow the graph had. The nested families are described
-      by one collection sitting inside another, so the operations that
-      describe nesting come first. The two judges split on this pair.
+      Turns round the arrow the graph had. The nested families are
+      described by one collection sitting inside another, so the
+      operations that describe nesting come first. The two judges split on
+      this pair.
 
   - pair: [MIT-1.1, MIT-1.4]
     verdict: needs
     first: MIT-1.1
     why: >
-      A positional numeral system is powers of the base, and hexadecimal as a
-      shorthand rests on sixteen being two to the fourth. Rescues both topics
-      from sitting outside the graph. Note that the tutorial currently teaches
-      binary by doubling, well before powers arrive, so the reading order and
-      the graph disagree here.
+      A positional numeral system is powers of the base, and hexadecimal
+      as a shorthand rests on sixteen being two to the fourth. Rescues
+      both topics from sitting outside the graph. Note that the tutorial
+      currently teaches binary by doubling, well before powers arrive, so
+      the reading order and the graph disagree here.
 
   - pair: [MIT-4.5, MIT-4.9]
     verdict: needs
     first: MIT-4.5
     why: >
-      Takes the executable reading. Every cell in this course feeds a degree
-      value through math.radians, so a student who has not met the distinction
-      gets a plausible wrong number and no warning.
+      Takes the executable reading. Every cell in this course feeds a
+      degree value through math.radians, so a student who has not met the
+      distinction gets a plausible wrong number and no warning.
 
   - pair: [MIT-5.11, MIT-5.10]
-    verdict: level
+    verdict: needs
+    first: MIT-5.11
     why: >
-      Choosing between charts and knowing what a histogram does arrive
-      together. One section of pictures-worth-numbers.md teaches both.
+      Josh's own game answer. The earlier decision here said something
+      else, and he chose the game answer.
 
   - pair: [CMPS-LO9, CMPS-LO5]
     verdict: needs
     first: CMPS-LO9
     why: >
-      The other way round from what the mathematics suggests. A student needs
-      a few strategies in hand before asking how the cost of each one grows.
+      The other way round from what the mathematics suggests. A student
+      needs a few strategies in hand before asking how the cost of each
+      one grows.
 
-  # Trigonometry: several things are required at once, which is fine.
   - pair: [MIT-4.5, MIT-4.8]
     verdict: needs
     first: MIT-4.5
-    why: The area of any triangle requires radians.
+    why: >
+      The area of any triangle requires radians.
 
   - pair: [MIT-4.9, MIT-4.8]
     verdict: needs
     first: MIT-4.9
-    why: The area of any triangle requires right-angled-triangle trigonometry.
+    why: >
+      The area of any triangle requires right-angled-triangle
+      trigonometry.
 
   - pair: [MIT-4.6, MIT-4.8]
     verdict: needs
     first: MIT-4.6
     why: >
-      The area of any triangle needs the unit circle and it needs right-angled
-      triangle trigonometry. Those two together give sine and cosine as
-      functions, and sine and cosine are how the area is reached.
+      The area of any triangle needs the unit circle and it needs right-
+      angled triangle trigonometry. Those two together give sine and
+      cosine as functions, and sine and cosine are how the area is
+      reached.
 
   - pair: [MIT-3.1, MIT-4.10]
     verdict: needs
     first: MIT-3.1
-    why: The Sine and Cosine Rules need functions.
+    why: >
+      The Sine and Cosine Rules need functions.
 
   - pair: [MIT-4.6, MIT-4.10]
     verdict: needs
     first: MIT-4.6
-    why: The Sine and Cosine Rules need the unit circle.
+    why: >
+      The Sine and Cosine Rules need the unit circle.
 
-  # The object-oriented chain: types, then choosing and repeating, then lists,
-  # then one class, then several.
   - pair: [FOOP-LO1, FOOP-LO2]
     verdict: needs
-    first: FOOP-LO1
+    first: FOOP-LO2
     why: >
-      Breaks the five-topic box. The basic data types do not include lists, so
-      types come before the instructions a program is built from.
+      Josh's own game answer. The earlier decision here said something
+      else, and he chose the game answer.
 
   - pair: [FOOP-LO1, PDP-LO6]
     verdict: needs
     first: FOOP-LO1
-    why: Types before choosing and repeating, for the same reason.
+    why: >
+      Types before choosing and repeating, for the same reason.
 
   - pair: [FOOP-LO1, MIT-6.3]
     verdict: needs
     first: FOOP-LO1
-    why: Lists and arrays need the basic data types first.
+    why: >
+      Lists and arrays need the basic data types first.
 
   - pair: [MIT-6.3, FOOP-LO3]
     verdict: needs
     first: MIT-6.3
-    why: Once there are lists, objects in one class can be talked about.
+    why: >
+      Once there are lists, objects in one class can be talked about.
 
   - pair: [MIT-6.3, MIT-6.7]
-    verdict: level
-    why: Lists and arrays are interdependent with iterating over them.
+    verdict: needs
+    first: MIT-6.7
+    why: >
+      Josh's own game answer. The earlier decision here said something
+      else, and he chose the game answer.
 
   - pair: [MIT-6.3, MIT-2.4]
     verdict: unrelated
@@ -145,142 +157,153 @@ decisions:
     verdict: needs
     first: FOOP-LO1
     why: >
-      Breaks the level the judges found. The chain is types, then choosing and
-      repeating, then lists, then one class, so types come first.
+      Breaks the level the judges found. The chain is types, then choosing
+      and repeating, then lists, then one class, so types come first.
 
   - pair: [MIT-4.1, MIT-1.12]
     verdict: needs
     first: MIT-4.1
     why: >
       Two simultaneous equations in two unknowns are two lines, and the
-      solution is where they cross. Having the line first gives the solution a
-      picture.
+      solution is where they cross. Having the line first gives the
+      solution a picture.
 
   - pair: [MIT-1.11, MIT-1.12]
-    verdict: unrelated
+    verdict: needs
+    first: MIT-1.11
     why: >
-      One is a range from a single statement, the other a point satisfying
-      several. Neither needs the other.
+      Josh's own game answer. The earlier decision here said something
+      else, and he chose the game answer.
 
-  # The programming chain, split out of the box the judges found.
   - pair: [PDP-LO4, FOOP-LO2]
     verdict: needs
     first: PDP-LO4
-    why: Parts of a program, then data types, then choosing and repeating.
+    why: >
+      Parts of a program, then data types, then choosing and repeating.
 
   - pair: [PDP-LO4, PDP-LO6]
     verdict: needs
     first: PDP-LO4
-    why: Same chain. Breaks the box the judges found into an order.
+    why: >
+      Same chain. Breaks the box the judges found into an order.
 
   - pair: [FOOP-LO2, PDP-LO6]
     verdict: needs
     first: FOOP-LO2
-    why: Same chain.
+    why: >
+      Same chain.
 
   - pair: [MIT-3.1, MIT-4.1]
     verdict: needs
     first: MIT-3.1
     why: >
       A line is a function: give it an x and it returns one y. Meeting the
-      machine first makes the line an instance of something already understood.
+      machine first makes the line an instance of something already
+      understood.
 
   - pair: [FOOP-LO8, FOOP-LO7]
-    verdict: level
+    verdict: needs
+    first: FOOP-LO8
     why: >
-      Grouping an object's fields and deciding what a real thing should
-      remember arrive together. Both judges flagged these as at risk of being
-      one topic under two names.
+      Josh's own game answer. The earlier decision here said something
+      else, and he chose the game answer.
 
   - pair: [MIT-2.3, MIT-2.4]
-    verdict: level
+    verdict: needs
+    first: MIT-2.4
     why: >
-      Two notations for one idea: overlapping circles, and the same
-      combinations written out in full.
+      Josh's own game answer. The earlier decision here said something
+      else, and he chose the game answer.
 
   - pair: [MIT-3.5, MIT-3.6]
     verdict: needs
     first: MIT-3.5
     why: >
       Confirmed. The derivative is defined as the limit of a difference
-      quotient, and the tutorial says the limit is the only new idea in it.
+      quotient, and the tutorial says the limit is the only new idea in
+      it.
 
   - pair: [MIT-1.8, MIT-3.6]
-    verdict: unrelated
+    verdict: needs
+    first: MIT-1.8
     why: >
-      Confirmed. This course reaches the derivative numerically by shrinking a
-      gap, so nothing is ever expanded algebraically.
+      Josh's own game answer. The earlier decision here said something
+      else, and he chose the game answer.
 
   - pair: [MIT-1.2, MIT-1.3]
     verdict: needs
     first: MIT-1.2
-    why: Confirmed. Surface area is the area of the faces added up.
+    why: >
+      Confirmed. Surface area is the area of the faces added up.
 
   - pair: [PDP-LO6, MIT-2.4]
     verdict: needs
     first: PDP-LO6
     why: >
-      Turns round the arrow the graph had. Students meet Booleans inside an if
-      statement, and the truth table formalises what they have already been
-      doing. Explore first, then name it.
+      Turns round the arrow the graph had. Students meet Booleans inside
+      an if statement, and the truth table formalises what they have
+      already been doing. Explore first, then name it.
 
   - pair: [MIT-5.9, MIT-5.13]
     verdict: needs
     first: MIT-5.9
     why: >
-      Knowing a column is nominal is what tells you its mean is meaningless.
-      The taxonomy is the reason an average misleads.
+      Knowing a column is nominal is what tells you its mean is
+      meaningless. The taxonomy is the reason an average misleads.
 
   - pair: [PDP-LO8, FOOP-LO10]
     verdict: needs
     first: PDP-LO8
-    why: A test is a function you write to call another one.
+    why: >
+      A test is a function you write to call another one.
 
   - pair: [MIT-4.7, MIT-3.3]
     verdict: level
     why: >
-      The exact angles and the shape of the wave are two ways of reading the
-      same circle.
+      The exact angles and the shape of the wave are two ways of reading
+      the same circle.
 
   - pair: [CMPS-LO1, CMPS-LO4]
     verdict: unrelated
     why: >
       Both judges proposed this arrow, and both also flagged that "data
-      structures and recursion" is four topics in one. Only the grid half is
-      needed, and matrices already takes that from "Lists and arrays". The
-      arrow would import trees and recursion for nothing.
+      structures and recursion" is four topics in one. Only the grid half
+      is needed, and matrices already takes that from "Lists and arrays".
+      The arrow would import trees and recursion for nothing.
 
   - pair: [MIT-5.12, MIT-5.4]
     verdict: unrelated
     why: >
-      Counting arrangements and summarising a column of numbers are separate
-      skills that happen to share a module.
+      Counting arrangements and summarising a column of numbers are
+      separate skills that happen to share a module.
 
   - pair: [MIT-1.9, MIT-3.4]
     verdict: needs
     first: MIT-1.9
     why: >
       Factorising is the direct route to the solutions, and completing the
-      square is the fallback for when it will not factorise. The easier case
-      comes first.
+      square is the fallback for when it will not factorise. The easier
+      case comes first.
 
   - pair: [FOOP-LO11, PDP-LO12]
     verdict: needs
     first: FOOP-LO11
     why: >
-      Shipping more than one version is in the team topic's own description,
-      so a student needs to have shipped one alone first.
+      Shipping more than one version is in the team topic's own
+      description, so a student needs to have shipped one alone first.
 
   - pair: [MIT-6.6, CMPS-LO1]
     verdict: needs
     first: MIT-6.6
     why: >
-      Halving a problem is the concrete case that makes recursion worth naming
-      afterwards.
+      Halving a problem is the concrete case that makes recursion worth
+      naming afterwards.
 
   - pair: [MIT-1.12, CMPS-LO4]
     verdict: level
-    why: A system of equations and its matrix are one object in two notations.
+    why: >
+      A system of equations and its matrix are one object in two
+      notations.
 
   - pair: [MIT-3.5, MIT-4.6]
     verdict: unrelated
@@ -291,7 +314,8 @@ decisions:
   - pair: [FOOP-LO11, FOOP-LO3]
     verdict: needs
     first: FOOP-LO11
-    why: Deploying before classes and objects.
+    why: >
+      Deploying before classes and objects.
 
   - pair: [PDP-LO10, CMPS-LO10]
     verdict: needs
@@ -302,11 +326,279 @@ decisions:
       islands into the graph.
 
   - pair: [MIT-1.7, MIT-1.10]
+    verdict: needs
+    first: MIT-1.7
+    why: >
+      Josh's own game answer. The earlier decision here said something
+      else, and he chose the game answer.
+
+  - pair: [MIT-5.12, MIT-5.11]
+    verdict: needs
+    first: MIT-5.12a
+    why: >
+      Josh's own game answer. The earlier decision here said something
+      else, and he chose the game answer.
+
+  - pair: [CMPS-LO13, CMPS-LO11]
+    verdict: needs
+    first: CMPS-LO13
+    why: >
+      Turns round the arrow both judges kept. Knowing what accuracy and
+      precision mean is what tells you whether another round of the model
+      is called for.
+
+  - pair: [MIT-5.12, MIT-5.9]
+    verdict: needs
+    first: MIT-5.9
+    why: >
+      Settled, after going round twice. Both judges agreed averages come
+      before kinds of data, reading the tutorial. Josh's own game answer
+      says the taxonomy comes first, and asked which he wanted, he stood
+      by it. This was briefly recorded as unrelated only to break a loop,
+      which was breaking it by removing the question rather than by
+      answering it.
+
+  - pair: [MIT-1.5, MIT-1.6]
+    verdict: needs
+    first: MIT-1.5
+    why: >
+      Josh's own judgement, played blind in the pair game.
+
+  - pair: [MIT-1.6, MIT-1.7]
+    verdict: level
+    why: >
+      Josh's own judgement, played blind in the pair game.
+
+  - pair: [MIT-1.6, MIT-1.8]
+    verdict: needs
+    first: MIT-1.6
+    why: >
+      Josh's own judgement, played blind in the pair game.
+
+  - pair: [MIT-1.8, MIT-1.9]
+    verdict: needs
+    first: MIT-1.8
+    why: >
+      Josh's own judgement, played blind in the pair game.
+
+  - pair: [MIT-1.9, MIT-1.10]
+    verdict: needs
+    first: MIT-1.9
+    why: >
+      Josh's own judgement, played blind in the pair game.
+
+  - pair: [MIT-2.1, MIT-1.10]
+    verdict: needs
+    first: MIT-2.1
+    why: >
+      Josh's own judgement, played blind in the pair game.
+
+  - pair: [MIT-1.5, MIT-1.11]
+    verdict: needs
+    first: MIT-1.5
+    why: >
+      Josh's own judgement, played blind in the pair game.
+
+  - pair: [MIT-1.5, MIT-1.12]
+    verdict: needs
+    first: MIT-1.5
+    why: >
+      Josh's own judgement, played blind in the pair game.
+
+  - pair: [MIT-2.2, MIT-2.3]
+    verdict: needs
+    first: MIT-2.2
+    why: >
+      Josh's own judgement, played blind in the pair game.
+
+  - pair: [MIT-2.4, MIT-2.5]
+    verdict: needs
+    first: MIT-2.4
+    why: >
+      Josh's own judgement, played blind in the pair game.
+
+  - pair: [MIT-1.5, MIT-3.1]
+    verdict: needs
+    first: MIT-1.5
+    why: >
+      Josh's own judgement, played blind in the pair game.
+
+  - pair: [MIT-3.1, MIT-3.2]
+    verdict: needs
+    first: MIT-3.1
+    why: >
+      Josh's own judgement, played blind in the pair game.
+
+  - pair: [MIT-3.2, MIT-3.3]
+    verdict: needs
+    first: MIT-3.2
+    why: >
+      Josh's own judgement, played blind in the pair game.
+
+  - pair: [MIT-4.6, MIT-3.3]
+    verdict: needs
+    first: MIT-4.6
+    why: >
+      Josh's own judgement, played blind in the pair game.
+
+  - pair: [MIT-3.2, MIT-3.4]
+    verdict: needs
+    first: MIT-3.2
+    why: >
+      Josh's own judgement, played blind in the pair game.
+
+  - pair: [MIT-3.2, MIT-3.5]
+    verdict: needs
+    first: MIT-3.2
+    why: >
+      Josh's own judgement, played blind in the pair game.
+
+  - pair: [MIT-3.6, MIT-3.7]
+    verdict: needs
+    first: MIT-3.6
+    why: >
+      Josh's own judgement, played blind in the pair game.
+
+  - pair: [MIT-1.5, MIT-4.1]
+    verdict: needs
+    first: MIT-1.5
+    why: >
+      Josh's own judgement, played blind in the pair game.
+
+  - pair: [MIT-4.1, MIT-4.2]
+    verdict: needs
+    first: MIT-4.1
+    why: >
+      Josh's own judgement, played blind in the pair game.
+
+  - pair: [MIT-4.4, MIT-4.3]
+    verdict: needs
+    first: MIT-4.4
+    why: >
+      Josh's own judgement, played blind in the pair game.
+
+  - pair: [MIT-4.5, MIT-4.6]
+    verdict: needs
+    first: MIT-4.6
+    why: >
+      Josh's own judgement, played blind in the pair game.
+
+  - pair: [MIT-4.4, MIT-4.6]
+    verdict: needs
+    first: MIT-4.4
+    why: >
+      Josh's own judgement, played blind in the pair game.
+
+  - pair: [MIT-4.1, MIT-4.6]
+    verdict: needs
+    first: MIT-4.1
+    why: >
+      Josh's own judgement, played blind in the pair game.
+
+  - pair: [MIT-4.6, MIT-4.7]
+    verdict: needs
+    first: MIT-4.6
+    why: >
+      Josh's own judgement, played blind in the pair game.
+
+  - pair: [CMPS-LO1a, CMPS-LO5]
+    verdict: needs
+    first: CMPS-LO1a
+    why: >
+      Algorithmic complexity comes after grids.
+
+  - pair: [CMPS-LO11, CMPS-LO1a]
     verdict: unrelated
     why: >
-      No arrow from rearranging formulae. Solving quadratics does need the
-      basic algebraic operations, but that is a topic the list does not have
-      yet — see topic_changes below.
+      Iterating a model does not come before grids.
+
+  - pair: [CMPS-LO11, CMPS-LO3]
+    verdict: unrelated
+    why: >
+      Iterating a model does not come before running a simulation. The
+      chain runs the other way, and already does.
+
+  - pair: [CMPS-LO11, CMPS-LO5]
+    verdict: unrelated
+    why: >
+      Iterating a model does not come before algorithmic complexity.
+
+  - pair: [FOOP-LO2, PDP-LO4]
+    verdict: level
+    why: >
+      "The instructions a program is built from" restates "the parts of a
+      program".
+
+  - pair: [FOOP-LO2, PDP-LO6a]
+    verdict: level
+    why: >
+      The same topic also restates choosing between paths.
+
+  - pair: [FOOP-LO2, PDP-LO6b]
+    verdict: level
+    why: >
+      And repeating a step.
+
+  - pair: [FOOP-LO1, PDP-LO4]
+    verdict: level
+    why: >
+      The kinds of value a program stores are among the parts a program is
+      built from.
+
+  - pair: [FOOP-LO4, PDP-LO8]
+    verdict: level
+    why: >
+      Writing a method once and calling it from anywhere is packaging a
+      piece of a program so it can be used again.
+
+  - pair: [FOOP-LO9, PDP-LO7]
+    verdict: level
+    why: >
+      Documenting a class is documenting a program.
+
+  - pair: [FOOP-LO10, PDP-LO10]
+    verdict: level
+    why: >
+      Finding out whether an object behaves as its class promises is
+      testing and debugging.
+
+  - pair: [FOOP-LO6, FOOP-LO1]
+    verdict: unrelated
+    why: >
+      Putting several classes to work together cannot come before knowing
+      what kinds of value a program holds. Data types already reaches
+      building bigger programs the long way round.
+
+  - pair: [FOOP-LO11, FOOP-LO1]
+    verdict: unrelated
+    why: >
+      Deploying a program does not come before the kinds of value it
+      holds. Deploying before classes and objects was settled separately
+      and stands; this is a different pair.
+
+  - pair: [PDP-LO7, PDP-LO6a]
+    verdict: needs
+    first: PDP-LO6a
+    why: >
+      Turns round a game answer. You cannot write a program worth
+      documenting before it can choose between two paths, and the topic
+      that documents it then sits after the thing it documents.
+
+  - pair: [FOOP-LO3, FOOP-LO4]
+    verdict: needs
+    first: FOOP-LO3
+    why: >
+      Turns round a game answer. Writing a method once and calling it
+      wherever an object of that class exists needs the class to exist
+      first.
+
+  - pair: [PDP-LO7, PDP-LO9]
+    verdict: unrelated
+    why: >
+      The last of the circle. A student reads a traceback long before
+      writing anything worth documenting, so documenting cannot come
+      first, and the other two arrows in the ring are each defensible on
+      their own.
 
 # Changes wanted to the topics themselves, rather than to the arrows between
 # them. An arrow can only say how two topics stand to each other; some of what
@@ -479,75 +771,77 @@ decisions:
     first: MIT-4.6
     why: >
       Josh's own judgement, played blind in the pair game.
-
 topic_changes:
   - topic: MIT-2.1
     change: split
     into: [natural, integer, rational, irrational, computable, real, complex]
     why: >
-      The families are expanded at each level of the series rather than met
-      all at once, so one topic covering all of them cannot say what any
-      particular tutorial needs. As separate topics each one can carry its own
-      arrows — complex numbers next to the quadratic that demands them,
-      integers far earlier.
+      The families are expanded at each level of the series rather than
+      met all at once, so one topic covering all of them cannot say what
+      any particular tutorial needs. As separate topics each one can carry
+      its own arrows — complex numbers next to the quadratic that demands
+      them, integers far earlier.
 
-  - topic: null
+  - topic: None
     change: add
     name: Basic algebraic operations
     why: >
-      Moving an equation around is what solving a quadratic actually needs,
-      and rearranging formulae is not it. There are other things between the
-      two, and this is the one the list is missing.
+      Moving an equation around is what solving a quadratic actually
+      needs, and rearranging formulae is not it. There are other things
+      between the two, and this is the one the list is missing.
 
   - topic: MIT-1.10
     change: split
     into: [Solving quadratics, Complex roots]
     why: >
-      Two topics taught weeks apart, in cracking-equations and complex-roots.
-      Both judges said so independently. Once split, only the second needs the
-      complex family, and the quadratic formula stops dragging it along.
+      Two topics taught weeks apart, in cracking-equations and complex-
+      roots. Both judges said so independently. Once split, only the
+      second needs the complex family, and the quadratic formula stops
+      dragging it along.
 
   - topic: CMPS-LO12
     change: leave outside the graph
     why: >
-      Kept as an island on purpose. A list of habits has no prerequisites and
-      is a prerequisite for nothing, and that is an honest picture of it.
+      Kept as an island on purpose. A list of habits has no prerequisites
+      and is a prerequisite for nothing, and that is an honest picture of
+      it.
 
   - topic: MIT-1.1
     change: split
     into: [Powers, Logarithms]
     why: >
-      Powers are needed early, by the quadratics and by binary place value.
-      Nothing on the list needs logarithms. As one topic it drags logarithms
-      into every arrow that only wanted powers.
+      Powers are needed early, by the quadratics and by binary place
+      value. Nothing on the list needs logarithms. As one topic it drags
+      logarithms into every arrow that only wanted powers.
 
   - topic: CMPS-LO1
     change: split
     into: [Grids, Trees, Recursion]
     why: >
-      Four things under one code, with different prerequisites and different
-      things depending on each. Matrices needs only the grid; divide and
-      conquer leads only to the recursion.
+      Four things under one code, with different prerequisites and
+      different things depending on each. Matrices needs only the grid;
+      divide and conquer leads only to the recursion.
 
   - topic: MIT-5.8
     change: split
     into: [Combining with and, Combining with or, Conditional probability]
     why: >
-      Five rules under one name. The tutorial already gives it two sections,
-      and says outright that it does not go deep into conditional probability.
+      Five rules under one name. The tutorial already gives it two
+      sections, and says outright that it does not go deep into
+      conditional probability.
 
   - topic: CMPS-LO2
     change: split
     into: [Probability, Sampling, Dependence, Pseudorandom numbers, Information theory]
     order: >
-      A chain: probability, then sampling, then dependence, then pseudorandom
-      numbers. Information theory sits at the same level as pseudorandom
-      numbers and also depends on dependence.
+      A chain: probability, then sampling, then dependence, then
+      pseudorandom numbers. Information theory sits at the same level as
+      pseudorandom numbers and also depends on dependence.
     why: >
-      One code holding basic probability, sample statistics, independence and
-      random number generation. The basic probability duplicates three MIT
-      topics. The name also promises information theory, which the split makes
-      real rather than dropping.
+      One code holding basic probability, sample statistics, independence
+      and random number generation. The basic probability duplicates three
+      MIT topics. The name also promises information theory, which the
+      split makes real rather than dropping.
 
   - topic: CMPS-LO4
     change: split
@@ -557,63 +851,66 @@ topic_changes:
       things too, such as functions.
     why: >
       Six tutorials under one code, from image transforms to page ranking.
-      Splitting lets each application carry its own prerequisites instead of
-      the topic carrying the union of all of them.
+      Splitting lets each application carry its own prerequisites instead
+      of the topic carrying the union of all of them.
 
   - topic: MIT-6.8
     change: split
     into: [Searching, Sorting]
     order: >
-      Both stay at one level with divide and conquer: binary search and merge
-      sort are both halving.
-    why: Two tutorials under one code.
+      Both stay at one level with divide and conquer: binary search and
+      merge sort are both halving.
+    why: >
+      Two tutorials under one code.
 
   - topic: MIT-4.10
     change: split
     into: [The Cosine Rule, The Sine Rule, The ambiguous case]
     why: >
-      Two rules with different footings. The Cosine Rule extends Pythagoras.
-      The Sine Rule needs the fact that sine cannot tell an angle from 180
-      minus it, and that ambiguous case is a substantial idea on its own.
+      Two rules with different footings. The Cosine Rule extends
+      Pythagoras. The Sine Rule needs the fact that sine cannot tell an
+      angle from 180 minus it, and that ambiguous case is a substantial
+      idea on its own.
 
   - topic: PDP-LO6
     change: split
     into: [Selection, Iteration]
     order: >
-      The two do not depend on each other. Lists depends on both: selection
-      here means selecting within a list, and iteration assumes one. Refines
-      the earlier chain, which had this topic as a single step before lists.
+      The two do not depend on each other. Lists depends on both:
+      selection here means selecting within a list, and iteration assumes
+      one. Refines the earlier chain, which had this topic as a single
+      step before lists.
     why: >
       Two ideas in one outcome, taught in two separate tutorials, Making
-      Decisions and Repeating Yourself. A list is really a data structure with
-      these two at its heart.
+      Decisions and Repeating Yourself. A list is really a data structure
+      with these two at its heart.
 
   - topic: MIT-5.12
     change: split
     into: [Centre, Simple spread, Standard deviation]
     why: >
-      Three measures of centre plus range plus standard deviation under one
-      name. Standard deviation is a markedly harder idea with its own formula
-      and its own motivation.
+      Three measures of centre plus range plus standard deviation under
+      one name. Standard deviation is a markedly harder idea with its own
+      formula and its own motivation.
 
   - topic: MIT-4.6
     change: split
     into: [Sine and cosine defined, The identity sin squared plus cos squared, Tangent as slope]
     why: >
       The definition of sine and cosine is the load-bearing idea and takes
-      most of this topic's six arrows. "Unit circle" names the picture rather
-      than the content.
+      most of this topic's six arrows. "Unit circle" names the picture
+      rather than the content.
 
   - topic: MIT-6.5
     change: fold into MIT-6.3
     why: >
-      No material of its own: it shares one section with iterating by index.
-      Folding it in also shrinks the lists level, which currently holds four
-      topics.
+      No material of its own: it shares one section with iterating by
+      index. Folding it in also shrinks the lists level, which currently
+      holds four topics.
 
   - topic: MIT-6.3
     change: split
     into: [Lists, Arrays]
     why: >
-      The topic promises arrays that nothing teaches. Splitting makes the gap
-      visible instead of hiding it inside a topic that looks covered.
+      The topic promises arrays that nothing teaches. Splitting makes the
+      gap visible instead of hiding it inside a topic that looks covered.

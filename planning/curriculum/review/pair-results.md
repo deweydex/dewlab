@@ -333,9 +333,10 @@ Two topics that each need the other sit at the same level of the
 graph. Either they are taught together, or they are one topic under
 two names. Neither is a fault to fix.
 
+- Modular, reusable code and Classes and objects — the arrow between them runs both ways once these judgements go in
+- Iterating a model and What a model's numbers are worth — the arrow between them runs both ways once these judgements go in
 - Problem-solving strategies and Divide and conquer — the arrow between them runs both ways once these judgements go in
-- Modular, reusable code and Deploying a program — the arrow between them runs both ways once these judgements go in
-- Index and sigma notation and Iterating by index — the arrow between them runs both ways once these judgements go in
+- Iterating by index and Index and sigma notation — the arrow between them runs both ways once these judgements go in
 - CMPS-LO1 and Algorithmic complexity — every judge said so (1 judgement)
 - CMPS-LO2 and Probability as a scale — every judge said so (1 judgement)
 - Computer simulation and CMPS-LO4 — every judge said so (1 judgement)
@@ -367,28 +368,18 @@ two names. Neither is a fault to fix.
 A loop this long cannot be taught in any order, and teaching the
 topics together does not fix it. Each has to be broken.
 
-- PDP-LO6 → Functions and scope → Documented programs → PDP-LO6
-- CMPS-LO1 → Computer simulation → Modelling versus simulation → Iterating a model → CMPS-LO1
-- CMPS-LO1 → Computer simulation → Modelling versus simulation → Iterating a model → Algorithmic complexity → Problem-solving strategies → CMPS-LO1
-- Computer simulation → Modelling versus simulation → Iterating a model → Algorithmic complexity → Problem-solving strategies → Computer simulation
-- Modelling versus simulation → Iterating a model → Algorithmic complexity → Problem-solving strategies → Modelling versus simulation
-- Iterating a model → Algorithmic complexity → Probability applied to computing → Iterating a model
-- Modelling versus simulation → Iterating a model → Algorithmic complexity → Probability applied to computing → Modelling versus simulation
-- Computer simulation → Modelling versus simulation → Iterating a model → Algorithmic complexity → Probability applied to computing → Computer simulation
-- Modelling versus simulation → Iterating a model → Algorithmic complexity → Probability applied to computing → What a model's numbers are worth → Modelling versus simulation
-- CMPS-LO1 → Computer simulation → Modelling versus simulation → Iterating a model → Algorithmic complexity → Probability applied to computing → What a model's numbers are worth → CMPS-LO1
-- Computer simulation → Modelling versus simulation → Iterating a model → Algorithmic complexity → Probability applied to computing → What a model's numbers are worth → Computer simulation
-- Algorithmic complexity → Probability applied to computing → What a model's numbers are worth → Algorithmic complexity
-- Iterating a model → Algorithmic complexity → Probability applied to computing → What a model's numbers are worth → Iterating a model
-- Modelling versus simulation → Iterating a model → Algorithmic complexity → Modelling versus simulation
-- Computer simulation → Modelling versus simulation → Iterating a model → Computer simulation
-- PDP-LO6 → Functions and scope → Documented programs → Problem definition and design → Personal attributes in problem-solving → PDP-LO6
 - Modular, reusable code → Building bigger programs from smaller ones → Data types in an object oriented program → Modular, reusable code
 - Organising data → Modular, reusable code → Building bigger programs from smaller ones → Data types in an object oriented program → Organising data
-- Classes and objects → Organising data → Modular, reusable code → Deploying a program → Classes and objects
-- Organising data → Modular, reusable code → Deploying a program → Organising data
-- Classes and objects → Organising data → Modular, reusable code → Classes and objects
-- Functions and scope → Documented programs → Reading error messages → Functions and scope
+- Deploying a program → Organising data → Modular, reusable code → Deploying a program
+- Organising data → Modular, reusable code → Classes and objects → Organising data
+- Computer simulation → Modelling versus simulation → Iterating a model → CMPS-LO1 → Computer simulation
+- Algorithmic complexity → Probability applied to computing → Computer simulation → Modelling versus simulation → Iterating a model → What a model's numbers are worth → Algorithmic complexity
+- Computer simulation → Modelling versus simulation → Iterating a model → What a model's numbers are worth → Computer simulation
+- Modelling versus simulation → Iterating a model → What a model's numbers are worth → Modelling versus simulation
+- Algorithmic complexity → Probability applied to computing → Computer simulation → Modelling versus simulation → Iterating a model → Algorithmic complexity
+- Computer simulation → Modelling versus simulation → Iterating a model → Computer simulation
+- Functions and scope → Documented programs → Problem definition and design → Personal attributes in problem-solving → PDP-LO6 → Reading error messages → Functions and scope
+- Functions and scope → Documented programs → Problem definition and design → Personal attributes in problem-solving → PDP-LO6 → Functions and scope
 
 ## Pairs where one judge saw an arrow and the other did not
 
