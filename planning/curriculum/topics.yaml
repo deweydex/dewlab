@@ -646,17 +646,47 @@ topics:
         assume this and break interestingly when the assumption is false.
     needs: [MIT-5.6, MIT-5.1]
 
-  MIT-5.8:
-    name: Combining probabilities
+  MIT-5.8a:
+    name: Both things happening
     outcome: MIT-5.8
     plain: >
-      What happens when you want two things to happen, or either of two things.
-      The rules differ depending on whether the events affect each other.
+      The chance that two things both happen. When neither one affects the
+      other, you multiply the two chances together, and the answer is
+      always smaller than either.
     uses:
-      - Reliability. If a system needs five parts all working, its chance of
-        working is the product, which is always worse than people expect.
-      - Retry logic — the chance that three attempts all fail.
+      - Reliability. A system that needs five parts all working has the
+        product of their five chances, which is worse than most people
+        expect.
+      - Retry logic, where the chance that three attempts all fail is one
+        multiplication.
     needs: [MIT-5.7]
+
+  MIT-5.8b:
+    name: Either thing happening
+    outcome: MIT-5.8
+    plain: >
+      The chance that at least one of two things happens. You add the two
+      chances, then take away the chance of both, because otherwise the
+      overlap is counted twice.
+    uses:
+      - Working out whether any one of several alerts fires.
+      - Counting how many records match one condition or another without
+        double-counting the ones that match both.
+    needs: [MIT-5.7]
+
+  MIT-5.8c:
+    name: When one event changes another
+    outcome: MIT-5.8
+    plain: >
+      The chance of something given that something else has already
+      happened. Learning one fact can change how likely the next one is,
+      and the multiplication rule has to account for that.
+    uses:
+      - Reading a medical or a security test result, where the chance of a
+        true alarm depends on how common the thing is.
+      - Spam filters and other classifiers, which are built on chances that
+        shift as each new word is read.
+    needs: [MIT-5.8a, MIT-5.8b]
 
   MIT-5.9:
     name: Kinds of data
