@@ -638,7 +638,7 @@ topics:
     uses:
       - Performance monitoring. The average response time hides the slow tail;
         the histogram shows it.
-    needs: [MIT-5.9, MIT-6.3]
+    needs: [MIT-5.9, MIT-6.3a]
 
   MIT-5.12:
     name: Averages and spread
@@ -688,16 +688,34 @@ topics:
         allowed.
     needs: [MIT-6.1, MIT-3.1]
 
-  MIT-6.3:
-    name: Lists and arrays
+  MIT-6.3a:
+    name: Lists
     outcome: MIT-6.3
     plain: >
-      Holding many values under one name, in order, and doing things to all of
-      them at once.
+      Holding many values under one name, in order. You can reach any one
+      of them by its position, and you can do the same thing to all of them
+      at once.
     uses:
-      - Every collection of anything — rows from a database, pixels in an
-        image, users in a queue.
+      - Every collection of anything, from rows out of a database to pixels
+        in an image to people waiting in a queue.
+      - Reading a file. A program usually takes the lines in one at a time
+        and keeps them together under one name.
     needs: []
+
+  MIT-6.3b:
+    name: Arrays
+    outcome: MIT-6.3
+    plain: >
+      A list where every value is the same kind of thing, and the computer
+      knows in advance how much room each one takes. Knowing that is what
+      lets it jump straight to a position instead of counting along.
+    uses:
+      - Working with numbers in bulk. The libraries for data and for images
+        store their values this way, which is part of why they are so much
+        faster than a plain list.
+      - Talking to hardware, or to a file format, where the bytes have to
+        sit in a fixed shape.
+    needs: [MIT-6.3a]
 
   MIT-6.4:
     name: Index and sigma notation
@@ -708,7 +726,7 @@ topics:
     uses:
       - Reading a formula in a paper or a specification and turning it into a
         loop, which is largely a matter of recognising this notation.
-    needs: [MIT-6.3]
+    needs: [MIT-6.3a]
 
   MIT-6.5:
     name: Lists applied to problems
@@ -719,7 +737,7 @@ topics:
     uses:
       - Almost any small program. The first design decision is usually what goes
         in the list.
-    needs: [MIT-6.3]
+    needs: [MIT-6.3a]
 
   MIT-6.6:
     name: Divide and conquer
@@ -1097,7 +1115,7 @@ topics:
         multiplying a matrix of links.
       - Sequence alignment and nearest-neighbour search, both of which compare
         rows of numbers to find the closest match.
-    needs: [MIT-6.3, MIT-3.2]
+    needs: [MIT-6.3a, MIT-3.2]
 
   CMPS-LO5:
     name: Algorithmic complexity
