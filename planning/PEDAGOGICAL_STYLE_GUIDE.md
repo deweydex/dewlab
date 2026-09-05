@@ -149,10 +149,15 @@ instead* is a participle with nothing to attach to; a reader has to supply the
 missing "this topic is about" before they can start. Write "You work out what
 would happen instead of running the real thing."
 
-**One idea per sentence, and roughly twenty words.** Twenty-five is a ceiling
-worth a reason; past thirty the sentence has two ideas in it and wants to be
-two sentences. A list of four things is allowed to be longer, because the
-reader is counting rather than following an argument.
+**Read it back, then try a shorter version.** A sentence's tone matters more
+than its length: read it in the voice you would use explaining this to the
+reader in person, and cut anything that would not survive being said aloud
+that way. Then try trimming a clause and see whether the sentence still says
+the same thing. If it does, the clause was never necessary, whatever the
+sentence's word count was. A list of four things is allowed to run long,
+because the reader is counting rather than following an argument; a
+nine-word sentence that still hides an unearned aside is not automatically
+fine either.
 
 **Put the meaning before the dash, not after it.** The habit this repository
 fell into is a short main clause, an em dash, and then the part that actually
@@ -446,7 +451,8 @@ see section 5.
 - Does the frontmatter declare `covers:` for what is taught and `touches:` for
   what is referenced?
 - Are the explanations prose rather than bullets?
-- Is any sentence over twenty-five words, and does it need to be?
+- Read each sentence back: does every clause survive a shorter version, and
+  does it still sound right said aloud?
 - Does every definition open with a subject and a verb, and say what the thing
   is before what it is not?
 - Is any metaphor carrying the meaning rather than illustrating it? Any idiom
