@@ -31,9 +31,11 @@ is the only difference, and it is meant to be visible at a glance.
 Some cells have a small **?** beside them. That is a hint, tucked out of the
 way until you want it.
 
-Every cell also has a **reset** button, which puts back the code that came with
-the tutorial. If you have changed a cell past the point of rescuing it, reset
-that one cell and carry on — the rest of the page is untouched.
+Every cell has a **reset** button. It brings back the code the tutorial
+started with. If you get stuck, or a cell stops making sense, press reset.
+Getting stuck and using reset is a normal part of learning to code, not a
+mistake. Only that one cell changes — everything else on the page stays as it
+was.
 
 Some tutorials have no code at all. Those are ordinary dewlab tutorials too,
 and they open instantly, because a page with nothing to run never starts Python.
@@ -160,11 +162,13 @@ page and from the end of the tutorial. Some pages are mixed sets that draw on
 several tutorials at once, for when you want to practise across a few topics
 rather than one.
 
-Problems come with two folds. The first is a hint: a few steps, something to
-think about, and a related problem to try next. The second is the answer, with
-the working. They are in that order on purpose. Opening the hint first and
-having a go tends to teach you more than opening the answer, though the answer
-is there when you want to check yourself.
+Problems come with two folds, in that order. The first fold is a hint: a few
+steps, something to think about, and a related problem to try. The second
+fold is the full answer, with every step shown.
+
+Try the hint first. Getting an answer wrong along the way is a normal part of
+trying, not a failure. It usually teaches you more than reading the answer
+straight away. The answer is always there when you want to check your work.
 
 ---
 
