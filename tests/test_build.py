@@ -13,6 +13,7 @@ from __future__ import annotations
 import json
 import re
 import sys
+import urllib.parse
 import zipfile
 
 import yaml
@@ -3382,21 +3383,28 @@ def test_no_workbench_folder_is_not_an_error(repo, monkeypatch):
 
 
 class TestFeedbackFooter:
-    """The footer's "report something about this page" link — DECISIONS_LOG
-    Phase 8. On by default; planning/feedback.yaml is the kill switch."""
+    """The footer's "three doors" report disclosure — DECISIONS_LOG Phase 8.
+    On by default; planning/feedback.yaml is the kill switch."""
 
-    def test_report_link_on_a_tutorial_page_by_default(self, repo, monkeypatch):
+    def test_doors_on_a_tutorial_page_by_default(self, repo, monkeypatch):
         write(repo, "# Sample\n\nSome text.")
         b.build()
 
         page = built(repo)
+        assert '<details class="dl-report-doors">' in page
         assert "Something wrong on this page? Tell us." in page
+        assert "I have a question" in page
+        assert "It gives an error" in page
+        assert "The page is wrong, or I could not follow it" in page
+        assert "github.com/deweydex/dewlab/discussions/new" in page
         assert "github.com/deweydex/dewlab/issues/new?" in page
         assert "template=report.yml" in page
         assert "page=computational-methods%2Fsample" in page
         assert "version=2026.08.23.1" in page
+        assert "kind=It+gives+an+error" in page
+        assert "kind=The+page+is+wrong" in page
 
-    def test_report_link_gone_when_switched_off(self, repo, monkeypatch):
+    def test_doors_gone_when_switched_off(self, repo, monkeypatch):
         (repo / "planning").mkdir(parents=True, exist_ok=True)
         (repo / "planning" / "feedback.yaml").write_text("enabled: false\n")
         write(repo, "# Sample\n\nSome text.")
@@ -3404,14 +3412,17 @@ class TestFeedbackFooter:
 
         page = built(repo)
         assert "Something wrong on this page?" not in page
+        assert "dl-report-doors" not in page
         assert "issues/new" not in page
+        assert "discussions/new" not in page
 
-    def test_report_link_also_appears_on_the_contents_page(self, repo, monkeypatch):
+    def test_doors_also_appear_on_the_contents_page(self, repo, monkeypatch):
         write(repo, "# Sample\n\nSome text.")
         b.build()
 
         index = (repo / "site" / "index.html").read_text()
         assert "Something wrong on this page? Tell us." in index
+        assert "discussions/new" in index
 
     def test_report_issue_url_carries_page_and_version(self):
         url = b.report_issue_url("computational-methods/first-steps", "2026.09.01.2")
@@ -3419,6 +3430,26 @@ class TestFeedbackFooter:
         assert "page=computational-methods%2Ffirst-steps" in url
         assert "version=2026.09.01.2" in url
         assert "template=report.yml" in url
+        assert "kind=" not in url
+
+    def test_report_issue_url_carries_kind_when_given(self):
+        url = b.report_issue_url("a/b", "1", kind="The page is wrong, or I could not follow it")
+        assert "kind=The+page+is+wrong" in url
+
+    def test_report_doors_html_kinds_match_the_issue_template(self):
+        template = yaml.safe_load(
+            (b.ROOT / ".github" / "ISSUE_TEMPLATE" / "report.yml").read_text()
+        )
+        options = next(
+            f["attributes"]["options"] for f in template["body"] if f.get("id") == "kind"
+        )
+        html = b.report_doors_html("a/b", "1")
+        assert f"kind={urllib.parse.quote_plus(options[0])}" in html
+        assert f"kind={urllib.parse.quote_plus(options[1])}" in html
+        # The third option ("a question, an idea, or something else") is
+        # deliberately not one of the doors' issue links — a question goes
+        # to Discussions instead, which is the whole point of having doors.
+        assert options[2] not in html
 
     def test_feedback_enabled_defaults_true_without_a_config_file(self, repo):
         assert b.feedback_enabled() is True

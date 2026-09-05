@@ -120,12 +120,17 @@ The pipeline, roughly in the order the code runs it:
 
 8. **Stamp the footer.** `site_footer()` builds the `{{FOOTER}}` token every
    page fills: the copyright line, and — unless `feedback_enabled()` says
-   otherwise — a link to report something about that specific page.
-   `report_issue_url(page, version)` builds that link: a GitHub "new issue"
-   address, `page` and `version` filled in as query parameters that GitHub's
-   own issue form (`.github/ISSUE_TEMPLATE/report.yml`) reads back out and
-   shows to the reader before anything is submitted. `feedback_enabled()`
-   reads `planning/feedback.yaml` fresh on every call, the same reasoning as
+   otherwise — the "three doors" disclosure for reporting something about
+   that specific page. `report_doors_html(page, version)` renders it: a
+   plain `<details>` with three links, no JavaScript. "I have a question"
+   goes to `/discussions/new`; the other two call `report_issue_url(page,
+   version, kind)`, a GitHub "new issue" address with `page`, `version` and
+   `kind` as query parameters that GitHub's own issue form
+   (`.github/ISSUE_TEMPLATE/report.yml`) reads back out and shows to the
+   reader before anything is submitted — `kind` has to match one of that
+   form's dropdown options exactly, which `test_report_doors_html_kinds_match_the_issue_template`
+   (tests/test_build.py) checks. `feedback_enabled()` reads
+   `planning/feedback.yaml` fresh on every call, the same reasoning as
    `module_order()` above (step 5) — a constant computed at import time
    would not see a test's temporary `ROOT`. See DECISIONS_LOG.md, Phase 8.
 

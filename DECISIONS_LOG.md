@@ -6429,3 +6429,29 @@ picks that option, rather than the panel doing it for them.
 and the template is additive — but real work follows from it: the report
 panel and the cell-level button both need to exist for the extra fields
 to fill themselves in, which is the deferred half of this plan.*
+
+**8.4 — The "three doors" choice is a static `<details>` disclosure, not
+JavaScript.** The plan's Treatment 1 asked for a question to be sorted
+away from a bug report before it is sent, since a question filed as an
+issue is the wrong container for it and for whoever answers it later.
+That sorting turned out not to need the report panel or any runtime code
+at all: `report_doors_html()` renders three plain links inside a
+`<details>`/`<summary>` — a question to `/discussions/new`, the other two
+to `report_issue_url()` with `kind` set to one of
+`.github/ISSUE_TEMPLATE/report.yml`'s dropdown options, matched exactly
+so GitHub pre-selects it. Revealing the list pushes the rest of the
+footer down in normal flow, the same shape `.dl-hint-text` already uses,
+rather than a floating dropdown that could sit over content below it or
+trap a touch reader with no hover to dismiss it. `report_issue_url()`
+gained an optional third argument, `kind`, backward compatible with its
+two existing call sites.
+
+The Discussions link is real today even though Discussions itself is
+still off for both repositories — a manual step, not a code one — so it
+404s until that switch is flipped. Shipping it inert rather than waiting
+for the manual step means the doors are already correct once Discussions
+is turned on, with nothing to remember to come back and add.
+*Cost to change: small. The two option strings are the coupling point
+between `build.py` and the issue template — a wording change to one
+without the other, and `test_report_doors_html_kinds_match_the_issue_template`
+catches it.*

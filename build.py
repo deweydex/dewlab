@@ -2579,24 +2579,61 @@ def feedback_enabled() -> bool:
     return bool(data.get("enabled", True))
 
 
-def report_issue_url(page: str, version: str) -> str:
-    """The prefilled GitHub issue link the footer's report line opens.
+_REPORT_KIND_ERROR = (
+    "It gives an error, and I have tried resetting the cell, running the "
+    "cells above it, and reloading the page"
+)
+_REPORT_KIND_WRONG = "The page is wrong, or I could not follow it"
 
-    `page` and `version` only fill in fields on GitHub's own form — nothing
-    is sent until the reader presses GitHub's own Submit, and every field is
-    still theirs to edit or clear first. See docs/REPORTING_A_PROBLEM.md.
+
+def report_issue_url(page: str, version: str, kind: str = "") -> str:
+    """The prefilled GitHub issue link a report door opens.
+
+    `page`, `version` and `kind` only fill in fields on GitHub's own form —
+    nothing is sent until the reader presses GitHub's own Submit, and every
+    field is still theirs to edit or clear first. `kind`, when given, must
+    match one of `.github/ISSUE_TEMPLATE/report.yml`'s dropdown options
+    exactly, or GitHub leaves the dropdown unset rather than failing loudly.
+    See docs/REPORTING_A_PROBLEM.md.
     """
-    query = urllib.parse.urlencode(
-        {"template": "report.yml", "page": page, "version": str(version)}
+    params = {"template": "report.yml", "page": page, "version": str(version)}
+    if kind:
+        params["kind"] = kind
+    return f"{_REPORT_REPO_URL}/issues/new?{urllib.parse.urlencode(params)}"
+
+
+def report_doors_html(page: str, version: str) -> str:
+    """The three-doors disclosure the footer opens: a question goes to
+    Discussions rather than an issue, since a question filed as a bug
+    report is the wrong container for it and for whoever answers it later.
+    A plain `<details>` element, so this needs no JavaScript and no runtime
+    change — see DECISIONS_LOG.md, Phase 8.
+
+    Three links joined by " · ", the same separator the rest of the
+    footer already uses, rather than a `<ul>`/`<li>` list — a bulleted
+    list is the wrong shape for three short links, and it also silently
+    broke every test that counted a page's `<li>` tags, since this markup
+    reaches every page.
+    """
+    error_url = report_issue_url(page, version, _REPORT_KIND_ERROR)
+    wrong_url = report_issue_url(page, version, _REPORT_KIND_WRONG)
+    return (
+        '<details class="dl-report-doors">'
+        "<summary>Something wrong on this page? Tell us.</summary>"
+        "<p>"
+        f'<a href="{_REPORT_REPO_URL}/discussions/new">I have a question</a> · '
+        f'<a href="{error_url}">It gives an error</a> · '
+        f'<a href="{wrong_url}">The page is wrong, or I could not follow it</a>'
+        "</p>"
+        "</details>"
     )
-    return f"{_REPORT_REPO_URL}/issues/new?{query}"
 
 
 def site_footer(page: str = "", version: str = "") -> str:
-    """Copyright line and licence link, stamped with the current year, plus
-    a link to report something about this page unless `feedback_enabled()`
-    says the link is switched off, or the caller passed no `page` to report
-    against.
+    """Copyright line and licence line, stamped with the current year, plus
+    a "three doors" disclosure for reporting something about this page,
+    unless `feedback_enabled()` says it is switched off, or the caller
+    passed no `page` to report against.
     """
     year = datetime.date.today().year
     footer = (
@@ -2604,10 +2641,7 @@ def site_footer(page: str = "", version: str = "") -> str:
         f'<a href="{_LICENCE_URL}">Licence</a>'
     )
     if page and feedback_enabled():
-        footer += (
-            f' · <a href="{report_issue_url(page, version)}">'
-            "Something wrong on this page? Tell us.</a>"
-        )
+        footer += f" · {report_doors_html(page, version)}"
     return footer
 
 
@@ -3920,7 +3954,7 @@ def write_about_page(shell: str) -> Path:
         "<p>We would be glad of help with the material. You can open an issue "
         "with an idea, a request or a comment. You can also send a pull request "
         "with a change of your own.</p>"
-        "<p>If you have found a mistake, the quickest way is the link at the "
+        "<p>If you have found a mistake, the quickest way is the line at the "
         "foot of the page it is on. Without that, opening a GitHub issue "
         "works too. If you would rather fix it yourself, send a pull "
         "request and we will review it and merge it.</p>"

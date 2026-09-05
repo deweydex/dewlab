@@ -54,9 +54,9 @@ want it.
 ## I found a mistake in a tutorial. What do I do?
 
 Please say something — you do not need to be certain it is a mistake first.
-The quickest way is the link at the foot of the page itself, "Something
+The quickest way is the line at the foot of the page itself, "Something
 wrong on this page? Tell us." [`REPORTING_A_PROBLEM.md`](REPORTING_A_PROBLEM.md)
-says where to send it without that link, and what is useful to include
+says where to send it without that line, and what is useful to include
 either way.
 
 ## Can I use dewlab on a phone?
