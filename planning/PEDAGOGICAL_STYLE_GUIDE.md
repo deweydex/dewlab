@@ -208,6 +208,39 @@ invitation, and in what the sentence does not assume about the reader — not in
 figurative language. The plainest version of a sentence is usually also the
 friendliest.
 
+### Vocabulary
+
+Rules 1–8 above govern architecture and dialect. Neither governs the word
+itself, and a sentence can pass every one of them and still put a reader who
+learned English as a second language in front of *masthead*, *furniture*, or a
+phrasal verb with no single-word equivalent. Rule 7 already bans idiom that
+assumes Irish or British English; this rule bans idiom and rare vocabulary
+regardless of which English it belongs to.
+
+**Prefer the common word.** *Get*, not *obtain*. *Start*, not *commence*.
+Where the site's own terminology (section 7) needs the less common word, keep
+it and define it — this rule is about the words around the terminology, not
+the terminology itself.
+
+**A phrasal verb needs a one-word replacement to be worth finding.** *Carry
+on* becomes *continue*. *Have a go* becomes *try*. *Get stuck* stays — there
+is no single word that keeps the meaning, and the phrase is common enough in
+plain teaching English to belong on a B1 word list.
+
+**No idiom, from any dialect.** *Having a go*, *with the working*, *earns its
+keep* — rule 7 named the Irish and British cases; this one drops the
+qualifier. If a phrase would need explaining to a fluent English speaker from
+outside the country that coined it, it needs explaining here too, or cutting.
+
+**Ration the passive.** *The page is saved* is a real binary and stays passive
+on purpose — nobody does the saving, the browser just does it. Where an agent
+is hiding in a passive sentence and naming it costs the sentence nothing, name
+it.
+
+**The test.** Would a reader with a working vocabulary of about two thousand
+English words — roughly a B1 CEFR reader, the level this rule is pitched at —
+get through the sentence without stopping to guess at a word?
+
 `CONTRIBUTING.md` ("Who reads what") has said most of this for the site's own
 pages all along — *no jargon without explaining it, no metaphor for its own
 sake, if you would not say it that way to a fifteen-year-old sitting next to
@@ -418,6 +451,7 @@ see section 5.
   is before what it is not?
 - Is any metaphor carrying the meaning rather than illustrating it? Any idiom
   that assumes Irish or British English?
+- Any idiom from another dialect, or a rare word where a common one would do?
 - Where something happens in a sequence, is the sequence marked — first, then,
   then — rather than folded into one clause?
 - Any reversal that makes the reader hold a negative before they have anything

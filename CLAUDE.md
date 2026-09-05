@@ -30,7 +30,7 @@ glossary definition, `planning/curriculum/topics.yaml`, every tutorial and
 practice page, `docs/FOR_STUDENTS.md`, and any string in `build.py` that ends
 up on a page. It does not mean code comments, planning documents or this file.
 
-Eight checks. Run them over anything you write before you commit it:
+Nine checks. Run them over anything you write before you commit it:
 
 1. **Does every sentence have a verb?** *Two ways of measuring an angle.* is a
    fragment. *There are two ways to measure an angle.* is a sentence. The one
@@ -55,6 +55,12 @@ Eight checks. Run them over anything you write before you commit it:
    because a native speaker cannot see them.
 8. **Is a claim stated flat that is not a binary?** Hedge it — *usually comes
    afterwards*. State flatly only what is genuinely flat.
+9. **Any idiom from another dialect, or a rare word where a common one would
+   do?** Rule 7 covers Irish and British idiom specifically; this one covers
+   every dialect, plus phrasal verbs with a one-word replacement (*carry on*
+   → *continue*) and words like *obtain* or *commence* where *get* or *start*
+   say the same thing. Pitched at a reader with a working vocabulary of about
+   two thousand English words.
 
 Two more things the guide settles that are easy to guess wrong:
 
