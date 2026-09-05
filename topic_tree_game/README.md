@@ -15,6 +15,11 @@ checkout, with no build step.
 2. After a dozen or so, tap **save**. GitHub opens with the file already
    written; sign in and tap **Commit changes**. The file lands in
    `planning/curriculum/review/pairs/`.
+
+   A URL carries about a dozen judgements and no more, so a long session
+   cannot go out in one tap. The dialog says how many taps it would take, and
+   once that is more than two it puts **Save a file** first instead, which
+   sends the lot at once. Upload that file to the same folder.
 3. Run `python3 dev/pair_results.py`. It reads every saved batch and writes
    `planning/curriculum/review/pair-results.md`.
 4. Read the report and decide what goes into `topics.yaml`.
@@ -28,15 +33,16 @@ it never edits `topics.yaml`.
 
 ## The queue
 
-All 92 topics make 4,186 pairs, and most of them are two topics with nothing
+All 120 topics make 7,140 pairs, and most of them are two topics with nothing
 to do with each other. The page works through them in three tiers:
 
-1. The 95 arrows the graph already has, to check they are real.
+1. The arrows the graph already has, to check they are real.
 2. Every pair inside one section of a descriptor, where a missing prerequisite
    is most likely to be hiding.
 3. Everything else, shuffled.
 
-The first two tiers are 542 pairs, which is the part worth finishing.
+The first two tiers are the part worth finishing. The counter says how many
+of them are left.
 
 ## The other buttons
 
