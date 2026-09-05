@@ -74,8 +74,8 @@ there is genuinely something to show you.
 
 Anything in the Reference you met in an earlier tutorial also says where you
 met it, with a link straight back to that section. Coming back to a tutorial
-after a fortnight and half recognising a word is an ordinary way to read, and
-this is the way back.
+after a while, half recognising a word, is an ordinary way to read, and this
+is the way back.
 
 ---
 
@@ -152,6 +152,22 @@ want to practise.
 On the contents page, a small badge next to a tutorial you have opened shows how
 many of its cells you have run, turning red only if a cell's last run failed. It
 is read from your own browser, and you can turn it off in Settings.
+
+---
+
+## If a Page Stops Making Sense
+
+This happens to everyone, and it is not a sign you are doing something wrong.
+A few real places can help, instead of guessing.
+
+You can look up any unfamiliar word in the Reference panel. You can check the
+topic tree to see what this page expects you to know already. If you have not
+met something yet, going back to that page first can help. Or you can search
+the contents page for another tutorial on the same idea, explained in a
+different way.
+
+None of this is a detour. Going back a step is a normal way forward here, not
+a setback.
 
 ---
 
