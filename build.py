@@ -4121,7 +4121,8 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
     # /topic_editor/, for whoever is drawing the graph, and never linked.
     if TOPIC_EDITOR.is_dir():
         shutil.rmtree(OUT / "topic_editor", ignore_errors=True)
-        shutil.copytree(TOPIC_EDITOR, OUT / "topic_editor")
+        shutil.copytree(TOPIC_EDITOR, OUT / "topic_editor",
+                        ignore=shutil.ignore_patterns("README.md"))
 
     # dewmini's own downloadable, offline-capable copy (DECISIONS_LOG.md
     # 7.92) — after the hosted compose/ copy just above, since

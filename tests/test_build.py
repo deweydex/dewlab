@@ -3333,11 +3333,15 @@ def test_the_topic_editor_is_published_beside_the_game(repo, monkeypatch):
     editor = repo / "topic_editor"
     editor.mkdir(parents=True)
     (editor / "index.html").write_text("<h1>topic editor</h1>")
+    (editor / "help.html").write_text("<h1>how it works</h1>")
+    (editor / "README.md").write_text("for a reader of the repository")
     monkeypatch.setattr(b, "TOPIC_EDITOR", editor)
 
     b.build()
 
     assert (b.OUT / "topic_editor" / "index.html").read_text() == "<h1>topic editor</h1>"
+    assert (b.OUT / "topic_editor" / "help.html").is_file()
+    assert not (b.OUT / "topic_editor" / "README.md").exists()
 
 
 def test_no_topic_editor_folder_is_not_an_error(repo, monkeypatch):

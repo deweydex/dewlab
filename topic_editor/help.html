@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Topic editor · how it works</title>
+<style>
+:root{ --ink:#1b1b1f; --dim:#6b6b76; --line:#cfcfd8; --paper:#fbfbfd; --box:#fff; --mark:#1b5cff; --soft:#eef2ff;
+  --req:#5b5b66; --help:#7b8fb5; --tool:#4f9a6e; --inter:#b8860b; --inv:#c9a85a; }
+@media (prefers-color-scheme: dark){
+  :root{ --ink:#e9e9ef; --dim:#9a9aa6; --line:#3a3a44; --paper:#141418; --box:#1e1e25; --mark:#7aa2ff; --soft:#22283a;
+    --req:#a3a3ae; --help:#8fa4cf; --tool:#7fc59a; --inter:#e0b552; --inv:#b39a5a; } }
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:44rem;margin:0 auto;padding:2rem 1.2rem 4rem}
+h1{font-size:1.6rem;margin:0 0 .3rem}
+.lede{color:var(--dim);margin:0 0 1.8rem}
+h2{font-size:1.1rem;margin:2rem 0 .5rem;padding-top:1.2rem;border-top:1px solid var(--line)}
+p{margin:.5rem 0 .8rem}
+table{border-collapse:collapse;width:100%;margin:.6rem 0 1rem;font-size:.95rem}
+th,td{text-align:left;vertical-align:top;padding:.45rem .5rem;border-bottom:1px solid var(--line)}
+th{font-size:.75rem;text-transform:uppercase;letter-spacing:.05em;color:var(--dim);font-weight:600}
+kbd{font:inherit;font-size:.85em;padding:0 .35em;border:1px solid var(--line);border-radius:4px;background:var(--box)}
+code{font-size:.9em;background:var(--soft);padding:.05em .3em;border-radius:4px}
+.sw{display:inline-block;width:26px;height:11px;vertical-align:middle;margin-right:.3rem}
+.sw path{fill:none;stroke-width:1.8}
+a{color:var(--mark)}
+.back{display:inline-block;margin-bottom:1.2rem;font-size:.9rem}
+</style></head><body><main>
+<a class="back" href="index.html">← Back to the editor</a>
+<h1>The topic editor</h1>
+<p class="lede">A page for drawing the map of what a student needs before what. This is how it works.</p>
+
+<p>The map is a graph. Each box is a topic, and a link between two boxes says how they relate. The editor lets you draw those links by hand, move topics around, and send the result back into the repository.</p>
+
+<h2>Getting around</h2>
+<p>Drag empty space to move around. Hold <kbd>Ctrl</kbd> and scroll to zoom. <kbd>Fit</kbd> shows the whole field. Type in the search box to find a topic; <kbd>/</kbd> puts the cursor there.</p>
+<p>Drag a topic to move it. A topic you have dragged stays where you put it, and shows a darker border. <kbd>Let go</kbd> releases them all, so the links can arrange them again.</p>
+
+<h2>Linking two topics</h2>
+<p>Tap one topic, then another. A link appears from the first to the second. It starts as <em>requires</em>, meaning the first has to come before the second.</p>
+<p>Tap the second topic again to change what kind of link it is. Each tap moves to the next kind in the list below, and a tap after the last one removes the link. Pressing <kbd>1</kbd> to <kbd>5</kbd> chooses a kind directly.</p>
+<table>
+<tr><th>Key</th><th>Kind</th><th>What it says</th></tr>
+<tr><td>1</td><td><svg class="sw" viewBox="0 0 26 11"><path d="M1 6 L25 6" style="stroke:var(--req)"/></svg>requires</td><td>You cannot do the second without the first. Only this kind decides the order.</td></tr>
+<tr><td>2</td><td><svg class="sw" viewBox="0 0 26 11"><path d="M1 6 L25 6" style="stroke:var(--help);stroke-dasharray:7 4"/></svg>helps</td><td>The first makes the second easier, but is not needed.</td></tr>
+<tr><td>3</td><td><svg class="sw" viewBox="0 0 26 11"><path d="M1 6 L25 6" style="stroke:var(--tool);stroke-dasharray:2 4"/></svg>applied in</td><td>The first is a tool the second uses.</td></tr>
+<tr><td>4</td><td><svg class="sw" viewBox="0 0 26 11"><path d="M1 6 L25 6" style="stroke:var(--inter);stroke-width:2.4"/></svg>interdependent</td><td>The two need each other. This link has no direction.</td></tr>
+<tr><td>5</td><td><svg class="sw" viewBox="0 0 26 11"><path d="M1 6 L25 6" style="stroke:var(--inv);stroke-dasharray:3 5"/></svg>involves</td><td>The two touch each other, more loosely. No direction.</td></tr>
+</table>
+<p>A <em>requires</em> link that would make a loop is refused, and the loop is named. The editor makes it a <em>helps</em> link instead, so nothing is lost.</p>
+<p>With a topic chosen, picking a search result links to it. That is the way to reach a topic that is off the screen. Hold <kbd>Shift</kbd> to go to the result without linking.</p>
+<p>The small numbers on a box are its links: in on the left, out on the right. At nine either way the editor warns you, because that is about the most a student can hold.</p>
+
+<h2>The panel</h2>
+<p>Choose a topic and the panel on the right shows everything it has: what comes before it, what it comes before, and what goes both ways. Each link has a menu to change its kind, a <kbd>⇄</kbd> to turn a one-way link round, and a <kbd>×</kbd> to remove it. Tap a name in the list to go to that topic.</p>
+<p>The topic's name, column, tags and description can be changed here too. Choose <em>New column…</em> in the column list to make one.</p>
+
+<h2>Three bigger changes</h2>
+<table>
+<tr><th>Button</th><th>What it does</th></tr>
+<tr><td>Cut everything before</td><td>Removes every one-way link into this topic, so nothing comes before it.</td></tr>
+<tr><td>Merge another into this…</td><td>Tap a second topic. It is folded into this one: its outcomes, uses and links come across, and it is gone.</td></tr>
+<tr><td>Split this…</td><td>Makes two topics out of one. Both halves keep every link, so remove what does not belong to each afterwards.</td></tr>
+</table>
+
+<h2>Building out from a topic</h2>
+<p>Choose a topic and press <kbd>Build out from here</kbd>. It goes to the centre. Every topic that has no links yet waits in rings around it, grouped by column. One tap on a ring topic links it to the centre and brings it in. The rings are always what is still unplaced, so they empty as you go.</p>
+<p>To keep going outward, choose a linked topic and press the same button. It becomes the new centre.</p>
+
+<h2>How the field moves</h2>
+<p>Nothing here assumes an order. Topics push each other apart, a link pulls its two ends together, and a one-way link leans its far end a little lower than its near end. So an order appears as you draw it, without a row ever being imposed. <kbd>Flow down</kbd> switches that lean off.</p>
+
+<h2>Columns and filters</h2>
+<p>Each topic belongs to a column, which is its colour. The chips under the search box dim every column but the ones chosen, which makes the field easier to read while you work on one subject. They do not change anything.</p>
+
+<h2>Saving</h2>
+<p>Everything you do is saved in this browser as you go, and <kbd>Ctrl</kbd>+<kbd>Z</kbd> undoes any of it. The note by the search box says how many changes have not yet been exported.</p>
+<table>
+<tr><th>Button</th><th>What it does</th></tr>
+<tr><td>Export</td><td>Saves your work as a file called <code>topic-graph-edits.json</code>.</td></tr>
+<tr><td>Import</td><td>Loads a file you exported before.</td></tr>
+<tr><td>Bring in repo links</td><td>Adds every link the repository's graph has, keeping yours.</td></tr>
+<tr><td>Start again</td><td>Throws away every change. It asks whether to start from the repository's graph or from the topics alone.</td></tr>
+</table>
+
+<h2>Getting it into the repository</h2>
+<p>The editor never writes to the repository itself. Export a file, then in a checkout run:</p>
+<p><code>python3 dev/apply_topic_edits.py topic-graph-edits.json</code></p>
+<p>That writes your graph into <code>planning/curriculum/topics.yaml</code> and <code>strands.yaml</code>. From then on the graph is what those files say, and the pair judgements and decisions under <code>review/</code> are the record of how it got there.</p>
+
+<h2>Keys</h2>
+<table>
+<tr><th>Key</th><th>Does</th></tr>
+<tr><td><kbd>/</kbd></td><td>Search</td></tr>
+<tr><td><kbd>Esc</kbd></td><td>Let go of the chosen topic, or cancel</td></tr>
+<tr><td><kbd>1</kbd>–<kbd>5</kbd></td><td>Kind of the link you just made</td></tr>
+<tr><td><kbd>Ctrl</kbd>+<kbd>Z</kbd></td><td>Undo</td></tr>
+<tr><td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Z</kbd></td><td>Redo</td></tr>
+<tr><td><kbd>Ctrl</kbd>+scroll</td><td>Zoom</td></tr>
+<tr><td><kbd>Shift</kbd>+tap</td><td>Choose a topic without linking it</td></tr>
+</table>
+</main></body></html>

@@ -29,6 +29,8 @@ textarea{width:100%;resize:vertical;min-height:4.5rem}
 button{font:inherit;padding:.4rem .6rem;border:1px solid var(--line);
   border-radius:7px;background:var(--box);color:inherit;cursor:pointer;white-space:nowrap}
 button:disabled{opacity:.4;cursor:default}
+a.btn{font:inherit;padding:.4rem .6rem;border:1px solid var(--line);border-radius:7px;
+  background:var(--box);color:inherit;text-decoration:none;white-space:nowrap}
 button.act{border-color:var(--mark);color:var(--mark)}
 button.warn{border-color:var(--bad);color:var(--bad)}
 button[aria-pressed=true]{background:var(--soft);border-color:var(--mark);color:var(--mark)}
@@ -126,6 +128,7 @@ dialog .row{display:flex;gap:.4rem;justify-content:flex-end;margin-top:1rem}
     <button id="export" class="act">Export</button>
     <label><input type="file" id="import" accept=".json" hidden><button id="importBtn">Import</button></label>
     <button id="reset" class="warn">Start again</button>
+    <a class="btn" href="help.html" target="_blank" rel="noopener" title="How the editor works">Help</a>
   </div>
   <div class="hits" id="hits"></div>
   <div class="cols" id="cols"></div>
