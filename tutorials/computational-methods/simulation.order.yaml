@@ -4,3 +4,4 @@ series: Simulation
 order:
   - leaving-it-to-chance
   - counting-darts
+  - a-model-that-corrects-itself

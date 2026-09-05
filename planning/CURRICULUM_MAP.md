@@ -15,14 +15,14 @@ so this doubles as a way of finding where anything is taught.
 
 ## Where we stand
 
-**81 of 91** outcomes are in place.
+**83 of 91** outcomes are in place.
 
-- 🟩 **79 taught** — a tutorial section teaches it.
+- 🟩 **81 taught** — a tutorial section teaches it.
 - 🟦 **2 taught in part** — deliberately narrowed, and the narrowed version is written.
 - 🟨 **2 used but not taught** — students meet it in passing without it ever being the subject. These are the quiet gaps: they look covered from a distance.
-- 🟥 **8 not covered** — nothing in dewlab touches it.
+- 🟥 **6 not covered** — nothing in dewlab touches it.
 
-**10 of the 10 outcomes still to write have no proposal**: `CMPS-LO1`, `CMPS-LO10`, `CMPS-LO11`, `CMPS-LO12`, `CMPS-LO13`, `CMPS-LO5`, `CMPS-LO6`, `CMPS-LO7`, `CMPS-LO8`, `CMPS-LO9`. These are the ones nobody has decided how to teach yet.
+**8 of the 8 outcomes still to write have no proposal**: `CMPS-LO1`, `CMPS-LO10`, `CMPS-LO12`, `CMPS-LO13`, `CMPS-LO5`, `CMPS-LO6`, `CMPS-LO8`, `CMPS-LO9`. These are the ones nobody has decided how to teach yet.
 
 ### By strand
 
@@ -37,7 +37,7 @@ so this doubles as a way of finding where anything is taught.
 | **geometry** | 6 | 0 | 0 | 0 | 0 |
 | **linear-algebra** | 1 | 0 | 0 | 0 | 0 |
 | **logic** | 2 | 0 | 0 | 0 | 0 |
-| **modelling** | 0 | 0 | 0 | 2 | 0 |
+| **modelling** | 2 | 0 | 0 | 0 | 0 |
 | **number** | 2 | 0 | 0 | 0 | 0 |
 | **oop** | 4 | 0 | 0 | 0 | 0 |
 | **probability** | 9 | 0 | 0 | 1 | 0 |
@@ -60,7 +60,7 @@ graph LR
   geometry["geometry<br/>6 of 6 in place"]
   linear_algebra["linear-algebra<br/>1 of 1 in place"]
   logic["logic<br/>2 of 2 in place"]
-  modelling["modelling<br/>0 of 2 in place"]
+  modelling["modelling<br/>2 of 2 in place"]
   number["number<br/>2 of 2 in place"]
   oop["oop<br/>4 of 4 in place"]
   probability["probability<br/>9 of 10 in place"]
@@ -75,9 +75,9 @@ graph LR
   classDef full fill:#edf7f0,stroke:#1f6b3f,color:#1f6b3f;
   classDef part fill:#fdf6ec,stroke:#b5651d,color:#7a4310;
   classDef none fill:#fdf0ef,stroke:#9b2226,color:#9b2226;
-  class algebra,algorithms,calculus,functions,geometry,linear_algebra,logic,number,oop,programming,sets,simulation,statistics,trigonometry full;
+  class algebra,algorithms,calculus,functions,geometry,linear_algebra,logic,modelling,number,oop,programming,sets,simulation,statistics,trigonometry full;
   class probability part;
-  class complexity,data_structures,modelling,problem_solving,reflection none;
+  class complexity,data_structures,problem_solving,reflection none;
 ```
 
 ## The series as it stands
@@ -382,11 +382,11 @@ graph TD
 | `CMPS-LO4` Apply array and matrix representations to real-world computational problems | 🟩 | [Solving Systems — Three Unknowns, Row by Row](https://deweydex.github.io/dewlab/tutorials/computational-methods/solving-systems.html#three-unknowns-row-by-row)<br/>[Solving Systems — Reading Off the Answer](https://deweydex.github.io/dewlab/tutorials/computational-methods/solving-systems.html#reading-off-the-answer)<br/>[Solving Systems — Checking Your Work](https://deweydex.github.io/dewlab/tutorials/computational-methods/solving-systems.html#checking-your-work)<br/>[Undoing It — Undoing a Transformation](https://deweydex.github.io/dewlab/tutorials/computational-methods/undoing-it.html#undoing-a-transformation)<br/>[Undoing It — Which Ones Can Be Undone](https://deweydex.github.io/dewlab/tutorials/computational-methods/undoing-it.html#which-ones-can-be-undone)<br/>[What a Matrix Does to a Picture — Where Do the Corners Go?](https://deweydex.github.io/dewlab/tutorials/computational-methods/what-a-matrix-does-to-a-picture.html#where-do-the-corners-go)<br/>[What a Matrix Does to a Picture — A Small Gallery](https://deweydex.github.io/dewlab/tutorials/computational-methods/what-a-matrix-does-to-a-picture.html#a-small-gallery)<br/>[What a Matrix Does to a Picture — Guess the Matrix](https://deweydex.github.io/dewlab/tutorials/computational-methods/what-a-matrix-does-to-a-picture.html#guess-the-matrix)<br/>[Where Chains Lead — A Weather Machine](https://deweydex.github.io/dewlab/tutorials/computational-methods/where-chains-lead.html#a-weather-machine)<br/>[Where Chains Lead — Watching It Settle](https://deweydex.github.io/dewlab/tutorials/computational-methods/where-chains-lead.html#watching-it-settle)<br/>[Where Chains Lead — Words That Follow Words](https://deweydex.github.io/dewlab/tutorials/computational-methods/where-chains-lead.html#words-that-follow-words)<br/>[Where Chains Lead — Ranking a Small Web](https://deweydex.github.io/dewlab/tutorials/computational-methods/where-chains-lead.html#ranking-a-small-web)<br/>_used in:_ [A Grid of Numbers — Two Grids, Added Together](https://deweydex.github.io/dewlab/tutorials/computational-methods/grid-of-numbers.html#two-grids-added-together)<br/>_used in:_ [A Grid of Numbers — Scaling and the Shape Rule](https://deweydex.github.io/dewlab/tutorials/computational-methods/grid-of-numbers.html#scaling-and-the-shape-rule)<br/>_used in:_ [A Grid of Numbers — Turning It Sideways: the Transpose](https://deweydex.github.io/dewlab/tutorials/computational-methods/grid-of-numbers.html#turning-it-sideways-the-transpose)<br/>_used in:_ [Multiplying Grids — The Dot Product, First](https://deweydex.github.io/dewlab/tutorials/computational-methods/multiplying-grids.html#the-dot-product-first)<br/>_used in:_ [Multiplying Grids — Multiplying Two Grids](https://deweydex.github.io/dewlab/tutorials/computational-methods/multiplying-grids.html#multiplying-two-grids)<br/>_used in:_ [Multiplying Grids — Order Matters](https://deweydex.github.io/dewlab/tutorials/computational-methods/multiplying-grids.html#order-matters)<br/>_used in:_ [Multiplying Grids — The Matrix That Does Nothing](https://deweydex.github.io/dewlab/tutorials/computational-methods/multiplying-grids.html#the-matrix-that-does-nothing)<br/>_used in:_ [Solving Systems — A System You Can Already Solve](https://deweydex.github.io/dewlab/tutorials/computational-methods/solving-systems.html#a-system-you-can-already-solve)<br/>_used in:_ [Undoing It — Measuring the Square](https://deweydex.github.io/dewlab/tutorials/computational-methods/undoing-it.html#measuring-the-square)<br/>_used in:_ [Undoing It — When the Square Collapses](https://deweydex.github.io/dewlab/tutorials/computational-methods/undoing-it.html#when-the-square-collapses) |
 | `CMPS-LO5` Assess an algorithm or computational approach for speed, efficiency, and best/expected/worst-case behaviour | 🟥 | — |
 | `CMPS-LO6` Apply probability and information theory to computational approaches to real-world problems | 🟥 | — |
-| `CMPS-LO7` Differentiate modelling from simulation, and the abstraction that lets a machine address a real-world problem | 🟥 | — |
+| `CMPS-LO7` Differentiate modelling from simulation, and the abstraction that lets a machine address a real-world problem | 🟩 | [A Model That Corrects Itself — A Model That Starts Out Wrong](https://deweydex.github.io/dewlab/tutorials/computational-methods/a-model-that-corrects-itself.html#a-model-that-starts-out-wrong)<br/>[A Model That Corrects Itself — Running It Again and Again](https://deweydex.github.io/dewlab/tutorials/computational-methods/a-model-that-corrects-itself.html#running-it-again-and-again)<br/>[A Model That Corrects Itself — What the Model Actually Learned](https://deweydex.github.io/dewlab/tutorials/computational-methods/a-model-that-corrects-itself.html#what-the-model-actually-learned) |
 | `CMPS-LO8` Identify approaches to problem definition, solution design, testing and evaluation | 🟥 | — |
 | `CMPS-LO9` Strengths, weaknesses and areas of application of contemporary problem definition and analysis techniques | 🟥 | — |
 | `CMPS-LO10` Distinguish pragmatic problem-solving (treating the symptom) from semantic analysis (finding the root cause) | 🟥 | — |
-| `CMPS-LO11` An iterative process of model creation and validation against the real-world situation being modelled | 🟥 | — |
+| `CMPS-LO11` An iterative process of model creation and validation against the real-world situation being modelled | 🟩 | [A Model That Corrects Itself — Checking It Against Patterns It Has Never Seen](https://deweydex.github.io/dewlab/tutorials/computational-methods/a-model-that-corrects-itself.html#checking-it-against-patterns-it-has-never-seen)<br/>_used in:_ [A Model That Corrects Itself — Running It Again and Again](https://deweydex.github.io/dewlab/tutorials/computational-methods/a-model-that-corrects-itself.html#running-it-again-and-again) |
 | `CMPS-LO12` The role of personal attributes — initiative, a methodical approach, logical reasoning, persistence, lateral thinking — in preventing and resolving problems | 🟥 | — |
 | `CMPS-LO13` Reflect on the impact of numerical and logical thinking in the real world: accuracy, precision, and decisions made from computational models and simulations | 🟨 | _used in:_ [Counting Darts — More Is Not Reliably Better](https://deweydex.github.io/dewlab/tutorials/computational-methods/counting-darts.html#more-is-not-reliably-better) |
 
