@@ -56,6 +56,28 @@ class TestCollapse:
         page.click(".dl-cell[data-cell-id='plain-python'] .dl-cell-collapsed-summary")
         assert not is_collapsed(page, "plain-python")
 
+    def test_the_summary_announces_itself_as_a_button(self, clean_storage):
+        """A screen reader needs role="button" here — it is a <div>, not a
+        real <button>, and the keydown handler alone doesn't say so."""
+        page = clean_storage
+        page.click(".dl-cell[data-cell-id='plain-python'] .dl-collapse-toggle")
+        assert is_collapsed(page, "plain-python")
+        summary = page.locator(
+            ".dl-cell[data-cell-id='plain-python'] .dl-cell-collapsed-summary"
+        )
+        assert summary.get_attribute("role") == "button"
+
+    def test_pressing_space_on_the_summary_expands_it(self, clean_storage):
+        """The real .dl-collapse-toggle <button> gets Space for free from the
+        browser; this div-as-button has to handle it itself."""
+        page = clean_storage
+        page.click(".dl-cell[data-cell-id='plain-python'] .dl-collapse-toggle")
+        assert is_collapsed(page, "plain-python")
+
+        page.focus(".dl-cell[data-cell-id='plain-python'] .dl-cell-collapsed-summary")
+        page.keyboard.press("Space")
+        assert not is_collapsed(page, "plain-python")
+
     def test_output_stays_visible_while_collapsed(self, clean_storage):
         """Collapsing hides the code, not the result it produced
         (planning/CELL_IDENTITY.md §4)."""
