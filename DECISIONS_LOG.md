@@ -6455,3 +6455,49 @@ is turned on, with nothing to remember to come back and add.
 between `build.py` and the issue template — a wording change to one
 without the other, and `test_report_doors_html_kinds_match_the_issue_template`
 catches it.*
+
+**8.5 — The cell-level report control is an icon, not a fourth button, and
+its panel is filled in at open time, not build time.** The plan's
+Treatment 1 asked for a report button in the cell bar that captures a
+cell's own code and last output automatically. Two things had to be
+decided that the plan left implicit.
+
+First, where it sits. `.dl-cell-more`'s own existing comment already
+warns against "crowding a bar that already has reset and Run" with more
+always-visible buttons — so the report control is `.dl-report-icon`, the
+same small circular toggle as `.dl-hint-icon` right beside it, not a
+fifth `.dl-btn`. Its panel (`.dl-report-doors.dl-cell-report-doors`) opens
+as a plain block after the bar, the same push-down shape `.dl-hint-text`
+already uses, reusing `report_doors_links()` — the inner half of the
+footer's own three-doors markup, split out so both call sites share it.
+
+Second, what build time can and cannot know. `page`, `version` and this
+cell's own id are build-time constants, threaded down through
+`place_blocks()` from `load()` (which has the tutorial's frontmatter
+before a `Tutorial` object even exists) into `render_cell()`. A cell's
+current code and its last output are not — they depend on what the
+reader has actually typed and run, which does not exist until their
+browser tab does. Those two fields ship blank from `build.py` and are
+filled in by `updateCellReportLinks()` in `tutorial-runtime.js`, called
+once, at the moment the panel opens — not kept live on every keystroke,
+since nobody reads a report link before opening the panel to use it.
+`report_doors_links()` marks its two issue links with
+`class="dl-report-issue-link"` for exactly this: something for the
+runtime to select without re-parsing `href`s to tell them apart from the
+Discussions link, which needs no code or output.
+
+A custom cell — the reader's own, created at runtime rather than
+authored — gets none of this. There is nothing to report about code
+nobody but the reader wrote.
+
+Verified in a real browser, not only unit tests: `tests/e2e/test_cell_report.py`,
+against a self-hosted Pyodide (`python3 dev/fetch_pyodide.py`) and this
+machine's own pre-installed Chromium — the panel's `output` field is
+absent before a cell has run, carries the actual traceback after one
+errors (`error-traceback` in the e2e fixture), and a live edit shows up
+in `code` rather than the starter text the page shipped with.
+*Cost to change: moderate. Two files agree on the shape of a report
+link now (`build.py`'s markup, `tutorial-runtime.js`'s
+`updateCellReportLinks()`), and the `dl-report-issue-link` class is the
+seam between them — rename or restructure one without the other, and the
+runtime silently stops finding anything to update.*

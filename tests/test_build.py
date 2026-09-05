@@ -3458,3 +3458,46 @@ class TestFeedbackFooter:
         (repo / "planning").mkdir(parents=True, exist_ok=True)
         (repo / "planning" / "feedback.yaml").write_text("enabled: false\n")
         assert b.feedback_enabled() is False
+
+
+class TestCellReportPanel:
+    """The report icon and its panel on an authored cell — DECISIONS_LOG
+    Phase 8, the deferred half of the plan built once the footer doors
+    were live. code/output are filled in by tutorial-runtime.js at open
+    time, not at build time — see updateCellReportLinks() there."""
+
+    def test_report_icon_and_panel_on_a_cell_by_default(self, repo, monkeypatch):
+        write(repo, "```python exec\nid: greet\nprint('hi')\n```\n", slug="sample")
+        b.build()
+
+        page = built(repo)
+        assert '<button type="button" class="dl-report-icon"' in page
+        assert 'aria-controls="dl-report-greet"' in page
+        assert 'id="dl-report-greet" hidden' in page
+        assert 'class="dl-report-doors dl-cell-report-doors"' in page
+        assert "cell=greet" in page
+        assert "I have a question" in page
+        assert "It gives an error" in page
+
+    def test_report_icon_gone_when_switched_off(self, repo, monkeypatch):
+        (repo / "planning").mkdir(parents=True, exist_ok=True)
+        (repo / "planning" / "feedback.yaml").write_text("enabled: false\n")
+        write(repo, "```python exec\nid: greet\nprint('hi')\n```\n", slug="sample")
+        b.build()
+
+        page = built(repo)
+        assert "dl-report-icon" not in page
+        assert "dl-cell-report-doors" not in page
+
+    def test_report_issue_url_carries_cell_when_given(self):
+        url = b.report_issue_url("a/b", "1", cell="greet")
+        assert "cell=greet" in url
+
+    def test_report_doors_links_marks_only_the_issue_links(self):
+        html = b.report_doors_links("a/b", "1", cell="greet")
+        assert html.count('class="dl-report-issue-link"') == 2
+        # The Discussions link is deliberately not one of them — nothing
+        # in tutorial-runtime.js should try to inject code/output into it.
+        discuss_start = html.index("discussions/new")
+        issue_start = html.index("dl-report-issue-link")
+        assert discuss_start < issue_start

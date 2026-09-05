@@ -38,10 +38,36 @@ body:
       label: Version
       description: "Filled in for you."
 
+  - type: input
+    id: cell
+    attributes:
+      label: Cell
+      description: "Filled in for you, if you reported this from a cell. Blank otherwise."
+
+  - type: textarea
+    id: code
+    attributes:
+      label: The cell's code
+      description: "Filled in for you, exactly as you had it, if you reported this from a cell."
+      render: python
+
+  - type: textarea
+    id: output
+    attributes:
+      label: What the cell showed
+      description: "Filled in for you, if the cell had run and shown something."
+      render: text
+
+  - type: input
+    id: browser
+    attributes:
+      label: Browser
+      description: "Filled in for you, if you reported this from a cell."
+
   - type: textarea
     id: description
     attributes:
       label: What happened
-      description: "A sentence is enough. Paste any error text rather than describing it."
+      description: "A sentence is enough. Paste any error text rather than describing it, unless it is already above."
     validations:
       required: true

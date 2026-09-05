@@ -241,7 +241,10 @@ If a tutorial has a mistake in it, or something on the site does not work,
 please tell us. You do not need to be certain it is a bug to say something.
 Most pages carry a line at the foot for exactly this, "Something wrong on
 this page? Tell us." Click it and pick the one that fits: a question, an
-error, or something wrong or hard to follow.
+error, or something wrong or hard to follow. A cell giving trouble has its
+own small circle for the same three choices, in its own bar. Pick that one
+instead, and your code and its last output are already included, with
+nothing left for you to copy.
 [`REPORTING_A_PROBLEM.md`](REPORTING_A_PROBLEM.md) covers the rest: where
 to report something without that line handy, and what is helpful to
 include.
