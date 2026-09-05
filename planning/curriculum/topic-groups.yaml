@@ -192,3 +192,4 @@ groups:
       - { module: computational-methods, slug: leaving-it-to-chance }
       - { module: computational-methods, slug: counting-darts }
       - { module: computational-methods, slug: a-model-that-corrects-itself }
+      - { module: computational-methods, slug: when-a-queue-never-clears }
