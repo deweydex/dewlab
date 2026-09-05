@@ -1164,6 +1164,39 @@ function setCellCollapsed(cell, collapsed) {
   }
 }
 
+/* Kept well under any server's practical URL-length limit (commonly
+ * ~8000 characters), with room to spare for the other fields sharing the
+ * same address — code and output are the only two that can run long, so
+ * they are the only two this ever has to shorten. */
+const REPORT_CODE_LIMIT = 2500;
+const REPORT_OUTPUT_LIMIT = 1500;
+
+function truncateForReport(text, limit) {
+  if (text.length <= limit) return text;
+  return `${text.slice(0, limit)}\n… (cut off here — paste the rest yourself if it matters)`;
+}
+
+/* Fills in the two fields build.py's render_cell() could not: this cell's
+ * code as the reader actually has it right now, and whatever its output
+ * area is currently showing (an error included — tutorial_tools.py's
+ * show_error() writes the traceback straight into that same area, so
+ * there is nothing special to look for). Called once, right as the panel
+ * opens, rather than kept in sync on every keystroke: nobody reads a
+ * report link before opening the panel to use it, so there is nothing to
+ * gain from paying for this on every edit. */
+function updateCellReportLinks(cell, box) {
+  const code = truncateForReport(cell.getCode(), REPORT_CODE_LIMIT);
+  const output = truncateForReport((cell.outputEl?.innerText || "").trim(), REPORT_OUTPUT_LIMIT);
+  const browser = navigator.userAgent;
+  for (const link of box.querySelectorAll(".dl-report-issue-link")) {
+    const url = new URL(link.href);
+    url.searchParams.set("code", code);
+    if (output) url.searchParams.set("output", output);
+    url.searchParams.set("browser", browser);
+    link.href = url.toString();
+  }
+}
+
 /* Turns the manifest's plain-data cell descriptions into real, working
  * cells on the page: finds each cell's DOM elements (already present in
  * the HTML build.py generated — this doesn't create the cell's markup,
@@ -1261,6 +1294,24 @@ function buildCells(manifest) {
         const open = hintIcon.getAttribute("aria-expanded") === "true";
         hintIcon.setAttribute("aria-expanded", String(!open));
         hintText.hidden = open;
+      });
+    }
+
+    /* The report icon (build.py's render_cell(), DECISIONS_LOG.md Phase 8)
+     * — same open/close shape as the hint icon just above, but the panel it
+     * reveals has two of its three links already built at build time with
+     * everything build.py could know, and nothing it couldn't: this cell's
+     * code and its last output only exist once the reader has actually
+     * typed and run something, so updateCellReportLinks() fills those in
+     * fresh on every open, never stale from an earlier run. */
+    const reportIcon = host.querySelector(".dl-report-icon");
+    const reportBox = host.querySelector(".dl-report-doors");
+    if (reportIcon && reportBox) {
+      reportIcon.addEventListener("click", () => {
+        const open = reportIcon.getAttribute("aria-expanded") === "true";
+        reportIcon.setAttribute("aria-expanded", String(!open));
+        reportBox.hidden = open;
+        if (!open) updateCellReportLinks(cell, reportBox);
       });
     }
 

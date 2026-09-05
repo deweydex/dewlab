@@ -132,7 +132,11 @@ The pipeline, roughly in the order the code runs it:
    (tests/test_build.py) checks. `feedback_enabled()` reads
    `planning/feedback.yaml` fresh on every call, the same reasoning as
    `module_order()` above (step 5) — a constant computed at import time
-   would not see a test's temporary `ROOT`. See DECISIONS_LOG.md, Phase 8.
+   would not see a test's temporary `ROOT`. `report_doors_links()` is the
+   shared inner half of that markup — three links, no `<details>`/`<summary>`
+   wrapper — reused by `render_cell()` (step 3 above) for a cell's own
+   report panel, with that cell's id added as a fourth query parameter.
+   See DECISIONS_LOG.md, Phase 8.
 
 Two supporting scripts worth knowing about: `dev/curriculum_map.py`
 regenerates `planning/CURRICULUM_MAP.md` from `outcomes.yaml`, `topics.yaml`
@@ -186,6 +190,16 @@ to the student's own line: all of that is decided inside
 CPython with no browser at all. When the call returns, the runtime saves the
 cell's code and output to `localStorage` — after the run, not during it, so
 what's persisted is what the student actually finished looking at.
+
+A cell's own report panel (`.dl-report-icon`, DECISIONS_LOG.md 8.5) opens
+the same way its hint does — a small icon toggling a block below the bar —
+but its two issue links carry two fields `build.py` cannot fill in ahead of
+time: this cell's current code and whatever its output area is currently
+showing. `updateCellReportLinks()` reads both straight off the live
+`cell` object (`cell.getCode()`, `cell.outputEl.innerText`) and rewrites
+the links' query parameters, once, at the moment the panel opens — never
+kept in sync on every keystroke, and never touching the panel's third
+link, to Discussions, which needs neither.
 
 Everything a Pyodide-backed cell can call beyond ordinary Python is defined
 once, in `tutorial_tools.py`, and listed there in `__all__`.

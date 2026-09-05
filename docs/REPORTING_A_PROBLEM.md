@@ -43,6 +43,20 @@ the issue tracker itself still work exactly as before.
 
 ---
 
+## An even quicker way: from a cell
+
+Every cell has a small circle in its own bar, next to its hint if it has
+one. Click it to open the same three doors, already filled in for this
+cell. Choose "It gives an error," and your code exactly as you have it,
+and whatever the cell last showed, are both included in the report. You
+do not need to copy either one yourself.
+
+A very long cell or a very long error is cut short rather than left out,
+so the link stays short enough for GitHub's own form to open. Paste the
+rest yourself if the missing part matters.
+
+---
+
 ## Three kinds of problem
 
 It helps to know which one you are looking at, because what is useful to include
