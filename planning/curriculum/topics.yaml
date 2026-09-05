@@ -517,18 +517,47 @@ topics:
         and their shape decides how well it renders.
     needs: []
 
-  MIT-4.10:
-    name: The Sine and Cosine Rules
+  MIT-4.10a:
+    name: The Cosine Rule
     outcome: MIT-4.10
     plain: >
-      What to do when the triangle is not right-angled. Two rules that between
-      them solve any triangle from three pieces of information.
+      A rule for a triangle that has no right angle. It is Pythagoras with
+      a correction term, and the correction depends on how far the angle is
+      from a right angle.
     uses:
-      - Navigation and positioning — working out where you are from angles to
-        two known landmarks.
-      - Robot arms and animation rigs, where the question is what angles put the
-        hand in the right place.
+      - Working out a distance you cannot measure directly, given two sides
+        and the angle between them.
+      - Robot arms and animation rigs, where the question is what angles
+        put the hand in the right place.
     needs: [MIT-4.9]
+
+  MIT-4.10b:
+    name: The Sine Rule
+    outcome: MIT-4.10
+    plain: >
+      A second rule for a triangle with no right angle. It relates each
+      side to the angle opposite it, so knowing one such pair lets you find
+      the others.
+    uses:
+      - Navigation and positioning, where you work out where you are from
+        the angles to two known landmarks.
+      - Surveying a distance across something you cannot walk over, such as
+        a river.
+    needs: [MIT-4.9]
+
+  MIT-4.10c:
+    name: The ambiguous case
+    outcome: MIT-4.10
+    plain: >
+      Sine cannot tell an angle from 180 degrees minus that angle, so the
+      Sine Rule sometimes gives two triangles that both fit. You then have
+      to decide which one the problem meant.
+    uses:
+      - Any program that solves triangles from measurements and has to
+        choose an answer rather than return both.
+      - Reading a result from a library and knowing when it has quietly
+        picked one of two.
+    needs: [MIT-4.10b]
 
   # ----------------------------------------- MIT 5: probability and statistics
   MIT-5.1:
