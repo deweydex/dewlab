@@ -189,15 +189,15 @@ the ones that change the graph.
 | The counting principle | Equally likely outcomes | 1 | yes |
 | The counting principle | Both things happening | 1 | yes |
 | The counting principle | Kinds of data | 1 | yes |
-| Probability as a scale | Algorithmic complexity | 1 | yes |
-| Probability as a scale | Listing outcomes | 1 | yes |
-| Probability as a scale | Choosing a display | 1 | yes |
-| Probability as a scale | Frequency tables and histograms | 1 | yes |
-| Probability as a scale | The middle of a set of numbers | 1 | yes |
-| Probability as a scale | When averages mislead | 1 | yes |
-| Probability as a scale | The counting principle | 1 | yes |
-| Probability as a scale | Both things happening | 1 | yes |
-| Probability as a scale | Kinds of data | 1 | yes |
+| Probability | Algorithmic complexity | 1 | yes |
+| Probability | Listing outcomes | 1 | yes |
+| Probability | Choosing a display | 1 | yes |
+| Probability | Frequency tables and histograms | 1 | yes |
+| Probability | The middle of a set of numbers | 1 | yes |
+| Probability | When averages mislead | 1 | yes |
+| Probability | The counting principle | 1 | yes |
+| Probability | Both things happening | 1 | yes |
+| Probability | Kinds of data | 1 | yes |
 | Equally likely outcomes | Choosing a display | 1 | yes |
 | Equally likely outcomes | Frequency tables and histograms | 1 | yes |
 | Equally likely outcomes | The middle of a set of numbers | 1 | yes |
@@ -338,7 +338,7 @@ two names. Neither is a fault to fix.
 - Modular, reusable code and Deploying a program — the arrow between them runs both ways once these judgements go in
 - Index and sigma notation and Iterating by index — the arrow between them runs both ways once these judgements go in
 - Grids and Algorithmic complexity — every judge said so (1 judgement)
-- Probability and Probability as a scale — every judge said so (1 judgement)
+- Probability and Probability — every judge said so (1 judgement)
 - Computer simulation and Matrices — every judge said so (1 judgement)
 - Computer simulation and Algorithmic complexity — every judge said so (1 judgement)
 - Algorithmic complexity and Probability applied to computing — every judge said so (1 judgement)

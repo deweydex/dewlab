@@ -33,7 +33,7 @@ the ones that change the graph.
 | Counting values into bands (was Frequency tables and histograms) | Choosing a display | 2 | yes |
 | The middle of a set of numbers | When averages mislead | 2 | yes |
 | The middle of a set of numbers | Kinds of data | 2 | yes |
-| Probability as a scale | Chance, and the random numbers a computer makes (was Probability) | 2 | yes |
+| Probability | Chance, and the random numbers a computer makes (was Probability) | 2 | yes |
 | Equally likely outcomes | Chance, and the random numbers a computer makes (was Probability) | 2 | yes |
 | Equally likely outcomes | Both things happening | 2 | yes |
 | Lists | What a grid of numbers is good for (was Matrices) | 2 | yes |
@@ -143,9 +143,9 @@ None.
 - **Multiplying the choices (was The counting principle)** and **Choosing when the order does not matter (was Combinations)**
   - ruth: Multiplying the choices (was The counting principle) first
   - tom: unrelated
-- **Probability as a scale** and **Both things happening**
+- **Probability** and **Both things happening**
   - ruth: unrelated
-  - tom: Probability as a scale first
+  - tom: Probability first
 - **Cutting a problem in half (was Divide and conquer)** and **Iterating by index**
   - ruth: unrelated
   - tom: Iterating by index first

@@ -40,6 +40,7 @@ from __future__ import annotations
 import collections
 import glob
 import random
+import itertools
 import html
 import json
 import sys
@@ -49,6 +50,8 @@ import yaml
 
 ROOT = Path(__file__).resolve().parent.parent
 TOPICS = ROOT / "planning" / "curriculum" / "topics.yaml"
+STRANDS = ROOT / "planning" / "curriculum" / "strands.yaml"
+OUTCOMES = ROOT / "planning" / "curriculum" / "outcomes.yaml"
 REVIEW = ROOT / "planning" / "curriculum" / "review"
 BLIND = REVIEW / "blind"          # the two agents, judging without the graph
 OWN = REVIEW / "pairs"            # Josh's own, played in the game
@@ -69,11 +72,25 @@ GONE = {
     "MIT-2.1": "MIT-2.1a",
     # folded away rather than split: its material sits inside lists
     "MIT-6.5": "MIT-6.3a",
+    # the same sentence twice, once from each module descriptor
+    "CMPS-LO2a": "MIT-5.6",
 }
 
 
 def live(code: str) -> str:
-    return GONE.get(code, code)
+    """The live code a dead one stands for, following a chain of them.
+
+    A split can be followed by a merge — CMPS-LO2 became CMPS-LO2a, which
+    was then folded into MIT-5.6 — so one lookup is not enough. Ten steps
+    is far past any chain this file will ever hold, and stopping there
+    means a mistake in GONE cannot hang the build.
+    """
+    for _ in range(10):
+        nxt = GONE.get(code)
+        if nxt is None:
+            return code
+        code = nxt
+    raise SystemExit(f"GONE loops around {code}")
 
 
 def owner_judgements() -> dict[tuple, tuple]:
@@ -330,7 +347,8 @@ def verticals(topics: dict, edges: set, levels: set) -> dict[str, str]:
 # graph drawn as a single box because there is no order inside it.
 NODE_W, NODE_H = 168, 56
 GAP_X, GAP_Y = 18, 84
-PAD = 36
+GUTTER = 54          # between one column and the next
+PAD, HEAD = 36, 52   # HEAD is the strip the column names sit in
 CHARS, LINES = 23, 3
 
 
@@ -351,23 +369,69 @@ def wrap(text: str) -> list[str]:
     return out
 
 
-def place(depth: dict, group: dict, edges: set) -> tuple[dict, int, int]:
-    """Where every box sits, and how big the map is.
+def columns(topics: dict, edges: set) -> tuple[dict, list]:
+    """Which column each topic is drawn in, and what order the columns go in.
 
-    The layer fixes the row, so that part is not a choice. Which order the
-    boxes sit in along a row is free, and the order chosen here is the one that
-    puts each box near the boxes it connects to. Short arrows that cross each
-    other rarely are the only thing being optimised.
+    The column comes from `strands.yaml`, which is a drawing decision and not
+    a claim about what depends on what. Columns branch, rejoin and reach into
+    each other, and the arrows that cross between them are the point.
 
-    Left to right inside a row carries no meaning. Those topics have no order
-    between them, which is what sharing a row says.
+    Their left-to-right order is worked out rather than chosen: every one of
+    the seven hundred and twenty arrangements is tried, and the one kept is
+    whichever puts the fewest column widths between the two ends of an arrow.
+    Related columns end up beside each other because the arrows say they are.
+    """
+    spec = yaml.safe_load(STRANDS.read_text())
+    outcomes = {o["code"]: o
+                for o in yaml.safe_load(OUTCOMES.read_text())["outcomes"]}
+    over = spec.get("topics") or {}
+
+    band = {}
+    for code, entry in topics.items():
+        if code in over:
+            band[code] = over[code]["column"]
+            continue
+        claimed = entry.get("outcome") or code
+        first = claimed if isinstance(claimed, str) else claimed[0]
+        fine = (outcomes.get(first) or {}).get("strand")
+        band[code] = spec["from_strand"].get(fine)
+    astray = sorted(c for c, b in band.items() if not b)
+    if astray:
+        raise SystemExit(f"no column for {', '.join(astray)} — add them to "
+                         f"{STRANDS.name}")
+
+    ids = [c["id"] for c in spec["columns"]]
+    home = {c["id"]: i for i, c in enumerate(spec["columns"])}
+
+    def cost(order: tuple) -> tuple:
+        where = {c: i for i, c in enumerate(order)}
+        far = sum(abs(where[band[a]] - where[band[b]]) for a, b in edges)
+        return (far, tuple(home[c] for c in order))
+
+    best = min(itertools.permutations(ids), key=cost)
+    return band, [next(c for c in spec["columns"] if c["id"] == i) for i in best]
+
+
+def place(depth: dict, group: dict, edges: set, band: dict,
+          order: list) -> tuple[dict, dict, int, int]:
+    """Where every box sits, how wide each column is, and how big the map is.
+
+    The row is the layer, so that part is not a choice, and the column is the
+    subject. What is left free is the order of the boxes within one column on
+    one row, and the order chosen is the one that puts each box near the boxes
+    it connects to.
+
+    Left to right carries no meaning inside a column. Those topics have no
+    order between them, which is what sharing a row says.
     """
     unit_of = {c: u for u, members in group.items() for c in members}
-    rows = collections.defaultdict(list)
+    col_of = {u: band[min(members)] for u, members in group.items()}
+
+    cells = collections.defaultdict(list)
     for unit, level in depth.items():
-        rows[level].append(unit)
-    for level in rows:
-        rows[level].sort()
+        cells[(level, col_of[unit])].append(unit)
+    for key in cells:
+        cells[key].sort()
 
     up = collections.defaultdict(list)
     down = collections.defaultdict(list)
@@ -377,54 +441,78 @@ def place(depth: dict, group: dict, edges: set) -> tuple[dict, int, int]:
             down[a].append(b)
             up[b].append(a)
 
-    def spread(row: list[str]) -> dict[str, float]:
-        if len(row) == 1:
-            return {row[0]: 0.5}
-        return {u: i / (len(row) - 1) for i, u in enumerate(row)}
+    seen = sorted({l for l, _ in cells})
+    wide = {c["id"]: max((len(cells.get((lv, c["id"])) or ()) for lv in seen),
+                         default=0) or 1
+            for c in order}
+    left, run = {}, PAD
+    for c in order:
+        left[c["id"]] = run
+        run += wide[c["id"]] * NODE_W + (wide[c["id"]] - 1) * GAP_X + GUTTER
+    width = int(run - GUTTER + PAD)
+    rows = max(l for l, _ in cells) + 1
+    height = int(HEAD + PAD + rows * NODE_H + (rows - 1) * GAP_Y)
 
-    # Sweep down the rows then back up, each time re-ordering a row by where
-    # its neighbours in the row before sit. Ten passes is well past the point
-    # where the ordering stops changing for a graph this size.
+    def spread(key) -> dict[str, float]:
+        row, col = cells[key], key[1]
+        span = len(row) * NODE_W + (len(row) - 1) * GAP_X
+        start = left[col] + (wide[col] * NODE_W + (wide[col] - 1) * GAP_X - span) / 2
+        return {u: start + i * (NODE_W + GAP_X) for i, u in enumerate(row)}
+
+    # Sweep down the rows then back up, each time re-ordering each cell by
+    # where its neighbours in the row before sit. Ten passes is well past the
+    # point where the ordering stops changing for a graph this size.
     for sweep in range(10):
-        pos = {}
-        for row in rows.values():
-            pos.update(spread(row))
-        levels_in_order = sorted(rows) if sweep % 2 == 0 else sorted(rows, reverse=True)
+        at_x = {}
+        for key in list(cells):
+            at_x.update(spread(key))
+        levels = sorted({l for l, _ in cells}, reverse=sweep % 2)
         side = up if sweep % 2 == 0 else down
-        for level in levels_in_order:
-            row = rows[level]
-            here = spread(row)
+        for level in levels:
+            for c in order:
+                key = (level, c["id"])
+                if len(cells[key]) < 2:
+                    continue
+                here = spread(key)
 
-            def anchor(unit: str) -> tuple[float, str]:
-                near = [pos[n] for n in side[unit] if n in pos]
-                return (sum(near) / len(near) if near else here[unit], unit)
+                def anchor(unit: str) -> tuple[float, str]:
+                    near = [at_x[n] for n in side[unit] if n in at_x]
+                    return (sum(near) / len(near) if near else here[unit], unit)
 
-            row.sort(key=anchor)
-            pos.update(spread(row))
-
-    widest = max(len(row) for row in rows.values())
-    width = PAD * 2 + widest * NODE_W + (widest - 1) * GAP_X
-    height = PAD * 2 + (max(rows) + 1) * NODE_H + max(rows) * GAP_Y
+                cells[key].sort(key=anchor)
+                at_x.update(spread(key))
 
     at = {}
-    for level, row in rows.items():
-        span = len(row) * NODE_W + (len(row) - 1) * GAP_X
-        left = (width - span) / 2
-        for i, unit in enumerate(row):
-            at[unit] = (left + i * (NODE_W + GAP_X), PAD + level * (NODE_H + GAP_Y))
-    return at, int(width), int(height)
+    for key, row in cells.items():
+        if not row:
+            continue
+        xs = spread(key)
+        for unit in row:
+            at[unit] = (xs[unit], HEAD + key[0] * (NODE_H + GAP_Y))
+    spans = {c["id"]: (left[c["id"]] - GAP_X / 2,
+                       wide[c["id"]] * NODE_W + (wide[c["id"]] - 1) * GAP_X + GAP_X)
+             for c in order}
+    return at, spans, width, height
+
+
+def esc(text: str) -> str:
+    return text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 
 
 def page(topics: dict, g: dict, depth: dict, group: dict) -> str:
-    """One page: the map as a drawn graph, plus a search box and a card.
+    """One page: the map as a drawn graph in six columns, a search box and a
+    card.
 
-    The map is drawn as boxes in rows with the arrows between them, because
-    that is the shape of the thing: what has to come first sits above what
-    needs it. It opens scaled to fit whatever screen it is on, so a phone gets
-    the shape first and the detail on a tap.
+    Rows are what has to come first. Columns are the subject a topic belongs
+    to, which is a way of arranging the drawing rather than anything the graph
+    knows. An arrow that stays inside its column is drawn faintly; an arrow
+    that crosses from one column to another is drawn in the accent colour,
+    because those are the ones worth looking at.
     """
     unit_of = {c: u for u, members in group.items() for c in members}
-    at, width, height = place(depth, group, g["edges"])
+    band, order = columns(topics, g["edges"])
+    at, spans, width, height = place(depth, group, g["edges"], band, order)
+    col_of = {u: band[min(members)] for u, members in group.items()}
 
     name = {u: " + ".join(topics[c]["name"] for c in sorted(members))
             for u, members in group.items()}
@@ -437,15 +525,26 @@ def page(topics: dict, g: dict, depth: dict, group: dict) -> str:
             down[a].add(b)
             up[b].add(a)
 
+    bands = []
+    for i, c in enumerate(order):
+        x, w = spans[c["id"]]
+        bands.append(
+            f'<g class="band{" alt" if i % 2 else ""}" data-c="{c["id"]}">'
+            f'<rect x="{x:.0f}" y="0" width="{w:.0f}" height="{height}"/>'
+            f'<text x="{x + w / 2:.0f}" y="30">{esc(c["name"])}</text></g>')
+
     wires = []
+    crossings = 0
     for a in sorted(down):
         for b in sorted(down[a]):
             x1, y1 = at[a][0] + NODE_W / 2, at[a][1] + NODE_H
             x2, y2 = at[b][0] + NODE_W / 2, at[b][1]
             bend = max(24, (y2 - y1) / 2)
+            over = col_of[a] != col_of[b]
+            crossings += over
             wires.append(
-                f'<path class="wire" data-a="{a}" data-b="{b}" '
-                f'd="M{x1:.0f} {y1:.0f} C{x1:.0f} {y1 + bend:.0f} '
+                f'<path class="wire{" over" if over else ""}" data-a="{a}" '
+                f'data-b="{b}" d="M{x1:.0f} {y1:.0f} C{x1:.0f} {y1 + bend:.0f} '
                 f'{x2:.0f} {y2 - bend:.0f} {x2:.0f} {y2:.0f}"/>')
 
     pairs = []
@@ -468,32 +567,29 @@ def page(topics: dict, g: dict, depth: dict, group: dict) -> str:
             for i, line in enumerate(lines))
         many = " many" if len(group[unit]) > 1 else ""
         boxes.append(
-            f'<g class="node{many}" data-u="{unit}" transform="translate({x:.0f},{y})">'
+            f'<g class="node{many}" data-u="{unit}" data-c="{col_of[unit]}" '
+            f'transform="translate({x:.0f},{y:.0f})">'
             f'<rect width="{NODE_W}" height="{NODE_H}" rx="9"/>'
             f'<text>{text}</text></g>')
 
-    facts = {
-        u: {"n": name[u], "c": sorted(group[u]), "r": depth[u],
-            "u": sorted(up[u]), "d": sorted(down[u])}
-        for u in at
-    }
-    roots = sorted((u for u in at if not up[u]), key=lambda u: name[u].lower())
+    facts = {u: {"n": name[u], "c": col_of[u], "r": depth[u],
+                 "u": sorted(up[u]), "d": sorted(down[u])} for u in at}
+    chips = "".join(f'<button class="chip" data-c="{c["id"]}">{esc(c["name"])}'
+                    f'</button>' for c in order)
 
     return (TEMPLATE
             .replace("__W__", str(width))
             .replace("__H__", str(height))
+            .replace("__BANDS__", "\n".join(bands))
             .replace("__WIRES__", "\n".join(wires))
             .replace("__PAIRS__", "\n".join(pairs))
             .replace("__BOXES__", "\n".join(boxes))
+            .replace("__CHIPS__", chips)
             .replace("__FACTS__", json.dumps(facts, sort_keys=True))
-            .replace("__ROOTS__", json.dumps(roots))
             .replace("__ROWS__", str(max(depth.values()) + 1))
             .replace("__COUNT__", str(len(topics)))
+            .replace("__CROSS__", str(crossings))
             .replace("__ARROWS__", str(len(g["edges"]))))
-
-
-def esc(text: str) -> str:
-    return (text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;"))
 
 
 TEMPLATE = """<!doctype html>
@@ -504,10 +600,12 @@ TEMPLATE = """<!doctype html>
 :root{
   --ink:#1b1b1f; --dim:#6b6b76; --line:#d6d6de; --paper:#fbfbfd;
   --box:#fff; --mark:#1b5cff; --soft:#eef2ff; --two:#b8860b;
+  --tint:#f1f1f6; --cross:#c2703a;
 }
 @media (prefers-color-scheme: dark){
   :root{ --ink:#e9e9ef; --dim:#9a9aa6; --line:#3a3a44; --paper:#141418;
-         --box:#1e1e25; --mark:#7aa2ff; --soft:#22283a; --two:#e0b552; }
+         --box:#1e1e25; --mark:#7aa2ff; --soft:#22283a; --two:#e0b552;
+         --tint:#1a1a20; --cross:#e08a52; }
 }
 *{box-sizing:border-box}
 body{margin:0;background:var(--paper);color:var(--ink);
@@ -521,26 +619,39 @@ input[type=search]{flex:1;min-width:0;padding:.5rem .6rem;font:inherit;
   border:1px solid var(--line);border-radius:8px;background:var(--box);color:inherit}
 button{font:inherit;padding:.45rem .6rem;border:1px solid var(--line);
   border-radius:8px;background:var(--box);color:inherit;cursor:pointer}
-button:disabled{opacity:.45;cursor:default}
+.chips{display:flex;flex-wrap:wrap;gap:.3rem;margin:.45rem 0 0}
+.chip{padding:.3rem .55rem;font-size:.82rem;border-radius:999px}
+.chip[aria-pressed=true]{background:var(--soft);border-color:var(--mark);color:var(--mark)}
+.key{display:flex;flex-wrap:wrap;align-items:center;gap:.15rem .9rem;
+  margin:.45rem 0 0;font-size:.78rem;color:var(--dim)}
+.key b{font-weight:400;display:flex;align-items:center;gap:.3rem}
+.key path{fill:none;stroke-width:1.6}
+.key .one{stroke:var(--dim)}
+.key .cross{stroke:var(--cross)}
+.key .two{stroke:var(--two);stroke-dasharray:3 4}
 #stage{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;
   touch-action:pan-x pan-y;display:grid;place-content:start center;padding:.5rem}
 svg{display:block}
+.band rect{fill:none}
+.band.alt rect{fill:var(--tint)}
+.band text{font-size:17px;fill:var(--dim);text-anchor:middle;font-weight:600}
 .node rect{fill:var(--box);stroke:var(--line);stroke-width:1.2}
 .node.many rect{stroke-dasharray:5 3}
 .node text{font-size:12px;fill:var(--ink);text-anchor:middle;
   dominant-baseline:middle;pointer-events:none}
 .node{cursor:pointer}
 .wire{fill:none;stroke:var(--line);stroke-width:1.2}
+.wire.over{stroke:var(--cross);opacity:.55}
 .pair{fill:none;stroke:var(--two);stroke-width:1.4;stroke-dasharray:3 4;opacity:.7}
-svg.picked .node rect{opacity:.25}
-svg.picked .wire{opacity:.12}
-svg.picked .pair{opacity:.12}
-svg.picked .node.on rect{opacity:1;stroke:var(--mark);stroke-width:2;fill:var(--soft)}
+svg.picked .node rect,svg.narrow .node rect{opacity:.2}
+svg.picked .wire,svg.narrow .wire{opacity:.1}
+svg.picked .pair,svg.narrow .pair{opacity:.1}
+svg.picked .node.on rect,svg.narrow .node.on rect{opacity:1}
+svg.picked .node.on rect{stroke:var(--mark);stroke-width:2;fill:var(--soft)}
 svg.picked .node.here rect{opacity:1;stroke:var(--mark);stroke-width:3;fill:var(--soft)}
-svg.picked .node.on text,svg.picked .node.here text{opacity:1}
-svg.picked .node rect:not(.x){}
 svg.picked .wire.on{opacity:1;stroke:var(--mark);stroke-width:1.8}
-.node.found rect{stroke:var(--two);stroke-width:2.4}
+svg.narrow .wire.on{opacity:.75}
+.node.found rect{stroke:var(--two);stroke-width:2.4;opacity:1}
 #card{border-top:1px solid var(--line);background:var(--paper);
   padding:.6rem .8rem;max-height:42dvh;overflow:auto}
 #card[hidden]{display:none}
@@ -551,31 +662,30 @@ svg.picked .wire.on{opacity:1;stroke:var(--mark);stroke-width:1.8}
 #card ul{margin:0;padding:0;list-style:none;display:flex;flex-wrap:wrap;gap:.3rem}
 #card li button{padding:.3rem .5rem;font-size:.85rem}
 .none{color:var(--dim);font-size:.85rem;margin:0}
-.key{display:flex;flex-wrap:wrap;align-items:center;gap:.15rem .9rem;
-  margin:.45rem 0 0;font-size:.78rem;color:var(--dim)}
-.key b{font-weight:400;display:flex;align-items:center;gap:.3rem}
-.key path{fill:none;stroke-width:1.6}
-.key .one{stroke:var(--dim)}
-.key .two{stroke:var(--two);stroke-dasharray:3 4}
 </style></head><body>
 <header>
-  <h1>The topic map <span>__COUNT__ topics · __ARROWS__ arrows · __ROWS__ rows</span></h1>
+  <h1>The topic map <span>__COUNT__ topics · __ARROWS__ arrows, __CROSS__ of them
+    between columns · __ROWS__ rows</span></h1>
   <div class="bar">
     <input type="search" id="find" placeholder="Search a topic" autocomplete="off">
     <button id="out" title="Smaller">−</button>
     <button id="in" title="Bigger">+</button>
     <button id="fit">Fit</button>
   </div>
+  <div class="chips" id="chips">__CHIPS__</div>
   <p class="key">
     <b><svg width="26" height="11" aria-hidden="true"><path class="one"
       d="M1 1 C10 1 16 10 25 10"/></svg> one comes before the other</b>
+    <b><svg width="26" height="11" aria-hidden="true"><path class="cross"
+      d="M1 1 C10 1 16 10 25 10"/></svg> and crosses columns</b>
     <b><svg width="26" height="11" aria-hidden="true"><path class="two"
       d="M1 6 L25 6"/></svg> neither comes first</b>
-    <b>Left to right means nothing.</b>
+    <b>Left to right within a column means nothing.</b>
   </p>
 </header>
 <div id="stage">
 <svg id="map" viewBox="0 0 __W__ __H__" width="__W__" height="__H__">
+<g id="bands">__BANDS__</g>
 <g id="pairs">__PAIRS__</g>
 <g id="wires">__WIRES__</g>
 <g id="boxes">__BOXES__</g>
@@ -584,22 +694,18 @@ svg.picked .wire.on{opacity:1;stroke:var(--mark);stroke-width:1.8}
 <div id="card" hidden></div>
 <script>
 const FACTS = __FACTS__;
-const ROOTS = __ROOTS__;
 const map = document.getElementById("map");
 const stage = document.getElementById("stage");
 const card = document.getElementById("card");
 const W = __W__, H = __H__;
-let scale = 1;
+let scale = 1, column = null;
 
 function apply(){
   map.setAttribute("width", Math.round(W * scale));
   map.setAttribute("height", Math.round(H * scale));
 }
-function fit(){
-  scale = Math.min(1.6, (stage.clientWidth - 4) / W);
-  apply();
-}
-document.getElementById("fit").addEventListener("click", () => { fit(); });
+function fit(){ scale = Math.min(1.6, (stage.clientWidth - 12) / W); apply(); }
+document.getElementById("fit").addEventListener("click", fit);
 document.getElementById("in").addEventListener("click", () => { scale *= 1.35; apply(); });
 document.getElementById("out").addEventListener("click", () => { scale /= 1.35; apply(); });
 
@@ -613,8 +719,12 @@ function reach(start, key){
   }
   return seen;
 }
-
 function box(unit){ return map.querySelector('.node[data-u="' + CSS.escape(unit) + '"]'); }
+function centre(el){
+  const r = el.getBoundingClientRect(), s = stage.getBoundingClientRect();
+  stage.scrollBy({left: r.left - s.left - s.width/2 + r.width/2,
+                  top: r.top - s.top - s.height/2, behavior: "smooth"});
+}
 
 function pick(unit){
   map.classList.add("picked");
@@ -627,12 +737,18 @@ function pick(unit){
   for(const w of map.querySelectorAll(".wire")){
     if(lit.has(w.dataset.a) && lit.has(w.dataset.b)) w.classList.add("on");
   }
-  show(unit, before.size, after.size);
-  const r = box(unit).getBoundingClientRect(), s = stage.getBoundingClientRect();
-  stage.scrollBy({left: r.left - s.left - s.width/2, top: r.top - s.top - s.height/2,
-                  behavior: "smooth"});
+  const f = FACTS[unit];
+  card.innerHTML = "<h2>" + f.n + "</h2><p>Row " + (f.r + 1) + ". " + before.size
+    + " behind it, " + after.size + " ahead of it.</p>"
+    + list("Needs first", f.u) + list("Opens up", f.d);
+  card.hidden = false;
+  centre(box(unit));
 }
-
+function list(title, units){
+  if(!units.length) return "<h3>" + title + "</h3><p class=none>Nothing.</p>";
+  return "<h3>" + title + "</h3><ul>" + units.map(u =>
+    '<li><button data-go="' + u + '">' + FACTS[u].n + "</button></li>").join("") + "</ul>";
+}
 function clear(){
   map.classList.remove("picked");
   for(const n of map.querySelectorAll(".node")) n.classList.remove("on","here");
@@ -640,20 +756,27 @@ function clear(){
   card.hidden = true;
 }
 
-function list(title, units){
-  if(!units.length) return "<h3>" + title + "</h3><p class=none>Nothing.</p>";
-  const items = units.map(u =>
-    '<li><button data-go="' + u + '">' + FACTS[u].n + "</button></li>").join("");
-  return "<h3>" + title + "</h3><ul>" + items + "</ul>";
+function narrow(id){
+  // clear() first, because it strips the very classes set below.
+  clear();
+  column = column === id ? null : id;
+  for(const chip of document.querySelectorAll(".chip"))
+    chip.setAttribute("aria-pressed", String(chip.dataset.c === column));
+  map.classList.toggle("narrow", Boolean(column));
+  for(const n of map.querySelectorAll(".node"))
+    n.classList.toggle("on", n.dataset.c === column);
+  for(const w of map.querySelectorAll(".wire"))
+    w.classList.toggle("on", Boolean(column) &&
+      (FACTS[w.dataset.a].c === column || FACTS[w.dataset.b].c === column));
+  if(column){
+    const band = map.querySelector('.band[data-c="' + CSS.escape(column) + '"] rect');
+    if(band) centre(band);
+  }
 }
-
-function show(unit, before, after){
-  const f = FACTS[unit];
-  const row = "Row " + (f.r + 1) + ". " + before + " behind it, " + after + " ahead of it.";
-  card.innerHTML = "<h2>" + f.n + "</h2><p>" + row + "</p>"
-    + list("Needs first", f.u) + list("Opens up", f.d);
-  card.hidden = false;
-}
+document.getElementById("chips").addEventListener("click", e => {
+  const chip = e.target.closest(".chip");
+  if(chip) narrow(chip.dataset.c);
+});
 
 map.addEventListener("click", e => {
   const node = e.target.closest(".node");
@@ -673,14 +796,9 @@ find.addEventListener("input", () => {
     n.classList.toggle("found", hit);
     if(hit && !first) first = n;
   }
-  if(first){
-    const r = first.getBoundingClientRect(), s = stage.getBoundingClientRect();
-    stage.scrollBy({left: r.left - s.left - s.width/2,
-                    top: r.top - s.top - s.height/2, behavior: "smooth"});
-  }
+  if(first) centre(first);
 });
 
-addEventListener("resize", () => {});
 fit();
 </script></body></html>
 """

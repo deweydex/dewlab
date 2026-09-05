@@ -70,6 +70,7 @@ GONE = {
     "MIT-5.12": "MIT-5.12a", "CMPS-LO1": "CMPS-LO1a", "MIT-5.8": "MIT-5.8a",
     "MIT-4.6": "MIT-4.6a", "CMPS-LO4": "CMPS-LO4a", "CMPS-LO2": "CMPS-LO2a",
     "MIT-2.1": "MIT-2.1a", "MIT-6.5": "MIT-6.3a",
+    "CMPS-LO2a": "MIT-5.6",
 }
 
 
@@ -227,8 +228,24 @@ def cycles(edges: set[tuple]) -> list[list[str]]:
     return found
 
 
+def live_code(code: str) -> str:
+    """The live code a dead one stands for, following a chain of them.
+
+    A split can be followed by a merge — CMPS-LO2 became CMPS-LO2a, which was
+    then folded into MIT-5.6 — so one lookup is not enough. Ten steps is far
+    past any chain this file will ever hold, and stopping there means a
+    mistake in GONE cannot hang the build.
+    """
+    for _ in range(10):
+        nxt = GONE.get(code)
+        if nxt is None:
+            return code
+        code = nxt
+    raise SystemExit(f"GONE loops around {code}")
+
+
 def name_of(topics: dict, code: str, renames: dict) -> str:
-    live = GONE.get(code, code)
+    live = live_code(code)
     if code in renames:
         return f"{renames[code]} (was {topics.get(live, {}).get('name', code)})"
     return topics.get(live, {}).get("name", code)

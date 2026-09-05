@@ -748,14 +748,17 @@ topics:
     needs: [MIT-5.4]
 
   MIT-5.6:
-    name: Probability as a scale
-    outcome: MIT-5.6
+    name: Probability
+    outcome: [MIT-5.6, CMPS-LO2]
     plain: >
-      Every probability is a number between zero and one. Zero cannot happen,
-      one is certain, and everything real is in between.
+      How likely something is, written as a number between zero and one.
+      Zero cannot happen, one is certain, and everything real sits in
+      between.
     uses:
       - Reading a model's confidence honestly. A classifier that says 0.51 is
         not really making a prediction; it is saying it does not know.
+      - Games of chance, and any feature that needs a fair-seeming shuffle
+        or deal.
     needs: []
 
   MIT-5.7:
@@ -1347,18 +1350,6 @@ topics:
         answers.
     needs: [MIT-6.7]
 
-  CMPS-LO2a:
-    name: Probability
-    outcome: CMPS-LO2
-    plain: >
-      How likely something is, written as a number between zero and one.
-      Zero cannot happen, one is certain, and everything real sits in
-      between.
-    uses:
-      - Games of chance, and any feature that needs a fair-seeming shuffle
-        or deal.
-    needs: [MIT-5.6, MIT-5.7]
-
   CMPS-LO2b:
     name: Sampling
     outcome: CMPS-LO2
@@ -1371,7 +1362,7 @@ topics:
         traffic.
       - Any survey or poll, and the reason its result comes with a margin
         either side.
-    needs: [CMPS-LO2a]
+    needs: [MIT-5.6]
 
   CMPS-LO2c:
     name: Dependence
@@ -1428,7 +1419,7 @@ topics:
         into a counting exercise a computer can just run.
       - Testing a design against thousands of random scenarios before it is
         built.
-    needs: [CMPS-LO2a]
+    needs: [MIT-5.6]
 
   CMPS-LO4a:
     name: Matrices
@@ -1467,7 +1458,7 @@ topics:
       - Web search ranking, which began as exactly this calculation.
       - Working out who matters in any network, such as which account in a
         social graph reaches the most people.
-    needs: [CMPS-LO4a, CMPS-LO2a]
+    needs: [CMPS-LO4a, MIT-5.6]
 
   CMPS-LO4d:
     name: Comparing rows of numbers
@@ -1509,7 +1500,7 @@ topics:
       - Failure prediction and reliability engineering, and branch prediction
         inside a processor.
       - Analysing packet loss and jitter on a network link.
-    needs: [CMPS-LO2a, CMPS-LO5]
+    needs: [MIT-5.6, CMPS-LO5]
 
   CMPS-LO7:
     name: Modelling versus simulation

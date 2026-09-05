@@ -45,8 +45,8 @@ the ones that change the graph.
 | Counting values into bands (was Frequency tables and histograms) | Choosing the right chart (was Choosing a display) | 2 | no |
 | The middle of a set of numbers | When averages mislead | 2 | yes |
 | The middle of a set of numbers | Kinds of data | 2 | yes |
-| Probability as a number between zero and one (was Probability as a scale) | Probability, and the random numbers a program makes (was Probability) | 2 | yes |
-| Probability as a number between zero and one (was Probability as a scale) | Both things happening | 2 | yes |
+| Probability as a number between zero and one (was Probability) | Probability, and the random numbers a program makes (was Probability) | 2 | yes |
+| Probability as a number between zero and one (was Probability) | Both things happening | 2 | yes |
 | When every outcome is equally likely (was Equally likely outcomes) | Probability, and the random numbers a program makes (was Probability) | 2 | yes |
 | When every outcome is equally likely (was Equally likely outcomes) | Both things happening | 2 | yes |
 | What an algorithm is | Cutting a problem in half (was Divide and conquer) | 2 | yes |
@@ -198,8 +198,8 @@ None.
 - **Counting values into bands (was Frequency tables and histograms)** and **Lists: many values under one name (was Lists)**
   - ruth-blind: unrelated
   - tom-blind: Lists: many values under one name (was Lists) first
-- **Probability as a number between zero and one (was Probability as a scale)** and **When every outcome is equally likely (was Equally likely outcomes)**
-  - ruth-blind: Probability as a number between zero and one (was Probability as a scale) first
+- **Probability as a number between zero and one (was Probability)** and **When every outcome is equally likely (was Equally likely outcomes)**
+  - ruth-blind: Probability as a number between zero and one (was Probability) first
   - tom-blind: both
 - **What an algorithm is** and **Putting the steps in order (was Solving in sequence)**
   - ruth-blind: What an algorithm is first
@@ -275,7 +275,7 @@ None.
 | Factorials | Counting the ways to put things in order |
 | Permutations | Choosing when the order matters |
 | Combinations | Choosing when the order does not matter |
-| Probability as a scale | Probability as a number between zero and one |
+| Probability | Probability as a number between zero and one |
 | Equally likely outcomes | When every outcome is equally likely |
 | Algorithms as functions | What goes in and what comes out |
 | MIT-6.3 | Lists: many values under one name |
