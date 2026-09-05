@@ -59,8 +59,8 @@ with no call to `count_files` needed beyond the first.
 
 </details>
 
-**2.** Write `deepest_level(folder, level=0)` so it returns how many
-levels down the deepest subfolder sits, matching the tutorial's own
+**2.** Try writing `deepest_level(folder, level=0)` so it returns how
+many levels down the deepest subfolder sits, matching the tutorial's own
 description. Predict `deepest_level(photos)` before running it.
 
 ```python exec
@@ -125,9 +125,9 @@ only a subfolder, so it contributes nothing on its own.
 
 **4.** The tutorial's `count_files_iterative` visits the most recently
 added folder first, because `pop()` removes the last item from a list by
-default. Change one line so it visits folders in the order they were
-added instead — first added, first visited — and confirm the total is
-still the same on `photos`.
+default. See if you can change one line so it visits folders in the
+order they were added instead — first added, first visited — and confirm
+the total is still the same on `photos`.
 
 ```python exec
 id: visiting-in-a-different-order-1

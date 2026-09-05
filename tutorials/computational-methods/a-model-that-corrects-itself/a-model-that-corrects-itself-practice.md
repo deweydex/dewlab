@@ -32,8 +32,9 @@ def predict(weights, bias, pixels):
 
 ## A Model That Starts Out Wrong
 
-**1.** Set every weight to `0.0` but the bias to `5.0`, and predict on both
-`PLUS` and `CROSS`. What do you expect, and why, before running it?
+**1.** Try setting every weight to `0.0` but the bias to `5.0`, then
+predict on both `PLUS` and `CROSS`. What do you expect, and why, before
+running it?
 
 ```python exec
 id: a-model-that-starts-out-wrong-1
@@ -49,9 +50,9 @@ made up its mind before looking at the picture.
 
 </details>
 
-**2.** Write `predict_label()`, a version of `predict()` that returns the
-string `"plus"` or `"cross"` instead of `1` or `0`, without changing the
-arithmetic.
+**2.** Try writing `predict_label()`, a version of `predict()` that
+returns the string `"plus"` or `"cross"` instead of `1` or `0`, without
+changing the arithmetic.
 
 <details class="dl-answer"><summary>answer</summary>
 

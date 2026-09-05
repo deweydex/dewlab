@@ -58,7 +58,7 @@ def fewest_tokens_greedy(amount, denominations):
 
 ## Checking the Guarantee
 
-**1.** Predict `fewest_tokens_brute_force(10, TOKENS)` before running it: which
+**1.** Before running it, see if you can predict `fewest_tokens_brute_force(10, TOKENS)`: which
 three tokens from `[1, 3, 4]` add up to `10`?
 
 ```python exec
@@ -92,7 +92,7 @@ amounts forever, never handing back an actual number.
 
 ## When the Shortcut Fails
 
-**3.** Using a different set of tokens, `TOKENS2 = [1, 4, 5]`, compare
+**3.** Try a different set of tokens, `TOKENS2 = [1, 4, 5]`, and compare
 `fewest_tokens_greedy(8, TOKENS2)` against `fewest_tokens_cached(8, TOKENS2)`.
 The tutorial's own example disagreed by one token — does this one disagree by
 more?

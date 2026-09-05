@@ -71,9 +71,9 @@ number that decides everything.
 
 ## Changing the Shape of Arrivals
 
-**3.** Rewrite `arrivals_this_step` to check *three* independent chances
-each step instead of two. What is the new formula for average arrivals
-per step, in terms of `arrival_prob`?
+**3.** Try rewriting `arrivals_this_step` to check *three* independent
+chances each step instead of two. What is the new formula for average
+arrivals per step, in terms of `arrival_prob`?
 
 ```python exec
 id: changing-the-shape-of-arrivals-1
@@ -95,7 +95,7 @@ what the average actually is has changed.
 </details>
 
 **4.** With three chances per step (`arrivals_this_step_v2`) and
-`service_capacity=1`, is `arrival_prob=0.3` stable? Run it for 500 steps
+`service_capacity=1`, is `arrival_prob=0.3` stable? Try it for 500 steps
 and look at how large the queue gets, not just its final value.
 
 ```python exec

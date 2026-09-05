@@ -70,7 +70,7 @@ single step with nothing to repeat or choose between.
 
 </details>
 
-**4.** Write a cell that counts how many numbers in `[3, -1, 4, -2, 5]`
+**4.** Try writing a cell that counts how many numbers in `[3, -1, 4, -2, 5]`
 are negative, using the same storing-then-iterating shape as the first
 cell in this tutorial.
 
@@ -193,8 +193,8 @@ in `self.items` at the moment it is called, cheese included.
 
 </details>
 
-**9.** Write a `count()` method for `Basket` that returns how many items
-it holds, using iteration the same way `total()` does.
+**9.** Try writing a `count()` method for `Basket` that returns how many
+items it holds, using iteration the same way `total()` does.
 
 <details class="dl-answer"><summary>answer</summary>
 
