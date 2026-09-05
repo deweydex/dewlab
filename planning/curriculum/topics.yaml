@@ -196,7 +196,7 @@ topics:
       - Working out whether a system settles down or oscillates, which is
         the difference between a control loop that works and one that
         shakes itself apart.
-    needs: [MIT-1.10a, MIT-2.1]
+    needs: [MIT-1.10a, MIT-2.1g]
 
   MIT-1.11:
     name: Linear inequalities
@@ -225,20 +225,97 @@ topics:
     needs: [MIT-1.5]
 
   # -------------------------------------------- MIT 2: sets and boolean logic
-  MIT-2.1:
-    name: Number families
+  MIT-2.1a:
+    name: Counting numbers
     outcome: MIT-2.1
     plain: >
-      The nested families numbers live in — counting numbers, then negatives,
-      then fractions, then everything on the number line, then a family that
-      includes the square roots of negatives. Each one exists because the
-      previous one could not answer some question.
+      One, two, three, and on upwards. These are the numbers you count
+      with, and every other family is built by asking a question these
+      cannot answer.
     uses:
-      - Choosing a type. `int` and `float` in a program are two of these
-        families, and the bugs come from forgetting which one you are in.
-      - Knowing that 0.1 + 0.2 is not exactly 0.3 in most languages, and why
-        that is a fact about the family and not a mistake.
+      - How many of anything, which is what most of a program's numbers
+        are.
+      - The position of an item in a list, and how many times a loop has
+        run.
     needs: []
+
+  MIT-2.1b:
+    name: Integers
+    outcome: MIT-2.1
+    plain: >
+      The counting numbers, zero, and the negatives. This family exists
+      because taking a larger number from a smaller one has no answer
+      without it.
+    uses:
+      - Anything that can go both ways, such as a temperature, a balance,
+        or a scroll position.
+      - The `int` type in a program, and the bugs that come from a value
+        going below zero when nothing expected it to.
+    needs: [MIT-2.1a]
+
+  MIT-2.1c:
+    name: Rational numbers
+    outcome: MIT-2.1
+    plain: >
+      Anything you can write as one whole number over another. This family
+      exists because dividing two integers usually lands between them.
+    uses:
+      - Money, ratios, and percentages.
+      - Exact arithmetic in a program, where a fraction type avoids the
+        small errors a decimal introduces.
+    needs: [MIT-2.1b]
+
+  MIT-2.1d:
+    name: Irrational numbers
+    outcome: MIT-2.1
+    plain: >
+      Numbers no fraction can write exactly, such as the square root of
+      two, or pi. Their decimals run on forever without ever settling into
+      a repeat.
+    uses:
+      - Any measurement round a circle, or a diagonal across a square.
+      - Knowing why a program stores an approximation of pi rather than pi.
+    needs: [MIT-2.1c]
+
+  MIT-2.1e:
+    name: Computable numbers
+    outcome: MIT-2.1
+    plain: >
+      The numbers a program could work out to as many decimal places as you
+      asked for, given enough time. Almost every number anybody names is
+      one, and almost every number that exists is not.
+    uses:
+      - Understanding what a maths library actually gives you, which is a
+        value correct to a stated number of places.
+      - Seeing where the limits of computing sit, since a number no program
+        can produce is a limit of a different kind from a slow one.
+    needs: [MIT-2.1d]
+
+  MIT-2.1f:
+    name: Real numbers
+    outcome: MIT-2.1
+    plain: >
+      Everything on the number line, the fractions and the endless decimals
+      together. This is the family most maths written for people quietly
+      assumes.
+    uses:
+      - The `float` type in a program, which holds an approximation of one
+        of these.
+      - Knowing that 0.1 plus 0.2 is not exactly 0.3 in most languages, and
+        that this is a fact about the storage rather than a mistake.
+    needs: [MIT-2.1e]
+
+  MIT-2.1g:
+    name: Complex numbers
+    outcome: MIT-2.1
+    plain: >
+      A family that includes the square roots of negatives. It exists
+      because no number on the line multiplies by itself to give a
+      negative, and some equations ask for one that does.
+    uses:
+      - Signal processing and anything involving a wave.
+      - Working out whether a system settles down or oscillates.
+    needs: [MIT-2.1f]
 
   MIT-2.2:
     name: Set operations
@@ -252,7 +329,7 @@ topics:
         "everyone who has not paid" is a difference.
       - Permissions — what a user can do is usually the intersection of what
         their role allows and what the resource permits.
-    needs: [MIT-2.1]
+    needs: [MIT-2.1a]
 
   MIT-2.3:
     name: Venn diagrams
