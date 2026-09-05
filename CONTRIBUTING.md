@@ -100,6 +100,18 @@ changing how a report is built, sent, or worked — a change to one that
 leaves the others describing the old behaviour is exactly the stale-doc
 problem the next section is about.
 
+Two more workflows run against a report once it exists, neither on a push
+or a pull request: `label-report` fires the moment an issue opens and
+applies a `page:`/`kind:` label, creating either the first time it is
+needed — `dev/label_report.py` has the parsing and the label rules.
+`report-patterns` runs weekly and opens or updates a `pattern` issue for
+any page with three or more open reports, or any cell with two, in the
+last fortnight — `dev/report_patterns.py`, tested in
+`tests/test_report_patterns.py`. Both talk to GitHub's REST API directly
+over `urllib`, the same "no extra dependency" convention every other
+`dev/` script already follows, since neither needs anything the standard
+library does not already provide.
+
 ---
 
 ## Keep documentation and comments current
