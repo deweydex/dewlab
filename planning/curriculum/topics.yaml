@@ -1162,22 +1162,46 @@ topics:
     needs: [FOOP-LO4]
 
   # ---------------------------------------------------------------- CMPS 5N0554
-  CMPS-LO1:
-    name: Data structures and recursion
+  CMPS-LO1a:
+    name: Grids
     outcome: CMPS-LO1
     plain: >
-      Ways of arranging many values so a program can find and change them
-      quickly: a flat row, a grid with rows and columns, or a tree that
-      branches. It also covers the choice between repeating a step in a loop
-      and having a function call itself.
+      Arranging values in rows and columns rather than in a single row. You
+      reach one value by giving two positions, first which row and then
+      which column.
     uses:
-      - ASCII art and computer graphics, where a grid of characters or pixels
-        is a matrix in the plainest possible sense.
-      - Gaussian elimination for solving simultaneous equations, and decision
-        matrices for weighing several options against several criteria at
-        once.
-      - Classical searching, sorting and filtering, all of which walk one of
-        these structures.
+      - ASCII art and computer graphics, where a grid of characters or of
+        pixels is exactly this.
+      - Any table of numbers a program works on, such as a spreadsheet or a
+        set of readings taken at several places over several days.
+    needs: [MIT-6.7]
+
+  CMPS-LO1b:
+    name: Trees
+    outcome: CMPS-LO1
+    plain: >
+      Arranging values so that each one can lead to several others, and
+      none of them leads back. Following the branches gets you to any value
+      quickly, because each step rules out most of what is left.
+    uses:
+      - Folders on a disk, and the structure of a web page, both of which
+        branch this way.
+      - Deciding something in stages, where each answer narrows what you
+        ask next.
+    needs: [MIT-6.7]
+
+  CMPS-LO1c:
+    name: Recursion
+    outcome: CMPS-LO1
+    plain: >
+      Writing a function that calls itself on a smaller piece of the
+      problem. It needs a case small enough to answer outright, or it never
+      stops.
+    uses:
+      - Walking a tree or a folder structure, where each branch is the same
+        problem again on something smaller.
+      - Any method that splits a problem in half and combines the two
+        answers.
     needs: [MIT-6.7]
 
   CMPS-LO2:
