@@ -18,9 +18,12 @@ used to list as missing were closed across five new tutorials (a
 perceptron, a queue simulation, a coin-change strategy comparison, a
 folder-tree recursion tutorial, and a debugging tutorial) plus small
 additions to two existing ones — `planning/STATUS.md` §2 has the detail,
-including a few loose ends (no tutorial uses real data yet; the
-link-graph strand's crawl is still just a worked example) that don't
-block the outcome count but are worth knowing about.
+including a loose end that doesn't block the outcome count but is
+worth knowing about: the link-graph strand's crawl is still just a
+worked example, deliberately, in favour of a Markov-chain text-
+generation series built instead. (The other loose end this line used
+to name, no tutorial using real data, closed on 2026-09-05 — see
+`STATUS.md` §2 and `ROADMAP.md`'s Phase 2.)
 
 ## Why this file stops here
 
