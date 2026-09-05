@@ -372,17 +372,12 @@ def wrap(text: str) -> list[str]:
     return out
 
 
-def columns(topics: dict, edges: set) -> tuple[dict, list]:
-    """Which column each topic is drawn in, and what order the columns go in.
+def bands(topics: dict) -> dict:
+    """Which column each topic is drawn in.
 
     The column comes from `strands.yaml`, which is a drawing decision and not
     a claim about what depends on what. Columns branch, rejoin and reach into
     each other, and the arrows that cross between them are the point.
-
-    Their left-to-right order is worked out rather than chosen: every one of
-    the seven hundred and twenty arrangements is tried, and the one kept is
-    whichever puts the fewest column widths between the two ends of an arrow.
-    Related columns end up beside each other because the arrows say they are.
     """
     spec = yaml.safe_load(STRANDS.read_text())
     outcomes = {o["code"]: o
@@ -402,7 +397,42 @@ def columns(topics: dict, edges: set) -> tuple[dict, list]:
     if astray:
         raise SystemExit(f"no column for {', '.join(astray)} — add them to "
                          f"{STRANDS.name}")
+    return band
 
+
+def separate(g: dict, band: dict) -> tuple[int, int]:
+    """Drop the arrows a wall in `strands.yaml` forbids, and the levels that
+    straddle it.
+
+    A wall says one column's topics never come before another's. Where two
+    module descriptors cover the same ground in their own order, the graph
+    ends up asserting both directions between them, and no single pair can be
+    argued out of it. The wall settles the whole boundary at once, and the
+    file that declares it says why.
+    """
+    spec = yaml.safe_load(STRANDS.read_text())
+    walls = spec.get("no_arrow_from") or {}
+    if not walls:
+        return 0, 0
+    barred = {(a, b) for a, kids in walls.items() for b in kids}
+    arrows = {e for e in g["edges"] if (band[e[0]], band[e[1]]) in barred}
+    pairs = {p for p in g["levels"]
+             if (band[p[0]], band[p[1]]) in barred
+             or (band[p[1]], band[p[0]]) in barred}
+    g["edges"] -= arrows
+    g["levels"] -= pairs
+    return len(arrows), len(pairs)
+
+
+def column_order(topics: dict, edges: set, band: dict) -> list:
+    """What order the columns go in, left to right.
+
+    Worked out rather than chosen: every one of the seven hundred and twenty
+    arrangements is tried, and the one kept is whichever puts the fewest
+    column widths between the two ends of an arrow. Related columns end up
+    beside each other because the arrows say they are.
+    """
+    spec = yaml.safe_load(STRANDS.read_text())
     ids = [c["id"] for c in spec["columns"]]
     home = {c["id"]: i for i, c in enumerate(spec["columns"])}
 
@@ -412,7 +442,7 @@ def columns(topics: dict, edges: set) -> tuple[dict, list]:
         return (far, tuple(home[c] for c in order))
 
     best = min(itertools.permutations(ids), key=cost)
-    return band, [next(c for c in spec["columns"] if c["id"] == i) for i in best]
+    return [next(c for c in spec["columns"] if c["id"] == i) for i in best]
 
 
 def place(depth: dict, group: dict, edges: set, band: dict,
@@ -513,7 +543,8 @@ def page(topics: dict, g: dict, depth: dict, group: dict) -> str:
     because those are the ones worth looking at.
     """
     unit_of = {c: u for u, members in group.items() for c in members}
-    band, order = columns(topics, g["edges"])
+    band = bands(topics)
+    order = column_order(topics, g["edges"], band)
     at, spans, width, height = place(depth, group, g["edges"], band, order)
     col_of = {u: band[min(members)] for u, members in group.items()}
 
@@ -528,10 +559,10 @@ def page(topics: dict, g: dict, depth: dict, group: dict) -> str:
             down[a].add(b)
             up[b].add(a)
 
-    bands = []
+    stripes = []
     for i, c in enumerate(order):
         x, w = spans[c["id"]]
-        bands.append(
+        stripes.append(
             f'<g class="band{" alt" if i % 2 else ""}" data-c="{c["id"]}">'
             f'<rect x="{x:.0f}" y="0" width="{w:.0f}" height="{height}"/>'
             f'<text x="{x + w / 2:.0f}" y="30">{esc(c["name"])}</text></g>')
@@ -583,7 +614,7 @@ def page(topics: dict, g: dict, depth: dict, group: dict) -> str:
     return (TEMPLATE
             .replace("__W__", str(width))
             .replace("__H__", str(height))
-            .replace("__BANDS__", "\n".join(bands))
+            .replace("__BANDS__", "\n".join(stripes))
             .replace("__WIRES__", "\n".join(wires))
             .replace("__PAIRS__", "\n".join(pairs))
             .replace("__BOXES__", "\n".join(boxes))
@@ -811,10 +842,14 @@ def main() -> int:
     out = Path(sys.argv[1] if len(sys.argv) > 1 else "topic-graph.html")
     topics = yaml.safe_load(TOPICS.read_text())["topics"]
     g = revise(topics, judgements())
+    walled, straddling = separate(g, bands(topics))
     depth, group = layers(topics, g["edges"], g["levels"])
     out.write_text(page(topics, g, depth, group))
     print(f"wrote {out} — {len(topics)} topics, {len(g['edges'])} arrows, "
           f"{len(g['levels'])} two-way pairs, {max(depth.values()) + 1} layers")
+    if walled or straddling:
+        print(f"  a wall in {STRANDS.name} dropped {walled} arrows and "
+              f"{straddling} two-way pairs")
     return 0
 
 

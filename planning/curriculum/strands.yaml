@@ -70,3 +70,19 @@ topics:
   PDP-LO10: {column: software-development, why: Testing is a practice rather than a way of writing code.}
   PDP-LO11: {column: software-development, why: A standard is an agreement between people.}
   PDP-LO12: {column: software-development, why: Working together is the practice itself.}
+
+# A wall between two columns, in one direction.
+#
+# Software development is the practice of building software: testing it,
+# documenting it, deploying it, agreeing standards, working together.
+# Programming is learning to write code. A student writes code before there is
+# anything to test or deploy, so the practice never comes before the basics.
+#
+# Twenty-nine arrows said otherwise, and ten pairs said the two are one
+# lesson. They come from the two module descriptors covering the same ground
+# in their own order rather than from anything a student needs, so they are
+# dropped here rather than argued one at a time. Arrows the other way, from
+# programming into software development, are kept: there are thirty-two, and
+# every one of them says you write the thing before you look after it.
+no_arrow_from:
+  software-development: [programming]
