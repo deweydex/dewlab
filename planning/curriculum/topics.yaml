@@ -170,20 +170,33 @@ topics:
         as factorising and the reason both are called that.
     needs: [MIT-1.8]
 
-  MIT-1.10:
-    name: Solving quadratics, including complex roots
+  MIT-1.10a:
+    name: Solving quadratics
     outcome: MIT-1.10
     plain: >
-      The formula that solves any quadratic, and what to do when it asks for the
-      square root of a negative number. The answers still exist — they are just
-      not on the number line you have been using.
+      The formula that solves any quadratic equation. You put the three
+      numbers in and it gives you the values that make the equation true.
     uses:
-      - Signal processing and anything involving a wave. Complex numbers are the
-        natural language for "how big" and "how far shifted" at once.
-      - Working out whether a system settles down or oscillates, which is the
-        difference between a control loop that works and one that shakes itself
-        apart.
-    needs: [MIT-1.9, MIT-2.1]
+      - Working out where something lands, or when it arrives, whenever the
+        quantity changes at a changing rate.
+      - Finding where two curves meet, which is how a program answers a
+        question like whether two moving objects collide.
+    needs: [MIT-1.9]
+
+  MIT-1.10b:
+    name: Complex roots
+    outcome: MIT-1.10
+    plain: >
+      What to do when the formula asks for the square root of a negative
+      number. The answers still exist. They sit off the number line you
+      have been using, on a second axis at right angles to it.
+    uses:
+      - Signal processing and anything involving a wave. Complex numbers
+        hold how big and how far shifted in one value.
+      - Working out whether a system settles down or oscillates, which is
+        the difference between a control loop that works and one that
+        shakes itself apart.
+    needs: [MIT-1.10a, MIT-2.1]
 
   MIT-1.11:
     name: Linear inequalities
