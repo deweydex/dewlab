@@ -50,6 +50,16 @@ jobs:
       - name: Fail if the pair game's topics are out of date
         run: python3 dev/build_topic_game.py --check
 
+      # The pair reports are generated from the judgement files and checked in,
+      # so a run that reported different loops each time would show up as noise
+      # in every diff.
+      - name: Fail if a pair report is out of date
+        run: |
+          python3 dev/pair_results.py
+          python3 dev/pair_results.py --from blind
+          python3 dev/pair_results.py --from sighted
+          git diff --exit-code planning/curriculum/review/pair-results*.md
+
       # The build already refuses to publish a tutorial whose `tutorial:` link
       # goes nowhere. This holds the documentation about the project to the same
       # standard, which it had drifted from: renamed files still cited by their

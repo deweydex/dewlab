@@ -10,8 +10,13 @@ they were missed: a loop, a disagreement, and an arrow nobody kept.
 from __future__ import annotations
 
 import json
+import os
+import random
+import subprocess
 import sys
 from pathlib import Path
+
+import yaml
 
 import pytest
 
@@ -113,6 +118,46 @@ def test_an_unreadable_batch_is_skipped_rather_than_fatal(pairs, capsys):
     batch(pairs, "1.json", "josh", [{"pair": ["A", "C"], "verdict": "unrelated"}])
     assert len(pr.load_batches()) == 1
     assert "broken.json" in capsys.readouterr().err
+
+
+def test_the_same_judgements_give_the_same_report_across_runs(tmp_path):
+    """A set of edges iterates in whatever order the hash gives, and the loop
+    walk follows that order, so two runs over one pile of judgements reported
+    different loops. A generated file that cannot be reproduced cannot be
+    checked into CI, which is the whole point of generating it.
+
+    In one process that order is fixed, so the fault only shows across
+    processes: this runs the report several times with a different hash seed
+    each time, which is what two people on two machines get.
+    """
+    # Ten topics, each pointing at three others: enough overlapping loops that
+    # which ones the walk reports depends on the order it meets a topic's
+    # out-edges. A handful of topics with one edge each will not show it.
+    rng = random.Random(7)
+    codes = list("abcdefghij")
+    edges = [(a, b) for a in codes
+             for b in rng.sample([c for c in codes if c != a], 3)]
+    (tmp_path / "topics.yaml").write_text(yaml.safe_dump(
+        {"topics": {c: {"name": c.upper(), "needs": []} for c in codes}}))
+    (tmp_path / "pairs").mkdir()
+    (tmp_path / "pairs" / "1.json").write_text(json.dumps({"by": "josh", "judgements": [
+        {"pair": [a, b], "verdict": "needs", "first": a} for a, b in edges]}))
+
+    script = (
+        "import sys, pathlib; sys.path.insert(0, %r);"
+        "import pair_results as pr;"
+        "pr.TOPICS = pathlib.Path(%r); pr.PAIRS = pathlib.Path(%r);"
+        "print(pr.build_report(pr.load_topics(), pr.load_batches()))"
+    ) % (str(Path(__file__).resolve().parent.parent / "dev"),
+         str(tmp_path / "topics.yaml"), str(tmp_path / "pairs"))
+
+    seen = set()
+    for seed in ("1", "7", "42", "1234", "99999"):
+        out = subprocess.run([sys.executable, "-c", script], capture_output=True,
+                             text=True, env={**os.environ, "PYTHONHASHSEED": seed})
+        assert out.returncode == 0, out.stderr
+        seen.add(out.stdout)
+    assert len(seen) == 1, "the report differs between runs over one pile"
 
 
 def test_a_pair_with_the_wrong_shape_is_ignored(pairs):

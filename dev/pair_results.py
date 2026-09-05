@@ -56,7 +56,21 @@ REPORT = REVIEW / "pair-results.md"
 # would lose the comparison that is the point of having both. `blind/README.md`
 # has what the comparison showed.
 SOURCES = {"pairs": (PAIRS, REPORT),
-           "blind": (REVIEW / "blind", REVIEW / "pair-results-blind.md")}
+           "blind": (REVIEW / "blind", REVIEW / "pair-results-blind.md"),
+           "sighted": (REVIEW / "sighted", REVIEW / "pair-results-sighted.md")}
+
+# Thirteen topics were split after these judgements were made, so a judgement
+# names a code that is gone. Each stands for the child that took over its
+# arrows, which is what `dev/draw_topic_graph.py` does; here it only decides
+# which name the report prints, so a reader is not left looking up a code that
+# no longer exists.
+GONE = {
+    "MIT-6.3": "MIT-6.3a", "MIT-1.1": "MIT-1.1a", "MIT-6.8": "MIT-6.8a",
+    "PDP-LO6": "PDP-LO6a", "MIT-1.10": "MIT-1.10a", "MIT-4.10": "MIT-4.10a",
+    "MIT-5.12": "MIT-5.12a", "CMPS-LO1": "CMPS-LO1a", "MIT-5.8": "MIT-5.8a",
+    "MIT-4.6": "MIT-4.6a", "CMPS-LO4": "CMPS-LO4a", "CMPS-LO2": "CMPS-LO2a",
+    "MIT-2.1": "MIT-2.1a", "MIT-6.5": "MIT-6.3a",
+}
 
 
 def load_topics() -> dict:
@@ -153,8 +167,12 @@ def reachable_from(edges: set[tuple]) -> dict[str, set[str]]:
     nothing new when the graph runs factorials to permutations to
     combinations already.
     """
+    # Sorted, because a set of edges iterates in whatever order the hash
+    # gives, and the walk below follows that order. The loops it reports would
+    # otherwise differ between two runs over the same data, which makes a
+    # generated file impossible to check into CI.
     ahead: dict[str, list[str]] = defaultdict(list)
-    for early, late in edges:
+    for early, late in sorted(edges):
         ahead[early].append(late)
 
     memo: dict[str, set[str]] = {}
@@ -182,8 +200,12 @@ def cycles(edges: set[tuple]) -> list[list[str]]:
     A loop of two topics and a loop of five are different findings, so the
     caller separates them; this only finds them.
     """
+    # Sorted, because a set of edges iterates in whatever order the hash
+    # gives, and the walk below follows that order. The loops it reports would
+    # otherwise differ between two runs over the same data, which makes a
+    # generated file impossible to check into CI.
     ahead: dict[str, list[str]] = defaultdict(list)
-    for early, late in edges:
+    for early, late in sorted(edges):
         ahead[early].append(late)
     found, path, on_path, seen = [], [], set(), set()
 
@@ -199,16 +221,17 @@ def cycles(edges: set[tuple]) -> list[list[str]]:
         on_path.discard(node)
         path.pop()
 
-    for node in list(ahead):
+    for node in sorted(ahead):
         if node not in seen:
             walk(node)
     return found
 
 
 def name_of(topics: dict, code: str, renames: dict) -> str:
+    live = GONE.get(code, code)
     if code in renames:
-        return f"{renames[code]} (was {topics.get(code, {}).get('name', code)})"
-    return topics.get(code, {}).get("name", code)
+        return f"{renames[code]} (was {topics.get(live, {}).get('name', code)})"
+    return topics.get(live, {}).get("name", code)
 
 
 def build_report(topics: dict, batches: list[dict]) -> str:
@@ -266,12 +289,13 @@ def build_report(topics: dict, batches: list[dict]) -> str:
         elif verdict == "unsure":
             unsure.append(key)
 
+    both_ways.sort(key=lambda entry: entry[0])
     loops = cycles(existing | judged_edges)
     # A two-topic loop says those two are a level. A longer one is a real
     # problem: it cannot be taught in any order and no amount of teaching
     # them together fixes it.
-    levels = [lp for lp in loops if len(lp) == 3]
-    tangles = [lp for lp in loops if len(lp) > 3]
+    levels = sorted((lp for lp in loops if len(lp) == 3), key=lambda lp: lp[0])
+    tangles = sorted((lp for lp in loops if len(lp) > 3), key=lambda lp: lp[0])
 
     nm = lambda code: name_of(topics, code, renames)
     L = []
