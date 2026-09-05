@@ -181,7 +181,7 @@ topics:
         quantity changes at a changing rate.
       - Finding where two curves meet, which is how a program answers a
         question like whether two moving objects collide.
-    needs: [MIT-1.9]
+    needs: [MIT-1.9, PRE-2]
 
   MIT-1.10b:
     name: Complex roots
@@ -605,6 +605,23 @@ topics:
       - Splitting a movement into how far across and how far up, which is what
         every "move at this angle" in a game does.
     needs: [MIT-4.4, PRE-1]
+
+  PRE-2:
+    # Groundwork, like PRE-1: no descriptor asks for it, and the algebra
+    # outcomes all quietly assume it.
+    strand: algebra
+    name: Moving an equation around
+    plain: >
+      Doing the same thing to both sides of an equation so that it still says
+      the same thing. Add to both sides, multiply both sides, take the same
+      term off both sides. Every method of solving anything rests on this one
+      move, repeated.
+    uses:
+      - Rearranging any formula in code so it gives you the value you actually
+        want, rather than the one it was written to give.
+      - Checking your own work. If a step did not do the same thing to both
+        sides, the two lines are not equal and everything after is wrong.
+    needs: []
 
   PRE-1:
     # Groundwork carries its own strand: strands otherwise come from
