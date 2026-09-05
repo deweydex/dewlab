@@ -328,11 +328,14 @@ decisions:
       called for.
 
   - pair: [MIT-5.12, MIT-5.9]
-    verdict: unrelated
+    verdict: needs
+    first: MIT-5.9
     why: >
-      Overrules both judges, who agreed averages come before kinds of data.
-      Keeping their arrow alongside the existing one from kinds of data into
-      frequency tables put kinds of data above and below the same box.
+      Settled, after going round twice. Both judges agreed averages come
+      before kinds of data, reading the tutorial. Josh's own game answer says
+      the taxonomy comes first, and asked which he wanted, he stood by it.
+      This was briefly recorded as unrelated only to break a loop, which was
+      breaking it by removing the question rather than by answering it.
 
   - pair: [MIT-1.5, MIT-1.6]
     verdict: needs
