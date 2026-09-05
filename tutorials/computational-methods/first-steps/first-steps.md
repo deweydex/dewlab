@@ -51,6 +51,30 @@ for value in [1, 2, 3]:
 You can tell the difference by looking for the **Run** button. If there isn't
 one, the code is an illustration.
 
+## When a cell does not do what you expect
+
+A cell can fail without anything being wrong with the site. Three things are
+worth trying, in this order.
+
+**Reset the cell.** The button next to Run puts back the code the tutorial
+started with. If the cell works again after that, an edit was the cause, not
+the page.
+
+**Run the cells above it.** A later cell often needs something an earlier one
+set up. The small **⋯** button beside Run opens "Run this cell and all
+above," which runs every cell before this one from the top.
+
+**Reload the page.** This starts Python fresh. It clears nothing you have
+saved — your work is kept in this browser, on this device.
+
+[When It Goes Wrong](tutorial:when-it-goes-wrong#reading-a-traceback) covers
+what an error message is actually telling you, line by line.
+
+If none of the three explain it, click the small circle beside a cell's
+hint. It opens a report with your code and the cell's last output already
+included, nothing to copy. The line at the foot of every page does the same
+for the page as a whole, rather than one cell.
+
 ## Where to go next
 
 The next tutorial in this series works with a table of data rather than single

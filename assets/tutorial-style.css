@@ -667,6 +667,42 @@ p code, li code {
 }
 .dl-hint-text[hidden] { display: none; }
 
+/* A cell's own report toggle (DECISIONS_LOG.md Phase 8) — the same
+ * circular-icon, click-to-open-a-block-below shape as .dl-hint-icon right
+ * beside it, deliberately not a fifth always-visible text button: see the
+ * comment on render_cell() in build.py for why. Its revealed panel reuses
+ * the footer's own .dl-report-doors styling below, plus this cell-scoped
+ * variant for the padding/border a block sitting inside a cell needs
+ * (the footer has no cell border to sit against). */
+.dl-report-icon {
+  width: 1.15rem; height: 1.15rem;
+  border-radius: 50%;
+  border: 1px solid var(--dl-cell-border);
+  background: var(--dl-panel-bg);
+  color: var(--dl-muted);
+  font-size: 0.68rem;
+  line-height: 1.05rem;
+  text-align: center;
+  cursor: pointer;
+  padding: 0;
+}
+.dl-report-icon[aria-expanded="true"] {
+  background: var(--dl-orange);
+  border-color: var(--dl-orange);
+  color: #fff;
+}
+.dl-cell-report-doors {
+  padding: 0.6rem 0.75rem;
+  border-top: 1px solid var(--dl-cell-border);
+  background: var(--dl-panel-bg);
+  font-size: 0.82rem;
+}
+.dl-cell-report-doors[hidden] { display: none; }
+/* Two classes, not one, so this beats .dl-report-doors p's own margin
+ * regardless of which rule the cascade sees first in the file — the cell
+ * panel already gets its spacing from the padding above. */
+.dl-cell-report-doors.dl-report-doors p { margin: 0; }
+
 .dl-editor { background: var(--dl-panel-bg); }
 .dl-editor .cm-editor { font-size: 0.86rem; }
 .dl-editor .cm-editor.cm-focused { outline: none; }
@@ -2939,6 +2975,18 @@ p code, li code {
 .dl-footer a { color: inherit; }
 .dl-footer a:hover { color: var(--dl-fg); }
 
+/* The "three doors" report disclosure (DECISIONS_LOG.md Phase 8). A plain
+ * <details> — clicking the summary reveals the list below it in normal
+ * flow, the same "push down, cover nothing" shape .dl-hint-text already
+ * uses, rather than a floating dropdown that could sit over the page
+ * below the footer or trap a touch reader who cannot hover to dismiss it. */
+.dl-report-doors summary { cursor: pointer; color: inherit; }
+.dl-report-doors summary:hover,
+.dl-report-doors[open] summary { color: var(--dl-fg); }
+.dl-report-doors p { margin: 0.6rem 0 0; }
+.dl-report-doors a { color: var(--dl-link); }
+.dl-report-doors a:hover { color: var(--dl-fg); }
+
 /* ------------------------------------------------------------------ print
  *
  * "Print — or save as PDF" in Settings calls window.print() — this is what a
@@ -2950,7 +2998,8 @@ p code, li code {
 @media print {
   .dl-chrome, .dl-reference-toggle, .dl-seriesnav-toggle,
   .dl-settings, .dl-reference, .dl-seriesnav, .dl-status, .dl-nav,
-  .dl-insert, .dl-hint-icon, .dl-cell-bar .dl-btn {
+  .dl-insert, .dl-hint-icon, .dl-report-icon, .dl-cell-report-doors,
+  .dl-cell-bar .dl-btn, .dl-report-doors {
     display: none !important;
   }
   body, .dl-page { background: #fff !important; color: #111 !important; }

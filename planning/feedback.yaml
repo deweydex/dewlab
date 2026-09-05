@@ -1,0 +1,9 @@
+# Turns the "Something wrong on this page? Tell us." link off everywhere it
+# appears on the site, without touching a single tutorial. Flip `enabled` to
+# `false` and push (or edit this file straight from GitHub's web editor and
+# commit to main) if student reports need to stop while something is fixed,
+# or the feature is not working as meant. Flip it back the same way.
+#
+# Read by build.py's feedback_enabled(). Missing this file, or missing
+# `enabled:` inside it, both mean on. See DECISIONS_LOG.md, Phase 8.
+enabled: true

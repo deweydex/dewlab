@@ -13,6 +13,7 @@ from __future__ import annotations
 import json
 import re
 import sys
+import urllib.parse
 import zipfile
 
 import yaml
@@ -3379,3 +3380,124 @@ def test_no_workbench_folder_is_not_an_error(repo, monkeypatch):
     monkeypatch.setattr(b, "DEWMARK_WORKBENCH", repo / "dewmark" / "workbench")
     b.build()
     assert not (b.OUT / "dewmark").exists()
+
+
+class TestFeedbackFooter:
+    """The footer's "three doors" report disclosure — DECISIONS_LOG Phase 8.
+    On by default; planning/feedback.yaml is the kill switch."""
+
+    def test_doors_on_a_tutorial_page_by_default(self, repo, monkeypatch):
+        write(repo, "# Sample\n\nSome text.")
+        b.build()
+
+        page = built(repo)
+        assert '<details class="dl-report-doors">' in page
+        assert "Something wrong on this page? Tell us." in page
+        assert "I have a question" in page
+        assert "It gives an error" in page
+        assert "The page is wrong, or I could not follow it" in page
+        assert "github.com/deweydex/dewlab/discussions/new" in page
+        assert "github.com/deweydex/dewlab/issues/new?" in page
+        assert "template=report.yml" in page
+        assert "page=computational-methods%2Fsample" in page
+        assert "version=2026.08.23.1" in page
+        assert "kind=It+gives+an+error" in page
+        assert "kind=The+page+is+wrong" in page
+
+    def test_doors_gone_when_switched_off(self, repo, monkeypatch):
+        (repo / "planning").mkdir(parents=True, exist_ok=True)
+        (repo / "planning" / "feedback.yaml").write_text("enabled: false\n")
+        write(repo, "# Sample\n\nSome text.")
+        b.build()
+
+        page = built(repo)
+        assert "Something wrong on this page?" not in page
+        assert "dl-report-doors" not in page
+        assert "issues/new" not in page
+        assert "discussions/new" not in page
+
+    def test_doors_also_appear_on_the_contents_page(self, repo, monkeypatch):
+        write(repo, "# Sample\n\nSome text.")
+        b.build()
+
+        index = (repo / "site" / "index.html").read_text()
+        assert "Something wrong on this page? Tell us." in index
+        assert "discussions/new" in index
+
+    def test_report_issue_url_carries_page_and_version(self):
+        url = b.report_issue_url("computational-methods/first-steps", "2026.09.01.2")
+        assert url.startswith("https://github.com/deweydex/dewlab/issues/new?")
+        assert "page=computational-methods%2Ffirst-steps" in url
+        assert "version=2026.09.01.2" in url
+        assert "template=report.yml" in url
+        assert "kind=" not in url
+
+    def test_report_issue_url_carries_kind_when_given(self):
+        url = b.report_issue_url("a/b", "1", kind="The page is wrong, or I could not follow it")
+        assert "kind=The+page+is+wrong" in url
+
+    def test_report_doors_html_kinds_match_the_issue_template(self):
+        template = yaml.safe_load(
+            (b.ROOT / ".github" / "ISSUE_TEMPLATE" / "report.yml").read_text()
+        )
+        options = next(
+            f["attributes"]["options"] for f in template["body"] if f.get("id") == "kind"
+        )
+        html = b.report_doors_html("a/b", "1")
+        assert f"kind={urllib.parse.quote_plus(options[0])}" in html
+        assert f"kind={urllib.parse.quote_plus(options[1])}" in html
+        # The third option ("a question, an idea, or something else") is
+        # deliberately not one of the doors' issue links — a question goes
+        # to Discussions instead, which is the whole point of having doors.
+        assert options[2] not in html
+
+    def test_feedback_enabled_defaults_true_without_a_config_file(self, repo):
+        assert b.feedback_enabled() is True
+
+    def test_feedback_enabled_reads_the_config_file(self, repo):
+        (repo / "planning").mkdir(parents=True, exist_ok=True)
+        (repo / "planning" / "feedback.yaml").write_text("enabled: false\n")
+        assert b.feedback_enabled() is False
+
+
+class TestCellReportPanel:
+    """The report icon and its panel on an authored cell — DECISIONS_LOG
+    Phase 8, the deferred half of the plan built once the footer doors
+    were live. code/output are filled in by tutorial-runtime.js at open
+    time, not at build time — see updateCellReportLinks() there."""
+
+    def test_report_icon_and_panel_on_a_cell_by_default(self, repo, monkeypatch):
+        write(repo, "```python exec\nid: greet\nprint('hi')\n```\n", slug="sample")
+        b.build()
+
+        page = built(repo)
+        assert '<button type="button" class="dl-report-icon"' in page
+        assert 'aria-controls="dl-report-greet"' in page
+        assert 'id="dl-report-greet" hidden' in page
+        assert 'class="dl-report-doors dl-cell-report-doors"' in page
+        assert "cell=greet" in page
+        assert "I have a question" in page
+        assert "It gives an error" in page
+
+    def test_report_icon_gone_when_switched_off(self, repo, monkeypatch):
+        (repo / "planning").mkdir(parents=True, exist_ok=True)
+        (repo / "planning" / "feedback.yaml").write_text("enabled: false\n")
+        write(repo, "```python exec\nid: greet\nprint('hi')\n```\n", slug="sample")
+        b.build()
+
+        page = built(repo)
+        assert "dl-report-icon" not in page
+        assert "dl-cell-report-doors" not in page
+
+    def test_report_issue_url_carries_cell_when_given(self):
+        url = b.report_issue_url("a/b", "1", cell="greet")
+        assert "cell=greet" in url
+
+    def test_report_doors_links_marks_only_the_issue_links(self):
+        html = b.report_doors_links("a/b", "1", cell="greet")
+        assert html.count('class="dl-report-issue-link"') == 2
+        # The Discussions link is deliberately not one of them — nothing
+        # in tutorial-runtime.js should try to inject code/output into it.
+        discuss_start = html.index("discussions/new")
+        issue_start = html.index("dl-report-issue-link")
+        assert discuss_start < issue_start

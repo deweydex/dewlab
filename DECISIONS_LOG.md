@@ -6371,3 +6371,133 @@ task this was filed as ("dewmini has no run announcement") was wrong —
 it already had one — and the real gap only turned up by reading
 `runCell()` and `updateStatus()` directly instead of trusting the
 title on the task.*
+
+
+## Phase 8 — Student feedback pathway
+
+Planned in an artifact worked through with Josh before any code existed:
+GitHub already has the receiving end (Issues, an issue form, labels, a
+Project), so the gap was at the student's end, and the further choice to
+teach the account rather than route around it, since dewstack's students
+already make one and dewlab's own reporting document already assumed one.
+This phase is the first slice of that plan: a link on every page, the
+issue form it opens, and a switch to turn the link off. The "three doors"
+panel, the cell-level report button with code capture, and the two new
+debugging/GitHub-reading tutorials are deliberately not part of this
+slice — see the artifact for the fuller design and why they were held
+back.
+
+**8.1 — The kill switch is a YAML file, read fresh on every call, not a
+`build.py` constant.** `planning/feedback.yaml` holds one key,
+`enabled:`. The alternative, a `FEEDBACK_ENABLED = True` constant near
+the top of `build.py`, would work exactly as well for the build itself,
+but it asks whoever needs to turn the link off in a hurry to find one
+line inside a 4,000-line file rather than one line inside a file whose
+whole content is that line and a comment explaining it. It is read fresh
+from `ROOT` on every call, matching `module_order()`'s own reasoning
+(ARCHITECTURE.md §1, step 5): a module-level constant computed at
+import time would not see a test's temporary `ROOT`. Missing
+the file, or missing `enabled:` inside it, both mean on — the switch
+exists to make turning the link off fast, not to make on the careful
+path.
+*Cost to change: trivial. One file, one function, six call sites of
+`site_footer()` that already pass it a page.*
+
+**8.2 — Every page gets a report link, not only tutorial pages.** The
+contents page, the topic tree, "browse by topic," the About page and the
+editor all call `site_footer()` with their own slug and a version of
+`"1"`, the same as their existing `{{SLUG}}`/`{{VERSION}}` tokens. The
+plan's own Treatment 2 asked for the link "on every page," and there was
+no reason a bug on the topic tree or in the editor should be harder to
+report than one in a tutorial.
+*Cost to change: small — dropping a page from the list is removing one
+call site's arguments.*
+
+**8.3 — The prefilled link carries only `page` and `version`; browser and
+the cell's code are not captured yet.** `report_issue_url()` builds a
+GitHub "new issue" address from two query parameters, matching the two
+fields in `.github/ISSUE_TEMPLATE/report.yml` that are marked "filled in
+for you." Browser and device, and a cell's current code and last output,
+are both real fields the reporting document already asks students to
+include by hand — but capturing them automatically needs JavaScript
+running on the page, which is the report panel from the plan's
+Treatment 1, not yet built. The issue template's `kind:` dropdown already
+has a "gives an error" option that names the checks a student should have
+tried, so a student reporting a cell bug today writes one sentence and
+picks that option, rather than the panel doing it for them.
+*Cost to change: small on its own — adding fields to `report_issue_url()`
+and the template is additive — but real work follows from it: the report
+panel and the cell-level button both need to exist for the extra fields
+to fill themselves in, which is the deferred half of this plan.*
+
+**8.4 — The "three doors" choice is a static `<details>` disclosure, not
+JavaScript.** The plan's Treatment 1 asked for a question to be sorted
+away from a bug report before it is sent, since a question filed as an
+issue is the wrong container for it and for whoever answers it later.
+That sorting turned out not to need the report panel or any runtime code
+at all: `report_doors_html()` renders three plain links inside a
+`<details>`/`<summary>` — a question to `/discussions/new`, the other two
+to `report_issue_url()` with `kind` set to one of
+`.github/ISSUE_TEMPLATE/report.yml`'s dropdown options, matched exactly
+so GitHub pre-selects it. Revealing the list pushes the rest of the
+footer down in normal flow, the same shape `.dl-hint-text` already uses,
+rather than a floating dropdown that could sit over content below it or
+trap a touch reader with no hover to dismiss it. `report_issue_url()`
+gained an optional third argument, `kind`, backward compatible with its
+two existing call sites.
+
+The Discussions link is real today even though Discussions itself is
+still off for both repositories — a manual step, not a code one — so it
+404s until that switch is flipped. Shipping it inert rather than waiting
+for the manual step means the doors are already correct once Discussions
+is turned on, with nothing to remember to come back and add.
+*Cost to change: small. The two option strings are the coupling point
+between `build.py` and the issue template — a wording change to one
+without the other, and `test_report_doors_html_kinds_match_the_issue_template`
+catches it.*
+
+**8.5 — The cell-level report control is an icon, not a fourth button, and
+its panel is filled in at open time, not build time.** The plan's
+Treatment 1 asked for a report button in the cell bar that captures a
+cell's own code and last output automatically. Two things had to be
+decided that the plan left implicit.
+
+First, where it sits. `.dl-cell-more`'s own existing comment already
+warns against "crowding a bar that already has reset and Run" with more
+always-visible buttons — so the report control is `.dl-report-icon`, the
+same small circular toggle as `.dl-hint-icon` right beside it, not a
+fifth `.dl-btn`. Its panel (`.dl-report-doors.dl-cell-report-doors`) opens
+as a plain block after the bar, the same push-down shape `.dl-hint-text`
+already uses, reusing `report_doors_links()` — the inner half of the
+footer's own three-doors markup, split out so both call sites share it.
+
+Second, what build time can and cannot know. `page`, `version` and this
+cell's own id are build-time constants, threaded down through
+`place_blocks()` from `load()` (which has the tutorial's frontmatter
+before a `Tutorial` object even exists) into `render_cell()`. A cell's
+current code and its last output are not — they depend on what the
+reader has actually typed and run, which does not exist until their
+browser tab does. Those two fields ship blank from `build.py` and are
+filled in by `updateCellReportLinks()` in `tutorial-runtime.js`, called
+once, at the moment the panel opens — not kept live on every keystroke,
+since nobody reads a report link before opening the panel to use it.
+`report_doors_links()` marks its two issue links with
+`class="dl-report-issue-link"` for exactly this: something for the
+runtime to select without re-parsing `href`s to tell them apart from the
+Discussions link, which needs no code or output.
+
+A custom cell — the reader's own, created at runtime rather than
+authored — gets none of this. There is nothing to report about code
+nobody but the reader wrote.
+
+Verified in a real browser, not only unit tests: `tests/e2e/test_cell_report.py`,
+against a self-hosted Pyodide (`python3 dev/fetch_pyodide.py`) and this
+machine's own pre-installed Chromium — the panel's `output` field is
+absent before a cell has run, carries the actual traceback after one
+errors (`error-traceback` in the e2e fixture), and a live edit shows up
+in `code` rather than the starter text the page shipped with.
+*Cost to change: moderate. Two files agree on the shape of a report
+link now (`build.py`'s markup, `tutorial-runtime.js`'s
+`updateCellReportLinks()`), and the `dl-report-issue-link` class is the
+seam between them — rename or restructure one without the other, and the
+runtime silently stops finding anything to update.*

@@ -33,6 +33,7 @@ import os
 import re
 import shutil
 import sys
+import urllib.parse
 import zipfile
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -515,7 +516,7 @@ def extract_math(body: str) -> tuple[str, list[Math]]:
 # ----------------------------------------------------------------- rendering
 
 
-def render_cell(cell: Cell, number: int) -> str:
+def render_cell(cell: Cell, number: int, page: str = "", version: str = "") -> str:
     """The markup the runtime binds an editor, a Run button and an output area to.
 
     The bar sits below the editor and output, not above them — a reader's
@@ -557,6 +558,20 @@ def render_cell(cell: Cell, number: int) -> str:
     same seam rather than needing one of its own. An authored cell
     itself is the tutorial's own content and stays fixed; the copy is
     the reader's, free to edit or delete.
+
+    The report icon (DECISIONS_LOG.md Phase 8) is the same toggle
+    pattern as the hint icon right beside it — a small circular button
+    that opens a plain block after the bar, not a floating popover —
+    deliberately not a fourth always-visible text button next to
+    duplicate/reset/run: `.dl-cell-more`'s own comment already explains
+    why this bar avoids crowding itself with one-off actions. `page` and
+    `version` are build-time constants, the same as the footer's; `code`
+    and `output` are not knowable until the reader has actually typed
+    and run something, so those two fields stay blank in this markup and
+    are filled in by `tutorial-runtime.js` at the moment the panel opens
+    — see `updateCellReportLinks()` there. A custom cell (the reader's
+    own, not the tutorial's) gets none of this: there is nothing to
+    report about code nobody but the reader wrote.
     """
     safe_id = html.escape(cell.id, quote=True)
     hint_markup = ""
@@ -570,6 +585,21 @@ def render_cell(cell: Cell, number: int) -> str:
         hint_text = (
             f'<div class="dl-hint-text" id="dl-hint-{safe_id}" hidden>'
             f"{html.escape(cell.hint)}</div>"
+        )
+    report_markup = ""
+    report_box = ""
+    if page and feedback_enabled():
+        report_markup = (
+            f'<button type="button" class="dl-report-icon" aria-expanded="false" '
+            f'aria-controls="dl-report-{safe_id}" '
+            f'aria-label="Report a problem with Cell {number}" '
+            f'title="Report a problem with this cell">&#9873;</button>'
+        )
+        report_box = (
+            f'<div class="dl-report-doors dl-cell-report-doors" '
+            f'id="dl-report-{safe_id}" hidden>'
+            f"{report_doors_links(page, version, cell=cell.id)}"
+            "</div>"
         )
     return (
         f'<div class="dl-cell" data-cell-id="{safe_id}">'
@@ -592,6 +622,7 @@ def render_cell(cell: Cell, number: int) -> str:
         '<span class="dl-cell-runline"></span>'
         '<span class="dl-cell-spacer"></span>'
         f"{hint_markup}"
+        f"{report_markup}"
         '<button type="button" class="dl-btn dl-btn-duplicate" '
         'title="Copy this cell into your own, right below it">duplicate</button>'
         '<button type="button" class="dl-btn dl-btn-reset">reset</button>'
@@ -608,6 +639,7 @@ def render_cell(cell: Cell, number: int) -> str:
         '<button type="button" class="dl-btn dl-btn-run" disabled>…</button>'
         "</div>"
         f"{hint_text}"
+        f"{report_box}"
         "</div>"
     )
 
@@ -649,7 +681,8 @@ def to_html(body: str) -> tuple[str, list]:
 
 
 def place_blocks(
-    page_html: str, cells: list[Cell], blocks: list[CodeBlock], maths: list[Math]
+    page_html: str, cells: list[Cell], blocks: list[CodeBlock], maths: list[Math],
+    page: str = "", version: str = "",
 ) -> str:
     """Puts cells, illustrative code blocks, and maths back into the page
     after the Markdown converter has run. `extract_blocks`/`extract_math`
@@ -661,12 +694,19 @@ def place_blocks(
     their content from Markdown's own text-formatting rules — see
     `extract_math`'s own comment for a concrete example of what goes
     wrong otherwise.
+
+    `page` and `version` are only for `render_cell()`'s own report panel
+    (DECISIONS_LOG.md Phase 8) — passed straight through, since this
+    function runs from `load()`, before a tutorial's own frontmatter has
+    become a `Tutorial` object with a `.slug`/`.module` of its own.
     """
     for index, cell in enumerate(cells):
         placeholder = f"<!--dewlab-cell-{index}-->"
         if placeholder not in page_html:
             raise BuildError(f"cell {cell.id!r} was lost during markdown conversion")
-        page_html = page_html.replace(placeholder, render_cell(cell, index + 1))
+        page_html = page_html.replace(
+            placeholder, render_cell(cell, index + 1, page, version)
+        )
     for index, block in enumerate(blocks):
         page_html = page_html.replace(f"<!--dewlab-code-{index}-->", render_code_block(block))
     for index, item in enumerate(maths):
@@ -2336,7 +2376,8 @@ def load(path: Path) -> Tutorial:
     stripped, maths = extract_math(stripped)
     stripped = loosen_tight_lists(stripped)
     converted, toc = to_html(stripped)
-    body_html = place_blocks(converted, cells, blocks, maths)
+    page = f"{meta.get('module', '')}/{meta.get('slug', '')}"
+    body_html = place_blocks(converted, cells, blocks, maths, page, str(meta.get("version", "")))
     body_html, notes = extract_notes(body_html, path)
     anchors = set(ID_RE.findall(body_html)) | {c.id for c in cells}
     return Tutorial(
@@ -2556,15 +2597,104 @@ def practice_link(tutorial: Tutorial, practice: Tutorial | None,
 
 
 _LICENCE_URL = "https://github.com/deweydex/dewlab/blob/main/LICENSE.md"
+_REPORT_REPO_URL = "https://github.com/deweydex/dewlab"
+FEEDBACK_CONFIG_FILE = "feedback.yaml"
 
 
-def site_footer() -> str:
-    """Copyright line and licence link, stamped with the current year."""
-    year = datetime.date.today().year
+def feedback_enabled() -> bool:
+    """Whether the "report something about this page" link appears anywhere
+    on the site, read fresh from `planning/feedback.yaml` on every call —
+    the same reasoning as `module_order()`: a constant computed at import
+    time would not see a test's temporary ROOT.
+
+    Missing the file, or the file missing `enabled:`, both mean on. The
+    switch exists to turn the link off in a hurry — one line, editable from
+    GitHub's own web editor, no code to find — not to make on the fussy
+    path. See DECISIONS_LOG.md, Phase 8.
+    """
+    path = ROOT / "planning" / FEEDBACK_CONFIG_FILE
+    if not path.is_file():
+        return True
+    data = yaml.safe_load(path.read_text()) or {}
+    return bool(data.get("enabled", True))
+
+
+_REPORT_KIND_ERROR = (
+    "It gives an error, and I have tried resetting the cell, running the "
+    "cells above it, and reloading the page"
+)
+_REPORT_KIND_WRONG = "The page is wrong, or I could not follow it"
+
+
+def report_issue_url(page: str, version: str, kind: str = "", cell: str = "") -> str:
+    """The prefilled GitHub issue link a report door opens.
+
+    `page`, `version`, `kind` and `cell` only fill in fields on GitHub's own
+    form — nothing is sent until the reader presses GitHub's own Submit, and
+    every field is still theirs to edit or clear first. `kind`, when given,
+    must match one of `.github/ISSUE_TEMPLATE/report.yml`'s dropdown options
+    exactly, or GitHub leaves the dropdown unset rather than failing loudly.
+    See docs/REPORTING_A_PROBLEM.md.
+    """
+    params = {"template": "report.yml", "page": page, "version": str(version)}
+    if kind:
+        params["kind"] = kind
+    if cell:
+        params["cell"] = cell
+    return f"{_REPORT_REPO_URL}/issues/new?{urllib.parse.urlencode(params)}"
+
+
+def report_doors_links(page: str, version: str, cell: str = "") -> str:
+    """The three doors themselves: a question goes to Discussions rather
+    than an issue, since a question filed as a bug report is the wrong
+    container for it and for whoever answers it later; the other two open
+    the issue form with `kind` already picked. Shared by the footer
+    (`report_doors_html()`, no `cell`) and a cell's own report panel
+    (`render_cell()`, `cell` set to that cell's id) — see DECISIONS_LOG.md,
+    Phase 8.
+
+    Three links joined by " · " rather than a `<ul>`/`<li>` list — a
+    bulleted list is the wrong shape for three short links, and it also
+    silently broke every test that counted a page's `<li>` tags, since
+    this markup reaches every page.
+    """
+    error_url = report_issue_url(page, version, _REPORT_KIND_ERROR, cell)
+    wrong_url = report_issue_url(page, version, _REPORT_KIND_WRONG, cell)
     return (
+        "<p>"
+        f'<a href="{_REPORT_REPO_URL}/discussions/new">I have a question</a> · '
+        f'<a class="dl-report-issue-link" href="{error_url}">It gives an error</a> · '
+        f'<a class="dl-report-issue-link" href="{wrong_url}">The page is wrong, or I could not follow it</a>'
+        "</p>"
+    )
+
+
+def report_doors_html(page: str, version: str) -> str:
+    """The footer's three-doors disclosure. A plain `<details>` element, so
+    this needs no JavaScript and no runtime change.
+    """
+    return (
+        '<details class="dl-report-doors">'
+        "<summary>Something wrong on this page? Tell us.</summary>"
+        + report_doors_links(page, version) +
+        "</details>"
+    )
+
+
+def site_footer(page: str = "", version: str = "") -> str:
+    """Copyright line and licence line, stamped with the current year, plus
+    a "three doors" disclosure for reporting something about this page,
+    unless `feedback_enabled()` says it is switched off, or the caller
+    passed no `page` to report against.
+    """
+    year = datetime.date.today().year
+    footer = (
         f'© {year} J. S. Aaron · '
         f'<a href="{_LICENCE_URL}">Licence</a>'
     )
+    if page and feedback_enabled():
+        footer += f" · {report_doors_html(page, version)}"
+    return footer
 
 
 def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "",
@@ -2654,7 +2784,7 @@ def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "",
         ),
         # `<` escaped so nothing in a cell can close the surrounding <script>.
         "{{MANIFEST_JSON}}": json.dumps(manifest).replace("<", "\\u003c"),
-        "{{FOOTER}}": site_footer(),
+        "{{FOOTER}}": site_footer(f"{tutorial.module}/{tutorial.slug}", tutorial.meta["version"]),
     }
     page = shell
     for token, value in tokens.items():
@@ -3362,7 +3492,7 @@ def write_index(
         "{{SERIES_NAV}}": "",
         "{{BODY}}": render_index(groups, archives, retired, practice, mixed, module_archives),
         "{{MANIFEST_JSON}}": json.dumps(manifest).replace("<", "\\u003c"),
-        "{{FOOTER}}": site_footer(),
+        "{{FOOTER}}": site_footer("index", "1"),
     }
     page = shell
     for token, value in tokens.items():
@@ -3496,7 +3626,7 @@ def write_tree_page(shell: str, tutorials: list[Tutorial]) -> Path | None:
         "{{SERIES_NAV}}": "",
         "{{BODY}}": body,
         "{{MANIFEST_JSON}}": json.dumps(manifest).replace("<", "\\u003c"),
-        "{{FOOTER}}": site_footer(),
+        "{{FOOTER}}": site_footer("tree", "1"),
     }
     page = shell
     for token, value in tokens.items():
@@ -3614,7 +3744,7 @@ def write_topics_page(
         "{{SERIES_NAV}}": "",
         "{{BODY}}": "".join(body),
         "{{MANIFEST_JSON}}": json.dumps(manifest).replace("<", "\\u003c"),
-        "{{FOOTER}}": site_footer(),
+        "{{FOOTER}}": site_footer("topics", "1"),
     }
     page = shell
     for token, value in tokens.items():
@@ -3876,9 +4006,10 @@ def write_about_page(shell: str) -> Path:
         "<p>We would be glad of help with the material. You can open an issue "
         "with an idea, a request or a comment. You can also send a pull request "
         "with a change of your own.</p>"
-        "<p>If you have found a mistake, please open a GitHub issue. If you "
-        "would rather fix it yourself, send a pull request and we will review "
-        "it and merge it.</p>"
+        "<p>If you have found a mistake, the quickest way is the line at the "
+        "foot of the page it is on. Without that, opening a GitHub issue "
+        "works too. If you would rather fix it yourself, send a pull "
+        "request and we will review it and merge it.</p>"
         '<p><strong>Project repository:</strong> <a href="https://github.com/deweydex/dewlab">'
         "github.com/deweydex/dewlab</a></p>"
         '<p><strong>Contact:</strong> <a href="mailto:deweydex@jsaaron.com">'
@@ -3908,7 +4039,7 @@ def write_about_page(shell: str) -> Path:
         "{{SERIES_NAV}}": "",
         "{{BODY}}": body,
         "{{MANIFEST_JSON}}": json.dumps(manifest).replace("<", "\\u003c"),
-        "{{FOOTER}}": site_footer(),
+        "{{FOOTER}}": site_footer("about", "1"),
     }
     page = shell
     for token, value in tokens.items():
@@ -3969,7 +4100,7 @@ def write_editor_page(shell: str) -> Path:
         "{{SERIES_NAV}}": "",
         "{{BODY}}": body,
         "{{MANIFEST_JSON}}": json.dumps(manifest).replace("<", "\\u003c"),
-        "{{FOOTER}}": site_footer(),
+        "{{FOOTER}}": site_footer("editor", "1"),
     }
     page = shell
     for token, value in tokens.items():

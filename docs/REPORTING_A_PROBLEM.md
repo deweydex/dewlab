@@ -4,11 +4,56 @@ If you have found something wrong, telling us is a help, and you do not need to
 be sure it is wrong before you say so. Half of what turns out to be a real bug
 starts as somebody saying "this looked odd to me". That is enough.
 
-Everything goes in the same place: **[the issue tracker on
-GitHub](https://github.com/deweydex/dewlab/issues)**. You need a free GitHub
-account to post one. Have a quick look at the open issues first in case somebody
-has already reported it — if they have, adding what you saw to that issue is
-more useful than starting a new one.
+---
+
+## The quick way: from the page itself
+
+Most pages carry a line at the foot, "Something wrong on this page? Tell
+us." Click it and three doors open.
+
+**I have a question.** Not wrong, just something you want explained. This
+one goes to Discussions rather than an issue, so an answer stays where
+somebody with the same question can find it later.
+
+**It gives an error.** For a cell that will not run, a button that does
+nothing, or anything else that misbehaves. Opens GitHub's own issue form,
+with the page and its version already filled in and this kind already
+picked. See ["Before you report a page that will not
+run"](#before-you-report-a-page-that-will-not-run) first.
+
+**The page is wrong, or I could not follow it.** For a mistake or
+something confusing. Same form, same fields filled in, this kind picked
+instead.
+
+Whichever door you take, all you need to add is the one thing that
+matters: what happened.
+
+If the doors are missing, or your report has no one page attached to it
+(an idea, a suggestion, something about the site as a whole), opening an
+issue yourself works the same way — **[the issue tracker on
+GitHub](https://github.com/deweydex/dewlab/issues)**. You need a free
+GitHub account to post one. Have a quick look at the open issues first
+in case somebody has already reported it — if they have, adding what you
+saw to that issue is more useful than starting a new one. The rest of
+this page covers what is useful to include, either way.
+
+The doors can be turned off for a while if reports need to pause, for
+example while something is being fixed. When they are off, this page and
+the issue tracker itself still work exactly as before.
+
+---
+
+## An even quicker way: from a cell
+
+Every cell has a small circle in its own bar, next to its hint if it has
+one. Click it to open the same three doors, already filled in for this
+cell. Choose "It gives an error," and your code exactly as you have it,
+and whatever the cell last showed, are both included in the report. You
+do not need to copy either one yourself.
+
+A very long cell or a very long error is cut short rather than left out,
+so the link stays short enough for GitHub's own form to open. Paste the
+rest yourself if the missing part matters.
 
 ---
 
