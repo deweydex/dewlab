@@ -1296,22 +1296,57 @@ topics:
         built.
     needs: [CMPS-LO2]
 
-  CMPS-LO4:
-    name: Matrices in practice
+  CMPS-LO4a:
+    name: Matrices
     outcome: CMPS-LO4
     plain: >
-      What a grid of numbers is good for once you leave the data-structures
-      course. A matrix is the machinery behind a graphics transformation, a
-      game's state, a web search ranking, and comparing one thing with its
-      nearest neighbours.
+      A grid of numbers treated as one object. You can add two of them,
+      multiply one by another, and the rules for doing so are what make
+      everything below possible.
     uses:
-      - Computer graphics and game engines, where every rotation, scale and
-        camera move is a matrix multiplication.
-      - Google's PageRank algorithm, which ranks the entire web by repeatedly
-        multiplying a matrix of links.
-      - Sequence alignment and nearest-neighbour search, both of which compare
-        rows of numbers to find the closest match.
-    needs: [MIT-6.3a, MIT-3.2]
+      - Holding a set of related numbers where the position of each one
+        carries meaning, such as how much of each ingredient each recipe
+        needs.
+    needs: [CMPS-LO1a, MIT-3.2]
+
+  CMPS-LO4b:
+    name: Moving and turning a picture
+    outcome: CMPS-LO4
+    plain: >
+      Every rotation, scale and camera move in graphics is one matrix
+      multiplied by the points of the thing you are moving. Combining two
+      moves is multiplying their two matrices.
+    uses:
+      - Computer graphics and game engines.
+      - Image editing, where a crop, a rotation and a resize can be folded
+        into one step.
+    needs: [CMPS-LO4a, MIT-4.6a]
+
+  CMPS-LO4c:
+    name: Ranking by following links
+    outcome: CMPS-LO4
+    plain: >
+      Write down who links to whom as a grid, then multiply by it over and
+      over. The numbers settle towards a ranking, and the pages that many
+      linked pages point at come out on top.
+    uses:
+      - Web search ranking, which began as exactly this calculation.
+      - Working out who matters in any network, such as which account in a
+        social graph reaches the most people.
+    needs: [CMPS-LO4a, CMPS-LO2]
+
+  CMPS-LO4d:
+    name: Comparing rows of numbers
+    outcome: CMPS-LO4
+    plain: >
+      Two things described by numbers can be compared by how close their
+      rows are. Doing that for every pair at once is a matrix calculation.
+    uses:
+      - Nearest-neighbour search, which is how a recommendation finds
+        things like the one you chose.
+      - Sequence alignment, where two strands are lined up by scoring every
+        way of matching them.
+    needs: [CMPS-LO4a]
 
   CMPS-LO5:
     name: Algorithmic complexity
