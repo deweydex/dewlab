@@ -1920,7 +1920,7 @@ def render_index(
     out = [
         "<h1>Tutorials</h1>",
         '<div class="dl-intro">',
-        "<p>dewlab is a set of tutorials where we learn maths and programming "
+        "<p>Welcome to dewlab. Here we explore maths and programming "
         "together. Everything runs in your browser, so there is nothing to "
         "install and no account to make. Open any tutorial and start.</p>",
         '<ul class="dl-intro-points">',
@@ -1932,17 +1932,18 @@ def render_index(
         "look at the general principle behind it. Then we learn the name "
         "people give it, so that we can talk to other people about the same "
         "idea.</li>",
-        "<li><strong>Practice problems run all the way through.</strong> Most "
-        "tutorials have a page of them as well, linked as <em>practice</em> "
-        "beside the title. The answer usually sits right below each problem. "
-        "We are not trying to hide the right answer. What we are learning is "
-        "the steps that get us there. The first problems are small. Later ones "
-        "take several steps. Later ones again are more abstract.</li>",
+        "<li><strong>We are not trying to hide the right answer.</strong> Most "
+        "tutorials have a practice page beside them. The answer usually sits "
+        "right below each problem. What we are learning is the steps that get "
+        "us there. If you get stuck, you can open a hint, try a different "
+        "approach, or read the answer and try the problem again.</li>",
         "<li><strong>Getting something wrong costs nothing.</strong> An error "
         "message is usually telling us something useful. Nothing here is "
-        "scored. Nothing you write leaves your browser.</li>",
-        "<li><strong>Your work is saved on this device as you go.</strong> You "
-        "can also download any tutorial as a single file and keep it.</li>",
+        "scored. A wrong answer is information about a method, not a mark "
+        "against you.</li>",
+        "<li><strong>Your work is saved in this browser as you go.</strong> "
+        "It stays on this device. You can also download any tutorial as a "
+        "single file and keep it.</li>",
         "<li><strong>The list below is grouped into modules, and each module "
         "into series.</strong> A series is meant to be read in order, from the "
         'top. If you are not sure where to start, the <a href="tree.html">topic '
@@ -3972,9 +3973,8 @@ def write_about_page(shell: str) -> Path:
         "runnable Python on the same page, so that you can read about an idea "
         "and try it out in the same place.</p>"
         "<p>It began for one classroom, and it is free for anyone who wants to "
-        "use it. There is no account, and nothing is scored. What you write "
-        "stays on your own device, and a wrong answer here is information "
-        "about a method, not a mark against you.</p>"
+        "use it. There is no account, and nothing is scored. A wrong answer "
+        "here is information about a method, not a mark against you.</p>"
         "<h2>What's here</h2>"
         "<p>The tutorials are listed in the order the course teaches them. That "
         "is the main way in, and a series is meant to be read from the top.</p>"
@@ -3997,8 +3997,10 @@ def write_about_page(shell: str) -> Path:
         '<a href="https://github.com/deweydex/dewlab/blob/main/docs/FAQ.md">FAQ</a> '
         "answers the questions people ask most.</p>"
         "<h2>Your work</h2>"
-        "<p>A tutorial saves your edits as you go, along with any cells you add "
-        "yourself. Everything stays in this browser, on this device.</p>"
+        "<p>A tutorial saves your edits in this browser as you go, along with "
+        "any cells you add yourself. It stays on this device, so it will not "
+        "follow you to a different computer. Clearing your browser data will "
+        "clear it.</p>"
         "<p>You can also take a copy with you. There are three ways to do it: a "
         "single HTML file, a printed or PDF copy, or your cells saved as a "
         "Jupyter notebook.</p>"

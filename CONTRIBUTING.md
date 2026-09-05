@@ -117,9 +117,11 @@ longer has is worse than confusing.
 
 **Student-facing pages** (`docs/FOR_STUDENTS.md`,
 `docs/DEWMINI.md`, the homepage, in-app help text): plain, friendly, welcoming
-language, written for a teenage student. No jargon without explaining it, no
-metaphor for its own sake. If you would not say it that way to a fifteen-year-old
-sitting next to you, rewrite it.
+language for adult learners, including readers working at about B1 English
+level. No jargon without explaining it, no metaphor for its own sake. Technical
+terms need explanations where they first appear. Activities use concrete
+invitations rather than commands, and a stuck learner needs a practical route
+to help, not only reassurance.
 
 **Contributor and maintainer documentation** (`README.md`, `ARCHITECTURE.md`,
 `docs/WRITING_TUTORIALS.md`, `planning/*.md`): plain and direct in the same way,
