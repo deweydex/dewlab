@@ -7,7 +7,7 @@ about it.
 
 You do not need to install anything, and you do not need an account. The Python
 runs on your own computer, inside the browser tab. Nothing is scored, and
-nobody is watching how you get on.
+nobody sees your answers.
 
 ---
 

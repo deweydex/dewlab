@@ -31,15 +31,16 @@ expected one. That feedback is there for you, not for anyone else.
 
 Close the tab. Your work is saved in your own browser as you go. It will be
 there when you come back, later the same day or after a longer gap. If you
-have half-forgotten a word by the time you return, the Reference panel is
-built for exactly that.
+do not quite remember a word when you come back, the Reference panel is
+there for that.
 
 ## Will my work follow me to a different computer?
 
 No, not on its own. Your work is saved in the browser you were using, not to
 an account, so it stays on that machine. Clearing your browser data will also
 clear it. If you want a copy you can move or keep, Settings has an export
-button that saves one to a file.
+button that saves one to a file. Loading a copy replaces the matching cell
+edits and notes, so export the current version first if you want to keep it.
 
 ## Can I skip ahead, or go back to something earlier?
 
@@ -63,7 +64,13 @@ sent, and nothing is sent without you choosing to.
 The reset button on a cell restores the code the tutorial started with and
 clears the cell's visible result. It replaces your edits in that one cell.
 It does not clear the values Python already holds from running earlier cells.
-If you need a completely fresh start, reload the page.
+
+**Restart Python**, in Settings, starts a fresh Python session while keeping
+your code in the editors. Earlier cells may need to run again before a later
+cell can use their values.
+
+**Start again**, also in Settings, restores the tutorial's cells and clears
+your notes after confirmation. It leaves cells you added yourself in place.
 
 ## I found a mistake in a tutorial. What do I do?
 
