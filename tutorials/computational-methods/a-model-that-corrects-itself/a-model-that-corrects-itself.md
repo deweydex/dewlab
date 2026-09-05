@@ -88,9 +88,9 @@ is what happens next.
 
 ### Your turn
 
-Set `weights[1]` (the top-middle pixel) to `1.0` by hand, leaving everything
-else at zero, and run `predict()` on both patterns again. Which one flips,
-and why that particular pixel?
+Try setting `weights[1]` (the top-middle pixel) to `1.0` by hand, leaving
+everything else at zero, then run `predict()` on both patterns again.
+Which one flips, and why that particular pixel?
 
 ```python exec
 id: a-model-that-starts-out-wrong-3
@@ -157,9 +157,9 @@ learning.
 
 ### Your turn
 
-Change `learning_rate` from `0.5` to `0.05` and run the training loop again.
-Does it still reach 100% train accuracy? Does it take more epochs, fewer, or
-about the same?
+Try changing `learning_rate` from `0.5` to `0.05`, then run the training
+loop again. Does it still reach 100% train accuracy? Does it take more
+epochs, fewer, or about the same?
 
 ```python exec
 id: running-it-again-and-again-2

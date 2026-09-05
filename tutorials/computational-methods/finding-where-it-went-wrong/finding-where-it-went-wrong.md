@@ -89,7 +89,7 @@ this wrong answer would have looked correct to anyone who used it.
 
 ### Your turn
 
-Run `summarize(["32.0"])` on its own, the freezing point alone. Does it
+Try `summarize(["32.0"])` on its own, the freezing point alone. Does it
 also come back wrong? What does that tell you about which of the two
 readings in the combined test actually caught the bug?
 
@@ -184,9 +184,9 @@ def summarize_v2(raw_lines):
 print(summarize_v2(["32.0", "212.0"]))
 ```
 
-Using the same known-answer test, check each stage of `summarize_v2` in
-turn until you find the one that disagrees with what it alone should
-produce.
+See if you can use the same known-answer test to check each stage of
+`summarize_v2` in turn, until you find the one that disagrees with what
+it alone should produce.
 
 ```python exec
 id: the-symptom-is-not-the-cause-5
@@ -215,9 +215,9 @@ a page.
 first place. Nobody required writing one, and it would have been easy to
 run the pipeline once, see a plausible-looking number, and stop there.
 *Persistence* is what stops the pragmatic patch from being the last step
-taken, once it makes the one visible test pass. All five habits named in
-this outcome are not separate techniques to memorise. This tutorial's
-own walk-through already showed every one of them in action.
+taken, once it makes the one visible test pass. None of these five
+habits are separate techniques to memorise. This tutorial's own
+walk-through already showed every one of them in action.
 
 ### Your turn
 

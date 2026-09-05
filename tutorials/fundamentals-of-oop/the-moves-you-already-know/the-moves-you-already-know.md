@@ -48,8 +48,8 @@ a value.
 `for amount in amounts:` repeats a step once for each amount, an
 *iteration*. `if amount >= 0:` chooses between two paths, a
 *selection*. The lines themselves run in the order they are written, a
-*sequence*. Nothing here is new; this is the same vocabulary every
-program you have written so far is built from.
+*sequence*. Nothing here is new. It is the same vocabulary every program
+you have written so far is built from.
 
 ## The Same Moves, Inside a Class
 
@@ -75,8 +75,9 @@ basket.add("mistake", -5)
 print(basket.items)
 ```
 
-`self.items = []` stores a value, the same way `total = 0` did above,
-except now it lives on the object instead of in a plain variable.
+`self.items = []` stores a value, just like `total = 0` did above. This
+time, though, the value lives on the object instead of in a plain
+variable.
 `if price >= 0:` inside `add()` is the same selection as before, only
 now it decides whether *this object's* list should grow. The item
 priced `-5` never made it in.

@@ -207,9 +207,9 @@ for seed in [0, 1, 2, 3]:
 ```
 
 Four runs, all one hundred thousand darts, produce four different second
-decimal places. This is the difference between two separate questions a
-model's numbers get asked. *Accuracy* is how close an estimate is to the
-true answer — the "off by" column above. *Precision* is how much of an
+decimal places. This shows two separate questions worth asking about any
+model's numbers. *Accuracy* is how close an estimate is to the true
+answer — the "off by" column above. *Precision* is how much of an
 estimate stays the same if the whole thing is run again.
 
 A hundred thousand darts here is reasonably accurate, off by well under a
