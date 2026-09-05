@@ -771,6 +771,50 @@ decisions:
     first: MIT-4.6
     why: >
       Josh's own judgement, played blind in the pair game.
+
+  - pair: [MIT-1.5, MIT-1.2]
+    verdict: needs
+    first: MIT-1.5
+    why: >
+      An area formula is an expression you substitute into. Area and
+      perimeter sat at the top of the map with nothing before it, which is
+      what a missing prerequisite looks like rather than a starting point.
+
+  - pair: [PRE-1, MIT-1.2]
+    verdict: needs
+    first: PRE-1
+    why: >
+      Half the base times the height asks for a reader who already knows
+      what the base and the height of a triangle are.
+
+  - pair: [MIT-1.5, PRE-2]
+    verdict: needs
+    first: MIT-1.5
+    why: >
+      Moving an equation around is a thing you do to an equation, so the
+      equation comes first.
+
+  - pair: [MIT-2.2, CMPS-LO2a]
+    verdict: needs
+    first: MIT-2.2
+    why: >
+      A probability is a probability over a set of outcomes. Venn diagrams
+      already sit under set operations, and probability belongs there too.
+
+  - pair: [MIT-1.5, CMPS-LO2a]
+    verdict: needs
+    first: MIT-1.5
+    why: >
+      A probability is a fraction between zero and one before it is
+      anything else.
+
+  - pair: [MIT-6.1, CMPS-LO8]
+    verdict: needs
+    first: MIT-6.1
+    why: >
+      Defining and designing a problem is designing an algorithm for it, so
+      knowing what an algorithm is comes first.
+
 topic_changes:
   - topic: MIT-2.1
     change: split

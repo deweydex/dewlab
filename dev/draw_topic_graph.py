@@ -326,282 +326,349 @@ def verticals(topics: dict, edges: set, levels: set) -> dict[str, str]:
     return best_labels
 
 
-def page(topics: dict, g: dict, depth: dict, group: dict) -> str:
-    """One page: a search box, the columns, and the arrows for whatever you
-    point at.
+# One box on the map is one unit: a topic, or a whole circular region of the
+# graph drawn as a single box because there is no order inside it.
+NODE_W, NODE_H = 168, 56
+GAP_X, GAP_Y = 18, 84
+PAD = 36
+CHARS, LINES = 23, 3
 
-    Two things it deliberately does not do. It does not ink all 387 arrows at
-    once, because a graph this size drawn in full is a grey wash nobody can
-    read a single path out of. And it does not lay the columns out by subject
-    heading: the columns come from `verticals()`, so a column is a set of
-    topics that mostly need each other, and the arrows that leave one are rare
-    enough to be worth marking.
+
+def wrap(text: str) -> list[str]:
+    """The lines of a box's label, cut short rather than spilling out of it."""
+    out, line = [], ""
+    for word in text.split():
+        nxt = f"{line} {word}".strip()
+        if len(nxt) > CHARS and line:
+            out.append(line)
+            line = word
+        else:
+            line = nxt
+    out.append(line)
+    if len(out) > LINES:
+        out = out[:LINES]
+        out[-1] = out[-1][:CHARS - 1] + "…"
+    return out
+
+
+def place(depth: dict, group: dict, edges: set) -> tuple[dict, int, int]:
+    """Where every box sits, and how big the map is.
+
+    The layer fixes the row, so that part is not a choice. Which order the
+    boxes sit in along a row is free, and the order chosen here is the one that
+    puts each box near the boxes it connects to. Short arrows that cross each
+    other rarely are the only thing being optimised.
+
+    Left to right inside a row carries no meaning. Those topics have no order
+    between them, which is what sharing a row says.
     """
     unit_of = {c: u for u, members in group.items() for c in members}
-    column = verticals(topics, g["edges"], g["levels"])
+    rows = collections.defaultdict(list)
+    for unit, level in depth.items():
+        rows[level].append(unit)
+    for level in rows:
+        rows[level].sort()
 
-    # A column is named after whichever of its topics the others most depend
-    # on, so the heading is a real topic rather than a label somebody invented.
-    pull = collections.Counter()
-    for a, b in g["edges"]:
-        if column[a] == column[b]:
-            pull[a] += 1
-    order = collections.Counter(column.values())
-    names = {}
-    for col in order:
-        members = [c for c in topics if column[c] == col]
-        names[col] = topics[max(members, key=lambda c: (pull[c], c))]["name"]
+    up = collections.defaultdict(list)
+    down = collections.defaultdict(list)
+    for early, late in sorted(edges):
+        a, b = unit_of[early], unit_of[late]
+        if a != b:
+            down[a].append(b)
+            up[b].append(a)
 
-    # Depth two ways. Global keeps every column on the same rows, so a crossing
-    # arrow always points downwards. Local packs each column tight from its own
-    # first topic, which is shorter to read and lets a crossing point upwards.
-    local: dict[str, int] = {}
-    for col in order:
-        members = [c for c in topics if column[c] == col]
-        inside = {(a, b) for a, b in g["edges"]
-                  if column[a] == col and column[b] == col}
-        above = collections.defaultdict(set)
-        for a, b in inside:
-            if unit_of[a] != unit_of[b]:
-                above[b].add(a)
-        for _ in range(len(members) + 1):
-            for c in sorted(members, key=lambda c: depth[unit_of[c]]):
-                want = max((local.get(p, 0) + 1 for p in above[c]), default=0)
-                local[c] = max(local.get(c, 0), want)
+    def spread(row: list[str]) -> dict[str, float]:
+        if len(row) == 1:
+            return {row[0]: 0.5}
+        return {u: i / (len(row) - 1) for i, u in enumerate(row)}
 
-    data = {
-        "topics": {
-            c: {
-                "name": topics[c]["name"],
-                "plain": " ".join(str(topics[c].get("plain", "")).split()),
-                "col": column[c],
-                "deep": depth[unit_of[c]],
-                "near": local[c],
-            }
-            for c in sorted(topics)
-        },
-        "columns": [
-            {"key": col, "name": names[col], "size": order[col]}
-            for col in sorted(order, key=lambda k: (-order[k], names[k]))
-        ],
-        "edges": sorted([a, b] for a, b in g["edges"]),
-        "levels": sorted([a, b] for a, b in g["levels"]),
+    # Sweep down the rows then back up, each time re-ordering a row by where
+    # its neighbours in the row before sit. Ten passes is well past the point
+    # where the ordering stops changing for a graph this size.
+    for sweep in range(10):
+        pos = {}
+        for row in rows.values():
+            pos.update(spread(row))
+        levels_in_order = sorted(rows) if sweep % 2 == 0 else sorted(rows, reverse=True)
+        side = up if sweep % 2 == 0 else down
+        for level in levels_in_order:
+            row = rows[level]
+            here = spread(row)
+
+            def anchor(unit: str) -> tuple[float, str]:
+                near = [pos[n] for n in side[unit] if n in pos]
+                return (sum(near) / len(near) if near else here[unit], unit)
+
+            row.sort(key=anchor)
+            pos.update(spread(row))
+
+    widest = max(len(row) for row in rows.values())
+    width = PAD * 2 + widest * NODE_W + (widest - 1) * GAP_X
+    height = PAD * 2 + (max(rows) + 1) * NODE_H + max(rows) * GAP_Y
+
+    at = {}
+    for level, row in rows.items():
+        span = len(row) * NODE_W + (len(row) - 1) * GAP_X
+        left = (width - span) / 2
+        for i, unit in enumerate(row):
+            at[unit] = (left + i * (NODE_W + GAP_X), PAD + level * (NODE_H + GAP_Y))
+    return at, int(width), int(height)
+
+
+def page(topics: dict, g: dict, depth: dict, group: dict) -> str:
+    """One page: the map as a drawn graph, plus a search box and a card.
+
+    The map is drawn as boxes in rows with the arrows between them, because
+    that is the shape of the thing: what has to come first sits above what
+    needs it. It opens scaled to fit whatever screen it is on, so a phone gets
+    the shape first and the detail on a tap.
+    """
+    unit_of = {c: u for u, members in group.items() for c in members}
+    at, width, height = place(depth, group, g["edges"])
+
+    name = {u: " + ".join(topics[c]["name"] for c in sorted(members))
+            for u, members in group.items()}
+
+    up = collections.defaultdict(set)
+    down = collections.defaultdict(set)
+    for early, late in g["edges"]:
+        a, b = unit_of[early], unit_of[late]
+        if a != b:
+            down[a].add(b)
+            up[b].add(a)
+
+    wires = []
+    for a in sorted(down):
+        for b in sorted(down[a]):
+            x1, y1 = at[a][0] + NODE_W / 2, at[a][1] + NODE_H
+            x2, y2 = at[b][0] + NODE_W / 2, at[b][1]
+            bend = max(24, (y2 - y1) / 2)
+            wires.append(
+                f'<path class="wire" data-a="{a}" data-b="{b}" '
+                f'd="M{x1:.0f} {y1:.0f} C{x1:.0f} {y1 + bend:.0f} '
+                f'{x2:.0f} {y2 - bend:.0f} {x2:.0f} {y2:.0f}"/>')
+
+    pairs = []
+    for a, b in sorted(g["levels"]):
+        ua, ub = unit_of[a], unit_of[b]
+        if ua == ub:
+            continue
+        x1, y1 = at[ua][0] + NODE_W / 2, at[ua][1] + NODE_H / 2
+        x2, y2 = at[ub][0] + NODE_W / 2, at[ub][1] + NODE_H / 2
+        pairs.append(f'<path class="pair" data-a="{ua}" data-b="{ub}" '
+                     f'd="M{x1:.0f} {y1:.0f} L{x2:.0f} {y2:.0f}"/>')
+
+    boxes = []
+    for unit in sorted(at, key=lambda u: (depth[u], at[u][0])):
+        x, y = at[unit]
+        lines = wrap(name[unit])
+        top = NODE_H / 2 - (len(lines) - 1) * 6.5
+        text = "".join(
+            f'<tspan x="{NODE_W / 2:.0f}" y="{top + i * 13:.1f}">{esc(line)}</tspan>'
+            for i, line in enumerate(lines))
+        many = " many" if len(group[unit]) > 1 else ""
+        boxes.append(
+            f'<g class="node{many}" data-u="{unit}" transform="translate({x:.0f},{y})">'
+            f'<rect width="{NODE_W}" height="{NODE_H}" rx="9"/>'
+            f'<text>{text}</text></g>')
+
+    facts = {
+        u: {"n": name[u], "c": sorted(group[u]), "r": depth[u],
+            "u": sorted(up[u]), "d": sorted(down[u])}
+        for u in at
     }
+    roots = sorted((u for u in at if not up[u]), key=lambda u: name[u].lower())
 
-    crossing = sum(1 for a, b in g["edges"] if column[a] != column[b])
-    counts = (f'{len(topics)} topics in {len(order)} columns · '
-              f'{len(g["edges"])} arrows, {crossing} of them crossing a column · '
-              f'{len(g["levels"])} two-way pairs')
-    return (TEMPLATE.replace("__DATA__", json.dumps(data))
-                    .replace("__COUNTS__", counts))
+    return (TEMPLATE
+            .replace("__W__", str(width))
+            .replace("__H__", str(height))
+            .replace("__WIRES__", "\n".join(wires))
+            .replace("__PAIRS__", "\n".join(pairs))
+            .replace("__BOXES__", "\n".join(boxes))
+            .replace("__FACTS__", json.dumps(facts, sort_keys=True))
+            .replace("__ROOTS__", json.dumps(roots))
+            .replace("__ROWS__", str(max(depth.values()) + 1))
+            .replace("__COUNT__", str(len(topics)))
+            .replace("__ARROWS__", str(len(g["edges"]))))
+
+
+def esc(text: str) -> str:
+    return (text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;"))
 
 
 TEMPLATE = """<!doctype html>
 <html lang="en"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>The topic map</title>
 <style>
-:root{--bg:#fdfcfa;--card:#fff;--ink:#1a1a1a;--muted:#5f6b7a;--navy:#1b2a4a;
- --brand:#d4692a;--rule:#e3ddd2;--panel:#f6f3ee;--up:#1b6b8f;--down:#b0541f;
- --serif:Georgia,"Iowan Old Style",serif;
- --sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
- --mono:ui-monospace,SFMono-Regular,Menlo,monospace}
-@media (prefers-color-scheme:dark){:root{--bg:#14181f;--card:#1b2129;--ink:#e6e3dd;
- --muted:#98a2b3;--navy:#b9c8e6;--rule:#2a3140;--panel:#1b2129;--up:#7ec7e8;--down:#e8a06a}}
+:root{
+  --ink:#1b1b1f; --dim:#6b6b76; --line:#d6d6de; --paper:#fbfbfd;
+  --box:#fff; --mark:#1b5cff; --soft:#eef2ff; --two:#b8860b;
+}
+@media (prefers-color-scheme: dark){
+  :root{ --ink:#e9e9ef; --dim:#9a9aa6; --line:#3a3a44; --paper:#141418;
+         --box:#1e1e25; --mark:#7aa2ff; --soft:#22283a; --two:#e0b552; }
+}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans)}
-header{position:sticky;top:0;z-index:3;background:var(--bg);
- border-bottom:1px solid var(--rule);padding:.75rem 1rem}
-h1{font-family:var(--serif);color:var(--navy);font-size:1.2rem;margin:0 0 .15rem}
-.sub{font-family:var(--mono);font-size:.68rem;color:var(--muted);margin:0}
-.tools{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin-top:.6rem}
-#q{flex:1 1 16rem;min-width:12rem;padding:.5rem .7rem;font:inherit;font-size:.9rem;
- border:1px solid var(--rule);border-radius:8px;background:var(--card);color:var(--ink)}
-#q:focus{outline:2px solid var(--brand);outline-offset:1px}
-label{font-size:.76rem;color:var(--muted);display:flex;gap:.3rem;align-items:center}
-.key{font-size:.7rem;color:var(--muted);display:flex;gap:.8rem;flex-wrap:wrap}
-.key i{font-style:normal;display:inline-flex;gap:.3rem;align-items:center}
-.sw{width:1.3rem;height:0;border-top:2px solid}
-#hits{font-family:var(--mono);font-size:.68rem;color:var(--brand)}
-
-#stage{position:relative;overflow-x:auto;padding:1rem}
-svg{position:absolute;inset:0;pointer-events:none;z-index:0;overflow:visible}
-#cols{position:relative;z-index:1;display:flex;gap:1.1rem;align-items:flex-start;
- min-width:max-content}
-.col{display:flex;flex-direction:column;gap:.3rem;width:11.5rem}
-.col h2{font-family:var(--mono);font-size:.6rem;letter-spacing:.08em;
- text-transform:uppercase;color:var(--brand);margin:0 0 .2rem;
- position:sticky;top:0;background:var(--bg);padding:.15rem 0}
-.col h2 span{color:var(--muted)}
-.band{min-height:.1rem;display:flex;flex-direction:column;gap:.25rem}
-.chip{background:var(--card);border:1px solid var(--rule);border-radius:7px;
- padding:.35rem .45rem;font-size:.73rem;line-height:1.2;color:var(--navy);
- cursor:pointer;transition:border-color .1s,opacity .1s}
-.chip.lv{border-style:dashed;border-color:var(--brand)}
-.chip.on{border-color:var(--brand);border-width:2px;background:var(--panel);font-weight:600}
-.chip.up{border-color:var(--up)}
-.chip.down{border-color:var(--down)}
-.chip.dim{opacity:.25}
-.chip.hit{background:var(--brand);color:#fff;border-color:var(--brand)}
-#detail{position:sticky;bottom:0;z-index:3;background:var(--panel);
- border-top:1px solid var(--rule);padding:.6rem 1rem;font-size:.8rem;min-height:2.6rem}
-#detail b{color:var(--navy)}
-#detail .p{color:var(--muted);font-size:.76rem}
+body{margin:0;background:var(--paper);color:var(--ink);
+     font:15px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif;
+     display:flex;flex-direction:column;height:100dvh}
+header{padding:.6rem .8rem;border-bottom:1px solid var(--line);background:var(--paper)}
+h1{margin:0 0 .35rem;font-size:1rem;font-weight:600}
+h1 span{font-weight:400;color:var(--dim)}
+.bar{display:flex;gap:.4rem;align-items:center}
+input[type=search]{flex:1;min-width:0;padding:.5rem .6rem;font:inherit;
+  border:1px solid var(--line);border-radius:8px;background:var(--box);color:inherit}
+button{font:inherit;padding:.45rem .6rem;border:1px solid var(--line);
+  border-radius:8px;background:var(--box);color:inherit;cursor:pointer}
+button:disabled{opacity:.45;cursor:default}
+#stage{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;
+  touch-action:pan-x pan-y;display:grid;place-content:start center;padding:.5rem}
+svg{display:block}
+.node rect{fill:var(--box);stroke:var(--line);stroke-width:1.2}
+.node.many rect{stroke-dasharray:5 3}
+.node text{font-size:12px;fill:var(--ink);text-anchor:middle;
+  dominant-baseline:middle;pointer-events:none}
+.node{cursor:pointer}
+.wire{fill:none;stroke:var(--line);stroke-width:1.2}
+.pair{fill:none;stroke:var(--two);stroke-width:1.4;stroke-dasharray:3 4;opacity:.7}
+svg.picked .node rect{opacity:.25}
+svg.picked .wire{opacity:.12}
+svg.picked .pair{opacity:.12}
+svg.picked .node.on rect{opacity:1;stroke:var(--mark);stroke-width:2;fill:var(--soft)}
+svg.picked .node.here rect{opacity:1;stroke:var(--mark);stroke-width:3;fill:var(--soft)}
+svg.picked .node.on text,svg.picked .node.here text{opacity:1}
+svg.picked .node rect:not(.x){}
+svg.picked .wire.on{opacity:1;stroke:var(--mark);stroke-width:1.8}
+.node.found rect{stroke:var(--two);stroke-width:2.4}
+#card{border-top:1px solid var(--line);background:var(--paper);
+  padding:.6rem .8rem;max-height:42dvh;overflow:auto}
+#card[hidden]{display:none}
+#card h2{margin:0 0 .1rem;font-size:1rem}
+#card p{margin:.15rem 0 .5rem;color:var(--dim);font-size:.85rem}
+#card h3{margin:.6rem 0 .25rem;font-size:.8rem;text-transform:uppercase;
+  letter-spacing:.04em;color:var(--dim)}
+#card ul{margin:0;padding:0;list-style:none;display:flex;flex-wrap:wrap;gap:.3rem}
+#card li button{padding:.3rem .5rem;font-size:.85rem}
+.none{color:var(--dim);font-size:.85rem;margin:0}
 </style></head><body>
-
 <header>
-  <h1>The topic map</h1>
-  <p class="sub">__COUNTS__</p>
-  <div class="tools">
-    <input id="q" type="search" placeholder="Find a topic…" autocomplete="off">
-    <span id="hits"></span>
-    <label><input type="checkbox" id="tight"> Pack each column</label>
-    <label><input type="checkbox" id="all"> Ink every arrow</label>
-    <span class="key">
-      <i><span class="sw" style="border-color:var(--up)"></span>needs this</i>
-      <i><span class="sw" style="border-color:var(--down)"></span>needs the one you are on</i>
-      <i><span class="sw" style="border-color:var(--brand);border-top-style:dashed"></span>crosses a column</i>
-    </span>
+  <h1>The topic map <span>__COUNT__ topics · __ARROWS__ arrows · __ROWS__ rows</span></h1>
+  <div class="bar">
+    <input type="search" id="find" placeholder="Search a topic" autocomplete="off">
+    <button id="out" title="Smaller">−</button>
+    <button id="in" title="Bigger">+</button>
+    <button id="fit">Fit</button>
   </div>
 </header>
-
-<div id="stage"><svg id="wires"></svg><div id="cols"></div></div>
-<div id="detail">Point at a topic to see what it needs.</div>
-
+<div id="stage">
+<svg id="map" viewBox="0 0 __W__ __H__" width="__W__" height="__H__">
+<g id="pairs">__PAIRS__</g>
+<g id="wires">__WIRES__</g>
+<g id="boxes">__BOXES__</g>
+</svg>
+</div>
+<div id="card" hidden></div>
 <script>
-const D = __DATA__;
-const T = D.topics;
-const into = {}, outof = {}, level = {};
-D.edges.forEach(([a,b]) => { (outof[a] ||= []).push(b); (into[b] ||= []).push(a); });
-D.levels.forEach(([a,b]) => { (level[a] ||= []).push(b); (level[b] ||= []).push(a); });
-
-const cols = document.getElementById("cols");
-const svg = document.getElementById("wires");
+const FACTS = __FACTS__;
+const ROOTS = __ROOTS__;
+const map = document.getElementById("map");
 const stage = document.getElementById("stage");
-const chip = {};
+const card = document.getElementById("card");
+const W = __W__, H = __H__;
+let scale = 1;
 
-function draw(){
-  const tight = document.getElementById("tight").checked;
-  const key = tight ? "near" : "deep";
-  cols.replaceChildren();
-  for(const col of D.columns){
-    const box = document.createElement("div");
-    box.className = "col";
-    box.innerHTML = "<h2>" + col.name + " <span>" + col.size + "</span></h2>";
-    const rows = {};
-    for(const [code, t] of Object.entries(T)){
-      if(t.col !== col.key) continue;
-      (rows[t[key]] ||= []).push(code);
+function apply(){
+  map.setAttribute("width", Math.round(W * scale));
+  map.setAttribute("height", Math.round(H * scale));
+}
+function fit(){
+  scale = Math.min(1.6, (stage.clientWidth - 4) / W);
+  apply();
+}
+document.getElementById("fit").addEventListener("click", () => { fit(); });
+document.getElementById("in").addEventListener("click", () => { scale *= 1.35; apply(); });
+document.getElementById("out").addEventListener("click", () => { scale /= 1.35; apply(); });
+
+function reach(start, key){
+  const seen = new Set(), queue = [start];
+  while(queue.length){
+    const at = queue.pop();
+    for(const next of FACTS[at][key]){
+      if(!seen.has(next)){ seen.add(next); queue.push(next); }
     }
-    const deepest = Math.max(...Object.values(T).map(t => t[key]));
-    for(let r = 0; r <= deepest; r++){
-      const band = document.createElement("div");
-      band.className = "band";
-      /* In the aligned mode every column carries every row, empty or not, so
-         a topic on row 7 sits level with every other row-7 topic and a
-         crossing arrow can only point downwards. */
-      if(!tight) band.style.minHeight = "1.9rem";
-      for(const code of (rows[r] || []).sort((x,y) => T[x].name.localeCompare(T[y].name))){
-        const el = document.createElement("div");
-        el.className = "chip" + (level[code] ? " lv" : "");
-        el.textContent = T[code].name;
-        el.dataset.code = code;
-        band.appendChild(el);
-        chip[code] = el;
-      }
-      box.appendChild(band);
-    }
-    cols.appendChild(box);
   }
-  bind();
-  if(document.getElementById("all").checked) inkAll(); else clear();
+  return seen;
 }
 
-function wire(a, b, colour, faint, dashed){
-  const s = stage.getBoundingClientRect();
-  const p = chip[a].getBoundingClientRect(), q = chip[b].getBoundingClientRect();
-  const x1 = p.left - s.left + stage.scrollLeft + p.width/2, y1 = p.bottom - s.top;
-  const x2 = q.left - s.left + stage.scrollLeft + q.width/2, y2 = q.top - s.top;
-  const mid = (y1 + y2) / 2;
-  const path = document.createElementNS("http://www.w3.org/2000/svg","path");
-  path.setAttribute("d", `M${x1},${y1} C${x1},${mid} ${x2},${mid} ${x2},${y2}`);
-  path.setAttribute("fill","none");
-  path.setAttribute("stroke", colour);
-  path.setAttribute("stroke-width", faint ? 1 : 1.8);
-  path.setAttribute("opacity", faint ? .14 : .85);
-  if(dashed) path.setAttribute("stroke-dasharray","4 3");
-  svg.appendChild(path);
+function box(unit){ return map.querySelector('.node[data-u="' + CSS.escape(unit) + '"]'); }
+
+function pick(unit){
+  map.classList.add("picked");
+  for(const n of map.querySelectorAll(".node")) n.classList.remove("on","here");
+  for(const w of map.querySelectorAll(".wire")) w.classList.remove("on");
+  const before = reach(unit, "u"), after = reach(unit, "d");
+  const lit = new Set([...before, ...after, unit]);
+  for(const u of lit) box(u).classList.add("on");
+  box(unit).classList.add("here");
+  for(const w of map.querySelectorAll(".wire")){
+    if(lit.has(w.dataset.a) && lit.has(w.dataset.b)) w.classList.add("on");
+  }
+  show(unit, before.size, after.size);
+  const r = box(unit).getBoundingClientRect(), s = stage.getBoundingClientRect();
+  stage.scrollBy({left: r.left - s.left - s.width/2, top: r.top - s.top - s.height/2,
+                  behavior: "smooth"});
 }
-const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
-const crosses = (a,b) => T[a].col !== T[b].col;
 
 function clear(){
-  svg.replaceChildren();
-  Object.values(chip).forEach(c => c.className =
-    c.className.replace(/ (on|up|down|dim)/g,""));
+  map.classList.remove("picked");
+  for(const n of map.querySelectorAll(".node")) n.classList.remove("on","here");
+  for(const w of map.querySelectorAll(".wire")) w.classList.remove("on");
+  card.hidden = true;
 }
 
-function focus(code){
-  clear();
-  const up = into[code] || [], down = outof[code] || [], lv = level[code] || [];
-  const near = new Set([code, ...up, ...down, ...lv]);
-  Object.values(chip).forEach(c => { if(!near.has(c.dataset.code)) c.classList.add("dim"); });
-  chip[code].classList.add("on");
-  up.forEach(a => { chip[a].classList.add("up");
-    wire(a, code, crosses(a,code) ? css("--brand") : css("--up"), false, crosses(a,code)); });
-  down.forEach(b => { chip[b].classList.add("down");
-    wire(code, b, crosses(code,b) ? css("--brand") : css("--down"), false, crosses(code,b)); });
-  lv.forEach(x => { chip[x].classList.add("on");
-    wire(code, x, css("--brand"), false, true); wire(x, code, css("--brand"), false, true); });
-
-  const t = T[code];
-  const say = list => list.length ? list.map(c => T[c].name).join(", ") : "nothing";
-  document.getElementById("detail").innerHTML =
-    "<b>" + t.name + "</b> \\u00b7 needs " + say(up) + " \\u00b7 needed by " + say(down)
-    + (lv.length ? " \\u00b7 at one level with " + say(lv) : "")
-    + "<div class='p'>" + t.plain + "</div>";
+function list(title, units){
+  if(!units.length) return "<h3>" + title + "</h3><p class=none>Nothing.</p>";
+  const items = units.map(u =>
+    '<li><button data-go="' + u + '">' + FACTS[u].n + "</button></li>").join("");
+  return "<h3>" + title + "</h3><ul>" + items + "</ul>";
 }
 
-function inkAll(){
-  clear();
-  D.edges.forEach(([a,b]) => wire(a, b, crosses(a,b) ? css("--brand") : css("--muted"),
-                                 true, crosses(a,b)));
+function show(unit, before, after){
+  const f = FACTS[unit];
+  const row = "Row " + (f.r + 1) + ". " + before + " behind it, " + after + " ahead of it.";
+  card.innerHTML = "<h2>" + f.n + "</h2><p>" + row + "</p>"
+    + list("Needs first", f.u) + list("Opens up", f.d);
+  card.hidden = false;
 }
 
-function bind(){
-  Object.values(chip).forEach(el => {
-    el.addEventListener("pointerenter", () => { if(!all.checked) focus(el.dataset.code); });
-    el.addEventListener("click", () => focus(el.dataset.code));
-  });
-}
-
-const q = document.getElementById("q");
-q.addEventListener("input", () => {
-  const term = q.value.trim().toLowerCase();
-  let n = 0, first = null;
-  Object.entries(chip).forEach(([code, el]) => {
-    const hit = term && (T[code].name.toLowerCase().includes(term)
-                      || T[code].plain.toLowerCase().includes(term));
-    el.classList.toggle("hit", !!hit);
-    if(hit){ n++; first ||= code; }
-  });
-  document.getElementById("hits").textContent = term ? n + " found" : "";
-  /* Bring the first match into view without moving anything else: the map
-     stays where it was, so a search never costs you your place. */
-  if(first) chip[first].scrollIntoView({block:"center", inline:"center", behavior:"smooth"});
+map.addEventListener("click", e => {
+  const node = e.target.closest(".node");
+  if(node) pick(node.dataset.u); else clear();
 });
-q.addEventListener("keydown", e => {
-  if(e.key !== "Enter") return;
-  const hit = Object.entries(chip).find(([,el]) => el.classList.contains("hit"));
-  if(hit) focus(hit[0]);
+card.addEventListener("click", e => {
+  const go = e.target.closest("[data-go]");
+  if(go) pick(go.dataset.go);
 });
 
-const all = document.getElementById("all");
-all.addEventListener("change", () => all.checked ? inkAll() : clear());
-document.getElementById("tight").addEventListener("change", draw);
-stage.addEventListener("pointerleave", () => { if(all.checked) inkAll(); else clear(); });
-addEventListener("resize", () => { if(all.checked) inkAll(); else clear(); });
-draw();
+const find = document.getElementById("find");
+find.addEventListener("input", () => {
+  const q = find.value.trim().toLowerCase();
+  let first = null;
+  for(const n of map.querySelectorAll(".node")){
+    const hit = q.length > 1 && FACTS[n.dataset.u].n.toLowerCase().includes(q);
+    n.classList.toggle("found", hit);
+    if(hit && !first) first = n;
+  }
+  if(first){
+    const r = first.getBoundingClientRect(), s = stage.getBoundingClientRect();
+    stage.scrollBy({left: r.left - s.left - s.width/2,
+                    top: r.top - s.top - s.height/2, behavior: "smooth"});
+  }
+});
+
+addEventListener("resize", () => {});
+fit();
 </script></body></html>
 """
 
