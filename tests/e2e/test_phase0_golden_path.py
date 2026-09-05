@@ -353,21 +353,22 @@ def test_the_tree_draws_every_topic_and_its_prerequisites(browser, base_url):
 
 def test_choosing_a_topic_shows_what_it_is_and_lights_its_path(browser, base_url):
     context, tab = open_tree(browser, base_url)
-    tab.click('.dl-tree-node[data-code="MIT-6.8"]')
+    tab.click('.dl-tree-node[data-code="MIT-6.8a"]')
     panel = tab.inner_text("#dl-tree-detail")
-    assert "Searching and sorting" in panel
+    assert "Searching" in panel
     # inner_text is what the reader sees, and these headings are uppercased by
     # the stylesheet — so compare against that rather than against the source.
     assert "WHERE IT TURNS UP" in panel
     assert "NEEDS FIRST" in panel
     assert tab.eval_on_selector_all(".dl-tree-uses li", "e => e.length") >= 2
-    # What it needs and what needs it. Divide and conquer used to hang off this
-    # one; it now sits beside it, taught inside searching and inside sorting
-    # rather than before or after either — so only one edge runs backward, to
-    # iterating by index. The second lit edge runs forward: CMPS-LO5
-    # (algorithmic complexity, not yet taught) names MIT-6.8 as a prerequisite
-    # in topics.yaml, and an arrow into an untaught topic is exactly what the
-    # map is for — see topics.yaml's own docstring on `needs`.
+    # What it needs and what needs it. Divide and conquer used to hang off the
+    # topic searching was split out of; it now sits beside it, taught inside
+    # searching and inside sorting rather than before or after either — so only
+    # one edge runs backward, to iterating by index. The second lit edge runs
+    # forward: CMPS-LO5 (algorithmic complexity, not yet taught) names
+    # MIT-6.8a as a prerequisite in topics.yaml, and an arrow into an untaught
+    # topic is exactly what the map is for — see topics.yaml's own docstring
+    # on `needs`.
     assert tab.eval_on_selector_all(".dl-tree-edge.is-lit", "e => e.length") == 2
     context.close()
 
@@ -392,9 +393,9 @@ def test_a_topic_nobody_teaches_says_so_instead(browser, base_url):
 
 def test_a_prerequisite_in_the_panel_moves_the_selection(browser, base_url):
     context, tab = open_tree(browser, base_url)
-    tab.click('.dl-tree-node[data-code="MIT-6.8"]')
+    tab.click('.dl-tree-node[data-code="MIT-6.8a"]')
     tab.click(".dl-tree-jump")
-    assert tab.evaluate("globalThis.dewlabTree.chosen()") != "MIT-6.8"
+    assert tab.evaluate("globalThis.dewlabTree.chosen()") != "MIT-6.8a"
     context.close()
 
 

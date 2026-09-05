@@ -57,6 +57,13 @@ knowledge-map caption.
 **64 of 251 glossary definitions**, being the ones that breached the
 sentence-length or metaphor rules. Descriptions already plain were left alone.
 
+**35 topic descriptions written fresh** when thirteen topics were split into
+the parts a student actually meets separately. Each child was written to the
+eight checks rather than cut out of its parent's sentences, so none of them
+carries the fragments or the em-dash definitions the pass exists to remove.
+Fourteen of the older descriptions in the same file are still on the list
+below.
+
 ---
 
 ## Not done — pick up here

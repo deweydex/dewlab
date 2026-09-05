@@ -1449,8 +1449,28 @@ def topic_tiers(topics: dict) -> dict[str, int]:
     return tier
 
 
+def outcome_of(topics: dict, code: str) -> str:
+    """Which learning outcome a topic serves, for looking it up in anything
+    keyed by outcome — coverage, strands, the out-of-scope list.
+
+    A topic code and an outcome code were once the same string. They are not
+    any more: several topics may serve one outcome where the descriptor bundles
+    ideas a student meets weeks apart, and one topic may serve several where it
+    folds in what a thin neighbouring outcome asked for. Where a topic serves
+    several, the first is the one the tree colours and links by. Falling back
+    to the topic's own code keeps `PRE-` groundwork, which serves none, working
+    as it did.
+    """
+    claimed = (topics.get(code) or {}).get("outcome")
+    if not claimed:
+        return code
+    return claimed if isinstance(claimed, str) else claimed[0]
+
+
 def topic_layout(topics: dict, strands: dict[str, str]) -> tuple[dict, float, float]:
     """Where every topic sits: one row per tier, reading downwards.
+
+    `strands` is keyed by topic code, already resolved by the caller.
 
     **Top to bottom is dependency.** Nothing in the top row needs anything, and
     nothing ever points upwards, so how far down a topic sits is how much has to
@@ -1479,7 +1499,8 @@ def topic_layout(topics: dict, strands: dict[str, str]) -> tuple[dict, float, fl
     y = TREE_PAD
     for level in sorted(rows):
         members = sorted(
-            rows[level], key=lambda c: (strands.get(c, "other"), topics[c]["name"])
+            rows[level],
+            key=lambda c: (strands.get(c, "other"), topics[c]["name"]),
         )
         lines = [members[i:i + TREE_COLUMNS] for i in range(0, len(members), TREE_COLUMNS)]
         top = y
@@ -1522,12 +1543,16 @@ def tree_data(tutorials: list[Tutorial]) -> dict:
     topics = load_topics()
     if not topics:
         return {}
-    strands = load_strands()
-    # A topic may name its own strand, which is the only way a topic that is not
-    # an outcome can have one at all.
-    for code, topic in topics.items():
-        if topic.get("strand"):
-            strands[code] = str(topic["strand"])
+    # One strand per topic, resolved here so the layout does not have to know
+    # where a strand comes from. A topic may name its own, which is the only
+    # way a topic that is not an outcome can have one at all; otherwise it
+    # takes the strand of the outcome it serves.
+    by_outcome = load_strands()
+    strands = {
+        code: str(topic["strand"]) if topic.get("strand")
+        else by_outcome.get(outcome_of(topics, code), "other")
+        for code, topic in topics.items()
+    }
     excluded = load_out_of_scope()
     taught = taught_where(tutorials)
     place, width, height = topic_layout(topics, strands)
@@ -1535,14 +1560,14 @@ def tree_data(tutorials: list[Tutorial]) -> dict:
     nodes = []
     for code, topic in sorted(topics.items()):
         at = place[code]
-        where = taught.get(code)
+        where = taught.get(outcome_of(topics, code))
         # Groundwork is not an outcome, so no tutorial can claim it in `covers:`
         # and it would otherwise sit on the map forever marked "planned". It is
         # not planned; it is assumed, and picked up in passing wherever it is
         # first needed.
         if code.startswith("PRE-"):
             state = "groundwork"
-        elif code in excluded:
+        elif outcome_of(topics, code) in excluded:
             state = "excluded"
         else:
             state = "taught" if where else "planned"

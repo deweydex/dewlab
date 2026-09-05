@@ -44,6 +44,12 @@ jobs:
       - name: Fail if the curriculum map is out of date
         run: python3 dev/curriculum_map.py --check
 
+      # The pair game carries the topics as a JSON blob, because it is one file
+      # a phone opens with no build step. A copy drifts: after thirteen topics
+      # were split it still offered fourteen that no longer existed.
+      - name: Fail if the pair game's topics are out of date
+        run: python3 dev/build_topic_game.py --check
+
       # The build already refuses to publish a tutorial whose `tutorial:` link
       # goes nowhere. This holds the documentation about the project to the same
       # standard, which it had drifted from: renamed files still cited by their

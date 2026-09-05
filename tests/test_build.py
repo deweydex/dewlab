@@ -2012,6 +2012,40 @@ class TestTheTopicTree:
         assert node["uses"]
         assert node["strand"] == "number"
 
+    def test_a_topic_takes_its_strand_and_coverage_from_the_outcome_it_serves(
+        self, repo, monkeypatch
+    ):
+        """A topic code and an outcome code used to be the same string.
+
+        They are not any more: a descriptor sometimes bundles ideas a student
+        meets weeks apart, so several topics may serve one outcome. Everything
+        keyed by outcome — the strand, whether a tutorial teaches it, whether
+        it is out of scope — has to follow the `outcome:` field rather than the
+        topic's own code, or a split topic silently shows as untaught.
+        """
+        real = b.load_topics()
+        split = {
+            "SPLIT-A": {
+                "name": "The first half",
+                "outcome": "MIT-1.4",
+                "plain": "One half of what the descriptor asks for.",
+                "uses": ["Somewhere it comes up."],
+                "needs": [],
+            }
+        }
+        monkeypatch.setattr(b, "load_topics", lambda: {**real, **split})
+        write(repo, "Some prose.\n")
+        b.build()
+
+        node = next(n for n in self.data(repo)["nodes"] if n["code"] == "SPLIT-A")
+        original = next(n for n in self.data(repo)["nodes"] if n["code"] == "MIT-1.4")
+        assert node["strand"] == original["strand"], (
+            "a split topic lost the strand of the outcome it serves"
+        )
+        assert node["state"] == original["state"], (
+            "a split topic lost the coverage of the outcome it serves"
+        )
+
     def test_nothing_needs_something_below_it(self, repo):
         """The whole layout rests on this: top to bottom is dependency, so an
         arrow that pointed upwards would be a lie about the tree."""

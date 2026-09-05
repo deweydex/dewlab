@@ -116,6 +116,19 @@ class Outcome:
     strand: str
 
 
+def outcomes_of(topic: dict) -> list[str]:
+    """Which learning outcomes a topic serves.
+
+    Usually one. A topic that folds in what a thin neighbouring outcome asked
+    for serves both, and saying so is how that outcome stays claimed instead of
+    quietly going missing. A `PRE-` topic serves none.
+    """
+    claimed = topic.get("outcome")
+    if not claimed:
+        return []
+    return [claimed] if isinstance(claimed, str) else list(claimed)
+
+
 def load_outcomes() -> tuple[dict[str, Outcome], dict]:
     """Reads `planning/curriculum/outcomes.yaml` — every learning outcome
     the two QQI module descriptors define — into a lookup dict keyed by
