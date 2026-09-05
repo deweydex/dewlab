@@ -105,9 +105,10 @@ follow from each other. An explanation broken into fragments has had its joins
 removed, and the joins were the reasoning.
 
 **Invitational, not commanding.** "Let's try", "what happens when", "how might
-you". Not "Solve this problem" or "Complete the following". The difference is
-whether the sentence positions the reader as somebody being told what to do or
-somebody being invited to find something out.
+you", "give it a click and see what happens". Not "Solve this problem" or
+"Complete the following". The difference is whether the sentence positions the
+reader as somebody being told what to do or somebody being invited to find
+something out.
 
 This licenses "let's" and rules out imperatives aimed at the student. Both
 halves matter and they are easy to confuse — see section 8.
@@ -417,10 +418,13 @@ have meant rewriting thirty-five files to remove the warmth Josh asked for.
 
 **Bibliographies.** Josh's guide requires one in every tutorial, naming Khan
 Academy, 3Blue1Brown, StatQuest, Computerphile, Ben Eater, Sebastian Lague and
-others as the sources to prefer. **No tutorial in this repository has one.** That
-is a real gap rather than a disagreement, and it is the largest single piece of
-outstanding style work — thirty-five tutorials, each needing three or four
-genuinely useful further-reading entries with working links.
+others as the sources to prefer. Most tutorials have one now — 49 of 60, as of
+the last count — as a "Where to Read More" section at the foot, but depth is
+uneven: some carry the three or four genuinely useful entries the guide asks
+for, others carry a single link. The real remaining work is an audit — which
+of the 49 are thin, and closing the gap on the eleven that have none — not
+writing thirty-five from scratch, which is what this section used to say and
+no longer does.
 
 **Stating learning outcomes at the start.** Josh's guide asks for them
 explicitly; dewlab puts them in frontmatter under `covers:`, where the build and
@@ -466,7 +470,11 @@ see section 5.
 - Any command language aimed at the student? Any emoji?
 - Has every number in the tutorial and its practice page actually been run?
 - Does the practice page exist, and do hard problems carry a stepped hint?
-- Is there a bibliography? (Today the honest answer is no. See section 8.)
+- Is there a bibliography, with three or four genuinely useful entries rather
+  than one placeholder link? (Uneven across the site — see section 8.)
+- Where a mistake or a stuck moment is named, is a real next step named with
+  it — the Reference panel, the topic tree, a step back — not only the fact
+  that it is normal? See section 11.
 
 ---
 
@@ -498,3 +506,41 @@ concepts, Ben Eater for architecture and low-level work, Sebastian Lague for
 algorithms, Welch Labs for machine learning, and Khan Academy or MDN for
 straightforward reference. Cite the original paper or a textbook where one
 exists.
+
+---
+
+## 11. Struggle, effort and self-worth
+
+Kohn (section 1, section 10) argues that external evaluation — grades, praise,
+punishment — trains a person to read any judgment of their work as a judgment
+of themselves. Section 2's refusal to score anything is this repository
+already acting on that argument. This section is the same refusal, carried one
+step further, to the moment right after a mistake — where, even with nothing
+being graded, an error can still quietly turn into a verdict on the reader
+rather than staying information about a method.
+
+**An error is a fact about a line, not about the person who ran it.** Say this
+directly, where a tutorial is already in the middle of demonstrating it —
+`when-it-goes-wrong.md`'s opening is the house example — rather than assume
+the point makes itself. Being wrong is cheap; it should not also be shameful,
+and the second half needs saying at least once as plainly as the first.
+
+**Structural before verbal.** A reader who is stuck needs a real place to go —
+the Reference panel, the topic tree, a step back to an earlier tutorial —
+more than a sentence telling them they can do this. Naming the route earns
+more trust than naming the feeling alone, and costs the same number of words.
+`docs/FOR_STUDENTS.md`'s "If a Page Stops Making Sense" is the house example.
+
+**Name the feeling, then hand over the route.** *Frustrated*, *stuck*, *unsure
+what to do next* are fine to say plainly, and better than talking around them.
+What is not fine is naming a feeling and leaving it to float with nothing
+under it. Say what it feels like, then say the concrete next step, in that
+order.
+
+**Ration this too.** Said once, at the place a tutorial is already
+demonstrating it, this stays a real statement. Said in every tutorial's error
+message, it becomes exactly the aphorism the "Plain language" rules above
+already warn against — a maxim a reader learns to skim past.
+
+**The test.** Whether a reader who is stuck has somewhere real to go, not only
+something reassuring to read.

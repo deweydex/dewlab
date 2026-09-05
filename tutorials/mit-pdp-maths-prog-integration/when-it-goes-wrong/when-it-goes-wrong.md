@@ -31,6 +31,10 @@ The red text is a description of what happened and where. It is written in an un
 
 So we are going to break things on purpose. Every cell below is meant to fail, and reading its failure is the exercise.
 
+We might feel frustrated here, or unsure what to do next. That is something to expect, not something to fix. Every profession with this much left to discover feels this way sometimes, and so does every real attempt to learn something new. We do not always want to stop something from breaking. Sometimes we need it to break, to see how it works.
+
+An error here is a fact about this line, on this run. It is not a fact about whether you can learn to program.
+
 ## Three Kinds of Wrong
 
 Before the messages, a distinction that will save you a great deal of time, because the three kinds fail differently and are found differently.
