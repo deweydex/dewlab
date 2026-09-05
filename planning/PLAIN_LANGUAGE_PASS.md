@@ -58,12 +58,12 @@ tree, search) rather than told only that it is normal to be stuck. New in
 walkthrough, distinct from `FOR_STUDENTS.md`'s job). The About page
 (`write_about_page()` in `build.py`) gained a short paragraph saying why the
 project exists and why nothing is scored, which it had never said despite
-section 2 saying it at length. `dewstack`'s README, its own new
-`docs/FOR_STUDENTS.md`, and its new FAQ page (`tutorials/reference/faq/`,
-in the reference shelf) all picked up the same pattern, adapted to a real
-difference the two projects have: dewstack's tutorials are not graded, but
-the course's two projects and its exam are, so the reassurance there is
-about the exercises specifically, not a blanket "nothing is scored."
+section 2 saying it at length. dewstack's README, its own new FOR_STUDENTS.md, and its new FAQ page
+(under Reference, in the reference shelf) all picked up the same pattern in
+that separate repository, adapted to a real difference between the two
+projects: dewstack's tutorials are not graded, but the course's two
+projects and its exam are, so the reassurance there is about the exercises
+specifically, not a blanket "nothing is scored."
 
 ---
 
