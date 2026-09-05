@@ -281,20 +281,33 @@ class TestTheTopicGlossary:
         path = cm.ROOT / "planning" / "curriculum" / "topics.yaml"
         return yaml.safe_load(path.read_text())["topics"]
 
-    def test_every_outcome_has_a_topic(self):
+    def test_every_outcome_is_claimed_by_a_topic(self):
+        """An outcome nothing claims is one the map cannot show as taught, so
+        it would go missing without anybody noticing.
+
+        Several topics may claim one outcome. A descriptor sometimes bundles
+        ideas a student meets weeks apart, and cutting the topic finer is how
+        the map says so; cutting the descriptor is not ours to do."""
         outcomes, _ = cm.load_outcomes()
-        missing = sorted(set(outcomes) - set(self.topics()))
-        assert not missing, f"no topic written for {missing}"
+        served = {t.get("outcome") for t in self.topics().values()}
+        missing = sorted(set(outcomes) - served)
+        assert not missing, f"no topic claims {missing}"
 
     def test_no_topic_invents_an_outcome(self):
-        """A `MIT-` or `PDP-` code has to be a real one, or it is a typo that
-        silently detaches a topic from the descriptor it claims to come from.
+        """An `outcome:` has to name a real one, or it is a typo that silently
+        detaches a topic from the descriptor it claims to come from.
 
-        `PRE-` codes are deliberately not outcomes — see the next test."""
+        `PRE-` codes carry no outcome at all — see the next test."""
         outcomes, _ = cm.load_outcomes()
-        claimed = {c for c in self.topics() if not c.startswith("PRE-")}
-        unknown = sorted(claimed - set(outcomes))
-        assert not unknown, f"{unknown} are not in any module descriptor"
+        for code, topic in self.topics().items():
+            claimed = topic.get("outcome")
+            if code.startswith("PRE-"):
+                assert claimed is None, f"{code} is groundwork and claims {claimed}"
+                continue
+            assert claimed, f"{code} names no outcome"
+            assert claimed in outcomes, (
+                f"{code} claims {claimed}, which is in no module descriptor"
+            )
 
     def test_groundwork_is_marked_as_groundwork_and_says_as_much(self):
         """Not everything a student needs is a numbered outcome. Naming the
@@ -307,6 +320,7 @@ class TestTheTopicGlossary:
         assert not (groundwork & set(outcomes)), (
             "a PRE- code collides with a real outcome"
         )
+        assert groundwork, "no groundwork topic left; the PRE- convention is dead"
         for code in groundwork:
             topic = self.topics()[code]
             assert topic.get("name") and topic.get("plain") and topic.get("uses"), (
