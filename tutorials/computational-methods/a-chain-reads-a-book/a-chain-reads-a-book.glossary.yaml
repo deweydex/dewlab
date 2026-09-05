@@ -1,0 +1,37 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+entries:
+  - term: "load_text()"
+    kind: function
+    definition: >
+      Fetches a plain-text file — from dewlab's shared data folder, or a
+      full web address — and returns its contents as one string.
+    example: 'book = await load_text("pride-and-prejudice.txt")'
+  - term: dictionary of dictionaries
+    kind: concept
+    definition: >
+      One dictionary, keyed by word. Each value is itself a dictionary,
+      holding every word that followed the key somewhere in the source
+      text and how many times. Never has to record a pair of words that
+      never actually happened next to each other, unlike a dense grid.
+  - term: "dict.setdefault()"
+    kind: function
+    definition: >
+      Returns a key's existing value if it has one, or sets and returns a
+      given default if it does not. Used to start a new inner dictionary
+      the first time a word is seen, without a separate check first.
+    example: "next_words.setdefault(word, {})"
+  - term: "str.find()"
+    kind: function
+    definition: >
+      Searches a string for the first place another string appears inside
+      it, and returns that position as a number. A second argument gives a
+      position to start searching from, which finds a later match instead
+      of the first one. Returns -1 if the search text is not found at all.
+    example: 'raw.find("*** START")'
+  - term: "str.index()"
+    kind: function
+    definition: >
+      Works like str.find(), searching for the first place another string
+      appears — but raises an error instead of returning -1 when the
+      search text is not found at all.
+    example: 'raw.index("\n", start)'

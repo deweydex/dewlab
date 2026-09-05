@@ -1,0 +1,8 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+entries:
+  - term: order (of a chain)
+    kind: concept
+    definition: >
+      How many previous words a chain looks at before choosing what comes
+      next. An order-1 chain keys on one word; an order-2 chain keys on a
+      pair of words, kept together as one dictionary key.

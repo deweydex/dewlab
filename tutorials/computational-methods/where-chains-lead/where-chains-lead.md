@@ -189,6 +189,11 @@ of adjacent words in it is. This is the entire idea behind predictive text on
 a phone keyboard, scaled up enormously: given what came just before, what is
 likely to come next?
 
+This chain only ever saw ten words, all from one repeated sentence. A real
+book offers thousands. A companion series, coming soon, continues from here:
+it builds the same kind of chain from an entire novel, and lets you generate
+sentences nobody has ever read before.
+
 ## Ranking a Small Web
 
 Three web pages link to each other. Page A links equally to B and C. Page B

@@ -64,7 +64,10 @@ sense.
 10. **Widgets** — `text_input`, `dropdown`, `button`, `image_input`, and
     the shared machinery behind them (`_widget_id`, `_Widget`,
     `_mount_widget`, `_require_dom_sink`).
-11. **Shared data** — `load_csv` and `run_query`; right after `run_query`
+11. **Shared data** — `load_csv`, `load_text`, and `run_query`; `load_text`
+    sits right after `load_csv` and fetches the same way (the shared
+    `/data/` folder, or a full URL), returning the file's contents as a
+    plain string instead of a parsed DataFrame. Right after `run_query`
     sits `_run_sql_cell` (not in `__all__` — internal plumbing, not
     something a reader calls by name), `run_query`'s multi-statement
     counterpart: dewmini's own SQL cell type (DECISIONS_LOG.md 7.118,

@@ -1,0 +1,19 @@
+# Attribution for data/the-montessori-method.txt — planning/SIDEBAR_CONTENT.md §2.
+# Shown in the reference sidebar of any tutorial that declares this dataset,
+# so a reader can trace the text they are working with back to its source.
+
+source: >
+  "The Montessori Method: Scientific Pedagogy as Applied to Child Education
+  in 'The Children's Houses,'" by Maria Montessori, translated from the
+  Italian by Anne E. George. First published by Frederick A. Stokes
+  Company, 1912.
+
+license: >
+  Public domain in the United States — published in 1912, well before the
+  cutoff for automatic public-domain status.
+
+description: >
+  The complete text of the 1912 English translation, title page, an
+  introduction by Henry W. Holmes, and a table of contents intact — a
+  tutorial trims down to Montessori's own chapters before treating it as
+  prose.
