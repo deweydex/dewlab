@@ -15,14 +15,14 @@ so this doubles as a way of finding where anything is taught.
 
 ## Where we stand
 
-**79 of 91** outcomes are in place.
+**81 of 91** outcomes are in place.
 
-- 🟩 **77 taught** — a tutorial section teaches it.
+- 🟩 **79 taught** — a tutorial section teaches it.
 - 🟦 **2 taught in part** — deliberately narrowed, and the narrowed version is written.
 - 🟨 **2 used but not taught** — students meet it in passing without it ever being the subject. These are the quiet gaps: they look covered from a distance.
-- 🟥 **10 not covered** — nothing in dewlab touches it.
+- 🟥 **8 not covered** — nothing in dewlab touches it.
 
-**12 of the 12 outcomes still to write have no proposal**: `CMPS-LO1`, `CMPS-LO10`, `CMPS-LO11`, `CMPS-LO12`, `CMPS-LO13`, `CMPS-LO5`, `CMPS-LO6`, `CMPS-LO7`, `CMPS-LO8`, `CMPS-LO9`, `FOOP-LO2`, `FOOP-LO5`. These are the ones nobody has decided how to teach yet.
+**10 of the 10 outcomes still to write have no proposal**: `CMPS-LO1`, `CMPS-LO10`, `CMPS-LO11`, `CMPS-LO12`, `CMPS-LO13`, `CMPS-LO5`, `CMPS-LO6`, `CMPS-LO7`, `CMPS-LO8`, `CMPS-LO9`. These are the ones nobody has decided how to teach yet.
 
 ### By strand
 
@@ -42,7 +42,7 @@ so this doubles as a way of finding where anything is taught.
 | **oop** | 4 | 0 | 0 | 0 | 0 |
 | **probability** | 9 | 0 | 0 | 1 | 0 |
 | **problem-solving** | 0 | 0 | 0 | 3 | 0 |
-| **programming** | 16 | 0 | 0 | 2 | 0 |
+| **programming** | 18 | 0 | 0 | 0 | 0 |
 | **reflection** | 0 | 0 | 1 | 0 | 0 |
 | **sets** | 3 | 0 | 0 | 0 | 0 |
 | **simulation** | 1 | 0 | 0 | 0 | 0 |
@@ -65,7 +65,7 @@ graph LR
   oop["oop<br/>4 of 4 in place"]
   probability["probability<br/>9 of 10 in place"]
   problem_solving["problem-solving<br/>0 of 3 in place"]
-  programming["programming<br/>16 of 18 in place"]
+  programming["programming<br/>18 of 18 in place"]
   reflection["reflection<br/>0 of 1 in place"]
   sets["sets<br/>3 of 3 in place"]
   simulation["simulation<br/>1 of 1 in place"]
@@ -75,8 +75,8 @@ graph LR
   classDef full fill:#edf7f0,stroke:#1f6b3f,color:#1f6b3f;
   classDef part fill:#fdf6ec,stroke:#b5651d,color:#7a4310;
   classDef none fill:#fdf0ef,stroke:#9b2226,color:#9b2226;
-  class algebra,algorithms,calculus,functions,geometry,linear_algebra,logic,number,oop,sets,simulation,statistics,trigonometry full;
-  class probability,programming part;
+  class algebra,algorithms,calculus,functions,geometry,linear_algebra,logic,number,oop,programming,sets,simulation,statistics,trigonometry full;
+  class probability part;
   class complexity,data_structures,modelling,problem_solving,reflection none;
 ```
 
@@ -395,10 +395,10 @@ graph TD
 | Outcome | | Where |
 |---|---|---|
 | `FOOP-LO1` Data types used in object oriented programs | 🟩 | [Objects and Classes — One Thing, Many Parts](https://deweydex.github.io/dewlab/tutorials/fundamentals-of-oop/objects-and-classes.html#one-thing-many-parts) |
-| `FOOP-LO2` The fundamental set of instructions in a program, and using them to design and construct programs that solve problems | 🟥 | — |
+| `FOOP-LO2` The fundamental set of instructions in a program, and using them to design and construct programs that solve problems | 🟩 | [The Moves You Already Know — The Handful of Moves](https://deweydex.github.io/dewlab/tutorials/fundamentals-of-oop/the-moves-you-already-know.html#the-handful-of-moves)<br/>[The Moves You Already Know — The Same Moves, Inside a Class](https://deweydex.github.io/dewlab/tutorials/fundamentals-of-oop/the-moves-you-already-know.html#the-same-moves-inside-a-class)<br/>[The Moves You Already Know — One Method, Several Moves](https://deweydex.github.io/dewlab/tutorials/fundamentals-of-oop/the-moves-you-already-know.html#one-method-several-moves) |
 | `FOOP-LO3` Basic object oriented constructs: classes, objects, methods, fields, encapsulation, abstraction, inheritance | 🟩 | [Objects and Classes — One Thing, Many Parts](https://deweydex.github.io/dewlab/tutorials/fundamentals-of-oop/objects-and-classes.html#one-thing-many-parts)<br/>[Objects and Classes — Keeping Details to Itself](https://deweydex.github.io/dewlab/tutorials/fundamentals-of-oop/objects-and-classes.html#keeping-details-to-itself)<br/>[Objects and Classes — Building on What Already Exists](https://deweydex.github.io/dewlab/tutorials/fundamentals-of-oop/objects-and-classes.html#building-on-what-already-exists) |
 | `FOOP-LO4` Design and construct modular, reusable code blocks | 🟩 | [One Class, Many Methods — From Loose Functions to One Class](https://deweydex.github.io/dewlab/tutorials/fundamentals-of-oop/one-class-many-methods.html#from-loose-functions-to-one-class)<br/>[One Class, Many Methods — Giving It More to Do](https://deweydex.github.io/dewlab/tutorials/fundamentals-of-oop/one-class-many-methods.html#giving-it-more-to-do) |
-| `FOOP-LO5` Work within a modern integrated development environment | 🟥 | — |
+| `FOOP-LO5` Work within a modern integrated development environment | 🟩 | [The Tools Around Your Code — An Environment You Are Already In](https://deweydex.github.io/dewlab/tutorials/fundamentals-of-oop/the-tools-around-your-code.html#an-environment-you-are-already-in)<br/>[The Tools Around Your Code — Errors Worth Reading](https://deweydex.github.io/dewlab/tutorials/fundamentals-of-oop/the-tools-around-your-code.html#errors-worth-reading)<br/>[The Tools Around Your Code — What the Editor Already Knows](https://deweydex.github.io/dewlab/tutorials/fundamentals-of-oop/the-tools-around-your-code.html#what-the-editor-already-knows)<br/>[The Tools Around Your Code — Where a Bigger Project Lives](https://deweydex.github.io/dewlab/tutorials/fundamentals-of-oop/the-tools-around-your-code.html#where-a-bigger-project-lives) |
 | `FOOP-LO6` Construct larger programs from smaller ones | 🟩 | [One Parent, Many Children — Another Kind of Account](https://deweydex.github.io/dewlab/tutorials/fundamentals-of-oop/one-parent-many-children.html#another-kind-of-account)<br/>[One Parent, Many Children — Many Kinds, One Loop](https://deweydex.github.io/dewlab/tutorials/fundamentals-of-oop/one-parent-many-children.html#many-kinds-one-loop) |
 | `FOOP-LO7` Model real-world objects to build object oriented programs that model real-world activities | 🟩 | [One Parent, Many Children — Many Kinds, One Loop](https://deweydex.github.io/dewlab/tutorials/fundamentals-of-oop/one-parent-many-children.html#many-kinds-one-loop)<br/>[One Parent, Many Children — A Bank Holds Its Accounts](https://deweydex.github.io/dewlab/tutorials/fundamentals-of-oop/one-parent-many-children.html#a-bank-holds-its-accounts) |
 | `FOOP-LO8` Ways to organise and structure data | 🟩 | [One Class, Many Methods — Data That Belongs Together](https://deweydex.github.io/dewlab/tutorials/fundamentals-of-oop/one-class-many-methods.html#data-that-belongs-together) |

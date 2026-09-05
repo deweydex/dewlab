@@ -1,0 +1,13 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# Third tutorial of the Programming with objects series. Checked against
+# the-moves-you-already-know's and objects-and-classes' own glossaries —
+# no overlap. Not emphasised anywhere else in the curriculum either
+# (checked via dev/curriculum_map.py's terms_of()).
+entries:
+  - term: development environment
+    kind: concept
+    definition: >
+      A development environment is the set of tools sitting around your
+      code: an editor to write it in, a way to run it and see what
+      happened, and help finding out why it broke.
