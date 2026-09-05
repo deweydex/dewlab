@@ -52,6 +52,7 @@ ROOT = Path(__file__).resolve().parent.parent
 TOPICS = ROOT / "planning" / "curriculum" / "topics.yaml"
 STRANDS = ROOT / "planning" / "curriculum" / "strands.yaml"
 OUTCOMES = ROOT / "planning" / "curriculum" / "outcomes.yaml"
+TUTORIALS = ROOT / "tutorials"
 REVIEW = ROOT / "planning" / "curriculum" / "review"
 BLIND = REVIEW / "blind"          # the two agents, judging without the graph
 OWN = REVIEW / "pairs"            # Josh's own, played in the game
@@ -372,6 +373,35 @@ def wrap(text: str) -> list[str]:
     return out
 
 
+def lessons() -> dict:
+    """Which tutorial teaches each outcome, and where inside it.
+
+    A tutorial's frontmatter claims outcomes section by section, so the first
+    section claiming one is the place to send somebody who wants to learn it.
+    Practice sits beside the tutorial under the same slug, which is a build
+    convention rather than anything the frontmatter says, so the link is only
+    offered where that file is really there.
+    """
+    found: dict[str, dict] = {}
+    for path in sorted(TUTORIALS.rglob("*.md")):
+        text = path.read_text()
+        if not text.startswith("---"):
+            continue
+        meta = yaml.safe_load(text.split("---", 2)[1])
+        if not isinstance(meta, dict) or "slug" not in meta:
+            continue
+        drill = path.parent / f"{meta['slug']}-practice.md"
+        for anchor, claim in (meta.get("covers") or {}).items():
+            for code in (claim or {}).get("covers") or []:
+                found.setdefault(code, {
+                    "title": meta.get("title") or meta["slug"],
+                    "read": f"tutorials/{meta['module']}/{meta['slug']}.html#{anchor}",
+                    "drill": (f"tutorials/{meta['module']}/{meta['slug']}-practice.html"
+                              if drill.exists() else None),
+                })
+    return found
+
+
 def bands(topics: dict) -> dict:
     """Which column each topic is drawn in.
 
@@ -533,20 +563,22 @@ def esc(text: str) -> str:
 
 
 def page(topics: dict, g: dict, depth: dict, group: dict) -> str:
-    """One page: the map as a drawn graph in six columns, a search box and a
-    card.
+    """The map page: a search box, a close-up of one topic, and the whole map.
 
-    Rows are what has to come first. Columns are the subject a topic belongs
-    to, which is a way of arranging the drawing rather than anything the graph
-    knows. An arrow that stays inside its column is drawn faintly; an arrow
-    that crosses from one column to another is drawn in the accent colour,
-    because those are the ones worth looking at.
+    Two views over one graph. The close-up centres on a topic, with what it
+    needs to its left and what it opens to its right, a few steps each way —
+    the answer to "I am here" and "I am stuck on this". The whole map is the
+    same graph drawn in its six columns, for standing back.
+
+    Neither view is radial. A prerequisite graph's content is direction, and a
+    ring around a centre says only "connected": left and right say which way.
     """
     unit_of = {c: u for u, members in group.items() for c in members}
     band = bands(topics)
     order = column_order(topics, g["edges"], band)
     at, spans, width, height = place(depth, group, g["edges"], band, order)
     col_of = {u: band[min(members)] for u, members in group.items()}
+    teach = lessons()
 
     name = {u: " + ".join(topics[c]["name"] for c in sorted(members))
             for u, members in group.items()}
@@ -567,8 +599,7 @@ def page(topics: dict, g: dict, depth: dict, group: dict) -> str:
             f'<rect x="{x:.0f}" y="0" width="{w:.0f}" height="{height}"/>'
             f'<text x="{x + w / 2:.0f}" y="30">{esc(c["name"])}</text></g>')
 
-    wires = []
-    crossings = 0
+    wires, crossings = [], 0
     for a in sorted(down):
         for b in sorted(down[a]):
             x1, y1 = at[a][0] + NODE_W / 2, at[a][1] + NODE_H
@@ -602,14 +633,33 @@ def page(topics: dict, g: dict, depth: dict, group: dict) -> str:
         many = " many" if len(group[unit]) > 1 else ""
         boxes.append(
             f'<g class="node{many}" data-u="{unit}" data-c="{col_of[unit]}" '
+            f'data-m="{module_of(unit)}" '
             f'transform="translate({x:.0f},{y:.0f})">'
             f'<rect width="{NODE_W}" height="{NODE_H}" rx="9"/>'
             f'<text>{text}</text></g>')
 
-    facts = {u: {"n": name[u], "c": col_of[u], "r": depth[u],
-                 "u": sorted(up[u]), "d": sorted(down[u])} for u in at}
-    chips = "".join(f'<button class="chip" data-c="{c["id"]}">{esc(c["name"])}'
-                    f'</button>' for c in order)
+    facts = {}
+    for unit, members in group.items():
+        lead = min(members)
+        entry = topics[lead]
+        claimed = entry.get("outcome") or lead
+        outcomes = [claimed] if isinstance(claimed, str) else list(claimed)
+        lesson = next((teach[o] for o in outcomes if o in teach), None)
+        facts[unit] = {
+            "n": name[unit], "c": col_of[unit], "m": module_of(unit),
+            "r": depth[unit], "u": sorted(up[unit]), "d": sorted(down[unit]),
+            "p": " ".join((entry.get("plain") or "").split()),
+            "w": [" ".join(u.split()) for u in (entry.get("uses") or [])],
+            "L": lesson,
+        }
+
+    chips = "".join(
+        f'<button class="chip col" data-c="{c["id"]}" aria-pressed="true">'
+        f'{esc(c["name"])}</button>' for c in order)
+    seen_modules = sorted({module_of(u) for u in group})
+    modules = "".join(
+        f'<button class="chip mod" data-m="{m}" aria-pressed="true">'
+        f'{esc(MODULES.get(m, m))}</button>' for m in seen_modules)
 
     return (TEMPLATE
             .replace("__W__", str(width))
@@ -619,11 +669,29 @@ def page(topics: dict, g: dict, depth: dict, group: dict) -> str:
             .replace("__PAIRS__", "\n".join(pairs))
             .replace("__BOXES__", "\n".join(boxes))
             .replace("__CHIPS__", chips)
+            .replace("__MODULES__", modules)
             .replace("__FACTS__", json.dumps(facts, sort_keys=True))
             .replace("__ROWS__", str(max(depth.values()) + 1))
             .replace("__COUNT__", str(len(topics)))
             .replace("__CROSS__", str(crossings))
             .replace("__ARROWS__", str(len(g["edges"]))))
+
+
+# The four QQI modules, shortened to fit a chip. "Groundwork" is ours: a PRE-
+# topic is prior knowledge no descriptor asked for.
+MODULES = {
+    "MIT": "Maths for IT", "PDP": "Programming and Design",
+    "CMPS": "Computational Methods", "FOOP": "Object Oriented",
+    "PRE": "Groundwork",
+}
+
+
+def module_of(unit: str) -> str:
+    return unit.split("-")[0]
+
+
+def esc(text: str) -> str:
+    return text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 
 
 TEMPLATE = """<!doctype html>
@@ -634,38 +702,71 @@ TEMPLATE = """<!doctype html>
 :root{
   --ink:#1b1b1f; --dim:#6b6b76; --line:#d6d6de; --paper:#fbfbfd;
   --box:#fff; --mark:#1b5cff; --soft:#eef2ff; --two:#b8860b;
-  --tint:#f1f1f6; --cross:#c2703a;
+  --tint:#f1f1f6; --cross:#c2703a; --panel:#fff;
 }
 @media (prefers-color-scheme: dark){
   :root{ --ink:#e9e9ef; --dim:#9a9aa6; --line:#3a3a44; --paper:#141418;
          --box:#1e1e25; --mark:#7aa2ff; --soft:#22283a; --two:#e0b552;
-         --tint:#1a1a20; --cross:#e08a52; }
+         --tint:#1a1a20; --cross:#e08a52; --panel:#1a1a20; }
 }
 *{box-sizing:border-box}
 body{margin:0;background:var(--paper);color:var(--ink);
-     font:15px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif;
-     display:flex;flex-direction:column;height:100dvh}
-header{padding:.6rem .8rem;border-bottom:1px solid var(--line);background:var(--paper)}
-h1{margin:0 0 .35rem;font-size:1rem;font-weight:600}
-h1 span{font-weight:400;color:var(--dim)}
+  font:15px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif;
+  display:flex;flex-direction:column;height:100dvh;overflow:hidden}
+header{padding:.55rem .8rem;border-bottom:1px solid var(--line);flex:none}
 .bar{display:flex;gap:.4rem;align-items:center}
+h1{margin:0 .5rem 0 0;font-size:.95rem;font-weight:600;white-space:nowrap}
 input[type=search]{flex:1;min-width:0;padding:.5rem .6rem;font:inherit;
   border:1px solid var(--line);border-radius:8px;background:var(--box);color:inherit}
 button{font:inherit;padding:.45rem .6rem;border:1px solid var(--line);
   border-radius:8px;background:var(--box);color:inherit;cursor:pointer}
-.chips{display:flex;flex-wrap:wrap;gap:.3rem;margin:.45rem 0 0}
-.chip{padding:.3rem .55rem;font-size:.82rem;border-radius:999px}
-.chip[aria-pressed=true]{background:var(--soft);border-color:var(--mark);color:var(--mark)}
-.key{display:flex;flex-wrap:wrap;align-items:center;gap:.15rem .9rem;
-  margin:.45rem 0 0;font-size:.78rem;color:var(--dim)}
-.key b{font-weight:400;display:flex;align-items:center;gap:.3rem}
-.key path{fill:none;stroke-width:1.6}
-.key .one{stroke:var(--dim)}
-.key .cross{stroke:var(--cross)}
-.key .two{stroke:var(--two);stroke-dasharray:3 4}
-#stage{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;
-  touch-action:pan-x pan-y;display:grid;place-content:start center;padding:.5rem}
-svg{display:block}
+button[aria-pressed=true]{background:var(--soft);border-color:var(--mark);color:var(--mark)}
+.rows{display:flex;flex-wrap:wrap;gap:.3rem;margin-top:.4rem;align-items:center}
+.rows small{color:var(--dim);font-size:.75rem;margin-right:.1rem}
+.chip{padding:.25rem .5rem;font-size:.78rem;border-radius:999px}
+.chip[aria-pressed=false]{opacity:.45}
+main{flex:1;display:flex;min-height:0}
+#stage{flex:1;min-width:0;position:relative;overflow:auto;
+  -webkit-overflow-scrolling:touch;touch-action:pan-x pan-y}
+aside{width:320px;flex:none;border-left:1px solid var(--line);
+  background:var(--panel);overflow:auto;padding:.9rem}
+#sift{display:none}
+@media (max-width:820px){
+  main{flex-direction:column}
+  aside{width:auto;border-left:0;border-top:1px solid var(--line);
+        max-height:40dvh;padding:.7rem}
+  h1{display:none}
+  /* the chips are a third of a phone screen, so they fold away */
+  #sift{display:block}
+  #filters{display:none}
+  #filters.open{display:flex}
+}
+/* the close-up */
+#near{display:none;padding:1rem .6rem;min-height:100%;position:relative}
+#near.on{display:flex;gap:0;align-items:stretch;min-height:100%}
+#near .step{flex:1;min-width:150px;max-width:230px;display:flex;
+  flex-direction:column;padding:0 .5rem;position:relative;z-index:1}
+#near .stack{flex:1;display:flex;flex-direction:column;gap:.4rem;
+  justify-content:center}
+#near h2{margin:0 0 .3rem;font-size:.7rem;text-transform:uppercase;
+  letter-spacing:.05em;color:var(--dim);font-weight:600;text-align:center}
+.card{display:block;width:100%;text-align:left;padding:.45rem .55rem;
+  font-size:.83rem;line-height:1.25;border-radius:9px;border:1px solid var(--line);
+  background:var(--box)}
+.card.here{border-color:var(--mark);border-width:2px;background:var(--soft);
+  font-weight:600;font-size:.92rem;padding:.6rem}
+.card.off{opacity:.3}
+.card em{display:block;font-style:normal;font-size:.68rem;color:var(--dim);
+  margin-top:.15rem}
+.more{font-size:.75rem;color:var(--dim);padding:.3rem}
+#threads{position:absolute;inset:0;pointer-events:none;z-index:0}
+#threads path{fill:none;stroke:var(--line);stroke-width:1.4}
+#threads path.over{stroke:var(--cross)}
+.empty{color:var(--dim);font-size:.78rem;text-align:center;padding:.4rem}
+/* the whole map */
+#all{display:none;place-content:start center;padding:.5rem}
+#all.on{display:grid}
+svg#map{display:block}
 .band rect{fill:none}
 .band.alt rect{fill:var(--tint)}
 .band text{font-size:17px;fill:var(--dim);text-anchor:middle;font-weight:600}
@@ -674,166 +775,268 @@ svg{display:block}
 .node text{font-size:12px;fill:var(--ink);text-anchor:middle;
   dominant-baseline:middle;pointer-events:none}
 .node{cursor:pointer}
+.node.off{opacity:.12}
+.node.found rect{stroke:var(--two);stroke-width:2.4}
 .wire{fill:none;stroke:var(--line);stroke-width:1.2}
 .wire.over{stroke:var(--cross);opacity:.55}
 .pair{fill:none;stroke:var(--two);stroke-width:1.4;stroke-dasharray:3 4;opacity:.7}
-svg.picked .node rect,svg.narrow .node rect{opacity:.2}
-svg.picked .wire,svg.narrow .wire{opacity:.1}
-svg.picked .pair,svg.narrow .pair{opacity:.1}
-svg.picked .node.on rect,svg.narrow .node.on rect{opacity:1}
-svg.picked .node.on rect{stroke:var(--mark);stroke-width:2;fill:var(--soft)}
-svg.picked .node.here rect{opacity:1;stroke:var(--mark);stroke-width:3;fill:var(--soft)}
-svg.picked .wire.on{opacity:1;stroke:var(--mark);stroke-width:1.8}
-svg.narrow .wire.on{opacity:.75}
-.node.found rect{stroke:var(--two);stroke-width:2.4;opacity:1}
-#card{border-top:1px solid var(--line);background:var(--paper);
-  padding:.6rem .8rem;max-height:42dvh;overflow:auto}
-#card[hidden]{display:none}
-#card h2{margin:0 0 .1rem;font-size:1rem}
-#card p{margin:.15rem 0 .5rem;color:var(--dim);font-size:.85rem}
-#card h3{margin:.6rem 0 .25rem;font-size:.8rem;text-transform:uppercase;
-  letter-spacing:.04em;color:var(--dim)}
-#card ul{margin:0;padding:0;list-style:none;display:flex;flex-wrap:wrap;gap:.3rem}
-#card li button{padding:.3rem .5rem;font-size:.85rem}
-.none{color:var(--dim);font-size:.85rem;margin:0}
+/* the panel */
+aside h2{margin:0 0 .15rem;font-size:1.05rem}
+aside .where{color:var(--dim);font-size:.78rem;margin:0 0 .6rem}
+aside p{margin:0 0 .7rem}
+aside .go{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.8rem}
+aside .go a{text-decoration:none;padding:.45rem .7rem;border-radius:8px;
+  border:1px solid var(--mark);color:var(--mark);font-size:.85rem}
+aside .go a.solid{background:var(--mark);color:#fff}
+aside .none{color:var(--dim);font-size:.82rem}
+aside h3{margin:.9rem 0 .3rem;font-size:.72rem;text-transform:uppercase;
+  letter-spacing:.05em;color:var(--dim)}
+aside ul{margin:0;padding-left:1.1rem}
+aside li{margin-bottom:.4rem;font-size:.85rem}
+.hits{display:flex;flex-wrap:wrap;gap:.3rem;margin-top:.4rem}
+.hits:empty{display:none}
+.hits button{padding:.25rem .55rem;font-size:.8rem;border-radius:999px}
 </style></head><body>
 <header>
-  <h1>The topic map <span>__COUNT__ topics · __ARROWS__ arrows, __CROSS__ of them
-    between columns · __ROWS__ rows</span></h1>
   <div class="bar">
-    <input type="search" id="find" placeholder="Search a topic" autocomplete="off">
-    <button id="out" title="Smaller">−</button>
-    <button id="in" title="Bigger">+</button>
-    <button id="fit">Fit</button>
+    <h1>The topic map</h1>
+    <input type="search" id="find" placeholder="Search a topic you are on, or one you find hard" autocomplete="off">
+    <button id="sift" aria-pressed="false">Filters</button>
+    <button id="wide" aria-pressed="false">Whole map</button>
   </div>
-  <div class="chips" id="chips">__CHIPS__</div>
-  <p class="key">
-    <b><svg width="26" height="11" aria-hidden="true"><path class="one"
-      d="M1 1 C10 1 16 10 25 10"/></svg> one comes before the other</b>
-    <b><svg width="26" height="11" aria-hidden="true"><path class="cross"
-      d="M1 1 C10 1 16 10 25 10"/></svg> and crosses columns</b>
-    <b><svg width="26" height="11" aria-hidden="true"><path class="two"
-      d="M1 6 L25 6"/></svg> neither comes first</b>
-    <b>Left to right within a column means nothing.</b>
-  </p>
+  <div class="hits" id="hits"></div>
+  <div class="rows" id="filters">
+    <small>Subjects</small>__CHIPS__
+    <small>Modules</small>__MODULES__
+    <small>How far</small>
+    <button class="chip step" data-n="1">1 step</button>
+    <button class="chip step" data-n="2">2 steps</button>
+    <button class="chip step" data-n="3">3 steps</button>
+  </div>
 </header>
-<div id="stage">
-<svg id="map" viewBox="0 0 __W__ __H__" width="__W__" height="__H__">
-<g id="bands">__BANDS__</g>
-<g id="pairs">__PAIRS__</g>
-<g id="wires">__WIRES__</g>
-<g id="boxes">__BOXES__</g>
-</svg>
-</div>
-<div id="card" hidden></div>
+<main>
+  <div id="stage">
+    <div id="near"><svg id="threads"></svg></div>
+    <div id="all">
+      <svg id="map" viewBox="0 0 __W__ __H__" width="__W__" height="__H__">
+      <g id="bands">__BANDS__</g>
+      <g id="pairs">__PAIRS__</g>
+      <g id="wires">__WIRES__</g>
+      <g id="boxes">__BOXES__</g>
+      </svg>
+    </div>
+  </div>
+  <aside id="panel"></aside>
+</main>
 <script>
 const FACTS = __FACTS__;
-const map = document.getElementById("map");
 const stage = document.getElementById("stage");
-const card = document.getElementById("card");
-const W = __W__, H = __H__;
-let scale = 1, column = null;
+const near = document.getElementById("near");
+const all = document.getElementById("all");
+const map = document.getElementById("map");
+const panel = document.getElementById("panel");
+const threads = document.getElementById("threads");
+const CAP = 12;
+let here = null, steps = null, opened = new Set();
+const hidden = {c: new Set(), m: new Set()};
 
-function apply(){
-  map.setAttribute("width", Math.round(W * scale));
-  map.setAttribute("height", Math.round(H * scale));
-}
-function fit(){ scale = Math.min(1.6, (stage.clientWidth - 12) / W); apply(); }
-document.getElementById("fit").addEventListener("click", fit);
-document.getElementById("in").addEventListener("click", () => { scale *= 1.35; apply(); });
-document.getElementById("out").addEventListener("click", () => { scale /= 1.35; apply(); });
+const START = "<h2>Where are you?</h2>"
+  + "<p>Search for a topic you are working on, or one you are finding hard. "
+  + "The map then shows what comes before it and what it leads to.</p>"
+  + "<p>Select any box to move the map to it. Where a tutorial teaches the "
+  + "topic, its link appears here.</p>"
+  + "<p class=none>The chips above hide a column or a module, which makes the "
+  + "map smaller while you look for something.</p>";
 
-function reach(start, key){
-  const seen = new Set(), queue = [start];
-  while(queue.length){
-    const at = queue.pop();
-    for(const next of FACTS[at][key]){
-      if(!seen.has(next)){ seen.add(next); queue.push(next); }
-    }
+function shown(u){ const f = FACTS[u]; return !hidden.c.has(f.c) && !hidden.m.has(f.m); }
+function fit(){ return innerWidth < 900 ? 2 : 3; }
+function reach(u, key, n){
+  const rings = [];
+  let front = new Set([u]), seen = new Set([u]);
+  for(let i = 0; i < n; i++){
+    const next = new Set();
+    for(const c of front) for(const x of FACTS[c][key]) if(!seen.has(x)){ next.add(x); seen.add(x); }
+    if(!next.size) break;
+    rings.push([...next].sort((a, b) => FACTS[a].n.localeCompare(FACTS[b].n)));
+    front = next;
   }
-  return seen;
-}
-function box(unit){ return map.querySelector('.node[data-u="' + CSS.escape(unit) + '"]'); }
-function centre(el){
-  const r = el.getBoundingClientRect(), s = stage.getBoundingClientRect();
-  stage.scrollBy({left: r.left - s.left - s.width/2 + r.width/2,
-                  top: r.top - s.top - s.height/2, behavior: "smooth"});
+  return rings;
 }
 
-function pick(unit){
-  map.classList.add("picked");
-  for(const n of map.querySelectorAll(".node")) n.classList.remove("on","here");
-  for(const w of map.querySelectorAll(".wire")) w.classList.remove("on");
-  const before = reach(unit, "u"), after = reach(unit, "d");
-  const lit = new Set([...before, ...after, unit]);
-  for(const u of lit) box(u).classList.add("on");
-  box(unit).classList.add("here");
-  for(const w of map.querySelectorAll(".wire")){
-    if(lit.has(w.dataset.a) && lit.has(w.dataset.b)) w.classList.add("on");
-  }
-  const f = FACTS[unit];
-  card.innerHTML = "<h2>" + f.n + "</h2><p>Row " + (f.r + 1) + ". " + before.size
-    + " behind it, " + after.size + " ahead of it.</p>"
-    + list("Needs first", f.u) + list("Opens up", f.d);
-  card.hidden = false;
-  centre(box(unit));
-}
-function list(title, units){
-  if(!units.length) return "<h3>" + title + "</h3><p class=none>Nothing.</p>";
-  return "<h3>" + title + "</h3><ul>" + units.map(u =>
-    '<li><button data-go="' + u + '">' + FACTS[u].n + "</button></li>").join("") + "</ul>";
-}
-function clear(){
-  map.classList.remove("picked");
-  for(const n of map.querySelectorAll(".node")) n.classList.remove("on","here");
-  for(const w of map.querySelectorAll(".wire")) w.classList.remove("on");
-  card.hidden = true;
+function cardHtml(u, cls){
+  const f = FACTS[u];
+  const note = f.L ? "" : "<em>no tutorial yet</em>";
+  return '<button class="card ' + cls + (shown(u) ? "" : " off") + '" data-u="'
+    + u + '">' + f.n + note + "</button>";
 }
 
-function narrow(id){
-  // clear() first, because it strips the very classes set below.
-  clear();
-  column = column === id ? null : id;
-  for(const chip of document.querySelectorAll(".chip"))
-    chip.setAttribute("aria-pressed", String(chip.dataset.c === column));
-  map.classList.toggle("narrow", Boolean(column));
-  for(const n of map.querySelectorAll(".node"))
-    n.classList.toggle("on", n.dataset.c === column);
-  for(const w of map.querySelectorAll(".wire"))
-    w.classList.toggle("on", Boolean(column) &&
-      (FACTS[w.dataset.a].c === column || FACTS[w.dataset.b].c === column));
-  if(column){
-    const band = map.querySelector('.band[data-c="' + CSS.escape(column) + '"] rect');
-    if(band) centre(band);
-  }
+function column(title, list, key){
+  const open = opened.has(key);
+  const take = open ? list : list.slice(0, CAP);
+  const rest = list.length - take.length;
+  return '<div class="step">' + "<h2>" + title + '</h2><div class="stack">'
+    + (list.length ? take.map(u => cardHtml(u, "")).join("")
+                   : '<p class="empty">Nothing.</p>')
+    + (rest > 0 ? '<button class="more" data-open="' + key + '">and '
+        + rest + " more</button>" : "") + "</div></div>";
 }
-document.getElementById("chips").addEventListener("click", e => {
-  const chip = e.target.closest(".chip");
-  if(chip) narrow(chip.dataset.c);
+
+function drawNear(){
+  if(!here) return;
+  const n = steps || fit();
+  const back = reach(here, "u", n), fwd = reach(here, "d", n);
+  const say = i => i === 1 ? "Comes first" : i + " steps before";
+  const sayF = i => i === 1 ? "Comes next" : i + " steps on";
+  let html = "";
+  for(let i = back.length; i >= 1; i--) html += column(say(i), back[i-1], "b" + i);
+  html += '<div class="step"><h2>You are here</h2><div class="stack">'
+        + cardHtml(here, "here") + "</div></div>";
+  for(let i = 1; i <= fwd.length; i++) html += column(sayF(i), fwd[i-1], "f" + i);
+  near.innerHTML = '<svg id="threads"></svg>' + html;
+  wireUp();
+  show(here);
+  // After the frame, because the columns have no width until they are laid
+  // out, and a phone shows two of seven — opening anywhere but on the topic
+  // itself is opening in the wrong place.
+  requestAnimationFrame(() => {
+    const you = near.querySelector(".card.here");
+    if(you) you.scrollIntoView({inline: "center", block: "nearest"});
+  });
+}
+
+function wireUp(){
+  const svg = document.getElementById("threads");
+  const box = near.getBoundingClientRect();
+  svg.setAttribute("viewBox", "0 0 " + box.width + " " + box.height);
+  svg.setAttribute("width", box.width);
+  svg.setAttribute("height", box.height);
+  const spot = {};
+  for(const el of near.querySelectorAll(".card")){
+    const r = el.getBoundingClientRect();
+    spot[el.dataset.u] = {l: r.left - box.left, r: r.right - box.left,
+                          y: r.top - box.top + r.height / 2};
+  }
+  let d = "";
+  for(const a in spot) for(const b of FACTS[a].d){
+    if(!spot[b] || spot[b].l <= spot[a].r - 4) continue;
+    const over = FACTS[a].c !== FACTS[b].c;
+    const mid = (spot[a].r + spot[b].l) / 2;
+    d += '<path class="' + (over ? "over" : "") + '" d="M' + spot[a].r + " "
+      + spot[a].y + " C" + mid + " " + spot[a].y + " " + mid + " " + spot[b].y
+      + " " + spot[b].l + " " + spot[b].y + '"/>';
+  }
+  svg.innerHTML = d;
+}
+
+function show(u){
+  const f = FACTS[u];
+  let html = "<h2>" + f.n + "</h2><p class=where>" + f.c.replace(/-/g, " ")
+    + " · row " + (f.r + 1) + "</p>";
+  if(f.p) html += "<p>" + f.p + "</p>";
+  if(f.L){
+    html += '<div class="go"><a class="solid" href="' + f.L.read + '">Read it</a>'
+      + (f.L.drill ? '<a href="' + f.L.drill + '">Practice</a>' : "") + "</div>"
+      + '<p class="none">In <b>' + f.L.title + "</b>.</p>";
+  } else {
+    html += '<p class="none">No tutorial teaches this one yet.</p>';
+  }
+  if(f.w && f.w.length){
+    html += "<h3>Where it turns up</h3><ul>"
+      + f.w.map(x => "<li>" + x + "</li>").join("") + "</ul>";
+  }
+  panel.innerHTML = html;
+}
+
+function centre(u){
+  here = u;
+  opened.clear();
+  if(all.classList.contains("on")) wideOff();
+  near.classList.add("on");
+  drawNear();
+}
+
+function wideOn(){
+  near.classList.remove("on"); all.classList.add("on");
+  document.getElementById("wide").setAttribute("aria-pressed", "true");
+  const w = stage.clientWidth - 12, h = stage.clientHeight - 12;
+  const s = Math.min(1.6, w / __W__);
+  map.setAttribute("width", Math.round(__W__ * s));
+  map.setAttribute("height", Math.round(__H__ * s));
+}
+function wideOff(){
+  all.classList.remove("on");
+  document.getElementById("wide").setAttribute("aria-pressed", "false");
+  if(here) near.classList.add("on");
+}
+document.getElementById("sift").addEventListener("click", e => {
+  const open = document.getElementById("filters").classList.toggle("open");
+  e.currentTarget.setAttribute("aria-pressed", String(open));
+});
+document.getElementById("wide").addEventListener("click", () => {
+  all.classList.contains("on") ? wideOff() : wideOn();
 });
 
+near.addEventListener("click", e => {
+  const more = e.target.closest("[data-open]");
+  if(more){ opened.add(more.dataset.open); drawNear(); return; }
+  const c = e.target.closest(".card");
+  if(c) centre(c.dataset.u);
+});
 map.addEventListener("click", e => {
-  const node = e.target.closest(".node");
-  if(node) pick(node.dataset.u); else clear();
+  const n = e.target.closest(".node");
+  if(n) centre(n.dataset.u);
 });
-card.addEventListener("click", e => {
-  const go = e.target.closest("[data-go]");
-  if(go) pick(go.dataset.go);
+
+document.getElementById("filters").addEventListener("click", e => {
+  const chip = e.target.closest(".chip");
+  if(!chip) return;
+  if(chip.classList.contains("step")){
+    steps = Number(chip.dataset.n);
+    for(const s of document.querySelectorAll(".chip.step"))
+      s.setAttribute("aria-pressed", String(s === chip));
+    drawNear();
+    return;
+  }
+  const key = chip.classList.contains("col") ? "c" : "m";
+  const id = key === "c" ? chip.dataset.c : chip.dataset.m;
+  const on = chip.getAttribute("aria-pressed") === "true";
+  chip.setAttribute("aria-pressed", String(!on));
+  on ? hidden[key].add(id) : hidden[key].delete(id);
+  for(const n of map.querySelectorAll(".node")) n.classList.toggle("off", !shown(n.dataset.u));
+  if(here) drawNear();
 });
 
 const find = document.getElementById("find");
-find.addEventListener("input", () => {
+const hits = document.getElementById("hits");
+function matches(){
   const q = find.value.trim().toLowerCase();
-  let first = null;
-  for(const n of map.querySelectorAll(".node")){
-    const hit = q.length > 1 && FACTS[n.dataset.u].n.toLowerCase().includes(q);
-    n.classList.toggle("found", hit);
-    if(hit && !first) first = n;
-  }
-  if(first) centre(first);
+  if(q.length < 2) return [];
+  return Object.keys(FACTS).filter(u => shown(u)
+    && FACTS[u].n.toLowerCase().includes(q))
+    .sort((a, b) => FACTS[a].n.length - FACTS[b].n.length).slice(0, 8);
+}
+find.addEventListener("input", () => {
+  const found = matches();
+  hits.innerHTML = found.map(u => '<button data-u="' + u + '">'
+    + FACTS[u].n + "</button>").join("");
+  for(const n of map.querySelectorAll(".node"))
+    n.classList.toggle("found", found.includes(n.dataset.u));
+});
+find.addEventListener("keydown", e => {
+  if(e.key !== "Enter") return;
+  const found = matches();
+  if(found.length) centre(found[0]);
+});
+hits.addEventListener("click", e => {
+  const b = e.target.closest("button");
+  if(b) centre(b.dataset.u);
 });
 
-fit();
+addEventListener("resize", () => {
+  if(all.classList.contains("on")) wideOn(); else if(here) drawNear();
+});
+panel.innerHTML = START;
+wideOn();
 </script></body></html>
 """
 
