@@ -20,8 +20,13 @@ Three things decide what is drawn, and all three need two judges to agree:
 
 Where a judge stood alone the pair is left as it is. One judge is an opinion.
 
-`decisions.yaml` is applied last and overrules all of it. Two judges can be
-wrong together, and the graph belongs to whoever teaches from it.
+Then two things overrule that, in order. **`pairs/`** holds Josh's own
+judgements, played blind in the game: his answer replaces whatever the agents
+said about that pair, because he is the one who teaches from this. Then
+**`decisions.yaml`**, what he settled deliberately with the agents' evidence
+in front of him, which overrules even his own game answer. The conflicts
+between those two are worth reading rather than resolving quietly, so `revise`
+returns them.
 
 The page does not draw all 117 arrows at once. A layered graph this wide is a
 hairball when every edge is inked, and the question a reader actually has is
@@ -43,8 +48,22 @@ import yaml
 
 ROOT = Path(__file__).resolve().parent.parent
 TOPICS = ROOT / "planning" / "curriculum" / "topics.yaml"
-BLIND = ROOT / "planning" / "curriculum" / "review" / "blind"
-DECISIONS = ROOT / "planning" / "curriculum" / "review" / "decisions.yaml"
+REVIEW = ROOT / "planning" / "curriculum" / "review"
+BLIND = REVIEW / "blind"          # the two agents, judging without the graph
+OWN = REVIEW / "pairs"            # Josh's own, played in the game
+DECISIONS = REVIEW / "decisions.yaml"
+
+
+def owner_judgements() -> dict[tuple, tuple]:
+    """Every pair Josh has judged himself, a newer file winning a repeat."""
+    out: dict[tuple, tuple] = {}
+    for path in sorted(glob.glob(str(OWN / "*.json"))):
+        batch = json.loads(Path(path).read_text())
+        for j in batch.get("judgements") or []:
+            pair = j.get("pair") or []
+            if len(pair) == 2:
+                out[tuple(sorted(pair))] = (j["verdict"], j.get("first"))
+    return out
 
 
 def judgements() -> dict[str, dict]:
@@ -83,9 +102,24 @@ def revise(topics: dict, runs: dict) -> dict:
     for pair in levels:
         edges -= {pair, pair[::-1]}
 
+    own = owner_judgements()
+    for key, (verdict, first) in own.items():
+        edges -= {key, key[::-1]}
+        levels.discard(key)
+        if verdict == "needs" and first:
+            edges.add((first, key[0] if key[1] == first else key[1]))
+        elif verdict == "both":
+            levels.add(key)
+
     decided = 0
+    clashes = []
     for entry in (yaml.safe_load(DECISIONS.read_text()) or {}).get("decisions") or []:
         x, y = entry["pair"]
+        key = tuple(sorted((x, y)))
+        settled = (entry["verdict"], entry.get("first"))
+        if key in own and own[key] != settled and not (
+                own[key][0] == "both" and entry["verdict"] == "level"):
+            clashes.append((key, own[key], settled))
         edges -= {(x, y), (y, x)}
         levels.discard((x, y))
         levels.discard((y, x))
@@ -97,32 +131,81 @@ def revise(topics: dict, runs: dict) -> dict:
         decided += 1
 
     return {"edges": edges, "levels": levels, "dropped": dropped, "turned": turned,
-            "added": arrows - existing, "existing": existing, "decided": decided}
+            "added": arrows - existing, "existing": existing, "decided": decided,
+            "own": own, "clashes": clashes}
+
+
+def components(topics: dict, edges: set, levels: set) -> dict[str, list[str]]:
+    """Every set of topics that can be reached from each other, as one unit.
+
+A circle is A needs B needs C needs A, and it is a real thing a graph can
+    contain: a region of the curriculum with no order inside it. It cannot be
+    laid out in layers while its topics are drawn separately, so the whole
+    region becomes one unit and the drawing says so.
+
+    Levels are deliberately not part of this. A level is a two-way arrow
+    between two topics, drawn as one; it is not a claim that everything either
+    of them touches belongs in the same lesson.
+    """
+    # Only the one-way arrows decide the order. A level says two topics need
+    # each other, which is a fact about those two and not a claim that
+    # everything either of them touches is also one lesson. Feeding levels in
+    # here fuses them transitively: twenty-five of them ran together into one
+    # region of twenty-five topics with no order inside it, which is an
+    # artefact of the merging rather than anything a judge said.
+    ahead = collections.defaultdict(set)
+    for early, late in edges:
+        ahead[early].add(late)
+
+    index, low, on, stack, order, out = {}, {}, set(), [], [], {}
+
+    def strong(root):
+        work = [(root, iter(ahead[root]))]
+        index[root] = low[root] = len(index)
+        stack.append(root); on.add(root)
+        while work:
+            node, kids = work[-1]
+            for nxt in kids:
+                if nxt not in index:
+                    index[nxt] = low[nxt] = len(index)
+                    stack.append(nxt); on.add(nxt)
+                    work.append((nxt, iter(ahead[nxt])))
+                    break
+                if nxt in on:
+                    low[node] = min(low[node], index[nxt])
+            else:
+                work.pop()
+                if work:
+                    low[work[-1][0]] = min(low[work[-1][0]], low[node])
+                if low[node] == index[node]:
+                    part = []
+                    while True:
+                        m = stack.pop(); on.discard(m); part.append(m)
+                        if m == node:
+                            break
+                    order.append(part)
+
+    for c in topics:
+        if c not in index:
+            strong(c)
+    for part in order:
+        out[min(part)] = sorted(part)
+    return out
 
 
 def layers(topics: dict, edges: set, levels: set) -> tuple[dict, dict]:
-    """Which layer each unit sits on, with a level pair counting as one unit."""
-    parent = {c: c for c in topics}
+    """Which layer each unit sits on, a whole circular region counting as one."""
+    group = components(topics, edges, levels)
+    home = {c: u for u, members in group.items() for c in members}
 
     def find(x):
-        while parent[x] != x:
-            parent[x] = parent[parent[x]]
-            x = parent[x]
-        return x
-
-    for x, y in levels:
-        rx, ry = find(x), find(y)
-        if rx != ry:
-            parent[rx] = ry
-
-    group = collections.defaultdict(list)
-    for c in topics:
-        group[find(c)].append(c)
+        return home[x]
 
     above = collections.defaultdict(set)
     for early, late in edges:
         if find(early) != find(late):
             above[find(late)].add(find(early))
+    group = {u: m for u, m in group.items()}
 
     depth: dict[str, int] = {}
     for _ in range(len(group) + 1):
@@ -201,7 +284,8 @@ def page(topics: dict, g: dict, depth: dict, group: dict) -> str:
                    .replace("__COUNTS__", counts) \
                    .replace("__WAS__", f'{len(g["existing"])} arrows before, '
                             f'{len(g["dropped"])} dropped, {len(g["added"])} added, '
-                            f'{len(g["turned"])} turned round, {g["decided"]} settled by hand')
+                            f'{len(g["turned"])} turned round · {len(g["own"])} judged by Josh · '
+                            f'{g["decided"]} settled by hand')
 
 
 TEMPLATE = """<!doctype html>
