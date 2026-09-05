@@ -30,9 +30,9 @@ this paragraph. Interleaved with the reading are *cells*: small boxes of Python
 that you can edit and run, with the result appearing directly underneath.
 
 The Python runs inside this browser tab, on the machine in front of you.
-Nothing is installed, nothing is sent anywhere, and nobody else can see what
-you type. If you make a mess of a cell, the **reset** button on it puts back
-the version you started with.
+Nothing is installed, and nobody else can see what you type. If you make a
+mess of a cell, the **reset** button on it puts back the version you started
+with.
 
 To run a cell, press its **Run** button, or hold Ctrl and press Enter. Try it
 with the cell below.
@@ -42,7 +42,9 @@ id: how-this-page-works-1
 print("Hello, world!")
 ```
 
-If you saw `Hello, world!` appear below the cell, everything is working. That single line is a complete Python program -- it tells the computer to display a message. The `print()` part is a *function* (we will learn much more about functions later), and the text in quotes is what we want it to display.
+If you saw `Hello, world!` appear below the cell, everything is working. If the result does not appear, Python may still be loading — the page's status message can help explain what is happening. You can also ask your teacher to look with you.
+
+That single line is a complete Python program -- it tells the computer to display a message. The `print()` part is a *function* (we will learn much more about functions later), and the text in quotes is what we want it to display.
 
 Let's try a few more things.
 
@@ -62,7 +64,7 @@ Notice that Python can work with numbers directly -- no quotes needed. The four 
 
 ### Your turn
 
-In the cell below, try a few calculations of your own. Maybe work out how many hours there are in a week, or how many seconds in a day. Use `print()` to display the results, and use comments to explain what each calculation does.
+What calculation could we try next? In the cell below, you could work out how many hours there are in a week, or how many seconds in a day — or choose numbers of your own. Use `print()` to display the results, and a comment to explain what each calculation does.
 
 ```python exec
 id: your-turn-1
@@ -88,7 +90,7 @@ Programming is the art of writing algorithms precisely enough that a computer ca
 
 What is a simple everyday task you could write out as a numbered sequence of steps? Making breakfast, getting to college, logging into a computer -- anything you like. How specific would it have to be for someone who had never done it before to follow along?
 
-Double-click this cell and write your algorithm below:
+You could write the steps on paper, in a notebook, or in **Your notes** under Settings — wherever is easiest.
 
 ## Pseudocode: Planning Before Coding
 
@@ -155,7 +157,7 @@ That last operator, `%` (called modulo), gives us the remainder after division. 
 
 ### Your turn
 
-Before running the cell below, what do you think each line will print? Predictions can go in as comments, and then the cell will settle it. Getting a prediction wrong is the useful case — that is the moment you find out what Python is actually doing rather than what you assumed.
+Let's try predicting what each line will print before we run the cell. Write a prediction next to each comment, then run the cell and compare. Getting a prediction wrong is the useful case — that is the moment you find out what Python is actually doing rather than what you assumed. If you would rather run it first and then work out why, that works too.
 
 ```python exec
 id: your-turn-3
@@ -183,9 +185,7 @@ That is a solid foundation. In the next tutorial we will learn about *variables*
 
 ### Reflection
 
-A few sentences about this tutorial, whenever you are ready. What made sense? What was confusing? What are you curious about?
-
-Double-click this cell to write your thoughts:
+A few sentences about this tutorial, whenever you are ready. What made sense? What was confusing? What are you curious about? You could write in **Your notes** under Settings, or just think it over.
 
 ## Where to Read More
 

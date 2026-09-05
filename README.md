@@ -1,13 +1,13 @@
 # dewlab
 
-dewlab turns a markdown file into a web page where students read an
+dewlab turns a markdown file into a web page where learners read an
 explanation, edit the Python underneath it, and run it. The Python runs inside
-the browser tab, on the student's own machine. Nothing is installed, nothing is
-submitted, and no server ever sees their code.
+the browser tab, on the learner's own machine. Nothing is installed, nothing is
+submitted, and nothing is scored.
 
 It exists to remove the first-week cost of teaching programming. Instead of an
 hour spent installing an interpreter, an editor and a package or two across
-four operating systems, a student opens a link and starts writing Python.
+four operating systems, a learner opens a link and starts writing Python.
 
 ---
 
@@ -16,21 +16,21 @@ four operating systems, a student opens a link and starts writing Python.
 This page is an overview. The detail lives in one document per reader, so you
 only have to read the one that matches what you are here to do.
 
-| If you are… | Read |
+| If you want to… | Read |
 |---|---|
-| A student or anyone reading a tutorial | [`docs/FOR_STUDENTS.md`](docs/FOR_STUDENTS.md) |
-| Looking for a quick answer before you start | [`docs/FAQ.md`](docs/FAQ.md) |
-| Writing or editing a tutorial | [`docs/WRITING_TUTORIALS.md`](docs/WRITING_TUTORIALS.md) |
-| Changing the code | [`CONTRIBUTING.md`](CONTRIBUTING.md), then [`ARCHITECTURE.md`](ARCHITECTURE.md) |
-| Reporting a mistake or a bug | [`docs/REPORTING_A_PROBLEM.md`](docs/REPORTING_A_PROBLEM.md) |
-| Using the standalone Python workspace | [`docs/DEWMINI.md`](docs/DEWMINI.md) |
-| Deciding whether to teach with dewlab | keep reading here |
+| Use a tutorial | [`docs/FOR_STUDENTS.md`](docs/FOR_STUDENTS.md) |
+| Find an answer about getting started | [`docs/FAQ.md`](docs/FAQ.md) |
+| Write or edit a tutorial | [`docs/WRITING_TUTORIALS.md`](docs/WRITING_TUTORIALS.md) |
+| Change the code | [`CONTRIBUTING.md`](CONTRIBUTING.md), then [`ARCHITECTURE.md`](ARCHITECTURE.md) |
+| Report a mistake or a bug | [`docs/REPORTING_A_PROBLEM.md`](docs/REPORTING_A_PROBLEM.md) |
+| Use the standalone Python workspace | [`docs/DEWMINI.md`](docs/DEWMINI.md) |
+| Decide whether to teach with dewlab | keep reading here |
 
 Three more documents sit behind those.
 [`planning/PEDAGOGICAL_STYLE_GUIDE.md`](planning/PEDAGOGICAL_STYLE_GUIDE.md)
 settles how a tutorial is written and why — anyone writing prose for the site
 should read it, and section 4's "Plain language" rules govern every word a
-student sees. [`planning/PLAIN_LANGUAGE_PASS.md`](planning/PLAIN_LANGUAGE_PASS.md)
+learner sees. [`planning/PLAIN_LANGUAGE_PASS.md`](planning/PLAIN_LANGUAGE_PASS.md)
 says which parts of the site have been through those rules and which have not.
 [`planning/README.md`](planning/README.md) indexes the design notes and
 decision records for the rest.
@@ -46,24 +46,25 @@ is easy to get wrong here.
 **Tutorials that run.** A tutorial is prose with editable Python cells set into
 it. A cell shows whatever the code printed, the value of its last line, a table
 drawn as a table and a chart drawn as a picture — and if something goes wrong,
-an error trimmed down to the student's own line. Cells on one page share their
+an error trimmed down to the learner's own line. Cells on one page share their
 variables in order, the way a notebook does. Pages start fresh, and share
 nothing with each other.
 
-**Work that stays.** Everything a student writes is saved in their own browser,
-keyed to the tutorial and its version. Close the tab, come back next week, and
-the code and its last output are still there. Nothing is scored and nothing
-leaves the machine.
+**Work saved in the browser.** Everything a learner writes is saved in their
+own browser, keyed to the tutorial and its version. Close the tab, come back
+next week, and the code and its last output are still there. Nothing is scored
+and nothing leaves the machine. The work stays on that device — it will not
+follow them to a different computer, and clearing browser data will clear it.
 
-**A reading surface a student can adjust.** Three buttons in every page's
-masthead open docked, resizable sidebars: Reference, the whole series, and
+**A reading surface a learner can adjust.** Three buttons in every page's
+top bar open resizable sidebars: Reference, the whole series, and
 Settings — theme, typeface, text size, line width and link colour, plus the
 buttons to export or reload work. A sidebar is meant to be left open and worked
-beside, and stays open while a reader pages through a series. The choices follow
-them from page to page.
+beside, and stays open while a reader moves through a series. The choices
+follow them from page to page.
 
 **Practice beside every tutorial.** Each tutorial has a practice page of
-problems, with hints and answers behind folds so a stuck student gets a route
+problems, with hints and answers behind folds so a stuck learner gets a route
 before an answer. Mixed problem sets draw on several tutorials at once.
 
 **Ways to take it away.** A tutorial can be downloaded as one HTML file that
@@ -104,7 +105,7 @@ In the browser, `assets/tutorial-runtime.js` starts Pyodide — a build of real
 CPython compiled for the browser — mounts a CodeMirror editor into each cell,
 and runs cells against it. On the hosted site Python runs in a Web Worker, off
 the page's own thread, which is what makes a real Stop button possible.
-Everything a student's code can call beyond ordinary Python is defined in
+Everything a learner's code can call beyond ordinary Python is defined in
 `assets/tutorial_tools.py`.
 
 ```text
@@ -129,7 +130,7 @@ GitHub, and where to start reading for a given kind of change.
 
 ## Running it on your own machine
 
-Students need none of this. It is for authors and contributors. You need
+Learners need none of this. It is for authors and contributors. You need
 Python 3.12 or later.
 
 ```sh

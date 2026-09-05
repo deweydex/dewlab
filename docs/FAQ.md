@@ -24,18 +24,23 @@ No. Nothing here is scored, and nobody sees your answers. A wrong answer is
 information about a method, not a mark against you. That is as true of the
 practice-page problems as it is of the tutorials themselves.
 
+Some cells offer a `check()` that helps you compare your result with the
+expected one. That feedback is there for you, not for anyone else.
+
 ## What if I do not finish a tutorial in one sitting?
 
 Close the tab. Your work is saved in your own browser as you go. It will be
 there when you come back, later the same day or after a longer gap. If you
-have half-forgotten a word by the time you return, the Reference panel is
-built for exactly that.
+do not quite remember a word when you come back, the Reference panel is
+there for that.
 
 ## Will my work follow me to a different computer?
 
 No, not on its own. Your work is saved in the browser you were using, not to
-an account, so it stays on that machine. If you want a copy you can move or
-keep, Settings has an export button that saves one to a file.
+an account, so it stays on that machine. Clearing your browser data will also
+clear it. If you want a copy you can move or keep, Settings has an export
+button that saves one to a file. Loading a copy replaces the matching cell
+edits and notes, so export the current version first if you want to keep it.
 
 ## Can I skip ahead, or go back to something earlier?
 
@@ -46,10 +51,26 @@ skipping.
 
 ## What does dewlab know about me?
 
-Nothing. There is no account and no tracking. The Python runs in your own
-browser tab, and your work is saved on your own device, not on a server
-that could see it. `ARCHITECTURE.md` has the full technical detail, if you
-want it.
+Nothing, unless you choose to send a report. The Python runs in your own
+browser tab, and your work is saved on your own device, not on a server. There
+is no account and no tracking.
+
+If you use a cell's report link to tell us about a problem, that opens a form
+on GitHub with your code and the cell's last output included. Nothing else is
+sent, and nothing is sent without you choosing to.
+
+## What does reset do?
+
+The reset button on a cell restores the code the tutorial started with and
+clears the cell's visible result. It replaces your edits in that one cell.
+It does not clear the values Python already holds from running earlier cells.
+
+**Restart Python**, in Settings, starts a fresh Python session while keeping
+your code in the editors. Earlier cells may need to run again before a later
+cell can use their values.
+
+**Start again**, also in Settings, restores the tutorial's cells and clears
+your notes after confirmation. It leaves cells you added yourself in place.
 
 ## I found a mistake in a tutorial. What do I do?
 
@@ -77,8 +98,9 @@ notebook. `FOR_STUDENTS.md` says more, under "Taking a tutorial with you".
 Yes, both. Nobody in a classroom is at exactly the same point, and a
 tutorial cannot know which one you are on any given day. If it feels too
 hard, the topic tree and the Reference panel are the two real places to
-check what it is assuming. If it feels too easy, the practice page usually
-has a harder problem near the end of the set.
+check what it is assuming. You can also go back to an earlier page, or ask
+your teacher to look at it with you. If it feels too easy, the practice
+page usually has a harder problem near the end of the set.
 
 ## I want to try Python without following a tutorial. Can I?
 

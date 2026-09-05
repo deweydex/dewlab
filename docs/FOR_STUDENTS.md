@@ -1,12 +1,13 @@
 # Using dewlab
 
-dewlab is a set of tutorials you read in a browser. Each one mixes an
-explanation with small boxes of Python you can change and run yourself, so you
-can try an idea out in the same place you are reading about it.
+Welcome to dewlab. Here we explore maths and programming together. Each
+tutorial mixes an explanation with small boxes of Python you can change and
+run yourself, so you can try an idea out in the same place you are reading
+about it.
 
 You do not need to install anything, and you do not need an account. The Python
-runs on your own computer, inside the browser tab. Nothing you write is sent
-anywhere, nothing is marked, and nobody is watching how you get on.
+runs on your own computer, inside the browser tab. Nothing is scored, and
+nobody sees your answers.
 
 ---
 
@@ -19,7 +20,7 @@ Press Run, or Ctrl-Enter, and the result appears directly underneath.
 What comes back is whatever the code printed, the value of the last line if it
 is an expression, a table drawn as a table, and a chart drawn as a picture. If
 something goes wrong, you get an error message trimmed down to your own line
-rather than a wall of machinery you did not write.
+rather than a wall of text you did not write.
 
 The cells on one page share their variables from top to bottom, so a cell near
 the end can use something a cell near the start set up. Each page starts fresh,
@@ -31,11 +32,14 @@ is the only difference, and it is meant to be visible at a glance.
 Some cells have a small **?** beside them. That is a hint, tucked out of the
 way until you want it.
 
-Every cell has a **reset** button. It brings back the code the tutorial
-started with. If you get stuck, or a cell stops making sense, press reset.
+Every cell has a **reset** button. It restores the code the tutorial started
+with and clears the cell's visible result. Only that one cell changes —
+everything else on the page stays as it was. One thing worth knowing: reset
+does not clear the values Python already holds from running earlier cells. If
+you need a completely fresh start, reload the page.
+
 Getting stuck and using reset is a normal part of learning to code, not a
-mistake. Only that one cell changes — everything else on the page stays as it
-was.
+mistake.
 
 Some tutorials have no code at all. Those are ordinary dewlab tutorials too,
 and they open instantly, because a page with nothing to run never starts Python.
@@ -68,24 +72,24 @@ small **Look up** button. Press it and the Reference opens, already filtered
 to that word, so you do not have to leave the sentence you were reading to go
 and find it.
 
-Selecting anything else — a phrase you are copying, a line you are just
-following with the cursor — does nothing at all. The button only appears when
-there is genuinely something to show you.
+Selecting anything else — a phrase you are copying, a line you are following
+with the cursor — does nothing at all. The button only appears when there is
+something to show you.
 
 Anything in the Reference you met in an earlier tutorial also says where you
-met it, with a link straight back to that section. Coming back to a tutorial
-after a while, half recognising a word, is an ordinary way to read, and this
-is the way back.
+met it, with a link back to that section. Coming back to a tutorial after a
+while, not quite remembering a word, is a normal way to read, and this is the
+way back to where you first saw it.
 
 ---
 
 ## Settings
 
-Every page has a **Settings** button in the bar at the top, and that bar follows
-you down the page, so it is always one tap away. It opens as a panel docked down
-the right-hand side of the screen, full height, and it stays open while you read
-and run cells — you do not have to close it to get back to the page. Drag its
-left edge to make it wider or narrower.
+Every page has a **Settings** button in the bar at the top, and that bar
+follows you down the page, so it is always one tap away. It opens as a panel
+on the right-hand side of the screen, full height, and it stays open while you
+read and run cells — you do not have to close it to get back to the page. Drag
+its left edge to make it wider or narrower.
 
 What is behind it is grouped in three parts.
 
@@ -110,22 +114,22 @@ default is uncomfortable to read, change it — that is what it is for.
 ## Finding your way around
 
 The bar at the top carries three buttons: **Reference**, **Series** and
-**Settings**. Each opens a panel docked down one side of the screen, full
-height, meant to be left open beside what you are reading rather than closed
-again straight away. On a narrow screen the labels drop away and you get the
-icons alone, so they still fit one row.
+**Settings**. Each opens a panel on one side of the screen, full height,
+meant to be left open beside what you are reading rather than closed again
+straight away. On a narrow screen the labels drop away and you get the icons
+alone, so they still fit one row.
 
 **Reference** is the definitions, functions and formulas this tutorial — and
-everything before it in its series — has covered. Nothing appears in it that you
-have not been taught yet. If a tutorial has nothing to show there, the button
-does not appear at all.
+everything before it in its series — has covered. Nothing appears in it that
+you have not been taught yet. If a tutorial has nothing to show there, the
+button does not appear at all.
 
 **Series** is every tutorial in this one's series, so you can jump to any of
 them from wherever you are, not only to the one immediately before or after.
 
-Reference and Series both dock to the left, so opening one closes the other.
-Settings docks to the right and is independent of both. Whichever you leave
-open stays open as you page through a series, so opening the Reference once is
+Reference and Series both open on the left, so opening one closes the other.
+Settings opens on the right and is independent of both. Whichever you leave
+open stays open as you move through a series, so opening the Reference once is
 enough — you do not have to reopen it on every tutorial.
 
 All three can be made wider or narrower: Settings by dragging its left edge,
@@ -135,39 +139,38 @@ make room rather than being covered up.
 On a phone, all three open as a sheet across the bottom of the screen instead,
 and they close as you move on rather than following you from page to page.
 
-Underneath the bar, the **previous / All tutorials / next** row sits with it, so
-moving on never means scrolling to find the link. Any tutorial with more than
-one section also has a **Contents** list, closed until you open it, showing the
-page's headings with sub-headings nested underneath.
+Underneath the bar, the **previous / All tutorials / next** row sits with it,
+so moving on never means scrolling to find the link. Any tutorial with more
+than one section also has a **Contents** list, closed until you open it,
+showing the page's headings with sub-headings underneath.
 
 The contents page lists everything in teaching order and has a search box. Two
-other pages cut across that order. The **topic tree** shows every topic in the
+other pages go across that order. The **topic tree** shows every topic in the
 course and what each one needs before it; you can drag to move around it, scroll
 to zoom, and choose any topic to read what it is and where it turns up. Topics
 that are not taught here yet are drawn with a dashed outline, so the tree is
-straight with you about its gaps. **Browse by topic** gathers everything on one
-subject in one place, which is the better page when you already know what you
-want to practise.
+honest about its gaps. **Browse by topic** gathers everything on one subject in
+one place, which is the better page when you already know what you want to
+practise.
 
-On the contents page, a small badge next to a tutorial you have opened shows how
-many of its cells you have run, turning red only if a cell's last run failed. It
-is read from your own browser, and you can turn it off in Settings.
+On the contents page, a small badge next to a tutorial you have opened shows
+how many of its cells you have run, turning red only if a cell's last run
+failed. It is read from your own browser, and you can turn it off in Settings.
 
 ---
 
 ## If a Page Stops Making Sense
 
 This happens to everyone, and it is not a sign you are doing something wrong.
-A few real places can help, instead of guessing.
+A few real places can help.
 
 You can look up any unfamiliar word in the Reference panel. You can check the
 topic tree to see what this page expects you to know already. If you have not
-met something yet, going back to that page first can help. Or you can search
-the contents page for another tutorial on the same idea, explained in a
-different way.
+met something yet, going back to that page first usually helps. You can also
+search the contents page for another tutorial on the same idea, explained in a
+different way. Or you can ask your teacher to look at it with you.
 
-None of this is a detour. Going back a step is a normal way forward here, not
-a setback.
+Going back a step is a normal way forward here, not a setback.
 
 ---
 
@@ -182,9 +185,12 @@ Problems come with two folds, in that order. The first fold is a hint: a few
 steps, something to think about, and a related problem to try. The second
 fold is the full answer, with every step shown.
 
-Try the hint first. Getting an answer wrong along the way is a normal part of
-trying, not a failure. It usually teaches you more than reading the answer
-straight away. The answer is always there when you want to check your work.
+We are not trying to hide the right answer. What we are learning is the steps
+that get us there. Try the hint first. Getting an answer wrong along the way
+is a normal part of trying, not a failure. It usually teaches you more than
+reading the answer straight away. After reading an answer, you could try the
+problem again with the answer closed. The answer is always there when you
+want to check your work.
 
 ---
 
@@ -196,8 +202,8 @@ Use them for working something out, leaving yourself a note, or trying a
 variation on what the tutorial just showed you.
 
 Your own cells are kept separately from the tutorial's, so updating the
-tutorial leaves them alone. You can also save one as a small file and send it to
-someone else, who can load it into their copy of the same page.
+tutorial leaves them alone. You can also save one as a small file and send it
+to someone else, who can load it into their copy of the same page.
 
 ---
 
@@ -241,10 +247,12 @@ If a tutorial has a mistake in it, or something on the site does not work,
 please tell us. You do not need to be certain it is a bug to say something.
 Most pages carry a line at the foot for exactly this, "Something wrong on
 this page? Tell us." Click it and pick the one that fits: a question, an
-error, or something wrong or hard to follow. A cell giving trouble has its
-own small circle for the same three choices, in its own bar. Pick that one
-instead, and your code and its last output are already included, with
-nothing left for you to copy.
+error, or something wrong or hard to follow.
+
+A cell giving trouble has its own small circle for the same three choices, in
+its own bar. Pick that one instead, and your code and its last output are
+already included, with nothing to copy. That report link opens a form on
+GitHub. Questions about your own edits are welcome too.
+
 [`REPORTING_A_PROBLEM.md`](REPORTING_A_PROBLEM.md) covers the rest: where
-to report something without that line handy, and what is helpful to
-include.
+to report something without that line, and what is helpful to include.
