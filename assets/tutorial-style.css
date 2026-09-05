@@ -2939,6 +2939,18 @@ p code, li code {
 .dl-footer a { color: inherit; }
 .dl-footer a:hover { color: var(--dl-fg); }
 
+/* The "three doors" report disclosure (DECISIONS_LOG.md Phase 8). A plain
+ * <details> — clicking the summary reveals the list below it in normal
+ * flow, the same "push down, cover nothing" shape .dl-hint-text already
+ * uses, rather than a floating dropdown that could sit over the page
+ * below the footer or trap a touch reader who cannot hover to dismiss it. */
+.dl-report-doors summary { cursor: pointer; color: inherit; }
+.dl-report-doors summary:hover,
+.dl-report-doors[open] summary { color: var(--dl-fg); }
+.dl-report-doors p { margin: 0.6rem 0 0; }
+.dl-report-doors a { color: var(--dl-link); }
+.dl-report-doors a:hover { color: var(--dl-fg); }
+
 /* ------------------------------------------------------------------ print
  *
  * "Print — or save as PDF" in Settings calls window.print() — this is what a
