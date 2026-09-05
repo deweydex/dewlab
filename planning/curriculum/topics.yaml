@@ -560,15 +560,15 @@ topics:
     name: Tangent as slope
     outcome: MIT-4.6
     plain: >
-      Sine divided by cosine, which is how steep the line from the centre
-      to the point is. It is the same number a straight line's slope gives
-      you, so an angle and a slope become two ways of saying one thing.
+      How steep a line is, said as an angle rather than as a ratio. A slope
+      and an angle are two ways of describing the same thing, and tangent is
+      what turns either one into the other.
     uses:
       - Turning a direction into an angle, which is what a program does to
         point something at a target.
       - Reading a gradient off a graph and saying what angle it makes with
         the horizontal.
-    needs: [MIT-4.6a, MIT-4.2]
+    needs: [MIT-4.2]
 
   MIT-4.7:
     name: Exact trigonometric values
@@ -1331,7 +1331,7 @@ topics:
         branch this way.
       - Deciding something in stages, where each answer narrows what you
         ask next.
-    needs: [MIT-6.7]
+    needs: [MIT-6.7, CMPS-LO1c]
 
   CMPS-LO1c:
     name: Recursion
