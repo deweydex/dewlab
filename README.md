@@ -19,6 +19,7 @@ only have to read the one that matches what you are here to do.
 | If you are… | Read |
 |---|---|
 | A student or anyone reading a tutorial | [`docs/FOR_STUDENTS.md`](docs/FOR_STUDENTS.md) |
+| Looking for a quick answer before you start | [`docs/FAQ.md`](docs/FAQ.md) |
 | Writing or editing a tutorial | [`docs/WRITING_TUTORIALS.md`](docs/WRITING_TUTORIALS.md) |
 | Changing the code | [`CONTRIBUTING.md`](CONTRIBUTING.md), then [`ARCHITECTURE.md`](ARCHITECTURE.md) |
 | Reporting a mistake or a bug | [`docs/REPORTING_A_PROBLEM.md`](docs/REPORTING_A_PROBLEM.md) |

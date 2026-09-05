@@ -3836,6 +3836,10 @@ def write_about_page(shell: str) -> Path:
         "<p>dewlab is an open educational project. We put writing, maths and "
         "runnable Python on the same page, so that you can read about an idea "
         "and try it out in the same place.</p>"
+        "<p>It began for one classroom, and it is free for anyone who wants to "
+        "use it. There is no account, and nothing is scored. What you write "
+        "stays on your own device, and a wrong answer here is information "
+        "about a method, not a mark against you.</p>"
         "<h2>What's here</h2>"
         "<p>The tutorials are listed in the order the course teaches them. That "
         "is the main way in, and a series is meant to be read from the top.</p>"
@@ -3852,6 +3856,11 @@ def write_about_page(shell: str) -> Path:
         '<p><a href="compose/dewmini.html">dewmini</a> is an open Python '
         "workspace with no tutorial attached. Open it when you just want to try "
         "something out.</p>"
+        '<p>New here, or stuck on something? '
+        '<a href="https://github.com/deweydex/dewlab/blob/main/docs/FOR_STUDENTS.md">'
+        "Using dewlab</a> walks through the reading page, and the "
+        '<a href="https://github.com/deweydex/dewlab/blob/main/docs/FAQ.md">FAQ</a> '
+        "answers the questions people ask most.</p>"
         "<h2>Your work</h2>"
         "<p>A tutorial saves your edits as you go, along with any cells you add "
         "yourself. Everything stays in this browser, on this device.</p>"

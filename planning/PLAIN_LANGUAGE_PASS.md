@@ -50,6 +50,21 @@ the first two; both also happened to fix rule 7 idiom violations from before
 the ninth rule existed. This is a second, smaller axis than readability, and
 it has no ledger of its own yet — see "Not done."
 
+A second round added a "structural before verbal" version of the same idea:
+a stuck reader is pointed at a real route (the Reference panel, the topic
+tree, search) rather than told only that it is normal to be stuck. New in
+`docs/FOR_STUDENTS.md` ("If a Page Stops Making Sense") and `docs/FAQ.md`
+(new — orientation and logistics questions that come before a feature
+walkthrough, distinct from `FOR_STUDENTS.md`'s job). The About page
+(`write_about_page()` in `build.py`) gained a short paragraph saying why the
+project exists and why nothing is scored, which it had never said despite
+section 2 saying it at length. dewstack's README, its own new FOR_STUDENTS.md, and its new FAQ page
+(under Reference, in the reference shelf) all picked up the same pattern in
+that separate repository, adapted to a real difference between the two
+projects: dewstack's tutorials are not graded, but the course's two
+projects and its exam are, so the reassurance there is about the exercises
+specifically, not a blanket "nothing is scored."
+
 ---
 
 ## Done
