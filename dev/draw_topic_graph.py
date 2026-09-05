@@ -39,6 +39,7 @@ from __future__ import annotations
 
 import collections
 import glob
+import random
 import html
 import json
 import sys
@@ -275,157 +276,332 @@ def layers(topics: dict, edges: set, levels: set) -> tuple[dict, dict]:
     return depth, group
 
 
-BAND = ["needs nothing before it", "second", "third", "fourth", "fifth",
-        "sixth", "seventh", "eighth"]
+def verticals(topics: dict, edges: set, levels: set) -> dict[str, str]:
+    """Which column each topic belongs in, decided by the graph rather than by
+    a label.
+
+    Every topic starts in its own column and repeatedly joins whichever column
+    most of its neighbours are in. Where that settles is a set of topics that
+    mostly connect to each other — which is what a subject is, read off the
+    arrows instead of off a syllabus heading.
+
+    The result depends on the order topics are visited, so this runs it from
+    twelve starting orders and keeps the one where fewest arrows cross a
+    column. Fewest crossings is the thing worth having: a crossing is a topic
+    reaching outside its own subject, and those are the interesting arrows
+    precisely because they are rare.
+    """
+    near = collections.defaultdict(set)
+    for a, b in list(edges) + [x for pair in levels for x in (pair, pair[::-1])]:
+        near[a].add(b)
+        near[b].add(a)
+
+    def settle(seed: int) -> dict[str, str]:
+        rng = random.Random(seed)
+        label = {c: c for c in topics}
+        for _ in range(60):
+            order = sorted(topics)
+            rng.shuffle(order)
+            moved = False
+            for code in order:
+                if not near[code]:
+                    continue
+                count = collections.Counter(label[n] for n in near[code])
+                # sorted() before max() so a tie breaks the same way every run
+                best = max(sorted(count), key=lambda k: (count[k], k))
+                if best != label[code]:
+                    label[code] = best
+                    moved = True
+            if not moved:
+                break
+        return label
+
+    best_labels, best_key = None, None
+    for seed in range(12):
+        label = settle(seed)
+        crossing = sum(1 for a, b in edges if label[a] != label[b])
+        key = (crossing, len(set(label.values())))
+        if best_key is None or key < best_key:
+            best_labels, best_key = label, key
+    return best_labels
 
 
 def page(topics: dict, g: dict, depth: dict, group: dict) -> str:
+    """One page: a search box, the columns, and the arrows for whatever you
+    point at.
+
+    Two things it deliberately does not do. It does not ink all 387 arrows at
+    once, because a graph this size drawn in full is a grey wash nobody can
+    read a single path out of. And it does not lay the columns out by subject
+    heading: the columns come from `verticals()`, so a column is a set of
+    topics that mostly need each other, and the arrows that leave one are rare
+    enough to be worth marking.
+    """
     unit_of = {c: u for u, members in group.items() for c in members}
-    rows = collections.defaultdict(list)
-    for unit, members in group.items():
-        rows[depth[unit]].append(unit)
-    for band in rows.values():
-        band.sort(key=lambda u: topics[u]["name"])
+    column = verticals(topics, g["edges"], g["levels"])
+
+    # A column is named after whichever of its topics the others most depend
+    # on, so the heading is a real topic rather than a label somebody invented.
+    pull = collections.Counter()
+    for a, b in g["edges"]:
+        if column[a] == column[b]:
+            pull[a] += 1
+    order = collections.Counter(column.values())
+    names = {}
+    for col in order:
+        members = [c for c in topics if column[c] == col]
+        names[col] = topics[max(members, key=lambda c: (pull[c], c))]["name"]
+
+    # Depth two ways. Global keeps every column on the same rows, so a crossing
+    # arrow always points downwards. Local packs each column tight from its own
+    # first topic, which is shorter to read and lets a crossing point upwards.
+    local: dict[str, int] = {}
+    for col in order:
+        members = [c for c in topics if column[c] == col]
+        inside = {(a, b) for a, b in g["edges"]
+                  if column[a] == col and column[b] == col}
+        above = collections.defaultdict(set)
+        for a, b in inside:
+            if unit_of[a] != unit_of[b]:
+                above[b].add(a)
+        for _ in range(len(members) + 1):
+            for c in sorted(members, key=lambda c: depth[unit_of[c]]):
+                want = max((local.get(p, 0) + 1 for p in above[c]), default=0)
+                local[c] = max(local.get(c, 0), want)
 
     data = {
-        "units": {u: [{"id": c, "name": topics[c]["name"]} for c in sorted(members)]
-                  for u, members in group.items()},
-        "edges": [[unit_of[a], unit_of[b]] for a, b in sorted(g["edges"])
-                  if unit_of[a] != unit_of[b]],
+        "topics": {
+            c: {
+                "name": topics[c]["name"],
+                "plain": " ".join(str(topics[c].get("plain", "")).split()),
+                "col": column[c],
+                "deep": depth[unit_of[c]],
+                "near": local[c],
+            }
+            for c in sorted(topics)
+        },
+        "columns": [
+            {"key": col, "name": names[col], "size": order[col]}
+            for col in sorted(order, key=lambda k: (-order[k], names[k]))
+        ],
+        "edges": sorted([a, b] for a, b in g["edges"]),
+        "levels": sorted([a, b] for a, b in g["levels"]),
     }
 
-    bands = []
-    for i in sorted(rows):
-        chips = []
-        for unit in rows[i]:
-            members = sorted(group[unit])
-            inner = '<span class="tie">&harr;</span>'.join(
-                f'<b>{html.escape(topics[c]["name"])}</b>' for c in members)
-            cls = "chip level" if len(members) > 1 else "chip"
-            chips.append(f'<div class="{cls}" data-u="{html.escape(unit)}">{inner}</div>')
-        label = BAND[i] if i < len(BAND) else f"layer {i + 1}"
-        bands.append(
-            f'<section class="band"><h2>{i + 1}. {label}'
-            f'<span>{len(rows[i])}</span></h2><div class="chips">'
-            + "".join(chips) + "</div></section>")
-
-    counts = (f'{len(topics)} topics · {len(g["edges"])} arrows · '
-              f'{len(g["levels"])} two-way pairs · {max(depth.values()) + 1} layers')
-    return TEMPLATE.replace("__BANDS__", "".join(bands)) \
-                   .replace("__DATA__", json.dumps(data)) \
-                   .replace("__COUNTS__", counts) \
-                   .replace("__WAS__", f'{len(g["existing"])} arrows before, '
-                            f'{len(g["dropped"])} dropped, {len(g["added"])} added, '
-                            f'{len(g["turned"])} turned round · {len(g["own"])} judged by Josh · '
-                            f'{g["decided"]} settled by hand')
+    crossing = sum(1 for a, b in g["edges"] if column[a] != column[b])
+    counts = (f'{len(topics)} topics in {len(order)} columns · '
+              f'{len(g["edges"])} arrows, {crossing} of them crossing a column · '
+              f'{len(g["levels"])} two-way pairs')
+    return (TEMPLATE.replace("__DATA__", json.dumps(data))
+                    .replace("__COUNTS__", counts))
 
 
 TEMPLATE = """<!doctype html>
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>The topic graph the judges built</title>
+<title>The topic map</title>
 <style>
 :root{--bg:#fdfcfa;--card:#fff;--ink:#1a1a1a;--muted:#5f6b7a;--navy:#1b2a4a;
  --brand:#d4692a;--rule:#e3ddd2;--panel:#f6f3ee;--up:#1b6b8f;--down:#b0541f;
- --serif:Georgia,"Iowan Old Style",serif;--sans:system-ui,-apple-system,"Segoe UI",sans-serif;
+ --serif:Georgia,"Iowan Old Style",serif;
+ --sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
  --mono:ui-monospace,SFMono-Regular,Menlo,monospace}
 @media (prefers-color-scheme:dark){:root{--bg:#14181f;--card:#1b2129;--ink:#e6e3dd;
  --muted:#98a2b3;--navy:#b9c8e6;--rule:#2a3140;--panel:#1b2129;--up:#7ec7e8;--down:#e8a06a}}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans)}
-.wrap{max-width:78rem;margin:0 auto;padding:1.5rem 1rem 4rem}
-h1{font-family:var(--serif);color:var(--navy);font-size:1.5rem;margin:0 0 .3rem}
-.sub{font-family:var(--mono);font-size:.72rem;color:var(--muted);margin:0 0 .2rem}
-.bar{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;margin:1rem 0;
- padding:.6rem;background:var(--panel);border:1px solid var(--rule);border-radius:8px}
-.bar label{font-size:.78rem;color:var(--muted);display:flex;gap:.35rem;align-items:center}
-.key{font-size:.72rem;color:var(--muted);display:flex;gap:.9rem;flex-wrap:wrap;margin-left:auto}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans)}
+header{position:sticky;top:0;z-index:3;background:var(--bg);
+ border-bottom:1px solid var(--rule);padding:.75rem 1rem}
+h1{font-family:var(--serif);color:var(--navy);font-size:1.2rem;margin:0 0 .15rem}
+.sub{font-family:var(--mono);font-size:.68rem;color:var(--muted);margin:0}
+.tools{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin-top:.6rem}
+#q{flex:1 1 16rem;min-width:12rem;padding:.5rem .7rem;font:inherit;font-size:.9rem;
+ border:1px solid var(--rule);border-radius:8px;background:var(--card);color:var(--ink)}
+#q:focus{outline:2px solid var(--brand);outline-offset:1px}
+label{font-size:.76rem;color:var(--muted);display:flex;gap:.3rem;align-items:center}
+.key{font-size:.7rem;color:var(--muted);display:flex;gap:.8rem;flex-wrap:wrap}
 .key i{font-style:normal;display:inline-flex;gap:.3rem;align-items:center}
-.sw{width:1.4rem;height:0;border-top:2px solid}
-#stage{position:relative}
-svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:visible}
-.band{position:relative;z-index:1;margin:0 0 1.1rem}
-.band h2{font-family:var(--mono);font-size:.66rem;letter-spacing:.09em;text-transform:uppercase;
- color:var(--brand);margin:0 0 .4rem;display:flex;gap:.5rem;align-items:baseline}
-.band h2 span{color:var(--muted);font-size:.62rem}
-.chips{display:flex;flex-wrap:wrap;gap:.35rem}
-.chip{background:var(--card);border:1px solid var(--rule);border-radius:8px;
- padding:.4rem .55rem;font-size:.78rem;line-height:1.2;cursor:default;
- transition:border-color .12s,background .12s}
-.chip b{font-weight:600;color:var(--navy)}
-.chip.level{border-style:dashed;border-color:var(--brand);background:var(--panel)}
-.tie{color:var(--brand);margin:0 .35rem;font-weight:700}
-.chip.on{border-color:var(--brand);border-width:2px;background:var(--panel)}
+.sw{width:1.3rem;height:0;border-top:2px solid}
+#hits{font-family:var(--mono);font-size:.68rem;color:var(--brand)}
+
+#stage{position:relative;overflow-x:auto;padding:1rem}
+svg{position:absolute;inset:0;pointer-events:none;z-index:0;overflow:visible}
+#cols{position:relative;z-index:1;display:flex;gap:1.1rem;align-items:flex-start;
+ min-width:max-content}
+.col{display:flex;flex-direction:column;gap:.3rem;width:11.5rem}
+.col h2{font-family:var(--mono);font-size:.6rem;letter-spacing:.08em;
+ text-transform:uppercase;color:var(--brand);margin:0 0 .2rem;
+ position:sticky;top:0;background:var(--bg);padding:.15rem 0}
+.col h2 span{color:var(--muted)}
+.band{min-height:.1rem;display:flex;flex-direction:column;gap:.25rem}
+.chip{background:var(--card);border:1px solid var(--rule);border-radius:7px;
+ padding:.35rem .45rem;font-size:.73rem;line-height:1.2;color:var(--navy);
+ cursor:pointer;transition:border-color .1s,opacity .1s}
+.chip.lv{border-style:dashed;border-color:var(--brand)}
+.chip.on{border-color:var(--brand);border-width:2px;background:var(--panel);font-weight:600}
 .chip.up{border-color:var(--up)}
 .chip.down{border-color:var(--down)}
-.chip.dim{opacity:.32}
-</style></head><body><div class="wrap">
-<h1>The topic graph the judges built</h1>
-<p class="sub">__COUNTS__</p>
-<p class="sub">__WAS__</p>
+.chip.dim{opacity:.25}
+.chip.hit{background:var(--brand);color:#fff;border-color:var(--brand)}
+#detail{position:sticky;bottom:0;z-index:3;background:var(--panel);
+ border-top:1px solid var(--rule);padding:.6rem 1rem;font-size:.8rem;min-height:2.6rem}
+#detail b{color:var(--navy)}
+#detail .p{color:var(--muted);font-size:.76rem}
+</style></head><body>
 
-<div class="bar">
-  <label><input type="checkbox" id="all"> Ink every arrow at once</label>
-  <span class="key">
-    <i><span class="sw" style="border-color:var(--up)"></span> needs this first</i>
-    <i><span class="sw" style="border-color:var(--down)"></span> needs the one you are on</i>
-    <i><span class="sw" style="border-color:var(--brand);border-top-style:dashed"></span> a level, two ways</i>
-  </span>
-</div>
+<header>
+  <h1>The topic map</h1>
+  <p class="sub">__COUNTS__</p>
+  <div class="tools">
+    <input id="q" type="search" placeholder="Find a topic…" autocomplete="off">
+    <span id="hits"></span>
+    <label><input type="checkbox" id="tight"> Pack each column</label>
+    <label><input type="checkbox" id="all"> Ink every arrow</label>
+    <span class="key">
+      <i><span class="sw" style="border-color:var(--up)"></span>needs this</i>
+      <i><span class="sw" style="border-color:var(--down)"></span>needs the one you are on</i>
+      <i><span class="sw" style="border-color:var(--brand);border-top-style:dashed"></span>crosses a column</i>
+    </span>
+  </div>
+</header>
 
-<div id="stage"><svg id="wires"></svg>__BANDS__</div>
-</div>
+<div id="stage"><svg id="wires"></svg><div id="cols"></div></div>
+<div id="detail">Point at a topic to see what it needs.</div>
+
 <script>
 const D = __DATA__;
-const stage = document.getElementById("stage"), svg = document.getElementById("wires");
-const chips = [...document.querySelectorAll(".chip")];
-const byUnit = Object.fromEntries(chips.map(c => [c.dataset.u, c]));
-const into = {}, outof = {};
+const T = D.topics;
+const into = {}, outof = {}, level = {};
 D.edges.forEach(([a,b]) => { (outof[a] ||= []).push(b); (into[b] ||= []).push(a); });
+D.levels.forEach(([a,b]) => { (level[a] ||= []).push(b); (level[b] ||= []).push(a); });
 
-/* A curve from the bottom of one chip to the top of another, in the stage's
-   own coordinates so it survives a reflow at any width. */
-function wire(a, b, colour, faint){
+const cols = document.getElementById("cols");
+const svg = document.getElementById("wires");
+const stage = document.getElementById("stage");
+const chip = {};
+
+function draw(){
+  const tight = document.getElementById("tight").checked;
+  const key = tight ? "near" : "deep";
+  cols.replaceChildren();
+  for(const col of D.columns){
+    const box = document.createElement("div");
+    box.className = "col";
+    box.innerHTML = "<h2>" + col.name + " <span>" + col.size + "</span></h2>";
+    const rows = {};
+    for(const [code, t] of Object.entries(T)){
+      if(t.col !== col.key) continue;
+      (rows[t[key]] ||= []).push(code);
+    }
+    const deepest = Math.max(...Object.values(T).map(t => t[key]));
+    for(let r = 0; r <= deepest; r++){
+      const band = document.createElement("div");
+      band.className = "band";
+      /* In the aligned mode every column carries every row, empty or not, so
+         a topic on row 7 sits level with every other row-7 topic and a
+         crossing arrow can only point downwards. */
+      if(!tight) band.style.minHeight = "1.9rem";
+      for(const code of (rows[r] || []).sort((x,y) => T[x].name.localeCompare(T[y].name))){
+        const el = document.createElement("div");
+        el.className = "chip" + (level[code] ? " lv" : "");
+        el.textContent = T[code].name;
+        el.dataset.code = code;
+        band.appendChild(el);
+        chip[code] = el;
+      }
+      box.appendChild(band);
+    }
+    cols.appendChild(box);
+  }
+  bind();
+  if(document.getElementById("all").checked) inkAll(); else clear();
+}
+
+function wire(a, b, colour, faint, dashed){
   const s = stage.getBoundingClientRect();
-  const p = byUnit[a].getBoundingClientRect(), q = byUnit[b].getBoundingClientRect();
-  const x1 = p.left - s.left + p.width/2, y1 = p.bottom - s.top;
-  const x2 = q.left - s.left + q.width/2, y2 = q.top - s.top;
+  const p = chip[a].getBoundingClientRect(), q = chip[b].getBoundingClientRect();
+  const x1 = p.left - s.left + stage.scrollLeft + p.width/2, y1 = p.bottom - s.top;
+  const x2 = q.left - s.left + stage.scrollLeft + q.width/2, y2 = q.top - s.top;
   const mid = (y1 + y2) / 2;
   const path = document.createElementNS("http://www.w3.org/2000/svg","path");
   path.setAttribute("d", `M${x1},${y1} C${x1},${mid} ${x2},${mid} ${x2},${y2}`);
   path.setAttribute("fill","none");
   path.setAttribute("stroke", colour);
   path.setAttribute("stroke-width", faint ? 1 : 1.8);
-  path.setAttribute("opacity", faint ? .16 : .85);
+  path.setAttribute("opacity", faint ? .14 : .85);
+  if(dashed) path.setAttribute("stroke-dasharray","4 3");
   svg.appendChild(path);
 }
 const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const crosses = (a,b) => T[a].col !== T[b].col;
 
-function clear(){ svg.replaceChildren(); chips.forEach(c => c.className =
-  c.className.replace(/ (on|up|down|dim)/g,"")); }
+function clear(){
+  svg.replaceChildren();
+  Object.values(chip).forEach(c => c.className =
+    c.className.replace(/ (on|up|down|dim)/g,""));
+}
 
-function focus(u){
+function focus(code){
   clear();
-  const up = into[u] || [], down = outof[u] || [];
-  chips.forEach(c => { if(c.dataset.u !== u && !up.includes(c.dataset.u)
-    && !down.includes(c.dataset.u)) c.classList.add("dim"); });
-  byUnit[u].classList.add("on");
-  up.forEach(a => { byUnit[a].classList.add("up"); wire(a, u, css("--up")); });
-  down.forEach(b => { byUnit[b].classList.add("down"); wire(u, b, css("--down")); });
+  const up = into[code] || [], down = outof[code] || [], lv = level[code] || [];
+  const near = new Set([code, ...up, ...down, ...lv]);
+  Object.values(chip).forEach(c => { if(!near.has(c.dataset.code)) c.classList.add("dim"); });
+  chip[code].classList.add("on");
+  up.forEach(a => { chip[a].classList.add("up");
+    wire(a, code, crosses(a,code) ? css("--brand") : css("--up"), false, crosses(a,code)); });
+  down.forEach(b => { chip[b].classList.add("down");
+    wire(code, b, crosses(code,b) ? css("--brand") : css("--down"), false, crosses(code,b)); });
+  lv.forEach(x => { chip[x].classList.add("on");
+    wire(code, x, css("--brand"), false, true); wire(x, code, css("--brand"), false, true); });
+
+  const t = T[code];
+  const say = list => list.length ? list.map(c => T[c].name).join(", ") : "nothing";
+  document.getElementById("detail").innerHTML =
+    "<b>" + t.name + "</b> \\u00b7 needs " + say(up) + " \\u00b7 needed by " + say(down)
+    + (lv.length ? " \\u00b7 at one level with " + say(lv) : "")
+    + "<div class='p'>" + t.plain + "</div>";
 }
 
 function inkAll(){
   clear();
-  D.edges.forEach(([a,b]) => wire(a, b, css("--muted"), true));
+  D.edges.forEach(([a,b]) => wire(a, b, crosses(a,b) ? css("--brand") : css("--muted"),
+                                 true, crosses(a,b)));
 }
 
-chips.forEach(c => {
-  c.addEventListener("pointerenter", () => { if(!all.checked) focus(c.dataset.u); });
-  c.addEventListener("click", () => focus(c.dataset.u));
+function bind(){
+  Object.values(chip).forEach(el => {
+    el.addEventListener("pointerenter", () => { if(!all.checked) focus(el.dataset.code); });
+    el.addEventListener("click", () => focus(el.dataset.code));
+  });
+}
+
+const q = document.getElementById("q");
+q.addEventListener("input", () => {
+  const term = q.value.trim().toLowerCase();
+  let n = 0, first = null;
+  Object.entries(chip).forEach(([code, el]) => {
+    const hit = term && (T[code].name.toLowerCase().includes(term)
+                      || T[code].plain.toLowerCase().includes(term));
+    el.classList.toggle("hit", !!hit);
+    if(hit){ n++; first ||= code; }
+  });
+  document.getElementById("hits").textContent = term ? n + " found" : "";
+  /* Bring the first match into view without moving anything else: the map
+     stays where it was, so a search never costs you your place. */
+  if(first) chip[first].scrollIntoView({block:"center", inline:"center", behavior:"smooth"});
 });
-stage.addEventListener("pointerleave", () => { if(all.checked) inkAll(); else clear(); });
+q.addEventListener("keydown", e => {
+  if(e.key !== "Enter") return;
+  const hit = Object.entries(chip).find(([,el]) => el.classList.contains("hit"));
+  if(hit) focus(hit[0]);
+});
+
 const all = document.getElementById("all");
 all.addEventListener("change", () => all.checked ? inkAll() : clear());
+document.getElementById("tight").addEventListener("change", draw);
+stage.addEventListener("pointerleave", () => { if(all.checked) inkAll(); else clear(); });
 addEventListener("resize", () => { if(all.checked) inkAll(); else clear(); });
+draw();
 </script></body></html>
 """
 
