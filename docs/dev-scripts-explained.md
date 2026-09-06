@@ -85,7 +85,70 @@ one file.
 
 ---
 
-## A pattern shared by all four: a script is a `main()`, guarded
+## `dev/label_report.py`
+
+Called once, right after a report issue opens
+(`.github/workflows/label-report.yml`), to apply the two labels the
+issue form itself cannot: `.github/ISSUE_TEMPLATE/report.yml` can put a
+fixed `source: page` on every report, but not a label whose *value*
+depends on what the student actually typed — which page, which kind.
+`parse_fields()` reads the issue body back out (GitHub renders every
+form field as `### <label>\n\n<value>`, in field order — the one regex
+at the top of the file, `FIELD_RE`, is built to read that shape
+regardless of which fields a given report filled in), `kind_label()`
+turns the free-text "what kind of thing is this?" answer into one of
+three fixed labels, and `ensure_label()` creates a label the first time
+anything needs it rather than requiring a maintainer to set one up by
+hand in GitHub's settings first.
+
+No `kind:` label exists for "a question, an idea, or something else" on
+purpose — see the file's own docstring for why, and `DECISIONS_LOG.md`
+8.4 for the fuller reasoning.
+
+## `dev/report_patterns.py`
+
+Runs weekly (`.github/workflows/report-patterns.yml`), reading every
+open report issue and asking one question: does any single page, or any
+single cell on a page, have enough open reports recently to be worth a
+person looking at as a group rather than one at a time? `gather()`
+groups issues by page (and, within a page, by cell, when the report
+came from a cell's own report icon and so carries one), `worth_a_pattern()`
+applies the threshold (three reports on a page, or two naming the same
+cell, within the last fortnight), and `pattern_body()` writes the
+issue text a human triager reads.
+
+Idempotent by design: a hidden `<!-- pattern-key: <page> -->` marker in
+the issue body is how a second run finds the pattern issue it already
+opened for a page, rather than opening a duplicate — the body is
+replaced wholesale each run, so an issue nobody has looked at yet still
+reflects the current count, not the count from whenever it was first
+opened. `.claude/skills/triage-report/SKILL.md`'s own "Working a
+pattern issue" section is what a person (or an agent) actually does
+with the result.
+
+`parse_fields()` is deliberately the same regex as
+`label_report.py`'s own, copied rather than imported from a shared
+module — each script is meant to be readable and runnable on its own.
+`tests/test_report_patterns.py`'s `test_label_report_uses_the_same_parser`
+exists to catch the day the two copies quietly diverge, which is the
+real risk that duplication carries.
+
+---
+
+## Not yet covered here
+
+Six more scripts live in `dev/` — `check_doc_links.py`,
+`apply_topic_edits.py`, `build_topic_editor.py`, `build_topic_game.py`,
+`draw_topic_graph.py`, `pair_results.py` — that this file has never
+covered, going back to when `planning/DOCS_AND_COMMENTS_PASS.md`'s own
+Phase D first scoped this file to four scripts rather than the whole
+folder. Not new drift; a gap that was already there, recorded honestly
+rather than implied away by this file's title. `planning/DOCS_AND_COMMENTS_PLAN.md`
+(2026-09-06) tracks closing it.
+
+---
+
+## A pattern shared by most of these: a script is a `main()`, guarded
 
 Every one of these files ends with the same shape:
 
