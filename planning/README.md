@@ -72,6 +72,11 @@ written before the thing it describes was built.
   sit, and the Worker migration that made a real Stop button possible.
 - **[`CELL_TOOLTIPS.md`](./CELL_TOOLTIPS.md)** — hover docs and signature
   help, including what Jedi in Pyodide costs and covers.
+- **[`CELL_HINTS.md`](./CELL_HINTS.md)** — hints that appear after a
+  cell has errored or run some number of times: what the page can
+  already observe, the fold-and-attribute authoring surface, the
+  questions still open. Design only, nothing built; its dewstack half
+  lives beside it in that repository.
 - **[`CELL_IDENTITY.md`](./CELL_IDENTITY.md)** — the settled design for
   execution counters and cell identity (the pill, the run line, what
   differs by cell type), not yet built. A working mockup of every cell
