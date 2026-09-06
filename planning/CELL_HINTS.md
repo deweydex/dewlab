@@ -76,7 +76,7 @@ does not also print `True`. That tuple is a per-run "did the check pass"
 signal that already exists in Python and is thrown away at the end of the
 run. dewstack's equivalent is the `sql-check` block, a separate
 "Check my work" button per task calling a `check_*` function in
-`sql_tools.py`, not something a cell's own run reports.
+`dewstack/assets/sql_tools.py`, not something a cell's own run reports.
 
 **`run_cell()` returns a boolean**: True if the code raised nothing. The
 Worker path (`pyodide-worker.js`) carries that back as the `result` of a
@@ -123,11 +123,11 @@ cell at runtime on any page that has cells. So a hint that contains a
 runnable cell is not out of reach; the engine to mount one exists. It is
 a later stage, not the first.
 
-**On dewstack**, `assets/sql-cell.js` runs all three cell kinds on one
+**On dewstack**, `dewstack/assets/sql-cell.js` runs all three cell kinds on one
 Pyodide, main thread: `run_sql()` and `run_python()` each return an HTML
 string, and an error is a `.dl-sql-error` or `.dl-error` element inside
 it. Only a persisted SQL cell saves anything to `localStorage`. The web
-track's site editor (`site-editor.js`) has no Run for HTML and CSS — they
+track's site editor (`dewstack/assets/site-editor.js`) has no Run for HTML and CSS — they
 are live — and a Run for the JavaScript pane, whose errors arrive on the
 console relay with a line number. `sql-check` blocks report pass or fail
 per click. There is no run-line and no per-cell save record, so a
@@ -391,7 +391,7 @@ written with it in mind.
 
 ## 7. dewstack: the same fold, three engines
 
-dewstack shares no code with dewlab, only shapes (its `sql-cell.js` is
+dewstack shares no code with dewlab, only shapes (its `dewstack/assets/sql-cell.js` is
 "ported in shape" from `pyodide-engine.js`). So the runtime work is done
 twice, once per repository, and the authoring surface is what should be
 identical. The `dl-hint` fold exists there already, with the same class
@@ -403,7 +403,7 @@ unchanged. What differs is what "a run" and "an error" are:
   compares the textarea. `expect` has no Python namespace to evaluate
   against, but has something better for SQL: a query. `expect: SELECT
   COUNT(*) FROM products >= 4` is what the plushies quiz's `check_*`
-  functions already do by hand in `sql_tools.py`, and a general
+  functions already do by hand in `dewstack/assets/sql_tools.py`, and a general
   `expect:` on a SQL cell would let an author write such a check without
   a new Python function per task.
 - **Python cell.** As dewlab, minus the Worker: `run_python()` returns
@@ -431,7 +431,7 @@ the quiz. The web track waits.
 **dewlab.**
 
 - `tests/e2e/fixture/rendering-tour.md` gets one cell with two staged
-  folds and one `expect:`; `tests/e2e/test_cell_hints_staged.py` drives
+  folds and one `expect:`; a new test file beside `test_cell_hint.py` drives
   the runs in a real Chromium (the same fixture and server
   `test_cell_hint.py` uses): a fold is hidden on load, still hidden after
   two errors, visible and closed after the third, not re-revealed by a
@@ -457,8 +457,8 @@ the quiz. The web track waits.
   `asking-questions-of-a-table`, for the Python-cell path.
 - dewstack's `tests/e2e/` already drives its site editor, full-stack
   cell and workspace in a real Chromium, so a staged-hint test there has
-  a fixture and a server to reuse; its `test_sql_tools.py` and
-  `test_python_tools.py` cover the Python side under CPython.
+  a fixture and a server to reuse; its `dewstack/tests/test_sql_tools.py` and
+  `dewstack/tests/test_python_tools.py` cover the Python side under CPython.
 
 ---
 
@@ -535,7 +535,7 @@ Ordered so each step is useful on its own and none needs the one after.
 3. **Two pages.** `finding-where-it-went-wrong` and `grid-of-numbers`,
    the folds written against the style guide's checks and run in a real
    browser before merge. `PLAIN_LANGUAGE_PASS.md` notes the new surface.
-4. **dewstack.** Same attributes, its own counters in `sql-cell.js`, the
+4. **dewstack.** Same attributes, its own counters in `dewstack/assets/sql-cell.js`, the
    quiz and one data page. Its planning note's ledger updated.
 5. **Later, each its own decision:** `expect:` on SQL and web cells;
    persistence; a runnable cell inside a fold; `run_cell()` returning a
@@ -661,7 +661,7 @@ the code.
 | System | Where checks live | What the student sees | Attempt-aware | Hints authored where |
 |---|---|---|---|---|
 | nbgrader | cell metadata, `### BEGIN` markers | validate: pass line or traceback | no | nowhere |
-| otter | markers → `tests/q1.py` dict | `check("q1")`: pass, or diff plus `failure_message` | no (logs each check) | one message per case, shown on first failure |
+| otter | markers → a `q1` dict in its tests directory | `check("q1")`: pass, or diff plus `failure_message` | no (logs each check) | one message per case, shown on first failure |
 | okpy | `.ok` config, `tests/*.py`, hashed locked answers | terminal unlock loop | yes: history, cooldowns, hint after 2, again every 5 | a server; misconception messages in `.ok_guidance` |
 | Khan | Perseus item JSON | right/wrong, cumulative hint steps | on assessment only; hints cost mastery | `hints: [...]`, last is the answer |
 | Runestone | `=====` suffix in the directive | pass/fail table, "You passed: N%" | no | a separate `reveal`, always open |
