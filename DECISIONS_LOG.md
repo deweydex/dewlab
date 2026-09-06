@@ -6501,3 +6501,67 @@ link now (`build.py`'s markup, `tutorial-runtime.js`'s
 `updateCellReportLinks()`), and the `dl-report-issue-link` class is the
 seam between them — rename or restructure one without the other, and the
 runtime silently stops finding anything to update.*
+
+**8.6 — A written triage procedure, and a one-shot scheduled off switch,
+both added before the first real report arrives rather than after.**
+`.claude/skills/triage-report/SKILL.md` exists so working the inbox does
+not have to be reinvented each session: read before acting, re-sort the
+student's guessed `kind` rather than trusting it, reproduce an error
+report from `code`/`output` before touching anything, and the two hard
+stops the plan always intended — a maths or curriculum question is
+Josh's call, and nothing closes without a person having looked.
+
+`.github/workflows/auto-disable-feedback.yml` is a direct request: the
+doors stay on, but turn themselves off on Tuesday, 2026-09-08, without
+anyone having to remember to. It is a genuine one-shot rather than a
+recurring weekly job — the date is cron's day-of-month/month fields, not
+day-of-week — and its last step deletes its own workflow file in the
+same commit that flips `planning/feedback.yaml`, so nothing is left
+behind to misfire on the same date next year. `workflow_dispatch` on the
+same workflow doubles as a manual "turn it off right now" trigger, which
+does the same thing early rather than rehearsing it safely — a real
+alternative to editing `planning/feedback.yaml` by hand, not a test mode.
+*Cost to change: trivial for the switch itself (edit or delete the
+workflow file, the same as any other scheduled job). Extending the
+deadline means editing the cron date before it fires, since the file
+that would let you edit it again is gone once it has.*
+
+**8.7 — Labels are created by a workflow, at the moment they are first
+needed, rather than by anyone clicking through GitHub's settings.** The
+plan called for `kind:`/`source:`/`pattern` labels, and an issue form's
+own `labels:` key can only ever apply fixed text — it has no way to know
+in advance which page or which kind a particular report will name.
+`label-report.yml` fires on every newly opened issue and calls
+`dev/label_report.py`, which reads the issue back out through GitHub's
+REST API, parses its rendered fields (the same `### <label>` pattern
+GitHub always renders an issue form's fields as), and applies a
+`page: <slug>` and a `kind: <error|unclear|question>` label — creating
+either the first time it is used, via the same token every Actions job
+already gets for free. Nobody had to open GitHub's label settings for
+this to work.
+
+`report-patterns.yml` runs weekly and calls `dev/report_patterns.py`,
+which re-derives page and cell from the same parsed fields (not from the
+labels above, which exist for browsing the issue list, not as this
+script's own data — the fields are the one source of truth) and opens or
+updates one `pattern` issue per page that crosses a threshold: three open
+reports on the page, or two on one cell, within a fortnight. A hidden
+`<!-- pattern-key: <page> -->` marker in the issue body is how a second
+run finds the issue it already opened for a page rather than doubling it
+— the body is replaced wholesale each run, so a pattern issue nobody has
+looked at yet still reflects the current count next Monday, not last
+Monday's.
+
+Both scripts talk to `api.github.com` directly with `urllib`, matching
+every other `dev/` script's "no dependency beyond the standard library"
+rule, rather than reaching for a GitHub Actions marketplace action or the
+`gh` CLI. The parsing logic (`parse_fields()`) is duplicated between the
+two files on purpose rather than factored into a shared module — each
+script is meant to be readable and runnable on its own, the same
+reasoning `tests/test_report_patterns.py`'s own
+`test_label_report_uses_the_same_parser` exists to guard: not to justify
+the duplication, but to catch the day the two copies quietly diverge.
+*Cost to change: small for the thresholds themselves (two named
+constants). Changing what counts as a "page" or a "cell" means changing
+the field-label strings in both scripts and in `.github/ISSUE_TEMPLATE/report.yml`
+at once, or the parser silently stops finding what it is looking for.*

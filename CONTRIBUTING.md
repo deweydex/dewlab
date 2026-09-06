@@ -74,6 +74,44 @@ with `npm install && npm run build` inside `vendor-src/` and commit the result.
 `publish` (`.github/workflows/deploy.yml`) builds the site and deploys it to
 GitHub Pages on a push to `main`.
 
+`auto-disable-feedback` is a one-shot, not a check: it fires once, on a
+date written into its own cron expression, flips
+`planning/feedback.yaml` off, and deletes itself in the same commit. See
+"Student feedback pipeline" below.
+
+---
+
+## Student feedback pipeline
+
+Most pages carry a line at the foot, "Something wrong on this page? Tell
+us.", and a cell has its own smaller version of the same thing beside its
+hint icon. Both open the same three doors: a question goes to GitHub
+Discussions, an error or a page that is wrong or hard to follow both open
+a prefilled issue on `.github/ISSUE_TEMPLATE/report.yml`. `report_doors_links()`
+and `report_issue_url()` in `build.py` build the doors; `ARCHITECTURE.md`
+§1 step 8 has the mechanics, `DECISIONS_LOG.md` Phase 8 has the reasoning
+behind each piece of it.
+
+`planning/feedback.yaml` is the switch — `enabled: false` turns every
+door off, everywhere, without touching a tutorial. `.claude/skills/triage-report/SKILL.md`
+is the order to work an incoming issue in, so triage does not get
+reinvented each session. Neither of these is optional reading before
+changing how a report is built, sent, or worked — a change to one that
+leaves the others describing the old behaviour is exactly the stale-doc
+problem the next section is about.
+
+Two more workflows run against a report once it exists, neither on a push
+or a pull request: `label-report` fires the moment an issue opens and
+applies a `page:`/`kind:` label, creating either the first time it is
+needed — `dev/label_report.py` has the parsing and the label rules.
+`report-patterns` runs weekly and opens or updates a `pattern` issue for
+any page with three or more open reports, or any cell with two, in the
+last fortnight — `dev/report_patterns.py`, tested in
+`tests/test_report_patterns.py`. Both talk to GitHub's REST API directly
+over `urllib`, the same "no extra dependency" convention every other
+`dev/` script already follows, since neither needs anything the standard
+library does not already provide.
+
 ---
 
 ## Keep documentation and comments current

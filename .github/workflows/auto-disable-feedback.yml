@@ -1,0 +1,45 @@
+# A one-shot: Josh asked for the student report doors to stay on for now,
+# but to turn themselves off on Tuesday 2026-09-08 without anyone having to
+# remember to come back and do it by hand. The date is in the cron
+# expression itself (day-of-month 8, month 9) rather than a recurring
+# weekday, so this fires once, in that specific week, not every Tuesday
+# forever — and the last step deletes this file in the same commit that
+# flips the switch, so there is nothing left behind to misfire next
+# September.
+#
+# Flipping planning/feedback.yaml back to `enabled: true` and re-adding a
+# workflow like this one (or just running it once by hand with
+# workflow_dispatch, before the scheduled step deletes it) is how to
+# extend or reverse this.
+name: auto-disable-feedback
+
+on:
+  schedule:
+    - cron: "0 7 8 9 *"
+  # A manual run does exactly what the scheduled one does — flips the
+  # switch and removes this file — so use this to turn the doors off
+  # sooner than Tuesday, on purpose, not to rehearse the workflow safely.
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  disable:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Turn the report doors off
+        run: |
+          sed -i 's/^enabled: true$/enabled: false/' planning/feedback.yaml
+          grep -q '^enabled: false$' planning/feedback.yaml
+
+      - name: Commit the switch and remove this workflow, in one push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git rm .github/workflows/auto-disable-feedback.yml
+          git add planning/feedback.yaml
+          git commit -m "Turn the student report doors off (scheduled one-shot, 2026-09-08)"
+          git push
