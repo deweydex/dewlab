@@ -197,7 +197,14 @@ for `load_csv()`).
    is the debounced write back the other way, called from `saveState()`
    whenever the tab's `.path` is set. A site tab has no cells; its three
    files' live text sits directly on the notebook object
-   (`siteHtml`/`siteCss`/`siteJs`) instead.
+   (`siteHtml`/`siteCss`/`siteJs`) instead. Its HTML and CSS panes
+   redraw the preview as you type; its JavaScript pane runs only on Run
+   or Ctrl/Cmd+Enter, and a console under the preview shows what the
+   script printed and every error with its pane line, relayed out of the
+   sandboxed frame by `SITE_RELAY` and explained by `SITE_FRIENDLY`
+   (`DECISIONS_LOG.md` 7.134). `buildSiteDocument` assembles the frame's
+   document and records where each pane starts, so the console can turn
+   a document line back into a pane line.
 5. **Downloads** — `triggerDownload` (the shared Blob-download trick),
    then `downloadAsPython`/`downloadAsIpynb`/`downloadAsHtml`, the last
    of which builds an entire second, self-contained HTML page as a

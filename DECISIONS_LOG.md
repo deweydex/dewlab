@@ -6565,3 +6565,63 @@ the duplication, but to catch the day the two copies quietly diverge.
 constants). Changing what counts as a "page" or a "cell" means changing
 the field-label strings in both scripts and in `.github/ISSUE_TEMPLATE/report.yml`
 at once, or the parser silently stops finding what it is looking for.*
+
+**7.134 — dewmini's Site view gains a console under its preview, and its
+JavaScript pane runs on Run rather than on every keystroke.** Until now
+a site's script that threw did the one thing a learner cannot read: the
+preview stopped changing, with no message anywhere. The Web cell's
+Render button and the JavaScript cell's own relayed output both existed,
+but the Site view, the one place all three files meet, had neither.
+
+Ported in shape, not code, from dewstack's site editor
+(`deweydex/dewstack`, `assets/site-editor.js`, and
+`planning/CONSOLE_AND_WORKSPACE.md` there), where Josh decided the pair
+on 2026-09-06: **HTML and CSS stay live**, because a stylesheet is a
+state and the lesson is watching the box change under your hand;
+**JavaScript runs when asked**, because a program is not a state and
+half-typed code is a syntax error on most keystrokes, so a console that
+flashed red between characters would teach a reader to ignore it. His
+own reason for the Run button is the one worth keeping: a student who
+presses Run has read their own code once before asking the machine to.
+Until Run (or Ctrl/Cmd+Enter inside the pane, the keys a Python cell
+already answers to), the preview keeps the last script that ran, so
+retyping a colour does not silently re-run a half-edited program.
+
+**The mechanism** is `js-cell-engine.js`'s own idea made visible: a
+small ES5 relay (`SITE_RELAY`) goes into the preview document's head
+ahead of the reader's CSS, replaces `console.log` and its siblings with
+versions that also `postMessage` to this page, and listens for the
+window's `error` event (uncaught runtime errors and syntax errors in an
+inline script alike) and for `unhandledrejection`. Line numbers arrive
+relative to the whole `srcdoc`, so `buildSiteDocument()` records where
+the HTML and JavaScript panes start and the console subtracts, naming
+the pane and its line; a Go to line button selects that line in the
+right editor. Under the browser's message, a plain-language second line
+for the four errors a first term meets most (`SITE_FRIENDLY`), drawn in
+the same `.dl-error` / `.dl-error-hint` clothes `_ERROR_HINTS` gives a
+Python traceback, so an error reads the same in both places. `</script`
+typed into the pane is escaped rather than ending the script element.
+
+**One thing found on dewstack's twin and carried here.** Several
+synchronous `srcdoc` writes in one task loaded only the *first*
+document in a real Chromium, so a site opened on an empty preview. The
+Site view now treats the frame as one resource: a document is written
+only once no earlier one is still loading, later ones wait, newest
+wins, and the frame's load event flushes the next. Coalescing on load
+rather than on a timer keeps a fast typist's last keystroke from being
+the one dropped.
+
+**Verified in a real browser**, against a self-hosted Pyodide: four new
+e2e tests in `tests/e2e/test_dewmini_workbench.py` — the printed line
+and the error with its pane line and hint; typing in the JavaScript pane
+not running it, a live HTML edit redrawing with the last-run script, and
+Run applying the new one; Ctrl+Enter inside the pane; Go to line
+selecting the failing line. The seven existing Site view tests still
+pass, live HTML and CSS included.
+
+*Cost to change: `renderSiteView()` grew by the relay, the assembly
+arithmetic and the console; the CSS by a preview column. The friendly
+map is data. Not shared with dewstack as a file — "port in shape" stays
+the rule between the two repositories, decided the same day — so a
+change to the wording there is a change to make here by hand, and the
+banner on each names the other.*

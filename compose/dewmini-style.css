@@ -1485,17 +1485,71 @@ kbd {
   min-height: 8rem;
 }
 
+/* The right-hand column: the preview, and under it the console
+ * (DECISIONS_LOG.md 7.134). */
+.dm-siteview-preview {
+  flex: 1 1 50%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
 /* Fixed white background regardless of theme, the same reasoning as a
  * Web cell's own .dm-html-frame: a reader's page is written assuming a
  * page, not dewlab's dark mode. */
 .dm-siteview-frame {
-  flex: 1 1 50%;
+  flex: 1 1 auto;
+  width: 100%;
   min-width: 0;
-  min-height: 24rem;
+  min-height: 20rem;
   border: 1px solid var(--dl-cell-border);
   border-radius: 6px;
   background: #fff;
 }
+
+/* A pane's label row: the label, and for the JavaScript pane its Run
+ * button at the other end. The icon-button base is sized for a glyph;
+ * Run is a word, so it gets its width back. */
+.dm-siteview-pane-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+.dm-siteview-pane-head .dm-web-pane-label { margin-bottom: 0; }
+.dm-siteview-run { width: auto; padding: 0 0.6rem; margin-bottom: 0.25rem; }
+
+/* The console: what the site's script printed and every error it raised,
+ * in the same .dl-stdout / .dl-error / .dl-error-hint clothes a Python
+ * cell's own output wears, so an error reads the same in both places. */
+.dm-siteview-console-output {
+  min-height: 1.8rem;
+  max-height: 14rem;
+  overflow: auto;
+  padding: 0.4rem 0.6rem;
+  border: 1px solid var(--dl-cell-border);
+  border-radius: 6px;
+  background: var(--dl-output-bg, var(--dl-cell-bg));
+  font-family: var(--dl-mono);
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+.dm-siteview-console-line { white-space: pre-wrap; overflow-wrap: anywhere; }
+.dm-siteview-console-line.dl-error { margin: 0.25rem 0; }
+.dm-siteview-console-warn { color: var(--dl-orange); }
+.dm-siteview-goto {
+  margin-left: 0.6rem;
+  font: inherit;
+  font-size: 0.78rem;
+  padding: 0 0.4rem;
+  border: 1px solid var(--dl-cell-border);
+  border-radius: 4px;
+  background: var(--dl-panel-bg);
+  color: var(--dl-fg);
+  cursor: pointer;
+}
+.dm-siteview-goto:hover { border-color: var(--dl-orange); color: var(--dl-orange); }
 
 /* On the tab, so a reader can tell at a glance which of two open
  * notebooks is showing as a file. */

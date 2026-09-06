@@ -350,3 +350,12 @@ any pane updates the preview without a separate press; the CSS and JS
 halves each write back to their own file, readable from a Python cell in
 another tab; the toolbar's cell-only controls hide for a site tab and
 reappear on a notebook tab; and a site tab survives a full page reload.
+
+**Added later (`DECISIONS_LOG.md` 7.134): a console, and Run for
+JavaScript.** The right-hand column is now the preview with a console
+under it: what the site's script printed, and every uncaught error with
+the pane and line it came from, a Go to line button, and a plain-language
+second line for the common errors. HTML and CSS stay live; the
+JavaScript pane runs on Run or Ctrl/Cmd+Enter, and the preview keeps the
+last-run script until then. Ported in shape from dewstack's site editor,
+where the pair was decided first.
