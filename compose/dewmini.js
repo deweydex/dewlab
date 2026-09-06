@@ -1288,7 +1288,104 @@ async function runWholeFile() {
  * The CSS and JavaScript panes are always shown, whether or not their
  * file exists yet on disk — a reader building a site from nothing needs
  * somewhere to start typing a stylesheet before writeSiteToWorkspace()
- * has anything to write. */
+ * has anything to write.
+ *
+ * Two run models, and a console (DECISIONS_LOG.md 7.134; ported in shape
+ * from dewstack's assets/site-editor.js, where the same pair was decided
+ * first). HTML and CSS are live: a stylesheet is a state, and the lesson
+ * is watching the box change under your hand. JavaScript is a program,
+ * and a program runs when asked: the JavaScript pane does nothing until
+ * Run (or Ctrl/Cmd+Enter inside it, the keys a Python cell already
+ * answers to), and until then the preview keeps the last script that
+ * ran, so retyping a colour does not silently re-run a half-edited
+ * program. Under the preview, a console: what the script printed, and
+ * every uncaught error with the pane and line it came from, relayed out
+ * of the sandboxed frame by SITE_RELAY the same way js-cell-engine.js's
+ * own runtime relays a JavaScript cell's output. */
+
+/* Runs inside the preview document, not this page — read it as a small,
+ * separate program, the same way js-cell-engine.js's RUNTIME_SRC is one.
+ * Plain ES5 on purpose: embedded as a string, it gets none of the vendor
+ * build's transpilation. It reports; it never decides. */
+const SITE_RELAY = [
+  "<script>",
+  "(function () {",
+  "  var send = function (m) { parent.postMessage(m, '*'); };",
+  "  function fmt(v) {",
+  "    if (typeof v === 'string') return v;",
+  "    if (v === undefined) return 'undefined';",
+  "    if (v === null) return 'null';",
+  "    if (typeof v === 'function') return '[Function' + (v.name ? ': ' + v.name : '') + ']';",
+  "    if (v instanceof Error) return v.name + ': ' + v.message;",
+  "    if (v && v.nodeType === 1) return '<' + v.tagName.toLowerCase() + (v.id ? ' id=\"' + v.id + '\"' : '') + '>';",
+  "    try { return JSON.stringify(v); } catch (e) { return String(v); }",
+  "  }",
+  "  ['log', 'info', 'warn', 'error'].forEach(function (level) {",
+  "    var real = console[level] ? console[level].bind(console) : function () {};",
+  "    console[level] = function () {",
+  "      var args = Array.prototype.slice.call(arguments);",
+  "      real.apply(console, args);",
+  "      send({ dmSite: 'console', level: level, text: args.map(fmt).join(' ') });",
+  "    };",
+  "  });",
+  "  window.addEventListener('error', function (ev) {",
+  "    send({ dmSite: 'error', message: ev.message, line: ev.lineno, column: ev.colno });",
+  "  });",
+  "  window.addEventListener('unhandledrejection', function (ev) {",
+  "    var r = ev.reason;",
+  "    send({ dmSite: 'error', message: (r && r.name ? r.name + ': ' + r.message : String(r)), line: 0, column: 0 });",
+  "  });",
+  "})();",
+  "<\/script>",
+].join("\n");
+
+/* A plain-language second line for the errors a first term meets most,
+ * matched against the browser's own message — the JavaScript counterpart
+ * of tutorial_tools.py's _ERROR_HINTS for Python, drawn the same way
+ * (.dl-error, then .dl-error-hint). Data, so a new entry is a line added
+ * here from what students hit in class. The first match wins. */
+const SITE_FRIENDLY = [
+  {
+    test: /^(Uncaught )?ReferenceError: (.+?) is not defined/,
+    hint: (m) => `The page does not know a name called ${m[2]}. Check the spelling, and check that the line that creates ${m[2]} runs before this one.`,
+  },
+  {
+    test: /^(Uncaught )?SyntaxError/,
+    hint: () => "Something on this line is not written the way JavaScript expects. Look along the line for a missing bracket, quote or comma.",
+  },
+  {
+    test: /^(Uncaught )?TypeError: Cannot (read|set) properties of null/,
+    hint: () => "The page looked for an element and found nothing. Check that the id in the JavaScript matches the id in the HTML exactly, and that the script runs after the element exists.",
+  },
+  {
+    test: /^(Uncaught )?TypeError: (.+?) is not a function/,
+    hint: (m) => `${m[2]} is not something the page can call. Check the spelling, and check what ${m[2]} holds.`,
+  },
+];
+
+function siteFriendlyHint(message) {
+  for (const entry of SITE_FRIENDLY) {
+    const m = entry.test.exec(message);
+    if (m) return entry.hint(m);
+  }
+  return null;
+}
+
+/* Assembles the preview document and records where each pane's first
+ * line lands in it, so a reported line can be handed back to the pane it
+ * came from. The relay sits first so its own line count is a constant.
+ * `</script` inside the reader's script is escaped, since left alone it
+ * would end the script element early. */
+function buildSiteDocument(html, css, js) {
+  const countLines = (text) => (text.length ? text.split("\n").length : 0);
+  const head = `<!DOCTYPE html><html><head>\n${SITE_RELAY}\n<style>${css}</style></head>\n<body>`;
+  const htmlStart = countLines(head);
+  const withHtml = `${head}${html}`;
+  const jsStart = countLines(withHtml);
+  const safeJs = js.replace(/<\/script/gi, "<\\/script");
+  return { doc: `${withHtml}<script>${safeJs}<\/script></body></html>`, htmlStart, jsStart };
+}
+
 function renderSiteView() {
   const notebook = activeNotebook();
   const wrap = document.createElement("div");
@@ -1299,7 +1396,7 @@ function renderSiteView() {
   note.textContent = `This site is ${notebook.path}`
     + (notebook.siteCssPath ? `, ${notebook.siteCssPath}` : "")
     + (notebook.siteJsPath ? ` and ${notebook.siteJsPath}` : "")
-    + ". The preview on the right updates as you type.";
+    + ". The preview updates as you type HTML and CSS. The JavaScript runs when you press Run.";
   wrap.appendChild(note);
 
   const split = document.createElement("div");
@@ -1310,48 +1407,166 @@ function renderSiteView() {
   editors.className = "dm-siteview-editors";
   split.appendChild(editors);
 
+  const previewCol = document.createElement("div");
+  previewCol.className = "dm-siteview-preview";
+  split.appendChild(previewCol);
+
   const iframe = document.createElement("iframe");
   iframe.className = "dm-siteview-frame";
   iframe.setAttribute("sandbox", "allow-scripts");
   iframe.title = `${notebook.name}'s rendered page`;
-  split.appendChild(iframe);
+  previewCol.appendChild(iframe);
+
+  const consoleEl = document.createElement("div");
+  consoleEl.className = "dm-siteview-console";
+  const consoleLabel = document.createElement("div");
+  consoleLabel.className = "dm-web-pane-label";
+  consoleLabel.textContent = "Console";
+  const consoleOut = document.createElement("div");
+  consoleOut.className = "dm-siteview-console-output";
+  consoleOut.setAttribute("aria-live", "polite");
+  consoleEl.append(consoleLabel, consoleOut);
+  previewCol.appendChild(consoleEl);
+
+  // The preview frame is one resource: a document is written to srcdoc
+  // only once no earlier one is still loading, and later ones wait,
+  // newest wins. Traced in a real Chromium on dewstack's twin of this
+  // view: several synchronous srcdoc writes in one task loaded only the
+  // *first*. The line offsets and the console reset at write time, so
+  // they describe the document the frame is showing.
+  const view = { lastRunJs: notebook.siteJs, htmlStart: 0, jsStart: 0, pendingDoc: null, loading: false, loadTimer: null };
+
+  const flush = () => {
+    if (view.loading || !view.pendingDoc) return;
+    const built = view.pendingDoc;
+    view.pendingDoc = null;
+    view.htmlStart = built.htmlStart;
+    view.jsStart = built.jsStart;
+    consoleOut.textContent = "";
+    view.loading = true;
+    clearTimeout(view.loadTimer);
+    view.loadTimer = setTimeout(() => { view.loading = false; flush(); }, 2000);
+    iframe.srcdoc = built.doc;
+  };
+  iframe.addEventListener("load", () => { clearTimeout(view.loadTimer); view.loading = false; flush(); });
 
   // Combines the three editors' own live text, not a fresh disk read —
   // the same choice the Web cell's own preview makes, so typing shows up
   // straight away rather than waiting on the debounced write to land.
   const render = () => {
-    iframe.srcdoc = `<style>${notebook.siteCss}</style>${notebook.siteHtml}`
-      + `<script>${notebook.siteJs}</script>`;
+    view.pendingDoc = buildSiteDocument(notebook.siteHtml, notebook.siteCss, view.lastRunJs);
+    flush();
+  };
+  const run = () => { view.lastRunJs = notebook.siteJs; render(); };
+
+  // Which pane a document line belongs to, and the line within it.
+  const locate = (docLine) => {
+    if (!docLine) return null;
+    if (docLine >= view.jsStart) return { lang: "js", label: "JavaScript", line: docLine - view.jsStart + 1 };
+    if (docLine >= view.htmlStart) return { lang: "html", label: "HTML", line: docLine - view.htmlStart + 1 };
+    return null;
   };
 
-  const pane = (label, content, language, onChange) => {
+  const onMessage = (ev) => {
+    if (ev.source !== iframe.contentWindow) return;
+    const msg = ev.data;
+    if (!msg || !msg.dmSite) return;
+    if (msg.dmSite === "console") {
+      const line = document.createElement("div");
+      line.className = `dm-siteview-console-line dl-stdout dm-siteview-console-${msg.level}`;
+      line.textContent = msg.text;
+      consoleOut.appendChild(line);
+      return;
+    }
+    const where = locate(msg.line);
+    const message = String(msg.message).replace(/^Uncaught /, "");
+    const line = document.createElement("div");
+    line.className = "dm-siteview-console-line dl-error";
+    const text = document.createElement("span");
+    text.textContent = where ? `${message} (${where.label}, line ${where.line})` : message;
+    line.appendChild(text);
+    if (where && siteEditors && siteEditors[where.lang]) {
+      const go = document.createElement("button");
+      go.type = "button";
+      go.className = "dm-siteview-goto";
+      go.textContent = "Go to line";
+      go.addEventListener("click", () => selectEditorLine(siteEditors[where.lang], where.line));
+      line.appendChild(go);
+    }
+    consoleOut.appendChild(line);
+    const hint = siteFriendlyHint(message);
+    if (hint) {
+      const hintEl = document.createElement("div");
+      hintEl.className = "dl-error-hint";
+      hintEl.textContent = hint;
+      consoleOut.appendChild(hintEl);
+    }
+  };
+  window.addEventListener("message", onMessage);
+
+  const pane = (label, content, language, onChange, { live = true } = {}) => {
     const paneEl = document.createElement("div");
     paneEl.className = "dm-siteview-pane";
+    const head = document.createElement("div");
+    head.className = "dm-siteview-pane-head";
     const labelEl = document.createElement("div");
     labelEl.className = "dm-web-pane-label";
     labelEl.textContent = label;
+    head.appendChild(labelEl);
+    if (!live) {
+      const runBtn = document.createElement("button");
+      runBtn.type = "button";
+      runBtn.className = "dm-icon-btn dm-icon-render dm-siteview-run";
+      runBtn.textContent = "Run";
+      runBtn.title = "Run this script (Ctrl+Enter or Cmd+Enter in the pane)";
+      runBtn.addEventListener("mousedown", (e) => e.preventDefault());
+      runBtn.addEventListener("click", run);
+      head.appendChild(runBtn);
+    }
     const editorEl = document.createElement("div");
     editorEl.className = "dm-editor";
-    paneEl.append(labelEl, editorEl);
+    paneEl.append(head, editorEl);
     editors.appendChild(paneEl);
+    if (!live) {
+      // Capture phase, ahead of CodeMirror's own Enter — the same shape
+      // a Python cell's editor uses for its Ctrl/Cmd+Enter.
+      editorEl.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
+          e.preventDefault();
+          e.stopPropagation();
+          run();
+        }
+      }, true);
+    }
     return createCodeEditor(editorEl, content, {
       dark: isDarkNow(), language,
-      onChange: (text) => { onChange(text); saveState(); render(); },
+      onChange: (text) => { onChange(text); saveState(); if (live) render(); },
     });
   };
 
   siteEditors = {
     html: pane("HTML", notebook.siteHtml, "html", (text) => { notebook.siteHtml = text; }),
     css: pane("CSS", notebook.siteCss, "css", (text) => { notebook.siteCss = text; }),
-    js: pane("JavaScript", notebook.siteJs, "javascript", (text) => { notebook.siteJs = text; }),
+    js: pane("JavaScript", notebook.siteJs, "javascript", (text) => { notebook.siteJs = text; }, { live: false }),
+    _onMessage: onMessage,
   };
 
   cellsContainer.appendChild(wrap);
   render();
 }
 
+/* Selects one whole line (1-based) of a CodeMirror editor and scrolls to
+ * it: the console's Go to line. */
+function selectEditorLine(editor, n) {
+  const { view } = editor;
+  const line = view.state.doc.line(Math.max(1, Math.min(n, view.state.doc.lines)));
+  view.dispatch({ selection: { anchor: line.from, head: line.to }, scrollIntoView: true });
+  view.focus();
+}
+
 function destroySiteEditors() {
   if (!siteEditors) return;
+  if (siteEditors._onMessage) window.removeEventListener("message", siteEditors._onMessage);
   siteEditors.html?.destroy();
   siteEditors.css?.destroy();
   siteEditors.js?.destroy();

@@ -2210,3 +2210,79 @@ class TestStatusAnnouncer:
         page.evaluate("document.getElementById('dm-status').textContent = 'sentinel'")
         run_first_cell_and_wait(page)
         self.wait_for_status(page, "Ran.")
+
+
+# ------------------------------------------------------ site: console and Run
+
+
+def open_site(page, html: str, js: str, name: str = "page") -> None:
+    """A .html with a same-name .js beside it, opened as a site."""
+    write_workspace_file(page, f"{name}.js", js)
+    write_workspace_file(page, f"{name}.html", html)
+    open_files_panel(page)
+    page.locator(".dm-filelist-item-name", has_text=f"{name}.html").click()
+    page.wait_for_selector(".dm-siteview")
+
+
+def site_console_lines(page):
+    return page.locator(".dm-siteview-console-line")
+
+
+def test_a_sites_script_logs_and_errors_into_its_console(dewmini):
+    """The console under the preview shows what the script printed and
+    the error it raised, with the pane line the error came from, and a
+    plain-language second line (DECISIONS_LOG.md 7.134)."""
+    open_site(dewmini, "<h1>Hi</h1>", 'console.log("start", { a: 1 });\nnope();\nconsole.log("never");')
+    lines = site_console_lines(dewmini)
+    lines.nth(1).wait_for()
+    assert lines.count() == 2
+    assert lines.nth(0).inner_text() == 'start {"a":1}'
+    assert "ReferenceError: nope is not defined (JavaScript, line 2)" in lines.nth(1).inner_text()
+    assert "does not know a name called nope" in dewmini.locator(".dm-siteview-console-output .dl-error-hint").inner_text()
+
+
+def test_a_sites_javascript_runs_on_run_not_on_typing(dewmini):
+    """HTML and CSS stay live; the JavaScript pane waits for Run, and the
+    preview keeps the last-run script until then."""
+    open_site(dewmini, "<h1>Hi</h1>", 'console.log("first");')
+    site_console_lines(dewmini).first.wait_for()
+    assert site_console_lines(dewmini).first.inner_text() == "first"
+
+    js_editor = dewmini.locator(".dm-siteview-pane").nth(2).locator(".cm-content")
+    js_editor.click()
+    dewmini.keyboard.press("Control+A")
+    js_editor.fill('console.log("typed");')
+    dewmini.wait_for_timeout(400)
+    assert site_console_lines(dewmini).first.inner_text() == "first"
+
+    # A live HTML edit redraws with the *last-run* script, not the typed one.
+    html_editor = dewmini.locator(".dm-siteview-pane").nth(0).locator(".cm-content")
+    html_editor.click()
+    dewmini.keyboard.press("Control+A")
+    html_editor.fill("<h1>Changed</h1>")
+    frame = dewmini.locator(".dm-siteview-frame").content_frame
+    frame.locator("h1", has_text="Changed").wait_for()
+    site_console_lines(dewmini).first.wait_for()
+    assert site_console_lines(dewmini).first.inner_text() == "first"
+
+    dewmini.locator(".dm-siteview-run").click()
+    dewmini.locator(".dm-siteview-console-line", has_text="typed").wait_for()
+    assert site_console_lines(dewmini).count() == 1
+
+
+def test_ctrl_enter_in_the_javascript_pane_runs_it(dewmini):
+    open_site(dewmini, "<p>x</p>", 'console.log("first");')
+    site_console_lines(dewmini).first.wait_for()
+    js_editor = dewmini.locator(".dm-siteview-pane").nth(2).locator(".cm-content")
+    js_editor.click()
+    dewmini.keyboard.press("Control+A")
+    js_editor.fill('console.log("keys");')
+    js_editor.press("Control+Enter")
+    dewmini.locator(".dm-siteview-console-line", has_text="keys").wait_for()
+
+
+def test_go_to_line_selects_the_failing_line(dewmini):
+    open_site(dewmini, "<p>x</p>", 'var a = 1;\nnope();')
+    dewmini.locator(".dm-siteview-goto").first.wait_for()
+    dewmini.locator(".dm-siteview-goto").first.click()
+    assert dewmini.evaluate("() => window.getSelection().toString()") == "nope();"
