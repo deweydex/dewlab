@@ -106,6 +106,35 @@ for value in [1, 2, "three"]:
     total += value
 ```
 
+## A hint that waits for an attempt
+
+Run this cell as it is and it fails. The hint below stays hidden until the
+same error has come up twice; a second one after three errors in all; and
+none of that once `total` is 6.
+
+```python exec
+id: staged-hints
+expect: total == 6
+total = 0
+for value in [1, 2, 3]:
+    total = total + valeu
+```
+
+```hint
+after: 2 identical errors
+What does the last line of the message say Python could not find? Is that
+word spelled the same way on the line above it?
+```
+
+```hint
+after: 3 errors
+title: some steps
+1. Read the name in the error message.
+2. Find that name in your cell, letter by letter.
+
+Then $t = \sum v$ once it runs.
+```
+
 ## Checking your own answer
 
 ```python exec

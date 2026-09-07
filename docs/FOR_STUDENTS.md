@@ -172,6 +172,13 @@ different way. Or you can ask your teacher to look at it with you.
 
 Going back a step is a normal way forward here, not a setback.
 
+Some cells have one more place to go. If you run a cell several times and
+it keeps failing, a small fold may appear under it, with a line like *Let's
+slow down a moment…*. Open it when you want to. Inside is a question about
+what you can see, and later a few steps. It is never the answer. Nothing
+about how many times you ran the cell is shown to you or sent anywhere.
+You can turn these hints off in Settings.
+
 ---
 
 ## Practice

@@ -10,7 +10,10 @@ then perhaps pseudocode, and a while later another; "kind of like Khan
 Academy's hints but a bit more engaged and pedagogically more open,
 inviting the learner to form certain habits that we can specify."
 
-Nothing here is built. The note says what already exists in both
+**Built on dewlab, 2026-09-06 — see §12 at the end for what was decided
+and how it differs from the design below.** The rest of this note is the
+design as it was written before Josh answered its questions; §9's list is
+kept as the record of what was asked. The note says what already exists in both
 repositories to build on, what a page can observe without any new
 plumbing, what the authoring surface could look like in markdown, how the
 same idea lands on dewstack's three cell kinds, where to try it first, and
@@ -692,3 +695,62 @@ that stay open. OK's two thresholds and its misconception match, as
 suffix, as `expect:`. And from all of them, the thing to refuse: a hint
 that fires on the first failure, costs the reader anything, or ends at
 the answer.
+
+---
+
+## 12. What was decided, and what was built
+
+Josh answered §9 the same day, in two rounds. What changed from the design
+above, then what shipped (DECISIONS_LOG.md 7.135).
+
+**The authoring surface is a fence, not two HTML attributes.** Josh: "the
+way you wrote that in markdown involves a lot of HTML, is there a nicer way
+of doing that?" There is: a ```` ```hint ```` fence, with `for:`, `after:`
+and `title:` as optional header lines in the shape the exec cell already
+uses, defaulting to the cell above, `5 errors`, and *Let's slow down a
+moment…*. It also survives the Milkdown editor, which §4's option (C)
+would not have. Both trigger spellings are accepted — `5 errors` and
+`errors:5` — and canonicalised to the second.
+
+**The default is five errors, not three identical ones.** `same-errors`,
+`unchanged`, `runs`, `check-fails` and `minutes` are all there for an
+author to reach for.
+
+**`expect:` shipped in the first build**, on the cell header, evaluated by
+Python after each run and reported back; Josh: "even having text there
+would be a win for a student", and the win costs four lines.
+
+**Nothing is cleared by success.** Josh: "I don't see why success needs to
+hide hints?" A shown hint stays. The cell's Reset keeps the counters. Two
+Settings rows: hints on or off (default on), and whether Restart Python
+hides them (default keep).
+
+**Counters persist in the saved-work record**, so a reload and the
+downloaded series keep them and the export carries them.
+
+**A marker on the cell's bar** as well as the live-region sentence: a dot,
+gone when the fold is opened.
+
+**The first stage asks.** Not a habits list of commands; questions — what
+did you expect, what does the last line name, which line is it pointing at,
+what would the smallest input be. The style guide's §3 subsection and
+`docs/WRITING_TUTORIALS.md` carry this.
+
+**Practice pages are left as they are** for now; the labelled-check binding
+(§6) is a later piece. The four first tutorials are the two computational
+methods pages named in §8 and two FOOP pages, `the-moves-you-already-know`
+and `testing-what-a-class-does`.
+
+**One thing found on the way.** Python-Markdown treats a `<details>` block
+as raw HTML to its closing tag, so the hand-written `dl-hint` and
+`dl-answer` folds on the practice pages have been shipping their numbered
+steps and backticks as literal text, not lists and `<code>`. The `hint`
+fence converts its body on its own (`render_staged_hint()`), so it does
+not share the problem; the existing folds do. A pass that converts fold
+bodies at build time is a separate, small change worth making.
+
+**dewstack** stays as designed in its own note, not yet built: Josh, "I am
+more concerned about it for python cells, but yes a makes sense."
+
+**What §13 asked about the run report** was decided (a): `run_cell_report()`
+returns a JSON report; `run_cell()` keeps its boolean for dewmini.
