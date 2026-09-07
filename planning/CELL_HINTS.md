@@ -741,13 +741,16 @@ what would the smallest input be. The style guide's §3 subsection and
 methods pages named in §8 and two FOOP pages, `the-moves-you-already-know`
 and `testing-what-a-class-does`.
 
-**One thing found on the way.** Python-Markdown treats a `<details>` block
-as raw HTML to its closing tag, so the hand-written `dl-hint` and
-`dl-answer` folds on the practice pages have been shipping their numbered
-steps and backticks as literal text, not lists and `<code>`. The `hint`
-fence converts its body on its own (`render_staged_hint()`), so it does
-not share the problem; the existing folds do. A pass that converts fold
-bodies at build time is a separate, small change worth making.
+**One thing found on the way, now fixed.** Python-Markdown treats a
+`<details>` block as raw HTML to its closing tag, so the hand-written
+`dl-hint` and `dl-answer` folds on the practice pages had been shipping
+their numbered steps and backticks as literal text, not lists and
+`<code>`. The `hint` fence converts its body on its own
+(`render_staged_hint()`), so it never shared the problem; the existing
+folds did. `convert_fold_bodies()` in `build.py` now runs a fold's body
+through `to_html()` on its own, the same way, right after the page's main
+markdown conversion and before place_hints() sees it — DECISIONS_LOG.md
+7.139.
 
 **dewstack** stays as designed in its own note, not yet built: Josh, "I am
 more concerned about it for python cells, but yes a makes sense."

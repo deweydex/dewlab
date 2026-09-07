@@ -6859,3 +6859,34 @@ shared `page` fixture (`tests/e2e/conftest.py`). Confirmed with 4
 consecutive clean runs of the fixed test alone and the whole file (38
 tests) green; full unit suite unaffected (`page.problems` had exactly one
 reader).*
+
+**7.139 — The hand-written `dl-hint`/`dl-answer` folds now convert their
+own markdown.** `planning/CELL_HINTS.md` §12 flagged this while building
+the staged-hint fence and left it for later: Josh, "let's fix that bug."
+
+Python-Markdown treats a `<details>` block as raw HTML through to its
+closing tag, so every practice page's hand-written `dl-hint` and
+`dl-answer` folds had been shipping their numbered steps and
+backtick-wrapped code as literal text — no `<ol>`, no `<code>` — while the
+`hint` fence's own folds, built the same session, were already correct
+because `render_staged_hint()` converts its body separately before
+placing it. The fix follows that same shape: a new `convert_fold_bodies()`
+in `build.py`, run on the page right after its main markdown conversion
+and before `place_hints()` sees it, finds each hand-written
+`<details class="dl-hint">`/`<details class="dl-answer">` block with a new
+`FOLD_RE`, and runs its still-unconverted body through `to_html()` on its
+own — the same trick `extract_notes()` already uses for a pedagogical
+note's raw aside. The summary line and the class that styles the fold are
+left untouched; only the body between them is replaced. Timing is what
+keeps this from colliding with a staged hint's own fold: `convert_fold_bodies()`
+runs while a staged hint is still just a placeholder comment, so its later
+`dl-hint-staged` class is never in scope for `FOLD_RE` to match.
+
+Confirmed against a real page rather than assumed: rebuilt the site and
+read `grid-of-numbers-practice.html`'s two folds directly — the numbered
+steps come out as `<ol><li>`, the backtick spans as `<code>`, the
+bold `**Think about:**` as `<strong>`.
+
+*Cost to change: one regex (`FOLD_RE`) and one function
+(`convert_fold_bodies()`) in `build.py`, one call added to `load()`.
+Full unit suite and a fresh full-site build confirmed clean.*

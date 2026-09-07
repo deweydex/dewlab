@@ -168,6 +168,18 @@ DETAILS_RE = re.compile(r"<details\b[^>]*>", re.IGNORECASE)
 # answer. Both are styled from their class, so a fold without one renders as a
 # bare browser triangle in the middle of the prose.
 FOLD_CLASSES = ("dl-hint", "dl-answer")
+# A hand-written fold's own body, matched against the page *before* the main
+# markdown conversion has run — see convert_fold_bodies()'s own comment for
+# why. Only the plain `dl-hint`/`dl-answer` forms authors actually write are
+# matched; a staged hint's `dl-hint-staged` class does not exist yet at this
+# point in the pipeline (place_hints() runs after), so there is nothing here
+# for it to clash with.
+FOLD_RE = re.compile(
+    r'(?P<open><details class="(?:dl-hint|dl-answer)">\s*<summary>[^<]*</summary>)'
+    r"\s*(?P<body>.*?)\s*"
+    r"(?P<close></details>)",
+    re.DOTALL,
+)
 # A pedagogical note (planning/SIDEBAR_CONTENT.md §3): an HTML aside, same
 # trick as a fold, but pulled out of the body entirely rather than staying
 # inline — extract_notes() removes what this matches.
@@ -912,6 +924,26 @@ def to_html(body: str) -> tuple[str, list]:
     converter = markdown.Markdown(extensions=["extra", "sane_lists", "toc"])
     html_out = converter.convert(body)
     return html_out, list(getattr(converter, "toc_tokens", []))
+
+
+def convert_fold_bodies(page_html: str) -> str:
+    """Convert the markdown inside a hand-written `dl-hint`/`dl-answer` fold.
+
+    Python-Markdown treats a `<details>` block as raw HTML through to its
+    closing tag — the same behaviour extract_notes()'s own comment describes
+    — so a fold's numbered steps and backtick code would otherwise reach the
+    page as literal text rather than a real list and `<code>`. Converting the
+    body on its own, the same way render_staged_hint() already does for a
+    ```hint fence, fixes that without touching the summary line or the class
+    that styles the fold. Run against `page_html` straight out of to_html():
+    a fold's body is still the untouched source text at that point, exactly
+    what to_html() needs to convert it properly.
+    """
+    def one(match: re.Match) -> str:
+        body_html, _ = to_html(match.group("body"))
+        return f'{match.group("open")}\n{body_html}\n{match.group("close")}'
+
+    return FOLD_RE.sub(one, page_html)
 
 
 def place_blocks(
@@ -2611,6 +2643,7 @@ def load(path: Path) -> Tutorial:
     stripped, maths = extract_math(stripped)
     stripped = loosen_tight_lists(stripped)
     converted, toc = to_html(stripped)
+    converted = convert_fold_bodies(converted)
     converted = place_hints(converted, hints, maths)
     page = f"{meta.get('module', '')}/{meta.get('slug', '')}"
     body_html = place_blocks(converted, cells, blocks, maths, page, str(meta.get("version", "")))
