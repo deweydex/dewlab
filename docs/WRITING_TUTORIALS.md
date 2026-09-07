@@ -193,6 +193,29 @@ has not defined is fine. The reader never sees the expression, and it
 never affects the run itself. A `check()` in the cell does the same job
 for the `failed checks` signal.
 
+A cell may also carry a `name:` line, a short label shown beside its
+identity pill — a handle a reader can point at ("the `filter-evening`
+cell") instead of its number, and what a traceback names the cell in
+place of its own id, once given:
+
+````markdown
+```python exec
+id: filter-evening
+name: filter-evening
+readings[readings["evening"] > 14]
+```
+````
+
+Optional, and most cells don't need one. Keep it short — it sits beside
+a small pill, not in a sentence — and give it no `=` in it: a line at
+the top of a cell shaped like `word: value` is read as a header line,
+the same way `id:`/`hint:`/`expect:` already are, so `name: str = "Ada"`
+as a cell's own first line of code would be misread as a `name:` header
+rather than run. Writing `=` in the label itself is what tells the build
+this was never a header — a cell named `total = value` gets read as
+code, not as a name, so keep the label to a plain phrase or a variable's
+own bare name, the way `filter-evening` is above.
+
 **What each stage is for.** The first fold asks. It is a question about
 what the reader can see and what they expected, not an instruction: *What
 did you expect this line to print? What does the last line of the error

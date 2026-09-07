@@ -6758,3 +6758,54 @@ during this pass and were left alone rather than folded in here —
 `test_phase0_golden_path.py::test_python_started_with_no_console_errors`
 — neither touches code this entry changed, both worth their own look.
 PR: deweydex/dewlab#163.*
+
+**7.137 — Two real bugs in 7.136, caught by a second review after it
+merged.** Josh asked for another pass before trusting it; a fresh,
+adversarial read of the merged diff (rather than of the PR description)
+found what the first pass missed.
+
+**A cell's own code could be misread as its `name:` header.** `name`
+joined `id`/`hint`/`expect` in `HEADER_RE`'s alternation, matched against
+a cell's first lines regardless of whether they're actually a header —
+the same shape a type-annotated assignment has. `name: str = "Ada"` as a
+cell's own first line, entirely ordinary Python, was silently stripped
+out of the code and stored as a garbage pill label instead of running;
+`print(name)` on the next line then raised `NameError`. `id:`/`hint:`/
+`expect:` share the same theoretical ambiguity but never collide with
+real code in practice — `hint`/`expect` values are prose or expressions
+(genuinely used with `==`), and nobody accidentally writes a bare
+`id: ...` assignment. `name` is different: a bare identifier this common
+in ordinary code was always going to collide, once real authors started
+using it. Fixed the only way that doesn't touch the `key: value` header
+shape itself: a `name:` line whose value contains `=` was never a
+header — a real name is a short label, never an expression — so
+`parse_cell()` now checks for that one character before consuming it,
+and reads the rest as code instead.
+
+**`cell_filename()`'s own docstring claimed something the code didn't
+do.** It said a label only changes what a reader *sees*, and that an
+id "still decides `linecache`'s key" — false: the function returns
+`label or cell_id` as the whole filename, so a given label replaces the
+id everywhere, `linecache`'s key included. Unlike an id, a label isn't
+guaranteed unique — two dewmini cells can share a name — so two
+same-named cells do share one `linecache` entry. Traced through how this
+module actually runs a cell rather than assuming: `_register_source()`
+always re-registers a cell's own source immediately before it runs, and
+`_format_exception()` always formats its traceback immediately after,
+before any other cell gets a turn — so the entry a run's own traceback
+reads back is always its own, collision or not. The docstring now says
+this honestly instead of the wrong, stronger uniqueness claim; the code
+was already correct, only the comment was lying about it.
+
+Neither bug shipped to a student: the first only bites a tutorial author
+previewing their own build (the pill goes wrong, the cell doesn't run —
+both immediately visible), and the second never manifested given how the
+module runs today, only misdescribed itself for whoever read the
+docstring next. `docs/WRITING_TUTORIALS.md` also never documented `name:`
+at all — fixed alongside, with the same `=` rule spelled out for authors.
+
+*Cost to change: one `if` in `parse_cell()` (`build.py`), two corrected
+docstrings/doc passages (`tutorial_tools.py`, `planning/CELL_IDENTITY.md`,
+`docs/tutorial-tools-explained.md`), one new documented section in
+`docs/WRITING_TUTORIALS.md`, two new tests in `tests/test_build.py`. Full
+unit suite green.*

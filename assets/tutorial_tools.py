@@ -550,10 +550,17 @@ def cell_filename(cell_id: str, label: str | None = None) -> str:
     Per cell rather than one shared name, for two reasons: a traceback then
     says which cell it came from, and each cell's source can be registered in
     `linecache` under its own key without a stale entry from another cell
-    surfacing the wrong line. `label`, when given, replaces `cell_id` in what
-    a reader actually sees — the id itself still decides `linecache`'s key
-    and `_is_user_frame`'s prefix check, so nothing downstream needs to know
-    a label was ever involved.
+    surfacing the wrong line. `label`, when given, replaces `cell_id`
+    entirely, in `linecache`'s own key as well as what a reader sees —
+    unlike an id, a label is not guaranteed unique (a reader can name two
+    dewmini cells the same thing), so two same-named cells do share one
+    `linecache` entry. That's harmless for either cell's own run: this
+    module always re-registers a cell's source immediately before running
+    it and formats its traceback immediately after, before any other cell
+    gets a turn, so the entry a run's own traceback reads back is always
+    its own. It would only surface a wrong line for a traceback formatted
+    well after the fact, from a stored exception object — nothing in this
+    module does that today.
     """
     return f"{_CELL_FILENAME_PREFIX}{label or cell_id}>"
 
