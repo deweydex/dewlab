@@ -6726,6 +6726,17 @@ tutorial page's authored cells, and a genuinely editable `<input>` next
 to the pill on every dewmini cell, since a dewmini cell is already the
 reader's own.
 
+Two real bugs turned up in the process, both in code this entry's own
+work never touched but only now had a reason to exercise end to end: a
+reader's own custom cell threw the moment it was run, because
+`noteAttempt()`/`maybeRevealHint()` (7.135's own staged-hints counters)
+read `cell.attempts`/`cell.hints` unconditionally and a custom cell had
+never been given either; and `applyOutputEvent()`, the worker path's own
+output router, searched only `cells`, so a custom cell's own output was
+silently dropped on the floor the whole time staged hints has existed.
+Both fixed in the same pass, `cells.find(...) || customCells.find(...)`
+now the same pattern `downloadAsIpynb()` already used.
+
 *Cost to change: `render_cell()` rewritten to three rows
 (`.dl-cell-head`/`.dl-cell-body-row`/`.dl-cell-footbar`), mirrored by
 hand in `createCustomCellElement()`; a `label` parameter through
@@ -6736,5 +6747,14 @@ Texture machinery; `setBtnLabel()`/`getBtnLabel()` helpers in each file
 (markup, not a shared component, same "port in shape" convention as
 `sql-cell.js`). `tests/test_build.py`'s renamed footbar-order test, five
 e2e tests' button-label selectors, `assets/vendor/standalone.bundle.js`
-rebuilt. Full unit suite green; e2e verification in progress at the time
-of this entry.*
+rebuilt. Full unit suite green; `tests/e2e/test_custom_cells.py` (25),
+`test_dewmini_workbench.py` (~110), `test_cell_run_menu.py`,
+`test_cell_collapse_duplicate.py`, `test_stop_button.py`,
+`test_autocomplete.py`, `test_saved_progress.py`,
+`test_progress_badges.py` all green against a real Chromium and a
+self-hosted Pyodide. Two unrelated, pre-existing e2e failures surfaced
+during this pass and were left alone rather than folded in here —
+`test_cell_hints_staged.py::test_opening_the_fold_clears_the_marker` and
+`test_phase0_golden_path.py::test_python_started_with_no_console_errors`
+— neither touches code this entry changed, both worth their own look.
+PR: deweydex/dewlab#163.*
