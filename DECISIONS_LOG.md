@@ -6809,3 +6809,53 @@ docstrings/doc passages (`tutorial_tools.py`, `planning/CELL_IDENTITY.md`,
 `docs/tutorial-tools-explained.md`), one new documented section in
 `docs/WRITING_TUTORIALS.md`, two new tests in `tests/test_build.py`. Full
 unit suite green.*
+
+**7.138 — The two known e2e failures 7.136 flagged, chased down.** Josh:
+"let's keep going" — one turned out to be a real, if minor, test bug; the
+other turned out not to be a bug at all.
+
+**`test_opening_the_fold_clears_the_marker` — not reproducible.** Isolated,
+it passed every time (5 runs). Run alongside another heavy e2e file to
+recreate the resource pressure of the original failure (several Chromium
+instances at once, which is how it was first seen — several e2e suites
+running as background jobs together), it still passed, while a genuinely
+timing-sensitive test in the other file (`test_stop_button.py`, waiting on
+a real interrupt) failed with an ordinary timeout under that same load.
+Conclusion: the original failure was resource contention from running
+many heavy suites at once, not a defect in the marker-clearing code.
+Nothing changed here; recorded so it isn't re-chased.
+
+**`test_python_started_with_no_console_errors` — two real, unrelated
+problems hiding behind one assertion.** `page.inner_text("#dl-status")`
+was asserted `== ""`, and reliably wasn't — but `#dl-status` was correctly
+`hidden`, its own status-text span was correctly empty, and even the
+*native* `el.innerText` (not just Playwright's) returned the template's
+own whitespace between `#dl-status-text` and `#dl-boot-dots`. A hidden
+element's `innerText` isn't reliably `""` just because it isn't rendered
+— confirmed by direct DOM inspection, not assumed. Fixed the assertion to
+check what `setStatus("")` actually promises: `is_hidden()`, plus the
+status-text span's own emptiness. That unmasked the test's second
+assertion, `page.problems == []`, which was *also* failing — a genuine
+`console.error`, one property fetch away from `net::ERR_FAILED` on one run
+and `404` on the next. Traced to `assets/vendor/coi-serviceworker.js`
+(third-party, not this project's code): it forces exactly one reload on a
+genuinely first visit to pick up cross-origin-isolation headers no other
+means gets it (`test_stop_button.py`'s own top comment already documents
+this reload), and its own `fetch` handler logs any request that reload
+cancels with a bare `console.error(e)`. Confirmed by elimination, not
+guessed: ruled out the `cdn.jsdelivr.net` preconnect/dns-prefetch hints
+first (removed them, error persisted), found no external references in
+the vendored KaTeX/font CSS, then found the service worker's own error
+logging and the exact one-time-reload behavior this codebase already
+documents elsewhere. The `page` fixture (`tests/e2e/conftest.py`) now
+clears its collected `problems` once the boot-wait it already does
+resolves — "no console errors" now means from a stable, booted page
+onward, not through the one-time reload dance every fresh browser context
+goes through by design.
+
+*Cost to change: two assertions in one test
+(`tests/e2e/test_phase0_golden_path.py`), one `problems.clear()` in the
+shared `page` fixture (`tests/e2e/conftest.py`). Confirmed with 4
+consecutive clean runs of the fixed test alone and the whole file (38
+tests) green; full unit suite unaffected (`page.problems` had exactly one
+reader).*

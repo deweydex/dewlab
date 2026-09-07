@@ -81,7 +81,15 @@ def test_every_exec_cell_became_an_editor_with_line_numbers(page):
 
 
 def test_python_started_with_no_console_errors(page):
-    assert page.inner_text("#dl-status") == ""
+    # #dl-status is hidden (setStatus("") on a clean boot sets both) — but
+    # not inner_text() to check that: the template's own whitespace between
+    # #dl-status-text and #dl-boot-dots is real text content, and a hidden
+    # element's innerText isn't reliably "" in every engine (Chromium
+    # headless included) just because it isn't rendered. is_hidden() and
+    # the status text's own emptiness are what setStatus("") actually
+    # promises, and what a screen reader's aria-live region would announce.
+    assert page.is_hidden("#dl-status")
+    assert page.inner_text("#dl-status-text") == ""
     assert page.problems == []
 
 
