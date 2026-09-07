@@ -37,7 +37,7 @@ def run(page):
         timeout=240_000,
     )
     page.wait_for_function(
-        f"document.querySelector(\".dl-cell[data-cell-id='{CELL}'] .dl-btn-run\").textContent === 'Run'",
+        f"document.querySelector(\".dl-cell[data-cell-id='{CELL}'] .dl-btn-run .dl-btn-label\").textContent === 'Run'",
         timeout=240_000,
     )
 

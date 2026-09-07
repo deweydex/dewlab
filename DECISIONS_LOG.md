@@ -6695,3 +6695,46 @@ function in `tutorial_tools.py`; ~250 lines in `tutorial-runtime.js`, all
 in one block after `executeCell()`; two Settings rows; a CSS block. The
 grammar is a table (`TRIGGER_KEYS`). Verified in a real Chromium against a
 self-hosted Pyodide: `tests/e2e/test_cell_hints_staged.py`.*
+
+**7.136 — A tutorial page's Python cell and a dewmini cell, made to match.**
+Josh, 2026-09-07, comparing the two directly: dewmini is "the direction we
+want to go," and a single cell's own chrome and behaviour should feel the
+same wherever a student meets it, so "students expectations are not
+violated just because they switch to the other environment" — not the
+whole platform, just one Python cell. `planning/CELL_IDENTITY.md` §9 is
+the design note and records the comparison; this entry records what was
+built. Four mismatches, plus two things asked for alongside them: Run sat
+after the output on a tutorial page and between the code and the output
+in dewmini (`render_cell()`'s three rows reordered to match, and
+`createCustomCellElement()`'s own hand-built copy along with it); Reset
+(destroys typed code) and dewmini's Clear (only clears output) looked
+like the same button doing different things, now a clockwise ↻ with a
+red-ish border against dewmini's unchanged counterclockwise ↺; a tutorial
+page's buttons were plain words and dewmini's were bare icons, now both
+carry an icon and a label (`icon_button()`/`iconButtonHtml()`/
+`iconButton()`, one `.dl-btn-icon`/`.dl-btn-label` pair regardless of
+which page built the button) behind one new shared Settings row, "Cell
+buttons" — icons, text, or both — riding the existing Texture panel's
+`"dewlab:texture"` key and generic wiring rather than a setting of its
+own; and dewmini's own traceback named a cell by its internal id, now by
+whatever `label` `run_cell()` (`tutorial_tools.py`, threaded through
+`pyodide-engine.js`/`pyodide-worker.js`) was given — a reader's own name
+or `Cell N`, never the id. Alongside those: the identity pill's position
+was already the same on both pages; what was missing was a name beside
+it, "a handle to hold on to" — `name:`, a fourth cell header line, on a
+tutorial page's authored cells, and a genuinely editable `<input>` next
+to the pill on every dewmini cell, since a dewmini cell is already the
+reader's own.
+
+*Cost to change: `render_cell()` rewritten to three rows
+(`.dl-cell-head`/`.dl-cell-body-row`/`.dl-cell-footbar`), mirrored by
+hand in `createCustomCellElement()`; a `label` parameter through
+`run_cell()`/`run_cell_report()`/`_begin()`/`_CellContext`/
+`cell_filename()` and both JS engines; a `name`/`nameEl` field on both
+cell models; one Settings row shared verbatim by both pages' existing
+Texture machinery; `setBtnLabel()`/`getBtnLabel()` helpers in each file
+(markup, not a shared component, same "port in shape" convention as
+`sql-cell.js`). `tests/test_build.py`'s renamed footbar-order test, five
+e2e tests' button-label selectors, `assets/vendor/standalone.bundle.js`
+rebuilt. Full unit suite green; e2e verification in progress at the time
+of this entry.*

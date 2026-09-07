@@ -35,7 +35,7 @@ def run_cell(page, cell_id: str):
     page.click(f".dl-cell[data-cell-id='{cell_id}'] .dl-btn-run")
     page.wait_for_function(
         "sel => document.querySelector(sel).textContent === 'Run'",
-        arg=f".dl-cell[data-cell-id='{cell_id}'] .dl-btn-run",
+        arg=f".dl-cell[data-cell-id='{cell_id}'] .dl-btn-run .dl-btn-label",
         timeout=20_000,
     )
 
