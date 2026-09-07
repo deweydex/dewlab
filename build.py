@@ -121,7 +121,7 @@ MOVED_FRONTMATTER = {
 # ordinary illustrative code and markdown renders it as it always would.
 FENCE_RE = re.compile(r"^(?P<indent> *)```(?P<info>[^\n]*)\n(?P<body>.*?)^ *```[ \t]*$",
                       re.MULTILINE | re.DOTALL)
-HEADER_RE = re.compile(r"^\s*(id|hint|expect)\s*:\s*(.*)$")
+HEADER_RE = re.compile(r"^\s*(id|hint|expect|name)\s*:\s*(.*)$")
 # ```hint — a staged hint (planning/CELL_HINTS.md): a fold that stays hidden
 # until the cell it belongs to has been run, and failed, some number of
 # times. Its header lines follow the exec cell's own `key: value` shape, so
@@ -199,6 +199,11 @@ class Cell:
     # (planning/CELL_HINTS.md §3). Once it holds, no further staged hint
     # appears for the cell. None when the cell has no such line.
     expect: str | None = None
+    # A short, optional label shown beside the cell's pill — planning/
+    # CELL_IDENTITY.md's parity pass with dewmini, where a reader's own
+    # cells can carry the same thing. Also what a traceback's file line
+    # calls this cell, in place of its id, once one is given.
+    name: str | None = None
 
 
 @dataclass
@@ -476,7 +481,8 @@ def expand_includes(code: str, path: Path) -> str:
 
 
 def parse_cell(body: str, path: Path) -> Cell:
-    """Read `id:` and optional `hint:` off the top of an exec fence."""
+    """Read `id:` and optional `hint:`/`expect:`/`name:` off the top of an
+    exec fence."""
     lines = body.split("\n")
     header: dict[str, str] = {}
     while lines:
@@ -493,6 +499,7 @@ def parse_cell(body: str, path: Path) -> Cell:
         hint=header.get("hint") or None,
         code=code,
         expect=header.get("expect") or None,
+        name=header.get("name") or None,
     )
 
 
@@ -690,15 +697,38 @@ def extract_math(body: str, found: list[Math] | None = None) -> tuple[str, list[
 # ----------------------------------------------------------------- rendering
 
 
+def icon_button(css_class: str, icon: str, label: str, **attrs: str) -> str:
+    """A button that can read as icon-only, label-only, or both, at the
+    reader's own choice (Settings → "Cell buttons", `dewlab:button-labels`)
+    — one shared shape for every cell-chrome button on both this page and
+    dewmini's own `iconButton()` (`compose/dewmini.js`), so a setting
+    flipped on one means the same thing on both. `icon` is markup already
+    (an entity or a nested span), never escaped again here; `label` is
+    plain text, escaped once. CSS hides whichever span the setting says
+    not to show; nothing here decides that.
+    """
+    attr_str = "".join(f' {key}="{html.escape(str(value), quote=True)}"' for key, value in attrs.items())
+    return (
+        f'<button type="button" class="dl-btn {css_class}"{attr_str}>'
+        f'<span class="dl-btn-icon" aria-hidden="true">{icon}</span>'
+        f'<span class="dl-btn-label">{html.escape(label)}</span>'
+        "</button>"
+    )
+
+
 def render_cell(cell: Cell, number: int, page: str = "", version: str = "") -> str:
     """The markup the runtime binds an editor, a Run button and an output area to.
 
-    The bar sits below the editor and output, not above them — a reader's
-    eye lands on the code first, the controls for it after, the same order
-    a notebook cell is actually used in. The hint, when open, is a normal
-    block after the bar rather than a floating popover: expanding it grows
-    the cell and pushes whatever comes after it down the page, rather than
-    covering the editor or output it might otherwise float over.
+    Three rows, in the order a reader's eye actually uses them: a header
+    (identity — the pill, an optional name, Duplicate) above the code;
+    the code itself, with its collapse triangle; a footer (Run, Reset,
+    the run-line, the "Run above/below" menu) between the code and
+    where its output will land, so Run sits where a reader's hand
+    already is, not back above everything they just wrote. This is
+    dewmini's own shape (`compose/dewmini.js`'s `createCellElement()`),
+    matched here (planning/CELL_IDENTITY.md's parity pass) — a reader
+    moving from one page to the other finds the pill, and Run, in the
+    same place either way.
 
     `number` is the cell's plain 1-based position on the page (its index
     in `place_blocks()`'s own `cells` list, the same order the page reads
@@ -710,12 +740,22 @@ def render_cell(cell: Cell, number: int, page: str = "", version: str = "") -> s
     the same `--dl-type-python` token dewmini's own pill uses
     (`planning/CELL_IDENTITY.md` §2, built for this page in 7.113). No
     drag handle: authored cells aren't reorderable, so there's nothing
-    for one to do.
+    for one to do. `cell.name`, when an author gives one, sits beside the
+    pill — the word a reader can point at ("the `filter-evening` cell")
+    instead of a number, the same idea dewmini lets a reader give their
+    own cells.
 
     The run-line span and the "Run above/below" menu are empty shells
     here — tutorial-runtime.js fills and wires them the same way it
     already owns everything else about a live cell, the same treatment
     dewmini gives a Python cell (DECISIONS_LOG.md 7.105, 7.106, 7.110).
+
+    Reset is not Clear: it puts this cell's *starter code* back, throwing
+    away whatever the reader typed, because an authored cell has a fixed
+    starting point to return to — dewmini's own cells have none, so its
+    matching button only clears output and never touches code. Different
+    on purpose, so it gets a different icon, not just a different label
+    that icon-only mode would hide.
 
     The editor sits in a `.dl-cell-body-row`, beside a collapse triangle
     — every cell type gets one in dewmini (`planning/CELL_IDENTITY.md`
@@ -735,17 +775,14 @@ def render_cell(cell: Cell, number: int, page: str = "", version: str = "") -> s
 
     The report icon (DECISIONS_LOG.md Phase 8) is the same toggle
     pattern as the hint icon right beside it — a small circular button
-    that opens a plain block after the bar, not a floating popover —
-    deliberately not a fourth always-visible text button next to
-    duplicate/reset/run: `.dl-cell-more`'s own comment already explains
-    why this bar avoids crowding itself with one-off actions. `page` and
-    `version` are build-time constants, the same as the footer's; `code`
-    and `output` are not knowable until the reader has actually typed
-    and run something, so those two fields stay blank in this markup and
-    are filled in by `tutorial-runtime.js` at the moment the panel opens
-    — see `updateCellReportLinks()` there. A custom cell (the reader's
-    own, not the tutorial's) gets none of this: there is nothing to
-    report about code nobody but the reader wrote.
+    that opens a plain block after the cell, not a floating popover.
+    `page` and `version` are build-time constants, the same as the
+    footer's; `code` and `output` are not knowable until the reader has
+    actually typed and run something, so those two fields stay blank in
+    this markup and are filled in by `tutorial-runtime.js` at the moment
+    the panel opens — see `updateCellReportLinks()` there. A custom cell
+    (the reader's own, not the tutorial's) gets none of this: there is
+    nothing to report about code nobody but the reader wrote.
     """
     safe_id = html.escape(cell.id, quote=True)
     hint_markup = ""
@@ -775,8 +812,25 @@ def render_cell(cell: Cell, number: int, page: str = "", version: str = "") -> s
             f"{report_doors_links(page, version, cell=cell.id)}"
             "</div>"
         )
+    name_markup = ""
+    if cell.name:
+        name_markup = f'<span class="dl-cell-name">{html.escape(cell.name)}</span>'
     return (
         f'<div class="dl-cell" data-cell-id="{safe_id}">'
+        '<div class="dl-cell-head">'
+        '<span class="dl-cell-pill">'
+        f'<span class="dl-cell-pill-num">Cell {number}</span>'
+        '<span class="dl-cell-pill-type" data-type="python">Python</span>'
+        "</span>"
+        f"{name_markup}"
+        '<span class="dl-cell-spacer"></span>'
+        '<div class="dl-cell-header-end">'
+        f"{hint_markup}"
+        f"{report_markup}"
+        + icon_button("dl-btn-duplicate", "&#10697;", "Duplicate",
+                      title="Copy this cell into your own, right below it")
+        + "</div>"
+        "</div>"
         '<div class="dl-cell-body-row">'
         '<div class="dl-cell-collapse-col">'
         '<button type="button" class="dl-collapse-toggle" aria-expanded="true" '
@@ -787,33 +841,27 @@ def render_cell(cell: Cell, number: int, page: str = "", version: str = "") -> s
         '<div class="dl-cell-content"><div class="dl-editor"></div></div>'
         '<div class="dl-cell-collapsed-summary" role="button" tabindex="0" hidden></div>'
         "</div>"
-        '<div class="dl-output"></div>'
-        '<div class="dl-cell-bar">'
-        '<span class="dl-cell-pill">'
-        f'<span class="dl-cell-pill-num">Cell {number}</span>'
-        '<span class="dl-cell-pill-type" data-type="python">Python</span>'
-        "</span>"
-        '<span class="dl-cell-runline"></span>'
-        '<span class="dl-cell-spacer"></span>'
-        '<span class="dl-hint-marker" hidden aria-hidden="true" '
-        'title="A hint has appeared below this cell"></span>'
-        f"{hint_markup}"
-        f"{report_markup}"
-        '<button type="button" class="dl-btn dl-btn-duplicate" '
-        'title="Copy this cell into your own, right below it">duplicate</button>'
-        '<button type="button" class="dl-btn dl-btn-reset">reset</button>'
-        '<div class="dl-cell-more">'
-        '<button type="button" class="dl-btn dl-btn-more" aria-haspopup="true" '
-        'aria-expanded="false" title="More ways to run this cell">&#8943;</button>'
-        '<div class="dl-cell-run-menu" role="menu" hidden>'
+        '<div class="dl-cell-footbar">'
+        + icon_button("dl-btn-run", "&#9654;", "Loading…", disabled="disabled")
+        + icon_button("dl-btn-reset", "&#8635;", "Reset to starter",
+                      title="Put this cell's starter code back, and clear its output")
+        + '<div class="dl-cell-more">'
+        + icon_button("dl-btn-more", "&#8943;", "More",
+                      **{"aria-haspopup": "true", "aria-expanded": "false",
+                         "title": "More ways to run this cell"})
+        + '<div class="dl-cell-run-menu" role="menu" hidden>'
         '<button type="button" class="dl-cell-run-menu-item" role="menuitem" '
         'data-run-menu="above">Run this cell and all above</button>'
         '<button type="button" class="dl-cell-run-menu-item" role="menuitem" '
         'data-run-menu="below">Run this cell and all below</button>'
         "</div>"
         "</div>"
-        '<button type="button" class="dl-btn dl-btn-run" disabled>…</button>'
+        '<span class="dl-cell-spacer"></span>'
+        '<span class="dl-hint-marker" hidden aria-hidden="true" '
+        'title="A hint has appeared below this cell"></span>'
+        '<span class="dl-cell-runline"></span>'
         "</div>"
+        '<div class="dl-output"></div>'
         f"{hint_text}"
         f"{report_box}"
         "</div>"
@@ -2910,6 +2958,7 @@ def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "",
         "cells": [
             {"id": c.id, "hint": c.hint, "code": c.code}
             | ({"expect": c.expect} if c.expect else {})
+            | ({"name": c.name} if c.name else {})
             for c in tutorial.cells
         ],
     }

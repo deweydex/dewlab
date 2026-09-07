@@ -53,7 +53,7 @@ def test_stopping_a_genuine_infinite_loop(page):
     page.keyboard.insert_text("\ncounter = 0\nwhile True:\n    counter += 1")
 
     btn = run_button(page, "plain-python")
-    btn_selector = js_string(".dl-cell[data-cell-id='plain-python'] .dl-btn-run")
+    btn_selector = js_string(".dl-cell[data-cell-id='plain-python'] .dl-btn-run .dl-btn-label")
     btn.click()
     page.wait_for_function(
         f"document.querySelector({btn_selector}).textContent === 'Stop'",
@@ -70,7 +70,7 @@ def test_stopping_a_genuine_infinite_loop(page):
         f"document.querySelector({js_string(output_selector('plain-python'))}).innerText.includes('Stopped.')",
         timeout=20_000,
     )
-    assert btn.inner_text() == "Run"
+    assert btn.locator(".dl-btn-label").inner_text() == "Run"
     assert not btn.is_disabled()
 
 
@@ -85,7 +85,7 @@ def test_a_stopped_cell_can_be_run_again(page):
     page.keyboard.insert_text("\nwhile True:\n    pass")
 
     btn = run_button(page, "plain-python")
-    btn_selector = js_string(".dl-cell[data-cell-id='plain-python'] .dl-btn-run")
+    btn_selector = js_string(".dl-cell[data-cell-id='plain-python'] .dl-btn-run .dl-btn-label")
     btn.click()
     page.wait_for_function(
         f"document.querySelector({btn_selector}).textContent === 'Stop'",

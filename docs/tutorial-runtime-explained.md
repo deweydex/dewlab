@@ -294,7 +294,7 @@ same chain. Custom cells got a Duplicate button too, `type` carried
 through so a text cell's own copy stays text.
 
 A rendered custom text cell goes quiet until touched (`.dl-cell-text`,
-`assets/tutorial-style.css`, DECISIONS_LOG.md 7.115): its `.dl-cell-bar`
+`assets/tutorial-style.css`, DECISIONS_LOG.md 7.115): its `.dl-cell-head`
 and `.dl-cell-collapse-col` sit at `opacity: 0; pointer-events: none`
 until a reader hovers or focuses the cell, so a rendered note reads like
 part of the page rather than a code widget sitting open among cells that
@@ -302,6 +302,73 @@ are meant to be run. Pure CSS, ported from `compose/dewmini-style.css`'s
 own `.dm-cell-text` rule — `:focus-within` already covers "actively
 editing" (focusing the textarea puts the whole cell in that state), so
 no JS class-toggling was needed on either side.
+
+## Head, body row, footbar: the last gap with dewmini's own cells
+
+Everything above ported dewmini's *content* (the pill, the run line,
+collapse, Duplicate) onto `build.py`'s existing `.dl-cell-head`/
+`.dl-cell-bar` shape without moving anything — that shape had Run sitting
+*after* both the editor and the output, where dewmini's own footbar sits
+*between* them. A reader who had just learned "Run is under the code" in
+dewmini found it somewhere else entirely on a tutorial page — one of a
+short list of small, real mismatches `planning/CELL_IDENTITY.md` §9
+catalogues and closes. `render_cell()` now emits three rows in the order
+dewmini's own cells already use — `.dl-cell-head` (identity: the pill, an
+optional `.dl-cell-name`, then Duplicate), `.dl-cell-body-row` (the
+collapse triangle and the editor), `.dl-cell-footbar` (Run, Reset, the
+run menu, the run line) — with `.dl-output` last. `createCustomCellElement()`
+here builds the same three rows by hand for a reader's own cells, since
+nothing in this file generates markup from `render_cell()` directly.
+
+Two things rode along with the move rather than needing one of their own:
+
+- **Reset and dewmini's Clear are now visibly different buttons, not just
+  differently-behaved ones behind the same look.** Reset here still puts
+  a cell's *code* back to its starter and throws away whatever a reader
+  typed; dewmini's own footbar button only clears a cell's *output*,
+  touching no code at all. They already did different things — what
+  changed is that `.dl-btn-reset` now carries its own icon (a clockwise
+  ↻) and a resting red-ish border (`tutorial-style.css`), deliberately
+  not dewmini's own counterclockwise ↺, so the two are never one glance
+  away from being confused for each other.
+- **A cell can carry a name.** `name:` is a fourth header line beside
+  `id:`/`hint:`/`expect:` (`HEADER_RE`, `Cell.name`, `build.py`), shown
+  in `.dl-cell-name` next to the pill — "a handle to hold on to" when a
+  reader wants to talk about a specific cell by something more than its
+  number. It also replaces the cell's own id in a traceback's file line
+  once given (`run_cell()`'s new `label` parameter, threaded through
+  `run_cell_report()`/`runCellMainThread()`/`runCellWorker()` here down
+  to `tutorial_tools.cell_filename()`), the same reasoning dewmini's own
+  `executeCell()` uses for its `Cell N` fallback.
+
+Every button built by `icon_button()` (`build.py`) or `iconButtonHtml()`
+(here) now carries a nested `.dl-btn-icon`/`.dl-btn-label` pair rather
+than bare text — not for its own sake, but so Settings' new "Cell
+buttons" row (`data-texture="buttons"`, `TEXTURE_DEFAULTS.buttons`,
+`applyTexture()`) can show icon, label, or both by toggling one
+`[data-button-labels]` attribute on `<html>` (`tutorial-style.css`) with
+no markup rewrite per mode. It rides the same generic `initTexture()`
+machinery every other Texture row already uses, so no new Settings
+wiring function was needed — only the row itself
+(`assets/shell.html#dl-settings-texture`) and the two lines in
+`applyTexture()` that set or clear the attribute. `setBtnLabel()`/
+`getBtnLabel()` here read or write a button's `.dl-btn-label` span
+directly, since setting `.textContent` on the button itself would erase
+its icon along with whatever text was there — every place that used to
+set a Run/Preview button's `.textContent` (`setRunnable()`,
+`setCellRunning()`/`clearCellRunning()`, the text cell's own
+`syncPreviewBtn()`) goes through one of these two now instead. The small,
+fixed-size badge buttons — the hint and report toggles, the collapse
+triangle — deliberately were not given this treatment: they have no
+dewmini counterpart to stay consistent with, and a text label would not
+fit their compact, circular shape.
+
+`compose/dewmini.js` carries the same three changes on its own side —
+`.dm-icon-reset-output` keeps its original counterclockwise icon rather
+than drifting to this file's clockwise one, every `.dm-icon-btn` gained
+the same `.dl-btn-icon`/`.dl-btn-label` pair via a `iconButton()` helper
+there, and a cell gained an editable `.dm-cell-name`/`.dl-cell-name`
+input beside its pill — see `docs/dewmini-js-explained.md` for that half.
 
 ---
 

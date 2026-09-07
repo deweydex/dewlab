@@ -85,7 +85,7 @@ class TestCollapse:
         page.click(".dl-cell[data-cell-id='plain-python'] .dl-btn-run")
         page.wait_for_function(
             "sel => document.querySelector(sel).textContent === 'Run'",
-            arg=".dl-cell[data-cell-id='plain-python'] .dl-btn-run",
+            arg=".dl-cell[data-cell-id='plain-python'] .dl-btn-run .dl-btn-label",
             timeout=20_000,
         )
         output_before = page.inner_text(".dl-cell[data-cell-id='plain-python'] .dl-output")

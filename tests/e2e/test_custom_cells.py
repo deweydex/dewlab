@@ -189,7 +189,7 @@ class TestAddingACustomCell:
 
         page.mouse.move(5, 5)
         page.wait_for_timeout(150)  # let the 0.1s opacity transition settle
-        bar = page.locator(".dl-cell-text .dl-cell-bar")
+        bar = page.locator(".dl-cell-text .dl-cell-head")
         assert bar.evaluate("el => getComputedStyle(el).opacity") == "0"
 
         page.hover(".dl-cell-text")
@@ -208,10 +208,10 @@ class TestAddingACustomCell:
         page.click(".dl-cell-text .dl-doc-editor")
         page.keyboard.type("Some notes")
         btn = page.locator(".dl-cell-text .dl-btn-preview")
-        assert btn.text_content() == "view"
+        assert btn.locator(".dl-btn-label").text_content() == "View"
         btn.click()
         assert page.eval_on_selector(".dl-cell-text .dl-doc-editor", "el => el.hidden") is True
-        assert btn.text_content() == "edit"
+        assert btn.locator(".dl-btn-label").text_content() == "Edit"
         btn.click()
         assert page.eval_on_selector(".dl-cell-text .dl-doc-editor", "el => el.hidden") is False
 
@@ -261,6 +261,20 @@ class TestAddingACustomCell:
         page.keyboard.type("print('from a custom cell')")
         page.click(".dl-cell-custom .dl-btn-run")
         page.wait_for_selector(".dl-cell-custom .dl-output .dl-stdout", timeout=120_000)
+        # scheduleCustomSave() debounces by AUTOSAVE_DELAY — the run finishing
+        # and the output actually landing in localStorage are two different
+        # moments, and reloading between them would lose the very output
+        # this test exists to check survives a reload.
+        page.wait_for_function(
+            """([key, text]) => {
+              const raw = localStorage.getItem(key);
+              if (!raw) return false;
+              const saved = JSON.parse(raw);
+              return saved.some((c) => (c.output || "").includes(text));
+            }""",
+            arg=[page.evaluate("globalThis.dewlab.customCellsKey()"), "from a custom cell"],
+            timeout=10_000,
+        )
 
         reload_and_wait(page)
         assert "from a custom cell" in page.inner_text(".dl-cell-custom .dl-output")
@@ -328,6 +342,7 @@ class TestSharingAndLoadingACustomCell:
             page.click("#dl-custom-cells-import")
         fc_info.value.set_files(str(shared_file))
         page.wait_for_selector(".dl-cell-custom", timeout=5_000)
+        wait_for_saved_count(page, 1)
         saved = custom_cells_storage(page)
         assert saved[0]["id"] != "custom-not-mine"
         assert saved[0]["id"].startswith("custom-")
@@ -343,6 +358,7 @@ class TestSharingAndLoadingACustomCell:
             page.click("#dl-custom-cells-import")
         fc_info.value.set_files(str(shared_file))
         page.wait_for_selector(".dl-cell-text", timeout=5_000)
+        wait_for_saved_count(page, 1)
         assert custom_cells_storage(page)[0]["type"] == "text"
 
     def test_a_file_that_is_not_a_shared_cell_is_rejected(self, clean_storage, tmp_path):

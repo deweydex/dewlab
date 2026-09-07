@@ -238,12 +238,16 @@ class _MessageSink:
 
 
 class _CellContext:
-    def __init__(self, cell_id: str, sink):
+    def __init__(self, cell_id: str, sink, label: str | None = None):
         self.cell_id = cell_id
         self.sink = sink
         self.widget_seq = 0
         self.figures_rendered: set[int] = set()
-        self.filename = cell_filename(cell_id)
+        # `label` is what a reader would call this cell, if anything friendlier
+        # than its own internal id exists — a tutorial's own author-given
+        # `name:`, or dewmini's "Cell 3" — shown in a traceback's file line
+        # instead of an id nobody chose to look at (planning/CELL_IDENTITY.md).
+        self.filename = cell_filename(cell_id, label)
         # (emission count, value) of the most recent check(), so a cell ending
         # in a check does not print a bare True/False under its own verdict.
         self.last_check: tuple[int, bool] | None = None
@@ -540,15 +544,18 @@ def _flush_figures() -> None:
 _CELL_FILENAME_PREFIX = "<cell "
 
 
-def cell_filename(cell_id: str) -> str:
+def cell_filename(cell_id: str, label: str | None = None) -> str:
     """The pseudo-filename a cell's code is compiled under.
 
     Per cell rather than one shared name, for two reasons: a traceback then
     says which cell it came from, and each cell's source can be registered in
     `linecache` under its own key without a stale entry from another cell
-    surfacing the wrong line.
+    surfacing the wrong line. `label`, when given, replaces `cell_id` in what
+    a reader actually sees — the id itself still decides `linecache`'s key
+    and `_is_user_frame`'s prefix check, so nothing downstream needs to know
+    a label was ever involved.
     """
-    return f"{_CELL_FILENAME_PREFIX}{cell_id}>"
+    return f"{_CELL_FILENAME_PREFIX}{label or cell_id}>"
 
 
 def _is_user_frame(filename: str) -> bool:
@@ -699,7 +706,7 @@ def render_error(message: str) -> None:
 # --------------------------------------------------------------------------
 
 
-def _begin(cell_id: str, sink, code: str = "") -> None:
+def _begin(cell_id: str, sink, code: str = "", label: str | None = None) -> None:
     """Everything that has to happen right before a cell's code runs:
     clear its old output, make it the "current" cell (so the module-level
     functions below like `show()` know which cell they belong to), teach
@@ -711,7 +718,7 @@ def _begin(cell_id: str, sink, code: str = "") -> None:
     """
     global _current
     sink.clear()
-    _current = _CellContext(cell_id, sink)
+    _current = _CellContext(cell_id, sink, label)
     _register_source(_current.filename, code)
     _patch_pyplot_show()
     sys.stdout = _StreamWriter("dl-stdout")
@@ -739,12 +746,18 @@ def _end(value) -> None:
         _current = None
 
 
-async def run_cell(cell_id: str, output_target, code: str, expect: str | None = None) -> bool:
+async def run_cell(
+    cell_id: str, output_target, code: str, expect: str | None = None, label: str | None = None,
+) -> bool:
     """Run one cell's code and render everything it produced.
 
     Returns True if the code completed without raising. `expect`, when
     given, is evaluated after the run for the report `run_cell_report()`
-    returns — it never affects the run itself. The whole lifecycle
+    returns — it never affects the run itself. `label`, when given, is
+    what a traceback's file line calls this cell instead of its own id —
+    a tutorial's author-given `name:`, or dewmini's "Cell 3" for a cell
+    nobody has named, rather than either's own internal id showing up in
+    front of a reader (planning/CELL_IDENTITY.md). The whole lifecycle
     lives here, in Python, rather than being split across the JS runtime, so
     output ordering and traceback formatting have exactly one implementation.
 
@@ -759,7 +772,7 @@ async def run_cell(cell_id: str, output_target, code: str, expect: str | None = 
 
     global _last_report
     sink = _MessageSink(output_target) if callable(output_target) else _DomSink(output_target)
-    _begin(cell_id, sink, code)
+    _begin(cell_id, sink, code, label)
     ok = True
     value = None
     try:
@@ -832,7 +845,9 @@ def _report(ok: bool, cell: "_CellContext", expect: str | None) -> dict:
     }
 
 
-async def run_cell_report(cell_id: str, output_target, code: str, expect: str | None = None) -> str:
+async def run_cell_report(
+    cell_id: str, output_target, code: str, expect: str | None = None, label: str | None = None,
+) -> str:
     """run_cell(), plus a JSON report of what the run amounted to — see
     `_report()`. The tutorial page calls this one; `run_cell()` itself
     keeps returning a plain boolean because dewmini and the shared engine
@@ -841,7 +856,7 @@ async def run_cell_report(cell_id: str, output_target, code: str, expect: str | 
     call and the Worker's postMessage unchanged."""
     global _last_report
     _last_report = {}
-    await run_cell(cell_id, output_target, code, expect)
+    await run_cell(cell_id, output_target, code, expect, label)
     return json.dumps(_last_report)
 
 

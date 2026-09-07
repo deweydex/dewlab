@@ -394,6 +394,29 @@ html[data-dl-panel-right] .dm-page .dl-crumbs {
 .dm-cell-pill-type[data-type="sql"] { color: var(--dl-type-sql); }
 .dm-cell-pill-type[data-type="javascript"] { color: var(--dl-type-js); }
 
+/* An input, not a span, so typing into it works the way typing into a
+ * field always does — but it should read as a label sitting on the
+ * header, not as a form control, so every bit of an input's usual chrome
+ * is stripped back to nothing until it's actually focused. dl-cell-name
+ * itself (tutorial-style.css) supplies the colour, size limit and
+ * ellipsis; this only undoes what a bare <input> would otherwise add. */
+.dm-cell-name {
+  min-width: 3.5rem;
+  max-width: 10rem;
+  border: none;
+  background: transparent;
+  font: inherit;
+  font-family: var(--dl-mono);
+  font-size: 0.68rem;
+  padding: 0.15rem 0.2rem;
+}
+.dm-cell-name:focus {
+  outline: 1px solid var(--dl-orange);
+  outline-offset: 1px;
+  border-radius: 2px;
+}
+.dm-cell-name::placeholder { color: var(--dl-cell-border); font-style: normal; }
+
 .dm-cell-spacer { flex: 1; }
 
 .dm-cell-header-end {
@@ -479,6 +502,24 @@ html[data-dl-panel-right] .dm-page .dl-crumbs {
 .dm-icon-run.dm-icon-run-stop:hover { opacity: 0.85; }
 
 .dm-icon-btn:disabled { opacity: 0.4; cursor: default; }
+
+/* Every one of these buttons carries a nested .dl-btn-icon/.dl-btn-label
+ * pair (iconButton() above), the same shared span classes a tutorial
+ * page's own cell chrome uses — so tutorial-style.css's own
+ * [data-button-labels] rule (compose/dewmini.html loads that stylesheet
+ * too) shows or hides each span identically on both pages without a
+ * second copy of that rule here. What that rule can't do on its own is
+ * resize the button itself: .dm-icon-btn's fixed square is right for an
+ * icon alone, but a label needs room to sit beside it instead of being
+ * clipped by a box built for one glyph. Un-fixing the width only in
+ * "text"/"both" mode is what keeps "icons" mode exactly as small as it
+ * always was. */
+:root:not([data-button-labels="icons"]) .dm-icon-btn {
+  width: auto;
+  height: auto;
+  padding: 0.22rem 0.6rem;
+  gap: 0.35rem;
+}
 
 /* The "⋯" Run-above/Run-below menu (createRunMoreMenu() in dewmini.js) —
  * a popover anchored to its own toggle button rather than two more

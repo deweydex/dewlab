@@ -205,6 +205,10 @@ function readCells(saved) {
     .map((c) => ({
       id: c.id, type: c.type, content: c.content || "", style: c.style || "",
       output: c.output || "", error: !!c.error, collapsed: !!c.collapsed,
+      // A reader's own name for this cell — "a handle to hold on to"
+      // (planning/CELL_IDENTITY.md §4) — optional, so most cells carry
+      // none at all rather than an empty string round-tripping forever.
+      name: c.name || undefined,
     }));
 }
 
@@ -332,11 +336,12 @@ let warnedDroppedOutputs = 0;
  * plain object rather than serializing the live one directly. `style` is
  * a Web cell's CSS half; every other type simply never sets it. */
 function writeSavedState(skipOutputFor) {
-  const plainCells = (list) => list.map(({ id, type, content, style, output, error, collapsed }) => ({
+  const plainCells = (list) => list.map(({ id, type, content, style, output, error, collapsed, name }) => ({
     id, type, content, style: style || "",
     output: skipOutputFor.has(id) ? "" : (output || ""),
     error: !!error,
-    collapsed: !!collapsed
+    collapsed: !!collapsed,
+    ...(name ? { name } : {}),
   }));
   try {
     localStorage.setItem(NOTEBOOKS_KEY, JSON.stringify({
@@ -769,6 +774,40 @@ function escapeHtml(text) {
   // a raw " in, say, an imported notebook's markdown could otherwise
   // close the attribute early and smuggle in an attribute of its own.
   return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+
+/* One shared shape for every cell-chrome button — the same icon-plus-label
+ * pair a tutorial page's own icon_button()/iconButtonHtml() give an
+ * authored or custom cell (build.py, assets/tutorial-runtime.js), so the
+ * "icons only / text only / icons and text" Texture setting
+ * (data-texture="buttons", tutorial-style.css's [data-button-labels]
+ * rules) reads a dewmini cell exactly like one on a tutorial page. `icon`
+ * is markup already and goes in unescaped; `label` is plain text and is
+ * escaped once. The outer element keeps its own `dm-icon-*` class for
+ * dewmini's own icon-button sizing — only the two inner spans are the
+ * shared, cross-surface class names. */
+function iconButton(cssClass, icon, label, title) {
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.className = `dm-icon-btn ${cssClass}`;
+  if (title) btn.title = title;
+  btn.innerHTML =
+    `<span class="dl-btn-icon" aria-hidden="true">${icon}</span>`
+    + `<span class="dl-btn-label">${escapeHtml(label)}</span>`;
+  return btn;
+}
+
+/* Reads or writes a button's visible text without disturbing its icon —
+ * every place that used to set `.textContent` directly on one of these
+ * buttons now goes through here instead, since `.textContent` on the
+ * button itself would wipe the icon out along with whatever text was
+ * there. Falls back to the button itself for anything not built with
+ * iconButton() above. */
+function getBtnLabel(btn) {
+  return (btn.querySelector(".dl-btn-label") || btn).textContent;
+}
+function setBtnLabel(btn, text) {
+  (btn.querySelector(".dl-btn-label") || btn).textContent = text;
 }
 
 /* Handles the "inline" formatting that can appear inside one line of
@@ -1709,11 +1748,7 @@ function createRunMoreMenu(cell) {
   const wrap = document.createElement("div");
   wrap.className = "dm-cell-more";
 
-  const moreBtn = document.createElement("button");
-  moreBtn.type = "button";
-  moreBtn.className = "dm-icon-btn dm-icon-more";
-  moreBtn.title = "More ways to run this cell";
-  moreBtn.textContent = "⋯";
+  const moreBtn = iconButton("dm-icon-more", "&#8943;", "More", "More ways to run this cell");
   moreBtn.setAttribute("aria-haspopup", "true");
   moreBtn.setAttribute("aria-expanded", "false");
 
@@ -1930,6 +1965,29 @@ function createCellElement(cell) {
     `<span class="dm-cell-pill-num">Cell ${cellNumber}</span>` +
     `<span class="dm-cell-pill-type" data-type="${cell.type}">${PILL_LABELS[cell.type]}</span>`;
 
+  // A reader's own name for this cell, beside the pill rather than
+  // replacing it — the pill still says where the cell sits, this is just
+  // "a handle to hold on to" when talking about it later
+  // (planning/CELL_IDENTITY.md §4). A plain text input, not
+  // contenteditable: predictable focus/selection/paste behaviour matters
+  // more here than matching a <span>'s box exactly, and dm-cell-name's
+  // own rule below strips an input's usual chrome so it still reads as
+  // text sitting on the header, not as a form field. Shares dl-cell-name
+  // with a tutorial page's own (there, static) name span, so
+  // tutorial-style.css's colour/size/ellipsis rule needs no dewmini copy.
+  const nameEl = document.createElement("input");
+  nameEl.type = "text";
+  nameEl.className = "dm-cell-name dl-cell-name";
+  nameEl.placeholder = "+ name";
+  nameEl.value = cell.name || "";
+  nameEl.setAttribute("aria-label", "This cell's own name, if you give it one");
+  nameEl.addEventListener("mousedown", (e) => e.stopPropagation());
+  nameEl.addEventListener("click", (e) => e.stopPropagation());
+  nameEl.addEventListener("input", () => {
+    cell.name = nameEl.value.trim() || undefined;
+    saveState();
+  });
+
   const spacer = document.createElement("span");
   spacer.className = "dm-cell-spacer";
 
@@ -1948,9 +2006,7 @@ function createCellElement(cell) {
   // kept in sync by showEditor()/showRendered().
   let previewBtn = null;
   if (READ_NOT_RUN_TYPES.has(cell.type)) {
-    previewBtn = document.createElement("button");
-    previewBtn.type = "button";
-    previewBtn.className = "dm-icon-btn dm-icon-preview";
+    previewBtn = iconButton("dm-icon-preview", "&#128065;", "View");
     headerEnd.appendChild(previewBtn);
   }
   // A web cell's own explicit render trigger (DECISIONS_LOG.md 7.120) —
@@ -1959,46 +2015,36 @@ function createCellElement(cell) {
   // insertDocImage above, since it needs closures that only exist there.
   let renderBtn = null;
   if (cell.type === CELL_TYPES.WEB) {
-    renderBtn = document.createElement("button");
-    renderBtn.type = "button";
-    renderBtn.className = "dm-icon-btn dm-icon-render";
-    renderBtn.textContent = "Render";
-    renderBtn.title = "Render this cell's HTML and CSS together";
+    renderBtn = iconButton(
+      "dm-icon-render", "&#9655;", "Render",
+      "Render this cell's HTML and CSS together",
+    );
     headerEnd.appendChild(renderBtn);
   }
   // Attaching an image from disk only makes sense for a Text cell's own
   // markdown-image syntax — an HTML cell's reader can already write an
   // <img> tag directly, so this stays Text-only.
   if (cell.type === CELL_TYPES.TEXT) {
-    const imgBtn = document.createElement("button");
-    imgBtn.type = "button";
-    imgBtn.className = "dm-icon-btn dm-icon-image";
-    imgBtn.title = "Attach an image from your device";
-    imgBtn.innerHTML = '<span class="dm-tool-icon dm-tool-icon-image" aria-hidden="true"></span>';
+    const imgBtn = iconButton(
+      "dm-icon-image", '<span class="dm-tool-icon dm-tool-icon-image" aria-hidden="true"></span>', "Image",
+      "Attach an image from your device",
+    );
     imgBtn.addEventListener("click", (e) => { e.stopPropagation(); insertDocImage?.(); });
     headerEnd.appendChild(imgBtn);
   }
 
-  const dupBtn = document.createElement("button");
-  dupBtn.type = "button";
-  dupBtn.className = "dm-icon-btn dm-icon-duplicate";
-  dupBtn.title = "Duplicate this cell";
-  dupBtn.textContent = "⧉";
+  const dupBtn = iconButton("dm-icon-duplicate", "&#10697;", "Duplicate", "Duplicate this cell");
   dupBtn.addEventListener("click", (e) => { e.stopPropagation(); duplicateCell(cell.id); });
   headerEnd.appendChild(dupBtn);
 
   // Arm-then-confirm rather than a native confirm() dialog: a dialog
   // stops the whole page and needs a mouse trip to its own button,
   // where this just needs a second, deliberate press of the same one.
-  const delBtn = document.createElement("button");
-  delBtn.type = "button";
-  delBtn.className = "dm-icon-btn dm-icon-delete";
-  delBtn.title = "Delete this cell";
-  delBtn.textContent = "×";
+  const delBtn = iconButton("dm-icon-delete", "&#215;", "Delete", "Delete this cell");
   delBtn.addEventListener("click", (e) => { e.stopPropagation(); armDeleteButton(delBtn, () => deleteCell(cell.id)); });
   headerEnd.appendChild(delBtn);
 
-  head.append(pill, spacer, headerEnd);
+  head.append(pill, nameEl, spacer, headerEnd);
 
   // -------------------------------------------------------------- body
   //
@@ -2101,9 +2147,11 @@ function createCellElement(cell) {
     renderEl.tabIndex = 0;
     renderEl.hidden = true;
 
+    const previewIcon = previewBtn.querySelector(".dl-btn-icon");
     const syncPreviewBtn = () => {
       const editing = !textarea.hidden;
-      previewBtn.textContent = editing ? "View" : "Edit";
+      previewIcon.innerHTML = editing ? "&#128065;" : "&#9998;";
+      setBtnLabel(previewBtn, editing ? "View" : "Edit");
       previewBtn.title = editing ? "Show this note rendered" : "Edit this note";
     };
     const showEditor = () => {
@@ -2332,22 +2380,19 @@ function createCellElement(cell) {
     footbar = document.createElement("div");
     footbar.className = "dm-cell-footbar";
 
-    const runBtn = document.createElement("button");
-    runBtn.type = "button";
-    runBtn.className = "dm-icon-btn dm-icon-run";
-    runBtn.title = "Run this cell (Shift+Enter)";
-    runBtn.textContent = "▶";
+    const runBtn = iconButton("dm-icon-run", "&#9654;", "Run", "Run this cell (Shift+Enter)");
     runBtn.addEventListener("click", (e) => { e.stopPropagation(); runCell(cell.id); });
     footbar.appendChild(runBtn);
     cell.runBtn = runBtn;
 
     // Clears this cell's own output without touching its code — the
     // non-destructive counterpart to Delete.
-    const resetOutputBtn = document.createElement("button");
-    resetOutputBtn.type = "button";
-    resetOutputBtn.className = "dm-icon-btn dm-icon-reset-output";
-    resetOutputBtn.title = "Clear this cell's output";
-    resetOutputBtn.textContent = "↺";
+    // &#8634; (↺, counterclockwise) — deliberately not build.py's own
+    // &#8635; (↻, clockwise) for its destructive "reset to starter"
+    // button: a different-looking icon for a materially different action
+    // (planning/CELL_IDENTITY.md §1), not a coincidence of two similar
+    // buttons drifting to the same glyph.
+    const resetOutputBtn = iconButton("dm-icon-reset-output", "&#8634;", "Clear", "Clear this cell's output");
     resetOutputBtn.addEventListener("click", (e) => { e.stopPropagation(); resetCellOutput(cell.id); });
     footbar.appendChild(resetOutputBtn);
 
@@ -2558,11 +2603,16 @@ async function executeCell(cell) {
   // keystrokes while a slow cell was still running.
   cell.ranContent = cell.content;
   let ok;
+  // A reader's own name for this cell, if they gave it one, otherwise its
+  // plain position — either way, a traceback's file line then names
+  // something a reader chose or can already see, never this cell's own
+  // opaque internal id (planning/CELL_IDENTITY.md).
+  const label = cell.name || `Cell ${cells.indexOf(cell) + 1}`;
   if (cell.type === CELL_TYPES.JAVASCRIPT) {
     ({ ok } = await jsEngine.runCell(cell.id, cell.content));
   } else {
     const code = cell.type === CELL_TYPES.SQL ? buildSqlCellCode(cell.content) : cell.content;
-    ({ ok } = await engine.runCell(cell.id, code));
+    ({ ok } = await engine.runCell(cell.id, code, label));
   }
   cell.lastRunMs = performance.now() - startedAt;
   cell.ranOrder = ++runSequenceCounter;
@@ -2645,14 +2695,16 @@ function clearAllOutputs() {
  * even be noticed). */
 function setRunButtonRunning(runBtn, canStop) {
   if (!runBtn) return;
+  const icon = runBtn.querySelector(".dl-btn-icon");
   if (canStop) {
     runBtn.disabled = false;
-    runBtn.textContent = "■";
+    if (icon) icon.innerHTML = "&#9632;";
+    setBtnLabel(runBtn, "Stop");
     runBtn.title = "Stop this cell";
     runBtn.classList.add("dm-icon-run-stop");
   } else {
     runBtn.disabled = true;
-    runBtn.textContent = "…";
+    setBtnLabel(runBtn, "…");
     runBtn.title = "Running…";
   }
 }
@@ -2663,7 +2715,9 @@ function resetRunButton(runBtn) {
   runBtn.disabled = false;
   runBtn.classList.remove("dm-icon-run-stop");
   runBtn.title = "Run this cell (Shift+Enter)";
-  runBtn.textContent = "▶";
+  const icon = runBtn.querySelector(".dl-btn-icon");
+  if (icon) icon.innerHTML = "&#9654;";
+  setBtnLabel(runBtn, "Run");
 }
 
 /* Runs a single cell by id, in response to its own Run button or
@@ -5184,7 +5238,15 @@ function initSegKeyboardNav() {
  * functions there (the try/catch-around-localStorage convention, the
  * `{...a, ...b}` merge-with-defaults pattern) for more detail than
  * repeated here — the code is close to line-for-line the same. */
-const TEXTURE_DEFAULTS = { theme: "system", font: "serif", size: 18, width: 34, link: "#d4692a", contrast: "normal" };
+const TEXTURE_DEFAULTS = {
+  theme: "system", font: "serif", size: 18, width: 34, link: "#d4692a", contrast: "normal",
+  // Icons only, text only, or both, for every cell's Run/Reset/Duplicate/
+  // Delete and the rest (planning/CELL_IDENTITY.md §9) — same key, same
+  // default, and the same [data-button-labels] CSS rule (tutorial-style.css)
+  // a tutorial page's own copy of this row uses, so the choice reads the
+  // same on both.
+  buttons: "both",
+};
 
 function loadTexture() {
   try {
@@ -5203,6 +5265,7 @@ function applyTexture(state) {
   if (state.theme === "system") root.removeAttribute("data-theme"); else root.setAttribute("data-theme", state.theme);
   if (state.font === "serif") root.removeAttribute("data-font"); else root.setAttribute("data-font", state.font);
   if (state.contrast === "normal") root.removeAttribute("data-contrast"); else root.setAttribute("data-contrast", state.contrast);
+  if (state.buttons === "both") root.removeAttribute("data-button-labels"); else root.setAttribute("data-button-labels", state.buttons);
   root.style.setProperty("--dl-font-size", `${state.size}px`);
   root.style.setProperty("--dl-line-width", `${state.width}rem`);
   // High contrast overrides a reader's own link colour the same way it

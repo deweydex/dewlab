@@ -362,8 +362,8 @@ function requestInterrupt() {
  * "output" messages handled in ensureWorker's onmessage above — this
  * Promise only resolves once the cell has finished (or raised), the same
  * way tutorial_tools.py's run_cell always does. */
-async function runCellWorker(cellId, code) {
-  return workerRequest("run-cell", { cellId, code });
+async function runCellWorker(cellId, code, label) {
+  return workerRequest("run-cell", { cellId, code, label });
 }
 
 /* The worker counterpart of resetPageStateMT() — asks pyodide-worker.js's
@@ -626,9 +626,9 @@ function describeGlobalsMT() {
  * `{ ok }` return shape matches what runCellWorker's response looks like,
  * so the exported runCell() further down can treat both paths the same
  * way without caring which one actually ran. */
-async function runCellMainThread(cellId, code) {
+async function runCellMainThread(cellId, code, label) {
   const el = getOutputEl ? getOutputEl(cellId) : null;
-  const ok = await toolsMT.run_cell(cellId, el, code);
+  const ok = await toolsMT.run_cell(cellId, el, code, undefined, label);
   return { ok };
 }
 
@@ -865,10 +865,10 @@ export { requestInterrupt };
  * main thread. Output from the *previous* run is cleared first so a
  * re-run doesn't show old results mixed in with new ones, then execution
  * is handed off to whichever path actually booted. */
-export async function runCell(cellId, code) {
+export async function runCell(cellId, code, label) {
   clearOutput(cellId);
-  if (mode === "main-thread") return runCellMainThread(cellId, code);
-  return runCellWorker(cellId, code);
+  if (mode === "main-thread") return runCellMainThread(cellId, code, label);
+  return runCellWorker(cellId, code, label);
 }
 
 /* Clears the shared namespace and re-seeds it with the always-available

@@ -468,7 +468,28 @@ p code, li code {
 .dl-cell-collapsed-summary:hover { color: var(--dl-orange); }
 .dl-cell-collapsed-summary[hidden] { display: none; }
 
-.dl-cell-bar {
+/* The header, above the code — identity only: the pill, an optional
+   name, Duplicate. Nothing about running a cell lives here (that's
+   .dl-cell-footbar, below the code) — matches dewmini's own
+   .dm-cell-head (planning/CELL_IDENTITY.md's parity pass), so a reader
+   moving between the two finds "which cell is this" in the same place
+   either way. */
+.dl-cell-head {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.5rem 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--dl-cell-border);
+  font-family: var(--dl-mono);
+  font-size: 0.72rem;
+  color: var(--dl-muted);
+}
+.dl-cell-header-end { display: flex; align-items: center; gap: 0.35rem; }
+
+/* Run, Reset, the "Run above/below" menu, and the run-line — between the
+   code and its output, not after both, so Run sits right where a
+   reader's hand already is (matches dewmini's own .dm-cell-footbar). */
+.dl-cell-footbar {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -478,8 +499,6 @@ p code, li code {
   font-size: 0.72rem;
   color: var(--dl-muted);
 }
-
-.dl-cell-id { letter-spacing: 0.03em; }
 
 /* The identity pill — "Cell N" plus its type, coloured
    (planning/CELL_IDENTITY.md §2, ported from dewmini's own .dm-cell-pill
@@ -500,6 +519,19 @@ p code, li code {
   font-weight: bold;
 }
 .dl-cell-pill-type[data-type="python"] { color: var(--dl-type-python); }
+
+/* An author's (or, in dewmini, a reader's own) name for a cell — the
+   word one person can point at when talking to another about it, beside
+   the pill rather than replacing it, since the number still says where
+   the cell sits. */
+.dl-cell-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 14rem;
+  color: var(--dl-fg);
+  font-style: italic;
+}
 
 /* The run-line: order, duration, and staleness folded into one
    (planning/CELL_IDENTITY.md §3, ported from dewmini's own
@@ -592,6 +624,9 @@ p code, li code {
 }
 
 .dl-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
   font: inherit;
   font-family: var(--dl-mono);
   font-size: 0.72rem;
@@ -604,6 +639,21 @@ p code, li code {
 }
 .dl-btn:hover:not(:disabled) { border-color: var(--dl-orange); color: var(--dl-orange); }
 .dl-btn:disabled { opacity: 0.45; cursor: default; }
+
+/* Every cell-chrome button carries both an icon and a label span
+ * (icon_button() in build.py, iconButtonHtml() in tutorial-runtime.js,
+ * iconButton() in compose/dewmini.js) so "icons only / text only / icons
+ * and text" — Settings' "Cell buttons" row, data-texture="buttons",
+ * wired by the same generic initTexture() every other Texture row
+ * already uses (planning/CELL_IDENTITY.md §9) — is one pair of rules
+ * here rather than a rewrite of every button's markup per mode. The
+ * default, with neither attribute value, is "both" — the small
+ * fixed-size badge buttons (hint, report, collapse, run-menu) are
+ * deliberately not built this way and so never affected by this setting;
+ * see icon_button()'s own docstring for why. */
+.dl-btn-icon { line-height: 1; }
+[data-button-labels="icons"] .dl-btn-label { display: none; }
+[data-button-labels="text"] .dl-btn-icon { display: none; }
 
 .dl-btn-run {
   background: var(--dl-navy);
@@ -624,6 +674,15 @@ p code, li code {
   color: #fff;
 }
 .dl-btn-run.dl-btn-stop:hover:not(:disabled) { opacity: 0.85; }
+
+/* Reset puts a cell back to its starter code and throws away whatever a
+ * reader typed — a materially different, and more dangerous, action than
+ * dewmini's own "clear output" button, which touches no code at all
+ * (planning/CELL_IDENTITY.md §1, the difference this whole pass exists to
+ * close). A resting red-ish outline, on a button that otherwise sits
+ * beside Run, is what keeps a reader's hand from finding this one by the
+ * same habit that finds Run. */
+.dl-btn-reset { border-color: var(--dl-error-fg); color: var(--dl-error-fg); }
 
 /* Author-written hint (CONTENT_AND_FILE_ARCHITECTURE.md, `hint:`). Static
  * text only — this is not the live docstring-on-hover feature that
@@ -734,11 +793,6 @@ p code, li code {
  * already uses for "something about your own state," not a new colour. */
 .dl-cell-custom { border-left: 3px solid var(--dl-orange); }
 
-/* "your own cell" is a plain-English label, not a slug — the mono,
- * letter-spaced treatment .dl-cell-id normally gets reads as code-ish
- * furniture and looks odd on an actual sentence. */
-.dl-cell-custom .dl-cell-id { font-family: var(--dl-font-family); letter-spacing: normal; }
-
 /* A custom cell holding notes instead of code (dl-cell-text) — no editor,
  * no output, just a textarea that turns into rendered text on blur. Same
  * click-to-edit/blur-to-render shape as compose/dewmini.js's own text
@@ -754,15 +808,15 @@ p code, li code {
  * reveals it via :focus-within the moment it receives focus, and only a
  * mouse user needs to hover the cell first. A touch device has no hover
  * to reveal anything with, so it gets the chrome on unconditionally. */
-.dl-cell-text .dl-cell-bar,
+.dl-cell-text .dl-cell-head,
 .dl-cell-text .dl-cell-collapse-col { transition: opacity 0.1s ease; }
-.dl-cell-text:not(:hover):not(:focus-within) .dl-cell-bar,
+.dl-cell-text:not(:hover):not(:focus-within) .dl-cell-head,
 .dl-cell-text:not(:hover):not(:focus-within) .dl-cell-collapse-col {
   opacity: 0;
   pointer-events: none;
 }
 @media (hover: none) {
-  .dl-cell-text .dl-cell-bar,
+  .dl-cell-text .dl-cell-head,
   .dl-cell-text .dl-cell-collapse-col { opacity: 1; pointer-events: auto; }
 }
 
@@ -3031,7 +3085,7 @@ p code, li code {
   .dl-chrome, .dl-reference-toggle, .dl-seriesnav-toggle,
   .dl-settings, .dl-reference, .dl-seriesnav, .dl-status, .dl-nav,
   .dl-insert, .dl-hint-icon, .dl-report-icon, .dl-cell-report-doors,
-  .dl-cell-bar .dl-btn, .dl-report-doors {
+  .dl-cell-head .dl-btn, .dl-cell-footbar .dl-btn, .dl-report-doors {
     display: none !important;
   }
   body, .dl-page { background: #fff !important; color: #111 !important; }

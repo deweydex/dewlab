@@ -272,10 +272,10 @@ carrying the state rather than its shape.
   tutorial page is Python; `--dl-type-text` and the rest stay unused
   until a real second authored type exists.
 
-  There was never a header→footer move to make on this side, unlike
-  dewmini: `build.py`'s `.dl-cell-bar` sat below the editor and output
-  from the start (§5 above notes this — it's the layout dewmini's own
-  7.110 moved *to*), so nothing here needed relocating.
+  This entry originally said there was no header→footer move to make on
+  this side, since `build.py`'s `.dl-cell-bar` was assumed to already sit
+  where §5 describes. That was wrong: it actually sat after `.dl-output`,
+  not before it, the mismatch §9 (7.136) found and fixed.
 
 - **Tutorial and practice pages: collapse and Duplicate too (7.114).**
   The collapse triangle now applies to every cell that has editable
@@ -303,7 +303,7 @@ carrying the state rather than its shape.
   This document described it from §2 onward, but it was never actually
   built — not in dewmini, not here — until now. A rendered Text cell's
   chrome (dewmini's `.dm-cell-head`/`.dm-cell-collapse-col`; a custom
-  text cell's own `.dl-cell-bar`/`.dl-cell-collapse-col`) stays
+  text cell's own `.dl-cell-head`/`.dl-cell-collapse-col`) stays
   `opacity: 0; pointer-events: none` until a reader hovers or focuses
   the cell, one CSS rule with no JavaScript on either side — a reader
   focusing the textarea to edit already puts the cell in `:focus-within`,
@@ -575,3 +575,121 @@ the pill/run-line/collapse/
 Duplicate work apply here for the same reason: these are genuinely new
 engines, not a port of something dewmini already proved, and the
 tutorial runtime has never needed anything but Python.
+
+## 9. Closing the last gaps with tutorial pages (7.136)
+
+Josh, comparing a Python cell in a tutorial against one in dewmini, 2026-
+09-07: dewmini is "the direction we want to go", and a single Python
+cell's own chrome and behaviour should feel the same wherever a student
+meets it — not the whole platform (dewmini's tabs, its filesystem, its
+other cell types stay dewmini-only), just one cell. Four concrete
+mismatches came out of that comparison, plus two things Josh asked for
+alongside them.
+
+**Run moved from after the output to between the code and the output.**
+§5 above already states the rule — Run sits where a reader's hand already
+is, right under what they just wrote — and says `build.py`'s own bar
+already followed it. That turned out to be wrong once dewmini's own
+footbar-*before*-output shape (7.110) was compared against the tutorial
+page's actual markup: `.dl-cell-bar` there sat after `.dl-output`, not
+before it, the one real layout mismatch of the four. `render_cell()` now
+emits `.dl-cell-head` (identity: pill, optional name, Duplicate),
+`.dl-cell-body-row` (collapse triangle, editor), `.dl-cell-footbar` (Run,
+Reset, the run menu, the run line), then `.dl-output` — the same order
+dewmini's own `createCellElement()` already used. `assets/tutorial-
+runtime.js`'s `createCustomCellElement()` (a reader's own cells, built
+entirely client-side, never through `render_cell()`) got the same three
+rows by hand, so a reader's own cell and the tutorial's stay one shape.
+
+**A same-shaped button did two different things.** The tutorial's Reset
+puts a cell's *code* back to its starter and throws the rest away;
+dewmini's own footbar button only clears a cell's *output*, no code
+touched. Both were reasonable choices on their own — a tutorial's cell
+has starter code worth returning to, a dewmini cell doesn't — but nothing
+about how the two buttons *looked* said so, and the more dangerous of the
+two sat in the position a reader's muscle memory would already trust from
+the other page. `.dl-btn-reset` now carries its own icon, a clockwise ↻
+(`&#8635;`), and a resting red-ish border (`tutorial-style.css`);
+dewmini's own clear-output button keeps its original counterclockwise ↺
+(`&#8634;`) rather than drifting to match. Different glyphs for a
+genuinely different action, not a coincidence of two buttons converging
+on the same one.
+
+**Icon-only on one page, text-only on the other.** A tutorial page's
+buttons were plain words (`Run`, `Reset`, `duplicate`); dewmini's were
+bare glyphs in small square buttons, meaning purely by tooltip. Josh: "I
+think the icon with the text might be nice, and having that as a setting
+for each 'icons only, text only, icons and text' for buttons." Every
+cell-chrome button on both pages now carries both, in a nested
+`.dl-btn-icon`/`.dl-btn-label` pair (`icon_button()` in `build.py`,
+`iconButtonHtml()` in `tutorial-runtime.js`, `iconButton()` in
+`compose/dewmini.js`) — the same two class names regardless of which page
+built the button, so one CSS rule, `tutorial-style.css`'s
+`[data-button-labels]`, shows or hides either span on both. A new
+Settings row, "Cell buttons" (`data-texture="buttons"`, alongside Theme/
+Font/Contrast in the existing Texture panel — a display preference, not
+an execution one, so it stays available even on a page with no Python
+cells at all), offers icons/text/both and rides the exact same
+`"dewlab:texture"` localStorage key and generic `initTexture()` machinery
+every other Texture row already uses on both pages — no bespoke setting,
+no new wiring function, the choice literally shared rather than merely
+alike, since both pages read and write the same key on the same origin.
+The small, fixed-size badge buttons (hint and report toggles, the
+collapse triangle) were deliberately left out of this: no dewmini
+counterpart to match, and no room in their compact circular shape for a
+label. `setBtnLabel()`/`getBtnLabel()` (one small helper pair, defined
+separately in each file since this is markup, not a shared component —
+the project's usual "port in shape" convention) read or write a button's
+`.dl-btn-label` span directly, since `.textContent` on the button itself
+would erase its icon along with whatever text was there; the run/stop/
+preview state-swaps that used to set text directly now go through these.
+
+**dewmini's own traceback showed its internal cell id.** `run_cell()`
+(`tutorial_tools.py`) gained an optional `label`, threaded down through
+`run_cell_report()`/`_begin()`/`_CellContext`/`cell_filename()` and, on
+the JavaScript side, `assets/pyodide-engine.js`'s `runCell()` and
+`assets/pyodide-worker.js`'s `"run-cell"` message. The cell's own id
+still decides `linecache`'s key and `_is_user_frame`'s `"<cell "` prefix
+check — only what a reader actually *reads* in a traceback's file line
+changes. dewmini's `executeCell()` passes `cell.name || \`Cell
+${n}\``; a tutorial page passes its author-given `name:` when a cell has
+one, and nothing (the id, as before) when it doesn't.
+
+**The pill's position, and a name beside it.** Josh: the identity pill
+(cell number and type) should sit "at the same place" on both pages,
+"perhaps with the option for a cell name in both... to give a handle to
+hold on to." The pill's position was already the same — both put it at
+the head of the cell, §7's own account of 7.113 says so — what was new
+is the name. `name:` is a fourth header line on an authored cell
+(`HEADER_RE`, `Cell.name`, `build.py`), shown in `.dl-cell-name` next to
+the pill; dewmini's own cells get an *editable* one instead, a plain
+`<input>` (`.dm-cell-name`/`.dl-cell-name`, styled to read as a label
+rather than a form field) between the pill and the header spacer, since
+every dewmini cell is already the reader's own. Neither replaces the
+pill's number — the number still says *where* a cell sits; the name is
+only ever a second, optional way to point at it in conversation. A
+duplicate deliberately does not carry a dewmini cell's name over to its
+copy, the same reasoning already covers not carrying over run history:
+a name is a claim of identity, and a fresh cell hasn't earned it yet.
+
+Deliberately left for later, raised but not pursued this pass: Josh's own
+"(or something else we could put in that top bar? Idk...)" — nothing was
+added beyond the name, on the same restraint the header's own existing
+comment already states (it avoids crowding itself with one-off actions);
+and an editable name for a *tutorial* page's own reader-added custom
+cells, which stayed at their existing plain "Your cell"/"Your note" pill
+text rather than gaining the same input dewmini's cells did — asked for
+as a name "in both" meaning both platforms, not literally every kind of
+cell on both.
+
+*Cost to change: `render_cell()` (build.py) rewritten to three rows;
+`createCustomCellElement()` (tutorial-runtime.js) to match by hand; one
+new Settings row, shared verbatim by both pages' existing Texture
+machinery; a `label` parameter through five functions across
+`tutorial_tools.py`, `pyodide-engine.js`, `pyodide-worker.js`; a
+`name`/`nameEl` field on both cell models. `tests/test_build.py`'s
+`test_the_footbar_sits_between_the_editor_and_output` (renamed from an
+assertion the old layout made permanently false) and five e2e tests'
+button-label selectors, updated to read `.dl-btn-label` where they used
+to read a button's own `.textContent`. `assets/vendor/standalone.bundle.js`
+rebuilt for the `tutorial-runtime.js` change.*

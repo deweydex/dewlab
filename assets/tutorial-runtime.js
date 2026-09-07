@@ -65,6 +65,11 @@ const NON_TUTORIAL_PAGES = new Set(["index", "tree", "about", "topics"]);
 const TEXTURE_DEFAULTS = {
   theme: "system", font: "serif", size: 18, width: 34,
   link: "#d4692a", header: "full", contrast: "normal",
+  /* "Cell buttons" — icons only, text only, or both (planning/
+   * CELL_IDENTITY.md §9), the same choice compose/dewmini.js's own Texture
+   * panel offers, applied through the same [data-button-labels] CSS this
+   * page and dewmini both load from tutorial-style.css. */
+  buttons: "both",
 };
 
 /* The size slider's minimum, which has to be known here as well as in the
@@ -993,6 +998,8 @@ function applyTexture(state) {
   else root.setAttribute("data-header", state.header);
   if (state.contrast === "normal") root.removeAttribute("data-contrast");
   else root.setAttribute("data-contrast", state.contrast);
+  if (state.buttons === "both") root.removeAttribute("data-button-labels");
+  else root.setAttribute("data-button-labels", state.buttons);
   root.style.setProperty("--dl-font-size", state.size + "px");
   root.style.setProperty("--dl-line-width", state.width + "rem");
   // High contrast overrides a reader's own link colour the same way it
@@ -1347,7 +1354,7 @@ function setRunnable(enabled, label) {
   for (const cell of [...cells, ...customCells]) {
     if (!cell.runBtn) continue; // a text cell has no Run button at all
     cell.runBtn.disabled = !enabled;
-    cell.runBtn.textContent = label || (enabled ? "Run" : "…");
+    setBtnLabel(cell.runBtn, label || (enabled ? "Run" : "…"));
   }
 }
 
@@ -1600,6 +1607,41 @@ function escapeHtml(text) {
   return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
+/* One shared shape for every cell-chrome button this file builds itself
+ * (a custom cell has no server-rendered markup to start from) — the same
+ * icon-plus-label pair build.py's own icon_button() gives an authored
+ * cell, so the "icons only / text only / icons and text" setting
+ * (Settings' "Cell buttons" row, wired through the same generic
+ * initTexture() every other Texture row uses) reads one custom cell
+ * exactly like an authored one. `icon` is markup already and goes in
+ * unescaped; `label`
+ * is plain text and is escaped once. `attrs`, if given, is a literal
+ * string of extra HTML attributes (` disabled` or ` title="…"`), spliced
+ * in as-is — callers pass only fixed, code-authored strings here, never
+ * anything a reader typed. */
+function iconButtonHtml(cssClass, icon, label, attrs = "") {
+  return (
+    `<button type="button" class="dl-btn ${cssClass}"${attrs}>`
+    + `<span class="dl-btn-icon" aria-hidden="true">${icon}</span>`
+    + `<span class="dl-btn-label">${escapeHtml(label)}</span>`
+    + "</button>"
+  );
+}
+
+/* Reads or writes a button's visible text without disturbing its icon —
+ * every place that used to set `.textContent` directly on a Run/Preview
+ * button now goes through here instead, since that button is a `dl-btn`
+ * with a nested `.dl-btn-icon`/`.dl-btn-label` pair (iconButtonHtml()
+ * above, build.py's own icon_button()) and setting `.textContent` on the
+ * button itself would wipe the icon out along with whatever text was
+ * there. Falls back to the button itself for anything not built that way. */
+function getBtnLabel(btn) {
+  return (btn.querySelector(".dl-btn-label") || btn).textContent;
+}
+function setBtnLabel(btn, text) {
+  (btn.querySelector(".dl-btn-label") || btn).textContent = text;
+}
+
 /* The formatting that can appear inside one line of a text cell: `code`,
  * **bold**, and italic written either with asterisks or underscores.
  * Each `.replace()` scans the whole string for one pattern and swaps in
@@ -1737,9 +1779,10 @@ function scheduleCustomSave() {
 
 /* Builds one custom cell's DOM. A python-type cell is in the same shape
  * build.py's own render_cell() gives a real cell (build.py) —
- * `.dl-cell` > `.dl-editor`/`.dl-output`/`.dl-cell-bar` — so it looks and
- * behaves exactly like an authored one, and picks up the exact same CSS
- * (including print styling) for free. A text-type cell swaps the
+ * `.dl-cell` > `.dl-cell-head`/`.dl-cell-body-row`/`.dl-cell-footbar`/
+ * `.dl-output` — so it looks and behaves exactly like an authored one,
+ * and picks up the exact same CSS (including print styling) for free. A
+ * text-type cell swaps the
  * editor/output pair for a textarea + rendered-preview pair
  * (`.dl-doc-editor`/`.dl-doc-render`, compose/dewmini.js's own text-cell
  * shape) and has no Run button — there's nothing to run. Either way the
@@ -1770,9 +1813,35 @@ function createCustomCellElement(id, type) {
     + "</button>"
     + "</div>"
   );
+  // Duplicate and Delete read the same on a reader's own cell as on an
+  // authored one (icon, glyph, and title alike — the delete "×" matches
+  // compose/dewmini.js's own delBtn) so the same muscle memory carries
+  // over; Share and the note's view/edit toggle have no dewmini
+  // counterpart to match, since neither exists there.
+  const duplicateBtn = iconButtonHtml(
+    "dl-btn-duplicate", "&#10697;", "Duplicate",
+    ' title="Copy this cell, right below it"',
+  );
+  const shareBtn = iconButtonHtml(
+    "dl-btn-share", "&#8681;", "Save",
+    ' title="Save this cell to a file"',
+  );
+  const deleteBtn = iconButtonHtml("dl-btn-delete", "&#215;", "Delete", ' title="Delete this cell"');
+  const head = (label, typeLabel, dataType, headerEnd) => (
+    '<div class="dl-cell-head">'
+    + '<span class="dl-cell-pill">'
+    + `<span class="dl-cell-pill-num">${label}</span>`
+    + `<span class="dl-cell-pill-type" data-type="${dataType}">${typeLabel}</span>`
+    + "</span>"
+    + '<span class="dl-cell-spacer"></span>'
+    + `<div class="dl-cell-header-end">${headerEnd}</div>`
+    + "</div>"
+  );
   if (type === "text") {
+    const previewBtn = iconButtonHtml("dl-btn-preview", "&#128065;", "View", ' title="Show this note rendered"');
     host.innerHTML = (
-      '<div class="dl-cell-body-row">'
+      head("Your note", "Note", "text", previewBtn + duplicateBtn + shareBtn + deleteBtn)
+      + '<div class="dl-cell-body-row">'
       + collapseCol
       + '<div class="dl-cell-content">'
       + '<textarea class="dl-doc-editor" placeholder="Notes… (# heading, **bold**, - bullets)"></textarea>'
@@ -1780,35 +1849,24 @@ function createCustomCellElement(id, type) {
       + "</div>"
       + '<div class="dl-cell-collapsed-summary" role="button" tabindex="0" hidden></div>'
       + "</div>"
-      + '<div class="dl-cell-bar">'
-      + '<span class="dl-cell-id">your own note</span>'
-      + '<span class="dl-cell-spacer"></span>'
-      + '<button type="button" class="dl-btn dl-btn-preview">view</button>'
-      + '<button type="button" class="dl-btn dl-btn-duplicate" '
-      + 'title="Copy this cell, right below it">duplicate</button>'
-      + '<button type="button" class="dl-btn dl-btn-share">share</button>'
-      + '<button type="button" class="dl-btn dl-btn-delete">delete</button>'
-      + "</div>"
     );
   } else {
-    const runAttrs = pyodideReady ? "" : "disabled";
+    const runAttrs = pyodideReady ? "" : " disabled";
     const runLabel = pyodideReady ? "Run" : "…";
+    const runBtn = iconButtonHtml("dl-btn-run", "&#9654;", runLabel, runAttrs);
     host.innerHTML = (
-      '<div class="dl-cell-body-row">'
+      head("Your cell", "Python", "python", duplicateBtn + shareBtn + deleteBtn)
+      + '<div class="dl-cell-body-row">'
       + collapseCol
       + '<div class="dl-cell-content"><div class="dl-editor"></div></div>'
       + '<div class="dl-cell-collapsed-summary" role="button" tabindex="0" hidden></div>'
       + "</div>"
-      + '<div class="dl-output"></div>'
-      + '<div class="dl-cell-bar">'
-      + '<span class="dl-cell-id">your own cell</span>'
+      + '<div class="dl-cell-footbar">'
+      + runBtn
       + '<span class="dl-cell-spacer"></span>'
-      + '<button type="button" class="dl-btn dl-btn-duplicate" '
-      + 'title="Copy this cell, right below it">duplicate</button>'
-      + '<button type="button" class="dl-btn dl-btn-share">share</button>'
-      + '<button type="button" class="dl-btn dl-btn-delete">delete</button>'
-      + `<button type="button" class="dl-btn dl-btn-run" ${runAttrs}>${runLabel}</button>`
+      + '<span class="dl-cell-runline"></span>'
       + "</div>"
+      + '<div class="dl-output"></div>'
     );
   }
   return host;
@@ -1907,9 +1965,11 @@ function mountCustomCellAfter(afterNode, id, type, code, anchor) {
     // hover to hint that the note is clickable at all — previewBtn is the
     // same toggle, explicit and always visible, so there is no gesture a
     // reader has to already know about to find their way back in.
+    const previewIcon = previewBtn.querySelector(".dl-btn-icon");
     const syncPreviewBtn = () => {
       const editing = !textarea.hidden;
-      previewBtn.textContent = editing ? "view" : "edit";
+      previewIcon.innerHTML = editing ? "&#128065;" : "&#9998;";
+      setBtnLabel(previewBtn, editing ? "View" : "Edit");
       previewBtn.title = editing ? "Show this note rendered" : "Edit this note";
     };
     const showEditor = () => { textarea.hidden = false; renderEl.hidden = true; syncPreviewBtn(); };
@@ -1968,6 +2028,14 @@ function mountCustomCellAfter(afterNode, id, type, code, anchor) {
       collapsedSummary,
       getCode: () => editor.getValue(),
       focus: () => editor.focus(),
+      /* executeCell() calls noteAttempt()/maybeRevealHint() on every cell
+       * it runs, custom ones included — a custom cell can never actually
+       * have a staged hint (those are authored-only, matched by build-time
+       * `data-cell`), but it still needs somewhere for the counters those
+       * two functions read and write to live, or they throw reading
+       * `undefined.runs` the first time a reader runs their own cell. */
+      attempts: freshAttempts(),
+      hints: [],
     };
     runBtn.addEventListener("click", () => runCell(cell).then(scheduleCustomSave));
     host.addEventListener("keydown", (ev) => {
@@ -2581,7 +2649,7 @@ function pageNamesMT() {
  * back as a plain JS boolean) — used by runCellBatch() to count errors. */
 async function runCellMainThread(cell) {
   return JSON.parse(
-    await toolsMT.run_cell_report(cell.id, cell.outputEl, cell.getCode(), cell.expect),
+    await toolsMT.run_cell_report(cell.id, cell.outputEl, cell.getCode(), cell.expect, cell.name),
   );
 }
 
@@ -2629,7 +2697,11 @@ const openStreams = new Map(); // cellId -> {el, cssClass}
  * straight into the DOM itself, since there's no postMessage boundary in
  * the way on that path. */
 function applyOutputEvent(cellId, kind, cssClass, text, markup) {
-  const cell = cells.find((c) => c.id === cellId);
+  // A reader's own cell streams output through this exact same worker
+  // path as an authored one — searching only `cells` silently dropped
+  // every custom cell's output on the floor, since it never found a
+  // match and returned before ever touching `el`.
+  const cell = cells.find((c) => c.id === cellId) || customCells.find((c) => c.id === cellId);
   if (!cell) return;
   const el = cell.outputEl;
   if (kind === "stream") {
@@ -2735,7 +2807,7 @@ function requestInterrupt() {
  * "run-cell" handler responds with. */
 async function runCellWorker(cell) {
   return workerRequest("run-cell", {
-    cellId: cell.id, code: cell.getCode(), expect: cell.expect,
+    cellId: cell.id, code: cell.getCode(), expect: cell.expect, label: cell.name,
   });
 }
 
@@ -3082,15 +3154,17 @@ function initStagedHintsToggles() {
  * otherwise it just shows the cell is busy. Returns the button's previous
  * label, for clearCellRunning() below to restore once the run is done. */
 function setCellRunning(cell) {
-  const previousLabel = cell.runBtn.textContent;
+  const previousLabel = getBtnLabel(cell.runBtn);
+  const runIcon = cell.runBtn.querySelector(".dl-btn-icon");
   const canStop = !currentManifest.standalone && interruptBuffer !== null;
   if (canStop) {
     cell.runBtn.disabled = false;
-    cell.runBtn.textContent = "Stop";
+    if (runIcon) runIcon.innerHTML = "&#9632;"; // ■, matches compose/dewmini.js's own Stop affordance
+    setBtnLabel(cell.runBtn, "Stop");
     cell.runBtn.classList.add("dl-btn-stop");
   } else {
     cell.runBtn.disabled = true;
-    cell.runBtn.textContent = "Running…";
+    setBtnLabel(cell.runBtn, "Running…");
   }
   return previousLabel;
 }
@@ -3098,8 +3172,12 @@ function setCellRunning(cell) {
 function clearCellRunning(cell, previousLabel) {
   cell.runBtn.disabled = false;
   cell.runBtn.classList.remove("dl-btn-stop");
-  cell.runBtn.textContent =
-    previousLabel === "Running…" || previousLabel === "Stop" ? "Run" : previousLabel;
+  const runIcon = cell.runBtn.querySelector(".dl-btn-icon");
+  if (runIcon) runIcon.innerHTML = "&#9654;"; // ▶, back from Stop's ■
+  setBtnLabel(
+    cell.runBtn,
+    previousLabel === "Running…" || previousLabel === "Stop" ? "Run" : previousLabel,
+  );
 }
 
 /* The one announcement a screen reader gets once a cell finishes — not the

@@ -607,6 +607,20 @@
       </div>
     </div>
 
+    <!-- Run, Reset, Duplicate and the rest — icon, label, or both
+         (planning/CELL_IDENTITY.md §9). Same "dewlab:texture" key and same
+         [data-button-labels] CSS rule (tutorial-style.css) as a tutorial
+         page's own copy of this row, so the choice means the same thing
+         on either page. -->
+    <div class="dl-texture-row">
+      <span id="dl-seg-buttons-label">Cell buttons</span>
+      <div class="dl-seg" data-texture="buttons" role="radiogroup" aria-labelledby="dl-seg-buttons-label">
+        <button type="button" data-value="icons" role="radio">icons</button>
+        <button type="button" data-value="text" role="radio">text</button>
+        <button type="button" data-value="both" role="radio">both</button>
+      </div>
+    </div>
+
     <div class="dl-texture-row">
       <span>Size</span>
       <input type="range" id="dl-texture-size" min="16" max="24" step="1" aria-label="Text size">

@@ -236,6 +236,52 @@ for `load_csv()`).
 
 ---
 
+## A name beside the pill, and icon-or-label buttons
+
+Two small additions on top of the identity pill `planning/CELL_IDENTITY.md`
+already designed, both closing a gap with a tutorial page's own cells
+(`planning/CELL_IDENTITY.md` §9, `docs/tutorial-runtime-explained.md`'s
+matching section for the other half):
+
+**A cell can carry a name.** `nameEl`, a plain `<input>` styled to read as
+a label rather than a form field (`.dm-cell-name`, `dewmini-style.css`),
+sits between the pill and the header spacer in `createCellElement()` —
+optional, since most cells carry none, and a reader's own "a handle to
+hold on to" rather than anything dewmini assigns. `cell.name` round-trips
+through `readCells()`/`writeSavedState()`'s `plainCells()` the same way
+every other cell field does, and `executeCell()`'s `label` (`cell.name ||
+\`Cell ${n}\``) is what a traceback's file line shows instead of this
+cell's own generated id — the same `label` parameter `assets/pyodide-
+engine.js`'s `runCell()` now threads down to `tutorial_tools.run_cell()`
+for a tutorial page's authored cells too.
+
+**Every cell-chrome button carries an icon and a label, not just an
+icon.** `iconButton()` builds each one with a nested `.dl-btn-icon`/
+`.dl-btn-label` pair — the same two class names a tutorial page's own
+`icon_button()` (`build.py`)/`iconButtonHtml()` (`tutorial-runtime.js`)
+use, so Settings' "Cell buttons" row (`data-texture="buttons"`, the same
+`"dewlab:texture"` key and `initTexture()` machinery a tutorial page
+uses) shows or hides each span with one shared CSS rule
+(`tutorial-style.css`'s `[data-button-labels]`) regardless of which page
+it's on. `.dm-icon-btn` itself stays the small, square, icon-only shape
+by default; `dewmini-style.css`'s own `:root:not([data-button-labels=
+"icons"]) .dm-icon-btn` rule is what widens it out only in "text"/"both"
+mode, so "icons" mode — the only mode that existed before this — looks
+exactly as it always did. `setBtnLabel()`/`getBtnLabel()` read or write a
+button's `.dl-btn-label` span directly rather than its `.textContent`,
+since the latter would erase the icon along with whatever text was
+there — every place that used to set a button's text directly
+(`setRunButtonRunning()`/`resetRunButton()`, the text cell's own
+`syncPreviewBtn()`) goes through one of these two now. The output-clearing
+button in the footbar (`.dm-icon-reset-output`) deliberately kept its
+original counterclockwise ↺, rather than drifting to the clockwise ↻ a
+tutorial page's own destructive "reset to starter" button uses — two
+buttons that do genuinely different things (this one only clears output;
+that one throws away typed code) stay visibly different, not just
+differently labelled.
+
+---
+
 ## Two patterns worth understanding on their own
 
 **A small line-based Markdown parser.** Text cells support a deliberately

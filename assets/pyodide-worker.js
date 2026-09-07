@@ -338,7 +338,7 @@ async function boot(msg) {
  * message posted back to the page, which is what makes output appear
  * *as the cell runs*, one piece at a time, rather than only after it
  * finishes. */
-async function runCell(cellId, code, expect) {
+async function runCell(cellId, code, expect, label) {
   const emit = (kind, cssClass, text, markup) => {
     post({ type: "output", cellId, kind, cssClass, text, markup });
   };
@@ -355,7 +355,7 @@ async function runCell(cellId, code, expect) {
    * (planning/CELL_HINTS.md). Parsed here so the response is a plain
    * object; `ok` is still on it, so pyodide-engine.js's own reading of
    * this response is unchanged. */
-  const report = await tools.run_cell_report(cellId, emit, code, expect ?? null);
+  const report = await tools.run_cell_report(cellId, emit, code, expect ?? null, label ?? null);
   return JSON.parse(report);
 }
 
@@ -510,7 +510,7 @@ self.onmessage = async (ev) => {
        * no response needed, since there's nothing to report back yet. */
       pyodide.setInterruptBuffer(new Int32Array(msg.buffer));
     } else if (msg.type === "run-cell") {
-      respond(await runCell(msg.cellId, msg.code, msg.expect));
+      respond(await runCell(msg.cellId, msg.code, msg.expect, msg.label));
     } else if (msg.type === "reset-page-state") {
       await resetPageState();
       respond("ok");

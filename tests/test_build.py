@@ -237,12 +237,15 @@ class TestCells:
         assert 'aria-expanded="false"' in page
         assert 'role="tooltip"' not in page
 
-    def test_the_cell_bar_comes_after_the_editor_and_output_not_before(self, repo):
+    def test_the_footbar_sits_between_the_editor_and_output(self, repo):
+        # Run sits right where a reader's hand already is — between the
+        # code and its output, not after both (planning/CELL_IDENTITY.md,
+        # matching compose/dewmini.js's own .dm-cell-footbar placement).
         write(repo, CELL)
         b.build()
         page = built(repo)
-        assert page.index('<div class="dl-editor">') < page.index('class="dl-cell-bar"')
-        assert page.index('<div class="dl-output">') < page.index('class="dl-cell-bar"')
+        assert page.index('<div class="dl-editor">') < page.index('class="dl-cell-footbar"')
+        assert page.index('class="dl-cell-footbar"') < page.index('<div class="dl-output">')
 
     def test_an_untagged_fence_stays_ordinary_code(self, repo):
         write(repo, "```python\nnot_a_cell = 1\n```\n")
