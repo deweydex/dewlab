@@ -46,6 +46,11 @@ const NOTES_EXPORT_PREFIX = "dewlab:notes-exported-len:";
 const NOTES_NUDGE_KEY = "dewlab:notes-nudge";
 const NOTES_NUDGE_THRESHOLD = 120;
 const RUN_STATS_KEY = "dewlab:run-stats";
+/* Staged hints (planning/CELL_HINTS.md): whether they appear at all, and
+ * whether a restart of Python hides the ones already shown. Both default
+ * to the more forgiving reading — on, and keep. */
+const STAGED_HINTS_KEY = "dewlab:staged-hints";
+const STAGED_HINTS_RESTART_KEY = "dewlab:staged-hints-restart";
 const AUTOSAVE_DELAY = 500;
 /* A base64-embedded figure (tutorial_tools.py's _figure_html()) is easily
  * a few hundred KB in one cell's output_html, next to a typical printed
@@ -1237,6 +1242,13 @@ function buildCells(manifest) {
       collapsedSummary,
       element: host,
       getCode: () => editor.getValue(),
+      /* The author's `expect:` line, if any — evaluated by Python after
+       * every run and reported back as `reached` (planning/CELL_HINTS.md). */
+      expect: spec.expect || null,
+      /* How this cell's runs have gone so far, for its staged hints below;
+       * see noteAttempt(). Restored from the saved record, never shown. */
+      attempts: freshAttempts(),
+      hints: collectStagedHints(spec.id, host),
     };
 
     const editor = createCodeEditor(editorHost, spec.code || "", {
@@ -2568,7 +2580,9 @@ function pageNamesMT() {
  * raising (run_cell()'s own return value, a Python bool Pyodide hands
  * back as a plain JS boolean) — used by runCellBatch() to count errors. */
 async function runCellMainThread(cell) {
-  return toolsMT.run_cell(cell.id, cell.outputEl, cell.getCode());
+  return JSON.parse(
+    await toolsMT.run_cell_report(cell.id, cell.outputEl, cell.getCode(), cell.expect),
+  );
 }
 
 /* ---- hosted / Worker path (planning/CELL_CONTROLS.md §2) ---- */
@@ -2720,8 +2734,9 @@ function requestInterrupt() {
  * this Promise's result, which is just the `{ok}` pyodide-worker.js's own
  * "run-cell" handler responds with. */
 async function runCellWorker(cell) {
-  const { ok } = await workerRequest("run-cell", { cellId: cell.id, code: cell.getCode() });
-  return ok;
+  return workerRequest("run-cell", {
+    cellId: cell.id, code: cell.getCode(), expect: cell.expect,
+  });
 }
 
 /* The worker half of resetPageState() below — asks pyodide-worker.js's
@@ -2835,15 +2850,231 @@ async function pageNamesCompletion(context) {
  * this. Returns whether the run completed without raising. */
 async function executeCell(cell) {
   const startedAt = performance.now();
+  /* What ran last time, read before it is overwritten — the "ran the same
+   * code again" signal a staged hint can wait for (noteAttempt()). */
+  const previousCode = cell.ranContent;
   cell.ranContent = cell.getCode();
-  const ok = currentManifest.standalone
+  const report = currentManifest.standalone
     ? await runCellMainThread(cell)
     : await runCellWorker(cell);
   cell.lastRunMs = performance.now() - startedAt;
   cell.ranOrder = ++runSequenceCounter;
+  noteAttempt(cell, report, previousCode);
+  maybeRevealHint(cell, report);
   renderCellRunLine(cell);
   saveNow();
-  return ok;
+  return report.ok;
+}
+
+/* ---- staged hints: folds that wait for an attempt (planning/CELL_HINTS.md) ---- */
+
+function freshAttempts() {
+  return {
+    runs: 0,          // runs since the counters were last cleared
+    errors: 0,        // of those, how many raised
+    sameErrors: 0,    // consecutive runs ending in the same error as the one before
+    unchanged: 0,     // consecutive runs of code identical to the run before
+    checkFails: 0,    // consecutive runs in which a check() failed
+    firstRunAt: null, // when the first counted run happened, for `minutes`
+    lastErrorKey: null,
+  };
+}
+
+/* The folds build.py wrote for this cell — every `details.dl-hint-staged`
+ * on the page whose data-cell is this id, in source order, each with its
+ * `data-after` parsed once into {signal: count}. build.py has already
+ * validated the grammar, so an unreadable term here is a bug, not an
+ * author's slip, and is skipped rather than failing the page. */
+function collectStagedHints(cellId, host) {
+  const marker = host.querySelector(".dl-hint-marker");
+  const folds = document.querySelectorAll(
+    `details.dl-hint-staged[data-cell="${CSS.escape(cellId)}"]`,
+  );
+  return [...folds].map((el, index) => {
+    const terms = {};
+    for (const term of (el.dataset.after || "").split(/\s+/)) {
+      const [key, count] = term.split(":");
+      if (key && /^\d+$/.test(count || "")) terms[key] = Number(count);
+    }
+    /* Opening the fold is what the marker was asking for, so it goes. */
+    el.addEventListener("toggle", () => { if (el.open && marker) marker.hidden = true; });
+    return { el, index, terms, revealed: false };
+  });
+}
+
+/* Updates a cell's counters from one run's report (tutorial_tools.py's
+ * run_cell_report()). A Stop click is not an attempt: the reader chose to
+ * end that run, and counting it would hurry a hint they did not earn. */
+function noteAttempt(cell, report, previousCode) {
+  const a = cell.attempts;
+  if (report.error && report.error.type === "KeyboardInterrupt") return;
+  a.runs += 1;
+  if (a.firstRunAt == null) a.firstRunAt = Date.now();
+  a.unchanged = previousCode !== undefined && previousCode === cell.ranContent
+    ? a.unchanged + 1 : 0;
+  if (report.error) {
+    a.errors += 1;
+    const key = `${report.error.type}: ${report.error.message}`;
+    a.sameErrors = key === a.lastErrorKey ? a.sameErrors + 1 : 1;
+    a.lastErrorKey = key;
+  } else {
+    a.sameErrors = 0;
+    a.lastErrorKey = null;
+  }
+  if (report.check) a.checkFails = report.check.passed ? 0 : a.checkFails + 1;
+}
+
+/* Whether every term of a hint's `data-after` holds against the counters.
+ * `same-errors:3` means three runs in a row ended the same way;
+ * `unchanged:2` means the reader ran the very same code twice more;
+ * `minutes` is measured from the first counted run. */
+function triggerHolds(terms, a) {
+  const value = {
+    "errors": a.errors,
+    "same-errors": a.sameErrors,
+    "unchanged": a.unchanged,
+    "runs": a.runs,
+    "check-fails": a.checkFails,
+    "minutes": a.firstRunAt == null ? 0 : (Date.now() - a.firstRunAt) / 60000,
+  };
+  return Object.entries(terms).every(([key, count]) => (value[key] ?? 0) >= count);
+}
+
+/* At most one hint arrives per run, in the order the author wrote them,
+ * and none once the cell's `expect:` holds — the reader has got there, and
+ * a hint now would be noise. A hint the setting has turned off still counts
+ * as revealed, so turning the setting back on shows what was earned. */
+function maybeRevealHint(cell, report) {
+  if (report.reached === true) return;
+  for (const hint of cell.hints) {
+    if (hint.revealed) continue;
+    if (!triggerHolds(hint.terms, cell.attempts)) continue;
+    hint.revealed = true;
+    if (readStagedHints()) {
+      showStagedHint(cell, hint, { arriving: true });
+      cell.hintArrived = true;
+    }
+    return;
+  }
+}
+
+/* Removes `hidden` from a revealed fold, closed, in normal flow — the page
+ * grows by one summary line below the cell, nothing is covered and nothing
+ * is opened for the reader. `arriving` adds the short fade and lights the
+ * marker on the cell's bar; a fold restored from saved work gets neither. */
+function showStagedHint(cell, hint, { arriving } = {}) {
+  hint.el.hidden = false;
+  if (!arriving) return;
+  hint.el.classList.add("dl-hint-arrived");
+  const marker = cell.element.querySelector(".dl-hint-marker");
+  if (marker && !hint.el.open) marker.hidden = false;
+}
+
+/* Every revealed hint shown or hidden to match the setting — called when
+ * the setting changes, and once at load after restoreSaved(). */
+function syncStagedHints() {
+  const on = readStagedHints();
+  for (const cell of cells) {
+    for (const hint of cell.hints) {
+      if (hint.revealed) hint.el.hidden = !on;
+    }
+    if (!on) {
+      const marker = cell.element.querySelector(".dl-hint-marker");
+      if (marker) marker.hidden = true;
+    }
+  }
+}
+
+/* The "hide hints" reading of the after-a-restart setting: counters back
+ * to nothing, every staged fold hidden again, markers off. Never called on
+ * a check passing or `expect:` holding — a hint the reader has been shown
+ * stays theirs to reread. */
+function resetStagedHints() {
+  for (const cell of cells) {
+    cell.attempts = freshAttempts();
+    for (const hint of cell.hints) {
+      hint.revealed = false;
+      hint.el.hidden = true;
+      hint.el.open = false;
+      hint.el.classList.remove("dl-hint-arrived");
+    }
+    const marker = cell.element.querySelector(".dl-hint-marker");
+    if (marker) marker.hidden = true;
+  }
+}
+
+function readStagedHints() {
+  try {
+    return localStorage.getItem(STAGED_HINTS_KEY) !== "off";
+  } catch (err) {
+    return true;
+  }
+}
+
+function writeStagedHints(mode) {
+  try {
+    localStorage.setItem(STAGED_HINTS_KEY, mode);
+  } catch (err) {
+    /* This reader's own choice only; forgotten after it, same as the rest
+     * of this file's storage refusal shape. */
+  }
+}
+
+function readStagedHintsRestart() {
+  try {
+    return localStorage.getItem(STAGED_HINTS_RESTART_KEY) === "hide" ? "hide" : "keep";
+  } catch (err) {
+    return "keep";
+  }
+}
+
+function writeStagedHintsRestart(mode) {
+  try {
+    localStorage.setItem(STAGED_HINTS_RESTART_KEY, mode);
+  } catch (err) {
+    /* As above. */
+  }
+}
+
+/* The two Settings rows for staged hints — the same segmented-control
+ * shape as initRunStatsToggle() below, in the same section, so a page with
+ * no cells has already removed both by the time this runs. */
+function initStagedHintsToggles() {
+  const onOff = document.querySelector("[data-staged-hints]");
+  if (onOff) {
+    const sync = () => {
+      const on = readStagedHints();
+      for (const btn of onOff.querySelectorAll("button")) {
+        setSegChecked(btn, (btn.dataset.value === "on") === on);
+      }
+      syncSegRoving(onOff);
+    };
+    onOff.addEventListener("click", (ev) => {
+      const btn = ev.target.closest("button");
+      if (!btn) return;
+      writeStagedHints(btn.dataset.value);
+      sync();
+      syncStagedHints();
+    });
+    sync();
+  }
+  const restart = document.querySelector("[data-staged-hints-restart]");
+  if (restart) {
+    const sync = () => {
+      const mode = readStagedHintsRestart();
+      for (const btn of restart.querySelectorAll("button")) {
+        setSegChecked(btn, btn.dataset.value === mode);
+      }
+      syncSegRoving(restart);
+    };
+    restart.addEventListener("click", (ev) => {
+      const btn = ev.target.closest("button");
+      if (!btn) return;
+      writeStagedHintsRestart(btn.dataset.value);
+      sync();
+    });
+    sync();
+  }
 }
 
 /* Puts a cell's own Run button into its running/Stop state, wherever a
@@ -2883,9 +3114,14 @@ function announceCellRun(cell) {
   // same cell twice in a row would say nothing the second time without
   // this. Clearing first, then setting the real text next tick, makes
   // every run its own change even when the result reads identically.
+  /* A staged hint that arrived with this run (maybeRevealHint()) is the
+   * one visible change a sighted reader sees that a screen reader would
+   * otherwise miss, so it is said here, once, and never again. */
+  const hint = cell.hintArrived ? ". A hint has appeared below this cell." : "";
+  cell.hintArrived = false;
   runAnnouncerEl.textContent = "";
   setTimeout(() => {
-    runAnnouncerEl.textContent = errored ? "Ran — error" : "Ran — output below";
+    runAnnouncerEl.textContent = (errored ? "Ran — error" : "Ran — output below") + hint;
   }, 0);
 }
 
@@ -3066,6 +3302,7 @@ async function restartPython() {
   }
 
   resetRunSequence();
+  if (readStagedHintsRestart() === "hide") resetStagedHints();
 
   bootPromise = null;
   pyodideReady = false;
@@ -3293,6 +3530,12 @@ function saveNow() {
        * ask the same question. */
       errored: !!cell.outputEl.querySelector(".dl-error"),
       collapsed: !!cell.collapsed,
+      /* How the runs have gone and which staged hints have appeared
+       * (planning/CELL_HINTS.md) — so a reload, or the exported file, keeps
+       * a hint the reader had just been shown. Small, and additive: every
+       * other reader of this record ignores both. */
+      attempts: cell.attempts,
+      hints_shown: cell.hints.filter((hint) => hint.revealed).map((hint) => hint.index),
     })),
   };
   try {
@@ -3381,6 +3624,17 @@ function restoreSaved() {
       if (saved.output_html.includes("dl-widget")) widgets = true;
     }
     if (saved.collapsed) setCellCollapsed(cell, true);
+    if (saved.attempts && typeof saved.attempts === "object") {
+      cell.attempts = { ...freshAttempts(), ...saved.attempts };
+    }
+    if (Array.isArray(saved.hints_shown)) {
+      for (const hint of cell.hints) {
+        if (saved.hints_shown.includes(hint.index)) {
+          hint.revealed = true;
+          if (readStagedHints()) showStagedHint(cell, hint);
+        }
+      }
+    }
     restored.push(cell.id);
   }
 
@@ -4179,6 +4433,7 @@ initProgressSection();
 initCustomCellsSection();
 initExecutionSection();
 initRunStatsToggle();
+initStagedHintsToggles();
 initExportSection();
 initVersionsSection();
 initVersionMarker();
@@ -4222,6 +4477,7 @@ if (cells.length === 0 || leaving) {
 globalThis.dewlab = {
   version: PYODIDE_VERSION,
   cells,
+  restartPython,
   customCells,
   addCustomCell,
   saveNow,

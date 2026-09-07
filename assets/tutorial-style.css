@@ -2951,6 +2951,38 @@ p code, li code {
 .dl-hint > summary:hover { color: var(--dl-fg); }
 .dl-hint > :not(summary) { font-size: 0.95rem; }
 
+/* A staged hint (planning/CELL_HINTS.md): the same fold, written by the
+   author for one cell and kept hidden by build.py until the runtime decides
+   the reader has tried enough times. It arrives closed and in normal flow —
+   the page grows by one summary line, nothing is covered and nothing is
+   opened for the reader. The short fade is only so the arrival is
+   noticeable at all when the eye is on the cell above; it is dropped for a
+   reader who has asked their system for less motion. */
+.dl-hint-staged[hidden] { display: none; }
+.dl-hint-arrived { animation: dl-hint-arrive 0.5s ease-out; }
+@keyframes dl-hint-arrive {
+  from { opacity: 0; transform: translateY(-0.25rem); }
+  to { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dl-hint-arrived { animation: none; }
+}
+
+/* The marker a cell's bar shows while a staged hint below it is waiting to
+   be opened — the same colour as the fold it points at, and gone the moment
+   the fold is opened. A dot, not a count: how many tries it took is not the
+   reader's business to be reminded of (PEDAGOGICAL_STYLE_GUIDE.md §11). */
+.dl-hint-marker {
+  display: inline-block;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--dl-orange);
+  margin: 0 0.35rem;
+  align-self: center;
+}
+.dl-hint-marker[hidden] { display: none; }
+
 .dl-contents-practice {
   margin-left: 0.5rem;
   font-family: var(--dl-mono);

@@ -113,6 +113,14 @@ finding each match, not just substitute fixed text.
 - **"How does a `tutorial:other-slug` link get resolved?"** —
   `resolve_links()`, and `link_between()` for the actual relative-path
   math once a target is found.
+- **"How does a ```` ```hint ```` fence become a fold?"** — `parse_hint()`
+  reads its `for:`/`after:`/`title:` lines, `parse_trigger()` turns `5
+  errors` or `errors:5` into the runtime's `key:number` form,
+  `extract_blocks()` leaves a placeholder, and `place_hints()` swaps it for
+  `render_staged_hint()`'s output once the prose is converted — the body is
+  converted on its own, like a pedagogical note, because Python-Markdown
+  treats a `<details>` block as raw HTML. `expect:` is read off a cell's
+  header by `parse_cell()` and travels in the manifest.
 - **"How does the knowledge map lay itself out?"** — `topic_tiers()`
   (how deep a topic is, based on its prerequisites) feeds `topic_layout()`
   (turning tiers into actual x/y coordinates), and `arrow_between()` draws

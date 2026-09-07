@@ -747,3 +747,47 @@ class TestDescribeGlobalsWithPandas:
         tt._page_globals["lookalike"] = NotPandas()
         entry = next(e for e in tt.describe_globals() if e["name"] == "lookalike")
         assert entry["summary"] == "5 rows x 2 columns"
+
+
+# ------------------------------------------------- run reports for staged hints
+
+
+class TestRunReport:
+    """What `run_cell_report()` tells the page about one run — the plain
+    values `tutorial-runtime.js` counts attempts from (planning/CELL_HINTS.md)."""
+
+    def test_a_clean_run_with_no_checks_and_no_expect(self, cell):
+        report = tt._report(True, tt._current, None)
+        assert report == {"ok": True, "error": None, "check": None, "reached": None}
+
+    def test_an_error_is_its_type_and_first_line(self, cell):
+        try:
+            raise ValueError("first line\nsecond line")
+        except ValueError as exc:
+            tt._current.last_error = tt._describe_error(exc)
+        report = tt._report(False, tt._current, None)
+        assert report["ok"] is False
+        assert report["error"] == {"type": "ValueError", "message": "first line"}
+
+    def test_checks_report_the_first_failure_by_label(self, cell):
+        tt.check(1, 1, label="q1")
+        tt.check(2, 3, label="q2")
+        tt.check(4, 5, label="q3")
+        report = tt._report(True, tt._current, None)
+        assert report["check"] == {"passed": False, "label": "q2"}
+
+    def test_all_checks_passing_reports_the_last_label(self, cell):
+        tt.check(1, 1, label="q1")
+        tt.check(2, 2)
+        assert tt._report(True, tt._current, None)["check"] == {"passed": True, "label": None}
+
+    def test_expect_is_evaluated_in_the_page_namespace(self, cell):
+        tt._page_globals["total"] = 6
+        assert tt.holds("total == 6") is True
+        assert tt.holds("total == 7") is False
+        assert tt._report(True, tt._current, "total == 6")["reached"] is True
+
+    def test_expect_that_raises_is_not_yet_not_an_error(self, cell):
+        assert tt.holds("undefined_name == 1") is False
+        assert tt.holds("1 / 0") is False
+        assert tt.holds("this is not python") is False

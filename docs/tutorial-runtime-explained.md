@@ -345,6 +345,14 @@ two near-identical implementations of the same lookup functions
   `updateNotesNudge()`/`markNotesExported()`: a small, deliberately rough
   heuristic (has enough new text piled up since the last export?) rather
   than anything precise.
+- **"How does a hint decide to appear under a cell?"** — the staged-hints
+  block after `executeCell()`: `noteAttempt()` updates a cell's counters
+  from the run's report, `triggerHolds()` tests a fold's `data-after`
+  terms against them, `maybeRevealHint()` shows at most one fold per run
+  and none once `expect:` holds. The counters and which folds have shown
+  travel in the saved record (`attempts`, `hints_shown`), and two Settings
+  rows (`initStagedHintsToggles()`) decide whether they show at all and
+  whether a restart hides them. planning/CELL_HINTS.md is the design.
 - **"What's actually exposed to the browser console / end-to-end tests?"**
   — the `globalThis.dewlab = {...}` object at the very end of the file.
 - **"Why doesn't a shared custom cell run itself when I load it?"** —

@@ -6625,3 +6625,73 @@ map is data. Not shared with dewstack as a file — "port in shape" stays
 the rule between the two repositories, decided the same day — so a
 change to the wording there is a change to make here by hand, and the
 banner on each names the other.*
+
+**7.135 — Staged hints: a fold that waits for an attempt.** Josh, 2026-09-06,
+for both repositories: "what type of infrastructure would be necessary for
+the text to be at least somewhat aware of what the student has run or done
+to a given cell", so that after an error has come up some number of times a
+"pause and ponder" fold can appear with a question, and later another with
+steps — "kind of like Khan Academy's hints but a bit more engaged and
+pedagogically more open, inviting the learner to form certain habits."
+planning/CELL_HINTS.md is the design note and the survey of what nbgrader,
+otter, okpy, Khan Academy and Runestone do; this entry records what was
+decided and built.
+
+**The authoring surface is a fence, not HTML.** A ```` ```hint ```` fence
+after a cell, with optional `for:`, `after:` and `title:` header lines in
+the same `key: value` shape the exec cell already uses. Josh's first
+reaction to the HTML-attribute version was "is there a nicer way of doing
+that?", and the fence answers it while also surviving the Milkdown editor,
+which keeps only the first word of a fence's info string (7.60's
+`restoreExecTag()` exists for the same reason). Defaults: the exec cell
+above, `5 errors`, *Let's slow down a moment…* — Josh's own line. `after:`
+reads both `5 errors` and `errors:5`, since both were asked for; the build
+canonicalises to the second for the runtime and fails on a term it does not
+know. A cell may carry `expect:`, a Python expression evaluated in the page
+namespace after each run; once it holds no further hint appears. A body
+inside the fence is converted on its own (`render_staged_hint()`), because
+Python-Markdown treats a `<details>` block as raw HTML — which is also,
+it turned out, why the hand-written `dl-hint` folds on the practice pages
+have been shipping their markdown as literal text. Noted in
+planning/CELL_HINTS.md §12; not fixed here.
+
+**What the runtime counts, and what it never shows.** `run_cell_report()`
+returns a JSON report of each run — raised or not, the exception's type and
+first line, whether a `check()` passed, whether `expect` holds — and
+`tutorial-runtime.js` keeps per-cell counters from it: runs, errors,
+consecutive identical errors, consecutive runs of unchanged code,
+consecutive failed checks, time since the first run. At most one fold
+appears per run, closed, in normal flow, with a dot on the cell's bar until
+it is opened and one sentence added to the run announcement for a screen
+reader. No count is ever shown: section 11 of the style guide makes a number
+on a cell a verdict whatever its caption. `run_cell()` itself still returns
+a boolean, because dewmini and `pyodide-engine.js` read it that way.
+
+**What clears nothing.** Josh: "I don't see why success needs to hide
+hints? and restart might offer an option to the user? these definitely feel
+like settings." So a hint once shown stays; a cell's Reset keeps the
+counters (a reader resetting code is still stuck); and two Settings rows
+decide whether hints appear at all (default on) and whether Restart Python
+hides them (default keep). Counters and revealed folds travel in the
+saved-work record, so a reload and the downloaded series keep them.
+
+**The first fold asks.** Josh, on the habits list: "we should be asking
+questions here as our first stage, not commands... invitations to comment or
+think through cases or what you want and working backwards all as
+questions." The style guide's new §3 subsection has the three stages —
+a question, then steps, then the shape of the code, never the answer — and
+the docs' examples are written that way. Writing down what you expect
+before running is the habit Josh named as helping his students most; a first
+fold may send a reader to their notes to do it.
+
+**Where it is written first.** Four tutorials, at Josh's choice:
+`finding-where-it-went-wrong` and `grid-of-numbers` in computational
+methods, `the-moves-you-already-know` and `testing-what-a-class-does` in
+FOOP. dewstack's own half is designed in its planning note and not yet
+built; Josh: "I am more concerned about it for python cells."
+
+*Cost to change: two attributes and a fence in `build.py`; one report
+function in `tutorial_tools.py`; ~250 lines in `tutorial-runtime.js`, all
+in one block after `executeCell()`; two Settings rows; a CSS block. The
+grammar is a table (`TRIGGER_KEYS`). Verified in a real Chromium against a
+self-hosted Pyodide: `tests/e2e/test_cell_hints_staged.py`.*

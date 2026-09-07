@@ -29,6 +29,7 @@ from __future__ import annotations
 import asyncio
 import base64
 import html
+import json
 import io
 import linecache
 import math
@@ -246,6 +247,13 @@ class _CellContext:
         # (emission count, value) of the most recent check(), so a cell ending
         # in a check does not print a bare True/False under its own verdict.
         self.last_check: tuple[int, bool] | None = None
+        # Every check() this run made, as (label, passed), and the exception
+        # that ended the run, as (type name, first line of its message) —
+        # both read by run_cell_report() once the run is over, so the page
+        # can count attempts for a staged hint (planning/CELL_HINTS.md)
+        # without scraping the rendered output.
+        self.checks: list[tuple[str | None, bool]] = []
+        self.last_error: tuple[str, str] | None = None
 
 
 _current: _CellContext | None = None
@@ -731,10 +739,12 @@ def _end(value) -> None:
         _current = None
 
 
-async def run_cell(cell_id: str, output_target, code: str) -> bool:
+async def run_cell(cell_id: str, output_target, code: str, expect: str | None = None) -> bool:
     """Run one cell's code and render everything it produced.
 
-    Returns True if the code completed without raising. The whole lifecycle
+    Returns True if the code completed without raising. `expect`, when
+    given, is evaluated after the run for the report `run_cell_report()`
+    returns — it never affects the run itself. The whole lifecycle
     lives here, in Python, rather than being split across the JS runtime, so
     output ordering and traceback formatting have exactly one implementation.
 
@@ -747,6 +757,7 @@ async def run_cell(cell_id: str, output_target, code: str) -> bool:
     """
     from pyodide.code import eval_code_async  # pragma: no cover - browser only
 
+    global _last_report
     sink = _MessageSink(output_target) if callable(output_target) else _DomSink(output_target)
     _begin(cell_id, sink, code)
     ok = True
@@ -760,15 +771,78 @@ async def run_cell(cell_id: str, output_target, code: str) -> bool:
         # their code — a full traceback would say so anyway, but "Stopped."
         # is the honest, unintimidating version of the same fact.
         ok = False
+        _current.last_error = ("KeyboardInterrupt", "Stopped.")
         _current.sink.close_stream()
         render_error("Stopped.")
     except BaseException as exc:  # noqa: BLE001 - a student's error is normal traffic
         ok = False
+        _current.last_error = _describe_error(exc)
         _current.sink.close_stream()
         render_error(_format_exception(exc))
     finally:
+        _last_report = _report(ok, _current, expect)
         _end(value if ok else None)
     return ok
+
+
+# The report of the most recent run_cell(), kept for run_cell_report() —
+# see there for why the two are separate functions.
+_last_report: dict = {}
+
+
+def _describe_error(exc: BaseException) -> tuple[str, str]:
+    """An exception as (type name, first line of its message): what a staged
+    hint's "identical errors" count compares from one run to the next. The
+    first line only, because a SyntaxError's message runs on for several
+    lines that repeat the offending code, and two runs of the same mistake
+    should read as the same mistake."""
+    message = str(exc).strip().split("\n", 1)[0]
+    return type(exc).__name__, message
+
+
+def holds(expression: str) -> bool:
+    """Whether an author's `expect:` line is true of the page namespace right
+    now (planning/CELL_HINTS.md §3). Anything that goes wrong evaluating it —
+    a name not yet defined, a comparison that raises — is "not yet", not an
+    error to show: the expression is the author's and the reader has never
+    seen it."""
+    try:
+        return bool(eval(expression, _page_globals))  # noqa: S307 - the author's own expression
+    except BaseException:  # noqa: BLE001
+        return False
+
+
+def _report(ok: bool, cell: "_CellContext", expect: str | None) -> dict:
+    """What one run amounted to, for the page's attempt counters: whether it
+    raised and which error, whether its checks passed and which one did not,
+    and whether `expect:` holds. All plain values, so it can cross the
+    Worker's postMessage boundary as JSON."""
+    check = None
+    if cell.checks:
+        failed = [label for label, passed in cell.checks if not passed]
+        check = {"passed": not failed, "label": failed[0] if failed else cell.checks[-1][0]}
+    error = None
+    if cell.last_error:
+        error = {"type": cell.last_error[0], "message": cell.last_error[1]}
+    return {
+        "ok": ok,
+        "error": error,
+        "check": check,
+        "reached": holds(expect) if expect else None,
+    }
+
+
+async def run_cell_report(cell_id: str, output_target, code: str, expect: str | None = None) -> str:
+    """run_cell(), plus a JSON report of what the run amounted to — see
+    `_report()`. The tutorial page calls this one; `run_cell()` itself
+    keeps returning a plain boolean because dewmini and the shared engine
+    (compose/dewmini.js, assets/pyodide-engine.js) read it that way. A
+    string rather than a dict so the same value crosses both the main-thread
+    call and the Worker's postMessage unchanged."""
+    global _last_report
+    _last_report = {}
+    await run_cell(cell_id, output_target, code, expect)
+    return json.dumps(_last_report)
 
 
 def reset_page_state() -> None:
@@ -911,6 +985,7 @@ def check(actual, expected, tolerance: float | None = None, label: str | None = 
     passed, detail = _compare(actual, expected, tolerance)
     cell.sink.append_html(_check_html(passed, label, detail))
     cell.last_check = (cell.sink.count, passed)
+    cell.checks.append((label, passed))
     return passed
 
 

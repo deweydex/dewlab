@@ -231,6 +231,27 @@
         <button type="button" data-value="off" role="radio">off</button>
       </div>
     </div>
+    <!-- Staged hints (planning/CELL_HINTS.md): a fold an author wrote for a
+         cell, shown only after that cell has been run and failed some number
+         of times. Two choices, both the reader's: whether they appear at
+         all, and whether Restart Python hides the ones already shown. The
+         note underneath is the whole of what a reader is told about the
+         counting, on purpose — no count is ever shown on a cell. -->
+    <div class="dl-texture-row">
+      <span id="dl-seg-hints-label">Hints as you work</span>
+      <div class="dl-seg" data-staged-hints role="radiogroup" aria-labelledby="dl-seg-hints-label">
+        <button type="button" data-value="on" role="radio">on</button>
+        <button type="button" data-value="off" role="radio">off</button>
+      </div>
+    </div>
+    <div class="dl-texture-row">
+      <span id="dl-seg-hints-restart-label">After a restart</span>
+      <div class="dl-seg" data-staged-hints-restart role="radiogroup" aria-labelledby="dl-seg-hints-restart-label">
+        <button type="button" data-value="keep" role="radio">keep hints</button>
+        <button type="button" data-value="hide" role="radio">hide hints</button>
+      </div>
+    </div>
+    <p class="dl-panel-note">A hint can appear under a cell after you have run it several times without getting there. Nothing is counted against you, and nothing is sent anywhere.</p>
   </section>
 
   <!-- Cells a reader writes for themselves — planning/PRACTICE.md §3 — kept

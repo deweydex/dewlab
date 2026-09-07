@@ -121,7 +121,34 @@ MOVED_FRONTMATTER = {
 # ordinary illustrative code and markdown renders it as it always would.
 FENCE_RE = re.compile(r"^(?P<indent> *)```(?P<info>[^\n]*)\n(?P<body>.*?)^ *```[ \t]*$",
                       re.MULTILINE | re.DOTALL)
-HEADER_RE = re.compile(r"^\s*(id|hint)\s*:\s*(.*)$")
+HEADER_RE = re.compile(r"^\s*(id|hint|expect)\s*:\s*(.*)$")
+# ```hint — a staged hint (planning/CELL_HINTS.md): a fold that stays hidden
+# until the cell it belongs to has been run, and failed, some number of
+# times. Its header lines follow the exec cell's own `key: value` shape, so
+# the Milkdown editor's one-word info string (ARCHITECTURE.md §3) loses
+# nothing: `for:` names a cell (default: the exec cell above), `after:` says
+# when it appears (default: 5 errors), `title:` is the fold's summary line.
+HINT_HEADER_RE = re.compile(r"^\s*(for|after|title)\s*:\s*(.*)$")
+# `after:` accepts a plain phrase or a key:number term, several joined with
+# a comma or "and" — both spellings were asked for. Canonicalised to the
+# key:number form for the runtime, which parses only that.
+TRIGGER_KEYS = {
+    "errors": "errors", "error": "errors",
+    "identical errors": "same-errors", "identical error": "same-errors",
+    "same errors": "same-errors", "same error": "same-errors",
+    "same-error": "same-errors", "same-errors": "same-errors",
+    "identical-errors": "same-errors",
+    "unchanged runs": "unchanged", "unchanged run": "unchanged", "unchanged": "unchanged",
+    "runs": "runs", "run": "runs",
+    "failed checks": "check-fails", "failed check": "check-fails",
+    "check-fails": "check-fails", "failed-checks": "check-fails",
+    "minutes": "minutes", "minute": "minutes",
+}
+TRIGGER_TERM_RE = re.compile(
+    r"^(?:(?P<n1>\d+)\s+(?P<k1>[a-z][a-z -]*[a-z])|(?P<k2>[a-z][a-z-]*)\s*:\s*(?P<n2>\d+))$"
+)
+DEFAULT_HINT_AFTER = "errors:5"
+DEFAULT_HINT_TITLE = "Let\u2019s slow down a moment\u2026"
 INCLUDE_RE = re.compile(r"\{\{\s*include\s*:\s*(?P<path>[^}]+?)\s*\}\}")
 # A list written directly under a line of prose, with no blank line between.
 # Most markdown an author has written before — in a notebook, on GitHub — treats
@@ -167,6 +194,23 @@ class Cell:
     id: str
     hint: str | None
     code: str
+    # An author's own "the reader has got there" test — a Python expression
+    # evaluated in the page namespace after every run of this cell
+    # (planning/CELL_HINTS.md §3). Once it holds, no further staged hint
+    # appears for the cell. None when the cell has no such line.
+    expect: str | None = None
+
+
+@dataclass
+class StagedHint:
+    """A ```hint fence, before it becomes a fold — see extract_blocks()."""
+
+    cell: str
+    after: str
+    title: str
+    body: str
+    # Which of its cell's hints this is, in source order — the fold's id.
+    index: int = 0
 
 
 @dataclass
@@ -444,18 +488,128 @@ def parse_cell(body: str, path: Path) -> Cell:
     if "id" not in header:
         fail(path, "an exec cell has no `id:` line — ids are what saved progress matches on")
     code = expand_includes("\n".join(lines).strip("\n"), path)
-    return Cell(id=header["id"], hint=header.get("hint") or None, code=code)
+    return Cell(
+        id=header["id"],
+        hint=header.get("hint") or None,
+        code=code,
+        expect=header.get("expect") or None,
+    )
 
 
-def extract_blocks(body: str, path: Path) -> tuple[str, list[Cell], list[CodeBlock]]:
+def parse_trigger(text: str, path: Path) -> str:
+    """Turn an `after:` line into the runtime's `key:number` form.
+
+    `5 errors`, `3 identical errors and 2 minutes`, `errors:5, minutes:2` all
+    parse; the first two become the third. Every term must be one the
+    runtime knows (`TRIGGER_KEYS`), so a typo fails the build here rather
+    than producing a hint that never appears.
+    """
+    terms = []
+    for raw in re.split(r"\s*(?:,|\band\b|&)\s*", text.strip().lower()):
+        if not raw:
+            continue
+        match = TRIGGER_TERM_RE.match(raw)
+        if not match:
+            fail(path, f"a hint's after: line has a term I cannot read: {raw!r} "
+                       f"— write it like `5 errors` or `errors:5`")
+        key = match.group("k1") or match.group("k2")
+        count = int(match.group("n1") or match.group("n2"))
+        canonical = TRIGGER_KEYS.get(key.strip())
+        if canonical is None:
+            fail(path, f"a hint's after: line names a signal the runtime does not "
+                       f"track: {key!r} — one of errors, identical errors, "
+                       f"unchanged runs, runs, failed checks, minutes")
+        if count < 1:
+            fail(path, f"a hint's after: count must be at least 1, not {count}")
+        terms.append(f"{canonical}:{count}")
+    if not terms:
+        fail(path, "a hint's after: line is empty")
+    return " ".join(terms)
+
+
+def parse_hint(body: str, path: Path, previous_cell: str | None) -> StagedHint:
+    """Read `for:`, `after:` and `title:` off the top of a ```hint fence.
+
+    Everything after the header lines is the hint's own markdown. With no
+    `for:` the hint belongs to the exec cell just above it in the source,
+    which is where nearly every hint will sit.
+    """
+    lines = body.split("\n")
+    header: dict[str, str] = {}
+    while lines:
+        match = HINT_HEADER_RE.match(lines[0])
+        if not match or match.group(1) in header:
+            break
+        header[match.group(1)] = match.group(2).strip()
+        lines.pop(0)
+    cell = header.get("for") or previous_cell
+    if not cell:
+        fail(path, "a hint fence has no exec cell above it and no `for:` line "
+                   "naming one")
+    text = "\n".join(lines).strip("\n")
+    if not text.strip():
+        fail(path, f"the hint for cell {cell!r} has no text in it")
+    return StagedHint(
+        cell=cell,
+        after=parse_trigger(header.get("after") or DEFAULT_HINT_AFTER, path),
+        title=header.get("title") or DEFAULT_HINT_TITLE,
+        body=text,
+    )
+
+
+def render_staged_hint(hint: StagedHint, maths: list[Math]) -> str:
+    """The fold a ```hint fence becomes.
+
+    Its body is converted on its own, the same way extract_notes() converts a
+    pedagogical note: Python-Markdown treats a `<details>` block and
+    everything up to its closing tag as raw HTML, so a body left inside the
+    tags in the source would come out as literal text — which is also why the
+    hand-written folds on the practice pages keep to plain sentences. Maths
+    goes through extract_math() first, appending to the *page's* list so its
+    tokens are numbered after the prose's and place_blocks() renders them in
+    the same pass. `hidden` is what the runtime removes when the trigger
+    fires; with JavaScript off the fold stays hidden, as a cell stays
+    unrunnable.
+    """
+    stripped, _ = extract_math(hint.body, maths)
+    body_html, _ = to_html(loosen_tight_lists(stripped))
+    safe_cell = html.escape(hint.cell, quote=True)
+    return (
+        f'<details class="dl-hint dl-hint-staged" '
+        f'id="dl-staged-{safe_cell}-{hint.index}" '
+        f'data-cell="{safe_cell}" data-after="{html.escape(hint.after, quote=True)}" hidden>'
+        f"<summary>{html.escape(hint.title)}</summary>\n"
+        f"{body_html}\n"
+        f"</details>"
+    )
+
+
+def place_hints(page_html: str, hints: list[StagedHint], maths: list[Math]) -> str:
+    """Swap each hint's placeholder comment for its rendered fold — the
+    hint half of place_blocks(), run before it so the maths tokens a hint's
+    body adds to `maths` are still there to be rendered."""
+    for index, hint in enumerate(hints):
+        placeholder = f"<!--dewlab-hint-{index}-->"
+        if placeholder not in page_html:
+            raise BuildError(f"the hint for cell {hint.cell!r} was lost during markdown conversion")
+        page_html = page_html.replace(placeholder, render_staged_hint(hint, maths))
+    return page_html
+
+
+def extract_blocks(
+    body: str, path: Path,
+) -> tuple[str, list[Cell], list[CodeBlock], list[StagedHint]]:
     """Pull every fence out, leaving a comment placeholder markdown will keep.
 
-    An `exec` fence becomes a cell; any other fence becomes an illustrative,
-    read-only block. Both leave the source before the markdown converter runs,
-    so nothing inside either can be reinterpreted as markup.
+    An `exec` fence becomes a cell; a `hint` fence becomes a staged hint
+    (planning/CELL_HINTS.md); any other fence becomes an illustrative,
+    read-only block. All three leave the source before the markdown converter
+    runs, so nothing inside any of them can be reinterpreted as markup.
     """
     cells: list[Cell] = []
     blocks: list[CodeBlock] = []
+    hints: list[StagedHint] = []
+    hints_per_cell: dict[str, int] = {}
 
     # re.sub's second argument can be a function instead of a plain
     # replacement string — when it is, that function is called once per
@@ -471,6 +625,15 @@ def extract_blocks(body: str, path: Path) -> tuple[str, list[Cell], list[CodeBlo
         if "exec" in info:
             cells.append(parse_cell(match.group("body"), path))
             return f"{indent}<!--dewlab-cell-{len(cells) - 1}-->"
+        if info and info[0] == "hint":
+            # A staged hint (planning/CELL_HINTS.md): bound to the exec cell
+            # above it unless its `for:` says otherwise. Rendered by
+            # render_staged_hint() once the prose is converted.
+            hint = parse_hint(match.group("body"), path, cells[-1].id if cells else None)
+            hint.index = hints_per_cell.get(hint.cell, 0)
+            hints_per_cell[hint.cell] = hint.index + 1
+            hints.append(hint)
+            return f"{indent}<!--dewlab-hint-{len(hints) - 1}-->"
         language = info[0] if info else ""
         blocks.append(CodeBlock(language=language, code=match.group("body").strip("\n")))
         return f"{indent}<!--dewlab-code-{len(blocks) - 1}-->"
@@ -481,17 +644,28 @@ def extract_blocks(body: str, path: Path) -> tuple[str, list[Cell], list[CodeBlo
         if cell.id in seen:
             fail(path, f"two exec cells share the id {cell.id!r}")
         seen.add(cell.id)
-    return rewritten, cells, blocks
+    for hint in hints:
+        # Checked here rather than in parse_hint(): a `for:` may name a cell
+        # further down the page, which does not exist yet while the fences
+        # are being read in order.
+        if hint.cell not in seen:
+            fail(path, f"a hint names a cell this tutorial does not have: {hint.cell!r}")
+    return rewritten, cells, blocks, hints
 
 
-def extract_math(body: str) -> tuple[str, list[Math]]:
+def extract_math(body: str, found: list[Math] | None = None) -> tuple[str, list[Math]]:
     """Lift $…$ and $$…$$ out, leaving a token markdown will not touch.
 
     The placeholder is a bare alphanumeric word on purpose: an HTML comment
     works for a block-level fence but not mid-sentence, where markdown's inline
     pass can reach it.
+
+    `found` lets a second piece of text — a staged hint's body, converted on
+    its own — number its tokens after the page's, so place_blocks() renders
+    both from the one list.
     """
-    found: list[Math] = []
+    if found is None:
+        found = []
     body = body.replace("\\$", ESCAPED_DOLLAR)
 
     # Same re.sub-callback pattern as extract_blocks()'s own `one` above,
@@ -621,6 +795,8 @@ def render_cell(cell: Cell, number: int, page: str = "", version: str = "") -> s
         "</span>"
         '<span class="dl-cell-runline"></span>'
         '<span class="dl-cell-spacer"></span>'
+        '<span class="dl-hint-marker" hidden aria-hidden="true" '
+        'title="A hint has appeared below this cell"></span>'
         f"{hint_markup}"
         f"{report_markup}"
         '<button type="button" class="dl-btn dl-btn-duplicate" '
@@ -2373,10 +2549,11 @@ def load(path: Path) -> Tutorial:
     build.py builds starts here.
     """
     meta, body = split_frontmatter(path.read_text(), path)
-    stripped, cells, blocks = extract_blocks(body, path)
+    stripped, cells, blocks, hints = extract_blocks(body, path)
     stripped, maths = extract_math(stripped)
     stripped = loosen_tight_lists(stripped)
     converted, toc = to_html(stripped)
+    converted = place_hints(converted, hints, maths)
     page = f"{meta.get('module', '')}/{meta.get('slug', '')}"
     body_html = place_blocks(converted, cells, blocks, maths, page, str(meta.get("version", "")))
     body_html, notes = extract_notes(body_html, path)
@@ -2730,7 +2907,11 @@ def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "",
         # a page can only cache-bust what its own markup names.
         "assetVersions": {"tutorial_tools.py": asset_version("tutorial_tools.py")},
         "dataBase": f"{up}data/",
-        "cells": [{"id": c.id, "hint": c.hint, "code": c.code} for c in tutorial.cells],
+        "cells": [
+            {"id": c.id, "hint": c.hint, "code": c.code}
+            | ({"expect": c.expect} if c.expect else {})
+            for c in tutorial.cells
+        ],
     }
     versions = version_manifest(tutorial, family or [tutorial])
     if versions:

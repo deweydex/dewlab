@@ -108,8 +108,32 @@ position exactly once.
 
 ```python exec
 id: two-grids-added-together-2
+expect: add([[1, 2], [3, 4]], [[10, 20], [30, 40]]) == [[11, 22], [33, 44]]
 hint: Two nested loops. The outer one picks a row index, the inner one a column index, and the result at [i][j] is a[i][j] + b[i][j].
 # Your add(a, b)
+```
+
+```hint
+What does the last line of the error name: a variable Python has not met
+yet, an index past the end of a list, or something about the shape of a
+line? Which line of your `add` is it pointing at? Before you change that
+line, write down what you expected `a[0]` to be there. Is it one number,
+or a whole row?
+```
+
+```hint
+after: 10 errors
+title: some steps
+1. Start with an empty list, `result = []`.
+2. For each row index `i`, build one new row, then append it to `result`.
+3. Inside that, for each column index `j`, the new row gets `a[i][j] + b[i][j]`.
+4. Return `result` after both loops have finished, not inside them.
+
+**Think about:** why the inner loop's range comes from `len(a[0])` and the
+outer one from `len(a)`.
+
+**Try this next:** the same shape with subtraction, then with `max` of the
+two entries.
 ```
 
 Once `add` works, what is `A + B` by hand, and does your function agree? Try
@@ -142,8 +166,15 @@ matrices above.
 
 ```python exec
 id: scaling-and-the-shape-rule-1
+expect: scale(2, [[1, 2], [3, 4]]) == [[2, 4], [6, 8]]
 hint: scale(k, m) is one nested loop, no addition needed — just k * m[i][j] at every position.
 # Your scale(k, m)
+```
+
+```hint
+How is `scale` different from your `add`? How many matrices does it use,
+and what happens at each position? If your `add` works, which of
+its lines could you keep as they are, and which one line changes?
 ```
 
 ```python exec
@@ -180,6 +211,14 @@ hint: if not (len(a) == len(b) and len(a[0]) == len(b[0])): raise ValueError(...
 # Your add(a, b), with a shape check
 ```
 
+```hint
+Is the error you see the one you wrote, or one Python raised on its own?
+Read the last line. If it says `ValueError` with your own message, the
+check is working. Is that the case you meant to test? If it says something
+else, which line is it pointing at, and does that line run before the
+loops or inside them?
+```
+
 ## Turning It Sideways: the Transpose
 
 One more operation, and this one has no arithmetic in it at all — nothing is
@@ -207,8 +246,30 @@ the other way round from `M`.
 
 ```python exec
 id: turning-it-sideways-the-transpose-2
+expect: transpose([[1, 2, 3], [4, 5, 6]]) == [[1, 4], [2, 5], [3, 6]]
 hint: Build the result row by row, one row per column of m. The new row i is [row[i] for row in m].
 # Your transpose(m)
+```
+
+```hint
+Take `M = [[1, 2, 3], [4, 5, 6]]`. What should the first row of the result
+be, written out in full? Which column of `M` did those numbers come from?
+How many rows will the result have, and where in `M` does that number
+come from?
+```
+
+```hint
+after: 10 errors
+title: some steps
+1. The result has one row for each column of `m`, so the outer loop runs
+   `len(m[0])` times.
+2. Row `i` of the result collects position `i` from every row of `m`.
+3. Build each new row first, then append it, then move to the next `i`.
+
+**Think about:** why `len(m)` and `len(m[0])` change places between `m`
+and the result.
+
+**Try this next:** transpose the transpose. What comes back, and why?
 ```
 
 This flip-the-shape operation is called the *transpose*, written $A^T$. A

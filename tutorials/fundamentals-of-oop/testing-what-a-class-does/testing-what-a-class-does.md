@@ -71,6 +71,7 @@ Run the cell above again and confirm the printed balance is `100.0`, not
 
 ```python exec
 id: a-bug-that-hides-in-another-class-2
+expect: account.balance == 0.0
 class BankAccount:
     def __init__(self, owner, balance):
         self.owner = owner
@@ -89,6 +90,14 @@ class BankAccount:
 account = BankAccount("Alice", 100.0)
 account.withdraw(100.0)
 print(account.balance)   # should be 0.0 once the fix is in
+```
+
+```hint
+after: 4 runs
+What does the cell print, and what did the comment say it should print?
+The two numbers differ because of one comparison inside `withdraw()`. Read
+that `if` line aloud. When `amount` is exactly equal to the balance, which
+branch does it take, and which one did you want?
 ```
 
 ## Writing a Test for One Method
@@ -135,6 +144,7 @@ longer raises anything.
 
 ```python exec
 id: writing-a-test-for-one-method-2
+expect: account.balance == 0.0
 class BankAccount:
     def __init__(self, owner, balance):
         self.owner = owner
@@ -154,6 +164,14 @@ account = BankAccount("Alice", 100.0)
 account.withdraw(100.0)
 assert account.balance == 0.0, "withdrawing the full balance should leave 0.0"
 print("Passed.")
+```
+
+```hint
+after: 3 identical errors
+The `assert` raised again. What does the message after the comma say
+should be true? Add `print(account.balance)` on the line before the
+`assert` and run once more. Is that the number you expected, and if not,
+which method changed it last?
 ```
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
@@ -227,6 +245,7 @@ ends at `120.0`. Add a call to it alongside the three calls above.
 
 ```python exec
 id: a-few-tests-run-together-2
+expect: callable(test_deposit_then_withdraw)
 class BankAccount:
     def __init__(self, owner, balance):
         self.owner = owner
@@ -252,6 +271,16 @@ def test_deposit():
 test_deposit()
 # Call test_deposit_then_withdraw() here
 print("All tests passed.")
+```
+
+```hint
+after: 3 identical errors
+Which line is the error pointing at: the body of your new function, or
+the call to it? If Python says a name is not defined, is the `def` line
+spelled the same as the call, and does it come before the call? If it is
+an `AssertionError`, what did you expect the balance to be after
+depositing `50.0` into `100.0` and withdrawing `30.0`? Write that number
+down, then compare it with the one in your `assert`.
 ```
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>

@@ -3501,3 +3501,87 @@ class TestCellReportPanel:
         discuss_start = html.index("discussions/new")
         issue_start = html.index("dl-report-issue-link")
         assert discuss_start < issue_start
+
+
+class TestStagedHints:
+    """A ```hint fence becomes a hidden fold bound to a cell — planning/CELL_HINTS.md.
+
+    The fold is written back into the markdown rather than into the finished
+    HTML, so its body is converted like any other prose; the runtime removes
+    `hidden` when the cell has been run and failed enough times.
+    """
+
+    CELL = "```python exec\nid: stub\n# Your add(a, b)\n```\n\n"
+
+    def test_defaults_to_the_cell_above_and_five_errors(self, repo):
+        write(repo, self.CELL + "```hint\nWhat did the last line say?\n```\n")
+        b.build()
+        page = built(repo)
+        assert 'class="dl-hint dl-hint-staged"' in page
+        assert 'data-cell="stub"' in page
+        assert 'data-after="errors:5"' in page
+        assert " hidden>" in page
+        assert "<summary>Let’s slow down a moment…</summary>" in page
+
+    def test_the_body_is_markdown_and_maths(self, repo):
+        write(repo, self.CELL + "```hint\ntitle: some steps\n1. Look at `a[0]`.\n2. Then $x_i$.\n```\n")
+        b.build()
+        page = built(repo)
+        assert "<summary>some steps</summary>" in page
+        assert "<ol>" in page and "<code>a[0]</code>" in page
+        assert "dl-math" in page
+
+    def test_both_trigger_grammars_canonicalise_the_same_way(self, repo):
+        write(repo, self.CELL
+              + "```hint\nafter: 3 identical errors and 2 minutes\nA.\n```\n\n"
+              + "```hint\nafter: same-errors:3, minutes:2\nB.\n```\n\n"
+              + "```hint\nafter: 2 unchanged runs, 8 runs & 1 failed check\nC.\n```\n")
+        b.build()
+        page = built(repo)
+        assert page.count('data-after="same-errors:3 minutes:2"') == 2
+        assert 'data-after="unchanged:2 runs:8 check-fails:1"' in page
+
+    def test_a_second_hint_on_the_same_cell_gets_its_own_id(self, repo):
+        write(repo, self.CELL + "```hint\nA.\n```\n\n```hint\nafter: 12 errors\nB.\n```\n")
+        b.build()
+        page = built(repo)
+        assert 'id="dl-staged-stub-0"' in page and 'id="dl-staged-stub-1"' in page
+
+    def test_for_names_a_cell_anywhere_on_the_page(self, repo):
+        write(repo, "```hint\nfor: later\nEarly hint.\n```\n\n"
+                    "```python exec\nid: later\n1\n```\n")
+        b.build()
+        assert 'data-cell="later"' in built(repo)
+
+    def test_a_hint_with_no_cell_above_and_no_for_fails(self, repo):
+        write(repo, "```hint\nLost.\n```\n")
+        with pytest.raises(b.BuildError, match="no exec cell above it"):
+            b.build()
+
+    def test_a_hint_naming_a_missing_cell_fails(self, repo):
+        write(repo, self.CELL + "```hint\nfor: nope\nX.\n```\n")
+        with pytest.raises(b.BuildError, match="does not have: 'nope'"):
+            b.build()
+
+    def test_an_unreadable_trigger_fails(self, repo):
+        write(repo, self.CELL + "```hint\nafter: soon\nX.\n```\n")
+        with pytest.raises(b.BuildError, match="cannot read"):
+            b.build()
+
+    def test_an_unknown_signal_fails(self, repo):
+        write(repo, self.CELL + "```hint\nafter: 5 bananas\nX.\n```\n")
+        with pytest.raises(b.BuildError, match="does not track"):
+            b.build()
+
+    def test_an_empty_hint_fails(self, repo):
+        write(repo, self.CELL + "```hint\nafter: 5 errors\n```\n")
+        with pytest.raises(b.BuildError, match="no text"):
+            b.build()
+
+    def test_expect_travels_in_the_manifest_only_when_set(self, repo):
+        write(repo, "```python exec\nid: a\nexpect: total == 6\ntotal = 0\n```\n\n"
+                    "```python exec\nid: b\n1\n```\n")
+        b.build()
+        cells = manifest(built(repo))["cells"]
+        assert cells[0]["expect"] == "total == 6"
+        assert "expect" not in cells[1]
