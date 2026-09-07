@@ -643,10 +643,12 @@ p code, li code {
 /* Every cell-chrome button carries both an icon and a label span
  * (icon_button() in build.py, iconButtonHtml() in tutorial-runtime.js,
  * iconButton() in compose/dewmini.js) so "icons only / text only / icons
- * and text" (initButtonLabelsToggle(), planning/CELL_IDENTITY.md §5) is
- * one pair of rules here rather than a rewrite of every button's markup
- * per mode. The default, with neither attribute value, is "both" — the
- * small fixed-size badge buttons (hint, report, collapse, run-menu) are
+ * and text" — Settings' "Cell buttons" row, data-texture="buttons",
+ * wired by the same generic initTexture() every other Texture row
+ * already uses (planning/CELL_IDENTITY.md §9) — is one pair of rules
+ * here rather than a rewrite of every button's markup per mode. The
+ * default, with neither attribute value, is "both" — the small
+ * fixed-size badge buttons (hint, report, collapse, run-menu) are
  * deliberately not built this way and so never affected by this setting;
  * see icon_button()'s own docstring for why. */
 .dl-btn-icon { line-height: 1; }

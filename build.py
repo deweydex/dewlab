@@ -842,7 +842,7 @@ def render_cell(cell: Cell, number: int, page: str = "", version: str = "") -> s
         '<div class="dl-cell-collapsed-summary" role="button" tabindex="0" hidden></div>'
         "</div>"
         '<div class="dl-cell-footbar">'
-        + icon_button("dl-btn-run", "…", "Loading…", disabled="disabled")
+        + icon_button("dl-btn-run", "&#9654;", "Loading…", disabled="disabled")
         + icon_button("dl-btn-reset", "&#8635;", "Reset to starter",
                       title="Put this cell's starter code back, and clear its output")
         + '<div class="dl-cell-more">'

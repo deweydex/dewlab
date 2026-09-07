@@ -66,7 +66,7 @@ const TEXTURE_DEFAULTS = {
   theme: "system", font: "serif", size: 18, width: 34,
   link: "#d4692a", header: "full", contrast: "normal",
   /* "Cell buttons" — icons only, text only, or both (planning/
-   * CELL_IDENTITY.md §5), the same choice compose/dewmini.js's own Texture
+   * CELL_IDENTITY.md §9), the same choice compose/dewmini.js's own Texture
    * panel offers, applied through the same [data-button-labels] CSS this
    * page and dewmini both load from tutorial-style.css. */
   buttons: "both",
@@ -1611,8 +1611,10 @@ function escapeHtml(text) {
  * (a custom cell has no server-rendered markup to start from) — the same
  * icon-plus-label pair build.py's own icon_button() gives an authored
  * cell, so the "icons only / text only / icons and text" setting
- * (initButtonLabelsToggle()) reads one custom cell exactly like an
- * authored one. `icon` is markup already and goes in unescaped; `label`
+ * (Settings' "Cell buttons" row, wired through the same generic
+ * initTexture() every other Texture row uses) reads one custom cell
+ * exactly like an authored one. `icon` is markup already and goes in
+ * unescaped; `label`
  * is plain text and is escaped once. `attrs`, if given, is a literal
  * string of extra HTML attributes (` disabled` or ` title="…"`), spliced
  * in as-is — callers pass only fixed, code-authored strings here, never

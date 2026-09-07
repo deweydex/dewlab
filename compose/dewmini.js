@@ -5241,7 +5241,7 @@ function initSegKeyboardNav() {
 const TEXTURE_DEFAULTS = {
   theme: "system", font: "serif", size: 18, width: 34, link: "#d4692a", contrast: "normal",
   // Icons only, text only, or both, for every cell's Run/Reset/Duplicate/
-  // Delete and the rest (planning/CELL_IDENTITY.md §5) — same key, same
+  // Delete and the rest (planning/CELL_IDENTITY.md §9) — same key, same
   // default, and the same [data-button-labels] CSS rule (tutorial-style.css)
   // a tutorial page's own copy of this row uses, so the choice reads the
   // same on both.
