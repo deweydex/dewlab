@@ -489,6 +489,16 @@ def parse_cell(body: str, path: Path) -> Cell:
         match = HEADER_RE.match(lines[0])
         if not match or match.group(1) in header:
             break
+        # `name:`, uniquely among these four keys, collides with real code:
+        # a type-annotated first line of a cell's own body — `name: str =
+        # "Ada"` — is indistinguishable from the header by shape alone. `=`
+        # never appears in a genuine name (a short label, not an
+        # expression), so its presence means this was never the header —
+        # `id:`/`hint:`/`expect:` keep matching as before, since their own
+        # values are prose or Python expressions that legitimately use `=`
+        # (`expect: total == 6`).
+        if match.group(1) == "name" and "=" in match.group(2):
+            break
         header[match.group(1)] = match.group(2).strip()
         lines.pop(0)
     if "id" not in header:

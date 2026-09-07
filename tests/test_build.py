@@ -237,6 +237,24 @@ class TestCells:
         assert 'aria-expanded="false"' in page
         assert 'role="tooltip"' not in page
 
+    def test_a_name_is_carried_to_the_pill_and_the_manifest(self, repo):
+        write(repo, '```python exec\nid: c\nname: filter-evening\n1\n```\n')
+        b.build()
+        page = built(repo)
+        assert '<span class="dl-cell-name">filter-evening</span>' in page
+        assert manifest(page)["cells"][0]["name"] == "filter-evening"
+
+    def test_a_name_shaped_first_line_of_code_is_not_swallowed_as_a_header(self, repo):
+        # `name: str = "Ada"` is an ordinary type-annotated assignment, not
+        # a `name:` header — the `=` is what tells parse_cell() so, since a
+        # genuine name is a short label, never an expression.
+        write(repo, '```python exec\nid: c\nname: str = "Ada"\nprint(name)\n```\n')
+        b.build()
+        page = built(repo)
+        cell = manifest(page)["cells"][0]
+        assert cell.get("name") is None
+        assert cell["code"] == 'name: str = "Ada"\nprint(name)'
+
     def test_the_footbar_sits_between_the_editor_and_output(self, repo):
         # Run sits right where a reader's hand already is — between the
         # code and its output, not after both (planning/CELL_IDENTITY.md,

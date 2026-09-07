@@ -648,10 +648,16 @@ preview state-swaps that used to set text directly now go through these.
 (`tutorial_tools.py`) gained an optional `label`, threaded down through
 `run_cell_report()`/`_begin()`/`_CellContext`/`cell_filename()` and, on
 the JavaScript side, `assets/pyodide-engine.js`'s `runCell()` and
-`assets/pyodide-worker.js`'s `"run-cell"` message. The cell's own id
-still decides `linecache`'s key and `_is_user_frame`'s `"<cell "` prefix
-check — only what a reader actually *reads* in a traceback's file line
-changes. dewmini's `executeCell()` passes `cell.name || \`Cell
+`assets/pyodide-worker.js`'s `"run-cell"` message. `label`, when given,
+replaces the id entirely — in `linecache`'s own key as well as what a
+reader reads in a traceback's file line — since `_is_user_frame`'s own
+`"<cell "` prefix check only cares about the prefix, never what follows
+it. Unlike an id, a label isn't guaranteed unique — two dewmini cells can
+share a name — so two same-named cells do share one `linecache` entry;
+`cell_filename()`'s own docstring has the reasoning for why that's
+harmless given how this module actually runs and formats a cell's
+traceback (always immediately, never from a stored exception read back
+later). dewmini's `executeCell()` passes `cell.name || \`Cell
 ${n}\``; a tutorial page passes its author-given `name:` when a cell has
 one, and nothing (the id, as before) when it doesn't.
 

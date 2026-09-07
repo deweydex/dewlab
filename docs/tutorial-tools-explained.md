@@ -118,12 +118,14 @@ more detail; it's worth reading once, since the same shape shows up in
   `cell_filename`) are kept; dewlab's own frames are always dropped.
 - **"Why does a traceback sometimes name a cell instead of its id?"** —
   `cell_filename()`'s optional `label`, threaded through `run_cell()`/
-  `run_cell_report()`/`_begin()`/`_CellContext`. The id still decides
-  `linecache`'s key and `_is_user_frame`'s `"<cell "` prefix check — only
-  what a reader actually *sees* in the filename changes. A tutorial page
-  passes its author-given `name:`, when a cell has one; dewmini passes a
-  reader's own name or a plain `Cell N` fallback either way
-  (`planning/CELL_IDENTITY.md` §9).
+  `run_cell_report()`/`_begin()`/`_CellContext`. A label, when given,
+  replaces the id everywhere — `linecache`'s own key included, not just
+  what a reader *sees* — which does mean two cells sharing a label share
+  one `linecache` entry; `cell_filename()`'s own docstring explains why
+  that's harmless the way this module actually runs a cell and formats
+  its traceback. A tutorial page passes its author-given `name:`, when a
+  cell has one; dewmini passes a reader's own name or a plain `Cell N`
+  fallback either way (`planning/CELL_IDENTITY.md` §9).
 - **"Why does `check()` need its own comparison function instead of
   `==`?"** — `_compare`, and its own docstring: floats need a tolerance,
   numpy arrays and DataFrames raise on a bare `==`, and `True == 1` in
