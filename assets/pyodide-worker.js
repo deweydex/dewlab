@@ -338,7 +338,7 @@ async function boot(msg) {
  * message posted back to the page, which is what makes output appear
  * *as the cell runs*, one piece at a time, rather than only after it
  * finishes. */
-async function runCell(cellId, code) {
+async function runCell(cellId, code, expect) {
   const emit = (kind, cssClass, text, markup) => {
     post({ type: "output", cellId, kind, cssClass, text, markup });
   };
@@ -346,9 +346,17 @@ async function runCell(cellId, code) {
    * rendered output and returns normally — a throw here would mean
    * something broke in the plumbing itself, not in code a reader wrote,
    * so it is deliberately left to propagate to the uniform error path in
-   * onmessage below rather than caught twice. */
-  const ok = await tools.run_cell(cellId, emit, code);
-  return { ok };
+   * onmessage below rather than caught twice.
+   *
+   * run_cell_report() rather than run_cell(): the same run, plus a JSON
+   * report of what it amounted to — `ok`, the error's type and first
+   * line, whether a check() passed, whether the cell's `expect:` holds —
+   * which tutorial-runtime.js counts attempts from for a staged hint
+   * (planning/CELL_HINTS.md). Parsed here so the response is a plain
+   * object; `ok` is still on it, so pyodide-engine.js's own reading of
+   * this response is unchanged. */
+  const report = await tools.run_cell_report(cellId, emit, code, expect ?? null);
+  return JSON.parse(report);
 }
 
 /* Clears the shared namespace and re-seeds it with the always-available
@@ -502,7 +510,7 @@ self.onmessage = async (ev) => {
        * no response needed, since there's nothing to report back yet. */
       pyodide.setInterruptBuffer(new Int32Array(msg.buffer));
     } else if (msg.type === "run-cell") {
-      respond(await runCell(msg.cellId, msg.code));
+      respond(await runCell(msg.cellId, msg.code, msg.expect));
     } else if (msg.type === "reset-page-state") {
       await resetPageState();
       respond("ok");

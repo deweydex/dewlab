@@ -201,6 +201,24 @@ the links' query parameters, once, at the moment the panel opens — never
 kept in sync on every keystroke, and never touching the panel's third
 link, to Discussions, which needs neither.
 
+**Staged hints** (planning/CELL_HINTS.md) are the one place the page reacts
+to *how* a cell's runs have gone rather than only rendering the latest.
+`build.py` turns a ```` ```hint ```` fence into a hidden
+`<details class="dl-hint dl-hint-staged">` fold carrying `data-cell` and a
+canonical `data-after` (`errors:5`, `same-errors:3 minutes:2`, …), and reads
+an optional `expect:` line off a cell's header into the manifest.
+`tutorial_tools.run_cell_report()` runs the cell exactly as `run_cell()`
+does and returns a JSON report — `ok`, the exception's type and first line,
+whether a `check()` passed and which failed, whether `expect` holds —
+which `executeCell()` (tutorial-runtime.js) feeds into per-cell counters
+(`noteAttempt()`), tests each fold's terms against (`triggerHolds()`), and
+reveals at most one fold per run (`maybeRevealHint()`), closed, in flow,
+with a dot on the cell's bar and one sentence added to the run
+announcement. The counters and the revealed folds travel in the saved-work
+record. `run_cell()` itself still returns a boolean, because dewmini and
+`pyodide-engine.js` read it that way; the Worker's `run-cell` handler
+returns the report object, which still carries `ok`.
+
 Everything a Pyodide-backed cell can call beyond ordinary Python is defined
 once, in `tutorial_tools.py`, and listed there in `__all__`.
 `docs/WRITING_TUTORIALS.md`'s "What your cells can call" table is the

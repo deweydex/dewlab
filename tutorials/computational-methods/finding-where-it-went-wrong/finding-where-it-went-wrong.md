@@ -97,6 +97,14 @@ readings in the combined test actually caught the bug?
 id: building-the-pipeline-3
 ```
 
+```hint
+after: 4 errors
+What does the last line of the message say went wrong: a name Python does
+not know, or the shape of a line? Which line is it pointing at? Before you
+change it, what did you expect `summarize(["32.0"])` to print? Write that
+number in your notes, then compare it with what comes back.
+```
+
 ## The Symptom Is Not the Cause
 
 The symptom is clear: `summarize(["32.0", "212.0"])` should be `50.0` and
@@ -190,6 +198,30 @@ it alone should produce.
 
 ```python exec
 id: the-symptom-is-not-the-cause-5
+```
+
+```hint
+after: 4 runs
+Which stage have you checked so far, and what did it alone return? For
+`["32.0", "212.0"]`, what should `parse_readings` give back, what should
+each reading be in Celsius, and what should the average of those two be?
+Write the three expected values down before you run the next check.
+```
+
+```hint
+after: 8 runs
+title: some steps
+1. Print `parse_readings(["32.0", "212.0"])` and compare it with what you
+   expected.
+2. Print `fahrenheit_to_celsius_fixed(212.0)` and `fahrenheit_to_celsius_fixed(32.0)`.
+3. Print `average_v2` of those two Celsius values. What should the average
+   of two numbers be, and what did it give?
+
+**Think about:** which stage was the first to disagree with your expected
+value, and why the stages after it could not have been the cause.
+
+**Try this next:** call `average_v2` with a list of one reading. What
+happens, and what does that tell you about the line inside it?
 ```
 
 ## What Finding It Actually Took

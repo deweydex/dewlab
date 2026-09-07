@@ -95,6 +95,43 @@ lets a student talk to somebody else about the thing they have just done — a
 tutor, a classmate, a search box, the next tutorial. Saying that out loud is
 what turns the naming step from a formality into the reason for it.
 
+### Hints that wait for an attempt
+
+A `hint:` line on a cell is there from the first click. A `hint` fence
+(`docs/WRITING_TUTORIALS.md`, "Hints that wait for an attempt") is not: it
+appears only after the cell has been run, and has failed, some number of
+times, and the runtime never shows the count. The delay is the point.
+Koedinger and Aleven's assistance dilemma (section 10) is that help given
+early saves frustration and shallows learning, and help given late deepens
+it and wastes time; gating on attempts rather than on a clock is the answer
+they reach. Kapur's productive failure is the argument for letting the
+first attempts fail unaided.
+
+Three rules for what goes in the fences, in order:
+
+**The first fold asks.** A question about what the reader can see and what
+they expected — *what does the last line of the error name; which line of
+your cell is it pointing at; what did you expect that line to produce; what
+would the smallest input be that still shows the problem.* A question, not
+an instruction, because the habit being taught is asking it unprompted, and
+a command teaches obedience to the command. Writing down what you expect
+before you run, and comparing afterwards, is the habit worth most; a first
+fold may send the reader to their notes to do exactly that.
+
+**The second fold gives steps**, in the shape of the `dl-hint` fold in
+section 6: numbered, ending in a **Think about** and a **Try this next**.
+
+**A third fold, if any, gives the shape of the code with a gap in it.**
+Never the answer. Renkl and Atkinson's faded worked examples remove the
+last step first; a third fold that hands over the whole thing has removed
+nothing. The answer, where a page has one, stays in a `dl-answer` fold the
+reader opens for themselves.
+
+Ration these as section 11 rations everything else that speaks to a stuck
+reader: a "your turn" cell and a stub earn one; a worked cell does not. A
+page where every cell produces a fold on the fifth error teaches readers to
+skip folds.
+
 ---
 
 ## 4. Voice

@@ -142,6 +142,13 @@ already being touched for another reason, not swept on its own — a larger,
 dedicated set of pages on this was raised and deliberately deferred, to keep
 this addition small until that decision is made.
 
+**Staged hints (DECISIONS_LOG.md 7.135).** Three new student-facing
+surfaces, all written against §4 as they were added: the default fold
+title (*Let's slow down a moment…*), the two Settings rows and their note
+in `assets/shell.html`, and the hint fences themselves in the four
+tutorials that carry them. Each new hint an author writes is a new surface
+for this pass; the docs' own examples are the models.
+
 **Bibliographies.** Unrelated to readability but still the largest outstanding
 piece of style work — see section 8 of the style guide.
 
