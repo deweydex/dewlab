@@ -216,6 +216,16 @@ def page(browser, base_url):
         "document.querySelectorAll('.dl-btn-run:not([disabled])').length > 0",
         timeout=240_000,
     )
+    # assets/vendor/coi-serviceworker.js forces exactly one reload on a
+    # genuinely first visit, to pick up the cross-origin-isolation headers
+    # no other means gets it (test_stop_button.py's own top comment has
+    # the fuller account) — and that reload can cancel whatever request
+    # was still in flight when it fired, which the service worker's own
+    # fetch handler (third-party code, not this project's) logs with a
+    # bare `console.error(e)`. One console error from that one-time,
+    # expected dance is not a problem this page caused; only what happens
+    # from here, once the page is actually up and stable, should count.
+    problems.clear()
     try:
         yield tab
     finally:
