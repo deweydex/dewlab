@@ -246,33 +246,51 @@ body {
  * see .dl-reference/.dl-seriesnav further down) are fixed-position,
  * full-height sidebars rather than part of the document flow, which is
  * fine right up until an open one reaches far enough in to cover a
- * reader's own text. The fix is to reserve the room *before* either
- * panel ever opens, not to react once one does: .dl-page's max-width is
- * always capped as if a panel of the ordinary width (--dl-panel-gutter)
- * were already open on each side, whether or not one actually is. A
- * panel opening at its ordinary width then finds the space already
- * there and the column does not move at all — which is the point, not
- * a side effect: a column that shifts or narrows the moment a reader
- * opens Settings reads as the page reacting to them, when nothing about
- * their own text should change just because they looked at a panel.
- * The cost is a column that never quite reaches --dl-line-width on an
- * ordinary laptop screen at the widest Texture setting — judged worth
- * paying for a column that never visibly moves.
+ * reader's own text. Two tiers, by how much room a screen actually has
+ * to give:
  *
- * data-dl-panel-left/-right (set by watchPanelOverlap() in
- * tutorial-runtime.js, tracking each side independently since both
- * panels can now be open at once — see initSettingsPanel()'s own
- * comment) only matter here when a reader has *dragged* a panel wider
- * than --dl-panel-gutter: then the reserved space is no longer enough,
- * and max() falls through to the panel's own actual measured width
- * (--dl-panel-left-w/--dl-panel-right-w, kept in sync with each panel's
- * real rendered width by the same runtime function's ResizeObserver) —
- * the one case the column still adjusts for, because there is no width
- * it could have pre-reserved for a resize handle a reader has not
- * dragged yet. Skipped below 34rem, where a panel is already a
- * full-width bottom sheet rather than a docked sidebar, and reserving
- * gutters on a screen that narrow would leave no column at all. */
+ * From 34rem (below which a panel is already a full-width bottom sheet,
+ * not a docked sidebar) up to 85rem, there usually is not room to spare
+ * — reserving a permanent gutter on both sides here would leave less
+ * than --dl-line-width's own narrowest setting even with no panel open
+ * at all, which is worse than the shift it would prevent. So this tier
+ * only reacts once a panel is actually open, capping .dl-page at
+ * whichever measured width (--dl-panel-left-w/-right-w, tracked by
+ * watchPanelOverlap()'s ResizeObserver in tutorial-runtime.js) that
+ * panel actually has, rather than shifting the column sideways to dodge
+ * it: on a screen with any margin to spare the column was already clear
+ * with room left over, so capping it at something no narrower than that
+ * leaves it untouched; only a screen narrow enough that the panel would
+ * truly reach the text ever changes anything, and even then the column
+ * narrows, still centered, rather than hugging one side.
+ *
+ * From 85rem up — comfortably wider than --dl-line-width's narrowest
+ * setting (34rem) plus two ordinary-width panels (25rem each) plus a
+ * margin — there is room to do better: reserve that same ordinary width
+ * on each side *before* either panel ever opens, whether or not one
+ * actually is open. A panel opening at its ordinary width then finds
+ * the space already there and the column does not move at all — the
+ * point, not a side effect, on the screens wide enough to afford it.
+ * data-dl-panel-left/-right only matter here when a reader has
+ * *dragged* a panel wider than the reserved --dl-panel-gutter: then
+ * max() falls through to that panel's own actual measured width, the
+ * one case this tier's column still adjusts for, because there is no
+ * width it could have pre-reserved for a resize handle not yet dragged. */
 @media (min-width: 34rem) {
+  html[data-dl-panel-left]:not([data-dl-panel-right]) .dl-page {
+    max-width: min(var(--dl-line-width), calc(100vw - 2 * var(--dl-panel-left-w, 25rem) - 1rem));
+  }
+  html[data-dl-panel-right]:not([data-dl-panel-left]) .dl-page {
+    max-width: min(var(--dl-line-width), calc(100vw - 2 * var(--dl-panel-right-w, 25rem) - 1rem));
+  }
+  html[data-dl-panel-left][data-dl-panel-right] .dl-page {
+    max-width: min(
+      var(--dl-line-width),
+      calc(100vw - 2 * max(var(--dl-panel-left-w, 25rem), var(--dl-panel-right-w, 25rem)) - 1rem)
+    );
+  }
+}
+@media (min-width: 85rem) {
   :root { --dl-panel-gutter: 25rem; }
   .dl-page {
     max-width: min(var(--dl-line-width), calc(100vw - 2 * var(--dl-panel-gutter) - 1rem));
