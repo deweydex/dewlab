@@ -85,6 +85,14 @@ written before the thing it describes was built.
   new to the project, at
   [`mockups/cell-identity-explained.html`](./mockups/cell-identity-explained.html).
 
+### Bringing in dewstack
+- **[`DEWSTACK_MERGE.md`](./DEWSTACK_MERGE.md)** — the plan for retiring
+  `deweydex/dewstack` as a separately-hosted site: which of its courses
+  move into `database-methods` and a new `web-authoring` module, the
+  staging folder they're ported from, the engine work each needs, and
+  the dewmini/dewminiweb workspace question. In progress; its own ledger
+  tracks phase completion.
+
 ### The edges
 - **[`EDGES_AUDIT.md`](./EDGES_AUDIT.md)** — the phone, screen-reader and
   offline-bundle audit: what was claimed, what testing it found, and what

@@ -1,0 +1,6 @@
+# The reading order of this series. Every tutorial in the series has to be
+# listed here, and every slug listed has to exist, or the build stops.
+
+series: Putting it together
+order:
+  - a-page-that-reads-from-a-database
