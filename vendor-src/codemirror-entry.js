@@ -365,13 +365,20 @@ const OTHER_LANGUAGES = {
 export function createCodeEditor(
   parent, doc,
   { dark = false, onChange = null, completeNames = null, getDoc = null,
-    getSignature = null, getJediCompletions = null, language = "python" } = {}
+    getSignature = null, getJediCompletions = null, language = "python",
+    lineNumbersVisible = true, indentWidth = 4 } = {}
 ) {
   const themeCompartment = new Compartment();
+  /* Line numbers and indent width each live in their own compartment, the
+   * same reason the theme does: the Settings panel can flip either one for
+   * every open cell (setLineNumbers/setIndentWidth below) without tearing
+   * the editor down and losing what a student has typed. */
+  const lineNumbersCompartment = new Compartment();
+  const indentCompartment = new Compartment();
   const isPython = language === "python";
 
   const extensions = [
-    lineNumbers(),
+    lineNumbersCompartment.of(lineNumbersVisible ? [lineNumbers()] : []),
     highlightActiveLineGutter(),
     highlightActiveLine(),
     highlightSpecialChars(),
@@ -382,9 +389,10 @@ export function createCodeEditor(
     indentOnInput(),
     bracketMatching(),
     closeBrackets(),
+    indentCompartment.of(indentUnit.of(" ".repeat(indentWidth))),
     ...(isPython
       ? [pythonCompletion(completeNames, getJediCompletions), pythonDocTooltip(getDoc),
-         pythonSignatureHelp(getSignature), indentUnit.of("    "), python()]
+         pythonSignatureHelp(getSignature), python()]
       : OTHER_LANGUAGES[language]()),
     /* Find and replace (Ctrl/Cmd+F), and a highlight on every other
      * occurrence of whatever is selected. CodeMirror has always supported
@@ -422,6 +430,8 @@ export function createCodeEditor(
     state: EditorState.create({ doc, extensions }),
   });
   view._dewlabTheme = themeCompartment;
+  view._dewlabLineNumbers = lineNumbersCompartment;
+  view._dewlabIndent = indentCompartment;
 
   return {
     view,
@@ -436,6 +446,29 @@ export function createCodeEditor(
 export function setEditorTheme(editor, dark) {
   const view = editor.view;
   view.dispatch({ effects: view._dewlabTheme.reconfigure(themeOf(dark)) });
+}
+
+/* Shows or hides the line-number gutter on an already-mounted editor — the
+ * Settings panel's "line numbers" row, on by default. A no-op on a
+ * read-only block (createReadOnlyCode never sets up this compartment,
+ * so `_dewlabLineNumbers` is undefined there and there was never a
+ * gutter to begin with). */
+export function setLineNumbers(editor, visible) {
+  const view = editor.view;
+  if (!view._dewlabLineNumbers) return;
+  view.dispatch({
+    effects: view._dewlabLineNumbers.reconfigure(visible ? [lineNumbers()] : []),
+  });
+}
+
+/* Changes how many spaces Tab inserts (and how indentOnInput reindents) in
+ * an already-mounted editor — the Settings panel's "indent width" row. */
+export function setIndentWidth(editor, width) {
+  const view = editor.view;
+  if (!view._dewlabIndent) return;
+  view.dispatch({
+    effects: view._dewlabIndent.reconfigure(indentUnit.of(" ".repeat(width))),
+  });
 }
 
 /* Illustrative code — an untagged fence — gets the same highlighting as a live
