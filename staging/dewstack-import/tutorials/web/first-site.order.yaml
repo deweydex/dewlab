@@ -1,0 +1,27 @@
+# The reading order of this series. Every tutorial in the series has to be
+# listed here, and every slug listed has to exist, or the build stops.
+
+series: Your first site
+order:
+  - a-page-is-files
+  - the-skeleton
+  - headings-and-emphasis
+  - sections-that-mean-something
+  - images-and-alt-text
+  - three-kinds-of-link
+  - navigation
+  - a-rule-and-where-it-lives
+  - variables-and-colour
+  - the-box
+  - text-and-units
+  - selectors-and-classes
+  - the-container
+  - position-and-the-sticky-header
+  - hover-and-focus
+  - transitions-and-transforms
+  - media-queries
+  - flexible-images
+  - flexbox-first-steps
+  - named-grid-areas
+  - css-variables-and-bem
+  - keyframes-and-the-checkbox-hack

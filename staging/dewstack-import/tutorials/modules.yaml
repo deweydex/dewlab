@@ -1,0 +1,25 @@
+# The order the modules appear on the front page.
+#
+# A module missing from here still appears, after the listed ones, in
+# alphabetical order. A series missing from its module's order file does
+# not appear at all, and stops the build.
+order:
+  - getting-started
+  - web
+  - javascript
+  - data
+  - full-stack
+  - reference
+
+# Modules listed above that have no pages yet. Each gets its heading and one
+# line on the front page, so a student can see the shape of the course
+# before all of it is written. A module in `order` with neither pages nor an
+# entry here stops the build, because it is probably a typo.
+planned:
+  javascript:
+    title: "JavaScript"
+    note: "Coming soon. These pages will teach the language that makes a page respond to a click, after the web track's HTML and CSS."
+
+# One line of markdown shown under a module's list of pages.
+notes:
+  web: "The older lessons are still at [their original address](https://deweydex.github.io/WADB_Tutorials/) until each one is rewritten here."
