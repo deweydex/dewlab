@@ -679,7 +679,8 @@ class TestNavigation:
         self.series(repo)
         b.build()
         for slug in ("t1", "t2", "t3"):
-            assert '<a class="dl-nav-up" href="../../index.html">' in self.page(repo, slug)
+            assert ('<a class="dl-nav-up" href="../../all-tutorials.html">'
+                    in self.page(repo, slug))
 
     def test_the_order_file_decides_the_sequence_not_the_filename(self, repo):
         """Reordering is moving a line, and nothing else changes."""
@@ -796,7 +797,11 @@ class TestSeriesNav:
         assert "dl-seriesnav-series" not in built(repo, "sample")
 
 
-class TestTheContentsPage:
+class TestTheFrontPage:
+    """index.html: the landing page, static and tutorial-data-free — the
+    module listing itself lives on all-tutorials.html now
+    (TestAllTutorialsPage), which is what most of this used to test."""
+
     def test_it_is_written_at_the_site_root(self, repo):
         write(repo, "Prose.\n")
         b.build()
@@ -807,6 +812,38 @@ class TestTheContentsPage:
         b.build()
         assert (repo / "site" / "about.html").is_file()
 
+    def test_it_needs_no_python_runtime(self, repo):
+        write(repo, "Prose.\n")
+        b.build()
+        assert manifest((repo / "site" / "index.html").read_text())["cells"] == []
+
+    def test_it_names_the_authors_and_the_qqi_modules(self, repo):
+        write(repo, "Prose.\n")
+        b.build()
+        index = (repo / "site" / "index.html").read_text()
+        assert "Sean McGarry" in index
+        assert "Joshua Aaron" in index
+        assert "5N2927" in index
+
+    def test_it_offers_a_way_to_every_module_and_to_all_tutorials(self, repo):
+        write(repo, "Prose.\n")
+        b.build()
+        index = (repo / "site" / "index.html").read_text()
+        assert 'href="computational-methods.html"' in index
+        assert 'href="all-tutorials.html"' in index
+
+    def test_no_tutorials_means_no_front_page(self, repo):
+        assert b.build() == []
+        assert not (repo / "site" / "index.html").exists()
+        assert not (repo / "site" / "all-tutorials.html").exists()
+
+
+class TestAllTutorialsPage:
+    def test_it_is_written_at_the_site_root(self, repo):
+        write(repo, "Prose.\n")
+        b.build()
+        assert (repo / "site" / "all-tutorials.html").is_file()
+
     def test_it_lists_every_tutorial_in_order(self, repo):
         for n in (1, 2):
             path = tutorial_path(repo, f"t{n}", "computational-methods")
@@ -816,27 +853,27 @@ class TestTheContentsPage:
             )
         set_order(repo, "computational-methods", "s", ["t2", "t1"])
         b.build()
-        index = (repo / "site" / "index.html").read_text()
+        index = (repo / "site" / "all-tutorials.html").read_text()
         assert index.index("Tutorial 2") < index.index("Tutorial 1")
 
     def test_the_links_reach_the_pages_they_name(self, repo):
         write(repo, "Prose.\n")
         b.build()
-        index = (repo / "site" / "index.html").read_text()
+        index = (repo / "site" / "all-tutorials.html").read_text()
         assert 'href="tutorials/computational-methods/sample.html"' in index
         assert (repo / "site" / "tutorials" / "computational-methods" / "sample.html").is_file()
 
     def test_it_needs_no_python_runtime(self, repo):
         write(repo, "Prose.\n")
         b.build()
-        assert manifest((repo / "site" / "index.html").read_text())["cells"] == []
+        assert manifest((repo / "site" / "all-tutorials.html").read_text())["cells"] == []
 
     def test_a_tutorial_with_cells_carries_its_progress_data_attributes(self, repo):
         """tutorial-runtime.js's contents-page progress indicator
         (planning/PROGRESS_INDICATORS.md) reads these with no fetch."""
         write(repo, CELL, slug="one")
         b.build()
-        index = (repo / "site" / "index.html").read_text()
+        index = (repo / "site" / "all-tutorials.html").read_text()
         assert 'data-module="computational-methods"' in index
         assert 'data-slug="one"' in index
         assert 'data-cells="1"' in index
@@ -844,7 +881,7 @@ class TestTheContentsPage:
     def test_a_prose_only_tutorial_carries_no_progress_data_attributes(self, repo):
         write(repo, "Prose.\n", slug="one")
         b.build()
-        index = (repo / "site" / "index.html").read_text()
+        index = (repo / "site" / "all-tutorials.html").read_text()
         assert "data-cells" not in index
 
     def module_headings(self, repo) -> list[str]:
@@ -852,7 +889,7 @@ class TestTheContentsPage:
 
         By the heading rather than by substring: the slug also appears in every
         href below it, so a plain `index()` finds the link, not the heading."""
-        page = (repo / "site" / "index.html").read_text()
+        page = (repo / "site" / "all-tutorials.html").read_text()
         return re.findall(r'<h2 class="dl-module-heading">(.*?)</h2>', page)
 
     def test_modules_appear_in_the_order_the_module_file_gives(self, repo):
@@ -896,7 +933,7 @@ class TestTheContentsPage:
     def test_no_module_file_falls_back_to_alphabetical(self, repo):
         write(repo, "Prose.\n")
         b.build()
-        assert "computational-methods" in (repo / "site" / "index.html").read_text()
+        assert "computational-methods" in (repo / "site" / "all-tutorials.html").read_text()
 
     def test_a_series_is_headed_by_its_name_not_its_filename(self, repo):
         """A module with two series shows a heading per series, and until one
@@ -915,7 +952,7 @@ class TestTheContentsPage:
         # back to just its own.
         set_order(repo, "computational-methods", "python-fundamentals", ["sample"])
         b.build()
-        index = (repo / "site" / "index.html").read_text()
+        index = (repo / "site" / "all-tutorials.html").read_text()
         assert "<h3>Reflections and review</h3>" in index
         assert "<h3>reflections-and-review</h3>" not in index
 
@@ -931,7 +968,7 @@ class TestTheContentsPage:
         set_order(repo, "computational-methods", "later", ["looking-back"])
         set_order(repo, "computational-methods", "python-fundamentals", ["sample"])
         b.build()
-        assert "<h3>later</h3>" in (repo / "site" / "index.html").read_text()
+        assert "<h3>later</h3>" in (repo / "site" / "all-tutorials.html").read_text()
 
     def test_a_module_title_is_shown_where_one_is_given(self, repo):
         path = write(repo, "Prose.\n")
@@ -940,17 +977,17 @@ class TestTheContentsPage:
             'module: computational-methods\nmodule_title: "Computational Methods"'))
         b.build()
         assert ('<h2 class="dl-module-heading">Computational Methods</h2>'
-                in (repo / "site" / "index.html").read_text())
+                in (repo / "site" / "all-tutorials.html").read_text())
 
     def test_without_one_the_folder_name_is_shown(self, repo):
         write(repo, "Prose.\n")
         b.build()
         assert ('<h2 class="dl-module-heading">computational-methods</h2>'
-                in (repo / "site" / "index.html").read_text())
+                in (repo / "site" / "all-tutorials.html").read_text())
 
-    def test_no_tutorials_means_no_index(self, repo):
+    def test_no_tutorials_means_no_all_tutorials_page(self, repo):
         assert b.build() == []
-        assert not (repo / "site" / "index.html").exists()
+        assert not (repo / "site" / "all-tutorials.html").exists()
 
 
 @pytest.fixture()
@@ -1149,7 +1186,7 @@ class TestTheSeriesArchive:
     def test_the_contents_page_offers_it(self, repo_with_assets):
         self.two_tutorials(repo_with_assets)
         b.build(standalone=True)
-        index = (repo_with_assets / "site" / "index.html").read_text()
+        index = (repo_with_assets / "site" / "all-tutorials.html").read_text()
         assert 'href="download/computational-methods-core-skills.zip"' in index
         assert "Download all 2" in index
 
@@ -1166,14 +1203,14 @@ class TestTheSeriesArchive:
             '---\n\n**1.** A question.\n'
         )
         b.build(standalone=True)
-        index = (repo_with_assets / "site" / "index.html").read_text()
+        index = (repo_with_assets / "site" / "all-tutorials.html").read_text()
         assert "Download all 3" in index
         assert "Download all 2" not in index
 
     def test_the_download_link_sits_above_the_list_not_below_it(self, repo_with_assets):
         self.two_tutorials(repo_with_assets)
         b.build(standalone=True)
-        index = (repo_with_assets / "site" / "index.html").read_text()
+        index = (repo_with_assets / "site" / "all-tutorials.html").read_text()
         link = index.index('href="download/computational-methods-core-skills.zip"')
         listing = index.index('<ol class="dl-contents">')
         assert link < listing
@@ -1181,7 +1218,7 @@ class TestTheSeriesArchive:
     def test_the_download_link_is_a_button_with_a_hidden_icon(self, repo_with_assets):
         self.two_tutorials(repo_with_assets)
         b.build(standalone=True)
-        index = (repo_with_assets / "site" / "index.html").read_text()
+        index = (repo_with_assets / "site" / "all-tutorials.html").read_text()
         assert (
             '<a class="dl-download" href="download/computational-methods-core-skills.zip" '
             'download><span class="dl-download-icon" aria-hidden="true"></span>'
@@ -1198,14 +1235,14 @@ class TestTheSeriesArchive:
         )
         set_order(repo_with_assets, "computational-methods", "core-skills", ["t1"])
         b.build(standalone=True)
-        index = (repo_with_assets / "site" / "index.html").read_text()
+        index = (repo_with_assets / "site" / "all-tutorials.html").read_text()
         assert "Download this one as a single file" in index
         assert "Download all 1" not in index
 
     def test_a_build_without_the_copies_offers_nothing_to_download(self, repo):
         self.two_tutorials(repo)
         b.build()
-        index = (repo / "site" / "index.html").read_text()
+        index = (repo / "site" / "all-tutorials.html").read_text()
         assert ".zip" not in index
         assert not (repo / "site" / "download").exists()
 
@@ -1301,14 +1338,14 @@ class TestTheModuleArchive:
         write_in_series(repo_with_assets, "Two.\n", slug="two", series="simulation")
         set_order(repo_with_assets, "computational-methods", "simulation", ["two"])
         b.build(standalone=True)
-        index = (repo_with_assets / "site" / "index.html").read_text()
+        index = (repo_with_assets / "site" / "all-tutorials.html").read_text()
         assert 'href="download/computational-methods-all.zip"' in index
         assert "Download every tutorial and practice page in this module" in index
 
     def test_a_build_without_the_copies_offers_no_module_download(self, repo):
         write(repo, "One.\n", slug="one")
         b.build()
-        index = (repo / "site" / "index.html").read_text()
+        index = (repo / "site" / "all-tutorials.html").read_text()
         assert "computational-methods-all.zip" not in index
 
 
@@ -1954,7 +1991,7 @@ class TestArchivedTutorials:
         write(repo, "More prose.\n", slug="second")
         self.archive(repo)
         b.build()
-        index = (repo / "site" / "index.html").read_text()
+        index = (repo / "site" / "all-tutorials.html").read_text()
         assert "Archive" in index
         assert 'href="tutorials/computational-methods/sample.html"' in index
         # Below the live series, not among it.
@@ -2204,14 +2241,14 @@ class TestTheTopicTree:
         set_order(repo, "computational-methods", "python-fundamentals",
                   ["t1", "t2", "t3"])
         b.build()
-        assert "dl-map-node" not in (repo / "site" / "index.html").read_text()
+        assert "dl-map-node" not in (repo / "site" / "all-tutorials.html").read_text()
         assert "How the tutorials relate" in self.tree(repo)
         assert self.tree(repo).count('class="dl-map-node"') == 3
 
     def test_the_contents_page_introduces_the_place_instead(self, repo):
         write(repo, "Some prose.\n")
         b.build()
-        index = (repo / "site" / "index.html").read_text()
+        index = (repo / "site" / "all-tutorials.html").read_text()
         assert "Open any tutorial and start" in index
         assert 'href="tree.html"' in index
 
@@ -2486,7 +2523,7 @@ class TestPagesOfProblems:
         write(repo, "Two.\n", slug="two")
         self.practice(repo, "mixed", practice_across=["one", "two"])
         b.build()
-        index = (repo / "site" / "index.html").read_text()
+        index = (repo / "site" / "all-tutorials.html").read_text()
         assert "Mixed problems" in index
         assert "dl-mixed" in index
         assert "mixed.html" in index

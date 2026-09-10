@@ -1832,6 +1832,31 @@ p code, li code {
 }
 .dl-audience p { margin: 0 0 0.9rem; }
 
+/* "For teachers" and "For students": collapsible, so a reader who came
+   for one doesn't have to scroll past the other. The <summary> wraps the
+   whole <h2>, not just an arrow beside it, so the entire heading is the
+   click target — same "clicky arrow, but the title works too" behaviour
+   native <details> already gives for free. Same ▸/▾ marker as
+   .dl-hint/.dl-answer elsewhere on the site, just sized for a section
+   heading rather than an inline fold. */
+.dl-audience-fold > summary {
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+.dl-audience-fold > summary::-webkit-details-marker { display: none; }
+.dl-audience-fold > summary::before {
+  content: "▸";
+  flex: none;
+  color: var(--dl-orange);
+}
+.dl-audience-fold[open] > summary::before { content: "▾"; }
+.dl-audience-fold > summary h2 { margin: 0; }
+.dl-audience-fold > summary:hover h2 { color: var(--dl-orange); }
+.dl-audience-fold > summary + p { margin-top: 0.9rem; }
+
 .dl-module-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
@@ -1875,6 +1900,10 @@ p code, li code {
   color: var(--dl-muted);
 }
 .dl-module-card-badge[data-status="beta"] { border-color: var(--dl-orange); color: var(--dl-orange); }
+/* "All tutorials", the last card in the grid — a way out of the grid
+   rather than one more choice in it, so it gets two columns' worth of
+   room instead of competing at the same size as an actual module. */
+.dl-module-card-wide { grid-column: span 2; }
 
 .dl-intro { margin: 0 0 2.5rem; }
 .dl-intro p { margin: 0 0 0.9rem; }
@@ -1962,6 +1991,16 @@ p code, li code {
 }
 .dl-search-input:focus { outline: none; border-color: var(--dl-orange); }
 .dl-search #dl-search-hint { margin: 0.35rem 0 0; font-size: 0.78rem; }
+
+/* The front page's own copy: the primary way in for a reader who already
+   knows the topic, not a convenience at the foot of a long list — bigger
+   to match. */
+.dl-search-big .dl-search-label { font-size: 0.95rem; }
+.dl-search-big .dl-search-input {
+  padding: 0.9rem 1.1rem;
+  font-size: 1.1rem;
+  border-radius: 8px;
+}
 
 .dl-search-results {
   position: absolute;

@@ -1331,7 +1331,7 @@ def nav_for(tutorial: Tutorial, members: list[Tutorial]) -> str:
     parts = []
     if index == -1:
         up = "../" * tutorial.depth
-        return f'<a class="dl-nav-up" href="{up}index.html">All tutorials</a>' 
+        return f'<a class="dl-nav-up" href="{up}all-tutorials.html">All tutorials</a>'
     if index > 0:
         previous = members[index - 1]
         parts.append(
@@ -1339,7 +1339,7 @@ def nav_for(tutorial: Tutorial, members: list[Tutorial]) -> str:
             f"{html.escape(previous.title)}</a>"
         )
     up = "../" * tutorial.depth
-    parts.append(f'<a class="dl-nav-up" href="{up}index.html">All tutorials</a>')
+    parts.append(f'<a class="dl-nav-up" href="{up}all-tutorials.html">All tutorials</a>')
     if index < len(members) - 1:
         following = members[index + 1]
         parts.append(
@@ -2121,17 +2121,21 @@ def progress_attrs(tutorial: Tutorial) -> str:
     )
 
 
-def render_search_box(placeholder: str) -> str:
-    """The search box markup shared by the contents page and "Browse by
-    topic" — identical on both, so `assets/search.js` (loaded by
-    `shell.html` on every page, a no-op where the box isn't in the DOM)
-    only has to know one shape to wire up. `data-search-hint` matches
-    the id `aria-describedby` points at, since both are generated
-    together here rather than risking one getting out of step with the
-    other by hand on some future edit.
+def render_search_box(placeholder: str, big: bool = False) -> str:
+    """The search box markup shared by the front page, the contents page
+    and "Browse by topic" — identical everywhere it appears, so
+    `assets/search.js` (loaded by `shell.html` on every page, a no-op
+    where the box isn't in the DOM) only has to know one shape to wire
+    up. `data-search-hint` matches the id `aria-describedby` points at,
+    since both are generated together here rather than risking one
+    getting out of step with the other by hand on some future edit.
+    `big` adds a modifier class for the front page's own copy, the one
+    place this is the primary way in rather than a convenience partway
+    down a long list.
     """
+    classes = "dl-search dl-search-big" if big else "dl-search"
     return (
-        '<div class="dl-search" id="dl-search">'
+        f'<div class="{classes}" id="dl-search">'
         '<label for="dl-search-input" class="dl-search-label">Search tutorials</label>'
         f'<input type="search" id="dl-search-input" class="dl-search-input" '
         f'placeholder="{html.escape(placeholder, quote=True)}" autocomplete="off" '
@@ -2144,35 +2148,16 @@ def render_search_box(placeholder: str) -> str:
     )
 
 
-def render_index(
-    groups: dict[tuple[str, str], list[Tutorial]],
-    archives: dict[tuple[str, str], Path] | None = None,
-    retired: dict[str, list[Tutorial]] | None = None,
-    practice: dict[tuple[str, str], Tutorial] | None = None,
-    mixed: dict[str, list[Tutorial]] | None = None,
-    module_archives: dict[str, Path] | None = None,
-) -> str:
-    """The contents page: every module, every series, in order.
-
-    `archives` maps a series to its zip of downloadable copies, when the build
-    wrote them. Without it the page simply carries no whole-series link, which
-    is what a quick local build wants. `module_archives` is the same idea one
-    level up: a module's every series and every practice page, combined.
+def render_index() -> str:
+    """The front page: the mission, "for teachers", "for students" and its
+    module buttons, and the settings/dewmini invite. Static — everything a
+    reader needs to choose where to go from here is either written here by
+    hand or, for a real module, on that module's own page
+    (`write_module_page()`), so this needs no tutorial data of its own.
+    `render_tutorials_list()` is the separate, actual list of everything,
+    on its own page a reader reaches through "All tutorials" or the search
+    box below rather than by scrolling past it here.
     """
-    archives = archives or {}
-    retired = retired or {}
-    practice = practice or {}
-    mixed = mixed or {}
-    module_archives = module_archives or {}
-    if not groups:
-        return "<p>No tutorials have been written yet.</p>"
-
-    names = {}
-    for members in list(groups.values()) + list(retired.values()):
-        for member in members:
-            if member.meta.get("module_title"):
-                names.setdefault(member.module, member.module_title)
-
     # An introduction rather than a diagram. The map moved to its own page,
     # where it can have the whole window; this page's job is to say what dewlab
     # is to somebody who has just arrived, in as few lines as that takes, and
@@ -2190,26 +2175,43 @@ def render_index(
         "databases, web development and more — all in your browser, with "
         "nothing to install. Work online, or download a module once and "
         "keep going with no internet at all after that.</p>",
-        "<p>dewlab is a project by two teachers, Sean McGarry and Joshua "
-        "Aaron, at Dublin College — Sean at the Blackrock campus, and "
-        "Joshua at Dundrum. We built it to spare students and teachers "
-        "the install, the permissions and the early setup that usually "
-        "gets in the way before a class even begins.</p>",
+        '<p>dewlab is a project by two teachers, <strong><a href="https://'
+        'github.com/mcgarry">Sean McGarry</a></strong> and <strong>'
+        '<a href="https://github.com/deweydex">Joshua Aaron</a></strong>, '
+        "at Dublin College — Sean at the "
+        "Blackrock campus, and Joshua at Dundrum. We built it to spare "
+        "students and teachers the install, the permissions and the "
+        "early setup that usually gets in the way before a class even "
+        "begins.</p>",
         "<p>We are working through QQI's Level 5 and Level 6 programming "
         "and mathematics modules, and we plan to add the rest of the "
         "technical course over time. Level 5 comes first. Four modules "
-        "are ready now: Programming and Design Principles (5N2927), "
-        "Mathematics for Information Technology (5N18396), Fundamentals "
-        "of Object-Oriented Programming (5N0541), and Computational "
-        "Methods and Problem Solving (5N0554). Database Methods (5N0783) "
-        "and Web Authoring (5N1910) are next. Earlier versions of some "
-        'of this material already live on <a href="https://github.com/'
+        'are ready now: <a href="mit-pdp-maths-prog-integration.html">'
+        "Programming and Design Principles</a> (5N2927), "
+        '<a href="mit-pdp-maths-prog-integration.html">Mathematics for '
+        "Information Technology</a> (5N18396), "
+        '<a href="fundamentals-of-oop.html">Fundamentals of '
+        "Object-Oriented Programming</a> (5N0541), and "
+        '<a href="computational-methods.html">Computational Methods and '
+        "Problem Solving</a> (5N0554). "
+        '<a href="https://github.com/deweydex/dewstack">Database '
+        "Methods</a> (5N0783) and "
+        '<a href="https://github.com/deweydex/dewstack">Web '
+        "Authoring</a> (5N1910) are next. Earlier versions of some of "
+        'this material already live on <a href="https://github.com/'
         'deweydex/dewstack">dewstack</a>, our sister project — we are '
         "bringing the best of it here.</p>",
         "</div>",
 
         '<div class="dl-audience">',
-        "<h2>For teachers</h2>",
+        "<h2>Find a tutorial</h2>",
+        "<p>Already know the topic you want? Search for it directly.</p>",
+        render_search_box(
+            "Search by topic — e.g. loops, probability, sorting…", big=True),
+        "</div>",
+
+        '<details class="dl-audience dl-audience-fold">',
+        "<summary><h2>For teachers</h2></summary>",
         "<p>dewlab runs in your browser, with nothing to install and no "
         "permissions to grant. There is no account — your work saves "
         "itself, right there in the browser you are using. Prefer to "
@@ -2217,8 +2219,9 @@ def render_index(
         "working offline from then on.</p>",
         "<p>Every tutorial names the QQI learning outcome it teaches, so "
         "a lesson plan maps straight onto the descriptor.</p>",
-        "<p>We recommend starting with the integrated track, where maths "
-        "and programming are taught side by side — in our experience, "
+        '<p>We recommend starting with the <a href="mit-pdp-maths-prog-'
+        'integration.html">integrated track</a>, where maths and '
+        "programming are taught side by side — in our experience, "
         "that is what actually helps a class connect the two subjects. "
         "Suggested assessments and exams for any module are available on "
         'request; see the <a href="about.html">contact and about '
@@ -2231,13 +2234,14 @@ def render_index(
         'note on our <a href="https://github.com/deweydex/dewlab/issues/'
         'new">issues page</a>. If you would rather not, or do not have '
         'one, just <a href="about.html">email us</a> instead.</p>',
-        "</div>",
+        "</details>",
 
-        '<div class="dl-audience">',
-        "<h2>For students</h2>",
-        "<p>Feel free to click around. Choose a module below to open it, "
-        "or start with the integrated track, which teaches maths and "
-        "programming together.</p>",
+        '<details class="dl-audience dl-audience-fold" open>',
+        "<summary><h2>For students</h2></summary>",
+        '<p>Feel free to click around. Choose a module below to open it, '
+        'or start with the <a href="mit-pdp-maths-prog-integration.html">'
+        "integrated track</a>, which teaches maths and programming "
+        "together.</p>",
         '<div class="dl-module-grid">',
         '<a class="dl-module-card" href="mit-pdp-maths-prog-integration.html">'
         "<h3>Maths and Programming, Integrated"
@@ -2295,8 +2299,12 @@ def render_index(
         '<span class="dl-module-card-badge" data-status="soon">Coming soon</span>'
         "</h3>"
         "<p>Contact us if you would like to contribute.</p></a>",
+        '<a class="dl-module-card dl-module-card-wide" href="all-tutorials.html">'
+        "<h3>All tutorials</h3>"
+        "<p>Every module, every series, every practice page — the whole "
+        "course, in one list.</p></a>",
         "</div>",
-        "</div>",
+        "</details>",
 
         '<div class="dl-audience">',
         "<h2>Make it yours</h2>",
@@ -2308,8 +2316,46 @@ def render_index(
         '<a href="compose/dewmini.html">dewmini</a>, a small workspace '
         "built for exactly that.</p>",
         "</div>",
+    ]
+    return "\n".join(out)
 
-        "<h2>Browse every tutorial</h2>",
+
+def render_tutorials_list(
+    groups: dict[tuple[str, str], list[Tutorial]],
+    archives: dict[tuple[str, str], Path] | None = None,
+    retired: dict[str, list[Tutorial]] | None = None,
+    practice: dict[tuple[str, str], Tutorial] | None = None,
+    mixed: dict[str, list[Tutorial]] | None = None,
+    module_archives: dict[str, Path] | None = None,
+) -> str:
+    """"All tutorials": every module, every series, in order — the whole
+    course on one page, for a reader who wants to browse rather than
+    search. Its own page (`write_all_tutorials_page()`) rather than part
+    of the front page, so a first-time visitor meets the front page's own
+    pitch first and this only when they choose "All tutorials" or come
+    looking for something the search box on the front page didn't find.
+
+    `archives` maps a series to its zip of downloadable copies, when the build
+    wrote them. Without it the page simply carries no whole-series link, which
+    is what a quick local build wants. `module_archives` is the same idea one
+    level up: a module's every series and every practice page, combined.
+    """
+    archives = archives or {}
+    retired = retired or {}
+    practice = practice or {}
+    mixed = mixed or {}
+    module_archives = module_archives or {}
+    if not groups:
+        return "<p>No tutorials have been written yet.</p>"
+
+    names = {}
+    for members in list(groups.values()) + list(retired.values()):
+        for member in members:
+            if member.meta.get("module_title"):
+                names.setdefault(member.module, member.module_title)
+
+    out = [
+        "<h1>All tutorials</h1>",
         '<div class="dl-intro">',
         "<p>Everything runs in your browser, so there is nothing to "
         "install and no account to make. Open any tutorial and start.</p>",
@@ -2345,7 +2391,6 @@ def render_index(
         '<a href="about.html">About this project</a> explains how to suggest a '
         "change or report a mistake.</p>",
         "</div>",
-        render_search_box("Search by topic — e.g. loops, probability, sorting…"),
     ]
 
     titles = series_titles()
@@ -3183,6 +3228,7 @@ def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "",
         "{{SERIES}}": html.escape(str(tutorial.meta["series"]), quote=True),
         "{{ASSET_BASE}}": f"{up}assets/",
         "{{STYLE_URL}}": versioned(f"{up}assets/", "tutorial-style.css"),
+        "{{FAVICON_URL}}": versioned(f"{up}assets/", "favicon.svg"),
         "{{KATEX_CSS_URL}}": versioned(f"{up}assets/", "vendor/katex.min.css"),
         "{{ACCESSIBLE_FONTS_CSS_URL}}": versioned(f"{up}assets/", "vendor/accessible-fonts.css"),
         "{{RUNTIME_URL}}": versioned(f"{up}assets/", "tutorial-runtime.js"),
@@ -3873,43 +3919,41 @@ def readable_size(path: Path) -> str:
     return f"{max(size // 1000, 1)} KB"
 
 
-def write_index(
-    shell: str,
-    groups: dict[tuple[str, str], list[Tutorial]],
-    archives: dict[tuple[str, str], Path] | None = None,
-    retired: dict[str, list[Tutorial]] | None = None,
-    practice: dict[tuple[str, str], Tutorial] | None = None,
-    mixed: dict[str, list[Tutorial]] | None = None,
-    module_archives: dict[str, Path] | None = None,
-) -> Path:
-    """The contents page at the site root, which every page's masthead links to."""
+def write_index(shell: str) -> Path:
+    """The front page at the site root, which every page's masthead links to.
+
+    Static: it needs no tutorial data, since it names its own modules by
+    hand and points each one at that module's own page rather than listing
+    tutorials itself. `write_all_tutorials_page()` is the page that does.
+    """
     manifest = {"slug": "index", "version": 1, "assetBase": "assets/",
                 "dataBase": "data/", "cells": [], "assetVersions": {}}
     tokens = {
-        "{{TITLE}}": "Tutorials",
+        "{{TITLE}}": "dewlab",
         "{{VERSION}}": "1",
         "{{SLUG}}": "index",
         "{{MODULE}}": "",
         "{{YEAR}}": "",
         "{{SERIES}}": "",
-        "{{CRUMBS}}": "contents",
+        "{{CRUMBS}}": "",
         "{{ASSET_BASE}}": "assets/",
         "{{STYLE_URL}}": versioned("assets/", "tutorial-style.css"),
+        "{{FAVICON_URL}}": versioned("assets/", "favicon.svg"),
         "{{KATEX_CSS_URL}}": versioned("assets/", "vendor/katex.min.css"),
         "{{ACCESSIBLE_FONTS_CSS_URL}}": versioned("assets/", "vendor/accessible-fonts.css"),
         "{{RUNTIME_URL}}": versioned("assets/", "tutorial-runtime.js"),
         "{{ROOT_BASE}}": "",
-        "{{NAV_PREV_NEXT}}": "",
+        "{{NAV_PREV_NEXT}}": '<a class="dl-nav-up" href="all-tutorials.html">All tutorials</a>',
         "{{PAGE_SCRIPT}}": f'<script type="module" src="{versioned("assets/", "search.js")}"></script>',
-        # The contents page is not a tutorial and has nothing to download; the
+        # The front page is not a tutorial and has nothing to download; the
         # runtime hides the empty section rather than showing a bare heading.
         "{{CANONICAL}}": "",
         "{{DOWNLOAD}}": "",
-        # The contents page is a contents page. It does not need one of its own.
+        # The front page is not a contents list. It does not need one.
         "{{TOC}}": "",
-        # Nor a series to navigate — it is the thing every series links back to.
+        # Nor a series to navigate.
         "{{SERIES_NAV}}": "",
-        "{{BODY}}": render_index(groups, archives, retired, practice, mixed, module_archives),
+        "{{BODY}}": render_index(),
         "{{MANIFEST_JSON}}": json.dumps(manifest).replace("<", "\\u003c"),
         "{{FOOTER}}": site_footer("index", "1"),
     }
@@ -3921,6 +3965,64 @@ def write_index(
         raise BuildError(f"shell template has tokens the index does not fill: {leftover}")
     OUT.mkdir(parents=True, exist_ok=True)
     target = OUT / "index.html"
+    target.write_text(page)
+    return target
+
+
+def write_all_tutorials_page(
+    shell: str,
+    groups: dict[tuple[str, str], list[Tutorial]],
+    archives: dict[tuple[str, str], Path] | None = None,
+    retired: dict[str, list[Tutorial]] | None = None,
+    practice: dict[tuple[str, str], Tutorial] | None = None,
+    mixed: dict[str, list[Tutorial]] | None = None,
+    module_archives: dict[str, Path] | None = None,
+) -> Path:
+    """Every module, every series, every tutorial — the page "All
+    tutorials" on the front page and every other page's own "All
+    tutorials" link point at.
+    """
+    manifest = {"slug": "all-tutorials", "version": 1, "assetBase": "assets/",
+                "dataBase": "data/", "cells": [], "assetVersions": {}}
+    tokens = {
+        "{{TITLE}}": "All tutorials",
+        "{{VERSION}}": "1",
+        "{{SLUG}}": "all-tutorials",
+        "{{MODULE}}": "",
+        "{{YEAR}}": "",
+        "{{SERIES}}": "",
+        "{{CRUMBS}}": "all tutorials",
+        "{{ASSET_BASE}}": "assets/",
+        "{{STYLE_URL}}": versioned("assets/", "tutorial-style.css"),
+        "{{FAVICON_URL}}": versioned("assets/", "favicon.svg"),
+        "{{KATEX_CSS_URL}}": versioned("assets/", "vendor/katex.min.css"),
+        "{{ACCESSIBLE_FONTS_CSS_URL}}": versioned("assets/", "vendor/accessible-fonts.css"),
+        "{{RUNTIME_URL}}": versioned("assets/", "tutorial-runtime.js"),
+        "{{ROOT_BASE}}": "",
+        "{{NAV_PREV_NEXT}}": '<a class="dl-nav-up" href="index.html">Home</a>',
+        "{{PAGE_SCRIPT}}": f'<script type="module" src="{versioned("assets/", "search.js")}"></script>',
+        # This page is not a tutorial and has nothing to download; the
+        # runtime hides the empty section rather than showing a bare heading.
+        "{{CANONICAL}}": "",
+        "{{DOWNLOAD}}": "",
+        # This page is a contents list. It does not need one of its own.
+        "{{TOC}}": "",
+        # Nor a series to navigate — it is the thing every series links back to.
+        "{{SERIES_NAV}}": "",
+        "{{BODY}}": render_tutorials_list(
+            groups, archives, retired, practice, mixed, module_archives),
+        "{{MANIFEST_JSON}}": json.dumps(manifest).replace("<", "\\u003c"),
+        "{{FOOTER}}": site_footer("all-tutorials", "1"),
+    }
+    page = shell
+    for token, value in tokens.items():
+        page = page.replace(token, value)
+    if "{{" in page:
+        leftover = sorted({p.split("}}")[0] + "}}" for p in page.split("{{")[1:]})
+        raise BuildError(
+            f"shell template has tokens the all-tutorials page does not fill: {leftover}")
+    OUT.mkdir(parents=True, exist_ok=True)
+    target = OUT / "all-tutorials.html"
     target.write_text(page)
     return target
 
@@ -4017,11 +4119,12 @@ def write_module_page(
         "{{CRUMBS}}": html.escape(title),
         "{{ASSET_BASE}}": "assets/",
         "{{STYLE_URL}}": versioned("assets/", "tutorial-style.css"),
+        "{{FAVICON_URL}}": versioned("assets/", "favicon.svg"),
         "{{KATEX_CSS_URL}}": versioned("assets/", "vendor/katex.min.css"),
         "{{ACCESSIBLE_FONTS_CSS_URL}}": versioned("assets/", "vendor/accessible-fonts.css"),
         "{{RUNTIME_URL}}": versioned("assets/", "tutorial-runtime.js"),
         "{{ROOT_BASE}}": "",
-        "{{NAV_PREV_NEXT}}": '<a class="dl-nav-up" href="index.html">All tutorials</a>',
+        "{{NAV_PREV_NEXT}}": '<a class="dl-nav-up" href="all-tutorials.html">All tutorials</a>',
         "{{PAGE_SCRIPT}}": "",
         "{{CANONICAL}}": "",
         "{{DOWNLOAD}}": "",
@@ -4146,11 +4249,12 @@ def write_tree_page(shell: str, tutorials: list[Tutorial]) -> Path | None:
         "{{CRUMBS}}": "topic tree",
         "{{ASSET_BASE}}": "assets/",
         "{{STYLE_URL}}": versioned("assets/", "tutorial-style.css"),
+        "{{FAVICON_URL}}": versioned("assets/", "favicon.svg"),
         "{{KATEX_CSS_URL}}": versioned("assets/", "vendor/katex.min.css"),
         "{{ACCESSIBLE_FONTS_CSS_URL}}": versioned("assets/", "vendor/accessible-fonts.css"),
         "{{RUNTIME_URL}}": versioned("assets/", "tutorial-runtime.js"),
         "{{ROOT_BASE}}": "",
-        "{{NAV_PREV_NEXT}}": '<a class="dl-nav-up" href="index.html">All tutorials</a>',
+        "{{NAV_PREV_NEXT}}": '<a class="dl-nav-up" href="all-tutorials.html">All tutorials</a>',
         "{{PAGE_SCRIPT}}": (
             '<script type="application/json" id="dewlab-tree">'
             + json.dumps(data).replace("<", "\\u003c")
@@ -4270,11 +4374,12 @@ def write_topics_page(
         "{{CRUMBS}}": "browse by topic",
         "{{ASSET_BASE}}": "assets/",
         "{{STYLE_URL}}": versioned("assets/", "tutorial-style.css"),
+        "{{FAVICON_URL}}": versioned("assets/", "favicon.svg"),
         "{{KATEX_CSS_URL}}": versioned("assets/", "vendor/katex.min.css"),
         "{{ACCESSIBLE_FONTS_CSS_URL}}": versioned("assets/", "vendor/accessible-fonts.css"),
         "{{RUNTIME_URL}}": versioned("assets/", "tutorial-runtime.js"),
         "{{ROOT_BASE}}": "",
-        "{{NAV_PREV_NEXT}}": '<a class="dl-nav-up" href="index.html">All tutorials</a>',
+        "{{NAV_PREV_NEXT}}": '<a class="dl-nav-up" href="all-tutorials.html">All tutorials</a>',
         "{{PAGE_SCRIPT}}": f'<script type="module" src="{versioned("assets/", "search.js")}"></script>',
         "{{CANONICAL}}": "",
         "{{DOWNLOAD}}": "",
@@ -4542,8 +4647,10 @@ def write_about_page(shell: str) -> Path:
         "single HTML file, a printed or PDF copy, or your cells saved as a "
         "Jupyter notebook.</p>"
         "<h2>Who we are</h2>"
-        "<p>dewlab is built by two teachers. Joshua Aaron teaches at Dublin "
-        "College, Dundrum. Sean McGarry teaches at Dublin College, "
+        '<p>dewlab is built by two teachers. <strong><a href="https://'
+        'github.com/deweydex">Joshua Aaron</a></strong> teaches at Dublin '
+        'College, Dundrum. <strong><a href="https://github.com/mcgarry">'
+        "Sean McGarry</a></strong> teaches at Dublin College, "
         "Blackrock.</p>"
         "<h2>Helping out</h2>"
         "<p>We would be glad of help with the material. You can open an issue "
@@ -4558,10 +4665,12 @@ def write_about_page(shell: str) -> Path:
         "<h2>Contact</h2>"
         "<p>Suggested assessments and exams for any module are available on "
         "request. Email either of us.</p>"
-        '<p><strong>Joshua Aaron:</strong> <a href="mailto:jsaaron@jsaaron.com">'
+        '<p><strong><a href="https://github.com/deweydex">Joshua Aaron</a>'
+        ':</strong> <a href="mailto:jsaaron@jsaaron.com">'
         'jsaaron@jsaaron.com</a> or <a href="mailto:joshuaaaron@dcfe.ie">'
         "joshuaaaron@dcfe.ie</a></p>"
-        '<p><strong>Sean McGarry:</strong> <a href="mailto:seanmcgarry@bfei.ie">'
+        '<p><strong><a href="https://github.com/mcgarry">Sean McGarry</a>'
+        ':</strong> <a href="mailto:seanmcgarry@bfei.ie">'
         "seanmcgarry@bfei.ie</a></p>"
     )
     manifest = {"slug": "about", "version": 1, "assetBase": "assets/",
@@ -4576,11 +4685,12 @@ def write_about_page(shell: str) -> Path:
         "{{CRUMBS}}": "about",
         "{{ASSET_BASE}}": "assets/",
         "{{STYLE_URL}}": versioned("assets/", "tutorial-style.css"),
+        "{{FAVICON_URL}}": versioned("assets/", "favicon.svg"),
         "{{KATEX_CSS_URL}}": versioned("assets/", "vendor/katex.min.css"),
         "{{ACCESSIBLE_FONTS_CSS_URL}}": versioned("assets/", "vendor/accessible-fonts.css"),
         "{{RUNTIME_URL}}": versioned("assets/", "tutorial-runtime.js"),
         "{{ROOT_BASE}}": "",
-        "{{NAV_PREV_NEXT}}": '<a class="dl-nav-up" href="index.html">All tutorials</a>',
+        "{{NAV_PREV_NEXT}}": '<a class="dl-nav-up" href="all-tutorials.html">All tutorials</a>',
         "{{PAGE_SCRIPT}}": "",
         "{{CANONICAL}}": "",
         "{{DOWNLOAD}}": "",
@@ -4634,11 +4744,12 @@ def write_editor_page(shell: str) -> Path:
         "{{CRUMBS}}": "editor",
         "{{ASSET_BASE}}": "assets/",
         "{{STYLE_URL}}": versioned("assets/", "tutorial-style.css"),
+        "{{FAVICON_URL}}": versioned("assets/", "favicon.svg"),
         "{{KATEX_CSS_URL}}": versioned("assets/", "vendor/katex.min.css"),
         "{{ACCESSIBLE_FONTS_CSS_URL}}": versioned("assets/", "vendor/accessible-fonts.css"),
         "{{RUNTIME_URL}}": versioned("assets/", "tutorial-runtime.js"),
         "{{ROOT_BASE}}": "",
-        "{{NAV_PREV_NEXT}}": '<a class="dl-nav-up" href="index.html">All tutorials</a>',
+        "{{NAV_PREV_NEXT}}": '<a class="dl-nav-up" href="all-tutorials.html">All tutorials</a>',
         "{{PAGE_SCRIPT}}": (
             f'<link rel="stylesheet" href="{versioned("assets/", "vendor/milkdown.bundle.css")}">'
             f'<script type="module" src="{versioned("assets/", "editor.js")}"></script>'
@@ -4760,9 +4871,10 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
         written.extend(module_archives.values())
 
     if tutorials:
-        written.append(
-            write_index(shell, groups, archives, retired, practice, mixed, module_archives)
-        )
+        written.append(write_index(shell))
+        written.append(write_all_tutorials_page(
+            shell, groups, archives, retired, practice, mixed, module_archives
+        ))
         # One page per module, for the module buttons on the front page to
         # land on — every module with at least one live or archived
         # tutorial, listed or not (module_order() only decides position,
