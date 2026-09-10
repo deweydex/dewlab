@@ -2183,24 +2183,14 @@ def render_index() -> str:
         "students and teachers the install, the permissions and the "
         "early setup that usually gets in the way before a class even "
         "begins.</p>",
-        "<p>We are working through QQI's Level 5 and Level 6 programming "
-        "and mathematics modules, and we plan to add the rest of the "
-        "technical course over time. Level 5 comes first. Four modules "
-        'are ready now: <a href="mit-pdp-maths-prog-integration.html">'
-        "Programming and Design Principles</a> (5N2927), "
-        '<a href="mit-pdp-maths-prog-integration.html">Mathematics for '
-        "Information Technology</a> (5N18396), "
-        '<a href="fundamentals-of-oop.html">Fundamentals of '
-        "Object-Oriented Programming</a> (5N0541), and "
-        '<a href="computational-methods.html">Computational Methods and '
-        "Problem Solving</a> (5N0554). "
-        '<a href="https://github.com/deweydex/dewstack">Database '
-        "Methods</a> (5N0783) and "
-        '<a href="https://github.com/deweydex/dewstack">Web '
-        "Authoring</a> (5N1910) are next. Earlier versions of some of "
+        "<p>Right now we have QQI Level 5's programming and mathematics "
+        "modules, in beta. The material should suit anyone learning to "
+        "program or wanting to brush up on their maths, done a little "
+        "differently. See below for our full list of subjects and "
+        "topics — with more on the way. Earlier versions of some of "
         'this material already live on <a href="https://github.com/'
-        'deweydex/dewstack">dewstack</a>, our sister project — we are '
-        "bringing the best of it here.</p>",
+        'deweydex/dewstack">dewstack</a>, our sister project, and we '
+        "are bringing the best of it here.</p>",
         "</div>",
 
         '<div class="dl-audience">',
@@ -2215,15 +2205,17 @@ def render_index() -> str:
         "<p>dewlab runs in your browser, with nothing to install and no "
         "permissions to grant. There is no account — your work saves "
         "itself, right there in the browser you are using. Prefer to "
-        "work with no internet? Download a module once, and it keeps "
-        "working offline from then on.</p>",
+        "work offline? Download a tutorial or a series, and once you "
+        "have loaded it, it works with no internet connection after "
+        "that.</p>",
         "<p>Every tutorial names the QQI learning outcome it teaches, so "
         "a lesson plan maps straight onto the descriptor.</p>",
-        '<p>We recommend starting with the <a href="mit-pdp-maths-prog-'
-        'integration.html">integrated track</a>, where maths and '
-        "programming are taught side by side — in our experience, "
-        "that is what actually helps a class connect the two subjects. "
-        "Suggested assessments and exams for any module are available on "
+        '<p>We recommend integrating maths and programming, taught side '
+        'by side in the <a href="mit-pdp-maths-prog-integration.html">'
+        "integrated track</a>. In our experience, students feel more "
+        "confident in both subjects — many have overcome struggles "
+        "with maths they have carried for years. Suggested assessments "
+        "and exams for any module are available on "
         'request; see the <a href="about.html">contact and about '
         "page</a> for how to reach us.</p>",
         "<p>dewlab is young, and we would love your help making it "
