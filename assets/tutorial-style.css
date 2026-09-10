@@ -1818,6 +1818,69 @@ p code, li code {
    I start — and then the list they came for. The points are a list rather than
    prose on purpose: they are independent answers, and a reader arriving with
    one of those questions should not have to read the rest to find it. */
+/* The landing sections above the intro: the mission line, "for teachers",
+   "for students" and its module buttons, and the settings/dewmini invite.
+   Same rhythm as .dl-intro/.dl-workspaces below (a rule above, generous
+   bottom margin) so the whole run of sections reads as one page rather
+   than a hero bolted onto the old contents list. */
+.dl-hero { margin: 0 0 1.6rem; }
+.dl-hero p { margin: 0 0 0.9rem; }
+.dl-hero-byline {
+  margin: 0 0 2.5rem;
+  font-size: 0.86rem;
+  color: var(--dl-muted);
+}
+.dl-audience {
+  margin: 0 0 2.5rem;
+  padding-top: 0.8rem;
+  border-top: 1px solid var(--dl-rule);
+}
+.dl-audience p { margin: 0 0 0.9rem; }
+
+.dl-module-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
+  gap: 0.9rem;
+  margin: 1rem 0 0;
+}
+.dl-module-card {
+  display: block;
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--dl-cell-border);
+  border-radius: 8px;
+  background: var(--dl-panel-bg);
+  color: inherit;
+  text-decoration: none;
+}
+.dl-module-card:hover { border-color: var(--dl-orange); }
+.dl-module-card:hover h3 { color: var(--dl-orange); }
+.dl-module-card[data-status="soon"] { opacity: 0.72; }
+.dl-module-card h3 { margin: 0 0 0.3rem; font-size: 1rem; }
+.dl-module-card-meta {
+  display: block;
+  margin: 0 0 0.5rem;
+  font-family: var(--dl-mono);
+  font-size: 0.72rem;
+  color: var(--dl-muted);
+}
+.dl-module-card p { margin: 0 0 0.65rem; font-size: 0.86rem; color: var(--dl-muted); }
+/* Same pill shape as .dl-cell-pill, and the same "live needs no emphasis,
+   the other states do" rule the editor's own status buttons already use
+   (see .dl-editor-status-option above). */
+.dl-module-card-badge {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--dl-cell-border);
+  border-radius: 999px;
+  padding: 0.1rem 0.6rem;
+  font-family: var(--dl-mono);
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--dl-muted);
+}
+.dl-module-card-badge[data-status="beta"] { border-color: var(--dl-orange); color: var(--dl-orange); }
+
 .dl-intro { margin: 0 0 2.5rem; }
 .dl-intro p { margin: 0 0 0.9rem; }
 .dl-intro-points {
@@ -2023,9 +2086,43 @@ p code, li code {
 /* The contents page. Numbered because a series has an order and the numbers
    are part of the information, not decoration. */
 .dl-contents { margin: 0 0 2rem; padding-left: 1.6rem; }
-.dl-contents li { margin: 0.35rem 0; }
+.dl-contents li {
+  margin: 0.4rem 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
 .dl-contents a { text-decoration: none; }
 .dl-contents a:hover { text-decoration: underline; }
+/* A tutorial and its practice page, as two big buttons rather than a link
+   and a label — the same navy-and-orange pair everywhere this list appears
+   (the contents page, a module's own page, "Browse by topic"), so a reader
+   learns it once. Navy for "Explore" (the tutorial itself, so it carries
+   the weight of a solid fill); orange, outlined the way every other
+   bordered control on this page already is on hover, for "Practice". */
+.dl-contents-btn {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  padding: 0.45rem 0.9rem;
+  border-radius: 6px;
+  border: 1px solid var(--dl-heading);
+  background: var(--dl-navy);
+  color: #fdfcfa;
+  font-weight: 600;
+}
+.dl-contents-btn:hover {
+  border-color: var(--dl-orange);
+  text-decoration: none;
+}
+.dl-contents-kicker {
+  font-family: var(--dl-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  opacity: 0.75;
+}
 /* The whole-series/whole-module download offer, right under its own title
    rather than after the list under it — .dl-download is a button, not a
    line of text, so it wants less trailing space before what follows than a
@@ -3038,14 +3135,20 @@ p code, li code {
 .dl-hint-marker[hidden] { display: none; }
 
 .dl-contents-practice {
-  margin-left: 0.5rem;
-  font-family: var(--dl-mono);
-  font-size: 0.68rem;
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
-  color: var(--dl-muted);
+  display: inline-flex;
+  align-items: center;
+  padding: 0.45rem 0.9rem;
+  border-radius: 6px;
+  border: 1px solid var(--dl-orange);
+  background: transparent;
+  color: var(--dl-link);
+  font-weight: 600;
+  text-decoration: none;
 }
-.dl-contents-practice:hover { color: var(--dl-orange); }
+.dl-contents-practice:hover {
+  background: rgba(212, 105, 42, 0.14);
+  text-decoration: none;
+}
 
 /* ------------------------------------------------------------------ footer */
 
