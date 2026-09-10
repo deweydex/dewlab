@@ -2184,10 +2184,104 @@ def render_index(
     # is organised, where to start), and no answer follows from another. Prose
     # made the reader hunt for their own question.
     out = [
-        "<h1>Tutorials</h1>",
+        "<h1>dewlab</h1>",
+        '<div class="dl-hero">',
+        "<p>dewlab is a project by Sean McGarry and Joshua Aaron, built to "
+        "help teachers and students by creating material that works "
+        "through QQI's Level 5 and Level 6 programming and mathematics "
+        "modules. Level 5 comes first, with three modules under way: "
+        "Programming and Design Principles (5N2927), Mathematics for "
+        "Information Technology (5N18396), and Database Methods "
+        "(5N0783).</p>",
+        "</div>",
+        '<p class="dl-hero-byline">Joshua Aaron teaches at Dublin College, '
+        "Dundrum. Sean McGarry teaches at Dublin College, Blackrock.</p>",
+
+        '<div class="dl-audience">',
+        "<h2>For teachers</h2>",
+        "<p>dewlab installs nothing. It runs online, in a browser, with no "
+        "account and no permissions to grant. Download a module once, and "
+        "it keeps working offline after that. Every tutorial names the QQI "
+        "learning outcome it teaches, so a lesson plan maps straight onto "
+        "the descriptor. Maths and programming sit on the same page, so "
+        "moving between the two subjects feels natural rather than like "
+        "switching tools. Suggested assessments and exams are available on "
+        'request — see the <a href="about.html">contact and about '
+        "page</a>.</p>",
+        "</div>",
+
+        '<div class="dl-audience">',
+        "<h2>For students</h2>",
+        "<p>Feel free to click around. Choose a module below to open it, "
+        "or start with the integrated track, which teaches maths and "
+        "programming together.</p>",
+        '<div class="dl-module-grid">',
+        '<a class="dl-module-card" href="mit-pdp-maths-prog-integration.html">'
+        "<h3>Maths and Programming, Integrated</h3>"
+        '<span class="dl-module-card-meta">5N2927 + 5N18396 · QQI Level 5</span>'
+        "<p>We recommend starting here. One course moves between the two "
+        "subjects, in the order the class needs them.</p></a>",
+        '<a class="dl-module-card" href="mit-pdp-maths-prog-integration.html">'
+        "<h3>Programming and Design Principles</h3>"
+        '<span class="dl-module-card-meta">5N2927 · QQI Level 5</span>'
+        "<p>This module is taught inside the integrated track, alongside "
+        "Mathematics for IT.</p></a>",
+        '<a class="dl-module-card" href="mit-pdp-maths-prog-integration.html">'
+        "<h3>Mathematics for Information Technology</h3>"
+        '<span class="dl-module-card-meta">5N18396 · QQI Level 5</span>'
+        "<p>This module is taught inside the integrated track, alongside "
+        "Programming and Design Principles.</p></a>",
+        '<a class="dl-module-card" href="computational-methods.html">'
+        "<h3>Computational Methods and Problem Solving"
+        '<span class="dl-module-card-badge" data-status="beta">Beta</span>'
+        "</h3>"
+        '<span class="dl-module-card-meta">5N0554 · QQI Level 5</span>'
+        "<p>We work through matrices, simulation, algorithms and "
+        "debugging, in Python.</p></a>",
+        '<a class="dl-module-card" href="fundamentals-of-oop.html">'
+        "<h3>Fundamentals of Object-Oriented Programming"
+        '<span class="dl-module-card-badge" data-status="beta">Beta</span>'
+        "</h3>"
+        '<span class="dl-module-card-meta">5N0541 · QQI Level 5</span>'
+        "<p>We build classes, objects and inheritance, from first "
+        "principles.</p></a>",
+        '<a class="dl-module-card" data-status="soon" href="about.html">'
+        "<h3>Database Methods"
+        '<span class="dl-module-card-badge" data-status="soon">Coming soon</span>'
+        "</h3>"
+        '<span class="dl-module-card-meta">5N0783 · QQI Level 5</span>'
+        "<p>We have not written this one yet. Tell us you are waiting for "
+        "it.</p></a>",
+        '<a class="dl-module-card" data-status="soon" href="about.html">'
+        "<h3>Web Authoring"
+        '<span class="dl-module-card-badge" data-status="soon">Coming soon</span>'
+        "</h3>"
+        '<span class="dl-module-card-meta">5N1910 · QQI Level 5</span>'
+        "<p>We have not written this one yet. Tell us you are waiting for "
+        "it.</p></a>",
+        '<a class="dl-module-card" data-status="soon" href="about.html">'
+        "<h3>Web Development"
+        '<span class="dl-module-card-badge" data-status="soon">Coming soon</span>'
+        "</h3>"
+        "<p>We have not written this one yet. Tell us you are waiting for "
+        "it.</p></a>",
+        "</div>",
+        "</div>",
+
+        '<div class="dl-audience">',
+        "<h2>Make it yours</h2>",
+        "<p>Open <strong>Settings</strong>, in the corner of any page, to "
+        "change how dewlab looks. Switch to dark mode, choose a different "
+        "font, turn on high contrast, or pick your own colour for "
+        "links.</p>",
+        '<p>Want to try Python with no tutorial attached? Open '
+        '<a href="compose/dewmini.html">dewmini</a>, a small workspace '
+        "built for exactly that.</p>",
+        "</div>",
+
+        "<h2>Browse every tutorial</h2>",
         '<div class="dl-intro">',
-        "<p>Welcome to dewlab. Here we explore maths and programming "
-        "together. Everything runs in your browser, so there is nothing to "
+        "<p>Everything runs in your browser, so there is nothing to "
         "install and no account to make. Open any tutorial and start.</p>",
         '<ul class="dl-intro-points">',
         "<li><strong>Tutorials are made of cells.</strong> A cell is a small "
@@ -2221,26 +2315,6 @@ def render_index(
         '<a href="about.html">About this project</a> explains how to suggest a '
         "change or report a mistake.</p>",
         "</div>",
-        # A section of its own, not one more paragraph among the intro's —
-        # this is not a tutorial and doesn't belong on the numbered list
-        # below, but it's common enough a reason to visit ("I just want
-        # to try something") that a line buried in prose undersold it.
-        '<div class="dl-workspaces">',
-        # h2, because it is a top-level section of this page like the
-        # modules are. It used to be h3 to keep "every <h2> is a module"
-        # true for readers of this markup, at the cost of an h1 -> h3 jump
-        # that a screen reader navigating by heading level reads as a
-        # missing section (planning/EDGES_AUDIT.md). Module headings carry
-        # .dl-module-heading now, so telling them apart no longer depends
-        # on the level.
-        "<h2>Want to experiment on your own, outside a tutorial?</h2>",
-        '<a class="dl-workspace-card" href="compose/dewmini.html" target="_blank">',
-        "<h3>dewmini</h3>",
-        "<p>An open Python workspace with no tutorial attached. The same "
-        "cells and the same Python, plus files, SQLite and a Stop button. "
-        "Useful when we just want to try something out.</p>",
-        "</a>",
-        "</div>",
         render_search_box("Search by topic — e.g. loops, probability, sorting…"),
     ]
 
@@ -2251,103 +2325,135 @@ def render_index(
     # adding a module lands it at the end rather than breaking the page.
     ordered = [m for m in listed if m in everywhere] + sorted(everywhere - set(listed))
     for module in ordered:
+        out.extend(render_module_body(
+            module, names, groups, archives, retired, practice, mixed,
+            module_archives, titles,
+        ))
+    return "\n".join(out)
+
+
+def render_module_body(
+    module: str,
+    names: dict[str, str],
+    groups: dict[tuple[str, str], list[Tutorial]],
+    archives: dict[tuple[str, str], Path],
+    retired: dict[str, list[Tutorial]],
+    practice: dict[tuple[str, str], Tutorial],
+    mixed: dict[str, list[Tutorial]],
+    module_archives: dict[str, Path],
+    titles: dict[tuple[str, str], str],
+    heading: bool = True,
+) -> list[str]:
+    """One module's own content: its heading, its whole-module download
+    offer, every series in it (each with its own download offer and its
+    tutorial/practice list), its mixed problems and its archive.
+
+    Shared by `render_index()`, where every module appears one after another
+    on the contents page, and `write_module_page()`, where a module gets a
+    page of its own — `heading=False` there, since the page's own `<h1>`
+    already names it and repeating it as an `<h2>` right underneath would
+    say the same thing twice.
+    """
+    out: list[str] = []
+    if heading:
         out.append(
             f'<h2 class="dl-module-heading">{html.escape(names.get(module, module))}</h2>')
-        module_archive = module_archives.get(module)
-        if module_archive is not None:
-            # Same tally write_module_zip() built the archive from, worked out
-            # again here rather than threaded through — groups, practice and
-            # mixed are already everything it takes.
-            total = sum(
-                len(zip_sequence(members, practice))
-                for (owner, series), members in groups.items() if owner == module
-            ) + len(mixed.get(module, []))
+    module_archive = module_archives.get(module)
+    if module_archive is not None:
+        # Same tally write_module_zip() built the archive from, worked out
+        # again here rather than threaded through — groups, practice and
+        # mixed are already everything it takes.
+        total = sum(
+            len(zip_sequence(members, practice))
+            for (owner, series), members in groups.items() if owner == module
+        ) + len(mixed.get(module, []))
+        out.append(
+            '<p class="dl-series">' + download_link_html(
+                f"download/{module_archive.name}",
+                f"Download every tutorial and practice page in this module "
+                f"({total} files, {readable_size(module_archive)})",
+            ) + "</p>"
+        )
+    for (owner, series), members in sorted(groups.items()):
+        if owner != module:
+            continue
+        if len({s for m, s in groups if m == module}) > 1:
+            name = titles.get((owner, series), series)
+            out.append(f'<h3>{html.escape(name)}</h3>')
+        archive = archives.get((owner, series))
+        if archive is not None:
+            # Right under the series' own title rather than after its
+            # list, matching where the module's own download offer sits
+            # under its heading — a reader deciding "give me the whole
+            # thing" should not have to scroll past every title first.
+            sequence = zip_sequence(members, practice)
+            count = len(sequence)
+            # A series of one real file is a real case now that
+            # reflections live in their own section, and "Download all 1
+            # as single files" is not a sentence anybody wrote on
+            # purpose.
+            what = ("this one as a single file" if count == 1
+                    else f"all {count} as single files")
             out.append(
                 '<p class="dl-series">' + download_link_html(
-                    f"download/{module_archive.name}",
-                    f"Download every tutorial and practice page in this module "
-                    f"({total} files, {readable_size(module_archive)})",
+                    f"download/{archive.name}",
+                    f"Download {what} ({readable_size(archive)})",
                 ) + "</p>"
             )
-        for (owner, series), members in sorted(groups.items()):
-            if owner != module:
-                continue
-            if len({s for m, s in groups if m == module}) > 1:
-                name = titles.get((owner, series), series)
-                out.append(f'<h3>{html.escape(name)}</h3>')
-            archive = archives.get((owner, series))
-            if archive is not None:
-                # Right under the series' own title rather than after its
-                # list, matching where the module's own download offer sits
-                # under its heading — a reader deciding "give me the whole
-                # thing" should not have to scroll past every title first.
-                sequence = zip_sequence(members, practice)
-                count = len(sequence)
-                # A series of one real file is a real case now that
-                # reflections live in their own section, and "Download all 1
-                # as single files" is not a sentence anybody wrote on
-                # purpose.
-                what = ("this one as a single file" if count == 1
-                        else f"all {count} as single files")
-                out.append(
-                    '<p class="dl-series">' + download_link_html(
-                        f"download/{archive.name}",
-                        f"Download {what} ({readable_size(archive)})",
-                    ) + "</p>"
-                )
-            out.append('<ol class="dl-contents">')
-            for member in members:
-                href = member.out_path.relative_to(OUT).as_posix()
-                # Beside the tutorial rather than under it as a second numbered
-                # item: a practice page is not the next thing to read, it is the
-                # other half of this one.
-                also = practice.get((member.module, member.slug))
-                extra = ""
-                if also is not None:
-                    where = also.out_path.relative_to(OUT).as_posix()
-                    extra = (f' <a class="dl-contents-practice" href="{where}">'
-                             "practice</a>")
-                out.append(
-                    f'<li><a href="{href}"{progress_attrs(member)}>'
-                    f"{html.escape(member.title)}</a>{extra}</li>"
-                )
-            out.append("</ol>")
-        # After the series and before the archive. A mixed set is part of the
-        # course and belongs to no series in it, so there is nowhere else it
-        # could go — and it is the only kind of page nothing else links to.
-        for member in mixed.get(module, []):
-            if member is mixed[module][0]:
-                out.append('<h3 class="dl-mixed-head">Mixed problems</h3>')
-                out.append(
-                    '<p class="dl-mixed-note">Problems that draw on several '
-                    "tutorials at once. Try them once you have finished the "
-                    "tutorials they name.</p>"
-                )
-                out.append('<ul class="dl-contents dl-mixed">')
+        out.append('<ol class="dl-contents">')
+        for member in members:
             href = member.out_path.relative_to(OUT).as_posix()
+            # Beside the tutorial rather than under it as a second numbered
+            # item: a practice page is not the next thing to read, it is the
+            # other half of this one.
+            also = practice.get((member.module, member.slug))
+            extra = ""
+            if also is not None:
+                where = also.out_path.relative_to(OUT).as_posix()
+                extra = (f' <a class="dl-contents-practice" href="{where}">'
+                         "Practice</a>")
             out.append(
-                f'<li><a href="{href}"{progress_attrs(member)}>'
-                f"{html.escape(member.title)}</a></li>"
+                f'<li><a class="dl-contents-btn" href="{href}"{progress_attrs(member)}>'
+                f'<span class="dl-contents-kicker">Explore</span>'
+                f"{html.escape(member.title)}</a>{extra}</li>"
             )
-            if member is mixed[module][-1]:
-                out.append("</ul>")
+        out.append("</ol>")
+    # After the series and before the archive. A mixed set is part of the
+    # course and belongs to no series in it, so there is nowhere else it
+    # could go — and it is the only kind of page nothing else links to.
+    for member in mixed.get(module, []):
+        if member is mixed[module][0]:
+            out.append('<h3 class="dl-mixed-head">Mixed problems</h3>')
+            out.append(
+                '<p class="dl-mixed-note">Problems that draw on several '
+                "tutorials at once. Try them once you have finished the "
+                "tutorials they name.</p>"
+            )
+            out.append('<ul class="dl-contents dl-mixed">')
+        href = member.out_path.relative_to(OUT).as_posix()
+        out.append(
+            f'<li><a href="{href}"{progress_attrs(member)}>'
+            f"{html.escape(member.title)}</a></li>"
+        )
+        if member is mixed[module][-1]:
+            out.append("</ul>")
 
-        # Last, and marked, because it is not part of the course any more — but
-        # present, because a student who worked in one has to be able to find it.
-        for member in retired.get(module, []):
-            if member is retired[module][0]:
-                out.append('<h3 class="dl-archive-head">Archive</h3>')
-                out.append(
-                    '<p class="dl-archive-note">No longer part of the course. '
-                    "Kept here so that saved work can still be found and old "
-                    "links still work.</p>"
-                )
-                out.append('<ul class="dl-contents dl-archive">')
-            href = member.out_path.relative_to(OUT).as_posix()
-            out.append(f'<li><a href="{href}">{html.escape(member.title)}</a></li>')
-            if member is retired[module][-1]:
-                out.append("</ul>")
-    return "\n".join(out)
+    # Last, and marked, because it is not part of the course any more — but
+    # present, because a student who worked in one has to be able to find it.
+    for member in retired.get(module, []):
+        if member is retired[module][0]:
+            out.append('<h3 class="dl-archive-head">Archive</h3>')
+            out.append(
+                '<p class="dl-archive-note">No longer part of the course. '
+                "Kept here so that saved work can still be found and old "
+                "links still work.</p>"
+            )
+            out.append('<ul class="dl-contents dl-archive">')
+        href = member.out_path.relative_to(OUT).as_posix()
+        out.append(f'<li><a href="{href}">{html.escape(member.title)}</a></li>')
+        if member is retired[module][-1]:
+            out.append("</ul>")
+    return out
 
 
 # ------------------------------------------------------------------- checks
@@ -3780,6 +3886,121 @@ def write_index(
     return target
 
 
+# What each module's own page says about it, above its list of tutorials —
+# the QQI code(s) it covers and a short description of the course as a
+# whole. Keyed by folder name under tutorials/. A module with no entry here
+# (there is none today, but a new module folder would start without one)
+# still gets a page — just without the code line or the description.
+MODULE_INFO: dict[str, dict[str, object]] = {
+    "mit-pdp-maths-prog-integration": {
+        "code": "5N2927 + 5N18396 · QQI Level 5",
+        "description": [
+            "This is dewlab's flagship course. It teaches Programming and "
+            "Design Principles (5N2927) and Mathematics for Information "
+            "Technology (5N18396) together, moving between the two "
+            "subjects in the order the class needs them.",
+            "Five series carry it: programming foundations, discrete "
+            "maths and statistics, algebra and functions, geometry and "
+            "trigonometry, and a capstone project that draws on all "
+            "four.",
+        ],
+    },
+    "computational-methods": {
+        "code": "5N0554 · QQI Level 5",
+        "description": [
+            "This module is Computational Methods and Problem Solving "
+            "(5N0554). We work through matrices, simulation, algorithms "
+            "and debugging, in Python.",
+        ],
+    },
+    "fundamentals-of-oop": {
+        "code": "5N0541 · QQI Level 5",
+        "description": [
+            "This module is Fundamentals of Object-Oriented Programming "
+            "(5N0541). We build classes, objects and inheritance, from "
+            "first principles.",
+        ],
+    },
+}
+
+
+def write_module_page(
+    shell: str,
+    module: str,
+    groups: dict[tuple[str, str], list[Tutorial]],
+    archives: dict[tuple[str, str], Path],
+    retired: dict[str, list[Tutorial]],
+    practice: dict[tuple[str, str], Tutorial],
+    mixed: dict[str, list[Tutorial]],
+    module_archives: dict[str, Path],
+) -> Path:
+    """One module's own page: its description, its QQI code, and only its
+    own tutorials and practice pages — not the other modules' too.
+
+    A reader following a module button from the front page lands here
+    rather than partway down the full contents list. Written at the site
+    root, alongside `index.html`, so it can reuse every href
+    `render_module_body()` builds unchanged — those are relative to the
+    site root already, which is exactly where a module page also lives.
+    """
+    names: dict[str, str] = {}
+    for members in list(groups.values()) + list(retired.values()):
+        for member in members:
+            if member.meta.get("module_title"):
+                names.setdefault(member.module, member.module_title)
+    title = names.get(module, module)
+    titles = series_titles()
+
+    info = MODULE_INFO.get(module, {})
+    body = [f"<h1>{html.escape(title)}</h1>"]
+    code = info.get("code")
+    if code:
+        body.append(f'<p class="dl-module-card-meta">{html.escape(str(code))}</p>')
+    for para in info.get("description", []):
+        body.append(f"<p>{para}</p>")
+    body.extend(render_module_body(
+        module, names, groups, archives, retired, practice, mixed,
+        module_archives, titles, heading=False,
+    ))
+
+    manifest = {"slug": module, "version": 1, "assetBase": "assets/",
+                "dataBase": "data/", "cells": [], "assetVersions": {}}
+    tokens = {
+        "{{TITLE}}": title,
+        "{{VERSION}}": "1",
+        "{{SLUG}}": module,
+        "{{MODULE}}": "",
+        "{{YEAR}}": "",
+        "{{SERIES}}": "",
+        "{{CRUMBS}}": html.escape(title),
+        "{{ASSET_BASE}}": "assets/",
+        "{{STYLE_URL}}": versioned("assets/", "tutorial-style.css"),
+        "{{KATEX_CSS_URL}}": versioned("assets/", "vendor/katex.min.css"),
+        "{{ACCESSIBLE_FONTS_CSS_URL}}": versioned("assets/", "vendor/accessible-fonts.css"),
+        "{{RUNTIME_URL}}": versioned("assets/", "tutorial-runtime.js"),
+        "{{ROOT_BASE}}": "",
+        "{{NAV_PREV_NEXT}}": '<a class="dl-nav-up" href="index.html">All tutorials</a>',
+        "{{PAGE_SCRIPT}}": "",
+        "{{CANONICAL}}": "",
+        "{{DOWNLOAD}}": "",
+        "{{TOC}}": "",
+        "{{SERIES_NAV}}": "",
+        "{{BODY}}": "\n".join(body),
+        "{{MANIFEST_JSON}}": json.dumps(manifest).replace("<", "\\u003c"),
+        "{{FOOTER}}": site_footer(module, "1"),
+    }
+    page = shell
+    for token, value in tokens.items():
+        page = page.replace(token, value)
+    if "{{" in page:
+        leftover = sorted({p.split("}}")[0] + "}}" for p in page.split("{{")[1:]})
+        raise BuildError(f"shell template has tokens the module page does not fill: {leftover}")
+    OUT.mkdir(parents=True, exist_ok=True)
+    target = OUT / f"{module}.html"
+    target.write_text(page)
+    return target
+
+
 def strand_key(data: dict) -> str:
     """The colour on each node, said out loud.
 
@@ -3969,9 +4190,10 @@ def write_topics_page(
             extra = ""
             if also is not None:
                 where = also.out_path.relative_to(OUT).as_posix()
-                extra = f' <a class="dl-contents-practice" href="{where}">practice</a>'
+                extra = f' <a class="dl-contents-practice" href="{where}">Practice</a>'
             items.append(
-                f'<li><a href="{href}"{progress_attrs(member)}>'
+                f'<li><a class="dl-contents-btn" href="{href}"{progress_attrs(member)}>'
+                f'<span class="dl-contents-kicker">Explore</span>'
                 f"{html.escape(member.title)}</a>{extra}</li>"
             )
         # A group every one of whose tutorials this particular build
@@ -4277,6 +4499,10 @@ def write_about_page(shell: str) -> Path:
         "<p>You can also take a copy with you. There are three ways to do it: a "
         "single HTML file, a printed or PDF copy, or your cells saved as a "
         "Jupyter notebook.</p>"
+        "<h2>Who we are</h2>"
+        "<p>dewlab is built by two teachers. Joshua Aaron teaches at Dublin "
+        "College, Dundrum. Sean McGarry teaches at Dublin College, "
+        "Blackrock.</p>"
         "<h2>Helping out</h2>"
         "<p>We would be glad of help with the material. You can open an issue "
         "with an idea, a request or a comment. You can also send a pull request "
@@ -4287,8 +4513,14 @@ def write_about_page(shell: str) -> Path:
         "request and we will review it and merge it.</p>"
         '<p><strong>Project repository:</strong> <a href="https://github.com/deweydex/dewlab">'
         "github.com/deweydex/dewlab</a></p>"
-        '<p><strong>Contact:</strong> <a href="mailto:deweydex@jsaaron.com">'
-        "deweydex@jsaaron.com</a></p>"
+        "<h2>Contact</h2>"
+        "<p>Suggested assessments and exams for any module are available on "
+        "request. Email either of us.</p>"
+        '<p><strong>Joshua Aaron:</strong> <a href="mailto:jsaaron@jsaaron.com">'
+        'jsaaron@jsaaron.com</a> or <a href="mailto:joshuaaaron@dcfe.ie">'
+        "joshuaaaron@dcfe.ie</a></p>"
+        '<p><strong>Sean McGarry:</strong> <a href="mailto:seanmcgarry@bfei.ie">'
+        "seanmcgarry@bfei.ie</a></p>"
     )
     manifest = {"slug": "about", "version": 1, "assetBase": "assets/",
                 "dataBase": "data/", "cells": [], "assetVersions": {}}
@@ -4489,6 +4721,15 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
         written.append(
             write_index(shell, groups, archives, retired, practice, mixed, module_archives)
         )
+        # One page per module, for the module buttons on the front page to
+        # land on — every module with at least one live or archived
+        # tutorial, listed or not (module_order() only decides position,
+        # not presence).
+        for module in {m for m, _ in groups} | set(retired):
+            written.append(write_module_page(
+                shell, module, groups, archives, retired, practice, mixed,
+                module_archives,
+            ))
         tree = write_tree_page(shell, tutorials)
         if tree is not None:
             written.append(tree)
