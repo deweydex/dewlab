@@ -42,7 +42,7 @@ than in ordinary work, because dewstack already has real students:
 
 ## 2. Scope: what actually moves, and what doesn't yet
 
-dewstack's own ledger (`planning/CONSOLIDATION_PLAN.md` §7) shows two
+dewstack's own ledger (`dewstack/planning/CONSOLIDATION_PLAN.md` §7) shows two
 tracks finished to a "done" bar that already matches dewlab's own —
 plain-language pass, glossary, `cell-code-review`, axe and 1200/390px
 screenshots:
@@ -95,15 +95,16 @@ should not have to learn two spellings for the same idea.
 
 **Web authoring: a genuine gap.** dewlab has no sandboxed-iframe,
 live-HTML/CSS-run-on-demand-JS pattern anywhere in a tutorial page today.
-dewstack's `assets/site-editor.js` (18.8K) is the design to port: HTML
+dewstack's `dewstack/assets/site-editor.js` (18.8K) is the design to port: HTML
 and CSS panes rebuild the preview live; the JS pane runs on a Run click;
 errors relay from the iframe's console with a line number and a
 plain-language second line (`SITE_FRIENDLY` mapped errors, per
 `DECISIONS_LOG.md`'s account of the original build). This needs new
 `build.py` fence kinds (`site=`, `html app=`/`css app=`/`js app=`,
 matching dewstack's spelling for the same reason as above) and a new
-runtime file, working name `assets/site-runtime.js`, built against
-dewlab's manifest/report-doors conventions rather than dewstack's.
+runtime file — working name assets/site-runtime.js, not yet created —
+built against dewlab's manifest/report-doors conventions rather than
+dewstack's.
 
 The JS execution piece of this should not be built twice. dewlab already
 has a sandboxed JS runner for JS cells in dewmini
@@ -140,15 +141,15 @@ case") that comes out the other way this time.
   calls.
 - **dewminiweb** (working name, per Josh's own suggestion) is a new,
   standalone site-authoring workspace, built to the shape of dewstack's
-  `assets/workspace.js` (multi-file HTML/CSS/JS, a file concept, no
-  notebook cells) rather than dewstack's in-tutorial `site-editor.js` —
+  `dewstack/assets/workspace.js` (multi-file HTML/CSS/JS, a file concept,
+  no notebook cells) rather than dewstack's in-tutorial `site-editor.js` —
   the same relationship dewmini has to tutorial Python cells.
 
 What does carry over from the dewmini precedent is its other half: share
 the engine underneath even when the products stay separate.
 `dewminiweb`'s JS execution reuses `compose/js-cell-engine.js`; if it
-ever offers a SQL pane (dewstack's `workspace.js` doesn't appear to have
-one — worth confirming before promising it), that reuses
+ever offers a SQL pane (dewstack's `dewstack/assets/workspace.js` doesn't
+appear to have one — worth confirming before promising it), that reuses
 `pyodide-engine.js`/`tutorial_tools.py` too, the same as dewmini and the
 new tutorial-page SQL cells will.
 
@@ -165,25 +166,26 @@ contains is live, linked, or built.
 It holds a **verbatim, unedited copy-in**, taken from a named dewstack
 commit, of:
 
-- `tutorials/data/` and `tutorials/web/` in full (markdown, glossary
-  files, `.order.yaml`s, images).
-- `tutorials/full-stack/` (the one page, for later reference).
-- The relevant slice of `tutorials/modules.yaml` (the `data`/`web`
-  ordering and notes).
-- The five engine source files: `assets/site-editor.js`,
-  `assets/sql-cell.js`, `assets/sql_tools.py`, `assets/python_tools.py`,
-  `assets/workspace.js`.
-- `planning/CONSOLIDATION_PLAN.md` and `planning/NEXT_STEPS.md`, for the
-  ledger and rationale behind what's already "done."
+- `dewstack/tutorials/data/` and `dewstack/tutorials/web/` in full
+  (markdown, glossary files, `.order.yaml`s, images).
+- `dewstack/tutorials/full-stack/` (the one page, for later reference).
+- The relevant slice of `dewstack/tutorials/modules.yaml` (the
+  `data`/`web` ordering and notes).
+- The five engine source files: `dewstack/assets/site-editor.js`,
+  `dewstack/assets/sql-cell.js`, `dewstack/assets/sql_tools.py`,
+  `dewstack/assets/python_tools.py`, `dewstack/assets/workspace.js`.
+- `dewstack/planning/CONSOLIDATION_PLAN.md` and
+  `dewstack/planning/NEXT_STEPS.md`, for the ledger and rationale behind
+  what's already "done."
 
 A short `staging/dewstack-import/README.md` records the exact commit
 hash it was taken from and what it's for, so nobody mistakes it for a
 live copy or tries to build from it directly.
 
 What it isn't: a place to edit. Every file in it gets read from while the
-real port happens directly in `tutorials/database-methods/`,
-`tutorials/web-authoring/`, and new `assets/` files — never edited in
-place inside staging, and never the thing a pull request ships. Once a
+real port happens directly in `tutorials/database-methods/`, a new
+tutorials/web-authoring/ folder, and new `assets/` files — never edited
+in place inside staging, and never the thing a pull request ships. Once a
 module's port is done and running in front of a class, its slice of
 staging is deleted. dewstack's own copy stays untouched in its own
 repository throughout — this plan never asks dewstack to delete
@@ -219,17 +221,17 @@ The same bar dewstack already used, since it's dewlab's own bar too:
    (currently absent — `planning/ROADMAP.md` already flags this gap).
    Flip the homepage card once the module has run in front of a class.
 3. **Web engine + module.** Resolve the dewmini/dewminiweb question
-   (§8). Build the site-authoring fence kinds and `assets/site-runtime.js`
+   (§8). Build the site-authoring fence kinds and a new site-runtime.js
    for tutorial pages; build `dewminiweb` if confirmed. Port the 30 web
-   pages into `tutorials/web-authoring/` the same way. Flip its homepage
-   card.
+   pages into a new tutorials/web-authoring/ folder the same way. Flip
+   its homepage card.
 4. **Full-stack, later.** Combine dewstack's one page with whatever
    dewlab's own full-stack concept becomes, once both tracks are live.
    Not scheduled yet.
 5. **Cutover.** Both dewlab homepage cards point at real pages instead of
-   dewstack. dewstack's own front page (`tutorials/front.md`) gets a note
-   pointing the other way — "the current version of this course is on
-   dewlab" — in the same spirit as its `notes.web` line about
+   dewstack. dewstack's own front page (`dewstack/tutorials/front.md`)
+   gets a note pointing the other way — "the current version of this
+   course is on dewlab" — in the same spirit as its `notes.web` line about
    WADB_Tutorials today. `staging/dewstack-import/` is deleted once
    nothing in it is still being read from. dewstack's repository and
    history are not deleted or archived by this plan; that stays a
