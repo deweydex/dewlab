@@ -71,7 +71,8 @@ sense.
     sits `_run_sql_cell` (not in `__all__` — internal plumbing, not
     something a reader calls by name), `run_query`'s multi-statement
     counterpart: dewmini's own SQL cell type (DECISIONS_LOG.md 7.118,
-    `planning/CELL_IDENTITY.md` §8) generates a call to this rather than
+    `planning/CELL_IDENTITY.md` §8) and a tutorial page's `sql exec` cell
+    (DECISIONS_LOG.md 7.140) both generate a call to this rather than
     handing a reader's raw SQL to Pyodide directly. Splits a script on a
     bare `;`, runs every statement but the last, and renders only the
     last one's own result — a table if it returned rows, otherwise how

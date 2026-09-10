@@ -300,6 +300,80 @@ class TestCells:
         assert manifest(built(repo))["cells"] == []
 
 
+SQL_CELL = """```sql exec
+id: only-sql-cell
+SELECT 1;
+```
+"""
+
+
+class TestSqlCells:
+    """DEWSTACK_MERGE.md §3 — a sql exec cell shares python exec's header
+    grammar, markup, and manifest shape entirely; only the fence's own
+    language word and the pill it produces differ."""
+
+    def test_a_sql_exec_fence_becomes_a_cell(self, repo):
+        write(repo, SQL_CELL)
+        b.build()
+        page = built(repo)
+        assert 'class="dl-cell" data-cell-id="only-sql-cell"' in page
+        assert 'class="dl-editor"' in page and 'class="dl-output"' in page
+
+    def test_the_pill_reads_sql_not_python(self, repo):
+        write(repo, SQL_CELL)
+        b.build()
+        page = built(repo)
+        assert '<span class="dl-cell-pill-type" data-type="sql">SQL</span>' in page
+
+    def test_a_python_cell_on_the_same_page_still_reads_python(self, repo):
+        write(repo, SQL_CELL + "\n" + CELL)
+        b.build()
+        page = built(repo)
+        assert '<span class="dl-cell-pill-type" data-type="sql">SQL</span>' in page
+        assert '<span class="dl-cell-pill-type" data-type="python">Python</span>' in page
+
+    def test_the_sql_travels_in_the_manifest_as_a_typed_cell(self, repo):
+        write(repo, SQL_CELL)
+        b.build()
+        cells = manifest(built(repo))["cells"]
+        assert cells == [{"id": "only-sql-cell", "hint": None, "code": "SELECT 1;", "type": "sql"}]
+
+    def test_a_plain_python_cell_carries_no_type_key(self, repo):
+        # type is only in the manifest when it isn't the default, matching
+        # how expect/name are already handled — a page with no SQL cells
+        # gets a manifest identical to what it was before this fence existed.
+        write(repo, CELL)
+        b.build()
+        assert "type" not in manifest(built(repo))["cells"][0]
+
+    def test_a_sql_cell_gets_hint_and_expect_like_any_other(self, repo):
+        write(repo, '```sql exec\nid: c\nhint: Try SELECT *.\nSELECT 1;\n```\n')
+        b.build()
+        page = built(repo)
+        assert manifest(page)["cells"][0]["hint"] == "Try SELECT *."
+        assert 'aria-controls="dl-hint-c"' in page
+
+    def test_a_tutorial_with_a_sql_cell_needs_sqlite(self, repo):
+        write(repo, SQL_CELL)
+        b.build()
+        assert manifest(built(repo))["needsSqlite"] is True
+
+    def test_a_tutorial_with_no_sql_cells_does_not_need_sqlite(self, repo):
+        write(repo, CELL)
+        b.build()
+        assert "needsSqlite" not in manifest(built(repo))
+
+    def test_an_unknown_fence_language_fails_the_build(self, repo):
+        write(repo, "```rust exec\nid: c\nfn main() {}\n```\n")
+        with pytest.raises(b.BuildError, match="not one of"):
+            b.build()
+
+    def test_cells_of_different_types_keep_document_order(self, repo):
+        write(repo, "```sql exec\nid: one\nSELECT 1;\n```\n\ntext\n\n```python exec\nid: two\n2\n```\n")
+        b.build()
+        assert [c["id"] for c in manifest(built(repo))["cells"]] == ["one", "two"]
+
+
 class TestIncludes:
     def test_an_include_is_expanded_into_the_cell(self, repo):
         (repo / "setup" / "shared.py").write_text("shared = 1\n")

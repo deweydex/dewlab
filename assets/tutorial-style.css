@@ -593,6 +593,7 @@ p code, li code {
   font-weight: bold;
 }
 .dl-cell-pill-type[data-type="python"] { color: var(--dl-type-python); }
+.dl-cell-pill-type[data-type="sql"] { color: var(--dl-type-sql); }
 
 /* An author's (or, in dewmini, a reader's own) name for a cell — the
    word one person can point at when talking to another about it, beside

@@ -261,14 +261,14 @@ tutorial_tools._page_globals.update({
 tutorial_tools._page_globals["__name__"] = "__dewlab__"
 `;
 
-/* dewmini only (planning/CELL_IDENTITY.md §8) — a fresh, in-memory
- * sqlite3 connection under the name `db`, what a SQL cell runs against
- * and, under the same name, what a Python cell can reach it by too
- * (`pd.read_sql("select * from my_table", db)`), with no plumbing of
- * its own. Tutorial pages never set `seedDb` on their boot message (see
- * boot() below), so this never runs for one — the same "purely
- * additive, gated on who actually asks" shape the filesystem section
- * further down uses for its own dewmini-only messages.
+/* A fresh, in-memory sqlite3 connection under the name `db`, what a SQL
+ * cell runs against and, under the same name, what a Python cell can
+ * reach it by too (`pd.read_sql("select * from my_table", db)`), with no
+ * plumbing of its own. Originally dewmini only (planning/CELL_IDENTITY.md
+ * §8); a tutorial page with a sql exec cell now sets `seedDb` on its own
+ * boot message too (DEWSTACK_MERGE.md §3, tutorial-runtime.js's own
+ * bootWorker()) — the variable name below is a holdover from when only
+ * dewmini ever set the flag, not a claim about who still does.
  *
  * A previous `db`, on a reset rather than the first boot, is closed
  * first rather than just dropped — sqlite3 would eventually close it on
