@@ -1823,13 +1823,8 @@ p code, li code {
    Same rhythm as .dl-intro/.dl-workspaces below (a rule above, generous
    bottom margin) so the whole run of sections reads as one page rather
    than a hero bolted onto the old contents list. */
-.dl-hero { margin: 0 0 1.6rem; }
+.dl-hero { margin: 0 0 2.5rem; }
 .dl-hero p { margin: 0 0 0.9rem; }
-.dl-hero-byline {
-  margin: 0 0 2.5rem;
-  font-size: 0.86rem;
-  color: var(--dl-muted);
-}
 .dl-audience {
   margin: 0 0 2.5rem;
   padding-top: 0.8rem;

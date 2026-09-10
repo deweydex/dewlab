@@ -2186,28 +2186,51 @@ def render_index(
     out = [
         "<h1>dewlab</h1>",
         '<div class="dl-hero">',
-        "<p>dewlab is a project by Sean McGarry and Joshua Aaron, built to "
-        "help teachers and students by creating material that works "
-        "through QQI's Level 5 and Level 6 programming and mathematics "
-        "modules. Level 5 comes first, with three modules under way: "
-        "Programming and Design Principles (5N2927), Mathematics for "
-        "Information Technology (5N18396), and Database Methods "
-        "(5N0783).</p>",
+        "<p>dewlab is a place to learn programming, mathematics, "
+        "databases, web development and more — all in your browser, with "
+        "nothing to install. Work online, or download a module once and "
+        "keep going with no internet at all after that.</p>",
+        "<p>dewlab is a project by two teachers, Sean McGarry and Joshua "
+        "Aaron, at Dublin College — Sean at the Blackrock campus, and "
+        "Joshua at Dundrum. We built it to spare students and teachers "
+        "the install, the permissions and the early setup that usually "
+        "gets in the way before a class even begins.</p>",
+        "<p>We are working through QQI's Level 5 and Level 6 programming "
+        "and mathematics modules, and we plan to add the rest of the "
+        "technical course over time. Level 5 comes first. Four modules "
+        "are ready now: Programming and Design Principles (5N2927), "
+        "Mathematics for Information Technology (5N18396), Fundamentals "
+        "of Object-Oriented Programming (5N0541), and Computational "
+        "Methods and Problem Solving (5N0554). Database Methods (5N0783) "
+        "and Web Authoring (5N1910) are next. Earlier versions of some "
+        'of this material already live on <a href="https://github.com/'
+        'deweydex/dewstack">dewstack</a>, our sister project — we are '
+        "bringing the best of it here.</p>",
         "</div>",
-        '<p class="dl-hero-byline">Joshua Aaron teaches at Dublin College, '
-        "Dundrum. Sean McGarry teaches at Dublin College, Blackrock.</p>",
 
         '<div class="dl-audience">',
         "<h2>For teachers</h2>",
-        "<p>dewlab installs nothing. It runs online, in a browser, with no "
-        "account and no permissions to grant. Download a module once, and "
-        "it keeps working offline after that. Every tutorial names the QQI "
-        "learning outcome it teaches, so a lesson plan maps straight onto "
-        "the descriptor. Maths and programming sit on the same page, so "
-        "moving between the two subjects feels natural rather than like "
-        "switching tools. Suggested assessments and exams are available on "
-        'request — see the <a href="about.html">contact and about '
-        "page</a>.</p>",
+        "<p>dewlab runs in your browser, with nothing to install and no "
+        "permissions to grant. There is no account — your work saves "
+        "itself, right there in the browser you are using. Prefer to "
+        "work with no internet? Download a module once, and it keeps "
+        "working offline from then on.</p>",
+        "<p>Every tutorial names the QQI learning outcome it teaches, so "
+        "a lesson plan maps straight onto the descriptor.</p>",
+        "<p>We recommend starting with the integrated track, where maths "
+        "and programming are taught side by side — in our experience, "
+        "that is what actually helps a class connect the two subjects. "
+        "Suggested assessments and exams for any module are available on "
+        'request; see the <a href="about.html">contact and about '
+        "page</a> for how to reach us.</p>",
+        "<p>dewlab is young, and we would love your help making it "
+        "better. Spotted a mistake, or thought of something that would "
+        "make a page easier to use? Tell us — every idea is welcome, "
+        "whether it is a bug, a new feature, or a change to something "
+        'that already works. If you have a GitHub account, leave us a '
+        'note on our <a href="https://github.com/deweydex/dewlab/issues/'
+        'new">issues page</a>. If you would rather not, or do not have '
+        'one, just <a href="about.html">email us</a> instead.</p>',
         "</div>",
 
         '<div class="dl-audience">',
@@ -2217,17 +2240,23 @@ def render_index(
         "programming together.</p>",
         '<div class="dl-module-grid">',
         '<a class="dl-module-card" href="mit-pdp-maths-prog-integration.html">'
-        "<h3>Maths and Programming, Integrated</h3>"
+        "<h3>Maths and Programming, Integrated"
+        '<span class="dl-module-card-badge" data-status="beta">Beta</span>'
+        "</h3>"
         '<span class="dl-module-card-meta">5N2927 + 5N18396 · QQI Level 5</span>'
         "<p>We recommend starting here. One course moves between the two "
         "subjects, in the order the class needs them.</p></a>",
         '<a class="dl-module-card" href="mit-pdp-maths-prog-integration.html">'
-        "<h3>Programming and Design Principles</h3>"
+        "<h3>Programming and Design Principles"
+        '<span class="dl-module-card-badge" data-status="beta">Beta</span>'
+        "</h3>"
         '<span class="dl-module-card-meta">5N2927 · QQI Level 5</span>'
         "<p>This module is taught inside the integrated track, alongside "
         "Mathematics for IT.</p></a>",
         '<a class="dl-module-card" href="mit-pdp-maths-prog-integration.html">'
-        "<h3>Mathematics for Information Technology</h3>"
+        "<h3>Mathematics for Information Technology"
+        '<span class="dl-module-card-badge" data-status="beta">Beta</span>'
+        "</h3>"
         '<span class="dl-module-card-meta">5N18396 · QQI Level 5</span>'
         "<p>This module is taught inside the integrated track, alongside "
         "Programming and Design Principles.</p></a>",
@@ -2245,26 +2274,27 @@ def render_index(
         '<span class="dl-module-card-meta">5N0541 · QQI Level 5</span>'
         "<p>We build classes, objects and inheritance, from first "
         "principles.</p></a>",
-        '<a class="dl-module-card" data-status="soon" href="about.html">'
+        '<a class="dl-module-card" data-status="soon" '
+        'href="https://github.com/deweydex/dewstack" target="_blank" rel="noopener">'
         "<h3>Database Methods"
         '<span class="dl-module-card-badge" data-status="soon">Coming soon</span>'
         "</h3>"
         '<span class="dl-module-card-meta">5N0783 · QQI Level 5</span>'
-        "<p>We have not written this one yet. Tell us you are waiting for "
-        "it.</p></a>",
-        '<a class="dl-module-card" data-status="soon" href="about.html">'
+        "<p>Not written here yet — see the earlier version on "
+        "dewstack.</p></a>",
+        '<a class="dl-module-card" data-status="soon" '
+        'href="https://github.com/deweydex/dewstack" target="_blank" rel="noopener">'
         "<h3>Web Authoring"
         '<span class="dl-module-card-badge" data-status="soon">Coming soon</span>'
         "</h3>"
         '<span class="dl-module-card-meta">5N1910 · QQI Level 5</span>'
-        "<p>We have not written this one yet. Tell us you are waiting for "
-        "it.</p></a>",
+        "<p>Not written here yet — see the earlier version on "
+        "dewstack.</p></a>",
         '<a class="dl-module-card" data-status="soon" href="about.html">'
         "<h3>Web Development"
         '<span class="dl-module-card-badge" data-status="soon">Coming soon</span>'
         "</h3>"
-        "<p>We have not written this one yet. Tell us you are waiting for "
-        "it.</p></a>",
+        "<p>Contact us if you would like to contribute.</p></a>",
         "</div>",
         "</div>",
 
@@ -2374,13 +2404,22 @@ def render_module_body(
                 f"({total} files, {readable_size(module_archive)})",
             ) + "</p>"
         )
-    for (owner, series), members in sorted(groups.items()):
-        if owner != module:
-            continue
+    # Reading order, not alphabetical order — series.yaml's own order (built
+    # for reference accumulation, but that order *is* the reading order:
+    # each series builds on every one named before it) beats a plain sort,
+    # which would otherwise put "capstone-project" second on this module
+    # purely because "c" sorts early. A series series.yaml leaves out
+    # (reflections-and-review, deliberately — its own docstring says why)
+    # falls back to alphabetical, after every series that is listed.
+    present = {series for owner, series in groups if owner == module}
+    fixed = [s for s in module_series_order(module) if s in present]
+    series_order = fixed + sorted(present - set(fixed))
+    for series in series_order:
+        members = groups[(module, series)]
         if len({s for m, s in groups if m == module}) > 1:
-            name = titles.get((owner, series), series)
+            name = titles.get((module, series), series)
             out.append(f'<h3>{html.escape(name)}</h3>')
-        archive = archives.get((owner, series))
+        archive = archives.get((module, series))
         if archive is not None:
             # Right under the series' own title rather than after its
             # list, matching where the module's own download offer sits
@@ -3952,7 +3991,10 @@ def write_module_page(
     titles = series_titles()
 
     info = MODULE_INFO.get(module, {})
-    body = [f"<h1>{html.escape(title)}</h1>"]
+    body = [
+        f"<h1>{html.escape(title)} "
+        '<span class="dl-module-card-badge" data-status="beta">Beta</span></h1>'
+    ]
     code = info.get("code")
     if code:
         body.append(f'<p class="dl-module-card-meta">{html.escape(str(code))}</p>')
