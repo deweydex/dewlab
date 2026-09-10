@@ -6890,3 +6890,97 @@ bold `**Think about:**` as `<strong>`.
 *Cost to change: one regex (`FOLD_RE`) and one function
 (`convert_fold_bodies()`) in `build.py`, one call added to `load()`.
 Full unit suite and a fresh full-site build confirmed clean.*
+
+**7.140 — A `sql exec` fence for tutorial pages, and why it isn't spelled
+the way dewstack spells it.** `planning/DEWSTACK_MERGE.md` §2's own
+assumption going in was to match `deweydex/dewstack`'s `sql cell=`/
+`sql check=` grammar exactly, on `CELL_HINTS.md`'s "one thing to learn"
+reasoning for the hint fold. Reading `dewstack/build.py`'s `SQL_BLOCK`/
+`SQL_CHECK_BLOCK` closely enough to implement against them showed that
+grammar assumes several named databases per page and a hand-written
+`check_*` Python function per task — a different cell-identity model,
+not just different words, from dewlab's one shared `_page_globals`
+namespace and generic `check()`/`_compare()`. The fence is `sql exec`
+instead, reusing `parse_cell()`'s existing `id:`/`hint:`/`expect:` header
+grammar unchanged — a SQL cell differs from a `python exec` cell only in
+what language its code is and what the runtime does with that code
+before it reaches Python.
+
+`build.py`: `Cell` gained a `type` field (`"python"`/`"sql"`, dewmini's
+own vocabulary — `CELL_TYPES` in `compose/dewmini.js` — reused rather
+than inventing a second name for the same idea), read off the fence's
+own first word (`extract_blocks()`'s `one()`) and validated against a new
+`CELL_TYPES` set, failing the build on anything else. `Tutorial` gained
+`has_sql`, mirroring `has_math`; the manifest gets `needsSqlite: true`
+under the same "only pay for what you use" reasoning `math` already
+uses, rather than duplicating `tutorial-runtime.js`'s own
+`DEFAULT_PACKAGES` list in Python to append `sqlite3` to.
+`render_cell()`'s pill now reads the cell's real type instead of always
+saying "Python".
+
+`assets/tutorial-runtime.js`: `buildCells()` passes `language: "sql"` to
+`createCodeEditor()` for a SQL cell (CodeMirror's SQL mode was already
+compiled into `assets/vendor/codemirror.bundle.js` for dewmini's own use
+— no vendor rebuild needed) and reads `spec.type` onto the cell object.
+A new `wrapSqlCode()`/`codeToRun()` pair does exactly what
+`compose/dewmini.js`'s `buildSqlCellCode()` already does — turn the
+editor's raw SQL into
+`` `import tutorial_tools as _dl_tt\n_ = _dl_tt._run_sql_cell(db, ${JSON.stringify(sql)})` `` —
+called only at the two points code actually leaves for Python
+(`runCellWorker`, `runCellMainThread`), so `cell.getCode()` itself still
+returns the reader's own SQL everywhere else (staged-hint `ranContent`,
+the report-a-problem panel, Duplicate, export). `bootWorker()` now sets
+`seedDb: true` on its boot message whenever `manifest.needsSqlite` is
+set — the flag `assets/pyodide-worker.js`'s `boot()` already read, but
+that no tutorial page's own boot message had ever set until now. The
+standalone/offline export path (`bootMainThread()`/`resetPageStateMT()`)
+needed its own `db`-seeding entirely from scratch — a pre-existing gap
+shared with dewmini's own `pyodide-engine.js` main-thread fallback,
+which still doesn't seed `db` on that path — closed here only for
+tutorial pages, since only they were being newly asked to support it.
+
+Two real bugs found while making sure a duplicated SQL cell (Duplicate
+already exists on every authored cell unconditionally) survives a
+reload: `duplicateAsCustomCell(cell, "python")` on an authored cell was
+hardcoded regardless of the cell's real type (fixed: `cell.type`), and
+the two places a custom cell's saved/shared `type` gets read back
+(`payload.type`/`saved.type`, both in `tutorial-runtime.js`) collapsed
+anything that wasn't `"text"` down to `"python"` — silently corrupting a
+duplicated SQL custom cell into a Python cell holding raw SQL as its code
+the moment the page reloaded. Both now recognise `"sql"` too.
+
+`assets/editor.js` (the GitHub-integrated authoring editor) needed two
+fixes of its own, found by reading it rather than by a failing test:
+`restoreExecTag()`'s regex was hardcoded to `` ```python\n `` — Crepe's
+markdown round-trip drops a fence's second word regardless of its first,
+so a `sql exec` cell edited through this editor would have silently
+come back permanently demoted to inert illustrative code the moment an
+author saved. `parseCells()`, which `cellsChanged()` uses to warn an
+author before a save that a cell id changed or disappeared (the "cell id
+is a contract" protection CLAUDE.md names as one of the two traps in this
+repository), had the same `python`-only regex — a SQL cell's id changing
+would have gone unwarned. Both now accept either of `build.py`'s own
+`CELL_TYPES` words.
+
+Verified in a real browser against a real Pyodide, not just by unit
+test: `tests/e2e/fixture/rendering-tour.md` gained a `sql exec` cell
+(`sql-basics`) and a Python cell reading the same `db`
+(`sql-read-from-python`); three new assertions in
+`test_phase0_golden_path.py` confirm the pill reads "SQL", the `SELECT`
+renders as a table with the `WHERE` filter actually applied, and a
+Python cell on the same page sees what the SQL cell wrote — the same
+cross-cell guarantee `test_dewmini_workbench.py` already proves for
+dewmini's own SQL cell type. The existing cell-count test
+(`test_every_exec_cell_became_an_editor_with_line_numbers`) now counts
+both fence words rather than only `python exec`. A full rebuild diffed
+against `main` confirmed every existing page is unchanged except for the
+two edited assets' own cache-busting version strings — this fence is
+additive, not a rewrite of anything `python exec` already did.
+
+*Cost to change: a `type` field threaded through `Cell`, the manifest,
+and three functions in `tutorial-runtime.js`; two regexes in
+`assets/editor.js`; one CSS rule. `planning/DEWSTACK_MERGE.md` §3 and §8
+record the grammar reversal and what's still open (the web-authoring
+fences haven't been checked this closely yet). No tutorial content uses
+this fence yet — `tutorials/database-methods/` is the next piece of
+`planning/DEWSTACK_MERGE.md`'s phased rollout, not this entry.*

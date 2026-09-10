@@ -18,8 +18,9 @@ const REPO = "deweydex/dewlab";
 
 /* ------------------------------------------------------------------ parsing
  *
- * The build decides what a cell is by finding ```python exec fences and
- * reading the `id:` line inside. The editor has to agree with it exactly,
+ * The build decides what a cell is by finding ```python exec (or
+ * ```sql exec) fences and reading the `id:` line inside. The editor has to
+ * agree with it exactly,
  * because a disagreement here is an editor that shows you something the build
  * will not produce. Kept as pure functions so the tests can drive them without
  * a network or a token.
@@ -130,13 +131,17 @@ export function cellsChanged(before, after) {
 export function parseCells(body) {
   /* Every exec-tagged fence, with the id the build will key saved work on.
    * An untagged fence is illustrative code and is not a cell, which is the
-   * same rule build.py applies. */
+   * same rule build.py applies. `python` and `sql` are build.py's own
+   * CELL_TYPES, same as restoreExecTag()'s alternation above — a cell id
+   * changing or disappearing needs to be caught here regardless of which
+   * language it's written in, since either one can hold a student's saved
+   * work. */
   const cells = [];
   FENCE.lastIndex = 0;
   let match;
   while ((match = FENCE.exec(body)) !== null) {
     const info = match[1].trim();
-    if (!/^python\s+exec\b/.test(info)) continue;
+    if (!/^(python|sql)\s+exec\b/.test(info)) continue;
     const lines = match[2].split("\n");
     let id = "";
     let hint = "";
@@ -160,16 +165,19 @@ export function parseCells(body) {
 
 /* Crepe's code-block feature keeps only the first word of a fence's info
  * string as its "language" — its language picker has no way to select or
- * preserve a second word, so `python exec` round-trips through it as plain
- * `python`, silently turning every runnable cell into inert illustrative
- * code the moment an author saves through this editor. Restored here on the
- * same signal build.py itself treats as what makes a fence a cell: an `id:`
- * line as the very first thing inside it (parse_cell/HEADER_RE in build.py).
- * A plain illustrative example coincidentally opening with a literal `id:`
+ * preserve a second word, so `python exec` (or `sql exec`) round-trips
+ * through it as plain `python`/`sql`, silently turning every runnable cell
+ * into inert illustrative code the moment an author saves through this
+ * editor. Restored here on the same signal build.py itself treats as what
+ * makes a fence a cell: an `id:` line as the very first thing inside it
+ * (parse_cell/HEADER_RE in build.py). The two words in the alternation are
+ * build.py's own CELL_TYPES — kept in sync by hand, the same as every other
+ * piece of logic this file and build.py must independently agree on. A
+ * plain illustrative example coincidentally opening with a literal `id:`
  * line would be misread as a cell — unlikely enough in practice, and exactly
  * the same convention the source format already leans on, not a new one. */
 export function restoreExecTag(markdown) {
-  return markdown.replace(/^```python\n(?=id:\s*\S)/gm, "```python exec\n");
+  return markdown.replace(/^```(python|sql)\n(?=id:\s*\S)/gm, "```$1 exec\n");
 }
 
 /* A fence's body, blanked to the same number of lines rather than removed —

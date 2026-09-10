@@ -48,32 +48,34 @@ for how that's wired up).
    small helpers) and `loadJedi()`, which runs it.
 6. **`boot()`** — starts Pyodide, loads packages, loads
    `tutorial_tools.py`, sets up the shared namespace (`RESEED_GLOBALS_SOURCE`),
-   and, only if the boot message set `msg.seedDb` (dewmini only —
-   `assets/pyodide-engine.js`'s `bootWorker()` is the only caller that
-   ever sets it), seeds the dewmini-only `db` global too
+   and, only if the boot message set `msg.seedDb`, seeds the `db` global too
    (`SEED_DEWMINI_DB_SOURCE`, DECISIONS_LOG.md 7.118 — a fresh, in-memory
    `sqlite3` connection a SQL cell runs against and an ordinary Python
-   cell can read under the same name). `resetPageState()` further down
-   re-seeds both the same way, reading the `seedDewminiDb` flag `boot()`
-   set rather than needing the caller to say so again on every reset.
-   This file is shared with the hosted tutorial pages
-   (`assets/tutorial-runtime.js` boots through it too), which is exactly
-   why `db` is gated behind a flag rather than always created — a
-   tutorial page's own boot message never sets `seedDb`, so it never gets
-   one.
+   cell can read under the same name). Originally dewmini-only
+   (`assets/pyodide-engine.js`'s `bootWorker()`); a tutorial page's own
+   `assets/tutorial-runtime.js` `bootWorker()` now sets it too, whenever
+   the page's manifest has a `sql exec` cell (`manifest.needsSqlite`,
+   DECISIONS_LOG.md 7.140) — the variable name `seedDewminiDb` is a
+   holdover from when only dewmini ever asked, not a claim about who
+   still does. `resetPageState()` further down re-seeds both the same
+   way, reading that flag rather than needing the caller to say so again
+   on every reset.
 7. **`runCell()`** — runs one cell and streams its output back as it
    happens. What it actually runs is whatever code the calling page
-   handed it — for a dewmini SQL cell, that's already been turned into a
-   generated `tutorial_tools._run_sql_cell(db, …)` call before it ever
-   reaches this file (`compose/dewmini.js`'s `buildSqlCellCode()`); this
-   worker has no idea a SQL cell exists, which is deliberate — see
+   handed it — for a dewmini SQL cell (`compose/dewmini.js`'s
+   `buildSqlCellCode()`) or a tutorial page's own `sql exec` cell
+   (`assets/tutorial-runtime.js`'s `wrapSqlCode()`), that's already been
+   turned into a generated `tutorial_tools._run_sql_cell(db, …)` call
+   before it ever reaches this file; this worker has no idea a SQL cell
+   exists, which is deliberate — see
    [`dewmini-js-explained.md`](dewmini-js-explained.md).
 8. **Filesystem** (dewmini only — a
    tutorial page has no filesystem to mount) — `fsMountNative`/`fsMountOpfs`/
    `fsMountIdbfs` (the three storage backends), `fsSync`, `fsUnmount`,
    and the plain file operations `fsList`/`fsRead`/`fsWrite`/`fsDelete`/
    `fsMkdir`. `db`-seeding above follows the same "purely additive,
-   gated on who actually asks" shape this section already established.
+   gated on who actually asks" shape this section already established —
+   now asked by two callers instead of one.
 9. **`self.onmessage`** at the bottom — the one entry point tying
    everything above together: reads a message's `type`, calls the
    matching function, and posts a `"response"` back (or an `"error"` if

@@ -234,13 +234,15 @@ The same bar dewstack already used, since it's dewlab's own bar too:
 1. **Staging copy-in.** Populate `staging/dewstack-import/` as described
    in §5. No `build.py` changes, no tutorial changes, nothing
    student-visible. Reversible by deleting a folder.
-2. **Data engine + module.** Add a `sql exec` fence to `build.py` and
-   `tutorial-runtime.js`, calling the existing `_run_sql_cell()`.
-   Port the 12 pages into `tutorials/database-methods/` through §6's
-   checklist, preserving dewstack's slugs. Add the QQI outcome
+2. **Data engine + module.** **Engine done** (DECISIONS_LOG.md 7.140): a
+   `sql exec` fence in `build.py` and `tutorial-runtime.js`, calling the
+   existing `_run_sql_cell()`, verified end to end in a real browser
+   against a real Pyodide with no tutorial content using it yet. Still to
+   do: port the 12 pages into `tutorials/database-methods/` through §6's
+   checklist, preserving dewstack's slugs; add the QQI outcome
    descriptors 5N0783 needs to `planning/curriculum/outcomes.yaml`
-   (currently absent — `planning/ROADMAP.md` already flags this gap).
-   Flip the homepage card once the module has run in front of a class.
+   (currently absent — `planning/ROADMAP.md` already flags this gap);
+   flip the homepage card once the module has run in front of a class.
 3. **Web engine + module.** Resolve the dewmini/dewminiweb question
    (§8). Build the site-authoring fence kinds and a new site-runtime.js
    for tutorial pages; build `dewminiweb` if confirmed. Port the 30 web
@@ -289,8 +291,8 @@ The same bar dewstack already used, since it's dewlab's own bar too:
 
 | Module | Staged | Engine built | Ported | Live |
 |---|---|---|---|---|
-| `database-methods` (5N0783) | not yet | not yet | not yet | not yet |
-| `web-authoring` (5N1910) | not yet | not yet | not yet | not yet |
-| `full-stack` | — | — | — | — |
+| `database-methods` (5N0783) | done | done (`sql exec`, DECISIONS_LOG.md 7.140) | not yet | not yet |
+| `web-authoring` (5N1910) | done | not yet | not yet | not yet |
+| `full-stack` | done (reference only) | — | — | — |
 
 Update this table as each phase in §7 completes.

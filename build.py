@@ -119,9 +119,18 @@ MOVED_FRONTMATTER = {
 
 # ```python exec — the tag that makes a fence a live cell. An untagged fence is
 # ordinary illustrative code and markdown renders it as it always would.
+# ```sql exec is the same tag with a different first word: same id:/hint:/
+# expect:/name: header grammar, same shared page namespace, a SQL cell's code
+# is SQL text rather than Python (DEWSTACK_MERGE.md §3 — deliberately not
+# dewstack's own sql cell=/sql check= grammar, which turned out to assume
+# several named databases and per-task check functions dewlab's model doesn't
+# have).
 FENCE_RE = re.compile(r"^(?P<indent> *)```(?P<info>[^\n]*)\n(?P<body>.*?)^ *```[ \t]*$",
                       re.MULTILINE | re.DOTALL)
 HEADER_RE = re.compile(r"^\s*(id|hint|expect|name)\s*:\s*(.*)$")
+# The only two words that can open an exec fence today. Anything else fails
+# the build with a clear message rather than silently becoming a Python cell.
+CELL_TYPES = {"python", "sql"}
 # ```hint — a staged hint (planning/CELL_HINTS.md): a fold that stays hidden
 # until the cell it belongs to has been run, and failed, some number of
 # times. Its header lines follow the exec cell's own `key: value` shape, so
@@ -216,6 +225,11 @@ class Cell:
     # cells can carry the same thing. Also what a traceback's file line
     # calls this cell, in place of its id, once one is given.
     name: str | None = None
+    # The fence's own language word (` ```python exec `, ` ```sql exec `) —
+    # dewmini's own vocabulary (`CELL_TYPES` in compose/dewmini.js), reused
+    # here rather than inventing a second name for the same idea. "python"
+    # for every cell until DEWSTACK_MERGE.md's sql exec fence.
+    type: str = "python"
 
 
 @dataclass
@@ -277,6 +291,10 @@ class Tutorial:
     cells: list[Cell]
     body_html: str
     has_math: bool = False
+    # Whether any cell on the page is a `sql exec` cell — same "only pay for
+    # what you use" reasoning as has_math, but for the sqlite3 Pyodide
+    # package rather than the KaTeX bundle.
+    has_sql: bool = False
     anchors: set[str] = field(default_factory=set)
     toc: list = field(default_factory=list)
     notes: list[Note] = field(default_factory=list)
@@ -492,9 +510,10 @@ def expand_includes(code: str, path: Path) -> str:
     return INCLUDE_RE.sub(one, code)
 
 
-def parse_cell(body: str, path: Path) -> Cell:
+def parse_cell(body: str, path: Path, cell_type: str = "python") -> Cell:
     """Read `id:` and optional `hint:`/`expect:`/`name:` off the top of an
-    exec fence."""
+    exec fence. `cell_type` is the fence's own language word ("python" or
+    "sql") — the header grammar underneath it is identical either way."""
     lines = body.split("\n")
     header: dict[str, str] = {}
     while lines:
@@ -522,6 +541,7 @@ def parse_cell(body: str, path: Path) -> Cell:
         code=code,
         expect=header.get("expect") or None,
         name=header.get("name") or None,
+        type=cell_type,
     )
 
 
@@ -652,7 +672,11 @@ def extract_blocks(
         info = match.group("info").strip().split()
         indent = match.group("indent")
         if "exec" in info:
-            cells.append(parse_cell(match.group("body"), path))
+            cell_type = info[0] if info[0] != "exec" else "python"
+            if cell_type not in CELL_TYPES:
+                fail(path, f"an exec cell's fence starts with {cell_type!r}, "
+                           f"not one of {sorted(CELL_TYPES)}")
+            cells.append(parse_cell(match.group("body"), path, cell_type))
             return f"{indent}<!--dewlab-cell-{len(cells) - 1}-->"
         if info and info[0] == "hint":
             # A staged hint (planning/CELL_HINTS.md): bound to the exec cell
@@ -757,10 +781,10 @@ def render_cell(cell: Cell, number: int, page: str = "", version: str = "") -> s
     in) — an authored cell's order never changes at runtime the way a
     dewmini cell's can, so unlike `compose/dewmini.js`'s own
     `createCellElement()` this never needs recomputing after the fact.
-    The pill shows it alongside the cell's type — always "Python" here,
-    since an authored `exec` cell has no other kind yet — coloured via
-    the same `--dl-type-python` token dewmini's own pill uses
-    (`planning/CELL_IDENTITY.md` §2, built for this page in 7.113). No
+    The pill shows it alongside the cell's type — "Python" or "SQL",
+    coloured via the matching `--dl-type-python`/`--dl-type-sql` token
+    dewmini's own pill uses (`planning/CELL_IDENTITY.md` §2, built for
+    this page in 7.113; the SQL fence added in DEWSTACK_MERGE.md §3). No
     drag handle: authored cells aren't reorderable, so there's nothing
     for one to do. `cell.name`, when an author gives one, sits beside the
     pill — the word a reader can point at ("the `filter-evening` cell")
@@ -837,12 +861,13 @@ def render_cell(cell: Cell, number: int, page: str = "", version: str = "") -> s
     name_markup = ""
     if cell.name:
         name_markup = f'<span class="dl-cell-name">{html.escape(cell.name)}</span>'
+    type_label = "SQL" if cell.type == "sql" else "Python"
     return (
         f'<div class="dl-cell" data-cell-id="{safe_id}">'
         '<div class="dl-cell-head">'
         '<span class="dl-cell-pill">'
         f'<span class="dl-cell-pill-num">Cell {number}</span>'
-        '<span class="dl-cell-pill-type" data-type="python">Python</span>'
+        f'<span class="dl-cell-pill-type" data-type="{cell.type}">{type_label}</span>'
         "</span>"
         f"{name_markup}"
         '<span class="dl-cell-spacer"></span>'
@@ -2837,6 +2862,7 @@ def load(path: Path) -> Tutorial:
         cells=cells,
         body_html=body_html,
         has_math=bool(maths),
+        has_sql=any(c.type == "sql" for c in cells),
         anchors=anchors,
         toc=toc,
         notes=notes,
@@ -3184,6 +3210,7 @@ def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "",
             {"id": c.id, "hint": c.hint, "code": c.code}
             | ({"expect": c.expect} if c.expect else {})
             | ({"name": c.name} if c.name else {})
+            | ({"type": c.type} if c.type != "python" else {})
             for c in tutorial.cells
         ],
     }
@@ -3194,6 +3221,11 @@ def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "",
         # The runtime fetches the 266 KB KaTeX bundle only when this is set, so
         # a tutorial with no maths never pays for it.
         manifest["math"] = True
+    if tutorial.has_sql:
+        # The runtime adds sqlite3 to whatever package list it was already
+        # going to load — default or declared — only when the page actually
+        # has a sql exec cell, same reasoning as `math` above.
+        manifest["needsSqlite"] = True
     packages = tutorial.meta.get("packages")
     if packages:
         manifest["packages"] = list(packages)
