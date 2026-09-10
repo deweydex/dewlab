@@ -35,7 +35,7 @@ than in ordinary work, because dewstack already has real students:
   own convention forces it (module folder renamed, e.g. `data` becoming
   `database-methods`), never by editorial preference.
 - **A dewlab cell id is a contract the moment a class has seen it.**
-  Every ported `python exec`/`sql cell=` block gets a real, permanent
+  Every ported `python exec`/`sql exec` block gets a real, permanent
   `id:` on the header the first time it's written into dewlab, chosen
   with the same care as a new tutorial's own cells, because there is no
   second chance to rename it later without discarding saved work.
@@ -84,14 +84,35 @@ Two pieces are explicitly **not** in this pass:
 Worker-based `assets/pyodide-engine.js` and `assets/tutorial_tools.py`'s
 `_run_sql_cell(conn, script, max_rows=20)` back dewmini's own SQL cell
 type today (`tests/e2e/test_dewmini_workbench.py`). What's missing is a
-*tutorial-page* surface for it: `build.py` has no `sql cell=`/
-`sql check=` fence kind (only `python exec` exists there), and
-`tutorial-runtime.js` has no rendering for one. This is extending an
-engine that exists, not building one. dewstack's own `sql cell=`/
-`sql check=` spelling (`ARCHITECTURE.md` there) is the fence grammar to
-match, for the same reason `CELL_HINTS.md` gives for the hint fold: an
-author moving between conventions that used to be two repositories
-should not have to learn two spellings for the same idea.
+*tutorial-page* surface for it: `build.py` has no SQL fence kind (only
+`python exec` exists there), and `tutorial-runtime.js` has no rendering
+for one. This is extending an engine that exists, not building one.
+
+**Revised, against §8's own original assumption:** dewstack's `sql
+cell=<name>[ persist]` and separate `sql-check db=<name> task=<name>`
+fences (`dewstack/build.py` `SQL_BLOCK`/`SQL_CHECK_BLOCK`) turned out, on
+reading them closely while building this, to be a different *grammar*,
+not just a different spelling — a per-cell named database (several
+databases can coexist on one page), a `persist` flag controlling
+`localStorage`, and a check that runs a hand-written `check_*` Python
+function named by `task=`, with no code of its own. dewlab's own cell
+model is a single shared `_page_globals` namespace (one `db`, the same
+one every cell, matching what `_run_sql_cell()` and dewmini already
+assume), `id:`/`hint:`/`expect:` header lines identical to every
+`python exec` cell, and a generic `check()` that already compares
+DataFrames via `_compare()` — no per-task function needed. Copying
+dewstack's grammar verbatim would mean two incompatible fence dialects
+inside one file format, which is a worse outcome than dewstack's own
+two-repository compromise ever had to solve for, now that there is only
+one repository. **The fence is `sql exec`, not `sql cell=`**, reusing
+`parse_cell()`'s existing header-line grammar unchanged — the SQL text
+simply takes the place `python exec`'s Python code takes, and the editor
+holds real SQL, not a wrapped Python call (see §3's engine section for
+how that wrapping happens at runtime instead). This is the one place
+this document's original assumption changed after actually reading the
+other repository's code closely enough to implement against it — worth
+flagging precisely because it reverses something written down earlier as
+settled.
 
 **Web authoring: a genuine gap.** dewlab has no sandboxed-iframe,
 live-HTML/CSS-run-on-demand-JS pattern anywhere in a tutorial page today.
@@ -213,8 +234,8 @@ The same bar dewstack already used, since it's dewlab's own bar too:
 1. **Staging copy-in.** Populate `staging/dewstack-import/` as described
    in §5. No `build.py` changes, no tutorial changes, nothing
    student-visible. Reversible by deleting a folder.
-2. **Data engine + module.** Add `sql cell=`/`sql check=` to `build.py`
-   and `tutorial-runtime.js`, calling the existing `_run_sql_cell()`.
+2. **Data engine + module.** Add a `sql exec` fence to `build.py` and
+   `tutorial-runtime.js`, calling the existing `_run_sql_cell()`.
    Port the 12 pages into `tutorials/database-methods/` through §6's
    checklist, preserving dewstack's slugs. Add the QQI outcome
    descriptors 5N0783 needs to `planning/curriculum/outcomes.yaml`
@@ -249,12 +270,15 @@ The same bar dewstack already used, since it's dewlab's own bar too:
    pages indefinitely (dewstack's own `notes.web` line already does this
    for WADB_Tutorials), or write new dewlab-native equivalents. Affects
    scope and the front page, not just these two modules.
-3. **Fence-kind spelling.** Assumed above: keep dewstack's `sql cell=`/
-   `sql check=`/`site=`/`html app=`/`css app=`/`js app=` spelling
-   exactly, per the "one thing to learn" reasoning `CELL_HINTS.md`
-   already used for the hint fold. Worth a direct yes before `build.py`
-   work starts, since a fence keyword is nearly as sticky as a slug once
-   real tutorials use it.
+3. **Fence-kind spelling — resolved for SQL, still open for web.** §3
+   now settles the SQL side: `sql exec`, dewlab's own `id:`/`hint:`
+   grammar, one shared `db`, generic `check()` — not dewstack's `sql
+   cell=`/`sql check=`, once reading that grammar closely showed it was a
+   different cell-identity model, not just different words. The web
+   fences (`site=`, `html app=`/`css app=`/`js app=`) haven't been read
+   as closely yet — worth checking whether the same thing is true of
+   them before assuming their spelling carries over unchanged, rather
+   than repeating this document's own first mistake on the SQL side.
 4. **dewstack's eventual fate.** Out of scope for this plan, noted so it
    isn't forgotten: once both modules are live and have run in front of a
    class, does dewstack's repository stay up as a read-only archive
