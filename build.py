@@ -2121,30 +2121,57 @@ def progress_attrs(tutorial: Tutorial) -> str:
     )
 
 
-def render_search_box(placeholder: str, big: bool = False) -> str:
-    """The search box markup shared by the front page, the contents page
-    and "Browse by topic" — identical everywhere it appears, so
-    `assets/search.js` (loaded by `shell.html` on every page, a no-op
-    where the box isn't in the DOM) only has to know one shape to wire
-    up. `data-search-hint` matches the id `aria-describedby` points at,
-    since both are generated together here rather than risking one
-    getting out of step with the other by hand on some future edit.
+def render_search_box(placeholder: str, big: bool = False, id_prefix: str = "dl-search") -> str:
+    """The search box markup shared by every page that carries one — the
+    front page, "All tutorials", "Browse by topic", and (via
+    `nav_search_html()`) the small search popover next to "All
+    tutorials" in every page's own top nav. Identical shape everywhere,
+    so `assets/search.js` (loaded on every page, a no-op wherever it
+    finds no `.dl-search` at all) only ever has to know one shape to
+    wire up — it finds every instance by class and reads each one's own
+    children by class too, not by id, so `id_prefix` only has to keep
+    two instances on the same page (a page's own body search plus the
+    nav popover, on the handful of pages that carry both) from sharing
+    one id — it plays no part in the wiring itself.
     `big` adds a modifier class for the front page's own copy, the one
     place this is the primary way in rather than a convenience partway
     down a long list.
     """
     classes = "dl-search dl-search-big" if big else "dl-search"
+    input_id = f"{id_prefix}-input"
+    hint_id = f"{id_prefix}-hint"
+    results_id = f"{id_prefix}-results"
     return (
-        f'<div class="{classes}" id="dl-search">'
-        '<label for="dl-search-input" class="dl-search-label">Search tutorials</label>'
-        f'<input type="search" id="dl-search-input" class="dl-search-input" '
+        f'<div class="{classes}" id="{id_prefix}">'
+        f'<label for="{input_id}" class="dl-search-label">Search tutorials</label>'
+        f'<input type="search" id="{input_id}" class="dl-search-input" '
         f'placeholder="{html.escape(placeholder, quote=True)}" autocomplete="off" '
-        'aria-describedby="dl-search-hint">'
-        '<p class="dl-panel-note" id="dl-search-hint">Matches titles and the '
+        f'aria-describedby="{hint_id}">'
+        f'<p class="dl-panel-note" id="{hint_id}">Matches titles and the '
         "terms each tutorial actually teaches — close counts too "
         '("loop" also finds "iteration").</p>'
-        '<ul class="dl-search-results" id="dl-search-results" hidden></ul>'
+        f'<ul class="dl-search-results" id="{results_id}" hidden></ul>'
         "</div>"
+    )
+
+
+def nav_search_html() -> str:
+    """The small search popover beside "All tutorials" in every page's own
+    top nav (shell.html's `{{NAV_SEARCH}}`) — a native `<details>` rather
+    than a hand-wired toggle, the same disclosure the front page's own
+    "For teachers"/"For students" already use, so opening and closing it
+    needs no JavaScript of its own at all: the browser already knows how,
+    and a screen reader already knows how to announce it.
+    """
+    return (
+        '<details class="dl-nav-search">'
+        '<summary aria-label="Search"><span class="dl-nav-search-icon" '
+        'aria-hidden="true"></span><span class="dl-toggle-label">Search</span></summary>'
+        + render_search_box(
+            "Search for a topic, tutorial, practice, series, or module…",
+            id_prefix="dl-nav-search",
+        )
+        + "</details>"
     )
 
 
@@ -2348,6 +2375,8 @@ def render_tutorials_list(
 
     out = [
         "<h1>All tutorials</h1>",
+        '<div class="dl-search-sticky">' + render_search_box(
+            "Search by topic — e.g. loops, probability, sorting…") + "</div>",
         '<div class="dl-intro">',
         "<p>Everything runs in your browser, so there is nothing to "
         "install and no account to make. Open any tutorial and start.</p>",
@@ -3221,6 +3250,8 @@ def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "",
         "{{ASSET_BASE}}": f"{up}assets/",
         "{{STYLE_URL}}": versioned(f"{up}assets/", "tutorial-style.css"),
         "{{FAVICON_URL}}": versioned(f"{up}assets/", "favicon.svg"),
+        "{{SEARCH_JS_URL}}": versioned(f"{up}assets/", "search.js"),
+        "{{NAV_SEARCH}}": nav_search_html(),
         "{{KATEX_CSS_URL}}": versioned(f"{up}assets/", "vendor/katex.min.css"),
         "{{ACCESSIBLE_FONTS_CSS_URL}}": versioned(f"{up}assets/", "vendor/accessible-fonts.css"),
         "{{RUNTIME_URL}}": versioned(f"{up}assets/", "tutorial-runtime.js"),
@@ -3369,6 +3400,16 @@ def standalone_html(tutorial: Tutorial, page: str) -> str:
     # in, it would just be a request a file:// page can never satisfy.
     page = replace_once(
         page, f'<script src="{root}coi-serviceworker.js"></script>\n', "", "the isolation shim"
+    )
+
+    # Cross-tutorial search needs assets/search-index.json, which (like the
+    # /data/ folder load_csv() warns about above) does not travel with a
+    # standalone copy — and the popover it would drive is a <details>, so it
+    # still opens and closes with no script behind it at all, just with
+    # nothing search-shaped happening inside once it does.
+    page = replace_once(
+        page, f'<script type="module" src="{versioned(up, "search.js")}"></script>\n',
+        "", "the search script",
     )
 
     # The Python tools, which cannot be fetched from a file.
@@ -3931,12 +3972,14 @@ def write_index(shell: str) -> Path:
         "{{ASSET_BASE}}": "assets/",
         "{{STYLE_URL}}": versioned("assets/", "tutorial-style.css"),
         "{{FAVICON_URL}}": versioned("assets/", "favicon.svg"),
+        "{{SEARCH_JS_URL}}": versioned("assets/", "search.js"),
+        "{{NAV_SEARCH}}": nav_search_html(),
         "{{KATEX_CSS_URL}}": versioned("assets/", "vendor/katex.min.css"),
         "{{ACCESSIBLE_FONTS_CSS_URL}}": versioned("assets/", "vendor/accessible-fonts.css"),
         "{{RUNTIME_URL}}": versioned("assets/", "tutorial-runtime.js"),
         "{{ROOT_BASE}}": "",
         "{{NAV_PREV_NEXT}}": '<a class="dl-nav-up" href="all-tutorials.html">All tutorials</a>',
-        "{{PAGE_SCRIPT}}": f'<script type="module" src="{versioned("assets/", "search.js")}"></script>',
+        "{{PAGE_SCRIPT}}": "",
         # The front page is not a tutorial and has nothing to download; the
         # runtime hides the empty section rather than showing a bare heading.
         "{{CANONICAL}}": "",
@@ -3987,12 +4030,14 @@ def write_all_tutorials_page(
         "{{ASSET_BASE}}": "assets/",
         "{{STYLE_URL}}": versioned("assets/", "tutorial-style.css"),
         "{{FAVICON_URL}}": versioned("assets/", "favicon.svg"),
+        "{{SEARCH_JS_URL}}": versioned("assets/", "search.js"),
+        "{{NAV_SEARCH}}": nav_search_html(),
         "{{KATEX_CSS_URL}}": versioned("assets/", "vendor/katex.min.css"),
         "{{ACCESSIBLE_FONTS_CSS_URL}}": versioned("assets/", "vendor/accessible-fonts.css"),
         "{{RUNTIME_URL}}": versioned("assets/", "tutorial-runtime.js"),
         "{{ROOT_BASE}}": "",
         "{{NAV_PREV_NEXT}}": '<a class="dl-nav-up" href="index.html">Home</a>',
-        "{{PAGE_SCRIPT}}": f'<script type="module" src="{versioned("assets/", "search.js")}"></script>',
+        "{{PAGE_SCRIPT}}": "",
         # This page is not a tutorial and has nothing to download; the
         # runtime hides the empty section rather than showing a bare heading.
         "{{CANONICAL}}": "",
@@ -4112,6 +4157,8 @@ def write_module_page(
         "{{ASSET_BASE}}": "assets/",
         "{{STYLE_URL}}": versioned("assets/", "tutorial-style.css"),
         "{{FAVICON_URL}}": versioned("assets/", "favicon.svg"),
+        "{{SEARCH_JS_URL}}": versioned("assets/", "search.js"),
+        "{{NAV_SEARCH}}": nav_search_html(),
         "{{KATEX_CSS_URL}}": versioned("assets/", "vendor/katex.min.css"),
         "{{ACCESSIBLE_FONTS_CSS_URL}}": versioned("assets/", "vendor/accessible-fonts.css"),
         "{{RUNTIME_URL}}": versioned("assets/", "tutorial-runtime.js"),
@@ -4242,6 +4289,8 @@ def write_tree_page(shell: str, tutorials: list[Tutorial]) -> Path | None:
         "{{ASSET_BASE}}": "assets/",
         "{{STYLE_URL}}": versioned("assets/", "tutorial-style.css"),
         "{{FAVICON_URL}}": versioned("assets/", "favicon.svg"),
+        "{{SEARCH_JS_URL}}": versioned("assets/", "search.js"),
+        "{{NAV_SEARCH}}": nav_search_html(),
         "{{KATEX_CSS_URL}}": versioned("assets/", "vendor/katex.min.css"),
         "{{ACCESSIBLE_FONTS_CSS_URL}}": versioned("assets/", "vendor/accessible-fonts.css"),
         "{{RUNTIME_URL}}": versioned("assets/", "tutorial-runtime.js"),
@@ -4367,12 +4416,14 @@ def write_topics_page(
         "{{ASSET_BASE}}": "assets/",
         "{{STYLE_URL}}": versioned("assets/", "tutorial-style.css"),
         "{{FAVICON_URL}}": versioned("assets/", "favicon.svg"),
+        "{{SEARCH_JS_URL}}": versioned("assets/", "search.js"),
+        "{{NAV_SEARCH}}": nav_search_html(),
         "{{KATEX_CSS_URL}}": versioned("assets/", "vendor/katex.min.css"),
         "{{ACCESSIBLE_FONTS_CSS_URL}}": versioned("assets/", "vendor/accessible-fonts.css"),
         "{{RUNTIME_URL}}": versioned("assets/", "tutorial-runtime.js"),
         "{{ROOT_BASE}}": "",
         "{{NAV_PREV_NEXT}}": '<a class="dl-nav-up" href="all-tutorials.html">All tutorials</a>',
-        "{{PAGE_SCRIPT}}": f'<script type="module" src="{versioned("assets/", "search.js")}"></script>',
+        "{{PAGE_SCRIPT}}": "",
         "{{CANONICAL}}": "",
         "{{DOWNLOAD}}": "",
         "{{TOC}}": "",
@@ -4678,6 +4729,8 @@ def write_about_page(shell: str) -> Path:
         "{{ASSET_BASE}}": "assets/",
         "{{STYLE_URL}}": versioned("assets/", "tutorial-style.css"),
         "{{FAVICON_URL}}": versioned("assets/", "favicon.svg"),
+        "{{SEARCH_JS_URL}}": versioned("assets/", "search.js"),
+        "{{NAV_SEARCH}}": nav_search_html(),
         "{{KATEX_CSS_URL}}": versioned("assets/", "vendor/katex.min.css"),
         "{{ACCESSIBLE_FONTS_CSS_URL}}": versioned("assets/", "vendor/accessible-fonts.css"),
         "{{RUNTIME_URL}}": versioned("assets/", "tutorial-runtime.js"),
@@ -4737,6 +4790,8 @@ def write_editor_page(shell: str) -> Path:
         "{{ASSET_BASE}}": "assets/",
         "{{STYLE_URL}}": versioned("assets/", "tutorial-style.css"),
         "{{FAVICON_URL}}": versioned("assets/", "favicon.svg"),
+        "{{SEARCH_JS_URL}}": versioned("assets/", "search.js"),
+        "{{NAV_SEARCH}}": nav_search_html(),
         "{{KATEX_CSS_URL}}": versioned("assets/", "vendor/katex.min.css"),
         "{{ACCESSIBLE_FONTS_CSS_URL}}": versioned("assets/", "vendor/accessible-fonts.css"),
         "{{RUNTIME_URL}}": versioned("assets/", "tutorial-runtime.js"),

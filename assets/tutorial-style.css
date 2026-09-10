@@ -246,25 +246,55 @@ body {
  * see .dl-reference/.dl-seriesnav further down) are fixed-position,
  * full-height sidebars rather than part of the document flow, which is
  * fine right up until an open one reaches far enough in to cover a
- * reader's own text — a wide Texture "Width" setting, or simply an
- * ordinary laptop screen, both make that reachable. data-dl-panel-left/
- * -right (set by watchPanelOverlap() in tutorial-runtime.js, tracking
- * each side independently since both panels can now be open at once —
- * see initSettingsPanel()'s own comment) push .dl-page clear of
- * whichever side(s) currently have a panel open, abandoning the
- * ordinary `margin: 0 auto` centering above in favour of a fixed
- * margin on the occupied side: centering would split the reclaimed
- * width evenly, wasting half of it as a matching margin on the side
- * with nothing to avoid. --dl-panel-left-w/--dl-panel-right-w are kept
- * in sync with each panel's own *actual* rendered width by the same
- * runtime function (a ResizeObserver, since a reader can drag either
- * panel's resize handle wider or narrower at any time) — the 25rem
- * fallback only matters for the one frame before that observer's first
- * callback lands. Skipped below 34rem, where a panel is already a
- * full-width bottom sheet rather than a docked sidebar. */
+ * reader's own text. The fix is to reserve the room *before* either
+ * panel ever opens, not to react once one does: .dl-page's max-width is
+ * always capped as if a panel of the ordinary width (--dl-panel-gutter)
+ * were already open on each side, whether or not one actually is. A
+ * panel opening at its ordinary width then finds the space already
+ * there and the column does not move at all — which is the point, not
+ * a side effect: a column that shifts or narrows the moment a reader
+ * opens Settings reads as the page reacting to them, when nothing about
+ * their own text should change just because they looked at a panel.
+ * The cost is a column that never quite reaches --dl-line-width on an
+ * ordinary laptop screen at the widest Texture setting — judged worth
+ * paying for a column that never visibly moves.
+ *
+ * data-dl-panel-left/-right (set by watchPanelOverlap() in
+ * tutorial-runtime.js, tracking each side independently since both
+ * panels can now be open at once — see initSettingsPanel()'s own
+ * comment) only matter here when a reader has *dragged* a panel wider
+ * than --dl-panel-gutter: then the reserved space is no longer enough,
+ * and max() falls through to the panel's own actual measured width
+ * (--dl-panel-left-w/--dl-panel-right-w, kept in sync with each panel's
+ * real rendered width by the same runtime function's ResizeObserver) —
+ * the one case the column still adjusts for, because there is no width
+ * it could have pre-reserved for a resize handle a reader has not
+ * dragged yet. Skipped below 34rem, where a panel is already a
+ * full-width bottom sheet rather than a docked sidebar, and reserving
+ * gutters on a screen that narrow would leave no column at all. */
 @media (min-width: 34rem) {
-  html[data-dl-panel-left] .dl-page { margin-left: var(--dl-panel-left-w, 25rem); }
-  html[data-dl-panel-right] .dl-page { margin-right: var(--dl-panel-right-w, 25rem); }
+  :root { --dl-panel-gutter: 25rem; }
+  .dl-page {
+    max-width: min(var(--dl-line-width), calc(100vw - 2 * var(--dl-panel-gutter) - 1rem));
+  }
+  html[data-dl-panel-left]:not([data-dl-panel-right]) .dl-page {
+    max-width: min(
+      var(--dl-line-width),
+      calc(100vw - 2 * max(var(--dl-panel-gutter), var(--dl-panel-left-w, 25rem)) - 1rem)
+    );
+  }
+  html[data-dl-panel-right]:not([data-dl-panel-left]) .dl-page {
+    max-width: min(
+      var(--dl-line-width),
+      calc(100vw - 2 * max(var(--dl-panel-gutter), var(--dl-panel-right-w, 25rem)) - 1rem)
+    );
+  }
+  html[data-dl-panel-left][data-dl-panel-right] .dl-page {
+    max-width: min(
+      var(--dl-line-width),
+      calc(100vw - 2 * max(var(--dl-panel-gutter), var(--dl-panel-left-w, 25rem), var(--dl-panel-right-w, 25rem)) - 1rem)
+    );
+  }
 }
 
 /* Wide things — tables, plots, code — may exceed the reading measure. They
@@ -1663,9 +1693,18 @@ p code, li code {
 .dl-nav a { text-decoration: none; }
 .dl-nav a:hover { text-decoration: underline; }
 
+/* One more area than .dl-nav-bottom needs, for the search popover beside
+   "All tutorials" — .dl-nav-bottom has no equivalent and keeps the plain
+   three-column grid above. */
+.dl-nav-top {
+  grid-template-columns: 1fr auto auto 1fr;
+  grid-template-areas: "prev up search next";
+}
+
 .dl-nav-prev { grid-area: prev; justify-self: start; }
 .dl-nav-up { grid-area: up; justify-self: center; color: var(--dl-muted); white-space: nowrap; }
 .dl-nav-next { grid-area: next; justify-self: end; text-align: right; }
+.dl-nav-search { grid-area: search; justify-self: start; position: relative; }
 
 /* Non-breaking, so the arrow never wraps onto a line of its own under a long
    title — which is exactly what a phone-width column makes it do. */
@@ -1973,6 +2012,19 @@ p code, li code {
  * (position: absolute) drop below the input without pushing the rest
  * of the page down while it's open. */
 .dl-search { position: relative; margin: 0 0 2.5rem; }
+/* All tutorials' own copy: pinned below the masthead the same way
+   .dl-status is, so a reader partway down this long page never has to
+   scroll back up to search instead of keep scrolling. */
+.dl-search-sticky {
+  position: sticky;
+  top: var(--dl-chrome-h);
+  z-index: 10;
+  margin: 0 0 2rem;
+  padding: 0.9rem 0.9rem 0.5rem;
+  background: var(--dl-bg);
+  border-bottom: 1px solid var(--dl-rule);
+}
+.dl-search-sticky .dl-search { margin-bottom: 0.7rem; }
 .dl-search-label {
   display: block;
   font-size: 0.8rem;
@@ -2038,6 +2090,75 @@ p code, li code {
   color: var(--dl-orange);
 }
 .dl-search-empty { padding: 0.5rem 0.6rem; color: var(--dl-muted); font-size: 0.85rem; }
+
+/* The search popover beside "All tutorials" in every page's own top nav
+ * — a native <details>, so open/closed styling keys off its own [open]
+ * attribute rather than an aria-expanded the browser sets for us on
+ * nothing in particular. Sized and bordered the same as the other
+ * masthead toggles (.dl-settings-toggle and siblings) for a family
+ * resemblance, without sharing the class itself, since those are real
+ * <button>s wired up by tutorial-runtime.js and this is not. */
+.dl-nav-search > summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  cursor: pointer;
+  list-style: none;
+  font-family: var(--dl-mono);
+  font-size: 0.78rem;
+  color: var(--dl-heading);
+  border: 1px solid var(--dl-navy);
+  border-radius: 4px;
+  padding: 0.3rem 0.6rem;
+}
+.dl-nav-search > summary::-webkit-details-marker { display: none; }
+.dl-nav-search > summary:hover,
+.dl-nav-search[open] > summary {
+  border-color: var(--dl-orange);
+  color: var(--dl-orange);
+}
+.dl-nav-search[open] > summary {
+  background: var(--dl-navy);
+  border-color: var(--dl-navy);
+  color: #fff;
+}
+/* A circle and a handle, drawn rather than typed — the same reasoning
+   as every other masthead icon here (.dl-settings-icon and siblings):
+   it should not depend on a glyph the reader's font may not carry. */
+.dl-nav-search-icon {
+  width: 0.75em;
+  height: 0.75em;
+  border: 2px solid currentColor;
+  border-radius: 50%;
+  position: relative;
+  flex: none;
+}
+.dl-nav-search-icon::after {
+  content: "";
+  position: absolute;
+  bottom: -0.38em;
+  right: -0.38em;
+  width: 0.5em;
+  height: 2px;
+  background: currentColor;
+  transform: rotate(45deg);
+}
+/* A floating popover, not part of the nav row's own height — a search
+   box opening should not push "All tutorials" or the reading below it
+   down the page. */
+.dl-nav-search > .dl-search {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  left: 0;
+  z-index: 30;
+  width: min(26rem, 90vw);
+  margin: 0;
+  padding: 0.9rem;
+  border: 1px solid var(--dl-cell-border);
+  border-radius: 8px;
+  background: var(--dl-panel-bg);
+  box-shadow: 0 8px 24px var(--dl-shadow);
+}
 
 /* ------------------------------------------------------------ knowledge map
 
