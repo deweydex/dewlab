@@ -1,8 +1,11 @@
-/* Client-side search for the contents page and "Browse by topic" —
- * assets/search.js, loaded by both (build.py's write_index() and
- * write_topics_page(), via {{PAGE_SCRIPT}}) and a no-op anywhere else,
- * since it only ever does anything once it finds #dl-search in the
- * page. No server, no build-time query handling — just this file and
+/* Client-side search — assets/search.js, loaded by shell.html on every
+ * page, and a no-op wherever it finds no `.dl-search` element at all. A
+ * page can carry more than one: the small popover beside "All
+ * tutorials" in every page's own top nav is always present, and a
+ * handful of pages (the front page, "All tutorials", "Browse by topic")
+ * also carry one of their own further down — each instance is wired up
+ * independently, sharing only the one fetched index. No server, no
+ * build-time query handling — just this file and
  * assets/search-index.json (one row per live tutorial: title, module,
  * series, and the glossary terms that tutorial specifically introduces
  * — write_search_index() in build.py generates it fresh on every
@@ -99,11 +102,38 @@ function scoreDocument(doc, queryTokens) {
   return score;
 }
 
+/** Where this page's own assets live, relative to it — "assets/" for a
+ * root-level page, "../../assets/" for a tutorial two folders deep, and
+ * so on. Read from the same manifest every tutorial page already
+ * carries (readManifest() in tutorial-runtime.js reads the same
+ * element; this is a separate script and small enough not to share the
+ * function, just the one field it needs). Root-level pages with no
+ * cells of their own still carry a manifest with assetBase set — see
+ * write_index()'s own, for one. */
+function assetBase() {
+  const el = document.getElementById("dewlab-manifest");
+  if (!el) return "assets/";
+  try {
+    return JSON.parse(el.textContent).assetBase || "assets/";
+  } catch (e) {
+    return "assets/";
+  }
+}
+
+/** The same relative path back to the site root that assetBase() carries
+ * (it is just assetBase() with "assets/" itself lopped off the end) —
+ * every result's own `url` in the index is root-relative ("tutorials/
+ * computational-methods/first-steps.html"), so a page that is not
+ * itself at the root has to prefix it with this before using it. */
+function rootBase() {
+  return assetBase().replace(/assets\/$/, "");
+}
+
 /** Fetches and prepares the search index once — each document gets its
  * three token sets precomputed here rather than re-tokenized on every
  * keystroke, since the index itself never changes during a page visit. */
 async function loadIndex() {
-  const response = await fetch("assets/search-index.json");
+  const response = await fetch(assetBase() + "search-index.json");
   if (!response.ok) throw new Error(`HTTP ${response.status}`);
   const documents = await response.json();
   for (const doc of documents) {
@@ -131,7 +161,7 @@ function renderResults(listEl, ranked, queryTokens, limit = 12) {
       ? `<span class="dl-search-match">${matchedTerms.slice(0, 3).map(escapeHtml).join(", ")}</span>`
       : "";
     return (
-      `<li><a href="${doc.url}">` +
+      `<li><a href="${rootBase()}${doc.url}">` +
       `<span class="dl-search-title">${escapeHtml(doc.title)}</span>` +
       `<span class="dl-search-subtitle">${escapeHtml(subtitle)}</span>` +
       matchNote +
@@ -146,21 +176,16 @@ function escapeHtml(text) {
   return text.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 }
 
-async function initSearch() {
-  const root = document.getElementById("dl-search");
-  if (!root) return; // this page has no search box — nothing to do
-
-  const input = document.getElementById("dl-search-input");
-  const list = document.getElementById("dl-search-results");
+/** Wires up one `.dl-search` instance — everything that used to be the
+ * whole of initSearch(), before a page could carry more than one at
+ * once (the nav popover beside "All tutorials", present everywhere,
+ * plus a handful of pages' own body copy). `documents`/`loadError` are
+ * the one shared fetch every instance on the page reads from, not
+ * fetched again per instance. */
+function wireSearchBox(root, documents, loadError) {
+  const input = root.querySelector(".dl-search-input");
+  const list = root.querySelector(".dl-search-results");
   if (!input || !list) return;
-
-  let documents = null;
-  let loadError = null;
-  try {
-    documents = await loadIndex();
-  } catch (error) {
-    loadError = error;
-  }
 
   const runSearch = () => {
     const query = input.value.trim();
@@ -206,11 +231,42 @@ async function initSearch() {
 
   // Closing on an outside click matches every other panel on the site
   // (Settings, Help) — a search box left open after a reader has
-  // clicked elsewhere would be the odd one out.
+  // clicked elsewhere would be the odd one out. The nav popover is a
+  // <details> rather than one of those panels, so it gets the same
+  // treatment applied to itself, not just to its results list: native
+  // <details> has no built-in "close on outside click" or Escape of its
+  // own, and leaving those out here would make this the one panel on
+  // the page that does not behave like the rest.
+  const popover = root.closest("details.dl-nav-search");
   document.addEventListener("click", (e) => {
-    if (!root.contains(e.target)) { list.hidden = true; }
+    if (root.contains(e.target)) return;
+    list.hidden = true;
+    if (popover && !popover.contains(e.target)) popover.open = false;
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key !== "Escape" || !popover || !popover.open) return;
+    popover.open = false;
+    popover.querySelector("summary").focus();
   });
   input.addEventListener("focus", () => { if (input.value.trim()) list.hidden = false; });
+}
+
+/** Loads the index once, then wires up every `.dl-search` box the page
+ * carries — the nav popover beside "All tutorials" is on every page, so
+ * this always finds at least one. */
+async function initSearch() {
+  const roots = document.querySelectorAll(".dl-search");
+  if (roots.length === 0) return;
+
+  let documents = null;
+  let loadError = null;
+  try {
+    documents = await loadIndex();
+  } catch (error) {
+    loadError = error;
+  }
+
+  for (const root of roots) wireSearchBox(root, documents, loadError);
 }
 
 if (document.readyState === "loading") {
