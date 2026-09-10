@@ -13,7 +13,21 @@
 #   Programming and Design Principles 5N2927
 #   Computational Methods and Problem Solving 5N0554
 #   Fundamentals of Object Oriented Programming 5N0541
-# All four PDFs live in this repository, under planning/curriculum/descriptors/.
+#   Database Methods 5N0783
+# All five PDFs live in this repository, under planning/curriculum/descriptors/.
+#
+# Database Methods 5N0783's own descriptor is written for a GUI database tool
+# (Microsoft Access — "design view", "pivot chart", "combo box", "Lookup
+# wizard", mail-merge labels). dewlab teaches the same eleven outcomes through
+# real SQL and Python instead, since that is what dewlab teaches everywhere
+# else — DBM-LO3, DBM-LO6 and DBM-LO7 below are the clearest cases of the
+# descriptor's own vocabulary and dewlab's parting ways, not a disagreement
+# about what the outcome means. Two of the eleven, DBM-LO7 (mailable/printable
+# reports) and the report-building half of DBM-LO6 (a GUI data-entry form,
+# distinct from the HTML forms Web Authoring teaches), have no dewlab
+# equivalent yet and are not claimed as covered by anything — see
+# planning/DEWSTACK_MERGE.md for what's ported so far and what a report-style
+# page would need to close that gap.
 #
 # `strand` groups an outcome for the map's colouring, and is our word rather
 # than the descriptor's: it answers "what kind of thing is this?" in a way a
@@ -49,6 +63,11 @@ modules:
   FOOP:
     title: "Fundamentals of Object Oriented Programming"
     code: "5N0541"
+    sections:
+      LO: "Learning outcomes"
+  DBM:
+    title: "Database Methods"
+    code: "5N0783"
     sections:
       LO: "Learning outcomes"
 
@@ -351,4 +370,39 @@ outcomes:
     strand: problem-solving
   - code: CMPS-LO13
     title: "Reflect on the impact of numerical and logical thinking in the real world: accuracy, precision, and decisions made from computational models and simulations"
+    strand: reflection
+
+  # ---------------------------------------------------------------- DBM
+  - code: DBM-LO1
+    title: "Typical uses for databases, in everyday life and in business decision-making"
+    strand: database-concepts
+  - code: DBM-LO2
+    title: "Essential database concepts: tables, rows, columns, statements, queries"
+    strand: database-concepts
+  - code: DBM-LO3
+    title: "Explain what a query does, and read and write one in SQL (the descriptor's own list — design view, datasheet view, pivot table, pivot chart — names a GUI tool's views; dewlab teaches the query language directly instead)"
+    strand: querying
+  - code: DBM-LO4
+    title: "Open an existing table and carry out routine operations on it: reading, adding, editing, deleting, sorting and filtering rows"
+    strand: querying
+  - code: DBM-LO5
+    title: "Retrieve chosen data from one or more tables by writing a query, saved as the reader's own work for reuse"
+    strand: querying
+  - code: DBM-LO6
+    title: "Write the query a data-entry submission would run against a table (the descriptor's own form is a GUI data-entry screen; dewlab covers the query side here and the HTML side in Web Authoring)"
+    strand: data-entry
+  - code: DBM-LO7
+    title: "Present selected information from a database in a format suitable for sharing or printing (the descriptor's own GUI report builder — not yet covered by anything in dewlab)"
+    strand: reporting
+  - code: DBM-LO8
+    title: "Import external data, such as a CSV file, into a table"
+    strand: data-import
+  - code: DBM-LO9
+    title: "Design a database to a brief: tables, primary keys, and the relationships between tables"
+    strand: design
+  - code: DBM-LO10
+    title: "Build a database to a brief: create its tables, load or enter data, and write the queries it needs"
+    strand: design
+  - code: DBM-LO11
+    title: "Use hints, error messages and self-checks to work through an unfamiliar database problem"
     strand: reflection

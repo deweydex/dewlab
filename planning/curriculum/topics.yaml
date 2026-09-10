@@ -1572,3 +1572,155 @@ topics:
       - Knowing the difference between a model being wrong and a model being
         usefully approximate.
     needs: [CMPS-LO11]
+
+  # ---------------------------------------------------------------- DBM 5N0783
+  DBM-LO1:
+    name: Where databases show up
+    outcome: DBM-LO1
+    plain: >
+      Every place a list of things needs to be searched, sorted or updated by
+      more than one person, usually already runs on a database, often without
+      anyone calling it that.
+    uses:
+      - A school's own record of students and the classes they take.
+      - A shop's till, checking stock and prices as a sale happens.
+      - The contacts list on a phone, one record per person.
+    needs: []
+
+  DBM-LO2a:
+    name: Tables, rows and columns
+    outcome: DBM-LO2
+    plain: >
+      A table stores many records in one place, and every record is shaped
+      the same way: one row per record, one column per property every record
+      has.
+    uses:
+      - A spreadsheet, which stores data in exactly this shape.
+      - A shopping list, where each line is a record with a name and a
+        quantity.
+    needs: []
+
+  DBM-LO2b:
+    name: Statements and queries
+    outcome: DBM-LO2
+    plain: >
+      An instruction sent to a database, rather than typed by hand into a
+      cell the way a spreadsheet allows. Creating a table, adding a row, and
+      asking what a table already holds are all statements.
+    uses:
+      - A shop's database asked for every order placed this month.
+      - A web page's search results, built from a query behind the scenes.
+    needs: [DBM-LO2a]
+
+  DBM-LO3:
+    name: SQL as a query language
+    outcome: DBM-LO3
+    plain: >
+      The language most databases understand directly. A query written in it
+      says what you want back, not the steps a computer takes to find it.
+    uses:
+      - The same query language behind almost every database engine, from a
+        phone app to a bank.
+      - A report a business runs every week, written once as SQL and reused
+        unchanged.
+    needs: [DBM-LO2b]
+
+  DBM-LO4:
+    name: Editing what a table holds
+    outcome: DBM-LO4
+    plain: >
+      Changing a table's rows only on purpose, through a statement, rather
+      than by typing into a cell the way a spreadsheet allows. Adding a row,
+      changing one, deleting one, sorting and searching are the five ways
+      that happens.
+    uses:
+      - A shop updating its stock level every time something sells.
+      - Correcting a typo in one customer's address without touching any
+        other row.
+    needs: [DBM-LO2a]
+
+  DBM-LO5:
+    name: Retrieving and filtering data
+    outcome: DBM-LO5
+    plain: >
+      Asking a table for only the rows and columns that matter right now,
+      rather than reading through everything by eye.
+    uses:
+      - Finding every order over a certain amount, out of thousands.
+      - A dashboard that shows only this week's figures, filtered from years
+        of records.
+    needs: [DBM-LO2b]
+
+  DBM-LO6:
+    name: The query behind a form
+    outcome: DBM-LO6
+    plain: >
+      What actually happens once someone presses submit on a form: their
+      answers become the values inside one statement, run against a table.
+    uses:
+      - A sign-up form, where each submission becomes one new row.
+      - An order form, where the query records what was bought and by whom.
+    needs: [DBM-LO5]
+
+  DBM-LO7:
+    name: Sharing what a query found
+    outcome: DBM-LO7
+    plain: >
+      Turning a query's result into something meant for a reader outside the
+      database — printed, emailed, or saved as a file of its own.
+    uses:
+      - A weekly sales summary emailed to a manager.
+      - An invoice, built from one customer's own rows.
+    needs: [DBM-LO5]
+
+  DBM-LO8:
+    name: Importing external data
+    outcome: DBM-LO8
+    plain: >
+      Bringing a file that already exists somewhere else — a spreadsheet, a
+      CSV file, another database — into a table this database can query.
+    uses:
+      - Loading a public dataset published as a CSV file.
+      - Bringing a spreadsheet's contents into a real table instead of
+        retyping it by hand.
+    needs: [DBM-LO2a]
+
+  DBM-LO9:
+    name: Designing a database
+    outcome: DBM-LO9
+    plain: >
+      Working out what tables a problem needs, what belongs in each one, and
+      how those tables refer to each other, before writing a single table
+      into existence.
+    uses:
+      - Planning a shop's database as one table of products and one of
+        orders, linked by which product each order names.
+      - Deciding which column uniquely identifies a row, before any data
+        exists yet.
+    needs: [DBM-LO2a]
+
+  DBM-LO10:
+    name: Building a database to a brief
+    outcome: DBM-LO10
+    plain: >
+      Turning a design into a real, working database: creating its tables,
+      loading or entering its data, and writing the queries it needs to
+      answer.
+    uses:
+      - Handing over a finished database that matches exactly what a brief
+        asked for.
+      - A class project marked against a written specification rather than
+        freeform.
+    needs: [DBM-LO9, DBM-LO2b]
+
+  DBM-LO11:
+    name: Working through an unfamiliar database problem
+    outcome: DBM-LO11
+    plain: >
+      Using what is already available — an error message, a hint, a check
+      that says pass or not yet — rather than guessing, when a problem does
+      not match anything seen before.
+    uses:
+      - Reading a SQL error message for the exact line and reason it failed.
+      - A self-check that says what is still missing, one task at a time.
+    needs: []

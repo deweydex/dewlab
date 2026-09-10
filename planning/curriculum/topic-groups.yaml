@@ -216,3 +216,39 @@ groups:
       strategies behind fixing something, not any one language or tool.
     tutorials:
       - { module: computational-methods, slug: finding-where-it-went-wrong }
+
+  - key: tables-and-queries
+    name: Tables, rows, and simple queries
+    intro: >
+      A table stores records; a query asks it a question. This is where
+      both ideas start — one worked example built up, changed, and joined
+      to a second table, alongside a table you build and query yourself.
+    tutorials:
+      - { module: database-methods, slug: a-table-is-a-list-of-rows }
+      - { module: database-methods, slug: asking-questions-of-a-table }
+      - { module: database-methods, slug: changing-what-is-in-it }
+      - { module: database-methods, slug: a-second-table-and-a-join }
+
+  - key: real-data-and-several-tables
+    name: Real data across several tables
+    intro: >
+      Moving from a hand-built example to a real, published dataset: loading
+      a CSV into a table, joining it to a second one, charting a query's
+      result, and getting a result back out again.
+    tutorials:
+      - { module: database-methods, slug: designing-a-table-before-you-build-it }
+      - { module: database-methods, slug: loading-a-real-dataset }
+      - { module: database-methods, slug: joining-two-real-tables }
+      - { module: database-methods, slug: charting-a-querys-result }
+      - { module: database-methods, slug: exporting-a-query-to-a-file }
+      - { module: database-methods, slug: a-form-that-writes-a-row }
+
+  - key: database-practice
+    name: Database practice and self-checks
+    intro: >
+      Open-ended SQL practice, and a five-task quiz that checks your own
+      database as you build it, one task at a time, with a hint if you get
+      stuck.
+    tutorials:
+      - { module: database-methods, slug: sql-practice }
+      - { module: database-methods, slug: the-tentacular-plushies-quiz }

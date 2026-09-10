@@ -15,14 +15,14 @@ so this doubles as a way of finding where anything is taught.
 
 ## Where we stand
 
-**91 of 91** outcomes are in place.
+**91 of 102** outcomes are in place.
 
 - 🟩 **89 taught** — a tutorial section teaches it.
 - 🟦 **2 taught in part** — deliberately narrowed, and the narrowed version is written.
 - 🟨 **0 used but not taught** — students meet it in passing without it ever being the subject. These are the quiet gaps: they look covered from a distance.
-- 🟥 **0 not covered** — nothing in dewlab touches it.
+- 🟥 **11 not covered** — nothing in dewlab touches it.
 
-**Everything in both descriptors is written.** Nothing is outstanding.
+**11 of the 11 outcomes still to write have no proposal**: `DBM-LO1`, `DBM-LO10`, `DBM-LO11`, `DBM-LO2`, `DBM-LO3`, `DBM-LO4`, `DBM-LO5`, `DBM-LO6`, `DBM-LO7`, `DBM-LO8`, `DBM-LO9`. These are the ones nobody has decided how to teach yet.
 
 ### By strand
 
@@ -32,7 +32,11 @@ so this doubles as a way of finding where anything is taught.
 | **algorithms** | 9 | 0 | 0 | 0 | 0 |
 | **calculus** | 2 | 1 | 0 | 0 | 0 |
 | **complexity** | 2 | 0 | 0 | 0 | 0 |
+| **data-entry** | 0 | 0 | 0 | 1 | 0 |
+| **data-import** | 0 | 0 | 0 | 1 | 0 |
 | **data-structures** | 1 | 0 | 0 | 0 | 0 |
+| **database-concepts** | 0 | 0 | 0 | 2 | 0 |
+| **design** | 0 | 0 | 0 | 2 | 0 |
 | **functions** | 3 | 0 | 0 | 0 | 0 |
 | **geometry** | 6 | 0 | 0 | 0 | 0 |
 | **linear-algebra** | 1 | 0 | 0 | 0 | 0 |
@@ -43,7 +47,9 @@ so this doubles as a way of finding where anything is taught.
 | **probability** | 10 | 0 | 0 | 0 | 0 |
 | **problem-solving** | 3 | 0 | 0 | 0 | 0 |
 | **programming** | 18 | 0 | 0 | 0 | 0 |
-| **reflection** | 1 | 0 | 0 | 0 | 0 |
+| **querying** | 0 | 0 | 0 | 3 | 0 |
+| **reflection** | 1 | 0 | 0 | 1 | 0 |
+| **reporting** | 0 | 0 | 0 | 1 | 0 |
 | **sets** | 3 | 0 | 0 | 0 | 0 |
 | **simulation** | 1 | 0 | 0 | 0 | 0 |
 | **statistics** | 5 | 0 | 0 | 0 | 0 |
@@ -55,7 +61,11 @@ graph LR
   algorithms["algorithms<br/>9 of 9 in place"]
   calculus["calculus<br/>3 of 3 in place"]
   complexity["complexity<br/>2 of 2 in place"]
+  data_entry["data-entry<br/>0 of 1 in place"]
+  data_import["data-import<br/>0 of 1 in place"]
   data_structures["data-structures<br/>1 of 1 in place"]
+  database_concepts["database-concepts<br/>0 of 2 in place"]
+  design["design<br/>0 of 2 in place"]
   functions["functions<br/>3 of 3 in place"]
   geometry["geometry<br/>6 of 6 in place"]
   linear_algebra["linear-algebra<br/>1 of 1 in place"]
@@ -66,7 +76,9 @@ graph LR
   probability["probability<br/>10 of 10 in place"]
   problem_solving["problem-solving<br/>3 of 3 in place"]
   programming["programming<br/>18 of 18 in place"]
-  reflection["reflection<br/>1 of 1 in place"]
+  querying["querying<br/>0 of 3 in place"]
+  reflection["reflection<br/>1 of 2 in place"]
+  reporting["reporting<br/>0 of 1 in place"]
   sets["sets<br/>3 of 3 in place"]
   simulation["simulation<br/>1 of 1 in place"]
   statistics["statistics<br/>5 of 5 in place"]
@@ -75,7 +87,9 @@ graph LR
   classDef full fill:#edf7f0,stroke:#1f6b3f,color:#1f6b3f;
   classDef part fill:#fdf6ec,stroke:#b5651d,color:#7a4310;
   classDef none fill:#fdf0ef,stroke:#9b2226,color:#9b2226;
-  class algebra,algorithms,calculus,complexity,data_structures,functions,geometry,linear_algebra,logic,modelling,number,oop,probability,problem_solving,programming,reflection,sets,simulation,statistics,trigonometry full;
+  class algebra,algorithms,calculus,complexity,data_structures,functions,geometry,linear_algebra,logic,modelling,number,oop,probability,problem_solving,programming,sets,simulation,statistics,trigonometry full;
+  class reflection part;
+  class data_entry,data_import,database_concepts,design,querying,reporting none;
 ```
 
 ## The series as it stands
@@ -403,6 +417,22 @@ graph TD
 | `FOOP-LO9` Document program code properly | 🟩 | [Documenting a Class — A Class Docstring](https://deweydex.github.io/dewlab/tutorials/fundamentals-of-oop/documenting-a-class.html#a-class-docstring)<br/>[Documenting a Class — Documenting Each Method](https://deweydex.github.io/dewlab/tutorials/fundamentals-of-oop/documenting-a-class.html#documenting-each-method)<br/>[Documenting a Class — Keeping Documentation Honest](https://deweydex.github.io/dewlab/tutorials/fundamentals-of-oop/documenting-a-class.html#keeping-documentation-honest) |
 | `FOOP-LO10` Debug and test programs | 🟩 | [Testing What a Class Does — A Bug That Hides in Another Class](https://deweydex.github.io/dewlab/tutorials/fundamentals-of-oop/testing-what-a-class-does.html#a-bug-that-hides-in-another-class)<br/>[Testing What a Class Does — Writing a Test for One Method](https://deweydex.github.io/dewlab/tutorials/fundamentals-of-oop/testing-what-a-class-does.html#writing-a-test-for-one-method)<br/>[Testing What a Class Does — A Few Tests, Run Together](https://deweydex.github.io/dewlab/tutorials/fundamentals-of-oop/testing-what-a-class-does.html#a-few-tests-run-together) |
 | `FOOP-LO11` Deploy a program to the end user via a front end | 🟩 | [A Front End for a Class — A Program Only Its Author Can Use](https://deweydex.github.io/dewlab/tutorials/fundamentals-of-oop/a-front-end-for-a-class.html#a-program-only-its-author-can-use)<br/>[A Front End for a Class — A Menu Loop](https://deweydex.github.io/dewlab/tutorials/fundamentals-of-oop/a-front-end-for-a-class.html#a-menu-loop)<br/>[A Front End for a Class — Leaving the Loop Cleanly](https://deweydex.github.io/dewlab/tutorials/fundamentals-of-oop/a-front-end-for-a-class.html#leaving-the-loop-cleanly) |
+
+### Database Methods 5N0783
+
+| Outcome | | Where |
+|---|---|---|
+| `DBM-LO1` Typical uses for databases, in everyday life and in business decision-making | 🟥 | — |
+| `DBM-LO2` Essential database concepts: tables, rows, columns, statements, queries | 🟥 | — |
+| `DBM-LO3` Explain what a query does, and read and write one in SQL (the descriptor's own list — design view, datasheet view, pivot table, pivot chart — names a GUI tool's views; dewlab teaches the query language directly instead) | 🟥 | — |
+| `DBM-LO4` Open an existing table and carry out routine operations on it: reading, adding, editing, deleting, sorting and filtering rows | 🟥 | — |
+| `DBM-LO5` Retrieve chosen data from one or more tables by writing a query, saved as the reader's own work for reuse | 🟥 | — |
+| `DBM-LO6` Write the query a data-entry submission would run against a table (the descriptor's own form is a GUI data-entry screen; dewlab covers the query side here and the HTML side in Web Authoring) | 🟥 | — |
+| `DBM-LO7` Present selected information from a database in a format suitable for sharing or printing (the descriptor's own GUI report builder — not yet covered by anything in dewlab) | 🟥 | — |
+| `DBM-LO8` Import external data, such as a CSV file, into a table | 🟥 | — |
+| `DBM-LO9` Design a database to a brief: tables, primary keys, and the relationships between tables | 🟥 | — |
+| `DBM-LO10` Build a database to a brief: create its tables, load or enter data, and write the queries it needs | 🟥 | — |
+| `DBM-LO11` Use hints, error messages and self-checks to work through an unfamiliar database problem | 🟥 | — |
 
 ## Vocabulary
 
