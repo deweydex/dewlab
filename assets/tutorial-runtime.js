@@ -13,7 +13,8 @@
  * and gets out of the way.
  */
 
-import { createCodeEditor, createReadOnlyCode, setEditorTheme } from "./vendor/codemirror.bundle.js";
+import { createCodeEditor, createReadOnlyCode, setEditorTheme,
+         setLineNumbers, setIndentWidth } from "./vendor/codemirror.bundle.js";
 
 /* ------------------------------------------------------------------ config */
 
@@ -70,6 +71,19 @@ const TEXTURE_DEFAULTS = {
    * panel offers, applied through the same [data-button-labels] CSS this
    * page and dewmini both load from tutorial-style.css. */
   buttons: "both",
+  // Cuts CSS transitions/animations site-wide when "reduced" — a plain
+  // accessibility toggle, not tied to the system prefers-reduced-motion
+  // query, so a reader can ask for it even on a system that hasn't.
+  motion: "normal",
+  // A multiplier on the code editor's own line height, independent of the
+  // overall text size above — a reader who wants more air between lines of
+  // code without enlarging the letters themselves.
+  codeLineHeight: 1.5,
+  // Spaces Tab inserts in a code cell, and what indentOnInput reindents to.
+  indent: 4,
+  // Line numbers are the CodeMirror default everywhere else this bundle is
+  // used, so "on" is the default here too — a reader turns them off, not on.
+  linenumbers: "on",
 };
 
 /* The size slider's minimum, which has to be known here as well as in the
@@ -446,6 +460,48 @@ function initSettingsPanel() {
   for (const section of panel.querySelectorAll(".dl-settings-section")) {
     if (!section.textContent.trim()) section.hidden = true;
   }
+
+  // Search, the same filter-as-you-type shape as the reference panel's own
+  // (filterReferenceContent() above) — cleared whenever the panel closes,
+  // for the same reason: reopening it later should never start on a stale
+  // filter from whichever of this panel's several close paths ran last.
+  const searchInput = document.getElementById("dl-settings-search");
+  if (searchInput) {
+    searchInput.addEventListener("input", () => filterSettingsContent(searchInput.value));
+    new MutationObserver(() => {
+      if (panel.hasAttribute("hidden") && searchInput.value) {
+        searchInput.value = "";
+        filterSettingsContent("");
+      }
+    }).observe(panel, { attributes: true, attributeFilter: ["hidden"] });
+  }
+}
+
+/**
+ * Filters the Settings panel's own rows down to whatever matches `query` —
+ * a plain substring match against each row's visible text plus a small
+ * `data-keywords` list on the row itself (shell.html), the same reason
+ * assets/search.js keeps a synonym table: a row labelled just "Size" would
+ * never match someone typing "font size" without one. Only `.dl-texture-row`
+ * elements — the actual adjustable controls — participate; a section's own
+ * heading or an action button like "Restart Python" is left alone, since
+ * neither is a setting to search for.
+ */
+function filterSettingsContent(query) {
+  const panel = document.getElementById("dl-settings");
+  const emptyMessage = document.getElementById("dl-settings-empty");
+  if (!panel) return;
+  const needle = query.trim().toLowerCase();
+  let anyRowVisible = false;
+
+  for (const row of panel.querySelectorAll(".dl-texture-row")) {
+    const text = `${row.textContent} ${row.dataset.keywords || ""}`.toLowerCase();
+    const matches = !needle || text.includes(needle);
+    row.hidden = !matches;
+    if (matches) anyRowVisible = true;
+  }
+
+  if (emptyMessage) emptyMessage.hidden = anyRowVisible || !needle;
 }
 
 /* -------------------------------------------------------- reference */
@@ -1000,8 +1056,11 @@ function applyTexture(state) {
   else root.setAttribute("data-contrast", state.contrast);
   if (state.buttons === "both") root.removeAttribute("data-button-labels");
   else root.setAttribute("data-button-labels", state.buttons);
+  if (state.motion === "normal") root.removeAttribute("data-motion");
+  else root.setAttribute("data-motion", state.motion);
   root.style.setProperty("--dl-font-size", state.size + "px");
   root.style.setProperty("--dl-line-width", state.width + "rem");
+  root.style.setProperty("--dl-code-line-height", state.codeLineHeight);
   // High contrast overrides a reader's own link colour the same way it
   // already overrides their font choice (DECISIONS_LOG.md 7.124) — but
   // font-family only ever comes from the stylesheet's [data-contrast]
@@ -1043,6 +1102,7 @@ function initTexture(onThemeChange) {
   const sizeEl = document.getElementById("dl-texture-size");
   const widthEl = document.getElementById("dl-texture-width");
   const linkEl = document.getElementById("dl-texture-link");
+  const codeLineHeightEl = document.getElementById("dl-texture-code-line-height");
 
   function sync() {
     for (const group of panel.querySelectorAll(".dl-seg")) {
@@ -1059,6 +1119,7 @@ function initTexture(onThemeChange) {
     sizeEl.value = state.size;
     widthEl.value = state.width;
     linkEl.value = state.link;
+    codeLineHeightEl.value = state.codeLineHeight;
   }
 
   function commit() {
@@ -1081,6 +1142,10 @@ function initTexture(onThemeChange) {
   sizeEl.addEventListener("input", () => { state.size = Number(sizeEl.value); commit(); });
   widthEl.addEventListener("input", () => { state.width = Number(widthEl.value); commit(); });
   linkEl.addEventListener("input", () => { state.link = linkEl.value; commit(); });
+  codeLineHeightEl.addEventListener("input", () => {
+    state.codeLineHeight = Number(codeLineHeightEl.value);
+    commit();
+  });
 
   document.getElementById("dl-texture-reset").addEventListener("click", () => {
     Object.assign(state, TEXTURE_DEFAULTS);
@@ -1264,6 +1329,8 @@ function buildCells(manifest) {
       completeNames: pageNamesCompletion,
       getDoc: hoverDoc,
       getSignature: signatureHelp,
+      lineNumbersVisible: loadTexture().linenumbers !== "off",
+      indentWidth: loadTexture().indent,
     });
     cell.editor = editor;
     cells.push(cell);
@@ -2014,6 +2081,8 @@ function mountCustomCellAfter(afterNode, id, type, code, anchor) {
       completeNames: pageNamesCompletion,
       getDoc: hoverDoc,
       getSignature: signatureHelp,
+      lineNumbersVisible: loadTexture().linenumbers !== "off",
+      indentWidth: loadTexture().indent,
     });
 
     cell = {
@@ -4500,8 +4569,13 @@ const currentManifest = readManifest();
  * replaced by another one. */
 const leaving = followTheVersionYouLeftOff();
 
-initTexture((dark) => {
-  for (const cell of [...cells, ...customCells]) { if (cell.editor) setEditorTheme(cell.editor, dark); }
+const textureState = initTexture((dark) => {
+  for (const cell of [...cells, ...customCells]) {
+    if (!cell.editor) continue;
+    setEditorTheme(cell.editor, dark);
+    setLineNumbers(cell.editor, textureState.linenumbers !== "off");
+    setIndentWidth(cell.editor, textureState.indent);
+  }
   for (const block of readOnlyBlocks) setEditorTheme(block, dark);
 });
 initSegKeyboardNav();

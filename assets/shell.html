@@ -66,6 +66,8 @@
     if (s.size) r.style.setProperty("--dl-font-size", s.size + "px");
     if (s.width) r.style.setProperty("--dl-line-width", s.width + "rem");
     if (s.link) r.style.setProperty("--dl-link", s.link);
+    if (s.motion && s.motion !== "normal") r.setAttribute("data-motion", s.motion);
+    if (s.codeLineHeight) r.style.setProperty("--dl-code-line-height", s.codeLineHeight);
   } catch (e) { /* private mode, blocked storage: fall through to defaults */ }
 })();
 </script>
@@ -160,11 +162,23 @@
      badges, so it stays even on a page with no cells of its own. -->
 <div class="dl-settings" id="dl-settings" role="dialog" aria-modal="false"
      aria-labelledby="dl-settings-title" hidden>
-  <div class="dl-settings-head">
-    <h2 id="dl-settings-title">Settings</h2>
-    <button type="button" class="dl-settings-close" id="dl-settings-close"
-            aria-label="Close settings">&times;</button>
+  <div class="dl-panel-sticky-head">
+    <div class="dl-settings-head">
+      <h2 id="dl-settings-title">Settings</h2>
+      <button type="button" class="dl-settings-close" id="dl-settings-close"
+              aria-label="Close settings">&times;</button>
+    </div>
+    <!-- Filters the sections below to whatever matches — "font size",
+         "dark mode", "line numbers" — the same filter-as-you-type shape
+         Reference's own search already uses (filterSettingsContent(),
+         tutorial-runtime.js), against a small keyword list per row
+         rather than each row's own visible label, since a label like
+         "Size" alone would never match someone typing "font size". -->
+    <input type="search" class="dl-settings-search-input" id="dl-settings-search"
+           placeholder="Search settings — e.g. font size, dark mode…"
+           aria-label="Search settings" autocomplete="off">
   </div>
+  <p class="dl-panel-note dl-settings-empty" id="dl-settings-empty" hidden>Nothing matches that.</p>
 
   <section class="dl-settings-section" id="dl-settings-work">
     <h3>Your work</h3>
@@ -203,7 +217,7 @@
          export (updateNotesNudge(), tutorial-runtime.js). Opt-out here for
          the same reason the progress badges toggle below is one: ambient,
          seen without asking for it, unlike the rest of this panel. -->
-    <div class="dl-texture-row dl-texture-row-wide">
+    <div class="dl-texture-row dl-texture-row-wide" data-keywords="notes reminder export nudge">
       <span id="dl-seg-notes-nudge-label">Remind me to export new notes</span>
       <div class="dl-seg" data-notes-nudge role="radiogroup" aria-labelledby="dl-seg-notes-nudge-label">
         <button type="button" data-value="on" role="radio">on</button>
@@ -225,7 +239,7 @@
       <button type="button" class="dl-btn" id="dl-restart-run-all"
               title="Throw away everything Python currently holds, then run every cell on this page from the top — the way to prove the page still works from a clean start">Restart &amp; run all</button>
     </div>
-    <div class="dl-texture-row">
+    <div class="dl-texture-row" data-keywords="timing execution stats">
       <span id="dl-seg-run-stats-label">Run time</span>
       <div class="dl-seg" data-run-stats role="radiogroup" aria-labelledby="dl-seg-run-stats-label">
         <button type="button" data-value="on" role="radio">on</button>
@@ -238,7 +252,7 @@
          all, and whether Restart Python hides the ones already shown. The
          note underneath is the whole of what a reader is told about the
          counting, on purpose — no count is ever shown on a cell. -->
-    <div class="dl-texture-row">
+    <div class="dl-texture-row" data-keywords="staged hints help">
       <span id="dl-seg-hints-label">Hints as you work</span>
       <div class="dl-seg" data-staged-hints role="radiogroup" aria-labelledby="dl-seg-hints-label">
         <button type="button" data-value="on" role="radio">on</button>
@@ -350,7 +364,7 @@
   <section class="dl-settings-section" id="dl-settings-texture">
     <h3>Texture</h3>
 
-    <div class="dl-texture-row">
+    <div class="dl-texture-row" data-keywords="dark mode light mode night mode colour scheme color scheme">
       <span id="dl-seg-theme-label">Theme</span>
       <div class="dl-seg" data-texture="theme" role="radiogroup" aria-labelledby="dl-seg-theme-label">
         <button type="button" data-value="system" role="radio">auto</button>
@@ -359,7 +373,7 @@
       </div>
     </div>
 
-    <div class="dl-texture-row">
+    <div class="dl-texture-row" data-keywords="typeface serif sans mono">
       <span id="dl-seg-font-label">Font</span>
       <div class="dl-seg" data-texture="font" role="radiogroup" aria-labelledby="dl-seg-font-label">
         <button type="button" data-value="serif" role="radio">serif</button>
@@ -373,7 +387,7 @@
          own sync loop matches every group with this attribute, not one
          specific element), which is what lets these sit on their own
          line below the first three rather than crowding a six-wide row. -->
-    <div class="dl-texture-row">
+    <div class="dl-texture-row" data-keywords="dyslexia dyslexic font typeface">
       <span></span>
       <div class="dl-seg" data-texture="font" role="radiogroup" aria-label="Font, further options">
         <button type="button" data-value="lexend" role="radio">Lexend</button>
@@ -381,7 +395,7 @@
       </div>
     </div>
 
-    <div class="dl-texture-row">
+    <div class="dl-texture-row" data-keywords="accessibility contrast colour blindness color blindness">
       <span id="dl-seg-contrast-label">High contrast</span>
       <div class="dl-seg" data-texture="contrast" role="radiogroup" aria-labelledby="dl-seg-contrast-label">
         <button type="button" data-value="normal" role="radio">off</button>
@@ -389,11 +403,19 @@
       </div>
     </div>
 
+    <div class="dl-texture-row" data-keywords="animation motion accessibility">
+      <span id="dl-seg-motion-label">Reduce motion</span>
+      <div class="dl-seg" data-texture="motion" role="radiogroup" aria-labelledby="dl-seg-motion-label">
+        <button type="button" data-value="normal" role="radio">off</button>
+        <button type="button" data-value="reduced" role="radio">on</button>
+      </div>
+    </div>
+
     <!-- Run, Reset, Duplicate and the rest — icon, label, or both
          (planning/CELL_IDENTITY.md §9). Shares tutorial-style.css's
          [data-button-labels] rule with compose/dewmini.js's own copy of
          this same row, so the choice means the same thing on either page. -->
-    <div class="dl-texture-row">
+    <div class="dl-texture-row" data-keywords="icons labels button style run reset duplicate">
       <span id="dl-seg-buttons-label">Cell buttons</span>
       <div class="dl-seg" data-texture="buttons" role="radiogroup" aria-labelledby="dl-seg-buttons-label">
         <button type="button" data-value="icons" role="radio">icons</button>
@@ -402,12 +424,34 @@
       </div>
     </div>
 
-    <div class="dl-texture-row">
+    <div class="dl-texture-row" data-keywords="font size text size bigger smaller larger">
       <span>Size</span>
       <input type="range" id="dl-texture-size" min="16" max="24" step="1" aria-label="Text size">
     </div>
 
-    <div class="dl-texture-row">
+    <div class="dl-texture-row" data-keywords="code spacing leading line spacing">
+      <span>Code line height</span>
+      <input type="range" id="dl-texture-code-line-height" min="1.2" max="2.2" step="0.1"
+             aria-label="Space between lines of code">
+    </div>
+
+    <div class="dl-texture-row" data-keywords="tab width spaces indentation">
+      <span id="dl-seg-indent-label">Code indent</span>
+      <div class="dl-seg" data-texture="indent" data-number role="radiogroup" aria-labelledby="dl-seg-indent-label">
+        <button type="button" data-value="2" role="radio">2 spaces</button>
+        <button type="button" data-value="4" role="radio">4 spaces</button>
+      </div>
+    </div>
+
+    <div class="dl-texture-row" data-keywords="gutter numbering">
+      <span id="dl-seg-linenumbers-label">Line numbers</span>
+      <div class="dl-seg" data-texture="linenumbers" role="radiogroup" aria-labelledby="dl-seg-linenumbers-label">
+        <button type="button" data-value="off" role="radio">off</button>
+        <button type="button" data-value="on" role="radio">on</button>
+      </div>
+    </div>
+
+    <div class="dl-texture-row" data-keywords="line width column width line length narrow wide reading width">
       <span id="dl-seg-width-label">Width</span>
       <div class="dl-seg" data-texture="width" data-number role="radiogroup" aria-labelledby="dl-seg-width-label">
         <button type="button" data-value="34" role="radio">narrow</button>
@@ -416,13 +460,13 @@
       </div>
     </div>
 
-    <div class="dl-texture-row">
+    <div class="dl-texture-row" data-keywords="line width column width line length">
       <span></span>
       <input type="range" id="dl-texture-width" min="26" max="60" step="1"
              aria-label="Line width, finer than the three presets">
     </div>
 
-    <div class="dl-texture-row">
+    <div class="dl-texture-row" data-keywords="masthead minimal full">
       <span id="dl-seg-header-label">Header</span>
       <div class="dl-seg" data-texture="header" role="radiogroup" aria-labelledby="dl-seg-header-label">
         <button type="button" data-value="full" role="radio">full</button>
@@ -430,7 +474,7 @@
       </div>
     </div>
 
-    <div class="dl-texture-row">
+    <div class="dl-texture-row" data-keywords="link color hyperlink colour">
       <span>Links</span>
       <input type="color" id="dl-texture-link" aria-label="Link colour">
     </div>
@@ -452,10 +496,15 @@
      open alongside this one. -->
 <div class="dl-reference" id="dl-reference" role="dialog" aria-modal="false"
      aria-labelledby="dl-reference-title" hidden>
-  <div class="dl-reference-head">
-    <h2 id="dl-reference-title">Reference</h2>
-    <button type="button" class="dl-reference-close" id="dl-reference-close"
-            aria-label="Close reference">&times;</button>
+  <div class="dl-panel-sticky-head">
+    <div class="dl-reference-head">
+      <h2 id="dl-reference-title">Reference</h2>
+      <button type="button" class="dl-reference-close" id="dl-reference-close"
+              aria-label="Close reference">&times;</button>
+    </div>
+    <input type="search" class="dl-reference-search-input" id="dl-reference-search"
+           placeholder="Search this page's terms…" aria-label="Search this page's reference"
+           autocomplete="off" hidden>
   </div>
   <p class="dl-panel-note">
     The glossary below is what this page — and everything before it in the
@@ -463,9 +512,6 @@
     been taught yet. Notes and datasets, where this page has any, belong to
     this page alone.
   </p>
-  <input type="search" class="dl-reference-search-input" id="dl-reference-search"
-         placeholder="Search this page's terms…" aria-label="Search this page's reference"
-         autocomplete="off" hidden>
   <div class="dl-reference-groups" id="dl-reference-groups"></div>
   <p class="dl-panel-note dl-reference-empty" id="dl-reference-empty" hidden>Nothing matches that.</p>
 </div>
@@ -480,10 +526,12 @@
      not conflict with either. -->
 <div class="dl-seriesnav" id="dl-seriesnav" role="dialog" aria-modal="false"
      aria-labelledby="dl-seriesnav-title" hidden>
-  <div class="dl-seriesnav-head">
-    <h2 id="dl-seriesnav-title">This series</h2>
-    <button type="button" class="dl-seriesnav-close" id="dl-seriesnav-close"
-            aria-label="Close series navigation">&times;</button>
+  <div class="dl-panel-sticky-head">
+    <div class="dl-seriesnav-head">
+      <h2 id="dl-seriesnav-title">This series</h2>
+      <button type="button" class="dl-seriesnav-close" id="dl-seriesnav-close"
+              aria-label="Close series navigation">&times;</button>
+    </div>
   </div>
   <nav aria-label="Every tutorial in this series">
     {{SERIES_NAV}}

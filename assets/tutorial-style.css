@@ -21,6 +21,7 @@
   --dl-font-family: Georgia, "Iowan Old Style", "Times New Roman", serif;
   --dl-font-size: 18px;
   --dl-line-width: 34rem;
+  --dl-code-line-height: 1.5;
   /* Darker than --dl-orange, and deliberately not the brand hue itself.
    * The brand orange is 3.5:1 on this background, under the 4.5:1 that
    * ordinary AA asks for at this text size, and links are most of the
@@ -203,6 +204,31 @@
     --dl-link: #db7e47;
     --dl-cell-border: var(--dl-rule);
     --dl-type-python: #db7e47;
+  }
+}
+
+/* A reader's own request, independent of the system's prefers-reduced-motion
+ * query — someone motion bothers can turn this on even if their operating
+ * system has never been told to reduce motion, and someone who wants the
+ * system query honoured already gets that from the media query below,
+ * without ever visiting Settings. `!important` because this has to beat
+ * every transition/animation declared anywhere else in this file, not just
+ * the ones already written with reduced motion in mind. */
+:root[data-motion="reduced"] *,
+:root[data-motion="reduced"] *::before,
+:root[data-motion="reduced"] *::after {
+  transition-duration: 0.001ms !important;
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  /* Unconditional — the reader's own Settings choice only ever adds
+     reduced motion on top of this, never lifts an operating-system
+     request the site has no business overriding. */
+  *, *::before, *::after {
+    transition-duration: 0.001ms !important;
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
   }
 }
 
@@ -813,7 +839,7 @@ p code, li code {
 .dl-editor { background: var(--dl-panel-bg); }
 .dl-editor .cm-editor { font-size: 0.86rem; }
 .dl-editor .cm-editor.cm-focused { outline: none; }
-.dl-editor .cm-scroller { font-family: var(--dl-mono); line-height: 1.5; }
+.dl-editor .cm-scroller { font-family: var(--dl-mono); line-height: var(--dl-code-line-height); }
 .dl-editor .cm-content { padding: 0.5rem 0; }
 
 /* A hover docstring (vendor-src/codemirror-entry.js's pythonDocTooltip),
@@ -1230,15 +1256,21 @@ p code, li code {
   border-top: 2px solid currentColor;
 }
 
-/* A docked sidebar, not a floating card: flush to the right edge, full
-   height from below the sticky masthead to the foot of the viewport, so
-   it reads as a permanent pane a reader can leave open and work beside —
-   the "typical offline IDE" shape — rather than a popover that happens to
-   be open right now. */
+/* A docked sidebar, not a floating card: flush to the right edge, the
+   full height of the viewport, so it reads as a permanent pane a reader
+   can leave open and work beside — the "typical offline IDE" shape —
+   rather than a popover that happens to be open right now. Reaching the
+   very top rather than stopping below the masthead is what lets its own
+   sticky head (.dl-panel-sticky-head below) carry a title, a close
+   button and — here — a settings search, always in reach regardless of
+   how far a reader has scrolled the sections beneath it; the masthead
+   itself never overlaps this column, since the reading column's own
+   width already gives up exactly this much space on this edge whenever
+   this panel is open (see .dl-page's own rules, above). */
 .dl-settings {
   position: fixed;
   right: 0;
-  top: var(--dl-chrome-h);
+  top: 0;
   bottom: 0;
   z-index: 50;
   width: min(21rem, 100vw);
@@ -1414,7 +1446,7 @@ p code, li code {
 .dl-reference {
   position: fixed;
   left: 0;
-  top: var(--dl-chrome-h);
+  top: 0;
   bottom: 0;
   z-index: 50;
   width: min(22rem, 100vw);
@@ -1460,7 +1492,8 @@ p code, li code {
 }
 .dl-reference-close:hover { color: var(--dl-orange); }
 
-.dl-reference-search-input {
+.dl-reference-search-input,
+.dl-settings-search-input {
   display: block;
   width: 100%;
   margin: 0 0 0.8rem;
@@ -1472,8 +1505,39 @@ p code, li code {
   border: 1px solid var(--dl-cell-border);
   border-radius: 5px;
 }
-.dl-reference-search-input:focus { outline: none; border-color: var(--dl-orange); }
+.dl-reference-search-input:focus,
+.dl-settings-search-input:focus { outline: none; border-color: var(--dl-orange); }
 .dl-reference-search-input[hidden] { display: none; }
+
+/* The head every docked panel already had (title, close button) now
+   carries its own search too where the panel has one, and stays pinned
+   to the panel's own top edge as the sections below it scroll — the
+   panel reaches all the way to y:0 (see .dl-settings/.dl-reference/
+   .dl-seriesnav above) specifically so this has the room to do that.
+   The negative margin/top pair pulls this out to the panel's own edges
+   and cancels its top padding, then re-applies the same padding here,
+   so the sticky element is flush with the panel's real edge once
+   scrolled rather than stopping short by that padding. */
+.dl-panel-sticky-head {
+  position: sticky;
+  top: -1rem;
+  z-index: 2;
+  margin: -1rem -1.1rem 0.9rem;
+  padding: 1rem 1.1rem 0.7rem;
+  background: var(--dl-panel-bg);
+  border-bottom: 1px solid var(--dl-cell-border);
+}
+/* The same problem an anchored jump into the page solves against the
+   masthead (scroll-padding-top on the page, above) shows up again here:
+   a keyboard tab, a browser's "scroll to" on a focused control, or a
+   settings-search match near the very top of the panel can land right
+   under this sticky head instead of below it. A little more room than
+   the tallest of the three heads (Settings', with its own search row)
+   ever needs, so it clears all three rather than needing a value per
+   panel. */
+.dl-settings, .dl-reference, .dl-seriesnav {
+  scroll-padding-top: 9rem;
+}
 .dl-reference-empty { font-style: italic; }
 
 .dl-reference-group + .dl-reference-group {
@@ -1578,7 +1642,7 @@ p code, li code {
 .dl-seriesnav {
   position: fixed;
   left: 0;
-  top: var(--dl-chrome-h);
+  top: 0;
   bottom: 0;
   z-index: 50;
   width: min(22rem, 100vw);
@@ -1644,6 +1708,11 @@ p code, li code {
   align-items: center;
   margin-bottom: 0.65rem;
 }
+/* Without this, the row's own display: grid above would outrank the
+   browser's default [hidden] rule (equal specificity, author beats
+   user-agent) and filterSettingsContent()'s hidden rows would keep
+   rendering anyway. */
+.dl-texture-row[hidden] { display: none; }
 .dl-texture-row > span { color: var(--dl-muted); font-size: 0.78rem; }
 /* The 4.6rem label column fits a one-word label ("Theme", "Size") on one
  * line. A longer label ("Show progress on the tutorials list") wraps into
@@ -2958,7 +3027,7 @@ p code, li code {
 }
 .dl-editor-body .milkdown-code-block .cm-editor { background: transparent; font-size: 0.86rem; }
 .dl-editor-body .milkdown-code-block .cm-editor.cm-focused { outline: none; }
-.dl-editor-body .milkdown-code-block .cm-scroller { font-family: var(--dl-mono); line-height: 1.5; }
+.dl-editor-body .milkdown-code-block .cm-scroller { font-family: var(--dl-mono); line-height: var(--dl-code-line-height); }
 .dl-editor-body .milkdown-code-block .cm-content { padding: 0.5rem 0.6rem; }
 .dl-editor-body .milkdown-code-block .cm-gutters { background: transparent; border: none; opacity: 0.6; }
 
