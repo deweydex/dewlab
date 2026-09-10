@@ -72,7 +72,8 @@ def test_every_exec_cell_became_an_editor_with_line_numbers(page):
 
     Counted against the fixture rather than a fixed number, so adding a cell to
     rendering-tour.md does not fail a test that is not about counting."""
-    expected = FIXTURE.read_text().count("```python exec")
+    text = FIXTURE.read_text()
+    expected = text.count("```python exec") + text.count("```sql exec")
     cells = page.query_selector_all(".dl-cell")
     assert len(cells) == expected
     assert len(page.query_selector_all(".dl-cell .cm-editor")) == expected
@@ -114,6 +115,33 @@ def test_pandas_dataframe_renders_as_a_table(page):
     assert "<table" in output
     assert "Ireland" in output
     assert "Kenya" not in output, "the filter should have excluded Kenya"
+
+
+def test_a_sql_exec_cell_pill_reads_sql(page):
+    selector = ".dl-cell[data-cell-id='sql-basics'] .dl-cell-pill-type"
+    assert page.inner_text(selector) == "SQL"
+    assert page.get_attribute(selector, "data-type") == "sql"
+
+
+def test_a_sql_cells_select_renders_as_a_table(page):
+    """DEWSTACK_MERGE.md §3 — the editor holds real SQL text; the wrapper
+    tutorial-runtime.js builds around it before it reaches Python is what
+    makes _run_sql_cell() render this table, not anything in the fixture."""
+    output = run(page, "sql-basics")
+    assert "<table" in output
+    assert "spider" in output
+    assert "dog" in output
+    assert "hen" not in output, "the WHERE legs > 2 filter should have excluded it"
+
+
+def test_a_python_cell_can_read_what_a_sql_cell_wrote(page):
+    """The shared db is one connection, seeded once at boot — a SQL cell's
+    CREATE TABLE/INSERT is visible to a Python cell on the same page,
+    the same guarantee dewmini's own SQL cell type already gives."""
+    run(page, "sql-basics")
+    output = run(page, "sql-read-from-python")
+    assert "<table" in output
+    assert ">3<" in output, "3 rows were inserted"
 
 
 def test_matplotlib_renders_a_figure_beneath_the_cell(page):

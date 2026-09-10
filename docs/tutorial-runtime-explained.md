@@ -120,8 +120,10 @@ storage while the page is still loading) or long *after* it already has
 `createCustomCellElement()` reads it to decide whether a brand-new
 cell's Run button should start enabled or not, rather than assuming.
 
-**Two cell types, and a seam after every cell on the page.** A custom
-cell can be `"python"` (an editor, an output area, Run) or `"text"` (a
+**Cell types, and a seam after every cell on the page.** A custom cell
+can be `"python"` or `"sql"` (an editor, an output area, Run — `"sql"`
+only ever arrives by duplicating an authored `sql exec` cell, since there
+is no "+SQL" button of its own yet) or `"text"` (a
 textarea that turns into rendered notes — a small, hand-written markdown,
 `renderDocMarkdown()`, ported from `compose/dewmini.js`'s own text cells
 rather than reinvented). Blurring the textarea renders it, and clicking

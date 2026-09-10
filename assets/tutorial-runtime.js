@@ -99,6 +99,12 @@ function readManifest() {
   }
   m.cells = m.cells || [];
   m.packages = m.packages && m.packages.length ? m.packages : DEFAULT_PACKAGES;
+  // A page with a sql exec cell needs sqlite3 loaded whether it declared its
+  // own package list or fell back to DEFAULT_PACKAGES above — added here,
+  // once, rather than duplicating DEFAULT_PACKAGES in build.py to append to.
+  if (m.needsSqlite && !m.packages.includes("sqlite3")) {
+    m.packages = [...m.packages, "sqlite3"];
+  }
   m.assetBase = m.assetBase || "";
   m.dataBase = m.dataBase || "";
   m.assetVersions = m.assetVersions || {};
@@ -1241,6 +1247,12 @@ function buildCells(manifest) {
     const cell = {
       id: spec.id,
       starter: spec.code || "",
+      /* The fence's own language word (build.py's Cell.type) — "python" for
+       * every cell until DEWSTACK_MERGE.md's sql exec fence. Read by
+       * codeToRun() to decide whether this cell's code needs wrapping
+       * before it reaches Python, and by Duplicate to carry the type into
+       * the custom cell it creates. */
+      type: spec.type || "python",
       outputEl,
       runBtn,
       runLineEl,
@@ -1260,6 +1272,7 @@ function buildCells(manifest) {
 
     const editor = createCodeEditor(editorHost, spec.code || "", {
       dark,
+      language: cell.type === "sql" ? "sql" : "python",
       onChange: () => { scheduleSave(); renderCellRunLine(cell); },
       completeNames: pageNamesCompletion,
       getDoc: hoverDoc,
@@ -1298,7 +1311,7 @@ function buildCells(manifest) {
       });
     }
     if (duplicateBtn) {
-      duplicateBtn.addEventListener("click", () => duplicateAsCustomCell(cell, "python"));
+      duplicateBtn.addEventListener("click", () => duplicateAsCustomCell(cell, cell.type));
     }
 
     /* A cell's own hint, if it has one: a plain click toggle, not hover — see
@@ -2010,6 +2023,7 @@ function mountCustomCellAfter(afterNode, id, type, code, anchor) {
     const runBtn = host.querySelector(".dl-btn-run");
     const editor = createCodeEditor(editorHost, code || "", {
       dark: isDarkNow(),
+      language: type === "sql" ? "sql" : "python",
       onChange: () => scheduleCustomSave(),
       completeNames: pageNamesCompletion,
       getDoc: hoverDoc,
@@ -2096,10 +2110,10 @@ function addCustomCell(type = "python", code = "") {
 /* Duplicate — an authored cell's own button (build.py's render_cell())
  * and a custom cell's own (createCustomCellElement()) both call this,
  * DECISIONS_LOG.md 7.112: drops a fresh custom cell, seeded with this
- * cell's current code, immediately after it — `type` is always
- * "python" for an authored cell (the only type one has) and the
- * originating cell's own `.type` for a custom one, so a text cell
- * duplicates as text.
+ * cell's current code, immediately after it — `type` is the originating
+ * cell's own `.type` either way, authored or custom, so a text cell
+ * duplicates as text and a sql exec cell duplicates as a SQL custom cell
+ * (DEWSTACK_MERGE.md §3).
  *
  * "Immediately after it" is `cell.element.nextElementSibling` — every
  * cell this file ever mounts, real or custom, gets its own trailing
@@ -2185,7 +2199,7 @@ async function importCustomCell(file) {
     setStatus("That file doesn't look like a shared dewlab cell.", "error");
     return;
   }
-  const type = payload.type === "text" ? "text" : "python";
+  const type = payload.type === "text" ? "text" : payload.type === "sql" ? "sql" : "python";
   if (!addCustomCell(type, payload.code)) return;
   setStatus("Cell loaded — read it before you press Run.");
 }
@@ -2243,7 +2257,7 @@ function initCustomCellsSection() {
   const byAnchor = new Map();
   for (const saved of loadCustomCells()) {
     if (!saved || typeof saved.id !== "string" || typeof saved.code !== "string") continue;
-    const type = saved.type === "text" ? "text" : "python";
+    const type = saved.type === "text" ? "text" : saved.type === "sql" ? "sql" : "python";
     const anchor = typeof saved.anchor === "string" && realIds.has(saved.anchor)
       ? saved.anchor
       : TRAILING_ANCHOR;
@@ -2558,6 +2572,20 @@ tutorial_tools._page_globals.update({
 tutorial_tools._page_globals["__name__"] = "__dewlab__"
 `;
 
+/* A fresh, in-memory sqlite3 connection under the name `db` — the
+ * main-thread twin of assets/pyodide-worker.js's own
+ * SEED_DEWMINI_DB_SOURCE, run here on the offline/standalone export path
+ * a page with a sql exec cell needs it on too (DEWSTACK_MERGE.md §3).
+ * Genuinely duplicated rather than shared, same reasoning as
+ * RESEED_GLOBALS_SOURCE just above. */
+const SEED_SQL_DB_SOURCE = `
+import sqlite3
+_dewlab_previous_db = tutorial_tools._page_globals.get("db")
+if _dewlab_previous_db is not None:
+    _dewlab_previous_db.close()
+tutorial_tools._page_globals["db"] = sqlite3.connect(":memory:")
+`;
+
 async function loadJediMT() {
   try {
     await pyodideMT.loadPackage(["jedi", "parso"]);
@@ -2613,6 +2641,7 @@ async function bootMainThread(manifest) {
   toolsMT.configure(manifest.dataBase);
 
   await pyodideMT.runPythonAsync(RESEED_GLOBALS_SOURCE);
+  if (manifest.needsSqlite) await pyodideMT.runPythonAsync(SEED_SQL_DB_SOURCE);
 
   setStatus("");
   setBooting(false);
@@ -2631,6 +2660,7 @@ async function bootMainThread(manifest) {
 async function resetPageStateMT() {
   toolsMT.reset_page_state();
   await pyodideMT.runPythonAsync(RESEED_GLOBALS_SOURCE);
+  if (currentManifest.needsSqlite) await pyodideMT.runPythonAsync(SEED_SQL_DB_SOURCE);
 }
 
 /* Every name currently defined in the shared namespace, for autocomplete
@@ -2641,6 +2671,27 @@ function pageNamesMT() {
   return [...toolsMT._page_globals.keys()].filter((name) => !name.startsWith("_"));
 }
 
+/* A sql exec cell's editor holds SQL text, not Python — this is what turns
+ * it into the one line of Python that actually runs, exactly the pattern
+ * compose/dewmini.js's own buildSqlCellCode() already uses for its SQL
+ * cell type: JSON.stringify() as the Python string literal, since its
+ * escaping is a strict subset of Python's own double-quoted-string
+ * escaping, so any SQL text — quotes, backslashes, newlines — embeds
+ * safely. Assigned to `_` rather than left as the last expression so
+ * run_cell()'s own auto-display of the last value doesn't re-render the
+ * table _run_sql_cell() already rendered into the cell's output. */
+function wrapSqlCode(sql) {
+  return `import tutorial_tools as _dl_tt\n_ = _dl_tt._run_sql_cell(db, ${JSON.stringify(sql)})`;
+}
+
+/* What actually reaches Python for this cell's next run — cell.getCode()
+ * unwrapped for everything else, since ranContent, the report-a-problem
+ * panel, and Duplicate/export all need to see the reader's own SQL text,
+ * not the generated wrapper around it. */
+function codeToRun(cell) {
+  return cell.type === "sql" ? wrapSqlCode(cell.getCode()) : cell.getCode();
+}
+
 /* Runs one cell directly on the main thread. tutorial_tools.py's own
  * run_cell() does essentially everything — running the code, capturing
  * output, rendering it into the cell's output element — so this is
@@ -2649,7 +2700,7 @@ function pageNamesMT() {
  * back as a plain JS boolean) — used by runCellBatch() to count errors. */
 async function runCellMainThread(cell) {
   return JSON.parse(
-    await toolsMT.run_cell_report(cell.id, cell.outputEl, cell.getCode(), cell.expect, cell.name),
+    await toolsMT.run_cell_report(cell.id, cell.outputEl, codeToRun(cell), cell.expect, cell.name),
   );
 }
 
@@ -2770,6 +2821,11 @@ async function bootWorker(manifest) {
      * the worker script's own location, not this page's. */
     toolsSourceUrl: new URL(assetUrl(manifest, "tutorial_tools.py"), document.baseURI).href,
     dataBase: new URL(manifest.dataBase, document.baseURI).href,
+    /* The shared `db` connection every sql exec cell on this page runs
+     * against (assets/pyodide-worker.js's own SEED_DEWMINI_DB_SOURCE) —
+     * only asked for when the manifest actually has one, same "pay for
+     * what you use" gate as `math`/`needsSqlite` above. */
+    seedDb: !!manifest.needsSqlite,
   });
 
   if (globalThis.crossOriginIsolated && typeof SharedArrayBuffer !== "undefined") {
@@ -2807,7 +2863,7 @@ function requestInterrupt() {
  * "run-cell" handler responds with. */
 async function runCellWorker(cell) {
   return workerRequest("run-cell", {
-    cellId: cell.id, code: cell.getCode(), expect: cell.expect, label: cell.name,
+    cellId: cell.id, code: codeToRun(cell), expect: cell.expect, label: cell.name,
   });
 }
 

@@ -66,6 +66,28 @@ df = pd.DataFrame({
 df[df["life_expectancy"] > 75]
 ```
 
+## SQL
+
+A `sql exec` cell's code is SQL text, not Python — it runs against the same
+shared `db` every SQL cell on this page uses, and a `select` renders as a
+table exactly like a DataFrame does.
+
+```sql exec
+id: sql-basics
+CREATE TABLE creatures (name TEXT, legs INTEGER);
+INSERT INTO creatures VALUES ('spider', 8), ('hen', 2), ('dog', 4);
+SELECT * FROM creatures WHERE legs > 2;
+```
+
+A Python cell reads the same `db` a SQL cell just wrote to.
+
+```python exec
+id: sql-read-from-python
+import pandas as pd
+
+pd.read_sql("SELECT COUNT(*) AS n FROM creatures", db)
+```
+
 ## matplotlib
 
 A figure renders as an image.
