@@ -180,7 +180,7 @@ function watchPanelOverlap() {
   // The same drag strip on both edges. These two panels relied on native
   // `resize: horizontal` until now, which works but is a corner triangle
   // facing Settings' full-height strip — one page, two affordances, only
-  // one of them findable (DECISIONS_LOG.md 7.103). Wired here rather than
+  // one of them findable. Wired here rather than
   // in each panel's own init, because this is the one place that already
   // knows which edge each panel is docked to.
   for (const panel of leftPanels) makeEdgeResizable(panel, "left", 256, 640);
@@ -561,8 +561,8 @@ function initReferenceLookup(manifest) {
     // sentence about a transformation matrix finds the entry, and so does
     // selecting the whole phrase. Whole-word rather than substring is what
     // stops "and" offering pandas and "excellent" offering cell — the same
-    // false-positive problem that withdrew prose-linking (DECISIONS_LOG.md
-    // 7.92), reached here by a different route.
+    // false-positive problem that withdrew prose-linking, reached here by
+    // a different route.
     const bounded = whole(needle);
     return terms.find((term) => bounded.test(term))
       || terms.find((term) => whole(term).test(needle))
@@ -760,7 +760,7 @@ function applyTexture(state) {
   root.style.setProperty("--dl-line-width", state.width + "rem");
   root.style.setProperty("--dl-code-line-height", state.codeLineHeight);
   // High contrast overrides a reader's own link colour the same way it
-  // already overrides their font choice (DECISIONS_LOG.md 7.124) — but
+  // already overrides their font choice — but
   // font-family only ever comes from the stylesheet's [data-contrast]
   // rule, while link colour is normally also written here as an inline
   // style, and an inline style always wins over any stylesheet rule
@@ -875,7 +875,7 @@ const cells = [];
 const customCells = [];
 
 /* One entry per live HTML/CSS/JS site editor on the page (DEWSTACK_MERGE.md
- * §3, DECISIONS_LOG.md 7.142) — see buildSiteEditors() below. */
+ * §3) — see buildSiteEditors() below. */
 const siteEditors = [];
 
 function setCellCollapsed(cell, collapsed) {
@@ -2735,7 +2735,7 @@ function saveNow() {
     // caches what the preview showed, only what would rebuild it: each
     // pane's current text, and whether Run had been pressed (so a reload
     // shows the script's effect again rather than a blank one, matching
-    // DECISIONS_LOG.md 7.142's fix to dewmini's own Site tab).
+    // the same fix already made to dewmini's own Site tab).
     siteEditors: siteEditors.map((editor) => ({
       name: editor.name,
       panes: Object.fromEntries(

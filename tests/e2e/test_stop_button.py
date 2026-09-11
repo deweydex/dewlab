@@ -1,5 +1,4 @@
-"""The genuine Stop button, in a real browser — planning/CELL_CONTROLS.md §2,
-DECISIONS_LOG.md 7.77.
+"""The genuine Stop button, in a real browser — planning/CELL_CONTROLS.md §2.
 
 Pyodide runs inside assets/pyodide-worker.js on the hosted site now, so a
 tight, synchronous, no-yields-at-all Python loop can be interrupted from

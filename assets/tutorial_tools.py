@@ -181,8 +181,7 @@ class _MessageSink:
 
     `append_html()` always returns `None`: there is no live element for a
     widget to find itself again through. That is a real, deliberate gap, not
-    an oversight — see `text_input`/`dropdown`/`button`'s own guard below and
-    DECISIONS_LOG.md 7.77."""
+    an oversight — see `text_input`/`dropdown`/`button`'s own guard below."""
 
     def __init__(self, emit):
         self._emit = emit
@@ -692,8 +691,8 @@ async def run_cell(
     output ordering and traceback formatting have exactly one implementation.
 
     `output_target` is either a real `.dl-output` element (the main-thread
-    path the standalone export still uses — DECISIONS_LOG.md 7.77 keeps that
-    export on the pre-Worker runtime) or the `emit` callable
+    path the standalone export still uses, kept on the pre-Worker runtime)
+    or the `emit` callable
     `assets/pyodide-worker.js` passes for a page running Pyodide in a Worker.
     A callable can never be mistaken for an element, so which sink to build
     is exactly that check.
@@ -975,7 +974,7 @@ def _require_dom_sink(kind: str) -> _CellContext:
     """Widgets need a live element to attach a listener to — one
     `_MessageSink` (a Worker-run page) cannot hand back, since there is no
     DOM on that side of the postMessage boundary to hand back a reference
-    into (DECISIONS_LOG.md 7.77). Nothing published uses `text_input`,
+    into. Nothing published uses `text_input`,
     `dropdown`, `button` or `image_input` today, so this is a real gap with
     no live tutorial behind it — and a clear error a reader can see beats
     the silent one this would otherwise be: markup that renders but does

@@ -1,7 +1,7 @@
 """Browser tests for the merged run line (order, duration, staleness), the
 "⋯" Run above/below menu, and Restart & run all — planning/CELL_IDENTITY.md,
-ported from dewmini.js's own already-shipped versions (DECISIONS_LOG.md
-7.105, 7.106, 7.108, 7.113) onto tutorial pages' `.dl-cell`.
+ported from dewmini.js's own already-shipped versions onto tutorial pages'
+`.dl-cell`.
 
     python3 -m pytest tests/e2e/test_cell_run_menu.py -q
 """
@@ -158,7 +158,7 @@ class TestRunMenu:
 
 
 class TestRunAnnouncer:
-    """DECISIONS_LOG.md 7.131: the ticking run-line is deliberately not a
+    """The ticking run-line is deliberately not a
     live region, so this is the one thing a screen reader hears once a
     run actually finishes."""
 

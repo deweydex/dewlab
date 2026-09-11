@@ -163,7 +163,7 @@ SLOW_CLIENT = """
 
 class TestLoadingManyTutorialsAtOnce:
     """load() (assets/editor.js) reads files in concurrent batches rather
-    than one at a time — DECISIONS_LOG.md 7.61 has the why. 40 crosses that
+    than one at a time. 40 crosses that
     batch boundary (16 at a time) more than once."""
 
     def test_every_tutorial_in_a_large_repo_loads_with_the_right_content(self, browser, base_url):
@@ -559,7 +559,7 @@ class TestCrepeIsActuallyThemed:
     (Crepe wires up `prosemirror-virtual-cursor` for a consistent caret
     across browsers, which hides the native one and draws its own — and
     that replacement's own colour comes from one of the same undefined
-    variables). DECISIONS_LOG.md 7.63 has the fuller account."""
+    variables)."""
 
     def open_first(self, editor):
         editor.click('.dl-editor-card[data-slug="first-steps"] .dl-editor-open')

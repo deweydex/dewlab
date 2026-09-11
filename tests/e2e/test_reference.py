@@ -411,7 +411,7 @@ class TestDatasets:
 
 class TestMobile:
     """Planning/REFERENCE_PANEL.md's §6 mobile note, settled in
-    QUESTIONS.md/DECISIONS_LOG.md: the panel becomes a bottom sheet on a
+    QUESTIONS.md: the panel becomes a bottom sheet on a
     phone, mirroring .dl-settings' own existing mobile treatment, rather
     than staying hidden."""
 
@@ -488,7 +488,7 @@ SELECT = """(word) => {
 
 class TestHighlightToLookUp:
     """Selecting a word the reference knows offers to look it up —
-    planning/ROADMAP.md Phase 5, DECISIONS_LOG.md 7.91.
+    planning/ROADMAP.md Phase 5.
 
     The property worth protecting is not that the button appears; it is that
     it *stays away* for every selection that is not a term, which is most of

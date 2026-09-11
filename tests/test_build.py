@@ -231,7 +231,7 @@ class TestCells:
         b.build()
         page = built(repo)
         # A block, hidden by default and opened by a click (aria-expanded),
-        # not role="tooltip" hover text — DECISIONS_LOG.md's account of why.
+        # not role="tooltip" hover text.
         assert '<div class="dl-hint-text" id="dl-hint-c" hidden>Try this.</div>' in page
         assert 'aria-controls="dl-hint-c"' in page
         assert 'aria-expanded="false"' in page
@@ -2681,7 +2681,7 @@ class TestPagesOfProblems:
         """The two links are distinguishable.
 
         Tutorials did not link back to mixed sets at all until Josh asked for
-        them to (DECISIONS_LOG 7.51). What still has to hold is that a reader
+        them to. What still has to hold is that a reader
         can tell the difference: one page is answerable from this tutorial and
         the other is not."""
         write(repo, "One.\n", slug="one")
@@ -3616,7 +3616,7 @@ def test_no_workbench_folder_is_not_an_error(repo, monkeypatch):
 
 
 class TestFeedbackFooter:
-    """The footer's "three doors" report disclosure — DECISIONS_LOG Phase 8.
+    """The footer's "three doors" report disclosure.
     On by default; planning/feedback.yaml is the kill switch."""
 
     def test_doors_on_a_tutorial_page_by_default(self, repo, monkeypatch):
@@ -3691,10 +3691,10 @@ class TestFeedbackFooter:
 
 
 class TestCellReportPanel:
-    """The report icon and its panel on an authored cell — DECISIONS_LOG
-    Phase 8, the deferred half of the plan built once the footer doors
-    were live. code/output are filled in by tutorial-runtime.js at open
-    time, not at build time — see updateCellReportLinks() there."""
+    """The report icon and its panel on an authored cell — the deferred
+    half of the plan built once the footer doors were live. code/output
+    are filled in by tutorial-runtime.js at open time, not at build
+    time — see updateCellReportLinks() there."""
 
     def test_report_icon_and_panel_on_a_cell_by_default(self, repo, monkeypatch):
         write(repo, "```python exec\nid: greet\nprint('hi')\n```\n", slug="sample")

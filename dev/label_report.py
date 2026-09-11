@@ -11,7 +11,7 @@ This does that second half, called once, right after an issue opens, by
 
 No `kind:` label exists for "a question, an idea, or something else" on
 purpose: that kind is meant to leave through Discussions rather than land
-here as an issue at all (DECISIONS_LOG.md 8.4) — if one does turn up, it
+here as an issue at all — if one does turn up, it
 gets `kind: question` all the same, since a mislabelled report is still
 better found than lost.
 

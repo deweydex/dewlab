@@ -1,7 +1,7 @@
 """A cell's own hint, in a real browser.
 
-Click-to-open, not hover — DECISIONS_LOG.md has the account of why the
-previous hover popover was replaced. Wired in buildCells(), which runs
+Click-to-open, not hover — the previous hover popover was replaced.
+Wired in buildCells(), which runs
 before Pyodide's boot is even attempted, so none of this needs a cell to
 have run or Pyodide to have finished loading — the same reasoning
 test_autocomplete.py's first class already relies on for static

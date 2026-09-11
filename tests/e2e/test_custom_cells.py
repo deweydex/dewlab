@@ -176,7 +176,7 @@ class TestAddingACustomCell:
         assert "<strong>bold</strong>" in rendered
 
     def test_a_rendered_text_cells_chrome_is_invisible_until_touched(self, clean_storage):
-        """DECISIONS_LOG.md 7.115, planning/CELL_IDENTITY.md §4 — a rendered
+        """planning/CELL_IDENTITY.md §4 — a rendered
         text cell reads like part of the page, not a code widget, until a
         reader actually touches it. Ported from compose/dewmini-style.css's
         own .dm-cell-text rule."""

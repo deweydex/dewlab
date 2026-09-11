@@ -338,7 +338,7 @@ class TestRunQuery:
 @needs_pandas
 class TestRunSqlCell:
     """_run_sql_cell() — the dewmini SQL cell type's own internal
-    plumbing (planning/CELL_IDENTITY.md §8, DECISIONS_LOG.md 7.118),
+    plumbing (planning/CELL_IDENTITY.md §8),
     as opposed to run_query()'s public, one-statement API above."""
 
     @pytest.fixture()

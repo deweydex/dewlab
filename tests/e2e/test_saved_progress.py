@@ -88,7 +88,7 @@ class TestAutosave:
 
 
 class TestOversizedOutputFallback:
-    """DECISIONS_LOG.md 7.133: a large embedded figure (tutorial_tools.py's
+    """A large embedded figure (tutorial_tools.py's
     _figure_html(), a base64 PNG) can be big enough on its own to blow this
     browser's storage quota — saveNow() must not let that cost a reader
     their code and notes too. Storage.prototype.setItem is overridden here
@@ -373,7 +373,7 @@ class TestStartingAgain:
 class TestAPageWithNothingToSave:
     """A prose-only tutorial has no cells at all — but it is still a
     tutorial, so "Your work" stays for its notes field
-    (planning/STUDENT_NOTES.md, DECISIONS_LOG.md 7.71). The contents page
+    (planning/STUDENT_NOTES.md). The contents page
     is the one that truly has nothing here at all, since it is not a
     tutorial in the first place."""
 

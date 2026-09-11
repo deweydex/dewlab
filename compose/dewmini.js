@@ -15,7 +15,7 @@ const NOTES_KEY = "dewmini:notes";
 
 // Beyond the curriculum's numpy/pandas/matplotlib baseline (DECISIONS.md
 // "Core libraries"), dewmini also loads sqlite3 (an unvendored stdlib
-// module in Pyodide, one extra loadPackage() entry — DECISIONS_LOG.md 7.78)
+// module in Pyodide, one extra loadPackage() entry)
 // and Pillow (what image_input() decodes a picked file into). A tutorial
 // page stays on the narrower curriculum baseline; dewmini is a general
 // notebook, not curriculum content, so it can afford the wider default.
@@ -85,7 +85,7 @@ let statusClearTimer = null;
 
 // The live Pyodide interpreter, cell execution, hover/signature-help, and
 // filesystem mounting all go through the shared assets/pyodide-engine.js
-// now (DECISIONS_LOG.md 7.89) — rather than this file holding its own
+// now — rather than this file holding its own
 // `pyodide`/`tools`/`inspectModule` references and talking to Pyodide
 // directly, the way its first version did.
 // toolsSourceCache stays: downloadAsHtml()'s embedded bootstrap below
@@ -653,7 +653,7 @@ function renderDocMarkdown(text) {
 // Loaded once, lazily, the first time any rendered text cell actually
 // turns out to contain maths — never at boot, and never fetched again
 // after the first successful load. The same trade tutorial pages make in
-// assets/tutorial-runtime.js's own renderMaths() (DECISIONS_LOG.md 1.8),
+// assets/tutorial-runtime.js's own renderMaths(),
 // just gated differently: a tutorial page knows at build time, from its
 // manifest, whether it has maths; dewmini doesn't know until a reader
 // writes some, since a cell's content isn't decided until then. Kept as a
@@ -965,7 +965,7 @@ function renderSiteView() {
 
   // The relay, the document assembly, and the in-flight-coalescing flush
   // all live in assets/site-relay.js now, shared with the tutorial-page
-  // site editor (DECISIONS_LOG.md 7.142) — this closure only draws the
+  // site editor — this closure only draws the
   // console and wires Run to it.
   const preview = mountSitePreview(iframe, {
     onReset: () => { consoleOut.textContent = ""; },
@@ -1206,7 +1206,7 @@ function createRunMoreMenu(cell) {
     // Anchored from the button's right edge by default (see the
     // stylesheet), which runs the menu off the left of the viewport once
     // the button sits close enough to it — reachable more often now that
-    // Workbench docks left (DECISIONS_LOG.md 7.122), but always possible
+    // Workbench docks left, but always possible
     // on a narrow screen. Measured after becoming visible, since a
     // hidden element's rect is always zero.
     if (menu.getBoundingClientRect().left < 0) menu.classList.add("dm-cell-run-menu-left");
@@ -1413,7 +1413,7 @@ function createCellElement(cell) {
     previewBtn = iconButton("dm-icon-preview", "&#128065;", "View");
     headerEnd.appendChild(previewBtn);
   }
-  // A web cell's own explicit render trigger (DECISIONS_LOG.md 7.120) —
+  // A web cell's own explicit render trigger —
   // filled in by that branch below, same "built here so it sits in the
   // header row regardless of where the branch runs" reasoning as
   // insertDocImage above, since it needs closures that only exist there.
@@ -1612,7 +1612,7 @@ function createCellElement(cell) {
     else syncPreviewBtn();
   } else if (cell.type === CELL_TYPES.WEB) {
     // The merged replacement for the old separate HTML and CSS cell
-    // types (DECISIONS_LOG.md 7.120) — one cell, two source panels,
+    // types — one cell, two source panels,
     // stacked, and a rendered preview below both. Unlike the types it
     // replaces, both editors are always visible and always editable —
     // nothing is ever swapped out for anything else — so there is no
@@ -2262,7 +2262,7 @@ function cellsToPercentText(cellList, { bare = false } = {}) {
   // has no marker in it — the moment it was so much as opened in the file
   // view, let alone edited and saved, it silently grew one, turning an
   // ordinary script into something that looks like a notebook export the
-  // reader never asked for (DECISIONS_LOG.md 7.125).
+  // reader never asked for.
   //
   // downloadAsPython() asks for the marked form instead: its header sits
   // above the first marker so isOwnHeader() can recognise and strip it on
@@ -3826,7 +3826,7 @@ function initPanels() {
   // it grows into. The left rail used to rely on native `resize:
   // horizontal` instead — which works, but puts a small corner triangle
   // opposite a full-height strip, so the two rails behaved differently for
-  // no reason a reader could see (DECISIONS_LOG.md 7.103). The min/max
+  // no reason a reader could see. The min/max
   // mirror each panel's own CSS.
   // Left is the project: files, variables, notes. Right is everything
   // outside it: the reference, and settings.
@@ -3913,7 +3913,7 @@ function applyTexture(state) {
   root.style.setProperty("--dl-font-size", `${state.size}px`);
   root.style.setProperty("--dl-line-width", `${state.width}rem`);
   // High contrast overrides a reader's own link colour the same way it
-  // already overrides their font choice (DECISIONS_LOG.md 7.124) — but
+  // already overrides their font choice — but
   // font-family only ever comes from the stylesheet's [data-contrast]
   // rule, while link colour is normally also written here as an inline
   // style, and an inline style always wins over any stylesheet rule

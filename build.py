@@ -11,11 +11,11 @@ Maths and illustrative code are lifted out of the source before the markdown
 converter ever sees them, for the same reason cells are: `$a_i$` would otherwise
 come back with the subscript turned into emphasis. Both are marked for the
 runtime to finish — KaTeX for the maths, a read-only CodeMirror for the code —
-rather than rendered here (DECISIONS_LOG 1.8).
+rather than rendered here.
 
 The markup this emits for a cell, and the manifest it writes into the page, are
-the contract the runtime reads (DECISIONS_LOG 0.23), and what the browser tests
-in tests/e2e/ drive.
+the contract the runtime reads, and what the browser tests in tests/e2e/
+drive.
 
     python3 build.py            build into site/
     python3 build.py --clean    remove site/ first
@@ -774,7 +774,7 @@ def render_cell(cell: Cell, number: int, page: str = "", version: str = "") -> s
     The run-line span and the "Run above/below" menu are empty shells
     here — tutorial-runtime.js fills and wires them the same way it
     already owns everything else about a live cell, the same treatment
-    dewmini gives a Python cell (DECISIONS_LOG.md 7.105, 7.106, 7.110).
+    dewmini gives a Python cell.
 
     Reset is not Clear: it puts this cell's *starter code* back, throwing
     away whatever the reader typed, because an authored cell has a fixed
@@ -785,8 +785,8 @@ def render_cell(cell: Cell, number: int, page: str = "", version: str = "") -> s
 
     The editor sits in a `.dl-cell-body-row`, beside a collapse triangle
     — every cell type gets one in dewmini (`planning/CELL_IDENTITY.md`
-    §4), and there is nothing type-specific here to make that not apply
-    (DECISIONS_LOG.md 7.114). `.dl-cell-collapsed-summary` is the
+    §4), and there is nothing type-specific here to make that not apply.
+    `.dl-cell-collapsed-summary` is the
     one-line stand-in tutorial-runtime.js shows in its place once
     collapsed; both start empty/hidden and are filled in by
     `setCellCollapsed()` there, the same way the run-line is.
@@ -799,7 +799,7 @@ def render_cell(cell: Cell, number: int, page: str = "", version: str = "") -> s
     itself is the tutorial's own content and stays fixed; the copy is
     the reader's, free to edit or delete.
 
-    The report icon (DECISIONS_LOG.md Phase 8) is the same toggle
+    The report icon is the same toggle
     pattern as the hint icon right beside it — a small circular button
     that opens a plain block after the cell, not a floating popover.
     `page` and `version` are build-time constants, the same as the
@@ -915,7 +915,7 @@ def render_site_editor(editor: SiteEditor, index: int) -> str:
     pane's actual starting source travels in the manifest, not the DOM,
     and `tutorial-runtime.js` fills the editor in and mounts the live
     preview using `assets/site-relay.js`'s `mountSitePreview()`
-    (DECISIONS_LOG.md 7.142) the moment the page is ready — there is no
+    the moment the page is ready — there is no
     meaningful no-JavaScript fallback for a live preview the way
     `render_code_block()`'s escaped `<pre>` is one for a read-only
     example. A pane absent from `editor.panes` gets no box at all, unlike
@@ -1035,7 +1035,7 @@ def place_blocks(
     wrong otherwise.
 
     `page` and `version` are only for `render_cell()`'s own report panel
-    (DECISIONS_LOG.md Phase 8) — passed straight through, since this
+    — passed straight through, since this
     function runs from `load()`, before a tutorial's own frontmatter has
     become a `Tutorial` object with a `.slug`/`.module` of its own.
     """
@@ -3016,7 +3016,7 @@ def feedback_enabled() -> bool:
     Missing the file, or the file missing `enabled:`, both mean on. The
     switch exists to turn the link off in a hurry — one line, editable from
     GitHub's own web editor, no code to find — not to make on the fussy
-    path. See DECISIONS_LOG.md, Phase 8.
+    path.
     """
     path = ROOT / "planning" / FEEDBACK_CONFIG_FILE
     if not path.is_file():
@@ -3056,8 +3056,7 @@ def report_doors_links(page: str, version: str, cell: str = "") -> str:
     container for it and for whoever answers it later; the other two open
     the issue form with `kind` already picked. Shared by the footer
     (`report_doors_html()`, no `cell`) and a cell's own report panel
-    (`render_cell()`, `cell` set to that cell's id) — see DECISIONS_LOG.md,
-    Phase 8.
+    (`render_cell()`, `cell` set to that cell's id).
 
     Three links joined by " · " rather than a `<ul>`/`<li>` list — a
     bulleted list is the wrong shape for three short links, and it also
@@ -3637,7 +3636,7 @@ def write_dewmini_bundle() -> Path | None:
     classroom up for a day with no reliable connection) can save locally
     and open on the same machine even with no internet — Pyodide
     included, so the first run doesn't need a live connection either,
-    once assets/vendor/pyodide/ exists (DECISIONS_LOG.md 7.92).
+    once assets/vendor/pyodide/ exists.
 
     Needs a local server to actually open, though: dewmini.js imports
     dewmini-fs.js and pyodide-engine.js with real `import` statements,

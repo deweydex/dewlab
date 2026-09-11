@@ -171,7 +171,7 @@ def test_html_and_css_panes_are_live_without_pressing_run(page):
 
 
 def test_javascript_does_not_run_until_the_run_button_is_pressed(page):
-    """DECISIONS_LOG.md 7.142 — HTML/CSS are live, JavaScript is a program
+    """HTML/CSS are live, JavaScript is a program
     that runs when asked, the same rule dewmini's own Site tab follows."""
     hero = site_editor(page, "hero")
     frame = page.query_selector(f"{hero} .dl-site-frame").content_frame()
@@ -290,7 +290,7 @@ def test_show_and_show_table_and_check_render(page):
 
 def test_widgets_give_a_clear_error_on_a_hosted_page(page):
     """Every hosted page now runs Pyodide in a Worker (planning/CELL_CONTROLS.md
-    §2, DECISIONS_LOG.md 7.77), and a Worker has no DOM to hand a widget's
+    §2), and a Worker has no DOM to hand a widget's
     live element back through — text_input/dropdown/button raise rather
     than silently rendering something that does nothing when clicked or
     typed into. Widget-value persistence itself is still covered at the
