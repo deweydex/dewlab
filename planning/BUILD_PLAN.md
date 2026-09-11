@@ -49,11 +49,9 @@ Let a student close the tab and come back.
   `VERSIONING_AND_PROGRESS.md`.
 - Add the version comparison that document describes.
 - Test the mismatch path deliberately — bump a tutorial's version on purpose
-  and confirm the restore still works and the notice appears.
-
-That last point is the whole phase, really. The happy path where nothing has
-changed will work almost by accident; the path where you have edited a tutorial
-under a student's feet is the one that matters and the one nobody tests.
+  and confirm the restore still works and the notice appears. This is the
+  path that matters: the happy path, where nothing has changed, works almost
+  by accident.
 
 ## Phase 3 — Navigation
 
@@ -72,24 +70,22 @@ Make a series navigable as a series.
 ## Phase 5 — Pilot
 
 Convert two or three real tutorials end to end before converting a whole
-series. Put them in front of students, or at the very least run them on a
-machine that is not the one they were built on.
-
-Converting everything first and discovering a problem afterwards is the
-expensive order to do this in.
+series. Put them in front of students, or at least run them on a machine
+that is not the one they were built on — converting everything first and
+discovering a problem afterwards is the expensive order.
 
 ## Phase 6 — Closing the curriculum
 
 Phases 0 to 5 were about the tool. This one is about whether the material it
-carries actually covers the two module descriptors, which is a different
-question and was not answerable until there was something to measure.
+carries covers the two module descriptors — a different question, and not
+answerable until there was something to measure.
 
-The measuring is done. [`CURRICULUM_MAP.md`](./CURRICULUM_MAP.md) is generated
-from the outcome data and each tutorial's own `covers:` frontmatter, so it
-cannot drift from the tutorials, and CI fails if it is out of date. It reports
-**41 of 65 outcomes in place**, with the gaps concentrated almost entirely in the
-mathematics: calculus, trigonometry, function graphing and Boolean logic have no
-coverage at all.
+[`CURRICULUM_MAP.md`](./CURRICULUM_MAP.md) is generated from the outcome data
+and each tutorial's own `covers:` frontmatter, so it cannot drift from the
+tutorials, and CI fails if it is out of date. It reports **41 of 65 outcomes
+in place**, with the gaps concentrated almost entirely in the mathematics:
+calculus, trigonometry, function graphing and Boolean logic have no coverage
+at all.
 
 What is left is writing, and it divides into three kinds of work that cost very
 different amounts.

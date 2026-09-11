@@ -178,14 +178,14 @@ skill never has to re-derive "what came before," only receive it.
 
 **§6 describes the panel as it originally shipped — a floating card with
 a fixed corner toggle. Both changed shape — see `DECISIONS_LOG.md`
-7.83.** The toggle moved into `.dl-masthead-actions`, alongside Settings
-and the series nav's own toggle, rather than staying a fixed-position
-button of its own; the panel became a full-height docked sidebar rather
-than a card capped by `max-height`; and its open state now survives a
-Prev/Next navigation to the next tutorial in the series (still not
-restored below the phone breakpoint, where it stays a bottom sheet a
-reader opens on purpose each time). §6's placement details are kept
-here as the record of the shape this shipped in first, not rewritten.
+7.83.** The current shape: the toggle lives in `.dl-masthead-actions`,
+alongside Settings and the series nav's own toggle, instead of a
+fixed-position button of its own; the panel is a full-height docked
+sidebar instead of a card capped by `max-height`; and its open state
+survives a Prev/Next navigation to the next tutorial in the series
+(still not restored below the phone breakpoint, where it stays a bottom
+sheet a reader opens on purpose each time). §6's placement details are
+kept as the record of the shape this shipped in first, not rewritten.
 
 ## 6b. Highlight to look up
 
@@ -199,15 +199,15 @@ share one behaviour by construction.
 
 **The rule this lives or dies by: it stays silent unless the reference
 actually knows the selection.** Reacting to every selection would put a
-moving panel in front of a reader who was only copying a sentence. The offer
-is therefore gated on matching a *term name* in the manifest's glossary —
-never a definition, which would fire on ordinary words appearing in some
-entry's prose.
+moving panel in front of a reader who was only copying a sentence, so the
+offer is gated on matching a *term name* in the manifest's glossary — never
+a definition, which would fire on ordinary words appearing in some entry's
+prose.
 
-Matching is whole-word in both directions with an exact match preferred —
+Matching is whole-word in both directions with an exact match preferred:
 plain substring matching offered *pandas* for "and" and *cell* for
-"excellent", which is the same false-positive problem §6c describes, reached
-by a different route (`DECISIONS_LOG.md` 7.96).
+"excellent" — the same false-positive problem §6c describes, reached by a
+different route (`DECISIONS_LOG.md` 7.96).
 
 Nothing is stored. Selection in, the existing filter out.
 
@@ -220,19 +220,17 @@ Every entry a reader inherited from an earlier tutorial carries **Introduced
 in *Title***, linking to the section that teaches it. A tutorial's own new
 terms carry none: "you met this here" on the page teaching it says nothing.
 
-This replaced a version that linked every later occurrence of a term **in
-the prose**. That was built and withdrawn — ordinary English words are also
-glossary terms, and a regex cannot tell "set a seed" from set theory. 7.94
-has the measurement and the reasoning. The obstacle was sense
-disambiguation, not matching, so a stemmer or a `forms:` list would not have
-helped.
+An earlier version linked every later occurrence of a term **in the
+prose**, and was withdrawn: ordinary English words are also glossary terms,
+and a regex can't tell "set a seed" from set theory (7.94 has the
+measurement). The obstacle was sense disambiguation, not matching, so a
+stemmer or a `forms:` list would not have helped.
 
 ## 7. What ships in what order
 
 Roughly: schema + a couple of hand-written example glossaries to prove the
 shape → build.py assembly + tests → the UI (toggle, panel, styling) wired to
 real data → the skill itself → running the skill across every tutorial,
-batched by series (this is most of the remaining work — dozens of tutorials,
-each needing an actual read) → docs. Each stage is a PR of its own rather
-than one large one, so a mistake in the schema is caught before forty files
-commit to it.
+batched by series (most of the remaining work — dozens of tutorials, each
+needing an actual read) → docs. Each stage is its own PR, so a mistake in
+the schema is caught before forty files commit to it.
