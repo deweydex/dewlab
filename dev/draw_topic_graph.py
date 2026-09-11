@@ -59,12 +59,6 @@ OWN = REVIEW / "pairs"            # Josh's own, played in the game
 DECISIONS = REVIEW / "decisions.yaml"
 
 
-# A split leaves every judgement and every decision naming a code that is gone.
-# Each old code stands for the child that took over its arrows — the same child
-# the parent's `needs` references were pointed at — so a judgement about the old
-# topic still lands on the part of it that judgement was about. Where that is
-# wrong the pair simply wants judging again, which the report will show as a
-# pair nobody has an answer for.
 GONE = {
     "MIT-6.3": "MIT-6.3a", "MIT-1.1": "MIT-1.1a", "MIT-6.8": "MIT-6.8a",
     "PDP-LO6": "PDP-LO6a", "MIT-1.10": "MIT-1.10a", "MIT-4.10": "MIT-4.10a",
@@ -201,12 +195,6 @@ A circle is A needs B needs C needs A, and it is a real thing a graph can
     between two topics, drawn as one; it is not a claim that everything either
     of them touches belongs in the same lesson.
     """
-    # Only the one-way arrows decide the order. A level says two topics need
-    # each other, which is a fact about those two and not a claim that
-    # everything either of them touches is also one lesson. Feeding levels in
-    # here fuses them transitively: twenty-five of them ran together into one
-    # region of twenty-five topics with no order inside it, which is an
-    # artefact of the merging rather than anything a judge said.
     ahead = collections.defaultdict(set)
     for early, late in edges:
         ahead[early].add(late)
@@ -553,9 +541,6 @@ def place(depth: dict, group: dict, edges: set, band: dict,
         start = left[col] + (wide[col] * NODE_W + (wide[col] - 1) * GAP_X - span) / 2
         return {u: start + i * (NODE_W + GAP_X) for i, u in enumerate(row)}
 
-    # Sweep down the rows then back up, each time re-ordering each cell by
-    # where its neighbours in the row before sit. Ten passes is well past the
-    # point where the ordering stops changing for a graph this size.
     for sweep in range(10):
         at_x = {}
         for key in list(cells):

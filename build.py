@@ -93,38 +93,14 @@ OUT = ROOT / "site"
 
 REQUIRED_FRONTMATTER = ("title", "slug", "module", "year", "series", "version")
 
-# What a tutorial is for. `live` is the normal state and the default, so nothing
-# already written has to say anything. `archived` means superseded: still built,
-# still reachable, still holding whatever a student saved in it, but out of the
-# reading order and marked as no longer part of the course.
-#
-# This exists because deleting the file was the only way to retire a tutorial,
-# and deleting it strands every student who saved work in it — their work sits
-# in local storage keyed to a page that no longer exists, with no way back and
-# no trace it was ever there (planning/VERSIONS.md).
 STATUSES = ("draft", "beta", "live", "archived")
 
-# A version is a release, not a save: the date a cohort could first see it,
-# plus which release of that day it was. The date is the whole identity — "3"
-# means nothing to a student and "September" means a good deal
-# (planning/VERSIONS.md).
 VERSION_RE = re.compile(r"^(?P<y>\d{4})\.(?P<m>\d{2})\.(?P<d>\d{2})\.(?P<n>\d+)$")
 
-# `order` used to live here. It moved into one file per series, so a tutorial
-# that still carries it is half-migrated — and the half that is not migrated is
-# the half that would be silently ignored.
 MOVED_FRONTMATTER = {
     "order": "the series' .order.yaml file, which lists slugs in reading order",
 }
 
-# ```python exec — the tag that makes a fence a live cell. An untagged fence is
-# ordinary illustrative code and markdown renders it as it always would.
-# ```sql exec is the same tag with a different first word: same id:/hint:/
-# expect:/name: header grammar, same shared page namespace, a SQL cell's code
-# is SQL text rather than Python (DEWSTACK_MERGE.md §3 — deliberately not
-# dewstack's own sql cell=/sql check= grammar, which turned out to assume
-# several named databases and per-task check functions dewlab's model doesn't
-# have).
 FENCE_RE = re.compile(r"^(?P<indent> *)```(?P<info>[^\n]*)\n(?P<body>.*?)^ *```[ \t]*$",
                       re.MULTILINE | re.DOTALL)
 HEADER_RE = re.compile(r"^\s*(id|hint|expect|name)\s*:\s*(.*)$")
@@ -132,29 +108,9 @@ HEADER_RE = re.compile(r"^\s*(id|hint|expect|name)\s*:\s*(.*)$")
 # the build with a clear message rather than silently becoming a Python cell.
 CELL_TYPES = {"python", "sql"}
 
-# ```html site / ```css site / ```js site — a live HTML/CSS/JS pane,
-# grouped with the others sharing its `site:` name into one editor
-# (DEWSTACK_MERGE.md §3). Deliberately not dewstack's own `site=name`
-# spelling: that grammar puts a site's identity in the fence's own info
-# string, which dewlab's Crepe-based authoring editor cannot round-trip
-# (it keeps only a fence's first word — ARCHITECTURE.md §3), so every
-# other exec-family fence puts its identity on an `id:` line inside the
-# fence instead, and a site pane does the same. `site:` is the one header
-# key none of the other fence kinds have, since a python/sql exec cell
-# and a staged hint each stand alone rather than needing to be grouped
-# with siblings.
 SITE_LANGS = {"html", "css", "js"}
 SITE_HEADER_RE = re.compile(r"^\s*(id|site)\s*:\s*(.*)$")
-# ```hint — a staged hint (planning/CELL_HINTS.md): a fold that stays hidden
-# until the cell it belongs to has been run, and failed, some number of
-# times. Its header lines follow the exec cell's own `key: value` shape, so
-# the Milkdown editor's one-word info string (ARCHITECTURE.md §3) loses
-# nothing: `for:` names a cell (default: the exec cell above), `after:` says
-# when it appears (default: 5 errors), `title:` is the fold's summary line.
 HINT_HEADER_RE = re.compile(r"^\s*(for|after|title)\s*:\s*(.*)$")
-# `after:` accepts a plain phrase or a key:number term, several joined with
-# a comma or "and" — both spellings were asked for. Canonicalised to the
-# key:number form for the runtime, which parses only that.
 TRIGGER_KEYS = {
     "errors": "errors", "error": "errors",
     "identical errors": "same-errors", "identical error": "same-errors",
@@ -173,11 +129,6 @@ TRIGGER_TERM_RE = re.compile(
 DEFAULT_HINT_AFTER = "errors:5"
 DEFAULT_HINT_TITLE = "Let\u2019s slow down a moment\u2026"
 INCLUDE_RE = re.compile(r"\{\{\s*include\s*:\s*(?P<path>[^}]+?)\s*\}\}")
-# A list written directly under a line of prose, with no blank line between.
-# Most markdown an author has written before — in a notebook, on GitHub — treats
-# that as a list. This converter does not, and silently runs the items together
-# into the paragraph instead, which is the kind of mistake nobody notices until
-# a student is reading it. The blank line is inserted for them.
 TIGHT_LIST_RE = re.compile(
     r"(?m)^(?P<prose>(?![ \t]*(?:[-*+]|\d+[.)])\s)(?![ \t]*#)(?![ \t]*>)[^\n]*\S[^\n]*)\n"
     r"(?P<item>[ \t]*(?:[-*+]|\d+[.)])\s+\S)"
@@ -187,34 +138,18 @@ ID_RE = re.compile(r'\bid="([^"]+)"')
 IMG_RE = re.compile(r"<img\b[^>]*>", re.IGNORECASE)
 ALT_RE = re.compile(r"\balt\s*=", re.IGNORECASE)
 DETAILS_RE = re.compile(r"<details\b[^>]*>", re.IGNORECASE)
-# The two folds a page may use. A hint offers the steps; an answer gives the
-# answer. Both are styled from their class, so a fold without one renders as a
-# bare browser triangle in the middle of the prose.
 FOLD_CLASSES = ("dl-hint", "dl-answer")
-# A hand-written fold's own body, matched against the page *before* the main
-# markdown conversion has run — see convert_fold_bodies()'s own comment for
-# why. Only the plain `dl-hint`/`dl-answer` forms authors actually write are
-# matched; a staged hint's `dl-hint-staged` class does not exist yet at this
-# point in the pipeline (place_hints() runs after), so there is nothing here
-# for it to clash with.
 FOLD_RE = re.compile(
     r'(?P<open><details class="(?:dl-hint|dl-answer)">\s*<summary>[^<]*</summary>)'
     r"\s*(?P<body>.*?)\s*"
     r"(?P<close></details>)",
     re.DOTALL,
 )
-# A pedagogical note (planning/SIDEBAR_CONTENT.md §3): an HTML aside, same
-# trick as a fold, but pulled out of the body entirely rather than staying
-# inline — extract_notes() removes what this matches.
 NOTE_RE = re.compile(
     r'<aside class="dl-note" id="(?P<id>[^"]+)">\s*(?P<html>.*?)\s*</aside>\n?',
     re.DOTALL,
 )
 
-# Maths, matched only against prose — every fence is already out of the way by
-# the time these run. Display first so $$…$$ is never read as two inline spans.
-# Inline maths may not span a line, and may not open or close against a space,
-# which is what keeps "it cost $5 or $6" out of it.
 DISPLAY_MATH_RE = re.compile(r"\$\$(?P<tex>.+?)\$\$", re.DOTALL)
 INLINE_MATH_RE = re.compile(r"\$(?!\s)(?P<tex>[^$\n]+?)(?<!\s)\$")
 ESCAPED_DOLLAR = "\x00dldollar\x00"
@@ -229,20 +164,8 @@ class Cell:
     id: str
     hint: str | None
     code: str
-    # An author's own "the reader has got there" test — a Python expression
-    # evaluated in the page namespace after every run of this cell
-    # (planning/CELL_HINTS.md §3). Once it holds, no further staged hint
-    # appears for the cell. None when the cell has no such line.
     expect: str | None = None
-    # A short, optional label shown beside the cell's pill — planning/
-    # CELL_IDENTITY.md's parity pass with dewmini, where a reader's own
-    # cells can carry the same thing. Also what a traceback's file line
-    # calls this cell, in place of its id, once one is given.
     name: str | None = None
-    # The fence's own language word (` ```python exec `, ` ```sql exec `) —
-    # dewmini's own vocabulary (`CELL_TYPES` in compose/dewmini.js), reused
-    # here rather than inventing a second name for the same idea. "python"
-    # for every cell until DEWSTACK_MERGE.md's sql exec fence.
     type: str = "python"
 
 
@@ -328,9 +251,6 @@ class Tutorial:
     cells: list[Cell]
     body_html: str
     has_math: bool = False
-    # Whether any cell on the page is a `sql exec` cell — same "only pay for
-    # what you use" reasoning as has_math, but for the sqlite3 Pyodide
-    # package rather than the KaTeX bundle.
     has_sql: bool = False
     # A page's live HTML/CSS/JS editors, in source order (DEWSTACK_MERGE.md
     # §3) — usually empty; only the web-authoring module has any yet.
@@ -341,9 +261,6 @@ class Tutorial:
     # Where this sits in its series. Not from the frontmatter — the order file
     # decides it, and series_of() fills it in once the series is assembled.
     order: int = 0
-    # Whether this is the version the unversioned URL serves. Set by
-    # versions_of() once every version of a tutorial has been read, because it
-    # cannot be known from one file alone.
     is_default: bool = True
 
     @property
@@ -354,9 +271,6 @@ class Tutorial:
     def module(self) -> str:
         return str(self.meta["module"])
 
-    # Whether this is the version the unversioned URL serves. Set by
-    # versions_of() once every version of a tutorial has been read, because it
-    # cannot be known from one file alone.
     @property
     def out_path(self) -> Path:
         """The default sits at the tutorial's own URL; other versions sit under
@@ -476,9 +390,6 @@ def fail(path: Path, message: str) -> None:
     raise BuildError(f"{path.relative_to(ROOT)}: {message}")
 
 
-# ------------------------------------------------------------------ parsing
-
-
 def split_frontmatter(text: str, path: Path) -> tuple[dict, str]:
     """Splits one tutorial's raw file into its frontmatter (the YAML
     block between the two `---` lines, holding title/slug/module/version
@@ -534,10 +445,6 @@ def expand_includes(code: str, path: Path) -> str:
     on every page load (CONTENT_AND_FILE_ARCHITECTURE.md).
     """
 
-    # Same re.sub-callback pattern as extract_blocks()'s own `one` — see
-    # its comment for the general shape. Here, each match is one
-    # `{{include: ...}}` directive, and the returned string is the
-    # named file's actual contents, read fresh for every match.
     def one(match: re.Match) -> str:
         rel = match.group("path").strip()
         target = (ROOT / rel).resolve()
@@ -560,14 +467,6 @@ def parse_cell(body: str, path: Path, cell_type: str = "python") -> Cell:
         match = HEADER_RE.match(lines[0])
         if not match or match.group(1) in header:
             break
-        # `name:`, uniquely among these four keys, collides with real code:
-        # a type-annotated first line of a cell's own body — `name: str =
-        # "Ada"` — is indistinguishable from the header by shape alone. `=`
-        # never appears in a genuine name (a short label, not an
-        # expression), so its presence means this was never the header —
-        # `id:`/`hint:`/`expect:` keep matching as before, since their own
-        # values are prose or Python expressions that legitimately use `=`
-        # (`expect: total == 6`).
         if match.group(1) == "name" and "=" in match.group(2):
             break
         header[match.group(1)] = match.group(2).strip()
@@ -730,26 +629,9 @@ def extract_blocks(
     site_editors: list[SiteEditor] = []
     hints_per_cell: dict[str, int] = {}
     used_site_names: set[str] = set()
-    # Which SiteEditor the *previous* site-pane fence joined, and where in
-    # `body` that fence ended — together, "is this fence immediately after
-    # that one, with nothing but blank lines between" (dewstack's own
-    # `site=` grammar enforces the same adjacency, and for the same reason
-    # given in its build.py: the source should read as the whole site at a
-    # glance). Neither is reset when a *different* kind of fence comes
-    # between two same-named site fences — the position check below
-    # already catches that, since whatever that other fence is takes up
-    # space that is not blank.
     current_site: SiteEditor | None = None
     last_site_pane_end = -1
 
-    # re.sub's second argument can be a function instead of a plain
-    # replacement string — when it is, that function is called once per
-    # match, with the match object, and whatever string it returns takes
-    # the match's place. `one` is that function here: for every fenced
-    # code block FENCE_RE finds, it either records a new Cell, CodeBlock or
-    # SiteEditor (appending to the lists this closure can see because it's
-    # defined right here, inside extract_blocks), and returns a
-    # placeholder comment in its place.
     def one(match: re.Match) -> str:
         nonlocal current_site, last_site_pane_end
         info = match.group("info").strip().split()
@@ -762,9 +644,6 @@ def extract_blocks(
             cells.append(parse_cell(match.group("body"), path, cell_type))
             return f"{indent}<!--dewlab-cell-{len(cells) - 1}-->"
         if info and info[0] == "hint":
-            # A staged hint (planning/CELL_HINTS.md): bound to the exec cell
-            # above it unless its `for:` says otherwise. Rendered by
-            # render_staged_hint() once the prose is converted.
             hint = parse_hint(match.group("body"), path, cells[-1].id if cells else None)
             hint.index = hints_per_cell.get(hint.cell, 0)
             hints_per_cell[hint.cell] = hint.index + 1
@@ -812,9 +691,6 @@ def extract_blocks(
                 fail(path, f"two cells share the id {pane.id!r}")
             seen.add(pane.id)
     for hint in hints:
-        # Checked here rather than in parse_hint(): a `for:` may name a cell
-        # further down the page, which does not exist yet while the fences
-        # are being read in order.
         if hint.cell not in seen:
             fail(path, f"a hint names a cell this tutorial does not have: {hint.cell!r}")
     return rewritten, cells, blocks, hints, site_editors
@@ -835,13 +711,6 @@ def extract_math(body: str, found: list[Math] | None = None) -> tuple[str, list[
         found = []
     body = body.replace("\\$", ESCAPED_DOLLAR)
 
-    # Same re.sub-callback pattern as extract_blocks()'s own `one` above,
-    # but with an extra wrinkle: this needs *two* near-identical
-    # callbacks (one for $$display$$ maths, one for $inline$ maths), which
-    # only differ in what `display` value they record. `take(display)`
-    # returns a fresh `one` function that already "remembers" its own
-    # `display` value — a small factory, rather than writing the same
-    # callback twice with one boolean hardcoded differently in each copy.
     def take(display: bool):
         def one(match: re.Match) -> str:
             found.append(Math(tex=match.group("tex").strip(), display=display))
@@ -852,9 +721,6 @@ def extract_math(body: str, found: list[Math] | None = None) -> tuple[str, list[
     body = DISPLAY_MATH_RE.sub(take(True), body)
     body = INLINE_MATH_RE.sub(take(False), body)
     return body.replace(ESCAPED_DOLLAR, "$"), found
-
-
-# ----------------------------------------------------------------- rendering
 
 
 def icon_button(css_class: str, icon: str, label: str, **attrs: str) -> str:
@@ -1085,9 +951,6 @@ def render_site_editor(editor: SiteEditor, index: int) -> str:
         )
     console_markup = ""
     if "js" in editor.panes:
-        # A CSS-only or HTML-only editor has no script to log or error from,
-        # so it gets no console — the same "only pay for what you use"
-        # reasoning `render_cell()`'s own optional hint/report markup follows.
         console_markup = (
             '<div class="dl-site-console">'
             '<div class="dl-web-pane-label">Console</div>'
@@ -1206,28 +1069,16 @@ def extract_notes(body_html: str, path: Path) -> tuple[str, list[Note]]:
     notes: list[Note] = []
     seen: set[str] = set()
 
-    # The same re.sub-callback pattern used in extract_blocks()/extract_math()
-    # above — see extract_blocks()'s own comment on `one` for what this
-    # pattern is doing.
     def one(match: re.Match) -> str:
         note_id = match.group("id")
         if note_id in seen:
             fail(path, f"two notes share the id {note_id!r}")
         seen.add(note_id)
-        # Converted on its own, separately from the surrounding document:
-        # a raw HTML block's own contents are not otherwise re-run through
-        # the converter (the same reason a fold's backticks show up
-        # literally rather than as `<code>`), and a note needs real markdown
-        # — an image in particular (planning/SIDEBAR_CONTENT.md §1's "a note
-        # that contains an image is just markdown content").
         note_html, _ = to_html(match.group("html"))
         notes.append(Note(id=note_id, html=note_html))
         return ""
 
     return NOTE_RE.sub(one, body_html), notes
-
-
-# -------------------------------------------------------------- navigation
 
 
 ORDER_SUFFIX = ".order.yaml"
@@ -1270,10 +1121,6 @@ def order_files() -> dict[tuple[str, str], list[str]]:
         data = yaml.safe_load(path.read_text()) or {}
         module = path.parent.name
         series = path.name[: -len(ORDER_SUFFIX)]
-        # `order:` with nothing under it is a series whose every tutorial has
-        # been archived. That is a real state and should not force somebody to
-        # delete the file as well — but `order:` missing altogether is still a
-        # broken file, so the two are told apart rather than both allowed.
         if "order" not in data:
             fail(path, "an order file needs `order:` as a list of slugs")
         order = data.get("order") or []
@@ -1333,9 +1180,6 @@ def versions_of(tutorials: list[Tutorial]) -> list[Tutorial]:
             (v for v in versions if v.status == "live"), key=lambda v: v.released,
             default=None,
         )
-        # Nothing live: a tutorial that is entirely beta, or entirely archived.
-        # The newest of what there is still answers the unversioned URL, because
-        # a link that 404s is worse than a link to something marked clearly.
         default = newest_live or max(versions, key=lambda v: v.released)
         for version in versions:
             version.is_default = version is default
@@ -1468,10 +1312,6 @@ def series_of(tutorials: list[Tutorial]) -> dict[tuple[str, str], list[Tutorial]
         # superseded release is still readable; it is not part of the course.
         if tutorial.status != "live" or not tutorial.is_default:
             continue
-        # A practice page hangs off its tutorial rather than sitting between two
-        # others. Putting it on the route would double the length of every
-        # series and put a page of problems between a reader and the next thing
-        # they are meant to learn.
         if tutorial.is_practice:
             continue
         groups.setdefault((tutorial.module, tutorial.series), []).append(tutorial)
@@ -1590,13 +1430,6 @@ def render_series_nav(tutorial: Tutorial, members: list[Tutorial]) -> str:
             )
     return '<ol class="dl-seriesnav-series">' + "".join(items) + "</ol>"
 
-
-# --------------------------------------------------------------- reference
-#
-# planning/REFERENCE_PANEL.md has the full design. In short: a glossary file says
-# what one specific tutorial introduces; a page's reference is the
-# accumulation of every earlier series member's glossary plus its own, so a
-# tutorial never shows a reader something they have not been taught yet.
 
 GLOSSARY_KINDS = ("concept", "function", "operator", "formula", "keyword")
 
@@ -1748,9 +1581,6 @@ def cumulative_glossary(
             if key in seen:
                 continue
             seen.add(key)
-            # Where a reader met this, for everything inherited from an
-            # earlier tutorial. Not for the tutorial's own entries: "you met
-            # this here" is unhelpful on the page that is teaching it.
             found.append(entry if member is reader_at
                          else {**entry, "origin": origin_of(reader_at, member, entry["term"])})
     return found
@@ -1800,19 +1630,9 @@ def render_toc(tutorial: Tutorial) -> str:
         # One section, or none. A contents list for a single heading is furniture.
         return ""
 
-    # Sub-headings that repeat cannot be told apart in a list, so they are worse
-    # than useless there: "Your turn" appears five times in some tutorials, and
-    # a contents entry a reader cannot choose between is noise. They keep their
-    # anchors — only the listing drops them.
     names = [str(s.get("name", "")) for s in at_level(tutorial.toc, 3)]
     ambiguous = {name for name in names if names.count(name) > 1}
 
-    # A recursive function: it builds one heading's own <li>...</li>, and
-    # for any sub-headings under it, calls *itself* again (`item(child,
-    # depth + 1)`) to build each of those the same way, one level deeper.
-    # `depth` is what stops it from recursing forever and what limits how
-    # many levels of nesting the contents list actually shows (`depth ==
-    # 0` below only nests one level of children, not the whole tree).
     def item(entry: dict, depth: int) -> list[str]:
         text = html.escape(str(entry.get("name", "")))
         out = [f'<li><a href="#{html.escape(str(entry["id"]), quote=True)}">{text}</a>']
@@ -1871,8 +1691,6 @@ def download_section(tutorial: Tutorial) -> str:
     )
 
 
-# ------------------------------------------------------------ the topic tree
-
 TOPIC_DATA = ROOT / "planning" / "curriculum" / "topics.yaml"
 SCOPE_DATA = ROOT / "planning" / "curriculum" / "out-of-scope.yaml"
 TOPIC_GROUPS_DATA = ROOT / "planning" / "curriculum" / "topic-groups.yaml"
@@ -1926,13 +1744,6 @@ def taught_where(tutorials: list[Tutorial]) -> dict[str, dict]:
     """
     where: dict[str, dict] = {}
     for tutorial in tutorials:
-        # An archived tutorial taught what it taught, but a student picking a
-        # topic today cannot be sent there. Counting it would make the map say
-        # an outcome is covered when nothing on the course covers it — which is
-        # exactly the lie the map exists to prevent.
-        # The current live version only. A superseded release claims the same
-        # coverage as the one that replaced it, and counting both would make
-        # one outcome look taught by four things.
         if tutorial.archived or tutorial.status != "live" or not tutorial.is_default:
             continue
         for anchor, claim in (tutorial.meta.get("covers") or {}).items():
@@ -1953,13 +1764,6 @@ def topic_tiers(topics: dict) -> dict[str, int]:
     """
     tier: dict[str, int] = {}
 
-    # Recursive, with memoization: a topic's tier is 1 + the deepest tier
-    # among the things it needs, computed by calling this same function on
-    # each prerequisite. `if code in tier: return tier[code]` is the
-    # memoization — once a topic's tier has been worked out, it's cached
-    # in `tier` so a topic needed by several others is never recomputed,
-    # which matters since the topic graph can have a lot of shared
-    # prerequisites.
     def depth(code: str) -> int:
         if code in tier:
             return tier[code]
@@ -2066,10 +1870,6 @@ def tree_data(tutorials: list[Tutorial]) -> dict:
     topics = load_topics()
     if not topics:
         return {}
-    # One strand per topic, resolved here so the layout does not have to know
-    # where a strand comes from. A topic may name its own, which is the only
-    # way a topic that is not an outcome can have one at all; otherwise it
-    # takes the strand of the outcome it serves.
     by_outcome = load_strands()
     strands = {
         code: str(topic["strand"]) if topic.get("strand")
@@ -2084,10 +1884,6 @@ def tree_data(tutorials: list[Tutorial]) -> dict:
     for code, topic in sorted(topics.items()):
         at = place[code]
         where = taught.get(outcome_of(topics, code))
-        # Groundwork is not an outcome, so no tutorial can claim it in `covers:`
-        # and it would otherwise sit on the map forever marked "planned". It is
-        # not planned; it is assumed, and picked up in passing wherever it is
-        # first needed.
         if code.startswith("PRE-"):
             state = "groundwork"
         elif outcome_of(topics, code) in excluded:
@@ -2108,9 +1904,6 @@ def tree_data(tutorials: list[Tutorial]) -> dict:
             "where": where,
         })
 
-    # One stripe per tier, labelled by what it means rather than by its number:
-    # a student reading the map should not have to work out that "tier 0" is the
-    # place to start.
     bands = [
         {
             "tier": int(key[5:]),
@@ -2128,8 +1921,6 @@ def tree_data(tutorials: list[Tutorial]) -> dict:
         "node": {"w": TOPIC_W, "h": TOPIC_H},
     }
 
-
-# ------------------------------------------------------- the knowledge map
 
 OUTCOME_DATA = ROOT / "planning" / "curriculum" / "outcomes.yaml"
 
@@ -2228,9 +2019,6 @@ def render_knowledge_map(members: list[Tutorial], strands: dict[str, str]) -> st
         '<path d="M0 0 L8 4 L0 8 z" fill="currentColor"/></marker></defs>',
     ]
 
-    # Edges first so the nodes sit on top of them. A long arrow crossing the
-    # diagram passes behind the boxes it crosses, which is what stops it
-    # reading as though it touched them.
     for tutorial in members:
         for fan, target in enumerate(back_links(tutorial, members)):
             parts.append(
@@ -2405,16 +2193,6 @@ def render_index() -> str:
     on its own page a reader reaches through "All tutorials" or the search
     box below rather than by scrolling past it here.
     """
-    # An introduction rather than a diagram. The map moved to its own page,
-    # where it can have the whole window; this page's job is to say what dewlab
-    # is to somebody who has just arrived, in as few lines as that takes, and
-    # then leave them to the list they came for. One paragraph and six points,
-    # deliberately: PEDAGOGICAL_STYLE_GUIDE.md section 4 asks for prose over
-    # bullets in an *explanation*, and this is not one — it is the separate
-    # things a reader wants answered before they choose a tutorial (what a cell
-    # is, whether they can break it, where their work goes, how the list below
-    # is organised, where to start), and no answer follows from another. Prose
-    # made the reader hunt for their own question.
     out = [
         "<h1>dewlab</h1>",
         '<div class="dl-hero">',
@@ -2675,9 +2453,6 @@ def render_module_body(
             f'<h2 class="dl-module-heading">{html.escape(names.get(module, module))}</h2>')
     module_archive = module_archives.get(module)
     if module_archive is not None:
-        # Same tally write_module_zip() built the archive from, worked out
-        # again here rather than threaded through — groups, practice and
-        # mixed are already everything it takes.
         total = sum(
             len(zip_sequence(members, practice))
             for (owner, series), members in groups.items() if owner == module
@@ -2689,13 +2464,6 @@ def render_module_body(
                 f"({total} files, {readable_size(module_archive)})",
             ) + "</p>"
         )
-    # Reading order, not alphabetical order — series.yaml's own order (built
-    # for reference accumulation, but that order *is* the reading order:
-    # each series builds on every one named before it) beats a plain sort,
-    # which would otherwise put "capstone-project" second on this module
-    # purely because "c" sorts early. A series series.yaml leaves out
-    # (reflections-and-review, deliberately — its own docstring says why)
-    # falls back to alphabetical, after every series that is listed.
     present = {series for owner, series in groups if owner == module}
     fixed = [s for s in module_series_order(module) if s in present]
     series_order = fixed + sorted(present - set(fixed))
@@ -2706,16 +2474,8 @@ def render_module_body(
             out.append(f'<h3>{html.escape(name)}</h3>')
         archive = archives.get((module, series))
         if archive is not None:
-            # Right under the series' own title rather than after its
-            # list, matching where the module's own download offer sits
-            # under its heading — a reader deciding "give me the whole
-            # thing" should not have to scroll past every title first.
             sequence = zip_sequence(members, practice)
             count = len(sequence)
-            # A series of one real file is a real case now that
-            # reflections live in their own section, and "Download all 1
-            # as single files" is not a sentence anybody wrote on
-            # purpose.
             what = ("this one as a single file" if count == 1
                     else f"all {count} as single files")
             out.append(
@@ -2727,9 +2487,6 @@ def render_module_body(
         out.append('<ol class="dl-contents">')
         for member in members:
             href = member.out_path.relative_to(OUT).as_posix()
-            # Beside the tutorial rather than under it as a second numbered
-            # item: a practice page is not the next thing to read, it is the
-            # other half of this one.
             also = practice.get((member.module, member.slug))
             extra = ""
             if also is not None:
@@ -2742,9 +2499,6 @@ def render_module_body(
                 f"{html.escape(member.title)}</a>{extra}</li>"
             )
         out.append("</ol>")
-    # After the series and before the archive. A mixed set is part of the
-    # course and belongs to no series in it, so there is nowhere else it
-    # could go — and it is the only kind of page nothing else links to.
     for member in mixed.get(module, []):
         if member is mixed[module][0]:
             out.append('<h3 class="dl-mixed-head">Mixed problems</h3>')
@@ -2778,9 +2532,6 @@ def render_module_body(
         if member is retired[module][-1]:
             out.append("</ul>")
     return out
-
-
-# ------------------------------------------------------------------- checks
 
 
 def check_alt_text(tutorial: Tutorial) -> None:
@@ -2861,9 +2612,6 @@ def resolve_links(tutorial: Tutorial, registry: dict[tuple[str, str], Tutorial])
     ambiguous and stops the build rather than guessing.
     """
 
-    # Same re.sub-callback pattern as extract_blocks()'s own `one` — each
-    # match is one `tutorial:slug#anchor` reference, and this resolves it
-    # to a real relative link before returning it as the replacement text.
     def one(match: re.Match) -> str:
         slug, anchor = match.group("slug"), match.group("anchor")
         target = registry.get((tutorial.module, slug))
@@ -2892,30 +2640,6 @@ def resolve_links(tutorial: Tutorial, registry: dict[tuple[str, str], Tutorial])
     return TUTORIAL_HREF_RE.sub(one, tutorial.body_html)
 
 
-# --------------------------------------------------------- where a term came from
-#
-# A reader meets *stationary distribution* in one tutorial and again, three
-# tutorials later, as though they were expected to remember. The reference
-# panel answers "what does this mean"; this answers the other question a
-# returning learner actually asks — "where did I meet this?" — by giving each
-# borrowed entry a link back to the tutorial that introduced it.
-#
-# planning/ROADMAP.md Phase 5 originally proposed linking every later
-# *occurrence in the prose* instead. That was built, measured and withdrawn:
-# see DECISIONS_LOG.md 7.92. Ordinary English words are also glossary terms —
-# set, shape, limit, function — and matching them in prose linked "set a
-# seed" to set theory and "the shape of that improvement" to a matrix's
-# shape. A majority of the matches for some terms were the wrong sense, and a
-# confidently wrong link is worse for a reader than no link at all. Putting
-# the origin in the panel instead answers the same question with no way to be
-# wrong about it.
-
-
-# The heading every tutorial closes with. A term's name very often appears
-# in a citation title there — "The Monte Carlo Method" is a paper as well as
-# a concept — and a reader sent to the bibliography to find out where
-# something was taught has been sent to the one section that does not teach
-# it.
 BIBLIOGRAPHY_RE = re.compile(r"read more", re.I)
 
 TAG_RE = re.compile(r"<[^>]+>")
@@ -2961,18 +2685,6 @@ def origin_anchor(tutorial: Tutorial, term: str) -> str:
                 return anchor
     return ""
 
-
-# ---------------------------------------------------------- tutorial assets
-#
-# A tutorial is a folder, not a lone markdown file: its practice page, its
-# glossary and any pictures or recordings it needs all sit together in it.
-# planning/ROADMAP.md Phase 1 has the reasoning; the short version is that a
-# tutorial's own material should move, freeze and be found as one thing.
-#
-# Everything in that folder which is not itself a page or a data file the
-# build already understands is an *asset* — an image, a recording, a small
-# file a reader downloads — copied to the site beside the tutorial and
-# referred to by its plain name in the markdown.
 
 # The files a tutorial's folder holds that are the build's own business, not
 # assets: the pages themselves and the glossary that describes them.
@@ -3056,9 +2768,6 @@ def copy_tutorial_assets(tutorial: Tutorial) -> None:
         shutil.copy2(asset, target / asset.name)
 
 
-# -------------------------------------------------------------------- build
-
-
 def load(path: Path) -> Tutorial:
     """Turns one tutorial's source file into a fully-parsed `Tutorial`
     object — this is the one function that runs the whole parsing
@@ -3098,8 +2807,6 @@ def load(path: Path) -> Tutorial:
     )
 
 
-# ------------------------------------------------------------ asset versions
-
 _ASSET_VERSIONS: dict[str, str] = {}
 
 
@@ -3115,9 +2822,6 @@ def asset_version(name: str) -> str:
     Hashed per file rather than one version for everything, so editing the
     stylesheet does not also force a fresh download of the 266 KB maths bundle.
     """
-    # Keyed by the full path, not the name: the tests build several repositories
-    # in one process, and a cache keyed by "tutorial-style.css" alone would hand
-    # the second one the first one's hash.
     path = ASSETS / name
     key = str(path)
     if key not in _ASSET_VERSIONS:
@@ -3193,10 +2897,6 @@ def version_manifest(tutorial: Tutorial, family: list[Tutorial]) -> list[dict]:
     """
     if len(family) < 2:
         return []
-    # Two releases on one day read as the same option in the picker, because a
-    # reader sees the date and not the sequence number. Found the first time a
-    # tutorial was released twice in an afternoon. The number is added only
-    # where it is needed, so the ordinary case stays a plain date.
     same_day = {
         version.date for version in family
         if sum(1 for other in family if other.date == version.date) > 1
@@ -3424,10 +3124,6 @@ def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "",
     up = "../" * tutorial.depth
     manifest: dict[str, object] = {
         "slug": tutorial.slug,
-        # The module, because a slug is only unique within one. Saved work is
-        # keyed on this pair — without the module, both modules' `first-steps`
-        # would share one key and a student's answers would appear in the wrong
-        # tutorial.
         "module": tutorial.module,
         "version": tutorial.meta["version"],
         "assetBase": f"{up}assets/",
@@ -3451,18 +3147,8 @@ def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "",
         # a tutorial with no maths never pays for it.
         manifest["math"] = True
     if tutorial.has_sql:
-        # The runtime adds sqlite3 to whatever package list it was already
-        # going to load — default or declared — only when the page actually
-        # has a sql exec cell, same reasoning as `math` above.
         manifest["needsSqlite"] = True
     if tutorial.site_editors:
-        # Absent rather than an empty list on every other page, the same
-        # "only pay for what you use" signal as `math`/`needsSqlite` —
-        # tutorial-runtime.js only imports assets/site-relay.js when this
-        # key exists. Each pane's starting source travels here, not in the
-        # DOM (render_site_editor()'s own comment says why); a pane not
-        # present in an editor's own `panes` (most pages are html+css
-        # only) is simply absent from this dict too.
         manifest["siteEditors"] = [
             {
                 "name": editor.name,
@@ -3476,14 +3162,8 @@ def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "",
     packages = tutorial.meta.get("packages")
     if packages:
         manifest["packages"] = list(packages)
-    # Absent rather than an empty list when there is nothing accumulated yet —
-    # the runtime hides the reference toggle entirely on that signal, same
-    # as an empty dl-settings-section elsewhere on this page.
     if glossary:
         manifest["glossary"] = glossary
-    # Same "absent, not empty" signal as glossary — neither is cumulative
-    # (planning/SIDEBAR_CONTENT.md §4): a note or a dataset belongs to this
-    # specific tutorial, not to every one after it in the series.
     if notes:
         manifest["notes"] = notes
     if datasets:
@@ -3536,11 +3216,6 @@ def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "",
     return tutorial.out_path
 
 
-# --------------------------------------------------------------- standalone
-
-# A page opened from a file cannot load an ES module, fetch a neighbouring
-# file, or resolve a relative link to a page that is not there. A standalone
-# export therefore carries everything inside it and drops what it cannot honour.
 PYODIDE_CLASSIC = (
     '<script src="https://cdn.jsdelivr.net/pyodide/v0.28.3/full/pyodide.js"></script>'
 )
@@ -3555,10 +3230,6 @@ def inline_katex_css() -> str:
     """
     css = (ASSETS / "vendor" / "katex.min.css").read_text()
 
-    # Same re.sub-callback pattern as extract_blocks()'s own `one` — each
-    # match is one `url(fonts/....woff2)` reference in the stylesheet,
-    # replaced with a base64 data: URL so the standalone export needs no
-    # separate font files alongside it.
     def one(match: re.Match) -> str:
         font = ASSETS / "vendor" / "fonts" / match.group("name")
         if not font.is_file():
@@ -3614,9 +3285,6 @@ def standalone_html(tutorial: Tutorial, page: str) -> str:
     bundle = (ASSETS / "vendor" / "standalone.bundle.js").read_text()
     tools = (ASSETS / "tutorial_tools.py").read_text()
 
-    # The stylesheets, inlined. KaTeX's only travels with a page that has maths.
-    # Matched on the versioned URLs the page actually carries: a file inlined
-    # into the page has no URL to cache, so the version simply goes with it.
     page = replace_once(
         page,
         f'<link rel="stylesheet" href="{versioned(up, "vendor/katex.min.css")}">',
@@ -3644,19 +3312,10 @@ def standalone_html(tutorial: Tutorial, page: str) -> str:
         "the runtime",
     )
 
-    # coi-serviceworker exists to let a Worker's SharedArrayBuffer through
-    # (DECISIONS_LOG.md 7.77) — this export runs Pyodide on the main thread
-    # instead, on purpose, so there is no Worker here for it to serve. Left
-    # in, it would just be a request a file:// page can never satisfy.
     page = replace_once(
         page, f'<script src="{root}coi-serviceworker.js"></script>\n', "", "the isolation shim"
     )
 
-    # Cross-tutorial search needs assets/search-index.json, which (like the
-    # /data/ folder load_csv() warns about above) does not travel with a
-    # standalone copy — and the popover it would drive is a <details>, so it
-    # still opens and closes with no script behind it at all, just with
-    # nothing search-shaped happening inside once it does.
     page = replace_once(
         page, f'<script type="module" src="{versioned(up, "search.js")}"></script>\n',
         "", "the search script",
@@ -3669,16 +3328,9 @@ def standalone_html(tutorial: Tutorial, page: str) -> str:
     manifest = json.loads(page[start:end])
     manifest["toolsSource"] = tools
     manifest["standalone"] = True
-    # Only the default version gets a downloadable copy, and the other releases
-    # are not beside it on disk. A picker offering to move to files that are not
-    # there is worse than no picker, so the whole list goes and the runtime
-    # removes the section that would have shown it.
     manifest.pop("versions", None)
     page = page[:start] + json.dumps(manifest).replace("<", "\\u003c") + page[end:]
 
-    # Navigation points at pages that are not beside this file, and the offer to
-    # download it is already taken — this is the download. Both go rather than
-    # break: the runtime hides the emptied section.
     page = re.sub(r"<nav class=\"dl-nav[^\"]*\">.*?</nav>", "", page, flags=re.DOTALL)
     page = re.sub(
         r'(<section class="dl-settings-section" id="dl-settings-download">).*?(</section>)',
@@ -3686,12 +3338,6 @@ def standalone_html(tutorial: Tutorial, page: str) -> str:
         page,
         flags=re.DOTALL,
     )
-    # The series navigation panel is the same case: every link in it points
-    # at a sibling file that is not beside this one, so both the toggle and
-    # the panel go rather than open onto a page of broken links. Matched
-    # through to the end of the panel's own <nav>, not to the first </div>
-    # — the panel has a nested <div> (its head) that would otherwise end
-    # the match early.
     page = re.sub(
         r'<button type="button" class="dl-seriesnav-toggle".*?</button>\n?',
         "", page, flags=re.DOTALL,
@@ -3713,9 +3359,6 @@ def write_standalone(tutorial: Tutorial, page: str) -> Path:
     build-time sanity checks (like the load_csv warning right below) that
     only make sense for this particular kind of output.
     """
-    # A standalone file carries the page but not the /data/ folder beside it, so
-    # a tutorial that loads a dataset at runtime will read fine and fail at that
-    # cell. Better said at build time than discovered by a student.
     if any("load_csv" in cell.code for cell in tutorial.cells):
         print(
             f"note: {tutorial.path.relative_to(ROOT)} loads a dataset, which its "
@@ -3724,10 +3367,6 @@ def write_standalone(tutorial: Tutorial, page: str) -> Path:
             file=sys.stderr,
         )
 
-    # Under the module, like the page it came from. Slugs are unique within a
-    # module and not across the site, so a flat download folder would let two
-    # modules' "first-steps" overwrite each other — silently, since the loser
-    # simply never appears.
     target = OUT / "download" / tutorial.module / f"{tutorial.slug}.html"
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text(standalone_html(tutorial, page))
@@ -3786,9 +3425,6 @@ def start_here_html(title: str, sections: list[tuple[str | None, list[tuple[str,
     for heading, entries in sections:
         if heading:
             body.append(f"<h2>{html.escape(heading)}</h2>")
-        # start=, not a fresh <ol> per section: the number shown beside a link
-        # is what that file is actually numbered, and a list that restarted at
-        # 1 for every series would say otherwise.
         body.append(f'<ol start="{next_number}">')
         for name, member in entries:
             tag = ' <span class="practice">practice</span>' if member.is_practice else ""
@@ -3905,9 +3541,6 @@ def write_module_zip(
     target.parent.mkdir(parents=True, exist_ok=True)
     show_headings = len(series_in_order) > 1
 
-    # Every section's sequence, worked out before anything is written, so the
-    # whole archive's total (not just whichever section happens to be first)
-    # decides the zero-padding width every section then shares.
     series_sequences = [
         (series_title, zip_sequence(members, practice))
         for _, series_title, members in series_in_order
@@ -3943,22 +3576,6 @@ def zip_directory(source_dir: Path, target_zip: Path) -> Path:
     return target_zip
 
 
-# A downloaded bundle's own JavaScript is split across files that import
-# each other with real `import`/`export` statements, the same way any
-# modern web app is built — and a browser only honours that kind of
-# cross-file import over http:// or https://, never from a file opened
-# directly by double-clicking (a `file://` page has no origin a CORS
-# check can approve, so the browser blocks the import outright, silently
-# leaving the page's own JavaScript never having run at all). The
-# offline bundle needs a real, if tiny and local, server to actually
-# work — this is that server: nothing beyond what Python itself already
-# ships, run with the same command README.md's own "Running it on your
-# own machine" section already asks a contributor to run for the site
-# itself, just aimed at one already-unzipped folder instead. Found by
-# testing an actual downloaded bundle's own file:// experience while
-# building write_dewmini_bundle() below, not assumed from reading the
-# code (an earlier bundle had carried the identical, untested "reopen
-# it — no server needed" claim in its own docstring).
 SERVE_SCRIPT = '''#!/usr/bin/env python3
 """Run this — `python3 serve.py` — to actually open this folder.
 
@@ -3996,24 +3613,6 @@ if __name__ == "__main__":
 '''
 
 
-# The subset of assets/ (plus data/) dewmini's own compose/dewmini.html
-# actually loads, on its own, outside the hosted site — tutorial-runtime.js,
-# every tutorial-only vendor bundle, and the rest of assets/ dewmini never
-# touches would just be dead weight in a download meant to be as small as
-# it can be. Plus assets/examples/*.ipynb: the four worked-example
-# notebooks Settings' "Keep a copy" section offers.
-#
-# vendor/katex.min.css and vendor/katex.bundle.js are here even though
-# dewmini only loads the second of the two lazily, on first sight of maths
-# in a text cell (DECISIONS_LOG.md 7.107): this bundle is exactly the
-# no-connection case that lazy loading cannot help — a classroom with no
-# network at all cannot fetch what it does not already have on disk, so
-# "loads it lazily" and "carries it in the offline copy" are answers to two
-# different questions. The ~590 KB this adds to every offline copy, whether
-# or not that classroom ever does maths, is the trade recorded there; the
-# font files themselves are copied separately below, as a whole directory
-# rather than named one by one, since KaTeX's own stylesheet decides which
-# of them a given formula actually needs.
 DEWMINI_ASSET_FILES = (
     "pyodide-engine.js",
     "pyodide-worker.js",
@@ -4031,10 +3630,6 @@ DEWMINI_ASSET_FILES = (
     "examples/math-and-charts.ipynb",
     "examples/word-frequency.ipynb",
 )
-
-# compose/ files a hosted copy needs anyway (dewmini.html's own <script>/
-# <link> tags), so DEWMINI_ASSET_FILES above only needs to name what compose/
-# does *not* already carry — see write_dewmini_bundle()'s own copytree.
 
 
 def write_dewmini_bundle() -> Path | None:
@@ -4089,16 +3684,9 @@ def write_dewmini_bundle() -> Path | None:
 
     pyodide_vendored = (ASSETS / "vendor" / "pyodide").is_dir()
 
-    # compose/ wholesale first — dewmini.html, dewmini.js, dewmini-fs.js,
-    # dewmini-style.css, practice-bank.json, all exactly as hosted; only
-    # dewmini.html then gets its one Pyodide-base override layered in,
-    # a single targeted rewrite of one HTML file.
     shutil.copytree(COMPOSE, target / "compose")
     html = (target / "compose" / "dewmini.html").read_text()
     if pyodide_vendored:
-        # The override pyodide-engine.js's own pyodideBase() already
-        # honors — one directory up from compose/, matching every other
-        # ../-relative reference this same page already makes.
         html = html.replace(
             "<head>",
             '<head>\n<script>window.DEWLAB_PYODIDE_BASE = "../assets/vendor/pyodide/";</script>',
@@ -4118,9 +3706,6 @@ def write_dewmini_bundle() -> Path | None:
     if DATA.is_dir():
         shutil.copytree(DATA, target / "data")
 
-    # KaTeX's own font files and the two accessible fonts (both live under
-    # vendor/fonts/), whole — see DEWMINI_ASSET_FILES's own comment on why
-    # these are a directory copy rather than dozens of named entries there.
     fonts_dir = ASSETS / "vendor" / "fonts"
     if fonts_dir.is_dir():
         shutil.copytree(fonts_dir, target / "assets" / "vendor" / "fonts")
@@ -4145,17 +3730,6 @@ def write_dewmini_bundle() -> Path | None:
     # serve.py — see SERVE_SCRIPT's own docstring for why a bundle needs it.
     (target / "serve.py").write_text(SERVE_SCRIPT)
 
-    # A single obvious entry point at the folder's own top level: opening
-    # a downloaded folder should mean finding one file, not knowing in
-    # advance that the real page is one level down in compose/. Checks
-    # location.protocol itself rather than assuming a downloader ran
-    # serve.py first — a bare file:// open forwards nowhere and says why,
-    # since compose/dewmini.html would otherwise just come up blank with
-    # no visible explanation (its own JavaScript fails a CORS check that
-    # only exists for http(s):, so nothing about the page can detect or
-    # report the failure from the inside). This check lives here, not in
-    # compose/dewmini.html itself, so the page every hosted visitor also
-    # reaches stays exactly what it already is.
     (target / "index.html").write_text(
         "<!doctype html>\n"
         "<html lang=\"en\">\n"
@@ -4314,11 +3888,6 @@ def write_all_tutorials_page(
     return target
 
 
-# What each module's own page says about it, above its list of tutorials —
-# the QQI code(s) it covers and a short description of the course as a
-# whole. Keyed by folder name under tutorials/. A module with no entry here
-# (there is none today, but a new module folder would start without one)
-# still gets a page — just without the code line or the description.
 MODULE_INFO: dict[str, dict[str, object]] = {
     "mit-pdp-maths-prog-integration": {
         "code": "5N2927 + 5N18396 · QQI Level 5",
@@ -4484,10 +4053,6 @@ def write_tree_page(shell: str, tutorials: list[Tutorial]) -> Path | None:
         "where it comes up in computing, and where it is taught.</p>"
         '<div class="dl-tree-layout">'
         '<div class="dl-tree-main">'
-        # Above the frame rather than floating inside it. Floating, they sat on
-        # top of whichever topics happened to land under them and swallowed the
-        # clicks — the tree is taller now, so which topics those were changed
-        # with the layout.
         '<div class="dl-tree-controls">'
         '<button type="button" id="dl-tree-out" aria-label="Zoom out">−</button>'
         '<button type="button" id="dl-tree-fit" aria-label="Fit the width and return to the top">fit</button>'
@@ -4508,10 +4073,6 @@ def write_tree_page(shell: str, tutorials: list[Tutorial]) -> Path | None:
         "</div>"
     )
 
-    # The tutorial map underneath, because it answers a different question. The
-    # tree says what a topic needs; this says what order the tutorials come in
-    # and which ones lean on which — and that second part is found by reading
-    # the tutorials, so it exists nowhere else.
     strands = load_strands()
     for (_, _), members in sorted(series_of(tutorials).items()):
         svg = render_knowledge_map(members, strands)
@@ -4633,10 +4194,6 @@ def write_topics_page(
                 f'<span class="dl-contents-kicker">Explore</span>'
                 f"{html.escape(member.title)}</a>{extra}</li>"
             )
-        # A group every one of whose tutorials this particular build
-        # doesn't have (a sandboxed test's tiny fixture set, most likely)
-        # gets no heading either — an empty list under a real-sounding
-        # heading would read as a broken page, not a partial build.
         if not items:
             continue
         any_group_rendered = True
@@ -4647,9 +4204,6 @@ def write_topics_page(
         body.extend(items)
         body.append("</ol>")
 
-    # Every group came back empty (a sandboxed build whose tutorials this
-    # file's real refs simply don't match) — nothing here for a reader,
-    # so there's nothing to build a page around either.
     if not any_group_rendered:
         return None
 
@@ -4735,29 +4289,12 @@ def write_search_index(
     return target
 
 
-# Which module a learning-outcome code belongs to, and therefore which
-# subject a term filed under it belongs to. The prefix is the right key here
-# and `strand` is not: PDP-LO2 ("algorithms") carries the same strand as
-# several MIT outcomes, so strands cut across the maths/computing line rather
-# than along it.
 OUTCOME_SUBJECTS = {
     "MIT": "maths",       # Maths for Information Technology, 5N18396
     "PDP": "computing",   # Programming and Design Principles, 5N2927
     "CMPS": "computing",  # Computational Methods and Problem Solving, 5N0554
 }
 
-# Prerequisite depth, banded into three. `topic_tiers()` counts how many
-# layers of prerequisites sit under an outcome, and that is a better proxy
-# for "how far in is this" than any difficulty field anyone would
-# hand-maintain: it is derived from the dependency graph, so editing the
-# graph re-bands every term automatically and the two can never disagree.
-# Nothing here needs revisiting when the tree changes — which it will.
-#
-# Cut points chosen against the real spread rather than by dividing 0-6
-# evenly. With the deepest-outcome rule below, <=2 / <=3 puts 22 tutorials in
-# reach of a beginner, 16 in the middle and 5 at the deep end; the obvious
-# alternative (<=1 / <=3) collapses to 10/28/5, which makes "intermediate"
-# mean almost everything and so means nothing.
 LEVEL_BANDS = ((2, "beginner"), (3, "intermediate"), (99, "advanced"))
 
 
@@ -4874,9 +4411,6 @@ def write_reference_index(tutorials: list[Tutorial]) -> Path:
                 "definition": entry["definition"],
                 "origin": tutorial.title,
             }
-            # A term inherits what its tutorial can be filtered by. Absent
-            # keys stay absent rather than becoming empty lists: the panel
-            # distinguishes "no subject claimed" from "filtered out".
             if facet.get("subjects"):
                 record["subjects"] = facet["subjects"]
             if facet.get("level"):
@@ -5080,18 +4614,9 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
         shutil.rmtree(OUT)
 
     sources = sorted(TUTORIALS.rglob("*.md"))
-    # A draft is in the repository and not on the internet. The site is static
-    # and public, so there is no other way to have one: anything built has a
-    # URL, and a URL is public (planning/VERSIONS.md).
     everything = [load(p) for p in sources]
     tutorials = versions_of([t for t in everything if t.status != "draft"])
 
-    # Unique within a module, not across the whole site. The built path already
-    # carries the module, so two modules may each have a "first-steps" without
-    # any ambiguity about which page is which — and forcing them apart would
-    # mean naming tutorials around a constraint that does not exist.
-    # One entry per tutorial, holding its default version: a `tutorial:` link
-    # means "the current one", the same as the unversioned URL it resolves to.
     registry: dict[tuple[str, str], Tutorial] = {
         (t.module, t.slug): t for t in tutorials if t.is_default
     }
@@ -5146,9 +4671,6 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
             )
         written.extend(archives.values())
 
-        # The same module_title fallback render_index() uses for its own
-        # headings, worked out again here rather than threaded through —
-        # groups is all either needs.
         names: dict[str, str] = {}
         for members in groups.values():
             for member in members:
@@ -5172,10 +4694,6 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
         written.append(write_all_tutorials_page(
             shell, groups, archives, retired, practice, mixed, module_archives
         ))
-        # One page per module, for the module buttons on the front page to
-        # land on — every module with at least one live or archived
-        # tutorial, listed or not (module_order() only decides position,
-        # not presence).
         for module in {m for m, _ in groups} | set(retired):
             written.append(write_module_page(
                 shell, module, groups, archives, retired, practice, mixed,
@@ -5197,10 +4715,6 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
         shutil.rmtree(OUT / "data", ignore_errors=True)
         shutil.copytree(DATA, OUT / "data")
 
-    # Before the dewmini bundle below, which copies this file out of OUT
-    # rather than out of the source assets/ (it is generated, not checked
-    # in — see _reference_index_for_bundle()). After the assets/ copytree
-    # above, whose rmtree would otherwise delete it.
     if tutorials:
         written.append(write_reference_index(tutorials))
 
@@ -5210,19 +4724,10 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
         shutil.rmtree(OUT / "compose", ignore_errors=True)
         shutil.copytree(COMPOSE, OUT / "compose")
 
-    # dewmark's marking workbench. One self-contained page with nothing
-    # linked from it, so it copies as it is. It is a teacher's tool rather
-    # than a student's, and nothing on the site links to it: a teacher goes
-    # to /dewmark/ directly.
     if DEWMARK_WORKBENCH.is_dir():
         shutil.rmtree(OUT / "dewmark", ignore_errors=True)
         shutil.copytree(DEWMARK_WORKBENCH, OUT / "dewmark")
 
-    # The topic pair game, the same way: one self-contained page, nothing on
-    # the site linking to it, reached by typing /topic_tree_game/. It is a
-    # tool for whoever is checking the topic graph rather than anything a
-    # student would open. Its README is for a reader of the repository and
-    # has no business on the site.
     if TOPIC_GAME.is_dir():
         shutil.rmtree(OUT / "topic_tree_game", ignore_errors=True)
         shutil.copytree(TOPIC_GAME, OUT / "topic_tree_game",
@@ -5235,32 +4740,16 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
         shutil.copytree(TOPIC_EDITOR, OUT / "topic_editor",
                         ignore=shutil.ignore_patterns("README.md"))
 
-    # dewmini's own downloadable, offline-capable copy (DECISIONS_LOG.md
-    # 7.92) — after the hosted compose/ copy just above, since
-    # write_dewmini_bundle() reads compose/dewmini.html from disk (the
-    # source tree, not OUT), so ordering relative to that copy doesn't
-    # actually matter, but sitting right after it keeps the two dewmini
-    # steps together for a reader.
     if standalone:
         dewmini_bundle_dir = write_dewmini_bundle()
         if dewmini_bundle_dir is not None:
             written.append(dewmini_bundle_dir)
             written.append(zip_directory(dewmini_bundle_dir, OUT / "download" / "dewmini.zip"))
 
-    # coi-serviceworker.js (vendor-src/build-vendor.mjs) has to be served
-    # from the site root, not assets/vendor/ where every other vendored file
-    # lives: a service worker's scope defaults to the directory it is served
-    # from, and shell.html's {{ROOT_BASE}}coi-serviceworker.js tag registers
-    # it expecting root scope, wide enough to cover every tutorial. The
-    # existence guard means a test's own minimal ASSETS fixture need not
-    # carry every vendored file for its build to succeed.
     coi_src = ASSETS / "vendor" / "coi-serviceworker.js"
     if coi_src.exists():
         shutil.copy2(coi_src, OUT / "coi-serviceworker.js")
 
-    # After the assets/ copytree above, not before — that copytree starts
-    # with an rmtree of OUT / "assets", which would delete this file if it
-    # were written any earlier in this function.
     if tutorials:
         written.append(write_search_index(tutorials, registry, groups))
     return written

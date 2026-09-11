@@ -63,10 +63,6 @@ def _cell(cell_id: str) -> str:
     return f"```python exec\nid: {cell_id}\nprint(1)\n```\n\n"
 
 
-# The same repository with one tutorial already in a folder of releases, which
-# is what a tutorial becomes the first time anything is released. The editor
-# knew nothing about this shape until step 4 and opened such a tutorial as an
-# empty buffer.
 VERSIONED = {
     "tutorials/fixtures/maths.order.yaml":
         "series: Maths and programming\norder:\n  - first-steps\n  - two-takes\n",
@@ -80,10 +76,6 @@ VERSIONED = {
     "tutorials/fixtures/two-takes/v2026.09.15.1.md":
         _released("two-takes", "2026.09.15.1",
                   _cell("shared-one") + _cell("only-in-september")),
-    # Retired, with two releases, and so on none of the order files. This is
-    # the only shape in which the same tutorial could be listed twice: the
-    # off-the-route list is built by walking every markdown file, and a folder
-    # of releases is several files describing one tutorial.
     "tutorials/fixtures/old-ways/v2026.01.01.1.md":
         _released("old-ways", "2026.01.01.1", _cell("old-one"), status="archived"),
     "tutorials/fixtures/old-ways/v2026.03.01.1.md":
@@ -156,10 +148,6 @@ def _big_repo(count: int) -> dict:
     return files
 
 
-# read() resolves after a random short delay rather than instantly, so a
-# batch-index mistake in load() (assets/editor.js) — text from one request
-# landing against a different request's path — would show up as scrambled
-# titles instead of being masked by every request finishing in call order.
 SLOW_CLIENT = """
 (files) => ({
   committed: null,
@@ -349,9 +337,6 @@ LINKS = {
         '---\ntitle: "Next Steps"\nslug: next-steps\nmodule: other\n'
         'module_title: "Other"\nyear: "2026-2027"\nseries: other\nversion: 2026.08.23.1\n---\n\n'
         "# Next Steps\n\nProse.\n",
-    # Two different modules with the same slug, neither of them "fixtures" —
-    # a link from first-steps naming this slug has to be reported ambiguous
-    # rather than guessed at.
     "tutorials/third/shared-name.order.yaml":
         "series: Third\norder:\n  - shared-name\n",
     "tutorials/third/shared-name/shared-name.md":
@@ -976,10 +961,6 @@ class TestTheProposal:
                        "# First Steps\n\n## Adding up\n\n"
                        "```python exec\nid: adding-up-2\nprint(1)\n```\n")
         versioned.click("#dl-editor-release")
-        # Releasing reads the editor's own current markdown, which needs the
-        # freshly (re)mounted Crepe instance to finish loading first — async,
-        # so the report updates a beat after the click returns rather than
-        # inside it. Polled for rather than read immediately.
         versioned.wait_for_function(
             "!document.querySelector('#dl-editor-report').textContent.includes('usually a release')"
         )

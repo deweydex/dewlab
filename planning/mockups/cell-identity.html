@@ -24,11 +24,6 @@
   --dm-gap-sm: 0.5rem;
   --dm-gap-md: 0.75rem;
 
-  /* Type colour, added on request: muted enough to sit quietly next to
-   * everything else here, but distinct enough to scan a mixed notebook
-   * by. Python reuses the app's own orange rather than inventing a sixth
-   * hue, since it's the primary type; Text stays fully neutral — it's
-   * the plain baseline, not a type worth hunting for by colour. */
   --dl-type-python: var(--dl-orange);
   --dl-type-sql: #2d6a85;
   --dl-type-html: #a13a5c;
@@ -119,8 +114,6 @@ h2 { font-size: 1.05rem; color: var(--dl-heading); margin: 2.4rem 0 0.6rem; }
 .section-note { font-size: 0.92rem; line-height: 1.6; color: var(--dl-muted); margin: 0 0 1rem; }
 code { font-family: var(--dl-mono); font-size: 0.85em; background: var(--dl-cell-bg); padding: 0.1em 0.35em; border-radius: 3px; }
 
-/* ---------------------------------------------------------- notebook shell */
-
 .notebook {
   border: 1px solid var(--dl-cell-border);
   border-radius: 8px;
@@ -136,8 +129,6 @@ code { font-family: var(--dl-mono); font-size: 0.85em; background: var(--dl-cell
 .dm-cell-head { display: flex; align-items: center; gap: var(--dm-gap-sm); margin-bottom: var(--dm-gap-sm); }
 .dm-cell-spacer { flex: 1; }
 
-/* --------------------------------------------------------- identity pill */
-
 .ct-segmented {
   display: inline-flex;
   align-items: stretch;
@@ -150,9 +141,6 @@ code { font-family: var(--dl-mono); font-size: 0.85em; background: var(--dl-cell
 }
 .ct-segmented > span { display: inline-flex; align-items: center; padding: 0.1rem 0.55rem; color: var(--dl-muted); }
 .ct-segmented > span + span { border-left: 1px solid var(--dl-cell-border); }
-/* Only the type half carries colour — "Cell N" stays neutral, since
- * position is a structural fact shared by every cell alike, where type
- * is specifically the thing this palette exists to help tell apart. */
 .ct-segmented .seg-type { text-transform: uppercase; color: var(--dl-type-text); }
 .ct-segmented .seg-type[data-type="python"] { color: var(--dl-type-python); }
 .ct-segmented .seg-type[data-type="sql"] { color: var(--dl-type-sql); }
@@ -166,8 +154,6 @@ code { font-family: var(--dl-mono); font-size: 0.85em; background: var(--dl-cell
 }
 .ct-segmented-drag:hover .dm-drag-dots { color: var(--dl-orange); }
 
-/* -------------------------------------------------------------- run line */
-
 .dm-cell-runline { font-family: var(--dl-mono); font-size: 0.72rem; color: var(--dl-muted); }
 .dm-cell-runline .run-order { color: var(--dl-orange); }
 .dm-cell-runline .run-duration { color: var(--dl-muted); }
@@ -180,8 +166,6 @@ code { font-family: var(--dl-mono); font-size: 0.85em; background: var(--dl-cell
 }
 @keyframes dm-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.55; } }
 .dm-cell-runline.is-queued { color: var(--dl-muted); font-style: italic; }
-
-/* ------------------------------------------------------------- controls */
 
 .dm-icon-btn {
   display: inline-flex; align-items: center; justify-content: center;
@@ -197,8 +181,6 @@ code { font-family: var(--dl-mono); font-size: 0.85em; background: var(--dl-cell
 .dm-header-end { display: flex; gap: var(--dm-gap-xs); flex: none; }
 
 .dm-cell-footbar { display: flex; align-items: center; gap: var(--dm-gap-xs); margin: var(--dm-gap-sm) 0 0; }
-
-/* --------------------------------------------------------- code + gutter */
 
 .dm-cell-body-row { display: flex; align-items: flex-start; gap: var(--dm-gap-xs); }
 .dm-cell-body-row > .dm-editor-lined,
@@ -241,8 +223,6 @@ code { font-family: var(--dl-mono); font-size: 0.85em; background: var(--dl-cell
   border-left: 3px solid var(--dl-error-fg); border-radius: 0 4px 4px 0; padding-left: 0.65rem;
 }
 
-/* -------------------------------------------------------------- doc/text */
-
 .dm-doc-mock { padding: 0.55rem 0.6rem; border-radius: 4px; cursor: pointer; font-size: 0.95rem; line-height: 1.6; }
 .dm-doc-mock:hover { background: var(--dl-cell-bg); }
 .dm-doc-mock:focus-visible { outline: 2px solid var(--dl-orange); outline-offset: 2px; }
@@ -265,8 +245,6 @@ code { font-family: var(--dl-mono); font-size: 0.85em; background: var(--dl-cell
 }
 .quiet-hint { margin: 0.35rem 0 0; font-size: 0.78rem; color: var(--dl-muted); }
 
-/* ------------------------------------------------------------- tooltips */
-
 .tt-wrap { position: relative; display: inline-flex; }
 .tt-trigger { cursor: help; outline: none; }
 .tt-bubble {
@@ -280,8 +258,6 @@ code { font-family: var(--dl-mono); font-size: 0.85em; background: var(--dl-cell
 .tt-wrap:hover .tt-bubble, .tt-wrap:focus-within .tt-bubble, .tt-wrap.tt-open .tt-bubble {
   opacity: 1; visibility: visible; transform: translateY(0);
 }
-
-/* ------------------------------------------------------------ rules panel */
 
 .rules { margin-top: 2.6rem; padding: 1.1rem 1.2rem; border: 1px solid var(--dl-cell-border); border-radius: 8px; background: var(--dl-cell-bg); }
 .rules h2 { margin-top: 0; }
@@ -499,8 +475,6 @@ function pythonOrSqlOrCssCell(cell) {
   </div>`;
 }
 
-// -------------------------------------------------------- text/html quiet
-
 function textOrHtmlCell(cell) {
   const rendered = cell.type === 'html'
     ? `<div class="dm-html-preview" id="render-${cell.key}" tabindex="0">${cell.renderedHtml}</div>`
@@ -566,8 +540,6 @@ function mountQuietCell(container, cell) {
   });
 }
 
-// ----------------------------------------------------------- the notebook
-
 const notebookCells = [
   { key: 'n1', pos: 1, type: 'python',
     code: 'import pandas as pd\ndf = pd.read_csv("readings.csv")\nsummary = df.groupby("city")["temp_c"].mean()\nsummary',
@@ -603,8 +575,6 @@ notebookCells.forEach((c) => {
     mountQuietCell(slot, c);
   }
 });
-
-// -------------------------------------------------------------- mid-batch
 
 const batchCells = [
   { key: 'b1', pos: 3, type: 'python', code: 'fahrenheit = summary * 1.8 + 32\nfahrenheit', totalMs: 1600 },
@@ -677,8 +647,6 @@ async function playBatch() {
 }
 playBatch();
 setInterval(playBatch, 6500);
-
-// ------------------------------------------------------------ theme toggle
 
 const root = document.documentElement;
 root.setAttribute('data-theme', 'light');

@@ -112,9 +112,6 @@ def base_url(site):
 def test_a_link_meets_aa_against_its_own_background(browser, base_url, scheme):
     page = browser.new_page(color_scheme=scheme)
     try:
-        # A link in the tutorial's own prose, not the first anchor on the
-        # page: that one is the header wordmark, which takes its colour
-        # from --dl-fg and passes whatever --dl-link is doing.
         page.goto(f"{base_url}/tutorials/{MODULE}/contrast.html")
         page.wait_for_selector('a[href="https://example.org"]')
         measured = page.evaluate(

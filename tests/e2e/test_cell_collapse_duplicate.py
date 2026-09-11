@@ -174,9 +174,6 @@ class TestDuplicate:
         page.click(".dl-cell-custom .cm-content")
         page.keyboard.type("first_custom = True")
 
-        # A second Duplicate of the *authored* cell must land right after
-        # the authored cell — before the reader's own first custom cell —
-        # not appended after everything already in that group.
         page.click(".dl-cell[data-cell-id='plain-python'] .dl-btn-duplicate")
         page.wait_for_function(
             "document.querySelectorAll('.dl-cell-custom').length === 2", timeout=5_000

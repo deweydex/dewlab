@@ -27,12 +27,6 @@
 html{font-size:17px;scroll-behavior:smooth;}
 body{font-family:'Source Serif 4',Georgia,serif;background:var(--bg);color:var(--text);display:flex;height:100vh;overflow:hidden;}
 
-/* --- LOADING BANNER --- */
-
-
-
-
-/* --- SIDEBAR --- */
 #sidebar{
   width:240px;
   background:var(--navy);color:white;
@@ -56,7 +50,6 @@ body{font-family:'Source Serif 4',Georgia,serif;background:var(--bg);color:var(-
 #print-btn{width:100%;padding:0.55rem;background:var(--red);color:white;border:none;border-radius:4px;cursor:pointer;font-family:'Libre Baskerville',Georgia,serif;font-size:0.82rem;font-weight:700;transition:background 0.15s;}
 #print-btn:hover{background:#8A2008;}
 
-/* --- SIDEBAR STUDENT + INSTRUCTIONS --- */
 #sidebar-student{padding:0.65rem 1rem 0.55rem;border-bottom:1px solid rgba(255,255,255,0.12);}
 .sid-row{display:flex;align-items:center;gap:0.5rem;margin-bottom:0.28rem;}
 .sid-row:last-child{margin-bottom:0;}
@@ -69,10 +62,8 @@ body{font-family:'Source Serif 4',Georgia,serif;background:var(--bg);color:var(-
 .si-item:last-child{margin-bottom:0;}
 .si-item strong{color:white;font-weight:700;}
 
-/* --- PRINT HEADER --- */
 #print-header{display:none;}
 
-/* --- DRAG HANDLES --- */
 .drag-handle{
   width:6px;flex-shrink:0;background:transparent;cursor:col-resize;
   position:relative;transition:background 0.15s;
@@ -86,10 +77,8 @@ body{font-family:'Source Serif 4',Georgia,serif;background:var(--bg);color:var(-
 }
 .drag-handle:hover::after{background:#6AABDF;}
 
-/* --- MAIN --- */
 #main{flex:1;min-width:0;padding:2rem 2rem 3rem;overflow-y:auto;}
 
-/* --- RIGHT PANEL --- */
 #right-panel{
   width:300px;flex-shrink:0;
   background:var(--surface);border-left:1px solid var(--border);
@@ -98,7 +87,6 @@ body{font-family:'Source Serif 4',Georgia,serif;background:var(--bg);color:var(-
   display:flex;flex-direction:column;
 }
 
-/* --- COVER --- */
 #cover{background:white;border:2px solid var(--navy);border-radius:4px;padding:1.75rem;margin-bottom:1.75rem;}
 .cover-top{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid var(--navy);padding-bottom:0.9rem;margin-bottom:0.9rem;}
 .cover-top h1{font-family:'Libre Baskerville',Georgia,serif;font-size:1.4rem;color:var(--navy);}
@@ -114,7 +102,6 @@ body{font-family:'Source Serif 4',Georgia,serif;background:var(--bg);color:var(-
 
 code.ic{background:rgba(0,0,0,0.08);border-radius:3px;padding:0.04em 0.28em;font-family:'Source Code Pro',monospace;font-size:0.82em;}
 
-/* --- COLLAPSIBLE PANELS (right panel) --- */
 .rp-panel{border-bottom:1px solid var(--border);}
 .rp-panel > summary{
   padding:0.6rem 1rem;list-style:none;
@@ -132,7 +119,6 @@ code.ic{background:rgba(0,0,0,0.08);border-radius:3px;padding:0.04em 0.28em;font
 .nc-label{font-size:0.77rem;font-weight:700;color:var(--navy);margin-bottom:0.1rem;}
 .nc-body{font-size:0.77rem;color:var(--text);line-height:1.5;}
 
-/* --- COLLAPSIBLE CALCULATOR (left sidebar, fixed at bottom) --- */
 .sidebar-calc{border-top:1px solid rgba(255,255,255,0.1);flex-shrink:0;}
 .sidebar-calc > summary{
   padding:0.48rem 1rem;list-style:none;
@@ -146,7 +132,6 @@ code.ic{background:rgba(0,0,0,0.08);border-radius:3px;padding:0.04em 0.28em;font
 .sidebar-calc > summary::-webkit-details-marker{display:none;}
 .sidebar-calc-body{background:#131315;}
 
-/* --- FORMULA SHEET --- */
 .fs-sec{margin-bottom:0.8rem;padding-bottom:0.8rem;border-bottom:1px solid var(--border);}
 .fs-sec:last-child{border-bottom:none;margin-bottom:0;}
 .fs-stitle{font-family:'Libre Baskerville',Georgia,serif;font-size:0.88rem;font-weight:700;color:var(--navy);margin-bottom:0.4rem;border-bottom:1px solid var(--border);padding-bottom:0.18rem;}
@@ -157,11 +142,9 @@ code.ic{background:rgba(0,0,0,0.08);border-radius:3px;padding:0.04em 0.28em;font
 .fs-tbl th{background:var(--navy);color:white;padding:0.18rem 0.3rem;text-align:center;}
 .fs-tbl td{border:1px solid var(--border);padding:0.15rem 0.3rem;text-align:center;}
 
-/* --- SECTION HEADERS --- */
 .sec-head{font-family:'Libre Baskerville',Georgia,serif;font-size:1.4rem;color:var(--navy);border-bottom:3px solid var(--navy);padding-bottom:0.4rem;margin:2.25rem 0 1.25rem;}
 .sec-head small{font-size:0.85rem;color:var(--muted);font-weight:400;}
 
-/* --- QUESTION CARDS --- */
 .qcard{background:white;border:1px solid var(--border);border-radius:6px;margin-bottom:1.25rem;overflow:hidden;scroll-margin-top:2.5rem;}
 .qhd{display:flex;justify-content:space-between;align-items:center;padding:0.55rem 1.2rem;background:var(--navy);color:white;}
 .qnum{font-family:'Libre Baskerville',Georgia,serif;font-weight:700;font-size:0.95rem;}
@@ -170,7 +153,6 @@ code.ic{background:rgba(0,0,0,0.08);border-radius:3px;padding:0.04em 0.28em;font
 .qbody>p,.qbody>.preamble{margin-bottom:0.65rem;line-height:1.6;font-size:0.93rem;}
 .preamble{font-size:0.93rem;}
 
-/* --- PARTS --- */
 .part{margin:0.65rem 0;display:flex;gap:0.65rem;align-items:flex-start;}
 .plabel{font-weight:700;color:var(--navy);white-space:nowrap;padding-top:0.1rem;min-width:1.8rem;font-size:0.9rem;}
 .pcontent{flex:1;}
@@ -178,7 +160,6 @@ code.ic{background:rgba(0,0,0,0.08);border-radius:3px;padding:0.04em 0.28em;font
 .pm{font-size:0.78rem;color:var(--muted);font-style:italic;}
 .subpart{margin:0.5rem 0 0.5rem 0.5rem;}
 
-/* --- ANSWER AREAS --- */
 .alabel{display:block;font-size:0.76rem;font-weight:700;color:#2B5C2B;margin:0.35rem 0 0.2rem;text-transform:uppercase;letter-spacing:0.05em;}
 textarea.ans{
   width:100%;min-height:48px;padding:0.5rem 0.65rem;
@@ -188,14 +169,12 @@ textarea.ans{
 }
 textarea.ans:focus{outline:none;border-color:#1A6B1A;box-shadow:0 0 0 3px rgba(42,90,42,0.12);}
 
-/* --- VALUE TABLE (B2a) --- */
 .vtable{border-collapse:collapse;margin:0.65rem 0;font-size:0.88rem;}
 .vtable th,.vtable td{border:1.5px solid var(--navy);padding:0.35rem 0.8rem;text-align:center;}
 .vtable th{background:var(--navy);color:white;font-weight:700;}
 .vtable td input{width:4.5rem;border:none;background:#EEF8EE;text-align:center;font-size:0.88rem;font-family:Georgia,serif;padding:0.1rem;outline:none;}
 .vtable td input:focus{outline:2px solid var(--ans-bd);}
 
-/* --- GRAPH DESCRIPTION --- */
 .gdesc{background:var(--graph-bg);border:1px solid var(--graph-bd);border-radius:6px;padding:0.85rem 1.1rem;margin-top:0.45rem;}
 .gdesc>p{font-size:0.82rem;color:#304080;font-weight:700;margin-bottom:0.6rem;}
 .gfield{display:flex;align-items:center;gap:0.45rem;margin-bottom:0.4rem;font-size:0.87rem;flex-wrap:wrap;}
@@ -203,7 +182,6 @@ textarea.ans:focus{outline:none;border-color:#1A6B1A;box-shadow:0 0 0 3px rgba(4
 .gfield input[type=text]{border:1px solid var(--graph-bd);border-radius:3px;padding:0.18rem 0.4rem;font-size:0.87rem;font-family:Georgia,serif;width:72px;background:white;}
 .gfield select{border:1px solid var(--graph-bd);border-radius:3px;padding:0.18rem 0.4rem;font-size:0.87rem;font-family:Georgia,serif;background:white;}
 
-/* --- CUBIC SHAPES --- */
 .cubics-row{display:flex;gap:0.75rem;margin:0.65rem 0;flex-wrap:wrap;}
 .cubic-opt{display:flex;flex-direction:column;align-items:center;gap:0.2rem;cursor:pointer;padding:0.4rem;border:2px solid var(--border);border-radius:6px;transition:all 0.12s;}
 .cubic-opt:hover{border-color:var(--navy);}
@@ -211,16 +189,13 @@ textarea.ans:focus{outline:none;border-color:#1A6B1A;box-shadow:0 0 0 3px rgba(4
 .cubic-opt canvas{width:96px;height:76px;}
 .cubic-opt span{font-size:0.7rem;color:var(--muted);text-align:center;max-width:96px;}
 
-/* --- TRIANGLE CONTAINERS --- */
 .tri-wrap{display:flex;gap:1.75rem;align-items:flex-start;margin:0.65rem 0;flex-wrap:wrap;}
 .tri-tbl{font-size:0.84rem;}
 .tri-tbl td{padding:0.18rem 0.4rem;}
 .tri-tbl input[type=text]{border:1px solid var(--border);border-radius:3px;padding:0.18rem 0.35rem;font-size:0.84rem;font-family:Georgia,serif;width:72px;}
 
-/* --- BAR CHART --- */
 #barchart{border:1px solid var(--border);border-radius:4px;display:block;}
 
-/* --- CALCULATOR (inline in right panel) --- */
 #calcdisplay{padding:0.6rem 0.8rem;background:#0A0A0C;color:#E0E0E0;border-bottom:1px solid #333;}
 #calcdisplay .hint{font-size:0.66rem;color:#666;margin-bottom:0.2rem;font-family:'Source Code Pro',monospace;line-height:1.4;}
 #calcexpr{width:100%;background:transparent;border:none;color:#E0E0E0;font-family:'Source Code Pro',monospace;font-size:0.88rem;outline:none;}
@@ -234,7 +209,6 @@ textarea.ans:focus{outline:none;border-color:#1A6B1A;box-shadow:0 0 0 3px rgba(4
 .cbtn.eq:hover{background:var(--navy2);}
 .calcnote{padding:0.3rem 0.65rem;font-size:0.65rem;color:#555;border-top:1px solid #2A2A2A;font-family:'Source Code Pro',monospace;line-height:1.5;}
 
-/* --- PRINT --- */
 @media print{
   #sidebar,#right-panel,.drag-handle,#filesave-panel{display:none!important;}
   #main{padding:0;}
@@ -402,7 +376,6 @@ textarea.ans:focus{outline:none;border-color:#1A6B1A;box-shadow:0 0 0 3px rgba(4
   </div>
 </div>
 
-<!-- ========== SECTION A ========== -->
 <h2 class="sec-head">Section A <small>&mdash; Answer any 10 of the 12 questions (4 marks each)</small></h2>
 
 <!-- A1 -->
@@ -680,7 +653,6 @@ textarea.ans:focus{outline:none;border-color:#1A6B1A;box-shadow:0 0 0 3px rgba(4
   </div>
 </div>
 
-<!-- ========== SECTION B ========== -->
 <h2 class="sec-head" id="section-b">Section B <small>&mdash; Answer any 4 of the 6 questions (20 marks each)</small></h2>
 
 <!-- B1 -->
@@ -1263,7 +1235,6 @@ textarea.ans:focus{outline:none;border-color:#1A6B1A;box-shadow:0 0 0 3px rgba(4
 </aside>
 
 <script>
-// ===== TEXTAREA AUTO-EXPAND =====
 document.querySelectorAll('textarea').forEach(ta => {
   ta.addEventListener('input', function() {
     this.style.height = 'auto';
@@ -1271,7 +1242,6 @@ document.querySelectorAll('textarea').forEach(ta => {
   });
 });
 
-// ===== CALCULATOR =====
 function ca(v) { const e = document.getElementById('calcexpr'); e.value += v; e.focus(); }
 function cc() { document.getElementById('calcexpr').value = ''; document.getElementById('calcresult').textContent = '—'; }
 
@@ -1317,7 +1287,6 @@ function calcEval() {
   }
 }
 
-// ===== CUBIC SHAPE CANVASES =====
 function drawCubic(canvasId, fn, col) {
   const cv = document.getElementById(canvasId);
   if (!cv) return;
@@ -1350,7 +1319,6 @@ function selectCubic(el, idx) {
   document.getElementById('cubicsel').value = idx;
 }
 
-// ===== BAR CHART =====
 function drawBarChart() {
   const cv = document.getElementById('barchart');
   if (!cv) return;
@@ -1396,7 +1364,6 @@ function drawBarChart() {
   ctx.fillText('Letter', ml+cw/2, H-6);
 }
 
-// ===== AUTOSAVE (localStorage + File System) =====
 const SAVE_KEY = 'mit_5n18396_nopy_v1';
 let fileHandle = null;
 
@@ -1529,7 +1496,6 @@ function debouncedSave() {
 document.addEventListener('input',  debouncedSave);
 document.addEventListener('change', debouncedSave);
 
-// ===== FILE SYSTEM ACCESS =====
 const FILE_API = 'showSaveFilePicker' in window;
 
 function initFileSetupPanel() {
@@ -1591,7 +1557,6 @@ async function openSaveFile() {
   }
 }
 
-// ===== RESIZABLE COLUMNS =====
 function setupDrag(handleId, panelId, growsRight) {
   const handle = document.getElementById(handleId);
   const panel  = document.getElementById(panelId);
@@ -1617,7 +1582,6 @@ function setupDrag(handleId, panelId, growsRight) {
   });
 }
 
-// ===== SIDEBAR ACTIVE NAV =====
 const navLinks = document.querySelectorAll('.nlink');
 const qcards = document.querySelectorAll('.qcard');
 const obs = new IntersectionObserver(entries => {
@@ -1631,7 +1595,6 @@ const obs = new IntersectionObserver(entries => {
 }, { threshold: 0.25 });
 qcards.forEach(c => obs.observe(c));
 
-// ===== INIT =====
 window.addEventListener('load', () => {
   drawCubic('cc1', x => x**3 - 3*x,      '#1A2E4A');
   drawCubic('cc2', x => x**3 * 0.4,       '#2B7A3B');

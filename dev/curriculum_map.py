@@ -38,14 +38,6 @@ OUT_OF_SCOPE = ROOT / "planning" / "curriculum" / "out-of-scope.yaml"
 MAP = ROOT / "planning" / "CURRICULUM_MAP.md"
 SITE = "https://deweydex.github.io/dewlab"
 
-# The series this report is about. It used to be enough to name the module,
-# because the module had one series — and then reflections moved into their own,
-# `order` started at 1 twice, and the mermaid graph came out with two nodes
-# called T1 and an arrow from one of them to itself. The same 31 tutorials
-# later split again, into five small series that still read as one main
-# sequence (see `series.yaml` beside them), so this is now the reading
-# order of that sequence rather than a single series' name — `load_tutorials()`
-# renumbers `order` globally across it for exactly the same reason.
 MAIN_MODULE = "mit-pdp-maths-prog-integration"
 MAIN_SERIES = (
     "programming-foundations",
@@ -237,9 +229,6 @@ def load_tutorials(known: dict[str, Outcome]) -> list[Tutorial]:
             sections.append(Section(anchor, headings[anchor], covers, touches))
 
         if meta.get("practice_for") or meta.get("practice_across"):
-            # A page of problems sets them on what its tutorials taught. Reading
-            # it as a tutorial would report the same outcome as taught twice and
-            # put a link to a question where the answer should be.
             continue
 
         if str(meta.get("status", "live")) == "archived":
@@ -258,9 +247,6 @@ def load_tutorials(known: dict[str, Outcome]) -> list[Tutorial]:
             )
         )
 
-    # Order comes from one file per series now, not from each tutorial. A
-    # tutorial its series does not list keeps order 0 and simply does not appear
-    # in the sequence diagram, which is the honest thing to draw.
     for path in sorted(TUTORIALS.rglob("*.order.yaml")):
         listed = (yaml.safe_load(path.read_text()) or {}).get("order") or []
         position = {slug: index for index, slug in enumerate(listed, start=1)}
@@ -269,11 +255,6 @@ def load_tutorials(known: dict[str, Outcome]) -> list[Tutorial]:
             if tutorial.module == module and tutorial.slug in position:
                 tutorial.order = position[tutorial.slug]
 
-    # `order` above is a position within one series file. Five of those
-    # series feed the one main sequence diagram (MAIN_SERIES) — renumber
-    # those globally, 1..N in series.yaml's order, so node ids and
-    # back-references stay a single consistent line the way they were
-    # before that sequence was split into more than one series file.
     main = sorted(
         (
             t for t in tutorials
@@ -301,8 +282,6 @@ def coverage(
     return found
 
 
-# ------------------------------------------------------------- back-references
-
 def back_references(tutorials: list[Tutorial]) -> dict[str, set[int]]:
     """Which earlier tutorials each tutorial actually names in its own text.
 
@@ -319,12 +298,6 @@ def back_references(tutorials: list[Tutorial]) -> dict[str, set[int]]:
         refs[tutorial.slug] = {
             earlier.order
             for earlier in tutorials
-            # Series as well as module: order restarts at 1 in each series
-            # outside the main sequence, so comparing across those would read
-            # a reflections tutorial's 1 as coming before everything in the
-            # main sequence. Within the main sequence itself `order` is
-            # already renumbered globally (see MAIN_SERIES), so tutorials in
-            # different main-sequence series can still be compared.
             if earlier.module == tutorial.module
             and (
                 (earlier.series in MAIN_SERIES and tutorial.series in MAIN_SERIES)
@@ -336,8 +309,6 @@ def back_references(tutorials: list[Tutorial]) -> dict[str, set[int]]:
         }
     return refs
 
-
-# --------------------------------------------------------------------- render
 
 STATUS = {
     "taught": ("Taught", "🟩"),
@@ -531,22 +502,10 @@ def conflicts(found, scope) -> list[str]:
     return notes
 
 
-
-# ---------------------------------------------------------------------- terms
-
-# A term being introduced is already marked in these tutorials: single-asterisk
-# emphasis around the word, the first time it means something particular. That
-# convention was there before anybody thought to check it, which is what makes
-# it usable — it is evidence of what the author considered a new word, not a
-# list somebody would have to maintain.
 EMPHASIS_RE = re.compile(r"(?<![*\w])\*(?!\s)([^*\n]{2,40}?)(?<!\s)\*(?![*\w])")
 FENCE_BLOCK_RE = re.compile(r"```.*?```", re.DOTALL)
 INLINE_CODE_RE = re.compile(r"`[^`]*`")
 SUBTITLE_RE = re.compile(r"^\*\*Programming Design Principles.*$", re.MULTILINE)
-# A bibliography entry is `*Title.*` — genuine emphasis markup, but not a term
-# being introduced. Cut the whole section rather than trying to tell the two
-# apart line by line, since a bibliography is always the tutorial's last
-# section.
 BIBLIOGRAPHY_RE = re.compile(r"^## Where to Read More.*", re.DOTALL | re.MULTILINE)
 
 # Emphasis is also used for ordinary stress — "*not* the same", "*exactly* one".
@@ -614,8 +573,6 @@ def term_findings(tutorials: list[Tutorial]) -> dict[str, list]:
             late.append((term, min(used), where[0]))
     return {"repeated": repeated, "late": late, "count": len(terms)}
 
-
-# ------------------------------------------------------------------ proposals
 
 PROPOSED = ROOT / "planning" / "curriculum" / "proposed.yaml"
 
@@ -726,8 +683,6 @@ def proposal_table(proposals: list[dict], outcomes) -> str:
     return "\n".join(rows)
 
 
-# ------------------------------------------------------------------ document
-
 def render() -> str:
     """Builds the entire `planning/CURRICULUM_MAP.md` document, as one
     big string, by calling essentially every other function in this file
@@ -769,10 +724,6 @@ def render() -> str:
         "",
         "## Where we stand",
         "",
-        # The clause about what we ruled out only belongs here when we have
-        # ruled something out. "Once the 0 we have ruled out are set aside" is
-        # two mistakes in one line, and a generated file that reads like a typo
-        # makes a reader distrust the numbers beside it.
         ruled_out_clause(in_place, wanted, counted["excluded"]),
         "",
         f"- {STATUS['taught'][1]} **{counted['taught']} taught** — a tutorial "

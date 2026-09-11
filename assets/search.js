@@ -1,24 +1,3 @@
-/* Client-side search — assets/search.js, loaded by shell.html on every
- * page, and a no-op wherever it finds no `.dl-search` element at all. A
- * page can carry more than one: the small popover beside "All
- * tutorials" in every page's own top nav is always present, and a
- * handful of pages (the front page, "All tutorials", "Browse by topic")
- * also carry one of their own further down — each instance is wired up
- * independently, sharing only the one fetched index. No server, no
- * build-time query handling — just this file and
- * assets/search-index.json (one row per live tutorial: title, module,
- * series, and the glossary terms that tutorial specifically introduces
- * — write_search_index() in build.py generates it fresh on every
- * build, so it can never drift from the tutorials actually shipped).
- *
- * Matching is deliberately simple, not a real search engine: normalize
- * every word (lower-case, a light suffix-stripping stemmer, a small
- * synonym table), then score each tutorial by how many of the query's
- * normalized words it shares, weighted by which field they matched in
- * (title counts for more than a glossary term, which counts for more
- * than the module/series name). Good enough for a few dozen to a few
- * hundred tutorials; not attempting to be good enough for the open web.
- */
 
 // Small and common, not exhaustive — dropped from every field before
 // matching so "the" or "of" in a title never counts as a real match.
@@ -52,11 +31,6 @@ const SYNONYMS = {
   matrices: "matrix",
 };
 
-/** A light, rule-based stemmer — not Porter's full algorithm, just the
- * common English suffixes worth stripping so "sorting"/"sorted"/"sorts"
- * all normalize to the same token as "sort". Deliberately conservative
- * (only touches words long enough that stripping a suffix is unlikely
- * to collide two unrelated words) rather than aggressive. */
 function stem(word) {
   if (word.length > 5) {
     if (word.endsWith("ing")) return word.slice(0, -3);
@@ -70,10 +44,6 @@ function stem(word) {
   return word;
 }
 
-/** Lower-case, apply the synonym table, then stem — the one normalizer
- * both the index (built once, at load) and every query (on every
- * keystroke) run every word through, so "Loops" in a query and
- * "iterating" in a tutorial's own glossary land on the same token. */
 function normalizeWord(word) {
   const lower = word.toLowerCase();
   return stem(SYNONYMS[lower] || lower);
@@ -85,12 +55,6 @@ function tokenize(text) {
   return words.map(normalizeWord).filter((w) => w.length > 1 && !STOPWORDS.has(w));
 }
 
-/** Scores one document against a query's already-tokenized words.
- * Three fields, three weights: a hit in the title counts for more than
- * a hit among the terms this tutorial specifically introduces, which
- * counts for more than a hit in its module or series name — a search
- * for "loop" should put a tutorial titled "Loops" ahead of one that
- * merely lives in a module called "Repeating Yourself". */
 function scoreDocument(doc, queryTokens) {
   if (queryTokens.length === 0) return 0;
   let score = 0;
@@ -102,14 +66,6 @@ function scoreDocument(doc, queryTokens) {
   return score;
 }
 
-/** Where this page's own assets live, relative to it — "assets/" for a
- * root-level page, "../../assets/" for a tutorial two folders deep, and
- * so on. Read from the same manifest every tutorial page already
- * carries (readManifest() in tutorial-runtime.js reads the same
- * element; this is a separate script and small enough not to share the
- * function, just the one field it needs). Root-level pages with no
- * cells of their own still carry a manifest with assetBase set — see
- * write_index()'s own, for one. */
 function assetBase() {
   const el = document.getElementById("dewlab-manifest");
   if (!el) return "assets/";
@@ -120,18 +76,10 @@ function assetBase() {
   }
 }
 
-/** The same relative path back to the site root that assetBase() carries
- * (it is just assetBase() with "assets/" itself lopped off the end) —
- * every result's own `url` in the index is root-relative ("tutorials/
- * computational-methods/first-steps.html"), so a page that is not
- * itself at the root has to prefix it with this before using it. */
 function rootBase() {
   return assetBase().replace(/assets\/$/, "");
 }
 
-/** Fetches and prepares the search index once — each document gets its
- * three token sets precomputed here rather than re-tokenized on every
- * keystroke, since the index itself never changes during a page visit. */
 async function loadIndex() {
   const response = await fetch(assetBase() + "search-index.json");
   if (!response.ok) throw new Error(`HTTP ${response.status}`);
@@ -144,10 +92,6 @@ async function loadIndex() {
   return documents;
 }
 
-/** Renders up to `limit` ranked results into the results <ul>. Each
- * result shows which of its own terms actually matched, when any did
- * — the part of a result that explains *why* it's here, not just that
- * it is. */
 function renderResults(listEl, ranked, queryTokens, limit = 12) {
   if (ranked.length === 0) {
     listEl.innerHTML = '<li class="dl-search-empty">No tutorial matches that yet — try a different word.</li>';
@@ -176,12 +120,6 @@ function escapeHtml(text) {
   return text.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 }
 
-/** Wires up one `.dl-search` instance — everything that used to be the
- * whole of initSearch(), before a page could carry more than one at
- * once (the nav popover beside "All tutorials", present everywhere,
- * plus a handful of pages' own body copy). `documents`/`loadError` are
- * the one shared fetch every instance on the page reads from, not
- * fetched again per instance. */
 function wireSearchBox(root, documents, loadError) {
   const input = root.querySelector(".dl-search-input");
   const list = root.querySelector(".dl-search-results");
@@ -251,9 +189,6 @@ function wireSearchBox(root, documents, loadError) {
   input.addEventListener("focus", () => { if (input.value.trim()) list.hidden = false; });
 }
 
-/** Loads the index once, then wires up every `.dl-search` box the page
- * carries — the nav popover beside "All tutorials" is on every page, so
- * this always finds at least one. */
 async function initSearch() {
   const roots = document.querySelectorAll(".dl-search");
   if (roots.length === 0) return;

@@ -268,11 +268,6 @@ class TestNotesNudge:
         page.click('[data-notes-nudge] button[data-value="off"]')
         assert "dl-nudge" not in self.export_button_class(page)
 
-        # Holds across a reload — a real setting, not a one-off toggle.
-        # No second click on the settings toggle here: DECISIONS_LOG.md
-        # 7.83's sidebar restore already reopens Settings on its own,
-        # since it was left open when the reload happened — clicking the
-        # toggle again would close it instead.
         reload_and_wait(page)
         assert "dl-nudge" not in self.export_button_class(page)
 

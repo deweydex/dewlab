@@ -51,19 +51,10 @@ REVIEW = ROOT / "planning" / "curriculum" / "review"
 PAIRS = REVIEW / "pairs"
 REPORT = REVIEW / "pair-results.md"
 
-# Judgements made while the judge could see the graph, and judgements made
-# blind, are two different piles and are reported separately. Mixing them
-# would lose the comparison that is the point of having both. `blind/README.md`
-# has what the comparison showed.
 SOURCES = {"pairs": (PAIRS, REPORT),
            "blind": (REVIEW / "blind", REVIEW / "pair-results-blind.md"),
            "sighted": (REVIEW / "sighted", REVIEW / "pair-results-sighted.md")}
 
-# Thirteen topics were split after these judgements were made, so a judgement
-# names a code that is gone. Each stands for the child that took over its
-# arrows, which is what `dev/draw_topic_graph.py` does; here it only decides
-# which name the report prints, so a reader is not left looking up a code that
-# no longer exists.
 GONE = {
     "MIT-6.3": "MIT-6.3a", "MIT-1.1": "MIT-1.1a", "MIT-6.8": "MIT-6.8a",
     "PDP-LO6": "PDP-LO6a", "MIT-1.10": "MIT-1.10a", "MIT-4.10": "MIT-4.10a",
@@ -171,10 +162,6 @@ def reachable_from(edges: set[tuple]) -> dict[str, set[str]]:
     nothing new when the graph runs factorials to permutations to
     combinations already.
     """
-    # Sorted, because a set of edges iterates in whatever order the hash
-    # gives, and the walk below follows that order. The loops it reports would
-    # otherwise differ between two runs over the same data, which makes a
-    # generated file impossible to check into CI.
     ahead: dict[str, list[str]] = defaultdict(list)
     for early, late in sorted(edges):
         ahead[early].append(late)
@@ -204,10 +191,6 @@ def cycles(edges: set[tuple]) -> list[list[str]]:
     A loop of two topics and a loop of five are different findings, so the
     caller separates them; this only finds them.
     """
-    # Sorted, because a set of edges iterates in whatever order the hash
-    # gives, and the walk below follows that order. The loops it reports would
-    # otherwise differ between two runs over the same data, which makes a
-    # generated file impossible to check into CI.
     ahead: dict[str, list[str]] = defaultdict(list)
     for early, late in sorted(edges):
         ahead[early].append(late)
@@ -282,10 +265,6 @@ def build_report(topics: dict, batches: list[dict]) -> str:
         a, b = key
         second = b if first == a else a
 
-        # Two judges who both saw a prerequisite and pointed it opposite ways
-        # have between them said the pair is a level. That is the "both ways"
-        # answer, arrived at by two people instead of one, so it belongs with
-        # the levels rather than in a list of things to settle.
         directions = {v["first"] for v in cast if v["verdict"] == "needs"}
         if (not agreed and len(directions) > 1
                 and all(v["verdict"] == "needs" for v in cast)):
@@ -311,9 +290,6 @@ def build_report(topics: dict, batches: list[dict]) -> str:
 
     both_ways.sort(key=lambda entry: entry[0])
     loops = cycles(existing | judged_edges)
-    # A two-topic loop says those two are a level. A longer one is a real
-    # problem: it cannot be taught in any order and no amount of teaching
-    # them together fixes it.
     levels = sorted((lp for lp in loops if len(lp) == 3), key=lambda lp: lp[0])
     tangles = sorted((lp for lp in loops if len(lp) > 3), key=lambda lp: lp[0])
 

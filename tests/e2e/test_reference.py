@@ -242,9 +242,6 @@ class TestOpeningAndClosing:
         context.close()
 
     def test_opening_the_reference_does_not_close_settings(self, site, browser, base_url):
-        # Settings is right-anchored; the reference panel is left-anchored
-        # (tutorial-style.css) — genuinely different corners, so a reader
-        # can have both open together (see DECISIONS_LOG.md on this).
         context, page = self.open_page(site, browser, base_url)
         page.click("#dl-settings-toggle")
         assert page.is_visible("#dl-settings")
@@ -451,8 +448,6 @@ class TestMobile:
         context.close()
 
 
-# --------------------------------------------- highlight-to-look-up
-
 LOOKUP_TERM = {"term": "gradient", "kind": "concept",
                "definition": "How steeply something changes."}
 
@@ -471,10 +466,6 @@ version: 2026.08.23.1
 The gradient of a line is one thing, and serendipity is quite another.
 """
 
-# Selecting text from a test script: walk the reading for the word, put a
-# Range over it, and make that the document's selection — which is what a
-# reader's own drag produces, and what fires the selectionchange this
-# feature listens on.
 SELECT = """(word) => {
   const walk = document.createTreeWalker(
     document.getElementById('dl-body'), NodeFilter.SHOW_TEXT);
@@ -505,11 +496,6 @@ class TestHighlightToLookUp:
     """
 
     def open_page(self, site, browser, base_url):
-        # Flat, matching _tutorial()/_glossary() above rather than the
-        # folder-per-tutorial layout the real tutorials/ uses: the build reads
-        # a glossary from beside its own markdown wherever that sits, so these
-        # fixtures work either way, and staying consistent with the rest of
-        # this file keeps one convention per file.
         path = site / "tutorials" / MODULE / "lookup.md"
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(LOOKUP_PROSE)

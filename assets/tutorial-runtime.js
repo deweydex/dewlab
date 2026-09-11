@@ -1,76 +1,32 @@
-/* dewlab tutorial runtime.
- *
- * Owns three things on a generated tutorial page:
- *   1. the settings panel — the reader's work, the download, and the reading
- *      texture (theme/font/size/width/link colour -> CSS variables),
- *   2. the CodeMirror editors for `exec` cells, and read-only CodeMirror over
- *      the illustrative blocks build.py marked as `pre.dl-static`,
- *   3. booting Pyodide and running a cell's code.
- *
- * Deliberately thin on rendering: everything a cell produces is turned into
- * markup by tutorial_tools.py, inside Python, so the output rules live in one
- * place and stay unit-testable without a browser. This file starts the work
- * and gets out of the way.
- */
 
 import { createCodeEditor, createReadOnlyCode, setEditorTheme,
          setLineNumbers, setIndentWidth } from "./vendor/codemirror.bundle.js";
 import { mountSitePreview } from "./site-relay.js";
 
-/* ------------------------------------------------------------------ config */
-
-/* Pyodide is loaded from the public CDN by default. `DEWLAB_PYODIDE_BASE` lets
- * a page point at a self-hosted copy instead — used by the e2e tests, and the
- * escape hatch if a school network ever blocks the CDN (OPEN_QUESTIONS.md 32).
- * Switching the whole site over is a one-line change here, not a redesign. */
 const PYODIDE_VERSION = "0.28.3";
-/* Resolved against the page, so a relative base ("../assets/pyodide/") works
- * as a module specifier. A bare relative path is not one, and `import()` would
- * reject it. */
 const PYODIDE_BASE = new URL(
   globalThis.DEWLAB_PYODIDE_BASE ||
     `https://cdn.jsdelivr.net/pyodide/v${PYODIDE_VERSION}/full/`,
   document.baseURI
 ).href;
 
-/* The baseline three, per DECISIONS.md. All are official Pyodide packages, so
- * this is one loadPackage call with no micropip step. A tutorial can widen the
- * list via `packages:` in its frontmatter (that is how scipy would arrive). */
 const DEFAULT_PACKAGES = ["numpy", "pandas", "matplotlib"];
 
 const TEXTURE_KEY = "dewlab:texture";
 const PROGRESS_PREFIX = "dewlab:progress:";
 const PROGRESS_BADGES_KEY = "dewlab:progress-badges";
-/* planning/STUDENT_NOTES.md §4's staleness marker: how many new characters
- * of notes text, since the last export, before the export button gets a
- * marker. Rough on purpose — a heuristic, not a promise. */
 const NOTES_EXPORT_PREFIX = "dewlab:notes-exported-len:";
 const NOTES_NUDGE_KEY = "dewlab:notes-nudge";
 const NOTES_NUDGE_THRESHOLD = 120;
 const RUN_STATS_KEY = "dewlab:run-stats";
-/* Staged hints (planning/CELL_HINTS.md): whether they appear at all, and
- * whether a restart of Python hides the ones already shown. Both default
- * to the more forgiving reading — on, and keep. */
 const STAGED_HINTS_KEY = "dewlab:staged-hints";
 const STAGED_HINTS_RESTART_KEY = "dewlab:staged-hints-restart";
 const AUTOSAVE_DELAY = 500;
-/* A base64-embedded figure (tutorial_tools.py's _figure_html()) is easily
- * a few hundred KB in one cell's output_html, next to a typical printed
- * result's few dozen bytes — this is "that cell's own output is the odd
- * one out," not a real content-size judgement. Past this, saveNow()'s
- * retry below treats it as the thing to drop first if storage is full. */
 const SAVED_OUTPUT_STRIP_THRESHOLD = 100_000;
-/* The build.py write_*_page() slugs that are not a tutorial at all —
- * nothing here has "your work" to save, cells or notes alike, the way an
- * actual tutorial page does. */
 const NON_TUTORIAL_PAGES = new Set(["index", "tree", "about", "topics"]);
 const TEXTURE_DEFAULTS = {
   theme: "system", font: "serif", size: 18, width: 34,
   link: "#d4692a", header: "full", contrast: "normal",
-  /* "Cell buttons" — icons only, text only, or both (planning/
-   * CELL_IDENTITY.md §9), the same choice compose/dewmini.js's own Texture
-   * panel offers, applied through the same [data-button-labels] CSS this
-   * page and dewmini both load from tutorial-style.css. */
   buttons: "both",
   // Cuts CSS transitions/animations site-wide when "reduced" — a plain
   // accessibility toggle, not tied to the system prefers-reduced-motion
@@ -87,21 +43,8 @@ const TEXTURE_DEFAULTS = {
   linenumbers: "on",
 };
 
-/* The size slider's minimum, which has to be known here as well as in the
- * markup: a preference saved when the floor was lower is lifted to it on
- * load (loadTexture). Keep in step with `min=` on #dl-texture-size. */
 const TEXTURE_MIN_SIZE = 16;
 
-/* -------------------------------------------------------------- manifest */
-
-/* Every tutorial page build.py generates carries a <script id="dewlab-manifest">
- * tag holding one JSON object describing that specific page: its cells'
- * starter code, which Python packages it needs, where its data files
- * live, and so on. This function is how that JSON gets from "text on the
- * page" into a real JavaScript object the rest of this file can use —
- * with sensible defaults filled in if the tag is missing or somehow not
- * valid JSON, so a broken manifest degrades gracefully (an empty page
- * with no cells) instead of crashing this entire script. */
 function readManifest() {
   const el = document.getElementById("dewlab-manifest");
   if (!el) return { cells: [], assetBase: "", dataBase: "", packages: DEFAULT_PACKAGES };
@@ -126,32 +69,15 @@ function readManifest() {
   return m;
 }
 
-/* An asset the runtime fetches for itself, with the version build.py hashed for
- * it. The page's own <link> and <script> tags are versioned in the markup; these
- * two are not in the markup, so they would otherwise be the only files a
- * returning visitor could be served a stale copy of. */
 function assetUrl(manifest, name) {
   const version = manifest.assetVersions[name];
   return manifest.assetBase + name + (version ? `?v=${version}` : "");
 }
 
-/* ---------------------------------------------------------------- chrome */
-
-/* The sticky masthead and navigation are one group, and everything below has
- * to clear it: the status line, the settings panel, and an anchored jump, which
- * would otherwise land its heading underneath. Its height is not a constant —
- * it depends on how far the neighbouring tutorials' titles wrap, which depends
- * on the window and on the reader's text size — so it is measured rather than
- * guessed, and measured again whenever it changes. */
 function trackChromeHeight() {
   const chrome = document.getElementById("dl-chrome");
   if (!chrome) return;
 
-  /* Measures the header's actual on-screen height right now and writes it
-   * into a CSS custom property (--dl-chrome-h), which tutorial-style.css
-   * then uses wherever something needs to sit below the header. This is
-   * "measure, don't guess": the header's height genuinely isn't a fixed
-   * number, since it depends on how the neighbouring tutorial titles wrap. */
   const publish = () => {
     document.documentElement.style.setProperty(
       "--dl-chrome-h", `${Math.round(chrome.getBoundingClientRect().height)}px`
@@ -159,13 +85,6 @@ function trackChromeHeight() {
   };
   publish();
 
-  /* ResizeObserver is a browser API that calls a function whenever a
-   * specific element's size changes, for any reason — not just a window
-   * resize, but also (for instance) the header wrapping differently
-   * because its content changed. It's the more precise tool for "watch
-   * this one element," and is preferred here over listening for the
-   * window's own resize event, which only catches one of the ways the
-   * header's height can actually change. */
   if (typeof ResizeObserver === "function") {
     new ResizeObserver(publish).observe(chrome);
   } else {
@@ -174,35 +93,6 @@ function trackChromeHeight() {
   }
 }
 
-/* -------------------------------------------------------- settings panel */
-
-/* Settings, the reference (initReference(), below), and the navigation
- * panel (initSeriesNav()) are three docked sidebars, toggled from the
- * masthead's own action row (shell.html) — three open/close behaviours
- * on the page rather than one. Only two of them actually conflict: the
- * reference and the navigation panel dock to the same left edge
- * (tutorial-style.css) and would sit directly on top of each other if
- * both opened, so opening either one still closes the other. Settings
- * docks to the right instead — genuinely a different part of the
- * screen — and reader and content stay clear of whichever panel(s) are
- * open via the panel-open margin rules further down in
- * tutorial-style.css, so Settings can stay open alongside either of the
- * other two rather than being force-closed by them. Escape and a click
- * outside a given panel still close that one panel: dismissible without
- * hunting for the same small button again, whichever panel it is. Each
- * panel's open state also survives a Prev/Next page navigation
- * (saveSidebarState()/restoreSidebarState(), further down) on anything
- * wider than the phone breakpoint, so leaving one open reads as choosing
- * to work with it open rather than something to reopen on every page. */
-/* The three functions below (closeReference, closeSettings,
- * closeSeriesNav) and the three init*() functions further down that use
- * them share one repeated shape: a toggle button, a panel, and a
- * setOpen(open) function that shows/hides the panel — and, for the
- * reference and navigation panel specifically, closes the other of
- * that pair, since those two are the ones that actually conflict.
- * `aria-expanded` is set alongside the plain `hidden` attribute so a
- * screen reader also knows the toggle button's current state, not just
- * a sighted reader looking at whether the panel is visible. */
 function closeReference() {
   const toggle = document.getElementById("dl-reference-toggle");
   const panel = document.getElementById("dl-reference");
@@ -227,15 +117,6 @@ function closeSeriesNav() {
   if (toggle) toggle.setAttribute("aria-expanded", "false");
 }
 
-/**
- * Remembers which docked sidebar(s) a reader left open, so a series read
- * end to end (Prev/Next) keeps the reference or Settings open across
- * pages the way a permanent pane in a real IDE would, rather than
- * re-closing itself on every navigation. Read once at startup by
- * restoreSidebarState(); written here on every change so it stays
- * correct regardless of which of a panel's several open/close paths
- * (toggle click, close button, Escape, click-outside) did it.
- */
 function saveSidebarState() {
   const referencePanel = document.getElementById("dl-reference");
   const seriesnavPanel = document.getElementById("dl-seriesnav");
@@ -249,18 +130,6 @@ function saveSidebarState() {
   } catch (e) { /* private mode, blocked storage: nothing to remember */ }
 }
 
-/**
- * The other half of saveSidebarState() — opens whatever was left open
- * last time, by clicking the same toggle a reader would have clicked,
- * so this reuses each panel's own open logic (including the reference/
- * series-nav mutual exclusion) rather than duplicating it. Skipped
- * below the phone breakpoint, where a panel is a bottom sheet covering
- * most of the screen rather than a sidebar worth leaving open by
- * default, and skipped for a panel whose toggle this page never
- * revealed (no glossary/notes/datasets for the reference, no series
- * position for the nav) — clicking a hidden toggle would do nothing
- * harmful, but there is nothing to restore either.
- */
 function restoreSidebarState() {
   if (!window.matchMedia("(min-width: 34rem)").matches) return;
   let state;
@@ -284,28 +153,6 @@ function restoreSidebarState() {
   }
 }
 
-/**
- * Keeps `<html data-dl-panel-left>`/`<html data-dl-panel-right>` in sync
- * with whether a left-docked panel (reference or series nav) and/or the
- * right-docked Settings panel is currently visible — a MutationObserver
- * on each panel's `hidden` attribute, rather than hooking every one of
- * their several open/close paths (toggle click, close button, Escape,
- * click-outside), so this stays correct regardless of which path closed
- * a given panel. tutorial-style.css reads these two attributes to push
- * `.dl-page` clear of whichever side(s) currently have a panel open, on
- * desktop widths, so neither ever ends up covering a reader's own text
- * or a cell's controls — both panels can be open at once now (see the
- * comment above initSettingsPanel()), so this tracks the two sides
- * independently rather than a single "something is open" flag.
- *
- * A ResizeObserver on the same panels keeps --dl-panel-left-w/
- * --dl-panel-right-w in step with each panel's own *actual* rendered
- * width, not a guess — a docked sidebar can be dragged wider or
- * narrower at any time via its own resize handle, and the margin
- * pushing the page clear of it has to track that or a reader who drags
- * one wide enough would end up right back where this whole mechanism
- * started: a panel covering their own text.
- */
 function watchPanelOverlap() {
   const rightPanels = [document.getElementById("dl-settings")].filter(Boolean);
   const leftPanels = [document.getElementById("dl-reference"), document.getElementById("dl-seriesnav")].filter(Boolean);
@@ -353,19 +200,6 @@ function watchPanelOverlap() {
   for (const panel of [...rightPanels, ...leftPanels]) widthObserver.observe(panel);
 }
 
-/**
- * Whether `target` sits inside any of the named panels/toggles — used
- * by each of the three panels' own "click outside closes this" handler
- * so that clicking a *compatible* panel's toggle (Settings, from the
- * reference's or series nav's own listener; either of those two, from
- * Settings' own listener) never reads as "outside" and closes a panel
- * that is allowed to stay open alongside it. A genuine click elsewhere
- * on the page still closes whatever's open, same as before.
- *
- * @param {EventTarget} target
- * @param {string[]} ids - element ids to treat as "inside"
- * @returns {boolean}
- */
 function clickIsInsidePanels(target, ids) {
   return ids.some((id) => {
     const el = document.getElementById(id);
@@ -373,28 +207,6 @@ function clickIsInsidePanels(target, ids) {
   });
 }
 
-/**
- * A draggable strip along the edge a docked panel grows *into* — its left
- * edge when docked right, its right edge when docked left.
- *
- * This replaces native CSS `resize: horizontal` on both, for two separate
- * reasons. On a right-docked panel the native handle is unusable: it sits
- * at the box's bottom-right corner, flush with the browser window's own
- * right edge, with no room to drag further right and grow it — found by an
- * actual drag test, not assumed from the CSS (DECISIONS_LOG.md 7.84). On a
- * left-docked panel it *works*, which is why it was left alone — but it is
- * a small corner triangle facing a full-height strip on the panel opposite.
- * Two rails, two affordances, only one of them findable: that asymmetry is
- * why this is now shared rather than right-docked only.
- *
- * `side` is the edge the panel is docked to, so the drag maths runs the
- * right way round: a right-docked panel grows as the pointer moves left,
- * a left-docked one as it moves right. `min`/`max` mirror the panel's own
- * CSS `min-width`/`max-width`, kept in sync by hand — the constants are
- * already known and simpler than parsing them back out of the DOM.
- * `onResize` fires once per drag, on release rather than per frame, for a
- * caller that wants to persist the new width.
- */
 function makeEdgeResizable(panel, side = "right", min = 256, max = 640, onResize = null) {
   if (!panel || panel.querySelector(".dl-panel-resize-handle")) return;
   const handle = document.createElement("div");
@@ -461,9 +273,6 @@ function initSettingsPanel() {
     setOpen(false);
   });
 
-  /* A section with nothing in it is a heading over a gap. build.py leaves the
-   * download section empty on the contents page, which has nothing to
-   * download, and on a downloadable copy, which is already the file. */
   for (const section of panel.querySelectorAll(".dl-settings-section")) {
     if (!section.textContent.trim()) section.hidden = true;
   }
@@ -484,16 +293,6 @@ function initSettingsPanel() {
   }
 }
 
-/**
- * Filters the Settings panel's own rows down to whatever matches `query` —
- * a plain substring match against each row's visible text plus a small
- * `data-keywords` list on the row itself (shell.html), the same reason
- * assets/search.js keeps a synonym table: a row labelled just "Size" would
- * never match someone typing "font size" without one. Only `.dl-texture-row`
- * elements — the actual adjustable controls — participate; a section's own
- * heading or an action button like "Restart Python" is left alone, since
- * neither is a setting to search for.
- */
 function filterSettingsContent(query) {
   const panel = document.getElementById("dl-settings");
   const emptyMessage = document.getElementById("dl-settings-empty");
@@ -511,8 +310,6 @@ function filterSettingsContent(query) {
   if (emptyMessage) emptyMessage.hidden = anyRowVisible || !needle;
 }
 
-/* -------------------------------------------------------- reference */
-
 /* build.py's own kind list — GLOSSARY_KINDS — in the order a reader would
  * find most useful to scan: what a thing *is* before what you *do* with it. */
 const GLOSSARY_GROUP_LABELS = {
@@ -523,12 +320,6 @@ const GLOSSARY_GROUP_LABELS = {
   keyword: "Keywords",
 };
 
-/* Builds the reference's content from scratch out of the manifest's
- * glossary/notes/dataset entries, using document.createElement rather
- * than building an HTML string — safer by construction, since
- * `.textContent = entry.term` can never accidentally turn a term's text
- * into markup, the way concatenating it into an HTML string could if the
- * term ever contained something like "<" without careful escaping. */
 function renderReference(manifest) {
   const container = document.getElementById("dl-reference-groups");
   if (!container) return;
@@ -632,16 +423,6 @@ function renderReference(manifest) {
   if (searchInput) searchInput.hidden = container.querySelectorAll("dt, .dl-note").length < 6;
 }
 
-/**
- * Filters an already-rendered reference panel down to entries matching
- * `query` — a plain substring match over each term's own name and
- * definition (and a note's own text), not the cross-page index
- * assets/search.js uses for the contents/topics pages: this panel's
- * whole content is already sitting in the DOM for one page, so there is
- * nothing to fetch and no reason for anything fancier than hiding what
- * doesn't match. A `dt`/`dd` pair hides or shows together, since a
- * definition split from its own term would be meaningless either way.
- */
 function filterReferenceContent(query) {
   const container = document.getElementById("dl-reference-groups");
   const emptyMessage = document.getElementById("dl-reference-empty");
@@ -671,16 +452,6 @@ function filterReferenceContent(query) {
   if (emptyMessage) emptyMessage.hidden = anyGroupVisible || !needle;
 }
 
-/* Same open/close mechanics as initSettingsPanel(), staying in sync with
- * initSeriesNav() only — the two share a corner and genuinely conflict
- * (see setOpen() below); Settings does not. This toggle starts `hidden`
- * in shell.html, and stays that way — offering nothing at all — unless
- * this page's own manifest actually carries a glossary, a note, or a
- * dataset (planning/SIDEBAR_CONTENT.md §4 — none of the three is
- * cumulative the same way, but all three share this one panel). A
- * tutorial with nothing accumulated yet (planning/REFERENCE_PANEL.md §6)
- * is not a rare case early on: it is every tutorial before the skill has
- * been run on anything ahead of it in its series. */
 function initReference(manifest) {
   const toggle = document.getElementById("dl-reference-toggle");
   const panel = document.getElementById("dl-reference");
@@ -745,26 +516,6 @@ function initReference(manifest) {
   }
 }
 
-/**
- * Highlight-to-look-up: select a word in the reading, and if the reference
- * actually knows it, a small button appears offering to look it up.
- *
- * The rule that keeps this from being annoying is that it stays silent
- * unless it has something to say. A reader selecting text to copy, or
- * dragging across a sentence, sees nothing at all — the button only appears
- * when the selection matches a term this page's reference has actually
- * taught, which is exactly when a reader might have been about to go
- * looking for it anyway.
- *
- * Matching is against term *names* only, not definitions. Matching
- * definitions too would fire on ordinary words like "number" that happen to
- * appear in some entry's prose, which is the noisy version of this feature
- * and the reason it is not that.
- *
- * Nothing is stored and nothing is remembered: selection in, the panel's
- * existing filter out (filterReferenceContent(), the same one the panel's
- * own search box drives).
- */
 function initReferenceLookup(manifest) {
   const body = document.getElementById("dl-body");
   const panel = document.getElementById("dl-reference");
@@ -791,9 +542,6 @@ function initReferenceLookup(manifest) {
 
   function hide() { button.hidden = true; }
 
-  /* The term this selection is asking about, or null. A selection matches
-   * when it contains a term or a term contains it, so both "matrix" selected
-   * inside "transformation matrix" and the whole phrase find the entry. */
   function whole(word) {
     // A word-boundary test, built from a selection, so the selection has to
     // be escaped: a reader can select "f()" or "x^2", and those are regex
@@ -902,16 +650,6 @@ function initReferenceLookup(manifest) {
   document.addEventListener("scroll", hide, { passive: true });
 }
 
-/* --------------------------------------------------------- navigation panel */
-
-/* Same open/close mechanics as initSettingsPanel()/initReference(). Unlike
- * the reference, this panel's content is static per page — build.py's
- * render_series_nav() already rendered it server-side into {{SERIES_NAV}}
- * — so there is nothing here to assemble from a manifest, only whether
- * it ended up with anything in it. A tutorial with no series position
- * (archived, or a practice page) gets an empty <nav>, the same "nothing
- * to show, nothing to click" rule the reference's toggle already
- * follows for a tutorial with nothing accumulated yet. */
 function initSeriesNav() {
   const toggle = document.getElementById("dl-seriesnav-toggle");
   const panel = document.getElementById("dl-seriesnav");
@@ -948,34 +686,16 @@ function initSeriesNav() {
   });
 }
 
-/* -------------------------------------------------- .dl-seg radiogroups */
-
-/* Every .dl-seg is a mutually-exclusive single-choice group — the WAI-ARIA
- * APG radiogroup pattern, not a row of independent toggle buttons. role and
- * the group's accessible name are static (shell.html); what changes at
- * runtime is which button is aria-checked and, per the pattern's roving
- * tabindex, which one is a tab stop. Each group's own sync() below calls
- * this once per button in place of the old aria-pressed line, then
- * syncSegRoving() once per group to settle the tab stop. */
 function setSegChecked(btn, checked) {
   btn.setAttribute("aria-checked", String(checked));
 }
 
-/* Exactly one button in a group is ever a tab stop: the checked one, or —
- * for a group like Width that can sit between its presets with none of
- * them checked — the first, so the group is never skipped entirely. */
 function syncSegRoving(group) {
   const buttons = [...group.querySelectorAll("button")];
   const checked = buttons.find((btn) => btn.getAttribute("aria-checked") === "true");
   for (const btn of buttons) btn.tabIndex = btn === (checked || buttons[0]) ? 0 : -1;
 }
 
-/* One keydown listener per group covers every .dl-seg on the page, rather
- * than repeating it at each of the half-dozen places a group gets wired up
- * below. Arrow keys move focus and selection together, per the radiogroup
- * pattern, wrapping at the ends; Home/End jump to the first/last. Calling
- * .click() reuses whatever that particular group's own click handler does,
- * so this never needs to know what a selection *means* for any given group. */
 function initSegKeyboardNav() {
   for (const group of document.querySelectorAll(".dl-seg")) {
     group.addEventListener("keydown", (ev) => {
@@ -995,8 +715,6 @@ function initSegKeyboardNav() {
   }
 }
 
-/* --------------------------------------------------------- texture panel */
-
 function isDarkNow() {
   const explicit = document.documentElement.getAttribute("data-theme");
   if (explicit === "dark") return true;
@@ -1004,18 +722,6 @@ function isDarkNow() {
   return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
 }
 
-/* Reads whatever reading-preference choices this reader has made before
- * (theme, font, text size, and so on) out of localStorage, layered on
- * top of TEXTURE_DEFAULTS. The `{ ...a, ...b }` spread syntax merges two
- * objects, with `b`'s keys overriding `a`'s — so a reader's stored
- * choices override the defaults, but any key they've never set (or that
- * didn't exist yet when they last saved) still falls back to the
- * default. This is a pattern repeated throughout this file for every
- * piece of per-reader state (progress, notes, version pins): wrap the
- * read in try/catch, because localStorage can throw (private browsing,
- * a browser setting that blocks it entirely) rather than just returning
- * nothing, and a broken preference should never be able to crash the
- * whole page. */
 function loadTexture() {
   let state;
   try {
@@ -1023,17 +729,10 @@ function loadTexture() {
   } catch (err) {
     return { ...TEXTURE_DEFAULTS };
   }
-  /* The size slider's floor went from 15px to 16px (DECISIONS_LOG 7.101),
-   * so a preference saved before that can be below the control's own
-   * minimum — the slider would then show a thumb that does not match the
-   * page. Lift it rather than leaving the two disagreeing. */
   if (!(state.size >= TEXTURE_MIN_SIZE)) state.size = TEXTURE_MIN_SIZE;
   return state;
 }
 
-/* The write side of loadTexture — same try/catch-and-shrug shape, since a
- * reader whose browser refuses to store this should still get to read
- * the page, just without a preference that survives the page closing. */
 function saveTexture(state) {
   try {
     localStorage.setItem(TEXTURE_KEY, JSON.stringify(state));
@@ -1043,14 +742,6 @@ function saveTexture(state) {
   }
 }
 
-/* Turns a texture state object into the actual visual change: setting
- * (or removing) a `data-*` attribute on `<html>` for theme/font/header —
- * the CSS in tutorial-style.css keys off of exactly these attributes —
- * and setting CSS custom properties directly for the numeric/free-form
- * ones (size, width, link colour). Removing an attribute rather than
- * setting it to a "default" value, when the choice is the default, keeps
- * the CSS simpler: it can assume "no attribute" means default, rather
- * than needing an explicit rule for every possible default value too. */
 function applyTexture(state) {
   const root = document.documentElement;
   if (state.theme === "system") root.removeAttribute("data-theme");
@@ -1088,17 +779,6 @@ function applyTexture(state) {
   else root.style.removeProperty("--dl-link");
 }
 
-/* Wires up every control in the Texture settings section: the segmented
- * button groups (theme/font/width presets), the two sliders (size,
- * width), the colour picker (link), and the reset button. `state` is
- * plain mutable object shared by every one of these listeners through
- * closures — each listener just changes the one property it's
- * responsible for and calls commit(), which re-applies, re-saves, and
- * re-syncs every control's own displayed state to match. `onThemeChange`
- * is a callback the caller (the bottom of this file) provides, since this
- * function doesn't know about CodeMirror editors itself — it just reports
- * "the effective theme changed" and lets the caller decide what to do
- * with that. */
 function initTexture(onThemeChange) {
   const state = loadTexture();
   applyTexture(state);
@@ -1114,9 +794,6 @@ function initTexture(onThemeChange) {
   function sync() {
     for (const group of panel.querySelectorAll(".dl-seg")) {
       const key = group.dataset.texture;
-      /* Width is a number with three named presets and a slider behind them.
-       * Setting it to something between the presets is allowed and leaves none
-       * of the three pressed, which is the honest way to show it. */
       const current = group.hasAttribute("data-number") ? String(state[key]) : state[key];
       for (const btn of group.querySelectorAll("button")) {
         setSegChecked(btn, btn.dataset.value === current);
@@ -1170,13 +847,8 @@ function initTexture(onThemeChange) {
   return state;
 }
 
-/* ---------------------------------------------------------------- status */
-
 const runAnnouncerEl = document.getElementById("dl-run-announcer");
 const statusEl = document.getElementById("dl-status");
-/* The status text lives in its own child rather than directly in statusEl,
- * so setStatus() can rewrite it on every boot-progress message without
- * touching (and re-hiding) the bouncing dots sitting next to it. */
 const statusTextEl = document.getElementById("dl-status-text");
 const bootDotsEl = document.getElementById("dl-boot-dots");
 
@@ -1192,49 +864,20 @@ function setStatus(text, kind) {
   statusEl.classList.toggle("dl-status-error", kind === "error");
 }
 
-/* Greys out every cell's editor and shows the bouncing dots next to the
- * status text, for as long as Pyodide is actually booting — not for the
- * "unavailable" state a failed boot leaves behind, which gets its own
- * error banner instead (see ensureBooted()'s catch below). One attribute
- * on <html> rather than a class, matching the data-dl-panel-left/right
- * convention above. */
 function setBooting(active) {
   document.documentElement.toggleAttribute("data-dl-booting", active);
   if (bootDotsEl) bootDotsEl.hidden = !active;
 }
 
-/* ----------------------------------------------------------------- cells */
-
 /* One entry per `exec` cell on the page, in document order. */
 const cells = [];
 
-/* One entry per cell a reader has added themselves — see the "custom
- * cells" section further down for what these are and why they're kept
- * apart from `cells` above rather than merged into it. */
 const customCells = [];
 
 /* One entry per live HTML/CSS/JS site editor on the page (DEWSTACK_MERGE.md
  * §3, DECISIONS_LOG.md 7.142) — see buildSiteEditors() below. */
 const siteEditors = [];
 
-/* Collapses or expands one cell — an authored cell or a custom one,
- * python or text — by hiding its editable content (`.dl-cell-content`)
- * and showing a one-line summary in its place, or the reverse. Ported
- * from dewmini's own setCollapsed() closure inside createCellElement()
- * (DECISIONS_LOG.md 7.110/7.112, planning/CELL_IDENTITY.md §4): every
- * cell type gets this, code and text alike, since there's nothing
- * type-specific about wanting a long cell out of the way without
- * deleting it. Unlike dewmini's version this is a standalone function
- * rather than a per-cell closure, since it has to work the same way for
- * both `cells` and `customCells` — it reads `cell.collapseBtn`/
- * `contentRegion`/`collapsedSummary`, set once when each cell is built,
- * rather than closing over element references of its own. Saving is the
- * caller's job — saveNow() or saveCustomCells() directly, not the
- * debounced scheduleSave()/scheduleCustomSave(), matching dewmini's own
- * setCollapsed() (which calls saveState() the same way): a collapse
- * toggle is one discrete click, not a burst of keystrokes worth
- * coalescing, and debouncing it only risks losing the state to a reload
- * that beats the timer. */
 function setCellCollapsed(cell, collapsed) {
   cell.collapsed = collapsed;
   if (cell.contentRegion) cell.contentRegion.hidden = collapsed;
@@ -1252,10 +895,6 @@ function setCellCollapsed(cell, collapsed) {
   }
 }
 
-/* Kept well under any server's practical URL-length limit (commonly
- * ~8000 characters), with room to spare for the other fields sharing the
- * same address — code and output are the only two that can run long, so
- * they are the only two this ever has to shorten. */
 const REPORT_CODE_LIMIT = 2500;
 const REPORT_OUTPUT_LIMIT = 1500;
 
@@ -1264,14 +903,6 @@ function truncateForReport(text, limit) {
   return `${text.slice(0, limit)}\n… (cut off here — paste the rest yourself if it matters)`;
 }
 
-/* Fills in the two fields build.py's render_cell() could not: this cell's
- * code as the reader actually has it right now, and whatever its output
- * area is currently showing (an error included — tutorial_tools.py's
- * show_error() writes the traceback straight into that same area, so
- * there is nothing special to look for). Called once, right as the panel
- * opens, rather than kept in sync on every keystroke: nobody reads a
- * report link before opening the panel to use it, so there is nothing to
- * gain from paying for this on every edit. */
 function updateCellReportLinks(cell, box) {
   const code = truncateForReport(cell.getCode(), REPORT_CODE_LIMIT);
   const output = truncateForReport((cell.outputEl?.innerText || "").trim(), REPORT_OUTPUT_LIMIT);
@@ -1285,15 +916,6 @@ function updateCellReportLinks(cell, box) {
   }
 }
 
-/* Turns the manifest's plain-data cell descriptions into real, working
- * cells on the page: finds each cell's DOM elements (already present in
- * the HTML build.py generated — this doesn't create the cell's markup,
- * only makes it interactive), creates a CodeMirror editor inside it, and
- * wires up its Run button, Reset button, hint toggle, and keyboard
- * shortcut. Each cell's info (its editor, output element, starter code)
- * is collected into a plain object and pushed onto the shared `cells`
- * array, which is what every other function in this file (runCell,
- * saveNow, restoreSaved, and so on) iterates over or looks a cell up in. */
 function buildCells(manifest) {
   const dark = isDarkNow();
 
@@ -1317,11 +939,6 @@ function buildCells(manifest) {
     const cell = {
       id: spec.id,
       starter: spec.code || "",
-      /* The fence's own language word (build.py's Cell.type) — "python" for
-       * every cell until DEWSTACK_MERGE.md's sql exec fence. Read by
-       * codeToRun() to decide whether this cell's code needs wrapping
-       * before it reaches Python, and by Duplicate to carry the type into
-       * the custom cell it creates. */
       type: spec.type || "python",
       outputEl,
       runBtn,
@@ -1386,11 +1003,6 @@ function buildCells(manifest) {
       duplicateBtn.addEventListener("click", () => duplicateAsCustomCell(cell, cell.type));
     }
 
-    /* A cell's own hint, if it has one: a plain click toggle, not hover — see
-     * the CSS comment on .dl-hint-icon for why. Opening it is a real state
-     * change (aria-expanded, the [hidden] attribute), not a display trick, so
-     * a screen reader announces it the same way any other disclosure widget
-     * would. */
     const hintIcon = host.querySelector(".dl-hint-icon");
     const hintText = host.querySelector(".dl-hint-text");
     if (hintIcon && hintText) {
@@ -1401,13 +1013,6 @@ function buildCells(manifest) {
       });
     }
 
-    /* The report icon (build.py's render_cell(), DECISIONS_LOG.md Phase 8)
-     * — same open/close shape as the hint icon just above, but the panel it
-     * reveals has two of its three links already built at build time with
-     * everything build.py could know, and nothing it couldn't: this cell's
-     * code and its last output only exist once the reader has actually
-     * typed and run something, so updateCellReportLinks() fills those in
-     * fresh on every open, never stale from an earlier run. */
     const reportIcon = host.querySelector(".dl-report-icon");
     const reportBox = host.querySelector(".dl-report-doors");
     if (reportIcon && reportBox) {
@@ -1419,9 +1024,6 @@ function buildCells(manifest) {
       });
     }
 
-    /* Ctrl/Cmd+Enter runs the cell, the shortcut every notebook user reaches
-     * for first. Registered on the host rather than inside CodeMirror's keymap
-     * so it also fires from the Run button's own focus. */
     host.addEventListener("keydown", (ev) => {
       if ((ev.ctrlKey || ev.metaKey) && ev.key === "Enter") {
         ev.preventDefault();
@@ -1431,23 +1033,6 @@ function buildCells(manifest) {
   }
 }
 
-/* One `dl-site-editor` per manifest.siteEditors entry: a live HTML/CSS/JS
- * pane group, mounted onto the empty containers render_site_editor()
- * (build.py) leaves in the page — the same "markup is a shell, the
- * runtime fills it" split buildCells() above uses for an exec cell. The
- * relay, the preview document and the in-flight-coalescing flush all live
- * in assets/site-relay.js, shared with dewmini's own Site tab
- * (DECISIONS_LOG.md 7.142); this function only builds the editors, wires
- * Run and Reset, and draws the console.
- *
- * HTML and CSS are live from the moment this runs — the preview should
- * never sit blank while a reader decides whether to click something.
- * JavaScript is not: a fresh page shows an editor whose script has never
- * run, matching the stated rule right there in the page ("The JavaScript
- * runs when you press Run"). A reload is different — see restoreSaved()
- * below, which calls `run()` instead of `render()` when the saved record
- * says this editor's script had already been run, the same distinction
- * DECISIONS_LOG.md 7.142 fixed dewmini's own Site tab to make on reopen. */
 function buildSiteEditors(manifest) {
   const dark = isDarkNow();
   const labelFor = { html: "html", css: "css", js: "javascript" };
@@ -1551,9 +1136,6 @@ function buildSiteEditors(manifest) {
   }
 }
 
-/* Selects one whole line (1-based) of a CodeMirror editor and scrolls to
- * it — a site editor's own "Go to line", the same behaviour dewmini's Site
- * tab already gives its console (compose/dewmini.js's selectEditorLine()). */
 function selectSiteEditorLine(editor, n) {
   const { view } = editor;
   const line = view.state.doc.line(Math.max(1, Math.min(n, view.state.doc.lines)));
@@ -1561,10 +1143,6 @@ function selectSiteEditorLine(editor, n) {
   view.focus();
 }
 
-/* Enables or disables every cell's Run button at once, with a shared
- * label — used while Python is still booting ("…") or has failed
- * ("unavailable"), so a student can't click Run before there's anything
- * to run against. */
 function setRunnable(enabled, label) {
   for (const cell of [...cells, ...customCells]) {
     if (!cell.runBtn) continue; // a text cell has no Run button at all
@@ -1573,26 +1151,6 @@ function setRunnable(enabled, label) {
   }
 }
 
-/* -------------------------------------------------------------- run line
- *
- * A cell's run-line — order, duration, and staleness folded into one
- * (planning/CELL_IDENTITY.md §3), ported from compose/dewmini.js's own
- * version (DECISIONS_LOG.md 7.110), which itself replaced this file's
- * own first-generation separate stats span and stale badge (7.105,
- * 7.109). Adapted to this file's cells: no separate `.content` field to
- * compare against for staleness, the editor's own current value is asked
- * for directly. A custom cell has no `.runLineEl` — its bar was never
- * given the span build.py's render_cell() adds for an authored cell —
- * so the functions below are no-ops for one; `ranContent`/`lastRunMs`/
- * `ranOrder` are still tracked on it regardless, in case that changes
- * later.
- */
-
-/* How many cells on this page have actually run since the interpreter
- * last started or was last reset from a clean namespace — the counter
- * behind each cell's "Ran Nth". Reset to 0 by resetRunSequence(), never
- * decremented otherwise: a cell that runs twice in the same session just
- * gets a new, later ordinal each time. */
 let runSequenceCounter = 0;
 
 /* Formats how long a cell's last run took, human-scale rather than raw
@@ -1630,21 +1188,10 @@ function writeRunStats(mode) {
   }
 }
 
-/* Whether a cell's output belongs to code that no longer exists on
- * screen: it has run at least once (`ranContent` is set — a cell that has
- * never run has nothing to be stale relative to) and its current content
- * no longer matches what actually produced that output. Any difference
- * counts, whitespace included, the same deliberate starting position
- * dewmini's own isStale() takes. */
 function isStale(cell) {
   return cell.ranContent !== undefined && cell.ranContent !== cell.getCode();
 }
 
-/* Paints a cell's run-line from its stored state — cell.ranOrder (unset
- * until its first run this session), cell.lastRunMs, and isStale(cell).
- * Also the one place a live ticker gets cancelled: whatever this paints
- * is the truth, so anything still counting up on a stale timer has to
- * stop the moment a real state gets painted over it. */
 function renderCellRunLine(cell) {
   const el = cell.runLineEl;
   if (!el) return;
@@ -1668,12 +1215,6 @@ function renderCellRunLine(cell) {
   el.innerHTML = html;
 }
 
-/* Every cell on the page forgets when (and whether) it last ran — called
- * wherever the interpreter itself gets thrown away or the namespace gets
- * cleared and re-seeded (restartPython(), and runCellBatch() below
- * whenever it's asked to reset first): from that point on, nothing has
- * run yet, in the one sense that actually matters to a reader — this
- * session, against the namespace currently backing the page. */
 function resetRunSequence() {
   runSequenceCounter = 0;
   for (const cell of cells) {
@@ -1684,10 +1225,6 @@ function resetRunSequence() {
   }
 }
 
-/* Starts (or restarts) a live "Running… Xs" display on a cell's run-line
- * for as long as it's actually executing — a plain setTimeout loop, not
- * an aria-live region: announcing a number changing ten times a second
- * would be noise, not news, to a screen reader. */
 function startRunLineTicker(cell) {
   clearRunLineTicker(cell);
   const el = cell.runLineEl;
@@ -1710,10 +1247,6 @@ function clearRunLineTicker(cell) {
   cell.runLineEl?.classList.remove("dl-cell-runline-active");
 }
 
-/* Marks a cell as next in line during a batch run (runCellBatch() below)
- * — only ever the one cell right after whichever is currently running,
- * updated as the batch moves along, not the whole remaining list at
- * once. */
 function setRunLineQueued(cell) {
   if (!cell.runLineEl) return;
   clearRunLineTicker(cell);
@@ -1722,13 +1255,6 @@ function setRunLineQueued(cell) {
   cell.runLineEl.textContent = "Running next";
 }
 
-/* Wires the "⋯" button beside a cell's Run button to the "Run above"/"Run
- * below" popover build.py's render_cell() already lays down empty —
- * ported from dewmini.js's own createRunMoreMenu() (DECISIONS_LOG.md
- * 7.106). The open/close handling mirrors that function's own comment: a
- * document-level outside-click listener is added only while the menu is
- * open, and removed the moment it closes, rather than one listener kept
- * alive for the cell's whole lifetime. */
 function initCellRunMenu(cell, host) {
   const wrap = host.querySelector(".dl-cell-more");
   const moreBtn = host.querySelector(".dl-btn-more");
@@ -1780,60 +1306,14 @@ function initCellRunMenu(cell, host) {
   });
 }
 
-/* ------------------------------------------------------------ custom cells
- *
- * A student's own cells — planning/PRACTICE.md §3. A tutorial's own cells
- * are authored once, at build time, and identical for every reader; these
- * are the opposite: created at runtime, by one particular reader, and never
- * shared with anyone unless that reader explicitly exports one. They are
- * kept in their own array (`customCells`, declared with `cells` above) and
- * their own storage key, entirely separate from the tutorial's own
- * saved-work record — not because the two systems couldn't be merged, but
- * because keeping them apart is what makes "a custom cell survives a
- * tutorial version change untouched" true by construction, rather than
- * something a version-matching function has to get right. The one thing
- * they do share with a real cell is the shared runCell() function further
- * down this file: a custom cell object has the same shape a real cell does
- * ({id, editor, outputEl, runBtn, getCode, element}), so runCell() runs one
- * without ever needing to know it isn't a "real" cell.
- */
-
 const CUSTOM_CELLS_PREFIX = "dewlab:custom-cells:";
 
-/* The sentinel anchor for a custom cell that isn't attached to any
- * particular real cell — one added in the general "Try something of your
- * own" section at the end of the page, or one whose original anchor (a
- * real cell's id) no longer exists because the tutorial was updated. Not
- * the plain string "trailing": that's deliberately unlikely to ever equal
- * a real cell's own id, the same margin of safety CUSTOM_CELLS_PREFIX's
- * "custom-" already relies on for cell ids themselves. */
 const TRAILING_ANCHOR = "__trailing__";
 
-/* A small, deliberately shallow markdown for a reader's own text cells —
- * headings, bold/italic, inline code, bullets, paragraphs. Ported from
- * compose/dewmini.js's own escapeHtml()/renderDocInline()/
- * renderDocMarkdown() (that file's own comments explain the reasoning in
- * full); the one piece not ported is dewmini's "attach an image" button —
- * genuinely useful there, but more machinery than this feature asked for
- * here. Calling escapeHtml() on the whole text before anything else runs
- * is what keeps a reader's own literal "<" or "&" from being misread as
- * real HTML. */
 function escapeHtml(text) {
   return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
-/* One shared shape for every cell-chrome button this file builds itself
- * (a custom cell has no server-rendered markup to start from) — the same
- * icon-plus-label pair build.py's own icon_button() gives an authored
- * cell, so the "icons only / text only / icons and text" setting
- * (Settings' "Cell buttons" row, wired through the same generic
- * initTexture() every other Texture row uses) reads one custom cell
- * exactly like an authored one. `icon` is markup already and goes in
- * unescaped; `label`
- * is plain text and is escaped once. `attrs`, if given, is a literal
- * string of extra HTML attributes (` disabled` or ` title="…"`), spliced
- * in as-is — callers pass only fixed, code-authored strings here, never
- * anything a reader typed. */
 function iconButtonHtml(cssClass, icon, label, attrs = "") {
   return (
     `<button type="button" class="dl-btn ${cssClass}"${attrs}>`
@@ -1843,13 +1323,6 @@ function iconButtonHtml(cssClass, icon, label, attrs = "") {
   );
 }
 
-/* Reads or writes a button's visible text without disturbing its icon —
- * every place that used to set `.textContent` directly on a Run/Preview
- * button now goes through here instead, since that button is a `dl-btn`
- * with a nested `.dl-btn-icon`/`.dl-btn-label` pair (iconButtonHtml()
- * above, build.py's own icon_button()) and setting `.textContent` on the
- * button itself would wipe the icon out along with whatever text was
- * there. Falls back to the button itself for anything not built that way. */
 function getBtnLabel(btn) {
   return (btn.querySelector(".dl-btn-label") || btn).textContent;
 }
@@ -1857,12 +1330,6 @@ function setBtnLabel(btn, text) {
   (btn.querySelector(".dl-btn-label") || btn).textContent = text;
 }
 
-/* The formatting that can appear inside one line of a text cell: `code`,
- * **bold**, and italic written either with asterisks or underscores.
- * Each `.replace()` scans the whole string for one pattern and swaps in
- * the matching HTML, chained one after another — code before bold/
- * italic, so something inside backticks is never misread as a bold
- * marker. */
 function renderDocInline(text) {
   return text
     .replace(/`([^`]+)`/g, "<code>$1</code>")
@@ -1871,14 +1338,6 @@ function renderDocInline(text) {
     .replace(/(^|[^\w])_([^_\n]+)_(?!\w)/g, "$1<em>$2</em>");
 }
 
-/* Turns a whole text cell's raw content into rendered HTML, line by
- * line: a small, hand-written parser that walks the text once, tracking
- * whether a bullet list or a paragraph is currently open, and decides
- * what to do from what kind of line it just read (a heading, a bullet, a
- * blank line, or plain text to add to the paragraph in progress).
- * `para` collects an in-progress paragraph's lines until something ends
- * it, at which point `flushPara()` joins them into one `<p>`; `closeList()`
- * does the same job for an open `<ul>`. */
 function renderDocMarkdown(text) {
   const out = [];
   let listOpen = false;
@@ -1915,29 +1374,15 @@ function renderDocMarkdown(text) {
   return out.join("\n") || '<p class="dl-doc-empty">Empty note.</p>';
 }
 
-/* Same module+slug scoping as progressKey() above, and the same reason:
- * a slug is only unique within its module, so two modules' `first-steps`
- * need two different keys or a student's own cells on one would show up
- * on the other. */
 function customCellsKey() {
   const manifest = currentManifest || {};
   return `${CUSTOM_CELLS_PREFIX}${manifest.module || "unknown"}:${manifest.slug || "unknown"}`;
 }
 
-/* A short, locally-unique id — never sent anywhere, so it only has to
- * avoid colliding with this one reader's own other custom cells and with
- * every real cell id a tutorial could ever use. The "custom-" prefix
- * alone already guarantees the second part, since a tutorial's own cell
- * ids are ordinary words (planning/CONTENT_AND_FILE_ARCHITECTURE.md),
- * never anything starting with "custom-". */
 function generateCustomCellId() {
   return `custom-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
 }
 
-/* Reads this reader's saved custom cells back out of localStorage — an
- * array of {id, code, output}, or [] if there aren't any (a first visit,
- * or storage that refuses to cooperate; both treated the same way,
- * exactly like readSaved() above does for the tutorial's own record). */
 function loadCustomCells() {
   try {
     const raw = JSON.parse(localStorage.getItem(customCellsKey()) || "[]");
@@ -1947,18 +1392,6 @@ function loadCustomCells() {
   }
 }
 
-/* Writes every current custom cell's id, type, anchor, code, and last
- * output to localStorage as one plain array — called after any change
- * (typing, running, adding, deleting, importing) via the debounced
- * scheduleCustomSave() below, never called directly from an event
- * handler itself.
- *
- * Order and anchor come from the DOM itself (each cell's own host
- * element carries data-anchor, set by mountCustomCellAfter()), not from
- * customCells' own array order — a divider insert can place a new cell
- * anywhere in the page, and re-deriving "where" from where it actually
- * ended up is simpler and can't drift out of sync the way keeping a
- * second, parallel ordering would. */
 function saveCustomCells() {
   const record = [...document.querySelectorAll(".dl-cell-custom")]
     .map((host) => {
@@ -1984,38 +1417,11 @@ function saveCustomCells() {
 
 let customSaveTimer = null;
 
-/* Debounced the same way scheduleSave() is for the tutorial's own cells
- * — a burst of keystrokes while typing in a custom cell should cost one
- * write, AUTOSAVE_DELAY after the last one, not one write per keystroke. */
 function scheduleCustomSave() {
   clearTimeout(customSaveTimer);
   customSaveTimer = setTimeout(saveCustomCells, AUTOSAVE_DELAY);
 }
 
-/* Builds one custom cell's DOM. A python-type cell is in the same shape
- * build.py's own render_cell() gives a real cell (build.py) —
- * `.dl-cell` > `.dl-cell-head`/`.dl-cell-body-row`/`.dl-cell-footbar`/
- * `.dl-output` — so it looks and behaves exactly like an authored one,
- * and picks up the exact same CSS (including print styling) for free. A
- * text-type cell swaps the
- * editor/output pair for a textarea + rendered-preview pair
- * (`.dl-doc-editor`/`.dl-doc-render`, compose/dewmini.js's own text-cell
- * shape) and has no Run button — there's nothing to run. Either way the
- * extra class, `dl-cell-custom`, is what lets a reader tell "mine" from
- * "the tutorial's" at a glance, and there is no reset button — a custom
- * cell has no build-time "starter" to reset to — its bar instead offers
- * Share (export this one cell to a file) and Delete.
- *
- * A python cell's Run button starting state depends on `pyodideReady`: a
- * real cell's button is always disabled at first because build.py always
- * renders it that way, before this file has had any chance to know
- * whether Python is ready — but a custom cell is just as likely to be
- * created well *after* boot already finished (a reader adding one ten
- * minutes into a session) as before it (one restored from storage while
- * the page is still loading), so this checks the real, current state
- * instead of assuming "not ready yet" the way the server-rendered markup
- * has to.
- */
 function createCustomCellElement(id, type) {
   const host = document.createElement("div");
   host.className = type === "text" ? "dl-cell dl-cell-custom dl-cell-text" : "dl-cell dl-cell-custom";
@@ -2087,22 +1493,6 @@ function createCustomCellElement(id, type) {
   return host;
 }
 
-/* A tappable seam — after every real cell, and after every custom cell —
- * offering "+ Code" and "+ Text" right where a reader is already looking,
- * rather than one button far below whatever prompted the idea. Ported
- * from compose/dewmini.js's own createInsertDivider(): quiet at rest,
- * grows into two real buttons on hover (always visible on a touch
- * device, which has no hover to reveal them — see the CSS). `anchor` is
- * either a real cell's id or TRAILING_ANCHOR — every cell mounted through
- * this divider (see mountCustomCellAfter()) is tagged with the same
- * anchor, which is what lets a reload put things back in the right
- * place. `seed` marks a divider this function did not create on someone's
- * click — one of the fixed, permanent seams initCustomCellsSection()
- * lays down once, after every real cell and at the top of the trailing
- * section — as opposed to one that only exists because a cell was
- * inserted there; clearCustomCells() uses that distinction to know what
- * it's allowed to remove.
- */
 function createCustomInsertDivider(anchor, seed = false) {
   const row = document.createElement("div");
   row.className = seed ? "dl-insert dl-insert-seed" : "dl-insert";
@@ -2133,27 +1523,11 @@ function createCustomInsertDivider(anchor, seed = false) {
   return row;
 }
 
-/* The last divider currently carrying a given anchor, in document order —
- * "the current end of that anchor's chain," and so the right place to
- * append one more cell without disturbing whatever a reader has already
- * built up there (addCustomCell(), importCustomCell()). Every divider
- * this file ever creates carries its anchor in data-anchor, so this is
- * just a DOM query rather than anything this file has to track by hand. */
 function lastDividerFor(anchor) {
   const all = document.querySelectorAll(`.dl-insert[data-anchor="${CSS.escape(anchor)}"]`);
   return all.length ? all[all.length - 1] : null;
 }
 
-/* Mounts one saved-or-fresh cell {id, type, code} immediately after
- * `afterNode` (a divider already in the page) and gives it its own fresh
- * trailing divider carrying the same anchor, so this exact seam stays
- * usable for another insert right away. Wires Run/Share/Delete (python)
- * or the edit/render toggle (text), pushes the finished cell object onto
- * `customCells`, and returns both the cell and its new divider — a
- * restore loop chains through several of these by re-using the divider
- * each call returns as the next call's `afterNode`, which reproduces
- * saved order exactly.
- */
 function mountCustomCellAfter(afterNode, id, type, code, anchor) {
   const host = createCustomCellElement(id, type);
   host.dataset.anchor = anchor;
@@ -2246,12 +1620,6 @@ function mountCustomCellAfter(afterNode, id, type, code, anchor) {
       collapsedSummary,
       getCode: () => editor.getValue(),
       focus: () => editor.focus(),
-      /* executeCell() calls noteAttempt()/maybeRevealHint() on every cell
-       * it runs, custom ones included — a custom cell can never actually
-       * have a staged hint (those are authored-only, matched by build-time
-       * `data-cell`), but it still needs somewhere for the counters those
-       * two functions read and write to live, or they throw reading
-       * `undefined.runs` the first time a reader runs their own cell. */
       attempts: freshAttempts(),
       hints: [],
     };
@@ -2289,11 +1657,6 @@ function mountCustomCellAfter(afterNode, id, type, code, anchor) {
   return { cell, divider };
 }
 
-/* A divider's own "+ Code"/"+ Text" handler, and addCustomCell()'s
- * shared plumbing: mints a fresh id, mounts it right after `afterNode`,
- * saves the (still-empty) list so a reload doesn't lose the fact that
- * this cell exists even before its first keystroke, and scrolls/focuses
- * it so a reader can start typing immediately. */
 function insertCustomCell(afterNode, type, code, anchor) {
   const { cell } = mountCustomCellAfter(afterNode, generateCustomCellId(), type, code, anchor);
   scheduleCustomSave();
@@ -2302,51 +1665,17 @@ function insertCustomCell(afterNode, type, code, anchor) {
   return cell;
 }
 
-/* The "add one somewhere, no particular cell in mind" entry point —
- * used by the global debug/test hook and by importCustomCell() below —
- * always adds to the very end of the general "Try something of your
- * own" section rather than needing a specific divider to click. */
 function addCustomCell(type = "python", code = "") {
   const afterNode = lastDividerFor(TRAILING_ANCHOR);
   return afterNode ? insertCustomCell(afterNode, type, code, TRAILING_ANCHOR) : null;
 }
 
-/* Duplicate — an authored cell's own button (build.py's render_cell())
- * and a custom cell's own (createCustomCellElement()) both call this,
- * DECISIONS_LOG.md 7.112: drops a fresh custom cell, seeded with this
- * cell's current code, immediately after it — `type` is the originating
- * cell's own `.type` either way, authored or custom, so a text cell
- * duplicates as text and a sql exec cell duplicates as a SQL custom cell
- * (DEWSTACK_MERGE.md §3).
- *
- * "Immediately after it" is `cell.element.nextElementSibling` — every
- * cell this file ever mounts, real or custom, gets its own trailing
- * `.dl-insert` divider right there and nothing else is ever inserted
- * directly against the cell element itself, so that sibling is a
- * stable handle on "the seam right after this specific cell" no matter
- * how many other custom cells a reader has since added further down
- * the same anchor's chain. Reusing that divider's own `insertCustomCell()`
- * — the same one its own "+Code"/"+Text" buttons call — means Duplicate
- * needed no insertion logic of its own.
- *
- * No run history travels with the copy, the same as dewmini's own
- * Duplicate: a starting point for a variation, not a claim that the
- * copy already ran. An authored cell itself never changes — it is the
- * tutorial's own content; the copy is the reader's from the moment it
- * exists. */
 function duplicateAsCustomCell(cell, type) {
   const afterNode = cell.element.nextElementSibling;
   if (!afterNode || !afterNode.classList.contains("dl-insert")) return null; // should not happen
   return insertCustomCell(afterNode, type, cell.getCode(), afterNode.dataset.anchor);
 }
 
-/* Removes one custom cell — no confirmation, matching how deleting a
- * single cell already works in compose/dewmini.js;
- * only a bulk "remove everything" action asks first (clearCustomCells()
- * below). A cell's own trailing divider (the one mountCustomCellAfter()
- * created alongside it) goes with it — leaving it behind would leave a
- * second, redundant insert seam sitting right next to whichever divider
- * used to precede this cell. */
 function deleteCustomCell(cell) {
   const divider = cell.element.nextElementSibling;
   if (divider && divider.classList.contains("dl-insert")) divider.remove();
@@ -2357,13 +1686,6 @@ function deleteCustomCell(cell) {
   saveCustomCells();
 }
 
-/* Downloads one custom cell as a small JSON file another reader can load
- * back in via "Load a shared cell" in Settings — the same Blob +
- * URL.createObjectURL + <a> trick initProgressSection()'s own "Export a
- * copy" button uses below, just for one cell's code instead of a whole
- * saved-work record. The module and slug go in the filename for the same
- * reason they already do on the progress export: two files both called
- * "custom-cell.json" in a downloads folder are indistinguishable. */
 function exportCustomCell(cell) {
   const payload = { "dewlab-custom-cell": 1, type: cell.type, code: cell.getCode() };
   const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
@@ -2376,21 +1698,6 @@ function exportCustomCell(cell) {
   URL.revokeObjectURL(link.href);
 }
 
-/* "Load a shared cell": reads the chosen file, checks it at least looks
- * like one of exportCustomCell()'s own files, and mounts it at the end of
- * the general section (addCustomCell() above — this is exactly "add one,
- * no particular cell in mind," just with the file's code instead of a
- * blank cell) — with a freshly generated id, never the id (if any) the
- * file happened to carry, so an imported cell can never collide with, or
- * be confused for, one of this reader's own. A file shared before this
- * feature had text cells has no `type` field at all — that's still read
- * as a valid python cell, just an older kind of file. Deliberately does
- * not run the imported code: the trust note in Settings says plainly
- * that a loaded cell runs like any other code on this page, and
- * "plainly" means before anything runs, not after — the reader still has
- * to read it and press Run themselves, the same as every other cell on
- * the site.
- */
 async function importCustomCell(file) {
   let payload;
   try {
@@ -2408,13 +1715,6 @@ async function importCustomCell(file) {
   setStatus("Cell loaded — read it before you press Run.");
 }
 
-/* Wipes every one of this reader's own cells, asking first — the one
- * place in this whole feature a confirmation belongs, since unlike a
- * single delete this can't be undone by just clicking "add" again. Only
- * the "seed" dividers (see createCustomInsertDivider()'s own comment) —
- * one permanent seam after every real cell, one at the top of the
- * trailing section — survive; every custom cell and every divider it
- * grew for itself goes. */
 function clearCustomCells() {
   if (!window.confirm("Remove all your own cells? This can't be undone.")) return;
   for (const cell of customCells.splice(0)) {
@@ -2426,30 +1726,6 @@ function clearCustomCells() {
   saveCustomCells();
 }
 
-/* Builds a divider after every real cell (wherever it sits in the
- * tutorial's own prose) and the trailing "Try something of your own"
- * section at the end of the page, restores any cells this reader already
- * saved, and wires the Settings buttons (import, clear-all). Called
- * once, unconditionally, from the bottom of this file — like
- * initProgressSection() above, it decides for itself whether it applies
- * to this page rather than being gated at the call site. It doesn't: a
- * prose-only tutorial, or one of the three non-tutorial pages, has no
- * real cells of its own (`cells.length === 0`), and offering "add your
- * own cell" there would mean booting Pyodide just for this — the exact
- * cost a page with no cells is supposed to avoid paying (see the
- * boot-avoidance check near the bottom of this file). On such a page
- * this removes both the trailing section (never created) and the
- * matching Settings section, the same way initProgressSection() removes
- * "Your work" on a non-tutorial page.
- *
- * A saved cell's `anchor` is the id of the real cell it was added after —
- * unless the tutorial has since been updated and that cell no longer
- * exists, in which case it falls back to the trailing section rather
- * than being dropped. That fallback is the concrete mechanics behind
- * PRACTICE.md §3's "a custom cell must survive a version change
- * untouched": the cell and its code always survive; only its position
- * may degrade.
- */
 function initCustomCellsSection() {
   const settingsSection = document.getElementById("dl-settings-custom-cells");
   if (cells.length === 0) {
@@ -2513,54 +1789,16 @@ function initCustomCellsSection() {
   if (clearBtn) clearBtn.addEventListener("click", clearCustomCells);
 }
 
-/* ------------------------------------------------------------------ export
- *
- * Two more ways to take a tutorial page away, alongside "Download to keep"
- * in the section above: printing (or saving as PDF — every modern
- * browser's own print dialog offers that as one of its destinations) uses
- * the @media print rules in tutorial-style.css, and "Save as a Jupyter
- * notebook" turns this page's cells into a real .ipynb file any of
- * Jupyter, JupyterLab, or Colab can open. Both are wired here, in
- * #dl-settings-export (assets/shell.html) rather than folded into
- * #dl-settings-download — see that section's own comment for why it has
- * to be a separate one.
- */
-
 function initExportSection() {
   document.getElementById("dl-print-pdf")?.addEventListener("click", () => window.print());
   document.getElementById("dl-export-ipynb")?.addEventListener("click", downloadAsIpynb);
 }
 
-/* The Jupyter notebook format (.ipynb) stores a cell's source as a list of
- * strings, one per line, where every line *except the last* keeps its own
- * trailing "\n" — simply the convention real Jupyter itself uses when it
- * saves a file. Ported unchanged from compose/dewmini.js's own
- * splitLines(): split on newlines, then put the "\n" back on every line
- * but the final one, so a file downloaded from here looks the same, byte
- * for byte in this respect, as one saved by actual Jupyter. */
 function splitLines(text) {
   const lines = text.split("\n");
   return lines.map((line, i) => (i < lines.length - 1 ? `${line}\n` : line));
 }
 
-/* Builds a real Jupyter notebook (nbformat 4): every `.dl-cell` on the
- * page — the tutorial's own and a reader's own custom cells alike — in
- * the order they actually appear. Querying the DOM for that order, rather
- * than walking `cells` and `customCells` separately and trying to
- * interleave them by anchor, is simplest precisely because a custom cell
- * already lives at its real document position (mountCustomCellAfter()
- * puts it there when it's added): one query, one pass, and it can never
- * disagree with what the reader is actually looking at. A python cell
- * becomes a "code" cell; a reader's own text cell becomes "markdown".
- *
- * This deliberately does not attempt to turn the tutorial's own *prose*
- * into markdown cells alongside the code — by the time this runs, the
- * reading only exists as built HTML, not the original Markdown source, so
- * a faithful conversion back is a separate, much larger job. "Print" and
- * "Download to keep" already cover the full page; this is specifically
- * "take the code with you in a format Jupyter/Colab can open," and the
- * Settings panel note says so plainly.
- */
 function downloadAsIpynb() {
   const notebookCells = [];
   for (const host of document.querySelectorAll(".dl-cell")) {
@@ -2600,48 +1838,11 @@ function downloadAsIpynb() {
   URL.revokeObjectURL(link.href);
 }
 
-/* --------------------------------------------------------------- Pyodide
- *
- * Two execution paths from here down. The hosted site runs Pyodide inside
- * assets/pyodide-worker.js, off the main thread, so a genuine Stop button
- * is possible (planning/CELL_CONTROLS.md §2). The standalone/offline
- * export keeps Pyodide on the main thread exactly as this file always ran
- * it, unchanged below beyond a name — DECISIONS_LOG.md 7.77: a `file://`
- * page can hit real restrictions loading a module Worker at all, and the
- * offline story does not also need a genuine Stop button to be worth
- * having. `currentManifest.standalone` decides which; nothing past
- * ensureBooted()/runCell() needs to know or care which one is live. */
-
 let bootPromise = null;
-/* null when nothing is running; the cell object currently running a
- * single Run click; or plain `true` for the brief window at the start of
- * runCellBatch() (booting, resetting the namespace) before the batch has
- * reached its first cell — truthy either way, so `if (running) return`
- * still blocks every other Run click, but not yet any *particular* cell,
- * so `running === cell` can't misfire during that window. */
 let running = null;
 
-/* Whether Python has actually finished starting — set true at the end of
- * bootMainThread()/bootWorker() below, wherever they call
- * setRunnable(true, "Run"). A real cell only ever needs this indirectly,
- * through setRunnable() itself; a custom cell created *after* boot has
- * already finished needs it directly, since createCustomCellElement()
- * has no other way to know whether to start its own Run button enabled
- * or disabled — see that function's own comment. */
 let pyodideReady = false;
 
-/* ---- standalone / main-thread path — pre-Worker, unchanged below ---- */
-
-/* Everything with an "MT" suffix from here down belongs to the
- * main-thread path: Pyodide running directly in this script, rather than
- * inside a Worker. This is a near-exact twin of pyodide-engine.js's own
- * main-thread fallback (that file's own comments go into more line-by-line
- * detail on the same functions, if this section moves too fast) — the
- * pattern is: `lookupLiveNameMT`/`docForMT`/`signatureForMT` answer
- * questions about names that have already run, by asking Python's own
- * `inspect` module; `jediDocMT`/`jediSignatureMT` answer the same
- * questions for code that *hasn't* run yet, using the Jedi static-analysis
- * library instead. */
 let pyodideMT = null;
 let toolsMT = null;
 let inspectModuleMT = null;
@@ -2712,18 +1913,6 @@ function jediSignatureMT(source, line, col) {
   }
 }
 
-/* The same browser-backed networking patch assets/pyodide-worker.js and
- * assets/pyodide-engine.js apply at boot — see the long comment on
- * pyodide-engine.js's NETWORK_PATCH_SOURCE for what it buys and why it is
- * on by default.
- *
- * It belongs here too, and its absence was a real gap rather than a
- * deliberate omission: bootMainThread() below is the standalone export's
- * boot, which is exactly where a reader is *most* likely to hit it. A
- * downloaded tutorial is the copy someone opens on a train, pastes a
- * `pd.read_csv("https://…")` into, and has no second machine to compare
- * against — and it would have been the one surface still answering
- * "unknown url type: https" after every other one had stopped. */
 const NETWORK_PATCH_SOURCE = `
 try:
     import pyodide_http
@@ -2732,10 +1921,6 @@ except Exception:
     pass
 `;
 
-/* Shared with assets/pyodide-worker.js's own copy — genuinely two separate
- * JS execution contexts (a page never runs both), so this is the one place
- * a small duplication was cheaper than a shared-module import neither
- * bundle target (ESM here, IIFE for the standalone bundle) makes free. */
 const JEDI_HELPER_SOURCE = `
 import jedi
 
@@ -2759,14 +1944,6 @@ def _dewlab_signature(source, line, col):
     return None
 `;
 
-/* Puts every name in tutorial_tools.__all__ into the shared namespace,
- * plus __name__ — run once at the end of bootMainThread()'s own first
- * pass below, and again by resetPageStateMT() after
- * tutorial_tools.reset_page_state() clears that namespace out, so the
- * always-available names come right back without needing a full re-boot.
- * Genuinely duplicated from pyodide-engine.js's own copy rather than
- * shared — two separate JS execution contexts, a page never runs both
- * (see JEDI_HELPER_SOURCE's own comment above for the same reasoning). */
 const RESEED_GLOBALS_SOURCE = `
 import tutorial_tools
 tutorial_tools._page_globals.update({
@@ -2776,12 +1953,6 @@ tutorial_tools._page_globals.update({
 tutorial_tools._page_globals["__name__"] = "__dewlab__"
 `;
 
-/* A fresh, in-memory sqlite3 connection under the name `db` — the
- * main-thread twin of assets/pyodide-worker.js's own
- * SEED_DEWMINI_DB_SOURCE, run here on the offline/standalone export path
- * a page with a sql exec cell needs it on too (DEWSTACK_MERGE.md §3).
- * Genuinely duplicated rather than shared, same reasoning as
- * RESEED_GLOBALS_SOURCE just above. */
 const SEED_SQL_DB_SOURCE = `
 import sqlite3
 _dewlab_previous_db = tutorial_tools._page_globals.get("db")
@@ -2801,18 +1972,9 @@ async function loadJediMT() {
   }
 }
 
-/* Downloads and starts Pyodide directly in this script, loads the
- * tutorial's packages, loads tutorial_tools.py, and sets up the shared
- * page namespace every cell runs against — the main-thread twin of
- * bootWorker() further down, used only for the standalone/offline
- * export (see this file's own module-level comment on "Two execution
- * paths" above for why the two exist at all). */
 async function bootMainThread(manifest) {
   setStatus("Starting Python…");
 
-  /* A page opened from a file cannot import a module. The standalone export
-   * loads Pyodide's classic script first, which leaves loadPyodide on the
-   * global. */
   if (!globalThis.loadPyodide) {
     const offline = new Error(
       "Python could not be downloaded. This file needs an internet connection " +
@@ -2855,81 +2017,37 @@ async function bootMainThread(manifest) {
   loadJediMT();
 }
 
-/* Re-seeds the shared namespace exactly the way bootMainThread()'s own
- * first pass does, without re-running the rest of boot — clears
- * _page_globals first (tutorial_tools.reset_page_state()) and then
- * restores the always-available names. The main-thread half of
- * resetPageState() below; resetPageStateWorker() further down is its
- * Worker twin. Ported from pyodide-engine.js's own resetPageStateMT(). */
 async function resetPageStateMT() {
   toolsMT.reset_page_state();
   await pyodideMT.runPythonAsync(RESEED_GLOBALS_SOURCE);
   if (currentManifest.needsSqlite) await pyodideMT.runPythonAsync(SEED_SQL_DB_SOURCE);
 }
 
-/* Every name currently defined in the shared namespace, for autocomplete
- * — names starting with "_" (Python's convention for "internal, not for
- * outside use") are filtered out. */
 function pageNamesMT() {
   if (!toolsMT) return [];
   return [...toolsMT._page_globals.keys()].filter((name) => !name.startsWith("_"));
 }
 
-/* A sql exec cell's editor holds SQL text, not Python — this is what turns
- * it into the one line of Python that actually runs, exactly the pattern
- * compose/dewmini.js's own buildSqlCellCode() already uses for its SQL
- * cell type: JSON.stringify() as the Python string literal, since its
- * escaping is a strict subset of Python's own double-quoted-string
- * escaping, so any SQL text — quotes, backslashes, newlines — embeds
- * safely. Assigned to `_` rather than left as the last expression so
- * run_cell()'s own auto-display of the last value doesn't re-render the
- * table _run_sql_cell() already rendered into the cell's output. */
 function wrapSqlCode(sql) {
   return `import tutorial_tools as _dl_tt\n_ = _dl_tt._run_sql_cell(db, ${JSON.stringify(sql)})`;
 }
 
-/* What actually reaches Python for this cell's next run — cell.getCode()
- * unwrapped for everything else, since ranContent, the report-a-problem
- * panel, and Duplicate/export all need to see the reader's own SQL text,
- * not the generated wrapper around it. */
 function codeToRun(cell) {
   return cell.type === "sql" ? wrapSqlCode(cell.getCode()) : cell.getCode();
 }
 
-/* Runs one cell directly on the main thread. tutorial_tools.py's own
- * run_cell() does essentially everything — running the code, capturing
- * output, rendering it into the cell's output element — so this is
- * mostly just "hand off to Python." Returns whether it completed without
- * raising (run_cell()'s own return value, a Python bool Pyodide hands
- * back as a plain JS boolean) — used by runCellBatch() to count errors. */
 async function runCellMainThread(cell) {
   return JSON.parse(
     await toolsMT.run_cell_report(cell.id, cell.outputEl, codeToRun(cell), cell.expect, cell.name),
   );
 }
 
-/* ---- hosted / Worker path (planning/CELL_CONTROLS.md §2) ---- */
-
 let worker = null;
-/* A SharedArrayBuffer once cross-origin isolation is up, null wherever it
- * is not — a blocked service worker, a browser that refuses one, private
- * browsing. Every caller checks this rather than assuming: a page without
- * it still runs cells in the Worker (still off the main thread, so the
- * rest of the page stays responsive through a runaway loop), it just
- * cannot offer a real Stop for one. */
 let interruptBuffer = null;
 let jediReadyWorker = false;
 let nextRequestId = 1;
 const pendingRequests = new Map(); // id -> resolve
 
-/* Sends one message to the Worker and returns a Promise for its reply.
- * A Worker only talks over postMessage — there's no built-in "send this
- * and wait for the answer" — so this builds that: invent a unique `id`,
- * remember a {resolve, reject} pair for it, send the message, and let
- * `ensureWorker`'s onmessage handler resolve the matching pair once a
- * "response" message with the same id comes back. Every request this
- * script sends to `assets/pyodide-worker.js` goes through this one
- * function. */
 function workerRequest(type, payload) {
   const id = nextRequestId++;
   return new Promise((resolve, reject) => {
@@ -2938,19 +2056,8 @@ function workerRequest(type, payload) {
   });
 }
 
-/* Mirrors _DomSink's own create-or-append logic (assets/tutorial_tools.py)
- * exactly — one open <pre> per contiguous run of the same stream class —
- * relocated here because a Worker has no DOM to run that logic against. */
 const openStreams = new Map(); // cellId -> {el, cssClass}
 
-/* Turns one "something happened in Python" event — more printed text, a
- * finished block of markup (a table, an image), or "clear this cell's
- * output" — into the matching DOM change, for whichever cell it belongs
- * to. Called both from the Worker's onmessage handler below (for the
- * hosted path) and would be the same shape a main-thread DOM sink uses,
- * though the main-thread path here instead lets tutorial_tools.py write
- * straight into the DOM itself, since there's no postMessage boundary in
- * the way on that path. */
 function applyOutputEvent(cellId, kind, cssClass, text, markup) {
   // A reader's own cell streams output through this exact same worker
   // path as an authored one — searching only `cells` silently dropped
@@ -2982,13 +2089,6 @@ function applyOutputEvent(cellId, kind, cssClass, text, markup) {
   }
 }
 
-/* Creates the Worker the first time it's needed (later calls do nothing
- * — that's the "ensure" in the name), and sets up the one place this
- * file listens for messages coming back from it: progress text
- * ("status"), the autocomplete library finishing its background load
- * ("jedi-ready"), a cell producing output ("output", handed to
- * applyOutputEvent above), and the reply to a specific workerRequest()
- * call ("response", matched up by id). */
 function ensureWorker(manifest) {
   if (worker) return;
   worker = new Worker(new URL(assetUrl(manifest, "pyodide-worker.js"), document.baseURI), {
@@ -3012,10 +2112,6 @@ function ensureWorker(manifest) {
   };
 }
 
-/* Creates the worker (if needed) and asks it to actually boot Python,
- * then — if the browser supports it — sets up the SharedArrayBuffer that
- * makes a genuine Stop button possible (see requestInterrupt() just
- * below for what that buffer is for). */
 async function bootWorker(manifest) {
   ensureWorker(manifest);
   await workerRequest("boot", {
@@ -3025,10 +2121,6 @@ async function bootWorker(manifest) {
      * the worker script's own location, not this page's. */
     toolsSourceUrl: new URL(assetUrl(manifest, "tutorial_tools.py"), document.baseURI).href,
     dataBase: new URL(manifest.dataBase, document.baseURI).href,
-    /* The shared `db` connection every sql exec cell on this page runs
-     * against (assets/pyodide-worker.js's own SEED_DEWMINI_DB_SOURCE) —
-     * only asked for when the manifest actually has one, same "pay for
-     * what you use" gate as `math`/`needsSqlite` above. */
     seedDb: !!manifest.needsSqlite,
   });
 
@@ -3043,51 +2135,22 @@ async function bootWorker(manifest) {
   updateExecutionStatus();
 }
 
-/* How the Stop button actually stops a running cell. Two threads
- * normally can only talk by sending whole messages — but Python running
- * a tight loop isn't checking for new messages, it's just running.
- * SharedArrayBuffer is special: it's memory both threads can see and
- * write to instantly, and Pyodide checks it periodically while code
- * runs. Writing the number Pyodide treats as "this means Ctrl-C" into
- * that shared memory is enough to stop even a `while True: pass` cell.
- * If the browser never granted a SharedArrayBuffer (interruptBuffer
- * stays null), this just does nothing — Stop simply isn't offered in
- * that case; see `canStop` in the `globalThis.dewlab` block at the
- * bottom of this file. */
 function requestInterrupt() {
   if (!interruptBuffer) return;
   /* 2 is SIGINT in Pyodide's own interrupt-buffer convention. */
   new Int32Array(interruptBuffer)[0] = 2;
 }
 
-/* Asks the worker to run one cell and waits for it to finish. The
- * cell's actual output arrives separately, as "output" messages handled
- * in ensureWorker's onmessage above, as the cell runs — not bundled into
- * this Promise's result, which is just the `{ok}` pyodide-worker.js's own
- * "run-cell" handler responds with. */
 async function runCellWorker(cell) {
   return workerRequest("run-cell", {
     cellId: cell.id, code: codeToRun(cell), expect: cell.expect, label: cell.name,
   });
 }
 
-/* The worker half of resetPageState() below — asks pyodide-worker.js's
- * own "reset-page-state" handler (already there for dewmini's use) to
- * clear and re-seed the shared namespace inside the worker, the same two
- * steps resetPageStateMT() does on the main-thread path. */
 async function resetPageStateWorker() {
   await workerRequest("reset-page-state", {});
 }
 
-/* ---- code intelligence: what vendor-src/codemirror-entry.js actually calls ---- */
-
-/* The live answer if there is one, Jedi's static one otherwise — live
- * always wins, Jedi only fills the gap live cannot reach
- * (planning/CELL_TOOLTIPS.md). On the standalone path both live entirely
- * on this thread; on the hosted path both live entirely in the Worker, so
- * one request there does the same live-then-Jedi composition
- * assets/pyodide-worker.js's own hoverDoc()/signatureHelp() already do,
- * rather than two round trips from here. */
 async function hoverDoc(name, source, line, col) {
   if (currentManifest.standalone) return docForMT(name) || jediDocMT(source, line, col);
   if (!worker) return null;
@@ -3101,33 +2164,14 @@ async function signatureHelp(name, source, line, col, argIndex) {
   return workerRequest("signature-help", { name, source, line, col });
 }
 
-/* ---- the one dispatcher everything else calls ---- */
-
-/* Picks which of the two boot paths this page actually gets:
- * `manifest.standalone` is true only for the offline/downloadable export
- * (see this file's own top comment), everything else uses the Worker. */
 function boot(manifest) {
   return manifest.standalone ? bootMainThread(manifest) : bootWorker(manifest);
 }
 
-/* Clears the shared namespace and re-seeds the always-available names,
- * without a full restart — the cheap version restartPython() below
- * builds on. Used by runCellBatch() ahead of "Run all"/"Run above": the
- * whole point of running from the top is that what's on screen matches
- * what the code actually did, which a stale value from a previous run
- * could otherwise mask. Ported from pyodide-engine.js's own
- * resetPageState(). */
 function resetPageState() {
   return currentManifest.standalone ? resetPageStateMT() : resetPageStateWorker();
 }
 
-/* The one function everything else calls to make sure Python is running
- * before doing anything that needs it. Booting is slow and must only
- * ever happen once per page, so the *Promise* itself is cached in
- * bootPromise — a second call while still booting gets back that same
- * Promise and just waits for the same boot, rather than starting a
- * second one. If booting fails, bootPromise resets to null so a later
- * retry gets a fresh attempt instead of replaying the same failure. */
 function ensureBooted(manifest) {
   if (!bootPromise) {
     setBooting(true);
@@ -3147,15 +2191,6 @@ function ensureBooted(manifest) {
   return bootPromise;
 }
 
-/* Every name currently defined in the shared page namespace — the same
- * dict every cell actually runs against, tutorial_tools._page_globals
- * (run_cell's `globals=`) — so what is offered is exactly what a cell
- * could reference right now: a name from an earlier cell, or from this
- * tutorial's own setup cell, not a generic Python index. `__name__` and
- * anything else tutorial_tools itself seeds with a leading underscore are
- * filtered out. Async because the Worker path is a real round trip;
- * CodeMirror's autocomplete sources accept a Promise natively, the same
- * way its hover and signature-help sources do. */
 async function pageNamesCompletion(context) {
   const word = context.matchBefore(/\w+/);
   if (!word || (word.from === word.to && !context.explicit)) return null;
@@ -3168,18 +2203,6 @@ async function pageNamesCompletion(context) {
   return { from: word.from, options: names.map((label) => ({ label, type: "variable" })) };
 }
 
-/* ------------------------------------------------------------ running a cell */
-
-/* Runs one cell's code and everything that goes with it: timing the run
- * for the stats span, capturing the content that was actually handed to
- * Python (before the run, not after — see dewmini.js's own executeCell()
- * for why: even in the unusual case where an editor kept accepting
- * keystrokes while a slow cell was still running, the stale check has to
- * compare against what really produced this output), and saving
- * afterwards so what's stored is the output a reader actually ended up
- * looking at. Shared by runCell() (one cell, its own Stop-capable button)
- * and runCellBatch() below (many cells in a row) — neither duplicates
- * this. Returns whether the run completed without raising. */
 async function executeCell(cell) {
   const startedAt = performance.now();
   /* What ran last time, read before it is overwritten — the "ran the same
@@ -3198,8 +2221,6 @@ async function executeCell(cell) {
   return report.ok;
 }
 
-/* ---- staged hints: folds that wait for an attempt (planning/CELL_HINTS.md) ---- */
-
 function freshAttempts() {
   return {
     runs: 0,          // runs since the counters were last cleared
@@ -3212,11 +2233,6 @@ function freshAttempts() {
   };
 }
 
-/* The folds build.py wrote for this cell — every `details.dl-hint-staged`
- * on the page whose data-cell is this id, in source order, each with its
- * `data-after` parsed once into {signal: count}. build.py has already
- * validated the grammar, so an unreadable term here is a bug, not an
- * author's slip, and is skipped rather than failing the page. */
 function collectStagedHints(cellId, host) {
   const marker = host.querySelector(".dl-hint-marker");
   const folds = document.querySelectorAll(
@@ -3234,9 +2250,6 @@ function collectStagedHints(cellId, host) {
   });
 }
 
-/* Updates a cell's counters from one run's report (tutorial_tools.py's
- * run_cell_report()). A Stop click is not an attempt: the reader chose to
- * end that run, and counting it would hurry a hint they did not earn. */
 function noteAttempt(cell, report, previousCode) {
   const a = cell.attempts;
   if (report.error && report.error.type === "KeyboardInterrupt") return;
@@ -3256,10 +2269,6 @@ function noteAttempt(cell, report, previousCode) {
   if (report.check) a.checkFails = report.check.passed ? 0 : a.checkFails + 1;
 }
 
-/* Whether every term of a hint's `data-after` holds against the counters.
- * `same-errors:3` means three runs in a row ended the same way;
- * `unchanged:2` means the reader ran the very same code twice more;
- * `minutes` is measured from the first counted run. */
 function triggerHolds(terms, a) {
   const value = {
     "errors": a.errors,
@@ -3272,10 +2281,6 @@ function triggerHolds(terms, a) {
   return Object.entries(terms).every(([key, count]) => (value[key] ?? 0) >= count);
 }
 
-/* At most one hint arrives per run, in the order the author wrote them,
- * and none once the cell's `expect:` holds — the reader has got there, and
- * a hint now would be noise. A hint the setting has turned off still counts
- * as revealed, so turning the setting back on shows what was earned. */
 function maybeRevealHint(cell, report) {
   if (report.reached === true) return;
   for (const hint of cell.hints) {
@@ -3290,10 +2295,6 @@ function maybeRevealHint(cell, report) {
   }
 }
 
-/* Removes `hidden` from a revealed fold, closed, in normal flow — the page
- * grows by one summary line below the cell, nothing is covered and nothing
- * is opened for the reader. `arriving` adds the short fade and lights the
- * marker on the cell's bar; a fold restored from saved work gets neither. */
 function showStagedHint(cell, hint, { arriving } = {}) {
   hint.el.hidden = false;
   if (!arriving) return;
@@ -3317,10 +2318,6 @@ function syncStagedHints() {
   }
 }
 
-/* The "hide hints" reading of the after-a-restart setting: counters back
- * to nothing, every staged fold hidden again, markers off. Never called on
- * a check passing or `expect:` holding — a hint the reader has been shown
- * stays theirs to reread. */
 function resetStagedHints() {
   for (const cell of cells) {
     cell.attempts = freshAttempts();
@@ -3368,9 +2365,6 @@ function writeStagedHintsRestart(mode) {
   }
 }
 
-/* The two Settings rows for staged hints — the same segmented-control
- * shape as initRunStatsToggle() below, in the same section, so a page with
- * no cells has already removed both by the time this runs. */
 function initStagedHintsToggles() {
   const onOff = document.querySelector("[data-staged-hints]");
   if (onOff) {
@@ -3409,10 +2403,6 @@ function initStagedHintsToggles() {
   }
 }
 
-/* Puts a cell's own Run button into its running/Stop state, wherever a
- * genuine interrupt is possible (canStop, planning/CELL_CONTROLS.md §2);
- * otherwise it just shows the cell is busy. Returns the button's previous
- * label, for clearCellRunning() below to restore once the run is done. */
 function setCellRunning(cell) {
   const previousLabel = getBtnLabel(cell.runBtn);
   const runIcon = cell.runBtn.querySelector(".dl-btn-icon");
@@ -3440,11 +2430,6 @@ function clearCellRunning(cell, previousLabel) {
   );
 }
 
-/* The one announcement a screen reader gets once a cell finishes — not the
- * ticking "Running… Xs" run-line, deliberately (startRunLineTicker()'s own
- * comment above explains why), just the result once there is one. Checked
- * the same way the e2e tests already do: a `.dl-error` in the cell's own
- * output means the run errored. */
 function announceCellRun(cell) {
   if (!runAnnouncerEl) return;
   const errored = !!cell.outputEl?.querySelector(".dl-error");
@@ -3452,9 +2437,6 @@ function announceCellRun(cell) {
   // same cell twice in a row would say nothing the second time without
   // this. Clearing first, then setting the real text next tick, makes
   // every run its own change even when the result reads identically.
-  /* A staged hint that arrived with this run (maybeRevealHint()) is the
-   * one visible change a sighted reader sees that a screen reader would
-   * otherwise miss, so it is said here, once, and never again. */
   const hint = cell.hintArrived ? ". A hint has appeared below this cell." : "";
   cell.hintArrived = false;
   runAnnouncerEl.textContent = "";
@@ -3464,11 +2446,6 @@ function announceCellRun(cell) {
 }
 
 async function runCell(cell) {
-  /* A second click on the cell that is already running is a Stop request,
-   * not a second Run — the same button does both, per
-   * planning/CELL_CONTROLS.md §2. A click on any *other* cell while one is
-   * running is ignored, same as it always was: one Pyodide, one thing
-   * running in it at a time. */
   if (running === cell) {
     requestInterrupt();
     return;
@@ -3482,11 +2459,6 @@ async function runCell(cell) {
   try {
     await ensureBooted(currentManifest);
 
-    /* Python owns the output area for the duration of the cell: stdout,
-     * widgets, tables, figures and tracebacks all land through tutorial_tools,
-     * so they appear in the order the code produced them. A student's error —
-     * a Stop click included — is normal traffic and is rendered in the cell,
-     * not thrown up here. */
     await executeCell(cell);
     completed = true;
   } catch (err) {
@@ -3500,24 +2472,6 @@ async function runCell(cell) {
   }
 }
 
-/* Runs a batch of cells in order — the shared engine behind "Restart &
- * run all", "Run above", and "Run below", which differ only in *which*
- * cells they hand it and whether the namespace gets reset first. Ported
- * from compose/dewmini.js's own runCellBatch() (DECISIONS_LOG.md 7.106).
- *
- * `reset` matters more than it looks: "Run all" and "Run above" both
- * start from resetPageState() (clearing and re-seeding the shared
- * namespace), because the whole point of running from the top is that
- * what's on screen matches what the code actually did — without the
- * reset, a stale value from a previous run could linger and mask a cell
- * that no longer defines something it used to. "Run below" must *not*
- * reset: its whole point is to keep what the cells above it already
- * defined.
- *
- * Each cell's own Run button becomes a Stop button while it's its turn,
- * the same as running it individually, so a runaway cell partway through
- * a batch can still be interrupted without losing the cells that already
- * ran; the batch itself simply moves on to the next cell afterwards. */
 async function runCellBatch(list, { reset, emptyMessage, describe }) {
   if (running) return;
   if (!list.length) { setStatus(emptyMessage); return; }
@@ -3570,10 +2524,6 @@ async function runAllCells() {
   });
 }
 
-/* "Run above": every cell from the top through (and including) `id`,
- * from a clean namespace — the honest fix once a cell partway down has
- * been edited and everything before it needs re-proving, without paying
- * to re-run whatever comes after it too. */
 async function runAbove(id) {
   const idx = cells.findIndex((c) => c.id === id);
   if (idx === -1) return;
@@ -3585,11 +2535,6 @@ async function runAbove(id) {
   });
 }
 
-/* "Run below": `id` and every cell after it, keeping whatever earlier
- * cells already defined — the way to redo a slow computation's
- * downstream steps without paying to redo the computation itself. See
- * runCellBatch()'s own comment for why this is the one caller that must
- * not reset the namespace first. */
 async function runBelow(id) {
   const idx = cells.findIndex((c) => c.id === id);
   if (idx === -1) return;
@@ -3601,14 +2546,6 @@ async function runBelow(id) {
   });
 }
 
-/* Tears down whatever's running — the Worker if one exists, or the
- * main-thread Pyodide instance — so the next ensureBooted() starts a
- * genuinely fresh interpreter, clearing anything only a real restart
- * would (Jedi's completion cache included), not just the namespace
- * resetPageState() clears. Ported from pyodide-engine.js's own restart()
- * plus dewmini.js's own restartPython() wrapper (DECISIONS_LOG.md 7.108).
- * Returns whether the restart itself succeeded, so a caller that runs
- * cells afterwards (Restart & run all) knows whether to bother. */
 async function restartPython() {
   if (currentManifest.standalone) {
     pyodideMT = null;
@@ -3628,10 +2565,6 @@ async function restartPython() {
     worker = null;
     interruptBuffer = null;
     jediReadyWorker = false;
-    /* Reject what was in flight before dropping it — terminating the
-     * worker means no reply is ever coming, and a Promise that neither
-     * resolves nor rejects hangs forever, and so does whatever awaited
-     * it (this button exists precisely to get someone out of that). */
     for (const { reject } of pendingRequests.values()) {
       reject(new Error("Python was restarted before this finished."));
     }
@@ -3659,9 +2592,6 @@ async function restartPython() {
   return ok;
 }
 
-/* A plain summary of whether Python has started yet, for Settings' own
- * "Running Python" section — ported from dewmini.js's own
- * updateExecutionStatus(). */
 function updateExecutionStatus() {
   const el = document.getElementById("dl-execution-status");
   if (!el) return;
@@ -3670,15 +2600,6 @@ function updateExecutionStatus() {
     : "Not started yet — run a cell to start Python.";
 }
 
-/* Wires the "Restart Python" and "Restart & run all" buttons in Settings
- * (DECISIONS_LOG.md 7.108) — ported from dewmini.js's own
- * initExecutionSection(). "Restart & run all" is a reproducibility check:
- * if a page does not survive throwing the interpreter away and running
- * every cell fresh, it did not really work, it only looked like it did,
- * because of whatever state a stale namespace was quietly carrying.
- * Removed at load on a page with no cells at all, same as
- * initCustomCellsSection() above — there is nothing here to restart on a
- * page that never started anything. */
 function initExecutionSection() {
   const section = document.getElementById("dl-settings-execution");
   if (!section) return;
@@ -3703,12 +2624,6 @@ function initExecutionSection() {
   updateExecutionStatus();
 }
 
-/* The "Run time" Settings toggle — same shape as initNotesNudgeToggle()/
- * initProgressBadgesToggle() above, ported from dewmini's own "Run time"
- * on/off row. Lives inside #dl-settings-execution, so on a page with no
- * cells at all it is already gone by the time this runs (called after
- * initExecutionSection(), which removes that whole section) — the query
- * below then simply finds nothing and this is a no-op. */
 function initRunStatsToggle() {
   const group = document.querySelector("[data-run-stats]");
   if (!group) return;
@@ -3732,13 +2647,8 @@ function initRunStatsToggle() {
   sync();
 }
 
-/* ------------------------------------------------- illustrative code, maths */
-
 const readOnlyBlocks = [];
 
-/* An untagged fence. build.py leaves the escaped source inside <pre><code>, so
- * this is an upgrade of something already readable rather than the only way the
- * code ever appears — with JavaScript off, the page still shows it. */
 function highlightIllustrativeCode() {
   const dark = isDarkNow();
   for (const pre of document.querySelectorAll("pre.dl-static")) {
@@ -3751,19 +2661,11 @@ function highlightIllustrativeCode() {
   }
 }
 
-/* KaTeX is fetched only when the manifest says the page has maths — 266 KB that
- * a prose-and-code tutorial never pays for (DECISIONS_LOG 1.8). Each span holds
- * its own source TeX, which is both the fallback and the input. */
 async function renderMaths(manifest) {
   const spans = document.querySelectorAll(".dl-math");
   if (!manifest.math || spans.length === 0) return;
   let renderMath;
   try {
-    /* Deliberately a plain string: the standalone export bundles this import
-     * into one file, and it can only do that if the specifier is static. That
-     * costs the maths bundle its cache-busting, which is the right trade — it
-     * is vendored and pinned, so it changes only when we re-vendor on purpose,
-     * whereas the stylesheet and the runtime change most weeks. */
     ({ renderMath } = await import("./vendor/katex.bundle.js"));
   } catch (err) {
     console.error("dewlab: KaTeX failed to load; maths stays as source TeX", err);
@@ -3774,38 +2676,16 @@ async function renderMaths(manifest) {
   }
 }
 
-
-/* ------------------------------------------------------------- saved work */
-
-/* Everything a student types is kept in their own browser, on their own
- * device, and goes nowhere else. VERSIONING_AND_PROGRESS.md sets the rules:
- * autosave is the real safety net, restore matches on cell id rather than
- * position, and a tutorial edited since they last saved restores anyway — with
- * a notice, never a block. Losing an afternoon's practice is an annoyance, not
- * a lost grade, and the design is sized to that.
- */
-
 let saveTimer = null;
 /* Set by initProgressSection() when this page has one; read by saveNow()
  * and restoreSaved() the same way `cells` already is. */
 let notesEl = null;
 
 function progressKey() {
-  /* Module and slug, because a slug is only unique within its module — both
-   * modules have a `first-steps`. Keyed on the slug alone, the two shared one
-   * record and each overwrote the other's answers.
-   *
-   * This is the third time scoping slugs per module has left something keyed
-   * on the slug alone: the built pages, the downloadable copies, and now the
-   * saved work. */
   const manifest = currentManifest || {};
   return `${PROGRESS_PREFIX}${manifest.module || "unknown"}:${manifest.slug || "unknown"}`;
 }
 
-/* Reads this tutorial's saved-work record back out of localStorage, or
- * null if there isn't one (a first visit, private browsing, or storage
- * that refuses to cooperate — all treated the same way: nothing to
- * restore, not an error to show). */
 function readSaved() {
   try {
     const raw = localStorage.getItem(progressKey());
@@ -3817,11 +2697,6 @@ function readSaved() {
 }
 
 function describeMismatch(record) {
-  /* Whether a loaded file belongs to this tutorial, and if not, which one it
-   * is. Slug always; module only when the record carries one, so a file saved
-   * before the module was recorded still loads where it belongs.
-   *
-   * An empty string means it fits. */
   if (!record || typeof record !== "object" || !Array.isArray(record.cells)) {
     return "That file could not be read as saved dewlab work.";
   }
@@ -3839,39 +2714,19 @@ function describeMismatch(record) {
 function saveNow() {
   clearTimeout(saveTimer);
   saveTimer = null;
-  /* Not "no cells": a prose-only tutorial has nothing executable to save
-   * but can still have notes worth keeping. Only a page that is not a
-   * tutorial at all — the contents page, the topic tree, about — truly has
-   * nothing here to save. */
   if (NON_TUTORIAL_PAGES.has(currentManifest.slug)) return;
   const record = {
     "tutorial-slug": currentManifest.slug,
-    /* The module too, because the slug alone does not say which tutorial this
-     * came from — both modules have a `first-steps`. Written so an exported
-     * file can be checked before it replaces anything. */
     "tutorial-module": currentManifest.module,
     "tutorial-version": currentManifest.version,
     saved_at: new Date().toISOString(),
-    /* A student's own free-text notes (planning/STUDENT_NOTES.md) — distinct
-     * from SIDEBAR_CONTENT.md's author-written pedagogical notes, which are
-     * part of the tutorial itself and never travel in this record. */
     notes: notesEl ? notesEl.value : "",
     cells: cells.map((cell) => ({
       task_id: cell.id,
       student_code: cell.getCode(),
       output_html: cell.outputEl.innerHTML,
-      /* Whether this cell's last run raised — tutorial_tools.py's stderr
-       * stream and show_error() both write class="dl-error", so this is
-       * already visible in output_html; captured once here as a plain
-       * boolean rather than every reader (the contents page's progress
-       * indicator, this page's own Settings summary) re-parsing HTML to
-       * ask the same question. */
       errored: !!cell.outputEl.querySelector(".dl-error"),
       collapsed: !!cell.collapsed,
-      /* How the runs have gone and which staged hints have appeared
-       * (planning/CELL_HINTS.md) — so a reload, or the exported file, keeps
-       * a hint the reader had just been shown. Small, and additive: every
-       * other reader of this record ignores both. */
       attempts: cell.attempts,
       hints_shown: cell.hints.filter((hint) => hint.revealed).map((hint) => hint.index),
     })),
@@ -3894,12 +2749,6 @@ function saveNow() {
     rememberVersion();
     showSaveState(record.saved_at);
   } catch (err) {
-    /* Storage full or refused — usually one cell's output_html, a large
-     * embedded figure most likely, pushing the whole record over this
-     * browser's quota. A reader's own code and notes matter far more to
-     * keep than a picture a cell can just regenerate by running again,
-     * so retry once with any outsized output_html dropped before giving
-     * up and admitting nothing saved at all. */
     const oversized = record.cells.some(
       (cell) => cell.output_html.length > SAVED_OUTPUT_STRIP_THRESHOLD,
     );
@@ -3933,11 +2782,6 @@ function saveNow() {
   updateProgressSummary();
 }
 
-/* "Debouncing": every call to this resets the timer, so a rapid burst of
- * calls (every keystroke while typing in a cell or the notes box) only
- * results in one real save, AUTOSAVE_DELAY milliseconds after the *last*
- * keystroke — not one save per keystroke, which would be wasteful and
- * would make typing feel laggy if saving is at all slow. */
 function scheduleSave() {
   clearTimeout(saveTimer);
   saveTimer = setTimeout(saveNow, AUTOSAVE_DELAY);
@@ -3950,12 +2794,6 @@ function restoreSaved() {
 
   if (notesEl && typeof record.notes === "string") notesEl.value = record.notes;
 
-  /* new Map(cells.map(cell => [cell.id, cell])) builds a lookup table from
-   * the `cells` array in one line: each cell becomes a [key, value] pair
-   * keyed by its id, and Map takes an array of such pairs directly. This
-   * turns "find the cell with this id" from a linear search through
-   * `cells` (fine for one lookup, wasteful for one per saved cell) into a
-   * single fast byId.get(id) call. */
   const byId = new Map(cells.map((cell) => [cell.id, cell]));
   const restored = [];
   const dropped = [];
@@ -4014,12 +2852,6 @@ function restoreSaved() {
   };
 }
 
-/* Shows a small notice box at the top of the page summarizing what
- * restoreSaved() above just did — but only if there's actually something
- * worth telling the reader about (some cells were restored, or some
- * couldn't be). Builds its own dismiss button rather than relying on any
- * shared "closeable box" component, since this is the only place in the
- * file that needs one. */
 function announceRestore(summary) {
   if (!summary || (summary.restored.length === 0 && summary.dropped.length === 0)) return;
 
@@ -4027,11 +2859,6 @@ function announceRestore(summary) {
   box.className = "dl-restored";
   box.setAttribute("role", "status");
 
-  /* Where the tutorial has releases, both lines below can say what happened
-   * rather than guess at it: which release the work came from, which one this
-   * is, and that an answer with no cell to go in is still saved. Where it has
-   * only one, the work was written against a file that has since been edited
-   * in place, and "may not line up" is the honest thing to say (7.30). */
   const from = versionList().find((v) => v.version === summary.savedVersion);
   const here = thisVersion();
 
@@ -4083,9 +2910,6 @@ function announceRestore(summary) {
   dismiss.addEventListener("click", () => box.remove());
   box.appendChild(dismiss);
 
-  /* Below the page's own notice where there is one. Which release you are
-   * reading is the thing to know first; what happened to your work only makes
-   * sense once you know it. */
   const body = document.getElementById("dl-body");
   const notice = body.querySelector(".dl-archived");
   if (notice) notice.insertAdjacentElement("afterend", box);
@@ -4126,13 +2950,6 @@ function writeNotesNudge(mode) {
   }
 }
 
-/* planning/STUDENT_NOTES.md §4's staleness marker, the plain version's
- * larger proposal: a small dot on the export button once meaningful new
- * note text has piled up since the last export, and not before. Tracked
- * the same lightweight way rememberVersion()/writePin() track a small piece
- * of per-tutorial state — one number in its own key, not a new field on the
- * save record itself, since what matters here is "since the last export,"
- * not "as of the last save," and those are different moments. */
 function updateNotesNudge() {
   const btn = document.getElementById("dl-progress-export");
   if (!btn) return;
@@ -4150,17 +2967,11 @@ function updateNotesNudge() {
   btn.classList.toggle("dl-nudge", grown >= NOTES_NUDGE_THRESHOLD);
 }
 
-/* Called once notes are known to match what was just exported or imported —
- * both are "this text now exists outside this browser," which is the actual
- * question the marker asks. */
 function markNotesExported() {
   if (!notesEl) return;
   try {
     localStorage.setItem(notesExportKey(), String(notesEl.value.length));
   } catch (err) {
-    /* Nothing recorded; the marker may reappear sooner than it should — the
-     * same "forgotten after it" shape storage refusal already has
-     * everywhere else in this file. */
   }
 }
 
@@ -4168,10 +2979,6 @@ function initProgressSection() {
   const section = document.getElementById("dl-settings-work");
   if (!section) return;
 
-  /* Only a page that is not a tutorial at all has nothing here to save —
-   * not "no cells": a prose-only tutorial has no code to run but can still
-   * have notes worth keeping (planning/STUDENT_NOTES.md), so the section
-   * now stays for it. */
   if (NON_TUTORIAL_PAGES.has(currentManifest.slug)) {
     section.remove();
     return;
@@ -4183,20 +2990,9 @@ function initProgressSection() {
   document.getElementById("dl-progress-export").addEventListener("click", () => {
     saveNow();
     const record = readSaved() || {};
-    /* The standard trick for making the browser download a file that was
-     * only ever built in memory, never fetched from a server: a Blob is
-     * an in-memory file-like object, URL.createObjectURL gives it a
-     * temporary URL the browser will treat as a real download link, and
-     * a plain <a download> element with that URL, clicked
-     * programmatically, triggers the download exactly as if a person had
-     * clicked a real link. URL.revokeObjectURL below cleans up that
-     * temporary URL once it's no longer needed. */
     const blob = new Blob([JSON.stringify(record, null, 2)], { type: "application/json" });
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
-    /* Module in the filename: two files called first-steps-progress.json in a
-     * downloads folder are indistinguishable, and they are from different
-     * tutorials. */
     const from = [currentManifest.module, currentManifest.slug].filter(Boolean).join("-");
     link.download = `${from || "dewlab"}-progress.json`;
     link.click();
@@ -4212,9 +3008,6 @@ function initProgressSection() {
     if (!chosen) return;
     try {
       const record = JSON.parse(await chosen.text());
-      /* Check before writing. This used to overwrite whatever was already
-       * saved and only then discover the cells did not match, which destroyed
-       * the student's real work to make room for somebody else's. */
       const wrong = describeMismatch(record);
       if (wrong) {
         showSaveState(null, wrong);
@@ -4225,9 +3018,6 @@ function initProgressSection() {
       announceRestore(restoreSaved());
       showSaveState(record.saved_at);
       updateProgressSummary();
-      /* An imported file's notes already exist outside this browser by
-       * definition — that is what "import" means here — so this counts as
-       * exported too, not as new unsaved text. */
       markNotesExported();
       updateNotesNudge();
     } catch (err) {
@@ -4256,16 +3046,6 @@ function initProgressSection() {
   });
 }
 
-/* ------------------------------------------------------------- progress
- *
- * planning/PROGRESS_INDICATORS.md: how far a reader has gotten, read from
- * the same saved-progress record saveNow() already writes, nothing new
- * saved beyond the one `errored` boolean captured there. Two surfaces —
- * a plain summary line on this page's own Settings panel, and a small
- * badge next to each tutorial on the contents page, opt-out via a
- * Settings toggle since that one is ambient rather than something a
- * reader had to open a panel to see. */
-
 function progressCounts(entries) {
   /* entries: [{started, errored}]. started means an output exists — run,
    * or restored from a save — not merely that the cell was edited. */
@@ -4293,10 +3073,6 @@ function updateProgressSummary() {
   if (!el) return;
   const { total, done, errored } = liveProgressCounts();
   const ran = done + errored;
-  /* Nothing run yet is not different information from no cells at all, as
-   * far as a reader opening Settings is concerned — same reasoning the
-   * contents page's own badge uses (planning/PROGRESS_INDICATORS.md §2):
-   * a "0 of 8" reads as a judgment on a page nobody has touched yet. */
   if (ran === 0) {
     el.hidden = true;
     return;
@@ -4324,11 +3100,6 @@ function writeProgressBadges(mode) {
   }
 }
 
-/* Every tutorial link on the contents page, each already carrying its own
- * total cell count (render_index(), build.py) — read at build time so no
- * fetch is needed to know it. A tutorial with no saved record, or one
- * where no cell has been run yet, gets no badge at all rather than a
- * "0/9" that reads as a judgment on a page nobody has opened. */
 function renderContentsProgress() {
   for (const badge of document.querySelectorAll(".dl-progress-badge")) badge.remove();
   if (!readProgressBadges()) return;
@@ -4361,9 +3132,6 @@ function initContentsProgress() {
   renderContentsProgress();
 }
 
-/* Present on every page, contents page included — unlike the summary line
- * above, this toggle is not gated on cells.length, since the page it
- * changes the ambient behaviour of (the contents page) has none. */
 function initProgressBadgesToggle() {
   const group = document.querySelector("[data-progress-badges]");
   if (!group) return;
@@ -4387,9 +3155,6 @@ function initProgressBadgesToggle() {
   sync();
 }
 
-/* Only on a page with notes at all — unlike the badges toggle above, there
- * is nothing here to switch off on the contents page, which has no notes
- * field of its own. */
 function initNotesNudgeToggle() {
   const group = document.querySelector("[data-notes-nudge]");
   if (!group) return;
@@ -4413,23 +3178,6 @@ function initNotesNudgeToggle() {
   sync();
 }
 
-/* -------------------------------------------------------------- versions */
-/*
- * A tutorial can have more than one release, and two different questions
- * decide which one a reader gets:
- *
- *   the build  — what the plain URL serves, for somebody arriving for the
- *                first time. The newest live release.
- *   this file  — what somebody who has already worked here gets. The release
- *                they last worked in, unless they have said otherwise.
- *
- * Saved work is keyed by tutorial rather than by release, and restore matches
- * on cell id, so answers move between releases on their own. That is what lets
- * this list say what will happen rather than warn that something might: the
- * manifest carries every release's cell ids, so the page can count the answers
- * that survive a move before the reader makes it.
- */
-
 const VERSION_PIN_PREFIX = "dewlab:version:";
 const FOLLOW_KEY = "dewlab:versions-follow";
 
@@ -4444,12 +3192,6 @@ function versionPinKey() {
   return `${VERSION_PIN_PREFIX}${manifest.module || "unknown"}:${manifest.slug || "unknown"}`;
 }
 
-/* Which release this reader is on: the one they picked, or failing that the
- * one their saved work was written against.
- *
- * The fallback is what makes this work for somebody who was here before a
- * second release existed — there was nothing to pick then, but the record
- * says where they were. */
 function readPin() {
   try {
     const picked = localStorage.getItem(versionPinKey());
@@ -4473,11 +3215,6 @@ function writePin(version) {
 }
 
 function rememberVersion() {
-  /* Working in a release is a reader saying that is the one they are on, and
-   * it has to outrank an older pick or a stale pick would keep pulling them
-   * back off the page they are working on.
-   *
-   * Nothing to remember where there is no choice. */
   if (versionList().length < 2) return;
   writePin(currentManifest.version);
 }
@@ -4508,13 +3245,6 @@ function defaultVersion() {
   return versionList().find((v) => v.isDefault) || null;
 }
 
-/* Where a reader who has been here before is sent.
- *
- * Only ever away from the page the plain URL serves, and only to a release
- * that still exists — the first so this cannot bounce between two pages, the
- * second so a reader following a link to one particular release lands on the
- * release they asked for rather than on their own.
- */
 function continuityTarget() {
   if (readFollow() !== "started") return null;
   const here = thisVersion();
@@ -4533,10 +3263,6 @@ function followTheVersionYouLeftOff() {
   return true;
 }
 
-/* The answers a reader has written, as opposed to the cells they happened to
- * have open. A starter left untouched is not an answer, and counting it would
- * inflate every number below — the point of these counts is that they are
- * true. */
 function answeredCells() {
   const record = readSaved();
   if (!record || !Array.isArray(record.cells)) return [];
@@ -4549,14 +3275,6 @@ function answeredCells() {
   });
 }
 
-/* How many of the reader's real answers (from answeredCells() above)
- * would still show up if they moved to a different release (`entry`).
- * `there` is built as a Set (rather than just using `entry.cells`, an
- * array, directly) specifically so `.has()` is a fast lookup rather than
- * a linear scan through the array for every single answer being checked
- * — the same reasoning as `byId` in restoreSaved() above, just with a
- * Set instead of a Map since only membership matters here, not an
- * associated value. */
 function carryOver(entry) {
   const answers = answeredCells();
   if (answers.length === 0) return null;
@@ -4627,13 +3345,6 @@ function fillVersionList(list) {
   for (const entry of versionList()) list.appendChild(versionOption(entry));
 }
 
-/* The control beside the title: nothing at all on a tutorial with one release,
- * something always visible on a tutorial with several.
- *
- * Not a control that appears on hover. Hover does not exist on a phone, and a
- * good share of these readers are on one — an affordance that only appears on
- * hover is not subtle to them, it is missing.
- */
 function initVersionMarker() {
   if (versionList().length < 2) return;
   const here = thisVersion();
@@ -4679,10 +3390,6 @@ function initVersionMarker() {
     }
   });
 
-  /* Under the title where there is one, which is every tutorial that opens
-   * with a `# Heading`. A tutorial that opens straight into a section is legal
-   * and would otherwise get no marker at all, so it goes to the top of the
-   * body instead — after the notice, which is the one thing that outranks it. */
   const heading = document.querySelector("#dl-body h1");
   if (heading) {
     heading.insertAdjacentElement("afterend", wrap);
@@ -4694,10 +3401,6 @@ function initVersionMarker() {
   else body.insertBefore(wrap, body.firstChild);
 }
 
-/* build.py already writes the notice that says which release this is and links
- * to the current one. What it cannot know is how much of this reader's work
- * moves with them, so that is added here rather than duplicated as a second
- * box saying nearly the same thing. */
 function annotateNotice() {
   const notice = document.querySelector("#dl-body .dl-archived");
   const home = defaultVersion();
@@ -4766,26 +3469,8 @@ function initVersionsSection() {
   sync();
 }
 
-/* ------------------------------------------------------------------ start
- *
- * Everything above this point was just defining functions — nothing
- * actually happened on the page yet. This section is where the file
- * really *runs*: top-level code in a JavaScript module executes
- * immediately, in order, the moment the module loads, so the sequence of
- * calls below is the real, literal order things happen in when a
- * tutorial page opens. This file is loaded as a module (`<script
- * type="module">` in the page's own HTML), which is what lets it use
- * `import` at the very top and guarantees it doesn't run until the page's
- * HTML has already been parsed — so every element these functions look
- * up with `document.getElementById(...)` is guaranteed to already exist.
- */
-
 const currentManifest = readManifest();
 
-/* Before anything is built or booted: a reader who has worked in an older
- * release goes back to it rather than being handed the newest one halfway
- * through. Everything below is skipped, because this page is about to be
- * replaced by another one. */
 const leaving = followTheVersionYouLeftOff();
 
 const textureState = initTexture((dark) => {
@@ -4834,9 +3519,6 @@ highlightIllustrativeCode();
 const mathsRendered = renderMaths(currentManifest);
 
 if (cells.length === 0 || leaving) {
-  /* A prose-only tutorial is a normal tutorial, not a special case
-   * (CONTENT_AND_FILE_ARCHITECTURE.md). No cells means no reason to pay for
-   * Pyodide at all. */
   /* Nor is there a reason to pay for it on a page that is being replaced this
    * instant by the release the reader left off in. */
   setStatus("");
@@ -4845,14 +3527,6 @@ if (cells.length === 0 || leaving) {
   ensureBooted(currentManifest).catch(() => {});
 }
 
-/* Exposed for the e2e tests to await, and for debugging from the console.
- * `globalThis` is JavaScript's name for "the global object" in whatever
- * environment the code is running (the same thing `window` refers to in
- * a browser) — assigning to `globalThis.dewlab` makes this object
- * reachable from the browser's developer console as `dewlab.something`,
- * and from Playwright's end-to-end tests the same way, without either of
- * those needing to import anything from this file (which they couldn't
- * — this is a page script, not a library). */
 globalThis.dewlab = {
   version: PYODIDE_VERSION,
   cells,

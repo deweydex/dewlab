@@ -31,9 +31,6 @@ class TestCellHint:
         assert text(page).is_visible()
         assert icon(page).get_attribute("aria-expanded") == "true"
         assert "not one number at a time" in text(page).inner_text()
-        # In normal flow, not position: absolute — its box actually has
-        # height, which is what pushes the rest of the page down rather
-        # than floating over the editor or output above it.
         box = text(page).bounding_box()
         assert box["height"] > 0
         position = text(page).evaluate("el => getComputedStyle(el).position")

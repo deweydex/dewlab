@@ -1,12 +1,3 @@
-/* The slice of CodeMirror 6 a dewlab exec cell needs, bundled into one
- * classic-script-free ES module so a generated page can import it with no
- * build step of its own and no CDN round trip.
- *
- * Everything here is stock CodeMirror: line numbers, the standard Python
- * language support, and the default light / one-dark highlight pair. That is
- * what DECISIONS.md means by these affordances being free — built-in
- * extensions, not custom design work.
- */
 
 import { EditorView, ViewPlugin, keymap, lineNumbers, highlightActiveLine,
          highlightActiveLineGutter, drawSelection, highlightSpecialChars,
@@ -36,20 +27,6 @@ const baseTheme = EditorView.theme({
   ".cm-activeLine, .cm-activeLineGutter": { backgroundColor: "transparent" },
 });
 
-/* Keyword/builtin completion (`print`, `for`, `len`, —) and local-name
- * completion (whatever the student has already typed in this cell) are both
- * static — no interpreter involved, so they work the instant a cell mounts,
- * before Pyodide has even started loading. `completeNames`, when the caller
- * supplies one, goes first: it is how a booted cell's own runtime namespace
- * (imported modules, names a student defined) reaches the completion list,
- * wired in from tutorial-runtime.js rather than here, since this file has no
- * idea Pyodide exists. `override` rather than adding to CodeMirror's
- * defaults on purpose — the generic any-word-on-the-page fallback suggests
- * things that are not valid Python, which is worse than fewer, correct
- * suggestions for someone meeting the language for the first time.
- *
- * Jedi-based completion is added as an optional source. When `getJediCompletions`
- * is provided, it is used for pre-execution completion (before the cell has run). */
 function pythonCompletion(completeNames, getJediCompletions = null) {
   const sources = [completeNames, localCompletionSource, globalCompletion].filter(Boolean);
   
@@ -61,9 +38,6 @@ function pythonCompletion(completeNames, getJediCompletions = null) {
   return autocompletion({ override: sources, activateOnTyping: true });
 }
 
-/* Jedi completion source for pre-execution autocomplete.
- * This allows completion and hover docs to work before a cell has been executed,
- * using Jedi's static analysis running inside Pyodide. */
 function jediCompletionSource(getJediCompletions) {
   return (context) => {
     const { state } = context;
@@ -115,27 +89,8 @@ function jediCompletionSource(getJediCompletions) {
   };
 }
 
-/* A docstring on hover, when the caller can supply one — tutorial-runtime.js
- * wires this to a real, running Pyodide interpreter (a name's actual
- * `inspect.getdoc()`, not bundled documentation, now covering builtins too)
- * with a Jedi static-analysis fallback for a name that has not been executed
- * anywhere yet (planning/CELL_TOOLTIPS.md); the authoring editor has none to
- * offer and passes nothing, which is why this degrades to no extension at
- * all rather than an empty tooltip. `getDoc` is async — the live path
- * resolves immediately, the Jedi path is a real Pyodide call — and
- * CodeMirror's hover source accepts a Promise of a Tooltip natively, so no
- * separate async plumbing is needed here beyond `await`ing it. `getDoc` is
- * called with the hovered word plus the whole cell's source and the word's
- * own (1-indexed line, 0-indexed column) position, in Jedi's own coordinate
- * convention, so a caller that never needs the fallback can ignore the
- * extra arguments entirely — `docFor(name)` in tutorial-runtime.js does
- * exactly that before ever reaching for Jedi. */
 function pythonDocTooltip(getDoc) {
   if (!getDoc) return [];
-  /* hoverTooltip() returns { active, extension } rather than a plain
-   * Extension — .extension is the actual StateField/ViewPlugin bundle
-   * CodeMirror needs; `active` is metadata for callers tracking tooltip
-   * state elsewhere, which nothing here does. */
   return hoverTooltip(async (view, pos) => {
     const { from, text, number } = view.state.doc.lineAt(pos);
     const rel = pos - from;
@@ -162,15 +117,6 @@ function pythonDocTooltip(getDoc) {
   }).extension;
 }
 
-/* Signature help: as a student types the "(" of a call, a small tooltip
- * shows the callee's parameters, with the one under the cursor bolded
- * (planning/CELL_TOOLTIPS.md option b). Unlike pythonDocTooltip, which
- * fires on hover, this fires on typing — CodeMirror has no built-in
- * trigger-on-character mechanism the way hoverTooltip triggers on the
- * pointer, so it needs its own: a StateField holding the current tooltip
- * (or none), kept in sync by a ViewPlugin that recomputes on every
- * document or selection change. */
-
 const setSignatureTooltip = StateEffect.define();
 
 const signatureTooltipField = StateField.define({
@@ -179,23 +125,12 @@ const signatureTooltipField = StateField.define({
     for (const effect of tr.effects) {
       if (effect.is(setSignatureTooltip)) value = effect.value;
     }
-    /* A tooltip anchored to a position an edit has since invalidated is
-     * cleared rather than left pointing at whatever text now sits there;
-     * the ViewPlugin below computes a fresh one and re-sets it if the
-     * cursor is still inside a call after the edit. */
     if (value && tr.docChanged) value = null;
     return value;
   },
   provide: (field) => showTooltip.from(field),
 });
 
-/* Scans backward from `pos` for the nearest enclosing, still-open "(" and
- * the identifier immediately before it, counting top-level commas along the
- * way to know which argument the cursor is in. Not a parser — the same
- * "close enough for a first pass" spirit docFor's own name regex already
- * uses — so a cursor inside a string or a comment that happens to contain
- * unbalanced brackets can misread; scanning is bounded to the last 4000
- * characters for safety, more than any dewlab cell has ever needed. */
 function callContextAt(doc, pos) {
   const limit = Math.max(0, pos - 4000);
   let depth = 0;
@@ -225,10 +160,6 @@ function callContextAt(doc, pos) {
   return null;
 }
 
-/* Bolds the argIndex-th top-level parameter in a signature string such as
- * "average(numbers, weights=None)" or "len(obj: Sized, /) -> int" — split
- * only the parameters between the *matching* parens, so a default value or
- * type hint containing its own brackets or commas is not split apart. */
 function highlightParam(sigText, argIndex) {
   const open = sigText.indexOf("(");
   if (open === -1) return document.createTextNode(sigText);
@@ -282,11 +213,6 @@ function highlightParam(sigText, argIndex) {
   return frag;
 }
 
-/* `getSignature` takes the same shape pythonDocTooltip's `getDoc` does —
- * (name, wholeSource, line, col) — plus the argument index the cursor sits
- * in, so a live-interpreter lookup can ignore the position entirely and a
- * Jedi fallback has everything it needs. Returns a plain signature string
- * or a falsy value; this file owns turning that into a bolded tooltip. */
 function pythonSignatureHelp(getSignature) {
   if (!getSignature) return [];
   let debounceTimer = null;
@@ -319,9 +245,6 @@ function pythonSignatureHelp(getSignature) {
         const sigText = await getSignature(
           ctx.name, view.state.doc.toString(), line.number, col, ctx.argIndex
         );
-        /* The cursor may have moved on while that call was in flight; a
-         * stale answer for a question nobody is asking any more is
-         * dropped rather than applied. */
         if (this.lastKey !== key) return;
         if (!sigText) {
           view.dispatch({ effects: setSignatureTooltip.of(null) });
@@ -345,16 +268,6 @@ function pythonSignatureHelp(getSignature) {
   return [signatureTooltipField, plugin];
 }
 
-/* One extension per non-Python language dewlab's cells can hold
- * (planning/CELL_IDENTITY.md §8) — each package supplies its own
- * completion source via CodeMirror's language-data mechanism, so a
- * plain autocompletion() with no override is enough to get tag/
- * attribute completion for HTML, property completion for CSS, and so
- * on, the same "free, built-in" deal Python's own syntax highlighting
- * already is. Python keeps its own richer setup (Jedi-backed hover and
- * signature help, a live namespace to complete names from) below,
- * since those genuinely need this file's own machinery, not just the
- * language package. */
 const OTHER_LANGUAGES = {
   html: () => [html(), autocompletion()],
   css: () => [css(), autocompletion()],
@@ -369,10 +282,6 @@ export function createCodeEditor(
     lineNumbersVisible = true, indentWidth = 4 } = {}
 ) {
   const themeCompartment = new Compartment();
-  /* Line numbers and indent width each live in their own compartment, the
-   * same reason the theme does: the Settings panel can flip either one for
-   * every open cell (setLineNumbers/setIndentWidth below) without tearing
-   * the editor down and losing what a student has typed. */
   const lineNumbersCompartment = new Compartment();
   const indentCompartment = new Compartment();
   const isPython = language === "python";
@@ -394,25 +303,11 @@ export function createCodeEditor(
       ? [pythonCompletion(completeNames, getJediCompletions), pythonDocTooltip(getDoc),
          pythonSignatureHelp(getSignature), python()]
       : OTHER_LANGUAGES[language]()),
-    /* Find and replace (Ctrl/Cmd+F), and a highlight on every other
-     * occurrence of whatever is selected. CodeMirror has always supported
-     * both; dewmini had never wired them up, which stops mattering the
-     * moment a notebook grows past a screen of code. `top: true` puts the
-     * panel above the editor rather than below it — below, it would sit
-     * over the cell's own output. */
     search({ top: true }),
     highlightSelectionMatches(),
-    /* indentWithTab last so Tab indents inside a cell rather than tabbing the
-     * browser out of it — with Escape still available to leave, which is what
-     * keeps the page keyboard-navigable. completionKeymap ahead of it: Enter
-     * and Tab both need to accept an open completion before either falls
-     * through to a newline or an indent. */
     keymap.of([...closeBracketsKeymap, ...completionKeymap,
                ...searchKeymap, ...defaultKeymap, ...historyKeymap, indentWithTab]),
     themeCompartment.of(themeOf(dark)),
-    /* After the theme compartment, so dewlab's transparent background wins
-     * over one-dark's own and the cell panel colour shows through in both
-     * themes. Syntax colours still come from the theme. */
     baseTheme,
     EditorView.lineWrapping,
   ];
@@ -448,11 +343,6 @@ export function setEditorTheme(editor, dark) {
   view.dispatch({ effects: view._dewlabTheme.reconfigure(themeOf(dark)) });
 }
 
-/* Shows or hides the line-number gutter on an already-mounted editor — the
- * Settings panel's "line numbers" row, on by default. A no-op on a
- * read-only block (createReadOnlyCode never sets up this compartment,
- * so `_dewlabLineNumbers` is undefined there and there was never a
- * gutter to begin with). */
 export function setLineNumbers(editor, visible) {
   const view = editor.view;
   if (!view._dewlabLineNumbers) return;
@@ -471,10 +361,6 @@ export function setIndentWidth(editor, width) {
   });
 }
 
-/* Illustrative code — an untagged fence — gets the same highlighting as a live
- * cell, from the same theme, so the two never drift apart visually. It is not
- * an editor: no gutter, no cursor, no history, and the document cannot change.
- */
 export function createReadOnlyCode(parent, doc, { dark = false, language = "python" } = {}) {
   const themeCompartment = new Compartment();
   const view = new EditorView({

@@ -34,9 +34,6 @@ import urllib.request
 
 API = "https://api.github.com"
 
-# GitHub renders each issue-form field as "### <label>\n\n<value>" in the
-# issue body, in field order, so this is the one pattern that reads all of
-# them back out regardless of which fields a given report actually filled.
 FIELD_RE = re.compile(r"^### (?P<label>[^\n]+)\n+(?P<value>.+?)(?=\n### |\Z)", re.S | re.M)
 
 NO_RESPONSE = "_No response_"
