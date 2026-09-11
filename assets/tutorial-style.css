@@ -1891,13 +1891,13 @@ p code, li code {
    three-column grid above. */
 .dl-nav-top {
   grid-template-columns: 1fr auto auto 1fr;
-  grid-template-areas: "prev up search next";
+  grid-template-areas: "prev search up next";
 }
 
 .dl-nav-prev { grid-area: prev; justify-self: start; }
 .dl-nav-up { grid-area: up; justify-self: center; color: var(--dl-muted); white-space: nowrap; }
 .dl-nav-next { grid-area: next; justify-self: end; text-align: right; }
-.dl-nav-search { grid-area: search; justify-self: start; position: relative; }
+.dl-nav-search { grid-area: search; justify-self: end; position: relative; }
 
 /* Non-breaking, so the arrow never wraps onto a line of its own under a long
    title — which is exactly what a phone-width column makes it do. */
@@ -2315,31 +2315,32 @@ p code, li code {
   border-color: var(--dl-navy);
   color: #fff;
 }
-/* A circle and a handle, drawn rather than typed — the same reasoning
-   as every other masthead icon here (.dl-settings-icon and siblings):
-   it should not depend on a glyph the reader's font may not carry. */
+/* An actual magnifying glass, inline SVG rather than a font glyph — the
+   same reasoning as every other masthead icon here (.dl-settings-icon and
+   siblings): it should not depend on a glyph the reader's font may not
+   carry, and unlike those, a shape this specific reads more clearly
+   drawn as a real path than approximated from a circle and a border. */
 .dl-nav-search-icon {
-  width: 0.75em;
-  height: 0.75em;
-  border: 2px solid currentColor;
-  border-radius: 50%;
-  position: relative;
+  width: 0.85em;
+  height: 0.85em;
   flex: none;
 }
-.dl-nav-search-icon::after {
-  content: "";
-  position: absolute;
-  bottom: -0.38em;
-  right: -0.38em;
-  width: 0.5em;
-  height: 2px;
-  background: currentColor;
-  transform: rotate(45deg);
-}
+/* Closed <details> content is hidden from view (and from hit-testing) by
+   the browser's own native behaviour, but that hiding does not reliably
+   stop an absolutely positioned descendant — exactly what the rule below
+   makes this — from still contributing its own top/left box to the
+   page's scrollable width. Found because it was doing exactly that: a
+   closed popover sitting off past the right edge of a phone-width page,
+   silently widening the whole page and clipping the actual content.
+   Explicit and not left to native behaviour, for that reason. */
+.dl-nav-search:not([open]) > .dl-search { display: none; }
+
 /* A floating popover, not part of the nav row's own height — a search
    box opening should not push "All tutorials" or the reading below it
-   down the page. */
-.dl-nav-search > .dl-search {
+   down the page. Phone width overrides this below: there is nowhere for
+   a floating card to go on a screen this narrow, so it takes over the
+   row instead of floating over whatever is beneath it. */
+.dl-nav-search[open] > .dl-search {
   position: absolute;
   top: calc(100% + 0.5rem);
   left: 0;
@@ -2634,9 +2635,62 @@ p code, li code {
   }
   .dl-nav-up { justify-self: center; }
 
+  /* .dl-nav-top carries two classes to .dl-nav's one, so its own desktop
+     rule (above, four columns in a single row) always outranks the
+     .dl-nav override just above, at every width — the override never
+     actually reached this row. Restated here at matching specificity: All
+     tutorials and the search pill share the second row, since there is no
+     third grid column narrow enough to hold "search" without crowding or
+     clipping it, the way the single-row desktop shape was doing here. */
+  .dl-nav-top {
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      "prev   next"
+      "search up";
+    gap: 0.8rem 0.75rem;
+  }
+  .dl-nav-top .dl-nav-up { justify-self: start; }
+  .dl-nav-top .dl-nav-search { justify-self: start; }
+
+  /* Open, there is nowhere on a screen this narrow for the floating card
+     above to actually float into — it only ever had room to clip itself
+     against the right edge. Instead the search row takes over the whole
+     width in All tutorials' place, and the input and its results render
+     in normal flow rather than floating, so the chrome genuinely grows
+     taller and pushes the rest of the page down, instead of laying a
+     card over it. */
+  .dl-nav-top:has(.dl-nav-search[open]) {
+    grid-template-areas:
+      "prev   next"
+      "search search";
+  }
+  .dl-nav-top:has(.dl-nav-search[open]) .dl-nav-up { display: none; }
+  .dl-nav-search[open] { justify-self: stretch; }
+  .dl-nav-search[open] > .dl-search {
+    position: static;
+    width: auto;
+    margin: 0.6rem 0 0;
+    box-shadow: none;
+  }
+  .dl-nav-search[open] > .dl-search .dl-search-results {
+    position: static;
+    margin-top: 0.5rem;
+    max-height: none;
+  }
+
   .dl-crumbs { display: none; }
   .dl-page { padding-left: 1rem; padding-right: 1rem; }
   .dl-chrome { margin-inline: -1rem; padding-inline: 1rem; }
+
+  /* auto-fill's own arithmetic (.dl-module-grid, above) can resolve to two
+     columns here that together don't actually fit — one at its 13rem
+     floor, the other squeezed narrower than that same floor, overflowing
+     the page by the difference. Rather than trust that computation at a
+     width this tight, one column, full width: a module card was never
+     meant to be squeezed to less than its stated minimum just to keep a
+     second one beside it. */
+  .dl-module-grid { grid-template-columns: 1fr; }
+  .dl-module-card-wide { grid-column: auto; }
 
   /* Three full-text toggles ("Reference", "Series", "Settings") plus the
      wordmark don't fit one row at phone width even with the crumbs gone
