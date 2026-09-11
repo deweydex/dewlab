@@ -339,9 +339,9 @@ The same bar dewstack already used, since it's dewlab's own bar too:
    tutorial pages a "open this in the workspace" hand-off the way
    dewstack's own pages offer one). Still to do: getting-started/reference
    copied in whole under `web-authoring` (§8 q2), the 30 web pages ported
-   into `tutorials/web-authoring/` through §6's checklist, `dewmini web`
-   itself, and flipping the homepage card once the module has run in
-   front of a class.
+   into a new `tutorials/web-authoring` folder through §6's checklist,
+   `dewmini web` itself, and flipping the homepage card once the module
+   has run in front of a class.
 4. **Full-stack, later.** Combine dewstack's one page with whatever
    dewlab's own full-stack concept becomes, once both tracks are live.
    Not scheduled yet.
