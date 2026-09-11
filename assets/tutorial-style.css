@@ -1633,6 +1633,28 @@ p code, li code {
 .dl-settings-search-input:focus { outline: none; border-color: var(--dl-orange); }
 .dl-reference-search-input[hidden] { display: none; }
 
+/* Same shape as .dl-seg (Settings' own segmented controls), reused here
+   for real ARIA tabs rather than a radiogroup — a plain bordered pair,
+   the active one filled navy, nothing else about the panel's look
+   changing underneath it. */
+.dl-reference-tabs { display: flex; gap: 0.25rem; margin-top: 0.7rem; }
+.dl-reference-tab {
+  flex: 1;
+  font-family: var(--dl-mono);
+  font-size: 0.7rem;
+  padding: 0.4rem 0;
+  border: 1px solid var(--dl-cell-border);
+  border-radius: 3px;
+  background: none;
+  color: var(--dl-fg);
+  cursor: pointer;
+}
+.dl-reference-tab[aria-selected="true"] {
+  background: var(--dl-navy);
+  border-color: var(--dl-navy);
+  color: #fff;
+}
+
 /* The head every docked panel already had (title, close button) now
    carries its own search too where the panel has one, and stays pinned
    to the panel's own top edge as the sections below it scroll — the
