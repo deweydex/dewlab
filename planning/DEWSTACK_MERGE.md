@@ -320,15 +320,13 @@ The same bar dewstack already used, since it's dewlab's own bar too:
 1. **Staging copy-in.** Populate `staging/dewstack-import/` as described
    in §5. No `build.py` changes, no tutorial changes, nothing
    student-visible. Reversible by deleting a folder.
-2. **Data engine + module.** **Engine done** (DECISIONS_LOG.md 7.140): a
-   `sql exec` fence in `build.py` and `tutorial-runtime.js`, calling the
-   existing `_run_sql_cell()`, verified end to end in a real browser
-   against a real Pyodide with no tutorial content using it yet. Still to
-   do: port the 12 pages into `tutorials/database-methods/` through §6's
-   checklist, preserving dewstack's slugs; add the QQI outcome
-   descriptors 5N0783 needs to `planning/curriculum/outcomes.yaml`
-   (currently absent — `planning/ROADMAP.md` already flags this gap);
-   flip the homepage card once the module has run in front of a class.
+2. **Data engine + module — done.** A `sql exec` fence in `build.py` and
+   `tutorial-runtime.js`, calling the existing `_run_sql_cell()`
+   (DECISIONS_LOG.md 7.140); the 12 pages ported into
+   `tutorials/database-methods/` through §6's checklist, preserving
+   dewstack's slugs, with the QQI outcome descriptors 5N0783 needs added
+   to `planning/curriculum/outcomes.yaml` (DECISIONS_LOG.md 7.141); the
+   homepage card flipped and live (PR #174). See the ledger (§9).
 3. **Web engine, `dewmini web`, and all 42 web-authoring pages — done.**
    The engine half is built and merged: `html site`/`css site`/`js site`
    fence kinds, and `assets/site-relay.js` as the shared live-preview
