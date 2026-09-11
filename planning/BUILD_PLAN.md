@@ -3,10 +3,9 @@
 Six phases, in dependency order. Each rests on the one before it, and nothing
 in a later phase should send you back to reopen an earlier one.
 
-The order is not arbitrary. It puts the thing most likely to be wrong first —
-whether Python actually runs acceptably in a browser — and the thing easiest to
-change last. If the first phase had failed, nothing after it would have been
-worth building.
+The order puts the thing most likely to be wrong first — whether Python
+actually runs acceptably in a browser — and the thing easiest to change
+last.
 
 ---
 
@@ -22,12 +21,11 @@ Prove that the hard part works before building anything on top of it.
   extra package-installation stage.
 - Confirm that a plain cell running code from those libraries renders its
   output underneath itself correctly.
-- Only then build the widget bridge in `tutorial_tools.py`. It is a useful
-  layer, not a precondition — if plain execution does not work, widgets on top
-  of it are worthless.
+- Only then build the widget bridge in `tutorial_tools.py`, a useful layer
+  rather than a precondition.
 
-Worth re-checking whenever the Python runtime version changes: which packages
-are available shifts between releases.
+Worth re-checking whenever the Python runtime version changes: package
+availability shifts between releases.
 
 ## Phase 1 — The build script *(complete)*
 
@@ -40,9 +38,8 @@ Turn markdown into pages.
   on any that do not resolve.
 - Render the result into the page template.
 
-Test it against one hand-written tutorial, start to finish, before pointing it
-at real content. A converter that works on a file you wrote to exercise it is
-not the same as one that works on a file someone wrote to teach with.
+Test against one hand-written tutorial, start to finish, before pointing it
+at real content.
 
 ## Phase 2 — Saved progress
 

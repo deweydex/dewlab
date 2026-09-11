@@ -8,8 +8,8 @@ them.
 
 ## 1. What versioning has to do
 
-Tutorials change over academic terms, and the versioning system exists
-to satisfy three things at once:
+Tutorials change over academic terms. The versioning system satisfies
+three things at once:
 
 1. **A student's saved work has to survive a revision.** Updating a
    tutorial must never disrupt a session already in progress or

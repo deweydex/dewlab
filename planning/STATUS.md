@@ -1,8 +1,8 @@
 # Status
 
 What's actually built, what's still open, and the trickier design
-decisions behind the parts that are done. This is a factual record, kept
-current as things change — not a pitch.
+decisions behind the parts that are done. A factual record, kept current
+as things change — not a pitch.
 
 ---
 
@@ -64,8 +64,7 @@ current as things change — not a pitch.
   `SIDEBAR_CONTENT.md` (`STUDENT_NOTES.md`, DECISIONS_LOG.md 7.72/7.75).
 - **Highlight to look up**: selecting a word the reference knows offers
   a small button that opens the panel filtered to it; selecting anything
-  else does nothing at all (`REFERENCE_PANEL.md` §6b, DECISIONS_LOG.md
-  7.93).
+  else does nothing (`REFERENCE_PANEL.md` §6b, DECISIONS_LOG.md 7.93).
 - **Where a term came from**: an inherited reference entry says which
   tutorial introduced it and links to that section (`REFERENCE_PANEL.md`
   §6c, DECISIONS_LOG.md 7.94).
@@ -82,33 +81,31 @@ current as things change — not a pitch.
 - **A reader's own cells**: on any page that already has cells, a reader
   can add their own — Python or a short text note — right below any cell
   on the page, not just at the bottom, and share one as a small file
-  someone else can load in. Kept fully separate from the tutorial's own
-  saved work and version system, so it survives a tutorial update
-  untouched (`PRACTICE.md` §3-5).
-- **Print/PDF and a Jupyter notebook**: alongside the existing "Download
-  to keep," a tutorial page's Settings offers "Print — or save as PDF"
-  and "Save as a Jupyter notebook" (a page's cells, real and a reader's
-  own alike — not the reading itself, which Print and Download to keep
-  already cover).
+  someone else can load in. Kept separate from the tutorial's own saved
+  work and version system, so it survives a tutorial update untouched
+  (`PRACTICE.md` §3-5).
+- **Print/PDF and a Jupyter notebook**: alongside "Download to keep," a
+  tutorial page's Settings offers "Print — or save as PDF" and "Save as a
+  Jupyter notebook."
 
 ### dewmini (`compose/dewmini.*`)
 The one Python workspace with no tutorial attached — see
 `ARCHITECTURE.md` §4 for how it's built.
 
-dewmini runs Python through
-`assets/pyodide-engine.js`, a shared Worker-based engine (a client of
-`assets/pyodide-worker.js`, the same runtime tutorial pages use) — a
-genuine Stop button, and real Jedi-backed autocomplete and signature
-help. `compose/dewmini-fs.js` mounts a real local folder (File System
-Access API), its own named OPFS subdirectory, or IDBFS — whichever the
-browser supports — behind one interface, so the Workbench's Files
-section, SQL support (`sqlite3` against a mounted `.db` file), and file
-uploads all work the same way regardless of backend. `.ipynb`/`.py`
-import and export round it out, and dewmini has its own downloadable,
-offline-capable copy (`write_dewmini_bundle()` in `build.py`). How it
-came to be dewlab's one and only workspace is history, not status:
-`DECISIONS_LOG.md` 7.87–7.98 and the addenda in
-`planning/MINI_IDE_AND_DEWMINI_NEXT.md` hold that story.
+dewmini runs Python through `assets/pyodide-engine.js`, a shared
+Worker-based engine (a client of `assets/pyodide-worker.js`, the same
+runtime tutorial pages use) — a genuine Stop button, and real
+Jedi-backed autocomplete and signature help. `compose/dewmini-fs.js`
+mounts a real local folder (File System Access API), its own named OPFS
+subdirectory, or IDBFS — whichever the browser supports — behind one
+interface, so the Workbench's Files section, SQL support (`sqlite3`
+against a mounted `.db` file), and file uploads all work the same way
+regardless of backend. `.ipynb`/`.py` import and export round it out,
+and dewmini has its own downloadable, offline-capable copy
+(`write_dewmini_bundle()` in `build.py`). How it came to be dewlab's one
+and only workspace is history, not status: `DECISIONS_LOG.md` 7.87–7.98
+and the addenda in `planning/MINI_IDE_AND_DEWMINI_NEXT.md` hold that
+story.
 
 Since `DECISIONS_LOG.md` 7.99 it is a workbench rather than a single
 column: notebooks open in **tabs**, and two docked rails carry what a
@@ -124,8 +121,8 @@ intact; `planning/DEWMINI_WORKBENCH.md` is the design and its reasoning.
 Every substantial code file has detailed, teaching-oriented inline
 comments and a matching `docs/<file>-explained.md` walking through its
 structure — `CONTRIBUTING.md` makes keeping both current a standing
-requirement for future changes, the same way the build already enforces
-that links and folds can't go stale.
+requirement, the same way the build already enforces that links and
+folds can't go stale.
 
 ### Curriculum modules (`tutorials/`)
 - **113 published tutorial and practice pages** across three modules —
@@ -191,9 +188,9 @@ this file only narrates it.
 ## 2. What's still open
 
 ### Computational Methods (5N0554) curriculum — **all 13 outcomes now taught**
-Every outcome in *Computational Methods and Problem Solving 5N0554*
-now has a tutorial section teaching it, per `CURRICULUM_MAP.md`. What
-actually closed each one, strand by strand:
+Every outcome in *Computational Methods and Problem Solving 5N0554* now
+has a tutorial section teaching it, per `CURRICULUM_MAP.md`. What closed
+each one, strand by strand:
 
 1. **Linear Algebra & Matrix Operations** — six tutorials (*A Grid of
    Numbers* through *Where Chains Lead*), series `matrices`. `CMPS-LO4`
@@ -232,9 +229,8 @@ even though nothing blocks on them:**
   PageRank example** inside *Where Chains Lead*, deliberately: a first
   design for a real crawl was set aside as too advanced for now, and
   the Markov-chain series above was built in its place, extending the
-  same tutorial's other worked example instead. `CMPS-LO4` doesn't
-  need the crawl, but it's still a gap in ambition rather than in
-  coverage.
+  same tutorial's other worked example instead. `CMPS-LO4` doesn't need
+  the crawl, but it's still a gap in ambition rather than in coverage.
 - **`CMPS-LO2` and `CMPS-LO1`'s topics.yaml sub-parts** (grids, trees,
   recursion) are each taught in the tutorial that introduces that
   specific representation, not gathered into one dedicated "data

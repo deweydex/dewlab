@@ -9,12 +9,14 @@ that a tutorial's reference never shows something the reader hasn't met yet.
 
 A collapsible panel, closed by default, that a reader opens to see short
 definitions of the terms, functions, and formulas relevant to the tutorial
-they are on. The one requirement that matters more than the content itself:
-**it must never show something the reader has not been taught yet.** A reference that spoils next week's function names is worse than no reference.
+they are on. The requirement that matters more than the content itself:
+**it must never show something the reader has not been taught yet.** A
+reference that spoils next week's function names is worse than no
+reference.
 
-That constraint means the content cannot be written once, globally — it has
-to be assembled per tutorial, from whatever came before it. Two pieces follow
-from that:
+That constraint means the content can't be written once, globally — it has
+to be assembled per tutorial, from whatever came before it. Two pieces
+follow from that:
 
 1. Something has to say what each tutorial *introduces* — not what a whole
    module covers (`covers:` in frontmatter already says that, coarsely, for
@@ -29,17 +31,18 @@ uses for previous/next navigation. (1) does not, and is most of this spec.
 ## 2. Scope: series order, not the topic dependency graph
 
 `planning/curriculum/topics.yaml` and `DEPENDENCIES.md` model *reachability*
-— what a student could jump to next, deliberately not a running order, so a
-student can skip around and a teacher can slot in whatever fits a spare week.
-That is the right model for the topic tree; it is the wrong model for "what
-has this specific reader already seen," which needs an actual sequence.
+— what a student could jump to next — deliberately not a running order, so
+a student can skip around and a teacher can slot in whatever fits a spare
+week. That's the right model for the topic tree; it's the wrong model for
+"what has this specific reader already seen," which needs an actual
+sequence.
 
-`<series>.order.yaml` gives exactly that, but only within one series. Series within a
-module have no defined order relative to each other by default
+`<series>.order.yaml` gives exactly that, but only within one series. Series
+within a module have no defined order relative to each other by default
 (`write_index` lists them `sorted()` by name — alphabetical, not curricular,
-and that display order is unrelated to this one) — but a module may add
-`tutorials/<module>/series.yaml` (`order:`, a list of series slugs) to say
-what its own curricular order is, purely for reference purposes.
+and unrelated to this ordering) — but a module may add
+`tutorials/<module>/series.yaml` (`order:`, a list of series slugs) to state
+its own curricular order, purely for reference purposes.
 
 **A reference draws from the current series, up to and including the
 current tutorial's own position, plus every earlier series `series.yaml`
@@ -47,12 +50,11 @@ lists before this one** (`series_chain()`, `DECISIONS_LOG.md` 7.66) — never
 from another module. `tutorials/computational-methods/series.yaml` lists
 `python-fundamentals` before `matrices`, so matrices' reference does
 include what fundamentals introduced. A series left off the list — or a
-module with no `series.yaml` at all — gets series-only accumulation, which
-is what a series with no fixed curricular position needs:
-`reflections-and-review`, in `mit-pdp-maths-prog-integration`, is revisited
-whenever a reader wants rather than sitting at one point in the course
-(that series' own `.order.yaml` says so), so it is never listed anywhere
-and nothing about it changed when this shipped.
+module with no `series.yaml` at all — gets series-only accumulation. That's
+what a series with no fixed curricular position needs: `reflections-and-review`,
+in `mit-pdp-maths-prog-integration`, is revisited whenever a reader wants
+rather than sitting at one point in the course (that series' own
+`.order.yaml` says so), so it is never listed anywhere.
 
 A **practice page** does not have its own coverage — `practice_for`/
 `practice_across` name the tutorial(s) it tests instead of appearing in
@@ -86,12 +88,12 @@ entries:
 `kind` is one of `concept | function | operator | formula | keyword` —
 enough to group the panel without inventing a taxonomy nobody will maintain.
 A missing glossary file is not an error: the tutorial's own contribution is
-empty, and its reference is whatever came before it in the series. This is
-what lets the feature ship before every tutorial has one, and why generating
-them is deliberately its own batch of work rather than a blocker on the UI.
+empty, and its reference is whatever came before it in the series. That's
+what lets the feature ship before every tutorial has one, with generating
+them as its own batch of work rather than a blocker on the UI.
 
-This shape is shown here so a reader knows what a `.glossary.yaml` actually
-looks like — not as something to hand-write. `.claude/skills/
+This shape is documented here so a reader knows what a `.glossary.yaml`
+looks like, not as something to hand-write. `.claude/skills/
 tutorial-glossary/SKILL.md` (§4) is the tool for writing or updating one:
 run it on a tutorial, and it produces this file.
 
@@ -100,21 +102,19 @@ run it on a tutorial, and it produces this file.
 Not a cold read. `PEDAGOGICAL_STYLE_GUIDE.md` §4 already requires authors to
 mark a term's first meaningful use in single-asterisk emphasis — "define
 every technical term where it first appears, and mark it in italics" — and
-`dev/curriculum_map.py` already relies on that same convention being real
+`dev/curriculum_map.py` already relies on that same convention
 (`EMPHASIS_RE`, `terms_of()`, `term_findings()`'s "introduced more than
 once"/"used before it was introduced" checks, DECISIONS_LOG.md 5.11). That
-is evidence of what an author considered a new word, not a list anyone
-maintains by hand — and it means most of a tutorial's glossary candidates
-already exist, mechanically extractable, before the skill reads a word of
-prose.
+gives most of a tutorial's glossary candidates already extracted,
+mechanically, before the skill reads a word of prose.
 
-The skill still needs judgment for two things emphasis alone will not catch:
-a function or operator introduced mainly through a code cell rather than a
-sentence (`@` for matrix multiplication is unlikely to appear as
-`*@*` in prose), and confirming a candidate is genuinely new *for this
-series* rather than one `term_findings()` would flag as repeated — emphasis
-says "the author considered this new here," not "no earlier tutorial in
-this series said it too."
+The skill still needs judgment for two things emphasis alone won't catch: a
+function or operator introduced mainly through a code cell rather than a
+sentence (`@` for matrix multiplication is unlikely to appear as `*@*` in
+prose), and confirming a candidate is genuinely new *for this series* rather
+than one `term_findings()` would flag as repeated — emphasis says "the
+author considered this new here," not "no earlier tutorial in this series
+said it too."
 
 Given one tutorial and the cumulative glossary of everything before it in
 its series, the skill's job:
