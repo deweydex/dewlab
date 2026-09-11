@@ -173,6 +173,31 @@ CONCEPT = {"term": "x", "kind": "concept", "definition": "The first thing."}
 FUNCTION = {"term": "f()", "kind": "function", "definition": "Does a thing.", "example": "f(1)"}
 
 
+def _open_panel(actor, selector: str) -> None:
+    """Reference/Series/Settings' toggles now collapse behind one
+    "Panels" control in the masthead (shell.html's
+    <details class="dl-panels">) rather than always showing — expand it
+    first if it isn't already, then click the actual target. Checked via
+    #dl-panels' own `open` property rather than the target's own
+    visibility, so this never mistakes "already open" for "not open" and
+    toggles it shut again right before the click that was supposed to
+    land. Left expanded once opened (no auto-collapse), so this is only
+    needed once per page load, not before every toggle click."""
+    if not actor.eval_on_selector("#dl-panels", "el => el.open"):
+        actor.click("#dl-panels summary")
+    actor.click(selector)
+
+
+def _toggle_shows(actor, selector: str) -> bool:
+    """Whether a masthead toggle has content to show, via its own
+    `hidden` attribute (tutorial-runtime.js's own content-presence
+    signal) rather than Playwright's is_visible()/is_hidden() — those now
+    also depend on whether "Panels" happens to be expanded, which is a
+    question about the masthead's own UI state, not this page's
+    content."""
+    return actor.get_attribute(selector, "hidden") is None
+
+
 class TestVisibility:
     def test_no_glossary_anywhere_in_the_series_still_shows_the_basics_tabs(
             self, site, browser, base_url):
@@ -187,8 +212,8 @@ class TestVisibility:
         context = browser.new_context()
         page = context.new_page()
         page.goto(f"{base_url}/tutorials/{MODULE}/one.html")
-        assert page.is_visible("#dl-reference-toggle")
-        page.click("#dl-reference-toggle")
+        assert _toggle_shows(page, "#dl-reference-toggle")
+        _open_panel(page, "#dl-reference-toggle")
         assert page.is_visible("#dl-reference-nothing-yet")
         page.click("#dl-reference-tab-basics")
         assert page.locator("#dl-basics-groups dt").count() > 0
@@ -204,7 +229,7 @@ class TestVisibility:
         context = browser.new_context()
         page = context.new_page()
         page.goto(f"{base_url}/tutorials/{MODULE}/one.html")
-        assert page.is_visible("#dl-reference-toggle")
+        assert _toggle_shows(page, "#dl-reference-toggle")
         context.close()
 
 
@@ -228,27 +253,27 @@ class TestOpeningAndClosing:
 
     def test_clicking_the_toggle_opens_it(self, site, browser, base_url):
         context, page = self.open_page(site, browser, base_url)
-        page.click("#dl-reference-toggle")
+        _open_panel(page, "#dl-reference-toggle")
         assert page.is_visible("#dl-reference")
         context.close()
 
     def test_escape_closes_it(self, site, browser, base_url):
         context, page = self.open_page(site, browser, base_url)
-        page.click("#dl-reference-toggle")
+        _open_panel(page, "#dl-reference-toggle")
         page.keyboard.press("Escape")
         assert page.is_hidden("#dl-reference")
         context.close()
 
     def test_the_close_button_closes_it(self, site, browser, base_url):
         context, page = self.open_page(site, browser, base_url)
-        page.click("#dl-reference-toggle")
+        _open_panel(page, "#dl-reference-toggle")
         page.click("#dl-reference-close")
         assert page.is_hidden("#dl-reference")
         context.close()
 
     def test_clicking_outside_closes_it(self, site, browser, base_url):
         context, page = self.open_page(site, browser, base_url)
-        page.click("#dl-reference-toggle")
+        _open_panel(page, "#dl-reference-toggle")
         page.click("main#dl-body")
         assert page.is_hidden("#dl-reference")
         context.close()
@@ -258,18 +283,18 @@ class TestOpeningAndClosing:
         # (tutorial-style.css) — genuinely different corners, so a reader
         # can have both open together (see DECISIONS_LOG.md on this).
         context, page = self.open_page(site, browser, base_url)
-        page.click("#dl-settings-toggle")
+        _open_panel(page, "#dl-settings-toggle")
         assert page.is_visible("#dl-settings")
-        page.click("#dl-reference-toggle")
+        _open_panel(page, "#dl-reference-toggle")
         assert page.is_visible("#dl-reference")
         assert page.is_visible("#dl-settings")
         context.close()
 
     def test_opening_settings_does_not_close_the_reference(self, site, browser, base_url):
         context, page = self.open_page(site, browser, base_url)
-        page.click("#dl-reference-toggle")
+        _open_panel(page, "#dl-reference-toggle")
         assert page.is_visible("#dl-reference")
-        page.click("#dl-settings-toggle")
+        _open_panel(page, "#dl-settings-toggle")
         assert page.is_visible("#dl-settings")
         assert page.is_visible("#dl-reference")
         context.close()
@@ -286,7 +311,7 @@ class TestContent:
         context = browser.new_context()
         page = context.new_page()
         page.goto(f"{base_url}/tutorials/{MODULE}/two.html")
-        page.click("#dl-reference-toggle")
+        _open_panel(page, "#dl-reference-toggle")
         text = page.inner_text("#dl-reference-groups")
         assert "x" in text and "The first thing." in text
         assert "f()" in text and "Does a thing." in text
@@ -305,7 +330,7 @@ class TestContent:
         context = browser.new_context()
         page = context.new_page()
         page.goto(f"{base_url}/tutorials/{MODULE}/one.html")
-        page.click("#dl-reference-toggle")
+        _open_panel(page, "#dl-reference-toggle")
         text = page.inner_text("#dl-reference-groups")
         assert "x" in text
         assert "f()" not in text
@@ -319,7 +344,7 @@ class TestContent:
         context = browser.new_context()
         page = context.new_page()
         page.goto(f"{base_url}/tutorials/{MODULE}/one.html")
-        page.click("#dl-reference-toggle")
+        _open_panel(page, "#dl-reference-toggle")
         headings = page.eval_on_selector_all(
             "#dl-reference-groups h3", "els => els.map(e => e.textContent)")
         assert headings == ["Concepts", "Functions"]
@@ -339,7 +364,7 @@ class TestNotes:
         context = browser.new_context()
         page = context.new_page()
         page.goto(f"{base_url}/tutorials/{MODULE}/one.html")
-        assert page.is_visible("#dl-reference-toggle")
+        assert _toggle_shows(page, "#dl-reference-toggle")
         context.close()
 
     def test_opening_the_panel_shows_the_notes_heading_and_content(self, site, browser, base_url):
@@ -349,7 +374,7 @@ class TestNotes:
         context = browser.new_context()
         page = context.new_page()
         page.goto(f"{base_url}/tutorials/{MODULE}/one.html")
-        page.click("#dl-reference-toggle")
+        _open_panel(page, "#dl-reference-toggle")
         headings = page.eval_on_selector_all(
             "#dl-reference-groups h3", "els => els.map(e => e.textContent)")
         assert "Notes" in headings
@@ -376,7 +401,7 @@ class TestNotes:
         context = browser.new_context()
         page = context.new_page()
         page.goto(f"{base_url}/tutorials/{MODULE}/one.html")
-        page.click("#dl-reference-toggle")
+        _open_panel(page, "#dl-reference-toggle")
         headings = page.eval_on_selector_all(
             "#dl-reference-groups h3", "els => els.map(e => e.textContent)")
         assert headings == ["Concepts", "Notes"]
@@ -397,7 +422,7 @@ class TestDatasets:
         context = browser.new_context()
         page = context.new_page()
         page.goto(f"{base_url}/tutorials/{MODULE}/one.html")
-        assert page.is_visible("#dl-reference-toggle")
+        assert _toggle_shows(page, "#dl-reference-toggle")
         context.close()
 
     def test_opening_the_panel_shows_the_datasets_heading_and_attribution(
@@ -412,7 +437,7 @@ class TestDatasets:
         context = browser.new_context()
         page = context.new_page()
         page.goto(f"{base_url}/tutorials/{MODULE}/one.html")
-        page.click("#dl-reference-toggle")
+        _open_panel(page, "#dl-reference-toggle")
         headings = page.eval_on_selector_all(
             "#dl-reference-groups h3", "els => els.map(e => e.textContent)")
         assert "Datasets used here" in headings
@@ -438,7 +463,7 @@ class TestMobile:
         context = browser.new_context(viewport={"width": 375, "height": 700})
         page = context.new_page()
         page.goto(f"{base_url}/tutorials/{MODULE}/one.html")
-        assert page.is_visible("#dl-reference-toggle")
+        assert _toggle_shows(page, "#dl-reference-toggle")
         context.close()
 
     def test_opening_it_shows_a_sheet_anchored_to_the_bottom_edge(self, site, browser, base_url):
@@ -449,7 +474,7 @@ class TestMobile:
         context = browser.new_context(viewport={"width": 375, "height": 700})
         page = context.new_page()
         page.goto(f"{base_url}/tutorials/{MODULE}/one.html")
-        page.click("#dl-reference-toggle")
+        _open_panel(page, "#dl-reference-toggle")
         assert page.is_visible("#dl-reference")
         style = page.eval_on_selector(
             "#dl-reference",

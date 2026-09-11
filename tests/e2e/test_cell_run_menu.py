@@ -64,6 +64,21 @@ def clean_storage(page):
     page.evaluate("localStorage.clear()")
 
 
+def _open_panel(actor, selector: str) -> None:
+    """Reference/Series/Settings' toggles now collapse behind one
+    "Panels" control in the masthead (shell.html's
+    <details class="dl-panels">) rather than always showing — expand it
+    first if it isn't already, then click the actual target. Checked via
+    #dl-panels' own `open` property rather than the target's own
+    visibility, so this never mistakes "already open" for "not open" and
+    toggles it shut again right before the click that was supposed to
+    land. Left expanded once opened (no auto-collapse), so this is only
+    needed once per page load, not before every toggle click."""
+    if not actor.eval_on_selector("#dl-panels", "el => el.open"):
+        actor.click("#dl-panels summary")
+    actor.click(selector)
+
+
 class TestRunLine:
     def test_says_not_yet_run_before_a_cell_has_ever_run(self, clean_storage):
         page = clean_storage
@@ -218,7 +233,7 @@ class TestRestartAndRunAll:
         page.keyboard.insert_text("\nonly_the_old_interpreter_has_this = True")
         run_cell(page, "plain-python")
 
-        page.click("#dl-settings-toggle")
+        _open_panel(page, "#dl-settings-toggle")
         page.once("dialog", lambda dialog: dialog.accept())
         page.click("#dl-restart-run-all")
 

@@ -91,37 +91,53 @@
            (tutorial-style.css), not a floating card, and each panel
            remembers whether it was left open across page navigation
            (restoreSidebarState(), tutorial-runtime.js) on anything wider
-           than the phone breakpoint. -->
+           than the phone breakpoint.
+
+           One "Panels" control expands this inline to the three below,
+           at every width, rather than a permanent row of three buttons —
+           a native <details>, the same trick .dl-nav-search already
+           uses, so the disclosure needs no JS at all: opening or closing
+           it is native browser behaviour, and it stays open across
+           however many of the three a reader picks until they collapse
+           it by hand. Unlike .dl-nav-search this never floats: the row
+           grows in place and the masthead wraps beneath it if it must. -->
       <div class="dl-masthead-actions">
-        <!-- Starts hidden; tutorial-runtime.js reveals it only when this
-             page's manifest actually carries a glossary, a note, or a
-             dataset — a tutorial with nothing accumulated yet
-             (planning/REFERENCE_PANEL.md §6) shows no button at all, the
-             same "nothing to show, nothing to click" rule the Settings
-             panel already applies to its own empty sections below. -->
-        <button type="button" class="dl-reference-toggle" id="dl-reference-toggle"
-                aria-expanded="false" aria-controls="dl-reference" aria-label="Reference" hidden>
-          <span class="dl-reference-icon" aria-hidden="true"></span><span class="dl-toggle-label">Reference</span>
-        </button>
+        <details class="dl-panels" id="dl-panels">
+          <summary class="dl-panels-toggle">
+            <span class="dl-panels-icon" aria-hidden="true"></span>Panels
+          </summary>
+          <div class="dl-panels-group" id="dl-panels-group">
+            <!-- Starts hidden; tutorial-runtime.js reveals it only when this
+                 page's manifest actually carries a glossary, a note, a
+                 dataset, or the site-wide Basics tabs — a tutorial with
+                 nothing of its own accumulated yet still has those to
+                 offer (planning/REFERENCE_PANEL.md §6), so in practice
+                 this is rarely the reason a page has nothing to show. -->
+            <button type="button" class="dl-reference-toggle" id="dl-reference-toggle"
+                    aria-expanded="false" aria-controls="dl-reference" aria-label="Reference" hidden>
+              <span class="dl-reference-icon" aria-hidden="true"></span><span class="dl-toggle-label">Reference</span>
+            </button>
 
-        <!-- This tutorial's whole series, browsable from any point in it,
-             not just the tutorial immediately before and after
-             (planning/SIDEBAR_CONTENT.md §4b — the "where can I go"
-             question, distinct from the reference's "what do I need right
-             now"). Starts hidden; a tutorial with no series position
-             (archived, or a practice page) has nothing to show here —
-             build.py's render_series_nav() returns an empty string, and
-             the runtime hides the button the same way it hides the
-             reference's when there is nothing to show. -->
-        <button type="button" class="dl-seriesnav-toggle" id="dl-seriesnav-toggle"
-                aria-expanded="false" aria-controls="dl-seriesnav" aria-label="Series" hidden>
-          <span class="dl-seriesnav-icon" aria-hidden="true"></span><span class="dl-toggle-label">Series</span>
-        </button>
+            <!-- This tutorial's whole series, browsable from any point in it,
+                 not just the tutorial immediately before and after
+                 (planning/SIDEBAR_CONTENT.md §4b — the "where can I go"
+                 question, distinct from the reference's "what do I need right
+                 now"). Starts hidden; a tutorial with no series position
+                 (archived, or a practice page) has nothing to show here —
+                 build.py's render_series_nav() returns an empty string, and
+                 the runtime hides the button the same way it hides the
+                 reference's when there is nothing to show. -->
+            <button type="button" class="dl-seriesnav-toggle" id="dl-seriesnav-toggle"
+                    aria-expanded="false" aria-controls="dl-seriesnav" aria-label="Series" hidden>
+              <span class="dl-seriesnav-icon" aria-hidden="true"></span><span class="dl-toggle-label">Series</span>
+            </button>
 
-        <button type="button" class="dl-settings-toggle" id="dl-settings-toggle"
-                aria-expanded="false" aria-controls="dl-settings" aria-label="Settings">
-          <span class="dl-settings-icon" aria-hidden="true"></span><span class="dl-toggle-label">Settings</span>
-        </button>
+            <button type="button" class="dl-settings-toggle" id="dl-settings-toggle"
+                    aria-expanded="false" aria-controls="dl-settings" aria-label="Settings">
+              <span class="dl-settings-icon" aria-hidden="true"></span><span class="dl-toggle-label">Settings</span>
+            </button>
+          </div>
+        </details>
       </div>
     </header>
 
