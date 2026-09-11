@@ -6,26 +6,11 @@
 <title>dewmini web — dewlab</title>
 <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
 
-<!-- No coi-serviceworker.js and no Pyodide preconnect here, unlike
-     dewmini.html and shell.html: this page runs no Python at all, so
-     there is no SharedArrayBuffer Stop button to earn and nothing to
-     warm a connection to cdn.jsdelivr.net for. -->
-
-<!-- Two accessible reading fonts, self-hosted — same reasoning as
-     dewmini.html's own copy of this link: cheap enough (~500 KB total)
-     to carry unconditionally rather than only once a reader turns one on
-     in Settings elsewhere and lands here with it already chosen. -->
 <link rel="stylesheet" href="../assets/vendor/accessible-fonts.css">
 
 <link rel="stylesheet" href="../assets/tutorial-style.css">
 <link rel="stylesheet" href="dewminiweb-style.css">
 
-<!-- Applies whatever texture a reader already chose on any other dewlab
-     page, the same inline bootstrap assets/shell.html uses, so arriving
-     here looks like arriving anywhere else on the site. This page does
-     not yet offer its own way to *change* those settings (DECISIONS_LOG.md
-     7.143) — a deliberate, small first version, the same kind of honest
-     limit DBM-LO1 was on the database-methods module. -->
 <script>
 (function () {
   try {
@@ -77,17 +62,6 @@
       </div>
     </div>
 
-    <!-- The same markup render_site_editor() (build.py) writes for a
-         tutorial page's own site editor, built by hand here since this
-         page has no markdown to generate it from — reusing the exact
-         dl-site-* classes is what lets assets/tutorial-style.css style
-         both without a second stylesheet, and what lets this page mount
-         assets/site-relay.js's mountSitePreview() the same way
-         buildSiteEditors() (assets/tutorial-runtime.js) does. All three
-         panes always shown, unlike a tutorial page's optional ones — the
-         same choice dewmini's own Site tab makes, for the same reason:
-         a reader building a site from nothing needs somewhere to start
-         typing a stylesheet before there is one yet. -->
     <div class="dl-site-editor" id="dl-ws-editor" data-site-name="site">
       <div class="dl-site-split">
         <div class="dl-site-editors">

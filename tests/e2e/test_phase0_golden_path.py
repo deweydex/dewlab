@@ -111,8 +111,8 @@ def test_a_sql_exec_cell_pill_reads_sql(page):
 
 
 def test_a_sql_cells_select_renders_as_a_table(page):
-    """DEWSTACK_MERGE.md §3 — the editor holds real SQL text; the wrapper
-    tutorial-runtime.js builds around it before it reaches Python is what
+    """The editor holds real SQL text; the wrapper tutorial-runtime.js
+    builds around it before it reaches Python is what
     makes _run_sql_cell() render this table, not anything in the fixture."""
     output = run(page, "sql-basics")
     assert "<table" in output
@@ -136,8 +136,8 @@ def site_editor(page, name: str):
 
 
 def test_a_site_editors_panes_match_what_the_fixture_declares(page):
-    """DEWSTACK_MERGE.md §3 — panes are optional; a page with a JS pane gets
-    a Run button and a console, one without does not."""
+    """Panes are optional; a page with a JS pane gets a Run button and a
+    console, one without does not."""
     hero = site_editor(page, "hero")
     quiet = site_editor(page, "quiet")
     assert len(page.query_selector_all(f"{hero} .dl-site-pane")) == 3

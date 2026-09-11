@@ -323,8 +323,8 @@ console.log("hi");
 
 
 class TestSqlCells:
-    """DEWSTACK_MERGE.md §3 — a sql exec cell shares python exec's header
-    grammar, markup, and manifest shape entirely; only the fence's own
+    """A sql exec cell shares python exec's header grammar, markup, and
+    manifest shape entirely; only the fence's own
     language word and the pill it produces differ."""
 
     def test_a_sql_exec_fence_becomes_a_cell(self, repo):
@@ -387,8 +387,8 @@ class TestSqlCells:
 
 
 class TestSiteEditors:
-    """DEWSTACK_MERGE.md §3 — a live HTML/CSS/JS editor. Deliberately not
-    dewstack's own `site=name` spelling: identity lives on an `id:`/`site:`
+    """A live HTML/CSS/JS editor. Deliberately not dewstack's own
+    `site=name` spelling: identity lives on an `id:`/`site:`
     header inside the fence, the same place every other exec-family fence
     puts it, because a name in the info string cannot survive a round trip
     through the Crepe-based authoring editor (it keeps only a fence's first

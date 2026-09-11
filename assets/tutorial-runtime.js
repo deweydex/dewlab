@@ -1069,8 +1069,8 @@ const cells = [];
 
 const customCells = [];
 
-/* One entry per live HTML/CSS/JS site editor on the page (DEWSTACK_MERGE.md
- * §3) — see buildSiteEditors() below. */
+/* One entry per live HTML/CSS/JS site editor on the page — see
+ * buildSiteEditors() below. */
 const siteEditors = [];
 
 function setCellCollapsed(cell, collapsed) {

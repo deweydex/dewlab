@@ -1,34 +1,9 @@
-/* dewmini web: several named HTML/CSS/JS sites, kept in this browser
- * (DECISIONS_LOG.md 7.143, DEWSTACK_MERGE.md §4). A separate product
- * from dewmini — a multi-file site, not a Python notebook — shaped like
- * dewstack's own assets/workspace.js: what this file owns is the list
- * of sites, which one is open, saving every edit, the name field, and
- * New/Delete/Load files/Download. What it does not own is the preview,
- * the Run model, and the console — those are assets/site-relay.js's
- * mountSitePreview(), the same engine assets/tutorial-runtime.js's
- * buildSiteEditors() and compose/dewmini.js's own Site tab already
- * mount, ported in shape from dewstack's own workspace.js rather than
- * sharing its code, the same "port in shape, not code" rule that
- * governs everything crossing the dewlab/dewstack boundary.
- *
- * The console's own DOM (one div per line, an error's "Go to line"
- * button, a friendly hint) is written fresh here rather than imported
- * from tutorial-runtime.js's buildSiteEditors(), which draws the
- * identical-looking thing for a tutorial page's site editor: the two are
- * independently maintained look-alikes, the same relationship
- * render_cell() (build.py) already has with dewmini's own cell markup
- * — worth sharing if it starts drifting, not worth the coupling before
- * it has.
- */
 
 import { createCodeEditor, setEditorTheme } from "../assets/vendor/codemirror.bundle.js";
 import { mountSitePreview } from "../assets/site-relay.js";
 
 const KEY = "dewminiweb:sites:v1";
 
-/* A new site's starting text, so the first thing a reader sees is a page
- * and a console line, not three empty boxes — the same reasoning
- * dewstack's own STARTER constant gives. */
 const STARTER = {
   html: "<h1>Hello</h1>\n<p>Change this text, and watch the preview.</p>\n",
   css: "body {\n  font-family: sans-serif;\n  padding: 1rem;\n}\n",
@@ -57,8 +32,6 @@ function fileBase(name) {
   return base || "site";
 }
 
-/* ------------------------------------------------------------- storage */
-
 function readState() {
   try {
     const raw = localStorage.getItem(KEY);
@@ -78,17 +51,12 @@ function writeState(state) {
   pendingSave = null;
   try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { /* this visit does not save */ }
 }
-/* Debounced, so a keystroke does not serialise every site; flushed on
- * pagehide, so a tab closed inside the debounce loses nothing — the
- * same pattern dewstack's own workspace.js uses. */
 function saveState(state) {
   clearTimeout(saveTimer);
   pendingSave = state;
   saveTimer = setTimeout(() => writeState(state), 150);
 }
 window.addEventListener("pagehide", () => { if (pendingSave) writeState(pendingSave); });
-
-/* --------------------------------------------------------------- theme */
 
 const root = document.documentElement;
 const darkQuery = window.matchMedia("(prefers-color-scheme: dark)");
@@ -97,8 +65,6 @@ function isDark() {
   if (chosen) return chosen === "dark";
   return darkQuery.matches;
 }
-
-/* ---------------------------------------------------------------- page */
 
 const state = readState();
 
@@ -120,11 +86,6 @@ function activeSite() {
   return state.sites.find((s) => s.id === state.active) || state.sites[0];
 }
 
-/* One CodeMirror pane per language, mounted once and reused across every
- * site — switching sites calls .setValue() on all three rather than
- * tearing editors down and rebuilding them, the same "the component
- * stays, the content changes" choice dewstack's own workspace.js makes
- * (its site.load()). */
 const panes = {};
 for (const lang of ["html", "css", "js"]) {
   const host = editorEl.querySelector(`.dl-site-pane[data-lang="${lang}"] .dl-editor`);
@@ -202,8 +163,6 @@ widthInput.addEventListener("input", () => {
   iframe.style.width = `${widthInput.value}%`;
   widthOut.textContent = `${widthInput.value}%`;
 });
-
-/* -------------------------------------------------------- site list UI */
 
 function renderList() {
   listEl.innerHTML = "";
