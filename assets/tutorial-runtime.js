@@ -415,12 +415,91 @@ function renderReference(manifest) {
     container.append(section);
   }
 
+  // Math Basics (its own tab, renderMathBasics() below) fills the panel
+  // whether or not this page has anything of its own — this note is
+  // only about the Reference tab's own, page-specific content.
+  const nothingYet = document.getElementById("dl-reference-nothing-yet");
+  if (nothingYet) nothingYet.hidden = container.children.length > 0;
+
   // A page with only a handful of terms doesn't need searching; one with
-  // a whole series accumulated behind it does. Shown once there's
-  // actually more than one group's worth of entries to search through,
-  // rather than unconditionally the moment the panel has anything at all.
+  // a whole series accumulated behind it does. Math Basics' and Python
+  // Basics' own fixed sets almost always clear this on their own once
+  // they exist, so this mostly still matters for how the Reference tab
+  // looks before a series has accumulated much.
   const searchInput = document.getElementById("dl-reference-search");
-  if (searchInput) searchInput.hidden = container.querySelectorAll("dt, .dl-note").length < 6;
+  const basicsCount = ["mathBasics", "pythonBasics"].reduce((n, key) =>
+    n + (manifest[key] || []).reduce((m, group) => m + (group.entries || []).length, 0), 0);
+  if (searchInput) {
+    searchInput.hidden = container.querySelectorAll("dt, .dl-note").length < 6
+      && basicsCount < 6;
+  }
+}
+
+/* Math Basics: the same fixed set of terms on every page (build.py's
+ * load_math_basics()), grouped under the small headings the data file
+ * itself carries — Operations, Powers and roots, and so on — rather than
+ * GLOSSARY_GROUP_LABELS' kind grouping above, since this data has no
+ * "kind" at all, just a term and a plain definition — no example, no
+ * origin link, by the house rule math-basics.yaml itself documents. */
+function renderMathBasics(manifest) {
+  const container = document.getElementById("dl-basics-groups");
+  if (!container) return;
+  container.replaceChildren();
+
+  for (const group of manifest.mathBasics || []) {
+    const section = document.createElement("div");
+    section.className = "dl-reference-group";
+    const heading = document.createElement("h3");
+    heading.textContent = group.label;
+    section.append(heading);
+
+    const dl = document.createElement("dl");
+    for (const entry of group.entries || []) {
+      const dt = document.createElement("dt");
+      dt.textContent = entry.term;
+      const dd = document.createElement("dd");
+      dd.append(document.createTextNode(entry.definition));
+      dl.append(dt, dd);
+    }
+    section.append(dl);
+    container.append(section);
+  }
+}
+
+/* Python Basics: the same shape and site-wide source (build.py's
+ * load_python_basics()) as renderMathBasics() above, except an entry
+ * here may also carry a short `example` — rendered the same way
+ * renderReference() renders a tutorial's own glossary examples — since
+ * python-basics.yaml's own house rule allows one where a syntax mark is
+ * clearer shown than said. */
+function renderPythonBasics(manifest) {
+  const container = document.getElementById("dl-python-groups");
+  if (!container) return;
+  container.replaceChildren();
+
+  for (const group of manifest.pythonBasics || []) {
+    const section = document.createElement("div");
+    section.className = "dl-reference-group";
+    const heading = document.createElement("h3");
+    heading.textContent = group.label;
+    section.append(heading);
+
+    const dl = document.createElement("dl");
+    for (const entry of group.entries || []) {
+      const dt = document.createElement("dt");
+      dt.textContent = entry.term;
+      const dd = document.createElement("dd");
+      dd.append(document.createTextNode(entry.definition));
+      if (entry.example) {
+        const code = document.createElement("code");
+        code.textContent = entry.example;
+        dd.append(code);
+      }
+      dl.append(dt, dd);
+    }
+    section.append(dl);
+    container.append(section);
+  }
 }
 
 function filterReferenceContent(query) {
@@ -452,15 +531,61 @@ function filterReferenceContent(query) {
   if (emptyMessage) emptyMessage.hidden = anyGroupVisible || !needle;
 }
 
+/* Same shape as filterReferenceContent(), shared by both "Basics" tabs'
+ * own containers (Math Basics, Python Basics) — one function taking the
+ * container/empty ids as arguments, since neither has notes or origin
+ * links to skip over: just term/definition pairs to filter. */
+function filterBasicsContent(groupsId, emptyId, query) {
+  const container = document.getElementById(groupsId);
+  const emptyMessage = document.getElementById(emptyId);
+  if (!container) return;
+  const needle = query.trim().toLowerCase();
+  let anyGroupVisible = false;
+
+  for (const group of container.querySelectorAll(".dl-reference-group")) {
+    let groupHasMatch = false;
+    for (const dt of group.querySelectorAll(":scope > dl > dt")) {
+      const dd = dt.nextElementSibling;
+      const text = `${dt.textContent} ${dd ? dd.textContent : ""}`.toLowerCase();
+      const matches = !needle || text.includes(needle);
+      dt.hidden = !matches;
+      if (dd) dd.hidden = !matches;
+      if (matches) groupHasMatch = true;
+    }
+    group.hidden = !groupHasMatch;
+    if (groupHasMatch) anyGroupVisible = true;
+  }
+
+  if (emptyMessage) emptyMessage.hidden = anyGroupVisible || !needle;
+}
+
+function filterMathBasicsContent(query) {
+  filterBasicsContent("dl-basics-groups", "dl-basics-empty", query);
+}
+
+function filterPythonBasicsContent(query) {
+  filterBasicsContent("dl-python-groups", "dl-python-empty", query);
+}
+
+/* Same open/close mechanics as initSettingsPanel(), staying in sync with
+ * initSeriesNav() only — the two share a corner and conflict; Settings
+ * does not. Starts hidden in shell.html unless this page's manifest
+ * carries a glossary, a note, a dataset, Math Basics, or Python Basics.
+ * Math Basics and Python Basics are the same on every page once they
+ * exist, so this toggle stops hiding once they do. */
 function initReference(manifest) {
   const toggle = document.getElementById("dl-reference-toggle");
   const panel = document.getElementById("dl-reference");
   const hasContent = (manifest.glossary && manifest.glossary.length)
     || (manifest.notes && manifest.notes.length)
-    || (manifest.datasets && manifest.datasets.length);
+    || (manifest.datasets && manifest.datasets.length)
+    || (manifest.mathBasics && manifest.mathBasics.length)
+    || (manifest.pythonBasics && manifest.pythonBasics.length);
   if (!toggle || !panel || !hasContent) return;
 
   renderReference(manifest);
+  renderMathBasics(manifest);
+  renderPythonBasics(manifest);
   toggle.hidden = false;
 
   function setOpen(open) {
@@ -496,6 +621,77 @@ function initReference(manifest) {
     setOpen(false);
   });
 
+  // Three tabs sharing one search box — search filters whichever tab is
+  // open, tracked here rather than re-read from the DOM on every
+  // keystroke. Switching tabs re-runs the filter against whatever is
+  // already typed, so a query survives the switch instead of resetting.
+  // An array rather than a hardcoded pair, so a future fourth tab is one
+  // more entry here rather than a third copy of this whole block.
+  const searchInput = document.getElementById("dl-reference-search");
+  const tabs = [
+    {
+      name: "reference",
+      tab: document.getElementById("dl-reference-tab-reference"),
+      pane: document.getElementById("dl-reference-pane-reference"),
+      placeholder: "Search this page's terms…",
+      label: "Search this page's reference",
+      filter: filterReferenceContent,
+    },
+    {
+      name: "mathbasics",
+      tab: document.getElementById("dl-reference-tab-basics"),
+      pane: document.getElementById("dl-reference-pane-basics"),
+      placeholder: "Search Math Basics…",
+      label: "Search Math Basics",
+      filter: filterMathBasicsContent,
+    },
+    {
+      name: "pythonbasics",
+      tab: document.getElementById("dl-reference-tab-python"),
+      pane: document.getElementById("dl-reference-pane-python"),
+      placeholder: "Search Python Basics…",
+      label: "Search Python Basics",
+      filter: filterPythonBasicsContent,
+    },
+  ];
+  let activeTab = tabs[0];
+
+  function runActiveFilter() {
+    if (searchInput) activeTab.filter(searchInput.value);
+  }
+
+  function selectTab(name) {
+    activeTab = tabs.find((t) => t.name === name) || tabs[0];
+    for (const t of tabs) {
+      const on = t === activeTab;
+      t.tab.setAttribute("aria-selected", String(on));
+      t.tab.tabIndex = on ? 0 : -1;
+      t.pane.hidden = !on;
+    }
+    if (searchInput) {
+      searchInput.placeholder = activeTab.placeholder;
+      searchInput.setAttribute("aria-label", activeTab.label);
+    }
+    runActiveFilter();
+  }
+
+  if (tabs.every((t) => t.tab && t.pane)) {
+    for (const [i, t] of tabs.entries()) {
+      t.tab.addEventListener("click", () => selectTab(t.name));
+      // Left/right arrow keys move focus and selection together, the
+      // usual ARIA tabs keyboard pattern — a click already does both at
+      // once. Wraps around at either end.
+      t.tab.addEventListener("keydown", (ev) => {
+        if (ev.key !== "ArrowLeft" && ev.key !== "ArrowRight") return;
+        ev.preventDefault();
+        const step = ev.key === "ArrowRight" ? 1 : -1;
+        const next = tabs[(i + step + tabs.length) % tabs.length];
+        next.tab.focus();
+        selectTab(next.name);
+      });
+    }
+  }
+
   // Search, only once the panel actually has enough in it to search
   // (renderReference() decides that and hides the input otherwise).
   // Cleared whenever the panel closes — a MutationObserver on `hidden`
@@ -504,13 +700,12 @@ function initReference(manifest) {
   // closed by the series nav opening), so reopening it later never
   // starts on a stale filter from the last time it was open regardless
   // of which path closed it.
-  const searchInput = document.getElementById("dl-reference-search");
   if (searchInput) {
-    searchInput.addEventListener("input", () => filterReferenceContent(searchInput.value));
+    searchInput.addEventListener("input", runActiveFilter);
     new MutationObserver(() => {
       if (panel.hasAttribute("hidden") && searchInput.value) {
         searchInput.value = "";
-        filterReferenceContent("");
+        for (const t of tabs) t.filter("");
       }
     }).observe(panel, { attributes: true, attributeFilter: ["hidden"] });
   }
@@ -1128,6 +1323,15 @@ function buildSiteEditors(manifest) {
         editorState.ran = false;
         render();
         scheduleSave();
+      });
+    }
+
+    const widthInput = host.querySelector(".dl-site-width");
+    const widthOut = host.querySelector(".dl-site-preview-controls output");
+    if (widthInput) {
+      widthInput.addEventListener("input", () => {
+        iframe.style.width = `${widthInput.value}%`;
+        if (widthOut) widthOut.textContent = `${widthInput.value}%`;
       });
     }
 

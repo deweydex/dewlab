@@ -252,3 +252,105 @@ groups:
     tutorials:
       - { module: database-methods, slug: sql-practice }
       - { module: database-methods, slug: the-tentacular-plushies-quiz }
+
+  - key: web-authoring-orientation
+    name: A GitHub account, an editor, and a published page
+    intro: >
+      The tools this course's website track runs on, and the two loops
+      you use every time you change something: saving a file on your own
+      computer, and publishing a change through GitHub.
+    tutorials:
+      - { module: web-authoring, slug: how-the-pieces-fit }
+      - { module: web-authoring, slug: a-github-account }
+      - { module: web-authoring, slug: issues-and-pull-requests }
+      - { module: web-authoring, slug: an-editor }
+      - { module: web-authoring, slug: your-copy-of-the-starter }
+      - { module: web-authoring, slug: publish-it }
+      - { module: web-authoring, slug: the-two-loops }
+      - { module: web-authoring, slug: the-inspector }
+
+  - key: web-authoring-reference
+    name: Web authoring reference shelf
+    intro: >
+      Not a series to read start to finish — a shelf to come back to.
+      Questions people ask most, the checks worth trying when something
+      will not run, HTML/CSS/SQL syntax to look up, and project ideas
+      once you have a skill and want to practise it.
+    tutorials:
+      - { module: web-authoring, slug: faq }
+      - { module: web-authoring, slug: troubleshooting }
+      - { module: web-authoring, slug: quick-reference }
+      - { module: web-authoring, slug: project-ideas }
+
+  - key: web-first-page
+    name: "Your first page: HTML basics"
+    intro: >
+      Tags, elements and attributes; the head and the body; headings,
+      paragraphs and emphasis; sections that say what they hold; images
+      that still make sense when they fail to load; and three kinds of
+      link.
+    tutorials:
+      - { module: web-authoring, slug: a-page-is-files }
+      - { module: web-authoring, slug: the-skeleton }
+      - { module: web-authoring, slug: headings-and-emphasis }
+      - { module: web-authoring, slug: sections-that-mean-something }
+      - { module: web-authoring, slug: images-and-alt-text }
+      - { module: web-authoring, slug: three-kinds-of-link }
+      - { module: web-authoring, slug: navigation }
+
+  - key: web-css-basics
+    name: "CSS basics: rules, boxes and selectors"
+    intro: >
+      Where a rule lives and what it is made of, the three layers around
+      every element's content, units that hold their ground differently,
+      and picking out exactly the elements you mean.
+    tutorials:
+      - { module: web-authoring, slug: a-rule-and-where-it-lives }
+      - { module: web-authoring, slug: variables-and-colour }
+      - { module: web-authoring, slug: the-box }
+      - { module: web-authoring, slug: text-and-units }
+      - { module: web-authoring, slug: selectors-and-classes }
+      - { module: web-authoring, slug: the-container }
+
+  - key: web-interactive-css
+    name: Interactive and responsive CSS
+    intro: >
+      A header that stays in view, a footer that never floats up, states
+      a reader triggers with a pointer or a keyboard, smooth transitions,
+      and CSS that only applies below a chosen screen width.
+    tutorials:
+      - { module: web-authoring, slug: position-and-the-sticky-header }
+      - { module: web-authoring, slug: hover-and-focus }
+      - { module: web-authoring, slug: transitions-and-transforms }
+      - { module: web-authoring, slug: media-queries }
+
+  - key: web-layout-and-naming
+    name: Flexbox, grid, and naming your CSS
+    intro: >
+      Images that fit their container at any width, rows that wrap and
+      grids that resize themselves, a whole page laid out as a named map,
+      a naming pattern that says what a class is for, and CSS that moves
+      on its own or answers a click.
+    tutorials:
+      - { module: web-authoring, slug: flexible-images }
+      - { module: web-authoring, slug: flexbox-first-steps }
+      - { module: web-authoring, slug: named-grid-areas }
+      - { module: web-authoring, slug: css-variables-and-bem }
+      - { module: web-authoring, slug: keyframes-and-the-checkbox-hack }
+
+  - key: web-several-pages
+    name: A site with several pages
+    intro: >
+      Planning five pages before writing any HTML, one navigation that
+      appears on all of them, cards and a gallery that rearrange
+      themselves, a navigation that works on a phone, an accessible
+      form, keeping image files small, and documenting what you built.
+    tutorials:
+      - { module: web-authoring, slug: planning-a-site }
+      - { module: web-authoring, slug: pages-and-navigation }
+      - { module: web-authoring, slug: cards-in-a-row }
+      - { module: web-authoring, slug: a-grid-gallery }
+      - { module: web-authoring, slug: navigation-on-a-phone }
+      - { module: web-authoring, slug: a-form }
+      - { module: web-authoring, slug: images-and-file-size }
+      - { module: web-authoring, slug: documenting-what-you-built }

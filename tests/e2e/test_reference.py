@@ -174,14 +174,26 @@ FUNCTION = {"term": "f()", "kind": "function", "definition": "Does a thing.", "e
 
 
 class TestVisibility:
-    def test_no_glossary_anywhere_in_the_series_hides_the_toggle(self, site, browser, base_url):
+    def test_no_glossary_anywhere_in_the_series_still_shows_the_basics_tabs(
+            self, site, browser, base_url):
+        """Math Basics and Python Basics (build.py's load_math_basics()/
+        load_python_basics()) are the same on every page, so the toggle
+        no longer hides just because this page and its series have
+        nothing of their own yet — only the Reference tab itself says
+        so."""
         _tutorial(site, "one", "One")
         _set_order(site, ["one"])
         b.build()
         context = browser.new_context()
         page = context.new_page()
         page.goto(f"{base_url}/tutorials/{MODULE}/one.html")
-        assert page.is_hidden("#dl-reference-toggle")
+        assert page.is_visible("#dl-reference-toggle")
+        page.click("#dl-reference-toggle")
+        assert page.is_visible("#dl-reference-nothing-yet")
+        page.click("#dl-reference-tab-basics")
+        assert page.locator("#dl-basics-groups dt").count() > 0
+        page.click("#dl-reference-tab-python")
+        assert page.locator("#dl-python-groups dt").count() > 0
         context.close()
 
     def test_a_tutorial_with_something_accumulated_shows_the_toggle(self, site, browser, base_url):

@@ -800,18 +800,19 @@ p code, li code {
 
 .dl-site-head { display: flex; justify-content: flex-end; margin-bottom: 0.4rem; }
 
+/* Panes stacked above a full-width preview, not side by side: a page
+ * asking a reader to drag the preview narrower needs real room to do
+ * that in, and a side-by-side split leaves too little width for either
+ * half at this site's own --dl-line-width. Ported in shape from
+ * dewstack's own .dl-site-panes/.dl-site-preview (always a column,
+ * never a row). */
 .dl-site-split {
   display: flex;
+  flex-direction: column;
   gap: 0.75rem;
-  align-items: stretch;
-}
-@media (max-width: 48rem) {
-  .dl-site-split { flex-direction: column; }
 }
 
 .dl-site-editors {
-  flex: 1 1 50%;
-  min-width: 0;
   display: flex;
   flex-direction: column;
   gap: 0.6rem;
@@ -825,15 +826,29 @@ p code, li code {
 }
 
 .dl-site-preview {
-  flex: 1 1 50%;
-  min-width: 0;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
 }
 
+/* Lets a reader shrink the preview itself — the actual apparatus for a
+ * lesson about a media query or a flex row that only rearranges once its
+ * own box gets narrow, ported from dewstack's own .dl-site-preview-controls
+ * (its own CSS variables translated to this site's). */
+.dl-site-preview-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.78rem;
+  color: var(--dl-muted);
+}
+.dl-site-preview-controls label { flex: none; }
+.dl-site-width { flex: 1 1 auto; min-width: 0; }
+.dl-site-preview-controls output { flex: none; font-family: var(--dl-mono); }
+
 /* Fixed white background regardless of theme: a reader's page is written
- * assuming a page, not this site's own dark mode. */
+ * assuming a page, not this site's own dark mode. Width defaults to 100%
+ * here and is set inline, in percent, by the preview-width slider above. */
 .dl-site-frame {
   flex: 1 1 auto;
   width: 100%;
@@ -842,6 +857,7 @@ p code, li code {
   border: 1px solid var(--dl-cell-border);
   border-radius: 6px;
   background: #fff;
+  transition: width 0.15s ease;
 }
 
 .dl-site-pane-head {
@@ -1206,6 +1222,34 @@ p code, li code {
 .dl-settings-search-input:focus { outline: none; border-color: var(--dl-orange); }
 .dl-reference-search-input[hidden] { display: none; }
 
+/* Same shape as .dl-seg (Settings' own segmented controls), reused here
+   for real ARIA tabs rather than a radiogroup — a plain bordered row,
+   the active one filled navy, nothing else about the panel's look
+   changing underneath it. */
+.dl-reference-tabs { display: flex; gap: 0.25rem; margin-top: 0.7rem; }
+.dl-reference-tab {
+  flex: 1;
+  font-family: var(--dl-mono);
+  font-size: 0.7rem;
+  padding: 0.4rem 0;
+  border: 1px solid var(--dl-cell-border);
+  border-radius: 3px;
+  background: none;
+  color: var(--dl-fg);
+  cursor: pointer;
+}
+.dl-reference-tab[aria-selected="true"] {
+  background: var(--dl-navy);
+  border-color: var(--dl-navy);
+  color: #fff;
+}
+
+/* The head every docked panel already had (title, close button) now
+   carries its own search too where the panel has one, and stays pinned
+   to the panel's own top edge as the sections below it scroll. The
+   negative margin/top pair pulls this out to the panel's own edges and
+   cancels its top padding, then re-applies it here, so the sticky
+   element sits flush with the panel's real edge once scrolled. */
 .dl-panel-sticky-head {
   position: sticky;
   top: -1rem;

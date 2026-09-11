@@ -656,6 +656,46 @@ class TestTutorialAssets:
         assert not (repo / "site" / "tutorials" / "computational-methods"
                     / "sample" / "sample.glossary.yaml").exists()
 
+    def test_a_downloadable_sibling_file_is_linked_and_copied(self, repo):
+        """A small standalone .html to take as a starting point, not shown
+        with src= but linked with href= — the same folder, the same
+        one-level-above-itself reach the current release needs for a
+        picture."""
+        write(repo, '<a href="demo.html">demo.html</a>\n')
+        asset(repo, "sample", "demo.html", b"<p>a starter</p>")
+        b.build()
+        assert 'href="sample/demo.html"' in built(repo)
+        copied = repo / "site" / "tutorials" / "computational-methods" / "sample" / "demo.html"
+        assert copied.read_bytes() == b"<p>a starter</p>"
+
+    def test_an_href_naming_a_file_that_is_not_there_is_left_alone(self, repo):
+        """Unlike a missing src=, this does not fail the build: a page links
+        to plenty of things that are not a local asset at all, and
+        resolve_links() already produces a real, already-correct relative
+        href for another tutorial — this must not mistake one for a
+        missing local file."""
+        write(repo, '<a href="not-a-real-file.html">a link</a>\n')
+        b.build()
+        assert 'href="not-a-real-file.html"' in built(repo)
+
+    def test_an_external_href_is_left_alone(self, repo):
+        write(repo, '<a href="https://example.org/demo.html">demo</a>\n')
+        b.build()
+        assert 'href="https://example.org/demo.html"' in built(repo)
+
+    def test_a_src_or_href_shown_as_text_in_a_code_span_is_not_resolved(self, repo):
+        """A tutorial teaching HTML shows `<img src="...">` as a string to
+        read, not markup to run — markdown's own code-span handling leaves
+        the quote alone even though it escapes the angle brackets, so this
+        has to be told apart from a real attribute or a quick-reference
+        table breaks the build over its own example."""
+        write(repo, 'Shown as text: `<img src="not-a-real-file.png">` and '
+                    '`<a href="not-a-real-file.html">`.\n')
+        b.build()
+        page = built(repo)
+        assert 'src="not-a-real-file.png"' in page
+        assert 'href="not-a-real-file.html"' in page
+
 
 class TestFrontmatter:
     def test_a_missing_field_fails_the_build(self, repo):
@@ -2969,6 +3009,185 @@ class TestCrossSeriesGlossary:
         set_series_order(repo, "computational-methods", ["python-fundamentals", "no-such-series"])
         with pytest.raises(b.BuildError, match="no-such-series"):
             b.build()
+
+
+class TestMathBasics:
+    """Math Basics: plain definitions for arithmetic notation and
+    vocabulary, independent of any one tutorial or series — build.py's
+    load_math_basics(), planning/curriculum/math-basics.yaml. Not
+    cumulative and not per-tutorial, so every test here monkeypatches
+    MATH_BASICS_DATA directly rather than going through the `repo`
+    fixture's own tutorials/data/assets layout."""
+
+    def _write(self, repo: Path, monkeypatch, text: str) -> Path:
+        path = repo / "planning" / "curriculum" / "math-basics.yaml"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(text)
+        monkeypatch.setattr(b, "MATH_BASICS_DATA", path)
+        return path
+
+    def test_a_missing_file_is_fine_not_an_error(self, repo, monkeypatch):
+        monkeypatch.setattr(
+            b, "MATH_BASICS_DATA", repo / "planning" / "curriculum" / "math-basics.yaml")
+        assert b.load_math_basics() == []
+
+    def test_a_well_formed_file_loads_its_groups(self, repo, monkeypatch):
+        self._write(repo, monkeypatch, """
+groups:
+  - label: Operations
+    entries:
+      - term: Sum
+        definition: The result of adding numbers together.
+""")
+        assert b.load_math_basics() == [
+            {"label": "Operations", "entries": [
+                {"term": "Sum", "definition": "The result of adding numbers together."},
+            ]},
+        ]
+
+    def test_a_group_with_no_label_fails_the_build(self, repo, monkeypatch):
+        self._write(repo, monkeypatch, """
+groups:
+  - entries:
+      - term: Sum
+        definition: Adding.
+""")
+        with pytest.raises(b.BuildError, match="label"):
+            b.load_math_basics()
+
+    def test_a_group_with_no_entries_fails_the_build(self, repo, monkeypatch):
+        self._write(repo, monkeypatch, "groups:\n  - label: Operations\n    entries: []\n")
+        with pytest.raises(b.BuildError, match="no entries"):
+            b.load_math_basics()
+
+    def test_an_entry_missing_a_definition_fails_the_build(self, repo, monkeypatch):
+        self._write(repo, monkeypatch, """
+groups:
+  - label: Operations
+    entries:
+      - term: Sum
+""")
+        with pytest.raises(b.BuildError, match="term or a definition"):
+            b.load_math_basics()
+
+    def test_it_reaches_every_pages_own_manifest(self, repo, monkeypatch):
+        self._write(repo, monkeypatch, """
+groups:
+  - label: Operations
+    entries:
+      - term: Sum
+        definition: The result of adding numbers together.
+""")
+        write(repo, "One.\n", slug="one")
+        b.build()
+        assert manifest(built(repo, "one"))["mathBasics"] == [
+            {"label": "Operations", "entries": [
+                {"term": "Sum", "definition": "The result of adding numbers together."},
+            ]},
+        ]
+
+    def test_the_shipped_file_is_itself_well_formed(self):
+        """Not monkeypatched — loads the real file this repo ships, as a
+        guard against a malformed hand-edit of it ever reaching main."""
+        assert b.load_math_basics()
+
+
+class TestPythonBasics:
+    """Python Basics: plain definitions for Python's own vocabulary and
+    punctuation, independent of any one tutorial or series — build.py's
+    load_python_basics(), planning/curriculum/python-basics.yaml. Same
+    shape and same shared validation (_load_basics()) as Math Basics
+    above, so every test here mirrors TestMathBasics, monkeypatching
+    PYTHON_BASICS_DATA directly rather than going through the `repo`
+    fixture's own tutorials/data/assets layout."""
+
+    def _write(self, repo: Path, monkeypatch, text: str) -> Path:
+        path = repo / "planning" / "curriculum" / "python-basics.yaml"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(text)
+        monkeypatch.setattr(b, "PYTHON_BASICS_DATA", path)
+        return path
+
+    def test_a_missing_file_is_fine_not_an_error(self, repo, monkeypatch):
+        monkeypatch.setattr(
+            b, "PYTHON_BASICS_DATA", repo / "planning" / "curriculum" / "python-basics.yaml")
+        assert b.load_python_basics() == []
+
+    def test_a_well_formed_file_loads_its_groups(self, repo, monkeypatch):
+        self._write(repo, monkeypatch, """
+groups:
+  - label: Values
+    entries:
+      - term: String
+        definition: Text, written between quotation marks.
+        example: '"hello"'
+""")
+        assert b.load_python_basics() == [
+            {"label": "Values", "entries": [
+                {"term": "String", "definition": "Text, written between quotation marks.",
+                 "example": '"hello"'},
+            ]},
+        ]
+
+    def test_an_entry_with_no_example_is_fine(self, repo, monkeypatch):
+        self._write(repo, monkeypatch, """
+groups:
+  - label: Values
+    entries:
+      - term: Boolean
+        definition: A value that is either True or False.
+""")
+        assert b.load_python_basics() == [
+            {"label": "Values", "entries": [
+                {"term": "Boolean", "definition": "A value that is either True or False."},
+            ]},
+        ]
+
+    def test_a_group_with_no_label_fails_the_build(self, repo, monkeypatch):
+        self._write(repo, monkeypatch, """
+groups:
+  - entries:
+      - term: String
+        definition: Text.
+""")
+        with pytest.raises(b.BuildError, match="label"):
+            b.load_python_basics()
+
+    def test_a_group_with_no_entries_fails_the_build(self, repo, monkeypatch):
+        self._write(repo, monkeypatch, "groups:\n  - label: Values\n    entries: []\n")
+        with pytest.raises(b.BuildError, match="no entries"):
+            b.load_python_basics()
+
+    def test_an_entry_missing_a_definition_fails_the_build(self, repo, monkeypatch):
+        self._write(repo, monkeypatch, """
+groups:
+  - label: Values
+    entries:
+      - term: String
+""")
+        with pytest.raises(b.BuildError, match="term or a definition"):
+            b.load_python_basics()
+
+    def test_it_reaches_every_pages_own_manifest(self, repo, monkeypatch):
+        self._write(repo, monkeypatch, """
+groups:
+  - label: Values
+    entries:
+      - term: String
+        definition: Text, written between quotation marks.
+""")
+        write(repo, "One.\n", slug="one")
+        b.build()
+        assert manifest(built(repo, "one"))["pythonBasics"] == [
+            {"label": "Values", "entries": [
+                {"term": "String", "definition": "Text, written between quotation marks."},
+            ]},
+        ]
+
+    def test_the_shipped_file_is_itself_well_formed(self):
+        """Not monkeypatched — loads the real file this repo ships, as a
+        guard against a malformed hand-edit of it ever reaching main."""
+        assert b.load_python_basics()
 
 
 class TestNotes:

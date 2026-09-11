@@ -1,0 +1,13 @@
+# The reading order of this series. Every tutorial in the series has to be
+# listed here, and every slug listed has to exist, or the build stops.
+
+series: Welcome
+order:
+  - how-the-pieces-fit
+  - a-github-account
+  - issues-and-pull-requests
+  - an-editor
+  - your-copy-of-the-starter
+  - publish-it
+  - the-two-loops
+  - the-inspector

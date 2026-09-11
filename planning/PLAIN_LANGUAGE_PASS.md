@@ -76,6 +76,26 @@ and a new FAQ page, adapted for a real difference between the two projects —
 dewstack's two projects and exam are graded, so its reassurance is scoped to
 the exercises rather than a blanket "nothing is scored."
 
+**Twelve `web-authoring` tutorials ported from dewstack**: the `welcome`
+series (how the pieces fit, a GitHub account, issues and pull requests,
+an editor, your copy of the starter, publish it, the two loops, the
+browser inspector) and the `shelf` series (FAQ, troubleshooting, quick
+reference, project ideas). The prose itself needed little — dewstack
+already writes to this same guide — but the same bold-lead-fragment habit
+the database-methods pass found kept recurring in a different shape: a
+term introduced as "**A username.** This becomes part of…" rather than a
+sentence, the same pattern already fixed once in this module's own recap
+lists. Ten instances across three pages (`a-github-account`'s username,
+email address and password; `project-ideas`'s five project types)
+rewritten into full sentences with the term itself in italics rather
+than bold, matching this guide's own term-introduction convention rather
+than a documentation-style definition list. This port also needed
+platform-fact corrections (dewlab's own repository and PR in place of
+dewstack's, the real save/reset model in place of a special case dewlab
+doesn't have) — a different, adjacent kind of accuracy check to the
+plain-language one, but done in the same pass since both mean actually
+reading the sentence rather than trusting it.
+
 ---
 
 ## Not done — pick up here
@@ -110,10 +130,15 @@ tutorial rather than in a sweep.
 turns out to need one.** For now it's added opportunistically wherever a
 page is already being touched for another reason.
 
-**Staged hints (`DECISIONS_LOG.md` 7.135).** Written against section 4
-already: the default fold title, the two Settings rows and their note in
-`assets/shell.html`, and the hint fences in the four tutorials that carry
-them. Each new hint an author writes is a new surface for this pass.
+**Staged hints.** Written against section 4 already: the default fold
+title, the two Settings rows and their note in `assets/shell.html`, and
+the hint fences in the four tutorials that carry them. Each new hint an
+author writes is a new surface for this pass.
+
+**`dewmini web`'s page copy.** One new student-facing surface
+(`compose/dewminiweb.html`'s title, subtitle, and note, plus the homepage
+paragraph linking to it), written against §4 as it was added. Its own
+examples are the model for the next new page's copy.
 
 **Bibliographies.** Unrelated to readability but still the largest
 outstanding piece of style work — see section 8 of the style guide.

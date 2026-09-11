@@ -3096,10 +3096,125 @@ same per-page `localStorage` record every cell's code and output already
 do, keyed by each pane's own `id`. A reload that had been run re-runs on
 load; a fresh page never auto-runs JavaScript — the two states are told
 apart by one saved boolean per editor.
-*Cost to change: a new `SitePane`/`SiteEditor` pair in `build.py`, plus
-`parse_site_pane()`, the `extract_blocks()` dispatch branch, and
 `render_site_editor()`; a new file, `assets/site-relay.js`; a refactor of
 `compose/dewmini.js`'s `renderSiteView()`/`destroySiteEditors()` down to
 its own DOM-drawing code; a new `buildSiteEditors()` plus
 `saveNow()`/`restoreSaved()` additions in `assets/tutorial-runtime.js`; a
 new CSS section in `assets/tutorial-style.css`.*
+
+**7.143 — dewmini web: a second, standalone product sharing the
+site-relay engine.** `compose/dewminiweb.html`/`dewminiweb-style.css`/
+`dewminiweb.js`: several named sites kept in one `localStorage` record
+(`dewminiweb:sites:v1`), each with its own HTML/CSS/JS and a live
+preview, New/Delete/Load files/Download acting on whichever site is
+open. Shaped like dewstack's own `workspace.js` (multi-file, no notebook
+cells) rather than dewmini's own Site tab (one file per language inside
+a bigger notebook) — a standalone workspace needs the file concept a
+tutorial's embedded editor and dewmini's Python-first Site tab
+deliberately don't have.
+
+The engine underneath is a third consumer of `assets/site-relay.js`'s
+`mountSitePreview()`: the same live-HTML/CSS, run-on-demand-JS,
+friendly-error-hint behaviour a tutorial's site editor and dewmini's
+Site tab already have. The console's own DOM-drawing code is written
+fresh here rather than shared with `tutorial-runtime.js`'s
+`buildSiteEditors()` — two independently maintained look-alikes, the
+same relationship `render_cell()` has with dewmini's own cell markup,
+worth sharing once one drifts from the other, not before.
+
+Two behaviours ported in shape from dewstack's `workspace.js`: a
+debounced save flushed on `pagehide`, and two clicks to delete a site
+(the first arms a "click again" state for four seconds). A reader's
+first visit shows one working site already run, not empty panes —
+`openSite()` calls `run()`, not `render()`, on every load including the
+first.
+
+*Cost to change: three new files
+(`compose/dewminiweb.html`/`dewminiweb-style.css`/`dewminiweb.js`) and
+one paragraph in `build.py`'s `render_index()`. No change to
+`assets/site-relay.js`, `assets/tutorial-runtime.js`, or
+`compose/dewmini.js` — this product adds a third consumer to an engine
+already shaped to take one.*
+
+**7.144 — `getting-started`/`reference` ported from dewstack into
+`web-authoring`, with two real `resolve_assets()` gaps found along the
+way.** Twelve pages: the `welcome` series (how the pieces fit, a GitHub
+account, issues and pull requests, an editor, your copy of the starter,
+publish it, the two loops, the browser inspector) and the `shelf` series
+(FAQ, troubleshooting, quick reference, project ideas), plus three small
+demo `.html` files `project-ideas` links to, copied verbatim. None of
+the twelve get a glossary file — an orientation/reference module
+introduces GitHub concepts once each rather than building a vocabulary a
+later page depends on, the same reasoning that keeps a practice page
+glossary-free. `planning/curriculum/topic-groups.yaml` gained two groups
+for reachability, with no `covers:`/QQI mapping, since nothing here
+teaches a QQI outcome the way an `exec` cell does.
+
+Every dewstack-specific reference was rewritten to dewlab's own
+equivalents (its own repository, a real merged PR in place of a
+dewstack-specific one) rather than carried over. dewstack's SQL/site-editor
+persistence story doesn't describe dewlab at all — dewstack special-cases
+one saved box with its own Download/Load pair; dewlab saves every cell's
+code and result the same uniform way, so the FAQ/troubleshooting pages'
+"where is my work saved" sections were rewritten around that rule
+instead of carrying the special case across.
+
+`resolve_assets()` had two real gaps this content needed: it had never
+rewritten a plain `href=` the way it rewrites `src=` (now handled,
+deliberately permissive — a missing `href=` target is left alone rather
+than failing the build, since plenty of links aren't a local asset); and
+a literal `src="…"` shown as text inside a code span was being read as a
+real attribute and failing the build over an example — `<code>`/
+`<pre><code>` spans are now masked out before substitution and restored
+after. Both are new tests in `TestTutorialAssets`.
+
+The homepage's Web Authoring card stays "Coming soon" — getting-started
+and reference are scaffolding, not a lesson in HTML or CSS, and a card
+promising the module before it teaches anything would cost more than it
+saves.
+
+*Cost to change: twelve new tutorial folders under
+`tutorials/web-authoring/`, two new `.order.yaml` files, `web-authoring`
+added to `tutorials/modules.yaml`, two new topic-groups,
+`resolve_assets()`'s `href=` handling and its `CODE_SPAN_RE` masking in
+`build.py`, two new `TestTutorialAssets` cases. No change to
+`outcomes.yaml`/`topics.yaml` — this content was never QQI-mapped.*
+
+**7.145 — The 30-page `web-authoring` series, and a real gap in the
+site-editor engine only live content could have found.** Both of
+dewstack's web series ported: `first-site` (22 pages — a page's own
+files, the head/body split, semantic HTML, the box model, selectors,
+position, hover/focus, transitions, media queries, flexbox, grid, BEM,
+keyframes) and `several-pages` (8 — planning a multi-page site,
+consistent navigation, cards and a gallery, a phone-safe nav, an
+accessible form, image file size, documenting what got built). Every
+`html site=name`/`css site=name` fence became dewlab's own `id:`/
+`site:`-header grammar, every id chosen fresh. No QQI mapping here
+either, for the same reason as 7.144. Reachability comes from five new
+`topic-groups.yaml` groups, split by what each sub-arc actually teaches.
+
+Four pages ask a reader to narrow the preview to watch a media query, a
+flex row, or a named grid area change — the engine had no preview-width
+control until now. `render_site_editor()` and `buildSiteEditors()`
+gained the same slider `dewminiweb.js` already has: a 30%-100% range
+setting `.dl-site-frame`'s inline width, not persisted between visits (a
+viewing preference, not saved work).
+
+The slider alone wasn't enough: `.dl-site-split`'s side-by-side layout
+left the preview only 64-212px wide across the whole range — nowhere
+near a realistic breakpoint. The split itself, not the slider, was the
+mistake: `.dl-site-split` now stacks unconditionally, panes above a
+full-width preview, widening the range to 131-437px. Safe to change now,
+since no tutorial content had shipped against the side-by-side layout
+and neither dewmini's Site tab nor `dewmini web` reuses `.dl-site-split`.
+Three pages needed their own breakpoint numbers adjusted once the real
+range was known: `cards-in-a-row`'s demo from `flex: 1 1 200px` to
+`90px`; `flexbox-first-steps` from `100px` to `80px`; `named-grid-areas`
+from `min-width: 500px` to `350px`.
+
+*Cost to change: 30 new tutorial folders, two new `.order.yaml` files,
+five new `topic-groups.yaml` groups, the preview-width slider added to
+`render_site_editor()`/`buildSiteEditors()`/`tutorial-style.css`, and
+`.dl-site-split` changed from a side-by-side flex row to a stacked
+column. The module still needs a real QQI descriptor before
+`covers:`/`outcomes.yaml` entries can honestly follow.*
