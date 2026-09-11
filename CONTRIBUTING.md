@@ -1,9 +1,9 @@
 # Contributing code to dewlab
 
-Thanks for your interest in contributing to dewlap! This page is about what you need to know before recommending changes and additions to the site's own code — the
-build, the runtime, and the editor, dewmini. It covers getting
-set up, what to run before you open a pull request, and the one standing
-requirement this repository has: that documentation and comments stay accurate
+Thanks for your interest in contributing to dewlab! This page covers the
+site's own code — the build, the runtime, and the editor, dewmini: getting set
+up, what to run before you open a pull request, and the one standing
+requirement this repository has, that documentation and comments stay accurate
 as the code changes.
 
 If you are here for something else, one of these is a better door:
@@ -126,10 +126,12 @@ update the document a reader would reach for — `docs/FOR_STUDENTS.md`,
 the matching `docs/<name>-explained.md`, and `README.md` or `ARCHITECTURE.md` if
 they mention it.
 
-**Comment every function you touch or add**, not only the ones with tricky
-logic. A comment should say what the function does and, where it is not obvious,
-why — written so that someone learning to program could follow it, not only
-someone who already knows this codebase.
+**Comment sparingly.** A name and a well-shaped function usually say what code
+does; add a comment only where the *why* is not obvious from the code itself —
+a constraint, a workaround, a non-obvious ordering. Keep it to a line or two.
+Don't write banner comments, section dividers, or a walkthrough of what the
+next ten lines do — that belongs in the file's own `docs/<file>-explained.md`
+if it belongs anywhere.
 
 **Never leave a comment or document describing behaviour that no longer
 exists.** A stale comment is worse than no comment, because it misleads the next
