@@ -7450,3 +7450,88 @@ stacked column (no other site-editor markup changed). `planning/
 DEWSTACK_MERGE.md` §2, §7 item 3 and the ledger (§9) record this as
 done; the module still needs a real QQI 5N1910 descriptor before
 `covers:` frontmatter and `outcomes.yaml` entries can honestly follow.*
+
+**7.146 — QQI 5N1910 mapped from the real descriptor, and a stale DBM
+gap-claim caught along the way.** The user supplied the actual QQI 5N1910
+(Web Authoring) and QQI 5N0783 (Database Methods) descriptor PDFs, the
+same two 7.144/7.145 said dewlab could not honestly write `outcomes.yaml`
+entries without. Extracting their text needed `pypdf` (the sandbox has
+neither `poppler-utils` nor a working `cryptography` build out of the
+box — `pip install pypdf` alone raised `ModuleNotFoundError: _cffi_backend`
+from `cryptography`'s Rust extension; `pip install --force-reinstall cffi`
+fixed it). Both PDFs turned out to already be the ones committed at
+`planning/curriculum/descriptors/` — a checksum match confirmed it before
+any text was trusted.
+
+Reading the database-methods descriptor against the already-committed
+`outcomes.yaml` and `planning/CURRICULUM_MAP.md` found a second gap: the
+DBM comment block (written before "A Form That Writes a Row" and
+"Exporting a Query to a File" existed) still called DBM-LO6's data-entry
+half and DBM-LO7 uncovered, and DBM-LO7's own title still said "not yet
+covered by anything in dewlab" — both false since those two tutorials
+plus "Charting a Query's Result" shipped. `CURRICULUM_MAP.md` already
+showed both green; only the prose describing them had gone stale.
+Rewritten to match — the same "a stale comment is worse than no comment"
+rule `CONTRIBUTING.md` states for code, just as true of a comment
+describing curriculum coverage. DBM-LO1 (typical uses for databases) is
+the one real DBM gap left.
+
+Web Authoring's fourteen outcomes went into `outcomes.yaml`/`topics.yaml`
+the same way DBM's eleven did: paraphrased close to the descriptor,
+diverging honestly where dewlab's own approach — a hand-written
+in-browser site editor, GitHub Pages instead of an ISP, no WYSIWYG tool,
+no CMS, no code generator — doesn't match the descriptor's GUI/vendor
+assumptions. Three parallel agents (one per series group: welcome+shelf,
+first-site, several-pages) read all 42 web-authoring pages in full and
+proposed a `covers:`/`touches:` mapping against the real 14 outcomes,
+cross-checked against each other and against how the DBM pages already
+use the convention (multiple `covers:` entries for one code are fine
+when each teaches a genuinely distinct technique — DBM-LO5 already has
+three — not a "first occurrence only" rule). 40 of the 42 pages ended up
+with a `covers:` block; `faq.md` and `issues-and-pull-requests.md`
+genuinely teach or practice nothing on the QQI list. Ten of the fourteen
+codes land somewhere; WA-LO1 (HTML/CSS version history), WA-LO5 (desktop
+publishing/CMS tools) and WA-LO12 (code generators) get no dewlab
+equivalent at all, the same shape as DBM-LO1 — dewlab does not teach any
+of the three anywhere, and forcing a thin mapping onto unrelated content
+would be worse than saying so.
+
+One tooling gap surfaced only because a real page needed it:
+`keyframes-and-the-checkbox-hack.md` has two "## Why this happens"
+headings, and Python-Markdown's own `toc` extension disambiguates the
+second one as `why-this-happens_1` in the built HTML — but
+`dev/curriculum_map.py`'s `anchor_for()` re-implements the same slugify
+by hand from heading text alone and has no notion of a repeated heading,
+so it can only ever address the file's first occurrence. Not fixed here
+— the file's `covers:` frontmatter uses one merged `why-this-happens` key
+combining what both headings teach (CSS's `:checked`/`~` plus the new
+checkbox/label HTML) rather than working around a limitation in a
+different file; `anchor_for()` growing real duplicate-suffix handling is
+a separate, small task if a page ever needs the two addressed
+separately.
+
+`strands.yaml` needed WA's eight fine strands added to its column map
+(`dev/build_topic_editor.py --check` catches a missing one) —
+`web-history`/`html-tags`/`css` alongside DBM's own querying/data-entry
+strands in the `programming` column, and `tooling`/`design-principles`/
+`process`/`testing`/`independence` in `software-development`, the same
+column FOOP-LO5/9/10/11 and PDP-LO7/9/10/12 already sit in for the same
+reason: an environment, a document, a test or a deployment is a practice,
+not a way of writing code.
+
+Verified: full unit suite, a clean `build.py --clean` (390 pages),
+`dev/curriculum_map.py --check` (112 of 116 outcomes now in place, only
+DBM-LO1/WA-LO1/WA-LO5/WA-LO12 open), `dev/build_topic_editor.py --check`
+and `dev/build_topic_game.py --check` (both regenerated),
+`dev/check_doc_links.py`, and a headless-browser pass confirming the new
+section anchors — including the merged `keyframes-and-the-checkbox-hack`
+one — actually resolve on the built pages, plus `tree.html`, `topics.html`
+and `web-authoring.html` loading with no console error.
+
+*Cost to change: the DBM comment/title fix (one file); the WA-LO module
+block in `outcomes.yaml` and matching `topics.yaml` entries (no covers:
+frontmatter yet, its own commit); `covers:`/`touches:` frontmatter on 40
+of the 42 web-authoring pages; eight new fine strands in `strands.yaml`
+plus the two regenerated static pages that depend on it. No engine or
+build.py change this time — the gap this round was in the curriculum
+data and its own supporting comments, not the site-editor engine.*

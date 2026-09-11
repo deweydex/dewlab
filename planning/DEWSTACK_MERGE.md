@@ -352,15 +352,19 @@ The same bar dewstack already used, since it's dewlab's own bar too:
    realistic media-query breakpoint at all. Both fixed in `build.py`/
    `tutorial-style.css`, verified against every affected page.
 
-   Still open: this module has no QQI 5N1910 mapping at all —
-   `outcomes.yaml` has no entries for it, no tutorial carries `covers:`,
-   and `topic-groups.yaml`'s reachability groups are a stand-in, not a
-   substitute. Fixing that honestly needs the actual QQI 5N1910 minor
-   award descriptor in hand, the way 5N0783's did for database-methods —
-   inventing outcome codes without it would be worse than leaving the gap
-   named. Flipping the homepage card also still waits on the module
-   running in front of a class, the same rule that held database-methods'
-   card (7.141) — it stays "Coming soon" until then.
+   QQI 5N1910 mapping — done (DECISIONS_LOG.md 7.146), once Josh supplied
+   the actual descriptor. All fourteen outcomes are in `outcomes.yaml`
+   and `topics.yaml`; 40 of the 42 pages carry `covers:`/`touches:`
+   frontmatter (`faq` and `issues-and-pull-requests` genuinely teach
+   nothing on the list). Ten of the fourteen codes land on real content;
+   WA-LO1 (HTML/CSS version history), WA-LO5 (desktop publishing/CMS
+   tools) and WA-LO12 (code generators) have no dewlab equivalent, the
+   same honest shape as DBM-LO1. `topic-groups.yaml`'s reachability
+   groups stay in place alongside the outcome map, not instead of it —
+   the two answer different questions (§9 of this file, `topics.yaml`'s
+   own header comment). Flipping the homepage card still waits on the
+   module running in front of a class, the same rule that held
+   database-methods' card (7.141) — it stays "Coming soon" until then.
 4. **Full-stack, later.** Combine dewstack's one page with whatever
    dewlab's own full-stack concept becomes, once both tracks are live.
    Not scheduled yet.
@@ -428,7 +432,7 @@ The same bar dewstack already used, since it's dewlab's own bar too:
 | Module | Staged | Engine built | Ported | Live |
 |---|---|---|---|---|
 | `database-methods` (5N0783) | done | done, merged to `main` (`sql exec`, DECISIONS_LOG.md 7.140, PR #172) | done — 12 tutorials, QQI mapping, verified in a real browser (DECISIONS_LOG.md 7.141) | done — merged to `main`, PR #174 |
-| `web-authoring` (5N1910) | done | done, merged to `main` (`html site`/`css site`/`js site`, `assets/site-relay.js`, DECISIONS_LOG.md 7.142; `dewmini web` standalone workspace, DECISIONS_LOG.md 7.143; preview-width slider + stacked site-editor layout, DECISIONS_LOG.md 7.145) | done — all 42 pages (`getting-started`/`reference`, `first-site`, `several-pages`), verified in a real browser (DECISIONS_LOG.md 7.144, 7.145); no QQI mapping yet, see §7 item 3 | not yet — homepage card stays "Coming soon" until the module has run in front of a class |
+| `web-authoring` (5N1910) | done | done, merged to `main` (`html site`/`css site`/`js site`, `assets/site-relay.js`, DECISIONS_LOG.md 7.142; `dewmini web` standalone workspace, DECISIONS_LOG.md 7.143; preview-width slider + stacked site-editor layout, DECISIONS_LOG.md 7.145) | done — all 42 pages (`getting-started`/`reference`, `first-site`, `several-pages`), verified in a real browser (DECISIONS_LOG.md 7.144, 7.145); QQI 5N1910 mapping done too (DECISIONS_LOG.md 7.146) | not yet — homepage card stays "Coming soon" until the module has run in front of a class |
 | `full-stack` | done (reference only) | — | — | — |
 
 Update this table as each phase in §7 completes.
