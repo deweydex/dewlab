@@ -505,15 +505,43 @@
     <input type="search" class="dl-reference-search-input" id="dl-reference-search"
            placeholder="Search this page's terms…" aria-label="Search this page's reference"
            autocomplete="off" hidden>
+    <!-- Math Basics is the same on every page (build.py's
+         load_math_basics()), so this second tab is never hidden the way
+         the toggle used to be when a page had nothing of its own yet —
+         see initReference()'s own comment on that change. -->
+    <div class="dl-reference-tabs" role="tablist" aria-label="Reference sections">
+      <button type="button" class="dl-reference-tab" id="dl-reference-tab-reference"
+              role="tab" aria-selected="true" aria-controls="dl-reference-pane-reference">Reference</button>
+      <button type="button" class="dl-reference-tab" id="dl-reference-tab-basics"
+              role="tab" aria-selected="false" tabindex="-1"
+              aria-controls="dl-reference-pane-basics">Math Basics</button>
+    </div>
   </div>
-  <p class="dl-panel-note">
-    The glossary below is what this page — and everything before it in the
-    series — has covered so far. Nothing there is something you have not
-    been taught yet. Notes and datasets, where this page has any, belong to
-    this page alone.
-  </p>
-  <div class="dl-reference-groups" id="dl-reference-groups"></div>
-  <p class="dl-panel-note dl-reference-empty" id="dl-reference-empty" hidden>Nothing matches that.</p>
+  <div class="dl-reference-pane" id="dl-reference-pane-reference" role="tabpanel"
+       aria-labelledby="dl-reference-tab-reference">
+    <p class="dl-panel-note">
+      The glossary below is what this page — and everything before it in the
+      series — has covered so far. Nothing there is something you have not
+      been taught yet. Notes and datasets, where this page has any, belong to
+      this page alone.
+    </p>
+    <div class="dl-reference-groups" id="dl-reference-groups"></div>
+    <p class="dl-panel-note dl-reference-empty" id="dl-reference-empty" hidden>Nothing matches that.</p>
+    <p class="dl-panel-note" id="dl-reference-nothing-yet" hidden>
+      Nothing accumulated here yet — check back once this series has covered
+      some ground.
+    </p>
+  </div>
+  <div class="dl-reference-pane" id="dl-reference-pane-basics" role="tabpanel"
+       aria-labelledby="dl-reference-tab-basics" hidden>
+    <p class="dl-panel-note">
+      Plain definitions for the words and symbols maths uses, on their own —
+      not tied to what this series has covered, since these are about the
+      language itself rather than what it's being used to do.
+    </p>
+    <div class="dl-reference-groups" id="dl-basics-groups"></div>
+    <p class="dl-panel-note dl-reference-empty" id="dl-basics-empty" hidden>Nothing matches that.</p>
+  </div>
 </div>
 
 <!-- The navigation panel: this tutorial's whole series (planning/
