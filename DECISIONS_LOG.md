@@ -7256,3 +7256,112 @@ paragraph in `build.py`'s `render_index()`, and
 `assets/tutorial-runtime.js`, or `compose/dewmini.js` — this product adds
 a third consumer to an engine already shaped to take one.
 `planning/DEWSTACK_MERGE.md` §7 item 3 and §8 q1 record this as done.*
+
+**7.144 — `getting-started`/`reference` ported from dewstack into
+`web-authoring`, and two `resolve_assets()` gaps it found.**
+`DEWSTACK_MERGE.md` §8 q2 settled the shape of this port: fold both
+series in whole, under `web-authoring`, dewlab's own conventions applied
+on the way in. Twelve pages — the `welcome` series (how the pieces fit,
+a GitHub account, issues and pull requests, an editor, your copy of the
+starter, publish it, the two loops, the browser inspector) and the
+`shelf` series (FAQ, troubleshooting, quick reference, project ideas) —
+plus the three small demo `.html` files `project-ideas` links to
+(`hello-world.html`, `first-page.html`, `resume-template.html`, copied
+verbatim). §6's checklist otherwise applied in full except item 2: a
+glossary file is for a tutorial that introduces reusable vocabulary a
+later page might reach back for, and an orientation/reference module
+introduces GitHub concepts once each rather than building a vocabulary a
+later page depends on, so none of these twelve get one — the same
+reasoning that already keeps a practice page glossary-free. They still
+had to be reachable: `planning/curriculum/topic-groups.yaml` gained two
+groups (`web-authoring-orientation`, `web-authoring-reference`) so
+`TestTopicGroupsMatchRealTutorials` sees them, with no `covers:`/QQI
+mapping at all — nothing here teaches a QQI 5N1910 outcome the way a
+`sql exec` cell teaches one, and `topics.yaml`/`outcomes.yaml` stay
+untouched.
+
+**"Port in shape" turned out to mean real fact-checking, not just
+prose.** Dewstack's own copy named itself throughout — its own
+repository (`github.com/deweydex/dewstack`), and a real pull request
+(`dewstack#35`) as a worked example of what a pull request looks like.
+Both became dewlab's own equivalents: `github.com/deweydex/dewlab`, and
+[PR #151](https://github.com/deweydex/dewlab/pull/151) (the report-doors
+kill switch, dewlab's own small, real, merged PR) in place of a
+dewstack-specific one that added unrelated sections. Two links forward
+to pages `web-authoring` doesn't have yet — `the-skeleton`,
+`a-rule-and-where-it-lives`, both from the still-to-come 30-page series —
+were dropped to plain prose rather than a `tutorial:` link, matching
+`resolve_links()`'s own refusal to build with a dangling one; restoring
+them is one search away once that series exists.
+
+The bigger fact-check was dewstack's own SQL/site-editor persistence
+story, which does not describe dewlab at all. Dewstack special-cases one
+box, "Your table," as the only one that saves between visits, with its
+own `.sql` Download/Load pair for the rest, and says a tutorial's site
+editor does not save at all. Neither is true here: every cell — Python,
+SQL, or a `site exec` editor (7.142) — saves its own code and last result
+the same way, in the same per-page record, because dewlab's save promise
+never had an exception to begin with. The FAQ and troubleshooting pages'
+"where is my work saved," "what does Reset do," and "my SQL work is
+missing" sections are rewritten around that uniform rule instead of
+carrying the special case across. Settings' actual behaviour needed the
+same check: dewstack's troubleshooting claims a change "only shows once
+the panel closes," which `assets/tutorial-runtime.js`'s own `commit()`
+contradicts — every texture change re-applies immediately — so that line
+is dropped rather than carried into a page that would be teaching a bug
+dewlab doesn't have.
+
+**Two real `resolve_assets()` gaps, both found by content this port
+actually needed, not invented ahead of a need.** `project-ideas` links
+to three sibling `.html` files with a plain `href=`, which
+`resolve_assets()` had never handled — only `src=` was rewritten for the
+current release sitting one level above its own folder. `href=` now gets
+the same treatment, deliberately permissive where `src=` is strict: a
+missing `href=` target is left exactly as it is rather than failing the
+build, because `resolve_links()` already produces real relative hrefs
+for ordinary `tutorial:` links (some of them, for two tutorials in the
+same module, a bare filename too) and a page links to plenty of things
+that were never a local asset. Second, `quick-reference`'s own HTML
+table teaches `<img src="…">` and `<a href="…">` as text to read inside
+a `` `code span` `` — markdown escapes the angle brackets there but not
+the quote, so the literal string `src="…"` reached `resolve_assets()`
+looking exactly like a real attribute and failed the build over an
+example, not a mistake. `<code>`/`<pre><code>` spans are now masked out
+before either substitution runs and restored untouched after — a gap
+that was always going to surface once a web-authoring tutorial needed to
+show HTML as a string, and better to fix once here than in the first of
+the 30 pages still to come. Both are new tests in `TestTutorialAssets`.
+
+**The homepage card stays "Coming soon."** `render_index()`'s Web
+Authoring card already existed, pointing out to dewstack's own
+repository — this port does not flip it, on the same rule that held
+database-methods' card until its full twelve tutorials had run in front
+of a class (7.141): getting-started and reference are the surrounding
+scaffolding, not a lesson in HTML or CSS, and a card promising the
+module before it teaches anything would cost more than it saves. The
+module page (`web-authoring.html`) is real and reachable once linked to
+directly; nothing else changes until the 30-page series lands.
+
+Verified in a real browser: the module page loads and lists the welcome
+series in reading order; a cross-module `tutorial:` link into
+`database-methods` resolves; the fixed dewlab repository and PR #151
+references render correctly and no stale `dewstack` reference survived;
+the de-linked forward references read as plain prose; `hello-world.html`
+resolves to `project-ideas/hello-world.html` and actually opens; the
+quick-reference table's `src="…"`/`href="…"` examples render intact; and
+a 1200px/390px pass over a representative page found no horizontal
+overflow. Full unit suite, `dev/curriculum_map.py --check`,
+`dev/build_topic_game.py --check` (regenerated, since the tutorial count
+it derives from changed), `dev/build_topic_editor.py --check`,
+`dev/pair_results.py` (default, `--from blind`, `--from sighted`), and
+`dev/check_doc_links.py` all pass clean.
+
+*Cost to change: twelve new tutorial folders under
+`tutorials/web-authoring/`, two new `.order.yaml` files, `web-authoring`
+added to `tutorials/modules.yaml`, two new groups in
+`planning/curriculum/topic-groups.yaml`, `resolve_assets()`'s `href=`
+handling and its new `CODE_SPAN_RE` masking in `build.py`, and two new
+`TestTutorialAssets` cases in `tests/test_build.py`. No change to
+`outcomes.yaml`, `topics.yaml`, or any curriculum-mapping script — this
+content was never QQI-mapped to begin with. `planning/DEWSTACK_MERGE.md`
+§7 item 3 and §8 q2 record this as done; the ledger (§9) reflects it.*

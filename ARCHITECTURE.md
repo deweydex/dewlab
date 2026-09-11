@@ -47,10 +47,20 @@ describes them.
 
 A tutorial is a folder, `tutorials/<module>/<slug>/`, holding its markdown at
 `<slug>.md`, its practice page, its glossary, any frozen past releases as
-`v<version>.md`, and any pictures or recordings it uses. Where a page ends up
-is decided by its frontmatter's `module` and `slug`, never by where its source
-file sits — which is what let that layout change without moving a single
-published URL or storage key.
+`v<version>.md`, any pictures or recordings it uses, and any downloadable
+sibling file linked with `href=` rather than shown with `src=` — a small
+standalone `.html` a reader can take as a starting point, say. Both are
+found and copied by reading the folder rather than a frontmatter list
+(`tutorial_assets()`), and both get their plain file name rewritten to
+survive the current release sitting one level above its own folder
+(`resolve_assets()`) — a missing `src=` target fails the build the way a
+dead `tutorial:` link does, but a missing `href=` target is left exactly as
+it is, since a page links to plenty of things that are not a local asset at
+all and `resolve_links()` has often already turned a `tutorial:slug`
+reference into a real relative href by this point, some of them a bare
+filename too. Where a page ends up is decided by its frontmatter's `module`
+and `slug`, never by where its source file sits — which is what let that
+layout change without moving a single published URL or storage key.
 
 The pipeline, roughly in the order the code runs it:
 

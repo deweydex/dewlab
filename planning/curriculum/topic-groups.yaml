@@ -252,3 +252,32 @@ groups:
     tutorials:
       - { module: database-methods, slug: sql-practice }
       - { module: database-methods, slug: the-tentacular-plushies-quiz }
+
+  - key: web-authoring-orientation
+    name: A GitHub account, an editor, and a published page
+    intro: >
+      The tools this course's website track runs on, and the two loops
+      you use every time you change something: saving a file on your own
+      computer, and publishing a change through GitHub.
+    tutorials:
+      - { module: web-authoring, slug: how-the-pieces-fit }
+      - { module: web-authoring, slug: a-github-account }
+      - { module: web-authoring, slug: issues-and-pull-requests }
+      - { module: web-authoring, slug: an-editor }
+      - { module: web-authoring, slug: your-copy-of-the-starter }
+      - { module: web-authoring, slug: publish-it }
+      - { module: web-authoring, slug: the-two-loops }
+      - { module: web-authoring, slug: the-inspector }
+
+  - key: web-authoring-reference
+    name: Web authoring reference shelf
+    intro: >
+      Not a series to read start to finish — a shelf to come back to.
+      Questions people ask most, the checks worth trying when something
+      will not run, HTML/CSS/SQL syntax to look up, and project ideas
+      once you have a skill and want to practise it.
+    tutorials:
+      - { module: web-authoring, slug: faq }
+      - { module: web-authoring, slug: troubleshooting }
+      - { module: web-authoring, slug: quick-reference }
+      - { module: web-authoring, slug: project-ideas }

@@ -2985,9 +2985,28 @@ NON_ASSET_SUFFIXES = {".md", ".yaml", ".yml"}
 # the same way whatever the medium, so one pattern covers all of them.
 SRC_RE = re.compile(r'src="(?P<url>[^"]*)"')
 
+# href="..." pointing at a downloadable sibling file — a small standalone
+# .html a reader can open or take as a starting point, not a picture and not
+# a link to another page. Deliberately permissive where SRC_RE is strict: by
+# the time this runs, resolve_links() has already turned every authored
+# `tutorial:slug` reference into a real relative href, and some of those
+# come out as a bare filename with no slash too (two tutorials in the same
+# module, `os.path.relpath()` finding no directories between them) — this
+# has to leave those alone rather than mistake them for a local asset.
+HREF_ASSET_RE = re.compile(r'href="(?P<url>[^"]*)"')
+
 # A reference that points somewhere other than this tutorial's own folder:
 # an absolute URL, a root-relative path, a data: URI, or a page anchor.
 EXTERNAL_URL_RE = re.compile(r"^(?:[a-z][a-z0-9+.-]*:|//|/|#)", re.I)
+
+# A tutorial teaching HTML shows `<img src="...">` and `<a href="...">` as
+# text to read, not markup to run — markdown's own code-span handling
+# escapes `<`/`>` there but leaves a literal quote alone, so
+# `src="picture.png"` inside a `<code>` (inline, or a fenced block's
+# `<pre><code>`) still reads, to SRC_RE/HREF_ASSET_RE, exactly like a real
+# attribute. Masking a `<code>`'s contents before those run, then putting
+# them back unchanged, is what keeps a quick-reference table honest.
+CODE_SPAN_RE = re.compile(r"<code[^>]*>.*?</code>", re.S)
 
 
 def tutorial_assets(tutorial: Tutorial) -> list[Path]:
@@ -3006,7 +3025,13 @@ def tutorial_assets(tutorial: Tutorial) -> list[Path]:
 
 def resolve_assets(tutorial: Tutorial, body_html: str) -> str:
     """Point every `src="picture.png"` at the copy this build will write, and
-    fail on one naming a file the tutorial's folder does not hold.
+    fail on one naming a file the tutorial's folder does not hold. Do the
+    same for `href="worksheet.html"` — a downloadable sibling file linked
+    rather than shown — except a name that matches nothing is left exactly
+    as it is rather than failing the build: unlike an image, a page can link
+    to plenty of things that are not a local asset at all, and by this point
+    `resolve_links()` has already turned every `tutorial:slug` reference
+    into a real relative href, some of them a bare filename too.
 
     An author writes the plain file name, the same one they see beside the
     markdown, and it resolves from whichever URL the page ends up at. That
@@ -3026,7 +3051,7 @@ def resolve_assets(tutorial: Tutorial, body_html: str) -> str:
     # into — the same relpath calculation resolve_links() uses for pages.
     prefix = "" if not tutorial.is_default else f"{tutorial.slug}/"
 
-    def one(match: re.Match) -> str:
+    def src(match: re.Match) -> str:
         url = match.group("url")
         if not url or EXTERNAL_URL_RE.match(url):
             return match.group(0)
@@ -3038,7 +3063,23 @@ def resolve_assets(tutorial: Tutorial, body_html: str) -> str:
             )
         return f'src="{prefix}{url}"'
 
-    return SRC_RE.sub(one, body_html)
+    def href(match: re.Match) -> str:
+        url = match.group("url")
+        if not url or EXTERNAL_URL_RE.match(url) or "/" in url or not (folder / url).is_file():
+            return match.group(0)
+        return f'href="{prefix}{url}"'
+
+    # Code spans are masked out before either substitution runs, and put
+    # back untouched afterward — see CODE_SPAN_RE's own comment.
+    code_spans: list[str] = []
+
+    def stash(match: re.Match) -> str:
+        code_spans.append(match.group(0))
+        return f"\x00{len(code_spans) - 1}\x00"
+
+    masked = CODE_SPAN_RE.sub(stash, body_html)
+    resolved = HREF_ASSET_RE.sub(href, SRC_RE.sub(src, masked))
+    return re.sub(r"\x00(\d+)\x00", lambda m: code_spans[int(m.group(1))], resolved)
 
 
 def copy_tutorial_assets(tutorial: Tutorial) -> None:

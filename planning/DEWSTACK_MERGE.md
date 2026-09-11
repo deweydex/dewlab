@@ -339,11 +339,16 @@ The same bar dewstack already used, since it's dewlab's own bar too:
    live preview, load-files-in and download-files-out, linked from the
    homepage. §8 q1 is answered: it exists, so the tutorial pages can
    honestly promise the same "open this in the workspace" hand-off
-   dewstack's own pages offer. Still to do: getting-started/reference
-   copied in whole under `web-authoring` (§8 q2), the 30 web pages ported
-   into a new `tutorials/web-authoring` folder through §6's checklist, and
-   flipping the homepage card once the module has run in front of a
-   class.
+   dewstack's own pages offer. `getting-started`/`reference` are also
+   done — twelve pages folded in whole under `web-authoring` (§8 q2,
+   DECISIONS_LOG.md 7.144), the `welcome` and `shelf` series, with the
+   platform-specific facts they named (dewlab's own repository and a real
+   dewlab PR in place of dewstack's, the actual uniform save/reset model
+   in place of dewstack's "Your table" special case) corrected rather
+   than carried over unread. Still to do: the 30 web pages ported into
+   `tutorials/web-authoring` through §6's checklist, and flipping the
+   homepage card once the module has run in front of a class — the card
+   stays "Coming soon" until then, on purpose (7.144).
 4. **Full-stack, later.** Combine dewstack's one page with whatever
    dewlab's own full-stack concept becomes, once both tracks are live.
    Not scheduled yet.
@@ -368,19 +373,21 @@ The same bar dewstack already used, since it's dewlab's own bar too:
    tutorial pages, resolving the sequencing question in the way §3's SQL
    lesson predicted: the engine — and now the standalone workspace built
    on it — exists before any tutorial page promises a hand-off into it.
-2. **`getting-started`/`reference` from dewstack — settled 2026-09-11.**
-   Fold both in whole rather than leaving them linked to dewstack or
-   rewriting them from scratch — Josh: "I think we can literally copy
-   paste there." Filed under the `web-authoring` module (and, once it
-   exists, `web-dev`), not merged into dewlab's own `getting-started`,
+2. **`getting-started`/`reference` from dewstack — settled 2026-09-11,
+   and built the same day.** Folded in whole rather than left linked to
+   dewstack or rewritten from scratch — Josh: "I think we can literally
+   copy paste there." Filed under the `web-authoring` module (and, once
+   it exists, `web-dev`), not merged into dewlab's own `getting-started`,
    which teaches a different thing (Python/Pyodide, not a GitHub-Pages
-   authoring workflow). "Copy paste" still means dewlab's own conventions
-   apply on the way in — the plain-language pass, `covers:` frontmatter,
-   dewlab's own frontmatter shape — the same "port in shape, not code"
-   rule §2 already applies to the tutorial content; it is the content
-   itself, not its engineering, that travels unchanged here, since these
-   pages are prose and screenshots rather than cells with a grammar to
-   reconcile.
+   authoring workflow). "Copy paste" still meant dewlab's own conventions
+   applied on the way in — the plain-language pass, dewlab's own
+   frontmatter shape — the same "port in shape, not code" rule §2 already
+   applies to the tutorial content, and "in shape" turned out to include
+   the platform-specific facts these pages named about themselves, not
+   only their prose register (DECISIONS_LOG.md 7.144 has the list). No
+   `covers:` frontmatter after all: nothing here teaches a QQI 5N1910
+   outcome, so there is no outcome to map a cell to — `topic-groups.yaml`
+   carries the "browse by topic" reachability these pages need instead.
 3. **Fence-kind spelling — resolved for SQL, and now resolved for web
    too, 2026-09-11.** §3 settled the SQL side: `sql exec`, dewlab's own
    `id:`/`hint:` grammar, one shared `db`, generic `check()` — not
@@ -409,7 +416,7 @@ The same bar dewstack already used, since it's dewlab's own bar too:
 | Module | Staged | Engine built | Ported | Live |
 |---|---|---|---|---|
 | `database-methods` (5N0783) | done | done, merged to `main` (`sql exec`, DECISIONS_LOG.md 7.140, PR #172) | done — 12 tutorials, QQI mapping, verified in a real browser (DECISIONS_LOG.md 7.141) | done — merged to `main`, PR #174 |
-| `web-authoring` (5N1910) | done | done, merged to `main` (`html site`/`css site`/`js site`, `assets/site-relay.js`, DECISIONS_LOG.md 7.142; `dewmini web` standalone workspace, DECISIONS_LOG.md 7.143) | not yet | not yet |
+| `web-authoring` (5N1910) | done | done, merged to `main` (`html site`/`css site`/`js site`, `assets/site-relay.js`, DECISIONS_LOG.md 7.142; `dewmini web` standalone workspace, DECISIONS_LOG.md 7.143) | partial — `getting-started`/`reference`, 12 tutorials, verified in a real browser (DECISIONS_LOG.md 7.144); the 30 web pages still to come | not yet — homepage card stays "Coming soon" until the 30 web pages land too |
 | `full-stack` | done (reference only) | — | — | — |
 
 Update this table as each phase in §7 completes.
