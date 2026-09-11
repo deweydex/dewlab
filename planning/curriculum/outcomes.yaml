@@ -22,12 +22,14 @@
 # real SQL and Python instead, since that is what dewlab teaches everywhere
 # else — DBM-LO3, DBM-LO6 and DBM-LO7 below are the clearest cases of the
 # descriptor's own vocabulary and dewlab's parting ways, not a disagreement
-# about what the outcome means. Two of the eleven, DBM-LO7 (mailable/printable
-# reports) and the report-building half of DBM-LO6 (a GUI data-entry form,
-# distinct from the HTML forms Web Authoring teaches), have no dewlab
-# equivalent yet and are not claimed as covered by anything — see
-# planning/DEWSTACK_MERGE.md for what's ported so far and what a report-style
-# page would need to close that gap.
+# about what the outcome means. "A Form That Writes a Row" covers DBM-LO6
+# with the query side of a data-entry form — the `INSERT` a submission would
+# run — and says plainly that reading an HTML form's own fields is Web
+# Authoring's job, not yet joined to this page. "Exporting a Query to a File"
+# and "Charting a Query's Result" cover DBM-LO7's reports as a CSV export and
+# a matplotlib chart. Ten of the eleven are covered. DBM-LO1 (typical uses for
+# databases) has a topics.yaml entry but no page of its own yet — see
+# planning/CURRICULUM_MAP.md for the current state of every code.
 #
 # `strand` groups an outcome for the map's colouring, and is our word rather
 # than the descriptor's: it answers "what kind of thing is this?" in a way a
@@ -68,6 +70,11 @@ modules:
   DBM:
     title: "Database Methods"
     code: "5N0783"
+    sections:
+      LO: "Learning outcomes"
+  WA:
+    title: "Web Authoring"
+    code: "5N1910"
     sections:
       LO: "Learning outcomes"
 
@@ -392,7 +399,7 @@ outcomes:
     title: "Write the query a data-entry submission would run against a table (the descriptor's own form is a GUI data-entry screen; dewlab covers the query side here and the HTML side in Web Authoring)"
     strand: data-entry
   - code: DBM-LO7
-    title: "Present selected information from a database in a format suitable for sharing or printing (the descriptor's own GUI report builder — not yet covered by anything in dewlab)"
+    title: "Present selected information from a database in a format suitable for sharing or printing (the descriptor's own GUI report builder; dewlab teaches a CSV export and a chart instead)"
     strand: reporting
   - code: DBM-LO8
     title: "Import external data, such as a CSV file, into a table"
