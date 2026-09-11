@@ -6,12 +6,22 @@ module_title: "Database Methods"
 year: "2026-2027"
 series: practice
 version: 2026.09.10.1
+covers:
+  task-1-a-products-table:
+    covers: [DBM-LO10, DBM-LO11]
+  task-2-a-transactions-table:
+    covers: [DBM-LO10]
+  task-3-add-products:
+    touches: [DBM-LO4]
+  task-5-query-the-data:
+    touches: [DBM-LO5]
 ---
 
 # The Tentacular Plushies Quiz
 
 You are the new database administrator for Tentacular Plushies, a shop
-that sells stuffed cephalopod toys. Five tasks build its database, one
+that sells stuffed toys of octopuses, squid, and other tentacled sea
+creatures. Five tasks build its database, one
 piece at a time. Nothing here is graded. Each task has a check cell
 below it. Run that cell, and it tells you, instantly and only in your
 own browser, whether the task's requirements are met. Run it as often
@@ -19,8 +29,7 @@ as you like.
 
 Write your SQL in this box as you go. Your code is saved on this
 device, the same as every cell on this site. After a reload, run this
-box again to rebuild your tables. Use the hints if you need them —
-they are there for that.
+box again to rebuild your tables. Use the hints if you need them.
 
 ```sql exec
 id: quiz-workspace
@@ -32,12 +41,12 @@ id: quiz-workspace
 
 Create a table called `products` with these columns:
 
-- `id` — a whole number that identifies the row, filled in for you
-- `product_name` — text
-- `category` — text
-- `price` — a number with a decimal point
-- `stock_quantity` — a whole number
-- `description` — text, optional
+- `id` is a whole number that identifies the row, filled in for you.
+- `product_name` is text.
+- `category` is text.
+- `price` is a number with a decimal point.
+- `stock_quantity` is a whole number.
+- `description` is text, and you can leave it blank.
 
 <details class="dl-hint"><summary>hint</summary>
 
@@ -69,7 +78,7 @@ not find.
 
 Compare that name, letter by letter, with the list task 1 asks for. A
 column name with an extra space, a different case, or a small spelling
-change is the most common reason this check still says something is
+change is usually the reason this check still says something is
 missing, even after you create the table.
 
 **Try this:** run `PRAGMA table_info(products);` in the SQL box, and read
@@ -80,10 +89,10 @@ the `name` column of its result against the list above.
 
 Create a second table, `transactions`, that refers to `products`:
 
-- `id` — a whole number that identifies the row, filled in for you
-- `product_id` — a whole number naming a row in `products`
-- `customer_name` — text
-- `quantity` — a whole number
+- `id` is a whole number that identifies the row, filled in for you.
+- `product_id` is a whole number naming a row in `products`.
+- `customer_name` is text.
+- `quantity` is a whole number.
 
 <details class="dl-hint"><summary>hint</summary>
 
@@ -144,8 +153,8 @@ different categories among them. Both numbers are in its message.
 
 Count your own `INSERT` statements the same way. A single `INSERT INTO
 products (...) VALUES (...), (...), (...), (...);` with four rows and
-four different `category` values meets both counts in one statement —
-adding rows one at a time, or repeating the same category, is the usual
+four different `category` values meets both counts in one statement.
+Adding rows one at a time, or repeating the same category, is the usual
 reason one count comes up short.
 ```
 
@@ -214,8 +223,8 @@ check(over_30_count > 0 and under_15_count > 0, True, label="your data can answe
 ## One way to do it
 
 Every check passing means your own database already meets the tasks.
-This is one complete solution, not the only one — compare it with your
-own if you want to see a full example.
+This is one complete solution, not the only one. Compare it with your
+own to see a full example.
 
 <details class="dl-answer"><summary>a worked solution</summary>
 

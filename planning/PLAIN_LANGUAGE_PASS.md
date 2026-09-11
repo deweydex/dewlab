@@ -95,6 +95,29 @@ carries the fragments or the em-dash definitions the pass exists to remove.
 Fourteen of the older descriptions in the same file are still on the list
 below.
 
+**The four tutorials of "A table of your own"** (`series: first-database`,
+database-methods module) — `a-table-is-a-list-of-rows`,
+`asking-questions-of-a-table`, `changing-what-is-in-it`, and
+`a-second-table-and-a-join`. The first tutorial-by-tutorial pass on body
+prose, done after this content's porting, glossary and cell-review passes.
+It was ported in a register close enough to this repository's own that most
+sentences already had a verb, marked their sequences, and hedged what
+needed hedging; what needed fixing was concentrated in a few repeated
+habits. Each tutorial's "What you have now" recap list used a `Term —
+definition` line on every entry — a verbless fragment with the dash
+holding the definition, exactly what "put the meaning before the dash"
+exists to catch; all four lists are now full sentences with the term as
+subject, matching how this module's own `.glossary.yaml` files already
+define `WHERE`, `ORDER BY`, `UPDATE` and the rest. Two sentences describing
+Reset were double negatives (*there is little you can do here that Reset
+cannot undo*, *nothing here breaks anything that Reset cannot fix*),
+rewritten as the plain positive claim each one meant. One explanation in
+`a-second-table-and-a-join` put the actual mechanism of a `JOIN` after an em
+dash, behind the metaphor "the cost of that"; it now says what a query does
+before it says what that costs. One example, *a football squad*, assumed a
+word for a sport means the same game everywhere, and is now *a sports
+team*.
+
 ---
 
 ## Not done — pick up here
@@ -132,9 +155,10 @@ common English words, flagged the way `tools/measure_sentences.py` (dewstack)
 flags a sentence over the limit — but it still needs reading afterward, the
 same way that script's own docstring says of itself.
 
-**Tutorial body prose.** The largest surface, untouched by any of this, and the
-one where flattening would cost the most. Worth doing deliberately, tutorial by
-tutorial, rather than in a sweep.
+**Tutorial body prose.** The largest surface, and the one where flattening
+would cost the most. Four tutorials done — the "A table of your own" series
+in database-methods, see "Done" above — the rest untouched. Worth doing
+deliberately, tutorial by tutorial, rather than in a sweep.
 
 **A tracked pass for the struggle/self-efficacy framing**, if it turns out to
 need one. For now it is being added opportunistically wherever a page is

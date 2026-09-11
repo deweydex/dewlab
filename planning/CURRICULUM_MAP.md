@@ -15,14 +15,14 @@ so this doubles as a way of finding where anything is taught.
 
 ## Where we stand
 
-**91 of 102** outcomes are in place.
+**101 of 102** outcomes are in place.
 
-- 🟩 **89 taught** — a tutorial section teaches it.
+- 🟩 **99 taught** — a tutorial section teaches it.
 - 🟦 **2 taught in part** — deliberately narrowed, and the narrowed version is written.
 - 🟨 **0 used but not taught** — students meet it in passing without it ever being the subject. These are the quiet gaps: they look covered from a distance.
-- 🟥 **11 not covered** — nothing in dewlab touches it.
+- 🟥 **1 not covered** — nothing in dewlab touches it.
 
-**11 of the 11 outcomes still to write have no proposal**: `DBM-LO1`, `DBM-LO10`, `DBM-LO11`, `DBM-LO2`, `DBM-LO3`, `DBM-LO4`, `DBM-LO5`, `DBM-LO6`, `DBM-LO7`, `DBM-LO8`, `DBM-LO9`. These are the ones nobody has decided how to teach yet.
+**1 of the 1 outcomes still to write have no proposal**: `DBM-LO1`. These are the ones nobody has decided how to teach yet.
 
 ### By strand
 
@@ -32,11 +32,11 @@ so this doubles as a way of finding where anything is taught.
 | **algorithms** | 9 | 0 | 0 | 0 | 0 |
 | **calculus** | 2 | 1 | 0 | 0 | 0 |
 | **complexity** | 2 | 0 | 0 | 0 | 0 |
-| **data-entry** | 0 | 0 | 0 | 1 | 0 |
-| **data-import** | 0 | 0 | 0 | 1 | 0 |
+| **data-entry** | 1 | 0 | 0 | 0 | 0 |
+| **data-import** | 1 | 0 | 0 | 0 | 0 |
 | **data-structures** | 1 | 0 | 0 | 0 | 0 |
-| **database-concepts** | 0 | 0 | 0 | 2 | 0 |
-| **design** | 0 | 0 | 0 | 2 | 0 |
+| **database-concepts** | 1 | 0 | 0 | 1 | 0 |
+| **design** | 2 | 0 | 0 | 0 | 0 |
 | **functions** | 3 | 0 | 0 | 0 | 0 |
 | **geometry** | 6 | 0 | 0 | 0 | 0 |
 | **linear-algebra** | 1 | 0 | 0 | 0 | 0 |
@@ -47,9 +47,9 @@ so this doubles as a way of finding where anything is taught.
 | **probability** | 10 | 0 | 0 | 0 | 0 |
 | **problem-solving** | 3 | 0 | 0 | 0 | 0 |
 | **programming** | 18 | 0 | 0 | 0 | 0 |
-| **querying** | 0 | 0 | 0 | 3 | 0 |
-| **reflection** | 1 | 0 | 0 | 1 | 0 |
-| **reporting** | 0 | 0 | 0 | 1 | 0 |
+| **querying** | 3 | 0 | 0 | 0 | 0 |
+| **reflection** | 2 | 0 | 0 | 0 | 0 |
+| **reporting** | 1 | 0 | 0 | 0 | 0 |
 | **sets** | 3 | 0 | 0 | 0 | 0 |
 | **simulation** | 1 | 0 | 0 | 0 | 0 |
 | **statistics** | 5 | 0 | 0 | 0 | 0 |
@@ -61,11 +61,11 @@ graph LR
   algorithms["algorithms<br/>9 of 9 in place"]
   calculus["calculus<br/>3 of 3 in place"]
   complexity["complexity<br/>2 of 2 in place"]
-  data_entry["data-entry<br/>0 of 1 in place"]
-  data_import["data-import<br/>0 of 1 in place"]
+  data_entry["data-entry<br/>1 of 1 in place"]
+  data_import["data-import<br/>1 of 1 in place"]
   data_structures["data-structures<br/>1 of 1 in place"]
-  database_concepts["database-concepts<br/>0 of 2 in place"]
-  design["design<br/>0 of 2 in place"]
+  database_concepts["database-concepts<br/>1 of 2 in place"]
+  design["design<br/>2 of 2 in place"]
   functions["functions<br/>3 of 3 in place"]
   geometry["geometry<br/>6 of 6 in place"]
   linear_algebra["linear-algebra<br/>1 of 1 in place"]
@@ -76,9 +76,9 @@ graph LR
   probability["probability<br/>10 of 10 in place"]
   problem_solving["problem-solving<br/>3 of 3 in place"]
   programming["programming<br/>18 of 18 in place"]
-  querying["querying<br/>0 of 3 in place"]
-  reflection["reflection<br/>1 of 2 in place"]
-  reporting["reporting<br/>0 of 1 in place"]
+  querying["querying<br/>3 of 3 in place"]
+  reflection["reflection<br/>2 of 2 in place"]
+  reporting["reporting<br/>1 of 1 in place"]
   sets["sets<br/>3 of 3 in place"]
   simulation["simulation<br/>1 of 1 in place"]
   statistics["statistics<br/>5 of 5 in place"]
@@ -87,9 +87,8 @@ graph LR
   classDef full fill:#edf7f0,stroke:#1f6b3f,color:#1f6b3f;
   classDef part fill:#fdf6ec,stroke:#b5651d,color:#7a4310;
   classDef none fill:#fdf0ef,stroke:#9b2226,color:#9b2226;
-  class algebra,algorithms,calculus,complexity,data_structures,functions,geometry,linear_algebra,logic,modelling,number,oop,probability,problem_solving,programming,sets,simulation,statistics,trigonometry full;
-  class reflection part;
-  class data_entry,data_import,database_concepts,design,querying,reporting none;
+  class algebra,algorithms,calculus,complexity,data_entry,data_import,data_structures,design,functions,geometry,linear_algebra,logic,modelling,number,oop,probability,problem_solving,programming,querying,reflection,reporting,sets,simulation,statistics,trigonometry full;
+  class database_concepts part;
 ```
 
 ## The series as it stands
@@ -423,16 +422,16 @@ graph TD
 | Outcome | | Where |
 |---|---|---|
 | `DBM-LO1` Typical uses for databases, in everyday life and in business decision-making | 🟥 | — |
-| `DBM-LO2` Essential database concepts: tables, rows, columns, statements, queries | 🟥 | — |
-| `DBM-LO3` Explain what a query does, and read and write one in SQL (the descriptor's own list — design view, datasheet view, pivot table, pivot chart — names a GUI tool's views; dewlab teaches the query language directly instead) | 🟥 | — |
-| `DBM-LO4` Open an existing table and carry out routine operations on it: reading, adding, editing, deleting, sorting and filtering rows | 🟥 | — |
-| `DBM-LO5` Retrieve chosen data from one or more tables by writing a query, saved as the reader's own work for reuse | 🟥 | — |
-| `DBM-LO6` Write the query a data-entry submission would run against a table (the descriptor's own form is a GUI data-entry screen; dewlab covers the query side here and the HTML side in Web Authoring) | 🟥 | — |
-| `DBM-LO7` Present selected information from a database in a format suitable for sharing or printing (the descriptor's own GUI report builder — not yet covered by anything in dewlab) | 🟥 | — |
-| `DBM-LO8` Import external data, such as a CSV file, into a table | 🟥 | — |
-| `DBM-LO9` Design a database to a brief: tables, primary keys, and the relationships between tables | 🟥 | — |
-| `DBM-LO10` Build a database to a brief: create its tables, load or enter data, and write the queries it needs | 🟥 | — |
-| `DBM-LO11` Use hints, error messages and self-checks to work through an unfamiliar database problem | 🟥 | — |
+| `DBM-LO2` Essential database concepts: tables, rows, columns, statements, queries | 🟩 | [A Table Is a List of Rows — Three instructions, one script](https://deweydex.github.io/dewlab/tutorials/database-methods/a-table-is-a-list-of-rows.html#three-instructions-one-script)<br/>[Designing a Table Before You Build It — Naming a column and its type](https://deweydex.github.io/dewlab/tutorials/database-methods/designing-a-table-before-you-build-it.html#naming-a-column-and-its-type) |
+| `DBM-LO3` Explain what a query does, and read and write one in SQL (the descriptor's own list — design view, datasheet view, pivot table, pivot chart — names a GUI tool's views; dewlab teaches the query language directly instead) | 🟩 | [Asking Questions of a Table — Naming columns](https://deweydex.github.io/dewlab/tutorials/database-methods/asking-questions-of-a-table.html#naming-columns)<br/>_used in:_ [SQL Practice — Exercise 1: naming columns](https://deweydex.github.io/dewlab/tutorials/database-methods/sql-practice.html#exercise-1-naming-columns) |
+| `DBM-LO4` Open an existing table and carry out routine operations on it: reading, adding, editing, deleting, sorting and filtering rows | 🟩 | [Updating and Deleting Rows — UPDATE: changing a value](https://deweydex.github.io/dewlab/tutorials/database-methods/changing-what-is-in-it.html#update-changing-a-value)<br/>[Updating and Deleting Rows — DELETE: removing a row](https://deweydex.github.io/dewlab/tutorials/database-methods/changing-what-is-in-it.html#delete-removing-a-row)<br/>_used in:_ [SQL Practice — Exercise 3: INSERT](https://deweydex.github.io/dewlab/tutorials/database-methods/sql-practice.html#exercise-3-insert)<br/>_used in:_ [The Tentacular Plushies Quiz — Task 3: add products](https://deweydex.github.io/dewlab/tutorials/database-methods/the-tentacular-plushies-quiz.html#task-3-add-products) |
+| `DBM-LO5` Retrieve chosen data from one or more tables by writing a query, saved as the reader's own work for reuse | 🟩 | [A Second Table and a Join — JOIN: querying across both tables](https://deweydex.github.io/dewlab/tutorials/database-methods/a-second-table-and-a-join.html#join-querying-across-both-tables)<br/>[Asking Questions of a Table — WHERE: keeping only some rows](https://deweydex.github.io/dewlab/tutorials/database-methods/asking-questions-of-a-table.html#where-keeping-only-some-rows)<br/>[Joining Two Real Tables — The join that loses a row](https://deweydex.github.io/dewlab/tutorials/database-methods/joining-two-real-tables.html#the-join-that-loses-a-row)<br/>_used in:_ [Asking Questions of a Table — ORDER BY: choosing an order](https://deweydex.github.io/dewlab/tutorials/database-methods/asking-questions-of-a-table.html#order-by-choosing-an-order)<br/>_used in:_ [Charting a Query's Result — From SELECT to DataFrame](https://deweydex.github.io/dewlab/tutorials/database-methods/charting-a-querys-result.html#from-select-to-dataframe)<br/>_used in:_ [Loading a Real Dataset — Querying it as SQL](https://deweydex.github.io/dewlab/tutorials/database-methods/loading-a-real-dataset.html#querying-it-as-sql)<br/>_used in:_ [SQL Practice — Exercise 2: WHERE](https://deweydex.github.io/dewlab/tutorials/database-methods/sql-practice.html#exercise-2-where)<br/>_used in:_ [SQL Practice — Exercise 4: ORDER BY](https://deweydex.github.io/dewlab/tutorials/database-methods/sql-practice.html#exercise-4-order-by)<br/>_used in:_ [SQL Practice — Exercise 5: COUNT](https://deweydex.github.io/dewlab/tutorials/database-methods/sql-practice.html#exercise-5-count)<br/>_used in:_ [The Tentacular Plushies Quiz — Task 5: query the data](https://deweydex.github.io/dewlab/tutorials/database-methods/the-tentacular-plushies-quiz.html#task-5-query-the-data) |
+| `DBM-LO6` Write the query a data-entry submission would run against a table (the descriptor's own form is a GUI data-entry screen; dewlab covers the query side here and the HTML side in Web Authoring) | 🟩 | [A Form That Writes a Row — The row a submission would add](https://deweydex.github.io/dewlab/tutorials/database-methods/a-form-that-writes-a-row.html#the-row-a-submission-would-add) |
+| `DBM-LO7` Present selected information from a database in a format suitable for sharing or printing (the descriptor's own GUI report builder — not yet covered by anything in dewlab) | 🟩 | [Exporting a Query to a File — Saving it as a file](https://deweydex.github.io/dewlab/tutorials/database-methods/exporting-a-query-to-a-file.html#saving-it-as-a-file)<br/>_used in:_ [Charting a Query's Result — One line per country](https://deweydex.github.io/dewlab/tutorials/database-methods/charting-a-querys-result.html#one-line-per-country) |
+| `DBM-LO8` Import external data, such as a CSV file, into a table | 🟩 | [Loading a Real Dataset — Fetching a CSV from a Python cell](https://deweydex.github.io/dewlab/tutorials/database-methods/loading-a-real-dataset.html#fetching-a-csv-from-a-python-cell) |
+| `DBM-LO9` Design a database to a brief: tables, primary keys, and the relationships between tables | 🟩 | [Designing a Table Before You Build It — What goes in which table](https://deweydex.github.io/dewlab/tutorials/database-methods/designing-a-table-before-you-build-it.html#what-goes-in-which-table)<br/>[Designing a Table Before You Build It — One row can point at many](https://deweydex.github.io/dewlab/tutorials/database-methods/designing-a-table-before-you-build-it.html#one-row-can-point-at-many)<br/>_used in:_ [A Second Table and a Join — JOIN: querying across both tables](https://deweydex.github.io/dewlab/tutorials/database-methods/a-second-table-and-a-join.html#join-querying-across-both-tables)<br/>_used in:_ [Joining Two Real Tables — A second table, written by hand](https://deweydex.github.io/dewlab/tutorials/database-methods/joining-two-real-tables.html#a-second-table-written-by-hand) |
+| `DBM-LO10` Build a database to a brief: create its tables, load or enter data, and write the queries it needs | 🟩 | [The Tentacular Plushies Quiz — Task 1: a products table](https://deweydex.github.io/dewlab/tutorials/database-methods/the-tentacular-plushies-quiz.html#task-1-a-products-table)<br/>[The Tentacular Plushies Quiz — Task 2: a transactions table](https://deweydex.github.io/dewlab/tutorials/database-methods/the-tentacular-plushies-quiz.html#task-2-a-transactions-table) |
+| `DBM-LO11` Use hints, error messages and self-checks to work through an unfamiliar database problem | 🟩 | [The Tentacular Plushies Quiz — Task 1: a products table](https://deweydex.github.io/dewlab/tutorials/database-methods/the-tentacular-plushies-quiz.html#task-1-a-products-table) |
 
 ## Vocabulary
 

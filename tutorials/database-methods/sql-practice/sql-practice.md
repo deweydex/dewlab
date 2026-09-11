@@ -6,14 +6,26 @@ module_title: "Database Methods"
 year: "2026-2027"
 series: practice
 version: 2026.09.10.1
+covers:
+  exercise-1-naming-columns:
+    touches: [DBM-LO3]
+  exercise-2-where:
+    touches: [DBM-LO5]
+  exercise-3-insert:
+    touches: [DBM-LO4]
+  exercise-4-order-by:
+    touches: [DBM-LO5]
+  exercise-5-count:
+    touches: [DBM-LO5]
 ---
 
 # SQL Practice
 
-Five short exercises, against a shared table of students and a shared
-table of courses. None of this is graded; the hints and the solutions
-at the bottom are there to use freely. Getting one wrong and reading
-why is worth more than skipping the hint to avoid it.
+This page has five short exercises, using a shared table of students
+and a shared table of courses. None of this is graded; the hints and
+the solutions at the bottom are there to use freely. Getting an
+exercise wrong, then reading why, usually teaches you more than
+skipping the hint just to avoid the mistake.
 
 Run this first to build both tables.
 
@@ -144,7 +156,7 @@ SELECT * FROM students WHERE grade < 75;
 ```
 
 Carol Williams and Frank Miller are the two rows this matches, with the
-seed data above.
+data above.
 
 </details>
 
@@ -173,6 +185,6 @@ SELECT * FROM students ORDER BY name ASC;
 SELECT COUNT(*) FROM courses;
 ```
 
-Five, with the seed data above.
+There are five, with the data above.
 
 </details>

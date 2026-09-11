@@ -6,6 +6,9 @@ module_title: "Database Methods"
 year: "2026-2027"
 series: first-database
 version: 2026.09.10.1
+covers:
+  three-instructions-one-script:
+    covers: [DBM-LO2]
 ---
 
 # A Table Is a List of Rows
@@ -40,9 +43,9 @@ INSERT INTO dinosaurs (name, diet, length_meters, period) VALUES
 SELECT * FROM dinosaurs;
 ```
 
-Six rows appear, one per dinosaur, each with the same five columns. There
-is little you can do here that Reset cannot undo — it empties the table
-so you can start again.
+Six rows appear, one per dinosaur, each with the same five columns.
+Reset can undo almost anything you do here — it empties the table, so
+you can start again.
 
 ## Three instructions, one script
 
@@ -75,11 +78,10 @@ they do.
 
 Try changing something in the box above: a different dinosaur name, a
 seventh row, even a new column in the `CREATE TABLE` line. Run it again
-and see what happens. Nothing here breaks anything that Reset cannot
-fix.
+and see what happens. Reset can fix anything you break here.
 
 Then let's build a table of your own, about something you know well:
-books, a football squad, a music collection. Start with three columns
+books, a sports team, a music collection. Start with three columns
 and four rows — you can always add more later.
 
 ```sql exec
@@ -95,15 +97,15 @@ The code you write here is saved automatically, the same as every cell
 on this site — close this page and come back later, and it is still
 here. Running it again rebuilds your table from scratch. You will bring
 this same table back on each of the next few pages, so keep a copy of
-your `CREATE TABLE` and `INSERT` statements somewhere of your own.
-Settings also has ways to save a copy of the whole page, code included,
-if you want one on another computer or to hand in.
+your `CREATE TABLE` and `INSERT` statements somewhere safe. Settings
+also has ways to save a copy of the whole page, code included, if you
+want one on another computer or to hand in.
 
 ## What you have now
 
-- **Table** — rows of data, all shaped the same way, stored under one
+- **Table** stores rows of data, all shaped the same way, under one
   name.
-- **Row** — one record in a table.
-- **Column** — one property that every row in a table has.
-- **Statement** — one instruction to the database, such as `CREATE
+- **Row** holds one record in a table.
+- **Column** holds one property that every row in a table has.
+- **Statement** is one instruction to the database, such as `CREATE
   TABLE`, `INSERT`, or `SELECT`.

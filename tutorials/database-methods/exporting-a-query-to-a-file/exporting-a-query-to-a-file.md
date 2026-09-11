@@ -6,6 +6,9 @@ module_title: "Database Methods"
 year: "2026-2027"
 series: several-tables
 version: 2026.09.10.1
+covers:
+  saving-it-as-a-file:
+    covers: [DBM-LO7]
 ---
 
 # Exporting a Query to a File
@@ -48,7 +51,7 @@ ORDER BY year;
 
 ## Pulling the result into Python
 
-pandas can run that same query and hand back a DataFrame, ready to turn
+pandas can run that same query and return a DataFrame, ready to turn
 into a file.
 
 ```python exec
@@ -73,7 +76,7 @@ print(ireland.to_csv(index=False))
 ```
 
 The lines above are exactly what a file named `ireland-income-share.csv`
-would hold. Copy them into a new file in a text editor and save it with a
+would hold. Copy them into a new file in a text editor, then save it with a
 `.csv` ending. A spreadsheet program then opens that file as a proper
 table.
 
@@ -89,13 +92,13 @@ browser tab that ran the query.
 
 Write a query of your own against `income_share`: perhaps a different
 country, or every country in one particular year. Pull it into a DataFrame
-the same way as above, and print its `to_csv()` text to see the file it
+the same way as above, then print its `to_csv()` text to see the file it
 would become.
 
 ## What you have now
 
 - **`to_csv`.** Turns a DataFrame back into the same plain-text shape a CSV
   file holds.
-- **A query's result, not its text.** The SQL that built a table and the
-  rows it returned are two different things worth keeping separately; this
-  page exports the second.
+- **A query's result is not the same as its text.** The SQL that built a
+  table and the rows it returned are two different things worth keeping
+  separately; this page exports the second.

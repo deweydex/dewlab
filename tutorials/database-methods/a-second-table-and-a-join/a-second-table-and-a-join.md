@@ -6,6 +6,10 @@ module_title: "Database Methods"
 year: "2026-2027"
 series: first-database
 version: 2026.09.10.1
+covers:
+  join-querying-across-both-tables:
+    covers: [DBM-LO5]
+    touches: [DBM-LO9]
 ---
 
 # A Second Table and a Join
@@ -81,9 +85,9 @@ Storing a dinosaur's name on every one of its sighting rows would work.
 A misspelling in one row would then disagree with the others, and
 nothing would flag it. Storing the name once, in `dinosaurs`, and
 referring to it by `id` everywhere else means it can only be spelled one
-way. `JOIN` is the cost of that — the two tables are re-combined at
-query time, on the column that connects them, rather than kept together
-all along.
+way. It also means a query has to put the two tables back together
+itself, on the shared column, rather than finding them already
+combined. `JOIN` is what does that.
 
 ## Your turn
 
@@ -116,7 +120,7 @@ Settings has a few ways to save the whole page, code included.
 
 ## What you have now
 
-- **Foreign key** — a column in one table naming a row in another table,
-  the way `sightings.dinosaur_id` names a row in `dinosaurs`.
-- **JOIN** — combines rows from two tables in one query, matched on a
+- **Foreign key** names a row in another table from a column in this
+  one, the way `sightings.dinosaur_id` names a row in `dinosaurs`.
+- **JOIN** combines rows from two tables in one query, matched on a
   column they share.

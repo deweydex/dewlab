@@ -6,6 +6,11 @@ module_title: "Database Methods"
 year: "2026-2027"
 series: several-tables
 version: 2026.09.10.1
+covers:
+  from-select-to-dataframe:
+    touches: [DBM-LO5]
+  one-line-per-country:
+    touches: [DBM-LO7]
 ---
 
 # Charting a Query's Result
@@ -46,7 +51,7 @@ SELECT DISTINCT country FROM income_share ORDER BY country;
 
 ## From SELECT to DataFrame
 
-`pandas.read_sql` runs a query against the database and hands back a
+`pandas.read_sql` runs a query against the database and returns a
 DataFrame. It does the opposite of `to_sql`: going from a table back into
 Python, rather than from Python into a table.
 
@@ -56,6 +61,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 countries = ["Ireland", "Sweden", "United States", "Japan"]
+# each name needs quotes of its own, so SQL reads it as text, not as code
 placeholders = ", ".join(f"'{country}'" for country in countries)
 result = pd.read_sql(
     f"SELECT country, year, share_extrapolated FROM income_share "
@@ -80,7 +86,7 @@ plt.legend()
 
 `result.groupby("country")` splits the DataFrame into one smaller table per
 country. Each pass through the loop plots one line and labels it;
-`plt.legend()` at the end reads back every label a `plt.plot` call gave it.
+`plt.legend()` at the end collects every label a `plt.plot` call gave it.
 A cell's last line renders automatically here, the same as a DataFrame
 does, so this cell needs no separate `plt.show()` call.
 
@@ -100,8 +106,8 @@ barely moves at all.
 
 ## What you have now
 
-- **DataFrame to chart.** No separate conversion step: matplotlib reads
-  columns straight out of a DataFrame.
+- **A DataFrame becomes a chart directly.** No separate conversion step:
+  matplotlib reads columns straight out of a DataFrame.
 - **`groupby`.** Splits one table into a smaller table per group, ready for
   a loop that treats each group on its own.
 - **A chart raises questions.** A bend in a line says something changed; a

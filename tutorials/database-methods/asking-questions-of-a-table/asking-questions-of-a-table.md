@@ -6,6 +6,13 @@ module_title: "Database Methods"
 year: "2026-2027"
 series: first-database
 version: 2026.09.10.1
+covers:
+  naming-columns:
+    covers: [DBM-LO3]
+  where-keeping-only-some-rows:
+    covers: [DBM-LO5]
+  order-by-choosing-an-order:
+    touches: [DBM-LO5]
 ---
 
 # Asking Questions of a Table
@@ -108,7 +115,7 @@ same table back again on the next page.
 
 ## What you have now
 
-- **WHERE** — a condition after a table's name that keeps only the rows
-  where it is true.
-- **ORDER BY** — sorts a result by one of its columns, `ASC` (the
+- **WHERE** keeps only the rows where a condition after the table's
+  name is true.
+- **ORDER BY** sorts a result by one of its columns, `ASC` (the
   default) for smallest first, `DESC` for largest first.

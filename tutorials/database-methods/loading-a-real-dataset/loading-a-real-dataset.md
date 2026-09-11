@@ -6,6 +6,11 @@ module_title: "Database Methods"
 year: "2026-2027"
 series: several-tables
 version: 2026.09.10.1
+covers:
+  fetching-a-csv-from-a-python-cell:
+    covers: [DBM-LO8]
+  querying-it-as-sql:
+    touches: [DBM-LO5]
 ---
 
 # Loading a Real Dataset
@@ -75,7 +80,7 @@ as a measurement.
 
 ## Into a table
 
-A DataFrame is not a database table until it is put into one.
+A DataFrame becomes a database table only once it is put into one.
 `pandas.DataFrame.to_sql` does that, writing into `db`, the same shared
 connection a `` ```sql exec `` block on this page already uses.
 
@@ -106,18 +111,18 @@ LIMIT 15;
 
 Pick two or three countries of your own — a country you have lived in, one
 you would like to visit, one that came up in another class. Change the
-`country IN (...)` list above to yours, and run the query again. Look for a
-country whose numbers jump around between years next to one that stays
-fairly steady. The next page joins this table to a second one; keep your
-chosen countries in mind for that.
+`country IN (...)` list above to yours, then run the query again. Look for a
+country whose numbers move up and down sharply between years, next to one
+that stays fairly steady. The next page joins this table to a second one;
+keep your chosen countries in mind for that.
 
 ## What you have now
 
-- **CSV.** Rows of data separated by commas, the plain-text shape most real
-  datasets arrive in.
+- **A CSV holds rows of data, separated by commas.** It's the plain-text
+  shape most real datasets arrive in.
 - **`load_csv`.** Fetches a CSV from a web address and returns it as a table
   you can work with in Python.
-- **Cleaning.** Renaming columns to plain names, and checking what is
-  missing, before building a query on top of either.
+- **Cleaning renames columns to plain names, then checks what is missing.**
+  Both happen before building a query on top of the data.
 - **`to_sql`.** Writes a table built in Python into the page's shared
   database connection, so the same data answers to `SELECT`.

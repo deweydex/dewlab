@@ -6,6 +6,11 @@ module_title: "Database Methods"
 year: "2026-2027"
 series: first-database
 version: 2026.09.10.1
+covers:
+  update-changing-a-value:
+    covers: [DBM-LO4]
+  delete-removing-a-row:
+    covers: [DBM-LO4]
 ---
 
 # Updating and Deleting Rows
@@ -96,7 +101,7 @@ brings everything back.
 
 ## What you have now
 
-- **UPDATE** — changes a value in the rows a `WHERE` matches. Without a
+- **UPDATE** changes a value in the rows a `WHERE` matches. Without a
   `WHERE`, every row changes.
-- **DELETE** — removes the rows a `WHERE` matches. Without a `WHERE`,
+- **DELETE** removes the rows a `WHERE` matches. Without a `WHERE`,
   every row is removed.

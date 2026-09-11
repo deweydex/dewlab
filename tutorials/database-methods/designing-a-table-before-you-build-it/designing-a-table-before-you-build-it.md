@@ -6,6 +6,13 @@ module_title: "Database Methods"
 year: "2026-2027"
 series: several-tables
 version: 2026.09.10.1
+covers:
+  what-goes-in-which-table:
+    covers: [DBM-LO9]
+  naming-a-column-and-its-type:
+    covers: [DBM-LO2]
+  one-row-can-point-at-many:
+    covers: [DBM-LO9]
 ---
 
 # Designing a Table Before You Build It
@@ -51,7 +58,7 @@ library's books and its borrowers, a gym's classes and its members, a shop's
 products and its sales, or a topic of your own. On paper, or in a text file
 next to your notes, try answering three questions for each table:
 
-- What is one row? (One book. One borrower. One sale.)
+- What is one row? (One book, one borrower, one sale.)
 - What columns does that row need, and what kind of value goes in each?
 - Which column, if any, points at a row in another table?
 
@@ -63,7 +70,7 @@ series builds, one page at a time.
 
 - **Each table holds one kind of thing.** Repeating a value across many rows
   is the sign a table is doing two jobs.
-- **A column, and its type.** Every column needs a name and a kind of value,
-  decided before `CREATE TABLE` is written.
-- **One-to-many.** One row on one side can be pointed at by many rows on the
-  other, through an id column on the "many" side.
+- **Every column needs a name and a type.** Deciding both, before writing
+  `CREATE TABLE`, is what `CREATE TABLE` actually asks for.
+- **One-to-many** is a relationship where one row in one table can be linked
+  to many rows in another, through an id column such as `product_id`.

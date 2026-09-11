@@ -6,6 +6,11 @@ module_title: "Database Methods"
 year: "2026-2027"
 series: several-tables
 version: 2026.09.10.1
+covers:
+  a-second-table-written-by-hand:
+    touches: [DBM-LO9]
+  the-join-that-loses-a-row:
+    covers: [DBM-LO5]
 ---
 
 # Joining Two Real Tables
@@ -95,7 +100,7 @@ ORDER BY income_share.country;
 United States now appears, with `region` blank. That blank is the mismatch,
 made visible instead of silently dropped. Agreeing on one spelling is the
 fix here, not a cleverer `JOIN`. Change `'USA'` to `'United States'` in the
-`INSERT` above and re-run both cells; the first query then returns all six
+`INSERT` above, then re-run both cells; the first query now returns all six
 countries.
 
 ## Your turn
@@ -108,10 +113,10 @@ years.
 
 ## What you have now
 
-- **A join that drops a row.** This happens whenever the two tables spell
+- **A join can drop a row.** This happens whenever the two tables spell
   the same thing differently, not because the data itself is wrong.
-- **`LEFT JOIN`.** It keeps every row from the first table, filling in
+- **`LEFT JOIN` keeps every row from the first table.** It fills in
   empty where the second table has no match, so a mismatch shows up
   instead of vanishing.
-- **Fixing the spelling, not the query.** Agreeing on one name for the same
-  thing is usually the real fix, once a `LEFT JOIN` shows where the gap is.
+- **Fixing the spelling is usually the real fix, not a cleverer query.**
+  That works once a `LEFT JOIN` shows where the gap is.
