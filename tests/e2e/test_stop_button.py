@@ -1,5 +1,4 @@
-"""The genuine Stop button, in a real browser — planning/CELL_CONTROLS.md §2,
-DECISIONS_LOG.md 7.77.
+"""The genuine Stop button, in a real browser — planning/CELL_CONTROLS.md §2.
 
 Pyodide runs inside assets/pyodide-worker.js on the hosted site now, so a
 tight, synchronous, no-yields-at-all Python loop can be interrupted from
@@ -60,9 +59,6 @@ def test_stopping_a_genuine_infinite_loop(page):
         timeout=10_000,
     )
 
-    # Let it actually spin for a moment — stopping instantly would not tell
-    # the difference between a real interrupt and a cell that just hadn't
-    # started yet.
     page.wait_for_timeout(1_000)
     btn.click()  # the same button, now meaning Stop
 
@@ -98,9 +94,6 @@ def test_a_stopped_cell_can_be_run_again(page):
         timeout=20_000,
     )
 
-    # Reset back to the cell's starter code first — appending after the
-    # still-present `while True: pass` would just spin forever again
-    # before ever reaching a new statement.
     page.locator(".dl-cell[data-cell-id='plain-python'] .dl-btn-reset").click()
     cell.click()
     page.keyboard.press("Control+End")

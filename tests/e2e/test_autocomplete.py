@@ -92,7 +92,7 @@ def test_accepting_a_completion_inserts_it(page):
     checked as one string rather than "list(" for that reason.
 
     pageNamesCompletion is one of several override sources CodeMirror
-    merges together, and — since (DECISIONS_LOG.md 7.77) it is now a real
+    merges together, and — since it is now a real
     round trip to the Worker rather than a synchronous local lookup — the
     merged list can still be settling by the moment "list" first appears
     in it. Waiting for "list" specifically, not just for some tooltip to

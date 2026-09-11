@@ -386,9 +386,6 @@ class TestWhatTheTutorialsSayAboutTheCourse:
         """`order` restarts at 1 in each series. When reflections moved into
         their own, the mermaid graph came out with two nodes called T1 and an
         arrow from one of them to itself."""
-        # The map holds several mermaid blocks; the sequence one is whichever
-        # declares T-nodes. Taking "the first block" silently tested the strand
-        # diagram instead, and passed against a map that was visibly broken.
         blocks = [
             b for b in re.findall(r"```mermaid\n(.*?)```", cm.MAP.read_text(), re.S)
             if re.search(r"^  T\d+\[", b, re.MULTILINE)

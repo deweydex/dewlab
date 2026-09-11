@@ -6,31 +6,8 @@
 <title>{{TITLE}} — dewlab</title>
 <link rel="icon" type="image/svg+xml" href="{{FAVICON_URL}}">
 
-<!-- Cross-origin isolation, as early as this page can ask for it. GitHub
-     Pages will not let this repo set the Cross-Origin-Opener-Policy/
-     Cross-Origin-Embedder-Policy response headers a genuine Stop button
-     needs (OPEN_QUESTIONS.md, "the Web Worker migration"), so this same-
-     origin service worker adds them itself. Registered from its own script
-     tag rather than dynamically, since it reads its own URL off
-     document.currentScript to know where to register with root scope --
-     {{ROOT_BASE}} is the same relative-path-to-root every other site-wide
-     link already uses. A browser's very first visit to any page of this
-     site reloads once, right here, to pick the headers up; every page
-     after that is already covered, tutorials and dewmini alike, since a
-     service worker's scope is the origin path it registered at, not the
-     one page that happened to load this script. -->
 <script src="{{ROOT_BASE}}coi-serviceworker.js"></script>
 
-<!-- Every page boots its own Pyodide instance from the public CDN (no
-     dependency actually carries over between pages — see
-     docs/tutorial-runtime-explained.md), so a reader who lands on some
-     tutorial mid-series pays a fully cold DNS+TLS handshake to
-     cdn.jsdelivr.net before the runtime, numpy/pandas/matplotlib wheels
-     can even start downloading. `crossorigin` matters here: Pyodide's own
-     fetches are CORS requests, and a preconnect without it opens a second,
-     wasted connection instead of the one those fetches reuse. Harmless
-     when DEWLAB_PYODIDE_BASE points at a self-hosted copy instead — the
-     browser just never uses the hint. -->
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
 
@@ -42,10 +19,6 @@
 <meta name="tutorial-year" content="{{YEAR}}">
 <meta name="tutorial-series" content="{{SERIES}}">
 
-<!-- Empty except on a page that is one release of a tutorial with several,
-     where it points at the release the plain URL serves. Two versions of one
-     tutorial are near-identical pages, and without this they compete with each
-     other in search results rather than the current one winning. -->
 {{CANONICAL}}
 
 <link rel="stylesheet" href="{{KATEX_CSS_URL}}">
@@ -53,9 +26,6 @@
 <link rel="stylesheet" href="{{STYLE_URL}}">
 
 <script>
-/* Apply saved texture preferences before first paint, so a reader who chose
-   dark doesn't get a white flash on every page of the series. Kept inline and
-   tiny on purpose; the panel itself lives in tutorial-runtime.js. */
 (function () {
   try {
     var s = JSON.parse(localStorage.getItem("dewlab:texture") || "{}");
@@ -76,43 +46,17 @@
 <body>
 <div class="dl-page">
 
-  <!-- Masthead and chapter navigation stick together as one group, so the way
-       out of a page and the way to the next one are always on screen, and so
-       there is one height for everything below to measure against. -->
   <div class="dl-chrome" id="dl-chrome">
     <header class="dl-masthead">
       <a class="dl-wordmark" href="{{ROOT_BASE}}index.html">dewlab</a>
       <span class="dl-crumbs">{{CRUMBS}}</span>
 
-      <!-- Every panel's toggle lives here now, not scattered across the
-           page's corners — a sticky action row a reader can reach from
-           anywhere on the page, the same reason the masthead itself
-           sticks. Each of the three opens a genuine docked sidebar
-           (tutorial-style.css), not a floating card, and each panel
-           remembers whether it was left open across page navigation
-           (restoreSidebarState(), tutorial-runtime.js) on anything wider
-           than the phone breakpoint. -->
       <div class="dl-masthead-actions">
-        <!-- Starts hidden; tutorial-runtime.js reveals it only when this
-             page's manifest actually carries a glossary, a note, or a
-             dataset — a tutorial with nothing accumulated yet
-             (planning/REFERENCE_PANEL.md §6) shows no button at all, the
-             same "nothing to show, nothing to click" rule the Settings
-             panel already applies to its own empty sections below. -->
         <button type="button" class="dl-reference-toggle" id="dl-reference-toggle"
                 aria-expanded="false" aria-controls="dl-reference" aria-label="Reference" hidden>
           <span class="dl-reference-icon" aria-hidden="true"></span><span class="dl-toggle-label">Reference</span>
         </button>
 
-        <!-- This tutorial's whole series, browsable from any point in it,
-             not just the tutorial immediately before and after
-             (planning/SIDEBAR_CONTENT.md §4b — the "where can I go"
-             question, distinct from the reference's "what do I need right
-             now"). Starts hidden; a tutorial with no series position
-             (archived, or a practice page) has nothing to show here —
-             build.py's render_series_nav() returns an empty string, and
-             the runtime hides the button the same way it hides the
-             reference's when there is nothing to show. -->
         <button type="button" class="dl-seriesnav-toggle" id="dl-seriesnav-toggle"
                 aria-expanded="false" aria-controls="dl-seriesnav" aria-label="Series" hidden>
           <span class="dl-seriesnav-icon" aria-hidden="true"></span><span class="dl-toggle-label">Series</span>
@@ -135,10 +79,6 @@
     <span class="dl-boot-dots" id="dl-boot-dots" aria-hidden="true" hidden><span></span><span></span><span></span></span>
   </div>
 
-  <!-- Announces once a cell finishes running — the ticking "Running… Xs"
-       run-line deliberately isn't itself a live region (tutorial-runtime.js,
-       startRunLineTicker()); this is the one announcement a screen reader
-       gets, the moment there's an actual result to hear about. -->
   <div class="dl-sr-only" id="dl-run-announcer" role="status" aria-live="polite"></div>
 
   <main id="dl-body">
@@ -153,13 +93,6 @@
 
 </div>
 
-<!-- One panel, several sections. Everything a reader can change about the
-     page or do with their work lives here, so there is one place to look
-     rather than a row of small buttons to learn. A section that does not
-     apply to a page is removed at load: the contents page saves no work,
-     and a downloadable copy is already the file you are reading. Progress
-     is the one exception — its toggle also governs the contents page's own
-     badges, so it stays even on a page with no cells of its own. -->
 <div class="dl-settings" id="dl-settings" role="dialog" aria-modal="false"
      aria-labelledby="dl-settings-title" hidden>
   <div class="dl-panel-sticky-head">
@@ -168,12 +101,6 @@
       <button type="button" class="dl-settings-close" id="dl-settings-close"
               aria-label="Close settings">&times;</button>
     </div>
-    <!-- Filters the sections below to whatever matches — "font size",
-         "dark mode", "line numbers" — the same filter-as-you-type shape
-         Reference's own search already uses (filterSettingsContent(),
-         tutorial-runtime.js), against a small keyword list per row
-         rather than each row's own visible label, since a label like
-         "Size" alone would never match someone typing "font size". -->
     <input type="search" class="dl-settings-search-input" id="dl-settings-search"
            placeholder="Search settings — e.g. font size, dark mode…"
            aria-label="Search settings" autocomplete="off">
@@ -183,12 +110,6 @@
   <section class="dl-settings-section" id="dl-settings-work">
     <h3>Your work</h3>
 
-    <!-- A student's own notes (planning/STUDENT_NOTES.md) — not the
-         author-written pedagogical notes in the reference panel, which
-         are part of the tutorial itself and the same for every reader.
-         These are one reader's own, saved in the same record as their
-         cells (notesEl, tutorial-runtime.js) and riding along on the same
-         export button below. -->
     <label class="dl-progress-notes-label" for="dl-progress-notes">Your notes</label>
     <textarea class="dl-progress-notes" id="dl-progress-notes" rows="4"
               placeholder="Anything worth writing down as you go."></textarea>
@@ -212,11 +133,6 @@
     </div>
     <input type="file" id="dl-progress-file" accept="application/json,.json" hidden>
 
-    <!-- planning/STUDENT_NOTES.md §4's larger proposal: a small marker on
-         "Export a copy" once notes have grown a fair bit since the last
-         export (updateNotesNudge(), tutorial-runtime.js). Opt-out here for
-         the same reason the progress badges toggle below is one: ambient,
-         seen without asking for it, unlike the rest of this panel. -->
     <div class="dl-texture-row dl-texture-row-wide" data-keywords="notes reminder export nudge">
       <span id="dl-seg-notes-nudge-label">Remind me to export new notes</span>
       <div class="dl-seg" data-notes-nudge role="radiogroup" aria-labelledby="dl-seg-notes-nudge-label">
@@ -226,11 +142,6 @@
     </div>
   </section>
 
-  <!-- The live Python session behind every cell on the page — ported from
-       dewmini's own "Python" settings section (DECISIONS_LOG.md 7.108).
-       Removed at load on a page with no cells at all, same as "Your work"
-       above (initExecutionSection(), tutorial-runtime.js) — there is
-       nothing here to restart on a page that never started anything. -->
   <section class="dl-settings-section" id="dl-settings-execution">
     <h3>Running Python</h3>
     <p class="dl-panel-note" id="dl-execution-status">Not started yet — run a cell to start Python.</p>
@@ -246,12 +157,6 @@
         <button type="button" data-value="off" role="radio">off</button>
       </div>
     </div>
-    <!-- Staged hints (planning/CELL_HINTS.md): a fold an author wrote for a
-         cell, shown only after that cell has been run and failed some number
-         of times. Two choices, both the reader's: whether they appear at
-         all, and whether Restart Python hides the ones already shown. The
-         note underneath is the whole of what a reader is told about the
-         counting, on purpose — no count is ever shown on a cell. -->
     <div class="dl-texture-row" data-keywords="staged hints help">
       <span id="dl-seg-hints-label">Hints as you work</span>
       <div class="dl-seg" data-staged-hints role="radiogroup" aria-labelledby="dl-seg-hints-label">
@@ -269,17 +174,6 @@
     <p class="dl-panel-note">A hint can appear under a cell after you have run it several times without getting there. Nothing is counted against you, and nothing is sent anywhere.</p>
   </section>
 
-  <!-- Cells a reader writes for themselves — planning/PRACTICE.md §3 — kept
-       completely separate from the tutorial's own saved-work record above:
-       not tied to this tutorial's version, and not counted in the Progress
-       section below. Removed at load on a page with no cells at all, same
-       as "Your work" above (initCustomCellsSection(), tutorial-runtime.js).
-       The cells themselves live on the page — right below whichever real
-       cell a reader added one after, or in the "Try something of your
-       own" section at the very end if it wasn't added after any one cell
-       in particular — this panel only holds the actions that don't belong
-       on any single cell: loading one someone else shared, and clearing
-       all of them at once. -->
   <section class="dl-settings-section" id="dl-settings-custom-cells">
     <h3>Your own cells</h3>
 
@@ -298,12 +192,6 @@
     <input type="file" id="dl-custom-cells-file" accept="application/json,.json" hidden>
   </section>
 
-  <!-- Progress: how far a reader has gotten. Not removed on a page with no
-       cells the way "Your work" above is — the toggle here also governs
-       the contents page's own badges, and the contents page itself has no
-       cells at all, so this section has to survive there. The summary line
-       just stays hidden in that case (updateProgressSummary(),
-       tutorial-runtime.js). -->
   <section class="dl-settings-section" id="dl-settings-progress">
     <h3>Progress</h3>
 
@@ -318,9 +206,6 @@
     </div>
   </section>
 
-  <!-- Versions. Removed at load on the tutorials that have only one, which is
-       most of them: a list with a single entry is furniture, and the switch
-       below it would have nothing to switch between. -->
   <section class="dl-settings-section" id="dl-settings-versions">
     <h3>Versions</h3>
 
@@ -339,14 +224,6 @@
 
   <section class="dl-settings-section" id="dl-settings-download">{{DOWNLOAD}}</section>
 
-  <!-- Two more ways to take this page with you, built entirely at runtime
-       (initExportSection(), tutorial-runtime.js) rather than server-rendered
-       like #dl-settings-download above — deliberately its own section
-       rather than folded into that one, since build.py strips that whole
-       section's contents out of the standalone/offline export (its own
-       comment: "the offer to download it is already taken — this is the
-       download"), and these two stay just as useful *inside* an
-       already-downloaded copy. -->
   <section class="dl-settings-section" id="dl-settings-export">
     <h3>Export</h3>
     <p class="dl-panel-note">Two more ways to take this page with you.</p>
@@ -382,11 +259,6 @@
       </div>
     </div>
 
-    <!-- Same data-texture="font" as the row above — a second .dl-seg
-         group sharing one key works with no JS change (initTexture()'s
-         own sync loop matches every group with this attribute, not one
-         specific element), which is what lets these sit on their own
-         line below the first three rather than crowding a six-wide row. -->
     <div class="dl-texture-row" data-keywords="dyslexia dyslexic font typeface">
       <span></span>
       <div class="dl-seg" data-texture="font" role="radiogroup" aria-label="Font, further options">
@@ -411,10 +283,6 @@
       </div>
     </div>
 
-    <!-- Run, Reset, Duplicate and the rest — icon, label, or both
-         (planning/CELL_IDENTITY.md §9). Shares tutorial-style.css's
-         [data-button-labels] rule with compose/dewmini.js's own copy of
-         this same row, so the choice means the same thing on either page. -->
     <div class="dl-texture-row" data-keywords="icons labels button style run reset duplicate">
       <span id="dl-seg-buttons-label">Cell buttons</span>
       <div class="dl-seg" data-texture="buttons" role="radiogroup" aria-labelledby="dl-seg-buttons-label">
@@ -483,17 +351,6 @@
   </section>
 </div>
 
-<!-- The reference: definitions, functions, formulas, notes, and datasets
-     this specific page carries (planning/REFERENCE_PANEL.md,
-     planning/SIDEBAR_CONTENT.md §4), rendered by tutorial-runtime.js from
-     this page's own manifest — there is no server round trip, and a page
-     with nothing to show never reveals the toggle that would open this.
-     A genuine docked sidebar, full height, left edge (tutorial-style.css)
-     — not a floating card — sharing that edge with the navigation panel
-     below, which still genuinely conflicts with it (opening either closes
-     the other, since two docked panels on the same edge would sit on top
-     of one another); Settings docks to the right instead and can stay
-     open alongside this one. -->
 <div class="dl-reference" id="dl-reference" role="dialog" aria-modal="false"
      aria-labelledby="dl-reference-title" hidden>
   <div class="dl-panel-sticky-head">
@@ -558,14 +415,6 @@
   </div>
 </div>
 
-<!-- The navigation panel: this tutorial's whole series (planning/
-     SIDEBAR_CONTENT.md §4b), rendered server-side by build.py's
-     render_series_nav() — static per page, so unlike the reference there
-     is nothing here for the runtime to assemble from a manifest. Docked to
-     the left, the same edge as the reference, and mutually exclusive with
-     it for exactly that reason: two panels docked to the same edge at once
-     would sit on top of each other. Settings docks to the right and does
-     not conflict with either. -->
 <div class="dl-seriesnav" id="dl-seriesnav" role="dialog" aria-modal="false"
      aria-labelledby="dl-seriesnav-title" hidden>
   <div class="dl-panel-sticky-head">

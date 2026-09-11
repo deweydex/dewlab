@@ -15,10 +15,10 @@ the pages are built, and what is still worth doing.
 | Mixed sets, drawing on several | 4 |
 
 Six of the tutorials and six of the practice pages are the first 5N0554
-strand — `computational-methods`'s `matrices` series — and unlike the other
+strand — `computational-methods`'s `matrices` series. Unlike the other
 thirty-two, their worksheets (`07a`, `07b`, `07d`) have no answer key in the
-markdown, only a PDF. Every number on those six practice pages was worked
-fresh rather than transcribed; see DECISIONS_LOG 7.56.
+markdown, only a PDF, so every number on those six practice pages was worked
+fresh rather than transcribed (DECISIONS_LOG 7.56).
 
 Three tutorials have no practice page, on purpose. *Bringing It All Together*
 is already a set of integrative problems, and *Looking Back Before Moving
@@ -38,9 +38,9 @@ roughly 60 problems.
 **Twenty of the twenty-six end in an answer key in the markdown.** The other six
 — `04e_optimisation`, `07a_matrix_operations`, `07c_eigenvalues`,
 `07d_markov_chains`, `08a_bayes` and `08b_distributions` — have answers only as
-PDFs under `pdfs/solutions/`. Those six are also the ones whose material is not
-yet taught here, so nothing has been lost yet; when the 5N0554 strands are
-written, their answers will have to come out of the PDFs or be worked afresh.
+PDFs under `pdfs/solutions/`. Those six are also the ones whose material isn't
+taught here yet; when the 5N0554 strands are written, their answers will have
+to come out of the PDFs or be worked afresh.
 
 Which worksheet fed which page:
 
@@ -104,10 +104,9 @@ The answer, with the working.
 </details>
 ```
 
-The site is public, so an answer that exists can be read. What is worth
-protecting is not the answer but the moment before looking, and a fold is that
-moment made physical. A key at the bottom of the page is one scroll away, which
-is the same as being on it.
+The site is public, so an answer that exists can be read regardless. What the
+fold protects is the moment before looking — a key at the bottom of the page
+is one scroll away, which is the same as being visible.
 
 **A few checking tools, not a cell per problem.** One `python exec` cell per
 section, holding the helpers that section's problems need. Sixty CodeMirror
@@ -121,12 +120,11 @@ asserts on prose. See `DECISIONS_LOG.md` 7.50.
 ## 4. What is left
 
 - **A worksheet converter**, which would live in `dev/` and does not exist
-  yet. It would convert the Mathematics worksheets. The
-  two conditions for writing it are now met: the build supports practice pages,
-  and several have been done by hand so the shape is known. Whether it is worth
-  writing at all is a fair question — the remaining worksheets are the ones for
-  material that is not taught yet, so the converter would have nothing to
-  convert until those tutorials exist.
+  yet. It would convert the Mathematics worksheets, and the two conditions for
+  writing it are now met: the build supports practice pages, and several have
+  been done by hand so the shape is known. But the remaining worksheets are
+  for material not taught yet, so the converter would have nothing to convert
+  until those tutorials exist — worth writing only once that changes.
 - **Practice for the remaining 5N0554 strands**, once they are written. `07a`,
   `07b`, and `07d` fed the matrices strand's six pages; `07c` (eigenvalues),
   `08a` (Bayes) and `08b` (distributions) are still waiting, and their answers

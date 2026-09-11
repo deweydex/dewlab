@@ -1,16 +1,4 @@
-/* dewlab tutorial house style.
- *
- * Navy/orange/Georgia, extending the existing teaching-materials identity
- * (DECISIONS.md, "Palette and texture"). Everything a reader can retune from
- * the texture panel is a custom property on :root, so the panel only ever
- * writes variables and never touches rules.
- *
- * Prose stays borderless serif; exec cells get a subtle tint and border so the
- * page structure is scannable without color-blocking the reading surface
- * (DECISIONS.md, "Cell visual treatment").
- */
 
-/* ---------------------------------------------------------------- tokens */
 
 :root {
   /* Fixed brand hues. These are the identity, not reader preferences. */
@@ -22,23 +10,8 @@
   --dl-font-size: 18px;
   --dl-line-width: 34rem;
   --dl-code-line-height: 1.5;
-  /* Darker than --dl-orange, and deliberately not the brand hue itself.
-   * The brand orange is 3.5:1 on this background, under the 4.5:1 that
-   * ordinary AA asks for at this text size, and links are most of the
-   * text on the contents page. This clears it at 4.74:1 while still
-   * reading as the same orange. The brand hue keeps its own value for
-   * everything that is not body-sized text. Dark theme sets its own,
-   * below: --dl-orange is 4.96:1 there and needs no darkening. */
   --dl-link: #b8541a;
 
-  /* A cell type's colour, layered onto its label rather than standing in
-     for it — planning/CELL_IDENTITY.md §2/§8. Python/Text reference
-     --dl-orange/--dl-muted, so both already track the theme and the
-     texture panel's own choices for free. SQL/HTML/CSS/JavaScript needed
-     literal hues of their own instead — light-legible values here,
-     redefined for dark below the same way --dl-error-fg/--dl-pass-fg
-     already are, since a colour picked for the light cell background is
-     not automatically legible against the dark one. */
   --dl-type-python: var(--dl-orange);
   --dl-type-text: var(--dl-muted);
   --dl-type-sql: #0d7a72;
@@ -64,12 +37,6 @@
 
   --dl-mono: "SF Mono", "Cascadia Mono", Menlo, Consolas, monospace;
 
-  /* The sticky chrome's height. Everything that has to sit clear of it — the
-     status line, the settings panel, an anchored jump — measures from here
-     rather than from its own guess. The runtime overwrites it with the real
-     measured height on load and on every resize, because it depends on how far
-     the neighbouring tutorials' titles wrap. This value is the sensible
-     starting point for the moment before that happens. */
   --dl-chrome-h: 6rem;
 }
 
@@ -126,11 +93,6 @@
 :root[data-font="mono"] {
   --dl-font-family: var(--dl-mono);
 }
-/* Two accessible reading fonts (assets/vendor/accessible-fonts.css,
- * DECISIONS_LOG.md 7.123, 7.127): Lexend (designed to reduce the visual
- * complexity linked to reading difficulty) and OpenDyslexic. Real
- * fallback fonts after each, not just the family name, for the one
- * moment before the self-hosted @font-face has actually loaded. */
 :root[data-font="lexend"] {
   --dl-font-family: "Lexend", "Helvetica Neue", Arial, sans-serif;
 }
@@ -138,39 +100,6 @@
   --dl-font-family: "OpenDyslexic", "Comic Sans MS", sans-serif;
 }
 
-/* High contrast: a toggle of its own, not a sixth font choice — it
- * changes both the font and the colour palette together
- * (DECISIONS_LOG.md 7.123), independent of whichever of the five fonts
- * above (or light/dark theme) a reader separately picked, because
- * neither of those questions is "can I tell this text from its
- * background". Forces Lexend regardless of the Font row's own choice
- * (DECISIONS_LOG.md 7.127), and near-maximum text/background contrast
- * in whichever theme is active — --dl-muted is the one most rules here
- * lean on for secondary text, and the value it takes elsewhere is
- * nowhere near AAA contrast on purpose (it is meant to recede), so
- * high contrast redefines it to nearly --dl-fg rather than leaving it
- * at its normal value.
- *
- * The first version of this (DECISIONS_LOG.md 7.123) redefined only
- * --dl-fg/--dl-bg/--dl-muted/--dl-rule, on the assumption that a
- * reader's own body text was the whole of "can I read this" — found
- * wrong by actually turning the toggle on and looking, not by auditing
- * the variable list first (7.124). A heading, a link, a cell-type pill,
- * a cell's own border, a pass/fail message: every one of those is its
- * *own* variable, so the toggle changed nothing about any of them.
- * Measured with WCAG's own contrast-ratio formula rather than eyeballed
- * — --dl-link at 3.6:1 against white was failing the *ordinary* AA
- * minimum (4.5:1) that applies with the toggle off, let alone the
- * near-7:1 AAA this toggle exists to promise; --dl-cell-border was
- * effectively invisible (1.4:1, against a 3:1 floor for a graphical
- * boundary). Fixed by darkening (light theme) or lightening (dark) each
- * colour along its own hue until it clears 7:1 against the background it
- * actually sits on, not by replacing it with black or grey — a returning
- * reader who has learned "teal is SQL, purple is HTML" keeps that under
- * high contrast too, the same way the design already keeps it across
- * light and dark theme. --dl-cell-border has no hue worth preserving
- * (it is a boundary, not a signal), so it borrows --dl-rule outright
- * rather than getting a colour of its own. */
 :root[data-contrast="high"] {
   --dl-font-family: "Lexend", "Helvetica Neue", Arial, sans-serif;
   --dl-fg: #000000;
@@ -207,13 +136,6 @@
   }
 }
 
-/* A reader's own request, independent of the system's prefers-reduced-motion
- * query — someone motion bothers can turn this on even if their operating
- * system has never been told to reduce motion, and someone who wants the
- * system query honoured already gets that from the media query below,
- * without ever visiting Settings. `!important` because this has to beat
- * every transition/animation declared anywhere else in this file, not just
- * the ones already written with reduced motion in mind. */
 :root[data-motion="reduced"] *,
 :root[data-motion="reduced"] *::before,
 :root[data-motion="reduced"] *::after {
@@ -222,9 +144,6 @@
   animation-iteration-count: 1 !important;
 }
 @media (prefers-reduced-motion: reduce) {
-  /* Unconditional — the reader's own Settings choice only ever adds
-     reduced motion on top of this, never lifts an operating-system
-     request the site has no business overriding. */
   *, *::before, *::after {
     transition-duration: 0.001ms !important;
     animation-duration: 0.001ms !important;
@@ -232,22 +151,8 @@
   }
 }
 
-/* ------------------------------------------------------------ page frame */
-
 * { box-sizing: border-box; }
 
-/* An anchored jump has to clear the sticky masthead, or the heading it lands
-   on ends up hidden behind it.
-   The Texture "Size" slider's --dl-font-size belongs here, not on body:
-   nearly everything on the page — Settings, Help, buttons, cell chrome —
-   is sized in rem, which is relative to *this* element's font-size, not
-   body's. Setting it on body only ever changed the handful of things
-   that inherit a font-size directly rather than stating one in rem, which
-   is why the slider visibly resized reading prose but left every panel,
-   button, and control exactly the size it started at. A rem in a media
-   query is unaffected either way — the spec defines it there as always
-   relative to the root element's *initial* size, not this one, so moving
-   this doesn't shift any responsive breakpoint. */
 html {
   scroll-padding-top: calc(var(--dl-chrome-h) + 1rem);
   font-size: var(--dl-font-size);
@@ -268,40 +173,6 @@ body {
   padding: 0 1.25rem 6rem;
 }
 
-/* Settings (docked right) and the reference/series nav (docked left —
- * see .dl-reference/.dl-seriesnav further down) are fixed-position,
- * full-height sidebars rather than part of the document flow, which is
- * fine right up until an open one reaches far enough in to cover a
- * reader's own text. Two tiers, by how much room a screen actually has
- * to give:
- *
- * From 34rem (below which a panel is already a full-width bottom sheet,
- * not a docked sidebar) up to 85rem, there usually is not room to spare
- * — reserving a permanent gutter on both sides here would leave less
- * than --dl-line-width's own narrowest setting even with no panel open
- * at all, which is worse than the shift it would prevent. So this tier
- * only reacts once a panel is actually open, capping .dl-page at
- * whichever measured width (--dl-panel-left-w/-right-w, tracked by
- * watchPanelOverlap()'s ResizeObserver in tutorial-runtime.js) that
- * panel actually has, rather than shifting the column sideways to dodge
- * it: on a screen with any margin to spare the column was already clear
- * with room left over, so capping it at something no narrower than that
- * leaves it untouched; only a screen narrow enough that the panel would
- * truly reach the text ever changes anything, and even then the column
- * narrows, still centered, rather than hugging one side.
- *
- * From 85rem up — comfortably wider than --dl-line-width's narrowest
- * setting (34rem) plus two ordinary-width panels (25rem each) plus a
- * margin — there is room to do better: reserve that same ordinary width
- * on each side *before* either panel ever opens, whether or not one
- * actually is open. A panel opening at its ordinary width then finds
- * the space already there and the column does not move at all — the
- * point, not a side effect, on the screens wide enough to afford it.
- * data-dl-panel-left/-right only matter here when a reader has
- * *dragged* a panel wider than the reserved --dl-panel-gutter: then
- * max() falls through to that panel's own actual measured width, the
- * one case this tier's column still adjusts for, because there is no
- * width it could have pre-reserved for a resize handle not yet dragged. */
 @media (min-width: 34rem) {
   html[data-dl-panel-left]:not([data-dl-panel-right]) .dl-page {
     max-width: min(var(--dl-line-width), calc(100vw - 2 * var(--dl-panel-left-w, 25rem) - 1rem));
@@ -345,15 +216,6 @@ body {
  * scroll inside their own box; the page body never scrolls sideways. */
 .dl-page > * { min-width: 0; }
 
-/* --------------------------------------------------------------- masthead */
-
-/* The masthead and the chapter navigation follow the reader down the page, so
-   the way out — back to the contents, into Settings, or on to the next
-   tutorial — is always one tap away rather than a scroll to one end. They stick
-   as one group rather than two, which keeps a single height for the status
-   line, the settings panel and anchored jumps to measure against. That height
-   is written to --dl-chrome-h by the runtime, because it depends on how long
-   the neighbouring tutorials' titles are. */
 .dl-chrome {
   position: sticky;
   top: 0;
@@ -396,12 +258,6 @@ body {
   font-size: 0.78rem;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  /* On a narrow screen the module name is the first thing to go: the wordmark
-     and the way into the panel toggles both matter more than knowing which
-     course you are in while you are reading it. Grows to fill whatever
-     space the wordmark and the action row don't need, so it's the one
-     thing in the masthead that truncates rather than wraps or shrinks the
-     tap targets either side of it. */
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -409,18 +265,12 @@ body {
   min-width: 0;
 }
 
-/* One action row, right-aligned, holding every panel's toggle — the
-   Reference/Series/Settings order matches their docking order, left pair
-   then right, so a reader scanning left to right meets a toggle in the
-   same order its panel would appear. */
 .dl-masthead-actions {
   display: flex;
   align-items: center;
   gap: 0.5rem;
   flex: none;
 }
-
-/* ------------------------------------------------------------ prose blocks */
 
 h1, h2, h3, h4 {
   color: var(--dl-heading);
@@ -464,8 +314,6 @@ p code, li code {
   padding: 0.1em 0.35em;
 }
 
-/* ------------------------------------------------------------- exec cells */
-
 .dl-cell {
   margin: 1.6rem 0 1.9rem;
   border: 1px solid var(--dl-cell-border);
@@ -475,23 +323,8 @@ p code, li code {
   transition: opacity 0.15s ease;
 }
 
-/* Visibly not runnable yet, not only disabled — a cell's Run button is
-   already disabled while Pyodide boots, but that is easy to miss; dimming
-   every cell reads at a glance rather than on click. Same 0.45 the disabled
-   Run button itself already uses (see .dl-btn:disabled below). Set on
-   <html> by setBooting() (tutorial-runtime.js), not per cell, so it also
-   covers a custom cell a reader adds mid-boot. */
 [data-dl-booting] .dl-cell { opacity: 0.45; }
 
-/* A cell's editable content sits beside a collapse triangle — code and
-   text alike, ported from dewmini's own .dm-cell-body-row
-   (planning/CELL_IDENTITY.md §4, DECISIONS_LOG.md 7.110/7.112). The
-   triangle top-aligns with the first line beside it because both are
-   children of this same flex row, not because either was nudged into
-   place with a margin. Collapsing hides only the editable content
-   (.dl-cell-content) — the output and the bar underneath stay visible,
-   the same choice dewmini made: a reader wants the code out of the way,
-   not the result it produced. */
 .dl-cell-body-row { display: flex; align-items: flex-start; gap: 0.5rem; padding: 0.5rem; }
 .dl-cell-body-row > .dl-cell-content { flex: 1; min-width: 0; }
 .dl-cell-collapse-col { flex: none; }
@@ -511,20 +344,9 @@ p code, li code {
   line-height: 1;
 }
 .dl-collapse-toggle:hover { color: var(--dl-orange); background: var(--dl-cell-bg); }
-/* One glyph, rotated rather than swapped between two — pointing down
-   while expanded (content is right there, below), rotating back to
-   pointing right, its own resting orientation, once collapsed. Matches
-   dewmini's own choice (DECISIONS_LOG.md 7.110): two different filled
-   triangles in the same small corner of a cell read as confusingly
-   similar once actually built. */
 .dl-collapse-caret { display: inline-block; transform: rotate(90deg); transition: transform 0.15s ease; }
 .dl-collapse-toggle-collapsed .dl-collapse-caret { transform: rotate(0deg); }
 
-/* Stands in for .dl-cell-content while collapsed — one line, the first
-   line of the cell's own code or text, click (or Enter) to expand.
-   --dl-panel-bg rather than --dl-cell-bg, the same surface .dl-editor
-   already uses, so it reads as a distinct panel against the cell's own
-   background instead of disappearing into it. */
 .dl-cell-collapsed-summary {
   flex: 1;
   min-width: 0;
@@ -542,12 +364,6 @@ p code, li code {
 .dl-cell-collapsed-summary:hover { color: var(--dl-orange); }
 .dl-cell-collapsed-summary[hidden] { display: none; }
 
-/* The header, above the code — identity only: the pill, an optional
-   name, Duplicate. Nothing about running a cell lives here (that's
-   .dl-cell-footbar, below the code) — matches dewmini's own
-   .dm-cell-head (planning/CELL_IDENTITY.md's parity pass), so a reader
-   moving between the two finds "which cell is this" in the same place
-   either way. */
 .dl-cell-head {
   display: flex;
   align-items: center;
@@ -560,9 +376,6 @@ p code, li code {
 }
 .dl-cell-header-end { display: flex; align-items: center; gap: 0.35rem; }
 
-/* Run, Reset, the "Run above/below" menu, and the run-line — between the
-   code and its output, not after both, so Run sits right where a
-   reader's hand already is (matches dewmini's own .dm-cell-footbar). */
 .dl-cell-footbar {
   display: flex;
   align-items: center;
@@ -574,10 +387,6 @@ p code, li code {
   color: var(--dl-muted);
 }
 
-/* The identity pill — "Cell N" plus its type, coloured
-   (planning/CELL_IDENTITY.md §2, ported from dewmini's own .dm-cell-pill
-   in 7.111). No drag handle here: unlike a dewmini cell, an authored
-   cell's order is fixed at build time, so there's nothing to drag. */
 .dl-cell-pill {
   display: inline-flex;
   align-items: center;
@@ -595,10 +404,6 @@ p code, li code {
 .dl-cell-pill-type[data-type="python"] { color: var(--dl-type-python); }
 .dl-cell-pill-type[data-type="sql"] { color: var(--dl-type-sql); }
 
-/* An author's (or, in dewmini, a reader's own) name for a cell — the
-   word one person can point at when talking to another about it, beside
-   the pill rather than replacing it, since the number still says where
-   the cell sits. */
 .dl-cell-name {
   overflow: hidden;
   text-overflow: ellipsis;
@@ -608,13 +413,6 @@ p code, li code {
   font-style: italic;
 }
 
-/* The run-line: order, duration, and staleness folded into one
-   (planning/CELL_IDENTITY.md §3, ported from dewmini's own
-   .dm-cell-runline in 7.111 — replaces the separate stats span and
-   "edited since" badge 7.105/7.109 first shipped here). Empty before a
-   cell has ever built its first line (buildCells() paints it
-   immediately, so this is only ever a flash before that) collapses to
-   nothing via :empty, same trick .dl-progress-summary uses. */
 .dl-cell-runline { margin-left: 0.5rem; }
 .dl-cell-runline:empty { display: none; }
 .dl-cell-runline.dl-cell-runline-notrun {
@@ -630,12 +428,6 @@ p code, li code {
   color: var(--dl-muted);
   font-style: italic;
 }
-/* Ticking live while a cell actually runs (startRunLineTicker() in
-   tutorial-runtime.js) — a plain setTimeout loop, not an aria-live
-   region: a number changing ten times a second would be noise, not
-   news, to a screen reader. The pulsing dot is the only part that's
-   pure animation, so it's the only part prefers-reduced-motion turns
-   off. */
 .dl-cell-runline.dl-cell-runline-active { color: var(--dl-orange); }
 .dl-cell-runline.dl-cell-runline-active::before {
   content: "";
@@ -657,10 +449,6 @@ p code, li code {
 
 .dl-cell-spacer { flex: 1; }
 
-/* The "Run above"/"Run below" menu (initCellRunMenu() in
-   tutorial-runtime.js, ported from dewmini's createRunMoreMenu()) — a
-   popover anchored to its own toggle button rather than two more
-   always-visible buttons crowding a bar that already has reset and Run. */
 .dl-cell-more { position: relative; display: inline-flex; }
 .dl-btn-more { font-family: var(--dl-mono); }
 .dl-cell-run-menu {
@@ -715,17 +503,6 @@ p code, li code {
 .dl-btn:hover:not(:disabled) { border-color: var(--dl-orange); color: var(--dl-orange); }
 .dl-btn:disabled { opacity: 0.45; cursor: default; }
 
-/* Every cell-chrome button carries both an icon and a label span
- * (icon_button() in build.py, iconButtonHtml() in tutorial-runtime.js,
- * iconButton() in compose/dewmini.js) so "icons only / text only / icons
- * and text" — Settings' "Cell buttons" row, data-texture="buttons",
- * wired by the same generic initTexture() every other Texture row
- * already uses (planning/CELL_IDENTITY.md §9) — is one pair of rules
- * here rather than a rewrite of every button's markup per mode. The
- * default, with neither attribute value, is "both" — the small
- * fixed-size badge buttons (hint, report, collapse, run-menu) are
- * deliberately not built this way and so never affected by this setting;
- * see icon_button()'s own docstring for why. */
 .dl-btn-icon { line-height: 1; }
 [data-button-labels="icons"] .dl-btn-label { display: none; }
 [data-button-labels="text"] .dl-btn-icon { display: none; }
@@ -737,12 +514,6 @@ p code, li code {
 }
 .dl-btn-run:hover:not(:disabled) { background: var(--dl-orange); border-color: var(--dl-orange); color: #fff; }
 
-/* Run becomes Stop while a cell is running, wherever a genuine interrupt is
- * possible (planning/CELL_CONTROLS.md §2) — the same button, so there is
- * nothing new to find, just a different label and colour while it means
- * something different. Reuses the error ink rather than a colour of its
- * own: this is the one button on the page whose whole point is "something
- * is happening that you might want to stop". */
 .dl-btn-run.dl-btn-stop {
   background: var(--dl-error-fg);
   border-color: var(--dl-error-fg);
@@ -750,27 +521,8 @@ p code, li code {
 }
 .dl-btn-run.dl-btn-stop:hover:not(:disabled) { opacity: 0.85; }
 
-/* Reset puts a cell back to its starter code and throws away whatever a
- * reader typed — a materially different, and more dangerous, action than
- * dewmini's own "clear output" button, which touches no code at all
- * (planning/CELL_IDENTITY.md §1, the difference this whole pass exists to
- * close). A resting red-ish outline, on a button that otherwise sits
- * beside Run, is what keeps a reader's hand from finding this one by the
- * same habit that finds Run. */
 .dl-btn-reset { border-color: var(--dl-error-fg); color: var(--dl-error-fg); }
 
-/* Author-written hint (CONTENT_AND_FILE_ARCHITECTURE.md, `hint:`). Static
- * text only — this is not the live docstring-on-hover feature that
- * DECISIONS.md defers past v1.
- *
- * Click-to-open, not hover: this used to be a hover popover positioned
- * absolutely below the icon, which could float over the editor or output
- * below it and gave a touch reader no way to open it at all. Now it is a
- * plain block in normal flow, opened by a real click on the icon
- * (initCellHints() in tutorial-runtime.js) — opening it grows the cell and
- * pushes whatever follows the cell down the page, the same "push down, cover
- * nothing" shape the prose-level <details class="dl-hint"> fold already
- * has, rather than a floating card. */
 .dl-hint-icon {
   width: 1.15rem; height: 1.15rem;
   border-radius: 50%;
@@ -801,13 +553,6 @@ p code, li code {
 }
 .dl-hint-text[hidden] { display: none; }
 
-/* A cell's own report toggle (DECISIONS_LOG.md Phase 8) — the same
- * circular-icon, click-to-open-a-block-below shape as .dl-hint-icon right
- * beside it, deliberately not a fifth always-visible text button: see the
- * comment on render_cell() in build.py for why. Its revealed panel reuses
- * the footer's own .dl-report-doors styling below, plus this cell-scoped
- * variant for the padding/border a block sitting inside a cell needs
- * (the footer has no cell border to sit against). */
 .dl-report-icon {
   width: 1.15rem; height: 1.15rem;
   border-radius: 50%;
@@ -832,9 +577,6 @@ p code, li code {
   font-size: 0.82rem;
 }
 .dl-cell-report-doors[hidden] { display: none; }
-/* Two classes, not one, so this beats .dl-report-doors p's own margin
- * regardless of which rule the cascade sees first in the file — the cell
- * panel already gets its spacing from the padding above. */
 .dl-cell-report-doors.dl-report-doors p { margin: 0; }
 
 .dl-editor { background: var(--dl-panel-bg); }
@@ -843,10 +585,6 @@ p code, li code {
 .dl-editor .cm-scroller { font-family: var(--dl-mono); line-height: var(--dl-code-line-height); }
 .dl-editor .cm-content { padding: 0.5rem 0; }
 
-/* A hover docstring (vendor-src/codemirror-entry.js's pythonDocTooltip),
- * inside CodeMirror's own tooltip positioning wrapper rather than nested
- * under .dl-editor — the same popover language as .dl-hint-text, since both
- * are "a little more explanation, out of the way until asked for". */
 .cm-tooltip .cm-dewlab-doc-tooltip {
   max-width: min(28rem, 80vw);
   padding: 0.5rem 0.7rem;
@@ -861,28 +599,8 @@ p code, li code {
   white-space: pre-wrap;
 }
 
-/* A reader's own cell (planning/PRACTICE.md §3, initCustomCellsSection()
- * in tutorial-runtime.js) — same box as an authored .dl-cell, plus a
- * left accent so it reads as "yours" at a glance rather than something
- * the tutorial itself wrote. Reuses the orange accent .dl-restored
- * already uses for "something about your own state," not a new colour. */
 .dl-cell-custom { border-left: 3px solid var(--dl-orange); }
 
-/* A custom cell holding notes instead of code (dl-cell-text) — no editor,
- * no output, just a textarea that turns into rendered text on blur. Same
- * click-to-edit/blur-to-render shape as compose/dewmini.js's own text
- * cells (.dm-textarea/.dm-doc-render), ported here rather than reinvented. */
-
-/* Rendered, it reads like part of the page, not a code widget — its bar
- * (the "your own note" label, view/duplicate/share/delete) and its
- * collapse triangle stay invisible until a reader actually touches the
- * cell (planning/CELL_IDENTITY.md §4, DECISIONS_LOG.md 7.115, ported
- * from compose/dewmini-style.css's own .dm-cell-text rule).
- * `opacity: 0; pointer-events: none`, never `display: none`, so the
- * controls stay in the tab order — a keyboard user tabbing onto one
- * reveals it via :focus-within the moment it receives focus, and only a
- * mouse user needs to hover the cell first. A touch device has no hover
- * to reveal anything with, so it gets the chrome on unconditionally. */
 .dl-cell-text .dl-cell-head,
 .dl-cell-text .dl-cell-collapse-col { transition: opacity 0.1s ease; }
 .dl-cell-text:not(:hover):not(:focus-within) .dl-cell-head,
@@ -934,22 +652,12 @@ p code, li code {
 .dl-doc-render em { color: var(--dl-muted); }
 .dl-doc-empty { color: var(--dl-muted); font-style: italic; margin: 0; }
 
-/* The "Try something of your own" section: set off from the tutorial's
- * own content with a top border, the same way a reader would expect a
- * genuinely new part of the page to announce itself. */
 .dl-custom-cells {
   margin-top: 2.5rem;
   padding-top: 1.8rem;
   border-top: 1px solid var(--dl-cell-border);
 }
 
-/* A tappable seam between cells — after every real cell and every custom
- * cell, not only inside the trailing section — so a reader can try
- * something right below whatever prompted the idea, without scrolling
- * away from it first. Ported from compose/dewmini-style.css's own
- * .dm-insert: a quiet line at rest that grows into "+ Code"/"+ Text"
- * buttons on hover, and stays open (no hover to wait for) on a touch
- * device. */
 .dl-insert {
   position: relative;
   height: 0.8rem;
@@ -995,10 +703,6 @@ p code, li code {
   .dl-insert-btn { opacity: 0.75; }
 }
 
-/* Signature help (vendor-src/codemirror-entry.js's pythonSignatureHelp),
- * shown while typing a call rather than on hover — same popover shell as
- * the doc tooltip above, code font since the content itself is code, and
- * the argument under the cursor bolded by the caller rather than by CSS. */
 .cm-tooltip .cm-dewlab-signature-tooltip {
   max-width: min(28rem, 80vw);
   padding: 0.4rem 0.6rem;
@@ -1012,8 +716,6 @@ p code, li code {
   white-space: nowrap;
 }
 .cm-dewlab-signature-tooltip strong { color: var(--dl-orange); }
-
-/* --------------------------------------------------------------- output */
 
 .dl-output {
   border-top: 1px solid var(--dl-cell-border);
@@ -1044,11 +746,6 @@ p code, li code {
   border-radius: 0 3px 3px 0;
 }
 
-/* The plain-English note under a recognised failure (_ERROR_HINTS in
-   tutorial_tools.py). Deliberately not red: it is the calm half of the
-   pair, and colouring it like a second error would make one problem look
-   like two. Wraps, because it is prose with a code sample in it rather
-   than a traceback to be read line by line. */
 .dl-error-hint {
   margin-top: 0.35rem;
   padding: 0.5rem 0.7rem;
@@ -1099,27 +796,16 @@ p code, li code {
 .dl-check-mark { font-family: var(--dl-mono); font-weight: 700; }
 .dl-check-detail { font-family: var(--dl-mono); font-size: 0.78rem; opacity: 0.85; }
 
-/* --------------------------------------------------------- site editor */
-
-/* A live HTML/CSS/JS editor (DEWSTACK_MERGE.md §3) — editors on the left,
- * the preview and its console on the right, the way an ordinary
- * code-and-preview IDE lays the two out. Ported in shape from dewmini's
- * own .dm-siteview rules (compose/dewmini-style.css), the workspace this
- * page's own component was built to match (DECISIONS_LOG.md 7.142); the
- * class names differ (dl- here, dm- there) because the two are separate
- * products sharing an engine, not a shared stylesheet. */
 .dl-site-editor { margin: 1.25rem 0; }
 
 .dl-site-head { display: flex; justify-content: flex-end; margin-bottom: 0.4rem; }
 
 /* Panes stacked above a full-width preview, not side by side: a page
  * asking a reader to drag the preview narrower needs real room to do
- * that in, and splitting the two halves the width available for either
- * one — ported in shape from dewstack's own .dl-site-panes/.dl-site-preview
- * (always a column, never a row), found necessary once web-authoring
- * content that actually depends on a wide preview (media-queries and
- * three others) exposed how little width a side-by-side split leaves at
- * this site's own --dl-line-width. */
+ * that in, and a side-by-side split leaves too little width for either
+ * half at this site's own --dl-line-width. Ported in shape from
+ * dewstack's own .dl-site-panes/.dl-site-preview (always a column,
+ * never a row). */
 .dl-site-split {
   display: flex;
   flex-direction: column;
@@ -1191,9 +877,6 @@ p code, li code {
 .dl-site-pane-head .dl-web-pane-label { margin-bottom: 0; }
 .dl-btn-site-run { width: auto; padding: 0 0.6rem; margin-bottom: 0.25rem; }
 
-/* The console: what the site's script printed and every error it raised,
- * in the same .dl-stdout / .dl-error / .dl-error-hint clothes a Python
- * cell's own output wears, so an error reads the same in both places. */
 .dl-site-console-output {
   min-height: 1.8rem;
   max-height: 14rem;
@@ -1222,8 +905,6 @@ p code, li code {
 }
 .dl-site-goto:hover { border-color: var(--dl-orange); color: var(--dl-orange); }
 
-/* ------------------------------------------------------- widget controls */
-
 .dl-widget {
   display: flex;
   flex-wrap: wrap;
@@ -1249,11 +930,6 @@ p code, li code {
   outline-offset: -1px;
 }
 
-/* ---------------------------------------------------------- runtime status */
-
-/* Present to a screen reader, invisible on screen — the standard
-   clip-to-1px pattern, not `display: none` or `hidden`, either of which
-   would pull it out of the accessibility tree along with the page. */
 .dl-sr-only {
   position: absolute;
   width: 1px;
@@ -1282,12 +958,6 @@ p code, li code {
   font-size: 0.76rem;
 }
 
-/* Three dots next to "Starting Python…"/"Loading numpy, pandas,
-   matplotlib…" etc. — decorative only (aria-hidden), since the status
-   text itself is what a screen reader announces via #dl-status's own
-   aria-live. Hidden/shown by setBooting() in tutorial-runtime.js, not by
-   setStatus(), so rewriting the status text on every boot step doesn't
-   also restart this animation. */
 .dl-boot-dots {
   display: inline-flex;
   align-items: center;
@@ -1314,28 +984,13 @@ p code, li code {
   .dl-boot-dots span { animation: none; opacity: 0.85; }
 }
 
-/* Every tutorial's bibliography carries URLs, and a URL has no spaces to
-   break at, so on a narrow screen one long DOI pushes the whole page
-   sideways. break-word rather than anywhere: ordinary prose keeps wrapping
-   between words, and only a token that cannot fit on a line by itself is
-   broken. */
 #dl-body { overflow-wrap: break-word; }
 
-/* A failure message often carries a URL, and a URL has no spaces to break
-   at. Left to wrap normally it runs off the side of a phone and takes the
-   whole page with it — which is how a bad connection turns one problem into
-   two, exactly when a reader can least afford it. */
 .dl-status { overflow-wrap: anywhere; }
 
 .dl-status[hidden] { display: none; }
 .dl-status-error { color: var(--dl-error-fg); background: var(--dl-error-bg); border-color: var(--dl-error-fg); }
 
-/* --------------------------------------------------------- settings panel */
-
-/* The one control in the masthead, and the reason the masthead is worth
-   sticking: it is how a reader reaches their work, the download, and the
-   reading texture. Sized to be a comfortable tap target rather than the
-   smallest thing that could carry the word. */
 .dl-settings-toggle {
   display: inline-flex;
   align-items: center;
@@ -1380,17 +1035,6 @@ p code, li code {
   border-top: 2px solid currentColor;
 }
 
-/* A docked sidebar, not a floating card: flush to the right edge, the
-   full height of the viewport, so it reads as a permanent pane a reader
-   can leave open and work beside — the "typical offline IDE" shape —
-   rather than a popover that happens to be open right now. Reaching the
-   very top rather than stopping below the masthead is what lets its own
-   sticky head (.dl-panel-sticky-head below) carry a title, a close
-   button and — here — a settings search, always in reach regardless of
-   how far a reader has scrolled the sections beneath it; the masthead
-   itself never overlaps this column, since the reading column's own
-   width already gives up exactly this much space on this edge whenever
-   this panel is open (see .dl-page's own rules, above). */
 .dl-settings {
   position: fixed;
   right: 0;
@@ -1402,9 +1046,6 @@ p code, li code {
   max-width: min(40rem, 100vw);
   overflow-y: auto;
   overflow-x: hidden;
-  /* No native `resize: horizontal` here — see .dl-panel-resize-handle
-     below for why, and makeRightEdgeResizable() in tutorial-runtime.js
-     for what replaces it. */
   padding: 1rem 1.1rem 1.1rem;
   border-left: 1px solid var(--dl-cell-border);
   background: var(--dl-panel-bg);
@@ -1413,27 +1054,8 @@ p code, li code {
 }
 .dl-settings[hidden] { display: none; }
 
-/* Native CSS `resize: horizontal` draws its handle at a box's own
-   bottom-right corner and grows the box away from that corner — right
-   for a left-docked panel (.dl-reference/.dl-seriesnav below still use
-   it: dragging right, into the page, is exactly how those grow), wrong
-   for a right-docked one flush to the viewport's own right edge: that
-   corner sits exactly on the edge of the browser window, with zero room
-   on a real screen to drag further right and actually grow it — found
-   by an actual drag-the-handle test, not assumed safe from the CSS
-   alone. makeRightEdgeResizable() (tutorial-runtime.js) replaces it
-   with a plain pointer-drag on this thin strip along the panel's own
-   left edge instead — the edge a right-docked sidebar's resize
-   affordance belongs on, the same one a real IDE's own side panel
-   uses. */
 .dl-panel-resize-handle {
   position: absolute;
-  /* Flush inside the panel's own edge, not straddling it. A panel is a
-     scroll container (overflow-y: auto), which clips its absolutely
-     positioned children to the padding box — so a strip hung outside at
-     -3px loses half its width, and the half that survives ends exactly on
-     the boundary, where a pointer lands on the panel instead. Found by
-     hit-testing the midpoint, which returned the panel. */
   left: 0;
   top: 0;
   bottom: 0;
@@ -1441,10 +1063,6 @@ p code, li code {
   cursor: col-resize;
   touch-action: none;
 }
-/* A left-docked panel's strip belongs on its *right* edge — the edge away
-   from the one it is pinned to, which is the side it grows into. Both rails
-   then carry the same full-height affordance rather than one full-height
-   strip facing a small corner triangle nobody finds. */
 .dl-panel-resize-handle-right {
   left: auto;
   right: 0;
@@ -1502,20 +1120,6 @@ p code, li code {
   color: var(--dl-muted);
 }
 
-/* The reference toggle (planning/REFERENCE_PANEL.md §6) — lives in
-   .dl-masthead-actions now, alongside Series and Settings, rather than a
-   fixed corner button of its own; the masthead already sticks, so being
-   an ordinary flex item there keeps it reachable without a second
-   positioning scheme. Closed by default and revealed only by
-   tutorial-runtime.js, when this page's manifest actually carries
-   something (an empty toggle that opens onto nothing is worse than no
-   toggle). */
-/* [hidden] first and separately: an unconditional `display: inline-flex`
-   below has the same specificity as the UA stylesheet's own
-   `[hidden] { display: none }` and would win the tie by loading later,
-   showing the button regardless of the attribute JS uses to hide it —
-   found by a real test (TestVisibility in tests/e2e/test_reference.py)
-   rather than by re-reading this rule and assuming it was fine. */
 .dl-reference-toggle[hidden] { display: none; }
 .dl-reference-toggle {
   display: inline-flex;
@@ -1542,9 +1146,6 @@ p code, li code {
   border-color: var(--dl-navy);
   color: #fff;
 }
-/* A small card with a fold, drawn rather than typed for the same reason
-   .dl-settings-icon's bars are: it should not depend on a glyph the
-   reader's font may not carry. */
 .dl-reference-icon {
   width: 0.75em;
   height: 0.95em;
@@ -1561,12 +1162,6 @@ p code, li code {
   border-top: 1px solid currentColor;
 }
 
-/* Docked to the left edge, the mirror of .dl-settings — a permanent
-   sidebar, full height, not a floating card. Still mutually exclusive
-   with the series nav panel at runtime (initReference() in
-   tutorial-runtime.js), since both dock to this same edge and would sit
-   on top of one another otherwise; Settings docks to the right and does
-   not conflict with this one. */
 .dl-reference {
   position: fixed;
   left: 0;
@@ -1578,12 +1173,6 @@ p code, li code {
   max-width: min(40rem, 100vw);
   overflow-y: auto;
   overflow-x: hidden;
-  /* No native `resize: horizontal`, though it would work here — this box
-     is left-anchored, so growing width extends it rightward, away from the
-     edge already pinned. It draws a small corner triangle where
-     .dl-settings has a full-height strip, and one page should not have two
-     different ways to drag a panel wider, so both use
-     .dl-panel-resize-handle (DECISIONS_LOG.md 7.103). */
   padding: 1rem 1.1rem 1.1rem;
   border-right: 1px solid var(--dl-cell-border);
   background: var(--dl-panel-bg);
@@ -1657,13 +1246,10 @@ p code, li code {
 
 /* The head every docked panel already had (title, close button) now
    carries its own search too where the panel has one, and stays pinned
-   to the panel's own top edge as the sections below it scroll — the
-   panel reaches all the way to y:0 (see .dl-settings/.dl-reference/
-   .dl-seriesnav above) specifically so this has the room to do that.
-   The negative margin/top pair pulls this out to the panel's own edges
-   and cancels its top padding, then re-applies the same padding here,
-   so the sticky element is flush with the panel's real edge once
-   scrolled rather than stopping short by that padding. */
+   to the panel's own top edge as the sections below it scroll. The
+   negative margin/top pair pulls this out to the panel's own edges and
+   cancels its top padding, then re-applies it here, so the sticky
+   element sits flush with the panel's real edge once scrolled. */
 .dl-panel-sticky-head {
   position: sticky;
   top: -1rem;
@@ -1673,14 +1259,6 @@ p code, li code {
   background: var(--dl-panel-bg);
   border-bottom: 1px solid var(--dl-cell-border);
 }
-/* The same problem an anchored jump into the page solves against the
-   masthead (scroll-padding-top on the page, above) shows up again here:
-   a keyboard tab, a browser's "scroll to" on a focused control, or a
-   settings-search match near the very top of the panel can land right
-   under this sticky head instead of below it. A little more room than
-   the tallest of the three heads (Settings', with its own search row)
-   ever needs, so it clears all three rather than needing a value per
-   panel. */
 .dl-settings, .dl-reference, .dl-seriesnav {
   scroll-padding-top: 9rem;
 }
@@ -1719,10 +1297,6 @@ p code, li code {
   padding: 0.2rem 0.4rem;
 }
 
-/* A pedagogical note (planning/SIDEBAR_CONTENT.md §3), inside the reference panel's "Notes" section — its own accent, distinct from both the
-   hint/answer folds (which sit inline in the body, not here) and the
-   glossary's dl/dt/dd list above it, so it reads as prose to look at
-   rather than a term to recall. */
 .dl-note {
   border-left: 2px solid var(--dl-navy);
   padding-left: 0.7rem;
@@ -1734,9 +1308,6 @@ p code, li code {
 .dl-note > :first-child { margin-top: 0; }
 .dl-note > :last-child { margin-bottom: 0; }
 
-/* The navigation panel's own toggle — same masthead action row as the
-   reference's, beside it rather than stacked below it now that both are
-   ordinary flex items instead of fixed-position corner buttons. */
 .dl-seriesnav-toggle[hidden] { display: none; }
 .dl-seriesnav-toggle {
   display: inline-flex;
@@ -1781,10 +1352,6 @@ p code, li code {
 .dl-seriesnav-icon::before { top: 0; }
 .dl-seriesnav-icon::after { bottom: 0; }
 
-/* Docked the same edge the reference is — left — and mutually exclusive
-   with it at runtime (initSeriesNav() in tutorial-runtime.js), since two
-   panels docked to the same edge at once would sit on top of each other.
-   Settings docks right and does not conflict with this one. */
 .dl-seriesnav {
   position: fixed;
   left: 0;
@@ -1832,9 +1399,6 @@ p code, li code {
 .dl-seriesnav-series {
   margin: 0;
   padding-left: 1.4rem;
-  /* Every item's own number ("1. First Steps") is already baked into
-   * its text, not added by CSS — without this, the <ol>'s own default
-   * marker doubled up on top of it ("1. 1. First Steps"). */
   list-style: none;
 }
 .dl-seriesnav-series li { margin: 0.35rem 0; }
@@ -1854,18 +1418,8 @@ p code, li code {
   align-items: center;
   margin-bottom: 0.65rem;
 }
-/* Without this, the row's own display: grid above would outrank the
-   browser's default [hidden] rule (equal specificity, author beats
-   user-agent) and filterSettingsContent()'s hidden rows would keep
-   rendering anyway. */
 .dl-texture-row[hidden] { display: none; }
 .dl-texture-row > span { color: var(--dl-muted); font-size: 0.78rem; }
-/* The 4.6rem label column fits a one-word label ("Theme", "Size") on one
- * line. A longer label ("Show progress on the tutorials list") wraps into
- * a narrow ribbon instead, several lines tall, with most of the row's own
- * width sitting empty next to a two-button toggle that needs none of it.
- * This modifier drops to one column, so a long label reads as a normal
- * line of text above its toggle rather than a cramped one beside it. */
 .dl-texture-row-wide { grid-template-columns: 1fr; }
 .dl-seg { display: flex; gap: 0.25rem; }
 .dl-seg button {
@@ -1902,14 +1456,6 @@ p code, li code {
   cursor: pointer;
 }
 
-/* ------------------------------------------------------------ navigation */
-
-/* Previous, contents, next — in that order, so the row reads the way the
-   series does. A grid rather than a flex row because the outer two links are
-   often missing (the first and last tutorial in a series) and the contents
-   link has to stay centred either way rather than sliding to whichever side
-   is empty. Titles are long; each link gets its own column and wraps inside
-   it instead of pushing the others off the screen. */
 .dl-nav {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
@@ -1926,9 +1472,6 @@ p code, li code {
 .dl-nav a { text-decoration: none; }
 .dl-nav a:hover { text-decoration: underline; }
 
-/* One more area than .dl-nav-bottom needs, for the search popover beside
-   "All tutorials" — .dl-nav-bottom has no equivalent and keeps the plain
-   three-column grid above. */
 .dl-nav-top {
   grid-template-columns: 1fr auto auto 1fr;
   grid-template-areas: "prev search up next";
@@ -1944,15 +1487,6 @@ p code, li code {
 .dl-nav-prev::before { content: "←\00a0"; color: var(--dl-muted); }
 .dl-nav-next::after { content: "\00a0→"; color: var(--dl-muted); }
 
-/* Taking a tutorial, a series, or a module away with you — the single
-   tutorial's own offer sits in the settings panel rather than the
-   navigation row, since it's an occasional action, not part of moving
-   through the series; a series' or module's sits on the contents page,
-   under its own title. One shape for all three: a real button rather than
-   a plain link, so it doesn't read as just another item in the list above
-   or below it. The icon is .dl-download-icon, a shape rather than a font
-   glyph or an inline SVG — see download_link_html()'s own docstring for
-   why it's a plain aria-hidden span. */
 .dl-download {
   display: inline-flex;
   align-items: center;
@@ -2002,12 +1536,6 @@ p code, li code {
   transform: translateX(-50%);
 }
 
-/* ------------------------------------------------------- contents of a page
-
-   Closed by default and directly under the chrome. A reader arriving at a
-   tutorial should meet the tutorial, not a list of its parts — but on a page
-   with eight sections, getting back to one you half-remember is otherwise the
-   hard thing. */
 .dl-toc {
   margin: 0 0 2rem;
   border: 1px solid var(--dl-rule);
@@ -2052,13 +1580,6 @@ p code, li code {
 .dl-toc ul ul { margin: 0.2rem 0; }
 .dl-toc ul ul a { color: var(--dl-muted); font-size: 0.95em; }
 
-/* ------------------------------------------------------------ minimal header
-
-   For a small screen, where the chrome sticking is worth more than what is
-   written in it. The masthead tightens, the module name goes, and the
-   neighbouring titles truncate to one line each rather than wrapping to three.
-   Nothing is removed: every link that was there is still there and still
-   reaches the same place. */
 :root[data-header="minimal"] .dl-masthead { padding: 0.35rem 0 0.3rem; }
 :root[data-header="minimal"] .dl-crumbs { display: none; }
 :root[data-header="minimal"] .dl-settings-toggle {
@@ -2082,19 +1603,6 @@ p code, li code {
 }
 :root[data-header="minimal"] .dl-toc { margin-bottom: 1.5rem; }
 
-/* ------------------------------------------------------- the contents page
-
-   What somebody sees first. One short paragraph saying what this is, then the
-   points answering the questions a student arrives with — what is a cell, can
-   I break it, where does my work go, how is the list below organised, where do
-   I start — and then the list they came for. The points are a list rather than
-   prose on purpose: they are independent answers, and a reader arriving with
-   one of those questions should not have to read the rest to find it. */
-/* The landing sections above the intro: the mission line, "for teachers",
-   "for students" and its module buttons, and the settings/dewmini invite.
-   Same rhythm as .dl-intro/.dl-workspaces below (a rule above, generous
-   bottom margin) so the whole run of sections reads as one page rather
-   than a hero bolted onto the old contents list. */
 .dl-hero { margin: 0 0 2.5rem; }
 .dl-hero p { margin: 0 0 0.9rem; }
 .dl-audience {
@@ -2104,13 +1612,6 @@ p code, li code {
 }
 .dl-audience p { margin: 0 0 0.9rem; }
 
-/* "For teachers" and "For students": collapsible, so a reader who came
-   for one doesn't have to scroll past the other. The <summary> wraps the
-   whole <h2>, not just an arrow beside it, so the entire heading is the
-   click target — same "clicky arrow, but the title works too" behaviour
-   native <details> already gives for free. Same ▸/▾ marker as
-   .dl-hint/.dl-answer elsewhere on the site, just sized for a section
-   heading rather than an inline fold. */
 .dl-audience-fold > summary {
   cursor: pointer;
   list-style: none;
@@ -2156,9 +1657,6 @@ p code, li code {
   color: var(--dl-muted);
 }
 .dl-module-card p { margin: 0 0 0.65rem; font-size: 0.86rem; color: var(--dl-muted); }
-/* Same pill shape as .dl-cell-pill, and the same "live needs no emphasis,
-   the other states do" rule the editor's own status buttons already use
-   (see .dl-editor-status-option above). */
 .dl-module-card-badge {
   display: inline-flex;
   align-items: center;
@@ -2173,9 +1671,6 @@ p code, li code {
   color: var(--dl-muted);
 }
 .dl-module-card-badge[data-status="beta"] { border-color: var(--dl-orange); color: var(--dl-orange); }
-/* "All tutorials", the last card in the grid — a way out of the grid
-   rather than one more choice in it, so it gets two columns' worth of
-   room instead of competing at the same size as an actual module. */
 .dl-module-card-wide { grid-column: span 2; }
 
 .dl-intro { margin: 0 0 2.5rem; }
@@ -2189,9 +1684,6 @@ p code, li code {
   position: relative;
   margin: 0 0 0.55rem;
 }
-/* A small marker rather than a bullet glyph: the contents list below uses
-   real numbers, and two competing bullet shapes on one page read as two
-   kinds of list when these are not one. */
 .dl-intro-points li::before {
   content: "";
   position: absolute;
@@ -2209,11 +1701,6 @@ p code, li code {
   color: var(--dl-muted);
 }
 
-/* dewmini, on the contents page: a small area of its own rather than a
-   line buried in the intro prose above, since "I just want to try
-   something, no tutorial attached" is common enough a reason to visit
-   to deserve its own stop. One card, sized by its own max-width so it
-   reads as a card rather than a full-width bar. */
 .dl-workspaces {
   margin: 0 0 2.5rem;
   padding-top: 0.8rem;
@@ -2239,15 +1726,7 @@ p code, li code {
 .dl-workspace-card h3 { margin: 0 0 0.4rem; font-size: 0.98rem; }
 .dl-workspace-card p { margin: 0; font-size: 0.86rem; color: var(--dl-muted); }
 
-/* ---------------------------------------------------------------- search
- * assets/search.js's box, on the contents page and "Browse by topic".
- * position: relative on the wrapper is what lets the results list
- * (position: absolute) drop below the input without pushing the rest
- * of the page down while it's open. */
 .dl-search { position: relative; margin: 0 0 2.5rem; }
-/* All tutorials' own copy: pinned below the masthead the same way
-   .dl-status is, so a reader partway down this long page never has to
-   scroll back up to search instead of keep scrolling. */
 .dl-search-sticky {
   position: sticky;
   top: var(--dl-chrome-h);
@@ -2278,9 +1757,6 @@ p code, li code {
 .dl-search-input:focus { outline: none; border-color: var(--dl-orange); }
 .dl-search #dl-search-hint { margin: 0.35rem 0 0; font-size: 0.78rem; }
 
-/* The front page's own copy: the primary way in for a reader who already
-   knows the topic, not a convenience at the foot of a long list — bigger
-   to match. */
 .dl-search-big .dl-search-label { font-size: 0.95rem; }
 .dl-search-big .dl-search-input {
   padding: 0.9rem 1.1rem;
@@ -2324,13 +1800,6 @@ p code, li code {
 }
 .dl-search-empty { padding: 0.5rem 0.6rem; color: var(--dl-muted); font-size: 0.85rem; }
 
-/* The search popover beside "All tutorials" in every page's own top nav
- * — a native <details>, so open/closed styling keys off its own [open]
- * attribute rather than an aria-expanded the browser sets for us on
- * nothing in particular. Sized and bordered the same as the other
- * masthead toggles (.dl-settings-toggle and siblings) for a family
- * resemblance, without sharing the class itself, since those are real
- * <button>s wired up by tutorial-runtime.js and this is not. */
 .dl-nav-search > summary {
   display: inline-flex;
   align-items: center;
@@ -2355,31 +1824,13 @@ p code, li code {
   border-color: var(--dl-navy);
   color: #fff;
 }
-/* An actual magnifying glass, inline SVG rather than a font glyph — the
-   same reasoning as every other masthead icon here (.dl-settings-icon and
-   siblings): it should not depend on a glyph the reader's font may not
-   carry, and unlike those, a shape this specific reads more clearly
-   drawn as a real path than approximated from a circle and a border. */
 .dl-nav-search-icon {
   width: 0.85em;
   height: 0.85em;
   flex: none;
 }
-/* Closed <details> content is hidden from view (and from hit-testing) by
-   the browser's own native behaviour, but that hiding does not reliably
-   stop an absolutely positioned descendant — exactly what the rule below
-   makes this — from still contributing its own top/left box to the
-   page's scrollable width. Found because it was doing exactly that: a
-   closed popover sitting off past the right edge of a phone-width page,
-   silently widening the whole page and clipping the actual content.
-   Explicit and not left to native behaviour, for that reason. */
 .dl-nav-search:not([open]) > .dl-search { display: none; }
 
-/* A floating popover, not part of the nav row's own height — a search
-   box opening should not push "All tutorials" or the reading below it
-   down the page. Phone width overrides this below: there is nowhere for
-   a floating card to go on a screen this narrow, so it takes over the
-   row instead of floating over whatever is beneath it. */
 .dl-nav-search[open] > .dl-search {
   position: absolute;
   top: calc(100% + 0.5rem);
@@ -2394,17 +1845,6 @@ p code, li code {
   box-shadow: 0 8px 24px var(--dl-shadow);
 }
 
-/* ------------------------------------------------------------ knowledge map
-
-   The series as nodes and arrows on the contents page. A list says what order
-   to read in; this says how the parts relate — which tutorials a later one
-   leans on, and how long the course spends on each thing before moving.
-
-   A diagram is not prose and reads worse squeezed into a line length chosen for
-   reading, so it is the one thing on a dewlab page that is not bound by the
-   measure: centred on the column, up to 58rem wide, and scrolling inside its
-   own box when there is less room than that. The page still never scrolls
-   sideways — the 3rem inset leaves room for a scrollbar so that stays true. */
 .dl-map-figure {
   margin: 0 0 2.5rem;
   overflow-x: auto;
@@ -2485,12 +1925,6 @@ p code, li code {
 }
 .dl-contents a { text-decoration: none; }
 .dl-contents a:hover { text-decoration: underline; }
-/* A tutorial and its practice page, as two big buttons rather than a link
-   and a label — the same navy-and-orange pair everywhere this list appears
-   (the contents page, a module's own page, "Browse by topic"), so a reader
-   learns it once. Navy for "Explore" (the tutorial itself, so it carries
-   the weight of a solid fill); orange, outlined the way every other
-   bordered control on this page already is on hover, for "Practice". */
 .dl-contents-btn {
   display: inline-flex;
   flex-direction: column;
@@ -2513,17 +1947,8 @@ p code, li code {
   text-transform: uppercase;
   opacity: 0.75;
 }
-/* The whole-series/whole-module download offer, right under its own title
-   rather than after the list under it — .dl-download is a button, not a
-   line of text, so it wants less trailing space before what follows than a
-   paragraph would. */
 .dl-series { margin: 0 0 1.1rem; }
 
-/* How far a reader has gotten in one tutorial, read from this browser's own
- * saved progress with no fetch (renderContentsProgress(),
- * tutorial-runtime.js) — a fraction, not a bar, so it stays legible at the
- * same size as the title beside it. Grey by default; the error colour is
- * reserved for a cell that actually raised, not for "not finished yet". */
 .dl-progress-badge {
   margin-left: 0.4rem;
   padding: 0.05rem 0.4rem;
@@ -2538,9 +1963,6 @@ p code, li code {
   color: var(--dl-error-fg);
 }
 
-/* A student's own notes (planning/STUDENT_NOTES.md) — plain text, the same
-   font as the rest of the reading, not the mono cell font: this is prose a
-   reader writes, not code. */
 .dl-progress-notes-label {
   display: block;
   font-size: 0.82rem;
@@ -2570,9 +1992,6 @@ p code, li code {
 .dl-progress-actions .dl-btn { flex: 1 1 auto; min-height: 2rem; }
 .dl-progress-clear { color: var(--dl-error-fg); }
 
-/* planning/STUDENT_NOTES.md §4: a dot, not a banner — the export button
-   wants a second look, nothing more insistent than that. Same colour
-   .dl-status-error already uses for "something here wants your attention". */
 .dl-nudge { position: relative; }
 .dl-nudge::after {
   content: "";
@@ -2619,21 +2038,6 @@ p code, li code {
 .dl-math-display .katex { font-size: 1.15em; }
 .dl-math-error { color: var(--dl-error-fg); background: var(--dl-error-bg); }
 
-
-/* ------------------------------------------------------------ small screens */
-
-/* A phone held in one hand, which is how a good deal of the reading will
-   actually happen. Three changes: each panel — Settings, the reference,
-   and the navigation panel — becomes a sheet across the foot of the
-   screen rather than a full-height docked sidebar (a sidebar down the
-   side of a phone screen would leave almost nothing to read); the
-   navigation puts previous and next on one line with the contents link
-   beneath them, so two long titles stop fighting for the same row; and
-   the module name in the masthead gives up its space to the action row's
-   three toggles. Sidebar open state is not restored on this width even
-   if it was saved on a wider screen (restoreSidebarState(),
-   tutorial-runtime.js) — a bottom sheet covering most of the screen is a
-   deliberate, momentary action here, not a permanent pane to leave open. */
 @media (max-width: 34rem) {
   .dl-settings,
   .dl-reference,
@@ -2642,13 +2046,6 @@ p code, li code {
     bottom: 0;
     left: 0;
     right: 0;
-    /* !important on width alone: makeRightEdgeResizable() (tutorial-
-       runtime.js) sets .dl-settings' own width as an inline style when a
-       reader drags it on a wider screen, and an inline style otherwise
-       beats any stylesheet rule regardless of media query — without
-       this, a panel resized on desktop and then viewed (or resized down
-       to) phone width would keep that desktop pixel width instead of
-       becoming a full-width sheet. */
     width: auto !important;
     max-width: none;
     max-height: 78vh;
@@ -2661,9 +2058,6 @@ p code, li code {
     resize: none;
   }
 
-  /* The custom drag handle (.dl-panel-resize-handle, tutorial-style.css)
-     only makes sense on the docked desktop shape above; a bottom sheet
-     spans the full device width and has nothing to resize. */
   .dl-panel-resize-handle { display: none; }
 
   .dl-nav {
@@ -2675,13 +2069,6 @@ p code, li code {
   }
   .dl-nav-up { justify-self: center; }
 
-  /* .dl-nav-top carries two classes to .dl-nav's one, so its own desktop
-     rule (above, four columns in a single row) always outranks the
-     .dl-nav override just above, at every width — the override never
-     actually reached this row. Restated here at matching specificity: All
-     tutorials and the search pill share the second row, since there is no
-     third grid column narrow enough to hold "search" without crowding or
-     clipping it, the way the single-row desktop shape was doing here. */
   .dl-nav-top {
     grid-template-columns: 1fr 1fr;
     grid-template-areas:
@@ -2692,13 +2079,6 @@ p code, li code {
   .dl-nav-top .dl-nav-up { justify-self: start; }
   .dl-nav-top .dl-nav-search { justify-self: start; }
 
-  /* Open, there is nowhere on a screen this narrow for the floating card
-     above to actually float into — it only ever had room to clip itself
-     against the right edge. Instead the search row takes over the whole
-     width in All tutorials' place, and the input and its results render
-     in normal flow rather than floating, so the chrome genuinely grows
-     taller and pushes the rest of the page down, instead of laying a
-     card over it. */
   .dl-nav-top:has(.dl-nav-search[open]) {
     grid-template-areas:
       "prev   next"
@@ -2722,21 +2102,9 @@ p code, li code {
   .dl-page { padding-left: 1rem; padding-right: 1rem; }
   .dl-chrome { margin-inline: -1rem; padding-inline: 1rem; }
 
-  /* auto-fill's own arithmetic (.dl-module-grid, above) can resolve to two
-     columns here that together don't actually fit — one at its 13rem
-     floor, the other squeezed narrower than that same floor, overflowing
-     the page by the difference. Rather than trust that computation at a
-     width this tight, one column, full width: a module card was never
-     meant to be squeezed to less than its stated minimum just to keep a
-     second one beside it. */
   .dl-module-grid { grid-template-columns: 1fr; }
   .dl-module-card-wide { grid-column: auto; }
 
-  /* Three full-text toggles ("Reference", "Series", "Settings") plus the
-     wordmark don't fit one row at phone width even with the crumbs gone
-     above — icon-only from here down, same meaning conveyed by shape
-     alone (each icon is already distinct) and by the button's own
-     aria-label (shell.html) rather than its now-hidden visible text. */
   .dl-masthead-actions { gap: 0.35rem; }
   .dl-toggle-label { display: none; }
   .dl-reference-toggle,
@@ -2745,25 +2113,11 @@ p code, li code {
     padding: 0.38rem 0.55rem;
   }
 
-  /* Minimal keeps the top row a single line even here, which is the whole
-     reason to choose it on a phone. The bottom navigation is not sticky and
-     has the room, so it keeps the two-row shape. */
   :root[data-header="minimal"] .dl-nav-top {
     grid-template-columns: 1fr auto 1fr;
     grid-template-areas: "prev up next";
   }
 }
-
-
-/* -------------------------------------------------------------- topic tree
-
-   Its own page: every topic in both module descriptors, positioned left to
-   right by what has to come first and grouped top to bottom by subject. The
-   layout arrives as data from build.py; tree.js adds moving, zooming and
-   choosing.
-
-   Light and dark come free, because this page uses the same tokens and the
-   same settings panel as every other. */
 
 .dl-tree-intro { max-width: 34rem; }
 
@@ -2838,12 +2192,6 @@ p code, li code {
   overflow: hidden;
 }
 
-/* Subject as a coloured edge, since subject stopped being an axis when the tree
-   went vertical. An inset shadow rather than a left border, because the states
-   below all set `border-color` and would wipe a border out — a taught topic
-   would silently lose its subject, which is the kind of bug that only shows up
-   in a screenshot. Twelve hues around the wheel: distinguishable side by side,
-   and none of them load-bearing, since the panel gives the real answer. */
 .dl-tree-node { box-shadow: inset 4px 0 0 var(--dl-strand, transparent); }
 /* The same colour, named, in the panel — so the edge on a node is
    readable rather than merely decorative. */
@@ -2882,9 +2230,6 @@ p code, li code {
   color: #fff;
 }
 
-/* Above the tree, not on it. These used to float over the canvas, which meant
-   they covered whichever topics happened to sit under them and took the clicks
-   meant for those topics. */
 .dl-tree-controls {
   display: flex;
   justify-content: flex-end;
@@ -2969,10 +2314,6 @@ p code, li code {
   .dl-tree-frame { height: min(58vh, 30rem); }
   .dl-tree-detail { max-height: none; }
 }
-
-/* ---------------------------------------------------------------- the editor
-   Not a student-facing page. It still uses the same shell and tokens, because
-   a tool that looks like the thing it edits is easier to trust. */
 
 .dl-editor-intro { max-width: var(--dl-line-width); line-height: 1.6; }
 
@@ -3069,9 +2410,6 @@ p code, li code {
 }
 .dl-editor-gap button:hover { color: var(--dl-orange); background: var(--dl-cell-bg); }
 
-/* The tutorial link picker (assets/editor.js) — search-and-insert rather
- * than typing a `tutorial:slug#anchor` href from memory. Sits between the
- * frontmatter details and the prose editor it inserts into. */
 .dl-editor-linkpicker-toggle {
   background: none; border: 1px solid var(--dl-cell-border); border-radius: 4px;
   color: var(--dl-muted); font-size: 0.82rem; padding: 0.3rem 0.6rem;
@@ -3108,12 +2446,6 @@ p code, li code {
 }
 .dl-editor-linkpicker-anchor:hover { color: var(--dl-orange); border-color: var(--dl-orange); }
 
-/* The prose editor (assets/editor.js, vendor-src/milkdown-entry.js). Only
- * Crepe's structural stylesheet is vendored, not its "classic" skin — that
- * skin is a fixed light-mode colour scheme, and retexturing the same
- * elements from --dl-* here is what makes this editor follow the reader's
- * own theme like the rest of the site, dark mode included, rather than
- * looking like a different application dropped into the page. */
 .dl-editor-body {
   min-height: 20rem;
   padding: 0.9rem 1.1rem;
@@ -3121,41 +2453,6 @@ p code, li code {
   border-radius: 6px;
   background: var(--dl-output-bg);
 }
-/* Crepe's structural stylesheet (imported above) is written to be paired
- * with one of its own skins, which is what actually defines every
- * --crepe-color-*, --crepe-font-* and --crepe-shadow-* custom property it
- * reads
- * — main text colour, popover surfaces, hover/selected backgrounds, the
- * virtual text cursor's own colour, all of it. None of Crepe's skins are
- * loaded here (this file retextures from --dl-* instead, see the comment
- * below), so every one of those custom properties was undefined: a
- * property whose value is `var(--undefined-thing)` with no fallback is
- * invalid at computed-value time, which resolves it to that property's
- * *initial* value rather than anything Crepe intended. Two of those
- * silently produced real, live bugs rather than merely wrong colours: the
- * slash menu's `background: var(--crepe-color-surface)` came out fully
- * transparent (background's initial value) and sat unreadable over
- * whatever text was behind it, and the virtual cursor package Crepe wires
- * up for a consistent caret (`prosemirror-virtual-cursor`, cursor.css)
- * draws its own fake caret in `border-color:
- * var(--prosemirror-virtual-cursor-color)`, which cursor.css itself
- * redefines to `var(--crepe-color-outline)` — also undefined, so the
- * replacement caret it draws to replace the native one it hides
- * (`caret-color: transparent`, on purpose, is how that package works) came
- * out invisible too, which is why no cursor appeared to type at all. Both
- * found live, not read off the CSS — DECISIONS_LOG.md 7.63 has the fuller
- * account, including how they were tracked down.
- *
- * Defining the properties themselves, once, here, is the fix: every
- * downstream `var(--crepe-color-surface)` and the like across Crepe's own
- * CSS (popovers, hover states, the code block's own surface, the table and
- * image-block features, even ones this editor doesn't currently enable)
- * resolves correctly from this one place, rather than this file chasing
- * each broken consumer individually — the .milkdown-block-handle /
- * .milkdown-slash-menu rule further down used to do exactly that chasing,
- * for four classes, and still missed the cursor. Scoped to `.milkdown`
- * (the element Crepe's own skins target) under `.dl-editor-body` so it
- * cannot leak to a future `.milkdown` mount elsewhere on the site. */
 .dl-editor-body .milkdown {
   --crepe-color-background: var(--dl-output-bg);
   --crepe-color-on-background: var(--dl-fg);
@@ -3209,9 +2506,6 @@ p code, li code {
 .dl-editor-body .ProseMirror .placeholder,
 .dl-editor-body .ProseMirror [data-placeholder]::before { color: var(--dl-muted); opacity: 0.75; }
 
-/* A `python exec` fence, rendered as a live block with its own CodeMirror —
- * the same visual family as a cell on the reading page (--dl-cell-bg /
- * --dl-cell-border), so an author sees roughly what a student will. */
 .dl-editor-body .milkdown-code-block {
   margin: 0.7rem 0;
   border: 1px solid var(--dl-cell-border);
@@ -3236,12 +2530,6 @@ p code, li code {
 .dl-editor-body .ProseMirror ul, .dl-editor-body .ProseMirror ol { padding-left: 1.3rem; }
 .dl-editor-body .milkdown-list-item-block .label-wrapper { color: var(--dl-muted); }
 
-/* Block handle, slash menu, and the link/latex edit popovers are the
- * editor's own floating UI, positioned by Crepe and now correctly coloured
- * by the --crepe-* variables defined above — a border is the one thing
- * added here, since Crepe's own popovers rely on box-shadow alone for
- * definition against the page behind them and this editor wants a crisper
- * edge than that gives on a plain-coloured background. */
 .dl-editor-body .milkdown-block-handle,
 .dl-editor-body .milkdown-slash-menu,
 .dl-editor-body .milkdown-link-edit,
@@ -3274,11 +2562,6 @@ p code, li code {
 .dl-tree-key-strand { display: inline-flex; align-items: center; }
 .dl-tree-swatch[data-state="groundwork"] { border-style: dotted; border-color: var(--dl-muted); }
 
-/* ------------------------------------------------------------- the archive
-   A retired tutorial still runs and still holds whatever a student saved in
-   it. What it must not do is let somebody read it for a fortnight without
-   noticing it is not on the course, so the notice sits above the tutorial
-   itself and cannot be dismissed. */
 .dl-archived {
   max-width: var(--dl-line-width);
   margin: 0 0 1.6rem;
@@ -3299,17 +2582,10 @@ p code, li code {
   font-size: 0.88rem;
   line-height: 1.5;
 }
-/* Unnumbered, unlike a series: these are not in an order any more. Quieter
-   than a live tutorial, but still underlined — muted colour alone made them
-   read as plain text, and a link nobody knows is a link is the same as no
-   link at all. */
 .dl-contents.dl-archive { list-style: none; padding-left: 0; }
 .dl-contents.dl-archive a { color: var(--dl-muted); text-decoration: underline; }
 .dl-contents.dl-archive a:hover { color: var(--dl-orange); }
 
-/* Mixed problem sets. Unnumbered like the archive, because they are not in an
-   order either — but at full strength, because unlike the archive they are
-   part of the course and nothing else on the site links to them. */
 .dl-mixed-head { margin-top: 1.6rem; }
 .dl-mixed-note {
   max-width: var(--dl-line-width);
@@ -3352,9 +2628,6 @@ p code, li code {
 .dl-editor-off { border-style: dashed; }
 .dl-editor-off .dl-editor-open { color: var(--dl-muted); }
 
-/* Which release you are editing, and the one gesture that makes another one.
-   Set apart from the body below it because releasing is not an edit — it is
-   the decision that a student should be able to go back. */
 .dl-editor-release {
   display: flex;
   align-items: center;
@@ -3386,12 +2659,6 @@ p code, li code {
   background: var(--dl-orange);
   color: #fff;
 }
-
-/* ------------------------------------------------------- version picker */
-/* Only ever present on a tutorial with more than one release; the runtime
-   builds nothing at all on the rest. It sits under the title rather than
-   inside it so a long title still wraps like a title, and so the marker keeps
-   its own hit area on a phone. */
 
 .dl-versions {
   position: relative;
@@ -3460,9 +2727,6 @@ p code, li code {
   color: var(--dl-muted);
 }
 
-/* The count of answers that survive a move. Said plainly and in full rather
-   than shortened, because a number a reader has to decode is worse than no
-   number at all. */
 .dl-version-carry {
   margin: 0.25rem 0 0;
   color: var(--dl-muted);
@@ -3470,11 +2734,6 @@ p code, li code {
   line-height: 1.45;
 }
 .dl-archived .dl-version-carry { margin-top: 0.5rem; font-size: 0.85rem; }
-
-/* ---------------------------------------------------- practice problems */
-/* A page of problems belongs to a tutorial rather than to the reading order,
-   so the link between the two carries the whole of that relationship and has
-   to say which direction it is going. */
 
 .dl-practice-link,
 .dl-practice-back {
@@ -3490,16 +2749,10 @@ p code, li code {
 }
 .dl-practice-back { margin-top: 0; }
 
-/* The box now holds a paragraph per destination — its own practice page, then
-   any mixed set that names it. The paragraphs carry the spacing so the box does
-   not gain a blank line at each end. */
 .dl-practice-link > p { margin: 0; }
 .dl-practice-link > p + p { margin-top: 0.55rem; }
 .dl-practice-mixed { color: var(--dl-muted); }
 
-/* The answer, folded. Not hidden — a fold is the moment before looking made
-   physical, which is the part worth protecting. A key at the bottom of the
-   page is one scroll away, which is the same as being on it. */
 .dl-answer {
   max-width: var(--dl-line-width);
   margin: 0.5rem 0 1.6rem;
@@ -3521,10 +2774,6 @@ p code, li code {
 .dl-answer[open] { border-left-color: var(--dl-navy); }
 .dl-answer > :not(summary) { font-size: 0.95rem; }
 
-/* The steps, folded separately and before the answer. A stuck student needs a
-   route rather than the destination, and two folds opened in order is the
-   difference between being helped and being told. Warmer than the answer fold
-   so that opening it does not feel like giving up. */
 .dl-hint {
   max-width: var(--dl-line-width);
   margin: 0.5rem 0 0.6rem;
@@ -3545,13 +2794,6 @@ p code, li code {
 .dl-hint > summary:hover { color: var(--dl-fg); }
 .dl-hint > :not(summary) { font-size: 0.95rem; }
 
-/* A staged hint (planning/CELL_HINTS.md): the same fold, written by the
-   author for one cell and kept hidden by build.py until the runtime decides
-   the reader has tried enough times. It arrives closed and in normal flow —
-   the page grows by one summary line, nothing is covered and nothing is
-   opened for the reader. The short fade is only so the arrival is
-   noticeable at all when the eye is on the cell above; it is dropped for a
-   reader who has asked their system for less motion. */
 .dl-hint-staged[hidden] { display: none; }
 .dl-hint-arrived { animation: dl-hint-arrive 0.5s ease-out; }
 @keyframes dl-hint-arrive {
@@ -3562,10 +2804,6 @@ p code, li code {
   .dl-hint-arrived { animation: none; }
 }
 
-/* The marker a cell's bar shows while a staged hint below it is waiting to
-   be opened — the same colour as the fold it points at, and gone the moment
-   the fold is opened. A dot, not a count: how many tries it took is not the
-   reader's business to be reminded of (PEDAGOGICAL_STYLE_GUIDE.md §11). */
 .dl-hint-marker {
   display: inline-block;
   width: 0.5rem;
@@ -3593,8 +2831,6 @@ p code, li code {
   text-decoration: none;
 }
 
-/* ------------------------------------------------------------------ footer */
-
 .dl-footer {
   max-width: var(--dl-line-width);
   margin: 2rem auto 0;
@@ -3607,25 +2843,12 @@ p code, li code {
 .dl-footer a { color: inherit; }
 .dl-footer a:hover { color: var(--dl-fg); }
 
-/* The "three doors" report disclosure (DECISIONS_LOG.md Phase 8). A plain
- * <details> — clicking the summary reveals the list below it in normal
- * flow, the same "push down, cover nothing" shape .dl-hint-text already
- * uses, rather than a floating dropdown that could sit over the page
- * below the footer or trap a touch reader who cannot hover to dismiss it. */
 .dl-report-doors summary { cursor: pointer; color: inherit; }
 .dl-report-doors summary:hover,
 .dl-report-doors[open] summary { color: var(--dl-fg); }
 .dl-report-doors p { margin: 0.6rem 0 0; }
 .dl-report-doors a { color: var(--dl-link); }
 .dl-report-doors a:hover { color: var(--dl-fg); }
-
-/* ------------------------------------------------------------------ print
- *
- * "Print — or save as PDF" in Settings calls window.print() — this is what a
- * reader actually sees, ported from compose/dewmini-style.css's own print
- * block. Chrome, panels, and the insert seams have no place on a printed
- * page; the reading and its cells are the whole point, so they get real ink
- * regardless of which theme was on screen. */
 
 @media print {
   .dl-chrome, .dl-reference-toggle, .dl-seriesnav-toggle,
@@ -3651,16 +2874,6 @@ p code, li code {
   a { color: #1b2a4a !important; text-decoration: underline; }
 }
 
-/* Highlight-to-look-up (initReferenceLookup() in tutorial-runtime.js).
-   A small button that appears under a selection, but only when the
-   reference actually knows the selected term — so most selections, a
-   reader copying a sentence included, never see it at all.
-
-   Fixed rather than absolute because it is positioned from the
-   selection's viewport rectangle; a scroll dismisses it rather than
-   dragging it along. z-index sits above the reading and below the
-   panels, which is the order it needs: it opens a panel and gets out
-   of the way. */
 .dl-lookup {
   position: fixed;
   z-index: 45;
@@ -3692,10 +2905,6 @@ p code, li code {
   .dl-lookup { display: none !important; }
 }
 
-/* "Introduced in …" under a reference entry a reader inherited from an
-   earlier tutorial (renderReference() in tutorial-runtime.js, origin_of()
-   in build.py). Quiet: it is a way back for someone who wants one, not a
-   thing to read past on every entry. */
 .dl-term-origin {
   margin: 0.35rem 0 0;
   font-size: 0.85em;

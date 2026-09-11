@@ -20,19 +20,16 @@ These need answering eventually. None of them blocks current work, and each
 says what it would change.
 
 **A text cell collapsing on blur swallows the next click.**
-A text cell's editing box hides when it loses focus and its rendered
-markdown takes its place. The rendered form is usually shorter, so
-everything below the cell moves up at that moment. A reader who finishes
-typing a note and then clicks an insert seam below it presses the mouse
-on the button and releases it over whatever has slid into that position,
-and the click is lost. They click again and it works, so it reads as a
-stray misclick rather than as a defect.
-
-Found while writing the tests for the percent format, not looked for. A
-fix would keep the cell's height stable across the swap, or render on a
-change rather than on blur. The browser tests work around it
-deliberately — `add_text_cell()` leaves the cell and waits for the
-collapse — so the workaround is not mistaken for ceremony and removed.
+A text cell's editing box hides on blur and its rendered markdown — usually
+shorter — takes its place, so everything below the cell moves up at that
+moment. A reader who clicks an insert seam right after finishing a note
+presses on one element and releases over whatever slid into its place, and
+the click is lost; a second click works, so it reads as a stray misclick
+rather than a defect. A fix would keep the cell's height stable across the
+swap, or render on change rather than on blur. `tests/e2e/test_dewmini_workbench.py`'s
+`add_text_cell()` works around it deliberately (leaves the cell and waits
+for the collapse), on purpose, so the workaround isn't mistaken for
+ceremony and removed.
 
 **9. Does the mathematics content need symbolic computation?**
 A library like sympy would give algebra that works with symbols rather than
@@ -64,10 +61,6 @@ opened a tutorial would change that, so it is a decision to make deliberately.
 **20. One visual style across programming and mathematics, or two?**
 Whether a mathematics tutorial should look different from a programming one, or
 whether the consistency is worth more than the distinction.
-
-**21. Does a single tutorial ever mix programming and mathematics content?**
-The tracks are currently separate. If a tutorial needs to teach both at once,
-nothing prevents it — the question is whether that ever happens in practice.
 
 **22. Do the real-dataset conventions carry over to mathematics?**
 Programming tutorials work from real published data. Mathematics may be better
@@ -149,6 +142,12 @@ convenience on top of it.
 
 **19. Manual save or autosave?** Autosave, with manual export as a secondary
 option for moving between devices.
+
+**21. Does a single tutorial ever mix programming and mathematics content?**
+Yes, in practice: `first-steps.md` covers `MIT-6.1` (maths) and `PDP-LO2`
+(programming) together, and `finding-things.md` covers `MIT-6.2` while
+touching `MIT-3.1`. Nothing prevents it, and nothing special was needed to
+support it.
 
 ### Look and feel
 

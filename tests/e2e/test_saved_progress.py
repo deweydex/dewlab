@@ -88,7 +88,7 @@ class TestAutosave:
 
 
 class TestOversizedOutputFallback:
-    """DECISIONS_LOG.md 7.133: a large embedded figure (tutorial_tools.py's
+    """A large embedded figure (tutorial_tools.py's
     _figure_html(), a base64 PNG) can be big enough on its own to blow this
     browser's storage quota — saveNow() must not let that cost a reader
     their code and notes too. Storage.prototype.setItem is overridden here
@@ -268,11 +268,6 @@ class TestNotesNudge:
         page.click('[data-notes-nudge] button[data-value="off"]')
         assert "dl-nudge" not in self.export_button_class(page)
 
-        # Holds across a reload — a real setting, not a one-off toggle.
-        # No second click on the settings toggle here: DECISIONS_LOG.md
-        # 7.83's sidebar restore already reopens Settings on its own,
-        # since it was left open when the reload happened — clicking the
-        # toggle again would close it instead.
         reload_and_wait(page)
         assert "dl-nudge" not in self.export_button_class(page)
 
@@ -378,7 +373,7 @@ class TestStartingAgain:
 class TestAPageWithNothingToSave:
     """A prose-only tutorial has no cells at all — but it is still a
     tutorial, so "Your work" stays for its notes field
-    (planning/STUDENT_NOTES.md, DECISIONS_LOG.md 7.71). The contents page
+    (planning/STUDENT_NOTES.md). The contents page
     is the one that truly has nothing here at all, since it is not a
     tutorial in the first place."""
 

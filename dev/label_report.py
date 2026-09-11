@@ -11,7 +11,7 @@ This does that second half, called once, right after an issue opens, by
 
 No `kind:` label exists for "a question, an idea, or something else" on
 purpose: that kind is meant to leave through Discussions rather than land
-here as an issue at all (DECISIONS_LOG.md 8.4) — if one does turn up, it
+here as an issue at all — if one does turn up, it
 gets `kind: question` all the same, since a mislabelled report is still
 better found than lost.
 
@@ -34,9 +34,6 @@ import urllib.request
 
 API = "https://api.github.com"
 
-# GitHub renders each issue-form field as "### <label>\n\n<value>" in the
-# issue body, in field order, so this is the one pattern that reads all of
-# them back out regardless of which fields a given report actually filled.
 FIELD_RE = re.compile(r"^### (?P<label>[^\n]+)\n+(?P<value>.+?)(?=\n### |\Z)", re.S | re.M)
 
 NO_RESPONSE = "_No response_"

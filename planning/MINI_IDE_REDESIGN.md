@@ -10,44 +10,41 @@
 
 ## Context
 
-Mini IDE (`assets/mini-ide.html`/`.js`/`.css` in the dewlab repo) is a
-browser-based Python notebook built on Pyodide. The goal is to push it
-toward parity with the basics of Jupyter, with dewlab's own design
-language, plus several genuinely new capabilities: file uploads, an
-in-browser file manager, SQL/SQLite support, a richer pane layout (file
-tree | editor/cells), and Jupyter `.ipynb`/`.py` import — under the
-assumption that a student downloads Mini IDE once and works locally after
-Python starts up. This is explicitly a step up from **dewmini**
-(`compose/dewmini.html`/`.js`), a deliberately smaller/quieter sibling
-notebook that stays as-is; new features are scoped to Mini IDE only. The
-settings panel also needs to be meaningfully expanded to cover the new
-subsystems.
+Mini IDE (`assets/mini-ide.html`/`.js`/`.css`) is a browser-based Python
+notebook built on Pyodide. The goal is parity with the basics of
+Jupyter, in dewlab's own design language, plus genuinely new
+capabilities: file uploads, an in-browser file manager, SQL/SQLite
+support, a richer pane layout (file tree | editor/cells), and Jupyter
+`.ipynb`/`.py` import — on the assumption that a student downloads Mini
+IDE once and works locally after Python starts up. This is a step up
+from **dewmini** (`compose/dewmini.html`/`.js`), a deliberately
+smaller/quieter sibling notebook that stays as-is; new features are
+scoped to Mini IDE only. The settings panel also needs meaningfully
+expanding to cover the new subsystems.
 
-Research (three parallel codebase surveys + one design pass, plus two live
-checks against current Pyodide docs) surfaced two things that reshape the
-plan:
+Two things reshape the plan:
 
 1. **Mini IDE's execution engine is already behind the rest of the
-   codebase.** It runs Pyodide on the main thread with no Stop button, and
-   its "Jedi autocomplete" is a hardcoded stub — while `assets/pyodide-worker.js`
-   (built for the tutorial pages) already solves all of this: real Worker
-   execution, real Jedi, a genuine Stop button, streaming output, and the
-   *real* `tutorial_tools.py` instead of Mini IDE's weaker inlined
-   duplicate. **Decision: adopt this as the foundation before layering new
-   features on top**, since SQL queries and file operations would otherwise
-   freeze the tab.
-2. **"Download mini-ide.html and it just works offline" isn't true today**
-   — the file pulls in several sibling assets and loads Pyodide from a CDN
-   at runtime. **Decision: embrace this explicitly** — ship Mini IDE as a
-   folder (distribution/build output, not a source-tree restructure), and
-   use the File System Access API (`pyodide.mountNativeFS`) to give it a
-   real local working directory once granted — with an OPFS/IDBFS fallback
-   for browsers that don't support it (Firefox/Safari), so the same file
-   manager UI works everywhere, just backed by browser-private storage
-   instead of a visible folder.
+   codebase.** It runs Pyodide on the main thread with no Stop button,
+   and its "Jedi autocomplete" is a hardcoded stub, while
+   `assets/pyodide-worker.js` (built for the tutorial pages) already
+   solves all of this: real Worker execution, real Jedi, a genuine Stop
+   button, streaming output, and the *real* `tutorial_tools.py` instead
+   of Mini IDE's weaker inlined duplicate. **Decision: adopt this as the
+   foundation before layering new features on top**, since SQL queries
+   and file operations would otherwise freeze the tab.
+2. **"Download mini-ide.html and it just works offline" isn't true
+   today** — the file pulls in several sibling assets and loads Pyodide
+   from a CDN at runtime. **Decision: embrace this explicitly** — ship
+   Mini IDE as a folder (distribution/build output, not a source-tree
+   restructure), and use the File System Access API
+   (`pyodide.mountNativeFS`) to give it a real local working directory
+   once granted — with an OPFS/IDBFS fallback for browsers that don't
+   support it (Firefox/Safari), so the same file manager UI works
+   everywhere, just backed by browser-private storage instead of a
+   visible folder.
 
-Two additional open questions were resolved directly with the project
-owner:
+Two additional questions were resolved directly with the project owner:
 
 - **SQL helper placement**: `run_query()` goes into the shared
   `assets/tutorial_tools.py` (reusable by future tutorial content, reuses
@@ -73,9 +70,8 @@ Worker-based one that already exists and is proven on tutorial pages.
   block (`workerRequest`, `ensureWorker`/`bootWorker`, `runCellWorker`,
   `hoverDoc`/`signatureHelp`, interrupt/Stop handling, `applyOutputEvent`,
   and the `bootMainThread`/`runCellMainThread` fallback —
-  `tutorial-runtime.js:705-978`). This follows the codebase's existing
-  convention of not sharing JS modules between pages (mini-ide.js already
-  duplicates rather than imports tutorial-runtime.js's texture code).
+  `tutorial-runtime.js:705-978`), following the codebase's existing
+  convention of not sharing JS modules between pages.
 - In `mini-ide.js`: delete `ensurePyodide()` (`959-1005`),
   `loadTutorialTools()` (`1013-1025`), `getTutorialToolsCode()`
   (`1450-1452`), `updateSharedNamespace()` (`1033-1047`), and the three

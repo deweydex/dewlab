@@ -1,7 +1,7 @@
 """A cell's own hint, in a real browser.
 
-Click-to-open, not hover — DECISIONS_LOG.md has the account of why the
-previous hover popover was replaced. Wired in buildCells(), which runs
+Click-to-open, not hover — the previous hover popover was replaced.
+Wired in buildCells(), which runs
 before Pyodide's boot is even attempted, so none of this needs a cell to
 have run or Pyodide to have finished loading — the same reasoning
 test_autocomplete.py's first class already relies on for static
@@ -31,9 +31,6 @@ class TestCellHint:
         assert text(page).is_visible()
         assert icon(page).get_attribute("aria-expanded") == "true"
         assert "not one number at a time" in text(page).inner_text()
-        # In normal flow, not position: absolute — its box actually has
-        # height, which is what pushes the rest of the page down rather
-        # than floating over the editor or output above it.
         box = text(page).bounding_box()
         assert box["height"] > 0
         position = text(page).evaluate("el => getComputedStyle(el).position")

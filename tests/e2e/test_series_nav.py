@@ -174,9 +174,6 @@ class TestOpeningAndClosing:
         context.close()
 
     def test_opening_the_series_nav_does_not_close_settings(self, site, browser, base_url):
-        # Settings is right-anchored; the series nav is left-anchored
-        # (tutorial-style.css) — genuinely different corners, so a reader
-        # can have both open together (see DECISIONS_LOG.md on this).
         context, page = self.open_page(site, browser, base_url)
         page.click("#dl-settings-toggle")
         assert page.is_visible("#dl-settings")

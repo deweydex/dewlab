@@ -185,11 +185,6 @@ function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} 
 let S = load();
 let WHO = S.who || "";
 
-/* Where a batch of judgements goes. GitHub prefills a commit from a URL and
- * the reader is already signed in, so the page needs no token of its own: it
- * hands them a ready-made file and they tap commit, under their own account.
- * A token in a static page would be a write credential to the repository for
- * anyone who viewed source. */
 const REPO = "deweydex/dewlab";
 const BRANCH = "main";
 const DIR = "planning/curriculum/review/pairs";
@@ -206,9 +201,6 @@ function slug(s){
   return (String(s).toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"") || "anon").slice(0,24);
 }
 
-/* One save is one new file, named for whoever made it and the moment they
-   saved. Two people judging at the same time never touch the same file, so
-   their commits cannot conflict. */
 function batchFor(keys){
   return {
     by: WHO || "anon",
@@ -223,10 +215,6 @@ function batchFor(keys){
   };
 }
 
-/* A browser will carry a URL of a few thousand characters and quietly drop a
-   much longer one. Twelve judgements come to about 2.6 KB encoded, so a batch
-   that size always arrives. If more are waiting we send the oldest that fit
-   and leave the rest for the next save. */
 const URL_ROOM = 7000;
 function fitBatch(keys){
   let take = keys.slice();
@@ -240,11 +228,6 @@ function ghUrl(keys){
        + "&value=" + encodeURIComponent(JSON.stringify(batchFor(keys), null, 1));
 }
 
-/* The queue is tiered, because all 7,140 pairs is many hours and most of
-   them are two topics with nothing to do with each other. Tier 1 checks the 95
-   edges that already exist. Tier 2 is every pair inside one section of a
-   descriptor, where a real prerequisite is most likely to be hiding. Tier 3 is
-   everything else, shuffled, for whenever you feel like it. */
 function buildQueue(){
   const seen = new Set(), tier1 = [], tier2 = [], tier3 = [];
   IDS.forEach(k => T[k].d.forEach(p => {
@@ -400,11 +383,6 @@ document.getElementById("menu").onclick = () => {
   document.getElementById("exp").showModal();
 };
 
-/* How the save dialog reads depends on how much is waiting. A URL carries
-   about a dozen judgements, so a long session cannot go out that way in one
-   tap, and the honest thing is to say how many taps it would take and put the
-   file first instead. The first person to play this judged 524 in a sitting,
-   pressed save once, and 495 stayed on the phone. */
 function describe(more){
   const waiting = unsent().length;
   const fits = waiting ? fitBatch(unsent()).length : 0;
@@ -443,18 +421,11 @@ document.getElementById("push").onclick = () => {
   if(!waiting.length) return;
   const batch = fitBatch(waiting);
   window.open(ghUrl(batch), "_blank", "noopener");
-  /* The commit happens on GitHub, in their tab, so this page never learns
-     whether it went through. Marking them sent here is a claim about what was
-     handed over, not about what landed. Everything stays on the device, and
-     "Copy everything" still gives the full set if a commit is abandoned. */
   batch.forEach(k => S.sent[k] = 1);
   save();
   describe(batch.length); render();
 };
 
-/* A file has no length limit, so this one carries everything, not a batch.
-   On a phone it costs a trip through the file picker; the GitHub button is
-   quicker for a normal-sized batch. */
 document.getElementById("dl").onclick = () => {
   const blob = new Blob([JSON.stringify(batchFor(Object.keys(S.v)), null, 1)],
                         {type:"application/json"});

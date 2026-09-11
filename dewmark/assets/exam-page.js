@@ -1,8 +1,3 @@
-/* Behaviour for the dewmark exam page: saving, restoring, progress
-   counting, and the finish step. The page's questions are already
-   rendered as static content by the exam builder; this file only wires
-   them up. Everything here runs locally — the page never contacts a
-   server. */
 
 "use strict";
 
@@ -10,9 +5,6 @@ const MODEL = JSON.parse(
   document.getElementById("dewmark-exam-model").textContent);
 const STORAGE_KEY = "dewmark:" + MODEL.exam_code;
 
-/* One flat map of every answer space: name -> {type, marks, section,
-   question}. Built from the model so counting logic never scrapes the
-   page. */
 const SPACES = {};
 for (const section of MODEL.sections) {
   for (const question of section.questions) {
@@ -38,12 +30,7 @@ let state = {
 let fileHandle = null;
 let fileSaveTimer = null;
 
-/* ---------------------------------------------- reading answers back */
-
 function collectAnswer(root, type) {
-  /* Read one answer space's current value into plain data. Empty
-     answers come back as null so "never touched" and "left blank" can
-     be told apart by whether the key exists at all. */
   if (type === "multiple-choice") {
     const picked = [...root.querySelectorAll("input:checked")]
       .map((el) => Number(el.value));
@@ -185,8 +172,6 @@ function applyAnswer(root, type, value) {
   }
 }
 
-/* ---------------------------------------------- saving */
-
 function gatherState() {
   for (const root of document.querySelectorAll(".dm-answer")) {
     const name = root.dataset.answer;
@@ -243,8 +228,6 @@ function submissionBaseName() {
   const name = safeName(details["full name"] || details.name);
   return "dewmark_" + MODEL.exam_code + "_" + number + "_" + name;
 }
-
-/* ---------------------------------------------- starting and restoring */
 
 function readStoredState() {
   try {
@@ -350,8 +333,6 @@ function loadAnswerFile() {
   input.click();
 }
 
-/* ---------------------------------------------- progress */
-
 function refreshProgress() {
   for (const root of document.querySelectorAll(".dm-answer")) {
     const answered = root.dataset.answer in state.answers;
@@ -405,8 +386,6 @@ function buildPanel() {
   }
   refreshProgress();
 }
-
-/* ---------------------------------------------- the finish step */
 
 function finishReport() {
   const empty = [];
@@ -485,9 +464,6 @@ function readableCopy() {
     + "</html>";
 }
 
-/* A minimal zip writer. Entries are stored without compression, which
-   every unzip tool accepts; writing the format directly keeps the page
-   free of outside code. */
 function makeZip(entries) {
   const encoder = new TextEncoder();
   const table = [];
@@ -565,14 +541,6 @@ function downloadAnswerFile() {
   URL.revokeObjectURL(link.href);
 }
 
-/* ---------------------------------------------- python code questions */
-
-/* Python questions run through Pyodide, a build of the Python language
-   for the browser. The runtime downloads once (about thirty megabytes)
-   from a public address, or from a local copy when the page defines
-   window.DEWMARK_PYTHON_BASE before this script runs — that is how an
-   exam room without internet serves it from a laptop. */
-
 const pythonRuns = {};   // answer name -> {outputs, last_run, ran_code}
 let pyodide = null;
 let pythonBusy = false;
@@ -585,9 +553,6 @@ function el_note(text) {
 }
 
 function renderRecords(container, records) {
-  /* Draw a run's recorded output. Records are data — text, tables as
-     rows, images as encoded pictures — and are rendered as such, never
-     as markup. */
   container.innerHTML = "";
   for (const record of records || []) {
     if (record.kind === "stdout") {
@@ -631,9 +596,6 @@ function renderRecords(container, records) {
   }
 }
 
-/* The small Python helper module exam code imports. show() displays a
-   value, a table, or a chart; the form helpers build simple controls in
-   the output area, in the style students met in notebooks. */
 const DEWMARK_TOOLS_PY = `
 import io, json, base64
 from js import document, window
@@ -893,8 +855,6 @@ function refreshCodeNotes() {
   }
 }
 
-/* ---------------------------------------------- wiring */
-
 document.getElementById("dm-begin").addEventListener("click", begin);
 document.getElementById("dm-load-file").addEventListener("click",
   loadAnswerFile);
@@ -950,14 +910,6 @@ if (stored && Object.keys(stored.answers || {}).length) {
   note.appendChild(resume);
   document.getElementById("dm-start").prepend(note);
 }
-
-/* ---------------------------------------------- the calculator panel
-
-   A small expression calculator for exams whose file asks for one.
-   The expression is read by a parser of its own rather than handed to
-   the browser's code runner, so the calculator can only ever do
-   arithmetic, and a typing mistake produces a message instead of
-   something surprising. */
 
 const CALC_FUNCTIONS = {
   sqrt: Math.sqrt,

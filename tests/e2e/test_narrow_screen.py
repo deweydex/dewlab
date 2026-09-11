@@ -33,9 +33,6 @@ MODULE = "narrow-fixtures"
 # The smallest screen a student is realistically carrying.
 PHONE = {"width": 375, "height": 667}
 
-# A bibliography entry with a real DOI in it — the shape every tutorial's
-# "Where to Read More" section ends with, and the one that pushed the page
-# sideways before `#dl-body { overflow-wrap: break-word }`.
 TUTORIAL = """---
 title: "Narrow"
 slug: narrow
@@ -142,10 +139,6 @@ class TestNothingScrollsSideways:
         page = context.new_page()
         page.goto(f"{base_url}/tutorials/{MODULE}/narrow.html")
         page.wait_for_selector("#dl-body")
-        # The real #dl-status from shell.html, not a stand-in appended into
-        # the reading. It is a *sibling* of #dl-body, so it does not inherit
-        # that element's own wrapping — filling a copy inside #dl-body would
-        # test the wrong rule and pass whatever .dl-status does.
         overflow = page.evaluate("""() => {
           const status = document.getElementById('dl-status');
           status.classList.add('dl-status-error');

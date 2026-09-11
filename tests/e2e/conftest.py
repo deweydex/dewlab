@@ -65,9 +65,6 @@ def site_dir(tmp_path_factory) -> Path:
         into = root / "tutorials" / MODULE / source.relative_to(FIXTURE_DIR)
         into.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy(source, into)
-    # The series' reading order, which lives beside the tutorials now, and
-    # the glossary files build.py assembles the Reference panels from —
-    # both live beside a tutorial rather than in a directory of their own.
     for source in sorted(FIXTURE_DIR.glob("*.order.yaml")):
         shutil.copy(source, root / "tutorials" / MODULE / source.name)
     for source in sorted(FIXTURE_DIR.glob("*.glossary.yaml")):
@@ -77,11 +74,6 @@ def site_dir(tmp_path_factory) -> Path:
     # The topic tree is built from the curriculum data, and its behaviour —
     # panning, zooming, choosing a topic — only exists in a browser.
     shutil.copytree(DEWLAB / "planning" / "curriculum", root / "planning" / "curriculum")
-    # A topic group naming this fixture's own tutorials, appended to the copy
-    # rather than added to the real file: dewmini's Library rail offers one
-    # filter chip per group a term's tutorial belongs to, and with only the
-    # real groups — every one of which names tutorials this build does not
-    # have — that row would always be empty and its test would prove nothing.
     groups = root / "planning" / "curriculum" / "topic-groups.yaml"
     groups.write_text(
         groups.read_text()
@@ -101,10 +93,6 @@ def site_dir(tmp_path_factory) -> Path:
         "ASSETS": root / "assets",
         "SHELL": root / "assets" / "shell.html",
         "OUT": out,
-        # These three are module constants derived from build.py's own ROOT at
-        # import time, so repointing ROOT alone leaves them aimed at the real
-        # repository — which is why the group appended to the copy above had
-        # no effect until they were repointed too.
         "TOPIC_DATA": root / "planning" / "curriculum" / "topics.yaml",
         "TOPIC_GROUPS_DATA": root / "planning" / "curriculum" / "topic-groups.yaml",
         "OUTCOME_DATA": root / "planning" / "curriculum" / "outcomes.yaml",
@@ -216,15 +204,6 @@ def page(browser, base_url):
         "document.querySelectorAll('.dl-btn-run:not([disabled])').length > 0",
         timeout=240_000,
     )
-    # assets/vendor/coi-serviceworker.js forces exactly one reload on a
-    # genuinely first visit, to pick up the cross-origin-isolation headers
-    # no other means gets it (test_stop_button.py's own top comment has
-    # the fuller account) — and that reload can cancel whatever request
-    # was still in flight when it fired, which the service worker's own
-    # fetch handler (third-party code, not this project's) logs with a
-    # bare `console.error(e)`. One console error from that one-time,
-    # expected dance is not a problem this page caused; only what happens
-    # from here, once the page is actually up and stable, should count.
     problems.clear()
     try:
         yield tab

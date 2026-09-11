@@ -111,7 +111,6 @@ def main():
         browser = playwright.chromium.launch(**launch)
         context = browser.new_context(accept_downloads=True)
 
-        # ---- the sitting -------------------------------------------------
         page = context.new_page()
         page.on("pageerror", lambda e: errors.append(str(e)))
         if python_dir:
@@ -152,7 +151,6 @@ def main():
         assert "earlier version" in note.inner_text()
         print("stale-output note: ok")
 
-        # ---- the submission ----------------------------------------------
         page.click("#dm-finish")
         with page.expect_download() as caught:
             page.click("#dm-submit")
@@ -172,7 +170,6 @@ def main():
         assert {"stdout", "table", "image"} <= kinds, kinds
         print("submission records code, text, tables, and pictures: ok")
 
-        # ---- the workbench -----------------------------------------------
         bench = context.new_page()
         bench.on("pageerror", lambda e: errors.append(str(e)))
         bench.goto((DEWMARK / "workbench" / "index.html")

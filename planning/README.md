@@ -100,8 +100,12 @@ written before the thing it describes was built.
 
 ### The documentation itself
 - **[`DOCS_AND_COMMENTS_PASS.md`](./DOCS_AND_COMMENTS_PASS.md)** — the
-  repo-wide pass that gave every substantial code file teaching-oriented
-  comments and a matching `docs/<file>-explained.md`.
+  repo-wide pass that gave every substantial code file a matching
+  `docs/<file>-explained.md`. Its comment-density standard has since been
+  superseded by the lighter policy in `CONTRIBUTING.md`.
+- **[`DOCS_AND_COMMENTS_PLAN.md`](./DOCS_AND_COMMENTS_PLAN.md)** — the
+  follow-up: real drift since that pass closed, and the gaps it knowingly
+  left out of scope.
 
 ### Curriculum
 - **[`CURRICULUM_MAP.md`](./CURRICULUM_MAP.md)** — generated; every
