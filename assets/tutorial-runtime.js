@@ -631,16 +631,16 @@ function renderReference(manifest) {
   if (nothingYet) nothingYet.hidden = container.children.length > 0;
 
   // A page with only a handful of terms doesn't need searching; one with
-  // a whole series accumulated behind it does. Math Basics' own fixed set
-  // almost always clears this on its own once it exists, so this mostly
-  // still matters for how the Reference tab looks before a series has
-  // accumulated much.
+  // a whole series accumulated behind it does. Math Basics' and Python
+  // Basics' own fixed sets almost always clear this on their own once
+  // they exist, so this mostly still matters for how the Reference tab
+  // looks before a series has accumulated much.
   const searchInput = document.getElementById("dl-reference-search");
-  const mathBasicsCount = (manifest.mathBasics || [])
-    .reduce((n, group) => n + (group.entries || []).length, 0);
+  const basicsCount = ["mathBasics", "pythonBasics"].reduce((n, key) =>
+    n + (manifest[key] || []).reduce((m, group) => m + (group.entries || []).length, 0), 0);
   if (searchInput) {
     searchInput.hidden = container.querySelectorAll("dt, .dl-note").length < 6
-      && mathBasicsCount < 6;
+      && basicsCount < 6;
   }
 }
 
@@ -668,6 +668,42 @@ function renderMathBasics(manifest) {
       dt.textContent = entry.term;
       const dd = document.createElement("dd");
       dd.append(document.createTextNode(entry.definition));
+      dl.append(dt, dd);
+    }
+    section.append(dl);
+    container.append(section);
+  }
+}
+
+/* Python Basics: the same shape and site-wide source (build.py's
+ * load_python_basics()) as renderMathBasics() above, except an entry
+ * here may also carry a short `example` — rendered the same way
+ * renderReference() renders a tutorial's own glossary examples — since
+ * python-basics.yaml's own house rule allows one where a syntax mark is
+ * clearer shown than said. */
+function renderPythonBasics(manifest) {
+  const container = document.getElementById("dl-python-groups");
+  if (!container) return;
+  container.replaceChildren();
+
+  for (const group of manifest.pythonBasics || []) {
+    const section = document.createElement("div");
+    section.className = "dl-reference-group";
+    const heading = document.createElement("h3");
+    heading.textContent = group.label;
+    section.append(heading);
+
+    const dl = document.createElement("dl");
+    for (const entry of group.entries || []) {
+      const dt = document.createElement("dt");
+      dt.textContent = entry.term;
+      const dd = document.createElement("dd");
+      dd.append(document.createTextNode(entry.definition));
+      if (entry.example) {
+        const code = document.createElement("code");
+        code.textContent = entry.example;
+        dd.append(code);
+      }
       dl.append(dt, dd);
     }
     section.append(dl);
@@ -714,13 +750,13 @@ function filterReferenceContent(query) {
   if (emptyMessage) emptyMessage.hidden = anyGroupVisible || !needle;
 }
 
-/* Same shape as filterReferenceContent(), for the Math Basics tab's own
- * container — a separate function rather than one shared function taking
- * a container argument, since Math Basics has no notes and no origin
+/* Same shape as filterReferenceContent(), shared by both "Basics" tabs'
+ * own containers (Math Basics, Python Basics) — one function taking the
+ * container/empty ids as arguments, since neither has notes or origin
  * links to skip over: just term/definition pairs to filter. */
-function filterMathBasicsContent(query) {
-  const container = document.getElementById("dl-basics-groups");
-  const emptyMessage = document.getElementById("dl-basics-empty");
+function filterBasicsContent(groupsId, emptyId, query) {
+  const container = document.getElementById(groupsId);
+  const emptyMessage = document.getElementById(emptyId);
   if (!container) return;
   const needle = query.trim().toLowerCase();
   let anyGroupVisible = false;
@@ -742,27 +778,38 @@ function filterMathBasicsContent(query) {
   if (emptyMessage) emptyMessage.hidden = anyGroupVisible || !needle;
 }
 
+function filterMathBasicsContent(query) {
+  filterBasicsContent("dl-basics-groups", "dl-basics-empty", query);
+}
+
+function filterPythonBasicsContent(query) {
+  filterBasicsContent("dl-python-groups", "dl-python-empty", query);
+}
+
 /* Same open/close mechanics as initSettingsPanel(), staying in sync with
  * initSeriesNav() only — the two share a corner and genuinely conflict
  * (see setOpen() below); Settings does not. This toggle starts `hidden`
  * in shell.html, and stays that way — offering nothing at all — unless
  * this page's own manifest actually carries a glossary, a note, a
- * dataset, or Math Basics (planning/SIDEBAR_CONTENT.md §4 — none of the
- * first three is cumulative the same way, but all four share this one
- * panel). Math Basics is the same on every page once it exists, so in
- * practice this stops hiding the toggle at all from that point on — a
- * tutorial with nothing of its own yet still has Math Basics to offer. */
+ * dataset, Math Basics, or Python Basics (planning/SIDEBAR_CONTENT.md §4
+ * — none of the first three is cumulative the same way, but all five
+ * share this one panel). Math Basics and Python Basics are the same on
+ * every page once they exist, so in practice this stops hiding the
+ * toggle at all from that point on — a tutorial with nothing of its own
+ * yet still has both Basics tabs to offer. */
 function initReference(manifest) {
   const toggle = document.getElementById("dl-reference-toggle");
   const panel = document.getElementById("dl-reference");
   const hasContent = (manifest.glossary && manifest.glossary.length)
     || (manifest.notes && manifest.notes.length)
     || (manifest.datasets && manifest.datasets.length)
-    || (manifest.mathBasics && manifest.mathBasics.length);
+    || (manifest.mathBasics && manifest.mathBasics.length)
+    || (manifest.pythonBasics && manifest.pythonBasics.length);
   if (!toggle || !panel || !hasContent) return;
 
   renderReference(manifest);
   renderMathBasics(manifest);
+  renderPythonBasics(manifest);
   toggle.hidden = false;
 
   function setOpen(open) {
@@ -798,55 +845,73 @@ function initReference(manifest) {
     setOpen(false);
   });
 
-  // Two tabs sharing one search box — search filters whichever tab is
+  // Three tabs sharing one search box — search filters whichever tab is
   // open, tracked here rather than re-read from the DOM on every
   // keystroke. Switching tabs re-runs the filter against whatever is
   // already typed, so a query survives the switch instead of resetting.
-  const tabReference = document.getElementById("dl-reference-tab-reference");
-  const tabMathBasics = document.getElementById("dl-reference-tab-basics");
-  const paneReference = document.getElementById("dl-reference-pane-reference");
-  const paneMathBasics = document.getElementById("dl-reference-pane-basics");
+  // An array rather than a hardcoded pair, so a future fourth tab is one
+  // more entry here rather than a third copy of this whole block.
   const searchInput = document.getElementById("dl-reference-search");
-  let activeTab = "reference";
+  const tabs = [
+    {
+      name: "reference",
+      tab: document.getElementById("dl-reference-tab-reference"),
+      pane: document.getElementById("dl-reference-pane-reference"),
+      placeholder: "Search this page's terms…",
+      label: "Search this page's reference",
+      filter: filterReferenceContent,
+    },
+    {
+      name: "mathbasics",
+      tab: document.getElementById("dl-reference-tab-basics"),
+      pane: document.getElementById("dl-reference-pane-basics"),
+      placeholder: "Search Math Basics…",
+      label: "Search Math Basics",
+      filter: filterMathBasicsContent,
+    },
+    {
+      name: "pythonbasics",
+      tab: document.getElementById("dl-reference-tab-python"),
+      pane: document.getElementById("dl-reference-pane-python"),
+      placeholder: "Search Python Basics…",
+      label: "Search Python Basics",
+      filter: filterPythonBasicsContent,
+    },
+  ];
+  let activeTab = tabs[0];
 
   function runActiveFilter() {
-    if (!searchInput) return;
-    if (activeTab === "mathbasics") filterMathBasicsContent(searchInput.value);
-    else filterReferenceContent(searchInput.value);
+    if (searchInput) activeTab.filter(searchInput.value);
   }
 
   function selectTab(name) {
-    activeTab = name;
-    const onReference = name === "reference";
-    tabReference.setAttribute("aria-selected", String(onReference));
-    tabReference.tabIndex = onReference ? 0 : -1;
-    tabMathBasics.setAttribute("aria-selected", String(!onReference));
-    tabMathBasics.tabIndex = onReference ? -1 : 0;
-    paneReference.hidden = !onReference;
-    paneMathBasics.hidden = onReference;
+    activeTab = tabs.find((t) => t.name === name) || tabs[0];
+    for (const t of tabs) {
+      const on = t === activeTab;
+      t.tab.setAttribute("aria-selected", String(on));
+      t.tab.tabIndex = on ? 0 : -1;
+      t.pane.hidden = !on;
+    }
     if (searchInput) {
-      searchInput.placeholder = onReference
-        ? "Search this page's terms…" : "Search Math Basics…";
-      searchInput.setAttribute(
-        "aria-label", onReference ? "Search this page's reference" : "Search Math Basics");
+      searchInput.placeholder = activeTab.placeholder;
+      searchInput.setAttribute("aria-label", activeTab.label);
     }
     runActiveFilter();
   }
 
-  if (tabReference && tabMathBasics) {
-    tabReference.addEventListener("click", () => selectTab("reference"));
-    tabMathBasics.addEventListener("click", () => selectTab("mathbasics"));
-    // Left/right arrow keys move focus and selection together, the usual
-    // ARIA tabs keyboard pattern — a click already does both at once.
-    for (const [tab, other, name] of [
-      [tabReference, tabMathBasics, "mathbasics"],
-      [tabMathBasics, tabReference, "reference"],
-    ]) {
-      tab.addEventListener("keydown", (ev) => {
+  if (tabs.every((t) => t.tab && t.pane)) {
+    for (const [i, t] of tabs.entries()) {
+      t.tab.addEventListener("click", () => selectTab(t.name));
+      // Left/right arrow keys move focus and selection together, the
+      // usual ARIA tabs keyboard pattern — a click already does both at
+      // once. Wraps around at either end.
+      t.tab.addEventListener("keydown", (ev) => {
         if (ev.key !== "ArrowLeft" && ev.key !== "ArrowRight") return;
         ev.preventDefault();
-        other.focus();
-        selectTab(name);
+        const step = ev.key === "ArrowRight" ? 1 : -1;
+        const next = tabs[(i + step + tabs.length) % tabs.length];
+        next.tab.focus();
+        selectTab(next.name);
       });
     }
   }
@@ -864,8 +929,7 @@ function initReference(manifest) {
     new MutationObserver(() => {
       if (panel.hasAttribute("hidden") && searchInput.value) {
         searchInput.value = "";
-        filterReferenceContent("");
-        filterMathBasicsContent("");
+        for (const t of tabs) t.filter("");
       }
     }).observe(panel, { attributes: true, attributeFilter: ["hidden"] });
   }
