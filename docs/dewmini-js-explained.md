@@ -200,11 +200,18 @@ for `load_csv()`).
    (`siteHtml`/`siteCss`/`siteJs`) instead. Its HTML and CSS panes
    redraw the preview as you type; its JavaScript pane runs only on Run
    or Ctrl/Cmd+Enter, and a console under the preview shows what the
-   script printed and every error with its pane line, relayed out of the
-   sandboxed frame by `SITE_RELAY` and explained by `SITE_FRIENDLY`
-   (`DECISIONS_LOG.md` 7.134). `buildSiteDocument` assembles the frame's
-   document and records where each pane starts, so the console can turn
-   a document line back into a pane line.
+   script printed and every error with its pane line. The relay, the
+   friendly-error map (`SITE_FRIENDLY`/`siteFriendlyHint`), and the
+   document assembly (`buildSiteDocument`, now recording a `<base
+   href="about:srcdoc">` so a relative link inside the preview navigates
+   the preview and not this page) used to live here directly; since
+   `DECISIONS_LOG.md` 7.142 they're `assets/site-relay.js`'s
+   `mountSitePreview(iframe, {onReset, onConsole, onError})`, imported by
+   both this file and `assets/tutorial-runtime.js` — a tutorial page's
+   own site editor is the same engine, mounted several times on one page
+   rather than dewmini's one-at-a-time tab. `renderSiteView` keeps only
+   the DOM it draws (the panes, the console's own lines, "Go to line")
+   and the calls into that shared mount.
 5. **Downloads** — `triggerDownload` (the shared Blob-download trick),
    then `downloadAsPython`/`downloadAsIpynb`/`downloadAsHtml`, the last
    of which builds an entire second, self-contained HTML page as a

@@ -144,6 +144,88 @@ def test_a_python_cell_can_read_what_a_sql_cell_wrote(page):
     assert ">3<" in output, "3 rows were inserted"
 
 
+def site_editor(page, name: str):
+    return f".dl-site-editor[data-site-name='{name}']"
+
+
+def test_a_site_editors_panes_match_what_the_fixture_declares(page):
+    """DEWSTACK_MERGE.md §3 — panes are optional; a page with a JS pane gets
+    a Run button and a console, one without does not."""
+    hero = site_editor(page, "hero")
+    quiet = site_editor(page, "quiet")
+    assert len(page.query_selector_all(f"{hero} .dl-site-pane")) == 3
+    assert len(page.query_selector_all(f"{quiet} .dl-site-pane")) == 2
+    assert page.query_selector(f"{hero} .dl-btn-site-run") is not None
+    assert page.query_selector(f"{quiet} .dl-btn-site-run") is None
+    assert page.query_selector(f"{hero} .dl-site-console-output") is not None
+    assert page.query_selector(f"{quiet} .dl-site-console-output") is None
+
+
+def test_html_and_css_panes_are_live_without_pressing_run(page):
+    """The preview is a sandboxed iframe (`sandbox="allow-scripts"`, no
+    `allow-same-origin`) with its own opaque-origin document, so this reads
+    *through* Playwright's own frame handle rather than the top page's own
+    JavaScript reaching in — the browser's same-origin policy would refuse
+    that reach-in the same way a reader's own page could never do it either.
+    Reading into the frame, not the editor, is what proves the live rebuild
+    actually reached the page a reader would see."""
+    hero = site_editor(page, "hero")
+    css_pane = f"{hero} .dl-site-pane[data-lang='css'] .cm-content"
+    page.click(css_pane)
+    page.keyboard.press("Control+a")
+    page.keyboard.insert_text("#go { background: rgb(1, 2, 3); }")
+    frame = page.query_selector(f"{hero} .dl-site-frame").content_frame()
+    frame.wait_for_selector("#go")
+    frame.wait_for_function(
+        "() => getComputedStyle(document.querySelector('#go')).backgroundColor"
+        " === 'rgb(1, 2, 3)'",
+        timeout=10_000,
+    )
+
+
+def test_javascript_does_not_run_until_the_run_button_is_pressed(page):
+    """DECISIONS_LOG.md 7.142 — HTML/CSS are live, JavaScript is a program
+    that runs when asked, the same rule dewmini's own Site tab follows."""
+    hero = site_editor(page, "hero")
+    frame = page.query_selector(f"{hero} .dl-site-frame").content_frame()
+    frame.wait_for_selector("#out")
+    assert frame.inner_text("#out") == "not yet"
+
+    page.click(f"{hero} .dl-btn-site-run")
+    page.wait_for_function(
+        "(sel) => document.querySelector(sel).textContent.includes('script loaded')",
+        arg=f"{hero} .dl-site-console-output",
+        timeout=10_000,
+    )
+    # A new srcdoc write (run()'s own doing) tears down the old frame and
+    # its document — fetching the handle fresh is what makes the click
+    # land on the frame that is actually showing right now.
+    frame = page.query_selector(f"{hero} .dl-site-frame").content_frame()
+    frame.click("#go")
+    frame.wait_for_function(
+        "() => document.querySelector('#out').textContent === 'clicked'",
+        timeout=10_000,
+    )
+
+
+def test_a_site_editors_js_error_gets_a_friendly_hint(page):
+    hero = site_editor(page, "hero")
+    js_pane = f"{hero} .dl-site-pane[data-lang='js'] .cm-content"
+    page.click(js_pane)
+    page.keyboard.press("Control+a")
+    page.keyboard.insert_text("undefinedThing.explode();")
+    page.click(f"{hero} .dl-btn-site-run")
+    console_selector = f"{hero} .dl-site-console-output"
+    page.wait_for_function(
+        "(sel) => document.querySelector(sel).querySelector('.dl-error') !== null",
+        arg=console_selector,
+        timeout=10_000,
+    )
+    html = page.inner_html(console_selector)
+    assert "dl-error-hint" in html
+    assert "dl-site-goto" in html
+
+
 def test_matplotlib_renders_a_figure_beneath_the_cell(page):
     output = run(page, "matplotlib-figure")
     assert 'src="data:image/png;base64,' in output

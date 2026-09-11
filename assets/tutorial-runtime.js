@@ -15,6 +15,7 @@
 
 import { createCodeEditor, createReadOnlyCode, setEditorTheme,
          setLineNumbers, setIndentWidth } from "./vendor/codemirror.bundle.js";
+import { mountSitePreview } from "./site-relay.js";
 
 /* ------------------------------------------------------------------ config */
 
@@ -1212,6 +1213,10 @@ const cells = [];
  * apart from `cells` above rather than merged into it. */
 const customCells = [];
 
+/* One entry per live HTML/CSS/JS site editor on the page (DEWSTACK_MERGE.md
+ * §3, DECISIONS_LOG.md 7.142) — see buildSiteEditors() below. */
+const siteEditors = [];
+
 /* Collapses or expands one cell — an authored cell or a custom one,
  * python or text — by hiding its editable content (`.dl-cell-content`)
  * and showing a one-line summary in its place, or the reverse. Ported
@@ -1424,6 +1429,136 @@ function buildCells(manifest) {
       }
     });
   }
+}
+
+/* One `dl-site-editor` per manifest.siteEditors entry: a live HTML/CSS/JS
+ * pane group, mounted onto the empty containers render_site_editor()
+ * (build.py) leaves in the page — the same "markup is a shell, the
+ * runtime fills it" split buildCells() above uses for an exec cell. The
+ * relay, the preview document and the in-flight-coalescing flush all live
+ * in assets/site-relay.js, shared with dewmini's own Site tab
+ * (DECISIONS_LOG.md 7.142); this function only builds the editors, wires
+ * Run and Reset, and draws the console.
+ *
+ * HTML and CSS are live from the moment this runs — the preview should
+ * never sit blank while a reader decides whether to click something.
+ * JavaScript is not: a fresh page shows an editor whose script has never
+ * run, matching the stated rule right there in the page ("The JavaScript
+ * runs when you press Run"). A reload is different — see restoreSaved()
+ * below, which calls `run()` instead of `render()` when the saved record
+ * says this editor's script had already been run, the same distinction
+ * DECISIONS_LOG.md 7.142 fixed dewmini's own Site tab to make on reopen. */
+function buildSiteEditors(manifest) {
+  const dark = isDarkNow();
+  const labelFor = { html: "html", css: "css", js: "javascript" };
+
+  for (const spec of manifest.siteEditors || []) {
+    const host = document.querySelector(`.dl-site-editor[data-site-name="${CSS.escape(spec.name)}"]`);
+    if (!host) {
+      console.warn(`dewlab: manifest lists site editor "${spec.name}" but the page has no such element`);
+      continue;
+    }
+    const iframe = host.querySelector(".dl-site-frame");
+    const consoleOut = host.querySelector(".dl-site-console-output");
+    const resetBtn = host.querySelector(".dl-btn-site-reset");
+    const runBtn = host.querySelector(".dl-btn-site-run");
+
+    const panes = {};
+    for (const [lang, paneSpec] of Object.entries(spec.panes || {})) {
+      const paneHost = host.querySelector(`.dl-site-pane[data-lang="${lang}"] .dl-editor`);
+      if (!paneHost) continue;
+      const editor = createCodeEditor(paneHost, paneSpec.code || "", {
+        dark,
+        language: labelFor[lang] || lang,
+        onChange: () => { scheduleSave(); if (lang !== "js") render(); },
+        lineNumbersVisible: loadTexture().linenumbers !== "off",
+        indentWidth: loadTexture().indent,
+      });
+      panes[lang] = { id: paneSpec.id, starter: paneSpec.code || "", editor };
+    }
+
+    const code = (lang) => (panes[lang] ? panes[lang].editor.getValue() : "");
+    const preview = mountSitePreview(iframe, {
+      onReset: () => { if (consoleOut) consoleOut.textContent = ""; },
+      onConsole: (level, text) => {
+        if (!consoleOut) return;
+        const line = document.createElement("div");
+        line.className = `dl-site-console-line dl-stdout dl-site-console-${level}`;
+        line.textContent = text;
+        consoleOut.appendChild(line);
+      },
+      onError: ({ message, where, hint }) => {
+        if (!consoleOut) return;
+        const line = document.createElement("div");
+        line.className = "dl-site-console-line dl-error";
+        const text = document.createElement("span");
+        text.textContent = where ? `${message} (${where.label}, line ${where.line})` : message;
+        line.appendChild(text);
+        if (where && panes[where.lang]) {
+          const go = document.createElement("button");
+          go.type = "button";
+          go.className = "dl-site-goto";
+          go.textContent = "Go to line";
+          go.addEventListener("click", () => selectSiteEditorLine(panes[where.lang].editor, where.line));
+          line.appendChild(go);
+        }
+        consoleOut.appendChild(line);
+        if (hint) {
+          const hintEl = document.createElement("div");
+          hintEl.className = "dl-error-hint";
+          hintEl.textContent = hint;
+          consoleOut.appendChild(hintEl);
+        }
+      },
+    });
+
+    const editorState = { name: spec.name, panes, ran: false };
+    const render = () => preview.render(code("html"), code("css"));
+    const run = () => {
+      editorState.ran = true;
+      preview.run(code("html"), code("css"), code("js"));
+      scheduleSave();
+    };
+    editorState.render = render;
+    editorState.run = run;
+
+    if (runBtn) {
+      runBtn.addEventListener("mousedown", (e) => e.preventDefault());
+      runBtn.addEventListener("click", run);
+    }
+    if (panes.js) {
+      // Capture phase, ahead of CodeMirror's own Enter — the same shape
+      // an exec cell's own Ctrl/Cmd+Enter uses above.
+      host.querySelector('.dl-site-pane[data-lang="js"]').addEventListener("keydown", (ev) => {
+        if ((ev.ctrlKey || ev.metaKey) && ev.key === "Enter") {
+          ev.preventDefault();
+          ev.stopPropagation();
+          run();
+        }
+      }, true);
+    }
+    if (resetBtn) {
+      resetBtn.addEventListener("click", () => {
+        for (const pane of Object.values(panes)) pane.editor.setValue(pane.starter);
+        editorState.ran = false;
+        render();
+        scheduleSave();
+      });
+    }
+
+    siteEditors.push(editorState);
+    render();
+  }
+}
+
+/* Selects one whole line (1-based) of a CodeMirror editor and scrolls to
+ * it — a site editor's own "Go to line", the same behaviour dewmini's Site
+ * tab already gives its console (compose/dewmini.js's selectEditorLine()). */
+function selectSiteEditorLine(editor, n) {
+  const { view } = editor;
+  const line = view.state.doc.line(Math.max(1, Math.min(n, view.state.doc.lines)));
+  view.dispatch({ selection: { anchor: line.from, head: line.to }, scrollIntoView: true });
+  view.focus();
 }
 
 /* Enables or disables every cell's Run button at once, with a shared
@@ -3740,6 +3875,19 @@ function saveNow() {
       attempts: cell.attempts,
       hints_shown: cell.hints.filter((hint) => hint.revealed).map((hint) => hint.index),
     })),
+    // A site editor's own preview and console are cheap to rebuild — no
+    // Pyodide, no network — so unlike a cell's output_html, nothing here
+    // caches what the preview showed, only what would rebuild it: each
+    // pane's current text, and whether Run had been pressed (so a reload
+    // shows the script's effect again rather than a blank one, matching
+    // DECISIONS_LOG.md 7.142's fix to dewmini's own Site tab).
+    siteEditors: siteEditors.map((editor) => ({
+      name: editor.name,
+      panes: Object.fromEntries(
+        Object.entries(editor.panes).map(([lang, pane]) => [lang, pane.editor.getValue()]),
+      ),
+      ran: editor.ran,
+    })),
   };
   try {
     localStorage.setItem(progressKey(), JSON.stringify(record));
@@ -3839,6 +3987,21 @@ function restoreSaved() {
       }
     }
     restored.push(cell.id);
+  }
+
+  if (Array.isArray(record.siteEditors)) {
+    const byName = new Map(siteEditors.map((editor) => [editor.name, editor]));
+    for (const saved of record.siteEditors) {
+      const editor = byName.get(saved.name);
+      if (!editor) continue;
+      for (const [lang, code] of Object.entries(saved.panes || {})) {
+        if (editor.panes[lang] && typeof code === "string") editor.panes[lang].editor.setValue(code);
+      }
+      // run(), not render(): a reload should show the script's effect
+      // again if Run had already been pressed, the same distinction
+      // buildSiteEditors()'s own comment explains for a fresh page.
+      if (saved.ran) editor.run(); else editor.render();
+    }
   }
 
   return {
@@ -4632,11 +4795,19 @@ const textureState = initTexture((dark) => {
     setLineNumbers(cell.editor, textureState.linenumbers !== "off");
     setIndentWidth(cell.editor, textureState.indent);
   }
+  for (const editor of siteEditors) {
+    for (const pane of Object.values(editor.panes)) {
+      setEditorTheme(pane.editor, dark);
+      setLineNumbers(pane.editor, textureState.linenumbers !== "off");
+      setIndentWidth(pane.editor, textureState.indent);
+    }
+  }
   for (const block of readOnlyBlocks) setEditorTheme(block, dark);
 });
 initSegKeyboardNav();
 
 buildCells(currentManifest);
+buildSiteEditors(currentManifest);
 initProgressSection();
 initCustomCellsSection();
 initExecutionSection();

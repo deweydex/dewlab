@@ -64,13 +64,16 @@ The pipeline, roughly in the order the code runs it:
 2. **Pull code and maths out before markdown ever sees them.** `extract_blocks()`
    replaces every fenced code block — `exec`-tagged or not — with a numbered
    HTML comment placeholder, and separately records each block as a `Cell`
-   (if tagged `exec`, with its `id`/`hint` header parsed off) or a `CodeBlock`
-   (if not). `extract_math()` does the same for `$…$` and `$$…$$`. Both exist
-   for the same reason: Python's `markdown` library does not know dewlab's
-   conventions, and `$a_i + b_j$` run through a generic markdown converter
-   comes back with the subscript read as emphasis. Pulling both out first and
-   reinserting rendered markup afterward is what keeps a tutorial author from
-   ever having to think about escaping.
+   (if tagged `exec`, with its `id`/`hint` header parsed off), a `SitePane`
+   (if tagged `site` — an `html`/`css`/`js` fence with `id:`/`site:` headers,
+   grouped by consecutive `site:` name into one `SiteEditor`, a live preview
+   with no Pyodide involved at all — DEWSTACK_MERGE.md §3), or a `CodeBlock`
+   (anything else). `extract_math()` does the same for `$…$` and `$$…$$`.
+   All exist for the same reason: Python's `markdown` library does not know
+   dewlab's conventions, and `$a_i + b_j$` run through a generic markdown
+   converter comes back with the subscript read as emphasis. Pulling all of
+   it out first and reinserting rendered markup afterward is what keeps a
+   tutorial author from ever having to think about escaping.
 
 3. **Convert what's left with `markdown.Markdown()`**, then reinsert. Every
    placeholder gets swapped for its real markup — `render_cell()` for a live
@@ -159,6 +162,14 @@ cells, and booting Pyodide to run one. Deliberately thin on rendering —
 everything a cell's *output* looks like is decided in
 `assets/tutorial_tools.py`, in Python, so those rules are unit-testable
 without a browser and only have to be right in one place.
+
+A site editor (`buildSiteEditors()`, DEWSTACK_MERGE.md §3) sits beside
+this rather than inside it: no Pyodide, no cells, no Python at all — an
+`html site`/`css site`/`js site` fence group becomes a live HTML/CSS/JS
+editor with a sandboxed preview `<iframe>`, mounted through
+`assets/site-relay.js`'s `mountSitePreview()`, the same engine
+`compose/dewmini.js`'s own Site tab mounts (DECISIONS_LOG.md 7.142). A
+page with one of these but no cells never boots Pyodide at all.
 
 What happens when a page loads:
 
@@ -569,6 +580,8 @@ runtime or the editor.
 | What a tutorial's markdown can express (a new frontmatter field, a new fence convention) | `build.py` |
 | What a cell can do (a new tutorial-facing function) | `assets/tutorial_tools.py` |
 | What a cell *looks like*, or the settings panel, save/restore behaviour | `assets/tutorial-runtime.js` |
+| The live HTML/CSS/JS site editor's engine (preview, console, friendly errors) — shared by dewmini's Site tab and a tutorial's own site editor | `assets/site-relay.js` |
+| A tutorial page's own site editor: mounting, Run/Reset wiring, save/restore | `assets/tutorial-runtime.js`'s `buildSiteEditors()` |
 | dewmini's file manager, uploads, or storage backend | `compose/dewmini-fs.js` |
 | The Python engine (boot, run a cell, hover/autocomplete, Stop) | `assets/pyodide-engine.js` |
 | dewmini's cells, toolbar, or downloads | `compose/dewmini.js` |
