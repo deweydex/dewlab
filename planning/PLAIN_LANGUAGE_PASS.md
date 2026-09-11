@@ -95,6 +95,48 @@ carries the fragments or the em-dash definitions the pass exists to remove.
 Fourteen of the older descriptions in the same file are still on the list
 below.
 
+**All twelve tutorials of the database-methods module**, across all three of
+its series. The first pass covered `series: first-database`—
+`a-table-is-a-list-of-rows`, `asking-questions-of-a-table`,
+`changing-what-is-in-it`, and `a-second-table-and-a-join` — done right after
+this content's porting, glossary and cell-review passes. It was ported in a
+register close enough to this repository's own that most sentences already
+had a verb, marked their sequences, and hedged what needed hedging; what
+needed fixing was concentrated in a few repeated habits. Each tutorial's
+"What you have now" recap list used a `Term — definition` line on every
+entry — a verbless fragment with the dash holding the definition, exactly
+what "put the meaning before the dash" exists to catch; all four lists are
+now full sentences with the term as subject, matching how this module's own
+`.glossary.yaml` files already define `WHERE`, `ORDER BY`, `UPDATE` and the
+rest. Two sentences describing Reset were double negatives (*there is
+little you can do here that Reset cannot undo*, *nothing here breaks
+anything that Reset cannot fix*), rewritten as the plain positive claim
+each one meant. One explanation in `a-second-table-and-a-join` put the
+actual mechanism of a `JOIN` after an em dash, behind the metaphor "the
+cost of that"; it now says what a query does before it says what that
+costs. One example, *a football squad*, assumed a word for a sport means
+the same game everywhere, and is now *a sports team*.
+
+A second pass, done once the module's other two series were ported, covered
+the remaining eight: `designing-a-table-before-you-build-it`,
+`loading-a-real-dataset`, `joining-two-real-tables`,
+`charting-a-querys-result`, `exporting-a-query-to-a-file`,
+`a-form-that-writes-a-row` (`series: several-tables`), and `sql-practice`,
+`the-tentacular-plushies-quiz` (`series: practice`). Five of the eight were
+already clean on review — the ported register held up on its own. The other
+three had small, real fixes: a passive definition of a one-to-many
+relationship rewritten to name the id column as the agent rather than
+hiding it (`designing-a-table-before-you-build-it`); a personifying idiom, a
+table that "answers to `SELECT`", replaced with the plain claim that you can
+query it, in both the body text and its own recap entry
+(`loading-a-real-dataset`); a "not x but y" reversal describing a query and
+its result, turned around to say the relationship forwards
+(`exporting-a-query-to-a-file`); and a three-item recap list rewritten from
+gerund-led fragments into full sentences with a marked sequence — "reads...
+first", "turns... next", "then runs" — naming JavaScript as the actual
+agent throughout (`a-form-that-writes-a-row`). No heading needed changing in
+any of the eight, so no `covers:` frontmatter key changed either.
+
 ---
 
 ## Not done — pick up here
@@ -132,9 +174,10 @@ common English words, flagged the way `tools/measure_sentences.py` (dewstack)
 flags a sentence over the limit — but it still needs reading afterward, the
 same way that script's own docstring says of itself.
 
-**Tutorial body prose.** The largest surface, untouched by any of this, and the
-one where flattening would cost the most. Worth doing deliberately, tutorial by
-tutorial, rather than in a sweep.
+**Tutorial body prose.** The largest surface, and the one where flattening
+would cost the most. The whole database-methods module is done — twelve
+tutorials, see "Done" above — every other module untouched. Worth doing
+deliberately, tutorial by tutorial, rather than in a sweep.
 
 **A tracked pass for the struggle/self-efficacy framing**, if it turns out to
 need one. For now it is being added opportunistically wherever a page is

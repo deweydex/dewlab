@@ -2342,13 +2342,20 @@ class TestTopicGroupsMatchRealTutorials:
         """Every real, non-practice tutorial's own (module, slug) — a
         practice page is reached from its parent via the "practice" link
         (practice_pairs(), reused here from build.py), not listed as a
-        topic-group entry of its own, the same as the contents page."""
+        topic-group entry of its own, the same as the contents page.
+
+        A companion practice page is identified by its own `practice_for:`
+        frontmatter key (the same field `Tutorial.practice_for` reads in
+        build.py itself) rather than by a `-practice` filename suffix — a
+        real, standalone tutorial can legitimately have that suffix in its
+        own slug (`sql-practice`, dewlab/database-methods) without being
+        one tutorial's companion page."""
         seen = set()
         for path in (DEWLAB / "tutorials").rglob("*.md"):
-            if path.stem.endswith("-practice"):
-                continue
             front = path.read_text().split("---", 2)[1]
             meta = yaml.safe_load(front)
+            if meta.get("practice_for"):
+                continue
             seen.add((meta["module"], meta["slug"]))
         return seen
 

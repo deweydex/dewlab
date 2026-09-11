@@ -6984,3 +6984,84 @@ record the grammar reversal and what's still open (the web-authoring
 fences haven't been checked this closely yet). No tutorial content uses
 this fence yet — `tutorials/database-methods/` is the next piece of
 `planning/DEWSTACK_MERGE.md`'s phased rollout, not this entry.*
+
+**7.141 — `database-methods` ported from dewstack: content, QQI mapping,
+and two gaps the checks caught that a rebuild alone would not.** All 12
+tutorials of dewstack's data track (`first-database`, `several-tables`,
+`practice`) ported into `tutorials/database-methods/`, each rewritten in
+dewlab's own voice and cell grammar (7.140's `sql exec` fence) rather than
+copied verbatim, per `planning/DEWSTACK_MERGE.md` §2's "port in shape, not
+code." One exception was kept deliberately: `loading-a-real-dataset` and
+the three pages built on it still fetch dewstack's exact
+`ourworldindata.org` CSV, because the dataset itself, not only the code
+that reads it, is part of what the page teaches. The quiz page (`the-
+tentacular-plushies-quiz`) reimplements dewstack's five hand-written
+`sql_tools.py` `check_*` functions as five `python exec` cells calling
+`PRAGMA table_info`/`db.execute` directly against the page's own shared
+`db` — dewstack's separate named-connection model
+(`sql_tools.get_connection(name)`) has no equivalent here, by design
+(7.140).
+
+`outcomes.yaml` gained an 11-outcome `DBM` module block, paraphrased from
+the real 5N0783 descriptor into dewlab's own SQL/Python framing;
+`topics.yaml` gained the matching 12 topics; `topic-groups.yaml` gained
+three browse groups. `DBM-LO1` ("typical uses for databases... in
+business decision-making") stays uncovered — no page here teaches it, and
+`CURRICULUM_MAP.md` says so in the open rather than hiding the gap. Every
+`covers:`/`touches:` mapping across the 12 files is keyed by heading
+anchor (`dev/curriculum_map.py`'s `anchor_for()`), not cell id — the two
+are different contracts, and cell ids alone are the saved-work key
+CLAUDE.md's second trap protects.
+
+Two of the checks CI actually runs caught real gaps a rebuild by itself
+would have missed. `dev/build_topic_editor.py --check` refused all eleven
+new DBM topics at once: six new fine strands (`database-concepts`,
+`querying`, `data-entry`, `data-import`, `design`, `reporting`) had no
+column in `planning/curriculum/strands.yaml`'s `from_strand` map, so
+`draw_topic_graph.bands()` had nowhere to place them. All six went to the
+existing `programming` column — a query or a table's design is the same
+kind of skill as an algorithm or a class, in this file's own terms, not a
+`software-development` practice like testing or documenting.
+`dev/build_topic_game.py --check` was separately stale for the same new
+topics; both generated files are regenerated and check clean now.
+
+The homepage's module grid still pointed the Database Methods card
+off-site, at dewstack's GitHub repository, with a "Coming soon" badge
+(`build.py`'s `render_index()`). With real content built, it now points
+at the module's own `database-methods.html` (already built by
+`tutorials/modules.yaml`) and carries the same "Beta" badge as
+`computational-methods` and `fundamentals-of-oop`.
+
+`planning/PLAIN_LANGUAGE_PASS.md` had only the module's first series marked
+done, from a pass run right after porting. The other eight tutorials —
+`several-tables` and `practice` — had been ported but never actually
+checked against the style guide's own rules, which is the gap that tracker
+file exists to catch. A second pass covered them: five were already clean,
+three had small real fixes (a passive one-to-many definition, a table that
+"answers to `SELECT`", a "not x but y" reversal about a query and its
+result, a recap list of fragments rewritten into a marked sequence). No
+heading changed in any of the eight, so no `covers:` key needed updating.
+The tracker now records the whole module as done.
+
+Verified in a real browser, not only by unit test: all 12 pages loaded,
+and every cell this sandbox could reach ran cleanly. The part a rebuild
+can't confirm on its own — that the quiz's five checks actually
+distinguish a correct answer from an incomplete one — was run directly:
+against an empty workspace all five correctly reported not-yet, and
+against the page's own worked solution, pasted in, all five correctly
+reported pass. Four pages' cells that fetch the live `ourworldindata.org`
+dataset could not be exercised end to end from this sandbox: its outbound
+proxy returns a 403 on the CONNECT tunnel to that URL, confirmed directly
+with curl — a limit of this container, not of the content. A student's
+own browser reaches that public dataset the ordinary way.
+
+*Cost to change: 12 tutorial files and 12 glossary files under
+`tutorials/database-methods/`, three `.order.yaml` files, an 11-outcome
+block in `outcomes.yaml`, 12 entries in `topics.yaml`, three groups in
+`topic-groups.yaml`, one line in `modules.yaml`, six lines in
+`strands.yaml`, one module card in `build.py`, and the two files
+`dev/build_topic_editor.py`/`dev/build_topic_game.py` generate. Full unit
+suite, every check CI runs (`curriculum_map.py --check`,
+`build_topic_game.py --check`, `build_topic_editor.py --check`,
+`pair_results.py`, `check_doc_links.py`), and a full rebuild all pass;
+`planning/DEWSTACK_MERGE.md`'s ledger records this module as ported.*

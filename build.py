@@ -2322,14 +2322,13 @@ def render_index() -> str:
         '<span class="dl-module-card-meta">5N0541 · QQI Level 5</span>'
         "<p>We build classes, objects and inheritance, from first "
         "principles.</p></a>",
-        '<a class="dl-module-card" data-status="soon" '
-        'href="https://github.com/deweydex/dewstack" target="_blank" rel="noopener">'
+        '<a class="dl-module-card" href="database-methods.html">'
         "<h3>Database Methods"
-        '<span class="dl-module-card-badge" data-status="soon">Coming soon</span>'
+        '<span class="dl-module-card-badge" data-status="beta">Beta</span>'
         "</h3>"
         '<span class="dl-module-card-meta">5N0783 · QQI Level 5</span>'
-        "<p>Not written here yet — see the earlier version on "
-        "dewstack.</p></a>",
+        "<p>We build a table, then several, with SQL running right beside "
+        "the Python that reads it.</p></a>",
         '<a class="dl-module-card" data-status="soon" '
         'href="https://github.com/deweydex/dewstack" target="_blank" rel="noopener">'
         "<h3>Web Authoring"

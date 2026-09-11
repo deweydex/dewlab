@@ -1,0 +1,13 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# Fifth tutorial of "A database with several tables". Checked against
+# the four tutorials before it in this series -- read_sql() is reused
+# from charting-a-querys-result without being redefined.
+entries:
+  - term: "to_csv()"
+    kind: function
+    definition: >
+      Turns a DataFrame back into the same plain-text shape a CSV file
+      holds. Saving that text with a .csv ending makes a file a
+      spreadsheet program can open.
+    example: "ireland.to_csv(index=False)"

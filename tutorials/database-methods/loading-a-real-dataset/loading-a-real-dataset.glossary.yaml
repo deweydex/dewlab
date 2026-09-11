@@ -1,0 +1,34 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# Second tutorial of "A database with several tables". Checked against
+# designing-a-table-before-you-build-it's own glossary -- no overlap.
+entries:
+  - term: CSV
+    kind: concept
+    definition: >
+      A CSV is a plain-text file holding rows of data, one row per line,
+      with a comma separating each value. It is the shape most real
+      datasets arrive in before they become a table.
+
+  - term: "load_csv()"
+    kind: function
+    definition: >
+      Fetches a CSV from a web address and returns it as a table ready
+      to work with. Needs await in front of it, because fetching a file
+      over the network takes a moment.
+    example: 'income_share = await load_csv("https://example.org/data.csv")'
+
+  - term: cleaning
+    kind: concept
+    definition: >
+      Cleaning prepares a dataset before it is queried. It starts with
+      giving each column a plain, clear name, then checking which values
+      are missing.
+
+  - term: "to_sql()"
+    kind: function
+    definition: >
+      Writes a DataFrame into the page's shared database connection as a
+      new table. Passing if_exists="replace" lets the same cell run
+      again without failing because the table already exists.
+    example: 'income_share.to_sql("income_share", db, if_exists="replace", index=False)'

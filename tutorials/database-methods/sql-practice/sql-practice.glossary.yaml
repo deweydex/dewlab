@@ -1,0 +1,27 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# First tutorial of "Practice" (series: practice, practice.order.yaml).
+# dev/curriculum_map.py's EMPHASIS_RE finds zero marked terms here, the
+# same as the rest of this module -- candidates below came from reading
+# the exercises and hints directly.
+#
+# This module has no tutorials/database-methods/series.yaml, so nothing
+# chains "practice" after "first-database" or "several-tables" for
+# build.py's own cumulative reference -- this file's own cumulative list
+# starts empty, same situation a-table-is-a-list-of-rows was in as the
+# first tutorial of first-database. Checked anyway, by hand, against
+# every earlier tutorial's own glossary and against the four
+# still-missing-a-glossary tutorials of "several-tables": WHERE, ORDER
+# BY, ASC and INSERT INTO are all reused here exactly as first-database
+# already taught them, so none of them is repeated in this file.
+# COUNT() is the one genuinely new thing -- it is not used anywhere else
+# in the module. Worth a note back to whoever asked: without that
+# series.yaml, these two practice pages' own reference panel will only
+# ever show what they themselves introduce (just COUNT() here), not the
+# WHERE/ORDER BY/INSERT INTO/JOIN a reader has already met by the time
+# they reach a page that assumes all of it.
+entries:
+  - term: "COUNT()"
+    kind: function
+    definition: "COUNT() counts the rows a query matches, instead of returning the rows themselves."
+    example: "SELECT COUNT(*) FROM courses;"

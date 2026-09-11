@@ -1,0 +1,31 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# Fourth and last tutorial of "A table of your own" (series:
+# first-database). Checked against the other three tutorials' own
+# glossaries -- no overlap. "query" is used in this tutorial's prose
+# ("a query brings the two tables back together", "at query time") but
+# never given its own definition, so it is left out rather than
+# glossaried on the strength of incidental use.
+entries:
+  - term: foreign key
+    kind: concept
+    definition: >
+      A foreign key is a column in one table that stores the id of a row
+      in another table. `sightings.dinosaur_id` is a foreign key: it
+      stores the same value as one row's `id` in `dinosaurs`.
+
+  - term: "JOIN"
+    kind: keyword
+    definition: >
+      JOIN combines rows from two tables into one result, matched on a
+      column they share. The ON that follows it names which column in
+      each table holds that shared value.
+    example: "SELECT dinosaurs.name, sightings.location FROM sightings JOIN dinosaurs ON sightings.dinosaur_id = dinosaurs.id;"
+
+  - term: "table.column"
+    kind: operator
+    definition: >
+      Names a column using both its table and its own name, such as
+      `dinosaurs.name`. Needed when two tables in the same query might
+      otherwise share a column name.
+    example: "sightings.dinosaur_id"
