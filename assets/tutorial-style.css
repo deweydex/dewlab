@@ -228,6 +228,7 @@ body {
 
 .dl-masthead {
   display: flex;
+  flex-wrap: wrap;
   gap: 0.5rem 1rem;
   align-items: center;
   justify-content: space-between;
@@ -270,6 +271,56 @@ body {
   align-items: center;
   gap: 0.5rem;
   flex: none;
+}
+
+.dl-panels {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.dl-panels-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex: none;
+  font-family: var(--dl-mono);
+  font-size: 0.78rem;
+  background: none;
+  border: 1px solid var(--dl-navy);
+  border-radius: 4px;
+  color: var(--dl-heading);
+  padding: 0.38rem 0.7rem;
+  cursor: pointer;
+  min-height: 2rem;
+  list-style: none;
+}
+.dl-panels-toggle::-webkit-details-marker { display: none; }
+.dl-panels-toggle:hover {
+  border-color: var(--dl-orange);
+  color: var(--dl-orange);
+}
+.dl-panels[open] > .dl-panels-toggle {
+  background: var(--dl-navy);
+  border-color: var(--dl-navy);
+  color: #fff;
+}
+
+.dl-panels-icon {
+  width: 0.32em;
+  height: 0.32em;
+  background: currentColor;
+  box-shadow:
+    0.5em 0 currentColor,
+    0 0.5em currentColor,
+    0.5em 0.5em currentColor;
+}
+
+.dl-panels-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
 }
 
 h1, h2, h3, h4 {
@@ -1582,7 +1633,8 @@ p code, li code {
 
 :root[data-header="minimal"] .dl-masthead { padding: 0.35rem 0 0.3rem; }
 :root[data-header="minimal"] .dl-crumbs { display: none; }
-:root[data-header="minimal"] .dl-settings-toggle {
+:root[data-header="minimal"] .dl-settings-toggle,
+:root[data-header="minimal"] .dl-panels-toggle {
   font-size: 0.72rem;
   padding: 0.25rem 0.5rem;
   min-height: 1.7rem;
