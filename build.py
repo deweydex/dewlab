@@ -1059,9 +1059,19 @@ def render_site_editor(editor: SiteEditor, index: int) -> str:
     broken rather than minimal.
 
     `index` is this editor's plain 1-based position among the page's site
-    editors, the same role `render_cell()`'s `number` plays for cells —
-    shown nowhere yet, kept for the day a report-a-problem panel or a
-    similar per-editor feature needs one, the way cells already do.
+    editors, the same role `render_cell()`'s `number` plays for cells; it
+    also makes the preview-width slider's own `id` unique when a page has
+    more than one editor, so its `<label for=...>` still points at the
+    right control.
+
+    The preview-width slider itself (`.dl-site-preview-controls`, a
+    30%-100% range setting `.dl-site-frame`'s own inline width) is a
+    media-query lesson's actual apparatus, not decoration — a page that
+    asks a reader to "drag the preview narrower" needs a preview that can
+    get narrower, and a fixed-width iframe alone cannot demonstrate that
+    (found porting `media-queries` and three other `web-authoring`
+    tutorials that assume it; `dewminiweb.js` already carries the
+    identical control for its own workspace, wired here the same way).
     """
     safe_name = html.escape(editor.name, quote=True)
     labels = {"html": "HTML", "css": "CSS", "js": "JavaScript"}
@@ -1094,6 +1104,7 @@ def render_site_editor(editor: SiteEditor, index: int) -> str:
             '<div class="dl-site-console-output" aria-live="polite"></div>'
             "</div>"
         )
+    width_id = f"dl-site-width-{index}"
     return (
         f'<div class="dl-site-editor" data-site-name="{safe_name}">'
         '<div class="dl-site-head">'
@@ -1103,6 +1114,13 @@ def render_site_editor(editor: SiteEditor, index: int) -> str:
         '<div class="dl-site-split">'
         f'<div class="dl-site-editors">{"".join(panes_markup)}</div>'
         '<div class="dl-site-preview">'
+        '<div class="dl-site-preview-controls">'
+        f'<label for="{width_id}">Preview width</label>'
+        f'<input type="range" id="{width_id}" class="dl-site-width" '
+        'min="30" max="100" step="5" value="100" '
+        'aria-label="Preview width, as a percentage">'
+        f'<output for="{width_id}">100%</output>'
+        "</div>"
         f'<iframe class="dl-site-frame" sandbox="allow-scripts" '
         f"title=\"{safe_name}'s preview\"></iframe>"
         f"{console_markup}"

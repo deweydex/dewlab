@@ -329,26 +329,40 @@ The same bar dewstack already used, since it's dewlab's own bar too:
    descriptors 5N0783 needs to `planning/curriculum/outcomes.yaml`
    (currently absent — `planning/ROADMAP.md` already flags this gap);
    flip the homepage card once the module has run in front of a class.
-3. **Web engine and `dewmini web` — done; content module still to come.**
+3. **Web engine, `dewmini web`, and all 42 web-authoring pages — done.**
    The engine half is built and merged: `html site`/`css site`/`js site`
    fence kinds, and `assets/site-relay.js` as the shared live-preview
    engine underneath a tutorial's own site editor, dewmini's Site tab, and
-   now `dewmini web` too (DECISIONS_LOG.md 7.142, 7.143). `dewmini web`
+   `dewmini web` too (DECISIONS_LOG.md 7.142, 7.143). `dewmini web`
    itself — the standalone workspace, shaped like dewstack's
    `workspace.js` — is built: several named sites, HTML/CSS/JS panes, a
    live preview, load-files-in and download-files-out, linked from the
    homepage. §8 q1 is answered: it exists, so the tutorial pages can
    honestly promise the same "open this in the workspace" hand-off
-   dewstack's own pages offer. `getting-started`/`reference` are also
-   done — twelve pages folded in whole under `web-authoring` (§8 q2,
+   dewstack's own pages offer. `getting-started`/`reference` are done —
+   twelve pages folded in whole under `web-authoring` (§8 q2,
    DECISIONS_LOG.md 7.144), the `welcome` and `shelf` series, with the
    platform-specific facts they named (dewlab's own repository and a real
    dewlab PR in place of dewstack's, the actual uniform save/reset model
    in place of dewstack's "Your table" special case) corrected rather
-   than carried over unread. Still to do: the 30 web pages ported into
-   `tutorials/web-authoring` through §6's checklist, and flipping the
-   homepage card once the module has run in front of a class — the card
-   stays "Coming soon" until then, on purpose (7.144).
+   than carried over unread. The 30 lesson pages are done too, the
+   `first-site` and `several-pages` series (DECISIONS_LOG.md 7.145) — and
+   porting live content into the engine, rather than just its own test
+   fixture, found a real gap: the preview-width slider dewstack's own
+   site editor has and 7.142's port of the engine never grew, plus a
+   side-by-side editor/preview split too narrow to demonstrate a
+   realistic media-query breakpoint at all. Both fixed in `build.py`/
+   `tutorial-style.css`, verified against every affected page.
+
+   Still open: this module has no QQI 5N1910 mapping at all —
+   `outcomes.yaml` has no entries for it, no tutorial carries `covers:`,
+   and `topic-groups.yaml`'s reachability groups are a stand-in, not a
+   substitute. Fixing that honestly needs the actual QQI 5N1910 minor
+   award descriptor in hand, the way 5N0783's did for database-methods —
+   inventing outcome codes without it would be worse than leaving the gap
+   named. Flipping the homepage card also still waits on the module
+   running in front of a class, the same rule that held database-methods'
+   card (7.141) — it stays "Coming soon" until then.
 4. **Full-stack, later.** Combine dewstack's one page with whatever
    dewlab's own full-stack concept becomes, once both tracks are live.
    Not scheduled yet.
@@ -416,7 +430,7 @@ The same bar dewstack already used, since it's dewlab's own bar too:
 | Module | Staged | Engine built | Ported | Live |
 |---|---|---|---|---|
 | `database-methods` (5N0783) | done | done, merged to `main` (`sql exec`, DECISIONS_LOG.md 7.140, PR #172) | done — 12 tutorials, QQI mapping, verified in a real browser (DECISIONS_LOG.md 7.141) | done — merged to `main`, PR #174 |
-| `web-authoring` (5N1910) | done | done, merged to `main` (`html site`/`css site`/`js site`, `assets/site-relay.js`, DECISIONS_LOG.md 7.142; `dewmini web` standalone workspace, DECISIONS_LOG.md 7.143) | partial — `getting-started`/`reference`, 12 tutorials, verified in a real browser (DECISIONS_LOG.md 7.144); the 30 web pages still to come | not yet — homepage card stays "Coming soon" until the 30 web pages land too |
+| `web-authoring` (5N1910) | done | done, merged to `main` (`html site`/`css site`/`js site`, `assets/site-relay.js`, DECISIONS_LOG.md 7.142; `dewmini web` standalone workspace, DECISIONS_LOG.md 7.143; preview-width slider + stacked site-editor layout, DECISIONS_LOG.md 7.145) | done — all 42 pages (`getting-started`/`reference`, `first-site`, `several-pages`), verified in a real browser (DECISIONS_LOG.md 7.144, 7.145); no QQI mapping yet, see §7 item 3 | not yet — homepage card stays "Coming soon" until the module has run in front of a class |
 | `full-stack` | done (reference only) | — | — | — |
 
 Update this table as each phase in §7 completes.

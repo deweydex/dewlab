@@ -31,8 +31,8 @@ A blank page usually means the browser could not make sense of the file.
 - Check that content sits between the opening and closing `<body>` tags,
   not outside them.
 
-The skeleton of a page — the parts every HTML file needs, in order — is
-a good example to compare against, once a tutorial covers it.
+[The skeleton](tutorial:the-skeleton) shows the parts of an HTML page
+if you want an example to compare.
 
 ### The CSS isn't doing anything
 
@@ -45,8 +45,8 @@ find it:
 - Does the CSS file have a missing semicolon or an unclosed `{` near the
   top? One mistake there can stop everything below it from working.
 
-How an HTML page links to CSS, and where each rule takes effect, is
-covered once a tutorial reaches it.
+[A rule and where it lives](tutorial:a-rule-and-where-it-lives) shows
+how an HTML page links to CSS.
 
 ### Only some of the styles apply
 

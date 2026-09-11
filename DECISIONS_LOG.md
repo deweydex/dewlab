@@ -7291,8 +7291,9 @@ dewstack-specific one that added unrelated sections. Two links forward
 to pages `web-authoring` doesn't have yet — `the-skeleton`,
 `a-rule-and-where-it-lives`, both from the still-to-come 30-page series —
 were dropped to plain prose rather than a `tutorial:` link, matching
-`resolve_links()`'s own refusal to build with a dangling one; restoring
-them is one search away once that series exists.
+`resolve_links()`'s own refusal to build with a dangling one; restored
+the same day, once 7.145's 30-page port gave both a real page to point
+at.
 
 The bigger fact-check was dewstack's own SQL/site-editor persistence
 story, which does not describe dewlab at all. Dewstack special-cases one
@@ -7365,3 +7366,87 @@ handling and its new `CODE_SPAN_RE` masking in `build.py`, and two new
 `outcomes.yaml`, `topics.yaml`, or any curriculum-mapping script — this
 content was never QQI-mapped to begin with. `planning/DEWSTACK_MERGE.md`
 §7 item 3 and §8 q2 record this as done; the ledger (§9) reflects it.*
+
+**7.145 — The 30-page `web-authoring` series, and a real gap in the
+site-editor engine only live content could have found.** Both of
+dewstack's web series ported the same day as 7.144: `first-site` (22
+pages — a page's own files, the head/body split, semantic HTML, the box
+model, selectors, position, hover/focus, transitions, media queries,
+flexbox, grid, BEM, keyframes) and `several-pages` (8 — planning a
+multi-page site, consistent navigation, cards and a gallery, a phone-safe
+nav, an accessible form, image file size, documenting what got built).
+Every `html site=name`/`css site=name` fence became dewlab's own `id:`/
+`site:`-header grammar (7.142); every id chosen fresh, `<name>-html`/
+`<name>-css`, since these are a first appearance in dewlab, not a
+renaming of something a class has already seen. No QQI mapping here
+either, for the same reason as 7.144 — this genuinely does teach 5N1910
+outcomes, but writing `outcomes.yaml` entries for an official minor
+award without the actual QQI descriptor in hand would mean inventing
+them, which is worse than leaving the gap open and named:
+`planning/DEWSTACK_MERGE.md` now says so directly. Reachability instead
+comes from five new `topic-groups.yaml` groups, split by what each
+sub-arc actually teaches rather than mirroring the two series 1:1.
+
+**Porting real, live content found a real gap in the engine 7.142 built
+against a single test fixture.** Four of these pages ask a reader to
+"drag the preview narrower" to watch a media query, a flex row, or a
+named grid area change — dewstack's own tutorial-page site editor has a
+preview-width slider for exactly this (`.dl-site-preview-controls`,
+`assets/site.css`); dewlab's port of the engine never grew one, because
+nothing before this needed it. `render_site_editor()` and
+`buildSiteEditors()` now carry the same control `dewminiweb.js` already
+has, wired the same way: a 30%-100% range setting `.dl-site-frame`'s own
+inline width, with an `<output>` showing the percentage. Not persisted
+between visits, matching `dewminiweb.js`'s own choice — it is a viewing
+preference, not saved work.
+
+That slider alone did not fully solve it. `.dl-site-split`'s side-by-side
+layout (editors left, preview right, each roughly half the page's own
+`--dl-line-width`) left the preview only 64-212px wide across the whole
+slider range on a typical screen — nowhere near enough to cross a
+realistic breakpoint like `max-width: 350px`, and even the *default*
+100% width already sat below some pages' own threshold, so a demo could
+show its "narrow" state permanently and never its "wide" one. Measuring
+this against dewstack's own layout (`.dl-site-panes` and `.dl-site-preview`
+both plain flex columns, the preview always the full content width, never
+split side by side) showed the split itself was the mistake, not the
+slider: `.dl-site-split` now stacks unconditionally, panes above a
+full-width preview, which alone widened the slider's range to
+131-437px — comfortable headroom either side of every threshold these
+pages actually use. Changing it was safe to do now rather than carry
+forward: no tutorial content had shipped against the side-by-side layout
+yet (the module still isn't linked from the homepage), and neither
+dewmini's Site tab nor `dewmini web` reuses `.dl-site-split` at all, each
+having its own markup.
+
+Three pages still needed their own numbers adjusted once the real range
+was known, the same honest constraint a real screen imposes on a real
+lesson: `cards-in-a-row`'s live demo (not its "Your turn" section, which
+describes the reader's own, much wider site) moved from `flex: 1 1 200px`
+to `90px`; `flexbox-first-steps` from `100px` to `80px`; `named-grid-areas`
+from `@media (min-width: 500px)` to `350px`. Each was verified afterward
+to actually cross its own breakpoint at some reachable slider position —
+not assumed from the arithmetic.
+
+Verified in a real browser: every one of the 30 pages loads with no
+console or page error; the width-slider pages (`media-queries`,
+`flexbox-first-steps`, `cards-in-a-row`, `named-grid-areas`,
+`navigation-on-a-phone`) each visibly cross their own breakpoint between
+30% and 100%; the checkbox-hack accordion opens on a label click; a
+1200px/390px pass over a representative sample found no horizontal
+overflow. Existing site-editor and `dewmini web` e2e tests
+(`test_phase0_golden_path.py`, `test_dewminiweb.py`) still pass unchanged
+— the layout change touched no markup either of them asserts on. Full
+unit suite, a clean `build.py --clean` (390 pages), `dev/curriculum_map.py
+--check`, `dev/build_topic_game.py --check` (regenerated), `dev/
+build_topic_editor.py --check`, `dev/pair_results.py` (default, `--from
+blind`, `--from sighted`), and `dev/check_doc_links.py` all pass.
+
+*Cost to change: 30 new tutorial folders, two new `.order.yaml` files,
+five new `topic-groups.yaml` groups, the preview-width slider added to
+`render_site_editor()`/`buildSiteEditors()`/`tutorial-style.css`, and
+`.dl-site-split`'s layout changed from a side-by-side flex row to a
+stacked column (no other site-editor markup changed). `planning/
+DEWSTACK_MERGE.md` §2, §7 item 3 and the ledger (§9) record this as
+done; the module still needs a real QQI 5N1910 descriptor before
+`covers:` frontmatter and `outcomes.yaml` entries can honestly follow.*
