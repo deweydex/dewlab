@@ -249,7 +249,7 @@ retires at parity.
   became a redirect at first; both the redirect and the offline download
   were then removed once dewmini's own offline bundle covered the need.
 - **Offline proof: manual or CI?** Partly answered: a manual pass
-  (`DECISIONS_LOG.md` 7.92) served both bundles with `serve.py` and ran a
+  (`DECISIONS_LOG.md` 7.92) served both bundles with *serve.py* and ran a
   real interrupt-a-`while True`-loop Stop-button test against each, plus a
   `load_csv()` call against dewmini's own bundled `data/` — proof the
   *served* bundle works, not yet proof it works with the network fully

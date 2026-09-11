@@ -1,19 +1,14 @@
 # Decision log
 
 A record of the choices made while building dewlab that the planning documents
-did not settle — and, for each one, what it would cost to change your mind.
-
-The second half is the point. Any project accumulates decisions; what makes
-them hard to revisit later is not that they were undocumented but that nobody
-wrote down how much they cost. An entry marked *trivial* is an invitation to
-change it if you disagree. An entry marked *large* is a warning that several
-other things are resting on it, and that changing it is a piece of work rather
-than an edit.
+did not settle — and what each would cost to change. An entry marked *trivial*
+is an invitation to change it if you disagree; one marked *large* means several
+other things rest on it.
 
 `planning/` holds what was decided before any code existed, and nothing here
 overrides it. This file records the gaps: places the plan named something
-without specifying it, places two settled decisions left a genuine choice
-between them, and places the build met something the plan had not anticipated.
+without specifying it, places two settled decisions left a genuine choice, and
+places the build met something the plan had not anticipated.
 
 Entries are grouped by build phase and numbered so that code comments and
 commit messages can point at them.
@@ -25,60 +20,48 @@ commit messages can point at them.
 ### Reconstructing tutorial_tools.py
 
 `planning/DECISIONS.md` commits to six functions — `text_input`, `dropdown`,
-`button`, `show`, `show_table` and `check` — and pins down exactly one
-signature, `check(actual, expected)`. Everything else about how these behave
-had to be designed rather than looked up. Each choice is written down here
-rather than left implicit in the code, so that a later disagreement has
-something to argue with.
+`button`, `show`, `show_table` and `check` — pinning down only one signature,
+`check(actual, expected)`. Everything else below was designed rather than
+looked up.
 
 **0.1 — Widgets return a handle; `.value` reads the live DOM.**
-`text_input("Your name")` returns an object whose `.value` property reads the
-input element each time it is asked, rather than returning a snapshot taken
-when the widget was created. Without this a cell could render a text box but
-never read what was typed into it, which would make the widget bridge useless.
-The alternative — widgets that only render, with values fetched by a separate
-`get_value(id)` call — is clumsier at the call site.
+`text_input("Your name")` returns an object whose `.value` reads the input
+element live, each time it is asked, rather than a snapshot taken at creation
+— otherwise a cell could render a text box but never read what was typed
+into it.
 *Cost to change: small. One class, and the tutorials that use it.*
 
 **0.2 — Widget values survive a re-run.**
-Running a cell clears its output area, which destroys the widgets in it. Values
-are therefore remembered per `(cell_id, widget_id)` and restored when the
-widget is rebuilt. Without this, a student types an answer, presses Run, and
-watches it vanish. VERSIONING_AND_PROGRESS.md anticipates the related problem
-(a restored widget "needs a re-run to reinstantiate the live Python-side
-object") but does not address the re-run case itself.
+Running a cell clears its output area, destroying its widgets. Values are
+remembered per `(cell_id, widget_id)` and restored when the widget is rebuilt,
+so a re-run does not erase what a student typed.
 *Cost to change: small, but the behaviour without it is bad enough that it
 should not change.*
 
 **0.3 — Widget ids: explicit, else derived from the label, else positional.**
 `text_input("Your name")` gets the id `your-name-1`; `id="answer"` overrides.
-Ids have to be stable across re-runs for 0.2 to work at all. Deriving from the
-label means an author gets stable ids without thinking about it, and the
-positional suffix keeps two identically-labelled widgets apart.
+Ids must stay stable across re-runs for 0.2 to work; the positional suffix
+keeps two identically-labelled widgets apart.
 *Cost to change: small.*
 
 **0.4 — `check` takes two optional extras: `tolerance` and `label`.**
-The settled signature is `check(actual, expected)` and that still works
-unchanged. `tolerance=` makes a numeric tolerance explicit where a tutorial
-wants one; `label=` replaces the default "That's right." with an
-author-written question. Both default to `None`.
+The settled signature `check(actual, expected)` still works unchanged.
+`tolerance=` sets a numeric tolerance; `label=` replaces the default "That's
+right." with an author-written question. Both default to `None`.
 *Cost to change: small — dropping them would not break existing calls.*
 
 **0.5 — `check` compares by meaning, not by `==`.**
-Floats compare with `math.isclose` rather than exactly, so `check(0.1 + 0.2,
-0.3)` passes — a student meeting floating point for the first time should not
-be told their correct answer is wrong. numpy arrays and pandas objects compare
-elementwise instead of raising "truth value of an array is ambiguous". `True`
-does not equal `1`, despite Python, because it is not the answer they meant.
-Lists report which position differs.
+Floats compare with `math.isclose`, so `check(0.1 + 0.2, 0.3)` passes. numpy
+arrays and pandas objects compare elementwise instead of raising on an
+ambiguous truth value. `True` does not equal `1`. Lists report which position
+differs.
 *Cost to change: moderate. It is the behaviour tutorials will be written
 against.*
 
 **0.6 — `button(label, on_click)` calls the function; it does not re-run the cell.**
 The callback runs with the cell's output area still current, so anything it
-prints or `show`s appends beneath the button. Re-running the whole cell on
-every click was the other option; it would discard everything above the button
-and make a button useless for anything incremental.
+prints or `show`s appends beneath the button, rather than discarding
+everything above it by re-running the whole cell.
 *Cost to change: small.*
 
 **0.7 — `show(*values, label=None)` mirrors what a cell's last expression does.**
@@ -87,165 +70,136 @@ should show several things.
 *Cost to change: small.*
 
 **0.8 — `show_table(frame, max_rows=20, caption=None)` truncates by default.**
-A tutorial that renders a 50,000-row dataset in full produces an unusable page.
-Truncation is visible: the note under the table says how many rows there are.
+A 50,000-row dataset rendered in full produces an unusable page. Truncation is
+visible: the note under the table says how many rows there are.
 *Cost to change: small.*
 
 **0.9 — `load_csv(name)` added, beyond the six named functions.**
-CONTENT_AND_FILE_ARCHITECTURE.md spells out the fetch-into-Pyodide-then-read
-pattern inline in a setup snippet. That pattern is four lines of boilerplate
-that every data tutorial would repeat, so it is wrapped as
-`df = await load_csv("life-expectancy.csv")`. The raw pattern still works; this
-is a convenience, not a replacement.
+`df = await load_csv("life-expectancy.csv")` wraps the fetch-into-Pyodide-
+then-read pattern CONTENT_AND_FILE_ARCHITECTURE.md spells out as boilerplate;
+the raw pattern still works, this is a convenience.
 *Cost to change: small — it can be dropped without affecting anything else.*
 
 ### The execution path
 
 **0.10 — Output rendering rules.**
-A cell renders, in the order produced: printed text; anything passed to `show`,
-`show_table` or `check`; the value of the last expression; then any matplotlib
-figure the cell created but did not return. `None` renders nothing, so a cell
-ending in an assignment stays quiet. DataFrames and Series render as tables,
-figures as PNGs, everything else as `repr`. This is the notebook convention,
-which is what a student who has seen Jupyter or Colab will expect.
+A cell renders, in order: printed text; anything passed to `show`,
+`show_table` or `check`; the value of the last expression; then any
+matplotlib figure created but not returned. `None` renders nothing.
+DataFrames and Series render as tables, figures as PNGs, everything else as
+`repr` — the notebook convention.
 *Cost to change: moderate.*
 
 **0.11 — matplotlib is captured as PNG via the AGG backend.**
-`MPLBACKEND=AGG` is set before matplotlib can be imported, and figures are
-saved to an in-memory PNG and embedded as a data URI. The alternative,
-Pyodide's HTML5 canvas backend, draws to a target element chosen globally,
-which fights with per-cell output areas. PNG also means a figure survives being
-saved into Phase 2's `output_html` with no extra work.
+`MPLBACKEND=AGG` is set before matplotlib can be imported; figures are saved
+to an in-memory PNG and embedded as a data URI, rather than using Pyodide's
+canvas backend, which draws to a globally-chosen target and fights with
+per-cell output areas. PNG also means a figure survives into Phase 2's
+`output_html` with no extra work.
 *Cost to change: small, and Phase 2 gets easier because of it.*
 
 **0.12 — Cells on one page share one namespace, in document order.**
 The notebook model: cell 3 sees what cell 1 defined. This does not extend
-across pages — each tutorial page is its own Pyodide instance, exactly as
-CONTENT_AND_FILE_ARCHITECTURE.md says, so an included setup cell re-executes on
-every page load. The planning documents imply this without stating it.
+across pages — each tutorial page is its own Pyodide instance, so an included
+setup cell re-executes on every page load.
 *Cost to change: large. Everything else assumes it.*
 
 **0.13 — The whole cell lifecycle lives in Python, not split with JavaScript.**
 `tutorial_tools.run_cell(cell_id, output_element, code)` is the single entry
 point; the JavaScript runtime boots Pyodide and calls it. Output ordering and
-traceback formatting therefore have one implementation rather than two that can
-disagree — and, because the module imports under plain CPython with a recording
-stub in place of the DOM, that implementation is unit-testable without a
-browser.
+traceback formatting have one implementation rather than two that can
+disagree, and the module imports under plain CPython with a recording stub in
+place of the DOM, so it is unit-testable without a browser.
 *Cost to change: large.*
 
 **0.14 — Tracebacks are trimmed to the student's own frames.**
-A `NameError` shows the line they wrote, not dewlab's plumbing or
-`eval_code_async`'s. If trimming would leave nothing — a syntax error, say —
-the full traceback is shown instead of an empty one.
+A `NameError` shows the line they wrote, not dewlab's plumbing. If trimming
+would leave nothing, the full traceback is shown instead of an empty one.
 *Cost to change: small.*
 
 **0.15 — Printed output is `textContent`, never `innerHTML`.**
 A student printing `<b>hi</b>` sees `<b>hi</b>`, and a CSV containing markup
-cannot inject anything into the page. Everything that does emit markup —
-tables, check verdicts, widget labels — escapes its inputs. There is no
-untrusted author here, but a dataset is not always trustworthy and the cost of
-getting this right is zero.
+cannot inject anything into the page. Everything that emits markup — tables,
+check verdicts, widget labels — escapes its inputs.
 *Cost to change: none, it should not change.*
 
 **0.16 — A prose-only tutorial never loads Pyodide.**
-CONTENT_AND_FILE_ARCHITECTURE.md makes a zero-`exec`-cell tutorial a normal
-tutorial. If the manifest lists no cells the runtime skips the whole Pyodide
-boot, so a maths tutorial that is prose and KaTeX costs nothing to open.
+A tutorial whose manifest lists no cells skips the Pyodide boot entirely, so a
+maths tutorial that is prose and KaTeX costs nothing to open.
 *Cost to change: small.*
 
 ### Assets and dependencies
 
 **0.17 — Pyodide loads from the CDN by default, through one overridable constant.**
-`DEWLAB_PYODIDE_BASE` overrides the default jsdelivr URL. The e2e tests use it
-to run against a self-hosted copy, and it is the switch to flip if
-OPEN_QUESTIONS.md 32 turns out to bite — a school network blocking the CDN.
-Self-hosting the runtime plus the baseline three packages measures **30 MB**
-(`dev/fetch_pyodide.py` produces exactly that directory), which is the number
-to weigh against putting 30 MB of binary wheels in the repo. Not committed
-either way; the default stays CDN until someone checks.
+`DEWLAB_PYODIDE_BASE` overrides the default jsdelivr URL — the switch to flip
+if a school network blocks the CDN. Self-hosting the runtime plus the three
+baseline packages measures **30 MB** (`dev/fetch_pyodide.py` produces exactly
+that directory). Not committed either way; default stays CDN.
 *Cost to change: one line, plus 30 MB in the repo.*
 
 **0.18 — CodeMirror and KaTeX are vendored, not loaded from a CDN.**
 Unlike Pyodide these are small (700 KB together, mostly KaTeX's woff2 fonts)
-and CodeMirror 6 is ESM-only, so it needs a bundling step regardless. Bundling
-once into `assets/vendor/` costs less than every page paying a CDN round trip,
-and removes two of the three external dependencies a school network could
-block.
+and CodeMirror 6 is ESM-only, so it needs bundling regardless. Vendoring also
+removes two of the three external dependencies a school network could block.
 *Cost to change: small.*
 
 **0.19 — The vendor bundle is committed, and built by a separate script.**
-`vendor-src/` holds the pins and the esbuild script; `assets/vendor/` holds the
-output and is committed. REPO_AND_EDITOR.md keeps *generated HTML* out of the
-repo because it goes stale against its markdown source. A third-party bundle
-has no such source in the repo to drift from, and committing it means neither
-the GitHub Actions workflow nor an author previewing locally needs Node
+`vendor-src/` holds the pins and the esbuild script; `assets/vendor/` holds
+the output and is committed, so neither CI nor a local preview needs Node
 installed. Re-run `npm run build` in `vendor-src/` when a pin changes.
 *Cost to change: small.*
 
 **0.20 — Pyodide 0.28.3.**
-Current stable at the time of building, and it carries numpy 2.2.5, pandas
-2.3.1 and matplotlib 3.8.4 as official packages — so the baseline three load in
-one `loadPackage` call with no micropip, which is what Phase 0 was asked to
-confirm. BUILD_PLAN.md flags that package availability shifts between releases;
-the version is pinned in one constant in `tutorial-runtime.js` and in
-`dev/fetch_pyodide.py`.
+Carries numpy 2.2.5, pandas 2.3.1 and matplotlib 3.8.4 as official packages,
+so the baseline three load in one `loadPackage` call with no micropip.
+Pinned in one constant in `tutorial-runtime.js` and in `dev/fetch_pyodide.py`.
 *Cost to change: small, but re-run the e2e tests after.*
 
 **0.21 — A tutorial can widen the package list; the default stays the three.**
 The manifest carries a `packages` list defaulting to numpy, pandas and
-matplotlib. This is how scipy would arrive if the assumed-not-settled item in
-DECISIONS.md turns out to be wrong — a frontmatter field on the one tutorial
-that needs it, not a change to the baseline everyone pays for.
+matplotlib; a tutorial needing more widens its own frontmatter rather than
+the baseline everyone pays for.
 *Cost to change: none, the mechanism is already there.*
 
 ### Layout and files
 
 **0.22 — The shell template lives at `assets/shell.html`.**
-REPO_AND_EDITOR.md lists three files under `/assets/` and does not say where
-the template goes. It sits beside the CSS and JS it references. It is not
-served to students — `build.py` reads it — but it belongs with them.
+Not served to students — `build.py` reads it — but it belongs beside the CSS
+and JS it references.
 *Cost to change: trivial.*
 
 **0.23 — Cells are carried in one JSON block, not per-cell markup attributes.**
 `<script type="application/json" id="dewlab-manifest">` holds every cell's id,
 hint and starter code, with `<` escaped so nothing in a cell can close the
-script element. Putting Python source in HTML attributes or in `<textarea>`
-elements means escaping problems that show up months later on the one tutorial
-that prints an angle bracket.
+script element — rather than Python source living in HTML attributes or
+`<textarea>` elements, where escaping problems surface only once a cell prints
+an angle bracket.
 *Cost to change: moderate — it is the contract between `build.py` and the
 runtime.*
 
 **0.24 — `dev/make_harness.py` is Phase 0 scaffolding, replaced by `build.py`.**
-Phase 0 has to prove the shell and the execution path work, but `build.py` is
-Phase 1. This script fills the shell's tokens with a fixed set of cells chosen
-to exercise every rendering branch. The markup it emits is the contract
-`build.py` has to match. It is a test fixture, not a preview tool, and Phase 1
-should delete it once `build.py` can build the same page.
+It fills the shell's tokens with a fixed set of cells exercising every
+rendering branch; the markup it emits is the contract `build.py` must match.
+A test fixture, not a preview tool.
 *Cost to change: none, it is meant to be thrown away.*
 
 **0.25 — Ctrl/Cmd+Enter runs a cell.**
-Not in the plan. It is the shortcut every notebook user reaches for first,
-and it is three lines.
+Not in the plan. The shortcut every notebook user reaches for first, and it
+is three lines.
 *Cost to change: trivial.*
 
 **0.26 — Each cell has a "reset" button restoring the author's starter code.**
 Not in the plan. A student who has edited a cell into an unrecoverable state
-otherwise has to reload the page and lose everything else. Cheap now, and it
-interacts with Phase 2's restore, so better decided before that is built than
-after.
+otherwise has to reload the page and lose everything else.
 *Cost to change: small, but decide it before Phase 2.*
 
 ### Repository
 
 **0.27 — dewlab is its own repository. Resolved.**
 `planning/REPO_AND_EDITOR.md` specifies a standalone repository publishing to
-GitHub Pages, and that is what this is. The first phase of work was built
-elsewhere while this repository did not yet exist, and was moved here with its
-history intact once it did; every file arrived unchanged.
-
-Phase 4 is therefore unblocked: Pages can be switched on whenever there is
-something worth publishing.
+GitHub Pages, and that is what this is; Phase 0 was moved here with its
+history intact once the repository existed. Phase 4 is unblocked: Pages can
+be switched on whenever there is something worth publishing.
 *Resolved. No remaining cost.*
 
 ---
@@ -254,56 +208,48 @@ something worth publishing.
 
 Recorded so the next phase does not have to re-derive that they were skipped.
 
-- **OPEN_QUESTIONS.md 32** (school network blocking a CDN) is not resolved, but
-  0.17 makes it a one-line change rather than a redesign, and
+- **OPEN_QUESTIONS.md 32** (school network blocking a CDN) is not resolved,
+  but 0.17 makes it a one-line change rather than a redesign, and
   `dev/fetch_pyodide.py` measures the cost at 30 MB.
 - **9** (sympy) and **10** (interactive plots) did not come up. 0.21 is the
   mechanism for the first.
-- **33** (build-time checks beyond markdown-to-HTML) is Phase 1's question, not
-  Phase 0's.
+- **33** (build-time checks beyond markdown-to-HTML) is Phase 1's question,
+  not Phase 0's.
 - The **assumed-not-settled** items in DECISIONS.md — scipy staying out, the
   editor previewing through `build.py` rather than a live Pyodide pane, live
-  hover documentation deferred — were all built against as written. None of
-  them turned out to be load-bearing for Phase 0.
+  hover documentation deferred — were all built against as written and none
+  turned out to be load-bearing for Phase 0.
 
 ---
 
 ## Phase 0 addenda — found by looking at the rendered page
 
-Three things the tests passed but a screenshot showed were wrong. Recorded
-because each is a deliberate divergence from what a notebook does.
+Three deliberate divergences from what a notebook does.
 
 **0.28 — matplotlib artist reprs are suppressed.**
 `plt.plot(...)` returns a list of `Line2D`; `plt.title(...)` returns a `Text`.
-A notebook prints those reprs above the figure. For someone meeting matplotlib
-for the first time it is noise that looks like an error, so a cell whose last
-expression is an artist renders the figure and nothing else. Figures and every
-other type are unaffected.
+A notebook prints those reprs above the figure, which reads as an error to
+someone meeting matplotlib for the first time. A cell whose last expression is
+an artist renders the figure and nothing else; every other type is unaffected.
 *Cost to change: trivial.*
 
 **0.29 — a cell ending in `check(...)` does not print a bare `True`/`False`.**
 `check` returns a bool so a cell can branch on it, but ending a cell with a
-check is going to be the common shape in these tutorials, and repeating
-`False` under a verdict that already says "Not quite yet" reads as a second,
-more cryptic failure. Suppressed only when the check's verdict is the last
-thing rendered and the value is that same result; any other bool renders
-normally.
+check is the common shape here, and repeating `False` under a verdict that
+already says "Not quite yet" reads as a second, cryptic failure. Suppressed
+only when the check's verdict is the last thing rendered and the value is
+that same result; any other bool renders normally.
 *Cost to change: trivial.*
 
 **0.30 — figures are saved transparent, with one theme-neutral ink.**
-A figure saved with matplotlib's default white background sits in a bright
-white box on a dark page, so figures are saved with `transparent=True` and the
-page background shows through.
-
-That leaves the chrome — title, axis labels, ticks, spines, legend text. The
-obvious approach, painting it in the current theme's foreground, was tried and
-rejected: a PNG is baked at render time, so every figure already on the page
-turns near-invisible the moment the reader switches theme, and keeping every
-figure open for the life of the page purely to repaint it is not worth it. The
-chrome is therefore drawn in a single grey (`#7a7a7a`) that holds about 4.15:1
-against both the light and the dark page background — slightly less contrast
-than a theme-matched ink at its best, and never wrong. The plotted data keeps
-whatever colours the student's code chose.
+Figures are saved with `transparent=True` so the page background shows
+through, rather than matplotlib's white default sitting in a bright box on a
+dark page. Chrome — title, axis labels, ticks, spines, legend text — is drawn
+in a single grey (`#7a7a7a`), holding about 4.15:1 contrast against both
+light and dark backgrounds; painting it in the theme's own foreground was
+rejected, since a PNG baked at render time would turn near-invisible on the
+next theme switch. Plotted data keeps whatever colours the student's code
+chose.
 *Cost to change: small.*
 
 ---
@@ -311,163 +257,123 @@ whatever colours the student's code chose.
 ## Phase 1 — Build script v1
 
 **1.1 — `build.py` depends on Python-Markdown and PyYAML.**
-DECISIONS.md names markdown-it plus markdown-it-texmath as the reference
-toolchain, which is JavaScript; BUILD_PLAN.md and REPO_AND_EDITOR.md put
-`build.py` at the repository root, which is Python. Rather than pull Node into
-the build for the prose half, the converter is Python-Markdown with the `extra`,
-`sane_lists` and `toc` extensions, and frontmatter is parsed with PyYAML. Both
-are pure Python, build-time only, and pinned loosely in `requirements-build.txt`
-— nothing here reaches a student's browser. The one thing this loses is the
-texmath half of that toolchain; see 1.5.
+DECISIONS.md names markdown-it plus markdown-it-texmath (JavaScript) as the
+reference toolchain; `build.py` is Python. The converter is Python-Markdown
+with the `extra`, `sane_lists` and `toc` extensions, frontmatter parsed by
+PyYAML — both pure Python, build-time only, pinned loosely in
+`requirements-build.txt`. This loses the texmath half of that toolchain; see
+1.5.
 *Cost to change: moderate. Swapping the converter means re-checking the prose
 output, not rewriting the cell or link handling, which do not go through it.*
 
 **1.2 — `exec` fences are lifted out before markdown conversion, not after.**
-Each one is replaced by an HTML comment placeholder, the remaining prose goes
-through the converter, and the cell markup is substituted back in. Handing
-`python exec` to the markdown library as an info string and trying to catch it
-in a fence-handling extension is the other route; it means fighting the library
-for control of the one construct dewlab most needs to be exact about. Doing the
-split first means a cell's Python is never seen by the markdown parser at all,
-so nothing in it can be reinterpreted as markup.
+Each fence is replaced by an HTML comment placeholder, the remaining prose
+goes through the converter, and the cell markup is substituted back in —
+rather than handing `python exec` to the markdown library as an info string.
+A cell's Python is never seen by the markdown parser, so nothing in it can be
+reinterpreted as markup.
 *Cost to change: large. It is the shape of the whole converter.*
 
 **1.3 — Built pages mirror the source tree: `site/tutorials/<module>/<slug>.html`.**
-`/site/` was already the output directory named in `.gitignore` at the end of
-Phase 0. Mirroring `tutorials/<module>/` rather than flattening keeps the
-built tree legible against the source, and means a new module folder needs no
-build change. Cross-tutorial links are computed with `os.path.relpath`, so a
-link between two tutorials in the same module comes out as a bare filename
-rather than a walk up to the site root and back down.
+Mirroring `tutorials/<module>/` rather than flattening keeps the built tree
+legible against the source, and a new module folder needs no build change.
+Cross-tutorial links are computed with `os.path.relpath`, so a link between
+two tutorials in the same module is a bare filename rather than a walk up to
+the site root and back down.
 *Cost to change: small, but Phase 3's navigation and Phase 4's Pages deploy
 will both assume this layout once written.*
 
 **1.4 — A dead cross-link fails the build; a missing `alt` fails it too.**
-CONTENT_AND_FILE_ARCHITECTURE.md asks for a failure "or at minimum a loud
-warning" on an unresolved link; a warning in a CI log is a warning nobody reads,
-so it is an error. The same treatment answers OPEN_QUESTIONS.md 33 for images:
-an `<img>` with no `alt` attribute at all stops the build, while an explicit
-`alt=""` passes, which is how a decorative image is meant to be marked. Anchors
-are checked as well as slugs, and a cell id counts as an anchor.
+A warning in a CI log is a warning nobody reads, so both are errors: an
+`<img>` with no `alt` attribute stops the build, while an explicit `alt=""`
+passes, marking a decorative image. Anchors are checked as well as slugs, and
+a cell id counts as an anchor.
 *Cost to change: trivial to downgrade to warnings, and a bad idea.*
 
 **1.5 — Math is not rendered yet, and nothing in Phase 1 touches `$`.**
-DECISIONS.md settles KaTeX rendered at build time, and `assets/vendor/` carries
-KaTeX's CSS but no KaTeX JavaScript — so the markup has to be produced by the
-build, and there is no client-side fallback. Phase 1's brief does not include
-math, so the converter leaves `$…$` alone as literal text rather than guessing
-at a mechanism. The question of how a Python build script produces KaTeX markup
-is in `QUESTIONS.md`.
+DECISIONS.md settles KaTeX rendered at build time, but `assets/vendor/`
+carries KaTeX's CSS with no KaTeX JavaScript, so the converter leaves `$…$`
+alone as literal text rather than guessing at a mechanism.
 *Cost to change: none yet — this is deferred, not decided.*
 
 **1.6 — CI runs the unit tests and a full build; the e2e suite stays manual.**
-`.github/workflows/tests.yml` runs both unit modules and then `build.py --clean`,
-so a change that breaks the build fails the pull request even if every unit test
-passes. The e2e tests need a 30 MB Pyodide download and a browser, which is not
-worth paying on every push before Phase 4 exists.
+`.github/workflows/tests.yml` runs the unit modules and then
+`build.py --clean`, so a broken build fails the PR even if unit tests pass.
+The e2e suite needs a 30 MB Pyodide download and a browser, not worth paying
+on every push before Phase 4 exists.
 *Cost to change: small — the e2e job is a handful of lines whenever it earns
 its place.*
 
 **1.7 — The two `pytest.importorskip` calls became per-class `skipif` marks.**
-Both sat at module level in `tests/test_tutorial_tools.py`, so a machine without
-pandas skipped the entire file and reported "1 skipped" — indistinguishable from
-a pass at a glance, and about to become CI's problem. The guards now sit on the
-two classes that need the libraries: 49 tests run and 12 skip visibly where
-pandas and numpy are absent.
+Both sat at module level in `tests/test_tutorial_tools.py`, so a machine
+without pandas skipped the entire file — indistinguishable from a pass at a
+glance. The guards now sit on the two classes that need the libraries: 49
+tests run and 12 skip visibly where pandas and numpy are absent.
 *Cost to change: none, it should not change.*
 
 **1.8 — Maths renders in the browser, from marked spans, with KaTeX vendored.**
-The reason `planning/DECISIONS.md` gave for rendering at build time was to keep
-the parsing cost off students' machines. That cost was reviewed and judged not
-worth avoiding, which leaves 0.19 deciding the question instead: `assets/vendor/` is committed precisely so neither CI nor an author
-previewing locally needs Node, and calling Node from `build.py` to render maths
-would undo exactly that. So KaTeX is bundled into `assets/vendor/katex.bundle.js`
-(266 KB) and the runtime imports it dynamically, only on pages the manifest
-flags as containing maths.
+This reverses 1.5's build-time plan: the parsing-cost argument for build-time
+rendering was judged not worth avoiding, and 0.19's reasoning for vendoring
+rules out calling Node from `build.py` instead. KaTeX is bundled into
+`assets/vendor/katex.bundle.js` (266 KB) and imported dynamically, only on
+pages the manifest flags as containing maths.
 
-`build.py` still owns finding the maths. It lifts `$…$` and `$$…$$` out before
-the markdown converter runs — otherwise `$a_i + b_j$` comes back with the
-subscripts turned into emphasis — and emits a `<span class="dl-math">` holding
-the source TeX. That span is the input KaTeX renders from and the fallback if it
-never loads, so a reader with JavaScript off sees the TeX rather than a gap.
-KaTeX's auto-render contrib script is deliberately unused: the build already
-knows where every maths span is, so there is nothing for a delimiter scan to
-find that is not already marked.
+`build.py` still finds the maths, lifting `$…$` and `$$…$$` out before the
+markdown converter runs (otherwise `$a_i + b_j$` comes back with subscripts
+turned into emphasis) and emitting a `<span class="dl-math">` holding the
+source TeX — the render input, and the fallback if KaTeX never loads. KaTeX's
+auto-render contrib script is unused, since the build already marks every
+maths span.
 *Cost to change: moderate. Moving to build-time rendering later means a Node
 step in `build.py` and in CI, and nothing else — the marking is already done.*
 
 **1.9 — Illustrative code is highlighted by a read-only CodeMirror, not a second
 highlighter.**
-An untagged fence had no highlighting at all; only `exec` cells did. Pygments at
-build time was the obvious alternative and was rejected: it means a second
-syntax theme to keep in step with the CodeMirror pair the texture panel already
-switches (0.26, DECISIONS.md "Code cell theme"), and two themes drift. The same
-`createReadOnlyCode` view is used instead — same theme compartment, so one
-texture change repaints live cells and illustrative blocks together.
-
-`build.py` emits `<pre class="dl-static" data-lang="…"><code>` with the source
-escaped inside it, reusing the class Phase 0's stylesheet already defined for
-this and never had anything to apply it to. The runtime upgrades that in place,
-so the code is readable with JavaScript off and highlighted with it on.
+Pygments at build time was rejected: it would mean a second syntax theme to
+keep in step with the CodeMirror pair the texture panel already switches, and
+the two would drift. The same `createReadOnlyCode` view is used instead,
+sharing its theme compartment with live cells. `build.py` emits
+`<pre class="dl-static" data-lang="…"><code>` with the source escaped inside;
+the runtime upgrades that in place, readable with JavaScript off and
+highlighted with it on.
 *Cost to change: small.*
 
 **1.10 — Pages and Actions confirmed; the build stays Python for now.**
-GitHub Pages with an automated build on push is confirmed as the hosting, which
-is what `planning/REPO_AND_EDITOR.md` already specified and what Phase 4 will
-build. A local preview is wanted. The authoring editor is to follow an existing
-markdown editor pattern rather than being designed from scratch — a starting
-point rather than a decision.
-
-Wanting a local preview does not, on its own, force a JavaScript rewrite.
-`python3 build.py` followed by a static server is a local preview today, on any
-machine with Python. What Python cannot give is a preview *inside* a
-browser-based editor, or on a machine with no Python at all — and whether
-either is worth roughly 400 lines and 49 tests is a Phase 4 question, not one
-Phases 2 and 3 need answered. Left open deliberately, so that nothing built in
-between quietly assumes an answer.
+GitHub Pages with an automated build on push is confirmed, per
+`planning/REPO_AND_EDITOR.md`. Wanting a local preview does not force a
+JavaScript rewrite: `python3 build.py` plus a static server is a local
+preview today, on any machine with Python. A preview *inside* a browser-based
+editor, or on a machine with no Python at all, is a Phase 4 question, left
+open deliberately so nothing built in between assumes an answer.
 *Cost to change: rises with everything built on `build.py`. Decide before the
 editor is built.*
 
 **1.11 — `dev/from_notebook.py` converts notebooks; three things it drops on purpose.**
-The first real series comes from eighteen Jupyter notebooks rather than being
-written from scratch. Converting them is a script rather than an afternoon of
-copying, and the script makes three decisions worth stating.
+The first series is converted from eighteen Jupyter notebooks. Three decisions
+worth stating:
 
-*Saved outputs are dropped.* A notebook stores the output of the last run
-alongside the code. dewlab re-runs everything in the reader's browser, so a
-stored output is redundant at best and, once the code above it changes, a
-confident answer to a question nobody asked.
+*Saved outputs are dropped* — dewlab re-runs everything in the reader's
+browser, so a stored output is redundant at best.
 
-*Magics and shell escapes are dropped, and reported.* `%matplotlib inline` is
-unnecessary here and `!pip install …` cannot work. Silently keeping either
-would produce a cell that fails on the student's first run; silently dropping
-them would hide a change from the author. They are dropped and named in the
+*Magics and shell escapes are dropped, and reported* — `%matplotlib inline`
+is unnecessary and `!pip install …` cannot work; keeping either would produce
+a cell that fails on first run, so both are dropped and named in the
 conversion report.
 
-*Cell ids come from the section heading, not from position.* Ids are what saved
-progress matches on. A positional id rebinds a student's work to the wrong cell
-the first time one is inserted above it, which is precisely the failure
-VERSIONING_AND_PROGRESS.md exists to avoid. `counting-carefully-1` also happens
-to be readable, which matters when an author later edits the markdown by hand.
+*Cell ids come from the section heading, not from position* — ids are what
+saved progress matches on, and a positional id rebinds a student's work to
+the wrong cell the first time one is inserted above it.
 
-The `SOLUTION_` variants are not converted. They exist because a notebook
-cannot check a student's answer; dewlab has `check()`, so converting them would
-duplicate the series to no purpose.
+`SOLUTION_` variants are not converted, since `check()` makes them redundant.
 *Cost to change: small. The conversion is a one-off — after it, the markdown is
 the source and the script has done its job.*
 
 **1.12 — A list written tight against a paragraph is given its blank line.**
-Markdown converters disagree about whether a list may start on the line
-immediately after a paragraph. Most of the ones an author has met before — a
-notebook, GitHub — say yes. The converter here says no, and quietly runs the
-items together into the paragraph instead. Nobody notices until a student is
-reading it: there is no error, no warning, just prose where a list should be.
-Six places in the first converted series were like this.
-
-`build.py` now inserts the blank line rather than leaving the trap open. The
-alternative — warning and asking the author to fix it — trades a silent
-rendering bug for a noisy one, and the author's intent is not in doubt: a line
-beginning with a bullet under a sentence ending in a colon is a list.
+This converter does not allow a list to start immediately after a paragraph
+with no blank line; left alone it quietly runs the items into the paragraph
+with no error or warning. `build.py` now inserts the blank line automatically
+rather than leaving the trap open, since a line beginning with a bullet under
+a sentence ending in a colon is unambiguously a list.
 *Cost to change: small, and the tests pin the edge cases — a hyphenated
 sentence, a dash inside a fence, a list that already had its blank line.*
 
@@ -475,854 +381,641 @@ sentence, a dash inside a fence, a list that already had its blank line.*
 
 **2.1 — Autosave is silent; the restore is not.**
 VERSIONING_AND_PROGRESS.md makes autosave the primary mechanism, so a student
-never has to think about saving. That means the moment they *do* need to think
-about it — coming back to a tutorial that changed underneath them — has to
-announce itself. Work is restored either way; the notice is visible,
-dismissable, and never blocks the page.
-
-The notice says three separate things when they apply: that the tutorial was
-updated, that some saved cells no longer exist here, and that a cell with a box
-or a button in it needs running again before it works. The third is the
-limitation the plan anticipated — a widget's saved HTML comes back, but the
-live Python object behind it does not.
+never has to think about saving. The moment they do need to — coming back to
+a tutorial that changed underneath them — has to announce itself: work is
+restored either way, and the notice is visible, dismissable, and never blocks
+the page. It says up to three things: that the tutorial was updated, that
+some saved cells no longer exist, and that a cell with a widget or button
+needs running again, since the live Python object behind a restored widget
+does not come back.
 *Cost to change: small.*
 
 **2.2 — A saved cell with nowhere to go is reported, not discarded.**
-Restore matches on cell id, so reordering a tutorial or inserting a cell is
-harmless. Deleting one is not: whatever the student wrote there has no home.
-Silently dropping it is the easy path and the wrong one — they wrote it, and
-they should be told it is gone rather than quietly losing it.
+Restore matches on cell id, so reordering or inserting a cell is harmless.
+Deleting one is not: whatever the student wrote there has no home, and they
+should be told it is gone rather than quietly losing it.
 *Cost to change: trivial.*
 
 **2.3 — Saved output is written back as markup, and that is safe here.**
-Restoring means putting stored HTML back into the output area. Everything that
-lands there was escaped on the way in by `tutorial_tools` (0.15), the record
-never leaves the student's own browser, and the only person who can write to it
-is the person reading it. There is no second party for this to be dangerous to.
+Restoring writes stored HTML back into the output area. Safe because
+everything that lands there was already escaped on the way in (0.15), the
+record never leaves the student's own browser, and the only person who can
+write to it is the person reading it.
 *Cost to change: it should not change while the record stays device-local. If
 progress ever syncs between machines, this needs revisiting first.*
 
 **2.4 — Export is a file the student can keep; import replaces what is there.**
-The panel offers a copy to export, a copy to load, and starting again. Import
-overwrites rather than merging: merging two versions of a student's own work
-raises questions neither they nor the tool can answer, and the export exists to
-carry work between machines, not to combine it.
+Import overwrites rather than merging: merging two versions of a student's own
+work raises questions neither they nor the tool can answer, and export exists
+to carry work between machines, not combine it.
 *Cost to change: small, but merging is a design problem rather than an
 implementation one.*
 
 ## Phase 4 addendum — the downloadable copy
 
 **4.1 — One source, two outputs; the export is built, not duplicated.**
-A student should be able to take a tutorial away as a file and still run it.
-The obvious way to get that — keeping a hand-maintained HTML copy of each
-tutorial — is the thing worth refusing: it puts every tutorial in two places,
-and the second one goes stale the first time somebody is in a hurry.
-
-`build.py` therefore writes both from the same markdown in the same run. Editing
-a tutorial regenerates the page and its downloadable twin together, and neither
-can drift from the other because neither is written by hand. The download link
-on each page points at that twin.
+`build.py` writes both the page and its downloadable twin from the same
+markdown in the same run, rather than hand-maintaining a separate HTML copy —
+which would put every tutorial in two places and go stale the first time
+somebody is in a hurry. Editing a tutorial regenerates both together; neither
+can drift from the other since neither is written by hand.
 *Cost to change: small. The export is a transformation of the built page, so it
 follows the page rather than needing to be kept level with it.*
 
 **4.2 — The export is one file that still needs the internet once.**
-A page opened from a file cannot load an ES module, cannot fetch a neighbouring
-file, and cannot resolve a link to a page that is not beside it. So the export
-inlines the stylesheet, the editor, the maths renderer and its fonts, and the
-Python tools; it loads Pyodide through its classic script rather than as a
-module; and it drops the navigation rather than shipping links that would break.
-
-What it does not do is carry Python itself. That is 30 MB and would make the
-file unwieldy for the common case, where a student has a connection the first
-time they open it. If school filtering turns out to block the runtime — the
-risk `OPEN_QUESTIONS.md` 32 tracks — this is the decision to revisit, and the
-runtime can be inlined the same way everything else was.
-
-The runtime says so plainly rather than failing obscurely: with no connection,
-the reading works and a single line explains why the cells do not.
+A page opened from a file cannot load an ES module, fetch a neighbouring
+file, or resolve a link to a page not beside it. So the export inlines the
+stylesheet, editor, maths renderer and fonts, and the Python tools; loads
+Pyodide via its classic script rather than as a module; and drops navigation
+rather than shipping links that would break. It does not inline Python
+itself — 30 MB, unwieldy for the common case of a connection on first open.
+With no connection, the runtime says so plainly: reading works, and one line
+explains why the cells do not.
 *Cost to change: moderate. Inlining Python is a size decision, not a redesign.*
 
 **4.3 — The classic bundle is committed, and CI checks it is not stale.**
-`assets/vendor/standalone.bundle.js` is the whole runtime rebuilt in the older
-script format, committed like the rest of `vendor/` so that `build.py` needs no
-Node. Unlike the rest of that directory it depends on `assets/tutorial-runtime.js`
-rather than on a pinned version, so it goes stale whenever the runtime changes —
-and a stale copy would mean downloaded tutorials quietly behaving like an older
-version of the tool.
-
-CI rebuilds it and fails if the committed copy differs. That turns a silent
-divergence into a failed check.
+`assets/vendor/standalone.bundle.js` is the whole runtime rebuilt in the
+older script format, committed so `build.py` needs no Node. Unlike the rest
+of `vendor/` it depends on `assets/tutorial-runtime.js` rather than a pinned
+version, so it goes stale whenever the runtime changes. CI rebuilds it and
+fails if the committed copy differs.
 *Cost to change: small, but do not remove the check without replacing it.*
 
 **4.4 — A whole series downloads as one archive, built from the same files.**
-One tutorial at a time is right for a student who wants the one they are on.
-It is the wrong shape for a teacher setting up a room or filling a memory stick
-for a class, who would otherwise click through eighteen pages.
-
-So the build gathers each series into `site/download/<series>.zip` and the
-contents page links to it. The archive holds the very files the per-tutorial
-links point at — byte for byte, copied rather than regenerated — so there is no
-third thing that can go stale. A build without the downloadable copies writes no
-archive and the contents page shows no link, which keeps a quick local preview
-quick.
-*Cost to change: small. It is a dozen lines around the files that already exist.*
+`site/download/<series>.zip` gathers each series for a teacher setting up a
+room, rather than making them click through eighteen pages. The archive holds
+the same files the per-tutorial links point at — copied, not regenerated — so
+nothing else can go stale. A build without the downloadable copies writes no
+archive and shows no link.
+*Cost to change: small. It is a dozen lines around the files that already
+exist.*
 
 **5.1 — One Settings menu, not a row of small buttons.**
-The masthead grew a control per feature: "progress" when saving arrived, then
-"texture", with the download sitting in the navigation row because that is where
-there was space. Three unrelated things in two places, each too small to read as
-an invitation, and the navigation row paying for one of them.
-
-They are now one **Settings** button opening one panel with three sections —
-your work, this tutorial, texture. A student who finds Settings once has found
-all of it, and each section can grow without another button appearing beside the
-wordmark. The panel closes on Escape and on a click outside, because a panel
-that can only be dismissed by finding the same small button again is one that
-gets left open.
+One **Settings** button now opens one panel with three sections — your work,
+this tutorial, texture — replacing three separate controls in two places
+("progress", "texture", and download in the navigation row for lack of
+anywhere else). A student who finds Settings once has found all of it. The
+panel closes on Escape and on a click outside.
 *Cost to change: small. It is one panel and one controller.*
 
 **5.2 — The masthead follows the reader down the page.**
-A tutorial is long. With the header at the top only, the way back to the
-contents and the way into Settings were both a scroll to one end — and on a
-phone that is most of a page of scrolling to change the text size.
-
-The masthead is now sticky. Everything that has to clear it measures from
-`--dl-header-h` rather than guessing: the status line, the settings panel, and
-an anchored jump, which would otherwise land its heading underneath the header.
-The parts of the masthead are sized in rem and do not follow the reader's text
-size, so that one number holds at every width.
+The masthead is sticky, so the way to the contents and to Settings is not a
+scroll to one end of a long page. Everything that has to clear it measures
+from `--dl-header-h` rather than guessing: the status line, the settings
+panel, an anchored jump. The masthead's parts are sized in rem and do not
+follow the reader's text size, so that one number holds at every width.
 *Cost to change: small, but change the variable rather than the three places
 that read it.*
 
 **5.3 — The navigation row is a grid, and the phone gets its own shape.**
-Previous / contents / next was a flex row with `margin-inline: auto` holding the
-middle link in place. That works until a title is long or an outer link is
-missing — the first and last tutorial of every series — and then the row goes
-lopsided or pushes a title off the screen.
-
-It is a three-column grid now, so the contents link stays centred whether or not
-the outer two exist, and each title wraps inside its own column. Under 34rem the
-grid becomes previous and next side by side with the contents link beneath, and
-the module name in the masthead gives up its space to the Settings button.
+Previous / contents / next is a three-column grid rather than a flex row, so
+the contents link stays centred whether or not the outer two links exist, and
+each title wraps inside its own column. Under 34rem the grid becomes previous
+and next side by side with contents beneath, and the module name gives up its
+space to the Settings button.
 *Cost to change: small.*
 
 **5.4 — `plt.show()` renders the figure instead of warning about a canvas.**
-Every textbook ends a plot with `plt.show()`, so students write it. Under the
-non-interactive backend dewlab uses, matplotlib's own show() has nothing to draw
-on and says so — a `UserWarning` about `FigureCanvasAgg`, arriving in the cell's
-error colour, under a plot that rendered perfectly well. For someone meeting
-matplotlib for the first time that is indistinguishable from having done
-something wrong.
-
-dewlab replaces `plt.show` with its own, which renders the open figures at the
-point of the call. A cell that draws, prints, then draws again now reads in the
-order it was written. The replacement is installed lazily, since pyplot may not
-be imported yet; a warning filter covers the one cell that imports pyplot and
-calls show() before that lands.
+Under the non-interactive backend dewlab uses, matplotlib's own `show()` has
+nothing to draw on and warns — indistinguishable, to someone meeting
+matplotlib for the first time, from having done something wrong under a plot
+that rendered fine. dewlab's replacement renders the open figures at the
+point of the call instead, installed lazily since pyplot may not be imported
+yet, with a warning filter covering the one cell that calls `show()` before
+that lands.
 *Cost to change: small, but any change should keep both halves — the
 replacement and the filter behind it.*
 
 **5.5 — The chapter navigation sticks with the masthead, as one group.**
-Making the masthead sticky (5.2) left the previous/next row scrolling away, so
-moving on to the next tutorial still meant a scroll to one end of a long page.
-They now stick together.
-
-One group rather than two sticky elements, because everything below has to clear
-whatever is up there: the status line, the settings panel, and an anchored jump,
-which would otherwise land its heading underneath. That height is no longer a
-constant — it depends on how far the neighbouring tutorials' titles wrap, which
-depends on the window and on the reader's text size — so the runtime measures it
-into `--dl-chrome-h` and remeasures on every resize.
+The previous/next row sticks together with the masthead as one group rather
+than a second sticky element, since everything below has to clear whatever is
+up there. That combined height is not constant — it depends on how far the
+neighbouring titles wrap — so the runtime measures it into `--dl-chrome-h`
+and remeasures on resize.
 *Cost to change: small, but the measured variable is load-bearing for three
 other rules.*
 
 **5.6 — A minimal header, chosen rather than imposed.**
-Sticking the navigation costs vertical space, and on a phone with two long
-titles it costs a lot: 143px of a 780px screen. The obvious fix is to drop
-things at narrow widths automatically, which takes the choice away from the
-reader who wanted them.
-
-**Header: full or minimal** in Settings instead. Minimal tightens the masthead
-and truncates the neighbouring titles to one line each — 70px, and nothing is
-removed: every link is still there and still reaches the same place. It is a
-reading-comfort preference like text size, and it lives beside them.
+**Header: full or minimal** lives in Settings, rather than dropping things
+automatically at narrow widths. Minimal tightens the masthead and truncates
+the neighbouring titles to one line each — a reading-comfort preference like
+text size, living beside it. Nothing is removed; every link still reaches the
+same place.
 *Cost to change: small.*
 
 **5.7 — Every page carries its own contents list, built from its headings.**
-A tutorial runs to eight sections. Getting back to one a student half-remembers
-meant scrolling, and the series contents page is no help — it lists tutorials,
-not what is inside them.
-
-The list is generated from the same heading tree that gives the headings their
-ids, so it cannot disagree with the anchors it links to. Closed by default: a
-reader arriving at a tutorial should meet the tutorial, not a list of its parts.
-
-Two rules keep it useful rather than exhaustive. A page with fewer than two
-sections gets none, because a contents list for a single heading is furniture.
-And a sub-heading whose text repeats within the tutorial is left out — five
-entries reading "Your turn" are a list nobody can choose from. The headings keep
-their anchors either way; only the listing drops them.
+Generated from the same heading tree that gives the headings their ids, so it
+cannot disagree with the anchors it links to. Closed by default. A page with
+fewer than two sections gets no list, and a sub-heading whose text repeats
+within the tutorial is left out of the listing, though its anchor still
+works.
 *Cost to change: small.*
 
 **5.8 — Line width has three presets and a slider, not one or the other.**
-The slider alone gave no idea what a good value was, and three buttons alone
-would have taken away a control some readers had already set. So both: narrow,
-medium and wide write to the same number the slider does, and setting something
-between the presets leaves none of the three pressed, which is the honest way to
-show it.
+The slider alone gave no idea what a good value was; presets alone would take
+away a control some readers had already set. Narrow, medium and wide write to
+the same number the slider does, and a value between presets leaves none of
+the three pressed.
 *Cost to change: small.*
 
 **5.9 — The contents page opens with a map, not just a list.**
-A numbered list says what order to read in. It cannot say that the course spends
-four tutorials on programming before any mathematics appears, or that Tutorial
-17 leans on five earlier ones and is therefore the expensive one to move. Those
-are facts about the shape of the material, and a student deciding where they are
-and what they need first is asking about shape.
-
-Inline SVG generated by `build.py`, not a diagramming library: the layout is a
-few dozen lines of arithmetic, and adding a runtime dependency to draw twenty
-boxes would cost more than it saves. Nodes are grouped into the strand a
-tutorial mostly covers, read from `planning/curriculum/outcomes.yaml` — and
-optionally, so that the site still builds from the tutorials alone if the
-planning folder is not there.
-
-The two kinds of arrow do different jobs. Reading order is solid and dark
-because it is an instruction to the reader. "Builds on" is dashed and faint
-because it is a fact about the material — and it is *found*, by reading each
-tutorial for the earlier ones it names, rather than declared somewhere that
-could go stale.
-*Cost to change: moderate. The layout arithmetic is the part to be careful with.*
+A numbered list cannot show the shape of the material — that four tutorials
+cover programming before any mathematics, or that Tutorial 17 leans on five
+earlier ones. Inline SVG generated by `build.py`, not a diagramming library:
+the layout is a few dozen lines of arithmetic. Nodes are grouped into the
+strand a tutorial mostly covers, read optionally from
+`planning/curriculum/outcomes.yaml`, so the site still builds without it.
+Reading-order arrows are solid and dark, an instruction to the reader;
+"builds on" arrows are dashed and faint, a fact about the material found by
+reading each tutorial for the earlier ones it names.
+*Cost to change: moderate. The layout arithmetic is the part to be careful
+with.*
 
 **5.10 — The map is not bound by the reading measure.**
-Everything else on a dewlab page is sized to a comfortable line length. A
-diagram is not prose and reads worse squeezed, so the figure centres itself on
-the column and takes up to 58rem, scrolling inside its own box on a narrow
+A diagram reads worse squeezed to prose width, so the figure centres on the
+column and takes up to 58rem, scrolling inside its own box on a narrow
 screen. The page still never scrolls sideways.
 *Cost to change: small.*
 
 **5.11 — The curriculum map asks the tutorials about their own vocabulary.**
-The tutorials already mark a term being introduced: single-asterisk emphasis,
-the first time a word means something particular. That convention was there
-before anybody thought to check it, which is exactly what makes it usable — it
-is evidence of what an author considered a new word, not a list to maintain.
-
-Two questions come free from it. A term emphasised in two tutorials is being
-introduced twice, or means two things; the tool cannot tell which and says so.
-A term appearing in an earlier tutorial than the one that explains it was used
-as though the reader already knew it.
-
-Neither is a verdict. `index` turned up under the first question and cost a
-rewrite; `modular` turned up the same way and is merely said twice.
+It reuses the existing convention of single-asterisk emphasis for a term
+being introduced — evidence of what an author considered new, not a list to
+maintain. Two checks follow: a term emphasised in two tutorials is being
+introduced twice or means two things, and the tool cannot tell which; a term
+used before the tutorial that explains it appears was used as though the
+reader already knew it. Neither is a verdict.
 *Cost to change: small. The stress-word list is the only hand-maintained part,
 and a wrong entry there costs a little noise, not a wrong answer.*
 
 **5.12 — Asset URLs carry a content hash.**
-The map rendered as black boxes and filled blobs on a phone that had visited the
-site before. Nothing was wrong with the markup or the stylesheet: the browser was
-still serving the stylesheet it had downloaded on an earlier visit, so the page
-was new and the CSS was old.
-
-That failure does not look like caching. It looks like the site is broken, and
-only for people who have been here before — which is every student after their
-first lesson, on a school machine that caches aggressively.
-
-Every asset URL the markup names now ends in a short hash of that file's
-contents. Hashed per file rather than one version for the lot, so editing the
-stylesheet does not also force a fresh download of the 266 KB maths bundle. The
-one file the runtime fetches for itself, `tutorial_tools.py`, is not in the
-markup and so cannot be busted by it; its version travels in the manifest
-instead.
-
-`vendor/katex.bundle.js` is deliberately left unversioned: the standalone export
-can only bundle that import into one file if the specifier is a plain string,
-and the bundle is vendored and pinned, so it changes only when we re-vendor on
-purpose.
-*Cost to change: small. But removing it brings the bug back invisibly.*
+Every asset URL ends in a short hash of that file's contents, hashed per file
+rather than one version for the lot, so editing the stylesheet does not also
+force a fresh download of the maths bundle — this is what stops a browser
+serving a stale cached asset against a newly built page. `tutorial_tools.py`
+is not named in the markup and so cannot be busted this way; its version
+travels in the manifest instead. `vendor/katex.bundle.js` is deliberately left
+unversioned, since the standalone export can only bundle that import into one
+file if the specifier is a plain string.
+*Cost to change: small. But removing it brings the cache-staleness bug back
+invisibly.*
 
 **5.13 — The standalone export fails loudly when a substitution finds nothing.**
 The export works by replacing markup this same file wrote moments earlier.
-`str.replace` with no match is a silent no-op, so when the asset URLs gained a
-version the export quietly stopped inlining the stylesheet, and only the tests
-noticed. Every replacement now raises instead, naming what it could not find.
-*Cost to change: small, and it is the guard that made the previous entry safe.*
+Every replacement now raises if it finds nothing, naming what it could not
+find, rather than letting `str.replace` no-op silently.
+*Cost to change: small, and it is the guard that made 5.12 safe.*
 
 **6.1 — The map became a topic tree, on its own page.**
-The map on the contents page was of *tutorials*, and it had to fit above a list
-without pushing it off the screen. Both of those were limits, and the second was
-the reason it could never be more than a diagram.
-
-On its own page it can take the window, and it can be about topics rather than
-tutorials: all 67 outcomes in both descriptors, laid out left to right by what
-has to come first and grouped top to bottom by subject. Two axes doing two jobs,
-so a strand reads as a band across the whole tree and nothing ever points
-backwards.
-
-Drag to pan, scroll to zoom, choose a topic to read it. No library — the layout
-is computed in `build.py` and arrives as data, so the page has nothing to fetch
-and the interaction is the forty lines of pointer handling a library would have
-needed anyway.
+A full-page diagram of all 67 outcomes, laid out left to right by prerequisite
+order and grouped top to bottom by subject, replacing the tutorial map's
+cramped spot above the contents list and shifting the subject from tutorials
+to topics. Drag to pan, scroll to zoom, choose a topic to read it; no library
+— the layout is computed in `build.py` and arrives as data.
 *Cost to change: moderate. The layout arithmetic and the pan/zoom clamping are
 the parts to be careful with.*
 
 **6.2 — The tutorial map moved rather than being deleted.**
-It shows something the topic tree does not: which tutorials lean on which, found
-by reading each tutorial for the earlier ones it names. That is evidence about
-our own material and it exists nowhere else, so it sits under the tree on the
-same page rather than being replaced by it.
+It shows something the topic tree does not: which tutorials lean on which,
+found by reading each tutorial for the earlier ones it names. That evidence
+exists nowhere else, so it sits under the tree on the same page rather than
+being replaced by it.
 *Cost to change: small.*
 
 **6.3 — Light and dark cost nothing because the tree uses the same shell.**
-It could have been a standalone page with its own styling. Built on the shell
-every tutorial uses, it inherits the masthead, the settings panel, the theme
-tokens and the reader's saved preferences — so "works in dark mode" was not a
-feature to build, it was a consequence of not building a second thing.
+Built on the shell every tutorial uses, it inherits the masthead, the
+settings panel, the theme tokens and the reader's saved preferences — "works
+in dark mode" was a consequence of not building a second thing, not a feature
+to build.
 *Cost to change: small, but building it standalone would have cost far more.*
 
 **6.4 — The contents page introduces rather than illustrates.**
 With the map gone it says what dewlab is to somebody who has just arrived —
-nothing to install, nothing to break, work saved in this browser — and then gets
-out of the way of the list they came for.
+nothing to install, nothing to break, work saved in this browser — and then
+gets out of the way of the list they came for.
 *Cost to change: small.*
 
 **7.1 — Reading order lives in one file per series, not in every tutorial.**
-`order: 12` in each tutorial's frontmatter meant inserting one in the middle was
-an edit to every file after it. In `<series>.order.yaml` — a list of slugs —
-moving a tutorial is moving a line and inserting one is adding a line.
+`order: 12` in each tutorial's frontmatter meant inserting one tutorial in the
+middle was an edit to every file after it. `<series>.order.yaml` — a list of
+slugs — replaces it: moving a tutorial moves a line, inserting one adds a line.
 
-The build checks both directions. A tutorial the file forgets stops the build;
-so does a slug with no tutorial behind it, which is the more dangerous of the
-two because the file looks complete and the series is quietly short. And a
-tutorial still carrying `order:` in its frontmatter stops the build rather than
-having that field silently ignored — half-migrated is worse than either state,
-since the ignored field is exactly the one somebody would edit.
-
-This is what makes the editor small: it edits one list. It is also what makes
-the editor optional, because one list is something a person can reorder by hand
-in the GitHub web interface.
+The build fails if a tutorial is missing from the file, if a slug in the file
+has no tutorial, or if a tutorial still carries `order:` in its frontmatter.
+This keeps the editor small (it edits one list) and optional, since the list
+can be reordered by hand.
 *Cost to change: moderate, and it should not change again.*
 
 **7.2 — The numbers are gone from titles, slugs and prose.**
 "Tutorial 14: Expressions Come Alive" is now "Expressions Come Alive", at
-`expressions-come-alive.html`, and the fifty prose references say the name
-rather than the number. Published URLs changed, which is the real cost and the
-reason to do it exactly once.
+`expressions-come-alive.html`, with prose references using the name rather
+than the number. Published URLs changed as a result.
 
-What it buys is that inserting a tutorial anywhere is now free. Nothing carries
-a position except the order file, so the re-planned series — splitting Tutorial
-13, adding the maths tutorials, putting the two conversions near the front — no
-longer implies a fifty-place edit that nothing verifies.
-*Cost to change: high, in the sense that putting them back would be as much
-work again.*
+Nothing carries a position except the order file, so inserting a tutorial
+anywhere is now free.
+*Cost to change: high — putting them back would be as much work again.*
 
 **7.3 — A slug is unique within its module, not across the site.**
-The rename made both modules want `first-steps`, and the built path already
-carries the module, so there was never any real ambiguity — only a global check
-that would have forced tutorials to be named around a constraint that does not
-exist.
+A built path already carries the module, so there is no real ambiguity in two
+modules sharing a slug — only a global uniqueness check that would force names
+around a constraint that does not exist.
 
-`tutorial:slug` links now look in the linking tutorial's own module first, fall
+`tutorial:slug` links look in the linking tutorial's own module first, fall
 back to another module when exactly one has that slug, and stop the build when
-more than one does. Guessing would be the only other option.
+more than one does.
 *Cost to change: small.*
 
 **7.4 — "Builds on" is found by title now.**
-The map's dashed arrows were found by matching "Tutorial 11" in the prose. With
-the numbers gone they match titles instead — which is what a tutorial would
-naturally write anyway, and turned out to find exactly the same seven
-references.
+The map's dashed arrows used to match "Tutorial 11" in the prose; with numbers
+gone they match titles instead — what a tutorial would naturally write anyway,
+and it found the same seven references.
 *Cost to change: small.*
 
 **7.5 — A downloadable copy lives under its module, like its page.**
-Scoping slugs to the module (7.3) left one thing keyed by slug alone: the flat
-`site/download/` folder. Two modules each having a `first-steps` meant one
-silently overwrote the other, and the loser simply never appeared.
+Scoping slugs to the module (7.3) left the flat `site/download/` folder keyed
+by slug alone: two modules sharing `first-steps` meant one silently overwrote
+the other. Caught by the 4.3 publish guard on main.
 
-The publish guard from 4.3 caught it — *"20 tutorial pages but 19 downloadable
-copies"* — on main, which is later than it should have been. The unit tests had
-a case for two modules sharing a slug and a case for the downloadable copies,
-and neither exercised both at once.
-
-Copies now sit under `download/<module>/`, and four tests cover the crossing.
-Each was checked against the broken build first: all four fail without the fix.
+Copies now sit under `download/<module>/`, with four tests covering the
+crossing (each checked to fail against the unfixed build).
 *Cost to change: small, and the guard is what makes it safe.*
 
 **7.6 — Dependencies answer "can I start this now?", not "what comes next?".**
-The topic tree was built topic by topic — "what does this one obviously need?" —
+The topic tree built topic by topic asks "what does this one obviously need?",
 which produces edges that are individually reasonable and collectively
-arbitrary. The core architectural intent is reachability: giving students the
-opportunity to explore freely, discover areas requiring extra practice, and
-enabling instructors to plan module coverage flexibly.
+arbitrary. The real intent is reachability — letting students explore freely,
+find where they need more practice, and letting instructors plan module
+coverage — and a reachability map wants as few edges as it can honestly get
+away with, since every edge closes a door.
 
-That inverts the design rule. A route wants few branches and one clear line; a
-reachability map wants as few edges as it can honestly get away with, because
-**every edge closes a door**. Three trees built on three different rules are
-written up in `planning/curriculum/DEPENDENCIES.md`, with the places they
-disagree left visible rather than quietly resolved. Tree C — five gateway topics
-with everything else hanging off one — is what shipped.
-
-The measured result is not the one predicted: it added an edge rather than
-removing seven. What actually moved was depth, from a longest path of 6 to 5,
-with one more topic open from a standing start.
+Three candidate trees are recorded in `planning/curriculum/DEPENDENCIES.md`,
+with the places they disagree left visible. Tree C — five gateway topics with
+everything else hanging off one — shipped. It added one edge rather than
+removing seven from the prior version, and moved longest path from 6 to 5
+while opening one more topic from a standing start.
 *Cost to change: small. It is one `needs:` list per topic in `topics.yaml`.*
 
 **7.7 — Discover first, name afterwards.**
-Pedagogical principle: Discover first, name afterwards. Rather than introducing
-formal terminology upfront before practical motivation, concepts are discovered
-through step-by-step concrete reasoning. Applied systematically, this determines
-dependency directions. Divide and conquer no longer comes before searching and
-sorting — binary search is the reason to care about the idea, so it now comes
-after it. Substitution comes before the chain rule for the same reason, and
-because substitution is algebra students have already practiced.
+Concepts are discovered through concrete reasoning before formal terminology
+is introduced, and this determines dependency direction: divide and conquer no
+longer precedes searching and sorting, since binary search is the reason to
+care about it, so it now comes after. Substitution comes before the chain rule
+for the same reason, and because it is algebra students have already
+practiced.
 *Cost to change: small, and reversible per topic.*
 
 **7.8 — The tree reads downwards.**
-Roots at the top, and nothing ever points upwards. The first attempt was the
-direct flip of the old horizontal layout — one column per subject — which
-measured 5854px wide against 756px tall: a horizontal tree wearing a hat, and
-useless on a phone. With twelve subjects there is no width to spend, so subject
-stopped being an axis and became a sort. A tier wider than five topics wraps,
-subjects stay grouped within a tier, and each node carries its subject as a
-colour. The tree is now 1058 × 1768 and fits a phone.
+Roots at the top, nothing points upwards. A first attempt kept the old
+horizontal, one-column-per-subject layout and measured 5854×756px — wide and
+useless on a phone. Subject stopped being an axis and became a colour-coded
+sort instead; a tier wider than five topics wraps, subjects stay grouped
+within a tier. The tree is now 1058×1768 and fits a phone.
 
-Two bugs fell out of the change. The zoom controls sit inside the frame, and the
-frame starts a pan on any press that is not a topic — so pressing +, − or fit
-captured the pointer and swallowed the click. They had never worked. And the
-zoom floor of 0.35 was set against the old short tree; against the tall one it
-stopped "fit" from fitting.
+Two bugs fell out of the change: the zoom controls sat inside the pannable
+frame and never worked, since any non-topic press started a pan; and the zoom
+floor (0.35) was tuned for the old short tree and stopped "fit" from fitting
+the new tall one.
 *Cost to change: small.*
 
 **7.9 — The tutorials do not name the assessments.**
-The prose named them throughout: *"you are now ready for Skills Demo 1"*, *"the
-last tutorial before Skills Demo 2B"*, *"in the next set of tutorials and Skills
-Demo 2"*. Thirteen references across nine tutorials.
+Prose named specific institutional assessments throughout ("you are now ready
+for Skills Demo 1") — thirteen references across nine tutorials — tying the
+material to one institution's schedule, the thing most likely to change. Each
+was rewritten to say what readiness consists of instead ("you are now ready to
+build these tools fresh, from nothing but the ideas").
 
-That ties the material to one institution's assessment schedule, and the
-schedule is the thing most likely to change. Every reference had a version that
-said the same thing about the student's own work — "you are now ready to build
-these tools fresh, from nothing but the ideas" says more than "you are now ready
-for Skills Demo 1" did, because it says what readiness consists of.
-
-A test guards it. Not because anybody would put them back deliberately, but
-because prose written next year will reach for whatever the prose around it
-does.
+A test guards against this recurring, since prose written later tends to reach
+for whatever surrounds it.
 
 **7.10 — Reflection is its own series, not the last tutorial.**
-"Looking Back Before Moving Forward" sat at position eighteen of eighteen, which
-said it was the thing you do at the end. It is not: it is the thing you come
-back to whenever you have finished something worth looking at again. It now
-lives in a `Reflections and review` series of its own, and its text no longer
-assumes you have just handed in one particular piece of work.
+"Looking Back Before Moving Forward" sat at position eighteen of eighteen,
+implying it was an end-of-course task, when it is really something to return
+to after finishing anything worth reviewing. It now lives in its own
+`Reflections and review` series, with text no longer assuming one specific
+handed-in piece of work.
 
-Splitting it surfaced three things that had never been exercised, because no
-module had ever had two series:
-
-- The contents page headed each series with its **filename slug** rather than
-  the name in its order file.
-- The archive link read *"Download all 1 as single files"*.
-- The curriculum map's sequence graph keyed nodes on `order`, which restarts at
-  1 per series — so it emitted two nodes called `T1` and an arrow from one of
-  them to itself. The back-reference finder had the same fault.
-
+Splitting it surfaced three latent bugs, since no module had ever had two
+series before: the contents page headed each series by filename slug rather
+than its order-file name; the archive link read "Download all 1 as single
+files"; and the curriculum map's sequence graph keyed nodes on `order`, which
+restarts at 1 per series, producing two nodes called T1 and a self-loop arrow
+(the back-reference finder had the same fault).
 *Cost to change: small. Moving it back is a line in each of two order files.*
 
 **7.11 — The editor edits content, and previews structure rather than appearance.**
-The editor supports both series/tutorial management (reordering, inserting,
-creating) and content editing (prose, frontmatter, and code cells).
-
-A full live browser preview of rendered HTML would require maintaining a
-parallel client-side renderer alongside the Python-Markdown build pipeline. A
-secondary renderer that drifts from `build.py` provides inaccurate feedback.
-Consequently, the editor previews structural validity: runnable cell counts,
-cell IDs, headings, and build-breaking syntax issues (e.g. unclosed fences,
-missing or duplicate IDs). Visual rendering is inspected via the built site.
+A full live browser preview of rendered HTML would need a parallel
+client-side renderer alongside the Python-Markdown build pipeline, which would
+drift from `build.py` and give inaccurate feedback. The editor instead
+previews structural validity — runnable cell counts, cell IDs, headings,
+build-breaking syntax issues (unclosed fences, missing or duplicate IDs) — and
+visual rendering is checked on the built site.
 *Cost to change: small. The parser is pure and tested on its own.*
 
 **7.12 — Renaming a cell id destroys saved work, and only the editor can say so.**
-A cell's id is the key a student's work is stored under. Renaming one does not
-move their work; it orphans it, and the cell comes back empty. The build cannot
-warn about this — by the time it runs, the old id is gone. The editor is the
-only place both versions exist at once, so it names the ids that vanished
-before the commit is made.
+A cell's id is the key a student's work is stored under; renaming one orphans
+that work rather than moving it, and the build cannot warn about this because
+by the time it runs the old id is gone. The editor is the only place both
+versions exist at once, so it names the ids that vanished before the commit is
+made.
 *Cost to change: small, but the warning is the reason the feature is safe.*
 
 **7.13 — Divide and conquer sits beside searching and sorting, not before it.**
-Searching and sorting are split into distinct tutorials (`finding-things` and
-`putting-things-in-order`), with divide and conquer presented within both:
-binary search halving a sorted list, and merge sort halving an unsorted list.
-In `topics.yaml`, divide and conquer depends on iterating by index, matching
-searching and sorting, with neither configured as a prerequisite of the other.
+Searching and sorting are split into distinct tutorials (`finding-things`,
+`putting-things-in-order`), with divide and conquer presented within both —
+binary search halving a sorted list, merge sort halving an unsorted one. In
+`topics.yaml`, divide and conquer depends on iterating by index, matching
+both, with neither configured as the other's prerequisite.
 *Cost to change: one line.*
 
 **7.14 — Some things a student needs are nobody's learning outcome.**
-Certain foundational topics (e.g. categorization of triangles, the Cartesian
-coordinate plane for the unit circle) are necessary precursors to syllabus
-outcomes but are not explicitly enumerated in curriculum descriptors.
-
-Topics may now carry a `PRE-` code, meaning **groundwork**: assumed, met in
-passing wherever it is first needed, and belonging to no outcome. They show on
-the map as groundwork rather than as "planned", which would have read as a gap
-in the course. They also carry their own `strand:`, since strands come from
-`outcomes.yaml` and a non-outcome would otherwise land in "other" — which is
-not a subject, it is a shrug.
-
-The guard against typos survives: a `MIT-` or `PDP-` code must still be a real
-outcome.
+Foundational precursors (e.g. categorizing triangles, the Cartesian plane for
+the unit circle) are necessary but not enumerated in curriculum descriptors.
+Topics may now carry a `PRE-` code meaning **groundwork**: assumed, met in
+passing wherever first needed, belonging to no outcome. They show on the map
+as groundwork rather than "planned", and carry their own `strand:` rather than
+falling into a meaningless "other". The typo guard survives — a `MIT-`/`PDP-`
+code must still be a real outcome.
 *Cost to change: small. One code prefix and one branch in the state.*
 
 **7.15 — The colours on the tree are explained where they are used.**
-Every node carries its subject as a coloured edge, and the only way to learn
-what a colour meant was to choose a topic and read the panel — the wrong way
-round for a key. There is now one on the page, generated from the strands
-actually on the tree, so it cannot list a colour nothing uses or miss one that
-is there.
+Every node carries its subject as a coloured edge, but the only way to learn
+what a colour meant was to open a topic and read its panel. A key now sits on
+the page, generated from the strands actually present, so it can't list an
+unused colour or omit one that's there.
 *Cost to change: small.*
 
 **7.16 — The zoom controls are above the tree, not on it.**
-They floated over the canvas, which meant they covered whichever topics
-happened to sit under them and took the clicks meant for those topics —
-invisibly, differently at every zoom level, and only noticed because adding one
-topic moved the layout enough to put a tested node underneath them.
-
-The guard added in 7.8, which stopped the frame stealing presses on the
-controls, is gone with them: outside the frame it guards nothing.
+They used to float over the canvas, covering whichever topics sat underneath
+and stealing their clicks — invisibly, differently at every zoom level,
+noticed only when a layout change put a tested node underneath them. The 7.8
+guard against the frame stealing presses is removed along with them, since
+outside the frame it guards nothing.
 *Cost to change: small.*
 
 **7.17 — A tutorial is archived, not deleted.**
-Deleting the file was the only way to retire a tutorial, and deleting it would
-strand every student who had saved work in it: the work sits in local storage
-keyed to a page that no longer exists, with no way back and no trace it was ever
-there. That is why the editor was built without a delete button.
+Deleting a tutorial's file was the only way to retire it, which would strand
+any student's saved work — kept in local storage keyed to a page that no
+longer exists, with no way back and no trace. The editor was built with no
+delete button for this reason, fixed before the first cohort rather than
+after.
 
-*Nobody has lost anything yet — the site has not been in front of a class, so
-there is no saved work anywhere.* The property is a property of the design, and
-it was worth fixing before the first cohort rather than after.
-
-`status: archived` in the frontmatter. The page is still built, still runs, and
-still holds whatever a student saved. What changes is everything about its
-place on the course: it leaves the reading order, it has no previous and no
-next, it is not in the series archive, it is listed under *Archive* on the
-contents page rather than among the series, and it opens with a notice saying
-it is not part of the course any more.
-
-`live` is the default, so nothing already written has to say anything.
-Deleting a file is still possible and still the right move for something
-published in error — archiving is now the ordinary gesture.
+`status: archived` in frontmatter keeps the page built and runnable, still
+holding saved work, but removes it from the reading order (no previous/next),
+the series archive, and lists it under *Archive* on the contents page with a
+notice that it's not part of the course. `live` is the default, so nothing
+already written needs to say anything; deleting a file is still the right
+move for something published in error.
 *Cost to change: small.*
 
 **7.18 — An archived tutorial teaches nothing the map can point at.**
-It taught what it taught. But a student picking a topic today cannot be sent
-there, so counting it as coverage would make the map claim an outcome is
-covered when nothing on the course covers it — the exact lie the map exists to
-prevent. Both the topic tree and `dev/curriculum_map.py` skip archived
-tutorials when working out where an outcome is taught.
-
-This is the entry most worth disagreeing with. The other reading is that
-coverage means "we have written this", in which case an archived tutorial still
-counts and the map is a record of work rather than a guide to the course.
+A student today cannot be sent to an archived tutorial, so counting it as
+coverage would let the map claim an outcome is covered when nothing on the
+course covers it — the exact lie the map exists to prevent. Both the topic
+tree and `dev/curriculum_map.py` skip archived tutorials when working out
+where an outcome is taught. (The alternative reading — coverage means "we have
+written this" — would make the map a record of work rather than a guide to
+the course.)
 *Cost to change: small — two `continue`s.*
 
 **7.19 — Listing an archived tutorial in the order file stops the build.**
-A reading order is a route through the course and a retired tutorial is not on
-the route, so the two statements contradict each other. Ignoring the line
-silently would leave the order file saying one thing and the site doing
-another, which is the class of problem the order file was introduced to end.
-
-The empty case falls out of it: archiving the last tutorial in a series leaves
-`order:` with nothing under it, and that is a real state rather than a broken
-file. It is accepted, and the series simply stops appearing. `order:` missing
-altogether is still an error.
+A reading order is a route through the course; a retired tutorial is not on
+that route, so listing it there is a contradiction the build now catches
+rather than leaving the order file to disagree with the site. Archiving the
+last tutorial in a series leaves `order:` empty, which is accepted (the series
+stops appearing) — `order:` missing entirely is still an error.
 *Cost to change: small.*
 
 **7.20 — The version field is a readable date.**
-`2026.08.20.1` — year, month, day, and which release of that day — rather than
-an integer.
+`2026.08.20.1` — year, month, day, and which release of that day — replaces an
+integer. The restore comparison stringifies both sides and checks equality,
+not ordering, and restore itself matches on cell id, so a string version
+works unchanged. It also removes a redundant `released:` field, since
+`version:` already carries the date.
 
-The restore comparison is
-`String(record["tutorial-version"]) !== String(currentManifest.version)`: both
-sides stringified, compared for equality, not ordering. A string works with it
-unchanged, and the restore itself matches on cell id rather than on version, so
-no saved work depends on the type.
-
-It also removes redundant metadata: having `version:` carry the release date
-eliminates the need for a separate `released:` field.
-
-Two details that matter: sort on the four parsed numbers, because
-`2026.08.20.10` sorts before `2026.08.20.9` as a string. And the label a student
-reads stays prose — "20 August 2026" — with the dotted form kept for the file,
-the frontmatter and the URL.
+Sorting uses the four parsed numbers (`2026.08.20.10` sorts before `.9` as a
+string). The label a student reads stays prose ("20 August 2026"), with the
+dotted form kept for the file, frontmatter, and URL.
 *Cost to change: small while nothing is versioned yet; large once tutorials
 carry dated versions and students have saved against them.*
 
 **7.21 — Saved work is keyed on the module and the slug, not the slug alone.**
-A slug is unique within its module (7.3), and both modules have a
-`first-steps`. `progressKey()` was the prefix plus the slug, so the two
-tutorials shared one record: answers written in one appeared in the other, and
-each save overwrote the other. The manifest now carries the module and the key
-is the pair.
-
-Scoping slugs per module requires that every layer — built pages (#23),
-downloadable copies (#24), and saved progress — identifies tutorials by the
-`(module, slug)` pair rather than the slug alone.
-*Cost to change: small today, a migration inside every student's browser after
-the first class.*
+Since a slug is only unique within its module (7.3), two tutorials sharing a
+slug shared one `progressKey()` record, so answers in one overwrote the other.
+The manifest now carries the module, and the key is the `(module, slug)` pair
+— the same pairing required of built pages and downloadable copies.
+*Cost to change: small today, a migration inside every student's browser
+after the first class.*
 
 **7.22 — Loading a saved file checks before it overwrites.**
-"Load a copy" wrote whatever JSON it was handed into this page's key and only
-then found the cells did not match. By then the student's real work was gone,
-replaced by somebody else's, under a notice explaining that some cells could
-not be placed.
-
-The record now carries its module as well as its slug, the exported filename
-carries the module, and a file from elsewhere is refused by name with nothing
-changed. Lenient in one direction: a record with no module still loads on a
-matching slug, so a file written before the module was recorded does not hit a
-cliff.
+"Load a copy" used to write the JSON it was handed straight into the page's
+key and only then discover the cells didn't match — by which point the
+student's real work was already gone. The saved record now carries its
+module, the exported filename carries the module, and a file from elsewhere
+is refused by name with nothing changed. Lenient one way: a record with no
+module still loads on a matching slug, so files written before the module was
+recorded don't hit a cliff.
 *Cost to change: small.*
 
 **7.23 — Four contracts, audited once while changing them was free.**
-Before publishing to a live cohort, slugs, cell ids, the save record's
-shape and the version field were audited (`planning/WINDOW_AUDIT.md`).
-
-Cell ids are sound: 228 of them, none non-conforming, and the twelve reused
-across tutorials are safe precisely because storage is keyed per tutorial. The
-version field restore already compares versions as strings and so tolerates the
+Before publishing to a live cohort, slugs, cell ids, the save record's shape,
+and the version field were audited (`planning/WINDOW_AUDIT.md`). Cell ids
+checked out sound — 228 of them, none non-conforming, and the twelve reused
+across tutorials are safe because storage is keyed per tutorial. The
+version-field restore already compared versions as strings and tolerates the
 dotted date.
-*Cost to change: this window closes on the day the first class opens the site.*
+*Cost to change: this window closes on the day the first class opens the
+site.*
 
 **7.24 — A version is a release date, and the newest live one answers the
 tutorial's URL.**
-`version: 1` became `version: 2026.09.15.1` — year, month, day, and which
-release of that day. One field carries identity, order and the date a student
-reads; a separate `released:` would be a second copy of the first three numbers,
-and two fields that can disagree are worse than one that cannot (`VERSIONS.md`).
+`version: 1` became `version: 2026.09.15.1`. One field carries identity,
+order, and the date a student reads; a separate `released:` would be a second
+copy of the same numbers, and two fields that can disagree are worse than one
+that can't.
 
-The unversioned URL serves the **newest `live`** version. Every link written
-before versions existed — inside a tutorial, on the topic tree, in bookmarks —
-keeps working and keeps meaning "the current one". Other versions sit beneath it
-at `<slug>/v<version>.html`.
-
-That one rule supports the beta workflow with no extra machinery: freeze the
-current release, mark the working copy `beta`, and students keep the frozen live
-one until the beta is promoted.
-*Cost to change: high now, in the sense that undoing it would be as much work.*
+The unversioned URL serves the newest `live` version, so every link written
+before versions existed keeps working and keeps meaning "the current one".
+Other versions sit beneath it at `<slug>/v<version>.html`. This one rule also
+supports the beta workflow with no extra machinery: freeze the current
+release, mark the working copy `beta`, and students keep the frozen live one
+until the beta is promoted.
+*Cost to change: high now, in the sense that undoing it would be as much
+work.*
 
 **7.25 — Status is about the course; default is about the release.**
-Two orthogonal concerns that read like one. `status` specifies how a tutorial
-stands to the curriculum — `draft` (not built), `beta` (built, reachable,
-never the default), `live` (standard), `archived` (retired from active route).
-Whether a version is the *default* says which release students get, and a
-superseded release is still `live`: it was a real release, it is simply not the
-current default.
-
-Conflating them during early test implementation highlighted the distinction:
-marking a superseded version `archived` incorrectly presented it as having left
-the course rather than as an older valid release.
+`status` (`draft`/`beta`/`live`/`archived`) says how a tutorial stands to the
+curriculum. Whether a version is the *default* says which release students
+get — a superseded release is still `live`, just no longer the default.
+Conflating the two during early implementation meant marking a superseded
+version `archived`, which wrongly presented it as having left the course
+rather than as an older valid release.
 *Cost to change: small.*
 
 **7.26 — A draft is the only honest way to have something unpublished.**
-The site is static and public: anything built has a URL, and a URL is public.
-There is no server and no login, so "not finished" has exactly two meanings and
-they differ by whether a page exists. A draft is not built. A beta is built and
-findable only by someone given the link, and says so unmissably.
+The site is static and public — anything built has a URL, and a URL is public
+— so "not finished" has exactly two meanings that differ by whether a page
+exists. A draft is not built; a beta is built, findable only by link, and
+says so unmissably.
 *Cost to change: small.*
 
 **7.27 — Setting a status is two files, and that is why it belongs in the editor.**
-The frontmatter field on its own would be trivial to edit by hand. What is not
-trivial is that only a live tutorial is on the reading order, and the build
-refuses an order file that lists anything else (7.19) — so the line has to move
-with the field, or the next build stops. The editor does both in one commit.
-
-The list shows the four statuses on every tutorial with the current one marked,
-which also answers "what state is everything in?" at a glance.
-
-Taking a tutorial off the reading order previously removed it from the editor
-listing when the list was generated from the order file. The editor list now
-displays all tutorials belonging to a series, with off-route tutorials clearly
-demarcated.
+The frontmatter field alone would be trivial to hand-edit, but only a live
+tutorial belongs on the reading order and the build refuses an order file
+listing anything else (7.19) — so the frontmatter and the order line have to
+move together or the next build stops. The editor does both in one commit,
+and its tutorial list shows all four statuses with the current one marked,
+rather than only the tutorials still on the reading order.
 *Cost to change: small.*
 
 **7.28 — Modules appear in a declared order, not an alphabetical accident.**
-The contents page sorted modules by folder name, so Computational Methods came
-before Programming and Maths, Integrated for no reason anybody chose. That is
-the same invisible ordering the series order files were introduced to end
-(7.1), surviving one level up.
-
-`tutorials/modules.yaml` lists module names in the order they should appear.
-Lenient where the series files are strict: a tutorial missing from its order
-file vanishes from the site (which stops the build), whereas an unlisted module
-still appears at the end.
+The contents page sorted modules by folder name — the same invisible ordering
+the series order files (7.1) were introduced to end, surviving one level up.
+`tutorials/modules.yaml` now lists module names in display order. Lenient
+where the series files are strict: an unlisted module still appears (at the
+end) rather than failing the build.
 *Cost to change: small.*
 
 **7.29 — Log consolidation and duplicate sequence resolution.**
-Decisions 7.11 to 7.15 were reconciled after branch merges. Two branches both
-numbered an entry 7.20, so the second was indexed as 7.28 with citation
-continuity maintained.
+Entries 7.11–7.15 were reconciled after branch merges; two branches had both
+numbered an entry 7.20, so the second was reindexed to 7.28 with citations
+kept consistent.
 *Cost to change: none.*
 
 **7.30 — The picker tells a reader what will happen instead of warning them.**
-Switching tutorial versions provides exact, checkable counts of which cells
-carry over rather than ambiguous warnings. If work survives deterministically,
-the interface should state that clearly.
-
-Restore matches on cell id, so which answers survive a move is knowable before
-the reader makes it. The manifest now carries every release's cell ids, a few
-hundred bytes beside a payload that already holds every cell's source, and each
-option in the list states:
+Switching tutorial versions now gives exact, checkable counts of which cells
+carry over, rather than an ambiguous warning — restore matches on cell id, so
+which answers survive a move is knowable in advance. The manifest carries
+every release's cell ids, and each option in the list states, e.g.:
 
 > **2 June 2026** — 2 of your 3 answers carry over. 1 cell is not in that
 > version, so that answer stays saved but is not shown there.
 
-"Stays saved but is not shown" rather than "will be lost", because the record is
-keyed by tutorial, not by release, and the answer reappears when returning to a
-version containing the cell.
+"Stays saved but is not shown" rather than "will be lost", since the record
+is keyed by tutorial, not by release, and the answer reappears on returning to
+a version with that cell.
 *Cost to change: small. The counts are one function and the ids are one build
 step.*
 
 **7.31 — Which release a reader gets is the last one they worked in.**
-Two rules govern release resolution:
-1. The build determines what the unversioned URL serves (the newest live
-   release) for first-time visitors.
-2. For returning visitors, the browser resolves to the version the user last
-   worked in, unless explicitly chosen otherwise.
-
-The pin is written when selecting a release from the list, and again whenever
-saving work in one. Working in a release outranks older selections.
-
-Where no pin exists, the saved record's `tutorial-version` provides the fallback.
-*Cost to change: small. "The version last worked in" guarantees seamless continuity.*
+The build determines what the unversioned URL serves (the newest live
+release) for first-time visitors. For returning visitors, the browser
+resolves to the version last worked in, unless explicitly chosen otherwise.
+The pin is written on selecting a release and again on saving work in one;
+working in a release outranks older selections. Where no pin exists, the
+saved record's `tutorial-version` is the fallback.
+*Cost to change: small. "The version last worked in" guarantees seamless
+continuity.*
 
 **7.32 — The marker is conditional rather than invisible, and it is a date.**
-Single-release tutorials show no version badge beside the title. Tutorials with
-multiple releases display a persistent date marker (e.g. "15 September 2026")
-rather than a hover tooltip, ensuring touchscreens and mobile devices retain the
-indicator.
+Single-release tutorials show no version badge. Tutorials with multiple
+releases show a persistent date marker (e.g. "15 September 2026") rather than
+a hover tooltip, so touchscreens and mobile keep the indicator.
 *Cost to change: none. It is built from the manifest at load.*
 
 **7.33 — A downloaded copy has no version list.**
-Only the default release gets a standalone copy, so the other releases are not
-on the reader's disk. A picker offering to move to files that are not there is
-worse than no picker, so the list is stripped from the standalone manifest and
-the runtime removes the section that would have shown it.
+Only the default release gets a standalone copy, so other releases aren't on
+the reader's disk — offering a picker that points at files that don't exist
+would be worse than no picker, so the version list is stripped from the
+standalone manifest and the runtime removes the section that would have shown
+it.
 *Cost to change: one line, and a test that fails without it.*
 
 **7.34 — An older release tells search engines which one is current.**
-Two releases of a tutorial are near-identical pages at two URLs. Without a
-`<link rel="canonical">` they compete with each other in search results.
-
-Every non-default page points to the release served at the canonical URL. The
-default carries none, as it is already the canonical page.
+Two releases of a tutorial are near-identical pages at two URLs and would
+compete in search results without a `<link rel="canonical">`. Every
+non-default page points to the canonical URL; the default itself carries
+none, since it is already canonical.
 *Cost to change: one line and one shell token.*
 
 **7.35 — The restore notice says what happened instead of guessing.**
-When a tutorial has releases, the page knows which release the work was written
-in and which one is currently active, naming both explicitly. Answers whose
-cells do not exist in the current release are preserved in local storage and
-restored when opening a release that contains those cells.
+When a tutorial has releases, the page names both which release the work was
+written in and which one is active. Answers whose cells don't exist in the
+current release stay preserved in local storage and restore when a release
+containing those cells is opened.
 *Cost to change: none.*
 
 **7.36 — Automated curriculum coverage reporting in CURRICULUM_MAP.md.**
-Coverage metrics are generated directly by `dev/curriculum_map.py` by inspecting
+Coverage metrics are generated directly by `dev/curriculum_map.py` from
 `outcomes.yaml`, `out-of-scope.yaml`, `proposed.yaml`, and tutorial `covers:`
-frontmatter.
-
-`planning/CURRICULUM_MAP.md` reports the number of outstanding outcomes with no
-proposal, and `tests/test_curriculum_map.py` asserts that proposals do not claim
-already-covered outcomes.
+frontmatter. `planning/CURRICULUM_MAP.md` reports outcomes with no proposal,
+and `tests/test_curriculum_map.py` asserts a proposal never claims an
+already-covered outcome.
 *Cost to change: none.*
 
 **7.37 — Coordinate geometry is a tutorial, because Pythagoras is a gateway.**
-Outcomes `MIT-4.1` through `MIT-4.4` form their own tutorial, *Lines and
-Distances*, between Drawing Functions and Angles and Waves.
-
-Pythagoras is one of the six gateways in the topic tree, unlocking seven
-downstream topics. A gateway requires a dedicated tutorial rather than a
-subsection within graphing to serve as a clean reference point.
-
-Furthermore, *The Unit Circle* requires coordinate geometry prerequisites;
-having a dedicated tutorial prevents trigonometry from having to introduce
-Cartesian coordinates as an aside.
+Outcomes `MIT-4.1`–`MIT-4.4` form their own tutorial, *Lines and Distances*,
+between Drawing Functions and Angles and Waves. Pythagoras is one of the topic
+tree's six gateways, unlocking seven downstream topics, so it needs a
+dedicated tutorial rather than a subsection of graphing — and having one also
+means *The Unit Circle* doesn't have to introduce Cartesian coordinates as an
+aside.
 *Cost to change: none yet.*
 
 **7.38 — Connections between whole things, rather than things merged.**
-Venn diagrams (`MIT-2.3`) are structured as a dedicated short tutorial (*Drawing
-Sets*), linked to *Logic and Truth* and *Sets as Sorted Lists*.
-
-Three distinct modules with explicit cross-links are easier to discover,
-sequence, and maintain than an overloaded composite tutorial.
-
-Matplotlib draws diagrams directly from set operations, framing the diagram as
-computed visual output rather than manual notation.
+Venn diagrams (`MIT-2.3`) get a dedicated short tutorial, *Drawing Sets*,
+linked to *Logic and Truth* and *Sets as Sorted Lists* — three distinct,
+cross-linked modules are easier to discover, sequence, and maintain than one
+overloaded composite. Matplotlib draws the diagrams directly from set
+operations, framing them as computed output rather than manual notation.
 *Cost to change: none.*
 
 **7.39 — Editor path resolution supports versioned folders.**
-When a tutorial has multiple releases, it resides in a folder of release files
-rather than a single `<slug>.md`. The editor's `pathOf` resolves the active live
-release (falling back to the newest available release), matching `versions_of`
+When a tutorial has multiple releases it lives in a folder of release files
+rather than a single `<slug>.md`. The editor's `pathOf` resolves the active
+live release (falling back to the newest available), matching `versions_of`
 in `build.py`.
 *Cost to change: resolved in editor test fixtures.*
 
 **7.40 — The release workflow freezes existing content before publishing edits.**
-The editor maintains two copies of every file: the fetched text (`state.original`)
-and the working buffer.
-
-Releasing freezes `state.original` as the prior release and publishes the active
-buffer as the new release timestamp. This ensures students can return to the
-exact text of prior releases.
+The editor keeps two copies of every file: the fetched text
+(`state.original`) and the working buffer. Releasing freezes `state.original`
+as the prior release and publishes the active buffer as the new release, so
+students can always return to the exact text of a prior release.
 *Cost to change: fundamental release lifecycle guarantee.*
 
 **7.41 — Unified warning for cell ID mutations across edits and releases.**
-Renaming a cell ID in an in-place edit orphans saved student progress. Releasing
-a new version preserves prior cell IDs in the frozen release. The editor UI
-presents both outcomes in sequence to guide authors toward releasing when
-structural cell changes occur.
+Renaming a cell ID in an in-place edit orphans saved student progress;
+releasing a new version preserves prior cell IDs in the frozen release. The
+editor surfaces both outcomes in sequence, guiding authors toward releasing
+when structural cell changes occur.
 *Cost to change: two sentences in editor UI.*
 
 **7.42 — Plain titles and modular scope grounded in pedagogy.**
-Titles use plain language describing what the reader builds or explores:
-"Lines and Distances" rather than "Coordinate Geometry"; "How We Got Here"
-rather than "The Computing Time Machine".
-
-Tutorial scoping is determined by pedagogical cohesion rather than strict 1:1
-outcome counts. A tutorial introduces, explains, motivates, and provides
-hands-on practice. Two related outcomes stay together; a complex outcome with
-multiple distinct activities splits into separate modules.
+Titles use plain language for what the reader builds or explores — "Lines
+and Distances" rather than "Coordinate Geometry", "How We Got Here" rather
+than "The Computing Time Machine". Tutorial scope follows pedagogical
+cohesion rather than a strict 1:1 outcome count: two related outcomes stay
+together, a complex outcome with distinct activities splits into separate
+modules.
 *Cost to change: none.*
 
 **7.43 — Trigonometry partitioned into three focused tutorials.**
-Trigonometric content is structured into three focused tutorials:
-- **The Unit Circle** — radians, sine and cosine definitions, exact values.
-- **Sine and Cosine Waves** — unrolling circular motion into wave functions.
-- **Solving Triangles** — Sine and Cosine Rules, area calculations, right-triangle applications.
-
-Each covers a distinct conceptual activity with adequate room for exercises.
-*Parabolas* was separated from *Drawing Functions* on the same principle.
+*The Unit Circle* (radians, sine/cosine definitions, exact values), *Sine and
+Cosine Waves* (unrolling circular motion into wave functions), and *Solving
+Triangles* (Sine/Cosine Rules, area, right-triangle applications) — each a
+distinct conceptual activity with room for exercises. *Parabolas* was split
+from *Drawing Functions* on the same principle.
 *Cost to change: none.*
 
 **7.44 — Geometric grounding for exact trigonometric ratios.**
-Exact values in surd form (`MIT-4.7`) are taught geometrically on the unit circle
-rather than through rote memorization of triangles. Surds represent coordinates
-derived via the Pythagorean theorem on landmark angles.
-
-With this, every outcome in the curriculum descriptors is in scope and mapped to
-existing or proposed tutorials.
+Exact values in surd form (`MIT-4.7`) are taught geometrically on the unit
+circle rather than by rote-memorized triangles: surds represent coordinates
+derived via Pythagoras on landmark angles. With this, every outcome in the
+curriculum descriptors is in scope and mapped to an existing or proposed
+tutorial.
 *Cost to change: none.*
 
 **7.45 — Practice problem sets and worksheet conversion architecture.**
-Practice problem sets derived from worksheets (e.g. `deweydex/Mathematics`) are
-structured with answers placed behind collapsible folds beside each problem.
-
-This enables immediate self-verification while preserving the reflective moment
-before viewing the solution.
+Practice problem sets derived from worksheets (e.g. `deweydex/Mathematics`)
+put answers behind collapsible folds beside each problem, allowing immediate
+self-verification while preserving the reflective moment before viewing the
+solution.
 *Cost to change: free at planning stage.*
 
 **7.46 — Clean exception traceback formatting for syntax errors.**
-`_format_exception` trims tracebacks to student execution frames. For compile-time
-syntax errors where runtime execution frames are absent, dewlab renders the
-exception location directly (filename, line, caret) without exposing internal
-`tutorial_tools.py` plumbing.
-*Cost to change: five lines in runtime tools.*
-caret — and Python renders those from the exception rather than from the stack.
-So where the exception knows where it happened, the stack goes entirely:
+`_format_exception` trims tracebacks to student execution frames. For
+compile-time syntax errors, where no runtime execution frame exists, dewlab
+renders the exception's own location directly (filename, line, caret) instead
+of exposing internal `tutorial_tools.py` plumbing:
 
 ```
   File "<cell your-turn-4>", line 2
@@ -1331,5046 +1024,1563 @@ So where the exception knows where it happened, the stack goes entirely:
 SyntaxError: '(' was never closed
 ```
 
-Narrow on purpose. An exception with no user frames *and* no location of its own
-still shows the full traceback, because that is a bug in dewlab and hiding our
-frames would make it harder to find.
-
-*Cost to change: five lines. Found by writing a tutorial about error messages and
-then reading what the page showed, which no test would have thought to check.*
+Narrow by design: an exception with no user frames *and* no location of its
+own still shows the full traceback, since that signals a bug in dewlab and
+hiding our own frames would make it harder to find.
+*Cost to change: five lines in runtime tools.*
 
 **7.47 — The first two tutorials to close outcomes since the map existed.**
-*How We Got Here* (`PDP-LO1`, `PDP-LO3`) and *When It Goes Wrong* (`PDP-LO9`)
-are converted from everlearning notebooks. Forty-one outcomes in place became
-forty-four.
+*How We Got Here* (`PDP-LO1`, `PDP-LO3`) and *When It Goes Wrong* (`PDP-LO9`),
+converted from everlearning notebooks, brought outcomes covered from
+forty-one to forty-four.
 
-Three things about the conversion are worth recording, because the next one will
-hit all three.
-
-**The converter is a first draft, not an output.** `dev/from_notebook.py`
-produced a slug of `pdp-lo1-lo3-mit-14-the-computing-time-machine`, a title with
-two emoji in it, and cell ids like
-`stop-2-1945-machine-code-the-only-language-the-machine-understands-1`. A cell id
-is the key a student's work is saved under and belongs in the frontmatter of
-somebody's judgement, not in a slugified heading. Both tutorials were written by
-hand from the notebook rather than patched from the converter's output.
-
-**Only half of the second notebook came across.** It is called *Testing and
-Debugging* and most of it is testing, which *Building Reusable Tools* already
-covers. Taking the whole thing would have duplicated a tutorial that exists.
-
-**Deliberately broken cells are better here than in a notebook**, which is the
-one thing this conversion gains rather than merely survives. A cell that raises
-the error in front of the reader beats a commented-out example they have to
-uncomment — and it is what turned up 7.46.
-
+Three things worth recording for the next conversion: the converter
+(`dev/from_notebook.py`) is a first draft, not an output — it produced
+slugified cell ids and titles that need a human's judgment, so both
+tutorials were written by hand from the notebook rather than patched from its
+output. Only half of the second notebook came across, since most of it
+duplicated testing content *Building Reusable Tools* already covers. And
+deliberately broken cells work better here than in a notebook — a cell that
+raises its error in front of the reader beats a commented-out example, and is
+what turned up 7.46.
 *Cost to change: these are tutorials now, so their slugs and cell ids are
 contracts from the first class that uses them. The window is still open.*
 
 **7.48 — Every tutorial has a page of problems, and some problems have no
 tutorial.**
-Fourteen practice pages became thirty-two: one for every tutorial except the
-three that are already problems or reflection — *Bringing It All Together*,
-*Looking Back Before Moving Forward* and *The Team Project*.
+Fourteen practice pages became thirty-two — one per tutorial except the three
+that are already problems or reflection (*Bringing It All Together*, *Looking
+Back Before Moving Forward*, *The Team Project*).
 
-Three sources fed them, and only one is a transcription in any sense.
-
-**`deweydex/Mathematics`** has twenty-six worksheets under `markdown/`, twenty
-of which carry an answer key in the file. The claim in `planning/EXERCISES.md`
-that all of them do is wrong: `04e`, `07a`, `07c`, `07d`, `08a` and `08b` have
-answers only as PDFs under `pdfs/solutions/`. Those six are also the ones whose
-material is not yet taught, so nothing was lost.
-
-**`deweydex/everlearning`** has thirty-eight programming problems in
-`PracticeProblems/PDP-Practice-Problem-Bank.py`, as blank stubs with docstrings
-and no answers at all. Those gave questions; every answer here was written.
-
-**The tutorials themselves** are the third source, and the largest. Every "your
-turn" prompt is a problem that was already set and never answered.
-
+Three sources fed them. `deweydex/Mathematics`'s twenty-six worksheets, twenty
+of which carry an in-file answer key (the remaining six have answers only as
+PDFs, and cover material not yet taught, so nothing was lost).
+`deweydex/everlearning`'s thirty-eight blank programming-problem stubs gave
+questions with every answer written fresh. And every tutorial's own
+unanswered "your turn" prompts became problems in their own right — the
+largest source of the three.
 *Cost to change: thirty-two files. The frontmatter contract is one line each.*
 
 **7.49 — `practice_across:` for a set of problems with no single owner.**
-Some problems are only worth setting once several tutorials are behind you, and
-giving one of them ownership would be a lie about what the page needs. So a page
-may name several tutorials instead of one.
-
-The asymmetry is deliberate: a mixed set links to everything it draws on, and
-nothing links back. A tutorial has one companion page of problems, reachable from
-its own last paragraph, and a reader who has just finished it does not want to be
-sent somewhere that assumes six more.
-
-That leaves mixed sets as the only pages on the site nothing else links to, so
-they are listed on the contents page under their module — after the series,
-before the archive, which is the only place in that list they belong.
-
+Some problems only make sense once several tutorials are behind the reader,
+and giving one of them ownership would misstate what the page needs — so a
+page may name several tutorials instead of one. Deliberately asymmetric: a
+mixed set links to everything it draws on, and nothing links back, since a
+tutorial has one companion practice page reachable from its own last
+paragraph, and a reader who just finished it shouldn't be sent somewhere
+assuming six more. Mixed sets are the only pages nothing else links to, so
+they're listed on the contents page under their module, after the series and
+before the archive.
 *Cost to change: about ninety lines of build.py and fourteen tests. The four
 pages using it are content, and would survive a different mechanism.*
 
 **7.50 — Twenty-one numbers in answer keys were wrong before they were run.**
-Not a decision, a measurement, and the reason the practice pages took as long as
-the tutorials did.
-
-Among them: binary search costing 9 comparisons where it costs 8; two roots of an
-ambiguous triangle; a Heron semi-perimeter; a standard deviation out by a tenth;
-a password-cracking time out by a quarter; where `2**x` overtakes `x**3`; and
-when compound interest first beats simple by a hundred euro.
-
-Every one was plausible, and none would have failed a test — no test asserts on
-prose. The only thing that finds them is running the arithmetic, which is cheap
-and has to be done deliberately.
-
-Two answers were also written as a wrong attempt followed by its own correction,
-on the theory that the correction was instructive. It is not, in an answer key:
-a student checking their work against an answer that argues with itself learns
-that the page is unreliable. Both were straightened.
-
-*Cost to change: nothing. This is a note to the next person writing an answer.*
+Not a decision, a measurement: among the errors, binary search costing 9
+comparisons instead of 8, two roots of an ambiguous triangle, a wrong Heron
+semi-perimeter, a standard deviation out by a tenth, a password-cracking time
+out by a quarter, and where `2**x` overtakes `x**3`. Every one was plausible
+and none would have failed a test, since no test asserts on prose — only
+running the arithmetic finds them, and that has to be done deliberately. Two
+answers were also written as a wrong attempt followed by its own correction;
+straightened, since a student checking their work against a self-contradicting
+key learns the page is unreliable.
+*Cost to change: nothing. This is a note to the next person writing an
+answer.*
 
 **7.51 — Tutorials link back to the mixed sets after all.**
-7.49 decided that a mixed set links out and nothing links back, on the grounds
-that a reader who has just finished one tutorial should not be sent somewhere
-assuming six more. Josh asked for the reverse: "it would indeed be great if we
-could reach more practice from each tutorial."
+7.49 decided a mixed set links out with nothing linking back; Josh asked for
+the reverse, since discoverability was the weaker half of that argument — a
+page nothing links to is a page nobody finds, and the contents page isn't
+where a reader stands when they finish a tutorial.
 
-He is right that discoverability was the weaker half of that argument. A page
-nothing links to is a page nobody finds, and the contents page is not where a
-reader is standing when they finish a tutorial.
-
-The objection is answered by saying so rather than by hiding the link. A tutorial
-now shows its own practice page first — *worth doing when you have finished
-reading* — and then any mixed set that names it, marked *for later, once more of
-the course is behind you*, followed by the names of the other tutorials it draws
-on. A reader can see at a glance whether it is for them yet.
-
-*Cost to change: about thirty lines of build.py and four tests. Two existing
-tests encoded the old decision; one was rewritten to assert what still holds,
-and the other turned out to be asserting on the whole page when it meant the
-navigation bar, which is a better test now than it was.*
+A tutorial now shows its own practice page first ("worth doing when you have
+finished reading"), then any mixed set naming it, marked "for later, once
+more of the course is behind you", followed by the other tutorials it draws
+on — so a reader can see at a glance whether it's for them yet.
+*Cost to change: about thirty lines of build.py and four tests.*
 
 **7.52 — Two folds, and a build check that a fold names one of them.**
-Josh, on whether the harder problems should carry a hint: "the idea is to have
-steps in a dropdown that they might follow if they are stuck, with some
-reflection and next question at the end of each dropdown so they can think
-things through in a related question."
+Per Josh's request for hint dropdowns with steps and a follow-up reflection:
+`dl-hint` holds numbered steps and closes with a **Think about** and a **Try
+this next**; `dl-answer` holds the answer. The hint comes first, in a warmer
+colour, so opening it doesn't feel like giving up — and the closing
+reflection is what makes it more than a spoiler, teaching the method rather
+than just the answer.
 
-So there are two folds. `dl-hint` holds numbered steps and closes with a
-**Think about** and a **Try this next**; `dl-answer` holds the answer. The hint
-comes first, in warmer colour, because opening it should not feel like giving up.
-
-The reflection at the end is the part that makes this more than a spoiler. A
-hint that ends at the answer teaches the answer; one that ends in a related
-question the same steps solve teaches the method.
-
-Twenty are written so far, across the four mixed sets — the hardest problems in
-the repository and the ones Josh was asking about. The per-tutorial practice
-pages have none yet.
-
-`build.py` now fails on a `<details>` whose class is neither. This is worth the
-six lines: bare `<details><summary>` is what plain HTML looks like, an earlier
-draft of the style guide showed exactly that, and the failure mode is silent —
-the fold renders as a browser-default triangle sitting in the prose.
-
+`build.py` now fails on any `<details>` whose class is neither `dl-hint` nor
+`dl-answer`, since a bare `<details><summary>` renders as an unstyled
+browser-default triangle with no visible failure.
 *Cost to change: the classes are in the markdown of every practice page. The
 check is six lines and five tests.*
 
 **7.53 — Four tutorials re-released, and what the trial found.**
-Josh asked for the versioning system to be tried on real content: "some of the
-sections that are more traditional and use more imperatives — you can just pick
-4 that are diverse in their subject matter."
+Josh asked for the versioning system (7.20–7.24) to be tried on real content:
+*First Steps*, *Numbers and Their Families*, *What Are the Chances*, and
+*Putting Things in Order* — four diverse subjects, each converted from
+notebooks. Each became a folder: a working copy at `2026.08.23.2`, the
+previous release frozen at `v2026.08.23.1.md`. Thirty-one tutorials became a
+hundred and fifty-two pages.
 
-*First Steps* (introductory programming), *Numbers and Their Families* (number
-and algebra), *What Are the Chances* (probability) and *Putting Things in Order*
-(algorithms). All four were among the highest in the repository for command
-language, being converted from notebooks, and they cover four different
-subjects.
-
-Each is now a folder: the working copy at `2026.08.23.2` and the previous
-release frozen at `v2026.08.23.1.md`. Thirty-one tutorials became a hundred and
-fifty-two pages.
-
-The trial did what a trial is for. **Three defects, none of which any test would
-have caught:**
-
-**The curriculum map counted every release as a tutorial.** It reads every `.md`
-under `tutorials/`, so the four re-released ones appeared twice: the sequence
-graph came out with two nodes called T1 and thirty-one tutorials became
-thirty-five. Fixed by giving the map build.py's rule — newest live release
-answers for the tutorial — in a `newest_live` function of its own, with five
-tests, four of which fail against the old behaviour.
-
-**Two releases on one day were indistinguishable.** The picker shows a date, and
-both said "23 August 2026". A student choosing between two identical options is
-choosing at random. The sequence number is now shown, and only where it is
-needed, so an ordinary tutorial released once keeps a plain date.
-
-**One cell had never worked on a fresh page.** *Numbers and Their Families* has a
-`explore_number` that calls `classify_number`, which the student is asked to
-write in an earlier cell that ships empty — so it raised `NameError` for anybody
-who ran it before doing the exercise. It reports what is missing now instead.
-The frozen release keeps the bug, which is what a frozen release is for.
-
-*Cost to change: the folder layout is what build.py already expected. Undoing a
-release means moving the file back and deleting the frozen copy, and is free
-while no class has seen either.*
+Three defects turned up, none of which any test would have caught. The
+curriculum map read every `.md` under `tutorials/`, so a re-released tutorial
+counted twice — fixed with a `newest_live` function matching `build.py`'s own
+rule, with five tests, four failing against the old behaviour. Two releases
+on the same day showed identical dates in the picker, indistinguishable to a
+student choosing between them — fixed by showing the sequence number, only
+where needed. And one cell (`explore_number` calling a not-yet-written
+`classify_number`) had never worked on a fresh page — it now reports what's
+missing instead of raising `NameError`, and the frozen release deliberately
+keeps the bug.
+*Cost to change: the folder layout is what build.py already expected. Undoing
+a release means moving the file back and deleting the frozen copy, and is
+free while no class has seen either.*
 
 **7.54 — The first bibliographies.**
-Josh's guide requires one in every tutorial; none had one. These four now do,
-four or five entries each, chosen to be genuinely worth an hour rather than to
-fill a section — Timo Bingmann's sorting visualisation, 3Blue1Brown on
-logarithms, the Python documentation on floating point, Downey's *Think Python*.
-
-Thirty-one to go. That is the largest single piece of style work outstanding and
-it is not mechanical: a bibliography of plausible-looking links is worse than
-none, because a student who follows a dead one stops following any of them.
-
-*Cost to change: per tutorial, and each needs a person who knows the sources.*
+Josh's style guide requires one in every tutorial; none had one. Four now do,
+four or five entries each, chosen to be worth an hour rather than to fill a
+section (Bingmann's sorting visualisation, 3Blue1Brown on logarithms, the
+Python docs on floating point, Downey's *Think Python*). Thirty-one to go —
+the largest style-work item outstanding, and not mechanical: a bibliography of
+plausible-looking links is worse than none, since a student who follows one
+dead link stops trusting the rest.
+*Cost to change: per tutorial, and each needs a person who knows the
+sources.*
 
 **7.55 — 5N0554's thirteen outcomes, and where the examples went.**
 Transcribed from the descriptor PDF into `outcomes.yaml`, under a new `CMPS`
-module. The descriptor states each outcome and then, for most of them, an
-"e.g." — Google PageRank, ASCII art, PKI, a server room's temperature. Those
-examples are suggested content, not the outcome, and the map's coverage has to
-be measured against the outcome or a tutorial that teaches PageRank and
-nothing else would read as having taught LO4 in full. So the wording in
-`outcomes.yaml` is the outcome stripped of its examples, and every example
-moved to that code's `uses:` in `topics.yaml`, alongside the `name`, `plain`
-and `needs` every other topic already carries.
+module. The descriptor's "e.g." examples (Google PageRank, ASCII art, PKI, …)
+are suggested content, not the outcome itself, so measuring coverage against
+them would let a tutorial that taught PageRank and nothing else read as
+having taught the whole outcome. `outcomes.yaml` keeps the outcome stripped
+of its examples; every example moved to that code's `uses:` in
+`topics.yaml`.
 
-Two outcomes bundle more than one idea under one descriptor number — LO1 pairs
-data structures with iterative-versus-recursive algorithms, and several of
-LO7–LO13 are closer to a paragraph than a sentence. Left as one code each,
-matching the descriptor's own numbering rather than splitting further:
-`covers:` is keyed on these codes, and inventing sub-codes the descriptor does
-not have would be the tutorials disagreeing with the assessment document they
-have to answer to.
-
-`dev/curriculum_map.py` confirms what this is expected to say: thirteen new
-red squares, all thirteen listed as having no proposal yet, because a
-paraphrase of a descriptor is not a lesson plan.
-
+Two outcomes bundle more than one idea under one descriptor number (LO1
+pairs data structures with recursion; several of LO7–LO13 read like a
+paragraph). Left as one code each, matching the descriptor's own numbering
+rather than inventing sub-codes it doesn't have, since `covers:` answers to
+that document.
 *Cost to change: two files, twenty-six entries between them. The wording is a
-paraphrase rather than a legal transcription, so restating any one of them
-costs nothing the descriptor itself would object to.*
+paraphrase, so restating any one entry costs nothing the descriptor would
+object to.*
 
 **7.56 — The first 5N0554 strand: six tutorials, and PageRank rides along
 rather than getting its own.**
-`planning/outlines/matrices.md` planned five tutorials plus a Markov chains
-tutorial plus an open question about where PageRank goes. Built as six:
-*A Grid of Numbers*, *Multiplying Grids*, *What a Matrix Does to a Picture*,
-*Undoing It*, *Solving Systems*, and *Where Chains Lead* — the last folding
-weather prediction, convergence, word-level text generation, and a
-hand-checkable three-page PageRank example into one tutorial rather than
-four. Module `computational-methods`, a new series called `matrices`,
-alongside the existing `python-fundamentals`.
+Built as six tutorials in a new `matrices` series under
+`computational-methods`: *A Grid of Numbers*, *Multiplying Grids*, *What a
+Matrix Does to a Picture*, *Undoing It*, *Solving Systems*, and *Where Chains
+Lead* — the last folding weather prediction, convergence, text generation,
+and a hand-checkable PageRank example into one tutorial rather than four,
+closing the open question `planning/outlines/matrices.md` had left about
+where PageRank goes: a three-page link graph solved by the repeated-
+multiplication technique already built for weather is three cells, not a
+tutorial's worth of new machinery.
 
-Sourced rather than invented, per the instruction that started this: worksheet
-`07a_matrix_operations` gave the add/scale/transpose/multiply arithmetic in
-*A Grid of Numbers* and *Multiplying Grids*, `07b_linear_systems` gave the
-augmented-matrix and row-operation framing in *Solving Systems*, and
-`07d_markov_chains` gave the Dublin weather example and the three-page
-PageRank problem in *Where Chains Lead*. All three worksheets have their
-answer keys only as PDFs, so every number that reached a tutorial or its
-practice page was worked fresh in Python and checked against the worksheet's
-own claims where one existed (problem 30 in `07a` asserts $(2,1)$ solves
-$2x+3y=7, x-y=1$; that assertion is what *Solving Systems* opens with,
-confirmed rather than copied). The word-transition example in *Where Chains
-Lead* uses the opening sentence of Dickens' *A Tale of Two Cities*, which
-`everlearning/OtherCourses/Markov-Chains-and-Text-Generation` also trains on
-and which is public domain either way.
+Sourced from three worksheets whose answer keys exist only as PDFs (`07a`,
+`07b`, `07d`), so every number that reached a tutorial or its practice page
+was worked fresh in Python and checked against the worksheet's own claims
+where one existed. The Markov word-transition example uses the opening
+sentence of Dickens' *A Tale of Two Cities* (public domain, and already used
+the same way in `everlearning`).
 
-**PageRank rides along, closing the open question in `matrices.md`.** A
-three-page link graph, solved by the same repeated-multiplication technique
-the tutorial had just built for weather, is three cells — not a tutorial's
-worth of new machinery, and building one anyway would have meant padding it
-with material (crawling, a larger graph, damping factors) this module does
-not ask for. A dedicated PageRank tutorial over a real link graph is still
-open, and now a smaller piece of work than it was, since the core mechanism
-is already taught.
-
-**Closes `CMPS-LO4` in full**, touches `CMPS-LO1` (the data-structures half,
-not the recursion half) and `CMPS-LO2` (the randomness half, not the
-distributions or independence half) — see the curriculum map. Nine outcomes
-remain untouched: `CMPS-LO3`, `LO5` through `LO13`. Those are the discrete
-simulation, algorithmic complexity, and problem-solving strands STATUS.md
-lists as not started.
-
+Closes `CMPS-LO4` in full; touches `CMPS-LO1`'s data-structures half and
+`CMPS-LO2`'s randomness half. Nine outcomes (`CMPS-LO3`, `LO5`–`LO13`) remain
+untouched.
 *Cost to change: six tutorials, six practice pages, one series file. Nothing
-downstream depends on this strand yet — matrices.md itself said so — so
-reshaping it costs only the content, not any other page's links.*
+downstream depends on this strand yet, so reshaping it costs only the
+content.*
 
 **7.57 — What the browser QA pass caught, run before this pushed.**
-Every cell of the six new tutorials was run in a real Chromium against a
-self-hosted Pyodide, with a correct solution injected into every blank "your
-turn" cell before running it — otherwise a NameError from an unstarted
-exercise stops meaning anything, since it is not testing the tutorial, only
-confirming a blank cell is blank. The practice pages needed no injection:
-every runnable cell on a practice page is a tool cell, and the worked
-solutions live in `dl-answer` folds as inert markdown, not as `exec` cells.
+Every cell of the six new matrices tutorials was run in a real Chromium
+against self-hosted Pyodide, with a correct solution injected into every
+blank "your turn" cell first — otherwise a `NameError` from an unstarted
+exercise tests nothing but the fact the cell is blank. Practice pages needed
+no injection, since their runnable cells are all tool cells and worked
+solutions live in inert `dl-answer` folds.
 
-Two real bugs turned up, neither of which any of the numeric checking would
-have caught, because both were about what does and does not carry over
-between pages rather than about arithmetic.
-
-**`Multiplying Grids` never defined `transpose`.** Its own prose says "you
-already wrote something that turns columns into rows: `transpose`, from the
-last tutorial" — true of the *tutorial*, false of the *page*: each tutorial
-is its own Pyodide instance, nothing carries over, and a student arriving
-fresh at tutorial 2 has no `transpose` in this page's namespace at all. Fixed
-with a one-line recap cell, given rather than a "your turn" — the point of
-this tutorial is multiplication, not making someone re-derive transpose a
-second time.
-
-**A "your turn" cell's own shipped starter was the fix, not the bug** — in
-`Undoing It`, the QA script's first pass overwrote a cell whose entire
-starter was `import matplotlib.pyplot as plt`, and broke on the resulting
-`NameError: name 'plt' is not defined`. The tutorial was right; the harness
-had dropped a line it should have kept. Recorded because it is the kind of
-false positive that erodes trust in this exact check if it happens quietly —
-worth naming so the next QA pass looks at the starter before assuming a
-failure is the tutorial's fault.
-
+Two real bugs turned up, both about what carries over between pages rather
+than arithmetic. `Multiplying Grids`'s prose claimed `transpose` was already
+defined "from the last tutorial", but each tutorial is its own Pyodide
+instance with nothing carried over — fixed with a one-line recap cell rather
+than a "your turn", since the point of this tutorial is multiplication. And
+in `Undoing It`, the QA script's own harness had overwritten a "your turn"
+cell's shipped starter (`import matplotlib.pyplot as plt`), producing a
+false-positive `NameError` that was the harness's fault, not the tutorial's —
+recorded so a future QA pass checks the starter before assuming a failure is
+the tutorial's.
 *Cost to change: two lines, once each. The QA script itself is not
-committed — it lives in the scratchpad, per the instruction that started
-this, as a tool rather than a test.*
+committed — it lives in the scratchpad as a tool rather than a test.*
 
 **7.58 — Three wrong citations in the matrices strand's bibliographies,
-caught by checking each video id rather than trusting the author's own
-memory of it.** The style guide asks for a bibliography in every tutorial
-(section 6) and the matrices strand is the first to actually have one in
-every file — worth a second pass precisely because it is the first, and a
-pattern of small factual slips here would spread to every strand that copies
-its shape.
+caught by checking each video id rather than trusting memory.** Every
+bibliography entry across the six tutorials was checked against the video id
+or paper it links to. Three didn't match: `Multiplying Grids` attributed a
+3Blue1Brown video to "Ben Eater and Grant Sanderson (2022)" when it is
+Sanderson alone, 2017 (Eater had no part in it). `Solving Systems` labelled a
+video "Chapter 9" of *Essence of Linear Algebra* when it is chapter 13
+(chapter 9 is a different video entirely). `Where Chains Lead` cited a
+3Blue1Brown "Markov Chains (2022)" video whose id doesn't resolve to anything
+real — replaced with Josh Starmer's actual StatQuest video on the same topic;
+the same tutorial's Page-and-Brin citation also had the authors in the wrong
+order, fixed to match the paper.
 
-Checked every entry against the video id or paper it links to, not against
-what seemed plausible. Three did not match what they claimed:
-
-**`Multiplying Grids`** attributed the 3Blue1Brown video at `aircAruvnKk` to
-"Ben Eater and Grant Sanderson (2022)". It is Grant Sanderson alone,
-published 2017 — *But what is a neural network? | Deep learning, chapter 1*.
-Ben Eater had no part in it.
-
-**`Solving Systems`** labelled the video at `P2LTAUO1TdA` "Chapter 9" of
-*Essence of Linear Algebra*. It is chapter 13. Chapter 9 of that series is
-*Dot products and duality*, a different video entirely.
-
-**`Where Chains Lead`** cited "Grant Sanderson (3Blue1Brown) (2022). *Markov
-Chains.*" at `JGSaEwGZoDE` — a video id that does not resolve to anything,
-and 3Blue1Brown has no video by that title. Replaced with a real one that
-fits the same role and the guide's own list of preferred sources: Josh
-Starmer's StatQuest video *Markov Chains Clearly Explained! Part 1*
-(`i3AkTO9HLXo`, 2020). The same tutorial's Page and Brin citation had the
-authors in reverse order from how the paper is conventionally cited — fixed
-to Brin first, matching the paper itself and every index of it.
-
-Every other entry across the six tutorials — five more 3Blue1Brown chapter
-numbers, the Strang, Downey, Hughes et al., BetterExplained, Shannon and
-Dickens citations — checked out against a real search rather than being
-assumed correct by association with the ones that did not.
-
-*Cost to change: four lines, once each. The failure mode this guards
-against is a plausible-sounding citation nobody follows — see 7.54 on why a
+Every other entry across the six tutorials checked out against a real search.
+*Cost to change: four lines, once each. The failure mode this guards against
+is a plausible-sounding citation nobody follows — see 7.54 on why a
 bibliography of dead or wrong links is worse than none.*
 
 **7.59 — The editor's prose surface is now a Milkdown (Crepe) block editor,
 vendored the same way as CodeMirror and KaTeX, with no framework adopted.**
-`planning/REPO_AND_EDITOR.md` specified this for editor v1 from the start —
-"live, borderless block editing" rather than raw markdown in a box — and what
-shipped instead was a plain `<textarea>` wrapped in the reordering,
-frontmatter, and release machinery around it. That gap sat unnoticed until an
-outside critique of dewlab (mistakenly diagnosing it as an unoptimised React
-single-page app, which it has never been) happened to recommend a React
-block-editor library for the wrong reasons, on the wrong codebase — and
-pointed at a real gap between this repository's own plan and what it had
-actually built.
+`planning/REPO_AND_EDITOR.md` specified "live, borderless block editing" for
+editor v1 from the start; what had actually shipped was a plain
+`<textarea>`. Milkdown's Crepe preset was chosen over alternative
+React-based block editors (BlockNote, Tiptap, Lexical, Novel.sh) for the one
+reason none of those satisfy: its API is plain JavaScript, not React, so no
+component framework is needed. Bundled with esbuild in `vendor-src/` into
+`assets/vendor/milkdown.bundle.js`, committed like the other two vendored
+libraries.
 
-Milkdown's Crepe preset was chosen over the critique's own suggestions
-(BlockNote, Tiptap, Lexical, Novel.sh) for one reason none of those satisfy:
-its API is plain JavaScript, not React. `deweydex/faq` already uses it, and
-only wraps it in Preact because FAQ itself is a Preact app — the underlying
-`new Crepe({ root, defaultValue, features })` needs no component framework at
-all. Bundled with esbuild in `vendor-src/` into `assets/vendor/milkdown.bundle.js`,
-committed like the other two vendored libraries, so neither CI nor an author
-previewing a tutorial locally needs Node installed for the ordinary case.
-
-Two things were true of Crepe that the library's own documentation does not
-warn about, both found by actually driving the built editor in a real browser
-rather than trusted from reading the API: it fires its `markdownUpdated`
-callback once while still parsing the *starting* document, before a reader
-has touched anything, which without a guard made opening any tutorial and
-touching nothing look like an edit; and its code-block feature keeps only the
-first word of a fence's info string as its "language", which round-trips
-`python exec` back out as plain `python` — silently turning a runnable cell
-into inert illustrative code the moment it passed through an unmodified
-save. Both are fixed (`vendor-src/milkdown-entry.js`'s hydration guard,
-`editor.js`'s `restoreExecTag()`, keyed off the same `id:`-first-line
-convention `build.py` already uses to mean "this fence is a cell") and both
-have browser tests driving the real editor rather than a stand-in, in
-`tests/e2e/test_editor.py`.
-
-*Cost to change: moderate. Reverting to a `<textarea>` is small — delete the
-Crepe mount, restore the input listener — but would be giving up exactly what
-this entry exists to close. Swapping to a different block editor later means
-re-solving the exec-tag round-trip problem, if the replacement has the same
-one-word-language limitation; nothing else here should be library-specific,
-since `restoreExecTag()`, `problems()`, and the release logic all operate on
-plain markdown text rather than on Crepe's own document model.*
+Two undocumented Crepe behaviours were found and fixed: `markdownUpdated`
+fires once while still parsing the *starting* document, which without a
+guard made opening a tutorial and touching nothing look like an edit (fixed
+with a hydration guard); and its code-block feature keeps only the first word
+of a fence's info string as its "language", silently round-tripping `python
+exec` back out as plain `python` and turning a runnable cell inert on save
+(fixed by `restoreExecTag()`, keyed off the same `id:`-first-line convention
+`build.py` already uses).
+*Cost to change: moderate. Reverting to a `<textarea>` is small but gives up
+what this entry exists to close. Swapping to a different block editor later
+means re-solving the exec-tag round-trip problem if it has the same
+limitation.*
 
 **7.60 — The editor gained code completion and a dead-link check; a hover
 docstring in Crepe's own code blocks was attempted and pulled back out.**
-Three of these landed and are covered by tests/e2e/test_editor.py and
-tests/e2e/test_autocomplete.py: `problems()` now checks `tutorial:slug#anchor`
-links against every other tutorial's real slugs and anchors — the one class
-of mistake build.py already refused that the editor's own report did not
-catch, closing that gap rather than leaving it for CI to find first
-(`tutorialLinkProblems()`, `assets/editor.js`); both the editor's code
-blocks and a student's own cells gained keyword/builtin and locally-typed-name
-completion, wired from CodeMirror's already-vendored `@codemirror/autocomplete`
-and `@codemirror/lang-python` — genuinely close to free, since both packages
-were already dependencies for close-brackets and syntax highlighting; and a
-student's cell additionally gained *live* completion and a real hover
-docstring, reading `tutorial_tools._page_globals` and `inspect.getdoc()` off
-the actual interpreter running that page (`pageNamesCompletion`, `docFor`,
-`assets/tutorial-runtime.js`) — accurate by construction, since there is
-nothing bundled to fall out of date with the running interpreter.
+Three landed: `problems()` now checks `tutorial:slug#anchor` links against
+every other tutorial's real slugs and anchors, closing a gap `build.py`'s own
+checks didn't cover; both the editor's code blocks and a student's own cells
+gained keyword/builtin and locally-typed-name completion, wired from
+CodeMirror's already-vendored autocomplete packages; and a student's cell
+additionally gained live completion and a real hover docstring, read directly
+off the running interpreter (`tutorial_tools._page_globals`,
+`inspect.getdoc()`) — accurate by construction, with nothing bundled to fall
+out of date.
 
-The fourth piece — the same hover docstring inside the *editor's* own code
-blocks, for `module.name` written out in full (plt.plot, pd.DataFrame, …) —
-does not have a live interpreter to read from, so it was built to answer
-from `assets/editor-doc-snippets.js` instead: real docstrings, captured once
-from a real Pyodide by `dev/generate_doc_snippets.py`, for a small,
-grep-derived set of names the curriculum actually calls (that script's own
-comment has the full account, including why numpy is not in the list — it is
-not currently called as `np.anything` anywhere in `tutorials/` or `setup/`).
-The CodeMirror wiring — `hoverTooltip()`, the identical extension shape
-`codemirror-entry.js` uses successfully for a student's own cells — compiled,
-ran with no error, and simply never surfaced a tooltip inside Crepe's
-code-block feature specifically: not from a real mouse hover, not from a
-Playwright-driven one, despite confirming the underlying `mousemove` event
-genuinely reaches the code block's DOM node. Ruled out along the way: a
-`hoverTooltip()`-returns-a-wrapper-object mistake (`{ active, extension }`,
-not a plain `Extension` — real, fixed in both files, and worth having fixed
-regardless of whether it was the cause here) and Crepe's code-block instance
-not yet existing at hover time (it was — the same click-then-hover sequence
-that works for a student's cell was tried here too). Not chased past that;
-Crepe's code-block feature is evidently doing something to the CodeMirror
-instances it hosts that `autocompletion()` — confirmed working in the same
-file — does not run into, and finding what wants reading Crepe's own
-ProseMirror node-view integration for the code-block feature more closely
-than this pass had the budget for.
-
-*Cost to change: the three landed pieces, small — each is a self-contained
-static function plus a documented CodeMirror extension. The fourth: the data
-and the generator are real and committed, unused only because nothing reads
-them yet. Whoever picks it back up should start from confirming whether
-Crepe's other hover-driven UI (the link-edit popover, the language picker)
-uses `hoverTooltip()` internally or something else entirely — if it is
-something else, that is probably the answer.*
+The fourth piece — the same hover docstring for `module.name` written in the
+*editor's* own code (no live interpreter to read from) — was built from
+captured real Pyodide docstrings (`dev/generate_doc_snippets.py`) instead,
+for a small, grep-derived set of names the curriculum actually calls. The
+CodeMirror wiring compiled and worked for a student's own cells but never
+surfaced a tooltip specifically inside Crepe's code-block feature, in either
+a real or scripted hover, despite confirming the mouse event reaches the DOM
+node. Not chased further; Crepe's code-block feature is evidently doing
+something to its hosted CodeMirror instances that plain `autocompletion()`
+doesn't run into.
+*Cost to change: the three landed pieces, small, each a self-contained static
+function plus a documented CodeMirror extension. The fourth: data and
+generator are real and committed, unused only because nothing reads them
+yet.*
 
 **7.61 — `load()` reads a repository's files in concurrent batches of 16,
-not one at a time.** Noticed live, not in a test: the editor's own
-Playwright-driven suite never caught this because its fake GitHub client
-resolves instantly, with no network latency to expose a loop that awaits
-each request before starting the next. Against the real repository — 90-odd
-files under `tutorials/`, each its own GitHub Contents API round-trip — that
-loop was 15-25 seconds of an author staring at "Reading the repository…"
-before seeing a single tutorial, entirely serial for no reason the code
-itself needed.
-
-Batched rather than one `Promise.all()` over every file: GitHub's secondary
-rate limiting is real, and 90-odd simultaneous requests from one token reads
-as closer to abuse than a person opening a page. 16 at a time is a guess at
-a reasonable middle, not a measured optimum — nothing here needed it to be
-exact, only better than fully serial. `tests/e2e/test_editor.py`'s
-`TestLoadingManyTutorialsAtOnce` covers the part a fake client's own instant
-resolution could otherwise hide: a 40-tutorial repository, read once with
-requests resolving in call order and once with a random delay on each so
-they resolve out of order, checked both times for the same thing — every
-tutorial present, its title matched to its own slug, no batch-index mistake
-scrambling one request's text onto another's path.
-
+not one at a time.**
+Against a real 90-file repository under `tutorials/`, an
+await-each-request-before-the-next loop took 15-25 seconds before showing a
+single tutorial — the editor's own fake-client test suite never caught this
+since it resolves instantly with no latency to expose it. Batched at 16
+rather than one `Promise.all()`, since GitHub's secondary rate limiting
+treats 90 simultaneous requests from one token as closer to abuse than a
+person opening a page — 16 is a reasonable middle guess, not a measured
+optimum. `TestLoadingManyTutorialsAtOnce` covers both in-order and
+out-of-order resolution against a 40-tutorial fake repository.
 *Cost to change: trivial — one constant (`READ_CONCURRENCY`). Raising it
-trades a faster load for a higher chance of a real GitHub rate-limit
-response on a large enough repository; nothing currently retries or backs
-off if that happens, which would be the next thing to add before raising it
-much.*
+trades a faster load for a higher chance of a real rate-limit response;
+nothing currently retries or backs off if that happens.*
 
 **7.62 — The editor gained a search-and-insert tutorial link picker, and it
 uncovered a real bug in `@milkdown/utils`'s own `insert()` helper.**
-`tutorialLinkProblems()` (7.60) catches a `tutorial:slug#anchor` link after
-it is typed wrong; this is the other half — a toggle above the prose editor
-that searches every known tutorial by title, slug or module
-(`matchTutorials()`, `assets/editor.js`) and inserts a real link at the
-cursor, so an author reaches for a tutorial that exists rather than
-remembering a slug and finding out it was wrong from the report afterward.
+A toggle above the prose editor searches every known tutorial by title, slug,
+or module (`matchTutorials()`) and inserts a real link at the cursor, so an
+author reaches for a tutorial that exists rather than guessing a slug.
 
-The first working version used `@milkdown/utils`'s own `insert(markdown,
-true)` — the obvious, documented way to put markdown at a selection — and
-it silently produced a link with no href every time. Two separate bugs, both
-found by asserting on what `getBody()` actually returned in
-`tests/e2e/test_editor.py`'s `TestLinkPicker`, not by trusting either call's
-default behaviour: (1) `insert()`'s inline path round-trips the parsed
-content through a real DOM node — `DOMSerializer.serializeFragment()` then
-`DOMParser.parseSlice()` — before inserting it, and the commonmark preset's
-link mark sanitizes `href` down to empty for any scheme outside
-http/https/mailto/tel/ftp (`sanitizeLinkHref`, a real and correct guard
-against a mark rendering as `<a href="javascript:...">` in the editable
-DOM) — which means it also erases `tutorial:` before the round trip's
-second half ever reads the href back, a case that guard was never meant to
-catch and had no way to tell apart from one it was. (2) Once past that, by
-building the link mark directly instead of going through `insert()`,
-`replaceSelectionWith(node, true)` — `true` is the default — still dropped
-it: `inheritMarks: true` means prosemirror-state's own implementation calls
-`node.mark(marksAtCursor)`, which *replaces* the node's marks with whatever
-is active at the cursor rather than merging, and a cursor at the end of a
-paragraph typically carries none. `insertLink(title, href)`
-(`vendor-src/milkdown-entry.js`) now builds the text node and its link mark
-straight against the schema, with no DOM step in between, and calls
-`replaceSelectionWith(node, false)`.
-
+The first version used `@milkdown/utils`'s documented `insert(markdown,
+true)`, which silently produced a link with no href every time — two
+separate bugs. `insert()`'s inline path round-trips content through a real
+DOM node, and the commonmark preset's link-mark sanitizer strips `href` for
+any scheme outside http/https/mailto/tel/ftp — a real guard against
+`javascript:` links, but one that also erases `tutorial:` before the round
+trip's second half reads the href back. And building the link mark directly
+and calling `replaceSelectionWith(node, true)` still dropped it, since
+`inheritMarks: true` *replaces* the node's marks with whatever is active at
+the cursor rather than merging, and a cursor at a paragraph's end typically
+has none. `insertLink()` now builds the text node and mark straight against
+the schema, with no DOM step, and calls `replaceSelectionWith(node, false)`.
 *Cost to change: small — `matchTutorials()` is a pure function over
-`allTutorials()`'s existing shape (already computed for
-`tutorialLinkProblems()`); the picker itself is plain DOM, no ProseMirror
-plugin surgery, which is why this one shipped where 7.60's hover tooltip did
-not — nothing here depends on Crepe's own code-block internals. Both
-`insertLink()` bugs are worth remembering if anything else in this codebase
-ever reaches for `@milkdown/utils`'s `insert()` for a mark-bearing inline
-node, or for `replaceSelectionWith` at all: check what's active at the
-cursor before assuming `inheritMarks: true` is harmless.*
+already-computed data; the picker is plain DOM. Worth remembering for
+anything else that reaches for `@milkdown/utils`'s `insert()` on a
+mark-bearing inline node.*
 
 **7.63 — The slash menu was fully transparent and the text cursor never
 appeared, because Crepe's structural stylesheet reads ~25 custom properties
 that only one of its own skins defines, and this editor loads neither.**
-Reported live, by a person actually using the editor rather than surfacing
-in a test: the `/` command menu was there but unreadable, sitting
-transparent over whatever text was behind it, and typing produced no
-visible caret to type against at all.
+`milkdown-entry.js` deliberately imports only Crepe's structural CSS, not any
+of its skins, since this editor retextures the same elements from dewlab's
+own `--dl-*` variables instead. What that missed: the structural stylesheet
+has no colours of its own — it reads them from
+`--crepe-color-*`/`--crepe-font-*`/`--crepe-shadow-*` custom properties that
+only a skin defines. With none loaded, every `var()` reference to an
+undefined property resolved to its CSS initial value: the slash menu's
+background came out `transparent`, and the replacement text-cursor's border
+came out invisible.
 
-`milkdown-entry.js` deliberately imports only `@milkdown/crepe/theme/
-common/style.css` — the structural rules — and none of Crepe's skins
-(`crepe`, `crepe-dark`, `frame`, `nord-dark`), because a skin is a fixed
-colour scheme and this editor retextures the same elements from dewlab's
-own `--dl-*` variables instead, so it follows the reader's light/dark
-choice like the rest of the site. What that comment did not yet reckon
-with: the structural stylesheet does not carry its own colours at all — it
-reads them from `--crepe-color-*`, `--crepe-font-*` and `--crepe-shadow-*`
-custom properties (surface colours, hover/selected backgrounds, even the
-virtual text cursor's own colour), and only a skin defines those. With
-none loaded, every one of ~25 properties was undefined, and a `var()`
-reference to an undefined custom property with no fallback is invalid at
-computed-value time — which resolves to that property's own *initial*
-value, not anything Crepe intended: `background: var(--crepe-color-
-surface)` on the slash menu came out `transparent` (background's initial
-value), and the replacement caret `prosemirror-virtual-cursor` draws after
-hiding the real one (`caret-color: transparent` on the `.ProseMirror`
-element itself — correct, deliberate, how that package works at all) got
-its own `border-color` from `--crepe-color-outline`, equally undefined,
-and came out invisible too.
+A prior patch (7.60) had hand-fixed a few elements' backgrounds directly, but
+that override and Crepe's own rule turned out to be equal specificity — not
+reliably winning the cascade, confirmed with `getComputedStyle()`. The real
+fix defines the ~25 `--crepe-*` custom properties once, mapped to the
+matching `--dl-*` token, so every downstream `var()` across Crepe's entire
+stylesheet resolves correctly from one place — including elements this pass
+never went looking for individually.
 
-The existing fix for the one instance of this already found (7.60's
-editor styling pass had already patched the slash menu, block handle, and
-link/latex popovers' *background* by hand, four class selectors at a
-time) turned out not to be reliably winning the cascade at all — verified
-live with `getComputedStyle()`, not assumed, the override rule and Crepe's
-own rule are equal specificity, and source order between two separately
-built stylesheets is not something to depend on. The real fix is
-upstream of all of that: define the ~25 `--crepe-*` custom properties
-themselves, once, mapped to the matching `--dl-*` token
-(`.dl-editor-body .milkdown` in `tutorial-style.css`) — every downstream
-`var(--crepe-color-surface)` across Crepe's *entire* structural
-stylesheet then resolves correctly from that one place, including
-elements this pass never went looking for individually (the code block's
-own surface, list markers, table borders, the image-block and AI
-features' own popovers even though neither is enabled) — which is also
-why the four-selector override block shrank down to just a `border` (Crepe's
-own popovers use box-shadow alone for definition; this editor still wants
-a crisper edge) once the variables underneath it were actually real.
-
-Worth remembering for its own sake: the first attempt at this fix silently
-did nothing, for a third, unrelated reason — the explanatory comment
-written above the new rule contained the literal text
-"`--crepe-color-*` and `--crepe-font-*`" side by side, and the `*` ending
-one word immediately followed by the `/` starting the next formed a
-literal `*/`, which closed the CSS comment early. Everything from there to
-the block's real closing `*/` was then parsed as CSS source, not comment —
-found by checking `getComputedStyle()` in a real browser and seeing the
-custom property come back empty despite the rule visibly being present,
-byte for byte, in the served file; a syntax error inside a CSS comment
-produces no error anywhere, only a silently different stylesheet.
-
-*Cost to change: the mapping itself is cheap — one block of `--dl-*`
-references, no new colours invented. The real cost is trusting a browser's
-CSS cascade or its comment parsing by reading the rule rather than
-querying `getComputedStyle()` against a real, rendered page; both bugs
-this entry describes, and the meta-bug in fixing the first one, would have
-shipped unnoticed by any amount of re-reading the CSS text.*
+Worth remembering: a first attempt at this fix silently did nothing because
+the explanatory comment above the new rule contained the literal text `*`
+immediately followed by `/`, closing the CSS comment early and turning the
+intended comment into parsed (and broken) CSS — a syntax error inside a
+comment produces no error anywhere, only a silently different stylesheet.
+*Cost to change: the mapping itself is cheap. The real cost is trusting a
+browser's cascade or comment parsing by reading the rule, rather than
+querying `getComputedStyle()` against a real rendered page.*
 
 **7.64 — The reading page gained a cheat sheet, assembled per tutorial so it
-never shows a reader something they have not been taught yet.** Full design
-in `planning/CHEAT_SHEETS.md`; this is the shape of what landed.
+never shows a reader something they have not been taught yet.**
+Full design in `planning/CHEAT_SHEETS.md`. A glossary file
+(`<slug>.glossary.yaml`) says what one tutorial introduces — a sibling of the
+tutorial's `.md`, not frontmatter, so a bad entry fails the build the same
+way a bad `covers:` entry does. `cumulative_glossary()` walks a series in
+`order.yaml` order, accumulating each member's entries into the next, so a
+tutorial's manifest carries its own glossary plus everything before it. A
+practice page's cheat sheet is the union of the tutorial(s) it names, through
+the same registry lookup `practice_pairs()` already validates.
 
-A glossary file (`<slug>.glossary.yaml`) says what one specific tutorial
-introduces — a new sibling of the tutorial's own `.md`, not frontmatter,
-because a build already reads frontmatter for other reasons and a bad
-glossary entry should fail the build the same way a bad `covers:` entry
-does (`own_glossary()`'s `kind`/`term`/`definition` checks, `build.py`).
-`cumulative_glossary()` walks a series in `order.yaml` order — the same
-`members` list `nav_for()` already uses for previous/next — accumulating
-each member's own entries into the next, so a tutorial's manifest carries
-its own glossary plus everything before it and nothing after. A practice
-page has no series position that means anything of its own
-(`practice_for`/`practice_across` name what it tests, not where it sits),
-so its cheat sheet is the union of the tutorial(s) it names instead —
-resolved through the exact same `registry` lookup `practice_pairs()`
-already validates, not a parallel mechanism.
+The panel reuses `.dl-settings`'s floating-card positioning, and the two
+close each other on open. The toggle is pinned to the page's top-left
+corner, starting `hidden` and revealed only when the manifest's glossary is
+non-empty — a tutorial with nothing accumulated yet gets no button at all.
 
-The panel itself reuses `.dl-settings`'s own floating-card positioning
-rather than inventing a second panel language, anchored to the same corner
-on purpose — and the two now close each other on open
-(`closeCheatSheet()`/`closeSettings()`, `tutorial-runtime.js`), since
-showing both at once would overlap. The toggle is the one new thing with no
-existing analogue: pinned to the page's own top-left corner, independent of
-the masthead (which already gives its left side to the wordmark), starting
-`hidden` in `shell.html` and revealed only when `initCheatSheet()` finds a
-non-empty `manifest.glossary` — a tutorial with nothing accumulated yet,
-which is every tutorial for a while, offers no button at all rather than
-one that opens onto an empty panel.
-
-That toggle's own CSS shipped broken on the first pass, caught by
-`tests/e2e/test_cheat_sheet.py`'s `TestVisibility` rather than by reading
-the rule: `.dl-cheatsheet-toggle`'s unconditional `display: inline-flex`
-has the same specificity as the browser's own `[hidden] { display: none }`
-and, loading later, won the tie — showing the button regardless of the
-`hidden` attribute JS uses to hide it. `.dl-cheatsheet-toggle[hidden] {
-display: none }`, stated explicitly rather than assumed, fixed it. The
-`.dl-settings-toggle` this was modelled on never hit this, because that
-button is never itself hidden — only its panel is — which is exactly the
-kind of difference that is invisible until a test actually asserts on it.
-
-Producing the glossary files themselves — the part that makes any of this
-show real content — is `.claude/skills/tutorial-glossary/SKILL.md`, run
-tutorial by tutorial in series order, deliberately built on top of the
-first-use `*emphasis*` convention `dev/curriculum_map.py` already relies on
-(`EMPHASIS_RE`/`terms_of()`) rather than reading each tutorial cold: most of
-a tutorial's glossary candidates are already marked, by an author who was
-told to mark them, before the skill reads a word of prose.
-
+Producing the glossary files is `.claude/skills/tutorial-glossary/SKILL.md`,
+run tutorial by tutorial in series order, built on top of the first-use
+`*emphasis*` convention `dev/curriculum_map.py` already relies on.
 *Cost to change: the schema and accumulation logic, small — one YAML shape,
-one pure function per concern (`own_glossary`, `cumulative_glossary`), fully
-covered by `tests/test_build.py`'s `TestTheCheatSheet` without touching a
-browser. The panel and toggle, small — CSS and markup mirroring
-`.dl-settings` throughout. The real cost is everything this entry is not
-about: actually running the skill across the curriculum, tutorial by
-tutorial, in series order, which is most of the remaining work and is
-tracked separately rather than bundled into this PR.*
+one pure function per concern, fully covered by unit tests. The real cost is
+running the skill across the curriculum, tracked separately.*
 
 **7.65 — Every tutorial in both live modules now has a glossary file, so the
-cheat sheet described in 7.64 shows real content everywhere rather than only
-where a handful of hand-written examples put it.** Run per `.claude/skills/
-tutorial-glossary/SKILL.md`, series by series, in `order.yaml` order:
-`computational-methods`' `python-fundamentals` and `matrices` series (8
-tutorials), then `mit-pdp-maths-prog-integration`'s `maths-and-programming`
-series (all 31), then its `reflections-and-review` series (2). A handful of
-tutorials — `bringing-it-all-together`, `critique-and-reflection`,
-`the-team-project` — got an empty `entries: []` rather than no file at all,
-each with a comment saying why (a stated review with nothing new, or a
-project brief with no code), which keeps "this tutorial was deliberately
-considered and has nothing to add" distinguishable from "nobody has gotten
-to this one yet" (the latter still resolves to an empty list either way, by
-`own_glossary()`'s missing-file case in 7.64 — the file's only audience is a
-future reader of the repo, not the build).
+cheat sheet described in 7.64 shows real content everywhere.**
+Run series by series in `order.yaml` order across all of
+`computational-methods` and `mit-pdp-maths-prog-integration` (33 tutorials
+plus two reflections). A handful of tutorials with nothing to add —
+`bringing-it-all-together`, `critique-and-reflection`, `the-team-project` —
+got an empty `entries: []` with a comment explaining why, distinguishing
+"deliberately considered, nothing to add" from "nobody has gotten to this one
+yet".
 
-One same-word collision surfaced doing this: *tangent* already names the
-trig ratio (`the-unit-circle.glossary.yaml`), and `rates-of-change.md`
-introduces an unrelated *tangent line* for the derivative. Reusing the term
-string `tangent` there would have `cumulative_glossary()`'s
-first-definition-wins dedup silently keep the trig definition and drop the
-calculus one — caught only by writing the tangent-line entry and finding it
-missing from a rebuilt manifest. Fixed by using the distinct term string
-"tangent line" for the second meaning rather than teaching the dedup logic
-about senses of a word, with a comment at the top of the file recording why
-the two are separate entries on purpose. `making-decisions.glossary.yaml`
-already carries a related note from earlier in this rollout, about a
-tutorial's own prose citing the wrong predecessor for where N/Z/Q/R were
-first covered; the glossary there follows the real `order.yaml` sequence
-rather than the tutorial's own (incorrect) claim, and does not re-teach
-those names in `numbers-and-their-families.glossary.yaml` where the
-same content is genuinely first covered per the tutorial's prose — a
-content fix for the prose itself is tracked as a follow-up task rather than
-made part of this rollout.
+One collision surfaced: *tangent* already named the trig ratio, and
+`rates-of-change.md` introduces an unrelated *tangent line* for the
+derivative — reusing the string `tangent` would have had
+`cumulative_glossary()`'s first-definition-wins dedup silently keep the trig
+meaning and drop calculus's. Fixed with the distinct term string "tangent
+line" rather than teaching the dedup logic about word senses.
 
-Practice-page resolution was verified against real builds rather than only
-unit tests, across both modules: every single-target practice page compared
-equal to its target tutorial's own manifest glossary, and all four
-`practice_across` "mixed" pages in `mit-pdp-maths-prog-integration`
-(`mixed-programming`, `mixed-algebra`, `mixed-data`, `mixed-trigonometry`)
-compared equal to the union of their named targets' manifest glossaries —
-confirming `cumulative_glossary()`'s practice-page branch, exercised so far
-mostly by hand-written fixtures in `tests/test_build.py`, holds up against
-the full, real curriculum.
-
+Verified against real builds: every single-target practice page's cheat
+sheet matched its tutorial's manifest, and all four `practice_across` mixed
+pages matched the union of their targets'.
 *Cost to change: none of this changes the mechanism from 7.64 — it is
-content, not code. Adding a glossary for a tutorial written after this
-entry, or correcting one, is exactly the workflow `.claude/skills/
-tutorial-glossary/SKILL.md` already describes: one tutorial, the cumulative
-glossary of what came before it in its series, one YAML file out.*
+content, not code.*
 
 **7.66 — A cheat sheet may cross series within a module; it still never
-crosses modules.** Answers `QUESTIONS.md`'s open question from 7.64:
-matrices comes after Python fundamentals for a reader working through
-`computational-methods` in the obvious order, so a matrices tutorial's
-cheat sheet should carry fundamentals' vocabulary too, not stop at its own
-series' boundary the way 7.64 originally shipped.
-
+crosses modules.**
+Matrices comes after Python fundamentals in `computational-methods`, so a
+matrices tutorial's cheat sheet should carry fundamentals' vocabulary too,
+rather than stopping at its own series boundary as 7.64 originally shipped.
 An optional `tutorials/<module>/series.yaml` (`order:`, a list of series
-slugs — the same shape `tutorials/modules.yaml` already uses for the
-module-display order it is modelled on) says the order a module's series
-accumulate in. `series_chain()` builds the walk: every tutorial in every
-series listed *before* this one, each in its own `order.yaml` order,
-followed by this series' own members in theirs. `cumulative_glossary()`
-now walks that chain instead of one series' `members` list, so its
-signature dropped `members` entirely — `series_chain()` already has
-everything it needs from `groups`, the same dict the function already
-took.
+slugs) says the order a module's series accumulate in; `series_chain()`
+walks every tutorial in every series listed before this one, then this
+series' own members. `cumulative_glossary()` now walks that chain instead of
+one series' member list.
 
-The one thing this could not be allowed to break silently:
-`reflections-and-review`, in `mit-pdp-maths-prog-integration`, is not on
-any linear route through its module — its own `.order.yaml` comment
-already explains why: "it is not the last thing you do — it is the thing
-you come back to whenever you have finished something worth looking at
-again." A series left off `series.yaml` (or a module with no such file at
-all) keeps 7.64's original series-only accumulation unchanged, which is
-exactly what leaves `reflections-and-review` alone — nothing about it
-needed to change, because that module's `series.yaml` (if it had one)
-would simply never list it. `computational-methods/series.yaml` lists
-`[python-fundamentals, matrices]`; `mit-pdp-maths-prog-integration` gets no
-file at all, since it has only one series with a real position to begin
-with.
-
-`check_series_order()` fails the build if a `series.yaml` names a series
-that is not real in that module — the same reasoning `series_of()` already
-applies to a slug listed in an `order.yaml` with no tutorial behind it: a
-typo here would otherwise silently exclude a series from cross-series
-accumulation, with nothing else ever saying why a cheat sheet was missing
-content.
-
-*Cost to change: small. `series_chain()` and `check_series_order()` are
-each a short, pure function, covered by `tests/test_build.py`'s
-`TestCrossSeriesGlossary` (inherits across a listed order, stays
-series-only with no file, stays series-only when left off an existing
-file, fails loudly on an unknown series name). Verified against a real
-build too: `grid-of-numbers`, the first matrices tutorial, now carries
-`working-with-tables`' 8 fundamentals entries ahead of its own 11.*
+A series left off `series.yaml` (or a module with no such file) keeps 7.64's
+original series-only accumulation — which is what leaves
+`reflections-and-review`, not on any linear route through its module,
+unaffected. `check_series_order()` fails the build if `series.yaml` names a
+series that doesn't exist in that module.
+*Cost to change: small. `series_chain()` and `check_series_order()` are each
+short, pure, and covered by tests. Verified against a real build:
+`grid-of-numbers` now carries `working-with-tables`'s 8 fundamentals entries
+ahead of its own 11.*
 
 **7.67 — A cell's control bar moved below the editor and output, and its
-hint stopped floating.** Two real usability problems, reported directly
-against the live site rather than found in review: the bar (slug, hint,
-reset, run) sat above the code, so a reader met controls for code they had
-not read yet; and the hint's "?" opened a hover popover
-(`position: absolute`) that could float over the editor or output beneath
-it, and gave a touch reader no way to open it at all.
+hint stopped floating.**
+Two real usability problems reported against the live site: the bar (slug,
+hint, reset, run) sat above the code, so a reader met controls for code they
+hadn't read yet; and the hint's "?" opened a `position: absolute` hover
+popover that could float over the editor or output beneath it, with no way
+for a touch reader to open it at all.
 
 `render_cell()`'s markup order changed — bar now last inside `.dl-cell` —
-with no change to how `tutorial-runtime.js` binds to any of it, since
-every binding is a class lookup (`.dl-editor`, `.dl-output`,
-`.dl-btn-run`, `.dl-btn-reset`) rather than a DOM-position assumption. The
-hint became a real click toggle: `.dl-hint-icon` is a button with
-`aria-expanded`, `.dl-hint-text` is `hidden` by default and a plain block
-when open (not `position: absolute`), so opening it grows the cell and
-pushes whatever follows it down the page — the same "push down, cover
-nothing" shape the prose-level `<details class="dl-hint">` fold already
-had, reached by a different mechanism because `<details>` does not fit as
-one icon inside a horizontal bar. `[hidden]` gets the same explicit
-`.dl-hint-text[hidden] { display: none }` rule 7.64 already needed for the
-cheat sheet toggle, for the same specificity-tie reason.
+with no change to how `tutorial-runtime.js` binds to it, since every binding
+is a class lookup rather than a DOM-position assumption. The hint became a
+real click toggle, `hidden` by default and a plain block when open, growing
+the cell and pushing what follows down the page — the same "push down, cover
+nothing" shape the prose-level hint/answer fold already had.
 
-A second ask alongside this — the Run button becoming a Stop button while
-a cell runs — was investigated and not built: `planning/CELL_CONTROLS.md`
-§2 has the finding. Pyodide runs on the page's own main thread with no Web
-Worker anywhere in the codebase, so a genuinely blocking loop leaves no
-thread free to even handle a Stop click; the only real fix is a Worker
-plus `pyodide.setInterruptBuffer()`, which needs `SharedArrayBuffer`,
-which needs cross-origin-isolation response headers GitHub Pages does not
-let this project set without a service-worker shim. Raised in
-`QUESTIONS.md` as its own decision rather than folded into this PR.
-
-*Cost to change: small for what shipped — `tests/test_build.py` gained two
-tests (hint starts closed and is a toggle not `role="tooltip"`, bar comes
-after editor/output in the markup) and `tests/e2e/test_cell_hint.py` is new
-(starts closed, a click opens it in normal flow — asserted directly via
-`getComputedStyle(...).position === "static"` and a real bounding-box
-height rather than trusting the CSS — a second click closes it again),
-run against a real browser with no cell run and no Pyodide boot required,
-same reasoning `test_autocomplete.py`'s first class already established.
-The Stop button is not a cost deferred cheaply — see `QUESTIONS.md`, the
-Worker migration is real architecture work whenever it happens.*
+A separate ask — turning Run into Stop while a cell runs — was investigated
+and not built: Pyodide runs on the page's own main thread with no Web
+Worker, so a blocking loop leaves no thread free to handle a click; the real
+fix needs a Worker plus `SharedArrayBuffer`, which needs headers GitHub Pages
+won't let this project set without a service-worker shim. Raised as its own
+open question rather than folded into this change.
+*Cost to change: small for what shipped. The Stop button is real
+architecture work whenever it happens.*
 
 **7.68 — A new skill reviews a tutorial's own code for naming and comment
 quality, the same way `tutorial-glossary` reviews it for vocabulary.**
-`PEDAGOGICAL_STYLE_GUIDE.md` §5 had cell-length, boilerplate, and tool
-rules but nothing on variable naming or comment style — a real gap, since
+`PEDAGOGICAL_STYLE_GUIDE.md` §5 had cell-length, boilerplate, and tool rules
+but nothing on variable naming or comment style — a real gap, since
 "clearer, semantic variable names" needs somewhere authoritative to check
-against, the same reason `tutorial-glossary` defers to `terms_of()`'s
-existing emphasis convention rather than deciding term-worthiness itself.
-§5 gained rules (semantic names over mathy single letters; comments that
-say why, not what; two named exceptions — a formula's own letters
-matching the prose above a cell, and "discover first, name afterwards"
-applying to a variable's specificity the same way it already applies to
-prose) before `.claude/skills/cell-code-review/SKILL.md` was written
-against them.
+against. §5 gained rules (semantic names over mathy single letters; comments
+that say why, not what; two named exceptions — a formula's own letters
+matching the prose above it, and "discover first, name afterwards" applying
+to a variable's specificity) before `.claude/skills/cell-code-review/SKILL.md`
+was written against them.
 
-The skill treats a rename as whole-tutorial, not per-cell — cells in one
-tutorial share a namespace in document order, so a name reused across
-cells has to be renamed everywhere it appears or the tutorial breaks
-rather than improves — and requires validating an edited cell still
-compiles and, where checkable, still produces the same output, before
-calling a rename done.
+The skill treats a rename as whole-tutorial, not per-cell, since cells in
+one tutorial share a namespace, and requires validating an edited cell still
+compiles and produces the same output before calling a rename done.
 
-Run once, by hand, across a handful of real tutorials rather than the
-whole curriculum, to prove the process before committing to a full pass
-(the same staged approach `tutorial-glossary` took, `CHEAT_SHEETS.md` §7):
-`multiplying-grids.md` and `grid-of-numbers.md` needed nothing — `a`/`b`
-in `dot(a, b)` and `A`/`B`/`C`/`D`/`S`/`M` for matrices both match names
-already established in the surrounding prose, `pixels`/`ramp` were
-already semantic. `how-we-got-here.md`'s `to_binary(n)` was left alone —
-a general-purpose numeric conversion function's single parameter, already
-explained by its own docstring, is the same shape as `dot(a, b)`'s
-generic arguments. One real change: `undoing-it.md`'s `polygon_area()`
-renamed its point-count variable from `n` to `point_count` (`i`/`j` left
-alone as loop indices, exempted by name); confirmed identical output
-(`area of the original square: 1.0`, before and after) and a clean
-rebuild.
-
+Run once by hand across a handful of real tutorials to prove the process.
+Most existing code needed nothing; one real change — `undoing-it.md`'s
+`polygon_area()` renamed `n` to `point_count`, confirmed identical output
+before and after.
 *Cost to change: small — the skill is a process document, no code of its
-own. The style-guide rules it depends on are new text in an existing
-section, not a new document. Running it across the rest of the curriculum
-is real, separate work — tracked as a follow-up rather than attempted in
-one pass, the same reasoning that kept `tutorial-glossary`'s own curriculum
-run as several PRs rather than one.*
+own. Running it across the rest of the curriculum is tracked as a
+follow-up.*
 
 **7.69 — The cheat sheet stopped hiding on a phone; it becomes a bottom
-sheet instead, the same treatment `.dl-settings` already had.** Settles
-`QUESTIONS.md`'s mobile question from 7.64. The `@media (max-width: 34rem)`
-rule that used to read `.dl-cheatsheet-toggle, .dl-cheatsheet { display:
-none; }` now gives `.dl-cheatsheet` the exact same `top: auto; bottom: 0;
-left: 0; right: 0; ...` block `.dl-settings` already had, rather than a
-separate, parallel rule — one selector list, one set of rules, for two
-panels that already behave identically at this width. The toggle needed no
-change at all: it was always a small fixed corner button, not a floating
-card, so it was never the thing that stopped working on a phone — only the
-panel's shape was.
+sheet instead, the same treatment `.dl-settings` already had.**
+The mobile rule used to simply hide `.dl-cheatsheet-toggle`/`.dl-cheatsheet`.
+It now gives `.dl-cheatsheet` the same `top: auto; bottom: 0; left/right: 0`
+block `.dl-settings` already has, sharing one selector list rather than a
+parallel rule. The toggle needed no change, since it was always a small
+fixed corner button, not a floating card — it was never what broke on a
+phone.
+*Cost to change: small — CSS only, no JavaScript or markup changed.*
 
-`tests/e2e/test_cheat_sheet.py`'s `TestMobile` — previously one test
-asserting the toggle was hidden — is now two: the toggle stays visible, and
-opening it produces a panel actually anchored to the bottom edge, checked
-with `getComputedStyle()` (`position: fixed`, `bottom/left/right: 0`)
-rather than trusted from the CSS alone.
+**7.70 — Two progress indicators, both read from the saved-progress record
+`saveNow()` already writes.**
+`planning/PROGRESS_INDICATORS.md` designed both; shipped unchanged in shape.
+`saveNow()` gained one field per cell (`errored`), captured once rather than
+re-parsed from saved HTML wherever needed. `progressCounts()` is the one
+shared function turning a list of `{started, errored}` into `{total, done,
+errored}`.
 
-*Cost to change: small — CSS only, one selector list gained a second
-target, no JavaScript or markup changed. `tutorial-runtime.js` was
-untouched, so `standalone.bundle.js` did not need rebuilding this time.*
+**The contents page** gets a small badge (`1/2`, red only if a counted cell
+errored) next to a tutorial's title, computed client-side from that
+tutorial's own localStorage record, gated by a new Settings toggle since it's
+the one *ambient* piece visible on every visit. A tutorial with no saved
+record gets no badge — a `0/9` would read as a judgment on a page nobody
+opened.
 
-**7.70 — Two progress indicators, both read from the saved-progress
-record `saveNow()` already writes.** `planning/PROGRESS_INDICATORS.md`
-designed both; this is what shipped, unchanged from that design in shape.
+**A tutorial's own page** gets a plain summary line ("4 of 9 cells run · 1
+with an error") folded into a Settings "Progress" section rather than a
+persistent bar competing with the cheat sheet toggle for screen edge. No
+second toggle needed, since this line is only ever seen by a reader who
+already opened Settings. `#dl-settings-progress`, unlike `#dl-settings-work`,
+is **not** removed on a zero-cell page, since its toggle also governs the
+contents page's badges.
+*Cost to change: small. Each function is short and pure or near-pure, with
+unit and e2e coverage across both a build-time and a real-cell-run path.*
 
-`saveNow()` gained one field per cell — `errored: !!cell.outputEl.
-querySelector(".dl-error")` — captured once rather than re-parsing saved
-`output_html` wherever the question "did this cell's last run fail" comes
-up. `progressCounts()` is the one place that turns a list of
-`{started, errored}` into `{total, done, errored}`, shared by both
-surfaces below rather than two separate counting implementations.
-
-**The contents page** gets a small badge (`1/2`, red background only when
-at least one counted cell errored) next to a tutorial's title —
-`render_index()` already knows `len(member.cells)` at build time, so a new
-`progress_attrs()` helper writes it straight onto the link as
-`data-module`/`data-slug`/`data-cells`, no fetch needed for
-`renderContentsProgress()` to read that tutorial's own `localStorage`
-record client-side. A tutorial with no saved record, or one where nothing
-has been run yet, gets no badge — a `0/9` would read as a judgment on a
-page nobody has opened. A new Settings toggle ("Show progress on the
-tutorials list") governs this specifically, because it is the one
-*ambient* piece — visible on every visit to the contents page whether or
-not a reader wants a visible tally.
-
-**A tutorial's own page** gets a plain summary line — "4 of 9 cells run ·
-1 with an error" — folded into a new "Progress" section in Settings
-(`updateProgressSummary()`, called after every save) rather than a
-persistent bar competing with the cheat sheet's toggle for a screen edge,
-per the original framing's own reconsideration in the design doc. Hidden
-whenever nothing has been run yet, same reasoning as the contents page's
-badge. No second toggle: unlike the contents-page badge, this line is
-only ever seen by a reader who already opened Settings, which is opt-in
-by where it lives.
-
-One wrinkle the design doc called out and the implementation resolves the
-same way: `#dl-settings-progress`, unlike `#dl-settings-work`, is **not**
-removed on a page with zero cells — its toggle also governs the contents
-page's own badges, and the contents page itself has no cells at all, so
-the section has to survive there; only the summary line inside it stays
-hidden in that case.
-
-*Cost to change: small. `progressCounts()`/`liveProgressCounts()`/
-`renderContentsProgress()`/`updateProgressSummary()` are each short, pure
-or near-pure functions. Two new unit tests cover the build-time
-attributes (`TestTheContentsPage`), and two new e2e files cover the rest:
-`tests/e2e/test_progress_summary.py` runs real cells (a real traceback,
-not a seeded fake, is what proves the `errored` capture reads what
-`tutorial_tools.py` actually renders) against the shared Pyodide fixture,
-and `tests/e2e/test_progress_badges.py` seeds `localStorage` directly and
-never boots Pyodide at all, the same reasoning `test_cheat_sheet.py`
-already established for anything that only ever needs `index.html`.
-`standalone.bundle.js` rebuilt for the `tutorial-runtime.js` change.*
-
-**7.71 — The cell-code-review skill's curriculum pass, finished.** 7.68 proved
-the process on a handful of tutorials; this is the rest of it — the whole of
+**7.71 — The cell-code-review skill's curriculum pass, finished.**
+7.68 proved the process on a handful of tutorials; this is the rest — all of
 `computational-methods` and both series of `mit-pdp-maths-prog-integration`
-(`maths-and-programming`'s 30 tutorials and `reflections-and-review`'s 2),
-every practice page, and the four `mixed-*` practice_across pages. Batched
-the same way `tutorial-glossary`'s own curriculum run was (`CHEAT_SHEETS.md`
-§7) — several commits, not one, with a full `build(clean=True)` after each.
+(roughly eighty documents total), batched across several commits with a full
+clean build after each.
 
-Three real changes, all renames or comments, none of them changing what a
-cell does:
+Three real changes, all renames or comments, none changing what a cell does:
+`where-chains-lead.md`'s word-chain loop renamed generic `a, b` to `word,
+next_word`, matching the tutorial's own later naming; `inverse(M)`'s `e`
+(standing in for the determinant-taken `d`) got a one-line comment
+explaining why; and `storing-and-computing.md`'s bare `x, y, z, w` for four
+different typed results, contradicting the tutorial's own stated naming
+rule, were renamed to `text_value`, `number_value`, `decimal_value`,
+`number_as_text`.
 
-- `computational-methods/where-chains-lead.md` and its practice page: a
-  word-chain loop built a transition-count matrix with `for a, b in
-  zip(words, words[1:])`, reusing `dot(a, b)`'s generic-operand letters for
-  two concrete, temporally-ordered things (a word and the word after it)
-  that the same tutorial's own `generate()` already calls by a real name.
-  Renamed to `word, next_word`; confirmed identical counts before and after.
-- `computational-methods/undoing-it-practice.md` (twice) and
-  `solving-systems.md`: `inverse(M)` swaps in `e` for the formula's own `d`
-  — already taken by the determinant variable — with no explanation.
-  Added a one-line comment at the destructuring line saying why.
-- `mit-pdp-maths-prog-integration/storing-and-computing.md`: the "Type
-  Conversion" cell used bare `x, y, z, w` for four different results (a
-  string, an int, a float, a string built from an int) — directly
-  contradicting the tutorial's own stated rule one section earlier
-  (`temperature` is a good name; `t` is not). Renamed to `text_value`,
-  number_value, decimal_value, number_as_text.
-
-Everything else needed nothing — which, across roughly eighty documents,
-is itself worth recording rather than assumed. The pattern from 7.68 held
-at scale: single letters earn their place constantly (`a, b, c, d` matching
-a quadratic or a triangle's own notation on the page above; `i, j, k` as
-loop indices; `x, y` as coordinates; `f, g, h` as the standard names for
-"a function," used in dozens of cells across both modules; `p, q` for
-truth-table propositions; `n, r` matching `P(n, r)`/`C(n, r)` in *Counting
-Carefully*; `m, c` for a line's slope and intercept, which *Drawing
-Functions* names as conventional in its own prose). Two "discover first"
-names were confirmed rather than flagged: `where-chains-lead.md`'s `state`
-variable, used before the tutorial says "stationary distribution" out
-loud, is the same example the style guide itself gives. Several cells are
-deliberately bad code as the exercise itself — `when-it-goes-wrong.md`'s
-`largest = 0` and `>` -for-`>=` cells, `building-reusable-tools-practice.md`'s
-`def f(a, b): return (a + b) / 2` — and renaming any of those would erase
-the thing the reader is meant to find. `bringing-it-all-together.md` and
-`critique-and-reflection.md`/`the-team-project.md` have no code to review
-at all — the first is all stub cells, the other two are pure prose.
-
-One thing noticed and deliberately left alone, outside this skill's scope:
-`parabolas.md`'s second `every-quadratic-is-the-same-curve` cell contains a
-dead expression, `(x + 3) ** 2 - 4 + 4 - (x + 3) ** 2 + x ** 2`, which
-algebraically collapses to plain `x ** 2` and does nothing the next few
-lines don't already do properly on a second figure. That is a content bug,
-not a naming or comment problem, and the skill's own charter is explicit
-that restructuring logic is not its job — flagged here, and as a follow-up
-task, rather than touched.
-
-*Cost to change: small, same reasoning as 7.68 — this is a process applied
-to content, not new code. The one thing worth remembering for next time:
-running the skill this far confirms the proof-of-concept's finding scales
-— most existing naming in this curriculum was already good, and the real
-value was in the handful of places it wasn't, plus the confidence that
-comes from having actually looked at all of them instead of assuming.*
+Everything else needed nothing — single letters earned their place
+constantly (matching a formula or a triangle's own notation, loop indices,
+coordinates, the conventional `f, g, h` for "a function"), and two "discover
+first" names were confirmed as deliberate rather than flagged. Deliberately
+broken cells that are the exercise itself were left alone. One dead
+algebraic expression in `parabolas.md` was noticed and deliberately not
+touched, since restructuring logic is outside this skill's charter — flagged
+as a follow-up instead.
+*Cost to change: small, same reasoning as 7.68 — a process applied to
+content, not new code.*
 
 **7.72 — Students can write their own notes, distinct from a tutorial's
 author-written pedagogical notes, saved on the same record as their cell
-work.** `planning/STUDENT_NOTES.md`'s plain version, shipped as designed:
-a `notes` field on the record `saveNow()` already writes, a `<textarea>`
-in Settings' "Your work" section (`#dl-progress-notes`), riding along on
-the export/import button that already existed there — no new save path,
-no new file format.
+work.**
+A `notes` field on the record `saveNow()` already writes, a `<textarea>` in
+Settings' "Your work" section, riding on the existing export/import button —
+no new save path, no new file format.
 
-The one real design change this forced: `initProgressSection()` and
-`saveNow()` both used to bail out on `cells.length === 0`, on the
-reasoning that a page with no cells has nothing to save. That reasoning
-broke the moment notes existed — a prose-only tutorial has nothing
-*executable* to save but can still have something worth writing down. Both
-now check membership in a small `NON_TUTORIAL_PAGES` set (`index`, `tree`,
-`about` — `build.py`'s three non-tutorial `write_*_page()` slugs) instead,
-which is the actual question that matters: is this a tutorial at all, not
-whether it happens to have cells today.
+The one real design change forced by this: `initProgressSection()` and
+`saveNow()` used to bail out on zero cells, on the reasoning that a page with
+nothing executable has nothing to save. That broke once notes existed — a
+prose-only tutorial can still have something worth writing down. Both now
+check membership in a small `NON_TUTORIAL_PAGES` set (`index`, `tree`,
+`about`) instead.
 
-From §4's two nudge proposals, only the smaller one shipped: a first-use
-hint line under the textarea ("Notes are saved in this browser only.
-Download a copy below to keep them anywhere else."). The staleness marker
-on the export button was left for later per the design doc's own staging,
-and is now `QUESTIONS.md`'s open question on this feature.
-
-*Cost to change: small. `saveNow()`/`restoreSaved()` each gained a few
-lines; `notesEl` is one module-level reference set once, read from three
-places. Four new e2e tests in `tests/e2e/test_saved_progress.py`
-(`TestStudentNotes` — autosave, survives a reload, "Start again" clears
-it, and the export download actually contains it, checked via
-`page.expect_download()` rather than trusting the button click alone)
-against the shared Pyodide fixture, and a new
-`tests/e2e/test_student_notes_prose_only.py` (three tests, no Pyodide
-needed, same reasoning `test_cheat_sheet.py` already established) proving
-the zero-cell case specifically: the section is not removed, a note still
-autosaves with `cells: []`, and the contents page itself — which has no
-tutorial to have notes about — correctly gets no notes field at all.
-`standalone.bundle.js` rebuilt for the `tutorial-runtime.js` change.*
+Only the smaller of the design doc's two nudge proposals shipped: a
+first-use hint line under the textarea. The staleness marker on the export
+button was left for later (shipped in 7.75).
+*Cost to change: small. `saveNow()`/`restoreSaved()` each gained a few lines;
+four new e2e tests cover autosave, reload survival, clearing, and export,
+plus a separate zero-cell-case test file.*
 
 **7.73 — A left-anchored panel lets a reader jump to any tutorial in the
 current series, not just the one immediately before or after it.**
-`planning/SIDEBAR_CONTENT.md` §4b, shipped in scaled-down form: a new
-`render_series_nav(tutorial, members)` in `build.py` server-renders an
-`<ol>` of every member of the series, in reading order, with the current
-one marked (`aria-current="page"`, not a link) and every other one a link
-via the existing `link_between()` helper. A tutorial with nowhere in a
-series to sit — archived, same as `nav_for()`'s own case — gets nothing,
-rather than a guess. `write()` and the four other shell-template writers
-(`write_index()`, `write_tree_page()`, `write_about_page()`, the editor
-page) all gained the `{{SERIES_NAV}}` token, since an unfilled token fails
-the build in any of them.
+`render_series_nav(tutorial, members)` server-renders an `<ol>` of every
+series member in reading order, current one marked (not a link), every
+other one a link via the existing `link_between()` helper. A tutorial with
+nowhere in a series to sit — archived — gets nothing.
 
-Between writing the design doc and building this, an external PR (#65, not
-mine) moved the cheat sheet panel from right-anchored to left-anchored —
-which quietly invalidated §4b's assumption that "left" was open ground for
-a spatially separate nav panel. Rather than re-litigate that placement,
-the series nav panel joined the cheat sheet at the same left anchor,
-stacked below its toggle, and joined the existing Settings/cheat-sheet
-mutual-exclusion group as a third member (`closeSeriesNav()` alongside
-`closeSettings()`/`closeCheatSheet()`, each panel's open path now closing
-both of the others).
+Between the design and the build, an external PR moved the cheat sheet panel
+from right- to left-anchored, invalidating the design's assumption that
+"left" was open ground — so the series nav panel joined the cheat sheet at
+the same left anchor instead, and joined the existing Settings/cheat-sheet
+mutual-exclusion group as a third member.
 
-Scope was cut down from §4b's original sketch: this ships series-listing
-only, not a duplicate of the inline "Contents" table of contents
-(`render_toc()`) that already exists on every page. Duplicating that here
-would have doubled the maintenance surface for no reader benefit — the TOC
-already answers "where am I on this page," and this panel only needed to
-answer "where am I in the series."
+Scope was cut from the original sketch: this ships series-listing only, not
+a duplicate of the inline "Contents" table of contents that already answers
+"where am I on this page" — this panel only answers "where am I in the
+series."
 
-Two failures surfaced building this, both from the standalone/downloadable
-export path (`standalone_html()`), which strips navigation-dependent
-markup that can't survive as a single downloaded file: the new toggle and
-panel weren't covered by the existing stripping rules, and after adding
-targeted ones, the inlined JS bundle's own string literals (element-ID
-lookups like `"dl-navpanel-toggle"`) tripped the test asserting no
-`dl-nav`-prefixed substring survives outside `<style>` blocks — a
-collision with the pre-existing `<nav class="dl-nav...">` prev/next
-element's own naming, not a real bug. Fixed by renaming
-`navpanel`→`seriesnav` throughout, rather than carving the test's
-assertion around script blocks: the collision was real evidence the
-original name was too close to an existing convention, and the new name
-is more specific regardless.
-
-*Cost to change: small-to-moderate. One new function in `build.py`, one
-new token threaded through five call sites, new shell markup and CSS
-mirroring the cheat sheet's own (including its mobile bottom-sheet
-treatment), and `initSeriesNav()`/`closeSeriesNav()` in
-`tutorial-runtime.js` following the same open/close/mutual-exclusion shape
-`initCheatSheet()` already established. Two new `re.sub` rules in
-`standalone_html()` for the stripping gap. New
-`tests/e2e/test_series_nav.py` (visibility, open/close, three-way mutual
-exclusion with the cheat sheet, series content and ordering, mobile sheet)
-and a `TestSeriesNav` class in `tests/test_build.py` for
-`render_series_nav()` itself (ordering, current-item marking, the
-order-file-decides-not-filename case, and the archived/no-series-position
-empty case). `standalone.bundle.js` rebuilt for the
-`tutorial-runtime.js` change.*
+Two failures surfaced from the standalone/downloadable export path, which
+strips navigation-dependent markup: the new toggle and panel weren't covered
+by the existing stripping rules, and once added, the bundle's own string
+literals (`"dl-navpanel-toggle"`) collided with an existing test asserting no
+`dl-nav`-prefixed substring survives outside `<style>` blocks — fixed by
+renaming `navpanel`→`seriesnav` throughout, since the collision was real
+evidence the original name was too close to an existing convention.
+*Cost to change: small-to-moderate. One new build.py function, one new token
+threaded through five call sites, new CSS mirroring the cheat sheet's own;
+new e2e and unit test coverage for ordering, current-item marking, and the
+archived case.*
 
 **7.74 — Pedagogical notes and dataset attribution, both shipped as
-`planning/SIDEBAR_CONTENT.md` §2–§4 settled: extending the existing cheat
-sheet panel rather than a third one.** Neither is cumulative across a
-series the way the glossary is — a note or a dataset belongs to the
-specific tutorial that declared it, full stop, so both ride on `write()`'s
-manifest the same way `glossary` already does (present only when
-non-empty), just never accumulated through `series_chain()` first.
+extensions to the existing cheat sheet panel rather than a third one.**
+Neither is cumulative across a series the way the glossary is — a note or a
+dataset belongs to the specific tutorial that declared it — so both ride on
+`write()`'s manifest the same way `glossary` already does, without going
+through `series_chain()`.
 
-**Notes** are authored as `<aside class="dl-note" id="...">` in the body —
-§3's recommended option (b), the same reuse-over-invention trick the
-hint/answer fold already established. Unlike a fold, a note does not stay
-inline: `extract_notes()` pulls it out of `body_html` entirely once its id
-and content are captured, because §4 settled that notes surface in the
-sidebar, not mid-paragraph. One real design correction made while
-building this, not in the original design doc: a raw HTML block's inner
-content is *not* re-run through the markdown converter by this project's
-existing pipeline — confirmed by checking what the hint/answer fold
-already does with backticks and emphasis inside it (they show up literal,
-not as `<code>`/`<em>`, a pre-existing limitation left alone here since
-fixing it is out of this change's scope). §1's own design intent for
-notes was explicit that this had to work — "a note that contains an image
-is just markdown content" — so `extract_notes()` runs the captured inner
-text through `to_html()` on its own, separately from the surrounding
-document, which does convert correctly (checked directly: `![a
-chart](chart.png)` inside a note becomes a real `<img>`). `check_alt_text()`
-was extended to scan every note's own html alongside `body_html`, since an
-image inside a note needs exactly the same alt-text requirement as one in
-the body — it would otherwise go unchecked entirely, having already been
-removed from `body_html` by the time that check runs.
+**Notes** are authored as `<aside class="dl-note" id="...">` in the body;
+`extract_notes()` pulls each out of `body_html` entirely, since notes surface
+in the sidebar, not mid-paragraph. A real correction made while building
+this: raw HTML blocks aren't re-run through the markdown converter by this
+project's existing pipeline, so `extract_notes()` runs each note's captured
+inner text through `to_html()` on its own — meaning an image inside a note
+becomes a real `<img>`, checked directly. `check_alt_text()` was extended to
+scan every note's html too, since it would otherwise go unchecked after
+removal from `body_html`.
 
-**Datasets** use §2's `data/<name>.yaml` beside `data/<name>.csv` — the
-same beside-the-file pattern `<slug>.glossary.yaml` already established —
-plus a `datasets:` frontmatter list, cross-referenced the same
-fail()-on-mismatch way `practice_pairs()` already checks `practice_for`.
-Both the CSV and its attribution file are required once a tutorial
-declares a dataset name, and the attribution file needs all three fields
-(`source`, `license`, `description`) — an undocumented dataset would
-defeat the entire point of declaring one, so this fails loudly rather than
-shipping a nameless, sourceless entry.
+**Datasets** use `data/<name>.yaml` beside `data/<name>.csv`, plus a
+`datasets:` frontmatter list cross-referenced the same fail()-on-mismatch way
+`practice_pairs()` checks `practice_for`. Both the CSV and its attribution
+file (`source`, `license`, `description`, all required) fail the build if
+missing, rather than shipping a nameless, sourceless dataset.
 
-The cheat sheet panel's intro copy was reworded (`shell.html`) to keep its
-one real promise — "nothing here is something you have not been
-taught yet" — scoped to the glossary specifically, since that guarantee
-never applied to notes or datasets and saying it as a blanket claim would
-now be false. Each of the three now gets its own heading inside the panel
-(`renderCheatSheet()` in `tutorial-runtime.js` now takes the whole
-manifest rather than just glossary entries), which is what keeps a reader
-from mistaking a note for an examinable, taught term — the conceptual
-cost §4 flagged when it settled on reusing one panel for three different
-kinds of content.
+The panel's intro copy was reworded to scope its one real promise — "nothing
+here is something you have not been taught yet" — to the glossary
+specifically, since it never applied to notes or datasets. Each of the three
+now gets its own heading in the panel.
+*Cost to change: moderate. New `Note` dataclass, `Tutorial.notes`/`.datasets`
+fields, extraction and validation functions, and a restructured
+`renderCheatSheet()` — thoroughly covered by unit and e2e tests.*
 
-*Cost to change: moderate. New `Note` dataclass and `Tutorial.notes`/
-`Tutorial.datasets` fields, `extract_notes()` wired into `load()`,
-`dataset_attribution()`/`check_datasets()` in `build.py`; `write()` gained
-two more optional manifest fields following the same shape `glossary`
-already has. `renderCheatSheet()` restructured to read from the whole
-manifest and render three sections instead of one; `initCheatSheet()`'s
-visibility guard now checks all three instead of just `glossary`. New
-`TestNotes`/`TestDatasets` classes in `tests/test_build.py` (manifest
-shape, extraction/removal from the body, duplicate-id and
-missing-file/missing-attribution-field failures, non-inheritance across a
-series, and the markdown-conversion-inside-a-note correction with its own
-alt-text check) and new `TestNotes`/`TestDatasets` classes added to the
-existing `tests/e2e/test_cheat_sheet.py` rather than a new file, since
-this extends that panel rather than building a new one (toggle visibility
-from a note or dataset alone, per-section headings, a note pulled out of
-the page body, both a note and a glossary entry keeping their own separate
-headings). `standalone.bundle.js` rebuilt for the `tutorial-runtime.js`
-change.*
+**7.75 — The export button gets a small marker once notes have grown since
+the last export, opt-out in Settings.**
+The larger of `STUDENT_NOTES.md`'s two nudge proposals, left for later at
+7.72, is now built: a `.dl-nudge` class on the export button once the notes
+textarea has grown by `NOTES_NUDGE_THRESHOLD` (120) characters since the
+last export, rendered as a small coloured dot via `::after`. It changes only
+on an edit to notes, an export, an import, or "Start again" — never
+mid-keystroke elsewhere.
 
-**7.75 — The export button gets a small marker once notes have grown
-since the last export, opt-out in Settings.** `planning/STUDENT_NOTES.md`
-§4's second, larger proposal — left for later at 7.72 — is now built too:
-a `.dl-nudge` class on `#dl-progress-export` once the notes textarea has
-grown by `NOTES_NUDGE_THRESHOLD` (120) characters since the last export,
-rendered as a small coloured dot (`--dl-error-fg`, the same "something
-here wants your attention" language `.dl-status-error` already uses) via
-`::after` rather than any change to the button's own markup. Never a
-banner, never mid-sentence — it can only change on an edit to the notes
-field, an export, an import, or "Start again", none of which happen while
-a reader is mid-keystroke elsewhere on the page.
+The baseline is not a new field on the saved-progress record — that would
+conflate "as of the last autosave" with "as of the last export" — but its
+own lightweight per-tutorial localStorage key, the same pattern
+`rememberVersion()`/`writePin()` already use. An import counts as an export,
+since an imported file's notes already exist outside this browser by
+definition. "Start again" clears both the progress key and this baseline.
 
-The baseline it compares against is not a new field on the saved-progress
-record — that would conflate "as of the last autosave" with "as of the
-last export," which are different moments the whole feature exists to
-tell apart. It is one more number in its own per-tutorial key
-(`dewlab:notes-exported-len:<module>:<slug>`), tracked the same lightweight
-way `rememberVersion()`/`writePin()` already track a small piece of
-per-tutorial state outside the main record. An import counts as an export
-too — an imported file's notes already exist outside this browser by
-definition, which is the actual question the marker asks — so it resets
-the baseline exactly like clicking "Export a copy" does. "Start again"
-clears both the progress key and this one, so a fresh start does not carry
-over a stale baseline pointed at notes that no longer exist.
-
-The opt-out lives beside the existing progress-badges toggle in shape:
-`NOTES_NUDGE_KEY` (`dewlab:notes-nudge`), a `[data-notes-nudge]` segmented
-control in "Your work", `readNotesNudge()`/`writeNotesNudge()` mirroring
-`readProgressBadges()`/`writeProgressBadges()` exactly. Off means
-`updateNotesNudge()` always removes the class rather than skipping its own
-check — a reader who turns this off should never see the dot again until
-they turn it back on, not merely less often.
-
-*Cost to change: small. Five small functions in `tutorial-runtime.js`
-(`notesExportKey`, `readNotesNudge`/`writeNotesNudge`, `updateNotesNudge`,
-`markNotesExported`) plus one more toggle-init function following
-`initProgressBadgesToggle()`'s own shape exactly; one `.dl-texture-row` in
-`shell.html` and eight lines of CSS for the dot. Five new e2e tests in
-`tests/e2e/test_saved_progress.py` (`TestNotesNudge` — short notes get no
-marker, long notes do, exporting clears it and the clearing survives a
-reload, writing enough more after an export marks it again, and the
-Settings toggle turns it off and holds across a reload) against the
-shared Pyodide fixture, run alongside the full e2e suite and the full unit
-suite, both green. `standalone.bundle.js` rebuilt for the
-`tutorial-runtime.js` change.*
+The opt-out mirrors the existing progress-badges toggle exactly; turning it
+off always removes the dot rather than merely showing it less often.
+*Cost to change: small. Five small functions plus one more toggle-init
+function following an existing pattern; five new e2e tests cover the marker,
+the clearing, and the toggle.*
 
 **7.76 — All three tooltip options built together: builtins, signature
-help, and Jedi's pre-run answer for a name that has not been executed
-yet.** `planning/CELL_TOOLTIPS.md` recommended building (a) and (b) first
-and leaving (c) documented rather than built, on the reasoning that Jedi
-was a second, heavier mechanism whose main extra value — pre-run
-completion — was real but narrower once (a) had closed the builtins gap.
-Prototyped against the real pinned Pyodide (0.28.3) and the real self-hosted
-wheels before writing any of this: (a) confirmed the version cost nothing
-(a computed builtin's `inspect.getdoc()` behaves exactly like a
-`_page_globals` object's), and (c) confirmed Jedi's `.help()`/
-`.get_signatures()` genuinely resolve a function defined but never run in
-the same cell, from source text alone, in low tens of milliseconds warm.
-That removed the open question `(c)`'s own writeup left — whether pre-run
-completion was worth the second-mechanism cost — so all three were built
-as one feature rather than staged.
+help, and Jedi's pre-run answer for a name that has not been executed yet.**
+`planning/CELL_TOOLTIPS.md` had recommended staging (a)/(b) first and
+leaving (c) documented only. A prototype against the real pinned Pyodide
+confirmed (a) cost nothing extra and (c)'s Jedi genuinely resolves a
+function defined but never run, from source text alone, in low tens of
+milliseconds — closing the open question about whether pre-run completion
+was worth a second mechanism, so all three were built as one feature.
 
-**(a) Builtins.** `docFor`/the new `signatureFor` (`assets/tutorial-runtime.js`)
-both now check `__builtins__` — via a new `lookupLiveName()` shared by
-both, live-namespace first, builtins second, never shadowing a student's
-own name — after `tools._page_globals` comes up empty. `builtinsModule =
-pyodide.pyimport("builtins")`, set once at boot alongside `inspectModule`.
+**(a) Builtins**: `docFor`/`signatureFor` check `__builtins__` via a shared
+`lookupLiveName()`, live namespace first, builtins second, never shadowing a
+student's own name.
 
-**(b) Signature help.** New in `vendor-src/codemirror-entry.js`:
-`pythonSignatureHelp()`, a `StateField`/`ViewPlugin` pair rather than
-`hoverTooltip()` — nothing in CodeMirror triggers on typing a character
-the way `hoverTooltip` triggers on the pointer, so this needed its own
-mechanism. `callContextAt()` scans backward from the cursor for the
-nearest open, unclosed `(` and the identifier before it, counting
-top-level commas along the way for the argument index; `highlightParam()`
-bolds that argument in the returned signature string, splitting only
-between the matching parens so a default value's own brackets or commas
-are not mistaken for argument boundaries. `getDoc`'s calling convention
-changed to match: `(name, wholeSource, line, col)` instead of `(name)`,
-and it is now `async` — CodeMirror's hover source accepts a Promise of a
-Tooltip natively, so no new plumbing was needed for that, only `await`.
+**(b) Signature help**: `pythonSignatureHelp()`, a CodeMirror
+`StateField`/`ViewPlugin` pair rather than `hoverTooltip()`, since nothing
+triggers on typing the way hover triggers on the pointer. `callContextAt()`
+scans backward from the cursor for the nearest open paren and its
+identifier, counting commas for the argument index.
 
-**(c) Jedi.** Loaded in the background, well after `boot()` has already let
-a student click Run — `loadJedi()`, fired without an `await` at the end of
-`boot()` — since jedi+parso are a real ~1.6 MB download and nothing about
-a first cell running depends on them; `dewlab.jediReady()` is how a test
-(or a slower browser) knows the fallback has actually landed. Two Python
-helpers (`_dewlab_hover_doc`/`_dewlab_signature`) live in `pyodide.globals`
-— the interpreter's own top-level namespace, not
-`tutorial_tools._page_globals` a student's cell runs against
-(`run_cell()`'s `globals=`) — so `jedi` and both helpers are never visible
-to, or shadowable by, anything a student writes. Both wrapped in Python
-rather than left to a JS `try`/`catch`: the exception a malformed, mid-edit
-source string can raise is more varied than one JS-side catch should have
-to enumerate, and "no tooltip this time" is the only outcome that should
-ever reach the caller.
+**(c) Jedi**: loaded in the background well after boot, since jedi+parso is
+a ~1.6 MB download nothing about a first cell run depends on. Two Python
+helpers live in `pyodide.globals`, never visible to or shadowable by a
+student's own code, both wrapped in Python since a malformed mid-edit source
+string can raise a wider variety of exceptions than a single JS catch should
+enumerate.
 
-**Live always wins.** `hoverDoc(name, source, line, col)` and
-`signatureHelp(name, source, line, col, argIndex)` — what the CodeMirror
-extensions actually call — try the live-interpreter answer first and only
-reach for Jedi if that comes back empty. A name the interpreter already
-knows about is authoritative; Jedi only fills the gap live cannot reach,
-never the reverse, so the two can never disagree about a name they both
-have an opinion on.
+**Live always wins** — the live-interpreter answer is tried first and Jedi
+only fills the gap it can't reach, so the two can never disagree about a name
+they both know.
 
-**One false start, corrected before it shipped.** A first hand-check of
-Jedi's pre-run signature help against `average(numbers)` returned nothing
-and read, briefly, like a real limitation. It was an off-by-one in the
-column passed to `get_signatures()` — Jedi's own error message named the
-valid range once the column was pushed one past it, which is what caught
-it. Recorded because the same mistake would have been easy to carry
-straight into `callContextAt()` unnoticed.
+One false start: a first hand-check of Jedi's pre-run signature help
+returned nothing, which read like a real limitation but was an off-by-one in
+the column passed to `get_signatures()`.
+*Cost to change: moderate. Several new functions across `tutorial-runtime.js`
+and `codemirror-entry.js`; the self-hosted Pyodide mirror grew from ~30 MB to
+~32 MB for the jedi/parso dependency. Fifteen new e2e tests against the real
+self-hosted Jedi.*
 
-*Cost to change: moderate. `docFor`/`signatureFor`/`lookupLiveName`/
-`jediDoc`/`jediSignature`/`hoverDoc`/`signatureHelp`/`loadJedi` in
-`tutorial-runtime.js`; `pythonSignatureHelp`/`callContextAt`/
-`highlightParam` plus the `getDoc` signature change in
-`codemirror-entry.js`; a `.cm-dewlab-signature-tooltip` rule in
-`tutorial-style.css`; `dev/fetch_pyodide.py`'s baseline gained `jedi`
-(parso comes along as its own dependency), so the self-hosted mirror is
-now ~32 MB rather than ~30. Fifteen e2e tests in
-`tests/e2e/test_autocomplete.py` (`TestBuiltinTooltips`,
-`TestPreRunTooltips`, plus the reconciliation case), all against the real
-self-hosted Jedi rather than mocked — two needed `page.keyboard.insert_text()`
-in place of `type()` once multi-line typed source turned out to double up
-under CodeMirror's own auto-indent/auto-close handling, and hovering a
-bare builtin needed a `view.coordsAtPos()`-based helper since "len" inside
-"len([1, 2, 3])" gets no highlighting span of its own for a DOM text
-locator to find. `standalone.bundle.js`/`codemirror.bundle.js` rebuilt.*
+**7.77 — The Worker migration was built: Pyodide now runs off the main
+thread on the hosted site, and "Run" genuinely becomes "Stop."**
+`planning/CELL_CONTROLS.md` §2 had found the main-thread setup couldn't
+support this at all, since a blocking Python loop leaves no thread free to
+handle a click; this is the answer, built rather than re-weighed.
 
-**7.77 — The Worker migration `QUESTIONS.md` left open was built: Pyodide
-now runs off the main thread on the hosted site, and "Run" genuinely
-becomes "Stop."** `planning/CELL_CONTROLS.md` §2 found the previous,
-main-thread setup could not support this at all — a blocking Python loop
-leaves no thread free to handle a click — and `QUESTIONS.md` recorded the
-open question rather than guessing at an answer. This is that answer:
-built, not merely re-weighed.
+Two execution paths, chosen by `currentManifest.standalone`: the offline
+export keeps running Pyodide on the main thread, since a `file://` page
+can't use a module Worker and has no Stop button to justify the cost. Every
+function that talks to Pyodide now exists twice — unchanged under an `MT`
+suffix for that path, and behind a `workerRequest()` postMessage round-trip
+for the hosted path.
 
-**Two execution paths, chosen by `currentManifest.standalone`.** The
-offline, downloadable export (`build.py`'s `standalone_html()`) keeps
-running Pyodide on the main thread exactly as before — a `file://` page
-cannot use a module Worker, and the export has no Stop button to justify
-the cost anyway. Every function that used to talk to Pyodide directly now
-exists twice in `tutorial-runtime.js`: unchanged under an `MT` suffix for
-that path, and behind a `workerRequest()` postMessage round-trip for the
-hosted path. `boot(manifest)` picks the path once; nothing downstream
-re-checks it per call.
+`assets/pyodide-worker.js` runs the same `tutorial_tools.py` and
+hover/completion machinery behind one uniform request/response protocol. The
+interrupt itself is `pyodide.setInterruptBuffer()` against a
+`SharedArrayBuffer`, which needs cross-origin isolation headers GitHub Pages
+won't let this project set — `coi-serviceworker` (vendored) is the
+same-origin service-worker shim that adds them anyway. `dewlab.canStop()`
+reports the real achieved state, not merely "requested", since the shim's
+first registration needs one reload before headers apply.
 
-**`assets/pyodide-worker.js`**, new, is a module Worker running the same
-`tutorial_tools.py`, the same `docFor`/`signatureFor`/Jedi machinery moved
-over verbatim, behind one uniform request/response protocol
-(`{type, id, ...}` in, `{type:"response", id, result|error}` out, plus
-one-way `status`/`jedi-ready`/`output` pushes). Every URL it fetches
-(Pyodide's own base, `tutorial_tools.py`, the CSV data base) has to be
-resolved to an absolute URL before being handed to the Worker — a relative
-fetch inside a Worker resolves against the worker script's own location,
-not the page's, which is not obvious until it silently 404s.
+Cell output crosses the postMessage boundary through a new `_MessageSink` in
+`tutorial_tools.py`, parallel to the existing `_DomSink`; `applyOutputEvent()`
+replays the same stream/append/clear semantics on the main thread.
+`KeyboardInterrupt` renders as a plain "Stopped.", not a traceback.
 
-**The interrupt itself is `pyodide.setInterruptBuffer()`**, exactly as
-`CELL_CONTROLS.md` §2 described: a `SharedArrayBuffer` the main thread
-writes `2` (SIGINT) into on a Stop click, checked by the Worker's own
-Python between bytecode steps regardless of what the running code is
-doing. `SharedArrayBuffer` only exists when the page is cross-origin
-isolated, which needs `Cross-Origin-Opener-Policy`/
-`Cross-Origin-Embedder-Policy` response headers GitHub Pages will not let
-this project set — `coi-serviceworker` (vendored, `assets/vendor/`,
-registered from `shell.html`, excluded from the standalone export by
-`build.py`) is the same-origin service-worker shim that adds them anyway.
-`dewlab.canStop()` reports the real state — cross-origin isolation
-achieved and a `SharedArrayBuffer` actually allocated — rather than
-`interrupt buffer requested`, since `coi-serviceworker`'s own first
-registration on a given browser needs one reload before headers apply,
-and a run started before that reload should not show a Stop button it
-cannot honor.
-
-**Cell output crosses the postMessage boundary through a message-based
-sink**, `_MessageSink` in `tutorial_tools.py`, parallel to the existing
-`_DomSink` rather than replacing it — `run_cell(cell_id, output_target,
-code)` picks one by whether `output_target` is callable. The Worker side
-posts `{kind, cssClass, text, markup}` events; `applyOutputEvent()` on the
-main thread replays `_DomSink`'s own stream/append/clear semantics against
-the real DOM, so a reader sees byte-for-byte the same output shape either
-way. `KeyboardInterrupt` — what a Stop click actually raises inside the
-running Python — is caught ahead of the general exception handler and
-renders as a plain "Stopped.", not a traceback.
-
-**The widget bridge (`text_input`/`dropdown`/`button`) cannot work in a
-Worker and now says so.** All three hand a live DOM element back to the
-caller for `.value` reads and event listeners; a Worker has no DOM to hand
-one back from. Rather than degrade silently into inert markup,
-`_require_dom_sink()` raises a clear `RuntimeError` naming the reason
-whenever a cell's sink is a `_MessageSink`. Checked before writing this:
-zero published tutorials use any of the three, so nothing live breaks —
-this closes a real gap the Worker migration would otherwise have left
-open rather than trading one gap for another.
-
-**Cost to change: large, matching `QUESTIONS.md`'s own estimate.**
-`assets/pyodide-worker.js` (new); `tutorial-runtime.js`'s `MT`-suffixed
-split plus `workerRequest`/`ensureWorker`/`bootWorker`/`applyOutputEvent`/
-`requestInterrupt`; `_MessageSink`/`_require_dom_sink`/the
-`KeyboardInterrupt` branch in `tutorial_tools.py`; `coi-serviceworker`
-vendored via `vendor-src/package.json`/`build-vendor.mjs`, wired into
-`shell.html`, copied and then stripped back out for the standalone export
-in `build.py`; a `.dl-btn-stop` rule in `tutorial-style.css`. Eighteen e2e
-tests: three new in `tests/e2e/test_stop_button.py` (cross-origin
-isolation actually landed, a genuine infinite loop stopped and the button
-recovers, a stopped cell runs again afterward), one rewritten in
-`test_phase0_golden_path.py` replacing two widget tests that exercised
-behavior this migration deliberately removed on the hosted path. The full
-unit and e2e suites both green. `standalone.bundle.js` rebuilt.*
+The widget bridge (`text_input`/`dropdown`/`button`) hands back a live DOM
+element a Worker cannot supply — `_require_dom_sink()` now raises a clear
+error naming the reason rather than degrading silently; zero published
+tutorials used any of the three, so nothing live breaks.
+*Cost to change: large, matching the earlier estimate. Touches the file both
+execution paths depend on; eighteen e2e tests, full unit and e2e suites
+green.*
 
 **7.78 — dewmini gained `sqlite3`, Pillow, and a fourth widget,
 `image_input`, plus a way to attach an image to a documentation cell — none
-of it touching a tutorial page's own defaults.** DECISIONS.md's "Core
-libraries" row dropped sqlite deliberately, as the one library that needed
-unvendoring beyond numpy/pandas/matplotlib's single `loadPackage()` call —
-a real cost for curriculum content shipped to every published tutorial.
-dewmini is not curriculum content; it is a general notebook a reader opens
-for one session's worth of Python, so that cost buys something there it
-would not buy on a tutorial page. `DM_PACKAGES` in `compose/dewmini.js`
-(`numpy`, `pandas`, `matplotlib`, `sqlite3`, `Pillow`) is dewmini's own
-wider default, used by both its live Pyodide boot and the standalone
-`.html` export's embedded copy; `tutorial-runtime.js`'s `DEFAULT_PACKAGES`
-for tutorial pages is untouched.
+of it touching a tutorial page's own defaults.**
+sqlite3 was deliberately excluded from tutorial content, as the one library
+needing unvendoring beyond a single `loadPackage()` call — a real cost for
+curriculum shipped to every published tutorial. dewmini is not curriculum
+content, so that cost buys something there it wouldn't on a tutorial page.
+`DM_PACKAGES` in `compose/dewmini.js` is dewmini's own wider default;
+`tutorial-runtime.js`'s `DEFAULT_PACKAGES` is untouched.
 
-**`image_input(label="Choose an image", id=None)` joins `text_input`,
-`dropdown`, and `button` in `tutorial_tools.py`** — beyond the six named
-functions, the same way `load_csv` was (0.9). A file input limited to
-`accept="image/*"`; picking a file reads it with the JS File API's
-`arrayBuffer()`, decodes it through Pillow when Pillow is loaded and falls
-back to raw bytes when it is not (`ImportError` caught, not assumed away),
-and lands the result in `_widget_values` the same out-of-band dict
-`text_input`/`dropdown` already use for a value a plain `.value` read on
-the DOM element cannot supply — a file input's own `.value` is only ever
-the filename string. `_Widget.value` gained one `self._kind ==
-"image_input"` branch to read from there instead of `querySelector`.
-Nothing published uses this widget either, same as the three before it, so
-`_require_dom_sink`'s docstring gained a fourth name and nothing else
-changed about the gap it already described.
+`image_input(label, id)` joins the other three widgets in
+`tutorial_tools.py`: a file input reads via the JS File API, decodes through
+Pillow when loaded and falls back to raw bytes otherwise, landing in the
+same out-of-band `_widget_values` dict the others use. Nothing published
+uses any of the four widgets.
 
-**A documentation cell's own image attachment is unrelated to
-`image_input` and lives entirely in `compose/dewmini.js` — a reader
-illustrating a note, not a cell's code reading a file.** Its picture-frame
-button (next to Delete in the cell head) opens a native file picker, reads
-the pick as a data URL via `FileReader`, and appends `![image](data:...)`
-to the cell's own markdown-lite source — one more inline pattern in
-`renderDocInline`, deliberately restricted to a `data:` URL and nothing
-else, since a `data:` URL is the one thing this button ever writes and a
-remote image would need a loading and trust story this cell type has no
-reason to take on. Capped at 3 MB of raw file size before the read even
-starts (`MAX_DOC_IMAGE_BYTES`) — base64 inflates that by roughly a third
-once it lands in `localStorage` alongside every other cell, and a reader
-should see why a pick was refused rather than watch a save silently stop
-taking effect later.
+A documentation cell's own image attachment, unrelated to `image_input`,
+lives entirely in `compose/dewmini.js`: a picture-frame button reads a pick
+as a `data:` URL and appends it as inline markdown — deliberately restricted
+to `data:` rather than a remote URL, since that's the only thing this button
+ever writes. Capped at 3 MB raw before the read starts, since base64
+inflates the stored size by roughly a third.
 *Cost to change: small. `image_input` and the doc-cell attachment are
-independent and either can be dropped without the other; `DM_PACKAGES` is
-one array read by both the live boot and the standalone template (the
-latter via `JSON.stringify`), so the two never drift apart on their own.*
+independent; `DM_PACKAGES` is one array read by both the live boot and the
+standalone template.*
 
-**7.79 — Mini IDE's output never actually rendered: a stale CSS class,
-not the Worker migration, was hiding it — fixed, alongside a
-non-destructive per-cell/toolbar output reset, a run-time stat, a
-quieter idle rail, and side panels that no longer cover a wide cell.**
-Reported directly: clicking Run in Mini IDE produced no visible output
-at all. `assets/mini-ide-engine.js`'s worker path was writing real output
-into the DOM correctly the whole time — the bug was one CSS rule,
-`.mini-ide-cell-output.empty, .mini-ide-cell-output:empty { display:
-none; }` in `assets/mini-ide-style.css`, next to the matching JS at
-`mini-ide.js` that set a literal `.empty` class on a cell's output `<div>`
-once, at creation, and never removed it. Every tutorial page's own
-`.dl-output` avoids exactly this by hiding on `:empty` alone — a
-pseudo-class that re-evaluates on every DOM change, unlike a class a
-script has to remember to clear — and Mini IDE's own implementation had
-quietly drifted from that pattern. Fixed by dropping the static class
-entirely and hiding on `:empty` only, matching `.dl-output`.
+**7.79 — Mini IDE's output never actually rendered: a stale CSS class, not
+the Worker migration, was hiding it — fixed, alongside a non-destructive
+per-cell/toolbar output reset, a run-time stat, a quieter idle rail, and side
+panels that no longer cover a wide cell.**
+Reported directly: clicking Run in Mini IDE produced no visible output. The
+worker path was writing real output the whole time; the bug was a stale
+`.empty` class set once at cell creation and never removed, unlike
+`.dl-output`'s `:empty` pseudo-class which re-evaluates on every DOM change.
+Fixed by dropping the static class and matching `.dl-output`'s pattern.
 
-**Reset/clear output, non-destructive, joins the existing (destructive)
-Clear All in both Mini IDE and dewmini.** Neither page had a way to clear
-a cell's output without deleting the cell — "Clear All" only ever meant
-"delete everything." Each Python cell gained a small ↺ button next to
-Run (`resetCellOutput()`/`engine.clearOutput()` in Mini IDE,
-`resetCellOutput()` in dewmini, mirroring `executeCell()`'s own
-remove/re-add of dewmini's `dm-empty` class — the one place dewmini
-already had the correct pattern Mini IDE's bug above shows it lacked),
-and a toolbar-level **Clear Output** button runs it across every cell at
-once. Both need no confirmation dialog, unlike Clear All: nothing is
-lost, since the code stays untouched and a cell can simply be re-run.
+**Non-destructive reset** joins the existing destructive Clear All: a small
+↺ button per cell, and a toolbar-level Clear Output across all cells, with
+no confirmation dialog needed since code stays untouched.
 
-**A cell now shows how long its last run took, `Ran in <duration>`
-under its output, gated by a new Settings → Workspace → Python → **Run
-time** on/off switch (`#dl-settings-execution` in Mini IDE, a new
-`#dl-settings-execution` section in dewmini, following the existing
-`.dl-seg` on/off pattern rather than a bare checkbox — no checkbox
-appears anywhere else on either page).** Timed with `performance.now()`
-around the existing `engine.runCell()`/`tools.run_cell()` call in both
-`runCell()` and `runAllCells()`/`executeCell()`; the duration is kept on
-the cell (and persisted through `saveState()`, alongside `output` and
-`hasError`) even while the setting is off, so turning it on later doesn't
-need a re-run to have something to show.
+**A run-time stat** ("Ran in `<duration>`") under each cell's output, gated
+by a new Settings toggle, timed with `performance.now()` and persisted on
+the cell even while the setting is off.
 
-**The idle-state coloured rail (navy for Python, muted grey for text) is
-gone from both pages; the rail itself stays, now transparent until a
-cell is focused (orange) or its last run errored (red).** Reported
-directly: "get rid of the grey line on the left of every cell." The rail
-kept its reserved width and margin rather than collapsing to zero, so
-nothing shifts when it lights up for the two states actually worth
-flagging at a glance down a long notebook — only its at-rest colour
-changed, from a low-opacity type indicator to nothing at all, since a
-cell's type is already legible from its pill and its content.
+**The idle-state coloured rail** (navy for Python, grey for text) is gone;
+the rail now stays transparent until a cell is focused (orange) or errored
+(red), keeping its reserved width so nothing shifts.
 
-**Settings and Help, both fixed-position overlays
-(`tutorial-style.css`'s `.dl-settings` and `.mini-ide-panel`/`.dm-panel`),
-covered a cell's own run/reset/delete buttons — sometimes its output —
-at ordinary laptop widths (1280-1440px), because the workspace column
-they float over reaches close enough to the screen's right edge for the
-two to collide.** Confirmed by measuring: at 1280px, Mini IDE's
-`.mini-ide-workspace` and dewmini's `.dl-page` (at a reader's own chosen
-"wide" line width) both genuinely overlapped the open panel's horizontal
-range, not just visually crowded it. A new `watchPanelOverlap()` in each
-page's JS (a `MutationObserver` on each panel's `hidden` attribute/
-property, rather than hooking every one of Settings/Help's several
-open/close paths — toggle click, close button, Escape, click-outside)
-keeps `<html data-dl-panel-open>` in sync; each page's own stylesheet
-reads that attribute to left-anchor its workspace, with `margin-right`
-reserving space for the wider of the two panels, instead of the usual
-`margin: 0 auto`/`translateX(-50%)` centering trick — centering would
-have split the reclaimed width evenly, wasting half of it as a matching
-left margin nobody asked for. Scoped to `min-width: 34rem`, where a panel
-is a right-anchored overlay at all rather than the phone-width bottom
-sheet it already becomes below that. Deliberately scoped to Mini IDE and
-dewmini's own stylesheets rather than changing `.dl-settings`/
-`.mini-ide-panel` in `tutorial-style.css` directly, which would have
-touched the panel's behaviour on every one of the site's 100+ tutorial
-pages for a problem confirmed only on these two, wider-workspace pages.
-*Cost to change: small for the output-visibility fix and the rail (both
-CSS-only, one class each); small-to-moderate for reset/stats/panel-reach,
-spread across `assets/mini-ide.js`, `assets/mini-ide-engine.js`,
-`assets/mini-ide-style.css`, `compose/dewmini.js`,
-`compose/dewmini-style.css`, and both HTML files, but each of the four
-features is independent of the others and any one could be reverted on
-its own without touching the rest.*
+**Settings/Help panels overlapped a cell's own buttons at ordinary laptop
+widths (1280-1440px)**, confirmed by measuring. A new `watchPanelOverlap()`
+(a `MutationObserver` on each panel's `hidden` state) keeps `<html
+data-dl-panel-open>` in sync, and each page's stylesheet left-anchors its
+workspace and reserves margin for the open panel — scoped to Mini IDE and
+dewmini's own stylesheets rather than `tutorial-style.css`, since the problem
+was confirmed only on these two wider-workspace pages.
+*Cost to change: small for the output fix and the rail; small-to-moderate
+for reset/stats/panel-reach — each of the four features is independent and
+any one could be reverted alone.*
 
 **7.80 — Two more reported directly, both fixed: a cell's × now needs two
-clicks, and the Texture "Size" slider now actually resizes Settings,
-Help, and every other control, not just reading prose.** A single
-accidental click on × deleted a cell outright, with no way back short of
-undoing whatever the reader was about to do next. Both Mini IDE and
-dewmini's delete buttons now arm on a first click (turning solid red,
-title changing to "Click again to delete this cell") and only delete on
-a second — `armDeleteButton()`/`disarmDeleteButton()` in each page's own
-JS, auto-disarming after three seconds, on blur, or the moment anything
-else on the page is clicked, so a stale armed state from a click a
-reader has since forgotten about can never cause the same accidental
-delete a click straight through it was supposed to prevent. Deliberately
-not a native `confirm()` dialog: that stops the whole page and needs a
-mouse trip to a button elsewhere, where this needs only a second,
-deliberate press of the button already under the pointer.
+clicks, and the Texture "Size" slider now actually resizes Settings, Help,
+and every other control, not just reading prose.**
+A single accidental click on × used to delete a cell outright with no way
+back. Both IDEs' delete buttons now arm on a first click (turning solid red,
+"Click again to delete this cell") and only delete on a second —
+auto-disarming after three seconds, on blur, or on any other click
+elsewhere. Deliberately not a native `confirm()` dialog, since that needs a
+mouse trip elsewhere where this needs only a second press of the button
+already under the pointer.
 
-**The size slider bug was a one-line root cause, in a rule every page on
-the site shares.** `tutorial-style.css` set `--dl-font-size` on `body`,
-but nearly everything on any dewlab page — Settings, Help, buttons, cell
-chrome, both IDEs' own workspace math — is sized in `rem`, relative to
-the *root* element's font-size, not body's. Setting it on `body` only
-ever resized the handful of things that inherit a font-size directly
-rather than stating one in `rem`, which is why the slider visibly grew
-reading prose but left every panel, button, and control exactly the size
-it started at — not a Mini-IDE-or-dewmini-specific bug, since the
-`.dl-settings`/`.mini-ide-panel`/`.dm-panel` panels the report named are
-shared components rendered on every tutorial page too. Fixed by moving
-the declaration to `html`, where `rem` actually resolves from. A `rem`
-inside a media query is unaffected either way — the specification
-defines it there as always relative to the root element's *initial*
-size, never an author override — so no responsive breakpoint site-wide
-shifts as a result.
+**The size slider bug was a one-line root cause, in a rule every page
+shares**: `--dl-font-size` was set on `body`, but nearly everything sized in
+`rem` resolves against the *root* element's font-size, not body's — so the
+slider visibly grew reading prose but left every panel and button its
+original size. Fixed by moving the declaration to `html`. A second,
+narrower bug this exposed — Mini IDE's own h1/intro/toolbar sizing through
+the ordinary `.dl-page` column rather than its wider workspace override —
+got the same fix extended to `.dl-page`.
+*Cost to change: small. The delete confirmation and the font-size fix are
+unrelated and either could be reverted independently.*
 
-**That fix exposed a second, narrower one it made visible: Mini IDE's own
-h1/intro/toolbar/sample-notice, sized through the ordinary `--dl-line-width`-
-constrained `.dl-page` column rather than through `.mini-ide-workspace`'s
-own wider override, now widens along with the rest of the page at a
-larger Size setting — enough, at the high end of the slider, to reach
-under an open Settings/Help panel the same way `.mini-ide-workspace`
-itself did in 7.79.** Same fix, same reasoning, extended to `.dl-page`
-alongside the existing `.mini-ide-workspace` rule in
-`assets/mini-ide-style.css`.
-*Cost to change: small. The delete confirmation and the font-size fix
-are unrelated and either could be reverted independently; the root-cause
-`html`/`body` fix is one shared declaration, so reverting it reverts the
-behavior everywhere it applies, all at once, by design.*
+**7.81 — A Jupyter-import compatibility warning, three real shared datasets
+(the first ever committed to `data/`), and four worked-example notebooks
+reachable from both IDEs' own Import section.**
+Three separate requests landed together, since each depended on groundwork
+the last built.
 
-**7.81 — A Jupyter-import compatibility warning, three real shared
-datasets (the first ever committed to `data/`, which had been empty
-since launch), and four worked-example notebooks reachable from both
-IDEs' own Import section.** Three separate requests, landed together
-since each depended on groundwork the last one built.
+**The compatibility scan** (`scanPyodideCompatibility()`, ported identically
+into both IDEs) checks an imported notebook's Python source before its cells
+land in the page, for an import Pyodide can't satisfy (`tkinter`, `torch`,
+`subprocess`, `socket`, …) or a Jupyter magic/shell escape valid only inside
+a real IPython kernel — not a full parser, just the regexes worth the
+trouble. A dismissible banner lists what it found and which cell.
 
-**The compatibility scan** (`scanPyodideCompatibility()`, ported
-identically into both `assets/mini-ide.js` and `compose/dewmini.js`)
-checks an imported notebook's Python source, before its cells ever land
-in the page, for the two mistakes an outside notebook actually tends to
-carry: an import Pyodide cannot satisfy no matter what loads
-(`PYODIDE_INCOMPATIBLE_MODULES` — `tkinter`, `torch`, `subprocess`,
-`socket`, and similar, each with why), and a Jupyter magic (`%.../%%...`)
-or shell escape (`!...`) — valid only inside a real IPython kernel, a
-plain `SyntaxError` anywhere else. Not a full Python parser, just the
-regexes worth the trouble for what an outside notebook realistically
-contains. A new `#import-compat-notice` banner (styled off each page's
-existing "empty state"/"sample loaded" notice, given a more serious red
-accent since this one names things that will actually error) lists what
-it found, naming which imported cell each one is in; dismissible, never
-blocking the import itself.
+**Three real datasets**: `co2-emissions.csv` and `life-expectancy.csv`, both
+trimmed from Our World in Data (CC BY 4.0), and `pride-and-prejudice.txt`
+(public domain, kept byte-for-byte with its Gutenberg licence header, which a
+worked example itself strips as a real data-cleaning step). `load_csv()`'s
+docstring had cited `life-expectancy.csv` as its example since before the
+file existed — it now does.
 
-**Three real datasets now live in `data/`**, `.gitkeep`'s own note ("delete
-once this holds real content") finally acted on: `co2-emissions.csv`
-(national CO₂ and greenhouse-gas emissions, 1950–2023, trimmed from
-[Our World in Data's `owid-co2-data.csv`](https://github.com/owid/co2-data)
-to real ISO-3 countries and fourteen columns worth teaching with,
-~1.3 MB from an original ~14 MB), `life-expectancy.csv` (1950–2016,
-trimmed from OWID's Gapminder/UN/IHME compilation), and
-`pride-and-prejudice.txt` (Jane Austen, 1813, the standard Project
-Gutenberg plain-text release, kept byte-for-byte including its licence
-header/footer — Gutenberg's own terms ask for that, and the first
-worked example that uses it strips the boilerplate back out itself as
-a real data-cleaning step, not a hidden preprocessing step this project
-did on the student's behalf). All three CC BY 4.0 (CO₂, life expectancy)
-or US public domain (the novel); cited by name and licence in the
-notebook that uses each one. `load_csv()`'s own docstring had said
-`load_csv("life-expectancy.csv")` as its example since before any file
-by that name existed — it now does.
+**Four worked-example notebooks** in `assets/examples/` (real `.ipynb`
+files, importing through the same path a reader's own file would): SQL over
+the CO₂ data, a life-expectancy convergence investigation, a Monte Carlo π
+estimate, and a Zipf's-law word-frequency check on the novel. Every stated
+finding was actually computed against the real shipped data, and every cell
+ran end-to-end with zero errors. Reachable as four buttons in Settings →
+Import, sharing every step after parsing with a reader's own imported file
+via a newly factored `applyImportedCells()`.
+*Cost to change: small-to-moderate. Three independent pieces, but the worked
+examples depend on the datasets and would need rewriting, not just deleting,
+if those were ever removed.*
 
-**Four worked-example notebooks in `assets/examples/`** — real nbformat
-4 `.ipynb` files, not hardcoded cell arrays, so they import through the
-exact same `parseIpynb()` path (and the compatibility scan above) a
-reader's own file would: **`sql-owid.ipynb`** (`sqlite3`, `run_query()`,
-the CO₂ data), **`data-investigation.ipynb`** (has life expectancy
-converged across countries since 1950? — a real, verified finding: the
-country-average spread fell from a standard deviation of 12.0 years in
-1950 to 7.3 in 2016 while the mean rose from 49.0 to 72.4), **`math-and-
-charts.ipynb`** (estimating π by Monte Carlo — throwing random points at
-a quarter-circle), and **`word-frequency.ipynb`** (counting words in the
-novel and checking the result against Zipf's law — real, verified:
-rank × frequency stays in roughly the same range across the first
-hundred ranks). Every number any of the four states as a finding was
-actually computed, against the actual shipped data, before being
-written down — not reasoned about — and every code cell in all four was
-run end-to-end against real Pyodide (self-hosted, `dev/fetch_pyodide.py
---packages numpy pandas matplotlib sqlite3`) with zero cells erroring,
-not just checked for syntax.
-
-**Reachable from Settings → Import (Mini IDE) / Settings → Keep a copy
-(dewmini) as four buttons below the existing file picker**, each calling
-a new `loadBuiltInExample(path, label)` — `fetch()` the `.ipynb`,
-`parseIpynb()` it, hand the result to the same `applyImportedCells()`
-(newly factored out of `handleImportNotebookFile()`/`handleImportFile()`,
-so a built-in example and a reader's own file now share every step
-after parsing rather than the built-in path skipping the compatibility
-scan or the replace/append setting). dewmini has no replace/append
-choice for import at all — its own `handleImportFile()` always replaced
-the notebook outright already — so a built-in example does the same
-there, stated plainly in its own button's neighbouring copy.
-*Cost to change: small-to-moderate. The compatibility scan, the
-datasets, and the worked-examples UI are three independent pieces —
-any one could be reverted alone — but the worked examples depend on the
-datasets existing, and would need rewriting (not just deleting) if the
-datasets were ever removed.*
-
-**7.82 — A search box on the contents page and "Browse by topic"; the
-cheat sheet renamed to "Reference" everywhere, with its own search
-added inside it.** Two related but separately reported requests.
-
+**7.82 — A search box on the contents page and "Browse by topic"; the cheat
+sheet renamed to "Reference" everywhere, with its own search added inside
+it.**
 **Search** (`assets/search.js`, new) matches a query against every live
-tutorial's title, module, series, and — the part that makes it more
-than a title search — the terms its own glossary entry says it
-*specifically introduces*. `write_search_index()` in `build.py` writes
-one `assets/search-index.json` after every build (archived and
-practice-only pages excluded, the same "not a first thing to send a
-reader to" reasoning those already have elsewhere), using
-`own_glossary()` rather than `cumulative_glossary()` — a later tutorial
-in a series has already inherited an earlier term, and searching for it
-should point at where it was actually taught, not at every page
-downstream of that. Matching runs client-side: lower-case, a
-conservative rule-based stemmer (`sorting`/`sorted`/`sorts` all reduce
-to `sort`, not Porter's full algorithm, just the common English
-suffixes worth stripping), and a small curated synonym table (`loop` →
-the same normalized form as `iterate`, and so on) — good enough for a
-few hundred tutorials, not attempting to be good enough for the open
-web. Scored by field — a title hit counts for more than a glossary-term
-hit, which counts for more than a module/series-name hit — so a search
-for "loop" ranks a tutorial titled "Loops" above one that merely lives
-in a module called "Repeating Yourself." `render_search_box()` in
-`build.py` generates identical markup on both pages so `search.js` only
-has to know one shape; it is a no-op anywhere else, including every
-tutorial page, since it only ever does anything once it finds
-`#dl-search` in the page.
+tutorial's title, module, series, and its own glossary's specifically-
+introduced terms. `write_search_index()` writes `assets/search-index.json`
+after every build (archived and practice-only pages excluded) using
+`own_glossary()` rather than `cumulative_glossary()`, so a search for a term
+points at where it was actually taught. Matching is client-side: lower-cased,
+a conservative rule-based stemmer, and a small curated synonym table — good
+enough for a few hundred tutorials. Scored by field, so a title hit outranks
+a glossary-term hit, which outranks a module-name hit.
 
-**The cheat sheet is "Reference" now, top to bottom** — `dl-cheatsheet`
-→ `dl-reference`, `initCheatSheet()`/`closeCheatSheet()`/
-`renderCheatSheet()` → `initReference()`/`closeReference()`/
-`renderReference()`, `planning/CHEAT_SHEETS.md` →
-`planning/REFERENCE_PANEL.md`, `tests/e2e/test_cheat_sheet.py` →
-`tests/e2e/test_reference.py`, and every comment, docstring, and
-student-facing string that named it, across `assets/shell.html`,
-`assets/tutorial-runtime.js`, `assets/tutorial-style.css`, `build.py`,
-`README.md`, `ARCHITECTURE.md`, both `docs/*-explained.md` files, and
-several `planning/*.md` files. Reported directly, on the reasoning that
-"cheat sheet" reads as something a student should feel a little bad
-about needing, when the entire point of the panel is the opposite: nothing
-in it is ahead of where the reader actually is. `DECISIONS_LOG.md` and
-`QUESTIONS.md` keep the old name in their own already-written entries,
-deliberately — this project's own convention is to not rewrite finished
-history, and both files already explain the reasoning behind decisions
-made under the old name; a glossary entry's own file
-(`tutorials/*/*.glossary.yaml`) and `series.yaml` comments picked up the
-same rename since they are live content, not a historical record.
+**The cheat sheet is "Reference" now**, top to bottom, across code, tests,
+and every planning/docs file — reported directly, on the reasoning that
+"cheat sheet" reads as something a student should feel bad about needing,
+when nothing in the panel is ahead of where the reader actually is.
+`DECISIONS_LOG.md` and `QUESTIONS.md` deliberately keep the old name in
+already-written entries, per this project's convention of not rewriting
+finished history.
 
 **The reference panel got a search of its own**
-(`filterReferenceContent()` in `tutorial-runtime.js`), separate from
-`search.js` above and deliberately simpler: this panel's whole content
-for one page is already sitting in the DOM, so filtering is a plain
-substring match over each term's own name, definition, and any note's
-text — hiding what doesn't match, no fetch, no cross-page index, no
-stemming. Shown only once a page has more than a handful of entries to
-search through (`renderReference()` decides that), and cleared via a
-`MutationObserver` on the panel's own `hidden` attribute whenever it
-closes — regardless of which of its several close paths did the
-closing — so reopening it later never starts on a stale filter left
-over from the last time it was open.
+(`filterReferenceContent()`), deliberately simpler than `search.js`: a plain
+substring match over the page's own already-in-DOM content, shown only once
+a page has more than a handful of entries.
 
-**This also folded in an unrelated but adjacent request: Settings can
-now stay open alongside the reference or the series nav, instead of
-force-closing whichever of them was open.** Settings anchors to the
-page's right corner; the reference and series nav share the left one
-and still genuinely conflict with each other (they would sit directly
-on top of one another), so that pair still closes on open — only the
-stale three-way exclusion involving Settings, a carryover from before
-the reference panel moved to the left corner (PR #65), was removed.
-Each panel's own "click outside closes this" handler needed a matching
-fix (`clickIsInsidePanels()`, new): without it, opening a *compatible*
-panel's toggle still read as "outside" the first one and closed it
-anyway, even after the explicit force-close calls between them were
-removed. `assets/vendor/standalone.bundle.js` was rebuilt
-(`npm run build` in `vendor-src/`) after these `tutorial-runtime.js`
-changes, since it's compiled from that file and the
-`standalone-bundle-is-current` CI check would otherwise catch the drift.
-*Cost to change: small for search (two independent, self-contained
-features); moderate for the rename, purely because of its breadth
-rather than any real complexity — a mechanical find-and-replace plus a
-handful of files a first sweep missed (comments wrapped across two
-source lines, a couple of test docstrings naming the old test file by
-name), not a design decision to revisit.*
+**Settings can now stay open alongside the reference or series nav**,
+instead of force-closing whichever was open — only the stale three-way
+exclusion (a carryover from before the reference panel moved to the left
+corner) was removed; the reference and series nav still close each other,
+since they'd otherwise overlap.
+*Cost to change: small for search; moderate for the rename, purely because
+of its breadth rather than complexity.*
 
 **7.83 — Reference, Settings, and the series nav became docked sidebars,
-toggled from the masthead instead of the page's corners.** Reported
-directly: "is there a way to make the reference document more useful as
-a permanent sidebar that can be toggled? I think settings would be the
-same... maybe those things would be sticky in the header as opposed to
-in the upper corner?" — the panels themselves had already been proven
-(7.73–7.82), so this is a placement and shape change, not a new feature.
+toggled from the masthead instead of the page's corners.**
+Reported directly, asking for the reference panel (and Settings) to become a
+permanent, header-toggled sidebar rather than a corner popover — a placement
+and shape change to already-proven panels, not a new feature.
 
-**Toggle placement**: all three toggle buttons moved into
-`.dl-masthead-actions` (new, `shell.html`), a right-aligned action row
-in the sticky masthead alongside the wordmark and crumbs, replacing the
-reference's and series nav's own fixed-position corner buttons (the
-Settings toggle was already there). `.dl-crumbs` grew from `flex: 0 1
-auto` to `flex: 1 1 auto` to make room. Below the phone breakpoint,
-where three full-text buttons plus the wordmark no longer fit one row,
-each toggle's label text is wrapped in a new `.dl-toggle-label` span and
-hidden, leaving icon-only buttons — found by an actual screenshot at
-390px width during this work, not assumed to be fine; `aria-label`
-carries the accessible name once the visible text is hidden, since
-`display: none` content does not contribute to a button's computed
-accessible name.
+**Toggle placement**: all three toggle buttons moved into a new
+right-aligned `.dl-masthead-actions` row in the sticky masthead. Below the
+phone breakpoint, where three full-text buttons plus the wordmark no longer
+fit, each toggle collapses to icon-only with an `aria-label` carrying the
+accessible name — confirmed by an actual screenshot at 390px, not assumed
+fine.
 
-**Panel shape**: `.dl-settings`/`.dl-reference`/`.dl-seriesnav` went
-from floating cards (`top`/`left`/`right` inset by `1rem`, rounded
-corners, `box-shadow`, height capped by `max-height`) to full-height
-docked sidebars (`top: var(--dl-chrome-h); bottom: 0`, flush to their
-edge, a single `border-left`/`border-right` in place of the shadow) —
-the "typical offline IDE" shape asked for, where a panel is a permanent
-pane a reader can work beside rather than a popover that happens to be
-open. The reference and series nav still force-close each other on
-open (both dock to the left edge and would overlap otherwise); Settings
-still docks right and stays independent, unchanged from 7.82.
+**Panel shape**: the three panels went from floating cards to full-height
+docked sidebars, flush to their edge with a single border in place of the
+shadow.
 
-**The margin-push mechanism (7.x, `data-dl-panel-left`/`-right`) had a
-latent bug this surfaced**: it pushed `.dl-page` clear by a flat 25rem
-regardless of a panel's actual width, which was never wrong before
-because a floating card's `max-width` kept it well under that — but a
-genuine sidebar, resized wider by a reader dragging its own handle, has
-no reason to stay under 25rem. `watchPanelOverlap()` now also runs a
-`ResizeObserver` on each panel, writing its live `offsetWidth` (plus a
-small gutter) into `--dl-panel-left-w`/`--dl-panel-right-w`, which the
-margin rule reads with the old flat value only as a one-frame fallback.
-Verified with an actual drag-the-resize-handle Playwright test, not
-just read as correct from the CSS.
+**The margin-push mechanism had a latent bug this surfaced**: it pushed the
+page clear by a flat 25rem regardless of a panel's actual width, never wrong
+before since a floating card's `max-width` stayed under that — but a
+genuine sidebar, resized wider by a reader, has no reason to.
+`watchPanelOverlap()` now also runs a `ResizeObserver`, writing each panel's
+live width into a CSS variable the margin rule reads, with the flat value
+only as a one-frame fallback.
 
 **Open state now survives navigating to the next tutorial in a series**
-(`saveSidebarState()`/`restoreSidebarState()`, new) — a reader who opens
-the reference once and pages through Prev/Next keeps it open, rather
-than reopening it on every page, matching "permanent" in the request.
-Stored in `localStorage["dewlab:sidebars"]` as `{left, right}` — `left`
-is `"reference"`, `"seriesnav"`, or `null` rather than two independent
-booleans, since only one can ever be open at a time. Restored by
-clicking the matching toggle at startup rather than duplicating each
-panel's own open logic, so the reference/series-nav exclusion and the
-"toggle hidden on a page with nothing to show" checks are reused rather
-than re-implemented. Deliberately not restored below the phone
-breakpoint (checked with `matchMedia`, not the deprecated
-`window.innerWidth` snapshot) — a bottom sheet covering most of a phone
-screen is a deliberate, momentary action, not a pane to leave open by
-default. A genuine ordering bug was caught and fixed before this
-shipped: the existing `sync()` inside `watchPanelOverlap()` ran once,
-synchronously, at startup, before `restoreSidebarState()` had a chance
-to run — persisting "everything closed" over whatever a reader had
-actually saved, every single page load. Split into an `updateAttrs()`
-that runs unconditionally and a `sync()` (which also persists) that
-only runs from the `MutationObserver` path, so the one startup call
-updates the CSS attributes without also clobbering the stored
-preference.
-
-`assets/vendor/standalone.bundle.js` was rebuilt (`npm run build` in
-`vendor-src/`) after the `tutorial-runtime.js` changes, same reason
-7.82 needed it. `planning/REFERENCE_PANEL.md` §6 and
-`planning/SIDEBAR_CONTENT.md` §4b describe the old corner-button/
-floating-card shape; both got a short addendum pointing here rather
-than being rewritten, matching this project's own convention for a
-living design doc superseded by what actually shipped.
-
-*Cost to change: moderate — three coordinated CSS rewrites (toggle,
-panel, phone breakpoint) plus two genuinely new runtime mechanisms
-(width-tracking, state persistence), each independently small and
-tested (a resize-drag Playwright check, a narrow-viewport screenshot, a
-reload-preserves-state check), but real work rather than a rename.
-Reusing the existing `data-dl-panel-left/right` attribute mechanism and
-each panel's own open/close functions kept this from being a rewrite of
-working code — the sidebar concept was proven in 7.73, this changed its
-shape and location, not its logic.*
+(`saveSidebarState()`/`restoreSidebarState()`), stored in localStorage. A
+genuine ordering bug was caught before shipping: the existing overlap-sync
+ran once at startup before restore had a chance to run, persisting
+"everything closed" over whatever a reader had actually saved — fixed by
+splitting the unconditional attribute update from the persisting sync.
+*Cost to change: moderate — three coordinated CSS rewrites plus two
+genuinely new runtime mechanisms, each independently small and tested, but
+real work rather than a rename.*
 
 **7.84 — Mini IDE and dewmini's own Settings/Help panels became docked
-sidebars too, and a real resize bug 7.83 shipped with got caught and
-fixed on all three surfaces.** Reported directly, as a follow-on to
-7.83: "can we make sure all of the features of mini-ide are in dewmini...
-I think its time to introduce more capable sidebars basically" — settled
-into two phases, sidebars first (7.83), then IDE feature parity
-(`planning/MINI_IDE_AND_DEWMINI_NEXT.md`'s own next task). This entry is
-the first phase's second half: both IDEs already reused `.dl-settings`
-from `tutorial-style.css` (a shared class, not a duplicate), so 7.83's
-docked shape landed there automatically — the actual work was their own
-Help panel (`.mini-ide-panel`/`.dm-panel`, each IDE's own class so
-opening Help never fights the real `#dl-settings` node) and the
-`data-dl-panel-open` margin-push both IDEs already had from an earlier
-session (task 9 in that session's own list).
+sidebars too, and a real resize bug 7.83 shipped with got caught and fixed
+on all three surfaces.**
+Both IDEs already shared `.dl-settings` from `tutorial-style.css`, so 7.83's
+docked shape landed there automatically; the actual work was their own Help
+panel and the existing margin-push mechanism, which got the same
+width-tracking treatment via a `ResizeObserver` writing a single
+`--dl-panel-w` (since both IDEs' panels dock to the same right edge and are
+mutually exclusive). Open state is now persisted per IDE the same way.
 
-**Both IDEs' Help panel got the same docked-sidebar treatment `.dl-settings`
-got in 7.83** — full height, flush to the right edge, border-left instead
-of a floating card's shadow+radius — and the flat `26rem` margin-push
-guess became width-tracked the same way, via a `ResizeObserver` writing
-`--dl-panel-w` (a single property, not the tutorial pages' left/right
-pair, since both IDEs' two panels dock to the same right edge and are
-already mutually exclusive). Settings/Help open state is now also
-persisted per IDE (`localStorage["dewlab:mini-ide:sidebar"]`/
-`["dewlab:dewmini:sidebar"]`, each storing a single `"settings"|"help"|
-null` rather than the tutorial pages' `{left, right}`), restored the
-same way — clicking the saved toggle at startup, above the phone
-breakpoint only — with the same startup-ordering fix 7.83 needed
-(the DOM-attribute sync and the persisting sync split apart, so the one
-unconditional call at the top of `watchPanelOverlap()` doesn't overwrite
-a reader's actual saved state with "everything closed" before
-`restoreSidebarState()` gets to read it).
+**A real bug in 7.83's own right-docked panel, caught only once this pass
+actually dragged the resize handle**: native `resize: horizontal` always
+draws its handle at a box's bottom-right corner and grows the box away from
+it — correct for left-docked panels (dragging right, into the page) but
+wrong for anything right-docked and flush to the browser's edge, since
+growing it would need dragging past the window's own edge. Fixed on all
+three right-docked panels by removing native resize in favour of
+`makeRightEdgeResizable()`, a plain pointer drag on a thin strip along the
+panel's own left edge.
 
-**A real bug in 7.83's own right-docked panel shipped undetected until
-this pass actually dragged the resize handle: a panel flush to the
-browser window's own right edge has no room to grow.** Native CSS
-`resize: horizontal` always draws its handle at a box's own bottom-right
-corner and grows the box away from that corner, regardless of which
-edges are anchored via `left`/`right` — correct for `.dl-reference`/
-`.dl-seriesnav` (left-docked: the handle sits well inside the viewport,
-and dragging right, into the page, is exactly how those grow) but wrong
-for anything right-docked and flush to the edge (`.dl-settings`, and now
-`.mini-ide-panel`/`.dm-panel`): that corner sits exactly on the browser
-window's own edge, so growing it would require dragging the pointer
-*past* the edge of the window itself, which a real user's mouse cannot
-do. 7.83 shipped this already, unnoticed, because its own resize test
-only exercised the left-docked reference panel. Fixed the same way on
-all three surfaces: native `resize: horizontal` removed from the three
-right-docked panels, replaced by `makeRightEdgeResizable()` (one copy
-per file — `tutorial-runtime.js`, `mini-ide.js`, `dewmini.js`, matching
-this codebase's own "thin copy per page" convention) — a plain pointer
-drag on a new thin strip along the panel's own *left* edge instead, the
-edge a right-docked sidebar's resize affordance actually belongs on (the
-same edge a real IDE's own side panel uses). Verified by an actual
-drag-the-new-handle Playwright test showing the panel grow, on top of
-the drag-the-old-handle test from 7.83 that had wrongly read as passing
-(it drags the *left*-docked reference panel, which was never broken).
+**A second bug found alongside the first**: the browser's native resize
+sets width as an inline style, which beats any stylesheet media-query rule —
+so a panel resized wide on desktop, then viewed at phone width, would keep
+that pixel width instead of becoming a bottom sheet. Fixed with `!important`
+on the phone-breakpoint width rule across all three panels.
+*Cost to change: moderate — the docked-shape port was small, but the resize
+bug it surfaced was real, touched three already-shipped panels, and needed a
+genuine new mechanism.*
 
-**A second bug found alongside the first, before it shipped rather than
-after: the browser's own native resize sets an element's width as an
-inline style, which beats any stylesheet rule regardless of media
-query.** A panel resized wider on a desktop-width screen, then viewed
-(or resized down to) the phone breakpoint, would have kept that desktop
-pixel width instead of becoming the intended full-width bottom sheet —
-`width: auto` alone, already present in all three phone-breakpoint
-rules, was never enough to override an inline `style.width` the same
-element already carried. Fixed by adding `!important` to that one
-declaration on all three panels across all three stylesheets, and
-verified with a resize-then-shrink-the-viewport Playwright test rather
-than assumed safe from reading the cascade rules alone.
+**7.85 — The README was split by audience: a short overview at the root, and
+one document each for students, tutorial writers, code contributors, and
+anyone reporting a problem.**
+The README had grown to 671 lines addressing four readers at once — a
+student, an author, a developer, and someone reporting a wrong answer —
+each having to scroll past the other three, and reading as a project
+walkthrough rather than a way in.
 
-`assets/vendor/standalone.bundle.js` was rebuilt again after this
-pass's `tutorial-runtime.js` changes, same reason 7.82/7.83 needed it.
+`docs/FOR_STUDENTS.md` takes everything a tutorial's reader needs;
+`docs/WRITING_TUTORIALS.md` takes the whole authoring format;
+`docs/REPORTING_A_PROBLEM.md` is new, since there was nowhere to send
+someone with a found mistake; `CONTRIBUTING.md` absorbed the setup/test/CI
+material. The README itself dropped to 161 lines: what dewlab does, a table
+pointing each reader to their own document, a feature tour, and how to run
+it locally.
 
-*Cost to change: moderate — the docked-shape port itself was small (both
-IDEs already shared `.dl-settings`'s CSS, so only the Help panel and the
-margin-push needed touching), but the resize-handle bug it surfaced was
-real, affected three files' worth of already-shipped code (7.83's own
-`.dl-settings`, still an open PR at the time this was caught, plus this
-pass's two new panels), and needed a genuine new mechanism
-(`makeRightEdgeResizable()`) rather than a CSS tweak — cheap to have
-caught now, before 7.83 merged, rather than as a separate bug report
-later.*
+The pass also closed real staleness the README had accumulated (Mini IDE,
+dewmini, PDF/Jupyter export, search — all undocumented or wrong), and
+merging 7.83/7.84 in mid-review caught `docs/FOR_STUDENTS.md` still
+describing a panel layout that had just changed underneath it.
+*Cost to change: small. Reversing it is a `git revert` plus deciding what to
+do with the staleness fixes. The ongoing cost is that four documents can now
+drift apart where one couldn't.*
 
-**7.85 — The README was split by audience: a short overview at the root,
-and one document each for students, tutorial writers, code contributors,
-and anyone reporting a problem.** The README had grown to 671 lines and
-was addressing four readers at once — a student wondering what the
-Settings button does, an author looking up frontmatter fields, a
-developer setting up a build, and somebody who had found a wrong answer
-in a practice page. Each of them had to scroll past the other three.
-Read straight through, it was also a walkthrough of a project rather
-than a way into one, which asks a new reader to learn the history before
-they can do anything.
+**7.86 — The cheat-sheet rename finished in `QUESTIONS.md`: two dead file
+paths fixed, and the term itself changed there too, reversing 7.82's
+carve-out for that file.**
+7.82 renamed `CHEAT_SHEETS.md` to `REFERENCE_PANEL.md` and its test file, and
+kept the old term in already-written entries of `DECISIONS_LOG.md`/
+`QUESTIONS.md` per this project's convention. Two references to the old
+*paths* survived that convention regardless, since it never covered
+signposts — fixed to name the files that actually exist.
 
-The split follows who is reading rather than what the subject is.
-`docs/FOR_STUDENTS.md` takes everything a reader of a tutorial needs —
-cells, saved work, Settings, the Reference panel, practice, their own
-cells, the download and export options, and the two Python workspaces.
-`docs/WRITING_TUTORIALS.md` takes the whole authoring format:
-frontmatter, `order.yaml`, cells, mathematics, `check()`, includes,
-links, practice pages, glossary files, curriculum coverage, releases,
-and the pre-pull-request checks. `docs/REPORTING_A_PROBLEM.md` is new
-rather than moved — there was nowhere to send somebody who had found a
-mistake, and "open an issue" alone does not tell them what is useful to
-include. `CONTRIBUTING.md` absorbed the setup, test and CI material the
-README used to carry, so a code contributor now has one door rather than
-two half-doors.
+Then the term itself, in two passes: `QUESTIONS.md`'s seven mentions became
+"reference panel" (it's a live document a reader consults, not a historical
+record, and shouldn't require working out the two names are the same
+thing), then the last two mentions elsewhere in planning docs.
 
-What stayed on the README is what a reader who does not yet know what
-dewlab is needs: what it does, a table pointing each reader at their own
-document, a tour of the features, how the site is put together, how to
-run it locally, and where the project stands. It is 161 lines.
+**`DECISIONS_LOG.md` is the sole exception, and stays that way** — a
+decision record edited to match later decisions stops being evidence of
+anything.
 
-The pass also closed real staleness. The README described none of the
-work of the last several sessions — Mini IDE, dewmini, reader-added
-cells, PDF and Jupyter export, the site search, "Browse by topic" —
-except as filenames in a directory listing. `planning/STATUS.md` still
-said 71 pages and two `computational-methods` tutorials when the
-matrices strand it describes further down the same file had brought
-those to 83 and eight. `planning/README.md` still called reader-added
-practice cells unbuilt. `ARCHITECTURE.md` and `QUESTIONS.md` pointed
-tutorial writers at `README.md` for a format it no longer documents.
+A sweep for the same mistake elsewhere turned up two more (a link to a
+never-written outline, a section titled for a file that doesn't exist), both
+left alone as somebody else's call.
+*Cost to change: none worth naming. Twelve string edits across four files,
+no code and no behaviour.*
 
-Merging 7.83/7.84 in mid-review made the point immediately: the docked
-sidebars landed while this was open, so `docs/FOR_STUDENTS.md` was
-describing a Reference button in the page's top-left corner that no
-longer exists, and had no Series panel in it at all. Both were rewritten
-against the shipped markup rather than the old README's description.
-`docs/MINI_IDE.md` and `docs/DEWMINI.md` picked up the same correction —
-7.84 changed both IDEs' panels without touching either document, leaving
-`MINI_IDE.md` still saying Help and Settings "share the same corner".
+**7.87 — dewmini can import a `.py` file now, closing out one of the five
+items on the Mini IDE/dewmini parity list — and turned out to already be
+most of the way there.**
+A gap analysis found dewmini already had `.ipynb`/`.py`/`.html` export and
+the compatibility scanner ported; only `.py` *import* was missing.
+`run_query()` (the SQLite half of the same list) needed no work, since it
+already lives in shared `tutorial_tools.py`, which dewmini's own seed
+globals already expose — it was reachable in a cell before this session,
+just unmentioned.
 
-*Cost to change: small. Nothing here is code, and no built page links to
-any of these files; reversing it is a `git revert` plus deciding what to
-do about the staleness fixes, which are worth keeping either way. The
-ongoing cost is the opposite of the usual one — four documents can drift
-apart where one could not, so `CONTRIBUTING.md`'s "who reads what"
-section now names each of them explicitly rather than describing
-categories.*
+**`parsePyCells()` is the counterpart to `downloadAsPython()`, not to Mini
+IDE's own `.py` parser.** Mini IDE's export/import pair uses a plain `# %%`
+marker for Python-only cells; dewmini's own export already predates this
+port and handles both cell types via its own `# ---- cell N ----`/
+`# ---- note ----` markers, so the new parser reverses that exact prefixing
+rather than adopting Mini IDE's narrower one and losing note-cell
+round-tripping. A file with none of those markers imports as a single
+Python cell, matching Mini IDE's own fallback.
 
+Verified with an actual export-then-reimport round trip (three cells,
+including a text note) confirmed identical, plus a separate
+plain-script-import check.
 
-**7.86 — The cheat-sheet rename finished in `QUESTIONS.md`: two dead
-file paths fixed, and the term itself changed there too, reversing
-7.82's carve-out for that file.** 7.82 renamed
-`planning/CHEAT_SHEETS.md` to `planning/REFERENCE_PANEL.md` and
-`tests/e2e/test_cheat_sheet.py` to `tests/e2e/test_reference.py`, and
-settled at the time that `DECISIONS_LOG.md` and `QUESTIONS.md` would
-both keep the old term in entries already written, on this project's
-convention of not rewriting finished history.
+Deliberately not done: recognizing Mini IDE's own `# %%` convention for
+cross-tool import, since nothing today produces a file needing that.
+*Cost to change: small — self-contained new parsing, a two-line dispatch
+change, and a label update.*
 
-Two references to the old *paths* survived that, which the convention
-never covered: `QUESTIONS.md` §"Is a structured YAML glossary file the
-right format" pointed a reader at `planning/CHEAT_SHEETS.md` §3/§4 as
-where the glossary format is documented, and §"What should the reference
-panel become on a phone" pointed at `tests/e2e/test_cheat_sheet.py`'s
-`TestMobile`. Both now name the files that exist; §3 and §4 of
-`REFERENCE_PANEL.md` are still the glossary-file and skill sections the
-first one meant, so only the filename was wrong. A settled entry's own
-wording reads correctly as history, but a file path is a signpost, and a
-signpost to a file nobody has is just broken.
+**7.88 — dewmini can mount a persistent filesystem now: a real folder,
+OPFS, or IDBFS, the same three backends Mini IDE already had, tucked into
+Settings' own "Files" section rather than a sidebar tree.**
+The second parity item. Asked directly which shape to take, since Mini
+IDE's own file-tree sidebar is exactly the visual weight dewmini avoids — a
+compact Settings section was picked over a fourth docked sidebar, matching
+dewmini's "nothing to configure before typing code" ethos.
 
-**Then the term itself, asked for directly once the paths were fixed**,
-and in two passes. First `QUESTIONS.md`: seven mentions across four
-headings and three paragraphs became "reference panel", on the
-reasoning that `QUESTIONS.md` is not a historical record the way
-`DECISIONS_LOG.md` is — it is a live document a reader consults to find
-out where a question landed, and a reader who has only ever seen the
-panel called "Reference" should not have to work out that the two names
-are the same thing.
+`compose/dewmini-fs.js` is a close port of `assets/mini-ide-fs.js`, trimmed
+for the one real architectural difference: dewmini's Pyodide only ever runs
+on the main thread, so the FS primitives call `pyodide.FS` directly with no
+dispatching layer.
 
-Then the last two mentions anywhere outside the log, asked for once it
-was clear how few were left.
-`planning/MINI_IDE_AND_DEWMINI_NEXT.md`'s closing list had a bullet
-announcing the rename in both names; it now names only the panel's
-settled name and says where the older one survives.
-`planning/DOCS_AND_COMMENTS_PASS.md` listed `CHEAT_SHEETS.md` among the
-files one pass rewrote, and now names `REFERENCE_PANEL.md` — the same
-file, under the name it has.
+**A real collision this port had to design around**: Mini IDE's OPFS
+backend mounts the origin's one shared storage root directly; unmodified,
+dewmini would silently see the identical underlying files. dewmini's own
+OPFS mount gets a named `"dewmini"` subdirectory instead, and the
+native-folder backend's IndexedDB handle storage got a separate database
+name for the same reason.
 
-**`DECISIONS_LOG.md` is the sole exception, and stays that way.** It
-keeps the old term throughout its own entries, 7.82's account of the
-rename included, where the word is the subject rather than incidental.
-A decision record edited to match later decisions stops being evidence
-of anything: 7.82 would become an entry about renaming a thing to the
-name it apparently always had. That is the line — every document that
-describes how dewlab works now says "Reference"; the one document that
-records what was decided when keeps the words used at the time.
+**A real gap this pass's own testing surfaced**: neither this port nor Mini
+IDE's original synced the filesystem after a cell's Python code wrote to
+the mount directly (e.g. `sqlite3.connect()` or plain `open().write()`) —
+found by an actual write-then-reload test coming back empty. Fixed with a
+new `sync()`, called fire-and-forget after every cell finishes running,
+covering a cell's writes regardless of API. A second bug, also present in
+Mini IDE's original, left a stale `<li>` in the hidden file list after
+deleting a mount's last file — fixed by clearing the list unconditionally
+rather than per-branch.
 
-A sweep for the same class of mistake across every markdown file except
-`DECISIONS_LOG.md` turned up two more, both left alone as somebody
-else's call rather than folded in here: `planning/BUILD_PLAN.md` links
-to `outlines/from-everlearning.md`, an outline that was never written,
-and `planning/EDITOR.md` §3 is titled for `assets/editor.html`, which
-does not exist — the editor page's body is built in `build.py`'s
-`write_editor_page()` and rendered into `shell.html`.
+`DEWLAB_PYODIDE_BASE` (the self-hosted-Pyodide override the other two
+runtimes already had) was added to dewmini, both on its own merits and
+because it was the only way to test any of this against a locally-vendored
+Pyodide.
 
-*Cost to change: none worth naming. Twelve string edits across four
-files, no code and no behaviour. The headings that changed carry
-anchors, but nothing in the repository links to a `QUESTIONS.md`
-anchor.*
-**7.87 — dewmini can import a `.py` file now, closing out one of the
-five items on `planning/MINI_IDE_AND_DEWMINI_NEXT.md` §6's parity list —
-and turned out to already be most of the way there.** A gap analysis
-run before starting this work (per §6's own staged plan) found dewmini
-already had `.ipynb`/`.py`/`.html` *export* and the Jupyter-compatibility
-scanner — both had already been ported in an earlier session — and only
-`.ipynb` *import* worked; `.py` was accepted nowhere. `run_query()` (the
-other half of the SQLite item on that same list) turned out to need no
-work at all: it already lives in the shared `assets/tutorial_tools.py`,
-which dewmini's `SEED_GLOBALS_CODE` (`compose/dewmini.js`) already
-exposes every name in `__all__` from — it was reachable in a dewmini
-cell before this session started, just never mentioned as such.
+Deliberately smaller than Mini IDE's own file manager: a flat root-only
+list, not a recursive tree.
+*Cost to change: moderate — the FS module is a largely mechanical port, but
+the OPFS namespace collision and the missing post-run sync were genuine
+design decisions this port had to make, each caught by an actual end-to-end
+Playwright test.*
 
-**`parsePyCells()` (`compose/dewmini.js`) is the counterpart to
-`downloadAsPython()`, not to Mini IDE's own `.py` parser.** Mini IDE's
-own import/export pair uses a plain `# %%` marker and only ever carries
-Python cells, since Mini IDE has no note/text-cell concept to preserve.
-dewmini's own `.py` export already predates this port and already
-handles both cell types, via its own `# ---- cell N ----`/
-`# ---- note ----` markers (a text cell's content gets `#`-prefixed line
-by line) — so the new parser recognizes *that* format, reversing the
-exact prefixing `downloadAsPython()` applies, rather than adopting Mini
-IDE's narrower one and losing note-cell round-tripping dewmini already
-had on the export side. A file with none of those markers — a plain
-script, or one from anywhere else — imports as a single Python cell,
-the same fallback Mini IDE's own parser uses for an unmarked file.
-`handleImportFile()` now dispatches on the picked file's extension
-(`.py` vs `.ipynb`), and `#import-ipynb-file`'s `accept` attribute and
-button label (`compose/dewmini.html`) were widened to match — the
-`.ipynb`-suggestive element ids were left alone rather than renamed, to
-avoid touching working wiring for a cosmetic-only change.
+**7.89 — dewmini's Python now runs in a Worker, with a genuine Stop button,
+closing out the Mini IDE/dewmini parity list.**
+The last of the four parity items, deliberately last since every earlier
+item could be tested against dewmini's original main-thread interpreter;
+this one replaces that interpreter itself.
 
-Verified with an actual export-then-reimport Playwright round trip
-(three cells — Python, a text note with a blank line inside it, Python
-— confirmed to come back identical, not just "some cells appeared") and
-a separate plain-script-import check, alongside a re-run of the existing
-`.ipynb` import path to confirm it still works unchanged.
+Rather than duplicate Mini IDE's ~700-line worker/interrupt/postMessage
+engine, `mini-ide-engine.js` was renamed to `assets/pyodide-engine.js` and
+generalized into a shared module both tools import — a deliberate exception
+to this codebase's usual "each page owns a thin copy" convention, justified
+by the file's size (a real maintenance cost) and Mini IDE's planned
+retirement, after which this file simply keeps existing under dewmini
+alone. `dewmini-fs.js` was rewritten to delegate every filesystem primitive
+to the shared engine instead of calling `pyodide.FS` directly, since a
+Worker-hosted Pyodide isn't reachable from the main thread.
 
-Deliberately not done here: recognizing Mini IDE's own `# %%` marker
-convention too, for cross-tool import. Nothing today produces a
-Mini-IDE-format `.py` file that needs reopening in dewmini specifically
-— worth adding if that becomes a real need (most likely once Mini IDE's
-own retirement, `planning/MINI_IDE_AND_DEWMINI_NEXT.md` §6 step 3, means
-someone's old exports are all that's left of it), not before.
+Two genuine bugs turned up, both specific to dewmini being a second page
+sharing a module written for one: the engine's internal URL resolution used
+the *page's* location, correct for Mini IDE at the site root but wrong for
+dewmini one directory down — fixed by resolving against the module's own
+location (`import.meta.url`) instead. And dewmini's `runCell()` checked
+whether Stop was available *before* awaiting the engine's own boot, so the
+button rendered permanently non-stoppable on a fresh page — fixed by
+reordering to match Mini IDE's own sequencing.
 
-*Cost to change: small — the parser is genuinely new code (there was no
-existing `.py`-shaped parsing anywhere in dewmini to extend), but
-self-contained: one new function, a two-line dispatch change, and an
-`accept`/label update, with no engine or filesystem dependency the way
-the next two items on §6's list (the file manager, and the Worker/Stop
-migration) both have.*
+Also gave dewmini genuinely new capability: Jedi-backed hover docs and
+signature help on code that hasn't run yet.
 
-**7.88 — dewmini can mount a persistent filesystem now: a real folder, OPFS,
-or IDBFS, the same three backends Mini IDE already had, tucked into
-Settings' own "Files" section rather than a sidebar tree.** The second
-item on `planning/MINI_IDE_AND_DEWMINI_NEXT.md` §6's parity list. Asked
-directly which shape this should take, since Mini IDE's own file-tree
-sidebar is exactly the kind of visual weight dewmini is meant to avoid:
-offered a compact Settings section, a fourth docked sidebar, or the
-mounted filesystem alone with no browsing UI yet — a Settings section
-was picked, matching dewmini's "nothing to configure before typing
-code" ethos and adding no new permanent chrome to the page itself.
-
-**`compose/dewmini-fs.js`** is a close port of `assets/mini-ide-fs.js`,
-trimmed for the one real architectural difference: Mini IDE's version
-sits behind `mini-ide-engine.js`'s Worker/main-thread dispatch, since
-its Pyodide might be running in either place, while dewmini's only ever
-runs on the main thread — so the FS primitives (mount/list/read/write/
-delete/mkdir) call `pyodide.FS` directly, with no second dispatching
-layer that would only ever have one path to dispatch to. `getPyodide`
-is injected via `configure()` rather than imported directly, since
-`dewmini.js` needs to call into this module (to mount once Pyodide
-boots) and this module needs to call back into `dewmini.js` (to get the
-live instance) — a genuine two-way dependency, which dependency
-injection avoids turning into a circular-import tangle.
-
-**A real collision this port had to design around, not just copy past:**
-`mini-ide-fs.js`'s own OPFS backend mounts `navigator.storage.getDirectory()`
-— the origin's one shared root — directly at its Pyodide-side mount
-point. That was never a problem while Mini IDE was the only thing
-mounting OPFS on this origin; it would be the moment dewmini did the
-same thing unmodified, since both would be looking at the identical
-underlying files, invisibly. dewmini's own OPFS mount gets a named
-`"dewmini"` subdirectory of that shared root instead (`getDirectoryHandle`
-with `create: true`), keeping its files separate from Mini IDE's own
-un-namespaced mount — noted as a fix for the new arrival, not a
-retrofit onto Mini IDE's already-shipped, soon-to-retire code. The
-native-folder backend's own IndexedDB handle storage got the same
-treatment for the same reason (a separate database name), so choosing a
-folder in one tool never silently reconnects it in the other.
-
-**A real gap this pass's own testing surfaced, not assumed safe from
-reading the code: neither this port nor Mini IDE's own original synced
-the filesystem after a cell's Python code writes to the mount directly.**
-`writeFile()`/`deleteFile()`/`mkdir()` each schedule a debounced sync —
-but only when *this JS module* makes the write. A cell running
-`sqlite3.connect('/mnt/dewmini/x.db')` or plain `open(...).write(...)`
-touches the mounted path entirely through Pyodide's own `FS`, never
-through this module's functions, so nothing here ever knew to sync —
-found by an actual write-then-reload test coming back empty, not a
-theoretical review. The `beforeunload`/`visibilitychange` flush both
-this file and Mini IDE's own copy already had doesn't cover this either,
-by design of the web platform: a `beforeunload` handler that kicks off
-async work has no guarantee the browser waits for it to finish. Fixed
-with a new exported `sync()`, called (fire-and-forget, so a slow sync
-never makes a fast cell feel slower) once after every cell finishes
-running in `dewmini.js`'s `executeCell()` — covers a cell's own writes
-regardless of what API it used, and doesn't require Mini IDE's own
-already-shipped, soon-to-retire code to be touched to fix the same gap
-there. Verified with an actual write-reload-readback round trip, first
-with a plain text file, then with a real `sqlite3` `.db` file (the
-motivating use case for this whole item) — both survive a page reload,
-not just a same-session read.
-
-**A second real bug this pass's testing caught, also present in Mini
-IDE's own original: the empty-file-list branch never cleared the list
-it was hiding.** `renderFileList()`'s "no files yet" branch set the
-`<ul>` to `hidden` but never cleared its children, so deleting a mount's
-only file left a stale `<li>` sitting in the (invisible) list — found by
-an actual delete-then-recount test, where the count stayed unchanged
-instead of dropping to zero. Fixed here by clearing the list
-unconditionally at the top of the function rather than in each
-individual branch, so no future branch can reintroduce the same gap.
-
-**`DEWLAB_PYODIDE_BASE` — the self-hosted-Pyodide override
-`tutorial-runtime.js` and `mini-ide-engine.js` both already carry — was
-missing from dewmini entirely until this pass**, added on its own merits
-(parity with the other two runtimes, and the standing answer if a school
-network ever blocks the CDN, `OPEN_QUESTIONS.md` 32) rather than only
-because this pass's own testing needed a way to point dewmini at a
-locally-vendored Pyodide in a network-restricted environment — though it
-did need exactly that, and its absence was the reason no automated
-end-to-end verification of dewmini's actual filesystem behavior had ever
-been possible before.
-
-Deliberately smaller than Mini IDE's own file manager: the "Files" list
-browses the mount's root only, not a full recursive tree — a flat list
-fits a compact Settings section; a browsable tree does not, and Mini
-IDE's own tree only ever browses one mount's root well anyway (per
-`planning/MINI_IDE_AND_DEWMINI_NEXT.md`'s own §2, it was never true
-multi-file *editing*, just browse/upload/delete). Real SQLite
-persistence — the other half of §6's list, alongside this — needed no
-separate work: `run_query()` was already reachable in a cell before this
-session (`DECISIONS_LOG.md` 7.87's own finding), and a `.db` file under
-the mount now simply persists the way any other file under it does.
-
-*Cost to change: moderate — the FS module itself is a faithful, largely
-mechanical port, but two of the three things worth naming here (the OPFS
-namespace collision, the missing post-run sync) were genuine design
-decisions this port had to make that Mini IDE's own code never had to
-face or never got right, not just translation work. Each was caught by
-an actual end-to-end Playwright test — upload-and-read, write-reload-
-readback, delete-and-recount — run against a real, locally-vendored
-Pyodide instance, not inferred from reading the ported code and trusting
-it matched its source.*
-
-**7.89 — dewmini's Python now runs in a Worker, with a genuine Stop
-button, closing out `planning/MINI_IDE_AND_DEWMINI_NEXT.md` §6's parity
-list.** The last of the four parity items, and deliberately last — every
-earlier item (`.py` import, the file manager) could be built and tested
-against dewmini's original main-thread-only interpreter; this one
-replaces that interpreter itself.
-
-Rather than duplicate Mini IDE's own ~700-line
-worker/interrupt/postMessage engine a second time, `mini-ide-engine.js`
-was renamed to `assets/pyodide-engine.js` and generalized into a shared
-module both tools import — a deliberate, explicit exception to this
-codebase's usual "each page owns a thin copy" convention (the same
-convention `tutorial-runtime.js`'s own worker-communication block still
-follows). Asked directly, sharing was preferred over a second copy for
-two reasons specific to this file: its size makes duplication a real
-maintenance cost, not a cosmetic one, and Mini IDE's own retirement is
-now planned (`planning/MINI_IDE_AND_DEWMINI_NEXT.md` §6 step 3), at
-which point this file simply keeps existing under dewmini alone rather
-than needing to be merged back together. `dewmini-fs.js` was rewritten
-to match — it now delegates every filesystem primitive to the shared
-engine (`engine.mountNative`/`listDir`/`readFile`/`writeFile`/etc.)
-instead of calling `pyodide.FS` directly, since a Worker-hosted Pyodide
-isn't reachable from the main thread at all anymore. The OPFS
-namespacing 7.88 already added (dewmini's own `"dewmini"` subdirectory,
-kept separate from Mini IDE's un-namespaced root mount) needed no change
-— mounting a named subdirectory handle and mounting a real folder handle
-are the same operation from the engine's point of view.
-
-Two genuine bugs turned up in testing, both specific to dewmini being a
-second, differently-located page sharing a module written for one:
-
-- **`tutorial_tools.py` 404'd on every dewmini boot.** The engine's
-  internal `pageUrl()` helper resolved `"assets/tutorial_tools.py"`
-  against `document.baseURI` — the *page's* URL. That's correct for
-  Mini IDE, which lives at the site root, but dewmini lives one
-  directory down (`compose/dewmini.html`), so the same relative path
-  resolved to the nonexistent `compose/assets/tutorial_tools.py`
-  instead. Fixed by resolving against `import.meta.url` (this module's
-  own location, `assets/pyodide-engine.js`) rather than the page —
-  correct for either page, since both import the same file from the
-  same place. Renamed the helper `pageUrl()` → `assetUrl()` to match.
-- **The Stop button never appeared on a cell's first-ever run.**
-  dewmini's `runCell()` called `setRunButtonRunning()` — which reads
-  `engine.canStop()` to decide whether the button becomes a real Stop or
-  just a disabled "busy" indicator — *before* awaiting the engine's own
-  boot. On a fresh page, `canStop()` reads its pre-boot default (false)
-  at that point, so the button rendered as permanently non-stoppable, a
-  busy-and-disabled "…", even after the worker finished booting and a
-  Stop would have worked. Mini IDE's own `runCell()` avoids this by
-  awaiting its own `ensureEngineAndFsReady()` *before* calling
-  `setRunButtonRunning()`; dewmini's port had the two calls in the wrong
-  order. Fixed by moving `ensurePyodide()` ahead of
-  `setRunButtonRunning()` in dewmini's `runCell()`, matching Mini IDE's
-  own sequencing. (`runAllCells()` already awaited the boot first and
-  didn't have this bug.)
-
-Also gave dewmini genuinely new capability dewmini's previous
-live-namespace-only implementation had no way to offer: Jedi-backed
-hover docs and signature help (`engine.hoverDoc`/`signatureHelp`, wired
-into `createCodeEditor()` the same way Mini IDE's own already were) work
-on code that hasn't run yet, not just on names already defined in the
-running interpreter.
-
-Verified end-to-end against a real, locally-vendored Pyodide, on both
-pages sharing the now-common engine: cross-origin isolation actually
-lands (`window.crossOriginIsolated === true`, `SharedArrayBuffer`
-available) on each; a tight `while True` loop with no yield points is
-genuinely interrupted by Stop, on the first click, on the first-ever run
-of a page's very first cell; the interpreter survives an interrupt and
-runs further cells afterward; Mini IDE's own Run/Stop, file manager, and
-autocomplete were re-verified unchanged, confirming the rename and
-generalization didn't regress the page this file originally belonged
-to; dewmini's file manager and a write-reload-readback SQLite round trip
-(7.88's own tests) still pass now that they run through the shared
-engine instead of direct `pyodide.FS` calls; "Restart Python" (new in
-Settings alongside the existing execution-mode status line) actually
-produces a fresh interpreter, confirmed by a variable defined before
-restart raising `NameError` after it rather than silently surviving.
-
-*Cost to change: high — not the line count (most of it is generalizing
-an existing, already-working file rather than writing new logic), but
-the risk: this is the one item of the four that replaces dewmini's
-actual execution engine, touches the file both tools now depend on, and
-both bugs above were exactly the kind that only show up when a real
-browser actually runs the thing — neither would have been caught by
-reading the ported code and confirming it matched its source.*
-
----
+Verified end-to-end against a real, locally-vendored Pyodide on both pages:
+cross-origin isolation lands on each, a tight infinite loop is genuinely
+interrupted on the first click of a page's very first cell, and the
+interpreter survives and runs further cells afterward.
+*Cost to change: high — not the line count, but the risk: this replaces
+dewmini's actual execution engine and touches the file both tools now
+depend on, and both bugs above were exactly the kind that only show up when
+a real browser runs the thing.*
 
 **7.90 — Every tutorial is a folder, from the moment it is created.** A
-tutorial was a lone markdown file at `tutorials/<module>/<slug>.md` that
-grew a folder only when a second release was published — and when it did,
-its practice page and its glossary stayed behind at module level. Four
-tutorials were already in that state, so `ls` on a module showed a
-`first-steps.glossary.yaml` and a `first-steps-practice.md` with no
-`first-steps.md` anywhere near them, and every future release added
-another. A tutorial is now `tutorials/<module>/<slug>/`, holding its
-markdown at `<slug>.md`, its practice page, its glossary, its frozen past
-releases as `v<version>.md`, and any pictures or recordings it uses.
+tutorial lives at `tutorials/<module>/<slug>/`, holding its markdown
+(`<slug>.md`), practice page, glossary, frozen past releases (`v<version>.md`),
+and any images or recordings — never as a lone file at module level.
+`Tutorial.out_path` and saved-work keys are computed from frontmatter
+(`module`/`slug`), not from the source path, so this layout never affects a
+page's URL or a student's storage key. `resolve_assets()` rewrites a plain
+`src="picture.png"` per page so an author never has to account for the
+current release and a frozen one living at different folder depths — a
+reference to a file the folder doesn't hold fails the build, like a dead
+`tutorial:` link. `<slug>.md` is always the current release; `v<version>.md`
+is always a past one; releasing adds a file and moves nothing.
+*Cost to change: low to reverse the layout mechanically, but rising with
+every release added under it. Reverting also means giving up a place for
+assets to live.*
 
-**The migration cost nothing a reader could detect, and that was checkable
-rather than hoped for.** Where a page is written and what a student's saved
-work is keyed to are both computed from frontmatter — `Tutorial.out_path`
-reads `module` and `slug`, never `self.path` — so moving source files could
-not move a URL or orphan a storage key. Building the site before and after
-and diffing the two trees produced no differences at all, which is the
-strongest form the claim can take: not "the tests still pass" but "every
-byte of all 87 pages is identical."
+**7.91 — Mini IDE has retired.** dewmini reached parity with Mini IDE (7.87–7.89), the trigger for retirement already decided earlier in this session. There is one Python workspace now, not two.
 
-`glossary_path()` now reads `tutorial.path.parent` rather than rebuilding a
-flat path from `(module, slug)`. That is a smaller change than it looks and
-a more correct one: every release of a tutorial sits in the same folder, so
-each one finds the same glossary without the function needing to know
-anything about releases.
+`assets/mini-ide.html` becomes a short notice page (a `<meta http-equiv="refresh">` plus a JS `location.replace()`) forwarding a visitor to `compose/dewmini.html`, so an old bookmark or link lands somewhere useful rather than a 404.
 
-**Assets were the point of the folder, not a side effect.** There was
-nowhere for a tutorial's own picture to live and no way to refer to one.
-The obstacle was never storage, it was the reference: the current release
-is served at `tutorials/<module>/<slug>.html`, one level *above* its own
-folder, while a frozen release sits *inside* it at `v<version>.html`, so
-any path an author wrote by hand would be correct for one and broken for
-the other. `resolve_assets()` rewrites a plain `src="picture.png"` per
-page, so the author writes the file name they can see beside the markdown
-and never thinks about depth. A reference naming a file the folder does not
-hold fails the build, on the same reasoning as a dead `tutorial:` link:
-the alternative is a page that looks finished to everyone except the
-student who opens it.
+The original app survives, unlinked, renamed to `assets/mini-ide-offline-app.html`: `write_mini_ide_bundle()` in `build.py` now sources the downloadable Mini IDE bundle from that file rather than the (now short) hosted page, keeping the offline, run-without-a-server Python workspace working — dewmini has no offline distribution of its own yet. `mini-ide.js`, `mini-ide-fs.js`, and `mini-ide-style.css` stay for the same reason; they import the same shared `pyodide-engine.js` dewmini does (shared since 7.89), so nothing there needed to change.
 
-**The editor had two release shapes and now has one.** Its release path
-branched on whether a tutorial was already a folder, and the two branches
-disagreed about where the current release lives — one deleted `<slug>.md`
-and left two `v<version>.md` files, the other kept `<slug>.md` holding the
-*old* release while the new one became a `v` file. Neither matched what the
-repository's own hand-made forks contained. Now `<slug>.md` is always the
-current release and `v<version>.md` is always a past one, so "open the
-tutorial" means the same file however many releases accumulate, and
-releasing adds a file rather than moving any. `releasesOf()` had to start
-naming release files exactly instead of taking every markdown file in the
-folder — with the practice page now living there too, the old rule would
-have offered a page of problems as a version students could be sent back
-to. Two e2e expectations changed with it and one guard needed widening: the
-report that warns "the cells have changed since the last release" compared
-the buffer against whatever was committed at that path, which was right
-only while a fresh release always landed at a fresh path. It now also
-treats a version that differs from the committed one as a release rather
-than an edit, which is what it always meant.
+The homepage's two-workspace chooser (`write_index()`) became a single dewmini card; the about page dropped its Mini IDE mention; `docs/DEWMINI.md` absorbed the file-manager/SQLite/Stop-button/import material that used to live only in `docs/MINI_IDE.md`, which became a short pointer; `docs/mini-ide-engine-explained.md` was renamed to `docs/pyodide-engine-explained.md` and rewritten to describe the shared module; the JS/FS explainer docs were brought current. Historical planning docs (`planning/MINI_IDE_REDESIGN.md`, `planning/DOCS_AND_COMMENTS_PASS.md`) were left untouched, describing what was true when written.
 
-*Cost to change: low to reverse the layout mechanically — the moves are
-scripted and nothing published depends on them — but rising, and that is
-the reason for doing it now rather than later. The expensive half is not
-the files, it is the two conventions that were quietly diverging: every
-release published under the old editor added another folder in a shape no
-document described. Reverting would also mean giving up assets entirely, or
-rebuilding somewhere else for them to live.*
-
-**7.91 — Mini IDE has retired.** dewmini's parity with Mini IDE
-(7.87–7.89) was the trigger, not a further decision point — an explicit
-instruction earlier in this same working session established retirement
-as a given once parity landed, not something to re-confirm. There is one
-Python workspace now, not two.
-
-**The hosted URL redirects rather than 404s or silently disappearing.**
-`assets/mini-ide.html` — the app itself for years — is now a short,
-dependency-light notice page: a couple of sentences explaining that
-dewmini covers everything Mini IDE did, a `<meta http-equiv="refresh">`
-plus a JS `location.replace()` (belt and suspenders — the meta tag alone
-still gets a reader there with JavaScript off) sending a visitor on to
-`compose/dewmini.html` after a few seconds, and a link to go immediately.
-A bookmark or an old link someone still has keeps landing somewhere
-useful rather than a broken page — the assumption
-`planning/ROADMAP.md`'s own Phase 6 open questions had already settled
-on before this was built.
-
-**The app itself survives, unlinked, only as the offline download's own
-source.** The original `assets/mini-ide.html` was renamed to
-`assets/mini-ide-offline-app.html` rather than deleted — `write_mini_ide_bundle()`
-in `build.py` now sources the downloadable, self-contained Mini IDE
-bundle from that renamed file instead of the (now short) hosted page,
-so the offline download a student might already rely on keeps producing
-a genuinely working copy of the original app, Stop button and all, not
-the retirement notice. `assets/mini-ide.js`, `assets/mini-ide-fs.js`,
-and `assets/mini-ide-style.css` all stay for the same reason — nothing
-hosted links to them any more, but the bundle still needs them. Keeping
-the offline download working, rather than retiring it along with the
-hosted page, was a deliberate call: dewmini has no offline distribution
-of its own yet (the one item of the original four-item parity list that
-was never in scope for this pass), and the alternative — no offline,
-run-without-a-server Python workspace at all until dewmini gets one — was
-a real capability regression for anyone who already depends on that,
-for the cost of keeping one already-working, self-contained artifact
-building. `assets/pyodide-engine.js` — already shared with dewmini since
-7.89 — is what makes this cheap: the renamed offline app imports the
-exact same engine dewmini does, so nothing about the engine itself
-needed touching for this.
-
-**No bug this time, but only because it was checked rather than
-assumed.** 7.89's own `pageUrl()`→`assetUrl()` fix (resolving
-`tutorial_tools.py`'s path against the engine module's own location
-rather than `document.baseURI`, the *page's* URL) was written to fix
-dewmini specifically, before this file's own rename existed. Renaming
-`assets/mini-ide.html` to `assets/mini-ide-offline-app.html` and
-re-pointing `write_mini_ide_bundle()` at it changes what page is doing
-the importing, again — exactly the kind of change 7.89's own bug grew
-out of — so this got the same real-interrupt Stop-button test 7.89 used
-on dewmini run against the actual downloadable bundle's own
-`mini-ide.html`, rather than assuming a working hosted copy implies a
-working offline one. It passed: `assetUrl()`'s fix generalizes correctly
-regardless of which page imports the shared engine, confirmed rather
-than assumed.
-
-**Where the rest of the retirement went:** the homepage's two-workspace
-chooser (`build.py`'s `write_index()`) became a single dewmini card —
-`.dl-workspaces-grid`'s hardcoded two-column layout gained a `max-width`
-so one card doesn't stretch into a lopsided bar; the about page dropped
-its Mini IDE mention; `docs/DEWMINI.md` absorbed the file-manager/
-SQLite/Stop-button/import material that used to live only in
-`docs/MINI_IDE.md`, since dewmini now has all of it; `docs/MINI_IDE.md`
-itself became a short pointer to `docs/DEWMINI.md` rather than staying
-the several-hundred-line guide it was, on the same reasoning as the
-hosted redirect page — a tombstone, not a 404; `docs/FOR_STUDENTS.md`,
-`README.md`, and `ARCHITECTURE.md` §4 lost their two-workspace framing;
-`docs/mini-ide-engine-explained.md` was renamed to
-`docs/pyodide-engine-explained.md` (a rename `DECISIONS_LOG.md` 7.89's
-own engine rename should have carried at the time, and didn't) and
-rewritten to describe the shared module rather than a Mini-IDE-only
-one; `docs/mini-ide-js-explained.md`, `docs/mini-ide-fs-explained.md`,
-and `docs/dewmini-js-explained.md` (the last one substantially, since it
-still described dewmini's pre-7.89 main-thread-only, no-file-manager
-shape) were brought current. `planning/MINI_IDE_REDESIGN.md` and
-`planning/DOCS_AND_COMMENTS_PASS.md` were deliberately left alone —
-historical records of work already done, not descriptions of what's
-live today, the same "tombstone, not rewrite" treatment
-`planning/ROADMAP.md`'s own open question about retired planning docs
-already anticipated.
-
-*Cost to change: moderate — mechanically straightforward (a rename, a
-short new page, prose updates across a genuinely large number of files),
-but wide: nearly thirty files reference Mini IDE by name, and getting
-the hosted-vs-offline split right (one URL now serves two different
-purposes depending on whether it's `assets/mini-ide.html` the redirect
-or `assets/mini-ide-offline-app.html` the packaged app) needed care in
-`build.py` specifically, verified by testing the actual downloadable
-bundle's Stop button, not just the redirect page and dewmini's own
-already-covered behavior.*
+*Cost to change: moderate — mechanically straightforward (a rename, a short new page, prose updates across nearly thirty files that reference Mini IDE by name), but the hosted-vs-offline split needed care in `build.py`, verified against the actual downloadable bundle rather than just the redirect page.*
 
 ---
 
-**7.92 — dewmini has its own downloadable, offline-capable copy now, and
-a real bug in *both* offline bundles' core promise got found and fixed
-along the way.** The one item of the original four-item parity list
-(`planning/MINI_IDE_AND_DEWMINI_NEXT.md` §6) never brought over —
-explicitly out of scope for 7.87–7.91, on the reasoning that Mini IDE's
-own offline bundle already covered "a workspace exists for a
-no-connection classroom" well enough that dewmini going without one had
-no visible cost. That reasoning stopped holding the moment Mini IDE
-retired (7.91): dewmini is the only Python workspace there is now, so
-its own offline bundle stopped being optional the same way its own Stop
-button did in 7.89.
+**7.92 — dewmini has its own downloadable, offline-capable copy now, and a real bug in both offline bundles' core promise got found and fixed.** The one item never brought over from the original four-item parity list (`planning/MINI_IDE_AND_DEWMINI_NEXT.md` §6) stopped being optional once Mini IDE retired (7.91) — dewmini is the only Python workspace there is now.
 
-**`write_dewmini_bundle()` (`build.py`) mirrors `write_mini_ide_bundle()`
-in shape, not in structure.** Mini IDE's own hosted page already sat at
-the site root, so its bundle just flattens straight in. dewmini's hosted
-page sits one directory down (`compose/`), with `../assets/...`,
-`../data/`, and `../coi-serviceworker.js` references baked into
-`dewmini.html`/`dewmini.js` themselves — so rather than rewriting any of
-that (the path 7.89's own real bug came from, taken as a lesson rather
-than repeated), the bundle instead mirrors the *hosted site's actual
-folder shape*: `compose/`, `assets/`, and `data/` as untouched siblings,
-exactly what those already-working relative paths already assume. Zero
-rewriting of dewmini's own app code, at the cost of the real page sitting
-one level down in the unzipped folder — solved with a tiny top-level
-`index.html`, not by touching the real page.
+`write_dewmini_bundle()` mirrors the hosted site's actual folder shape (`compose/`, `assets/`, `data/` as untouched siblings) rather than flattening like Mini IDE's bundle does, since dewmini's hosted page sits one directory down with relative paths baked in — zero rewriting of app code, solved instead with a tiny top-level `index.html`.
 
-**The offline promise both bundles made — "reopen it, no server needed"
-— was never actually true, and nothing had tested it until this pass
-did.** dewmini.js imports pyodide-engine.js and dewmini-fs.js with real
-`import`/`export` statements, the same way any modern web app is built;
-a browser only permits that kind of cross-file import from `http://` or
-`https://`, never from a file opened by double-clicking off disk — a
-`file://` page has no origin a CORS check can approve, so the browser
-silently blocks the import and the page's own JavaScript never runs at
-all, no visible error, just a blank toolbar. Building this bundle and
-actually opening the result the way a downloader would — not assuming a
-folder of files just works because the code inside it is correct — is
-what surfaced this; it was checked, immediately, against Mini IDE's own
-already-shipped bundle too, which turned out to carry the identical,
-equally untested "reopen it, no server needed" claim in its own
-docstring and hits the identical failure.
+**Neither offline bundle's "reopen it, no server needed" claim was actually true.** dewmini.js and pyodide-engine.js use real ES module `import`/`export`; a browser blocks that kind of cross-file import from a `file://` page with no origin for CORS to approve, so the page's JavaScript never runs — no visible error, just a blank toolbar. Mini IDE's own already-shipped bundle carried the identical, equally untested claim and hits the identical failure.
 
-**Fixed with `serve.py`, not by restructuring either app to avoid ES
-modules.** Rewriting dewmini.js/pyodide-engine.js/pyodide-worker.js into
-non-module classic scripts just to satisfy `file://`'s CORS rule would
-mean forking the exact shared engine 7.89 and 7.91 both went out of
-their way to keep as one file, maintained twice from then on for every
-future change — hugely disproportionate to what the actual problem
-needs. `serve.py`, dropped into both bundles by the new shared
-`write_offline_serve_script()`, is a zero-dependency wrapper around
-`http.server` (the same module README.md's own "Running it on your own
-machine" section already has a contributor run for the site itself) that
-serves the unzipped folder to `localhost` and opens a browser tab there
-— satisfying the CORS rule with nothing beyond what a machine able to
-run the script at all already has. dewmini's own `index.html` goes
-further and checks `location.protocol` itself: served, it forwards
-straight to `compose/dewmini.html`; opened bare as a file, it explains
-`serve.py` right there instead of forwarding into a page that would just
-come up blank with no visible reason why. Mini IDE's own bundle gets the
-same `serve.py` plus a plain `README.txt` beside it, rather than a
-matching in-page check — editing that legacy, offline-only file for a
-nicer error message was judged not worth the touch; a README a
-downloader sees the moment they unzip says the same thing without it.
+Fixed with `serve.py` — a zero-dependency wrapper around `http.server` (added to both bundles via `write_offline_serve_script()`) that serves the unzipped folder to `localhost` and opens a browser tab there, rather than rewriting either app to avoid ES modules (which would fork the shared engine). dewmini's `index.html` checks `location.protocol`: served, it forwards to `compose/dewmini.html`; opened bare, it explains `serve.py` instead of coming up blank. Mini IDE's bundle gets `serve.py` plus a plain `README.txt` instead of an in-page check.
 
-**What's actually in the dewmini bundle:** `compose/` copied wholesale
-(no rewriting), the shared engine and worker, `tutorial_tools.py`, the
-CodeMirror bundle, and — found missing from `MINI_IDE_ASSET_FILES` while
-building this bundle's own equivalent list, and left that way there,
-per the same "not this pass's tool to fix" reasoning as everywhere else
-in 7.90–7.91 — the four worked-example `.ipynb` files Settings' "Keep a
-copy" section offers, and the whole `data/` folder those examples (and
-any `load_csv()` call) read from. `assets/vendor/pyodide/` is included
-when a build has fetched it (same `dev/fetch_pyodide.py` mechanism
-7.90/7.91 already use, asked for dewmini's own package list — Pillow in
-particular, which Mini IDE's own bundle has never needed).
+The bundle includes `compose/` wholesale, the shared engine and worker, `tutorial_tools.py`, CodeMirror, the four worked-example `.ipynb` files and the `data/` folder they read from (found missing from `MINI_IDE_ASSET_FILES` too, left that way), and `assets/vendor/pyodide/` when fetched.
 
-**Verified end-to-end, served the way a downloader actually would run
-it** (`python3 serve.py`, not the hosted site): the same real-interrupt
-Stop-button test 7.89/7.91 used elsewhere passes against the served
-bundle specifically; a worked example loads correctly (the
-`assets/examples/*.ipynb` fetch); `await load_csv("co2-emissions.csv")`
-reaches the bundled `data/` folder and returns the real row count; the
-`file://`-opened case shows the new instructions instead of a blank
-page; and the existing hosted dewmini, the existing Mini IDE offline
-bundle, the full unit suite, and `dev/check_doc_links.py` were all
-re-run afterward to confirm none of this touched anything that used to
-work.
+Verified served the way a downloader actually would (`python3 serve.py`): Stop-button test passes, a worked example loads, `load_csv()` reaches the bundled data, and the `file://`-opened case shows the new instructions.
 
-*Cost to change: moderate — the bundle itself is a fairly mechanical
-port of `write_mini_ide_bundle()`'s own shape, but the real cost was the
-`file://` finding: it applies to both offline bundles this codebase has
-ever shipped, not just the new one, and would have shipped a second time
-(this pass's own bundle, freshly written, would have carried the exact
-same bug its own docstring claimed not to have) had "does the folder
-have the right files in it" been treated as the same question as "does
-opening the folder actually work."*
+*Cost to change: moderate — the bundle itself is a mechanical port of `write_mini_ide_bundle()`, but the `file://` finding applies to both offline bundles this codebase has ever shipped, and this pass's own freshly-written bundle would have carried the same bug had "has the right files" been treated as the same question as "actually opens."*
 
 ---
 
-**7.93 — Highlight a word, and the reference offers to look it up — but
-only when it actually knows the word.** The reference panel could already
-be searched, once a reader thought to open it and type. The gap this
-closes is the moment a reader is *already* looking at a term they half
-remember, in the middle of a paragraph, and would have to leave the
-sentence to go and ask about it.
+**7.93 — Highlight a word, and the reference offers to look it up — but only when it actually knows the word.** The reference panel could already be searched by opening it and typing; this closes the gap when a reader is already looking at a half-remembered term mid-sentence.
 
-**The design decision that matters is the silence.** The obvious version
-of this feature reacts to every selection — filtering the panel live as a
-reader drags across text. That version is unusable: most selections are
-someone copying a sentence, and having a panel lurch about in response is
-exactly the kind of interruption `planning/VERSIONING_AND_PROGRESS.md`'s
-"a notice, never a block" instinct exists to rule out. So the offer
-appears only when the selected text matches a term this page's reference
-has actually taught. Select an ordinary word and nothing happens at all,
-which is the common case and the one worth optimising.
+**The design decision that matters is the silence.** The offer appears only when the selected text matches a term this page's reference has actually taught — never on every selection, since most selections are just copying text, and a panel that lurches in response would be an interruption. Select an ordinary word and nothing happens, which is the common case.
 
-Matching is against term *names* only, never definitions, for the same
-reason: matching definitions would fire on ordinary words like "number"
-that happen to appear inside some entry's prose, and the feature would
-become noise. A selection matches when it contains a term or a term
-contains it, so "matrix" selected inside a sentence about a
-transformation matrix finds the entry, and so does the whole phrase.
+Matching is against term *names* only, never definitions (matching definitions would fire on ordinary words appearing inside some entry's prose). A selection matches when it contains a term or a term contains it.
 
-Three things were found by driving it in a real browser rather than by
-reading the code, and each was a genuine defect rather than a polish item:
+Three real defects, found by driving it in a browser: the manifest's glossary is a flat list, not grouped by kind — `renderReference()` does the grouping, and the first draft read it as already grouped, producing an empty term list and a feature that never appeared; the click-outside handler that closes the panel also closed it on the button that had just opened it, now named as an exemption; and a selection can be off-screen, which put the lookup button off-screen too — it now declines to appear for a selection nobody can see, and clamps to the viewport otherwise.
 
-- **The manifest's glossary is a flat list of entries, not entries grouped
-  by kind** — `renderReference()` does the grouping for display. The first
-  draft read it as grouped, which produced an empty term list and a
-  feature that silently never appeared.
-- **`initReference()`'s click-outside handler closed the panel the button
-  had just opened.** The button lives outside the panel and outside its
-  toggle, so it looked like a click elsewhere. It is now named there as a
-  way in, beside the existing exemption for Settings.
-- **A selection can be off-screen**, restored on load or left behind by a
-  scroll, and placing the button at its coordinates put the button
-  off-screen too — invisible but still reachable by keyboard. It now
-  declines to appear for a selection nobody can see, and clamps to the
-  viewport otherwise, flipping above the selection where there is no room
-  below.
+The button releases the selection when used, which stops it re-offering the same lookup twice.
 
-The button releases the selection when used, which is what stops it
-re-offering the same lookup a second time: the `mousedown` handler
-deliberately preserves the selection long enough to read the term off it,
-and the click is where that ends.
-
-*Cost to change: low. One function in `assets/tutorial-runtime.js`, one
-CSS block, one line of exemption inside `initReference()`, and no new
-storage, no manifest change, no build change at all — it reads the
-glossary the manifest already carries and calls the filter the panel's own
-search box already uses. Removing it would leave no trace.*
+*Cost to change: low. One function in `assets/tutorial-runtime.js`, one CSS block, one exemption inside `initReference()` — no new storage, no manifest change, no build change. Removing it would leave no trace.*
 
 ---
 
-**7.94 — "Where did I meet this?" answered in the reference panel, after
-the prose-linking version was built, measured and withdrawn.**
-`planning/ROADMAP.md` Phase 5 proposed linking every later occurrence of a
-taught term in the prose back to the tutorial that introduced it. That was
-built — a tag-walking rewrite of the rendered HTML, skipping code,
-headings and existing links, linking the first occurrence per section, with
-the anchor taken from the term's emphasised first use. It worked, produced
-347 links across the site at about ten a page, and was structurally sound:
-no nested anchors, nothing rewritten inside a cell.
+**7.94 — "Where did I meet this?" answered in the reference panel, after the prose-linking version was built, measured and withdrawn.** `planning/ROADMAP.md` Phase 5 proposed linking every later occurrence of a taught term in the prose back to the tutorial that introduced it. It was built and worked structurally: 347 links across the site, first occurrence per section, skipping code/headings/existing links.
 
-**It was withdrawn because the links were wrong too often to ship.** The
-glossary's terms include ordinary English words — *set*, *shape*, *limit*,
-*function*, *list* — and a regex cannot tell which sense a sentence means.
-Sampling the eight uses of *shape* on one page: six were the everyday word
-("the shape of that improvement", "whatever shape a problem needs", "a
-flattened shape"), and two were a matrix's shape. A majority of the matches
-for that term pointed a reader at the wrong tutorial with complete
-confidence.
+**It was withdrawn because the links were wrong too often to ship.** The glossary's terms include ordinary English words — *set*, *shape*, *limit*, *function*, *list* — and a regex cannot tell which sense a sentence means. Sampling eight uses of *shape* on one page: six were the everyday word, two were a matrix's shape. That is worse than not linking, and specifically worse for the adult learners `PEDAGOGICAL_STYLE_GUIDE.md` §1 describes, many expecting to be bad at mathematics — sending one of them to a tutorial on set theory because the prose said "set a seed" costs confidence.
 
-That is worse than not linking at all, and specifically worse for the
-readers this project exists for. `PEDAGOGICAL_STYLE_GUIDE.md` §1 describes
-adult learners returning to education, many expecting to be bad at
-mathematics; sending one of them to a tutorial on set theory because the
-prose said "set a seed" costs confidence, not just a click. A false
-positive here is not a small defect in a useful feature.
+**The goal survives; the mechanism does not.** Each reference entry a reader inherited from an earlier tutorial now carries "Introduced in *Title*", linking to the section that teaches it (`origin_of()`, `origin_anchor()` in build.py; rendered in `renderReference()`). A tutorial's own new terms carry no origin. This can't be wrong about sense, because it never guesses at one: the entry a reader is looking at *is* the term. It composes with 7.93 — select a word, get the panel, see where you met it.
 
-**The goal survives; the mechanism does not.** Each reference entry a
-reader inherited from an earlier tutorial now carries "Introduced in
-*Title*", linking to the section that teaches it (`origin_of()`,
-`origin_anchor()` in build.py; the render in `renderReference()`). A
-tutorial's own new terms carry no origin, since "you met this here" on the
-page teaching it says nothing. There is no way for this to be wrong about a
-sense, because it never guesses at one: the entry a reader is already
-looking at *is* the term, so naming where it came from is a fact rather
-than a match. It also composes with 7.91 — select a word, get the panel,
-see where you met it — which is the whole journey the prose links were
-trying to shortcut.
+Worth recording: the obstacle for anyone revisiting prose-linking is sense disambiguation, not matching — stemming or a `forms:` list solve a different problem than the one that bit here.
 
-Worth recording for anyone who reaches for the prose-linking idea again:
-the obstacle is sense disambiguation, not matching. Stemming, a `forms:`
-list, or longest-match-first — all of which the roadmap anticipated — solve
-a different problem than the one that actually bit.
-
-*Cost to change: low. `origin_of()` adds one optional key to a manifest
-entry and nothing reads it but the panel; the prose-rewriting code is gone
-rather than disabled, and this entry is what remains of it.*
+*Cost to change: low. `origin_of()` adds one optional key to a manifest entry and nothing else reads it; the prose-rewriting code is gone rather than disabled.*
 
 ---
 
-**7.95 — The edges audit: the offline bundle proved, two phone-width
-failures fixed, one heading-order break corrected.**
-`planning/EDGES_AUDIT.md` has the full account. Three things had been
-asserted and never tested, and testing them found two real defects.
+**7.95 — The edges audit: the offline bundle proved, two phone-width failures fixed, one heading-order break corrected.** `planning/EDGES_AUDIT.md` has the full account. Three things had been asserted and never tested; testing found two real defects.
 
-**The offline bundle works, and now that is a measurement rather than a
-belief.** `planning/MINI_IDE_AND_DEWMINI_NEXT.md` §2 had said plainly that
-nothing proved the downloaded folder boots without a network. It was built
-with a vendored Pyodide, served from loopback, and loaded with every
-non-loopback request aborted: zero blocked requests, and a cell printing
-`42` under Python 3.13.2 with the network still off.
+**The offline bundle works, now as a measurement rather than a belief.** Built with a vendored Pyodide, served from loopback, with every non-loopback request aborted: zero blocked requests, a cell printing `42` with the network off.
 
-**At 375px the page scrolled sideways, for two separate reasons, both
-URLs.** A bibliography DOI took a tutorial to 381px against a 375px
-viewport — and every tutorial ends with a bibliography. Worse, a Pyodide
-failure message names the URL that failed, and that took the page to
-**511px**. The failures compound: the reader who sees that message is by
-definition the reader on a poor connection, and the message itself then
-made the page unreadable on their screen. `#dl-body` now breaks inside a
-word where a word cannot fit, `.dl-status` wraps anywhere, and every page
-fits 375px exactly.
+**At 375px the page scrolled sideways, for two reasons, both URLs.** A bibliography DOI pushed a tutorial to 381px, and a Pyodide failure message naming a failed URL pushed the page to 511px — precisely when the reader is on a poor connection and least able to cope with an unreadable page. `#dl-body` now breaks inside a word where needed, `.dl-status` wraps anywhere, and every page fits 375px.
 
-`tests/e2e/test_narrow_screen.py` was checked against the un-fixed
-stylesheet before being trusted — two of its three tests fail without the
-fix. A regression test that passes either way is worse than none, because
-it reports safety it is not providing.
+`tests/e2e/test_narrow_screen.py` was checked against the un-fixed stylesheet first — two of its three tests fail without the fix, confirming it actually catches the regression.
 
-**The contents page jumped `h1` to `h3`**, which a screen reader
-navigating by heading level hears as a missing section. It was deliberate:
-a comment explained that every `h2` on that page was read as a module
-heading, by the markup and by a test helper. That is a convenience for
-people reading the code, paid for by everyone navigating the page by ear.
-Module headings carry `.dl-module-heading` now, so telling them apart no
-longer depends on the level.
+**The contents page jumped `h1` to `h3`**, which a screen reader hears as a missing section — deliberate, so a test helper could read every `h2` as a module heading. Module headings now carry `.dl-module-heading`, so telling them apart no longer depends on level.
 
-**What this audit is not.** The structural checks — every control named,
-no missing `alt`, one `h1`, landmarks, `lang` — all pass, and they say
-nothing about whether a tutorial page is usable with a screen reader.
-Reading order, whether a sidebar announces itself, whether running a cell
-says anything to someone who cannot see the output: all still need a
-person. That is stated at the end of `EDGES_AUDIT.md` rather than left for
-someone to infer from a green checklist.
+**What this audit is not:** structural checks (control names, `alt`, one `h1`, landmarks, `lang`) say nothing about whether reading order, sidebar announcement, or cell-run feedback actually work with a screen reader — still open, and stated as such.
 
-*Cost to change: nil to reverse — two CSS declarations and a class name.
-The value is not in the code, which is trivial, but in the three claims
-that are now tested and the one that is honestly still open.*
+*Cost to change: nil to reverse — two CSS declarations and a class name. The value is in the three claims now tested and the one left honestly open.*
 
 ---
 
-**7.96 — Five defects in 7.91 and 7.92, found by reviewing my own work
-before it merged.** Recorded because four of them were invisible to the
-tests that were meant to cover them, and one is the same mistake 7.92 was
-written about.
+**7.96 — Five defects in 7.91 and 7.92, found by reviewing my own work before it merged.** Four were invisible to the tests meant to cover them; one repeats the mistake 7.94 was written about.
 
-**The lookup offered ordinary words.** `termFor()` matched a selection
-against a term by plain substring, either way round — so selecting "and"
-offered *pandas*, and "excellent" offered *cell*. That is precisely the
-false-positive class that got prose-linking withdrawn one entry ago,
-arriving by a different door: 7.92 removed a feature for guessing wrong
-about ordinary words while 7.91 shipped one doing the same thing. Matching
-is now whole-word in both directions, with an exact match preferred, so
-selecting "running estimate" offers that rather than *estimate*.
+**The lookup offered ordinary words.** `termFor()` matched a selection against a term by plain substring, either way round — selecting "and" offered *pandas*, "excellent" offered *cell*: the same false-positive class that got prose-linking withdrawn (7.94), arriving through 7.93 instead. Matching is now whole-word in both directions, exact match preferred.
 
-**A page with few entries stayed filtered.** `renderReference()` hides the
-search box below six entries, and the lookup skipped setting its value in
-that case. `initReference()`'s observer clears the filter on close by
-reading that value, so such a page reopened still filtered to one term,
-with no visible box to clear it. The value goes in whether or not the box
-is shown.
+**A page with few entries stayed filtered.** `renderReference()` hides the search box below six entries, and the lookup skipped setting its value in that case; `initReference()`'s observer clears the filter on close by reading that value, so such a page reopened still filtered with no visible box to clear it. The value is now set whether or not the box shows.
 
-**The origin anchor could land in the bibliography.** `origin_anchor()`
-fell back to a term's first plain occurrence, searched over raw HTML —
-which matched the Metropolis and Ulam citation title and sent a reader
-looking for "Monte Carlo method" to *Where to Read More*, the one section
-that does not teach it. It now searches per `h2` section, over each
-section's text rather than its markup (a raw search also matches inside an
-`href`), and skips the bibliography outright.
+**The origin anchor could land in the bibliography.** `origin_anchor()`'s fallback searched raw HTML and matched a citation title, sending a reader looking for "Monte Carlo method" to *Where to Read More*. It now searches per `h2` section's text (not markup) and skips the bibliography.
 
-**A practice page resolved origins from the wrong directory.**
-`cumulative_glossary()` recursed with the *target* tutorial, so hrefs were
-computed relative to that tutorial's folder rather than the page the reader
-is on. Identical for a default practice page and its default tutorial, and
-one level short — a 404 — the moment either has a frozen release. The page
-being rendered is now passed down explicitly. A practice page's own
-tutorial's terms gained an origin as a side effect, which is right: on a
-practice page every term came from somewhere else.
+**A practice page resolved origins from the wrong directory.** `cumulative_glossary()` recursed with the target tutorial, computing hrefs relative to the wrong folder — a 404 once either page has a frozen release. The page being rendered is now passed down explicitly.
 
-**A regression test that tested nothing.** 7.93's narrow-screen test built
-its own `.dl-status` element and appended it *inside* `#dl-body`, where it
-inherited that element's `overflow-wrap` and passed with the `.dl-status`
-rule deleted. The real `#dl-status` is a sibling of `#dl-body` and inherits
-nothing from it. Worse, the check that "proved" the test caught a
-regression had reverted both rules at once, so the passing half was never
-isolated. The test now drives the real element and asserts it is outside
-`#dl-body`, so the day that stops being true the test says so rather than
-quietly going hollow.
+**A regression test that tested nothing.** 7.93's narrow-screen test appended its own `.dl-status` *inside* `#dl-body`, inheriting a rule that made it pass even with the real rule deleted — and the check meant to prove the test worked had reverted both rules at once, so the passing half was never isolated. The test now drives the real element, a sibling of `#dl-body`.
 
-*Cost to change: nil — this is the fix, not a decision. Worth an entry
-because the pattern is the point: two of the five were found only by
-running the thing in a browser and reading the values it produced, and one
-was a test agreeing with itself.*
+*Cost to change: nil — this is the fix, not a decision. Two of the five were found only by running the thing in a browser and reading its actual values; one was a test agreeing with itself.*
 
 ---
 
-**7.97 — Six defects the Worker migration (7.89) left behind, found by
-reviewing it after it merged.** Reviewing a merged PR is not the usual
-order, and it earned its place: the first of these makes both workspaces
-unusable until the page is reloaded.
+**7.97 — Six defects the Worker migration (7.89) left behind, found by reviewing it after it merged.** The first of these makes both workspaces unusable until the page is reloaded.
 
-**"Restart Python" wedged the tool it exists to unwedge.**
-`pyodide-engine.js`'s `restart()` terminated the worker and called
-`pendingRequests.clear()` — dropping the in-flight promises rather than
-rejecting them. No reply was ever coming, so an awaited `run-cell` never
-settled, the caller's `finally` never ran, and dewmini's `running` guard
-stayed set. Every later Run was ignored. Reproduced in a real browser
-against a locally served Pyodide: without the fix, Run All is left visibly
-`disabled` after a restart and nothing recovers it short of a reload; with
-it, a later cell runs. `restart()` now rejects what it drops. The engine is
-shared, so Mini IDE was exposed to the same path.
+**"Restart Python" wedged the tool it exists to unwedge.** `pyodide-engine.js`'s `restart()` terminated the worker and called `pendingRequests.clear()`, dropping in-flight promises rather than rejecting them — so an awaited `run-cell` never settled, and dewmini's `running` guard stayed set forever, ignoring every later Run. `restart()` now rejects what it drops. The engine is shared, so Mini IDE had the same bug.
 
-**Two follow-ons that only became reachable once it rejected.**
-`runAllCells()` reset each cell's Run button *after* its await with no
-per-cell `try`, so a rejection mid-batch unwound past that cell and left
-its button showing "running" — Mini IDE's own loop already had the guard.
-And `uploadFsFiles()` returned silently on a boot failure with a comment
-saying `ensurePyodide()` had reported it; the rewritten `ensurePyodide()`
-catches only the filesystem mount and lets a boot failure out, so an upload
-after one did nothing and said nothing.
+**Two follow-ons only reachable once it rejected.** `runAllCells()` reset each cell's Run button *after* its await with no per-cell `try`, so a mid-batch rejection left a button stuck showing "running." `uploadFsFiles()` returned silently on a boot failure it assumed was already reported elsewhere; a boot failure now propagates out.
 
-**An open output stream survived a re-render it should not have.**
-`applyOutputEvent()` looks the output element up fresh each event but
-caches the open `<pre>`. Reordering or inserting a cell mid-run replaces
-the output area underneath, and text then appended to the detached node
-vanished. Reachable precisely because the worker keeps the page responsive
-while a cell runs. A cached `<pre>` no longer inside the current output
-area is now treated as no open stream, and a fresh one is started.
+**An open output stream survived a re-render it should not have.** `applyOutputEvent()` caches the open `<pre>`, and reordering or inserting a cell mid-run replaces the output area underneath it, so appended text vanished into a detached node. A cached `<pre>` no longer in the current output area is now treated as no open stream.
 
-**Two documentation claims the migration falsified.** dewmini's Help panel
-listed `text_input`, `dropdown`, `button` and `image_input`, and
-`docs/DEWMINI.md` said they "work here exactly as they do on a tutorial
-page, since dewmini keeps Python in the main page" — which stopped being
-true the moment it did not. All four raise `RuntimeError` off the main
-thread (7.77's accepted gap, inherited here). That same document also still
-said a runaway cell had to be waited out, describing the absence of the
-button the PR added, and called the shared data folder empty when it holds
-three datasets. `docs/WRITING_TUTORIALS.md` was wrong the same way and is
-now explicit that the widgets error on the hosted site and work in a
-downloaded copy.
+**Two documentation claims the migration falsified.** dewmini's Help panel and `docs/DEWMINI.md` claimed the interactive widgets "work here exactly as they do on a tutorial page" and that a runaway cell had to be waited out — both false once execution moved off the main thread (widgets now raise `RuntimeError`, and a Stop button exists). Both docs corrected.
 
-**And `__name__` disagreed with itself.** The live page is seeded by the
-shared engine (`__dewlab__`); dewmini's standalone export carries its own
-seed and still said `__dewmini__`, so one notebook answered differently in
-the page and in the file downloaded from it. The export now matches.
+**And `__name__` disagreed with itself.** The live page is seeded `__dewlab__`; dewmini's standalone export still said `__dewmini__`. The export now matches.
 
-*Cost to change: nil — these are fixes. Recorded because of what the set
-has in common: every one of them was created by moving execution off the
-main thread, and none was caught by a test. Three needed a browser to see
-at all, and two were documentation that quietly became false while the code
-around it was correct.*
+*Cost to change: nil — these are fixes. Every one was created by moving execution off the main thread, and none was caught by a test; three needed a browser to see at all, and two were documentation that quietly became false while the code around it stayed correct.*
 
 ---
 
-**7.98 — Mini IDE is removed, not just retired.** 7.91 retired the
-hosted page but deliberately kept the app alive underneath: the renamed
-`assets/mini-ide-offline-app.html`, its `mini-ide.js`/`mini-ide-fs.js`/
-`mini-ide-style.css`, and `write_mini_ide_bundle()` still packaging them
-into a downloadable bundle — on the reasoning that dewmini had no
-offline distribution of its own yet, so retiring the only offline
-workspace would have been a real capability regression. 7.92 ended that
-reasoning by giving dewmini its own offline bundle; this entry acts on
-the expiry. The four asset files, the bundle function and its
-`site/download/mini-ide` output, the tombstone `docs/MINI_IDE.md`, and
-the two explainer docs for the deleted code (`mini-ide-js-explained.md`,
-`mini-ide-fs-explained.md`) are all gone, and every present-tense
-reference across code comments, docs, tests, the deploy workflow, and
-planning was reworded — a workspace that no longer exists should not
-keep turning up by name in the description of the one that does.
+**7.98 — Mini IDE is removed, not just retired.** 7.91 retired the hosted page but kept the app alive underneath, on the reasoning that dewmini had no offline distribution yet. 7.92 ended that reasoning by giving dewmini its own offline bundle; this entry acts on the expiry. The four asset files, `write_mini_ide_bundle()` and its output, the tombstone `docs/MINI_IDE.md`, and the two explainer docs for the deleted code are all gone, and every present-tense reference across code, docs, tests, and planning was reworded.
 
-**The redirect goes too — because there was never anyone to redirect.**
-The first draft of this removal kept `assets/mini-ide.html` as an
-instant redirect to `compose/dewmini.html`, on 7.91's own reasoning
-that an old bookmark or link should land somewhere useful. The person
-the site is for then supplied the fact that decides it: the site has
-not been deployed or shared with students, so no bookmark to the old
-URL exists anywhere but in this repository's own history. A redirect
-with no possible visitors is furniture, not continuity — removed, along
-with `build.py`'s copy of it to the site root. (If the URL had ever
-been shared, the redirect would have been the right call; the reasoning
-in 7.91 was sound and simply rested on a premise that turned out false.)
+**The redirect goes too — because there was never anyone to redirect.** 7.91 kept `assets/mini-ide.html` as a redirect on the reasoning that an old bookmark should land somewhere useful. The site has never been deployed or shared with students, so no such bookmark exists anywhere but this repository's own history — a redirect with no possible visitors is furniture, not continuity, and was removed. (Had the URL ever been shared, 7.91's reasoning would have been right; it simply rested on a premise that turned out false.)
 
-**Historical records stay historical.** `planning/MINI_IDE_REDESIGN.md`,
-`planning/MINI_IDE_AND_DEWMINI_NEXT.md` (which gained a fourth addendum
-recording this removal), `planning/DOCS_AND_COMMENTS_PASS.md`, and this
-log's own earlier entries keep their original wording — they describe
-what was true when written, which is the point of keeping them. Present-
-tense documents (`ARCHITECTURE.md`, `STATUS.md`, `ROADMAP.md`'s Phase 6
-records, the explainer docs, `CONTRIBUTING.md`'s examples) now describe
-one workspace.
+**Historical records stay historical** — the earlier planning docs and this log's own earlier entries keep their original wording; present-tense documents now describe one workspace.
 
-**Found while removing: the deploy guard never excluded dewmini's own
-bundle.** `.github/workflows/deploy.yml` counts the built downloadable
-copies against the built tutorial pages and excluded
-`site/download/mini-ide/` from that count — but not
-`site/download/dewmini/`, whose `index.html` and `compose/dewmini.html`
-(shipped since 7.92) land in the same find. The exclusion now names the
-bundle that actually exists.
+**Found while removing: the deploy guard never excluded dewmini's own bundle.** `.github/workflows/deploy.yml` excluded `site/download/mini-ide/` from its built-page count but not `site/download/dewmini/`, shipped since 7.92. Fixed to name the bundle that actually exists.
 
-*Cost to change: low — the deletions themselves are the easy half; the
-care was in the sweep, since nearly forty files mentioned the old
-workspace by name, and in deciding which mentions were history (kept)
-and which were descriptions of the present (reworded). With the site
-never deployed, nothing removed here was ever in anyone's hands: no
-bookmark breaks and no downloaded bundle exists outside this
-repository.*
+*Cost to change: low — the deletions are the easy half; the care was in the sweep, since nearly forty files mentioned the old workspace, and in deciding which mentions were history (kept) and which were description of the present (reworded). Nothing removed here was ever in anyone's hands.*
 
 ---
 
-**7.99 — dewmini becomes a workbench: tabs, two rails, and tools for
-looking at your own work.** Asked for directly: tabs, sidebars on both
-sides carrying file imports and "variable inspectors and other
-pedagogical tools", a fuller reference with search and category
-navigation on the left, data import from somewhere like Our World in
-Data, and a right-hand side moved away from settings and towards notes
-and pedagogy. Widgets — the one real capability gap — were explicitly
-deferred. `planning/DEWMINI_WORKBENCH.md` is the design; this entry is
-what was decided along the way.
+**7.99 — dewmini becomes a workbench: tabs, two rails, and tools for looking at your own work.** Asked for directly: tabs, sidebars on both sides carrying file imports and variable inspectors, a fuller reference with search and category navigation, data import, and a right-hand side moved from settings towards notes and pedagogy. Widgets — the one real capability gap — were explicitly deferred. `planning/DEWMINI_WORKBENCH.md` is the design; this entry is what was decided along the way.
 
-**The smallness rule is not abandoned, it is restated.** Every planning
-document dewmini has says it is the small one, and §3 of
-`MINI_IDE_AND_DEWMINI_NEXT.md` made "nothing that makes it bigger" its
-whole finding. That rule existed because dewmini had a larger sibling to
-be small *against*. 7.91 removed the sibling. A tool with no alternative
-cannot also refuse to grow, so the discipline becomes **quiet by
-default, everything one press away**: nothing new opens on a first
-visit, the notebook keeps the full width until a rail is asked for, and
-someone who came to check `6 * 7` sees exactly what they saw before.
-Every decision below was checked against that sentence.
+**The smallness rule is restated, not abandoned.** dewmini's planning docs all say it is the small one, small *against* Mini IDE — which 7.91 removed. A tool with no alternative cannot also refuse to grow, so the discipline becomes **quiet by default, everything one press away**: nothing new opens on a first visit, the notebook keeps full width until a rail is asked for.
 
-**Three panels across two edges, and the layout was already built.**
-Library (left) is what you look up; Workbench (right) is your own work;
-Settings keeps the right edge with the Workbench and stops being the
-headline — Notes and Files moved out of it, which is the substance of
-"make the right bar more into notes and pedagogical ideas". Help stopped
-being a panel and became Library sections, on `SIDEBAR_CONTENT.md` §4's
-own reasoning that extending a panel beats adding one. The mechanism
-needed almost nothing new: `tutorial-style.css` has carried
-`data-dl-panel-left`/`-right` with independent width variables since
-7.83, and dewmini had overridden it with a single attribute and one
-width — a fair simplification while both its panels docked right (7.84),
-and exactly wrong with a rail on each side. Deleting that override *is*
-the two-rail layout. Two smaller corrections fell out of it: a
-left-docked panel resizes with native CSS (it grows away from its own
-edge, which is why the right-docked ones need the JS handle), and a
-docked rail must not close on an outside click — dismiss-on-outside is
-right for a popover and wrong for a pane the page has made room for,
-where every click on your own code would shut the reference you opened
-to read while writing it.
+**Three panels across two edges, on a layout that already existed.** Library (left, what you look up), Workbench (right, your own work), and Settings (stays right, stops being the headline — Notes and Files moved out of it). Help became Library sections rather than its own panel. `tutorial-style.css` already carried independent left/right panel widths since 7.83; dewmini had collapsed that to one attribute while both its panels docked right — deleting that override *is* the two-rail layout. A docked rail must not close on an outside click, unlike a popover.
 
-**Tabs re-point one variable rather than rewriting the file.**
-`notebooks[]` holds `{id, name, cells}`; the module-level `cells` is not
-a copy of the active notebook's array but *is* that array, so every
-existing function kept working untouched. The cost is one real hazard —
-assigning `cells` alone detaches it, leaving edits landing in an array
-attached to nothing, visible until a tab switch silently reverts them —
-so `setCells()` is the only sanctioned way to swap them, and the e2e
-test covers exactly that round trip. Storage moved to
-`dewmini:notebooks:v1` with a one-way migration from the old bare array,
-tested, and the old key deliberately left in place rather than deleted:
-if the migration is ever wrong, the original is still there.
+**Tabs re-point one variable rather than rewriting the file.** `notebooks[]` holds `{id, name, cells}`; the module-level `cells` *is* that array, not a copy, so existing functions kept working untouched — at the cost of one hazard (assigning `cells` alone detaches it), guarded by making `setCells()` the only sanctioned way to swap. Storage moved to `dewmini:notebooks:v1` with a tested one-way migration, old key left in place as a fallback.
 
-**One Python session shared by every tab, made visible rather than
-silent.** Real Jupyter gives each notebook its own kernel. Doing that
-here means threading a namespace identifier through every engine call
-and across the worker boundary — a change to the shared engine, which
-7.97 established is a change to every surface that runs Python, and a
-poor trade to make overnight without the person it is for available.
-Instead the sharing is *shown*: the Workbench's Variables list is one
-session, and says so in plain words whenever a second tab exists. A
-student who defines `data` in one tab and finds it in another has been
-told and can see why. If it turns out to confuse people, the per-tab
-namespace is the fix and this paragraph is the brief for it.
+**One Python session shared by every tab, made visible rather than silent.** Giving each tab its own kernel would mean threading a namespace identifier through the shared engine and across the worker boundary — too large a change to make overnight. Instead the Workbench's Variables list says plainly that it is one shared session. If that confuses people, a per-tab namespace is the documented fix.
 
-**The reference drops the one rule the tutorial pages' own is built
-around, on purpose.** `REFERENCE_PANEL.md` §1 is emphatic that a reader
-must never be shown a term they have not been taught — a reference that
-spoils next week's function names is worse than none. That rule protects
-a reader's position in a sequence. dewmini's readers have no position in
-a sequence; that is what a workspace *is*. So
-`write_reference_index()` emits the union — 248 terms today, deduplicated
-on `(term, kind)`, grouped by the five kinds the schema already defines,
-searchable across terms and definitions, with category filters — from
-the same `own_glossary()` the tutorial pages use, so neither can drift.
-Each entry names the tutorial that introduced it but does **not** link
-to it: this file ships inside the offline bundle, which carries no
-tutorials, and a link that 404s for every offline reader is worse than a
-title that tells them where to look.
+**The reference drops tutorial pages' spoiler rule, on purpose.** `REFERENCE_PANEL.md` §1 protects a reader's position in a sequence; dewmini's readers have no such position. `write_reference_index()` emits the deduplicated union of all terms (248 today) from the same source the tutorial pages use. Each entry names its origin tutorial but does not link to it, since the offline bundle carries no tutorials.
 
-**The variable inspector is Python, not JavaScript.**
-`describe_globals()` walks `_page_globals` and returns plain
-`{name, type, summary, kind}` strings: it belongs where the namespace
-lives, nothing crosses the worker boundary as a proxy, and — the reason
-that matters most here — it is unit-testable under plain CPython, which
-the JavaScript half is not. Eleven unit tests cover it, including a
-value whose `__repr__` raises, because that is a bug in a student's own
-object and not a reason for every other variable to vanish from the
-panel.
+**The variable inspector is Python, not JavaScript.** `describe_globals()` walks `_page_globals` and returns plain strings — testable under CPython, and nothing crosses the worker boundary as a proxy.
 
-**Data: one claim this environment could not test, so it is not made.**
-The catalogue lists local and remote datasets with real source and
-licence, and writes working code into the notebook when picked. Remote
-fetching depends on the other site permitting it (CORS), and the sandbox
-this was built in blocks `ourworldindata.org` outright — the fetch could
-not be tried once. Twice already this repository has shipped an untested
-claim (7.92: two offline bundles that could not be opened at all), so
-`load_csv()` was extended to take a URL *and* to fail informatively —
-naming CORS, and pointing at the reliable route of downloading the file
-and adding it through Files — and `tests/MANUAL_CHECKLIST.md` carries
-the check nobody here could run.
+**Data: one claim this environment could not test, so it is not made.** The sandbox blocked `ourworldindata.org` outright, so remote fetching could not be tried; `load_csv()` was extended to fail informatively (naming CORS, pointing at downloading and importing via Files) and the untested check is logged in `tests/MANUAL_CHECKLIST.md`.
 
-**dewmini has e2e coverage for the first time.** Twelve tests driving
-real Chromium against a self-hosted Pyodide: tabs keeping their own
-cells across a switch, the migration from pre-tabs storage, both rails
-open at once, same-edge panels excluding each other, a rail surviving a
-click on your own code, reference search and kind filters, a dataset
-writing its own cell, and the inspector reading variables out of live
-Python. 7.96 and 7.97 were both rounds of defects in code that looked
-right and had no browser test; this is the answer to that, and it found
-one thing immediately — an empty cell container has zero height, so
-"visible" is not what a test should wait on.
+**dewmini has e2e coverage for the first time** — twelve browser-driven tests, which immediately found that an empty cell container has zero height, so "visible" is not what a test should wait on.
 
-*Cost to change: substantial and mostly additive — ~900 lines across
-dewmini's three files, one build step, one shared-engine message, and a
-vendored CodeMirror addition for find-and-replace. The risk concentrates
-in two places: the `cells` aliasing above, and the shared engine, where
-`describeGlobals()` follows the existing `page-names` path exactly
-rather than inventing a second shape. Everything else is a panel that
-either renders or does not.*
+*Cost to change: substantial and mostly additive — ~900 lines across dewmini's three files, one shared-engine message, a vendored CodeMirror addition. Risk concentrates in the `cells` aliasing and the shared engine, where the new message follows an existing path exactly rather than inventing a second shape.*
 
 ---
 
-**7.100 — Ordinary Python HTTP code works here now, and `https` was never
-the thing that was missing.** Prompted by a real failure on the live site:
-pasting Our World in Data's own copy-this-to-fetch snippet into a cell gives
-`urllib.error.URLError: <urlopen error unknown url type: https>` in 8ms. That
-message is accurate and useless, and the snippet is the obvious thing to
-try, since it is the button on their page.
+**7.100 — Ordinary Python HTTP code works here now, and `https` was never the thing that was missing.** Prompted by a real failure on the live site: pasting Our World in Data's own fetch snippet gives `urllib.error.URLError: unknown url type: https` in 8ms.
 
-**Two claims I made about this were wrong, and the correction is the
-entry.** I said `requests` "isn't available and can't be", and that reading
-a URL with pandas could not work in a browser. Both false. Pyodide ships
-`requests`, `httpx`, `aiohttp`, `urllib3` *and* `pyodide-http`, whose entire
-job is to reroute Python's HTTP machinery through the browser's own
-fetching. They are simply not loaded at boot. Tested in a real browser
-against a local server: after `pyodide_http.patch_all()`, the snippet works
-**verbatim**, `storage_options` and all.
+**Two claims I made about this were wrong.** I said `requests` "isn't available and can't be," and that reading a URL with pandas could not work in a browser. Both false: Pyodide ships `requests`, `httpx`, `aiohttp`, `urllib3`, and `pyodide-http` (which reroutes Python's HTTP machinery through the browser's own fetching) — simply not loaded at boot. Tested in a real browser: after `pyodide_http.patch_all()`, the snippet works verbatim.
 
-**The fix is 9.6 KB, so it is on by default.** `pyodide-http` alone —
-without `requests`, which drags ~470 KB of certifi/urllib3/idna behind it —
-is enough to make `pandas.read_csv(url)` work, because pandas goes through
-`urllib` and the patch covers `urllib`. Loaded and applied at boot in both
-engine paths (`NETWORK_PATCH_SOURCE`), wrapped in try/except so a vendored
-Pyodide built before this existed still boots, just without the
-convenience. Added to `dev/fetch_pyodide.py`'s baseline so new offline
-bundles carry it.
+**The fix is 9.6 KB, so it is on by default.** `pyodide-http` alone (without `requests`, ~470 KB heavier) is enough to make `pandas.read_csv(url)` work, since pandas goes through `urllib`. Loaded at boot in both engine paths, wrapped in try/except so an older vendored Pyodide still boots without it.
 
-**`https` was never unavailable — Python just had no handler for it.**
-Worth stating plainly because the error implies otherwise, and because it
-is a thing students are taught to care about. A Pyodide build ships no TLS
-library, so `urllib` registers no HTTPS handler and rejects the scheme
-before any connection is attempted. That is not the absence of encryption;
-it is the absence of Python's *own* encryption. Through the patch the
-browser performs the TLS, with its own certificate validation and its own
-trust store — the same one it uses for every other site. Verified rather
-than reasoned: a real TLS server with a real certificate, and Chromium
-pinned to that one certificate by public-key fingerprint (rather than told
-to ignore certificate errors, which would have proved nothing).
-`pd.read_csv("https://…")` and `await load_csv("https://…")` both read it.
+**`https` was never unavailable — Python had no handler for it.** A Pyodide build ships no TLS library, so `urllib` rejects the scheme before any connection is attempted; that is the absence of Python's *own* encryption, not of encryption. Through the patch, the browser performs the TLS with its own certificate validation — verified against a real TLS server with Chromium pinned to that one certificate by fingerprint, not told to ignore certificate errors.
 
-**The cost, named: a hung request cannot be stopped.** The patched path is
-synchronous inside the Worker, so it blocks the interpreter while waiting.
-Tested: the Run button correctly offers Stop, and pressing it does nothing
-— eight seconds later the cell is still waiting. Before this change that
-request failed instantly instead, so this is a new way to be stuck. Taken
-anyway, because "instant unhelpful failure" is not better than "works, and
-a slow server can hang you", and because the async route
-(`await load_csv(url)`) does not block and remains what the docs lead with.
-A timeout on the patched path is the obvious follow-up and is not done.
+**The cost, named: a hung request cannot be stopped.** The patched path is synchronous inside the Worker, so Stop does nothing while it waits — a new way to be stuck, traded for because "instant unhelpful failure" is not better than "works, but a slow server can hang you." The async route (`await load_csv(url)`) does not block and remains what the docs lead with. A timeout on the patched path is the obvious follow-up, not done.
 
-**Errors that are about the browser now say so.** `_ERROR_HINTS` in
-`tutorial_tools.py` matches a small, deliberately short list of failures
-whose Python message explains nothing a student can act on, and appends a
-plain-English note under the traceback — under, not instead of, so the real
-error is still findable. Two entries today, both about reaching the network.
-The import scanner gained the same libraries, so a pasted notebook is
-warned before it runs rather than after.
+**Errors that are about the browser now say so.** `_ERROR_HINTS` matches a short list of failures with an unhelpful Python message and appends a plain-English note under the traceback.
 
-*Cost to change: small in code, wide in reach — this touches the shared
-engine's boot, so it changes tutorial pages too. Justified on the same
-grounds: a tutorial cell hits the identical wall.*
+*Cost to change: small in code, wide in reach — this touches the shared engine's boot, so it changes tutorial pages too, justified on the same grounds: a tutorial cell hits the identical wall.*
 
 ---
 
-**7.101 — The reference's categories are derived, never tagged; and the
-rail's smallest text gets a floor.** Three asks in one message, all of them
-about the Library rail: a topics row that drops down without covering what
-it filters, a check that the whole rail obeys the Texture slider, and — the
-one that changed the design — "the layers are actually a great proxy for
-beginner intermediate advanced! That way if we change the tree later (which
-we inevitably will) it automatically changes the search."
+**7.101 — The reference's categories are derived, never tagged; and the rail's smallest text gets a floor.** Three asks about the Library rail, the one that changed the design being: "the layers are actually a great proxy for beginner/intermediate/advanced... if we change the tree later it automatically changes the search."
 
-**That is the whole scheme, and it is better than what it replaced.** The
-first pass had subject and level as things someone would maintain. Reading
-them off data that already exists means they cannot drift from the thing
-they describe:
+**That is the whole scheme.** The first pass had subject and level as hand-maintained fields. Now:
+- **Subject** comes from the learning-outcome code *prefix* a tutorial already claims in `covers:` (not `strand`, which cuts across the maths/computing line). Tutorials claiming outcomes from both sides are filed under both — not a fudge, since a term introduced there genuinely belongs to both.
+- **Level** comes from `topic_tiers()`, the prerequisite depth of the `needs:` graph — nothing hand-tagged, so rearranging the tree re-files every term on the next build with nobody retagging anything. A test rebuilds after sliding groundwork under a topic and checks a term moves tiers.
 
-- **Subject** comes from the learning-outcome codes a tutorial already
-  claims in `covers:`. The *prefix* is the key and `strand` is not: PDP-LO2
-  ("algorithms") shares a strand with several MIT outcomes, so strands cut
-  across the maths/computing line rather than along it. MIT is the maths
-  module; PDP and CMPS are the computing ones. Seven tutorials claim an
-  outcome from each side and are filed under both, which is not a fudge to
-  avoid choosing — a term introduced there genuinely belongs to both.
-- **Level** comes from `topic_tiers()`, the prerequisite depth of the
-  `needs:` graph. Nothing is hand-tagged, so rearranging the tree re-files
-  every term on the next build with nobody having retagged anything. There
-  is a test that does exactly that: slide three layers of groundwork under
-  a topic, rebuild, watch a term move from beginner to advanced while its
-  tutorial is untouched.
+**Deepest outcome, not shallowest.** `min()` was tried first and rated a tutorial by its easiest moment, putting 150 of 222 terms in "beginner." Erring deep is the kinder error; bands at ≤2/≤3 tiers give a real spread (22/16/5 tutorials) where the obvious ≤1/≤3 alternative collapses to 10/28/5.
 
-**Deepest outcome, not shallowest.** `min()` was tried first and is worse in
-both directions: it rates a tutorial by its easiest moment, which put 150 of
-222 terms in "beginner", and it would cheerfully tell someone in week one
-that a tutorial needing four layers of groundwork is approachable. Erring
-deep is the kinder error. Bands at ≤2 / ≤3 against the real spread
-(22/16/5 tutorials); the obvious alternative ≤1 / ≤3 collapses to 10/28/5,
-which makes "intermediate" mean almost everything and so mean nothing.
+**A tutorial claiming no outcomes is left unfiled, not guessed at** — "Unfiled" is offered as a value of its own so those terms stay reachable.
 
-**A tutorial claiming no outcomes is left unfiled, not guessed at.** Two
-real ones do, plus every practice page. The row offers "Unfiled" as a value
-of its own, so those terms stay reachable instead of vanishing the moment
-any subject is chosen.
+**The topic row is a `<details>` in the normal flow, not a popover**, so opening it pushes the list down rather than covering it — tested by measuring the row's bottom edge against the list's top edge. Subject and level stay on the surface; topic and kind fold away, with the summary reporting its own state ("Topics · 1 on").
 
-**The topic row is a `<details>` in the normal flow, not a popover.** Asked
-for directly — it must not cover the results. So opening it pushes the list
-down, and there is a test that measures the row's bottom edge against the
-list's top edge rather than trusting a screenshot. Subject and level stay on
-the surface because they are the two anyone reaches for; topic and kind fold
-away because they are longer rows that would push the results off-screen
-before a reader had seen any. A folded row that is silently filtering is a
-trap, so the summary reports its own state ("Topics · 1 on").
+**The group list is read off the data too** — found by a test: the topic row was drawing from a hand-kept list of group keys that would silently miss a new group. Curated short labels stay as an *override*; an unlabelled group's key is turned back into words, a visible prompt to name it.
 
-**The group list is read off the data too — found by a test, not by
-reading.** The topic row was drawing from a hand-kept list of group keys in
-`dewmini.js`, which meant a group added to `topic-groups.yaml` would get no
-chip and nobody would notice. That is precisely the drift the rest of this
-entry is about, arriving through the one door left open. The curated short
-labels stay (the file's own names are page headings — "Trigonometry —
-triangles, circles, and waves" — and far too long for a chip), but they are
-now an *override*: the groups themselves come from the entries, and an
-unlabelled one gets its key turned back into words, which is a visible
-prompt to come and name it.
+**"A bit small for tired eyes" was measurably right.** At the old 15px floor, filter chips rendered at 10.2px. The slider minimum moves to 16px and small labels take a `max(…, 12px)` floor. A sweep test walking every element in the rail (not just the four just changed) found five more elements below the floor.
 
-**"A bit small for tired eyes" was right, and measurably so.** The rail does
-scale with the slider — everything is in `rem` off `--dl-font-size` on
-`html`, which was already true — but at the old floor of 15px the filter
-chips rendered at 10.2px, the kind badge at 9.6px. The slider minimum moves
-to 16px and the small labels take a `max(…, 12px)` floor.
-
-**The sweep found five more than the eyeball did.** Checking the four
-elements I had just changed said the job was done. A test that walks *every*
-element in the rail and reports the smallest computed size found `<kbd>` at
-10.6px, `<code>` inside a panel note at 11.6px, the "from the web" badge at
-11px, and the rail's own section heading at 11.5px — all `em` sizes
-compounding inside an already-small container, which is the failure mode
-eyeballing is worst at. That sweep is now the test, so the floor holds for
-anything added later rather than for the five things that were looked at
-today.
-
-*Cost to change: small. The bands are one tuple; the subject map is one
-dict; the disclosure is one `<details>`. What would be expensive is going
-back to hand-tagging, which is the point.*
+*Cost to change: small. The bands are one tuple; the subject map is one dict; the disclosure is one `<details>`. Going back to hand-tagging would be the expensive direction.*
 
 ---
 
-**7.102 — The boot patch was not universal, and the toolbar had two buttons
-for one job.** Two asks in one message, plus main moving underneath.
+**7.102 — The boot patch was not universal, and the toolbar had two buttons for one job.**
 
-**The networking patch reached two of four boot paths, not four.** 7.100
-said ordinary Python HTTP code "works here now"; Josh asked whether that was
-true of the whole application, and it was not. dewlab starts Pyodide in four
-places, and the patch had been added to the two I was looking at:
+**The networking patch (7.100) reached two of four boot paths, not four.** dewlab starts Pyodide in four places; the patch had only reached the hosted worker path and dewmini's no-worker fallback. Missed were `tutorial-runtime.js`'s own `bootMainThread()` — used by **a downloaded tutorial** — and `compose/dewmini.js`'s export template — used by **an exported notebook**: the worst possible place to miss, since those are exactly the copies opened with no second machine to compare against. Fixed in both, same try/except guard. Verified against a real downloaded export reading `https://` from a real, certificate-pinned TLS server.
 
-| Boot path | Used by | Had the patch |
-|---|---|---|
-| `pyodide-worker.js` `boot()` | every hosted page | yes |
-| `pyodide-engine.js` `bootMainThread()` | dewmini with no Worker | yes |
-| `tutorial-runtime.js` `bootMainThread()` | **a downloaded tutorial** | no |
-| `compose/dewmini.js`'s export template | **an exported notebook** | no |
+**The lesson is about how the gap was found:** not by reading the diff, but by being asked whether the claim held everywhere, then enumerating every `loadPyodide(` in the repository instead of every one remembered. "Is this universal?" is a different question from "is this right?"
 
-Both misses are the *downloadable* copies — which is the worst possible
-place for them, not an acceptable one. A downloaded tutorial is the copy
-someone opens on a train with no second machine to compare against, and an
-exported notebook is the file a reader sends to somebody else. A cell that
-read a URL perfectly well on the hosted site would have failed with the
-same "unknown url type: https" in both, after every other surface had
-stopped saying it. Fixed in both, wrapped in the same try/except so a
-Pyodide without the package still boots.
+**The toolbar's Python and Text buttons are gone** — the seams between cells already add a cell, where you're looking, so two buttons for the same action was one too many. The freed space takes **See an example** and **Start with imports**, previously findable only in the empty-notebook block and so invisible after the first cell.
 
-Verified rather than reasoned, because the claim being corrected here was
-itself reasoned: a real downloaded export, served from disk, booting its own
-Pyodide, reading `https://` from a real TLS server with Chromium pinned to
-that one certificate by public-key fingerprint. Two rows, two columns, over
-a connection whose certificate was actually checked.
+**Which exposed a hole:** the first seam was suppressed over an empty notebook (a seam with nothing on either side looks like debris), which with the toolbar gone would have left no way to start a *blank* cell. The seam is now drawn from the start.
 
-**The lesson is about how the gap was found.** It was not found by reading
-the diff — I wrote the diff. It was found by Josh asking whether the claim
-held everywhere, and then by enumerating every `loadPyodide(` in the
-repository instead of every one I remembered. "Is this universal?" is a
-different question from "is this right?", and the second does not answer
-the first.
+**And a fixture bug main exposed:** a test fixture guarded a Pyodide override with `if "DEWLAB_PYODIDE_BASE" not in html`, satisfied merely by a code *comment* mentioning the name, silently disabling the injection. Fixed to match the actual assignment and assert the result — a guard a sentence can satisfy is not a guard.
 
-**The toolbar's Python and Text buttons are gone.** Also Josh's, and
-correct: the seams between cells already add a cell, and add it where you
-are looking rather than at the end of a page you then scroll back up. Two
-buttons for the same action, one of them worse, is one button. The freed
-space takes **See an example** and **Start with imports**, which previously
-lived only in the empty-notebook block and so vanished the moment a reader
-had a single cell — the two openings hardest to find were the two only
-findable before you needed them.
-
-**Which exposed a hole the change would have left.** The first seam was
-suppressed over an empty notebook, on the reasoning that a seam with
-nothing on either side looks like debris. With the toolbar buttons gone
-that would have left no way at all to start a *blank* cell — only "Start
-with imports", which arrives with three lines in it. The seam is now drawn
-from the start, which is also the better teaching: the affordance a reader
-uses for every cell after the first is the one they meet for the first.
-
-**And a fixture bug that main exposed.** The dewmini e2e fixture pointed the
-page at a locally staged Pyodide only `if "DEWLAB_PYODIDE_BASE" not in
-html`. PR #91 added a comment to `compose/dewmini.html` explaining what that
-override does — containing the name — so the guard was satisfied by prose,
-the injection silently stopped, and every test that runs Python failed
-against a CDN this sandbox blocks. It now matches the assignment and
-asserts the result, because a guard that a sentence can satisfy is not a
-guard. Worth recording as its own mistake: the failure looked exactly like
-a regression from the toolbar change, and treating it as one would have
-meant "fixing" working code.
-
-*Cost to change: small. Two four-line boot additions, one markup move, and
-one deleted conditional.*
+*Cost to change: small. Two four-line boot additions, one markup move, one deleted conditional.*
 
 ---
 
-**7.103 — Both rails drag the same way, and a width someone chose survives
-the reload.** Josh asked whether the side rails are resizable, "so that one
-could work split screen if one wanted to". They were — and measuring it
-found two reasons the answer was worse than yes.
+**7.103 — Both rails drag the same way, and a width someone chose survives the reload.** Asked whether the side rails are resizable "so one could work split screen" — they were, and measuring found the answer was worse than yes.
 
-**Two rails, two different affordances.** The right-docked panels got the
-full-height drag strip 7.84 built for them, because native CSS `resize:
-horizontal` is unusable there: its grip sits at the box's bottom-right
-corner, flush with the browser window's own right edge, with no room to drag
-outward. The left-docked ones — dewmini's Library, and a tutorial page's
-Reference and Series nav — were left on native resize, because for them it
-*works*: a left-docked panel grows rightward, into the page.
+**Two rails, two different affordances, unified into one.** The right-docked panels had a full-height drag strip (native `resize: horizontal`'s grip sits flush with the browser's own edge there, unusable); the left-docked ones were left on native resize, which genuinely works for a panel growing rightward into the page — but native resize is a small corner triangle, not findable next to the strip's obvious full-height highlight. `makeRightEdgeResizable` becomes `makeEdgeResizable(panel, side, …)`, and native resize is gone from both files.
 
-Working is not the same as findable. Native resize is a small triangle in
-one corner; the strip is the full height of the panel and highlights on
-hover. So one page offered two ways to drag a panel wider, one of them
-plainly better, and which one you got depended on an implementation detail
-about which edge the panel happened to be pinned to. `makeRightEdgeResizable`
-becomes `makeEdgeResizable(panel, side, …)`, the sign of the drag flips with
-the side, and the native grips are gone from both files.
+**The strips were hung outside their panels, losing half their width.** The handle sat straddling the panel's edge, but a docked panel is a scroll container that clips absolutely-positioned children to its padding box — half of every strip was being thrown away. It worked by luck on the right (the clip's leading edge is inclusive) and not on the left, where the first drag test moved nothing; hit-testing the strip's midpoint returned the panel itself, which named the cause. Both strips now sit flush inside the edge. Nearly missed because the DOM, class, and CSS all looked right — only a real pointer drag showed it doing nothing.
 
-**And the strips were hung outside their panels, losing half their width.**
-The handle sat at `left: -3px`, straddling the panel's edge — but a docked
-panel is a scroll container (`overflow-y: auto`), which clips absolutely
-positioned children to its padding box. Half of every strip was being thrown
-away, and the surviving half ended exactly on the boundary. On the right
-edge that still worked by luck: the leading edge of a clip is inclusive. On
-the new left-edge variant it did not, and the first drag test moved nothing
-at all. Hit-testing the strip's midpoint returned the *panel*, which is what
-named the cause. Both strips now sit flush inside the edge.
+**A width nobody remembers is not a split screen.** `saveSidebarState()` stored only which rail was open, not how wide it had been dragged, so a rail pulled to half the screen snapped back on reload. It now stores and restores a width per panel.
 
-Worth keeping because of how it was nearly missed: the strip was in the DOM,
-the class was right, the CSS was right, and the geometry printed correctly.
-Only a real pointer drag showed it doing nothing.
+**Measured rather than asserted**, at 1440px: Library at 560px and Workbench at 612px leave the notebook column at 191px with no overlap — 1363 of 1440px accounted for.
 
-**A width nobody remembers is not a split screen.** `saveSidebarState()`
-stored which rail was open and not how wide it had been dragged, so a rail
-pulled out to half the screen snapped back on the next load. It now stores a
-width per panel and applies them before reopening, so a restored rail opens
-at its own size rather than opening small and jumping.
-
-**Measured rather than asserted**, on a 1440px viewport: with the Library at
-560px and the Workbench dragged to 612px, the notebook column sits at x=598
-with width 191 — no overlap on either side, the three of them accounting for
-1363 of 1440px. Split screen works in the sense the question meant.
-
-*Cost to change: small, and it deletes more than it adds — one shared
-function in place of two, and three `resize: horizontal` declarations gone.*
+*Cost to change: small, and it deletes more than it adds — one shared function in place of two, three `resize: horizontal` declarations gone.*
 
 ---
 
-**7.104 — The union reference is settled, on a better reason than the one I
-gave for it.** 7.99 and `DEWMINI_WORKBENCH.md` §4 dropped the tutorial
-Reference panel's rule (`REFERENCE_PANEL.md` §1: never show a reader a term
-from a tutorial they have not reached) and flagged it as Josh's to overrule.
-He has confirmed it, and his reasoning is the stronger of the two:
+**7.104 — The union reference is settled, on a better reason than the one I gave for it.** 7.99 dropped the tutorial Reference panel's spoiler rule for dewmini and flagged it as Josh's to overrule. He confirmed it, on stronger reasoning: *"we just don't know what the student will be doing when they open dewmini... maybe they have done all the tutorials online and we just can't see them?"*
 
-> *"we just don't know what the student will be doing when they open
-> dewmini? Maybe they have done all the tutorials online and we just can't
-> see them?"*
+My argument was about dewmini's nature — a workspace with no position in a series has no position to protect. His is about the reader's: the spoiler rule assumes the page knows where its reader has got to, which dewmini cannot know, since nothing is tracked anywhere (a deliberate property of the whole project). Hiding two thirds of the reference would mean guessing, wrongly, against a reader who may have finished the course.
 
-My argument was about **dewmini's** nature — a workspace has no position in
-a series, so there is no position to protect. His is about the **reader's**,
-and it is the one that actually decides the case: the spoiler rule assumes
-the page knows where its reader has got to. A tutorial page does know, from
-its own position in the series. dewmini cannot know. Nothing is recorded
-anywhere — no accounts, no server, no tracking (a deliberate property of
-this whole project) — so "what has this person been taught" is not a fact
-dewmini has access to, and hiding two thirds of the reference would mean
-guessing it, wrongly, against a reader who may well have finished the
-course.
+Worth recording because it changes what would reopen this: under my reasoning, revisiting would follow from dewmini becoming more curriculum-shaped; under his, it only reopens if dewmini gains a way to *know* a reader's progress — which would mean tracking them, refused on other grounds entirely. Settled harder than I had it.
 
-Worth writing down because it changes what would reopen this. Under my
-reasoning, the decision would be up for revisiting if dewmini ever became
-more curriculum-shaped. Under his, it only reopens if dewmini gains a way to
-*know* where a reader has got to — which would mean tracking them, which
-this project has refused on other grounds entirely. So this is settled
-harder than I had it.
-
-*Cost to change: unchanged — one function, and both behaviours are tested.
-But the reason to change it is now much narrower.*
+*Cost to change: unchanged — one function, both behaviours tested. The reason to change it is now much narrower.*
 
 ---
 
-**7.105 — A stale-output marker, strict from the start.** A dewmini
-proposal ("Five Jupyter features worth having in dewmini") argued for two
-paired features: execution counters (the `In [3]` numbers) and a marker
-for when a cell's output no longer matches its code. Josh asked to leave
-the counters out for now; the marker does not actually need them — it only
-needs to remember what a cell's content looked like the moment it last
-ran, and compare that to what is on screen now — so it ships on its own.
+**7.105 — A stale-output marker, strict from the start.** A proposal paired this with execution counters; Josh asked to leave the counters out, and the marker doesn't need them — it only needs to remember what a cell's content looked like when it last ran and compare that to what's on screen now.
 
-**Any difference counts, whitespace included.** The proposal flagged this
-as an open question: is `answer = 42` vs `answer  = 42` really "edited
-since last run"? I started strict, per the proposal's own recommendation,
-because the alternative — diffing after some kind of normalisation — is a
-judgement call about what counts as a "real" change, and a wrong judgement
-there hides a genuine edit rather than merely annoying someone over a
-harmless one. If this turns out to be noisy in practice (a reader
-reflowing a paragraph in a docstring, say), loosen it then, with a reason
-in hand rather than a guess.
+**Any difference counts, whitespace included.** Started strict, per the proposal's own recommendation: normalising before comparing is a judgement call about what counts as a "real" change, and a wrong judgement there hides a genuine edit rather than merely annoying someone over a harmless one. Loosen it later, with a reason in hand, if it turns out noisy.
 
-**The marker does not survive a reload, on purpose.** `ranContent` is
-never written to `saveState()`'s serialized shape and never read back by
-`readCells()` — the same treatment `lastRunMs` and (had it shipped)
-`execution_count` would get, for the same reason: nothing a cell's Python
-actually *did* survives a reload either, since the interpreter itself does
-not. A marker that persisted would claim a fact about a session that no
-longer exists.
+**The marker does not survive a reload, on purpose.** `ranContent` is never written to or read back from saved state, the same treatment `lastRunMs` gets — nothing a cell's Python actually *did* survives a reload either, since the interpreter doesn't. A marker that persisted would claim a fact about a session that no longer exists.
 
-*Cost to change: small — one field on the cell object, one comparison
-function, one CSS rule.*
+*Cost to change: small — one field on the cell object, one comparison function, one CSS rule.*
 
 ---
 
-**7.106 — Run above/below, behind a menu rather than two more buttons.**
-The same proposal's third feature: run every cell from the top through a
-given one, or that cell and everything after it — the practical repair
-once a reader notices (from 7.105's marker, or just experience) that a
-cell's output no longer matches what is above it.
+**7.106 — Run above/below, behind a menu rather than two more buttons.** The practical repair once a reader notices (via 7.105's marker, or experience) that a cell's output no longer matches what's above it.
 
-**The mechanics were mostly already there.** `runAllCells()` already did
-the whole job — the batch loop, the per-cell Stop-button state, the error
-tally — just always over every Python cell and always after a namespace
-reset. It is now `runCellBatch()`, parameterised on which cells and
-whether to reset first, with `runAllCells()`/`runAbove()`/`runBelow()` as
-its three callers.
+**The mechanics mostly already existed.** `runAllCells()` already did the batch loop, per-cell Stop-button state, and error tally — always over every cell and always after a reset. It became `runCellBatch()`, parameterised on which cells and whether to reset first, with `runAllCells()`/`runAbove()`/`runBelow()` as its three callers.
 
-**The one real risk was getting `reset` backwards.** "Run above" resets
-the namespace first, the same as "Run all" — the point of running from the
-top is that what is on screen matches what the code actually did, which a
-lingering value from a previous run could quietly fake. "Run below" must
-not: its entire reason to exist is keeping what the cells above it already
-defined, so resetting first would erase exactly the state it was built to
-preserve. Written down because getting this one boolean backwards would
-have shipped a feature that silently destroys work rather than saves it.
+**The one real risk was getting `reset` backwards.** "Run above" resets the namespace first, like "Run all," so what's on screen matches what the code actually did; "Run below" must not, since its entire purpose is keeping the state the cells above it already built. Getting this boolean backwards would have shipped a feature that silently destroys work.
 
-**Where the controls went.** `.dm-cell-actions` had its Python/Text
-buttons removed only recently, as duplicates of the insert seams (7.102) —
-adding two more always-visible icons per cell would cut straight back
-against that. Both options live behind one "⋯" toggle instead, opened and
-closed the same way `armDeleteButton()`'s outside-click already works: a
-document-level listener added only while the menu is open and removed the
-moment it closes, rather than one kept alive for the cell's whole
-lifetime — with a menu on every cell, an unremoved listener would be a
-real per-cell leak, not a theoretical one. The cost is one extra click to
-reach either option; the alternative the proposal raised, keyboard-only
-shortcuts, would have traded that for a beginner-facing tool learning
-Jupyter's own trapdoor (see this file's "Two I would argue against", still
-true and unrelated to this entry).
+**Where the controls went:** both options live behind one "⋯" toggle rather than two more always-visible icons (which would cut against 7.102's own recent removal of duplicate buttons), using the same open-while-active, remove-on-close outside-click pattern `armDeleteButton()` already uses — needed here since a menu on every cell makes an unremoved listener a real leak, not theoretical.
 
-*Cost to change: small-to-medium. The batch runner is one function used
-three ways; the menu is self-contained and does not touch anything else
-`.dm-cell-actions` already had.*
+*Cost to change: small-to-medium. The batch runner is one function used three ways; the menu is self-contained.*
 
 ---
 
-**7.107 — Maths in dewmini text cells: a second implementation, on
-purpose, and the offline bundle takes the weight.** The same proposal's
-largest item, and the one it explicitly flagged as needing a decision
-first. `$x^2 + 3x$` in a dewmini text cell now renders as maths, the way
-it already does in a tutorial.
+**7.107 — Maths in dewmini text cells: a second implementation, on purpose, and the offline bundle takes the weight.** `$x^2 + 3x$` in a dewmini text cell now renders as maths, the way it already does in a tutorial.
 
-**Ported, not called.** Tutorial maths runs through `build.py`'s
-`extract_math()`/`render_math()` — Python, at build time, working on
-python-markdown's input. dewmini's text cells run through
-`renderDocMarkdown()` — JavaScript, at read time, a small hand-written
-renderer that is not python-markdown at all. There was no function to
-reuse, only the pattern: `extractDocMath()` in `compose/dewmini.js` lifts
-`$…$`/`$$…$$` out into the same bare-alphanumeric placeholder scheme
-(`dlmath0z`, `dlmath1z`, …) *before* `renderDocMarkdown()`'s own line-by-
-line pass runs, for the same reason `extract_math()`'s own comment gives:
-`$a_i$` loses its underscore to `renderDocInline()`'s emphasis rule
-exactly the way it loses it to python-markdown's, if the parser sees the
-raw TeX at all.
+**Ported, not called.** Tutorial maths runs through `build.py`'s Python, build-time `extract_math()`/`render_math()` against python-markdown's input; dewmini's text cells run through a hand-written JavaScript renderer, `renderDocMarkdown()`, not python-markdown at all — there was no function to reuse, only the pattern. `extractDocMath()` lifts `$…$`/`$$…$$` into the same placeholder scheme *before* the markdown pass runs, for the same reason the Python side does: an underscore inside TeX is otherwise eaten by an emphasis rule.
 
-**This is a second maths renderer, and that is a deliberate, narrow
-choice — not an oversight.** The proposal's own §5 lays out that dewlab
-already has at least three markdown surfaces outside the tutorial
-pipeline (dewmini text cells, the authoring editor's Milkdown/KaTeX, and —
-this session's own finding, which the proposal's enumeration missed —
-`assets/tutorial-runtime.js`'s own copy of `renderDocMarkdown()`, ported
-from dewmini's for a *reader's own* cells inside a tutorial page), and asks
-whether dewlab should converge on one client-side renderer the build also
-targets. That refactor is not this change. Shipping the smaller, proven
-thing first — with this entry naming it plainly as a second
-implementation — means the unification question gets decided with two
-working examples in hand instead of zero. `assets/tutorial-runtime.js`'s
-own copy stays exactly as unaware of maths as it already is; if it needs
-the same treatment, that is the follow-up, not a silent gap in this one.
+**A second maths renderer, and that is a deliberate, narrow choice.** dewlab already has at least three markdown surfaces outside the tutorial pipeline (including a fourth found in this session's own audit: `tutorial-runtime.js`'s copy of `renderDocMarkdown()`, for a reader's own cells on a tutorial page, which stays unaware of maths). Whether to converge on one client-side renderer is a real open question this smaller, proven change deliberately defers rather than answers blind.
 
-**KaTeX's stylesheet loads unconditionally; its 266 KB renderer does
-not.** Tutorial pages already make this exact trade in `assets/shell.html`
-(1.8) — the 23 KB CSS is cheap enough to always pay, the JS is not.
-dewmini has no manifest to gate the JS on at build time (a cell's content
-is not decided until a reader writes it), so the gate here is behavioural
-instead: `loadKatexRenderMath()` fetches the bundle the first time
-`renderMathsIn()` finds a `.dl-math` span to render, and never before, and
-never again after. A notebook with no maths in it never pays for either
-KaTeX file beyond the CSS.
+**KaTeX's stylesheet loads unconditionally; its 266 KB renderer does not.** dewmini has no manifest to gate the JS on at build time, so the gate is behavioural: `loadKatexRenderMath()` fetches the bundle the first time a `.dl-math` span actually needs rendering, and never before.
 
-**The offline bundle takes the ~590 KB.** `DEWMINI_ASSET_FILES`
-(`build.py`) used to carry a comment saying, correctly at the time,
-"dewmini renders no maths" as the reason `vendor/katex.min.css` was
-missing from the downloadable copy. That comment is now false, and the
-proposal named the trade this reopens plainly: lazy loading only helps a
-classroom *with* a connection on first use; a classroom with none at all
-cannot fetch what was never lazy-loaded in the first place, so the offline
-bundle either carries KaTeX (JS, CSS, and all twenty font files, added to
-`DEWMINI_ASSET_FILES` and a new `shutil.copytree` for the fonts directory)
-or maths silently fails in exactly the setting the bundle exists for. I
-have included it, on the reasoning that a downloadable copy which cannot
-do something the hosted site can do is a worse trade than 590 KB — but the
-proposal marked this explicitly as Josh's call, and it still is; this
-entry is that decision recorded, reversible by dropping three lines from
-`DEWMINI_ASSET_FILES` and the fonts copytree if he decides otherwise.
+**The offline bundle takes the ~590 KB.** A comment in `DEWMINI_ASSET_FILES` correctly said, before this, "dewmini renders no maths" as the reason KaTeX was excluded from the download. Lazy loading only helps a classroom *with* a connection on first use, so the offline bundle must now carry KaTeX (JS, CSS, all twenty font files) or maths silently fails exactly where the bundle exists to work. Included, on the reasoning that a downloadable copy which can't do what the hosted site can is a worse trade than 590 KB — but flagged as Josh's call, reversible by dropping three lines and the fonts copytree.
 
-**The standalone-HTML export needed no change, and that is a finding worth
-recording.** The proposal's own text flagged `buildStandaloneHtml()`'s
-single-file export as a likely gap: if a notebook with maths gets
-exported, does the maths survive? It turns out the question does not
-arise. That export already renders a text cell's content as plain,
-literal `white-space: pre-wrap` text — `body.textContent = cell.content`,
-not `renderDocMarkdown()` — so headings, bold, and bullets were never
-rendered there either, maths included. There was nothing to inline,
-because there was already nothing rendered.
+**The standalone-HTML export needed no change** — it already renders a text cell as plain, literal text, so headings and bold were never rendered there either; there was nothing to inline.
 
-*Cost to change: medium. The extraction/render-span code is small and
-tested; the real ongoing cost is the ~590 KB now in every offline
-download, and the standing question of when (if ever) to unify the
-project's several markdown renderers into one.*
+*Cost to change: medium. The extraction/render code is small and tested; the ongoing cost is the ~590 KB in every offline download and the standing question of unifying the project's several markdown renderers.*
 
 ---
 
-**7.108 — Restart and run all, as one button.** The same proposal's
-smallest item: throw the interpreter away, then run every cell from the
-top — the reproducibility check that goes with 7.105's marker (*that*
-shows a notebook might not survive a fresh run; *this* proves whether it
-does).
-
-**The two halves already existed and needed no new logic**, only wiring:
-`restartPython()` (factored out of what "Restart Python" already did —
-`engine.restart()`, `dfs.reset()`, then `ensurePyodide()` again so
-Settings reflects real status immediately) followed by the existing
-`runAllCells()`.
-
-**Whether that makes this button "just a label" was the proposal's own
-open question, and the answer is no.** `runAllCells()` already resets the
-*namespace* first (`engine.resetPageState()`), which is the cheap version:
-clear and re-seed the same interpreter. `engine.restart()` is stronger —
-a genuinely fresh interpreter, which also clears Jedi's completion cache
-and forgets the mounted filesystem handle (`dfs.reset()`), neither of
-which `resetPageState()` touches. So "Restart & run all" is a strictly
-better reproducibility check than "Run all" alone, not a second name for
-the same thing, and Settings now offers both.
-
-*Cost to change: very small — one factored-out function, one new button,
-two confirm dialogues.*
-
-**7.109 — Three of dewmini's own cell features, ported onto tutorial and
-practice pages.** `planning/CELL_IDENTITY.md` asked the underlying
-question directly: tutorials, practice, and dewmini are three surfaces
-showing the same idea, a cell that runs Python against a shared session,
-in three different pieces of markup. Full unification — one rendering
-function shared by `build.py` (static HTML at build time) and dewmini
-(a live JS `cells` array) — is a large, invasive change the same
-document explicitly did not choose; a practice page turned out to need
-no separate treatment at all, since `build.py` already treats one as "a
-tutorial in every mechanical sense." What shipped instead: the stale
-badge, the "⋯" Run above/below menu, and Restart & run all (7.105,
-7.106, 7.108) ported onto `build.py`'s `render_cell()` and
-`assets/tutorial-runtime.js`, keeping the two engines and DOM systems
-separate — the project's own stated convention ("each page owns a thin
-copy... extract only when a shared fix needs to land in both").
-
-**Not ported: the numbered identity pill, or maths-in-text-cells.** The
-pill is `CELL_IDENTITY.md`'s own still-unbuilt design (nowhere yet,
-dewmini included) — shipping it for tutorials first would mean building
-a feature its own design note calls "not yet built" out of order. Maths
-needed nothing: a tutorial's prose already renders `$…$`/`$$…$$` via
-`extract_math()`/KaTeX (`build.py`), independent of dewmini's Text-cell
-type, which doesn't exist on this side at all.
-
-**The one real engineering gap**, closed here rather than deferred:
-`assets/tutorial-runtime.js` had no `resetPageState()`/`restart()`
-equivalent at all before this. Both now exist, built the same way
-`pyodide-engine.js`'s already did — `resetPageState()` reuses
-`pyodide-worker.js`'s existing `reset-page-state` message type
-(already there for dewmini's sake) and a newly-named
-`RESEED_GLOBALS_SOURCE` constant (previously an inline string, used only
-once, inside `bootMainThread()`); `restartPython()` terminates the
-Worker or drops the main-thread Pyodide references, then leans on the
-existing `ensureBooted()` to reboot. `runCellWorker()`/
-`runCellMainThread()` also now return whether a cell's run raised,
-previously discarded — needed to count errors across a batch, the one
-behavioural gap between a single Run click and "Run above/below".
-
-*Cost to change: small. Every new function names the dewmini original it
-was ported from; a future change to one is a reminder to check the
-other, not a search. The real ongoing cost is the one this decision
-argues against paying yet: a true shared cell implementation, still
-undecided. The numbered identity pill's own design was still unbuilt
-anywhere when this was written; 7.110 changes that, in dewmini.*
-
-**7.110 — The full cell-identity design, built in dewmini.** The
-numbered pill, per-type colour, merged run-line, and collapse triangle
-`planning/CELL_IDENTITY.md` designed and 7.109 explicitly left out —
-built now in `compose/dewmini.js`, on request, rather than staying a
-mockup. Three real amendments to the document along the way, made
-because building the thing surfaced questions the mockup alone hadn't:
-
-**Collapse is for every cell type, not only code-bearing ones.**
-`CELL_IDENTITY.md` §4 reasoned that Text/HTML didn't need it, since they
-already have a rendered form to shrink to. Fair for HTML, once it
-exists — but a long Text cell in *edit* mode has no rendered form to
-fall back on, and "shrink this out of the way without deleting it" is
-exactly as true for a long note as for a long function. Both cell types
-get the triangle now; `cell.collapsed` persists across a reload like any
-other cell field.
-
-**A header-end group, with a genuinely new feature in it.** Duplicate —
-insert a copy of a cell right after itself, same type and code, no run
-history — didn't exist in dewmini at all before this. It's not
-optional garnish: without it, `CELL_IDENTITY.md`'s own header-end layout
-(Edit, Duplicate, Delete) has a hole in it. `duplicateCell()` follows
-`insertCellAt()`'s own shape exactly.
-
-**The collapse triangle is one rotated chevron, not two swapped
-triangles.** The mockup used ▾/▸ (`&#9662;`/`&#9656;`) — filled
-triangles that, once actually sitting a few pixels above the Run
-button's own ▶ in the footer bar, read as confusingly similar glyphs in
-the same corner of the cell. A single `›` (`&#8250;`), rotated 90° by
-CSS between states rather than swapped for a different character, reads
-unambiguously as its own thing.
-
-**Run order resets on any reset, not only a full restart.**
-`runCellBatch()`'s `reset: true` path (Run all, Run above) already threw
-away the Python namespace via `engine.resetPageState()`; it just never
-told the run-line about it. `resetRunSequence()` now runs alongside that
-reset too, so every cell's line correctly reads "Not yet run this
-session" the moment the namespace is cleared, not only after a full
-`restartPython()`.
-
-**Not ported to tutorial or practice pages.** Those still carry 7.109's
-narrower slice. The type-colour system needs real content to colour —
-tutorials are Python-only today — and the header/footer layout move is
-a bigger, separate piece of work on the primary reading surface;
-neither was in scope here.
-
-*Cost to change: medium. `createCellElement()` is substantially rewritten
-— the header/body/footer split, the collapse mechanism, and the run-line
-system are all new structure, not additions to the old one — so a future
-change to a cell's anatomy touches one well-organised function rather
-than several scattered ones. `lastRunMs` is no longer persisted to
-`localStorage` (only `collapsed` is, alongside the existing fields) since
-it's meaningless without `ranOrder`, which was never persisted either;
-nothing reads the old field back, so no migration was needed.*
-
-**7.111 — The style guide gained a plain-language section, and the four
-student-facing surfaces were rewritten to it.**
-
-The contents page, the About page, the topic tree and the 251 glossary
-definitions all passed section 4 of `planning/PEDAGOGICAL_STYLE_GUIDE.md`
-as it stood — invitational, warm, prose not bullets, no emoji — and were
-still hard to read. Section 4 governed *stance*; nothing in it governed
-sentence architecture, and section 1 says a reader may be working in a
-second language.
-
-Six habits ran through all four surfaces, in the same proportions on each:
-a short main clause with an em dash carrying the actual meaning; definitions
-written as participles rather than sentences (*"Standing in for a process
-that…"*); contrast before definition (*not x but y*, before x was ever
-said); metaphor standing in place of the plain statement rather than after
-it (*how much skin a solid has*); Irish and British idiom (*already behind
-you*, *paging through*, *it earns its keep*); and an aphorism closing
-almost every unit.
-
-Measured before and after, on the same extraction: the About page went from
-29.7 words per sentence and a 61-word longest sentence to 17.7 and 31
-(Flesch–Kincaid 14.1 → 8.2); the contents page 17.7 → 11.5 (FK 9.4 → 6.1);
-`topics.yaml`'s topic descriptions 18.7 → 15.8 with the longest sentence
-46 → 31 (FK 9.3 → 7.9); the glossary 15.8 → 13.4 with the longest 60 → 45
-(FK 8.5 → 7.4). 25 of 81 topic descriptions and 64 of 251 glossary
-definitions were rewritten — the ones that breached the new rules, not all
-of them, so the diff stays reviewable and the entries that were already
-plain keep their wording.
-
-The rule went into section 4 as a subsection rather than a new numbered
-section on purpose: `.claude/skills/cell-code-review/` and several planning
-documents cite this guide by section number, and renumbering would have
-broken every one of those references silently.
-
-*Cost to change: small for the guide, large for the prose. Loosening the
-rules is an edit to one file. Reverting the rewrites means putting back
-text across `build.py`, `planning/curriculum/topics.yaml` and 30-odd
-glossary files, and `tests/test_build.py` asserts on one phrase of the
-contents page introduction (`test_the_contents_page_introduces_the_place_instead`)
-— which is the check that stops the introduction being deleted rather than
-a check on its wording, so update the phrase there rather than working
-around it.*
-
-**7.112 — The contents page introduction is one paragraph and six points, in
-the order a reader meets them.**
-
-Six paragraphs and 254 words was the wrong shape for the page somebody
-lands on. It answered several independent questions in prose — what is a
-cell, can I break this, where does my work go, how is the list organised,
-where do I start — so a reader arriving with one of them had to read the
-rest to find it. Section 4 of the style guide asks for prose over bullets;
-that rule is about an *explanation*, where the joins between sentences are
-the reasoning. Six separate answers to six separate questions have no
-joins to remove, so this is an exception rather than a breach, and it is
-noted in `render_index()` and in the stylesheet beside `.dl-intro-points`.
-
-The framing of two of those points was rewritten after the first draft got
-it wrong. "We try things before we name them" sold the running-first as
-novelty. The point is the sequence: explore a problem, then the general
-principle underneath it, then the name — and the name matters because it
-is how a student talks to somebody else about what they just did. Section
-3 now says that. Likewise the practice point: answers sit below the
-problems not as a concession but because the answer was never the thing
-worth protecting, and what is being learned is the steps — small first,
-then multi-step, then more abstract.
-
-Section 4 also gained the sentence-level rules this exposed: mark a
-sequence with *first… then… then*, do not make a reader hold a negative
-before there is anything to hold it against, "we" for the learning and
-"you" for what is actually theirs, and hedge any claim that is not a real
-binary.
-
-*Cost to change: trivial for the wording, small for the shape. The points
-live in one list in `render_index()`. Going back to prose means deleting
-`.dl-intro-points` from the stylesheet and the exception note from both
-comments — do not leave either behind claiming a list that is not there.*
-
-**7.113 — The pill and the run line, ported onto tutorial and practice
-pages too.** 7.110 built the numbered pill and the merged run-line in
-dewmini and explicitly left tutorial/practice pages on 7.109's narrower
-slice. This carries both over: `build.py`'s `render_cell()` now renders
-a `.dl-cell-pill` (`Cell N`, a coloured "Python" type badge) and a single
-`.dl-cell-runline` span in place of the old bare `.dl-cell-id` text and
-the separate `.dl-cell-stats`/`.dl-cell-stale-badge` pair; the run-line
-machinery in `assets/tutorial-runtime.js` — `runSequenceCounter`,
-`renderCellRunLine()`, `resetRunSequence()`, the live ticker, "Running
-next" for a queued batch cell — is a close copy of dewmini's own, adapted
-the same way 7.109's staleness code already was: these cells ask their
-CodeMirror editor for its code directly rather than comparing against a
-mirrored `.content` field.
-
-**The pill's number is static, not live.** dewmini recomputes a cell's
-position on every drag, since its cells can be reordered. A tutorial
-page's authored cells can't be — `build.py` generates static HTML once,
-at build time — so `render_cell()` just takes the cell's fixed 1-based
-position as a `number` argument. No drag handle exists here for the same
-reason: there is nothing to pick up.
-
-**No new colour token, and no drag/collapse/Duplicate.** The pill's type
-badge always reads "Python", coloured with the `--dl-type-python` token
-7.110 already defined — every authored cell on a tutorial page is
-Python, so there was nothing new to colour. Custom cells (the reader's
-own, added on the page) were left out of this port entirely; they keep
-their old plain-text `.dl-cell-id` label and no run line, since they're
-a separate system from authored cells (`docs/tutorial-runtime-explained.md`)
-and the user's own request was scoped to "the pill and run-line design,"
-not the fuller anatomy 7.110 also built — collapse and Duplicate stay
-dewmini-only for now (7.114 closes that gap). One thing not left for
-later: there is no header→footer move to make here at all — `build.py`'s
-`render_cell()` had its `.dl-cell-bar` below the editor and output
-already, before dewmini had one; 7.110 was the side that needed to move
-to match this one, not the other way around.
-
-*Cost to change: small. Both files' run-line functions name what they
-were ported from, the same convention 7.109 established; the only real
-new surface is `render_cell()`'s `number` parameter, a single call-site
-change in `place_blocks()`.*
-
-**7.114 — Collapse and Duplicate, the rest of dewmini's cell anatomy,
-ported to tutorial and practice pages.** 7.113 carried over the pill and
-run-line and left collapse and Duplicate dewmini-only, since the user's
-request that time was scoped narrowly. Asked to keep going and bring
-these two the rest of the way, both landed — but Duplicate needed a real
-design decision first, not just a port, because of a difference between
-the two surfaces this document hadn't had to reckon with yet: every
-dewmini cell is the reader's own, so "duplicate" always meant "copy
-something I already own." An authored tutorial cell is the opposite —
-it's the tutorial's own fixed content, generated once by `build.py` and
-never the reader's to change. Two shapes were on the table: leave
-Duplicate off authored cells entirely (custom cells, the reader's own,
-would still get it), or have it mean something adjacent — a copy that
-*becomes* the reader's, dropped in as a new custom cell right after the
-original. Chose the second, on request: it keeps the button meaningful
-everywhere the pill and run-line already are, and it turns "try it
-yourself" into one click on a specific example rather than a scroll down
-to a generic "+Code" seam with nothing already in it.
-
-**Duplicate reuses an existing seam rather than building a new one, and
-lands right after the cell it copies — not at the end of whatever a
-reader has already added there.** `initCustomCellsSection()` already
-drops a "+Code / +Text" insertion point immediately after every real
-cell (and `mountCustomCellAfter()` gives every custom cell its own
-trailing one too) — built for "Try something of your own" placed
-anywhere on the page, long before this decision needed it.
-`duplicateAsCustomCell(cell, type)` calls the same `insertCustomCell()`
-those buttons call, with the originating cell's current code instead of
-an empty string. The first version found its insertion point via
-`lastDividerFor(cell.id)` — the same helper `addCustomCell()` uses for
-"append to the end of the trailing section" — but that finds the *last*
-divider under an anchor, so duplicating an authored cell a second time,
-after a reader had already added their own cell under the first
-duplicate, put the new copy after that reader cell instead of the
-tutorial's own. Switched to `cell.element.nextElementSibling`: every
-cell this file ever mounts gets its own trailing `.dl-insert` right
-there, permanently, so it's a stable handle on "immediately after this
-specific cell" regardless of what else has since been added further
-down the same chain — matching `planning/CELL_IDENTITY.md` §4's own
-wording ("Duplicate inserts a copy of the cell right after itself")
-precisely, where the divider-search version only approximated it.
-Custom cells got
-the button too, once the mechanism no longer specifically assumed
-"copying an authored cell" — `cell.type` travels through so a text
-cell's own Duplicate stays text. No new markup beyond one more button,
-no new mounting logic.
-
-**Collapse applies to every cell with editable content, authored or
-custom, python or text** — the same table `planning/CELL_IDENTITY.md`
-§4 already settled for dewmini, carried over rather than re-litigated.
-Unlike the pill/run-line's `renderCellRunLine()`/`resetRunSequence()`
-split, one function, `setCellCollapsed(cell, collapsed)`, now serves
-`cells` and `customCells` alike — dewmini's own `setCollapsed()` is a
-closure inside `createCellElement()`, one instance per cell, but this
-file builds authored and custom cells through two different functions
-(`buildCells()`, `mountCustomCellAfter()`) that needed to share the same
-behavior, so it reads `cell.collapseBtn`/`contentRegion`/
-`collapsedSummary` off whichever cell object it's given rather than
-closing over element references of its own.
-
-**A real bug caught by a test, not by inspection: collapse must save
-immediately, not on the debounced timer.** The first pass wired the
-collapse toggle through `scheduleSave()`/`scheduleCustomSave()` — the
-same debounced save every keystroke already goes through — and a new
-"collapse survives a reload" e2e test failed: reload beat the 500 ms
-timer to the punch, so the very state the test had just set was gone.
-dewmini's own `setCollapsed()` never had this problem because it calls
-`saveState()` directly, not a scheduled version — a toggle is one
-discrete click, not a burst of keystrokes worth coalescing, so nothing
-was gained by debouncing it here either. Fixed to call `saveNow()`/
-`saveCustomCells()` directly, matching dewmini.
-
-**Corrected while writing this: 7.113's own text overstated what was
-left.** It said the header→footer layout move stayed dewmini-only for
-tutorial pages, alongside collapse and Duplicate. That was never true —
-`build.py`'s `render_cell()` had `.dl-cell-bar` below the editor and
-output since before dewmini's own cell existed at all; 7.110 was the
-side that had to move to match this one. Fixed in 7.113's own entry
-along with `planning/CELL_IDENTITY.md` §7, since both were still on this
-same, not-yet-merged branch. (Renumbered from 7.111/7.112 to 7.113/7.114
-while merging main: 7.111/7.112 landed there first, for the
-plain-language pass, from a branch that split from the same point.)
-
-*Cost to change: small. `setCellCollapsed()` and `duplicateAsCustomCell()`
-are each one function, and Duplicate's whole implementation rides on
-insertion machinery `initCustomCellsSection()` already had to build for
-an unrelated reason. The one thing worth remembering for a future
-change: any new way to mutate `cell.collapsed` needs an immediate save
-call alongside it, not the debounced one — that mistake is easy to
-reintroduce by copying the pattern every other cell mutation in this
-file already follows.*
-
-**7.115 — A text cell's chrome finally goes quiet until touched, in
-dewmini and on tutorial and practice pages both.** `planning/CELL_IDENTITY.md`
-§4 described this from the start — a Text cell renders by default and
-hides its own chrome until a reader deliberately touches it, `opacity: 0;
-pointer-events: none` rather than `display: none` so a keyboard user
-tabbing onto a hidden control still reveals it. 7.110's own text ("built
-this way in dewmini") and 7.114's ("the same instinct... has not been
-carried over here") both said or implied dewmini already had this. It
-never did — no `.dm-cell-text`-specific rule of any kind existed in
-`compose/dewmini-style.css` before this entry, checked directly rather
-than assumed. The design was real; the claim that it shipped wasn't.
-Built now, in both places it was claimed for.
-
-**One rule, no JavaScript, on either side.** `.dm-cell-text:not(:hover):not(:focus-within)`
-fades `.dm-cell-head` and `.dm-cell-collapse-col` to `opacity: 0` (the
-tutorial side does the same to `.dl-cell-bar`/`.dl-cell-collapse-col`,
-its own equivalents); a plain `@media (hover: none)` keeps the chrome on
-for a touch device, which has no hover to reveal anything with. No JS
-class-toggling needed: a reader focusing the textarea to edit already
-makes the whole cell match `:focus-within`, which is exactly when the
-chrome should be back. `:not(:hover):not(:focus-within)` on the cell
-covers hovering the rendered text itself too, not only the chrome —
-reasonable, since a reader's cursor being anywhere in the cell is itself
-a sign they're paying it attention.
-
-**Deliberately not changed: the interaction that opens a Text cell for
-editing.** The design doc's original mockup describes "a click to reveal
-the chrome, a double-click to edit" — but the version that actually
-shipped, in both dewmini and tutorial pages, has always used a single
-click on the rendered view to start editing directly, with an explicit
-Edit/View toggle as the keyboard- and touch-accessible alternative. That
-behaviour is established, tested, and outside what was asked here; this
-entry only fixes the chrome's own visibility, not the click semantics
-the mockup separately described.
-
-*Cost to change: trivial. Pure CSS on both sides, no new class, no new
-JS state — a future cell type that also wants this only needs its own
-selector added to the same rule.*
-
-**7.116 — HTML, the first of the four new cell types
-`planning/CELL_IDENTITY.md` §8 designed, built in dewmini.** `CELL_TYPES`
-gains `html`; the insert seam gets a third button; `createCellElement()`
-gets a third branch. An HTML cell's source is a CodeMirror editor (the
-`@codemirror/lang-html` support 7.115's own groundwork commit added,
-finally with a consumer) rather than Text's plain `<textarea>` — real
-code deserves real highlighting, and nothing about the Edit/View
-mechanism cared which kind of editor sat behind it. Rendering is a
-sandboxed `<iframe sandbox="allow-scripts" srcdoc="…">`, `resize:
-vertical` rather than measuring the frame's own content height, exactly
-as §8 designed it, no `allow-same-origin` — a reader's own HTML, or one
-they imported from somewhere else entirely, cannot reach this page's own
-window, storage, or DOM, script tag or not.
-
-**Rendering, not source, is the click target — unlike Text.** Text's
-`renderEl.addEventListener("click", showEditor)` cannot work for HTML:
-a click inside a cross-origin iframe is a click inside a different
-document, and it never bubbles out to a listener on this one. The
-header's own Edit/View toggle, already revealed by the same
-quiet-until-touched hover this entry extends to `.dm-cell-html`, is the
-one way in — not a regression from Text's affordance, a genuine
-difference in what the two documents can tell each other.
-
-**A real bug, caught by the browser rather than by `node --check`:
-`if {} else {} else if {}` is invalid JavaScript, and this file's own
-`.js` extension hid it.** The third branch was added after an existing
-`if (PYTHON) {…} else {…text…}`, which needed to become `if (PYTHON) {…}
-else if (TEXT) {…} else if (HTML) {…}` — an easy mistake, adding an
-`else if` after a bare `else` that already closed the chain. `node
---check compose/dewmini.js` reported no error; `dewmini.js` loads in the
-browser as an ES module (`<script type="module">`), and copying it to a
-`.mjs` extension before checking reproduces the browser's own
-`SyntaxError: Unexpected token 'else'` immediately — `node --check` on a
-plain `.js` file parses it as a CommonJS script, and that parse did not
-catch it here. `node --check` against a temporary `.mjs` copy (or
-`--input-type=module`) is the check that actually matches how this file
-runs, for `dewmini.js` and `tutorial-runtime.js` alike, and is worth
-reaching for on every future change to either.
-
-**Another real bug, caught by a browser-driven e2e test, not by
-inspection: `readCells()`'s own type whitelist would have silently
-dropped every saved HTML cell on reload.** `.filter((c) => c && c.id &&
-[CELL_TYPES.PYTHON, CELL_TYPES.TEXT].includes(c.type))` — a deliberate
-defense against a stray bad value crashing the notebook, written when
-only two types existed and never revisited when a third arrived. Fixed
-to `Object.values(CELL_TYPES).includes(c.type)`, so it stays correct the
-next time a type gets added rather than needing another manual edit
-found only by testing reload.
-
-**A genuine test-tooling wrinkle, not a product bug: hovering a cell's
-own geometric centre is not a reliable way to trigger CSS `:hover` when
-that centre sits inside a sandboxed iframe.** `elementFromPoint` at that
-coordinate correctly returns the iframe — the point genuinely is inside
-the cell's box — but under Playwright's CDP-driven synthetic mouse
-input, the outer document's `:hover` state did not consistently follow
-the cursor across that particular boundary, confirmed by hovering the
-same coordinate with a raw `page.mouse.move()` in an interactive
-Chromium session both with and without success across repeated runs. A
-real user's mouse does not appear to have this problem; the test suite's
-own `hover_cell()` helper now moves to a point inside the cell's header
-row instead, above where an HTML cell's iframe sits, which is reliable
-for every cell type.
-
-*Cost to change: small. `createCellElement()`'s HTML branch mirrors
-Text's shape closely enough that a future CSS type (§8's next type in
-line) should be a similarly small addition, not a redesign. The
-`if`/`else if` chain bug is exactly the kind of mistake worth a linter
-catching automatically rather than relying on remembering to check
-against `.mjs`; not set up here, left as a known gap.*
-
-**7.117 — CSS, the second of the four new cell types, built in dewmini.**
-Close to a copy of 7.116's HTML branch — CodeMirror with
-`@codemirror/lang-css`, a sandboxed `<iframe sandbox="allow-scripts">`
-for the preview, the same Edit/View toggle, the same quiet-until-touched
-chrome — with two differences, both settled in `planning/CELL_IDENTITY.md`
-§8 before this was built: the iframe's `srcdoc` is
-`CSS_PREVIEW_MARKUP` (a fixed little "page" — a heading, a paragraph
-with a link, a button, a list) with the reader's own rule in a
-`<style>` tag ahead of it, not the reader's own markup; and styling the
-HTML cell sitting above it was considered and set aside, since that
-would make a CSS cell's behaviour depend on cell order and type in a
-way nothing else in dewmini's model does.
-
-**A UX bug caught before it shipped, not after: a brand-new CSS cell
-opened with its editor already hidden.** The first pass called
-`showRendered()` unconditionally at the end of the branch, reasoning
-that a CSS cell's preview "always has something to show, empty rule or
-not" — true, but beside the point: every other cell type opens ready to
-type, and a fixed preview with nothing to look at yet is worse than an
-empty editor waiting for the reader's first keystroke. Fixed to the same
-`if (cell.content.trim()) showRendered(); else syncPreviewBtn();` HTML
-and Text already use — only a cell restored with existing content opens
-straight to its preview.
-
-The `READ_NOT_RUN_TYPES` set (`text`, `html`, `css`) replaced the
-`cell.type === CELL_TYPES.TEXT || cell.type === CELL_TYPES.HTML` check
-7.116 left behind — a third `||` clause for CSS would have worked, but
-the set reads as what it actually means ("the types meant to be read,
-not run") rather than an accumulating list of exceptions, and a fourth
-type (JavaScript, which *does* run) won't need touching it at all. The
-quiet-until-touched CSS rule got the same treatment, `:is(.dm-cell-text,
-.dm-cell-html, .dm-cell-css)` in place of three separate comma-joined
-selector lists.
-
-*Cost to change: small, and getting smaller — CSS took noticeably less
-new code than HTML did, most of it copied and adapted rather than
-designed from scratch, which is roughly what §8's own build order bet
-on. SQL and JavaScript won't get to make the same bet: both need a
-genuinely new execution engine, not another coat of the same pattern.*
-
-**7.118 — SQL, the third of the four new cell types, built in dewmini —
-on Python's own `sqlite3`, not the *sql.js* engine `planning/
-CELL_IDENTITY.md` §8 had specified.** That plan (SQLite compiled to
-WebAssembly, a second interpreter alongside Pyodide) was where
-implementation started — `sql.js` pinned in `vendor-src/package.json`,
-`build-vendor.mjs` copying its WASM into `assets/vendor/`, the
-groundwork any of §8's other three types didn't need. It was set aside
-mid-build on a direct question: is a second engine actually the better
-choice here, or just the first one that came to mind? The honest answer
-was the latter. dewmini already runs a real Python interpreter, and
-Python already ships `sqlite3` — unvendored as an ordinary loadable
-Pyodide package as of Pyodide 0.28, not bundled into core, and already
-in `compose/dewmini.js`'s `DM_PACKAGES` from `run_query()`'s own earlier
-work (7.78). Two engines booting in the same tab would have meant two
-data models with nothing bridging them — a SQL cell's own table
-invisible to a pandas DataFrame, unless something translated between
-them by hand. One engine, with the `db` global sqlite3 already gives it
-for free, means a SQL cell's `CREATE TABLE` is a table a Python cell can
-already read with `pd.read_sql("select * from t", db)`, no plumbing of
-its own — friendlier for a student who has never opened a terminal, and
-genuinely interoperable with the pandas/numpy tooling every other cell
-already uses, rather than a second island next to it. Every sql.js file
-change was reverted before anything was committed (`git checkout --` on
-`vendor-src/package.json`/`build-vendor.mjs`/`package-lock.json`,
-`rm -rf assets/vendor/sqljs`) — cheap, since it was caught before
-`npm run build` even ran once against it.
-
-**What actually got built.** `assets/tutorial_tools.py` gained
-`_run_sql_cell(conn, script, max_rows=20)` — internal, not in
-`__all__`, sitting right after `run_query()` (7.78) as its multi-
-statement counterpart: `run_query()` runs exactly one query and is meant
-to be called by name from a tutorial's own Python; `_run_sql_cell()` is
-what a generated wrapper line reaches, never something a reader is
-expected to type themselves. It splits a script on a bare `;` (a plain
-split, not a real parser — a semicolon inside a string literal would
-split somewhere it shouldn't, good enough for what a teaching notebook's
-SQL cell needs), runs every statement but the last with `conn.execute()`,
-and only renders the *last* statement's own result: a table via the same
-`_table_html()` a Python DataFrame already renders through, if it has
-columns; otherwise `cursor.rowcount` as "N rows affected" — the SQL
-equivalent of a Python statement that prints nothing. Every statement
-commits at the end, the same friendlier-than-raw-sqlite3 default
-`run_query()` already chose. Six new tests in `tests/test_tutorial_tools.py`
-(`TestRunSqlCell`) cover the split, the two render paths, state
-persisting across separate calls on the same connection, and a bad
-statement raising rather than rendering nothing.
-
-`compose/dewmini.js` gained `CELL_TYPES.SQL`, an insert-divider button
-and icon, a pill label and colour (`--dl-type-sql`, already defined
-7.117 in preparation), and a `createCellElement()` branch — but unlike
-HTML/CSS, a SQL cell's branch is Python-shaped: a bare CodeMirror editor
-(`language: "sql"`, `@codemirror/lang-sql` — syntax highlighting only,
-no Jedi-style semantic tooling, same as HTML/CSS's editors), no Edit/
-View toggle, no quiet-until-touched. `READ_NOT_RUN_TYPES` (7.117) stayed
-untouched — SQL was never a candidate for it — and gained a sibling,
-`RUNS_AGAINST_SESSION` (`python`, `sql`), which replaced every
-`cell.type === CELL_TYPES.PYTHON` check that actually meant "cells that
-run against the shared session": the footer/footbar build, `isStale()`,
-`resetCellOutput()`, `clearAllOutputs()`, `runCell()`'s own guard, and
-the "Run all"/"Run above"/"Run below" filters. A SQL cell's raw content
-is never handed to Pyodide as Python source — `executeCell()`'s new
-`buildSqlCellCode()` wraps it into one generated line,
-`tutorial_tools._run_sql_cell(db, <script>)`, with the script embedded
-as a `JSON.stringify()`-encoded string literal rather than a hand-rolled
-triple-quoted one (JSON's escaping — `\"`, `\\`, `\n`, control
-characters as `\u00XX` — is a strict subset of what a Python
-double-quoted literal accepts, so this is safe for any SQL text a reader
-could type, including one containing its own quotes or backslashes,
-where a raw triple-quoted string would simply break). The call is
-assigned (`_ = tutorial_tools._run_sql_cell(...)`) rather than left as
-the cell's own last expression on purpose: `_run_sql_cell()` already
-renders its result directly into the cell's output, and the normal
-auto-display of a cell's last value would otherwise render the same
-table a second time underneath it.
-
-**`db` itself: a fresh, in-memory `sqlite3.connect(":memory:")`
-connection**, created once at boot and again on every reset, dewmini-
-only per the scoping this whole phase of work was given. `assets/
-pyodide-engine.js`'s `RESEED_GLOBALS_SOURCE` (the main-thread fallback
-path, `bootMainThread()`/`resetPageStateMT()`) got it directly, closing
-any previous connection first rather than leaving it to garbage
-collection.
-
-**The bug this caught before it shipped: that edit alone would have done
-nothing for almost every reader.** `assets/pyodide-engine.js` is
-dewmini's own file, but the path most sessions actually take is not its
-main-thread fallback — it is `assets/pyodide-worker.js`, a Worker file
-genuinely *shared* with the hosted tutorial pages
-(`assets/tutorial-runtime.js` boots through the exact same file). That
-worker carries its own separate copy of `RESEED_GLOBALS_SOURCE` (a
-Worker cannot reach a JS constant defined in a different file's module
-scope), which the first pass of this work never touched — meaning `db`
-would have existed only on the rare main-thread fallback (no Worker
-support, or no cross-origin isolation) and been silently absent
-everywhere else, including this environment's own Playwright
-verification, had that verification not caught it. The fix keeps the
-worker file "purely additive" for dewmini the same way its filesystem-
-mounting section already is (its own comment: "dewmini only … Tutorial
-pages never send these message types, so this section is purely
-additive"): `pyodide-worker.js` gained its own
-`SEED_DEWMINI_DB_SOURCE` and a module-level `seedDewminiDb` flag, read
-once from the boot message (`msg.seedDb`) and reused on every
-`reset-page-state`; `assets/pyodide-engine.js`'s `bootWorker()` is the
-only caller that ever sets `seedDb: true`, so a tutorial page's own boot
-message — which never sets it — leaves the flag false and `db` never
-created there.
-
-**Verified in a real browser, not just unit tests**, since the whole
-point of the Python/sqlite3 design was interoperability between a SQL
-cell and a Python cell, which no Python-only test could actually prove.
-This environment had no route to the sqlite3 wheel's usual home
-(`cdn.jsdelivr.net`, blocked by egress policy) but did have one to
-`github.com`'s own release assets, so the wheel came from Pyodide's own
-GitHub release tarball instead, extracted without downloading the full
-~350 MB archive to disk. Playwright against a locally staged build
-confirmed: a multi-statement script (`CREATE TABLE` / `INSERT` /
-`SELECT`) renders only the final `SELECT`'s table, with no duplicate
-render; a non-`SELECT` script reports rows affected; a Python cell
-reading `db` via `pd.read_sql()` after a SQL cell ran sees exactly what
-that cell wrote; output and cell type both survive a reload without
-re-running; Duplicate/Delete/collapse all work; and — the one that would
-have been silent otherwise — the worker-mode `db` wiring actually took
-effect, not only the main-thread fallback. `dev/fetch_pyodide.py`'s own
-`BASELINE` gained `sqlite3` too, so the e2e suite's self-hosted Pyodide
-(`dev/pyodide/`, gitignored, fetched fresh by anyone who needs it) keeps
-having it without a special case; the seven new e2e tests in
-`tests/e2e/test_dewmini_workbench.py` run against that same local
-Pyodide, no CDN required.
-
-*Cost to change: the redirect away from sql.js cost nothing already
-spent (caught before a single build ran against it), and the corrected
-design turned out to need noticeably less new surface than HTML did —
-no new engine, no new sandboxing model, mostly a generated string and a
-`Set` membership change threaded through code that already existed.
-JavaScript is what's left, and it does not get this same discount: a
-persistent sandboxed session is a real second runtime, the one thing
-SQL turned out not to need after all.*
-
-**7.119 — JavaScript, the fourth and last of the four new cell types,
-built in dewmini — and a redeclaration bug in its own design doc, caught
-by actually running the code rather than by reasoning about it.** A new
-file, `compose/js-cell-engine.js`, plays the same role for a JS cell that
-`assets/pyodide-engine.js` plays for Python: one persistent session the
-whole notebook shares, created lazily on first run. Unlike Python's, it
-needs no Worker and no interpreter download — a sandboxed `<iframe
-sandbox="allow-scripts">` with no `allow-same-origin` (the same isolation
-HTML's own preview iframe already uses, planning/CELL_IDENTITY.md §8) is
-already a separate, memory-isolated realm, and every browser already has
-a JS engine sitting inside it. What Python's Worker buys — a genuine Stop
-button, via a shared interrupt buffer — has no equivalent here: this
-iframe still runs on the tab's own main thread, so `canStop()` is always
-false, the same limitation Pyodide's own main-thread fallback already
-has.
-
-**The bug, and how it was found.** `planning/CELL_IDENTITY.md` §8's own
-first draft of this design said a cell's code gets "posted into that
-iframe and evaluated there" — read as "inserted as a `<script>` tag,"
-the obvious way to run arbitrary JS text. Implementation started that
-way. It was wrong: a `<script>` tag's own top-level `let`/`const`
-declarations join the realm's *one, permanent* global lexical
-environment, and re-running the exact same declaration a second time —
-which is to say, re-running an edited cell, an entirely ordinary
-notebook action — throws `SyntaxError: Identifier 'x' has already been
-declared`. This was not caught by reading the design or the code; it was
-caught by actually re-running a `let`-declaring cell in a real browser
-during this build's own verification pass and watching it break. No
-amount of re-reading the plan would have surfaced it, because the plan
-itself was the thing that was wrong — the same lesson 7.96/7.97 already
-drew about defects only a browser can catch, applied here to a design
-document's own assumption rather than to an implementation bug.
-
-**The fix: indirect `eval` in place of a `<script>` tag.** `(0,
-eval)(code)`, called from the iframe's own top level. Per spec, indirect
-eval's top-level `let`/`const` bindings live in a scope private to that
-one call, not the realm's shared global environment — so a cell can
-always be re-run safely, at the cost of those bindings no longer being
-visible to a *later* cell. Only `var` and `function` declarations still
-persist across cells, since indirect eval attaches those to the real
-global object exactly like a `<script>` tag would. This is a real,
-user-visible gap from what §8 originally promised ("a `var`/function/
-`const` declared in one cell is still there for a later one to read") —
-worth naming honestly rather than quietly narrowing the design doc's own
-wording to match what shipped. A proper fix (parsing each cell to hoist
-its own top-level `let`/`const` onto the shared session by hand) would
-need an actual JS parser vendored in for it, out of scope here the same
-way SQL's own multi-statement split is a plain string split rather than
-a real SQL parser. Documented in three places a reader could reasonably
-look: `planning/CELL_IDENTITY.md` §8 itself, `compose/js-cell-engine.js`'s
-own file banner, and dewmini's own help panel (`compose/dewmini.html`) —
-plainly, without naming `let`/`const` by their JS jargon, since a reader
-who has never met either term still deserves to know a cell can always
-be safely re-run.
-
-Indirect eval turned out to simplify the error path too, not only fix the
-redeclaration bug: a synchronous error is now caught directly around the
-`eval()` call itself (a plain `try`/`catch`), which is what answers the
-run's own `ok` — no `window.onerror` handler needed, unlike the
-`<script>`-tag design this replaced would have required. An unhandled
-promise rejection (async work a cell scheduled but didn't itself catch)
-still needs `window.addEventListener("unhandledrejection", …)`, since it
-can only fire after the triggering `eval()` call already returned; it
-still reports into the cell's output, just too late to change the `ok`
-that run already recorded. Top-level `await` stays unsupported for the
-same underlying reason: wrapping a cell's code in an `async` function to
-permit it would swallow its own top-level `var`/`function` declarations
-into that function's scope instead of the global one — trading away the
-one persistence guarantee this design does keep.
-
-**Everything else in dewmini.js's own wiring.** `CELL_TYPES.JAVASCRIPT`,
-Python-shaped chrome via `RUNS_AGAINST_SESSION` (now three members, not
-two), an insert-divider button and a code-braces icon, a CodeMirror
-editor (`language: "javascript"`, already vendored — no new build-time
-work). `console.log`'s arguments are serialised inside the iframe's own
-runtime script the way `tutorial_tools.py` already serialises a Python
-`print()`'s (a string passes through as-is; everything else gets a short
-`JSON.stringify` rendering rather than `"[object Object]"`), and both
-that and a reported error `postMessage` back to the parent as `stream`/
-`append` events — the exact same event shape Python/SQL output already
-produces. Rather than duplicating the ~25 lines that turn those events
-into real DOM (`applyOutputEvent()`, previously private to
-`assets/pyodide-engine.js`), that function was exported and reused
-directly: both engines run in the same JS realm as `compose/dewmini.js`
-itself (no Worker boundary between them), and both are configured with
-the same cellId → output-element lookup anyway, so there was no reason
-for a second copy of "how does a cell's output area get updated" to
-exist.
-
-Because `executeCell()` now dispatches to two genuinely different
-engines rather than one, several functions that used to read
-`engine.canStop()`/call `engine.requestInterrupt()` unconditionally now
-go through `canStopFor(cell)`/`requestInterruptFor(cell)` instead —
-small, mechanical, and covered by the same reasoning `RUNS_AGAINST_SESSION`
-already established: one Set membership check, not scattered
-special-casing, wherever "which engine does this cell actually run
-against" matters. `runCellBatch()` (behind "Run all"/"Run above"/"Run
-below") no longer boots Pyodide unconditionally before the whole batch
-either — each cell's own session is ensured right before its own turn,
-so a batch of JavaScript cells alone never pays to download Python at
-all; a `reset` batch ("Run all"/"Run above") still tears the JS session
-down too (`jsEngine.restart()`, no cheaper reset exists for it, alongside
-`engine.resetPageState()`), for the same "what's on screen matches what
-the code actually did" reason Python's own reset already exists.
-
-**Verified in a real browser**, the same discipline that caught the
-redeclaration bug in the first place: creating a cell, running it,
-re-running an unmodified `let`-declaring cell without error,
-`var`-declared state surviving into a later cell, an uncaught error
-rendering with `dm-error`, Restart Python genuinely tearing the session
-down (confirmed by checking a previously-`var`-declared name reads back
-`undefined` afterward, not by trusting that `restart()` was called), and
-a mixed Python+JavaScript "Run all" running both. Nine new e2e tests in
-`tests/e2e/test_dewmini_workbench.py` cover the same ground, including
-the exact re-run-a-`let`-cell scenario that caught the bug, so it can't
-silently come back.
-
-*Cost to change: real, unlike SQL's — a persistent sandboxed session
-plus its own message protocol is genuinely new surface, not a generated
-string handed to an engine dewmini already had. The redeclaration bug is
-the clearest evidence yet, across all four of these new cell types, for
-why "verify in a real browser" is not optional the moment a genuinely
-new execution model is involved: every earlier catch this document
-records of the same shape (7.96, 7.97, this one) was invisible from the
-code and the design doc alike, and visible immediately the moment the
-feature actually ran.*
-
-**7.120 — HTML and CSS, retired as separate types and merged into one:
-Web.** Not a bug fix the way 7.118's and 7.119's own mid-build design
-corrections were — HTML and CSS worked exactly as designed, each on its
-own. The merge came from actually using both once they existed: a CSS
-cell could only ever style `CSS_PREVIEW_MARKUP`, a fixed sample page
-that was never the reader's own markup, and an HTML cell had no CSS of
-its own reachable at all — the pairing planning/CELL_IDENTITY.md §8's
-own CSS design explicitly declined to guess at ("CSS styling an HTML
-cell right above it… would make a CSS cell's behaviour depend on cell
-order and type"), because that reasoning assumed two separate cells
-where "which HTML is this CSS for" has no clean answer. One cell with
-both halves removes the question rather than answering it differently.
-
-**What changed.** `CELL_TYPES.HTML`/`CELL_TYPES.CSS` are gone;
-`CELL_TYPES.WEB` replaces both. A cell object gains a second content
-field, `style` (CSS), alongside the `content` field every type already
-had (now HTML, for a web cell) — the first time any dewmini cell has
-needed two independent source fields rather than one, which touched
-more of `compose/dewmini.js` than the type's own `createCellElement()`
-branch: `insertCellAt()`/`addCell()`/`duplicateCell()` all needed to
-carry the second field through, `saveState()`/`readCells()` needed to
-persist and restore it, and a new `destroyCellEditors(cell)` helper
-replaced six separate `cell.editor?.destroy()` call sites so a web
-cell's *second* CodeMirror instance (`cell.cssEditor`) stops leaking
-too, not only its first.
-
-**The cell itself: two editors, always both visible, one Render
-button.** Neither editor swaps out for a rendered view the way HTML's
-and CSS's own Edit/View toggle used to — both stay editable at once, so
-`READ_NOT_RUN_TYPES` (compose/dewmini.js) narrowed to Text alone, the
-only type left with an actual toggle. Rendering is the header's own
-explicit Render button instead of either editor's own `focusout`: two
-editors both auto-rendering on blur, the way HTML and CSS separately
-did, would have fired the same preview update twice for one edit, and
-shown a half-finished render mid-tab between the two. An empty HTML
-half still falls back to `CSS_PREVIEW_MARKUP`, so the old standalone-CSS
-use case — style a fixed little page, no markup of the reader's own
-needed — still works exactly as it did.
-
-**Migration: each old cell becomes its own new web cell, never merged
-with a neighbour.** A notebook saved under the two-type model still
-loads — `readCells()` runs every stored cell through a new
-`migrateLegacyCellType()` first, mapping a standalone `type: "html"`
-cell to a web cell with an empty CSS half, and a standalone `type:
-"css"` cell to one with an empty HTML half. Deliberately not smarter
-than that: guessing that an HTML cell and the CSS cell sitting next to
-it were meant as a pair is exactly the ambiguity the new design exists
-to no longer need, and a wrong guess would silently combine two things
-a reader may not have intended combined. Two old cells just become two
-new ones, each exactly where it already was — a reader who did mean
-them as a pair can copy one CSS rule into the other cell's own CSS half
-by hand, which costs one paste, not a filesystem-scale migration risk.
-
-**Export paths that would have silently dropped the CSS half.**
-`downloadAsPython()`, `downloadAsIpynb()`, and the standalone HTML
-export's own generic non-Python rendering all used to read only
-`cell.content` for every non-Python type — harmless before, since an
-old CSS cell's *entire* content was `cell.content`, but a real,
-silent data-loss bug for a web cell's separate `style` field if left
-unchanged. A new `cellExportContent(cell)` helper folds a non-empty CSS
-half into the exported text (wrapped in a `<style>` tag, clearly
-labelled) for all three call sites, so a reader downloading a notebook
-never loses the CSS half of a cell they can still see on screen.
-
-**Verified in a real browser**: both editors visible and independently
-editable with no toggle; a script inside the rendered iframe still
-cannot reach the parent page (the sandboxing itself untouched by the
-merge); a CSS rule now genuinely styling the *same* cell's own HTML,
-not a fixed sample; the CSS-only fallback still rendering
-`CSS_PREVIEW_MARKUP`; Render staying inert until clicked, confirming
-no accidental auto-render survived the rewrite; reload persistence for
-both halves at once; collapse/duplicate; and the migration path itself,
-seeding raw `type: "html"`/`type: "css"` localStorage data and
-confirming it becomes two independent web cells on load. Ten e2e tests
-replace the eleven the two old types had (net one fewer, covering more:
-the old suites never had a test proving CSS could style a cell's own
-HTML, because until this change it never could).
-
-*Cost to change: smaller than either SQL's or JavaScript's — no new
-engine, no new sandboxing model, the same iframe HTML already used with
-a second editor and one field threaded through the cell data model. The
-real cost was breadth, not depth: six call sites for editor teardown,
-three export paths, a data migration, and every doc/design surface that
-named "HTML" and "CSS" as two things rather than one — more files
-touched than either of the two harder builds that came before it, for a
-change with no new runtime behaviour to speak of beyond the merge
-itself.*
-
-**7.121 — Site: an .html file opens as a small website, on the same
-mounted filesystem — and a first design for it, built and then thrown
-away before it was ever committed, because `main` had moved underneath
-it.** The question 7.116–7.120 raised on the way past: dewmini can now
-run HTML, CSS and JavaScript separately (the Web and JavaScript cell
-types); the obvious follow-on is showing them together the way a real
-static site actually is — three real files, not three cells.
-
-A first version was built directly on this branch's own base
-(`57c6604`): a fixed `site/index.html`/`style.css`/`script.js`, a
-bespoke Workbench section of its own with its own load/save/debounce
-plumbing, and the three files hidden inside their own `site/` subfolder
-so Files' flat list (`DECISIONS_LOG.md` 7.88) would not show them
-directly. Before it was committed, `origin/main` was checked against —
-prompted directly, not discovered — and had moved three commits past
-this branch's base while this and the Web-cell merge were being built:
-`290829c` (a notebook shown as one Python file, `VIEWS.FILE`), `574d5c3`
-(Files becomes a real file manager — `openWorkspaceFile`, a debounced
-`writeNotebookToWorkspace`, rename, "New file…"), and `3325694`
-(Workbench moved to the left rail, Library to the right). Rebasing onto
-it produced real textual conflicts in `compose/dewmini.js`, `dewmini.html`
-and `dewmini-style.css` — not just adjacency, competing edits to the same
-functions (`runCellBatch`, `executeCell`'s post-run cleanup, the ipynb/
-percent-text export helpers) — resolved by hand, kept whichever side had
-since become the more complete version of each (main's dropped-output
-save mechanism, this branch's per-engine `ensureSessionFor`/`canStopFor`
-dispatch) rather than picking one side wholesale.
-
-**Why the first version was abandoned rather than merged forward.**
-`574d5c3` already builds almost exactly the mechanism a bespoke Site
-panel was reinventing in miniature: open a workspace file into a tab,
-edit it, debounce a write back to the real mounted filesystem, redraw
-the file list without a race. Building Site as its own section, with its
-own copy of that plumbing, made sense only while Files could not open
-anything — the moment it can, a second "open, edit, save" path next to
-it is duplication, not a feature. The `site/` subfolder-hiding trick
-existed only to keep those three files out of a Files list that could not
-do anything with them anyway; once Files can open an `.html` directly,
-hiding it from that same list stops making sense.
-
-**What shipped instead: a third tab kind, not a fourth panel.**
-`VIEWS` gains `SITE` alongside `CELLS` and `FILE` — the same enum
-`290829c` already introduced, extended rather than duplicated.
-`openWorkspaceFile()`'s guard, which used to refuse anything but `.py`/
-`.ipynb`, now also accepts `.html`: it reads the file, looks for a
-same-base-name `.css` and `.js` beside it (`page.html` pairs with
-`page.css`/`page.js` — Josh's own correction to the first design, which
-had fixed on three exact names), and opens a tab with no cells at all.
-The site's own three files' live text sits directly on the notebook
-object (`siteHtml`/`siteCss`/`siteJs`, `siteCssPath`/`siteJsPath`),
-persisted through `writeSavedState()`/`loadSavedState()` the same way
-`.path` already is for a File-view tab — the same "localStorage is the
-fast-path cache, the real file is the debounced write" pattern the rest
-of the file manager already uses, not a new one. `writeNotebookToWorkspace()`
-gained a Site branch (`writeSiteToWorkspace()`): the HTML file is always
-written, since it is the file the tab is; the CSS and JS files are
-written only once there is something in them, so a reader who never
-touched the CSS pane does not find an empty `page.css` in their
-workspace afterward. Neither file needs to exist for the tab to open — a
-site with no styling and no script is still a site, and requiring all
-three would reintroduce the fixed-files problem the base-name pairing
-was meant to solve.
-
-**Split screen, not a Render button.** Editors on one side, a live
-sandboxed `<iframe sandbox="allow-scripts">` (no `allow-same-origin`,
-the same isolation the Web cell already uses) on the other, updating on
-every keystroke across all three panes rather than waiting for an
-explicit press. Argued for directly: a Web cell's Render button suits a
-notebook cell answering a one-shot question inside a wider document; a
-site is what a reader keeps looking at continuously while they build it,
-closer to an ordinary code-and-preview IDE than to a cell. `renderCells()`
-gained a `VIEWS.SITE` branch (`renderSiteView()`) alongside the existing
-`VIEWS.FILE` one; the Cells/File toggle and every Python-notebook-only
-toolbar button (`See an example`, `Start with imports`, `Practice`,
-`Run all`, `Clear output`, `Clear`) hide themselves for a site tab behind
-one shared class, `.dm-cellview-only`, toggled in `updateViewSwitch()` —
-none of them mean anything for a tab with no cells.
-
-**One CSS bug worth naming, because it will recur.** The first attempt
-at hiding those toolbar groups set their `hidden` attribute and nothing
-happened — `.dm-toolbar-group { display: flex; }`, an author-stylesheet
-rule, always wins over the browser's own `[hidden] { display: none }`
-user-agent rule for the same property, regardless of selector
-specificity or source order, because origin (author vs. user-agent)
-decides before specificity does. Every other conditionally-hidden
-element in `dewmini-style.css` already carries its own explicit
-`.foo[hidden] { display: none; }` override for exactly this reason
-(`.dm-panel[hidden]`, `.dm-tabs[hidden]`, six others) — `.dm-toolbar-group`
-now does too. Caught by the e2e test written for it, not by inspection.
-
-**Verified in a real browser**, not asserted: opening an `.html` from
-Files renders a split-screen tab with a live preview of its actual
-content; a same-base-name `.css`/`.js` pair opens beside it with the
-preview reflecting all three (a JS cell mutating the DOM the HTML half
-produced, not just running inertly); a lone `.html` with no siblings
-still opens, its CSS/JS panes empty rather than erroring; typing in any
-of the three panes updates the preview without a separate press; the CSS
-and JS halves each write back to their own real file, readable from a
-Python cell in another tab; the toolbar's cell-only controls hide for a
-site tab and reappear switching back to a notebook tab; and a site tab
-survives a full page reload. Seven new e2e tests in
-`tests/e2e/test_dewmini_workbench.py` cover this ground — one of them
-(the CSS write-back test) needing a 3-second wait rather than 1.5,
-because two debounces still stack before a site's own file is durable on
-disk: `scheduleWorkspaceWrite()`'s 600ms, then `dewmini-fs.js`'s own
-internal sync debounce on top of that — the same discovery the abandoned
-first design made about its own, differently-shaped debounce stack,
-carried forward rather than rediscovered.
-
-*Cost to change: mostly absorbed by `574d5c3` already having built the
-file-open/write-back mechanism this reuses rather than reinvents — the
-net new surface is `VIEWS.SITE` itself, the sibling-discovery logic, and
-`renderSiteView()`'s split layout. The real cost was the false start:
-a working, tested implementation built and then discarded whole, because
-it was designed against a base three commits behind the one it needed
-to ship against. The lesson worth keeping is not "check `main` before
-building" in the abstract — that was already the working assumption —
-it is that a design decision made while a *sibling* branch is still
-landing large, overlapping surface area (the same `compose/dewmini.js`
-regions, in this case) has a short shelf life, and is worth holding
-loosely until both have actually met.*
-
-**7.122 — Five smaller things, from actually using what 7.116–7.121
-built: a cell-type toggle, a real notebook location, two layout bugs,
-and one CSS trap caught twice in one session.** Not one build — a run
-of small, direct fixes and one real feature, each found by looking at
-what had just shipped rather than by planning ahead.
-
-**Web and SQL cells default off, behind a per-type Settings toggle.**
-Four cell types shipped in 7.116–7.120; not every reader wants all four
-offered on every seam. Settings gains "Cell types": Web and SQL start
-off, JavaScript starts on, Python and Text carry no toggle at all —
-they are the notebook, not an extra. `enabledCellTypes`, read once at
-boot and on every toggle click, gates which buttons
-`createInsertDivider()` builds; nothing about a cell already in the
-notebook changes when its type is later turned off — it still shows,
-still runs, still exports, since the toggle only answers "what can be
-added next," never "what already exists." The existing e2e suite
-assumed all types were always offered, so the shared `dewmini` fixture
-now seeds Web and SQL on before the rest of the suite loads — the
-default-off behaviour, and the toggle itself, get their own tests
-against a page that fixture never touches.
-
-**A notebook now shows up in Files, without writing it to disk.**
-Raised directly: a file a cell's own code writes already appears in
-Files, but the notebook holding that cell had nowhere it showed up at
-all — not even the default one, on a first-ever visit. The tempting fix
-— write every notebook out as a real `.py` on the mounted filesystem —
-has a real cost this repository has already ruled against once: mounting
-that filesystem means booting Pyodide, and doing that on every page
-load, before a reader has touched Python, is exactly what
-`planning/DEWMINI_WORKBENCH.md` §1's "nothing opens on a first visit"
-rule exists to prevent. `renderNotebookList()` instead lists every open
-notebook with no `.path` directly in the Files panel, labelled as living
-in this browser rather than as a file, switching to it on click — no
-filesystem read, so it draws instantly regardless of whether Python has
-ever booted, piggybacked on `renderTabs()` so it can never drift out of
-sync with what is actually open. A notebook already backed by a real
-file (opened `.py`/`.ipynb`/`.html` from Files) is left out of this list
-on purpose — it already appears in the ordinary file list under its own
-name, and listing it twice would be the same notebook claiming two
-homes.
-
-**Two layout bugs, both found by looking at a screenshot rather than
-by reading the CSS.** Library and Workbench opened 3rem wider than
-Settings by default (`.dm-panel`'s `min(24rem, 100vw)` against
-`.dl-settings`' own `min(21rem, 100vw)` in the shared
-`tutorial-style.css`) — fixed on dewmini's own side, matching `.dm-panel`
-down to 21rem, rather than touching the shared rule and every tutorial
-page's own Settings width along with it. And the per-cell "⋯" run
-menu, right-anchored and growing left with no notion of the viewport's
-own edge, could run itself off-screen once the button sat close enough
-to it — increasingly reachable now that Workbench docks left (7.99).
-`openMenu()` now measures its own `getBoundingClientRect()` after
-becoming visible and flips to a left-anchored class when it would
-overflow, rather than trying to predict in advance when that will
-happen.
-
-**The same CSS trap, twice.** The Site tab's own note picked up
-`.dm-fileview-note`'s `flex: 1 1 20rem` by reusing that class outright
-— a rule written for a *row* flex parent (`.dm-fileview-head`) that,
-inside the Site tab's *column* flex wrapper, flex-grew the note to
-absorb the entire column's spare height instead, leaving a sentence of
-text sitting in a box hundreds of pixels tall. Given its own class,
-`.dm-siteview-note`, with the same look and none of that. And
-`.dm-toolbar-group`'s own `display: flex` was found, separately, to
-silently beat the browser's `[hidden] { display: none }` rule for the
-cell-type toggle's Settings groups — an author stylesheet always wins
-over the user-agent one for the same property regardless of specificity
-or order — fixed the same way every other conditionally-hidden element
-in this file already is, with its own explicit `[hidden]` override.
-Two different symptoms, the same one-line category of CSS mistake,
-caught by a test in one case and a screenshot in the other — neither
-readable from the rule that caused it.
-
-*Cost to change: each of these was small in isolation and none touched
-architecture — the toggle reuses `renderCells()`'s existing render
-path, the notebook list reuses `renderTabs()`'s existing trigger points,
-and both layout fixes are one CSS rule apiece. What is worth keeping is
-the pattern behind all five: every one of them was found by using the
-feature that had just shipped, in a real browser, rather than by
-re-reading the code that built it — the same lesson 7.96, 7.97 and
-7.119 already drew about defects invisible from the source and visible
-immediately once a reader (or a screenshot) actually meets them.*
-
-**7.123 — Two accessible reading fonts, and a High contrast switch that
-is its own toggle rather than a sixth font choice.** Josh's own framing
-settled the shape before any code did: "high contrast means font and
-colours as a toggle" — one switch changing two things together, not a
-new entry in the Font row asking a reader to somehow pick "high
-contrast" as if it were a typeface. The two fonts (Atkinson Hyperlegible,
-from the Braille Institute of America, and OpenDyslexic) sit in the Font
-row as two ordinary choices; High contrast is a second, independent
-row that forces both a black-on-white (or white-on-black in dark theme)
-palette and Atkinson Hyperlegible specifically, regardless of whichever
-of the five fonts a reader separately picked — legibility and contrast
-are two different questions from "which typeface", and bundling all
-three into one six-wide button group would have answered none of them
-cleanly.
-
-**Self-hosted, not a Google Fonts `<link>`.** The same reasoning KaTeX's
-own fonts already settled here: this is exactly the offline bundle
-(`write_dewmini_bundle()`, `DECISIONS_LOG.md` 7.92) a CDN link would
-leave broken, and this sandbox's own network policy blocks
-`fonts.googleapis.com` outright — confirmed with a direct `curl`, not
-assumed. `npm`'s own registry was reachable where the CDN was not, so
-both fonts come from `@fontsource/atkinson-hyperlegible` and
-`@fontsource/opendyslexic` (SIL OFL 1.1, same license family as most of
-the web's open fonts), vendored through `vendor-src/build-vendor.mjs`
-exactly like every other pinned asset in that directory — four faces
-each (regular/bold × roman/italic), the minimum for a page's own bold or
-italic markdown to render as a real face rather than a synthetic one.
-The woff2 files land flat in `vendor/fonts/`, beside KaTeX's own, rather
-than in a subfolder of their own — a deliberate choice, once it became
-clear `build.py`'s `standalone_html()` already has a `FONT_URL_RE`-based
-inlining step for KaTeX's fonts (folding them into the single-file
-tutorial download as base64 data) that a flat layout could reuse
-unchanged rather than needing a second copy of the same regex.
-
-**Shared with every tutorial page, not dewmini-only.** `data-font`/
-`data-contrast` and the CSS behind them live in `tutorial-style.css`
-and `tutorial-runtime.js` — the same reading-preference system every
-dewlab page already shares (`TEXTURE_DEFAULTS`, `applyTexture()`) — so
-the two new fonts and the contrast switch had to go in `assets/shell.html`
-(the tutorial pages' own Settings markup) as well as
-`compose/dewmini.html`, and `build.py` gained an
-`{{ACCESSIBLE_FONTS_CSS_URL}}` template token linked from every one of
-its six page-writing functions. **dewmini.js duplicates this whole
-mechanism rather than importing it** (documented already, in the
-duplicated code's own comment) — the first attempt at wiring the
-contrast toggle only touched the shared `tutorial-runtime.js` copy and
-did nothing in a real dewmini page, caught by watching `--dl-fg`/
-`--dl-bg` stay unchanged after clicking the toggle in a real browser
-rather than by re-reading the (correct) shared-file change and assuming
-it was enough.
-
-**One real test broken by a real behaviour change, both times fixed by
-narrowing what the test actually checks rather than by changing the
-behaviour.** `test_nothing_is_left_pointing_outside_the_file` failed
-outright — an unhandled `<link>` this new stylesheet added, exactly
-what that test exists to catch — fixed by giving
-`standalone_html()` an `inline_accessible_fonts_css()` alongside
-`inline_katex_css()`. `test_a_tutorial_without_maths_does_not_carry_them`
-failed more subtly: it asserted no `data:font/woff2;base64,` at all for
-a maths-free page, which was true only because KaTeX's own fonts were
-the sole source of that marker — now that the accessible fonts are
-inlined unconditionally, every standalone page carries some, maths or
-not. The fix looks for `.katex-html` specifically (a class only
-`katex.min.css` itself defines) rather than the family name `KaTeX_Main`,
-which a first attempt reached for and which the very page under test
-was already carrying anyway — `tutorial-style.css`'s own `.dl-math`
-fallback rule names it, whether or not KaTeX's fonts travelled.
-
-*Cost to change: real but contained. The vendoring step and the two new
-CSS rules are genuinely new surface; wiring the toggle itself rode
-entirely on a mechanism (`TEXTURE_DEFAULTS`, the generic `.dl-seg`
-sync loop) that already existed and needed no change beyond one new
-key — the same reason the two new font buttons could share the *same*
-`data-texture="font"` group, on a second `.dl-texture-row`, and just
-work. The one real trap, and worth remembering past this feature: a
-shared mechanism that has been duplicated (dewmini.js's own texture
-functions) needs the fix applied twice, and only a real browser catches
-the copy that was missed.*
-
-**7.124 — High contrast redefined four variables and called it done;
-turning it on and looking said otherwise.** Josh's own report, the day
-after 7.123 shipped: "the high contrast doesn't appear to work for all
-the elements." Right, and measurable — `[data-contrast="high"]`
-touched `--dl-fg`/`--dl-bg`/`--dl-muted`/`--dl-rule` and the font, on
-the unstated assumption that body text was the whole of "can I read
-this." A heading, a link, a cell-type pill, a cell's own border, a
-pass/fail message: every one of those is its own variable, so the
-toggle changed nothing about any of them. Measured with WCAG's own
-contrast-ratio formula rather than eyeballed screenshots: `--dl-link`
-at 3.6:1 against white was failing the *ordinary* AA minimum (4.5:1)
-that applies with the toggle off entirely, let alone the near-7:1 AAA
-this toggle exists to promise — the one thing it is for, not working,
-while it was on. `--dl-cell-border` was worse: 1.4:1, against a 3:1
-floor WCAG sets for a graphical boundary rather than text, meaning a
-code cell's own edge was close to invisible.
-
-**Fixed by moving each colour, not replacing it.** Asked directly
-rather than assumed: flatten every one of these to black and white
-too, or keep the hue and fix the ratio? Josh's answer was to keep it —
-a returning reader who has learned "teal is SQL, purple is HTML" keeps
-that under high contrast too, the same way the design already keeps it
-across light and dark theme, rather than losing every cell-type signal
-the moment the one toggle meant to help them is on. So each failing
-colour was darkened (light theme) or lightened (dark) along its own
-hue, in HSL, until it cleared 7:1 against the background it actually
-sits on — not 4.5, even though that alone would satisfy plain AA,
-because "high contrast" promising AAA and then quietly settling for
-AA the moment a colour needed real work is exactly the kind of gap
-this entry exists to close. `--dl-cell-border` is the one exception:
-a boundary carries no signal worth preserving the way a cell-type hue
-does, so it borrows `--dl-rule` outright — already pure black or white
-under this same toggle — rather than getting a darkened beige of its
-own that would have been muddy and still low-contrast at any
-reasonable target.
-
-**The bug worth naming for next time: an inline style beats a
-stylesheet, always, regardless of specificity.** `--dl-link`'s new
-high-contrast rule did nothing at first, in a real browser, despite
-being syntactically correct and more specific than the rule it was
-meant to override. The reason: dewlab's texture panel has its own
-reader-settable link colour, `state.link` in `TEXTURE_DEFAULTS`, and
-`applyTexture()` writes it with `root.style.setProperty(...)` — an
-inline style on `<html>`, which the cascade always prefers over any
-selector in a stylesheet, `:root[data-contrast="high"]` included. Font
-family never had this problem, because it is *only* ever set from the
-stylesheet's own `[data-contrast]`/`[data-font]` rules; link colour was
-the one property with a second, higher-priority writer nothing else in
-this feature touched. Fixed at the source: `applyTexture()` now skips
-the inline `--dl-link` write while `state.contrast === "high"`, and
-removes it if switching into high contrast from a state that had
-already set one, so the stylesheet rule is free to apply. The general
-lesson, not just this one property's: before trusting a stylesheet
-override to work, check whether anything *also* sets that same custom
-property as an inline style — a specificity fight a CSS-only reading
-never reveals, because nothing in the CSS itself is wrong.
-
-**The second copy, found the same way the first one was (7.123).**
-`assets/tutorial-runtime.js` carries the identical `applyTexture()`,
-for the same reason dewmini.js's own copy exists — needed the identical
-fix, found by testing a tutorial page in a real browser after fixing
-dewmini and discovering its link colour was *still* wrong there.
-Grepping for the pattern once it was known would have found both at
-once; reading the stylesheet fix and assuming a shared mechanism was
-therefore also fixed would have shipped exactly the same half-repaired
-state 7.123 itself shipped.
-
-**Verified in a real browser**, WCAG ratios computed rather than
-guessed: every corrected colour re-measured against the background it
-actually renders on (`--dl-link`, the four `--dl-type-*` colours, and
-`--dl-pass-fg` on its own `--dl-pass-bg`) and confirmed at or above
-7:1; `--dl-cell-border` confirmed pure black/white via computed style,
-not just read from the source; the fix checked in both light and dark
-high contrast, and confirmed the reader's own separately-picked link
-colour is respected again the moment high contrast is turned back off.
-`tests/test_build.py` and the full `tests/e2e/test_dewmini_workbench.py`
-suite both re-run clean — neither exercises contrast ratios directly,
-so a real browser is what this entry's own finding rests on, not the
-suites.
-
-*Cost to change: small in lines, real in the lesson. Nine colour
-values and a five-line JS guard, duplicated once. What actually cost
-time was rediscovering, from scratch, the two things 7.96/7.97 already
-named for a different feature: a claim about what a toggle does is
-worth nothing until the toggle has actually been turned on and looked
-at, and a mechanism that has been duplicated stays duplicated for every
-fix aimed at it, not only its first one.*
-
-**7.125 — Opening a plain `.py` file in the File view silently turned
-it into something that looks like a dewmini export.** Found while
-checking around the Cells/File switch for the bugs it seemed likely to
-be hiding: write a script from inside a running cell with
-`open("plain.py", "w").write("x = 1")`, no `# %%` anywhere, then open
-it in the File view. It showed up *with* a `# %%` marker already on
-it, before a single keystroke — and saving from there wrote that
-marker to disk for good. The cause was `cellsToPercentText()`, the
-function both the File view's own display and every save-back to a
-notebook's `.path` route through: it always put a marker before every
-cell, single cell or not, on the reasonable-looking assumption that a
-marker is how dewmini tells cells apart. `parsePyCells()`'s own
-markerless-file fallback — read a whole file with no marker in it back
-as one Python cell — already made the marker unnecessary on a single
-cell; the File view was adding a mark of ownership to a file that was
-never dewmini's to begin with, the moment a reader so much as looked
-at it.
-
-**Fixed at the two call sites that show or persist what is really on
-disk, not at the function itself.** `cellsToPercentText()` took a
-`bare` option: on, a lone Python cell serializes with no marker at
-all; off (the default), unchanged. `writeNotebookToWorkspace()` and
-`renderFileView()`'s editor seed both pass `bare: true`, since both
-exist to reflect a real file back at its reader — round-tripping a
-markerless file through either should leave it markerless.
-`downloadAsPython()` was left on the default. It looked at first like
-the same fix should apply there too, uniformly; it doesn't, because
-that path carries its own second mechanism the marker is load-bearing
-for. It writes a short explanatory header above the first `# %%`
-before handing the file to a reader who has never seen the convention,
-and strips that same header back out on reimport by checking for it
-(`isOwnHeader()`, inside `parsePyCells()`) — a check that only makes
-sense with a marker there to say where the header ends and the first
-cell begins. Applying `bare` there too passed the fix's own new tests
-cleanly and only broke on the full suite:
-`test_exporting_twice_does_not_grow_the_notebook` failed because, with
-no marker anywhere in the reimported file, the *whole file* — header
-included — fell into `parsePyCells()`'s single-cell fallback and came
-back as one cell's content, header and all, ready to be written out
-again above a second copy of itself on the next export. Scoping `bare`
-to the two call sites that reflect an existing file, and leaving the
-one call site that fabricates a new file with its own header
-untouched, keeps both fixed at once.
-
-**Verified in a real browser and in the suite.** A markerless `.py`
-opened and edited in the File view stays markerless, on disk and on
-redisplay (`test_a_markerless_file_stays_markerless_after_editing`,
-plus a live Playwright check); a file with genuine multiple cells
-keeps every one of its markers through an open/edit/save round trip
-(`test_a_multi_cell_file_keeps_its_markers`); the pre-existing
-export/reimport/export/reimport regression test that first caught the
-overreach passed again once `downloadAsPython()` was excluded. Full
-`tests/e2e/test_dewmini_workbench.py` (167 tests) and the rest of the
-suite both clean.
-
-*Cost to change: one parameter and two call sites, once the two false
-alarms found alongside it (output apparently lost across a File→Cells
-switch; a tab returning to `.dm-cell` count 0) were run down and ruled
-out as flaws in the test script checking them, not in the product. The
-lesson worth carrying forward: a single serialization function fed by
-more than one caller does not mean one call-site's needs generalize to
-the others — `downloadAsPython()` and the save-back path look alike
-from inside `cellsToPercentText()` but carry different downstream
-contracts, and the fix that is correct for one broke a working test
-for the other.*
-
-**7.126 — A long Settings label wrapped into a narrow ribbon, most of
-its own row sitting empty beside it.** Josh flagged it from a
-screenshot: "Show progress on the tutorials list", in the contents
-page's own Settings panel, broken across four cramped lines while the
-on/off toggle beside it had most of the row's width to itself and used
-none of it. The cause was `.dl-texture-row`'s own grid —
-`grid-template-columns: 4.6rem 1fr` — sized for the one-word labels
-("Theme", "Font", "Size") every other row in the panel actually has.
-A label long enough to need more than 4.6rem simply wraps inside that
-column instead of claiming any of the wide one beside it, since CSS
-grid tracks don't borrow room from each other that way.
-
-**Two more turned up the same way, once the shape of the bug was
-known.** Grepping `.dl-texture-row` across both templates
-(`assets/shell.html`, `compose/dewmini.html`) for every row's own
-label found "Remind me to export new notes" (the same panel, "Your
-work" section) and "Web (HTML+CSS)" (dewmini's own cell-type toggles)
-wrapping the identical way — three rows, two files, one shared cause.
-
-**Fixed with a modifier rather than widening the column.** A `.dl-
-texture-row-wide` class drops `grid-template-columns` to a single
-`1fr`, so the row's two children — the label `<span>` and the `<div
-class="dl-seg">` toggle — stack as two lines instead of two columns.
-Widening the shared 4.6rem column instead was the other option
-considered and rejected: every short label in the panel currently
-lines up in that same left column, and widening it to fit three
-outliers would have pushed every other row's toggle rightward for no
-reason of its own. Applied only to the three rows actually affected,
-found by reading every `.dl-texture-row`'s own label rather than
-guessing which looked long enough — a "does this look short" judgment
-would have been exactly the kind of assumption 7.124 and 7.125 both
-warn against making without looking.
-
-**Verified in a real browser**, at the width the original screenshot
-was taken from and at dewmini's own default width: all three rows now
-read as a normal line of label text above a comfortably-sized toggle,
-and every untouched row in the same panels still lines up exactly as
-it did before. `python3 -m pytest tests --ignore=tests/e2e` clean —
-nothing here is behaviour a test suite would catch, since the grid
-still parses and the toggle still works either way; only a screenshot
-shows the difference.
-
-*Cost to change: five lines of CSS and three class attributes, once
-the three affected rows were actually found rather than guessed at.
-The lesson is the same one this project keeps re-learning from a
-different angle each time: a component built for the common case (a
-one-word label) needs a second look the moment real content is longer
-than the case it was designed around, and the way to find every place
-that happens is to read the data the component renders, not to eyeball
-the finished page and hope nothing else is affected.*
-
-**7.127 — Atkinson Hyperlegible swapped for Lexend, on Josh's own call
-after using both.** Not a bug: 7.123 shipped Atkinson Hyperlegible
-(Braille Institute of America, built for low-vision legibility) as one
-of the two accessible reading fonts, alongside OpenDyslexic. Asked
-directly while looking at the rest of the texture panel for other small
-issues, Josh preferred Lexend instead — Google's own font built to
-reduce the visual complexity linked to reading difficulty — and, asked
-separately, wanted **High contrast** to force Lexend too rather than
-keep forcing the font it was replacing.
-
-**Vendored the same way, with one real difference the switch surfaced:
-Lexend ships no italic face at all.** Atkinson Hyperlegible and
-OpenDyslexic both come from `@fontsource` as four static faces —
-regular, bold, and an italic of each — copied by `build-vendor.mjs`'s
-`ACCESSIBLE_FONTS` loop under one shared `FACES` list applied to every
-font. Lexend's own `@fontsource` package has only two: regular and
-bold, no italic files in it to copy at all — the upstream family never
-drew one. `ACCESSIBLE_FONTS` now lists each font's own faces rather
-than assuming one list fits both; a page asking for italic Lexend gets
-the browser's own synthetic slant, the same fallback any font missing
-that face gets, not a build failure or a silently absent font.
-
-**The rest was a name swapped in four places once the CSS rule itself
-was renamed.** `:root[data-font="atkinson"]` became
-`:root[data-font="lexend"]`; the Font row's own button, in both
-`compose/dewmini.html` and `assets/shell.html`, changed its
-`data-value` and label to match; `:root[data-contrast="high"]`'s own
-forced `--dl-font-family` changed the same way, per Josh's answer on
-scope. No JavaScript changed — `data-font` is read and set generically
-off whichever button was clicked, with no fixed list of valid values to
-extend, the same design that let 7.123 add two fonts to a three-font
-row with no logic change either. A reader who had Atkinson Hyperlegible
-selected before this shipped keeps that value in their own saved
-`dewlab:texture` state; it no longer matches a `data-font` rule, so
-their page quietly falls back to the family the base rule sets, the
-same graceful path any unrecognised `data-font` value already took —
-not a migration this change needed to write by hand.
-
-**Verified in a real browser.** Lexend loads and applies as the body
-font from the Font row, confirmed via `document.fonts` rather than
-assumed from the CSS alone; High contrast forces it regardless of
-which font was active first; OpenDyslexic, untouched by this change,
-still applies correctly on its own button. `python3 -m pytest tests
---ignore=tests/e2e` and the full `tests/e2e/test_dewmini_workbench.py`
-suite both re-run clean — neither exercises font rendering directly,
-so the browser check is what this entry's own verification rests on.
-
-*Cost to change: small, once the italic gap was found. A CSS rule
-renamed in five places and a vendor-pin swap would have been the whole
-of it; the real content is `ACCESSIBLE_FONTS` no longer assuming every
-accessible font ships the same four faces the first two happened to
-share — an assumption a font added later could just as easily have
-broken again if this hadn't been noticed and fixed at the source now.*
-
-**7.128 — A cell left blank vanished the moment the File view was
-opened and closed again, with nothing said about it.** Found during an
-open-ended UI review, not reported first-hand: insert a fresh Python
-cell from the seam, glance at the File view, switch back to Cells, and
-the cell one had just added was gone. The same thing happened to a
-cell a reader had cleared out mid-edit, which is the more worrying
-case — the notebook lost work the reader could see they still had.
-
-**The cause sat in `parsePyCells()`'s own `flush()`, the routine that
-turns one stretch of the file's text back into a cell.** It kept a
-cell only `if (content.trim())` — true for a genuinely empty document
-(a plain, brand-new `.py` file has no cells to speak of, and that part
-is correct), but also true for a stretch that sits between two real
-`# %%` markers and simply has nothing typed into it yet. `flush()` had
-no way to tell those two apart: "nothing here because no cell asked
-for one" and "nothing here because this cell is blank right now" both
-trimmed to the empty string. `commitFileText()` calls
-`mergeParsedCells(cells, parsePyCells(text))` on every path that
-leaves the File view (`setView()`, by way of `flushFileEditor()`), and
-`mergeParsedCells()` only ever looks at what `parsePyCells()` handed
-it — a cell `flush()` never pushed was never a candidate to survive,
-however carefully the merge itself was written.
-
-**Fixed by making the marker itself the signal, not the content.** A
-`# %%` (or `# %% [markdown]`) line sets `currentType` away from
-`null`; `flush()` now keeps whatever it collected once that has
-happened, blank or not, and only drops a blank stretch when
-`currentType` is still `null` — the one case with no marker of its own
-asking for a cell to exist there, which is the leading segment before
-the first marker in the file, or the whole file when it has no marker
-at all. One line changed, from checking `content.trim()` alone to
-`content.trim() || currentType !== null`.
-
-**A narrower edge case was left alone, on purpose.** A notebook of
-exactly one blank Python cell, serialized `bare` (7.125's own case —
-no marker at all for a lone cell), still reads back as zero cells: an
-empty file and "one cell with nothing in it" are genuinely the same
-bytes with no marker to tell them apart, unlike the marked case this
-entry fixes. Left as a known gap rather than papered over, since
-closing it would mean deciding what an empty `.py` file *means* by
-convention rather than reading a marker that says so.
-
-**Verified with a new e2e test**
-(`test_a_blank_cell_survives_a_round_trip_through_the_file_view`,
-alongside the existing `test_a_round_trip_through_the_file_view_keeps
-_outputs`, which exercises the same File→Cells path with a non-blank
-cell and still passes): add one real cell, add one left blank, switch
-to File and back, and the blank one is still there. Full
-`tests/e2e/test_dewmini_workbench.py` (168 tests, one more than
-7.125's count) and the rest of the suite both clean.
-
-*Cost to change: one condition in one function, once the two "nothing
-here" cases were told apart. The lesson: a parser that reads "no
-content" as "no cell" is only safe when there is truly no other signal
-available — the moment a format has an explicit marker for where a
-cell starts, that marker is the one thing to trust, not a guess from
-whatever ended up between two of them.*
-
-**7.129 — Three comments in `compose/dewmini.html` described the
-Library/Workbench/Settings panels' own docking backwards.** Also found
-during the same open-ended UI review as 7.128, not a bug a reader could
-see. The toolbar-order comment claimed toggles were ordered "left-docked
-rail first, then the two right-docked ones"; the Library panel's own
-comment claimed it was "docked left, and independent of the two
-right-docked panels"; the Workbench panel's claimed it was "docked right
-and mutually exclusive with Settings, which shares that edge." Read
-against the actual CSS and the `wirePanel()` call in `dewmini.js` that
-wires the real conflicts, all three have it backwards: Library and
-Settings are the two right-docked panels sharing an edge (`.dm-panel`'s
-own default is `right: 0`; `.dl-settings` matches it), and Workbench is
-the one left-docked panel (`.dm-panel-left`), free to stay open beside
-either. `CLAUDE.md` calls a stale comment worse than no comment, and
-this is the case in point: a comment that reads as confidently correct
-prose is exactly the one nobody re-checks against the code once it no
-longer matches.
-
-**Fixed by rewriting each to describe what the code actually does,**
-citing the specific mechanism rather than restating a claim: the
-toolbar-order comment now says the order follows what a reader does
-with each panel (look something up, work, configure), not which edge
-it opens on; the Library and Workbench comments each name `wirePanel()`
-and its `conflicts` list as the actual thing enforcing "these two close
-each other, this one doesn't." No behaviour changed — CSS classes,
-`wirePanel()` calls and `watchPanelOverlap()`'s own `{left, right}` map
-were already correct; only the prose describing them was wrong.
-
-*Cost to change: three comments, once actually checked against the CSS
-classes and the `wirePanel()` conflict lists on the elements they sit
-above, rather than trusted on read. Comment review like this has no
-test to catch it — nothing here changes what runs — which is exactly
-why a comment that claims a wrong thing confidently can sit uncorrected
-for a long time.*
-
-**7.130 — Every segmented control in Settings announced itself to a
-screen reader as a row of independent toggle buttons, when picking one
-option always deselects the others.** An accessibility review flagged
-it: Theme, Font, Width, Density, Cursor, and every other `.dl-seg`
-group — about two dozen of them across `assets/shell.html` and
-`compose/dewmini.html` — read out as "toggle button, pressed" or "not
-pressed" for each button in turn, with nothing telling a screen reader
-the buttons belonged to one group or that only one of them could ever
-be true at once. A sighted reader sees the group at a glance; a screen
-reader user had to infer it from context, one button announcement at
-a time.
-
-**The cause was `aria-pressed`, the correct attribute for an
-independent on/off toggle button and the wrong one for a set of
-mutually exclusive options.** `.dl-seg` has only ever had one shape —
-a row of `<button data-value="...">`, exactly one carrying the
-"current" choice — and every one of the half-dozen places that wire
-it up (`initTexture()`'s own sync loop, plus a separate one for each
-of Run time, Notes nudge, Progress badges, Versions, Practice order,
-and Cell types, split across `assets/tutorial-runtime.js` and
-`compose/dewmini.js`) copied the same `aria-pressed` line, because the
-first one written did and nothing since had reason to question it.
-WAI-ARIA has a purpose-built pattern for exactly this shape — a
-radiogroup — and none of these groups used it.
-
-**Fixed by moving every `.dl-seg` onto the APG radiogroup pattern.**
-`role="radiogroup"` on the container and `role="radio"` on each button
-are static and went straight into the HTML, alongside a label: an
-`aria-labelledby` pointing at the row's own visible `<span>` (given an
-`id` where it didn't already have one) where there was text to point
-at, or an `aria-label` for the two rows that share a label with the
-row above them (the second Font row) and so have an empty `<span>` of
-their own. What changes at runtime — which button is checked — moved
-from `aria-pressed` to `aria-checked`, through two small shared
-helpers (`setSegChecked()`, `syncSegRoving()`) added once in each JS
-file rather than repeated at every call site, the second of which also
-keeps the roving tabindex the pattern calls for: the checked button is
-the group's one tab stop, or the first button when nothing is checked
-yet (Width's slider can sit between its three presets with none of
-them lit). A single `initSegKeyboardNav()`, wired once per file over
-every `.dl-seg` on the page rather than once per group, adds
-ArrowLeft/Right, ArrowUp/Down, and Home/End: each calls `.click()` on
-the target button before focusing it, so keyboard selection runs
-through the exact same code path a mouse click already did and the two
-can never disagree about what a selection means. `tutorial-style.css`'s
-`.dl-seg button[aria-pressed="true"]` became
-`[aria-checked="true"]`; the unrelated `[aria-pressed="true"]` rules
-for the editor-status picker and dewmini's reference filter chips —
-genuinely independent toggles, not this pattern — were left alone.
-
-**Verified in a real browser.** `python3 build.py --clean` and
-`python3 -m pytest --ignore=tests/e2e -q` both clean, and two new e2e
-tests against dewmini's Theme group
-(`test_the_theme_group_announces_itself_as_a_radiogroup`,
-`test_arrow_right_moves_focus_and_selection_together`, plus a third,
-`test_arrow_right_wraps_from_the_last_option_to_the_first`) — `role`,
-`aria-checked`, and an ArrowRight press moving both focus and the
-checked state to the next button, wrapping past the last one back to
-the first. Full `tests/e2e/test_dewmini_workbench.py` (103 tests,
-three more than before this entry) clean.
-
-*Cost to change: two roles and a label per group in the HTML, one
-attribute rename and one small roving-tabindex helper in the JS,
-written once and reused rather than copied per group. The lesson:
-`aria-pressed` and a radiogroup's `aria-checked` render almost
-identically on screen — the same row of buttons, the same highlighted
-one — which is exactly why the first `.dl-seg` written with the wrong
-one went unnoticed long enough for every later group to copy it rather
-than question it. A widget's accessibility tree is not implied by its
-CSS.*
-
-**7.133 — A large plotted figure could blow this browser's storage
-quota and cost a reader their code and notes along with it, not just
-the figure.** `tutorial_tools.py`'s `_figure_html()` embeds every
-matplotlib figure as a base64 PNG straight into a cell's output HTML —
-easily a few hundred KB from one cell, next to a typical printed
-result's few dozen bytes. `saveNow()` (`tutorial-runtime.js`) builds
-one JSON record covering every cell's code, output and the reader's own
-notes, and writes it with a single `localStorage.setItem()`. When that
-throws — the record now too big for what this browser will hold —
-the whole call failed, and the *only* sign of it was a line inside the
-Settings panel a reader would have to go looking for. Nothing about the
-storage itself was actually wiped: `setItem()` leaves the previous
-saved value alone on failure, so what was lost was ongoing —
-every future autosave kept failing the same way for as long as that
-oversized output stayed part of the record, silently discarding new
-code and notes from that point on, not the reader's whole saved history
-in one shot as first suspected.
-
-Fixed with a retry inside `saveNow()`'s existing `catch`: on failure,
-check whether any one cell's `output_html` is over
-`SAVED_OUTPUT_STRIP_THRESHOLD` (100,000 characters — comfortably below
-a real figure, comfortably above ordinary printed output) and, if so,
-save again with just that cell's `output_html` blanked rather than the
-whole record dropped. A blanked `output_html` already restores as "not
-run" (the same path a cell that has never run takes), so a reader gets
-their figure back with one more Run press after a reload — the code
-that produced it was never at risk. Only if the slimmed record still
-does not fit does this fall through to the original message admitting
-nothing saved at all. The new message names what happened rather than
-repeating the generic one: "Saved your code and notes, but this browser
-ran out of room for a large figure. Run that cell again after reloading
-to see it."
-
-**Verified in a real browser.** `python3 build.py --clean` and
-`python3 -m pytest --ignore=tests/e2e -q` both clean. Three new e2e
-tests in `tests/e2e/test_saved_progress.py`
-(`TestOversizedOutputFallback`), overriding `Storage.prototype.setItem`
-to throw past a size deterministically rather than trying to actually
-fill a browser's real quota: the oversized cell's own output is dropped
-while a second cell's freshly-typed code still saves, the status line
-names the reason rather than claiming an ordinary save, and a reload
-shows no output for the dropped cell (ready to be run again). Full
-`tests/e2e/test_saved_progress.py` clean.
-
-*Cost to change: one length check and one map inside an already-
-existing `catch`, no new UI. The lesson: `localStorage.setItem()`
-either writes the whole new value or leaves the old one alone — it is
-not the transaction most code assumes it to be until a failure path
-actually gets read closely, and "silently wipes everything" and "silently
-stops saving anything new" look identical from a glance at the code but
-call for different fixes.*
-
-**7.131 — Three more small accessibility gaps in the reader's own
-runtime, found in the same review that turned up 7.130.** None crashed
-anything or looked wrong on screen — all three only showed up once a
-keyboard or a screen reader, rather than a mouse and eyes, was the way
-of using the page.
-
-**A collapsed cell's one-line summary was a `<div>` pretending to be a
-button.** `.dl-cell-collapsed-summary` (`build.py`, plus the two custom-
-cell markup strings in `tutorial-runtime.js`) had `tabindex="0"` and a
-click handler, so a mouse and a sighted Tab-and-Enter user could both
-use it — but no `role="button"`, so a screen reader announced it as
-plain text, and its own keydown handler only checked `"Enter"`, so
-Space — the other key any real `<button>` answers to — did nothing.
-Fixed by adding `role="button"` at all three markup sites and `" "` to
-both keydown checks, with `ev.preventDefault()` alongside it so Space
-opens the cell instead of scrolling the page.
-
-**The "⋯" run menu (Run above / Run below) was the one panel on the
-page that didn't close on Escape.** Settings, Reference and SeriesNav
-each already have their own `document.addEventListener("keydown", ...)`
-checking `ev.key === "Escape"`, closing the panel and returning focus
-to whichever button opened it. `initCellRunMenu()` had an outside-click
-handler doing the closing half, but no Escape handler at all — the one
-way every other dismissible panel here can be closed without a mouse
-was missing from this one. Added the same pattern: Escape closes the
-menu and returns focus to `.dl-btn-more`.
-
-**A cell finishing a run said nothing to a screen reader.** The
-"Running… Xs" run-line is deliberately not a live region — its own
-comment already explains why, ticking ten times a second would be
-noise, not news — but nothing replaced it with an announcement once a
-run actually finished. A screen reader user pressing Run had no signal
-anything happened at all, short of manually re-finding the output
-region afterward. Added one shared `#dl-run-announcer`
-(`role="status" aria-live="polite"`, visually hidden with a new
-`.dl-sr-only` class rather than `hidden`, which would also pull it out
-of the accessibility tree), updated once a run completes: "Ran — output
-below" or "Ran — error", checked via `.dl-error` in the cell's own
-output, the same way the e2e tests already do. Cleared to empty text
-first, with the real message set a tick later — a live region only
-announces on an actual change, and running the same cell twice in a
-row would otherwise go silent the second time.
-
-**Verified in a real browser.** New e2e tests: two on the collapsed-
-summary (`role="button"` present, Space expands it), one confirming
-Escape closes the run menu and returns focus, and three on the
-announcer (a successful run, an errored one, and the same cell run
-twice in a row, each polling for the expected text rather than assuming
-the announcer's own next-tick update has already landed).
-`python3 -m pytest tests/e2e/test_cell_collapse_duplicate.py
-tests/e2e/test_cell_run_menu.py -q` and the rest of the suite both
-clean.
-
-*Cost to change: an attribute and a key check for the fake button, one
-keydown listener matching three already-written ones for the menu, one
-hidden live region and a handful of lines for the announcer. None of
-the three needed new UI — every one of them was a real interactive
-element already, just one that only fully worked for a mouse.*
-
-**7.132 — dewmini's own run announcement had 7.131's "same result
-twice in a row" bug, not 7.131's original gap.** Checking dewmini for
-the same missing-announcement problem found it was already covered:
-`runCell()` and `runCellBatch()` in `compose/dewmini.js` both call
-`updateStatus()`, which writes straight into `#dm-status`
-(`role="status" aria-live="polite"` in `dewmini.html`) — dewmini has
-announced "Ran." (or an error) after every run for as long as that
-function has existed. What it did not have was 7.131's fix for the
-narrower bug underneath: `updateStatus()` just set
-`statusEl.textContent = message` directly, so running the same cell
-twice in a row, both times ending in the identical "Ran.", changed
-nothing a live region could detect — the second announcement went
-silent. Fixed inside `updateStatus()` itself, not at its ~30 call
-sites: when the incoming message equals what is already showing, clear
-it and set the real text a tick later, the same pattern 7.131 used for
-`#dl-run-announcer`. Every other call — the large majority, where the
-new message differs from the last one — keeps its exact previous
-synchronous behaviour, so nothing timing-sensitive elsewhere in the UI
-had to change.
-
-**Verified in a real browser.** `python3 build.py --clean` and
-`python3 -m pytest --ignore=tests/e2e -q` both clean. One new e2e test,
-`TestStatusAnnouncer::test_running_the_same_cell_twice_announces_both_times`
-in `tests/e2e/test_dewmini_workbench.py`, running one cell twice in a
-row and polling `#dm-status` for "Ran." after each — clean, along with
-the rest of that file.
-
-*Cost to change: one branch inside one already-existing function,
-because the bug lived in the one place every status message already
-passes through. The lesson from re-checking rather than assuming: the
-task this was filed as ("dewmini has no run announcement") was wrong —
-it already had one — and the real gap only turned up by reading
-`runCell()` and `updateStatus()` directly instead of trusting the
-title on the task.*
+**7.108 — Restart and run all, as one button.** Throw the interpreter away, then run every cell from the top — the reproducibility check that pairs with 7.105's marker.
+
+**The two halves already existed and needed only wiring:** `restartPython()` (factored out of the existing "Restart Python": `engine.restart()`, `dfs.reset()`, then `ensurePyodide()`) followed by the existing `runAllCells()`.
+
+**Whether this is "just a label" was the open question, and the answer is no.** `runAllCells()` only resets the *namespace* — clear and re-seed the same interpreter. `engine.restart()` is a genuinely fresh interpreter, also clearing Jedi's completion cache and the mounted filesystem handle, neither of which the namespace reset touches. So "Restart & run all" is a strictly stronger check, not a second name for the same thing, and Settings now offers both.
+
+*Cost to change: very small — one factored-out function, one new button, two confirm dialogues.*
+
+**7.109 — Three of dewmini's own cell features, ported onto tutorial and practice pages.** `planning/CELL_IDENTITY.md` asked directly: tutorials, practice, and dewmini show the same idea — a cell running Python against a shared session — in three different pieces of markup. Full unification (one rendering function shared by `build.py`'s static HTML and dewmini's live JS array) is a large, invasive change explicitly not chosen here. What shipped instead: the stale badge, the "⋯" Run above/below menu, and Restart & run all (7.105, 7.106, 7.108) ported onto `build.py`'s `render_cell()` and `assets/tutorial-runtime.js`, keeping the two engines and DOM systems separate, per the project's convention of a thin copy per page rather than a shared abstraction.
+
+**Not ported:** the numbered identity pill (still an unbuilt design, dewmini included) and maths-in-text-cells (a tutorial's prose already renders `$…$` independently of dewmini's text-cell type).
+
+**The one real engineering gap, closed here:** `assets/tutorial-runtime.js` had no `resetPageState()`/`restart()` equivalent at all. Both now exist, built the way `pyodide-engine.js`'s already were, reusing the existing worker message type and a newly-named `RESEED_GLOBALS_SOURCE` constant. Cell-run functions also now return whether a run raised, needed to count errors across a batch.
+
+*Cost to change: small. Every new function names the dewmini original it was ported from. The real ongoing cost is the shared-implementation question this deliberately defers. 7.110 builds the identity pill, in dewmini.*
+
+**7.110 — The full cell-identity design, built in dewmini.** The numbered pill, per-type colour, merged run-line, and collapse triangle `CELL_IDENTITY.md` designed and 7.109 left out — built now on request, with three amendments made because building surfaced questions the mockup hadn't:
+
+**Collapse is for every cell type, not only code-bearing ones.** The design reasoned Text/HTML didn't need it since they already have a rendered form to shrink to — true once rendered, but a long Text cell in *edit* mode has no such fallback. Both types get the triangle now.
+
+**A header-end group, with a genuinely new feature: Duplicate** — insert a copy of a cell right after itself. Not optional garnish: without it, the designed header-end layout (Edit, Duplicate, Delete) has a hole in it.
+
+**The collapse triangle is one rotated chevron, not two swapped triangles** — the mockup's filled ▾/▸ read as confusingly similar to the Run button's own ▶ nearby; a single `›`, rotated by CSS, reads unambiguously.
+
+**Run order resets on any reset, not only a full restart** — `runCellBatch()`'s reset path already cleared the Python namespace but never told the run-line, so a cell's line could disagree with the namespace state until a full restart. Fixed to reset alongside any namespace reset.
+
+**Not ported to tutorial or practice pages** — those keep 7.109's narrower slice; the type-colour system needs real content to colour (tutorials are Python-only) and the layout move is separate work on the primary reading surface.
+
+*Cost to change: medium. `createCellElement()` is substantially rewritten as one well-organised function rather than several scattered ones. `lastRunMs` is no longer persisted, since it's meaningless without `ranOrder`, which was never persisted either — no migration needed.*
+
+**7.111 — The style guide gained a plain-language section, and the four student-facing surfaces were rewritten to it.** The contents page, About page, topic tree, and 251 glossary definitions all passed §4 of `PEDAGOGICAL_STYLE_GUIDE.md` as written — invitational, warm, prose not bullets — and were still hard to read: §4 governed stance, not sentence architecture, and §1 says a reader may be working in a second language.
+
+Six habits ran through all four surfaces: a short main clause with an em dash carrying the actual meaning; definitions written as participles rather than sentences; contrast before definition; metaphor replacing the plain statement rather than following it; Irish/British idiom; and a closing aphorism.
+
+Measured before and after: the About page went from 29.7 words/sentence (Flesch–Kincaid 14.1) to 17.7 (FK 8.2); the contents page 17.7→11.5 (FK 9.4→6.1); `topics.yaml`'s descriptions 18.7→15.8 (FK 9.3→7.9); the glossary 15.8→13.4 (FK 8.5→7.4). 25 of 81 topic descriptions and 64 of 251 glossary definitions were rewritten — only those breaching the new rules.
+
+The rule went into §4 as a subsection, since several planning documents and a skill cite this guide by section number.
+
+*Cost to change: small for the guide, large for the prose — reverting means putting back text across `build.py`, `topics.yaml`, and 30-odd glossary files. `tests/test_build.py`'s contents-page test checks that the introduction exists, not its exact wording — update the phrase there rather than working around it.*
+
+**7.112 — The contents page introduction is one paragraph and six points, in the order a reader meets them.** Six paragraphs and 254 words answered several independent questions in prose — what is a cell, can I break this, where does my work go, how is the list organised, where do I start — so a reader with one question had to read the rest to find it. §4's prose-over-bullets rule is about an *explanation*, where the joins between sentences carry the reasoning; six separate answers to six separate questions have no joins to remove, so this is a noted exception, not a breach.
+
+Two points were reframed after the first draft got them wrong: "we try things before we name them" is really about the sequence — explore, then the principle, then the name, since the name is how a student talks to somebody else about what they just did (now in §3); the practice point's answers sit below the problems because the answer was never the thing worth protecting.
+
+§4 gained the sentence-level rules this exposed: mark a sequence with *first… then… then*, don't make a reader hold a negative before there's anything to hold it against, "we" for the learning and "you" for what is theirs, hedge any non-binary claim.
+
+*Cost to change: trivial for the wording, small for the shape — the points live in one list in `render_index()`; reverting means deleting `.dl-intro-points` and both exception notes.*
+
+**7.113 — The pill and the run line, ported onto tutorial and practice pages too.** 7.110 built the numbered pill and merged run-line in dewmini, leaving tutorial/practice pages on 7.109's narrower slice; this carries both over. `build.py`'s `render_cell()` now renders a `.dl-cell-pill` (`Cell N`, a coloured "Python" badge) and a single `.dl-cell-runline` span in place of the old bare id and separate stats/stale-badge pair; the run-line machinery in `assets/tutorial-runtime.js` is a close copy of dewmini's, adapted to read code from CodeMirror directly.
+
+**The pill's number is static, not live** — a tutorial page's cells can't be reordered, so `render_cell()` takes the fixed 1-based position as an argument; no drag handle exists for the same reason.
+
+**No new colour token, and no drag/collapse/Duplicate.** Every authored cell is Python, so the badge always reads "Python." Custom (reader-added) cells were left out of this port. There is no header→footer move needed here: `render_cell()`'s bar was already positioned correctly before dewmini had one — dewmini was the side that needed to move to match.
+
+*Cost to change: small. The only real new surface is `render_cell()`'s `number` parameter.*
+
+**7.114 — Collapse and Duplicate, the rest of dewmini's cell anatomy, ported to tutorial and practice pages.** Duplicate needed a real design decision: every dewmini cell is the reader's own, so "duplicate" means "copy something I own." An authored tutorial cell is the tutorial's fixed content. Chose to have Duplicate drop a copy in as a new *custom* cell right after the original — keeps the button meaningful everywhere the pill/run-line are, and turns "try it yourself" into one click.
+
+**Duplicate reuses the existing custom-cell insertion seam** via `duplicateAsCustomCell(cell, type)`, landing right after the copied cell using `cell.element.nextElementSibling` — the first version used `lastDividerFor(cell.id)`, which finds the *last* divider under an anchor, so a second duplication landed after a reader's own inserted cell instead of after the original.
+
+**Collapse applies to every cell with editable content**, the same table `CELL_IDENTITY.md` §4 settled for dewmini. One function, `setCellCollapsed(cell, collapsed)`, serves both authored and custom cells by reading fields off whichever cell object it's given, since this file builds the two kinds through different functions unlike dewmini's single closure.
+
+**Collapse must save immediately, not on the debounced timer** — the first pass wired it through the same debounced save every keystroke uses, and an e2e test caught reload beating the 500ms timer. Fixed to save directly, matching dewmini's own behaviour.
+
+**Corrected while writing this: 7.113 overstated what was left** — it claimed the header→footer layout move stayed dewmini-only, which was never true. Fixed in both entries. (Renumbered from 7.111/7.112 to 7.113/7.114 while merging main, since those numbers were taken by the plain-language pass landing first from a sibling branch.)
+
+*Cost to change: small. Any new way to mutate `cell.collapsed` needs an immediate save call alongside it — easy to reintroduce by copying the pattern every other mutation in this file follows.*
+
+**7.115 — A text cell's chrome finally goes quiet until touched, in dewmini and on tutorial and practice pages both.** `CELL_IDENTITY.md` §4 described this from the start — a Text cell renders by default and hides its own chrome (`opacity: 0; pointer-events: none`, not `display: none`, so a keyboard user tabbing onto a hidden control still reveals it) until touched. Earlier entries implied dewmini already had this; checked directly, it never did.
+
+**One rule, no JavaScript, on either side.** `.dm-cell-text:not(:hover):not(:focus-within)` fades the head/collapse column; `@media (hover: none)` keeps chrome on for touch devices. No JS class-toggling needed — focusing the textarea already makes the cell match `:focus-within`.
+
+**Deliberately not changed:** a single click on the rendered view still starts editing directly, with an explicit Edit/View toggle as the accessible alternative — established behaviour, outside this entry's scope.
+
+*Cost to change: trivial. Pure CSS on both sides.*
+
+**7.116 — HTML, the first of the four new cell types §8 designed, built in dewmini.** Source is a CodeMirror editor; rendering is a sandboxed `<iframe sandbox="allow-scripts" srcdoc="…">`, no `allow-same-origin` — a reader's HTML cannot reach the page's own window, storage, or DOM.
+
+**Rendering, not source, is the click target — unlike Text**, since a click inside a cross-origin iframe never bubbles to the parent document; the header's Edit/View toggle is the only way in.
+
+**A real bug: `if {} else {} else if {}` is invalid JavaScript**, hidden by this file's `.js` extension from `node --check`, which parses a plain `.js` file as CommonJS rather than the ES module it runs as in the browser. Checking against a temporary `.mjs` copy reproduces the real `SyntaxError` — worth reaching for on any future change to `dewmini.js` or `tutorial-runtime.js`.
+
+**Another real bug, caught by an e2e test:** `readCells()`'s type whitelist would have silently dropped every saved HTML cell on reload. Fixed to check membership in `CELL_TYPES` generally, correct for future types too.
+
+**A test-tooling wrinkle:** hovering a cell's geometric centre doesn't reliably trigger `:hover` when that point is inside a sandboxed iframe under Playwright's synthetic input; the test helper now hovers the header row instead.
+
+*Cost to change: small. The HTML branch mirrors Text's shape closely enough that the next type should be a similarly small addition.*
+
+**7.117 — CSS, the second of the four new cell types, built in dewmini.** Close to a copy of 7.116's HTML branch, with two differences settled beforehand: the iframe's `srcdoc` is a fixed little sample page with the reader's rule injected ahead of it, not the reader's own markup; and styling the HTML cell above it was set aside, since that would make a CSS cell's behaviour depend on cell order.
+
+**A UX bug caught before shipping:** a new CSS cell opened with its editor already hidden, since the first pass called `showRendered()` unconditionally. Fixed to the same rule HTML and Text use — only a cell restored with existing content opens to its preview.
+
+`READ_NOT_RUN_TYPES` (`text`, `html`, `css`) replaced an accumulating `||` chain, reading as what it means rather than a growing exception list.
+
+*Cost to change: small, and getting smaller — CSS took noticeably less new code than HTML. SQL and JavaScript won't get the same discount: both need a genuinely new execution engine.*
+
+**7.118 — SQL, the third of the four new cell types, built in dewmini — on Python's own `sqlite3`, not the *sql.js* engine `CELL_IDENTITY.md` §8 had specified.** Implementation started on sql.js (a second WebAssembly interpreter alongside Pyodide) but was set aside mid-build: dewmini already runs Python, and Python already ships `sqlite3` as an ordinary loadable Pyodide package. Two engines would mean two data models with nothing bridging them; one engine means a SQL cell's `CREATE TABLE` is immediately readable from a Python cell via `pd.read_sql()`. All sql.js groundwork was reverted before anything was committed.
+
+**What got built.** `_run_sql_cell(conn, script, max_rows=20)` in `tutorial_tools.py` splits a script on a bare `;` (a plain split, not a real parser), runs every statement but the last, and renders only the last statement's result — a table if it has columns, otherwise "N rows affected." A SQL cell's content is wrapped by `buildSqlCellCode()` into one generated Python line, the script `JSON.stringify()`-encoded (a strict subset of Python's own escaping) rather than hand-rolled triple-quoting.
+
+**`db`: a fresh in-memory `sqlite3.connect(":memory:")` connection**, created at boot and on every reset.
+
+**The bug this caught before it shipped:** the rarely-used main-thread fallback got `db`, but the Worker path most sessions actually take — shared with hosted tutorial pages — carries its own separate copy of the seed source and was never touched, so `db` would have been silently absent for almost everyone. Fixed by gating a new worker-side seed source behind a `seedDb` flag set only by dewmini's own boot message.
+
+**Verified in a real browser**, since the point was interoperability no Python-only test could prove: a multi-statement script renders only the final result with no duplicate; a Python cell reading `db` sees exactly what a SQL cell wrote; the worker-mode wiring specifically (not only the fallback) actually took effect.
+
+*Cost to change: the sql.js redirect cost nothing already spent — caught before a build ran against it. JavaScript, next, does not get this same discount: a persistent sandboxed session is a real second runtime.*
+
+**7.119 — JavaScript, the fourth and last of the four new cell types, built in dewmini — and a redeclaration bug in its own design doc, caught by actually running the code.** `compose/js-cell-engine.js` plays the role `pyodide-engine.js` plays for Python — one persistent session, created lazily, needing no Worker: a sandboxed `<iframe sandbox="allow-scripts">` with no `allow-same-origin` is already a memory-isolated realm with its own JS engine. No Stop button exists here, since the iframe runs on the tab's main thread.
+
+**The bug:** the design's first draft said code gets "posted into that iframe and evaluated there," read as inserting a `<script>` tag — wrong, because a `<script>` tag's top-level `let`/`const` join the realm's one permanent global environment, so re-running an edited cell throws a redeclaration error. Not caught by reading the design; caught by actually re-running a `let`-declaring cell in a browser.
+
+**The fix: indirect `eval`, `(0, eval)(code)`.** Its top-level `let`/`const` live in a scope private to that one call, so a cell can always be re-run — at the cost of those bindings no longer visible to a *later* cell. Only `var`/`function` still persist across cells: a real, named gap from what the design promised, documented plainly (without JS jargon) in the design doc, the engine's file banner, and dewmini's help panel. A proper fix needs a real JS parser, out of scope here, the same trade SQL made with its plain-split parser.
+
+Indirect eval also simplified error handling (a synchronous error caught directly around the `eval()` call); an unhandled promise rejection still needs a `window` listener, since it fires after `eval()` returns. Top-level `await` stays unsupported, since wrapping code in an `async` function would swallow its own top-level declarations into that function's scope.
+
+**Wiring** reuses `applyOutputEvent()` (exported from `pyodide-engine.js` rather than duplicated) for output, since both engines share a realm with `dewmini.js` and the same cellId lookup. `runCellBatch()` only boots each cell's engine right before its own turn, so an all-JavaScript batch never downloads Python.
+
+**Verified in a real browser:** re-running an unmodified `let`-declaring cell without error, `var`-declared state surviving into a later cell, Restart confirmed by checking a previously-`var`-declared name reads back `undefined`, a mixed Python+JavaScript "Run all." Nine new e2e tests cover the same ground.
+
+*Cost to change: real, unlike SQL's — a persistent sandboxed session plus its own message protocol is genuinely new surface. The redeclaration bug is the clearest evidence yet that verifying in a real browser is not optional once a genuinely new execution model is involved.*
+
+**7.120 — HTML and CSS, retired as separate types and merged into one: Web.** Not a bug fix — both worked as designed on their own. The merge came from using both: a CSS cell could only ever style a fixed sample page, never a reader's own markup, and an HTML cell had no CSS of its own reachable at all — a pairing 7.117's design had explicitly declined to guess at. One cell with both halves removes the question rather than answering it differently.
+
+**What changed.** `CELL_TYPES.WEB` replaces `HTML`/`CSS`. A cell gains a second content field, `style`, alongside `content` (now HTML) — the first time any dewmini cell needed two independent source fields, touching cell creation/duplication, save/restore, and a new `destroyCellEditors(cell)` helper replacing six separate teardown call sites.
+
+**Two editors, always both visible, one Render button** rather than auto-render-on-blur (which would double-fire for one edit). `READ_NOT_RUN_TYPES` narrowed to Text alone. An empty HTML half still falls back to the fixed sample page, so the old standalone-CSS use case still works.
+
+**Migration: each old cell becomes its own new web cell, never merged with a neighbour.** `migrateLegacyCellType()` maps a standalone HTML cell to a web cell with an empty CSS half and vice versa — deliberately not smarter than that, since guessing that a neighbouring pair was meant together risks silently combining cells a reader didn't intend combined.
+
+**Export paths that would have silently dropped the CSS half** — all three export paths used to read only `cell.content`. A new `cellExportContent(cell)` helper folds a non-empty CSS half into the exported text for all three.
+
+**Verified in a real browser:** both editors independently editable with no toggle; a CSS rule genuinely styling the same cell's own HTML; Render staying inert until clicked; reload persistence for both halves; the migration path itself. Ten e2e tests replace the eleven the two old types had, covering more.
+
+*Cost to change: smaller than SQL's or JavaScript's — no new engine or sandboxing model. The real cost was breadth: six teardown call sites, three export paths, a data migration, and every doc/design surface that named HTML and CSS as two things rather than one.*
+
+**7.121 — Site: an .html file opens as a small website, on the same mounted filesystem — and a first design for it, built and then thrown away before it was ever committed, because `main` had moved underneath it.** The follow-on from 7.116–7.120: dewmini can run HTML, CSS and JavaScript separately; showing them together as three real files, not three cells, is the obvious next step.
+
+A first version was built directly on this branch's own base, with a fixed `site/index.html`/`style.css`/`script.js`, a bespoke Workbench section with its own load/save/debounce plumbing, and the three files hidden inside a `site/` subfolder so Files' flat list wouldn't show them. Checking `origin/main` before committing found it had moved three commits past this branch's base in the meantime — a notebook-as-one-Python-file view, Files becoming a real file manager with open/write-back/rename, and a rail-position swap — producing real conflicting edits, resolved by hand keeping whichever side had become more complete.
+
+**Why the first version was abandoned rather than merged forward.** Main's file-manager commit already builds almost exactly the "open into a tab, edit, debounce a write back to the real filesystem" mechanism the bespoke Site panel was reinventing. Building Site as its own section made sense only while Files couldn't open anything — once it can, a second open/edit/save path next to it is duplication.
+
+**What shipped instead: a third tab kind, not a fourth panel.** `VIEWS` gains `SITE` alongside the existing `CELLS`/`FILE` enum. `openWorkspaceFile()` now also accepts `.html`, looks for a same-base-name `.css`/`.js` beside it (base-name pairing, not three fixed names), and opens a tab with no cells. The three files' live text sits directly on the notebook object, persisted the same "localStorage cache, debounced real write" way `.path` already is. The HTML file is always written; CSS/JS only once there's something in them. Neither sibling file needs to exist for the tab to open.
+
+**Split screen, not a Render button** — editors on one side, a live sandboxed iframe on the other, updating on every keystroke: a site is something a reader keeps looking at continuously while building it, unlike a Web cell's one-shot question. The Python-notebook-only toolbar buttons hide themselves behind one shared class for a site tab.
+
+**One CSS bug worth naming, because it recurs:** hiding those toolbar groups via the `hidden` attribute did nothing, since an author stylesheet's `display: flex` always beats the browser's own `[hidden] { display: none }` rule regardless of specificity — fixed with the same explicit `[hidden]` override every other conditionally-hidden element in this file already carries.
+
+**Verified in a real browser:** opening an `.html` renders a live split-screen preview; a sibling `.css`/`.js` pair opens beside it and all three reflect in the preview; a lone `.html` with no siblings still opens; the CSS/JS halves write back to their real files, readable from a Python cell elsewhere; a site tab survives reload. Seven new e2e tests, one needing a longer wait since two debounces stack before a site's file is durable on disk.
+
+*Cost to change: mostly absorbed by main's file-manager commit already having built the mechanism this reuses. The real cost was the false start — a working, tested implementation built and discarded because it was designed against a base three commits behind the one it needed to ship against. The lesson: a design decision made while a sibling branch is landing large, overlapping surface area has a short shelf life.*
+
+**7.122 — Five smaller things, from actually using what 7.116–7.121 built: a cell-type toggle, a real notebook location, two layout bugs, and one CSS trap caught twice in one session.**
+
+**Web and SQL cells default off, behind a per-type Settings toggle.** Not every reader wants all four new cell types offered on every seam. Web and SQL start off, JavaScript starts on, Python and Text carry no toggle — they are the notebook, not an extra. The toggle only gates what `createInsertDivider()` offers next; a cell already in the notebook keeps showing, running, and exporting regardless of its type's current toggle state.
+
+**A notebook now shows up in Files, without writing it to disk.** A notebook holding cells had nowhere to show up in Files at all, and writing every notebook out as a real file on the mounted filesystem would mean booting Pyodide on every page load — against the project's own "nothing opens on a first visit" rule. `renderNotebookList()` instead lists every open notebook with no `.path` directly in the Files panel (labelled as living in this browser), drawing instantly with no filesystem read. A notebook already backed by a real file is excluded, since it already appears under its own name.
+
+**Two layout bugs found by screenshot, not by reading CSS.** Library and Workbench opened 3rem wider than Settings by default — fixed to match on dewmini's side rather than touching the shared rule every tutorial page's Settings also uses. The per-cell "⋯" menu could run off-screen once its button sat close to the edge — fixed by measuring its own bounding rect after becoming visible and flipping to a left-anchored class when it would overflow, rather than predicting in advance.
+
+**The same CSS trap, twice.** The Site tab's note reused a class written for a row-flex parent inside a column-flex wrapper, so it flex-grew to fill the whole column — given its own class instead. And `.dm-toolbar-group`'s `display: flex` again silently beat `[hidden]`'s `display: none` for the cell-type toggle's Settings groups, fixed the same way as 7.121's own instance of the identical bug.
+
+*Cost to change: each small in isolation, none architectural. The pattern behind all five: every one was found by using the just-shipped feature in a real browser, not by re-reading the code that built it.*
+
+**7.123 — Two accessible reading fonts, and a High contrast switch that is its own toggle rather than a sixth font choice.** Framed directly: "high contrast means font and colours as a toggle" — one switch changing two things together, not a new entry in the Font row. Atkinson Hyperlegible (Braille Institute of America) and OpenDyslexic sit as two ordinary Font choices; High contrast is a second, independent row forcing a black-on-white (or reversed in dark theme) palette and Atkinson Hyperlegible specifically, regardless of whichever font a reader separately picked.
+
+**Self-hosted, not a Google Fonts `<link>`** — this is exactly the offline bundle a CDN link would leave broken, and this sandbox's own network policy blocks `fonts.googleapis.com` outright (confirmed with `curl`). Both fonts come from `@fontsource` packages, vendored like every other pinned asset, four faces each — the minimum for bold/italic markdown to render as a real face. The woff2 files land flat in `vendor/fonts/` beside KaTeX's own, reusing `standalone_html()`'s existing `FONT_URL_RE` inlining step unchanged rather than needing a second copy of the regex.
+
+**Shared with every tutorial page, not dewmini-only** — `data-font`/`data-contrast` live in the same shared reading-preference system every dewlab page uses, so both new fonts and the contrast switch went into `assets/shell.html` as well as `compose/dewmini.html`. **`dewmini.js` duplicates this mechanism rather than importing it** — the first attempt at wiring the contrast toggle only touched the shared file and did nothing in a real dewmini page, caught by watching the CSS variables stay unchanged after clicking the toggle in a real browser.
+
+**Two tests needed narrowing, not the behaviour changed:** one broke outright on an unhandled new stylesheet link (fixed by inlining the accessible-fonts CSS the same way KaTeX's is); one asserted no font data at all on a maths-free page, true only because KaTeX's fonts were previously the sole source of that marker — narrowed to look for a KaTeX-specific class rather than a family name the page was already carrying regardless.
+
+*Cost to change: real but contained — wiring the toggle rode entirely on an existing generic sync mechanism needing one new key. The one real trap: a shared mechanism that has been duplicated needs its fix applied twice, and only a real browser catches the copy that was missed.*
+
+**7.124 — High contrast redefined four variables and called it done; turning it on and looking said otherwise.** Reported the day after 7.123 shipped: it touched only `--dl-fg`/`--dl-bg`/`--dl-muted`/`--dl-rule` and the font, on the unstated assumption that body text was the whole of "can I read this." A heading, a link, a cell-type pill, a cell's border, a pass/fail message each have their own variable, untouched. Measured with WCAG's contrast formula: `--dl-link` at 3.6:1 was failing the *ordinary* AA minimum (4.5:1), let alone the ~7:1 AAA the toggle exists to promise; `--dl-cell-border` at 1.4:1 was worse, against a 3:1 floor for a graphical boundary.
+
+**Fixed by moving each colour, not replacing it** — asked directly whether to flatten everything to black/white or keep the hue and fix the ratio; kept the hue, so a returning reader's learned colour associations (teal=SQL, purple=HTML) survive the toggle too. Each failing colour was darkened/lightened along its own hue until it cleared 7:1. `--dl-cell-border` is the exception: a boundary carries no signal worth preserving, so it borrows `--dl-rule` outright.
+
+**The bug worth naming: an inline style beats a stylesheet, always, regardless of specificity.** `--dl-link`'s new rule did nothing because the texture panel's own reader-settable link colour is written via `root.style.setProperty()` — an inline style on `<html>`, which the cascade always prefers over any stylesheet selector. Fixed at the source: `applyTexture()` now skips (and removes) that inline write while high contrast is on.
+
+**The second copy, found the same way the first one was (7.123)** — `tutorial-runtime.js` carries an identical `applyTexture()`, needing the identical fix, found by testing a tutorial page after fixing dewmini and finding the link colour still wrong there.
+
+*Cost to change: small in lines, real in the lesson — a claim about what a toggle does is worth nothing until the toggle has actually been turned on and looked at, and a duplicated mechanism stays duplicated for every fix aimed at it, not only its first.*
+
+**7.125 — Opening a plain `.py` file in the File view silently turned it into something that looks like a dewmini export.** Writing a markerless script from a cell, then opening it in the File view, showed it *with* a `# %%` marker already added, before a keystroke — and saving from there wrote that marker to disk permanently. The cause: `cellsToPercentText()`, used both by the File view's display and by save-back to a notebook's own path, always put a marker before every cell even a lone one, though `parsePyCells()`'s own markerless-file fallback already made that unnecessary for a single cell.
+
+**Fixed at the two call sites that reflect a real file, not at the function itself.** `cellsToPercentText()` took a `bare` option: on, a lone cell serializes with no marker. `writeNotebookToWorkspace()` and the File view's editor seed both pass `bare: true`. `downloadAsPython()` was deliberately left on the default — it carries its own second mechanism (an explanatory header above the first marker, stripped back out on reimport by checking for it) that only makes sense with a marker present to mark where the header ends; applying `bare` there broke the export/reimport/export regression test, since a markerless file with the header inline fell into the single-cell fallback and read the header back as content.
+
+**Verified:** a markerless file stays markerless through open/edit/save; a genuine multi-cell file keeps all its markers; the export/reimport regression test passes again once `downloadAsPython()` was excluded.
+
+*Cost to change: one parameter and two call sites, once two false alarms elsewhere were ruled out as flaws in the test script, not the product. A single serialization function fed by more than one caller does not mean one caller's needs generalize to the others.*
+
+**7.126 — A long Settings label wrapped into a narrow ribbon, most of its own row sitting empty beside it.** "Show progress on the tutorials list" broke across four cramped lines because `.dl-texture-row`'s grid (`4.6rem 1fr`) was sized for one-word labels; a longer label wraps inside its own column instead of borrowing room from the wide one beside it. Two more rows ("Remind me to export new notes", "Web (HTML+CSS)") were found wrapping the same way once the shape of the bug was known, by grepping every row's actual label rather than guessing which looked long.
+
+**Fixed with a modifier rather than widening the shared column.** A `.dl-texture-row-wide` class drops to a single `1fr` column so the label stacks above the toggle instead of beside it — applied only to the three affected rows, since widening the shared column would have pushed every short-label row's toggle rightward for no reason.
+
+*Cost to change: five lines of CSS and three class attributes. A component built for the common case needs a second look the moment real content is longer than the case it was designed around.*
+
+**7.127 — Atkinson Hyperlegible swapped for Lexend, on Josh's own call after using both.** Not a bug — Josh preferred Lexend (Google's font built to reduce reading-difficulty complexity) over Atkinson Hyperlegible after trying both, and wanted High contrast to force Lexend too.
+
+**Vendored the same way, with one real difference the switch surfaced: Lexend ships no italic face at all** — only regular and bold from `@fontsource`, versus the other two fonts' four faces each. `ACCESSIBLE_FONTS` now lists each font's own faces rather than assuming one shared list; a page asking for italic Lexend gets the browser's synthetic slant, the same fallback any font missing that face gets.
+
+**The rest was a name swapped in four places** once the CSS rule was renamed — the `data-font` value, the Font row's button, and High contrast's forced font. No JavaScript changed, since `data-font` is read/set generically with no fixed value list. A reader with the old value saved falls back gracefully to the base rule, same as any unrecognised value.
+
+*Cost to change: small, once the italic gap was found. `ACCESSIBLE_FONTS` no longer assumes every accessible font ships the same four faces the first two happened to share.*
+
+**7.128 — A cell left blank vanished the moment the File view was opened and closed again, with nothing said about it.** Insert a fresh cell, glance at the File view, switch back, and the cell was gone — the same happened to a cell a reader had cleared mid-edit, losing visible work.
+
+**The cause: `parsePyCells()`'s `flush()` kept a cell only `if (content.trim())`** — correct for a genuinely empty document, but also true for a stretch between two real markers with nothing typed yet; both trim to the empty string and `flush()` couldn't tell them apart.
+
+**Fixed by making the marker itself the signal, not the content.** A marker line sets `currentType` away from `null`; `flush()` now keeps whatever it collected once that's happened, blank or not, dropping a blank stretch only when `currentType` is still `null` (the case with no marker asking for a cell at all).
+
+**A narrower edge case was left alone, on purpose** — a notebook of exactly one blank cell serialized `bare` (no marker) still reads back as zero cells, since an empty file and "one empty cell" are genuinely the same bytes with no marker to distinguish them.
+
+*Cost to change: one condition in one function. A parser that reads "no content" as "no cell" is only safe when there is truly no other signal — once a format has an explicit marker, that marker is the thing to trust.*
+
+**7.129 — Three comments in `compose/dewmini.html` described the Library/Workbench/Settings panels' own docking backwards.** Found during an open-ended review, not a visible bug. The toolbar-order, Library, and Workbench comments each claimed the wrong docking side — checked against the actual CSS and `wirePanel()`'s conflict list, Library and Settings are the two right-docked panels sharing an edge, and Workbench is the one left-docked panel, free beside either.
+
+**Fixed by rewriting each to cite the actual mechanism** (`wirePanel()` and its `conflicts` list) rather than restating a claim. No behaviour changed — only the prose was wrong.
+
+*Cost to change: three comments, once actually checked against the code rather than trusted on read. A comment that claims a wrong thing confidently can sit uncorrected for a long time, since nothing tests it.*
+
+**7.130 — Every segmented control in Settings announced itself to a screen reader as a row of independent toggle buttons, when picking one option always deselects the others.** About two dozen `.dl-seg` groups (Theme, Font, Width, Density, Cursor, …) read out as independent pressed/not-pressed buttons, with nothing telling a screen reader they formed one mutually-exclusive group — inferred at a glance by a sighted reader, invisible otherwise.
+
+**The cause: `aria-pressed`**, correct for an independent toggle and wrong for a mutually exclusive set — copied to every new `.dl-seg` group because the first one written used it and nothing since questioned it. WAI-ARIA has a purpose-built radiogroup pattern, unused here.
+
+**Fixed by moving every `.dl-seg` onto the APG radiogroup pattern:** `role="radiogroup"`/`role="radio"`, a label via `aria-labelledby` or `aria-label`, `aria-checked` in place of `aria-pressed` through two small shared helpers, and roving tabindex so the checked (or first) button is the group's one tab stop. A single keyboard-nav function adds arrow keys and Home/End, each routing through the same `.click()` a mouse uses so the two paths can never disagree.
+
+*Cost to change: two roles and a label per group in the HTML, one attribute rename and one small helper in the JS, written once and reused. `aria-pressed` and a radiogroup's `aria-checked` render identically on screen, which is exactly why the wrong one went unnoticed long enough for every later group to copy it.*
+
+**7.133 — A large plotted figure could blow this browser's storage quota and cost a reader their code and notes along with it, not just the figure.** Every matplotlib figure is embedded as a base64 PNG straight into a cell's output HTML — easily a few hundred KB. `saveNow()` writes one JSON record covering every cell's code, output, and notes with a single `localStorage.setItem()`; when that throws because the record is now too big, the whole save failed silently except for a line in Settings a reader would have to go looking for. The previous saved value is untouched, so the real damage was ongoing: every future autosave kept failing the same way while the oversized output remained, silently discarding new code and notes from that point on.
+
+**Fixed with a retry inside `saveNow()`'s existing `catch`:** on failure, check whether any cell's output is over a threshold (100,000 characters) and, if so, save again with just that cell's output blanked rather than dropping the whole record. A blanked output restores as "not run," so a reader gets the figure back with one more Run press. Only if the slimmed record still doesn't fit does it fall through to the original all-or-nothing message. The new message names what happened rather than repeating a generic one.
+
+*Cost to change: one length check and one map inside an already-existing `catch`, no new UI. `localStorage.setItem()` either writes the whole new value or leaves the old one alone — not the transaction most code assumes until a failure path is actually read closely.*
+
+**7.131 — Three more small accessibility gaps in the reader's own runtime, found in the same review that turned up 7.130.** None crashed or looked wrong on screen — all three only showed up to a keyboard or a screen reader.
+
+**A collapsed cell's one-line summary was a `<div>` pretending to be a button** — `tabindex="0"` and a click handler, but no `role="button"` (so a screen reader announced it as plain text) and its keydown handler only checked Enter, not Space. Fixed with `role="button"` at all three markup sites and Space added to both keydown checks.
+
+**The "⋯" run menu was the one panel on the page that didn't close on Escape**, unlike Settings, Reference and SeriesNav, which all already do. Added the same pattern: Escape closes the menu and returns focus to its button.
+
+**A cell finishing a run said nothing to a screen reader.** The run-line ticker is deliberately not a live region (ticking noise), but nothing replaced it with an announcement on completion. Added one shared visually-hidden `role="status"` region, updated once a run completes ("Ran — output below" or "Ran — error"), cleared first and set a tick later so running the same cell twice in a row still announces the second time.
+
+*Cost to change: an attribute and a key check for the fake button, one keydown listener matching three already-written ones, one hidden live region. None needed new UI — every element was already interactive, just only fully for a mouse.*
+
+**7.132 — dewmini's own run announcement had 7.131's "same result twice in a row" bug, not 7.131's original gap.** dewmini already announced every run via `updateStatus()` writing into its own live region — it just lacked 7.131's fix for the narrower bug underneath: setting identical text twice in a row (e.g. "Ran." after two successive runs) is invisible to a live region. Fixed inside `updateStatus()` itself: when the incoming message equals what's already showing, clear it and set the real text a tick later, the same pattern 7.131 used elsewhere. Every other call, where the message differs, keeps its exact previous synchronous behaviour.
+
+*Cost to change: one branch inside one already-existing function. The task this was filed as ("dewmini has no run announcement") was wrong — it already had one — and the real gap only turned up by reading the code directly instead of trusting the title on the task.*
 
 
 ## Phase 8 — Student feedback pathway
@@ -6387,811 +2597,509 @@ debugging/GitHub-reading tutorials are deliberately not part of this
 slice — see the artifact for the fuller design and why they were held
 back.
 
+
 **8.1 — The kill switch is a YAML file, read fresh on every call, not a
-`build.py` constant.** `planning/feedback.yaml` holds one key,
-`enabled:`. The alternative, a `FEEDBACK_ENABLED = True` constant near
-the top of `build.py`, would work exactly as well for the build itself,
-but it asks whoever needs to turn the link off in a hurry to find one
-line inside a 4,000-line file rather than one line inside a file whose
-whole content is that line and a comment explaining it. It is read fresh
-from `ROOT` on every call, matching `module_order()`'s own reasoning
-(ARCHITECTURE.md §1, step 5): a module-level constant computed at
-import time would not see a test's temporary `ROOT`. Missing
-the file, or missing `enabled:` inside it, both mean on — the switch
-exists to make turning the link off fast, not to make on the careful
-path.
+`build.py` constant.** `planning/feedback.yaml` holds one key, `enabled:`,
+read fresh from `ROOT` on every call (matching `module_order()`'s
+reasoning, ARCHITECTURE.md §1 step 5) rather than as a module-level
+constant, so a test's temporary `ROOT` is seen. Missing the file, or
+missing `enabled:` inside it, both mean on: the switch exists to make
+turning the link off fast, not to make on the careful path.
 *Cost to change: trivial. One file, one function, six call sites of
 `site_footer()` that already pass it a page.*
 
 **8.2 — Every page gets a report link, not only tutorial pages.** The
-contents page, the topic tree, "browse by topic," the About page and the
-editor all call `site_footer()` with their own slug and a version of
-`"1"`, the same as their existing `{{SLUG}}`/`{{VERSION}}` tokens. The
-plan's own Treatment 2 asked for the link "on every page," and there was
-no reason a bug on the topic tree or in the editor should be harder to
-report than one in a tutorial.
+contents page, topic tree, "browse by topic," About page, and the editor
+all call `site_footer()` with their own slug and version, the same as
+their existing `{{SLUG}}`/`{{VERSION}}` tokens — a bug in the editor or
+topic tree should be no harder to report than one in a tutorial.
 *Cost to change: small — dropping a page from the list is removing one
 call site's arguments.*
 
 **8.3 — The prefilled link carries only `page` and `version`; browser and
 the cell's code are not captured yet.** `report_issue_url()` builds a
-GitHub "new issue" address from two query parameters, matching the two
-fields in `.github/ISSUE_TEMPLATE/report.yml` that are marked "filled in
-for you." Browser and device, and a cell's current code and last output,
-are both real fields the reporting document already asks students to
-include by hand — but capturing them automatically needs JavaScript
-running on the page, which is the report panel from the plan's
-Treatment 1, not yet built. The issue template's `kind:` dropdown already
-has a "gives an error" option that names the checks a student should have
-tried, so a student reporting a cell bug today writes one sentence and
-picks that option, rather than the panel doing it for them.
+GitHub "new issue" address from these two query parameters, matching the
+two fields in `.github/ISSUE_TEMPLATE/report.yml` marked "filled in for
+you." Browser/device and a cell's current code/output need JavaScript on
+the page (the report panel, not yet built) to capture automatically; the
+issue template's `kind:` dropdown already has a "gives an error" option
+so a student can name the check they tried without it.
 *Cost to change: small on its own — adding fields to `report_issue_url()`
-and the template is additive — but real work follows from it: the report
-panel and the cell-level button both need to exist for the extra fields
-to fill themselves in, which is the deferred half of this plan.*
+and the template is additive — but the report panel and the cell-level
+button both need to exist before those fields can fill themselves in.*
 
 **8.4 — The "three doors" choice is a static `<details>` disclosure, not
-JavaScript.** The plan's Treatment 1 asked for a question to be sorted
-away from a bug report before it is sent, since a question filed as an
-issue is the wrong container for it and for whoever answers it later.
-That sorting turned out not to need the report panel or any runtime code
-at all: `report_doors_html()` renders three plain links inside a
-`<details>`/`<summary>` — a question to `/discussions/new`, the other two
-to `report_issue_url()` with `kind` set to one of
+JavaScript.** A question needs sorting away from a bug report before it
+is sent, since it is the wrong container for whoever answers it later.
+`report_doors_html()` renders three plain links inside a
+`<details>`/`<summary>`: a question to `/discussions/new`, and two to
+`report_issue_url()` with `kind` set to one of
 `.github/ISSUE_TEMPLATE/report.yml`'s dropdown options, matched exactly
-so GitHub pre-selects it. Revealing the list pushes the rest of the
-footer down in normal flow, the same shape `.dl-hint-text` already uses,
-rather than a floating dropdown that could sit over content below it or
-trap a touch reader with no hover to dismiss it. `report_issue_url()`
-gained an optional third argument, `kind`, backward compatible with its
-two existing call sites.
+so GitHub pre-selects it. Revealing the list pushes the footer down in
+normal flow — the same shape `.dl-hint-text` uses — rather than a
+floating dropdown. `report_issue_url()` gained an optional third
+argument, `kind`, backward compatible with its two existing call sites.
 
-The Discussions link is real today even though Discussions itself is
-still off for both repositories — a manual step, not a code one — so it
-404s until that switch is flipped. Shipping it inert rather than waiting
-for the manual step means the doors are already correct once Discussions
-is turned on, with nothing to remember to come back and add.
+The Discussions link ships live even though Discussions itself is still
+off for both repositories (a manual switch, not code), so it 404s until
+that switch is flipped — correct once it is, with nothing to remember to
+add later.
 *Cost to change: small. The two option strings are the coupling point
 between `build.py` and the issue template — a wording change to one
 without the other, and `test_report_doors_html_kinds_match_the_issue_template`
 catches it.*
 
-**8.5 — The cell-level report control is an icon, not a fourth button, and
-its panel is filled in at open time, not build time.** The plan's
-Treatment 1 asked for a report button in the cell bar that captures a
-cell's own code and last output automatically. Two things had to be
-decided that the plan left implicit.
+**8.5 — The cell-level report control is an icon, not a fourth button,
+and its panel is filled in at open time, not build time.** It sits as
+`.dl-report-icon`, the same small circular toggle as `.dl-hint-icon`
+beside it, rather than a fifth `.dl-btn` crowding the cell bar. Its panel
+(`.dl-report-doors.dl-cell-report-doors`) opens as a plain block after the
+bar, the same push-down shape `.dl-hint-text` uses, reusing
+`report_doors_links()` — the inner half of the footer's own three-doors
+markup, split out so both call sites share it.
 
-First, where it sits. `.dl-cell-more`'s own existing comment already
-warns against "crowding a bar that already has reset and Run" with more
-always-visible buttons — so the report control is `.dl-report-icon`, the
-same small circular toggle as `.dl-hint-icon` right beside it, not a
-fifth `.dl-btn`. Its panel (`.dl-report-doors.dl-cell-report-doors`) opens
-as a plain block after the bar, the same push-down shape `.dl-hint-text`
-already uses, reusing `report_doors_links()` — the inner half of the
-footer's own three-doors markup, split out so both call sites share it.
+`page`, `version`, and the cell's own id are build-time constants,
+threaded through `place_blocks()` from `load()` into `render_cell()`. A
+cell's current code and its last output are not — they depend on what
+the reader has typed and run, which doesn't exist until their browser tab
+does. Those two fields ship blank from `build.py` and are filled in once,
+at the moment the panel opens, by `updateCellReportLinks()` in
+`tutorial-runtime.js` — not kept live on every keystroke, since nobody
+reads a report link before opening the panel. `report_doors_links()`
+marks its two issue links with `class="dl-report-issue-link"` so the
+runtime can select them without re-parsing `href`s, distinguishing them
+from the Discussions link, which needs no code or output.
 
-Second, what build time can and cannot know. `page`, `version` and this
-cell's own id are build-time constants, threaded down through
-`place_blocks()` from `load()` (which has the tutorial's frontmatter
-before a `Tutorial` object even exists) into `render_cell()`. A cell's
-current code and its last output are not — they depend on what the
-reader has actually typed and run, which does not exist until their
-browser tab does. Those two fields ship blank from `build.py` and are
-filled in by `updateCellReportLinks()` in `tutorial-runtime.js`, called
-once, at the moment the panel opens — not kept live on every keystroke,
-since nobody reads a report link before opening the panel to use it.
-`report_doors_links()` marks its two issue links with
-`class="dl-report-issue-link"` for exactly this: something for the
-runtime to select without re-parsing `href`s to tell them apart from the
-Discussions link, which needs no code or output.
-
-A custom cell — the reader's own, created at runtime rather than
-authored — gets none of this. There is nothing to report about code
-nobody but the reader wrote.
-
-Verified in a real browser, not only unit tests: `tests/e2e/test_cell_report.py`,
-against a self-hosted Pyodide (`python3 dev/fetch_pyodide.py`) and this
-machine's own pre-installed Chromium — the panel's `output` field is
-absent before a cell has run, carries the actual traceback after one
-errors (`error-traceback` in the e2e fixture), and a live edit shows up
-in `code` rather than the starter text the page shipped with.
-*Cost to change: moderate. Two files agree on the shape of a report
-link now (`build.py`'s markup, `tutorial-runtime.js`'s
+A custom cell (the reader's own, created at runtime) gets none of this —
+there is nothing to report about code nobody but the reader wrote.
+*Cost to change: moderate. Two files agree on the shape of a report link
+now (`build.py`'s markup, `tutorial-runtime.js`'s
 `updateCellReportLinks()`), and the `dl-report-issue-link` class is the
 seam between them — rename or restructure one without the other, and the
 runtime silently stops finding anything to update.*
 
 **8.6 — A written triage procedure, and a one-shot scheduled off switch,
-both added before the first real report arrives rather than after.**
-`.claude/skills/triage-report/SKILL.md` exists so working the inbox does
-not have to be reinvented each session: read before acting, re-sort the
-student's guessed `kind` rather than trusting it, reproduce an error
-report from `code`/`output` before touching anything, and the two hard
-stops the plan always intended — a maths or curriculum question is
-Josh's call, and nothing closes without a person having looked.
+both added before the first real report arrives.**
+`.claude/skills/triage-report/SKILL.md` sets the inbox procedure: read
+before acting, re-sort the student's guessed `kind` rather than trusting
+it, reproduce an error report from `code`/`output` before touching
+anything, and two hard stops — a maths or curriculum question is Josh's
+call, and nothing closes without a person having looked.
 
-`.github/workflows/auto-disable-feedback.yml` is a direct request: the
-doors stay on, but turn themselves off on Tuesday, 2026-09-08, without
-anyone having to remember to. It is a genuine one-shot rather than a
-recurring weekly job — the date is cron's day-of-month/month fields, not
-day-of-week — and its last step deletes its own workflow file in the
-same commit that flips `planning/feedback.yaml`, so nothing is left
-behind to misfire on the same date next year. `workflow_dispatch` on the
-same workflow doubles as a manual "turn it off right now" trigger, which
-does the same thing early rather than rehearsing it safely — a real
-alternative to editing `planning/feedback.yaml` by hand, not a test mode.
+`.github/workflows/auto-disable-feedback.yml` turns the doors off on
+Tuesday, 2026-09-08, without anyone having to remember to. It is a
+genuine one-shot (the date is cron's day-of-month/month fields, not
+day-of-week), and its last step deletes its own workflow file in the same
+commit that flips `planning/feedback.yaml`, so nothing is left to misfire
+next year. `workflow_dispatch` on the same workflow doubles as a manual
+"turn it off now" trigger — a real alternative to editing
+`planning/feedback.yaml` by hand, not a test mode.
 *Cost to change: trivial for the switch itself (edit or delete the
 workflow file, the same as any other scheduled job). Extending the
 deadline means editing the cron date before it fires, since the file
 that would let you edit it again is gone once it has.*
 
 **8.7 — Labels are created by a workflow, at the moment they are first
-needed, rather than by anyone clicking through GitHub's settings.** The
-plan called for `kind:`/`source:`/`pattern` labels, and an issue form's
-own `labels:` key can only ever apply fixed text — it has no way to know
-in advance which page or which kind a particular report will name.
-`label-report.yml` fires on every newly opened issue and calls
-`dev/label_report.py`, which reads the issue back out through GitHub's
-REST API, parses its rendered fields (the same `### <label>` pattern
-GitHub always renders an issue form's fields as), and applies a
-`page: <slug>` and a `kind: <error|unclear|question>` label — creating
-either the first time it is used, via the same token every Actions job
-already gets for free. Nobody had to open GitHub's label settings for
-this to work.
+needed, rather than by anyone clicking through GitHub's settings.** An
+issue form's own `labels:` key can only apply fixed text — it cannot know
+in advance which page or which kind a report will name. `label-report.yml`
+fires on every newly opened issue and calls `dev/label_report.py`, which
+reads the issue back through GitHub's REST API, parses its rendered
+fields (the `### <label>` pattern GitHub always renders an issue form's
+fields as), and applies a `page: <slug>` and a `kind:
+<error|unclear|question>` label — creating either the first time it is
+used.
 
 `report-patterns.yml` runs weekly and calls `dev/report_patterns.py`,
-which re-derives page and cell from the same parsed fields (not from the
-labels above, which exist for browsing the issue list, not as this
-script's own data — the fields are the one source of truth) and opens or
-updates one `pattern` issue per page that crosses a threshold: three open
-reports on the page, or two on one cell, within a fortnight. A hidden
-`<!-- pattern-key: <page> -->` marker in the issue body is how a second
-run finds the issue it already opened for a page rather than doubling it
-— the body is replaced wholesale each run, so a pattern issue nobody has
-looked at yet still reflects the current count next Monday, not last
-Monday's.
+which re-derives page and cell from the same parsed fields (the fields
+are the one source of truth, not the labels above) and opens or updates
+one `pattern` issue per page that crosses a threshold: three open reports
+on the page, or two on one cell, within a fortnight. A hidden
+`<!-- pattern-key: <page> -->` marker is how a second run finds the issue
+it already opened rather than doubling it; the body is replaced wholesale
+each run, so a pattern issue reflects the current count, not the count
+from its last run.
 
 Both scripts talk to `api.github.com` directly with `urllib`, matching
 every other `dev/` script's "no dependency beyond the standard library"
-rule, rather than reaching for a GitHub Actions marketplace action or the
-`gh` CLI. The parsing logic (`parse_fields()`) is duplicated between the
-two files on purpose rather than factored into a shared module — each
-script is meant to be readable and runnable on its own, the same
-reasoning `tests/test_report_patterns.py`'s own
-`test_label_report_uses_the_same_parser` exists to guard: not to justify
-the duplication, but to catch the day the two copies quietly diverge.
+rule. The parsing logic (`parse_fields()`) is duplicated between the two
+files on purpose, so each script stays readable and runnable on its own;
+`tests/test_report_patterns.py`'s `test_label_report_uses_the_same_parser`
+guards against the two copies quietly diverging.
 *Cost to change: small for the thresholds themselves (two named
 constants). Changing what counts as a "page" or a "cell" means changing
-the field-label strings in both scripts and in `.github/ISSUE_TEMPLATE/report.yml`
-at once, or the parser silently stops finding what it is looking for.*
+the field-label strings in both scripts and in
+`.github/ISSUE_TEMPLATE/report.yml` at once, or the parser silently stops
+finding what it is looking for.*
 
 **7.134 — dewmini's Site view gains a console under its preview, and its
-JavaScript pane runs on Run rather than on every keystroke.** Until now
-a site's script that threw did the one thing a learner cannot read: the
-preview stopped changing, with no message anywhere. The Web cell's
-Render button and the JavaScript cell's own relayed output both existed,
-but the Site view, the one place all three files meet, had neither.
+JavaScript pane runs on Run rather than on every keystroke.** Until now a
+site's script that threw did the one thing a learner cannot read: the
+preview stopped changing, with no message anywhere.
 
-Ported in shape, not code, from dewstack's site editor
-(`deweydex/dewstack`, `assets/site-editor.js`, and
-`planning/CONSOLE_AND_WORKSPACE.md` there), where Josh decided the pair
-on 2026-09-06: **HTML and CSS stay live**, because a stylesheet is a
-state and the lesson is watching the box change under your hand;
-**JavaScript runs when asked**, because a program is not a state and
-half-typed code is a syntax error on most keystrokes, so a console that
-flashed red between characters would teach a reader to ignore it. His
-own reason for the Run button is the one worth keeping: a student who
-presses Run has read their own code once before asking the machine to.
-Until Run (or Ctrl/Cmd+Enter inside the pane, the keys a Python cell
-already answers to), the preview keeps the last script that ran, so
-retyping a colour does not silently re-run a half-edited program.
+Ported in shape from dewstack's site editor. **HTML and CSS stay live**,
+because a stylesheet is a state and the lesson is watching the box change
+under your hand; **JavaScript runs when asked**, because a program is not
+a state and half-typed code is a syntax error on most keystrokes — a
+console flashing red between characters would teach a reader to ignore
+it. Until Run (or Ctrl/Cmd+Enter inside the pane), the preview keeps the
+last script that ran, so retyping a colour does not silently re-run a
+half-edited program.
 
-**The mechanism** is `js-cell-engine.js`'s own idea made visible: a
-small ES5 relay (`SITE_RELAY`) goes into the preview document's head
-ahead of the reader's CSS, replaces `console.log` and its siblings with
-versions that also `postMessage` to this page, and listens for the
-window's `error` event (uncaught runtime errors and syntax errors in an
-inline script alike) and for `unhandledrejection`. Line numbers arrive
-relative to the whole `srcdoc`, so `buildSiteDocument()` records where
-the HTML and JavaScript panes start and the console subtracts, naming
-the pane and its line; a Go to line button selects that line in the
-right editor. Under the browser's message, a plain-language second line
-for the four errors a first term meets most (`SITE_FRIENDLY`), drawn in
-the same `.dl-error` / `.dl-error-hint` clothes `_ERROR_HINTS` gives a
-Python traceback, so an error reads the same in both places. `</script`
-typed into the pane is escaped rather than ending the script element.
+**The mechanism:** a small ES5 relay (`SITE_RELAY`) goes into the preview
+document's head ahead of the reader's CSS, replaces `console.log` and its
+siblings with versions that also `postMessage` to this page, and listens
+for the window's `error` event (uncaught runtime errors and inline syntax
+errors alike) and `unhandledrejection`. Line numbers arrive relative to
+the whole `srcdoc`, so `buildSiteDocument()` records where the HTML and
+JavaScript panes start and the console subtracts, naming the pane and its
+line; a Go to line button selects that line in the right editor. Under
+the browser's message, a plain-language second line for the four errors a
+first term meets most (`SITE_FRIENDLY`), styled like `_ERROR_HINTS` gives
+a Python traceback. `</script` typed into the pane is escaped rather than
+ending the script element.
 
-**One thing found on dewstack's twin and carried here.** Several
-synchronous `srcdoc` writes in one task loaded only the *first*
-document in a real Chromium, so a site opened on an empty preview. The
-Site view now treats the frame as one resource: a document is written
-only once no earlier one is still loading, later ones wait, newest
-wins, and the frame's load event flushes the next. Coalescing on load
-rather than on a timer keeps a fast typist's last keystroke from being
-the one dropped.
-
-**Verified in a real browser**, against a self-hosted Pyodide: four new
-e2e tests in `tests/e2e/test_dewmini_workbench.py` — the printed line
-and the error with its pane line and hint; typing in the JavaScript pane
-not running it, a live HTML edit redrawing with the last-run script, and
-Run applying the new one; Ctrl+Enter inside the pane; Go to line
-selecting the failing line. The seven existing Site view tests still
-pass, live HTML and CSS included.
-
+**One bug carried from dewstack's twin:** several synchronous `srcdoc`
+writes in one task loaded only the *first* document in a real Chromium,
+so a site opened on an empty preview. The Site view now treats the frame
+as one resource: a document is written only once no earlier one is still
+loading, later ones wait, newest wins, and the frame's load event flushes
+the next — coalescing on load rather than on a timer keeps a fast
+typist's last keystroke from being the one dropped.
 *Cost to change: `renderSiteView()` grew by the relay, the assembly
-arithmetic and the console; the CSS by a preview column. The friendly
-map is data. Not shared with dewstack as a file — "port in shape" stays
-the rule between the two repositories, decided the same day — so a
-change to the wording there is a change to make here by hand, and the
-banner on each names the other.*
+arithmetic and the console; the CSS by a preview column. The friendly map
+is data. Not shared with dewstack as a file — "port in shape" stays the
+rule between the two repositories — so a wording change there is a
+change to make here by hand, and the banner on each names the other.*
 
-**7.135 — Staged hints: a fold that waits for an attempt.** Josh, 2026-09-06,
-for both repositories: "what type of infrastructure would be necessary for
-the text to be at least somewhat aware of what the student has run or done
-to a given cell", so that after an error has come up some number of times a
-"pause and ponder" fold can appear with a question, and later another with
-steps — "kind of like Khan Academy's hints but a bit more engaged and
-pedagogically more open, inviting the learner to form certain habits."
-planning/CELL_HINTS.md is the design note and the survey of what nbgrader,
-otter, okpy, Khan Academy and Runestone do; this entry records what was
-decided and built.
+**7.135 — Staged hints: a fold that waits for an attempt.** After an
+error recurs, a "pause and ponder" fold can appear with a question, and
+later another with steps — inviting habits rather than giving commands.
+`planning/CELL_HINTS.md` is the design note; this entry records what was
+built.
 
 **The authoring surface is a fence, not HTML.** A ```` ```hint ```` fence
-after a cell, with optional `for:`, `after:` and `title:` header lines in
-the same `key: value` shape the exec cell already uses. Josh's first
-reaction to the HTML-attribute version was "is there a nicer way of doing
-that?", and the fence answers it while also surviving the Milkdown editor,
-which keeps only the first word of a fence's info string (7.60's
-`restoreExecTag()` exists for the same reason). Defaults: the exec cell
-above, `5 errors`, *Let's slow down a moment…* — Josh's own line. `after:`
-reads both `5 errors` and `errors:5`, since both were asked for; the build
-canonicalises to the second for the runtime and fails on a term it does not
-know. A cell may carry `expect:`, a Python expression evaluated in the page
-namespace after each run; once it holds no further hint appears. A body
-inside the fence is converted on its own (`render_staged_hint()`), because
-Python-Markdown treats a `<details>` block as raw HTML — which is also,
-it turned out, why the hand-written `dl-hint` folds on the practice pages
-have been shipping their markdown as literal text. Noted in
-planning/CELL_HINTS.md §12; not fixed here.
+after a cell, with optional `for:`, `after:` and `title:` headers in the
+same `key: value` shape the exec cell uses — chosen because it survives
+the Milkdown editor, which keeps only a fence's first word. Defaults: the
+exec cell above, `5 errors`, *Let's slow down a moment…*. `after:`
+accepts both `5 errors` and `errors:5`, canonicalised to the second and
+rejected if unknown. A cell may carry `expect:`, a Python expression
+checked after each run; once it holds, no further hint appears. A
+fence's body converts separately (`render_staged_hint()`), because
+Python-Markdown treats a `<details>` block as raw HTML — the same reason
+hand-written `dl-hint` folds had been shipping markdown as literal text
+(§12 of the design note, not fixed here).
 
 **What the runtime counts, and what it never shows.** `run_cell_report()`
-returns a JSON report of each run — raised or not, the exception's type and
-first line, whether a `check()` passed, whether `expect` holds — and
-`tutorial-runtime.js` keeps per-cell counters from it: runs, errors,
-consecutive identical errors, consecutive runs of unchanged code,
-consecutive failed checks, time since the first run. At most one fold
-appears per run, closed, in normal flow, with a dot on the cell's bar until
-it is opened and one sentence added to the run announcement for a screen
-reader. No count is ever shown: section 11 of the style guide makes a number
-on a cell a verdict whatever its caption. `run_cell()` itself still returns
-a boolean, because dewmini and `pyodide-engine.js` read it that way.
+returns each run's outcome (raised or not, exception type/first line,
+whether `check()`/`expect` hold); `tutorial-runtime.js` keeps per-cell
+counters from it — runs, errors, consecutive identical errors, unchanged
+code, failed checks, time since first run. At most one fold appears per
+run, with a dot on the cell's bar until opened and one sentence for a
+screen reader. No count is ever shown — a number on a cell reads as a
+verdict regardless of caption (style guide §11). `run_cell()` still
+returns a boolean, since dewmini and `pyodide-engine.js` depend on that.
 
-**What clears nothing.** Josh: "I don't see why success needs to hide
-hints? and restart might offer an option to the user? these definitely feel
-like settings." So a hint once shown stays; a cell's Reset keeps the
-counters (a reader resetting code is still stuck); and two Settings rows
-decide whether hints appear at all (default on) and whether Restart Python
-hides them (default keep). Counters and revealed folds travel in the
-saved-work record, so a reload and the downloaded series keep them.
+**What clears nothing.** A hint once shown stays; Reset keeps the
+counters (a reader resetting code is still stuck); two Settings rows
+control whether hints appear at all (default on) and whether Restart
+Python hides them (default keep). Counters and revealed folds travel in
+the saved-work record.
 
-**The first fold asks.** Josh, on the habits list: "we should be asking
-questions here as our first stage, not commands... invitations to comment or
-think through cases or what you want and working backwards all as
-questions." The style guide's new §3 subsection has the three stages —
-a question, then steps, then the shape of the code, never the answer — and
-the docs' examples are written that way. Writing down what you expect
-before running is the habit Josh named as helping his students most; a first
-fold may send a reader to their notes to do it.
+**The first fold asks, not tells.** The style guide's new §3 subsection
+sets three stages — a question, then steps, then the shape of the code,
+never the answer.
 
-**Where it is written first.** Four tutorials, at Josh's choice:
-`finding-where-it-went-wrong` and `grid-of-numbers` in computational
-methods, `the-moves-you-already-know` and `testing-what-a-class-does` in
-FOOP. dewstack's own half is designed in its planning note and not yet
-built; Josh: "I am more concerned about it for python cells."
-
+Written first in `finding-where-it-went-wrong`, `grid-of-numbers`
+(computational methods), `the-moves-you-already-know`,
+`testing-what-a-class-does` (FOOP). dewstack's own half is designed but
+not yet built.
 *Cost to change: two attributes and a fence in `build.py`; one report
-function in `tutorial_tools.py`; ~250 lines in `tutorial-runtime.js`, all
-in one block after `executeCell()`; two Settings rows; a CSS block. The
-grammar is a table (`TRIGGER_KEYS`). Verified in a real Chromium against a
-self-hosted Pyodide: `tests/e2e/test_cell_hints_staged.py`.*
+function in `tutorial_tools.py`; ~250 lines in `tutorial-runtime.js`; two
+Settings rows; a CSS block. The grammar is a table (`TRIGGER_KEYS`).*
 
-**7.136 — A tutorial page's Python cell and a dewmini cell, made to match.**
-Josh, 2026-09-07, comparing the two directly: dewmini is "the direction we
-want to go," and a single cell's own chrome and behaviour should feel the
-same wherever a student meets it, so "students expectations are not
-violated just because they switch to the other environment" — not the
-whole platform, just one Python cell. `planning/CELL_IDENTITY.md` §9 is
-the design note and records the comparison; this entry records what was
-built. Four mismatches, plus two things asked for alongside them: Run sat
-after the output on a tutorial page and between the code and the output
-in dewmini (`render_cell()`'s three rows reordered to match, and
-`createCustomCellElement()`'s own hand-built copy along with it); Reset
-(destroys typed code) and dewmini's Clear (only clears output) looked
-like the same button doing different things, now a clockwise ↻ with a
-red-ish border against dewmini's unchanged counterclockwise ↺; a tutorial
-page's buttons were plain words and dewmini's were bare icons, now both
-carry an icon and a label (`icon_button()`/`iconButtonHtml()`/
-`iconButton()`, one `.dl-btn-icon`/`.dl-btn-label` pair regardless of
-which page built the button) behind one new shared Settings row, "Cell
-buttons" — icons, text, or both — riding the existing Texture panel's
-`"dewlab:texture"` key and generic wiring rather than a setting of its
-own; and dewmini's own traceback named a cell by its internal id, now by
-whatever `label` `run_cell()` (`tutorial_tools.py`, threaded through
-`pyodide-engine.js`/`pyodide-worker.js`) was given — a reader's own name
-or `Cell N`, never the id. Alongside those: the identity pill's position
-was already the same on both pages; what was missing was a name beside
-it, "a handle to hold on to" — `name:`, a fourth cell header line, on a
-tutorial page's authored cells, and a genuinely editable `<input>` next
-to the pill on every dewmini cell, since a dewmini cell is already the
-reader's own.
+**7.136 — A tutorial page's Python cell and a dewmini cell, made to
+match.** A single cell's chrome and behaviour should feel the same
+wherever a student meets it — not the whole platform, just one Python
+cell. `planning/CELL_IDENTITY.md` §9 is the design note.
 
-Two real bugs turned up in the process, both in code this entry's own
-work never touched but only now had a reason to exercise end to end: a
-reader's own custom cell threw the moment it was run, because
-`noteAttempt()`/`maybeRevealHint()` (7.135's own staged-hints counters)
-read `cell.attempts`/`cell.hints` unconditionally and a custom cell had
-never been given either; and `applyOutputEvent()`, the worker path's own
-output router, searched only `cells`, so a custom cell's own output was
-silently dropped on the floor the whole time staged hints has existed.
-Both fixed in the same pass, `cells.find(...) || customCells.find(...)`
-now the same pattern `downloadAsIpynb()` already used.
+Four mismatches fixed: Run sat after the output on a tutorial page and
+between code and output in dewmini — `render_cell()`'s three rows
+reordered to match, `createCustomCellElement()`'s hand-built copy along
+with it. Reset (destroys typed code) and dewmini's Clear (only clears
+output) looked like the same button doing different things — now a
+clockwise ↻ with a red-ish border against dewmini's unchanged
+counterclockwise ↺. A tutorial page's buttons were plain words and
+dewmini's were bare icons — now both carry an icon and a label
+(`icon_button()`/`iconButtonHtml()`/`iconButton()`, one
+`.dl-btn-icon`/`.dl-btn-label` pair regardless of page) behind one new
+shared Settings row, "Cell buttons" (icons, text, or both), riding the
+existing Texture panel's `"dewlab:texture"` key rather than a setting of
+its own. dewmini's own traceback named a cell by its internal id, now by
+whatever `label` `run_cell()` was given — a reader's own name or `Cell
+N`, never the id.
 
+Alongside those: a name beside the identity pill — `name:`, a fourth cell
+header line, on a tutorial page's authored cells, and a genuinely
+editable `<input>` next to the pill on every dewmini cell, since a
+dewmini cell is already the reader's own.
+
+Two real bugs turned up in code this work never touched but only now had
+reason to exercise end to end: a reader's own custom cell threw the
+moment it was run, because `noteAttempt()`/`maybeRevealHint()` (7.135's
+staged-hints counters) read `cell.attempts`/`cell.hints` unconditionally
+and a custom cell had never been given either; and `applyOutputEvent()`,
+the worker path's output router, searched only `cells`, so a custom
+cell's own output was silently dropped the whole time staged hints has
+existed. Both fixed with `cells.find(...) || customCells.find(...)`, the
+pattern `downloadAsIpynb()` already used.
 *Cost to change: `render_cell()` rewritten to three rows
 (`.dl-cell-head`/`.dl-cell-body-row`/`.dl-cell-footbar`), mirrored by
 hand in `createCustomCellElement()`; a `label` parameter through
 `run_cell()`/`run_cell_report()`/`_begin()`/`_CellContext`/
 `cell_filename()` and both JS engines; a `name`/`nameEl` field on both
-cell models; one Settings row shared verbatim by both pages' existing
-Texture machinery; `setBtnLabel()`/`getBtnLabel()` helpers in each file
-(markup, not a shared component, same "port in shape" convention as
-`sql-cell.js`). `tests/test_build.py`'s renamed footbar-order test, five
-e2e tests' button-label selectors, `assets/vendor/standalone.bundle.js`
-rebuilt. Full unit suite green; `tests/e2e/test_custom_cells.py` (25),
-`test_dewmini_workbench.py` (~110), `test_cell_run_menu.py`,
-`test_cell_collapse_duplicate.py`, `test_stop_button.py`,
-`test_autocomplete.py`, `test_saved_progress.py`,
-`test_progress_badges.py` all green against a real Chromium and a
-self-hosted Pyodide. Two unrelated, pre-existing e2e failures surfaced
-during this pass and were left alone rather than folded in here —
+cell models; one Settings row shared by both pages' Texture machinery;
+`setBtnLabel()`/`getBtnLabel()` helpers in each file (markup, not a
+shared component). Two unrelated, pre-existing e2e failures surfaced
+during this pass and were left alone —
 `test_cell_hints_staged.py::test_opening_the_fold_clears_the_marker` and
 `test_phase0_golden_path.py::test_python_started_with_no_console_errors`
-— neither touches code this entry changed, both worth their own look.
-PR: deweydex/dewlab#163.*
+— neither touches code changed here. PR: deweydex/dewlab#163.*
 
 **7.137 — Two real bugs in 7.136, caught by a second review after it
-merged.** Josh asked for another pass before trusting it; a fresh,
-adversarial read of the merged diff (rather than of the PR description)
-found what the first pass missed.
+merged.**
 
 **A cell's own code could be misread as its `name:` header.** `name`
 joined `id`/`hint`/`expect` in `HEADER_RE`'s alternation, matched against
-a cell's first lines regardless of whether they're actually a header —
+a cell's first lines regardless of whether they are actually a header —
 the same shape a type-annotated assignment has. `name: str = "Ada"` as a
-cell's own first line, entirely ordinary Python, was silently stripped
-out of the code and stored as a garbage pill label instead of running;
-`print(name)` on the next line then raised `NameError`. `id:`/`hint:`/
-`expect:` share the same theoretical ambiguity but never collide with
-real code in practice — `hint`/`expect` values are prose or expressions
-(genuinely used with `==`), and nobody accidentally writes a bare
-`id: ...` assignment. `name` is different: a bare identifier this common
-in ordinary code was always going to collide, once real authors started
-using it. Fixed the only way that doesn't touch the `key: value` header
-shape itself: a `name:` line whose value contains `=` was never a
-header — a real name is a short label, never an expression — so
-`parse_cell()` now checks for that one character before consuming it,
-and reads the rest as code instead.
+cell's first line was silently stripped out and stored as a garbage pill
+label instead of running; `print(name)` on the next line then raised
+`NameError`. `id:`/`hint:`/`expect:` share the same theoretical ambiguity
+but never collide with real code in practice; `name` is a bare identifier
+common enough in ordinary code that it always would. Fixed without
+touching the `key: value` header shape itself: a `name:` line whose value
+contains `=` was never a header — a real name is a short label, never an
+expression — so `parse_cell()` checks for that character before consuming
+it, and reads the rest as code instead.
 
-**`cell_filename()`'s own docstring claimed something the code didn't
-do.** It said a label only changes what a reader *sees*, and that an
-id "still decides `linecache`'s key" — false: the function returns
-`label or cell_id` as the whole filename, so a given label replaces the
-id everywhere, `linecache`'s key included. Unlike an id, a label isn't
-guaranteed unique — two dewmini cells can share a name — so two
-same-named cells do share one `linecache` entry. Traced through how this
-module actually runs a cell rather than assuming: `_register_source()`
-always re-registers a cell's own source immediately before it runs, and
-`_format_exception()` always formats its traceback immediately after,
-before any other cell gets a turn — so the entry a run's own traceback
-reads back is always its own, collision or not. The docstring now says
-this honestly instead of the wrong, stronger uniqueness claim; the code
-was already correct, only the comment was lying about it.
+**`cell_filename()`'s docstring claimed something the code didn't do.**
+It said a label only changes what a reader *sees*, and that an id "still
+decides `linecache`'s key" — false: the function returns `label or
+cell_id` as the whole filename, so a label replaces the id everywhere,
+`linecache`'s key included. Unlike an id, a label isn't guaranteed
+unique, so two same-named dewmini cells share one `linecache` entry — but
+`_register_source()` always re-registers a cell's source immediately
+before it runs and `_format_exception()` always formats its traceback
+immediately after, before any other cell gets a turn, so a run's own
+traceback always reads back correctly regardless. The docstring now
+states this honestly instead of the wrong, stronger uniqueness claim; the
+code was already correct.
 
 Neither bug shipped to a student: the first only bites a tutorial author
-previewing their own build (the pill goes wrong, the cell doesn't run —
-both immediately visible), and the second never manifested given how the
-module runs today, only misdescribed itself for whoever read the
-docstring next. `docs/WRITING_TUTORIALS.md` also never documented `name:`
-at all — fixed alongside, with the same `=` rule spelled out for authors.
-
+previewing their own build (both the pill and the failure to run are
+immediately visible), and the second never manifested given how the
+module runs today. `docs/WRITING_TUTORIALS.md` never documented `name:`
+at all — added alongside, with the `=` rule spelled out for authors.
 *Cost to change: one `if` in `parse_cell()` (`build.py`), two corrected
 docstrings/doc passages (`tutorial_tools.py`, `planning/CELL_IDENTITY.md`,
-`docs/tutorial-tools-explained.md`), one new documented section in
-`docs/WRITING_TUTORIALS.md`, two new tests in `tests/test_build.py`. Full
-unit suite green.*
+`docs/tutorial-tools-explained.md`), one new section in
+`docs/WRITING_TUTORIALS.md`, two new tests in `tests/test_build.py`.*
 
-**7.138 — The two known e2e failures 7.136 flagged, chased down.** Josh:
-"let's keep going" — one turned out to be a real, if minor, test bug; the
-other turned out not to be a bug at all.
+**7.138 — The two known e2e failures 7.136 flagged, chased down.** One
+turned out to be a real, if minor, test bug; the other wasn't a bug at
+all.
 
-**`test_opening_the_fold_clears_the_marker` — not reproducible.** Isolated,
-it passed every time (5 runs). Run alongside another heavy e2e file to
-recreate the resource pressure of the original failure (several Chromium
-instances at once, which is how it was first seen — several e2e suites
-running as background jobs together), it still passed, while a genuinely
-timing-sensitive test in the other file (`test_stop_button.py`, waiting on
-a real interrupt) failed with an ordinary timeout under that same load.
-Conclusion: the original failure was resource contention from running
-many heavy suites at once, not a defect in the marker-clearing code.
-Nothing changed here; recorded so it isn't re-chased.
+**`test_opening_the_fold_clears_the_marker` — not reproducible.**
+Isolated, it passed every time; run alongside another heavy e2e file to
+recreate the resource pressure of the original failure, it still passed,
+while a genuinely timing-sensitive test in that other file failed with
+an ordinary timeout under the same load. The original failure was
+resource contention from running many heavy suites at once, not a defect
+in the marker-clearing code. Nothing changed; recorded so it isn't
+re-chased.
 
 **`test_python_started_with_no_console_errors` — two real, unrelated
-problems hiding behind one assertion.** `page.inner_text("#dl-status")`
-was asserted `== ""`, and reliably wasn't — but `#dl-status` was correctly
-`hidden`, its own status-text span was correctly empty, and even the
-*native* `el.innerText` (not just Playwright's) returned the template's
-own whitespace between `#dl-status-text` and `#dl-boot-dots`. A hidden
-element's `innerText` isn't reliably `""` just because it isn't rendered
-— confirmed by direct DOM inspection, not assumed. Fixed the assertion to
-check what `setStatus("")` actually promises: `is_hidden()`, plus the
-status-text span's own emptiness. That unmasked the test's second
-assertion, `page.problems == []`, which was *also* failing — a genuine
-`console.error`, one property fetch away from `net::ERR_FAILED` on one run
-and `404` on the next. Traced to `assets/vendor/coi-serviceworker.js`
-(third-party, not this project's code): it forces exactly one reload on a
-genuinely first visit to pick up cross-origin-isolation headers no other
-means gets it (`test_stop_button.py`'s own top comment already documents
-this reload), and its own `fetch` handler logs any request that reload
-cancels with a bare `console.error(e)`. Confirmed by elimination, not
-guessed: ruled out the `cdn.jsdelivr.net` preconnect/dns-prefetch hints
-first (removed them, error persisted), found no external references in
-the vendored KaTeX/font CSS, then found the service worker's own error
-logging and the exact one-time-reload behavior this codebase already
-documents elsewhere. The `page` fixture (`tests/e2e/conftest.py`) now
-clears its collected `problems` once the boot-wait it already does
-resolves — "no console errors" now means from a stable, booted page
-onward, not through the one-time reload dance every fresh browser context
-goes through by design.
-
+problems hiding behind one assertion.** `page.inner_text("#dl-status") ==
+""` reliably failed even though `#dl-status` was correctly hidden and its
+own status-text span was correctly empty — a hidden element's
+`innerText` isn't reliably `""` just because it isn't rendered. Fixed the
+assertion to check what `setStatus("")` actually promises: `is_hidden()`,
+plus the status-text span's own emptiness. That unmasked a second,
+genuine `console.error` from `assets/vendor/coi-serviceworker.js`
+(third-party): it forces exactly one reload on a genuinely first visit to
+pick up cross-origin-isolation headers, and its own `fetch` handler logs
+any request that reload cancels. The `page` fixture
+(`tests/e2e/conftest.py`) now clears its collected `problems` once the
+boot-wait it already does resolves — "no console errors" now means from
+a stable, booted page onward, not through the one-time reload every
+fresh browser context goes through by design.
 *Cost to change: two assertions in one test
 (`tests/e2e/test_phase0_golden_path.py`), one `problems.clear()` in the
-shared `page` fixture (`tests/e2e/conftest.py`). Confirmed with 4
-consecutive clean runs of the fixed test alone and the whole file (38
-tests) green; full unit suite unaffected (`page.problems` had exactly one
-reader).*
+shared `page` fixture (`tests/e2e/conftest.py`).*
 
 **7.139 — The hand-written `dl-hint`/`dl-answer` folds now convert their
-own markdown.** `planning/CELL_HINTS.md` §12 flagged this while building
-the staged-hint fence and left it for later: Josh, "let's fix that bug."
-
-Python-Markdown treats a `<details>` block as raw HTML through to its
-closing tag, so every practice page's hand-written `dl-hint` and
-`dl-answer` folds had been shipping their numbered steps and
+own markdown.** Python-Markdown treats a `<details>` block as raw HTML
+through to its closing tag, so every practice page's hand-written
+`dl-hint`/`dl-answer` folds had been shipping their numbered steps and
 backtick-wrapped code as literal text — no `<ol>`, no `<code>` — while the
-`hint` fence's own folds, built the same session, were already correct
-because `render_staged_hint()` converts its body separately before
-placing it. The fix follows that same shape: a new `convert_fold_bodies()`
-in `build.py`, run on the page right after its main markdown conversion
-and before `place_hints()` sees it, finds each hand-written
-`<details class="dl-hint">`/`<details class="dl-answer">` block with a new
-`FOLD_RE`, and runs its still-unconverted body through `to_html()` on its
-own — the same trick `extract_notes()` already uses for a pedagogical
-note's raw aside. The summary line and the class that styles the fold are
-left untouched; only the body between them is replaced. Timing is what
-keeps this from colliding with a staged hint's own fold: `convert_fold_bodies()`
-runs while a staged hint is still just a placeholder comment, so its later
+`hint` fence's own folds were already correct because
+`render_staged_hint()` converts its body separately. The fix follows the
+same shape: a new `convert_fold_bodies()` in `build.py`, run on the page
+right after its main markdown conversion and before `place_hints()` sees
+it, finds each hand-written `<details class="dl-hint">`/`<details
+class="dl-answer">` block with a new `FOLD_RE` and runs its unconverted
+body through `to_html()` on its own — the same trick `extract_notes()`
+already uses for a pedagogical note's raw aside. Only the body between
+summary and closing tag is replaced. `convert_fold_bodies()` runs while a
+staged hint is still just a placeholder comment, so its later
 `dl-hint-staged` class is never in scope for `FOLD_RE` to match.
-
-Confirmed against a real page rather than assumed: rebuilt the site and
-read `grid-of-numbers-practice.html`'s two folds directly — the numbered
-steps come out as `<ol><li>`, the backtick spans as `<code>`, the
-bold `**Think about:**` as `<strong>`.
-
 *Cost to change: one regex (`FOLD_RE`) and one function
-(`convert_fold_bodies()`) in `build.py`, one call added to `load()`.
-Full unit suite and a fresh full-site build confirmed clean.*
+(`convert_fold_bodies()`) in `build.py`, one call added to `load()`.*
 
-**7.140 — A `sql exec` fence for tutorial pages, and why it isn't spelled
-the way dewstack spells it.** `planning/DEWSTACK_MERGE.md` §2's own
-assumption going in was to match `deweydex/dewstack`'s `sql cell=`/
-`sql check=` grammar exactly, on `CELL_HINTS.md`'s "one thing to learn"
-reasoning for the hint fold. Reading `dewstack/build.py`'s `SQL_BLOCK`/
-`SQL_CHECK_BLOCK` closely enough to implement against them showed that
-grammar assumes several named databases per page and a hand-written
-`check_*` Python function per task — a different cell-identity model,
-not just different words, from dewlab's one shared `_page_globals`
-namespace and generic `check()`/`_compare()`. The fence is `sql exec`
-instead, reusing `parse_cell()`'s existing `id:`/`hint:`/`expect:` header
-grammar unchanged — a SQL cell differs from a `python exec` cell only in
-what language its code is and what the runtime does with that code
-before it reaches Python.
+**7.140 — A `sql exec` fence for tutorial pages, distinct from dewstack's
+grammar.** dewstack's `sql cell=`/`sql check=` grammar assumes several
+named databases per page and a hand-written `check_*` function per task —
+a different cell-identity model from dewlab's shared `_page_globals`
+namespace and generic `check()`. The fence here is `sql exec` instead,
+reusing `parse_cell()`'s existing `id:`/`hint:`/`expect:` grammar
+unchanged — a SQL cell differs from a `python exec` cell only in its
+language and what the runtime does with it before it reaches Python.
 
-`build.py`: `Cell` gained a `type` field (`"python"`/`"sql"`, dewmini's
-own vocabulary — `CELL_TYPES` in `compose/dewmini.js` — reused rather
-than inventing a second name for the same idea), read off the fence's
-own first word (`extract_blocks()`'s `one()`) and validated against a new
-`CELL_TYPES` set, failing the build on anything else. `Tutorial` gained
-`has_sql`, mirroring `has_math`; the manifest gets `needsSqlite: true`
-under the same "only pay for what you use" reasoning `math` already
-uses, rather than duplicating `tutorial-runtime.js`'s own
-`DEFAULT_PACKAGES` list in Python to append `sqlite3` to.
-`render_cell()`'s pill now reads the cell's real type instead of always
-saying "Python".
+`Cell` gained a `type` field (`"python"`/`"sql"`, reusing dewmini's
+vocabulary), validated against a new `CELL_TYPES` set; `Tutorial` gained
+`has_sql`; the manifest gets `needsSqlite: true` under the same "only
+pay for what you use" reasoning `math` already uses; `render_cell()`'s
+pill now reads the cell's real type.
 
-`assets/tutorial-runtime.js`: `buildCells()` passes `language: "sql"` to
-`createCodeEditor()` for a SQL cell (CodeMirror's SQL mode was already
-compiled into `assets/vendor/codemirror.bundle.js` for dewmini's own use
-— no vendor rebuild needed) and reads `spec.type` onto the cell object.
-A new `wrapSqlCode()`/`codeToRun()` pair does exactly what
-`compose/dewmini.js`'s `buildSqlCellCode()` already does — turn the
-editor's raw SQL into
-`` `import tutorial_tools as _dl_tt\n_ = _dl_tt._run_sql_cell(db, ${JSON.stringify(sql)})` `` —
-called only at the two points code actually leaves for Python
-(`runCellWorker`, `runCellMainThread`), so `cell.getCode()` itself still
-returns the reader's own SQL everywhere else (staged-hint `ranContent`,
-the report-a-problem panel, Duplicate, export). `bootWorker()` now sets
-`seedDb: true` on its boot message whenever `manifest.needsSqlite` is
-set — the flag `assets/pyodide-worker.js`'s `boot()` already read, but
-that no tutorial page's own boot message had ever set until now. The
-standalone/offline export path (`bootMainThread()`/`resetPageStateMT()`)
-needed its own `db`-seeding entirely from scratch — a pre-existing gap
-shared with dewmini's own `pyodide-engine.js` main-thread fallback,
-which still doesn't seed `db` on that path — closed here only for
-tutorial pages, since only they were being newly asked to support it.
+In `tutorial-runtime.js`, a SQL cell gets CodeMirror's SQL mode (already
+vendored for dewmini); a new `wrapSqlCode()`/`codeToRun()` pair turns the
+editor's raw SQL into a call to `tutorial_tools._run_sql_cell(db, ...)`,
+invoked only at the points code actually leaves for Python —
+`cell.getCode()` still returns the reader's own SQL everywhere else.
+`bootWorker()` sets `seedDb: true` whenever `manifest.needsSqlite` is
+set; the standalone export path needed its own `db`-seeding from
+scratch, a pre-existing gap shared with dewmini's main-thread fallback,
+closed here only for tutorial pages.
 
-Two real bugs found while making sure a duplicated SQL cell (Duplicate
-already exists on every authored cell unconditionally) survives a
-reload: `duplicateAsCustomCell(cell, "python")` on an authored cell was
-hardcoded regardless of the cell's real type (fixed: `cell.type`), and
-the two places a custom cell's saved/shared `type` gets read back
-(`payload.type`/`saved.type`, both in `tutorial-runtime.js`) collapsed
-anything that wasn't `"text"` down to `"python"` — silently corrupting a
-duplicated SQL custom cell into a Python cell holding raw SQL as its code
-the moment the page reloaded. Both now recognise `"sql"` too.
+Two real bugs surfaced while confirming a duplicated SQL cell survives a
+reload: `duplicateAsCustomCell` was hardcoded to `"python"` regardless of
+the cell's real type; and the code that reads a custom cell's
+saved/shared `type` back collapsed anything but `"text"` to `"python"`,
+silently corrupting a duplicated SQL cell into Python holding raw SQL as
+code. Both now recognise `"sql"`.
 
-`assets/editor.js` (the GitHub-integrated authoring editor) needed two
-fixes of its own, found by reading it rather than by a failing test:
-`restoreExecTag()`'s regex was hardcoded to `` ```python\n `` — Crepe's
-markdown round-trip drops a fence's second word regardless of its first,
-so a `sql exec` cell edited through this editor would have silently
-come back permanently demoted to inert illustrative code the moment an
-author saved. `parseCells()`, which `cellsChanged()` uses to warn an
-author before a save that a cell id changed or disappeared (the "cell id
-is a contract" protection CLAUDE.md names as one of the two traps in this
-repository), had the same `python`-only regex — a SQL cell's id changing
-would have gone unwarned. Both now accept either of `build.py`'s own
-`CELL_TYPES` words.
-
-Verified in a real browser against a real Pyodide, not just by unit
-test: `tests/e2e/fixture/rendering-tour.md` gained a `sql exec` cell
-(`sql-basics`) and a Python cell reading the same `db`
-(`sql-read-from-python`); three new assertions in
-`test_phase0_golden_path.py` confirm the pill reads "SQL", the `SELECT`
-renders as a table with the `WHERE` filter actually applied, and a
-Python cell on the same page sees what the SQL cell wrote — the same
-cross-cell guarantee `test_dewmini_workbench.py` already proves for
-dewmini's own SQL cell type. The existing cell-count test
-(`test_every_exec_cell_became_an_editor_with_line_numbers`) now counts
-both fence words rather than only `python exec`. A full rebuild diffed
-against `main` confirmed every existing page is unchanged except for the
-two edited assets' own cache-busting version strings — this fence is
-additive, not a rewrite of anything `python exec` already did.
-
+`assets/editor.js` had two matching gaps: `restoreExecTag()`'s regex was
+hardcoded to `` ```python\n ``, so a `sql exec` cell edited there would
+come back demoted to inert illustrative code on save; `parseCells()`,
+which warns an author before save that a cell id changed, had the same
+`python`-only regex. Both now accept either of `CELL_TYPES`'s words.
 *Cost to change: a `type` field threaded through `Cell`, the manifest,
 and three functions in `tutorial-runtime.js`; two regexes in
-`assets/editor.js`; one CSS rule. `planning/DEWSTACK_MERGE.md` §3 and §8
-record the grammar reversal and what's still open (the web-authoring
-fences haven't been checked this closely yet). No tutorial content uses
-this fence yet — `tutorials/database-methods/` is the next piece of
-`planning/DEWSTACK_MERGE.md`'s phased rollout, not this entry.*
+`assets/editor.js`; one CSS rule. No tutorial content used this fence at
+the time — `tutorials/database-methods/` was the next piece of the
+rollout.*
 
-**7.141 — `database-methods` ported from dewstack: content, QQI mapping,
-and two gaps the checks caught that a rebuild alone would not.** All 12
-tutorials of dewstack's data track (`first-database`, `several-tables`,
-`practice`) ported into `tutorials/database-methods/`, each rewritten in
-dewlab's own voice and cell grammar (7.140's `sql exec` fence) rather than
-copied verbatim, per `planning/DEWSTACK_MERGE.md` §2's "port in shape, not
-code." One exception was kept deliberately: `loading-a-real-dataset` and
-the three pages built on it still fetch dewstack's exact
-`ourworldindata.org` CSV, because the dataset itself, not only the code
-that reads it, is part of what the page teaches. The quiz page (`the-
-tentacular-plushies-quiz`) reimplements dewstack's five hand-written
-`sql_tools.py` `check_*` functions as five `python exec` cells calling
-`PRAGMA table_info`/`db.execute` directly against the page's own shared
-`db` — dewstack's separate named-connection model
-(`sql_tools.get_connection(name)`) has no equivalent here, by design
-(7.140).
+**7.141 — `database-methods` ported from dewstack.** All 12 tutorials of
+dewstack's data track ported into `tutorials/database-methods/`,
+rewritten in dewlab's own voice and cell grammar (7.140's `sql exec`
+fence) rather than copied verbatim. One exception kept deliberately:
+`loading-a-real-dataset` and the three pages built on it still fetch
+dewstack's exact `ourworldindata.org` CSV, because the dataset itself is
+part of what the page teaches. The quiz page reimplements dewstack's
+five hand-written `check_*` functions as five `python exec` cells calling
+`PRAGMA table_info`/`db.execute` directly against the page's shared `db`
+— dewstack's separate named-connection model has no equivalent here, by
+design.
 
-`outcomes.yaml` gained an 11-outcome `DBM` module block, paraphrased from
-the real 5N0783 descriptor into dewlab's own SQL/Python framing;
-`topics.yaml` gained the matching 12 topics; `topic-groups.yaml` gained
-three browse groups. `DBM-LO1` ("typical uses for databases... in
-business decision-making") stays uncovered — no page here teaches it, and
-`CURRICULUM_MAP.md` says so in the open rather than hiding the gap. Every
-`covers:`/`touches:` mapping across the 12 files is keyed by heading
-anchor (`dev/curriculum_map.py`'s `anchor_for()`), not cell id — the two
-are different contracts, and cell ids alone are the saved-work key
-CLAUDE.md's second trap protects.
+`outcomes.yaml` gained an 11-outcome `DBM` module block; `topics.yaml`
+gained the matching 12 topics; `topic-groups.yaml` gained three browse
+groups. `DBM-LO1` ("typical uses for databases... in business
+decision-making") stays uncovered, and `CURRICULUM_MAP.md` says so in the
+open. Every `covers:`/`touches:` mapping is keyed by heading anchor
+(`dev/curriculum_map.py`'s `anchor_for()`), not cell id — the two are
+different contracts, and cell ids alone are the saved-work key.
 
-Two of the checks CI actually runs caught real gaps a rebuild by itself
-would have missed. `dev/build_topic_editor.py --check` refused all eleven
-new DBM topics at once: six new fine strands (`database-concepts`,
-`querying`, `data-entry`, `data-import`, `design`, `reporting`) had no
-column in `planning/curriculum/strands.yaml`'s `from_strand` map, so
-`draw_topic_graph.bands()` had nowhere to place them. All six went to the
-existing `programming` column — a query or a table's design is the same
-kind of skill as an algorithm or a class, in this file's own terms, not a
-`software-development` practice like testing or documenting.
-`dev/build_topic_game.py --check` was separately stale for the same new
+Two CI checks caught real gaps: `dev/build_topic_editor.py --check`
+refused all eleven new DBM topics because six new fine strands had no
+column in `strands.yaml`'s `from_strand` map — all six went to the
+existing `programming` column, since a query or a table's design is the
+same kind of skill as an algorithm or a class in this file's terms.
+`dev/build_topic_game.py --check` was separately stale for the same
 topics; both generated files are regenerated and check clean now.
 
-The homepage's module grid still pointed the Database Methods card
-off-site, at dewstack's GitHub repository, with a "Coming soon" badge
-(`build.py`'s `render_index()`). With real content built, it now points
-at the module's own `database-methods.html` (already built by
-`tutorials/modules.yaml`) and carries the same "Beta" badge as
-`computational-methods` and `fundamentals-of-oop`.
+The homepage's module grid had pointed the Database Methods card off-site
+at dewstack's repository with a "Coming soon" badge; it now points at
+the module's own page with the same "Beta" badge as the other two
+modules.
 
-`planning/PLAIN_LANGUAGE_PASS.md` had only the module's first series marked
-done, from a pass run right after porting. The other eight tutorials —
-`several-tables` and `practice` — had been ported but never actually
-checked against the style guide's own rules, which is the gap that tracker
-file exists to catch. A second pass covered them: five were already clean,
-three had small real fixes (a passive one-to-many definition, a table that
-"answers to `SELECT`", a "not x but y" reversal about a query and its
-result, a recap list of fragments rewritten into a marked sequence). No
-heading changed in any of the eight, so no `covers:` key needed updating.
-The tracker now records the whole module as done.
-
-Verified in a real browser, not only by unit test: all 12 pages loaded,
-and every cell this sandbox could reach ran cleanly. The part a rebuild
-can't confirm on its own — that the quiz's five checks actually
-distinguish a correct answer from an incomplete one — was run directly:
-against an empty workspace all five correctly reported not-yet, and
-against the page's own worked solution, pasted in, all five correctly
-reported pass. Four pages' cells that fetch the live `ourworldindata.org`
-dataset could not be exercised end to end from this sandbox: its outbound
-proxy returns a 403 on the CONNECT tunnel to that URL, confirmed directly
-with curl — a limit of this container, not of the content. A student's
-own browser reaches that public dataset the ordinary way.
-
+`planning/PLAIN_LANGUAGE_PASS.md` had only the module's first series
+marked done. A second pass covered the other eight: five were already
+clean, three had small real fixes (a passive definition, a table
+described as "answers to `SELECT`", a "not x but y" reversal, a recap
+list of fragments rewritten into a marked sequence).
 *Cost to change: 12 tutorial files and 12 glossary files under
 `tutorials/database-methods/`, three `.order.yaml` files, an 11-outcome
 block in `outcomes.yaml`, 12 entries in `topics.yaml`, three groups in
 `topic-groups.yaml`, one line in `modules.yaml`, six lines in
 `strands.yaml`, one module card in `build.py`, and the two files
-`dev/build_topic_editor.py`/`dev/build_topic_game.py` generate. Full unit
-suite, every check CI runs (`curriculum_map.py --check`,
-`build_topic_game.py --check`, `build_topic_editor.py --check`,
-`pair_results.py`, `check_doc_links.py`), and a full rebuild all pass;
-`planning/DEWSTACK_MERGE.md`'s ledger records this module as ported.*
+`dev/build_topic_editor.py`/`dev/build_topic_game.py` generate.*
 
-**7.142 — A live HTML/CSS/JS site editor for tutorial pages, and a shared
-engine underneath both it and dewmini's own Site tab.** `DEWSTACK_MERGE.md`
-§3's original draft assumed dewlab had nothing of this shape and that
-dewstack's `site=name`/`html app=` fence spelling could carry over
-unchanged. Both assumptions were wrong, in opposite directions, and only
-reading both sides closely — the same discipline 7.140 already paid for
-once on the SQL side — caught it before any tutorial content depended on
-a spelling that would need reversing.
+**7.142 — A live HTML/CSS/JS site editor for tutorial pages, sharing one
+engine with dewmini's own Site tab.** dewmini's Site tab
+(`compose/dewmini.js`, 7.121) already had the mechanics — a sandboxed
+`srcdoc` iframe, live HTML/CSS with JavaScript on Run, a relayed console
+with friendly error hints — near-twin to dewstack's own site editor after
+the two were ported between each other across 2026-09-04/09-06 (7.134).
 
-What turned out not to be a gap: dewmini's Site tab
-(`compose/dewmini.js`, `openSiteFile()`/`renderSiteView()`, 7.121) already
-had almost all of the mechanics — a sandboxed `srcdoc` iframe, live
-HTML/CSS with JavaScript on Run, a relayed console with friendly error
-hints. dewstack's own `assets/site-editor.js` was ported from it in shape
-on 2026-09-04 (dewstack's `planning/CONSOLIDATION_PLAN.md` §13), and
-dewstack's own later addition — the console and the Run-vs-live split —
-was ported back into dewmini on 2026-09-06 (7.134). The two were already
-near-twins at that layer before this entry did anything.
-
-What was a real, forced gap: `renderSiteView()` is a singleton over
-module state — one `siteEditors`, one `activeNotebook()` — so it can show
-one site at a time, full stop. A tutorial page needs several independent
-live editors on one page (dewstack's own content proves the requirement:
-`position-and-the-sticky-header.md` ships two). And `site=name` puts a
-site's identity in the fence's own info string, which dewlab's
-Crepe-based authoring editor cannot round-trip — it keeps only a fence's
-first word (`ARCHITECTURE.md` §3) — and every other exec-family fence
-survives exactly that by reading its identity off an `id:` line *inside*
-the fence instead. A `site=name` fence has nothing inside it to recover
-from: copied verbatim, every `html site=hero` block edited through
-dewlab's own authoring page would silently come back inert the moment an
-author saved.
+Two real gaps forced a fence design different from dewstack's:
+`renderSiteView()` is a singleton over module state, so it shows only one
+site at a time, while a tutorial page needs several independent live
+editors on one page. And dewstack's `site=name` puts a site's identity in
+the fence's own info string, which dewlab's Crepe-based authoring editor
+cannot round-trip — it keeps only a fence's first word, and has nothing
+inside the fence to recover an identity from, unlike every other
+exec-family fence, which reads its id from an `id:` line inside the fence
+itself.
 
 **The fence, decided:** `html site`/`css site`/`js site`, each with the
-same `id:` header every exec-family fence already has, plus a `site:`
-line naming the group it joins:
+same `id:` header every exec-family fence has, plus a `site:` line naming
+the group it joins. Consecutive fences sharing one `site:` value group
+into one `SiteEditor` (`build.py`'s `extract_blocks()`, tracked by fence
+position so an actual intervening fence breaks the run). Panes are
+optional — `render_site_editor()` draws only the panes an editor actually
+has, unlike dewmini's Site tab, which always shows three. An id collides
+with a cell's id the same way two cells colliding does.
 
-    ```html site
-    id: hero-markup
-    site: hero
-    <button>Hover me</button>
-    ```
-
-    ```css site
-    id: hero-style
-    site: hero
-    .btn { color: red; }
-    ```
-
-Consecutive fences sharing one `site:` value group into one `SiteEditor`
-(`build.py`'s `extract_blocks()`, tracked by fence position in the raw
-source so an *actual* intervening fence — not just a blank line — breaks
-the run, matching the failure dewstack's own consecutive-run check gives
-for the same mistake). Panes are optional: most of dewstack's own 27 web
-pages are HTML+CSS only, and `render_site_editor()` draws only the panes
-an editor actually has, unlike dewmini's Site tab, which always shows
-three regardless. An id collides with a cell's id the same way two cells
-colliding does — one shared namespace, checked once, in `extract_blocks()`'s
-own `seen` set.
-
-**The engine, shared rather than ported a third time.** Within one
-repository, "port in shape, not code" is the wrong rule — that convention
-exists for the boundary between dewlab and dewstack, which share no code
-by design, not for two files in the same repository heading toward the
-same drift a second, unshared copy always eventually causes. The relay
-script, the friendly-error map, the document assembly, and the
-in-flight-coalescing flush (`view.pendingDoc`/`loading`/a two-second
-watchdog, traced against a real Chromium originally for 7.121) all moved
-out of `compose/dewmini.js` into `assets/site-relay.js`, exporting
+**The engine, shared rather than ported a third time.** "Port in shape,
+not code" is the rule for the boundary between dewlab and dewstack, not
+for two files in one repository heading toward the same drift an
+unshared copy always causes. The relay script, the friendly-error map,
+the document assembly, and the in-flight-coalescing flush all moved out
+of `compose/dewmini.js` into `assets/site-relay.js`, exporting
 `mountSitePreview(iframe, {onReset, onConsole, onError})` — a factory,
-not a singleton, so a tutorial page can call it once per editor.
-`compose/dewmini.js`'s `renderSiteView()` now only builds its own DOM
-(panes, console lines, "Go to line") and calls into that shared mount;
-`assets/tutorial-runtime.js`'s new `buildSiteEditors()` does the tutorial
-page's equivalent, with its own `dl-site-*` chrome rather than dewmini's
-`dm-siteview-*`, matching the pill/output styling `sql exec` already
-established for keeping two products visually consistent without sharing
-a stylesheet. One real, unrelated bug surfaced by putting both copies
-side by side to extract them: dewmini's own `buildSiteDocument()` was
-missing `<base href="about:srcdoc">`, which dewstack's copy had — without
+not a singleton. `renderSiteView()` now only builds its own DOM and calls
+into the shared mount; `tutorial-runtime.js`'s new `buildSiteEditors()`
+does the tutorial page's equivalent with its own `dl-site-*` chrome. One
+unrelated bug surfaced by putting both copies side by side: dewmini's
+`buildSiteDocument()` was missing `<base href="about:srcdoc">` — without
 it, a relative link inside a dewmini site preview navigates the dewmini
-page itself rather than the preview. Fixed in the shared version, so both
-products get the fix at once.
+page itself rather than the preview. Fixed in the shared version, so
+both products get the fix at once.
 
 **Persistence follows dewlab's own convention, not dewstack's.**
-dewstack's site editor deliberately saves nothing — "the student's fork
-is where work is kept." dewlab's own promise is the opposite ("your work
-is saved on this device") for every cell on the site, so a tutorial's
-site editor follows dewlab's rule, not dewstack's: each pane's current
-text and whether Run had been pressed travel in the same per-page
-`localStorage` record every cell's code and output already do
-(`saveNow()`/`restoreSaved()`, `assets/tutorial-runtime.js`), keyed by
-each pane's own `id`. A reload that had been run re-runs on load, showing
-the script's effect again rather than a blank one; a fresh page never
-auto-runs JavaScript, matching the stated rule right there in the page
-("JavaScript runs when you press Run") — the two states are told apart by
-one saved boolean per editor, not by re-deriving intent from whatever the
-console happens to hold, since a site's preview and console are cheap
-enough to just rebuild rather than cache.
-
-Verified in a real browser against a real Pyodide-free page (no
-interpreter needed for this feature at all): built the e2e fixture's new
-"Site editor" section (two editors, `hero` with all three panes and
-`quiet` with HTML+CSS only) and drove it directly — the CSS pane updates
-the preview with no Run click; the JS pane's effect does not appear until
-Run is pressed; clicking Run makes the console show the loaded message
-and wires up the button inside the preview; a bad script produces an
-error line, a friendly hint, and a working "Go to line"; Reset restores
-the starter script; and a reload after editing and running restores both
-the edited code and the "already run" state, re-running the script rather
-than leaving the preview blank. `tests/test_build.py`'s `TestSiteEditors`
-covers the fence grammar and its failure modes (unknown language, missing
-`id:`/`site:`, two panes of the same language, non-consecutive reuse, a
-colliding id) at the unit level; four new tests in
-`tests/e2e/test_phase0_golden_path.py` cover the browser-only behaviour a
-unit test cannot reach.
-
+dewstack's site editor deliberately saves nothing; dewlab's promise is
+the opposite for every cell, so a tutorial's site editor follows suit:
+each pane's current text and whether Run had been pressed travel in the
+same per-page `localStorage` record every cell's code and output already
+do, keyed by each pane's own `id`. A reload that had been run re-runs on
+load; a fresh page never auto-runs JavaScript — the two states are told
+apart by one saved boolean per editor.
 *Cost to change: a new `SitePane`/`SiteEditor` pair in `build.py`, plus
 `parse_site_pane()`, the `extract_blocks()` dispatch branch, and
-`render_site_editor()`; a new file, `assets/site-relay.js`; a refactor
-(not a rewrite) of `compose/dewmini.js`'s `renderSiteView()`/
-`destroySiteEditors()` down to its own DOM-drawing code; a new
-`buildSiteEditors()` plus `saveNow()`/`restoreSaved()` additions in
-`assets/tutorial-runtime.js`; a new CSS section in
-`assets/tutorial-style.css`. `planning/DEWSTACK_MERGE.md` §3 has the
-fuller design record and §8 records the fence-spelling question as
-resolved. Full unit suite (including the 15 new `TestSiteEditors` cases)
-and the full e2e suite (including dewmini's own 108 Site-tab-adjacent
-tests, unchanged in behaviour) both pass.*
+`render_site_editor()`; a new file, `assets/site-relay.js`; a refactor of
+`compose/dewmini.js`'s `renderSiteView()`/`destroySiteEditors()` down to
+its own DOM-drawing code; a new `buildSiteEditors()` plus
+`saveNow()`/`restoreSaved()` additions in `assets/tutorial-runtime.js`; a
+new CSS section in `assets/tutorial-style.css`.*

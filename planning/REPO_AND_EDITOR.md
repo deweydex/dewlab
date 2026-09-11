@@ -26,7 +26,7 @@ Folders under `/tutorials/` are one per module, named by the same slug that goes
 
 Inside a module, each tutorial is a folder of its own, holding its markdown, its practice page, its glossary, any frozen past releases and any pictures it uses. A module's order files and `series.yaml` stay at module level, because they describe a series rather than any one tutorial.
 
-Written when the year-one plan was four modules — `mathematics-for-it` and `programming-design-principles` were since taught together and their tutorials live in `mit-pdp-maths-prog-integration/`; `database-methods` has no outcomes written. `planning/STATUS.md` has the current picture.
+The original plan had four modules; `mathematics-for-it` and `programming-design-principles` are now taught together, and their tutorials live in `mit-pdp-maths-prog-integration/`. `database-methods` has no outcomes written yet. `planning/STATUS.md` has the current picture.
 
 Generated HTML doesn't live in the repo as committed files — it's a build artifact, produced fresh on every push and deployed straight to Pages. That avoids the failure mode where a tutorial's markdown gets edited, the rebuild is forgotten, and source and output ship out of sync.
 
@@ -36,7 +36,7 @@ A GitHub Actions workflow triggered on push to main: checks out the repo, runs `
 
 ## The editor, v1
 
-**Built, as of the change that added this note** — see `ARCHITECTURE.md` §3. The gap between this spec and what shipped: the tool always had the reordering, frontmatter, and release machinery below, but the prose surface itself was a plain `<textarea>` until Milkdown was actually wired in.
+**Built** — see `ARCHITECTURE.md` §3. The reordering, frontmatter, and release machinery below shipped first; the prose surface was a plain `<textarea>` until Milkdown was wired in.
 
 A GUI built on Milkdown (Crepe preset) — live, borderless block editing — rather than a command-line-only workflow. Two people will be authoring tutorials, both comfortable with git, and both prefer working visually: open a folder, see the tutorials already there, create a new one, add and reorder cells, rather than hand-editing YAML frontmatter and fenced code blocks directly in a text editor.
 
