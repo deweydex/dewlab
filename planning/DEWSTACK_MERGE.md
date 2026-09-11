@@ -116,25 +116,108 @@ other repository's code closely enough to implement against it — worth
 flagging precisely because it reverses something written down earlier as
 settled.
 
-**Web authoring: a genuine gap.** dewlab has no sandboxed-iframe,
-live-HTML/CSS-run-on-demand-JS pattern anywhere in a tutorial page today.
-dewstack's `dewstack/assets/site-editor.js` (18.8K) is the design to port: HTML
-and CSS panes rebuild the preview live; the JS pane runs on a Run click;
-errors relay from the iframe's console with a line number and a
-plain-language second line (`SITE_FRIENDLY` mapped errors, per
-`DECISIONS_LOG.md`'s account of the original build). This needs new
-`build.py` fence kinds (`site=`, `html app=`/`css app=`/`js app=`,
-matching dewstack's spelling for the same reason as above) and a new
-runtime file — working name assets/site-runtime.js, not yet created —
-built against dewlab's manifest/report-doors conventions rather than
-dewstack's.
+**Web authoring: revised again, 2026-09-11, after actually reading both
+sides closely (§8 q3).** The paragraph this replaces assumed dewlab had
+nothing of this shape at all, and that dewstack's fence spelling
+(`site=`, `html app=`/`css app=`/`js app=`) could carry over unchanged.
+Both assumptions were wrong, in opposite directions.
 
-The JS execution piece of this should not be built twice. dewlab already
-has a sandboxed JS runner for JS cells in dewmini
-(`compose/js-cell-engine.js`, `<iframe sandbox="allow-scripts">`, no
-Worker). The web-authoring engine's JS pane should share that file or a
-lightly generalised version of it, rather than dewstack's separate JS
-console-relay code being reimplemented a third time.
+*What turned out not to be a gap.* dewlab already has almost all of the
+live-preview mechanics — just not on a tutorial page. dewmini's Site tab
+(`compose/dewmini.js`, `openSiteFile()`/`renderSiteView()`,
+DECISIONS_LOG 7.121) is exactly this pattern: a sandboxed
+`srcdoc` iframe (`sandbox="allow-scripts"`, no same-origin), an HTML/CSS
+live rebuild with JS on a Run click, a console relayed from inside the
+frame with four plain-language error mappings (`SITE_FRIENDLY`), a
+single-document-in-flight coalescing flush with a watchdog. dewstack's
+`assets/site-editor.js` was ported from it in shape on 2026-09-04
+(CONSOLIDATION_PLAN §13), including the very bug this document earlier
+mis-attributed — `SITE_FRIENDLY` is dewlab's own constant; dewstack's
+copy is called `FRIENDLY`. More importantly, dewstack's own later
+addition — the console and the Run-vs-live split for JS — was ported
+back into dewmini on 2026-09-06 (DECISIONS_LOG 7.134). The two are now
+near-twins at the preview/relay/console/Run layer. None of that needs
+reinventing: the relay to reuse for the tutorial-page component is the
+one already living in `dewmini.js:1349-1379` — not `compose/js-cell-engine.js`
+(dewmini's separate JS-cell type, a different feature that happens to
+share the same sandboxed-iframe idea) and not a third independent copy.
+
+*What is a genuine, forced gap — not a preference.* dewmini's
+`renderSiteView()` is a singleton over module-level state (one
+`siteEditors`, one `activeNotebook()`, one `cellsContainer`): it can show
+one site at a time, full stop. A tutorial page needs several
+independently live editors on one page — dewstack's own content proves
+the requirement, not just the theory (`position-and-the-sticky-header.md`
+ships two). And dewmini identifies a site by a real path on a mounted
+filesystem; a tutorial page has no filesystem to hang that on, so
+identity has to come from the fence itself. dewstack solved both with a
+per-instance `mount(el, opts)` and an `editors` registry
+(`site-editor.js`) — itself already "ported in shape" from dewmini once,
+so building dewlab's tutorial-page version the same way is the same rule
+applied a second time, not a new one.
+
+*Why dewstack's fence spelling still can't be copied — the SQL lesson,
+confirmed a second time.* `site=name` puts the site's identity in the
+fence's own info string. dewlab's Crepe-based authoring editor keeps only
+the *first word* of a fence's info string on a round trip
+(`ARCHITECTURE.md` §3, "The authoring editor"); every other exec fence survives this
+by recovering its tag from an `id:` header line written *inside* the
+fence (`assets/editor.js`'s `restoreExecTag()`). A `site=name` fence has
+nothing inside it to recover from — every `html site=hero` block edited
+through dewlab's own authoring page would silently come back as inert,
+illustrative HTML the moment an author saved. This is not a style
+mismatch to smooth over; it is the same class of failure the `sql cell=`
+grammar would have caused, caught the same way: by reading closely before
+assuming a spelling carries over.
+
+**The fence, decided:** an `id:`-bearing header, same grammar every other
+exec-family fence already uses, with an explicit grouping key rather than
+name-in-the-info-string:
+
+    ```html site
+    id: hero-markup
+    site: hero
+    <button>Hover me</button>
+    ```
+
+    ```css site
+    id: hero-style
+    site: hero
+    .btn { ... }
+    ```
+
+Consecutive fences sharing a `site:` value group into one editor, the
+same adjacency rule dewstack's own `site=` enforces (`build.py`'s
+consecutive-run walk) and for the same reason given there — the source
+should read as the student's whole site at a glance. Panes stay optional
+(most of dewstack's own 27 web pages are HTML+CSS only); `renderSiteView()`'s
+always-three-panes habit is wrong for a tutorial page and doesn't carry
+over. `js site` fences get a Run button and console; `html site`/`css
+site` stay live.
+
+**Engine shape:** a new, instantiable version of dewmini's Site view —
+`mount(container, {html, css, js})` returning `{run, destroy}`, per
+dewstack's own proof that this refactor works — built in
+`assets/tutorial-runtime.js`, sharing the relay/friendly-map/document-assembly
+code already sitting in `dewmini.js` rather than copying it a third time
+(within one repository, that means actually extracting it to a shared
+file both `compose/dewmini.js` and `tutorial-runtime.js` import, not
+"porting in shape" again — that rule is for the boundary between the two
+*repositories*, not within one). One bug worth fixing in the same pass,
+found by this comparison and unrelated to it otherwise: dewmini's
+document assembly (`buildSiteDocument()`) is missing
+`<base href="about:srcdoc">`, which dewstack's copy has
+(`site-editor.js`) — without it, a relative link inside a dewmini site
+preview navigates the dewmini page itself instead of the frame.
+
+**dewmini web, by contrast, is the easy side of this.** Measured against
+dewmini's *existing* Site tab and its own multi-notebook store
+(`dewmini:notebooks:v1`, already shaped like dewstack's
+`dewstack:workspace:v1`), what's missing is small and additive: freeing a
+site's display name from its filename, "load files in" from the local
+machine, "download these files" out, the preview-width slider. No new
+identity model, no instancing refactor — dewmini web can extend the tab
+model dewmini already has rather than starting over.
 
 ## 4. dewmini and dewmini web
 
@@ -290,18 +373,23 @@ The same bar dewstack already used, since it's dewlab's own bar too:
    itself, not its engineering, that travels unchanged here, since these
    pages are prose and screenshots rather than cells with a grammar to
    reconcile.
-3. **Fence-kind spelling — resolved for SQL, now being checked for
-   web.** §3 settled the SQL side: `sql exec`, dewlab's own `id:`/`hint:`
-   grammar, one shared `db`, generic `check()` — not dewstack's `sql
-   cell=`/`sql check=`, once reading that grammar closely showed it was a
-   different cell-identity model, not just different words. Josh, on the
-   web side: "let's check and work through it… if we need something new
-   that's okay, that's why we have dewmini web, we can just port the
-   whole thing over." A close read of dewstack's `site=` fence grammar
-   and its relationship to dewlab's existing dewmini Site tab
-   (`compose/dewmini.js`'s `openSiteFile()`, DECISIONS_LOG 7.121) is
-   under way; findings and the resulting engine design go here once
-   done, the same way §3 documents the SQL side's.
+3. **Fence-kind spelling — resolved for SQL, and now resolved for web
+   too, 2026-09-11.** §3 settled the SQL side: `sql exec`, dewlab's own
+   `id:`/`hint:` grammar, one shared `db`, generic `check()` — not
+   dewstack's `sql cell=`/`sql check=`, once reading that grammar closely
+   showed it was a different cell-identity model, not just different
+   words. The web side got the same reading, per Josh's "let's check and
+   work through it" — and confirmed the same conclusion, for a sharper
+   reason: dewstack's `site=name` puts identity in the fence's info
+   string, which dewlab's Crepe-based authoring editor cannot round-trip
+   (it keeps only a fence's first word), so a `site=name` fence edited
+   through dewlab's own editor would silently go inert. §3 has the full
+   comparison, the resulting `id:`/`site:`-header grammar, and the
+   engine design — dewmini's existing Site tab code is reused for the
+   relay/console/preview layer (already a near-twin of dewstack's, since
+   the two were ported back and forth between the repos twice already),
+   refactored to be instantiable per editor rather than the singleton it
+   is today.
 4. **dewstack's eventual fate.** Out of scope for this plan, noted so it
    isn't forgotten: once both modules are live and have run in front of a
    class, does dewstack's repository stay up as a read-only archive
