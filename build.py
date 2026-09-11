@@ -2190,8 +2190,13 @@ def nav_search_html() -> str:
     """
     return (
         '<details class="dl-nav-search">'
-        '<summary aria-label="Search"><span class="dl-nav-search-icon" '
-        'aria-hidden="true"></span><span class="dl-toggle-label">Search</span></summary>'
+        '<summary aria-label="Search">'
+        '<svg class="dl-nav-search-icon" viewBox="0 0 20 20" aria-hidden="true" focusable="false">'
+        '<circle cx="8.5" cy="8.5" r="6" fill="none" stroke="currentColor" stroke-width="2"/>'
+        '<line x1="13.3" y1="13.3" x2="18" y2="18" stroke="currentColor" stroke-width="2" '
+        'stroke-linecap="round"/>'
+        "</svg>"
+        '<span class="dl-toggle-label">Search for a topic</span></summary>'
         + render_search_box(
             "Search for a topic, tutorial, practice, series, or module…",
             id_prefix="dl-nav-search",
