@@ -3525,8 +3525,8 @@ def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "",
     if datasets:
         manifest["datasets"] = datasets
     # Same site-wide content on every page, so write() reads it directly
-    # (load_math_basics() caches the parse) rather than every one of
-    # write()'s many call sites threading it through as its own parameter.
+    # rather than every one of write()'s many call sites threading it
+    # through as its own parameter.
     math_basics = load_math_basics()
     if math_basics:
         manifest["mathBasics"] = math_basics
