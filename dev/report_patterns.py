@@ -4,9 +4,8 @@ one `pattern` issue per page that crosses a threshold — three or more open
 reports on the page, or two or more naming the same cell, both within the
 last fourteen days.
 
-A pattern issue is the request for a larger look, not a fix in itself
-(planning conversation behind DECISIONS_LOG.md Phase 8): the job can only
-count, so it names what it found and leaves the reading — whether a fix
+A pattern issue is the request for a larger look, not a fix in itself:
+the job can only count, so it names what it found and leaves the reading — whether a fix
 already covers some of the gathered reports, whether they share a root
 cause — to whoever picks it up (`.claude/skills/triage-report/SKILL.md`'s
 own "Working a pattern issue" section).

@@ -1,6 +1,3 @@
-# Shared setup: the small readings table several tutorials in this series use.
-# Expanded into the tutorial's own source by build.py, then executed in the
-# student's browser like any other cell.
 import pandas as pd
 
 readings = pd.DataFrame(

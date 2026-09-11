@@ -1,13 +1,3 @@
-/**
- * dewmini — a small, quiet notebook.
- *
- * Runs on the same tutorial_tools.py + run_cell() pipeline as every dewlab
- * tutorial page (fetched from ../assets/tutorial_tools.py at boot, never
- * duplicated here), so show()/show_table()/check()/widgets/matplotlib all
- * behave exactly as they do in a tutorial. What is new here is the page
- * around it: cell CRUD, drag reorder, downloads, and the Settings/Help/Notes
- * panels.
- */
 
 import { createCodeEditor, setEditorTheme } from "../assets/vendor/codemirror.bundle.js";
 import * as dfs from "./dewmini-fs.js";
@@ -25,7 +15,7 @@ const NOTES_KEY = "dewmini:notes";
 
 // Beyond the curriculum's numpy/pandas/matplotlib baseline (DECISIONS.md
 // "Core libraries"), dewmini also loads sqlite3 (an unvendored stdlib
-// module in Pyodide, one extra loadPackage() entry — DECISIONS_LOG.md 7.78)
+// module in Pyodide, one extra loadPackage() entry)
 // and Pillow (what image_input() decodes a picked file into). A tutorial
 // page stays on the narrower curriculum baseline; dewmini is a general
 // notebook, not curriculum content, so it can afford the wider default.
@@ -41,16 +31,6 @@ const DM_NETWORK_PATCH = "try:\n    import pyodide_http\n    pyodide_http.patch_
 
 const CELL_TYPES = { PYTHON: "python", TEXT: "text", WEB: "web", SQL: "sql", JAVASCRIPT: "javascript" };
 
-/* Which of the newer cell types (planning/CELL_IDENTITY.md §8) offer
- * themselves on the insert seam between cells — a Settings → "Cell
- * types" toggle per type, checked by createInsertDivider() below. Web
- * and SQL default off, JavaScript defaults on (DECISIONS_LOG.md 7.122):
- * a reader turns on what they mean to use rather than finding every
- * cell type dewmini knows about crowded onto every seam. Python and
- * Text carry no toggle — they are the notebook, not an extra a reader
- * opts into. Turning a type off never touches a cell of that type
- * already in the notebook: it still shows, still runs, still exports —
- * only what a reader can *add* changes. */
 const CELL_TYPE_TOGGLES = [
   { type: CELL_TYPES.WEB, dm: "celltype-web", key: "dewmini:celltype-web", defaultOn: false },
   { type: CELL_TYPES.SQL, dm: "celltype-sql", key: "dewmini:celltype-sql", defaultOn: false },
@@ -59,59 +39,16 @@ const CELL_TYPE_TOGGLES = [
 
 let enabledCellTypes = new Set([CELL_TYPES.PYTHON, CELL_TYPES.TEXT]);
 
-/* The fixed little "page" a web cell's own preview falls back to when its
- * HTML half is empty — a heading, a paragraph with a link, a button, a
- * list: enough ordinary elements that a reader's own CSS selectors (h2,
- * p, a, button, li, …) land on something real, without asking them to
- * write any HTML of their own first (planning/CELL_IDENTITY.md §8's own
- * reasoning for why a CSS rule doesn't simply style whatever markup sits
- * above it in a *different* cell — that would make its behaviour depend
- * on cell order, which nothing else in dewmini's model does; a web cell
- * folding both halves into one cell, DECISIONS_LOG.md 7.120, sidesteps
- * the question rather than answering it differently). */
 const CSS_PREVIEW_MARKUP = `<h2>Heading</h2>
 <p>A paragraph of text, with a <a href="#">link</a> inside it.</p>
 <button>A button</button>
 <ul><li>One item</li><li>Another item</li></ul>`;
 const IMPORTS_SNIPPET = "import numpy as np\nimport pandas as pd\nimport matplotlib.pyplot as plt\n";
 
-/* The cell types meant to be read, not run — rendered by default, with
- * chrome that stays quiet until touched (planning/CELL_IDENTITY.md
- * §4/§8). Python, SQL, and JavaScript sit outside this set: all three
- * run against a shared session, so all three keep Python-shaped chrome
- * (a run line, not a rendered view) — see RUNS_AGAINST_SESSION below.
- * Text is the only member with an actual Edit/View toggle now — a web
- * cell's own HTML and CSS editors are always both visible
- * (DECISIONS_LOG.md 7.120), so there is nothing for a toggle to switch
- * between; this Set still exists for Text alone rather than being
- * inlined as a single `=== CELL_TYPES.TEXT` check, since a future
- * read-not-run type may want the same toggle Text already has. */
 const READ_NOT_RUN_TYPES = new Set([CELL_TYPES.TEXT]);
 
-/* The cell types that run against a shared session and so get
- * Python-shaped chrome: a run line, a Run/Stop button, "Clear output",
- * and inclusion in "Run all"/"Run above"/"Run below". Two of these
- * three don't hand a cell's own raw text to the engine unchanged: a SQL
- * cell's code is not Python — executeCell() below wraps it into a call
- * to tutorial_tools._run_sql_cell() before handing it to
- * assets/pyodide-engine.js — and a JavaScript cell runs through a
- * different engine and session entirely (./js-cell-engine.js's own
- * sandboxed iframe, not Pyodide at all). What all three share, and why
- * they share this one Set rather than three separate checks, is
- * everything about *how* a run behaves regardless of what actually
- * executes it: one session at a time, staleness relative to a cell's
- * own last run, the same footer chrome. */
 const RUNS_AGAINST_SESSION = new Set([CELL_TYPES.PYTHON, CELL_TYPES.SQL, CELL_TYPES.JAVASCRIPT]);
 
-/* Seeds the namespace for the *standalone export* only — a downloaded copy
- * carries its own tiny runtime rather than pyodide-engine.js, which is what
- * seeds the live page (its own copy of this, assets/pyodide-engine.js).
- *
- * __dewlab__ rather than __dewmini__ so that the same notebook answers
- * `__name__` the same way in the page and in the file a reader downloaded
- * from it. They disagreed once the live page moved onto the shared engine,
- * which is the kind of difference nobody finds until a cell behaves
- * differently after a download and there is no obvious reason why. */
 const SEED_GLOBALS_CODE = `
 import tutorial_tools
 tutorial_tools._page_globals.update({
@@ -131,21 +68,8 @@ let notebooks = [];
 let activeNotebookId = null;
 let cells = [];
 
-/* The two ways a notebook can be shown. A notebook is a list of cells; a
- * file is one continuous piece of text. Because a percent-format Python
- * file is both of those at once, switching between them converts nothing
- * — it changes how the same work is displayed.
- *
- * Both views are kept because an empty file is harder to begin than an
- * empty cell. A blank page asks a beginner to decide what the whole
- * program will be before writing anything, and a cell asks for one line.
- * A student can start in cells and move to a file when they are ready. */
 const VIEWS = { CELLS: "cells", FILE: "file", SITE: "site" };
 
-/* Output from a whole-file run is not any cell's, so it needs an id of
- * its own for the engine to route by. Prefixed like a real cell id and
- * impossible to collide with one, since generateId() always ends in
- * random base-36 rather than a word. */
 const FILE_RUN_ID = "cell-file-run";
 
 let fileEditor = null;
@@ -161,7 +85,7 @@ let statusClearTimer = null;
 
 // The live Pyodide interpreter, cell execution, hover/signature-help, and
 // filesystem mounting all go through the shared assets/pyodide-engine.js
-// now (DECISIONS_LOG.md 7.89) — rather than this file holding its own
+// now — rather than this file holding its own
 // `pyodide`/`tools`/`inspectModule` references and talking to Pyodide
 // directly, the way its first version did.
 // toolsSourceCache stays: downloadAsHtml()'s embedded bootstrap below
@@ -171,32 +95,14 @@ let statusClearTimer = null;
 let toolsSourceCache = null;
 let running = false;
 let runningCellId = null;
-/* How many cells have actually run since the interpreter last started or
- * was last reset from a clean namespace — the counter behind each cell's
- * "Ran Nth" (planning/CELL_IDENTITY.md §3). Reset to 0 by
- * resetRunSequence(), never decremented otherwise: a cell that runs twice
- * in the same session just gets a new, later ordinal each time. */
 let runSequenceCounter = 0;
 
 let draggedId = null;
 
-// ---------------------------------------------------------------- storage
-
-/* A unique id for a new cell: the current time in base 36 (so ids sort
- * roughly by creation order) plus a few random base-36 characters (so two
- * cells created in the same millisecond still don't collide). Nothing
- * here needs to be a "real" globally-unique id like a UUID — it only has
- * to be unique among this one notebook's own cells. */
 function generateId() {
   return `cell-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
 }
 
-/* Turns whatever was stored into real cell objects. The `.filter(...)` step
- * matters: it drops anything that doesn't look like a real cell (a corrupted
- * entry, or one from some future version of this file with a cell type this
- * version doesn't know about) rather than trusting whatever was stored — a
- * cheap defense against a stray bad value crashing the whole notebook on
- * load. */
 function readCells(saved) {
   if (!Array.isArray(saved)) return [];
   return saved
@@ -213,18 +119,6 @@ function readCells(saved) {
     }));
 }
 
-/* A notebook saved before 7.120 could hold standalone `html`/`css`
- * cells — both retired in favour of one merged type, CELL_TYPES.WEB,
- * with an HTML half (`content`, same field every other type already
- * uses) and a CSS half (`style`). Each old cell becomes its own new
- * `web` cell, independently: an old HTML cell's markup becomes the new
- * cell's `content` with an empty `style`; an old CSS cell's rule
- * becomes the new cell's `style` with an empty `content`. Two old cells
- * a reader had built as a matching pair are *not* merged into one —
- * guessing which HTML an old CSS cell was written to style is exactly
- * the ambiguity a real fix would need to resolve, and nothing here
- * attempts it; the reader's own two cells just both become `web` cells,
- * each exactly where it already was. */
 function migrateLegacyCellType(c) {
   if (c.type === "html") return { ...c, type: CELL_TYPES.WEB, content: c.content || "", style: "" };
   if (c.type === "css") return { ...c, type: CELL_TYPES.WEB, content: "", style: c.content || "" };
@@ -238,11 +132,6 @@ function makeNotebook(name, cellList = [], view = VIEWS.CELLS) {
            name, cells: cellList, view };
 }
 
-/* Work saved before tabs existed lived under a different key, as a bare
- * array. Read it once, fold it into a first notebook, and leave the old key
- * alone rather than deleting it — if this migration ever turns out to be
- * wrong, the original is still sitting there to recover from, and a stale
- * key costs a few kilobytes of browser storage. */
 function migrateLegacyCells() {
   let legacy = [];
   try {
@@ -253,10 +142,6 @@ function migrateLegacyCells() {
   return legacy.length ? [makeNotebook("Notebook", legacy)] : [];
 }
 
-/* Reads every open notebook back out of localStorage on page load, falling
- * back through: saved notebooks, then pre-tabs work migrated into one, then
- * a single empty notebook. Always ends with at least one notebook and a
- * valid active id, so nothing downstream has to handle "no notebook". */
 function loadSavedState() {
   let saved = null;
   try {
@@ -302,40 +187,15 @@ function activeNotebook() {
   return notebooks.find((nb) => nb.id === activeNotebookId) || notebooks[0];
 }
 
-/* The one safe way to swap a notebook's cells wholesale. Assigning `cells`
- * on its own would break the "same array object" link this file relies on
- * (see the declaration above), leaving edits landing in an array no longer
- * attached to any notebook — visible on screen until a tab switch silently
- * reverted them. */
 function setCells(next) {
   cells = next;
   activeNotebook().cells = next;
 }
 
-/* Cell ids whose output has been left out of storage because the whole
- * notebook would not fit otherwise — see saveState(). The output is still
- * on screen and still on the cell object; it is only the saved copy that
- * lacks it, so a reload shows the code with an empty output area. */
 const outputsTooLargeToSave = new Set();
 
-/* How many outputs had been dropped the last time the reader was told.
- * Kept so the warning appears when the situation gets worse rather than
- * on every keystroke, since saveState() runs on every edit. */
 let warnedDroppedOutputs = 0;
 
-/* One attempt at writing the whole of dewmini's work to localStorage.
- * Returns false when it did not fit (or when storage is unavailable at
- * all, as in a browser with site data blocked), true when it did.
- *
- * Note the `.map(({ id, type, content, style, output, error }) => ({...}))`
- * step: by the time a cell has been rendered, it also carries live things
- * like `.editor` (a CodeMirror instance) and `.outputEl` (a DOM element)
- * — objects that `JSON.stringify` can't handle (they contain circular
- * references back to themselves) and that don't belong in storage anyway,
- * since they get rebuilt fresh every time the notebook renders. This
- * picks out only the plain-data fields worth keeping — build a fresh
- * plain object rather than serializing the live one directly. `style` is
- * a Web cell's CSS half; every other type simply never sets it. */
 function writeSavedState(skipOutputFor) {
   const plainCells = (list) => list.map(({ id, type, content, style, output, error, collapsed, name }) => ({
     id, type, content, style: style || "",
@@ -361,33 +221,6 @@ function writeSavedState(skipOutputFor) {
   }
 }
 
-/* Saves every open notebook, giving up outputs before it gives up code.
- *
- * A browser allows an origin somewhere around 5 MB of localStorage, and a
- * cell's output is stored as the HTML the output area is showing — which
- * for a matplotlib figure is a base64 PNG of tens of kilobytes. A few
- * plots across a few notebooks reaches the limit, and `setItem` then
- * throws a QuotaExceededError.
- *
- * This function used to wrap that single write in a `try` with an empty
- * `catch`, which meant crossing the limit stopped the work being saved
- * with no error, no message, and no sign anything had changed — until a
- * reload, which brought back whatever had been stored before the first
- * failed write. Losing an afternoon that way is the worst outcome this
- * file can produce, so it is worth some care.
- *
- * Code is small and cannot be recovered by any other means. An output is
- * large and can be recovered by running the cell again. So when the full
- * save does not fit, outputs are dropped — largest first, since the
- * largest one is usually the whole problem — and the write is tried
- * again after each. Only if every output is gone and it still does not
- * fit is anything actually lost, and then the reader is told plainly.
- *
- * Once an output has been dropped, its cell id stays in
- * `outputsTooLargeToSave`, so the following keystroke does not repeat the
- * search. The id comes back out when that cell runs again or its output
- * is cleared, which is when its size has changed and it deserves another
- * try. */
 function saveState() {
   scheduleWorkspaceWrite(activeNotebook());
   pruneDroppedOutputs();
@@ -422,9 +255,6 @@ function saveState() {
   );
 }
 
-/* Says how many outputs are being left out of the save, and why that is
- * survivable. Deliberately not phrased as a failure: the code — the part
- * that cannot be regenerated — is safely stored. */
 function warnAboutDroppedOutputs() {
   const n = outputsTooLargeToSave.size;
   warnedDroppedOutputs = n;
@@ -436,10 +266,6 @@ function warnAboutDroppedOutputs() {
   );
 }
 
-/* Puts a message in the standing storage notice, or takes it away when
- * `message` is empty. Not updateStatus(): that line is wiped by the very
- * next thing to report, and a run reports "Ran." immediately after the
- * save that produced this — so a reader would never see it. */
 function showStorageNotice(message) {
   const notice = document.getElementById("storage-notice");
   const text = document.getElementById("storage-notice-text");
@@ -453,10 +279,6 @@ function showStorageNotice(message) {
   notice.hidden = false;
 }
 
-/* Forgets ids for cells that no longer exist, so the number in the
- * warning stays honest after a cell is deleted or a notebook closed.
- * Guarded on the set being non-empty, which it is in every ordinary
- * session, so the usual save costs one comparison rather than a walk. */
 function pruneDroppedOutputs() {
   if (!outputsTooLargeToSave.size) return;
   const live = new Set();
@@ -467,20 +289,11 @@ function pruneDroppedOutputs() {
   warnedDroppedOutputs = Math.min(warnedDroppedOutputs, outputsTooLargeToSave.size);
 }
 
-/* Lets a cell's output be tried again on the next save. Called wherever
- * an output is replaced or emptied, since a new output may well fit
- * where the old one did not. */
 function allowOutputToSaveAgain(cellId) {
   if (!outputsTooLargeToSave.delete(cellId)) return;
   warnedDroppedOutputs = Math.min(warnedDroppedOutputs, outputsTooLargeToSave.size);
 }
 
-// --------------------------------------------------------------- notebooks
-
-/* Switches which notebook the page is showing. Every open editor belongs to
- * the notebook leaving the screen, so they are destroyed here rather than
- * left behind: a CodeMirror instance holds its own DOM and listeners, and
- * renderCells() below builds fresh ones for the notebook arriving. */
 function showNotebook(id) {
   if (id === activeNotebookId) return;
   const target = notebooks.find((nb) => nb.id === id);
@@ -510,11 +323,6 @@ function openNotebook(notebook) {
   updateFilenameField();
 }
 
-/* Closes a tab. The last one is never closed — a dewmini with no notebook
- * at all has no meaningful state to be in, and "close" quietly becoming
- * "clear" would be worse than the button simply not being there. Asks first
- * only when there is something to lose, so closing an empty scratch tab
- * stays a single click. */
 function closeNotebook(id) {
   if (notebooks.length < 2) return;
   const index = notebooks.findIndex((nb) => nb.id === id);
@@ -536,9 +344,6 @@ function closeNotebook(id) {
   updateStatus(`Closed ${notebook.name}.`);
 }
 
-/* Renames a tab through a prompt. Deliberately the plainest possible
- * mechanism: an inline-editable tab is nicer and is a genuine pile of
- * focus/blur/Escape handling for something a reader does rarely. */
 function renameNotebook(id) {
   const notebook = notebooks.find((nb) => nb.id === id);
   if (!notebook) return;
@@ -550,11 +355,6 @@ function renameNotebook(id) {
   updateFilenameField();
 }
 
-/* Draws the tab strip. Hidden entirely while there is only one notebook —
- * a row of tabs containing one tab is chrome that explains nothing, and a
- * reader who never opens a second notebook should never have to look at it
- * (the "+" lives in the toolbar, so there is still a way to get a second
- * one). */
 function renderTabs() {
   // Every call site that redraws the tab strip is exactly when the
   // Files panel's own notebook list needs redrawing too — a notebook
@@ -602,13 +402,6 @@ function renderTabs() {
   }
 }
 
-// ------------------------------------------------------------------- cells
-
-/* Inserts a new, empty cell at a specific position in the notebook (used
- * by the "insert here" dividers between cells) and follows the pattern
- * used everywhere in this file that changes `cells`: update the array,
- * save it, re-render the page to match, then focus the thing that
- * changed. */
 function insertCellAt(index, type, content = "", style = "") {
   const cell = { id: generateId(), type, content, style, output: "", error: false };
   cells.splice(index, 0, cell);
@@ -617,17 +410,10 @@ function insertCellAt(index, type, content = "", style = "") {
   focusCell(cell.id);
 }
 
-/* Adds a cell at the very end — what the toolbar's own "+ Python"/"+ Text"
- * buttons call, as opposed to insertCellAt() directly for an in-between
- * insert. */
 function addCell(type, content = "", style = "") {
   insertCellAt(cells.length, type, content, style);
 }
 
-/* A small, real tour rather than placeholder text — print, an expression,
- * numpy, a rendered documentation cell, a plot, and check() — run
- * immediately on load so "see it work" actually shows it working rather
- * than leaving a first-time reader to press Run themselves. */
 const EXAMPLE_CELLS = [
   { type: CELL_TYPES.PYTHON, content: 'print("Hello from dewmini!")\nanswer = 6 * 7\nanswer' },
   { type: CELL_TYPES.PYTHON, content: "import numpy as np\nreadings = np.array([4, 8, 15, 16, 23, 42])\nreadings.mean()" },
@@ -642,13 +428,6 @@ const EXAMPLE_CELLS = [
   },
 ];
 
-/* Destroys every CodeMirror editor a cell owns — `.editor` always, plus
- * `.cssEditor` for a web cell's second (CSS) pane (DECISIONS_LOG.md
- * 7.120). A CodeMirror instance holds its own DOM and listeners that
- * removing the wrapping element alone doesn't clean up, so every place
- * that gets rid of a cell — deleting it, switching notebooks, replacing
- * the whole list — has to call this rather than reach for `.editor`
- * directly, or a web cell would leak its CSS editor's own instance. */
 function destroyCellEditors(cell) {
   cell.editor?.destroy();
   cell.cssEditor?.destroy();
@@ -664,10 +443,6 @@ async function loadExampleCells() {
   await runAllCells();
 }
 
-/* Turns a delete button's click into "press once to arm, press again to
- * actually delete". An armed button auto-disarms after a few seconds, on blur, or the moment
- * anything else on the page is clicked, so a stale "one more click
- * deletes this" state never lingers into an accidental delete later. */
 function armDeleteButton(btn, onConfirm) {
   if (btn.classList.contains("dm-armed")) {
     clearTimeout(btn._disarmTimer);
@@ -695,10 +470,6 @@ function disarmDeleteButton(btn) {
   btn.title = "Delete this cell";
 }
 
-/* Removes a cell. destroyCellEditors() matters: CodeMirror editors hold
- * their own internal state and DOM listeners, and simply removing the
- * wrapping element from the page wouldn't clean those up on its own —
- * calling `.destroy()` first releases them properly. */
 function deleteCell(id) {
   const idx = cells.findIndex((c) => c.id === id);
   if (idx === -1) return;
@@ -709,10 +480,6 @@ function deleteCell(id) {
   updateStatus("Cell deleted.");
 }
 
-/* Inserts a copy of a cell right after itself — the same type and code,
- * but a fresh id and no run history: a duplicate is a starting point for
- * a variation, not a claim that it already ran (planning/CELL_IDENTITY.md
- * §2's header-end group, alongside Delete). */
 function duplicateCell(id) {
   const idx = cells.findIndex((c) => c.id === id);
   if (idx === -1) return;
@@ -733,14 +500,6 @@ function duplicateCell(id) {
   updateStatus("Cell duplicated.");
 }
 
-/* Scrolls to a cell, briefly highlights it (the `dm-focused` class, added
- * then removed after 900ms), and puts the cursor in it — used after
- * creating or restoring a cell so a student's eye is drawn to the thing
- * that just changed. Which "put the cursor in it" call happens depends on
- * the cell's current state: a live CodeMirror editor, a live text-cell
- * textarea, or (if the text cell is currently showing its *rendered*
- * form rather than the raw textarea) `showTextEditor()`, which switches
- * it back to editable first. */
 function focusCell(id) {
   const el = cellsContainer?.querySelector(`.dm-cell[data-id="${id}"]`);
   const cell = cells.find((c) => c.id === id);
@@ -754,21 +513,12 @@ function focusCell(id) {
   else if (cell?.textarea) cell.textarea.focus();
 }
 
-/* Moves the cursor to the cell after `id` — what Shift+Enter does once the
- * run finishes, so holding it works down a notebook the way it does in
- * Jupyter. At the last cell there is nowhere to advance to, and adding a
- * cell automatically would quietly fill a notebook with empty ones, so it
- * simply stays where it is. */
 function focusNextCellAfter(id) {
   const index = cells.findIndex((c) => c.id === id);
   if (index === -1 || index === cells.length - 1) return;
   focusCell(cells[index + 1].id);
 }
 
-/* A small, deliberately shallow markdown for documentation cells — headings,
- * bold/italic, inline code, bullets, paragraphs. Not CommonMark: a text
- * cell is a note beside the code, not a document, and the whole point is
- * that a student can read the syntax in the raw textarea at a glance. */
 function escapeHtml(text) {
   // Quotes too, not just angle brackets: renderDocInline() below places
   // escaped text inside double-quoted attributes (an image's alt/src), so
@@ -777,16 +527,6 @@ function escapeHtml(text) {
   return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 }
 
-/* One shared shape for every cell-chrome button — the same icon-plus-label
- * pair a tutorial page's own icon_button()/iconButtonHtml() give an
- * authored or custom cell (build.py, assets/tutorial-runtime.js), so the
- * "icons only / text only / icons and text" Texture setting
- * (data-texture="buttons", tutorial-style.css's [data-button-labels]
- * rules) reads a dewmini cell exactly like one on a tutorial page. `icon`
- * is markup already and goes in unescaped; `label` is plain text and is
- * escaped once. The outer element keeps its own `dm-icon-*` class for
- * dewmini's own icon-button sizing — only the two inner spans are the
- * shared, cross-surface class names. */
 function iconButton(cssClass, icon, label, title) {
   const btn = document.createElement("button");
   btn.type = "button";
@@ -798,12 +538,6 @@ function iconButton(cssClass, icon, label, title) {
   return btn;
 }
 
-/* Reads or writes a button's visible text without disturbing its icon —
- * every place that used to set `.textContent` directly on one of these
- * buttons now goes through here instead, since `.textContent` on the
- * button itself would wipe the icon out along with whatever text was
- * there. Falls back to the button itself for anything not built with
- * iconButton() above. */
 function getBtnLabel(btn) {
   return (btn.querySelector(".dl-btn-label") || btn).textContent;
 }
@@ -811,17 +545,6 @@ function setBtnLabel(btn, text) {
   (btn.querySelector(".dl-btn-label") || btn).textContent = text;
 }
 
-/* Handles the "inline" formatting that can appear inside one line of
- * text: `code`, **bold**, *italic*, and an attached image. Each
- * `.replace(regex, ...)` call scans the whole string for one pattern and
- * swaps in the matching HTML — chained one after another, so by the time
- * this returns, every recognized pattern has been turned into markup.
- * Order matters a little here (code before bold/italic, so something
- * inside backticks isn't accidentally read as bold markers), but this
- * function is deliberately simple: it's regex substitution, not a real
- * parser, which is exactly right for the small, fixed set of things a
- * documentation cell needs to format (see this section's own comment on
- * why a full Markdown implementation isn't the goal here). */
 function renderDocInline(text) {
   return text
     .replace(/`([^`]+)`/g, "<code>$1</code>")
@@ -839,10 +562,6 @@ function renderDocInline(text) {
 // since cells (images included) save to localStorage on every change.
 const MAX_DOC_IMAGE_BYTES = 3 * 1024 * 1024;
 
-/* Opens a native file picker limited to images, reads the pick as a data
- * URL, and hands it to `onDataUrl` — used by a documentation cell's
- * "insert image" button. A fresh, unattached `<input>` per call rather
- * than one kept around, so nothing lingers referencing a stale cell. */
 function pickImageFile(onDataUrl) {
   const input = document.createElement("input");
   input.type = "file";
@@ -873,19 +592,6 @@ const DM_MATH_ESCAPED_DOLLAR = "\0dldollar\0";
 const DM_DISPLAY_MATH_RE = /\$\$([\s\S]+?)\$\$/g;
 const DM_INLINE_MATH_RE = /\$(?!\s)([^$\n]+?)(?<!\s)\$/g;
 
-/* Lifts $…$ and $$…$$ out of a text cell's raw markdown before any of
- * this file's own hand-written parsing below sees it, leaving a bare
- * alphanumeric placeholder (`dlmath0z`, `dlmath1z`, …) in their place —
- * the same extract-then-restore trick build.py's own extract_math()/
- * render_math() use for tutorial markdown (DECISIONS_LOG.md 7.107),
- * *ported* into JavaScript rather than merely called from it: this file's
- * markdown never goes anywhere near build.py's Python side, so there is
- * no function to reuse, only the pattern. Extracting first is what keeps
- * renderDocInline()'s own bold/italic rules from mangling raw TeX —
- * `$a_i$` losing its underscore to *emphasis*, `$x^2$` losing its caret
- * to nothing — the same failure build.py's own comment warns about for
- * python-markdown. A bare alphanumeric placeholder can't itself trigger
- * any of those rules, so nothing is left in the text for them to catch. */
 function extractDocMath(text) {
   const found = [];
   let body = text.split("\\$").join(DM_MATH_ESCAPED_DOLLAR);
@@ -900,38 +606,11 @@ function extractDocMath(text) {
   return { body: body.split(DM_MATH_ESCAPED_DOLLAR).join("$"), found };
 }
 
-/* A marked span, the same shape build.py's own render_math() emits for a
- * tutorial. KaTeX replaces its contents in the browser once it has
- * loaded (renderMathsIn() below); until then, and permanently without
- * JavaScript, the span shows its own escaped source TeX — a far better
- * fallback than a blank gap. */
 function renderDocMathSpan(item) {
   const classes = item.display ? "dl-math dl-math-display" : "dl-math";
   return `<span class="${classes}">${escapeHtml(item.tex)}</span>`;
 }
 
-/* Turns a whole text cell's raw content into rendered HTML, line by
- * line. This is a small hand-written line-based parser: it walks the
- * text one line at a time, keeping track of whether a bullet list or a
- * paragraph is currently "open," and decides what to do based on what
- * kind of line it just read (a heading, a bullet, a blank line, or plain
- * text to add to the current paragraph). `para` collects the lines of an
- * in-progress paragraph until something ends it (a blank line, a heading,
- * a bullet, or the end of the text), at which point `flushPara()` joins
- * them into one `<p>` and starts fresh. `closeList()` does the same job
- * for a `<ul>` that's currently open. Calling `escapeHtml()` on the whole
- * text *before* any of this runs is what keeps a student's literal `<` or
- * `&` in their notes from being misread as real HTML.
- *
- * Maths runs first, on the raw, unescaped `text` — extractDocMath() has
- * to see real "$" characters, which escapeHtml() never touches anyway,
- * but doing this before the line-by-line pass is what lets a display
- * `$$…$$` block spanning several lines collapse to one placeholder before
- * the parser ever gets a chance to read those lines as separate
- * paragraphs. The placeholders extractDocMath() leaves behind are restored
- * to real `<span>` markup only at the very end, after both escapeHtml()
- * and renderDocInline() have already run — see extractDocMath()'s own
- * comment for why that ordering is what keeps the TeX intact. */
 function renderDocMarkdown(text) {
   const { body, found } = extractDocMath(text);
   const out = [];
@@ -974,7 +653,7 @@ function renderDocMarkdown(text) {
 // Loaded once, lazily, the first time any rendered text cell actually
 // turns out to contain maths — never at boot, and never fetched again
 // after the first successful load. The same trade tutorial pages make in
-// assets/tutorial-runtime.js's own renderMaths() (DECISIONS_LOG.md 1.8),
+// assets/tutorial-runtime.js's own renderMaths(),
 // just gated differently: a tutorial page knows at build time, from its
 // manifest, whether it has maths; dewmini doesn't know until a reader
 // writes some, since a cell's content isn't decided until then. Kept as a
@@ -994,16 +673,6 @@ function loadKatexRenderMath() {
   return katexRenderMathPromise;
 }
 
-/* Renders every `.dl-math` span inside `container` in place, loading
- * KaTeX first if this is the first maths seen so far. Every caller below
- * fires this and moves on rather than awaiting it: a text cell already
- * reads fine as source TeX (render_math()'s own fallback) while this is
- * in flight, or if it fails outright — a blocked CDN, an offline copy
- * built without the bundle — so nothing here should ever hold up showing
- * the rest of a note. renderMath() itself (assets/vendor/katex.bundle.js)
- * never throws for a single bad expression; it marks that one span
- * `dl-math-error` and carries on, so one broken formula can't blank out
- * an otherwise-fine note. */
 async function renderMathsIn(container) {
   const spans = container.querySelectorAll(".dl-math");
   if (!spans.length) return;
@@ -1019,21 +688,6 @@ async function renderMathsIn(container) {
 }
 
 /* Which view the active notebook is showing. */
-/* Opens a file from the workspace in a tab of its own.
- *
- * A .py opens in the file view, because a file is what it is, and the
- * reader should see the thing they are learning to write. A .ipynb opens
- * as cells, because that format carries outputs and cells are what shows
- * them. A .html opens as a site (planning/DEWMINI_WORKBENCH.md §10):
- * dewmini already runs HTML, CSS and JavaScript separately (the Web and
- * JavaScript cell types), so the obvious follow-on is showing them as the
- * three real files a static site actually is. Anything else stays where
- * it is: dewmini would have to guess how to read a .csv as code, and
- * guessing wrong turns a data file into one long broken cell.
- *
- * The tab remembers which file it came from, so editing it writes back to
- * the workspace rather than to a download. That is the difference between
- * a file manager and an import button. */
 async function openWorkspaceFile(name) {
   const lower = name.toLowerCase();
   const isPy = lower.endsWith(".py");
@@ -1073,9 +727,6 @@ async function openWorkspaceFile(name) {
   updateStatus(`Opened ${name}. Edits here save back to the workspace.`, "ok");
 }
 
-/* Reads a file's text back, or "" if it does not exist yet — the read a
- * site's optional CSS or JavaScript half needs, where "not written yet"
- * is the ordinary case rather than an error worth reporting. */
 async function readFileIfExists(name) {
   try {
     return await dfs.readFile(name, "utf8");
@@ -1084,12 +735,6 @@ async function readFileIfExists(name) {
   }
 }
 
-/* Opens an .html file as a site tab: the HTML itself, plus whichever of
- * the matching .css and .js (same base name — `page.html` pairs with
- * `page.css` and `page.js`) already exist alongside it. Nothing is
- * required to exist but the HTML — a site with no styling and no script
- * is still a site, and forcing three files where a reader wants one is
- * exactly the fixed-three-files rule §10 argues against. */
 async function openSiteFile(name) {
   let html;
   try {
@@ -1116,12 +761,6 @@ async function openSiteFile(name) {
   updateStatus(`Opened ${name}. Edits here save back to the workspace.`, "ok");
 }
 
-/* Writes a tab that came from the workspace back to the file it came
- * from, in the format that file already is.
- *
- * Debounced, because saveState() runs on every keystroke and a filesystem
- * write is not free. Nothing here reports success: a save that worked is
- * not news, and the status line is where a run says what it did. */
 let workspaceWriteTimer = null;
 function scheduleWorkspaceWrite(notebook) {
   if (!notebook?.path) return;
@@ -1144,11 +783,6 @@ async function writeNotebookToWorkspace(notebook) {
   renderFileList();
 }
 
-/* Writes a site tab's own three files back to the workspace. The HTML
- * half always gets written — it is the file this tab is — but the CSS
- * and JavaScript halves only when there is something in them: a reader
- * who never touched the CSS pane should not find an empty page.css
- * littering their workspace afterward. */
 async function writeSiteToWorkspace(notebook) {
   try {
     await dfs.writeFile(notebook.path, notebook.siteHtml || "");
@@ -1166,17 +800,6 @@ function currentView() {
   return view === VIEWS.FILE ? VIEWS.FILE : view === VIEWS.SITE ? VIEWS.SITE : VIEWS.CELLS;
 }
 
-/* Parsed cells, carrying forward the id and output of every cell the edit
- * did not change.
- *
- * This is the whole reason editing in the file view is safe. parsePyCells()
- * mints a fresh id for every cell it reads, and a cell id is the key its
- * saved output lives under, so re-parsing naively would throw away every
- * result in the notebook each time a reader switched views. Matching first
- * at the same position and then anywhere means an unchanged cell keeps its
- * id, its output and its collapsed state, while a cell whose code the
- * reader actually edited starts clean — which is right, because its old
- * output no longer belongs to it. */
 function mergeParsedCells(oldCells, parsed) {
   const spare = oldCells.map((cell, index) => ({ cell, index, used: false }));
   const same = (slot, next) => !slot.used && slot.cell.type === next.type
@@ -1191,9 +814,6 @@ function mergeParsedCells(oldCells, parsed) {
   });
 }
 
-/* Turns what the file editor is showing back into cells. Deliberately does
- * not re-render: while the file view is open the editor owns the screen,
- * and redrawing it under the reader would take their cursor with it. */
 function commitFileText(text) {
   clearTimeout(fileParseTimer);
   fileParseTimer = null;
@@ -1201,9 +821,6 @@ function commitFileText(text) {
   saveState();
 }
 
-/* Pulls whatever the file editor holds back into the cells before anything
- * reads them. Called by every path that leaves the file view or acts on
- * the notebook as a whole; a no-op in the cells view. */
 function flushFileEditor() {
   if (fileEditor) commitFileText(fileEditor.getValue());
 }
@@ -1229,10 +846,6 @@ function setView(view) {
   updateViewSwitch();
 }
 
-/* Keeps the toolbar's two buttons showing which view is on, and hides
- * every cell-notebook toolbar group (.dm-cellview-only) while a site tab
- * is active — Cells/File, "See an example", "Run all" and the rest are
- * all about a notebook of Python cells, which a site tab does not have. */
 function updateViewSwitch() {
   const view = currentView();
   const cellsBtn = document.getElementById("dm-view-cells");
@@ -1244,9 +857,6 @@ function updateViewSwitch() {
   document.querySelectorAll(".dm-cellview-only").forEach((el) => { el.hidden = view === VIEWS.SITE; });
 }
 
-/* The notebook as one Python document: a single editor over the whole
- * percent-format text, with one output area beneath it for a whole-file
- * run. */
 function renderFileView() {
   const wrap = document.createElement("div");
   wrap.className = "dm-fileview";
@@ -1277,11 +887,6 @@ function renderFileView() {
 
   fileEditor = createCodeEditor(editorEl, cellsToPercentText(cells, { bare: true }), {
     dark: isDarkNow(),
-    /* Committed on a pause rather than on every keystroke. Parsing
-     * half-typed text would churn the cells for no gain, and the editor
-     * holds the text meanwhile, so nothing is lost if the reader keeps
-     * going. Every path that needs the cells up to date calls
-     * flushFileEditor() first. */
     onChange: (text) => {
       clearTimeout(fileParseTimer);
       fileParseTimer = setTimeout(() => commitFileText(text), 400);
@@ -1294,9 +899,6 @@ function renderFileView() {
   if (emptyEl) emptyEl.hidden = true;
 }
 
-/* Runs the whole document top to bottom as one unit, which is the point of
- * the file view: a file always runs in the order it is written, and a
- * notebook does not. */
 async function runWholeFile() {
   if (running || !fileEditor) return;
   flushFileEditor();
@@ -1318,33 +920,6 @@ async function runWholeFile() {
     refreshVariables().catch((err) => console.warn("dewmini: refreshing variables failed", err));
   }
 }
-
-/* A site tab: three editors and a live preview, split-screen, the way an
- * ordinary code-and-preview IDE lays the two out — not a separate button
- * press away, the way a Web cell's Render is. A site is what a reader
- * came to look at continuously while they work on it, not a one-shot
- * question a cell asks and answers (planning/DEWMINI_WORKBENCH.md §10).
- *
- * The CSS and JavaScript panes are always shown, whether or not their
- * file exists yet on disk — a reader building a site from nothing needs
- * somewhere to start typing a stylesheet before writeSiteToWorkspace()
- * has anything to write.
- *
- * Two run models, and a console (DECISIONS_LOG.md 7.134; ported in shape
- * from dewstack's assets/site-editor.js, where the same pair was decided
- * first). HTML and CSS are live: a stylesheet is a state, and the lesson
- * is watching the box change under your hand. JavaScript is a program,
- * and a program runs when asked: the JavaScript pane does nothing until
- * Run (or Ctrl/Cmd+Enter inside it, the keys a Python cell already
- * answers to), and until then the preview keeps the last script that
- * ran, so retyping a colour does not silently re-run a half-edited
- * program. Under the preview, a console: what the script printed, and
- * every uncaught error with the pane and line it came from, relayed out
- * of the sandboxed frame by assets/site-relay.js's mountSitePreview()
- * the same way js-cell-engine.js's own runtime relays a JavaScript
- * cell's output — the engine underneath this view and the tutorial-page
- * site editor now share that one file rather than each carrying their
- * own copy (DECISIONS_LOG.md 7.142). */
 
 function renderSiteView() {
   const notebook = activeNotebook();
@@ -1390,7 +965,7 @@ function renderSiteView() {
 
   // The relay, the document assembly, and the in-flight-coalescing flush
   // all live in assets/site-relay.js now, shared with the tutorial-page
-  // site editor (DECISIONS_LOG.md 7.142) — this closure only draws the
+  // site editor — this closure only draws the
   // console and wires Run to it.
   const preview = mountSitePreview(iframe, {
     onReset: () => { consoleOut.textContent = ""; },
@@ -1528,11 +1103,6 @@ function renderCells() {
   if (emptyEl) emptyEl.hidden = cells.length > 0;
 }
 
-/* A tappable seam between cells (and before the first, after the last)
- * rather than only a bottom toolbar — the fast way to build a notebook is
- * inserting where you're already looking, not scrolling back down after
- * appending at the end. Full-height and always visible without hover on a
- * touch device, since hover isn't a thing to reveal it with there. */
 function createInsertDivider(index) {
   const row = document.createElement("div");
   row.className = "dm-insert";
@@ -1596,24 +1166,10 @@ function createInsertDivider(index) {
   return row;
 }
 
-/* Whether a Python cell's output belongs to code that no longer exists on
- * screen: it has run at least once (`ranContent` is set — a cell that has
- * never run has nothing to be stale relative to) and its current content
- * no longer matches what actually produced that output. Any difference
- * counts, whitespace included — a deliberate starting position, not an
- * oversight: the alternative (ignoring whitespace-only edits) would need
- * this to understand what a *meaningful* change is, which is exactly the
- * judgement call it exists to avoid making on a reader's behalf. */
 function isStale(cell) {
   return RUNS_AGAINST_SESSION.has(cell.type) && cell.ranContent !== undefined && cell.ranContent !== cell.content;
 }
 
-/* Updates a cell's on-page "chrome" — the error styling, and (for a cell
- * that runs against the session, RUNS_AGAINST_SESSION) the run-line — to
- * match its data, without a full re-render of the whole notebook. Called
- * after running a cell (error and staleness both just became current) and
- * on every edit of a cell that has already run once (staleness is the
- * only thing an edit alone can change). */
 function updateCellChrome(id) {
   const el = cellsContainer?.querySelector(`.dm-cell[data-id="${id}"]`);
   const cell = cells.find((c) => c.id === id);
@@ -1622,20 +1178,6 @@ function updateCellChrome(id) {
   renderCellRunLine(cell);
 }
 
-/* Builds the "⋯" menu beside a Python cell's Run button, holding "Run
- * above" and "Run below" (DECISIONS_LOG.md 7.106). These didn't get their
- * own always-visible buttons: the footer bar already carries Run and
- * Clear output, and two more icons on every cell would crowd a row that
- * already earns its keep. A menu keeps the row the same width whether or
- * not a reader ever opens it, at the cost of one extra click to reach
- * either option.
- *
- * The open/close handling here mirrors armDeleteButton() above: a
- * document-level outside-click listener is added only while the menu is
- * open, and removed the moment it closes, rather than one listener kept
- * alive for the cell's whole lifetime — with a menu on every cell, a
- * listener nobody ever removes would be a real per-cell leak, not a
- * theoretical one. */
 function createRunMoreMenu(cell) {
   const wrap = document.createElement("div");
   wrap.className = "dm-cell-more";
@@ -1664,7 +1206,7 @@ function createRunMoreMenu(cell) {
     // Anchored from the button's right edge by default (see the
     // stylesheet), which runs the menu off the left of the viewport once
     // the button sits close enough to it — reachable more often now that
-    // Workbench docks left (DECISIONS_LOG.md 7.122), but always possible
+    // Workbench docks left, but always possible
     // on a narrow screen. Measured after becoming visible, since a
     // hidden element's rect is always zero.
     if (menu.getBoundingClientRect().left < 0) menu.classList.add("dm-cell-run-menu-left");
@@ -1702,7 +1244,6 @@ function createRunMoreMenu(cell) {
   return wrap;
 }
 
-// -------------------------------------------------------------- run line
 //
 // A Python cell's run-line (planning/CELL_IDENTITY.md §3) — one line,
 // below the code, folding together whether it has run this session, in
@@ -1724,11 +1265,6 @@ function formatOrdinal(n) {
   }
 }
 
-/* Paints a cell's run-line from its stored state — cell.ranOrder (unset
- * until its first run this session), cell.lastRunMs, and isStale(cell).
- * Also the one place a live ticker gets cancelled: whatever this paints
- * is the truth, so anything still counting up on a stale timer has to
- * stop the moment a real state gets painted over it. */
 function renderCellRunLine(cell) {
   const el = cell.runLineEl;
   if (!el) return;
@@ -1753,12 +1289,6 @@ function renderCellRunLine(cell) {
   el.innerHTML = html;
 }
 
-/* Every cell forgets when (and whether) it last ran — called wherever the
- * interpreter itself gets thrown away or the namespace gets cleared and
- * re-seeded (restartPython(), and runCellBatch() below whenever it's
- * asked to reset first): from that point on, nothing has run yet, in the
- * one sense that actually matters to a reader — this session, against
- * the namespace currently backing the page. */
 function resetRunSequence() {
   runSequenceCounter = 0;
   for (const cell of cells) {
@@ -1769,10 +1299,6 @@ function resetRunSequence() {
   }
 }
 
-/* Starts (or restarts) a live "Running… Xs" display on a cell's run-line
- * for as long as it's actually executing — a plain setTimeout loop, not
- * an aria-live region: announcing a number changing ten times a second
- * would be noise, not news, to a screen reader. */
 function startRunLineTicker(cell) {
   clearRunLineTicker(cell);
   const el = cell.runLineEl;
@@ -1795,10 +1321,6 @@ function clearRunLineTicker(cell) {
   cell.runLineEl?.classList.remove("dm-cell-runline-active");
 }
 
-/* Marks a cell as next in line during a batch run (runCellBatch() below)
- * — only ever the one cell right after whichever is currently running,
- * updated as the batch moves along, not the whole remaining list at
- * once. */
 function setRunLineQueued(cell) {
   if (!cell.runLineEl) return;
   clearRunLineTicker(cell);
@@ -1807,15 +1329,6 @@ function setRunLineQueued(cell) {
   cell.runLineEl.textContent = "Running next";
 }
 
-/* Builds one cell's entire DOM tree from a plain `cell` data object —
- * the header row (type pill, Run/Delete/image buttons), the editable
- * area (a CodeMirror editor for a Python cell, a textarea plus a
- * rendered-preview div for a text cell), and the output area. This is
- * the one function that turns "data" into "pixels"; nothing else in the
- * file builds a cell's markup directly. Everything it builds is wired
- * with real event listeners right here too, so a fresh call to this
- * function is enough to produce a fully working cell, ready to be
- * dropped into the page by renderCells(). */
 function createCellElement(cell) {
   const wrap = document.createElement("div");
   wrap.className = `dm-cell dm-cell-${cell.type}`;
@@ -1828,7 +1341,6 @@ function createCellElement(cell) {
   const main = document.createElement("div");
   main.className = "dm-cell-main";
 
-  // ------------------------------------------------------------- header
   //
   // Identity pill (numbered, coloured by type) on the left; Edit (text
   // only), Duplicate, and Delete on the right (planning/CELL_IDENTITY.md
@@ -1901,7 +1413,7 @@ function createCellElement(cell) {
     previewBtn = iconButton("dm-icon-preview", "&#128065;", "View");
     headerEnd.appendChild(previewBtn);
   }
-  // A web cell's own explicit render trigger (DECISIONS_LOG.md 7.120) —
+  // A web cell's own explicit render trigger —
   // filled in by that branch below, same "built here so it sits in the
   // header row regardless of where the branch runs" reasoning as
   // insertDocImage above, since it needs closures that only exist there.
@@ -1938,7 +1450,6 @@ function createCellElement(cell) {
 
   head.append(pill, nameEl, spacer, headerEnd);
 
-  // -------------------------------------------------------------- body
   //
   // A collapse triangle beside the editable content — every cell type
   // gets one now, code and text alike: there's nothing type-specific
@@ -2101,7 +1612,7 @@ function createCellElement(cell) {
     else syncPreviewBtn();
   } else if (cell.type === CELL_TYPES.WEB) {
     // The merged replacement for the old separate HTML and CSS cell
-    // types (DECISIONS_LOG.md 7.120) — one cell, two source panels,
+    // types — one cell, two source panels,
     // stacked, and a rendered preview below both. Unlike the types it
     // replaces, both editors are always visible and always editable —
     // nothing is ever swapped out for anything else — so there is no
@@ -2258,7 +1769,6 @@ function createCellElement(cell) {
 
   setCollapsed(!!cell.collapsed);
 
-  // ------------------------------------------------------------ footer
   //
   // Run, clear-output, the "⋯" run-above/below menu, and the run-line —
   // RUNS_AGAINST_SESSION only (Python and SQL), since those are the only
@@ -2314,12 +1824,6 @@ function createCellElement(cell) {
   return wrap;
 }
 
-// -------------------------------------------------------------- execution
-
-/* Whether the page currently reads as dark, taking the reader's explicit
- * theme choice first and falling back to their operating system's own
- * light/dark preference only when they've chosen "system" (no explicit
- * `data-theme` attribute at all). */
 function isDarkNow() {
   const t = document.documentElement.getAttribute("data-theme");
   if (t === "dark") return true;
@@ -2327,10 +1831,6 @@ function isDarkNow() {
   return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
 }
 
-/* Fetches tutorial_tools.py's source once and keeps it in
- * `toolsSourceCache` — needed twice (booting Pyodide, and building a
- * standalone HTML export), and there's no reason to fetch the same file
- * over the network a second time within one page visit. */
 async function getToolsSource() {
   if (toolsSourceCache) return toolsSourceCache;
   const res = await fetch("../assets/tutorial_tools.py");
@@ -2339,16 +1839,6 @@ async function getToolsSource() {
   return toolsSourceCache;
 }
 
-/* Wires the shared engine up to this page — getOutputEl looks a cell's
- * live output element up by id (the engine's own event stream addresses
- * cells by id, not by direct element reference, since worker-mode output
- * arrives asynchronously and a cell could in principle be gone by the
- * time it does), onStatus forwards boot/package-loading progress the same
- * way this file's own updateStatus() already shows it, and dataBase is
- * "../data/" rather than the engine's default empty string, since this
- * page lives one directory deeper (compose/, not the site root) and needs
- * the extra "../" to reach the same repo-root data/ folder. Called once, at
- * module load — configure() itself does no booting. */
 engine.configure({
   getOutputEl: (cellId) => (cellId === FILE_RUN_ID
     ? fileRunOutputEl
@@ -2358,19 +1848,6 @@ engine.configure({
   dataBase: "../data/",
 });
 
-/* Starts Pyodide the first time it's actually needed (the first Run
- * click), not when the page loads — downloading and starting a whole
- * Python interpreter is slow, and a student reading or writing notes
- * shouldn't have to wait for it if they never run a cell. engine.
- * ensureBooted() itself is idempotent and memoized (a second call while
- * still booting returns the same in-flight Promise), so this wrapper only
- * has to add two things on top: showing "Python ready." once, the first
- * time boot actually finishes (engineMode() is still null beforehand),
- * and mounting a filesystem right after — a nice-to-have, not something
- * Python readiness should ever hinge on, so a mount failure here (blocked
- * storage, an unsupported browser, running from file://) is caught and
- * surfaced through the Files section in Settings on its own, never
- * re-thrown. */
 async function ensurePyodide() {
   const alreadyBooted = engine.engineMode() !== null;
   await engine.ensureBooted();
@@ -2384,12 +1861,6 @@ async function ensurePyodide() {
   }
 }
 
-/* The JavaScript counterpart of ensurePyodide() above — starts
- * ./js-cell-engine.js's own sandboxed session the first time a
- * JavaScript cell actually runs, and announces it once the same way
- * ensurePyodide() announces "Python ready." the first time. No
- * filesystem to mount, no engine mode to report: a JS cell's session has
- * neither. */
 async function ensureJsSession() {
   const alreadyReady = jsEngine.sessionReady();
   await jsEngine.ensureSession();
@@ -2404,85 +1875,24 @@ async function ensureJsSession() {
   }
 }
 
-/* Boots whichever session `cell` actually needs before it runs — Pyodide
- * for Python and SQL (a SQL cell's generated code still runs through
- * Pyodide, see buildSqlCellCode() below), the sandboxed iframe session
- * for JavaScript. The one place runCell()/runCellBatch() have to know
- * that RUNS_AGAINST_SESSION covers two genuinely different engines, not
- * one — everywhere else, the Set membership check alone is enough. */
 async function ensureSessionFor(cell) {
   if (cell.type === CELL_TYPES.JAVASCRIPT) { await ensureJsSession(); return; }
   await ensurePyodide();
 }
 
-/* Whether Stop could genuinely interrupt `cell` if it were running right
- * now — engine.canStop() for Python/SQL (worker mode, cross-origin
- * isolated), always false for JavaScript (js-cell-engine.js's own
- * canStop() — see that file's banner for why a same-thread sandboxed
- * iframe has no equivalent to Pyodide's interrupt buffer). */
 function canStopFor(cell) {
   return cell.type === CELL_TYPES.JAVASCRIPT ? jsEngine.canStop() : engine.canStop();
 }
 
-/* Sends a Stop request to whichever engine `cell` is actually running
- * against. A no-op for JavaScript (jsEngine.requestInterrupt()), which
- * exists only so this can be called unconditionally rather than
- * special-cased — canStopFor() above is what actually decides whether
- * Stop was ever offered in the first place. */
 function requestInterruptFor(cell) {
   if (cell.type === CELL_TYPES.JAVASCRIPT) jsEngine.requestInterrupt();
   else engine.requestInterrupt();
 }
 
-/* Autocomplete, hover docs, and signature help all come straight from the
- * shared engine now (engine.pageNamesCompletion/hoverDoc/signatureHelp,
- * DECISIONS_LOG.md 7.89). New capability for dewmini as a side effect of
- * that move: Jedi-based static-analysis tooltips for code that hasn't run
- * yet, and a signature-help popup, neither of which its own previous
- * live-namespace-only implementation could offer without a Worker. */
-
-/* Turns a SQL cell's own content into the Python source that actually
- * runs it: a call to tutorial_tools' internal _run_sql_cell() against
- * the shared `db` connection (assets/pyodide-engine.js's own
- * RESEED_GLOBALS_SOURCE, planning/CELL_IDENTITY.md §8) — SQL cells have
- * no execution path of their own, only this one line of generated
- * Python handed to the same engine.runCell() every Python cell uses.
- *
- * The script is embedded as a JSON string literal, not a Python
- * triple-quoted one: JSON's escaping (\", \\, \n, control characters as
- * \u00XX) is a subset of what a Python double-quoted string literal
- * accepts, so this is safe for any SQL text a reader could type,
- * including one that itself contains quotes or backslashes — a raw
- * triple-quoted string would break the moment the SQL did.
- *
- * The call is assigned rather than left as the cell's last expression on
- * purpose: _run_sql_cell() already renders its own result table (or its
- * "N rows affected" line) directly into the cell's output, and returns
- * the same DataFrame for a reader's own use from Python — if that
- * return value were also the last expression here, run_cell()'s normal
- * auto-display would render the same table a second time underneath it. */
 function buildSqlCellCode(sql) {
   return `import tutorial_tools as _dm_tt\n_ = _dm_tt._run_sql_cell(db, ${JSON.stringify(sql)})`;
 }
 
-/* Runs one cell's code and records what happened: the rendered output
- * HTML (so it can be saved and shown again without re-running), and
- * whether it errored. Returns whether the run succeeded.
- *
- * Dispatches to one of two genuinely different engines depending on
- * cell type — assets/pyodide-engine.js's runCell() (which reaches
- * tutorial_tools.py's own run_cell(), the same function every dewlab
- * tutorial cell runs through) for Python and SQL, or
- * ./js-cell-engine.js's own runCell() for JavaScript — but the
- * bookkeeping below (ranContent, lastRunMs, ranOrder, output/error,
- * saveState()) is identical either way: both engines return the same
- * `{ok}` shape, and both already wrote whatever the cell produced into
- * outputEl by the time they resolve.
- *
- * No "Running…" placeholder injected into the output area here — both
- * engines already clear a cell's own output the moment its run starts,
- * and the run/stop state shows on the cell's own Run button instead
- * (setRunButtonRunning() below). */
 async function executeCell(cell) {
   const outputEl = cell.outputEl;
   if (!outputEl) return true;
@@ -2545,10 +1955,6 @@ function formatRunDuration(ms) {
   return ms < 1000 ? `${Math.round(ms)} ms` : `${(ms / 1000).toFixed(1)} s`;
 }
 
-/* Clears one cell's output (and its run-line) without touching its code —
- * the non-destructive counterpart to deleting the cell outright. A no-op
- * while something is running, since clearing mid-run would fight the
- * output the running cell is actively writing. */
 function resetCellOutput(id) {
   const cell = cells.find((c) => c.id === id);
   if (!cell || !RUNS_AGAINST_SESSION.has(cell.type) || running) return;
@@ -2567,24 +1973,11 @@ function resetCellOutput(id) {
   saveState();
 }
 
-/* Toolbar-level "Clear output" — resets every cell that runs against the
- * session (Python, SQL, JavaScript), keeping every cell and its code.
- * Distinct from the existing "Clear" button, which deletes every cell. */
 function clearAllOutputs() {
   cells.forEach((cell) => { if (RUNS_AGAINST_SESSION.has(cell.type)) resetCellOutput(cell.id); });
   updateStatus("Output cleared.");
 }
 
-/* Toggles a cell's own Run button into its running/Stop state.
- * `canStop` — canStopFor(cell), resolved by the caller rather than read
- * in here, since which engine's own canStop() answers the question
- * depends on the cell's type. When true (worker mode, cross-origin
- * isolated, and never for a JavaScript cell — see canStopFor()) the
- * button becomes a real Stop; otherwise it just shows the cell is busy,
- * since there is nothing to interrupt (a main-thread fallback, or a
- * JavaScript cell's own sandboxed iframe, blocks this same thread
- * completely once a cell starts, with no opportunity for an interrupt to
- * even be noticed). */
 function setRunButtonRunning(runBtn, canStop) {
   if (!runBtn) return;
   const icon = runBtn.querySelector(".dl-btn-icon");
@@ -2612,19 +2005,6 @@ function resetRunButton(runBtn) {
   setBtnLabel(runBtn, "Run");
 }
 
-/* Runs a single cell by id, in response to its own Run button or
- * Shift+Enter. A second click on the cell that is already running sends
- * a Stop (interrupt) request instead of starting a new run — the same
- * button in its Stop state. `running` guards against overlapping runs
- * from two different cells: dewmini has one Python interpreter and one
- * JavaScript session, so only one cell can actually be executing at a
- * time across *either* of them; a click on a different cell while one is
- * already running is ignored rather than queued.
- *
- * The cell is looked up first, before deciding interrupt-vs-run, since
- * both branches need to know its type either way — requestInterruptFor()
- * to reach the right engine, ensureSessionFor()/canStopFor() to boot and
- * read the right one. */
 async function runCell(id) {
   const cell = cells.find((c) => c.id === id);
   if (!cell || !RUNS_AGAINST_SESSION.has(cell.type)) return;
@@ -2663,33 +2043,6 @@ async function runCell(id) {
   }
 }
 
-/* Runs a batch of cells (Python, SQL, and/or JavaScript —
- * RUNS_AGAINST_SESSION) in order — the shared logic behind "Run all",
- * "Run above", and "Run below" below, which differ only in *which*
- * cells they hand it and whether each cell's own session gets cleared
- * first.
- *
- * `reset` matters more than it looks: "Run all" and "Run above" both
- * start from a clean slate for *every* session a cell in the batch
- * might need — `engine.resetPageState()` (clearing and re-seeding
- * Pyodide's shared namespace, cheaper than a full restart) and
- * `jsEngine.restart()` (there is no equivalent cheap reset for the JS
- * session; tearing the iframe down and letting the next cell recreate
- * it is the only way to clear it) — because the whole point of running
- * from the top is that "what's on screen matches what the code actually
- * did." Without this, a stale value from a previous run could linger
- * and mask a cell that no longer defines something it used to. "Run
- * below" must *not* reset either session: its whole point is to keep
- * what the cells above it already defined, so resetting first would
- * throw away exactly the state it exists to preserve.
- *
- * Each cell's own session is booted right before its own turn, not once
- * for the whole batch up front — a batch of JavaScript cells alone never
- * needs Pyodide at all, and vice versa. Each cell's own Run button
- * becomes a Stop button while it's its turn, the same as running it
- * individually, so a runaway cell partway through a batch can still be
- * interrupted without losing the cells that already ran (Python/SQL
- * only — see canStopFor()). */
 async function runCellBatch(runnableCells, { reset, emptyMessage, describe }) {
   if (running) return;
   if (!runnableCells.length) { updateStatus(emptyMessage); return; }
@@ -2731,11 +2084,6 @@ async function runCellBatch(runnableCells, { reset, emptyMessage, describe }) {
       await ensureSessionFor(cell);
       setRunButtonRunning(cell.runBtn, canStopFor(cell));
       startRunLineTicker(cell);
-      /* try/finally per cell: if a
-       * run rejects rather than returning false — which is exactly what
-       * restarting Python mid-batch now does, since restart() rejects what
-       * was in flight — this cell's button would otherwise be left showing
-       * "running" forever while the batch unwound past it. */
       try {
         const ok = await executeCell(cell);
         if (!ok) errors += 1;
@@ -2772,10 +2120,6 @@ async function runAllCells() {
   });
 }
 
-/* "Run above": every runnable cell from the top through (and including)
- * `id`, from a clean namespace — the honest fix once a cell partway down
- * has been edited and everything before it needs re-proving, without
- * paying to re-run whatever comes after it too. */
 async function runAbove(id) {
   const idx = cells.findIndex((c) => c.id === id);
   if (idx === -1) return;
@@ -2787,11 +2131,6 @@ async function runAbove(id) {
   });
 }
 
-/* "Run below": `id` and every runnable cell after it, keeping whatever
- * earlier cells already defined — the way to redo a slow computation's
- * downstream steps without paying to redo the computation itself. See
- * runCellBatch()'s own comment for why this is the one caller that must
- * not reset the namespace first. */
 async function runBelow(id) {
   const idx = cells.findIndex((c) => c.id === id);
   if (idx === -1) return;
@@ -2803,42 +2142,16 @@ async function runBelow(id) {
   });
 }
 
-/* ------------------------------------------------- imported .py files
- *
- * A student who writes shapes.py in the workspace and imports it in a
- * cell meets a specific, confusing failure the first time they edit that
- * file. Python keeps every module it has imported in `sys.modules` and
- * hands back the remembered one rather than reading the file again, so
- * the corrected function is not the one that runs. The answer does not
- * change, and nothing on screen says why.
- *
- * dewmini tells them, and offers to re-read the files. It does not
- * re-read silently: module caching is real Python behaviour they will
- * meet in every other environment they ever use, and a student who has
- * met it here with an explanation is better placed than one for whom it
- * was quietly papered over. Restarting Python instead would be correct
- * and far too slow for a one-character edit. */
-
 // Module names currently shown in the notice, so its button knows what to
 // re-read without asking Python a second time.
 let staleImportNames = [];
 
-/* Asks whether any workspace file already imported has been edited since
- * Python read it, and shows the notice if so.
- *
- * Cheap to call and safe to call often: with nothing mounted there is no
- * import path to have imported from, so this returns without a round
- * trip at all. Never throws — it drives a notice, and a page that cannot
- * ask simply does not show one. */
 async function checkImportedFiles() {
   if (!dfs.getBackend()) return;
   const changed = await engine.changedImportedModules(dfs.mountPoint());
   if (changed.length) showStaleImportsNotice(changed);
 }
 
-/* Names the edited files and says what to do about them. Deliberately
- * concrete about which files: "a module changed" would send a student
- * looking through everything they have open. */
 function showStaleImportsNotice(names) {
   staleImportNames = names;
   const notice = document.getElementById("stale-imports-notice");
@@ -2857,14 +2170,6 @@ function hideStaleImportsNotice() {
   if (notice) notice.hidden = true;
 }
 
-/* Re-reads the edited modules, then says what happened.
- *
- * The warning about `from … import …` is not a footnote. Reloading
- * replaces what is inside the module object; a name the student imported
- * *out* of it still points at the old function, because that binding
- * lives in their own namespace. Someone who re-reads the file, runs the
- * cell, and still sees the old answer has been told nothing useful
- * unless this is said. */
 async function reloadStaleImports() {
   const names = staleImportNames.slice();
   if (!names.length) { hideStaleImportsNotice(); return; }
@@ -2891,14 +2196,6 @@ async function reloadStaleImports() {
   );
 }
 
-// -------------------------------------------------------------- downloads
-
-/* Reads the reader's chosen filename from Settings, cleaned up for use
- * as an actual filename: any extension they typed is stripped (each
- * download function adds its own), and characters that aren't valid in
- * a filename on at least one common operating system (`\ / : * ? " < >
- * |`) are replaced with a dash, so the same name works whether the
- * download lands on Windows, macOS, or Linux. */
 function getFilenameBase() {
   let name = (activeNotebook()?.name || "").trim();
   if (!name) name = "dewmini-notebook";
@@ -2907,11 +2204,6 @@ function getFilenameBase() {
   return name || "dewmini-notebook";
 }
 
-/* Keeps the Settings filename box, the browser tab title, and the tab strip
- * all saying the same thing — because since tabs, they are all one thing: a
- * notebook's name *is* its export filename. Two separate ideas (a tab called
- * one thing downloading as another) would be a small, permanent confusion
- * for no gain. */
 function updateFilenameField() {
   const el = document.getElementById("dm-filename");
   if (el) el.value = activeNotebook()?.name || "";
@@ -2933,14 +2225,6 @@ function initFilename() {
   });
 }
 
-/* The standard trick for making the browser download a file that only
- * ever existed in memory: a Blob wraps the content as an in-memory
- * file-like object, `URL.createObjectURL` gives it a temporary URL the
- * browser treats as a real download link, and a plain `<a download>`
- * clicked programmatically triggers the download exactly as a real click
- * would. `URL.revokeObjectURL` at the end releases that temporary URL
- * once it's no longer needed. Every download function below (Python,
- * ipynb, HTML) funnels through this one function. */
 function triggerDownload(filename, content, mime) {
   const blob = new Blob([content], { type: mime });
   const url = URL.createObjectURL(blob);
@@ -2953,41 +2237,12 @@ function triggerDownload(filename, content, mime) {
   URL.revokeObjectURL(url);
 }
 
-/* Every export below (.py, .ipynb) only ever reads one field, `content`
- * — fine for every type except `web` (DECISIONS_LOG.md 7.120), whose
- * CSS half lives in a second field, `style`, that would otherwise be
- * silently dropped from a downloaded file with no way to notice short of
- * comparing it against the cell still on screen. Not a concern the
- * types `web` replaced ever had: an old CSS cell's whole content *was*
- * `cell.content`, so nothing was lost exporting it the same generic way
- * every other non-Python type already was. */
 function cellExportContent(cell) {
   if (cell.type !== CELL_TYPES.WEB) return cell.content;
   if (!cell.style.trim()) return cell.content;
   return `${cell.content}\n\n<style>\n${cell.style}\n</style>`;
 }
 
-/* Joins every cell into one plain .py file: a Python cell's code goes in
- * as-is, and a text cell's content gets turned into `#`-prefixed comment
- * lines, so the whole notebook reads as one ordinary, runnable Python
- * script — no special notebook format needed to open it.
- *
- * The cell markers are the percent format: `# %%` before a code cell and
- * `# %% [markdown]` before a text cell. This replaces markers dewmini
- * invented for itself ("# ---- cell 1 ----"), which no other program
- * understood. Jupytext, Visual Studio Code, Spyder and PyCharm all read
- * the percent format, so a file written here opens as the same cells on
- * a machine that has never heard of dewlab — which is the only thing
- * that makes teaching a student to work in files worth doing.
- *
- * `# %%` explains nothing to a beginner, where the old markers almost
- * explained themselves. That is why the file opens with a few lines
- * saying what the markers are for, as a text cell the student can delete
- * once they no longer need it. Inside dewmini they never see a marker at
- * all: the cells are the markers.
- *
- * parsePyCells() reads exactly what this writes, so a downloaded .py
- * loads straight back into the same cells, notes included. */
 const PY_CELL_MARKER = "# %%";
 const PY_TEXT_MARKER = "# %% [markdown]";
 // The first line of the header block below. parsePyCells() matches this
@@ -2996,15 +2251,6 @@ const PY_TEXT_MARKER = "# %% [markdown]";
 // be kept. Change one and change the other.
 const PY_HEADER_OPENING = "# dewmini export";
 
-/* A list of cells as one percent-format Python document: `# %%` before a
- * code cell, `# %% [markdown]` before a text cell, whose lines are then
- * commented out.
- *
- * No explanatory header. downloadAsPython() adds one, because a file
- * leaving here is read by somebody who has never seen the convention. The
- * file *view* deliberately does without: its header would carry today's
- * date, so regenerating it on every switch between the two views would
- * look to the reader like an edit they did not make. */
 function cellsToPercentText(cellList, { bare = false } = {}) {
   // A lone Python cell writes as a plain script, no `# %%` marker, when
   // `bare` is set. The marker exists to tell two or more cells apart; on a
@@ -3016,7 +2262,7 @@ function cellsToPercentText(cellList, { bare = false } = {}) {
   // has no marker in it — the moment it was so much as opened in the file
   // view, let alone edited and saved, it silently grew one, turning an
   // ordinary script into something that looks like a notebook export the
-  // reader never asked for (DECISIONS_LOG.md 7.125).
+  // reader never asked for.
   //
   // downloadAsPython() asks for the marked form instead: its header sits
   // above the first marker so isOwnHeader() can recognise and strip it on
@@ -3058,46 +2304,11 @@ function downloadAsPython() {
   updateStatus("Downloaded as Python. Outputs are not in a .py file — use .ipynb to keep those.", "ok");
 }
 
-/* The Jupyter notebook format (.ipynb) stores a cell's source as a list
- * of strings, one per line, where every line *except the last* keeps its
- * own trailing "\n" — that's simply the convention real Jupyter itself
- * uses when it saves a file. This function reproduces that exact shape:
- * split on newlines, then put the "\n" back on every line except the
- * final one, so a file downloaded from here looks the same, byte for
- * byte in this respect, as one saved by actual Jupyter. */
 function splitLines(text) {
   const lines = text.split("\n");
   return lines.map((line, i) => (i < lines.length - 1 ? `${line}\n` : line));
 }
 
-/* ------------------------------------------------ outputs in a .ipynb
- *
- * dewmini keeps a cell's output as HTML — the contents of its output area
- * when the cell finished. The Jupyter notebook format keeps a list of
- * typed output objects instead: `stream` for text a cell printed, `error`
- * for an exception, and `display_data` or `execute_result` for a value,
- * carried as alternative representations labelled by MIME type.
- *
- * Neither direction used to be attempted. downloadAsIpynb() wrote
- * `outputs: []` for every code cell and parseIpynbCells() set every
- * imported cell's output to the empty string, so a student who imported
- * a notebook silently lost every result it arrived with. These two
- * functions are the translation that fixes it. */
-
-/* dewmini's own output HTML, turned into nbformat output objects.
- *
- * Translated child by child rather than as one blob, because the output
- * area is already a sequence of separate things: applyOutputEvent() in
- * pyodide-engine.js appends a `<pre>` per run of printed text and
- * ready-made HTML for anything else. A figure therefore survives as a
- * real `image/png`, which is what any other notebook tool expects, while
- * a table stays HTML because that is genuinely what it is.
- *
- * An error becomes a `stderr` stream rather than an nbformat `error`
- * object. An `error` requires an exception name and value as separate
- * fields, and what dewmini has kept is the rendered message. Splitting
- * that back apart would be guessing, and a wrong exception name in a file
- * is worse than an honest stream of the text that was actually shown. */
 function cellOutputsForIpynb(cell) {
   if (!cell.output) return [];
   const holder = document.createElement("template");
@@ -3151,9 +2362,6 @@ function cellOutputsForIpynb(cell) {
   return outputs;
 }
 
-/* The base64 of a PNG data URL when `node` is an image and nothing else
- * — either an <img> itself or a wrapper whose only content is one. Null
- * for anything more complicated, which then travels as HTML. */
 function lonePngDataUrl(node) {
   const img = node.tagName === "IMG" ? node : node.querySelector("img");
   if (!img) return null;
@@ -3162,14 +2370,6 @@ function lonePngDataUrl(node) {
   return match ? match[1] : null;
 }
 
-/* Elements an imported notebook's HTML output may keep. Everything else
- * is dropped, contents and all.
- *
- * An imported .ipynb is a file from anywhere — a classmate, a download, a
- * repository — and its outputs are HTML that would otherwise be put
- * straight into the page. An allow-list is the safe shape for this: a
- * list of things to remove is only ever as good as its author's
- * imagination, while a list of things to keep fails closed. */
 const IMPORTED_HTML_TAGS = new Set([
   "P", "DIV", "SPAN", "PRE", "CODE", "BR", "HR", "EM", "STRONG", "B", "I", "U", "SMALL", "SUB", "SUP",
   "UL", "OL", "LI", "DL", "DT", "DD", "BLOCKQUOTE",
@@ -3177,17 +2377,6 @@ const IMPORTED_HTML_TAGS = new Set([
   "H1", "H2", "H3", "H4", "H5", "H6", "IMG",
 ]);
 
-/* Rebuilds `html` keeping only the elements above, `class` as their only
- * attribute, and an <img> only when its source is an embedded image.
- *
- * Rebuilding rather than editing in place: every attribute is dropped by
- * default and the few that survive are copied across deliberately, so an
- * attribute nobody thought of — an event handler, a `style` carrying a
- * URL, an `srcset` — cannot survive by not having been considered.
- *
- * Parsing happens inside a <template>, whose contents are inert: no
- * script runs and no image is fetched while this is deciding what to
- * keep. */
 function sanitizeImportedHtml(html) {
   const source = document.createElement("template");
   source.innerHTML = html;
@@ -3224,14 +2413,6 @@ function sanitizeImportedHtml(html) {
   return out.innerHTML;
 }
 
-/* nbformat output objects, turned back into the HTML dewmini shows.
- *
- * `text/html` from a file is put through sanitizeImportedHtml() above.
- * `image/png` becomes an <img> built here rather than trusted as markup.
- * An `error` keeps its exception name and value, and its traceback with
- * the terminal colour codes real Jupyter leaves in it stripped out —
- * those are escape sequences meant for a terminal, and shown in a browser
- * they are line noise around the message a student needs to read. */
 function htmlForIpynbOutputs(outputs) {
   if (!Array.isArray(outputs)) return "";
   const text = (value) => (Array.isArray(value) ? value.join("") : String(value ?? ""));
@@ -3271,14 +2452,6 @@ function htmlForIpynbOutputs(outputs) {
   return parts.join("");
 }
 
-/* Builds a real Jupyter notebook (nbformat 4) file: a Python cell becomes
- * a "code" cell, a text cell becomes a "markdown" cell, in the exact JSON
- * shape Jupyter, JupyterLab, and Colab all expect — so the file this
- * produces opens correctly in any of them, and the same file loads back
- * into dewmini via handleImportFile() below. */
-/* A list of cells as a Jupyter notebook object, ready to be serialised.
- * Shared by the download and by saving a .ipynb back to the workspace, so
- * the two can never write files that differ. */
 function cellsToIpynb(cellList) {
   return {
     nbformat: 4,
@@ -3316,12 +2489,6 @@ function downloadAsIpynb() {
   updateStatus("Downloaded as Jupyter Notebook.", "ok");
 }
 
-/* A small, self-contained stylesheet for the standalone HTML export
- * below — deliberately not reusing dewlab's own site CSS, since the
- * whole point of this export is one file that works completely on its
- * own, with nothing else to fetch. `dark` picks one of two small colour
- * palettes at build time, baking the reader's current theme choice into
- * the exported file rather than making the export theme-aware itself. */
 function standaloneCss(dark) {
   const bg = dark ? "#14181f" : "#fdfcfa";
   const fg = dark ? "#e6e3dd" : "#1a1a1a";
@@ -3351,9 +2518,6 @@ function standaloneCss(dark) {
   `;
 }
 
-/* Builds and downloads a single .html file that can run this notebook
- * completely on its own, without dewmini itself — see buildStandaloneHtml
- * below for how that file actually works. */
 async function downloadAsHtml() {
   flushFileEditor();
   if (!cells.length) { updateStatus("No cells to export.", "error"); return; }
@@ -3370,24 +2534,6 @@ async function downloadAsHtml() {
   }
 }
 
-/* Returns one complete HTML page, as a single big string, that can open
- * by itself (double-click, no server needed) and run this notebook's
- * cells the moment it opens. The trick that makes this possible: rather
- * than the downloaded page fetching tutorial_tools.py or the cell data
- * from anywhere, both are serialized with `JSON.stringify(...)` and
- * embedded directly into the page's own `<script>` tag as JavaScript
- * constants (`TOOLS_SRC`, `CELLS`). That's also why this needed
- * `toolsSource` fetched ahead of time by the caller (downloadAsHtml,
- * above) rather than fetched from inside this function — the exported
- * page has no access back to dewlab's own files once it's been saved
- * somewhere else on the reader's computer. Read this as a small, separate
- * standalone program: everything inside the outer template literal's own
- * `<script>...</script>` runs *in the downloaded file*, in the reader's
- * browser, at some point in the future — not here, not now. It boots its
- * own copy of Pyodide (the reason it needs an internet connection the
- * first time it opens, even though it needs none after that) and runs
- * every cell once, top to bottom, then stays exactly as it rendered —
- * this is a read-only snapshot, not an editable copy of dewmini. */
 function buildStandaloneHtml(toolsSource, cellsData, dark, title) {
   const safeTitle = escapeHtml(title || "dewmini notebook");
   return `<!doctype html>
@@ -3474,11 +2620,6 @@ main();
 </html>`;
 }
 
-// --------------------------------------------------------------- reference
-
-/* The five kinds a glossary entry can have, in the order the panel shows
- * them — the same order and labels tutorial pages use, so a reader who has
- * met the Reference there finds the same shape here. */
 const REFERENCE_KINDS = [
   ["concept", "Concepts"],
   ["function", "Functions"],
@@ -3487,18 +2628,6 @@ const REFERENCE_KINDS = [
   ["keyword", "Keywords"],
 ];
 
-/* Short labels for the topic groups, in the order
- * planning/curriculum/topic-groups.yaml lists them. This is a label
- * *override*, not the list of groups: the file's own names are written for a
- * page heading ("Trigonometry — triangles, circles, and waves") and are far
- * too long for a chip, so the curated short forms live here.
- *
- * The groups themselves are read off the data (referenceTopics() below), so
- * adding one to topic-groups.yaml gives it a chip on the next build whether
- * or not anyone remembers to come back here. That matters: everything else
- * about these filters re-derives itself when the curriculum data changes,
- * and a hand-kept list that silently drops new groups would be the one place
- * the two could quietly disagree. */
 const REFERENCE_TOPIC_LABELS = [
   ["numbers-and-algebra", "Numbers & algebra"],
   ["polynomials-and-graphs", "Polynomials"],
@@ -3513,10 +2642,6 @@ const REFERENCE_TOPIC_LABELS = [
   ["big-picture", "Big picture"],
 ];
 
-/* Every topic group the reference actually has terms for, curated ones first
- * in their own order and anything new after them, alphabetically. A group
- * with no short label gets its key turned back into words — plain, and
- * visibly a fallback, which is the right prompt to come and name it. */
 function referenceTopics() {
   const labels = new Map(REFERENCE_TOPIC_LABELS);
   const present = new Set();
@@ -3540,9 +2665,6 @@ const REFERENCE_LEVELS = [
 
 let referenceEntries = null;
 
-/* Every filter row is the same shape: a set of chosen values, empty meaning
- * "no filter on this facet". Four independent sets rather than four
- * variables so the render and the reset can loop over them. */
 const referenceFilters = {
   subjects: new Set(),
   level: new Set(),
@@ -3550,10 +2672,6 @@ const referenceFilters = {
   kind: new Set(),
 };
 
-/* Fetches the cross-tutorial reference once (build.py's
- * write_reference_index()). Absent is not an error: a build with no
- * tutorials writes no index, and an offline bundle from such a build
- * should still open — the section says so and gets out of the way. */
 async function loadReference() {
   const statusEl = document.getElementById("dm-reference-status");
   try {
@@ -3568,12 +2686,6 @@ async function loadReference() {
   renderReference();
 }
 
-/* Does one entry pass every filter row? A row with nothing chosen doesn't
- * filter; a row with choices passes an entry matching any of them (so
- * Maths + Computing means "either", not "both"). An entry missing the facet
- * entirely — a term from a tutorial claiming no outcomes — is filtered out
- * once that row is in use, which is why "Unfiled" is offered as a value of
- * its own rather than leaving those terms unreachable. */
 function referenceEntryMatches(entry) {
   const rowPasses = (chosen, value) => {
     if (!chosen.size) return true;
@@ -3587,9 +2699,6 @@ function referenceEntryMatches(entry) {
     && rowPasses(referenceFilters.kind, entry.kind);
 }
 
-/* One chip. Toggling is additive within its row — picking Maths then
- * Computing widens rather than replaces, which is what a reader expects of
- * something that looks like a set of switches. */
 function referenceChip(row, value, label, count) {
   const btn = document.createElement("button");
   btn.type = "button";
@@ -3605,10 +2714,6 @@ function referenceChip(row, value, label, count) {
   return btn;
 }
 
-/* Draws all four filter rows, each chip carrying how many terms it would
- * leave — counted against the *other* rows' current choices, so the numbers
- * describe what would actually happen rather than a total that stops being
- * true the moment anything else is on. */
 function renderReferenceFilters() {
   if (!referenceEntries) return;
 
@@ -3647,11 +2752,6 @@ function renderReferenceFilters() {
   if (wrap) wrap.classList.toggle("dm-filter-more-active", chosen > 0);
 }
 
-/* Draws the reference, filtered by the search box and all four chip rows.
- * Built with createElement rather than an HTML string throughout, for the
- * same reason tutorial-runtime.js's own renderReference() is: a term can
- * legitimately contain `<` (dewlab teaches operators), and textContent
- * cannot turn it into markup where innerHTML would. */
 function renderReference() {
   const groupsEl = document.getElementById("dm-reference-groups");
   const statusEl = document.getElementById("dm-reference-status");
@@ -3711,12 +2811,6 @@ function initReferenceSection() {
   loadReference();
 }
 
-// -------------------------------------------------------------------- data
-
-/* Fetches the dataset catalogue and draws it. Same "fetch a JSON sibling
- * once" shape as the practice bank, and it rides the same wholesale
- * compose/ copy into the offline bundle, so the catalogue works offline
- * even where the datasets it describes do not. */
 async function loadDataCatalogue() {
   const listEl = document.getElementById("dm-data-list");
   const statusEl = document.getElementById("dm-data-status");
@@ -3739,13 +2833,6 @@ async function loadDataCatalogue() {
   }
 }
 
-/* One dataset's card: what it is, where it came from, what licence it
- * carries, and a button that writes the code to load it.
- *
- * The attribution is on the card rather than buried in a repository file
- * because a student who uses someone's data should see whose it is at the
- * moment they use it — the same reasoning behind the dataset YAML the
- * tutorial pages' own Reference already shows. */
 function renderDataset(dataset) {
   const card = document.createElement("div");
   card.className = "dm-dataset";
@@ -3783,18 +2870,6 @@ function renderDataset(dataset) {
   return card;
 }
 
-// --------------------------------------------------------------- variables
-
-/* Draws what is currently defined in the Python session. The engine
- * returns plain `{name, type, summary, kind}` objects
- * (tutorial_tools.describe_globals()), so nothing here has to know
- * anything about Python — this is presentation only.
- *
- * A student's own data goes first and unfolded; the functions and modules
- * that share the namespace fold away under a summary, because they are
- * almost always the same names every session (what the page seeded, what a
- * cell imported) and would otherwise bury the two variables the reader
- * actually wants to look at. */
 async function refreshVariables() {
   const listEl = document.getElementById("dm-variables");
   const statusEl = document.getElementById("dm-variables-status");
@@ -3873,16 +2948,11 @@ function initVariablesSection() {
   document.getElementById("dm-variables-refresh")?.addEventListener("click", () => refreshVariables());
 }
 
-// ---------------------------------------------------------------- practice
-
 const PRACTICE_INDEX_KEY = "dewmini:practice-index";
 const PRACTICE_ORDER_KEY = "dewmini:practice-order";
 const PRACTICE_SHUFFLE_KEY = "dewmini:practice-shuffle";
 let practiceBank = null;
 
-/* Fetches dewlab's shared practice-problem bank once and caches it in
- * `practiceBank`, the same "fetch once, reuse" shape as getToolsSource()
- * above. */
 async function loadPracticeBank() {
   if (practiceBank) return practiceBank;
   const res = await fetch("practice-bank.json");
@@ -3897,12 +2967,6 @@ function loadPracticeOrder() {
   try { return localStorage.getItem(PRACTICE_ORDER_KEY) === "random" ? "random" : "sequential"; } catch { return "sequential"; }
 }
 
-/* Builds an array [0, 1, 2, ..., n-1] and shuffles it into a random order
- * using the Fisher–Yates shuffle: walk backward from the end, and at each
- * position swap in a uniformly random earlier-or-equal element. This is
- * the standard way to shuffle an array with every possible ordering
- * equally likely — a naive "sort by Math.random()" approach, which might
- * seem simpler, doesn't actually produce a fair shuffle. */
 function shuffledRange(n) {
   const arr = Array.from({ length: n }, (_, i) => i);
   for (let i = arr.length - 1; i > 0; i--) {
@@ -3912,11 +2976,6 @@ function shuffledRange(n) {
   return arr;
 }
 
-/* A shuffle bag rather than plain Math.random() each time — "random" should
- * still mean every problem turns up once before any repeats, not the
- * frustrating experience of the same one twice in a row. Reshuffles once
- * the bag empties, nudging away an immediate repeat of the last problem
- * served across the reshuffle boundary. */
 function nextRandomPracticeIndex(total, lastIdx) {
   let bag = [];
   try { bag = JSON.parse(localStorage.getItem(PRACTICE_SHUFFLE_KEY) || "[]"); } catch {}
@@ -3931,13 +2990,6 @@ function nextRandomPracticeIndex(total, lastIdx) {
   return idx;
 }
 
-/* Picks the next practice problem's index, in whichever order Settings
- * has chosen. The sequential branch's `((x % total) + total) % total` is
- * a common trick for "modulo that's always non-negative": JavaScript's
- * `%` operator can return a negative result for a negative input (unlike
- * the mathematical definition of modulo), so this adds `total` back and
- * takes `% total` a second time to guarantee a valid, non-negative index
- * even if `lastIdx` were somehow negative. */
 function nextPracticeIndex(total) {
   let lastIdx = -1;
   try { lastIdx = parseInt(localStorage.getItem(PRACTICE_INDEX_KEY) || "-1", 10); } catch {}
@@ -3949,12 +3001,6 @@ function nextPracticeIndex(total) {
   return idx;
 }
 
-/* Adds one problem from dewlab's own practice bank — the doc cell states
- * which one, and the code cell is exactly the function stub from the
- * source bank (docstring, Args/Returns/Example and all), so there is
- * nothing to duplicate or drift out of sync with. Order (sequential or
- * random, Settings → Practice) decides which comes next; either way it
- * remembers where a reader left off. */
 async function addPracticeProblem() {
   try {
     const bank = await loadPracticeBank();
@@ -3984,12 +3030,6 @@ async function addPracticeProblem() {
   }
 }
 
-/* Modules with no Pyodide build at all, or that need something a browser
- * tab fundamentally cannot offer (a display to draw a GUI window in, a
- * separate OS process, a raw network socket, a real terminal) — not
- * every package Pyodide happens to lack, just the common, structurally
- * impossible ones worth telling a reader about before they go looking
- * for a bug in their own logic that was never there. */
 const PYODIDE_INCOMPATIBLE_MODULES = {
   tkinter: "opens a GUI window — there is no display here to draw one on",
   turtle: "opens a GUI window — there is no display here to draw one on",
@@ -4026,13 +3066,6 @@ const PYODIDE_INCOMPATIBLE_MODULES = {
   termios: "this needs a real terminal, which the browser has none of",
 };
 
-/* Best-effort scan of imported Python cells for things that will not
- * work once they actually run here — Jupyter magics, shell escapes, and
- * imports of the structurally impossible modules above — so the warning
- * reaches a reader before they go hunting for a bug in code they didn't
- * write. Line-based and deliberately shallow: a regex pass over each
- * line, not a Python parser, which is enough for the fixed set of
- * shapes it looks for. */
 function scanPyodideCompatibility(importedCells) {
   const magicCells = [];
   const shellCells = [];
@@ -4071,13 +3104,6 @@ function scanPyodideCompatibility(importedCells) {
   return warnings;
 }
 
-/* Populates and shows (or hides, if there's nothing to say)
- * #import-compat-notice — checked before the scanned cells ever land in
- * the notebook so the warning, if any, is the first thing a reader
- * sees about this import. Every warning string is built entirely from
- * this file's own hardcoded strings and plain integers (never from the
- * imported file's actual text), so turning `backticks` into <code> and
- * dropping straight into innerHTML is safe. */
 function showImportCompatNotice(warnings) {
   const notice = document.getElementById("import-compat-notice");
   const list = document.getElementById("import-compat-list");
@@ -4088,15 +3114,6 @@ function showImportCompatNotice(warnings) {
   notice.hidden = false;
 }
 
-/* Reads a chosen .ipynb or .py file and replaces the whole notebook with
- * its cells — a Jupyter "code" cell becomes a Python cell, anything else
- * (Jupyter's "markdown" cells) becomes a text cell. `Array.isArray(c.source)
- * ? c.source.join("") : c.source || ""` handles the fact that nbformat
- * allows a cell's source to be stored either as one string or as an
- * array of line-strings (see splitLines() above for why Jupyter itself
- * writes the array form) — this accepts either, so a file from any
- * real Jupyter tool imports correctly either way. Dispatches on the
- * file's own extension rather than sniffing content. */
 async function handleImportFile(e) {
   const input = e.target;
   const file = input.files && input.files[0];
@@ -4111,16 +3128,6 @@ async function handleImportFile(e) {
   }
 }
 
-/* Shared tail end of every import path (a picked file, or a built-in
- * example fetched by URL).
- *
- * Opens what was imported in a *new tab* rather than replacing the notebook
- * in front of you. Before tabs, this overwrote everything with no
- * confirmation and no undo — and since every change saves immediately, one
- * mis-picked file destroyed a session's work with nothing to recover from.
- * A new tab is a better answer than the confirmation dialog that was the
- * alternative: nothing is lost, so there is nothing to confirm, and the two
- * notebooks sit side by side if a reader wanted to compare them anyway. */
 function applyImportedCells(imported, sourceLabel) {
   if (!imported.length) { updateStatus("That notebook has no cells.", "error"); return; }
   showImportCompatNotice(scanPyodideCompatibility(imported));
@@ -4136,9 +3143,6 @@ function notebookNameFor(sourceLabel) {
   return base.length > 24 ? `${base.slice(0, 23)}…` : base;
 }
 
-/* Parses a .ipynb notebook's JSON into dewmini's cell shape — the same
- * mapping handleImportFile() applies to a picked file, factored out so
- * loadBuiltInExample() below can reuse it without duplicating it. */
 function parseIpynbCells(text) {
   const notebook = JSON.parse(text);
   if (!Array.isArray(notebook.cells)) throw new Error("that file has no cells array");
@@ -4160,27 +3164,6 @@ function parseIpynbCells(text) {
   });
 }
 
-/* Parses a .py file in the percent format into dewmini's cell shape —
- * the counterpart to downloadAsPython() above.
- *
- * `# %%` starts a code cell and `# %% [markdown]` starts a text cell,
- * whose prose follows as ordinary `#` comment lines. A marker may carry
- * a title and options after it, which is what Jupytext and Visual Studio
- * Code write (`# %% A title [markdown] tags=["x"]`), so the kind is
- * decided by looking for a bracketed word rather than by matching the
- * whole line. `[raw]` is read as a text cell: its content is not Python,
- * and a text cell is the closer of the two things dewmini has.
- *
- * Code before the first marker is kept as a leading Python cell. In a
- * file written anywhere else that is real code — a shebang line, a block
- * of imports — and discarding it would lose part of the program.
- *
- * A file with no markers at all — a plain script — imports as a single
- * Python cell.
- *
- * @param {string} text - raw .py file contents
- * @returns {Array<Object>} new cell objects, same shape parseIpynbCells() returns
- */
 function parsePyCells(text) {
   // Leading whitespace is allowed before the "#" because some editors
   // indent a marker inside a block; anything after the "%%" is the
@@ -4245,10 +3228,6 @@ function parsePyCells(text) {
   return cells;
 }
 
-/* Loads one of dewlab's own worked examples (assets/examples/*.ipynb) —
- * a real, runnable walkthrough (SQL over a real dataset, a data
- * investigation, a math simulation, text analysis). Replaces the
- * notebook outright, the same as picking a file already does here. */
 async function loadBuiltInExample(path, label) {
   let imported;
   try {
@@ -4262,38 +3241,10 @@ async function loadBuiltInExample(path, label) {
   applyImportedCells(imported, label);
 }
 
-// ------------------------------------------------------------- drag reorder
-
-/* Removes the "drop indicator" styling (a highlighted top/bottom edge)
- * from whichever cell currently has it, before adding it to a new one —
- * called on every dragover so only one cell ever shows the indicator at
- * once. */
 function clearDropMarkers() {
   cellsContainer?.querySelectorAll(".dm-drop-before,.dm-drop-after").forEach((el) => el.classList.remove("dm-drop-before", "dm-drop-after"));
 }
 
-/* Wires up reordering cells by dragging their header. This uses the
- * browser's built-in HTML5 Drag and Drop API, which works through four
- * events fired in sequence as a drag happens:
- *   - "dragstart" (on the thing being dragged): remembers which cell's
- *     id is being dragged, in the module-level `draggedId` variable.
- *   - "dragover" (fired repeatedly, on whatever the mouse is currently
- *     over): must call `e.preventDefault()` — the browser's default
- *     behavior is to *refuse* a drop unless something explicitly opts
- *     in, so this is what makes dropping onto a cell allowed at all.
- *     Also decides, from the mouse's vertical position within the
- *     hovered cell, whether to show the drop indicator above or below
- *     it (`before`, comparing the cursor's Y position to the cell's own
- *     vertical midpoint).
- *   - "dragend" (on the thing that was dragged, once the drag is over
- *     however it ended): cleanup, whether or not a drop actually
- *     happened.
- *   - "drop" (on whatever the mouse was over when released): does the
- *     actual reordering — removes the dragged cell from its old array
- *     position and re-inserts it at the new one, using the exact same
- *     "before or after the hovered cell" calculation dragover already
- *     made.
- */
 function setupDragAndDrop() {
   if (!cellsContainer) return;
 
@@ -4352,21 +3303,6 @@ function setupDragAndDrop() {
   });
 }
 
-// ------------------------------------------------------------------ status
-
-/* Shows a short status message ("Ran.", "Cell deleted.", an error) in the
- * small status line, and — unless it's an error, which stays until
- * something else happens — clears it again after 3.5 seconds. The
- * `if (statusEl.textContent === message)` check inside the timeout
- * guards against a subtle bug: if a second status message arrives before
- * the first one's timer fires, the first timer would otherwise clear the
- * *second* message instead of leaving it alone.
- *
- * `#dm-status` is a live region (`role="status" aria-live="polite"` in
- * dewmini.html), and a live region only announces on an actual text
- * change — running the same cell twice in a row, both times ending in
- * "Ran.", would go silent the second time without the clear-then-set-on-
- * next-tick below. */
 function updateStatus(message, kind = "") {
   if (!statusEl) return;
   const className = "dm-status" + (kind ? ` dm-status-${kind}` : "");
@@ -4385,8 +3321,6 @@ function updateStatus(message, kind = "") {
   }
 }
 
-// -------------------------------------------------------------- storage
-
 /* Human-sized file size — bytes, then one-decimal KB and MB. */
 function formatFileSize(bytes) {
   if (bytes < 1024) return `${bytes} B`;
@@ -4394,9 +3328,6 @@ function formatFileSize(bytes) {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-/* Reflects engine.engineMode()/canStop() into Settings' "Python" section
- * — the same two things the engine itself reports: which path booted,
- * and whether Stop can actually do anything in it. */
 function updateExecutionStatus() {
   const el = document.getElementById("settings-execution-status");
   if (!el) return;
@@ -4421,18 +3352,6 @@ function updateExecutionStatus() {
   el.textContent = text;
 }
 
-/* Tears both engines down entirely (engine.restart(), jsEngine.restart())
- * and forgets that a filesystem was ever mounted (dfs.reset(), since a
- * fresh interpreter has nothing mounted into it yet), then boots Pyodide
- * back up right away so Settings reflects real status immediately rather
- * than waiting for the next Run click. The JavaScript session is left
- * torn down rather than eagerly recreated too — unlike Pyodide, there is
- * no slow download for Settings to get ahead of, and creating it stays
- * lazy (ensureJsSession()) the same as it is on a fresh page load.
- * Shared by both "Restart Python" and "Restart & run all" below — the
- * run-all button needs exactly this same teardown before its own extra
- * step. Returns whether the restart itself succeeded, so a caller that
- * runs cells afterwards knows whether to bother. */
 async function restartPython() {
   engine.restart();
   jsEngine.restart();
@@ -4454,17 +3373,6 @@ async function restartPython() {
   return ok;
 }
 
-/* Wires the "Restart Python" and "Restart & run all" buttons
- * (DECISIONS_LOG.md 7.108). The second is a reproducibility check: if a
- * notebook does not survive throwing the interpreter away and running
- * every cell fresh, it did not really work — it only looked like it did,
- * because of whatever state a stale namespace was quietly carrying.
- * runAllCells() already resets the *namespace* (resetPageState, the cheap
- * version) before it runs; going through a full restart() first
- * additionally clears anything only a real interpreter restart would —
- * Jedi's completion cache and the mounted filesystem handle among them —
- * so this button is a stronger guarantee than "Run all" alone, not merely
- * its label. */
 function initExecutionSection() {
   document.getElementById("settings-restart-python")?.addEventListener("click", async () => {
     if (!confirm("Restart Python? Anything defined in the current session will be lost.")) return;
@@ -4476,11 +3384,6 @@ function initExecutionSection() {
   });
 }
 
-/* Reflects dfs.getBackend() into Settings' "Files" section: the status
- * line (one message per possible backend), and the
- * choose/reconnect/forget buttons' own visibility and label. Also
- * re-renders the file list, since a backend change always means "what's
- * actually in the mount" just changed too. */
 async function updateStorageStatus() {
   const statusEl = document.getElementById("settings-storage-status");
   const chooseBtn = document.getElementById("settings-choose-folder");
@@ -4510,19 +3413,6 @@ async function updateStorageStatus() {
   renderFileList();
 }
 
-/* Lists every open notebook in the Files panel too, even though none of
- * them are a file on the mounted filesystem. A notebook lives in this
- * browser's own storage — the Files section is where a reader already
- * looks to answer "where is my work", and until this a plain notebook
- * had no answer there at all, unlike a file a cell's own code writes
- * (DECISIONS_LOG.md 7.122). No filesystem read, so this needs no
- * ticket-guard the way renderFileList() does, and draws instantly
- * regardless of whether Python has ever booted.
- *
- * A notebook already backed by a real workspace file (`.path` is set —
- * opened from Files as a `.py`/`.ipynb`/`.html`) is skipped: it already
- * appears in the ordinary file list below under its own name, and
- * listing it here too would be the same notebook claiming two homes. */
 function renderNotebookList() {
   const listEl = document.getElementById("settings-notebook-list");
   if (!listEl) return;
@@ -4549,21 +3439,6 @@ function renderNotebookList() {
   }
 }
 
-/* Re-lists the mounted filesystem's root and redraws the "Files" list —
- * root only, not a full recursive tree with browsable subfolders:
- * a compact Settings section is the wrong place for
- * that (DECISIONS_LOG.md 7.88), and dewmini's own use of the mount
- * (a saved .db file, a dataset a cell downloaded) rarely goes more than
- * one level deep in practice. */
-/* Which call to renderFileList() is the current one.
- *
- * The function clears the list, then awaits a directory listing, then
- * appends. Two calls overlapping in that await therefore both clear an
- * already-empty list and then both append, so every file shows twice.
- * Reachable now that a cell run and opening the panel each ask for a
- * redraw, and found by a rename test that suddenly saw three copies of
- * one name. Each call takes a ticket; a call whose ticket is no longer
- * the newest stops before it writes anything. */
 let fileListRender = 0;
 
 async function renderFileList() {
@@ -4617,10 +3492,6 @@ async function renderFileList() {
     const item = document.createElement("li");
     item.className = "dm-filelist-item";
 
-    /* The name is a button, not a label. A list that shows what exists
-     * and offers no way to open any of it is an inventory; being able to
-     * open one is what makes this a file manager. A folder stays a plain
-     * label, since dewmini has nothing to show for one yet. */
     let nameEl;
     if (entry.isDir) {
       nameEl = document.createElement("span");
@@ -4658,12 +3529,6 @@ async function renderFileList() {
   }
 }
 
-/* Renames a file in the workspace, and follows the tab that is showing it.
- *
- * A copy-then-delete, because the filesystem interface has no rename of
- * its own across all three backends. The delete only happens once the copy
- * is written, so a failure halfway leaves the original where it was rather
- * than losing it. */
 async function renameFsFile(name) {
   const next = prompt(`Rename "${name}" to:`, name);
   if (next === null) return;
@@ -4701,9 +3566,6 @@ async function renameFsFile(name) {
   updateStatus(`Renamed ${name} to ${target}.`, "ok");
 }
 
-/* Starts a new, empty Python file in the workspace and opens it. Python
- * needs the file to exist before anything can import it, so this writes
- * it rather than only opening an empty tab. */
 async function newFsFile() {
   await ensurePyodide();
   const asked = prompt("Name for the new file:", "shapes.py");
@@ -4741,11 +3603,6 @@ async function deleteFsFile(name) {
   renderFileList();
 }
 
-/* Writes one or more picked files into the mounted filesystem's root.
- * Starts Python first if it hasn't already — uploading a file is itself
- * a reasonable first action for a student to take, so it boots Python
- * the same way clicking Run does rather than refusing until a cell has
- * been run. */
 async function uploadFsFiles(fileList) {
   const files = fileList ? Array.from(fileList) : [];
   if (!files.length) return;
@@ -4753,11 +3610,6 @@ async function uploadFsFiles(fileList) {
   try {
     await ensurePyodide();
   } catch (err) {
-    /* Says so, rather than returning quietly. ensurePyodide() used to report
-     * a boot failure itself and this comment used to say so; it now lets the
-     * error out (only the filesystem mount inside it is caught), so without
-     * this an upload after a failed boot did nothing at all and explained
-     * nothing either. */
     updateStatus(`Python isn't available, so the upload can't go anywhere: ${err.message}`,
                  "error");
     return;
@@ -4810,30 +3662,6 @@ function initStorageSection() {
   updateStorageStatus();
 }
 
-// ------------------------------------------------------------------ panels
-
-/**
- * A draggable strip along the edge a docked panel grows *into* — its left
- * edge when docked right, its right edge when docked left.
- *
- * This replaces native CSS `resize: horizontal` on both, for two separate
- * reasons. On a right-docked panel the native handle is unusable: it sits
- * at the box's bottom-right corner, flush with the browser window's own
- * right edge, with no room to drag further right and grow it — found by an
- * actual drag test, not assumed from the CSS (DECISIONS_LOG.md 7.84). On a
- * left-docked panel it *works*, which is why it was left alone — but it is
- * a small corner triangle facing a full-height strip on the panel opposite.
- * Two rails, two affordances, only one of them findable: that asymmetry is
- * why this is now shared rather than right-docked only.
- *
- * `side` is the edge the panel is docked to, so the drag maths runs the
- * right way round: a right-docked panel grows as the pointer moves left,
- * a left-docked one as it moves right. `min`/`max` mirror the panel's own
- * CSS `min-width`/`max-width`, kept in sync by hand — the constants are
- * already known and simpler than parsing them back out of the DOM.
- * `onResize` fires once per drag, on release rather than per frame, for a
- * caller that wants to persist the new width.
- */
 function makeEdgeResizable(panel, side = "right", min = 256, max = 640, onResize = null) {
   if (!panel || panel.querySelector(".dl-panel-resize-handle")) return;
   const handle = document.createElement("div");
@@ -4866,21 +3694,6 @@ function makeEdgeResizable(panel, side = "right", min = 256, max = 640, onResize
   });
 }
 
-/* Opens and closes one docked panel, closing only the panels that would
- * otherwise sit on top of it — the ones docked to the same edge.
- *
- * `conflicts` rather than a single `otherPanel`: dewmini used to have two
- * panels on one edge, where "the other one" was unambiguous. With a rail on
- * each edge, closing every other panel would make the two rails fight — the
- * whole point of two rails is having a definition open beside your own
- * variables.
- *
- * A click outside no longer closes anything either. A docked rail is a
- * permanent pane, not a popover: dismiss-on-outside-click is right for
- * something floating over the page and actively wrong for something the
- * page has made room for, where every click on your own notebook would
- * close the reference you opened to read while writing it. Escape and the
- * close button remain, which are the deliberate ways out. */
 function wirePanel(panel, toggle, closeBtn, conflicts = [], onOpen = null) {
   if (!panel) return;
   const setOpen = (open) => {
@@ -4906,16 +3719,6 @@ function wirePanel(panel, toggle, closeBtn, conflicts = [], onOpen = null) {
   });
 }
 
-/* Remembers what a reader left open on each edge, the same
- * localStorage-persisted-sidebar mechanism tutorial pages use (see
- * saveSidebarState()/restoreSidebarState() in tutorial-runtime.js,
- * DECISIONS_LOG.md 7.83) — a returning reader's rails come back open
- * rather than needing to be reopened, since they are meant to be
- * permanent panes, not popovers that happen to be open right now.
- *
- * A {left, right} pair rather than the single value dewmini stored while
- * both its panels shared one edge: with a rail on each side, "what is
- * open" is two independent answers. */
 const SIDEBAR_KEY = "dewlab:dewmini:sidebar";
 
 function saveSidebarState() {
@@ -4943,11 +3746,6 @@ function saveSidebarState() {
   } catch (e) { /* private mode, blocked storage: nothing to remember */ }
 }
 
-/* The other half of saveSidebarState() — reopens whatever was left open
- * last time by clicking its toggle, reusing that toggle's own open logic
- * rather than duplicating it. Skipped below the phone breakpoint, where
- * a panel is a bottom sheet covering most of the screen rather than a
- * sidebar worth leaving open by default. */
 const PANEL_TOGGLES = {
   "dm-library": "dm-library-toggle",
   "dm-workbench": "dm-workbench-toggle",
@@ -4976,23 +3774,6 @@ function restoreSidebarState() {
   }
 }
 
-/* Keeps `<html data-dl-panel-left>` / `data-dl-panel-right` in sync with
- * what is actually open on each edge, regardless of which of a panel's
- * several open/close paths (toggle click, close button, Escape, another
- * panel on the same edge opening) fired — a MutationObserver on each
- * panel's `hidden` property, rather than hooking every call site.
- *
- * These are the *shared* attributes tutorial-style.css has read since
- * DECISIONS_LOG.md 7.83, one per edge with its own width variable. dewmini
- * used to override them with a single `data-dl-panel-open` and one width,
- * which was a fair simplification while both its panels docked right
- * (7.84) and is exactly wrong with a rail on each side: one attribute
- * cannot say which edge to make room on, and one width cannot describe two
- * panels of different sizes open at once.
- *
- * A ResizeObserver keeps each side's width variable in step with its
- * panel's *real* rendered width rather than a guess, since a docked
- * sidebar can be dragged wider or narrower at any time. */
 function watchPanelOverlap(sides) {
   const entries = Object.entries(sides)
     .map(([side, panels]) => [side, panels.filter(Boolean)])
@@ -5045,7 +3826,7 @@ function initPanels() {
   // it grows into. The left rail used to rely on native `resize:
   // horizontal` instead — which works, but puts a small corner triangle
   // opposite a full-height strip, so the two rails behaved differently for
-  // no reason a reader could see (DECISIONS_LOG.md 7.103). The min/max
+  // no reason a reader could see. The min/max
   // mirror each panel's own CSS.
   // Left is the project: files, variables, notes. Right is everything
   // outside it: the reference, and settings.
@@ -5072,34 +3853,16 @@ function initPanels() {
   });
 }
 
-// -------------------------------------------------------- .dl-seg radiogroups
-
-/* Every .dl-seg is a mutually-exclusive single-choice group — the WAI-ARIA
- * APG radiogroup pattern, not a row of independent toggle buttons. role and
- * the group's accessible name are static (dewmini.html); what changes at
- * runtime is which button is aria-checked and, per the pattern's roving
- * tabindex, which one is a tab stop. Each group's own sync() below calls
- * this once per button in place of the old aria-pressed line, then
- * syncSegRoving() once per group to settle the tab stop. */
 function setSegChecked(btn, checked) {
   btn.setAttribute("aria-checked", String(checked));
 }
 
-/* Exactly one button in a group is ever a tab stop: the checked one, or —
- * for a group like Width that can sit between its presets with none of
- * them checked — the first, so the group is never skipped entirely. */
 function syncSegRoving(group) {
   const buttons = [...group.querySelectorAll("button")];
   const checked = buttons.find((btn) => btn.getAttribute("aria-checked") === "true");
   for (const btn of buttons) btn.tabIndex = btn === (checked || buttons[0]) ? 0 : -1;
 }
 
-/* One keydown listener per group covers every .dl-seg on the page, rather
- * than repeating it at each of the several places a group gets wired up
- * below. Arrow keys move focus and selection together, per the radiogroup
- * pattern, wrapping at the ends; Home/End jump to the first/last. Calling
- * .click() reuses whatever that particular group's own click handler does,
- * so this never needs to know what a selection *means* for any given group. */
 function initSegKeyboardNav() {
   for (const group of document.querySelectorAll(".dl-seg")) {
     group.addEventListener("keydown", (ev) => {
@@ -5119,17 +3882,6 @@ function initSegKeyboardNav() {
   }
 }
 
-// ----------------------------------------------------------- shared texture
-
-/* This whole section — loadTexture/saveTexture/applyTexture/initTexture —
- * is dewmini's own copy of the reading-preference settings (theme, font,
- * size, and so on) shared with every other dewlab page, reading and
- * writing the same "dewlab:texture" localStorage key so a choice made
- * here follows a reader to a tutorial page and back. See
- * docs/tutorial-runtime-explained.md's own notes on the identical
- * functions there (the try/catch-around-localStorage convention, the
- * `{...a, ...b}` merge-with-defaults pattern) for more detail than
- * repeated here — the code is close to line-for-line the same. */
 const TEXTURE_DEFAULTS = {
   theme: "system", font: "serif", size: 18, width: 34, link: "#d4692a", contrast: "normal",
   // Icons only, text only, or both, for every cell's Run/Reset/Duplicate/
@@ -5161,7 +3913,7 @@ function applyTexture(state) {
   root.style.setProperty("--dl-font-size", `${state.size}px`);
   root.style.setProperty("--dl-line-width", `${state.width}rem`);
   // High contrast overrides a reader's own link colour the same way it
-  // already overrides their font choice (DECISIONS_LOG.md 7.124) — but
+  // already overrides their font choice — but
   // font-family only ever comes from the stylesheet's [data-contrast]
   // rule, while link colour is normally also written here as an inline
   // style, and an inline style always wins over any stylesheet rule
@@ -5233,16 +3985,6 @@ function initTexture(onThemeChange) {
   return state;
 }
 
-// ------------------------------------------------------------ editor prefs
-
-/* Same load/save/apply/init shape as the texture section above, for a
- * different set of preferences: how code itself is displayed (its own
- * size, how roomy a cell feels, cursor thickness, gutter/current-line
- * visibility) rather than how the page's reading text looks. These are
- * dewmini-specific — a plain tutorial page has no code editor
- * settings of its own, since a tutorial's cells are meant to look
- * consistent between students, not customized per reader the way a
- * personal notebook's editor reasonably can be. */
 const EDITOR_DEFAULTS = { codeSize: 15, density: "cozy", cursor: "medium", gutter: "on", activeLine: "on" };
 const EDITOR_KEY_MAP = { density: "density", cursor: "cursor", gutter: "gutter", activeline: "activeLine" };
 
@@ -5307,8 +4049,6 @@ function initEditorSettings() {
   return state;
 }
 
-// ------------------------------------------------------------------- notes
-
 function initNotes() {
   const notesEl = document.getElementById("dm-notes");
   if (!notesEl) return;
@@ -5321,11 +4061,6 @@ function initNotes() {
   });
 }
 
-/* Pulses "See an example" on the very first time this page has ever loaded
- * in this browser, then never again — an invitation, not a nag. Still spent
- * only on an empty notebook: the button now lives in the toolbar and so is
- * always visible, but a reader arriving with cells already in it (an
- * imported .ipynb, say) has plainly not come here for the example. */
 function maybeHighlightExample() {
   if (cells.length) return;
   const btn = document.getElementById("dm-show-example");
@@ -5360,9 +4095,6 @@ function initPracticeOrderSettings() {
   sync();
 }
 
-/* Reads the saved on/off state for every toggle in CELL_TYPE_TOGGLES into
- * enabledCellTypes. Called before the first renderCells() (see init()),
- * since createInsertDivider() reads enabledCellTypes on every render. */
 function loadCellTypeToggles() {
   enabledCellTypes = new Set([CELL_TYPES.PYTHON, CELL_TYPES.TEXT]);
   for (const t of CELL_TYPE_TOGGLES) {
@@ -5376,10 +4108,6 @@ function loadCellTypeToggles() {
   }
 }
 
-/* Wires up Settings → "Cell types". A toggle here only changes which
- * insert-seam buttons createInsertDivider() draws — flipping one off
- * re-renders the seams (via renderCells()) so the change is visible
- * straight away, but touches nothing already in the notebook. */
 function initCellTypeSettings() {
   loadCellTypeToggles();
 
@@ -5413,12 +4141,6 @@ function initCellTypeSettings() {
   sync();
 }
 
-/* Wires up the Settings → Run time "on / off" switch — applied as a
- * data-dm-runstats attribute on <html> (read by renderCellRunLine()),
- * re-painted on every already-rendered cell immediately on toggle, not
- * just future runs. Only the duration half of the run-line is gated by
- * this — order and staleness are core identity, not a "nice to know",
- * and stay visible either way. */
 const RUN_STATS_KEY = "dewmini:show-run-stats";
 
 function initRunStatsSetting() {
@@ -5448,14 +4170,6 @@ function initRunStatsSetting() {
   sync();
 }
 
-// -------------------------------------------------------------- chrome/misc
-
-/* Measures the header's real on-screen height and publishes it as a CSS
- * custom property, so other elements can reliably sit below it — same
- * function, same reasoning, as tutorial-runtime.js's own
- * trackChromeHeight() (see that file's explanation doc for the longer
- * version of why this is measured rather than assumed to be a fixed
- * number). */
 function trackChromeHeight() {
   const chrome = document.getElementById("dl-chrome");
   if (!chrome) return;
@@ -5467,16 +4181,6 @@ function trackChromeHeight() {
   else window.addEventListener("resize", publish);
 }
 
-/* Keeps every CodeMirror editor's own colour theme in sync with the
- * page's theme, even when the theme changes for a reason this file
- * didn't cause directly — a MutationObserver is a browser API that calls
- * a function whenever something about a specific element changes (here,
- * any attribute on `<html>`); this only reacts when the change was
- * specifically to `data-theme`, and re-applies the right editor theme to
- * every cell's editor when it was. This is a belt-and-braces safety net
- * on top of initTexture()'s own onThemeChange callback — that callback
- * already handles the normal case of a reader clicking a theme button in
- * Settings; this one exists in case the theme changes some other way. */
 function observeThemeChanges() {
   const observer = new MutationObserver((mutations) => {
     if (!mutations.some((m) => m.attributeName === "data-theme")) return;
@@ -5490,9 +4194,6 @@ function observeThemeChanges() {
   observer.observe(document.documentElement, { attributes: true });
 }
 
-/* Wires up every toolbar and Settings button that doesn't already have
- * its own dedicated init*() function above — one line per button, each
- * just calling the one function that actually does the work. */
 function wireToolbar() {
   document.getElementById("new-notebook")?.addEventListener("click", () => {
     openNotebook(makeNotebook(`Notebook ${notebooks.length + 1}`));
@@ -5536,8 +4237,6 @@ function wireToolbar() {
   });
   document.getElementById("print-pdf")?.addEventListener("click", () => window.print());
 }
-
-// ------------------------------------------------------------------- start
 
 let initialized = false;
 

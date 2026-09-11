@@ -1,9 +1,8 @@
-> **Superseded in part.** This document describes what happens to a student's
-> saved work when a tutorial they have started is edited: the answer today is
-> "restore anyway, and apologise in a notice". `VERSIONS.md` proposes not doing
-> that to them at all — pinning a student to the version they started, and
-> keeping the old one reachable. The cell-id matching described below is
-> unchanged and is what makes that possible.
+> **Superseded in part.** `VERSIONS.md` is the current behaviour: a student is
+> pinned to the release they started, and the old one stays reachable, rather
+> than restoring into a changed page with an apology notice as described
+> below. The cell-id matching below is unchanged, and is what makes that
+> pinning possible.
 
 # Versioning and Progress
 
@@ -29,7 +28,7 @@ The loader reads the current page's version and compares it to the version recor
 
 If they match, restore proceeds with no friction — silent, cell by cell via `task_id`.
 
-If they don't match, restore still happens, but with a visible, non-blocking notice along the lines of "This progress was saved against an earlier version of this tutorial. Some cells may have changed." The matching logic doesn't change: it still goes by `task_id`, not array position, which is what lets it tolerate a cell being reordered or a new cell being inserted between versions without corrupting the restore. Two edge cases fall out of that: a saved cell whose `task_id` no longer exists in the current version gets dropped, noted in the restore summary rather than silently discarded; a current cell whose `task_id` wasn't in the saved file is left at its default starter content.
+If they don't match, restore still happens, with a visible, non-blocking notice along the lines of "This progress was saved against an earlier version of this tutorial. Some cells may have changed." Matching still goes by `task_id`, not array position, so a cell being reordered or a new cell being inserted between versions doesn't corrupt the restore. Two edge cases follow: a saved cell whose `task_id` no longer exists gets dropped, noted in the restore summary; a current cell whose `task_id` wasn't in the saved file is left at its default starter content.
 
 ## Interactive widgets
 
@@ -37,6 +36,6 @@ One limitation is worth stating plainly rather than discovering: a widget cell r
 
 ## Save transport
 
-Tutorials are confirmed ungraded — self-paced practice, not tied to a mark — which changes what this needs to protect against. Autosave to `localStorage` is the primary mechanism: progress persists across a closed tab or browser restart on the same device with no explicit action required. A manual "export to JSON" option stays available as a secondary path, for moving to another device or keeping an offline copy, but it is not the primary safety net — losing progress here is an inconvenience, not a lost grade. An optional GitHub Gist-sync layer (a PAT-authenticated "Save" button calling the Gists API directly from browser JS) can still sit on top of either path without changing any of the version-compare logic above — it only changes where the JSON blob lives between sessions.
+Tutorials are ungraded — self-paced practice, not tied to a mark — so losing progress is an inconvenience, not a lost grade. Autosave to `localStorage` is the primary mechanism: progress persists across a closed tab or browser restart on the same device, with no action required. A manual "export to JSON" option is a secondary path, for moving to another device or keeping an offline copy. An optional GitHub Gist-sync layer (a PAT-authenticated "Save" button calling the Gists API from browser JS) could sit on top of either path without changing the version-compare logic above — it would only change where the JSON blob lives between sessions.
 
 A `check()` cell's pass/fail result is saved and restored the same way as any other cell's output — nothing new required in the save schema for it.

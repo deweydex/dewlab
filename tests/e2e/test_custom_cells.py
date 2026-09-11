@@ -176,7 +176,7 @@ class TestAddingACustomCell:
         assert "<strong>bold</strong>" in rendered
 
     def test_a_rendered_text_cells_chrome_is_invisible_until_touched(self, clean_storage):
-        """DECISIONS_LOG.md 7.115, planning/CELL_IDENTITY.md §4 — a rendered
+        """planning/CELL_IDENTITY.md §4 — a rendered
         text cell reads like part of the page, not a code widget, until a
         reader actually touches it. Ported from compose/dewmini-style.css's
         own .dm-cell-text rule."""
@@ -261,10 +261,6 @@ class TestAddingACustomCell:
         page.keyboard.type("print('from a custom cell')")
         page.click(".dl-cell-custom .dl-btn-run")
         page.wait_for_selector(".dl-cell-custom .dl-output .dl-stdout", timeout=120_000)
-        # scheduleCustomSave() debounces by AUTOSAVE_DELAY — the run finishing
-        # and the output actually landing in localStorage are two different
-        # moments, and reloading between them would lose the very output
-        # this test exists to check survives a reload.
         page.wait_for_function(
             """([key, text]) => {
               const raw = localStorage.getItem(key);
@@ -432,9 +428,6 @@ class TestExport:
         )
 
     def test_ipynb_export_with_zero_cells_shows_a_status_message_not_a_download(self, clean_storage):
-        # This tutorial always has at least its own authored cells, so
-        # exercise the guard directly rather than needing a zero-cell
-        # fixture — the same function a real zero-cell page would call.
         page = clean_storage
         page.evaluate(
             """() => {
@@ -447,14 +440,6 @@ class TestExport:
         page.wait_for_selector("#dl-status:not([hidden])", timeout=5_000)
         assert "No cells to export" in page.inner_text("#dl-status")
 
-
-# --------------------------------------------------------- a page with no cells
-#
-# Self-contained, no Pyodide needed — same reasoning
-# test_student_notes_prose_only.py already established: a prose-only
-# tutorial's own boot() never loads Pyodide at all, so there's no reason
-# to route this through the shared `page` fixture, which waits for a real
-# boot before it even yields.
 
 MODULE = "custom-cells-fixtures"
 

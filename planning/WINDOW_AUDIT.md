@@ -2,8 +2,7 @@
 
 A review of the storage schemas, slug scoping, cell-id conventions, and
 version comparisons dewlab depends on — done once, before public cohorts
-started saving real work, because these are the things that become hard
-to change the moment a real student has saved something against them.
+started saving real work.
 
 ---
 

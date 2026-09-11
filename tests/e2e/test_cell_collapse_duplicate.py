@@ -1,5 +1,5 @@
 """Browser tests for the collapse triangle and Duplicate — the rest of
-dewmini's cell anatomy (DECISIONS_LOG.md 7.110), ported onto tutorial
+dewmini's cell anatomy, ported onto tutorial
 pages' `.dl-cell` in 7.114.
 
     python3 -m pytest tests/e2e/test_cell_collapse_duplicate.py -q
@@ -174,9 +174,6 @@ class TestDuplicate:
         page.click(".dl-cell-custom .cm-content")
         page.keyboard.type("first_custom = True")
 
-        # A second Duplicate of the *authored* cell must land right after
-        # the authored cell — before the reader's own first custom cell —
-        # not appended after everything already in that group.
         page.click(".dl-cell[data-cell-id='plain-python'] .dl-btn-duplicate")
         page.wait_for_function(
             "document.querySelectorAll('.dl-cell-custom').length === 2", timeout=5_000

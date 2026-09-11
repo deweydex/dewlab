@@ -1,7 +1,7 @@
 """Browser tests for the merged run line (order, duration, staleness), the
 "⋯" Run above/below menu, and Restart & run all — planning/CELL_IDENTITY.md,
-ported from dewmini.js's own already-shipped versions (DECISIONS_LOG.md
-7.105, 7.106, 7.108, 7.113) onto tutorial pages' `.dl-cell`.
+ported from dewmini.js's own already-shipped versions onto tutorial pages'
+`.dl-cell`.
 
     python3 -m pytest tests/e2e/test_cell_run_menu.py -q
 """
@@ -119,9 +119,6 @@ class TestRunMenu:
 
     def test_run_below_keeps_earlier_state_and_does_not_reset_the_namespace(self, clean_storage):
         page = clean_storage
-        # Define something only "above" would normally re-seed, then run
-        # "below" from the next cell down — it must still be there
-        # afterwards, since "below" is documented to never reset first.
         page.click(".dl-cell[data-cell-id='plain-python'] .cm-content")
         page.keyboard.press("Control+End")
         page.keyboard.insert_text("\nmarker_from_above = 'still here'")
@@ -129,9 +126,6 @@ class TestRunMenu:
 
         open_run_menu(page, "numpy-basics")
         page.click(".dl-cell[data-cell-id='numpy-basics'] [data-run-menu='below']")
-        # "below" runs every cell from numpy-basics to the end of the page —
-        # wait for the very last one, tools-widgets, to know the whole
-        # batch actually finished rather than just its first cell.
         wait_for_run_stats(page, "tools-widgets", timeout=60_000)
         assert "mean:" in output_text(page, "numpy-basics")
 
@@ -145,11 +139,6 @@ class TestRunMenu:
         page = clean_storage
         open_run_menu(page, "plain-python")
         assert page.locator(".dl-cell[data-cell-id='plain-python'] .dl-cell-run-menu").is_visible()
-        # initCellRunMenu() registers its outside-click listener via
-        # setTimeout(fn, 0), deliberately after the click that opened the
-        # menu has finished bubbling — a real click straight afterwards
-        # lands comfortably after that, but this one is scripted right on
-        # its heels, so it needs the same beat to actually be caught.
         page.wait_for_timeout(50)
         page.mouse.click(5, 5)
         assert page.locator(".dl-cell[data-cell-id='plain-python'] .dl-cell-run-menu").is_hidden()
@@ -169,14 +158,11 @@ class TestRunMenu:
 
 
 class TestRunAnnouncer:
-    """DECISIONS_LOG.md 7.131: the ticking run-line is deliberately not a
+    """The ticking run-line is deliberately not a
     live region, so this is the one thing a screen reader hears once a
     run actually finishes."""
 
     def wait_for_announcement(self, page, text: str):
-        # announceCellRun() clears the region then sets the real text on
-        # the next tick (a live region only announces on a genuine change),
-        # so the text can lag a beat behind the Run button's own state.
         page.wait_for_function(
             "text => document.getElementById('dl-run-announcer').textContent === text",
             arg=text,

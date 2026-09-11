@@ -1,12 +1,3 @@
-/* dewmini — dewlab's minimal, notebook-shaped Python workspace.
- *
- * Built on tutorial-style.css's own tokens (navy/orange, Georgia, the light
- * and dark palettes) rather than a palette of its own — the borderless,
- * text-on-the-page affordances are the idea worth borrowing from elsewhere;
- * dewlab's colours are not up for grabs. Everything specific to this page
- * lives under the --dm- prefix, so it never shadows a --dl- token by
- * accident.
- */
 
 :root {
   --dm-code-size: 15px;
@@ -15,16 +6,11 @@
   --dm-code-line: 1.55;
 }
 
-/* Spacing presets. One attribute drives padding and code line-height
- * together, because the two only ever want to move in step — the whole
- * point of "compact" is a tighter cell, not just a tighter line. */
 :root[data-dm-density="compact"] { --dm-cell-pad-y: 0.55rem; --dm-code-line: 1.35; }
 :root[data-dm-density="relaxed"] { --dm-cell-pad-y: 1.25rem; --dm-code-line: 1.8; }
 
 :root[data-dm-cursor="thin"] { --dm-cursor-w: 1px; }
 :root[data-dm-cursor="thick"] { --dm-cursor-w: 3px; }
-
-/* ------------------------------------------------------------- masthead */
 
 .dm-masthead-actions {
   display: flex;
@@ -33,21 +19,11 @@
   flex: none;
 }
 
-/* The masthead sits inside .dl-page, so it narrows with the page whenever a
-   rail opens — and three toggles in a narrowed column squeeze the crumb
-   down to an ellipsis, which reads as a bug rather than as a breadcrumb.
-   It is the most expendable thing in the row (the wordmark still links
-   home, and the page's own <h1> already says where you are), so it stands
-   down while a rail is open rather than being shown broken. */
 html[data-dl-panel-left] .dm-page .dl-crumbs,
 html[data-dl-panel-right] .dm-page .dl-crumbs {
   display: none;
 }
 
-/* The rail toggles. One shape for both, since they are the same kind of
- * control on opposite edges — only their icons differ, so a reader can
- * tell them apart at a glance without reading either label (and does have
- * to, below the phone breakpoint, where the labels are dropped). */
 .dm-library-toggle,
 .dm-workbench-toggle {
   display: inline-flex;
@@ -63,10 +39,6 @@ html[data-dl-panel-right] .dm-page .dl-crumbs {
   cursor: pointer;
   min-height: 2rem;
 }
-/* Library: a stack of shelves. Workbench: a bench with a tool on it.
-   Both drawn in borders alone rather than shipped as image files — a
-   sub-kilobyte icon that inherits currentColor and needs no second
-   request, the same approach every other .dl-*-icon here takes. */
 .dm-library-icon,
 .dm-workbench-icon {
   display: inline-block;
@@ -116,14 +88,10 @@ html[data-dl-panel-right] .dm-page .dl-crumbs {
   color: #fff;
 }
 
-/* ----------------------------------------------------------------- title */
-
 .dm-title-row { margin: 0.4rem 0 1.6rem; }
 .dm-title-row h1 { margin-bottom: 0.3rem; }
 .dm-subtitle { color: var(--dl-muted); margin: 0; font-size: 0.95rem; }
 .dm-subtitle-note { color: var(--dl-muted); margin: 0.5rem 0 0; font-size: 0.85rem; }
-
-/* ---------------------------------------------------------------- toolbar */
 
 .dm-toolbar {
   display: flex;
@@ -135,12 +103,6 @@ html[data-dl-panel-right] .dm-page .dl-crumbs {
   border-bottom: 1px solid var(--dl-rule);
 }
 .dm-toolbar-group { display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; }
-/* display:flex above beats the browser's own [hidden] rule (an author
- * stylesheet always wins over the user-agent one for the same property,
- * regardless of specificity) — the same reason every other conditionally-
- * hidden element in this file needs its own [hidden] override. Without
- * this, hiding .dm-cellview-only for a site tab (updateViewSwitch())
- * would set the attribute and change nothing on screen. */
 .dm-toolbar-group[hidden] { display: none; }
 .dm-toolbar-group-end { margin-left: auto; }
 
@@ -220,8 +182,6 @@ html[data-dl-panel-right] .dm-page .dl-crumbs {
   -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z'/%3E%3C/svg%3E") center/contain no-repeat;
 }
 
-/* ------------------------------------------------------------- empty state */
-
 .dm-empty {
   padding: 2.2rem 1.5rem;
   margin-bottom: 1.5rem;
@@ -233,11 +193,6 @@ html[data-dl-panel-right] .dm-page .dl-crumbs {
 .dm-empty p:first-child { margin: 0 0 0.5rem; color: var(--dl-heading); font-size: 1.05rem; }
 .dm-empty .dm-panel-note { max-width: 30rem; margin-inline: auto; }
 
-/* A distinct, more serious accent than the plain dashed .dm-empty
- * border it otherwise reuses — this is naming things that will
- * actually raise an error if run as-is, not just an empty-state hint —
- * and left-aligned, since it holds a list rather than one centered
- * line. */
 .dm-import-notice {
   text-align: left;
   border: 1px solid var(--dl-error-fg);
@@ -247,9 +202,6 @@ html[data-dl-panel-right] .dm-page .dl-crumbs {
 .dm-import-notice li { margin: 0.3rem 0; }
 .dm-import-notice li code { font-family: var(--dl-mono); }
 
-/* A gentle, finite pulse on "See an example" the very first time this page
- * ever loads — a show-it-working affordance done as an invitation rather
- * than pre-filled content that squats on the empty state permanently. */
 @keyframes dm-pulse {
   0%, 100% { box-shadow: 0 0 0 0 rgba(212, 105, 42, 0.4); }
   50% { box-shadow: 0 0 0 9px rgba(212, 105, 42, 0); }
@@ -259,14 +211,8 @@ html[data-dl-panel-right] .dm-page .dl-crumbs {
   .dm-pulse { animation: none; }
 }
 
-/* -------------------------------------------------------------------cells */
-
 .dm-cells { display: flex; flex-direction: column; }
 
-/* The seam between cells, always present, tappable at every gap — including
- * before the first cell and after the last. Slim and quiet at rest, an
- * ordinary divider line; it only grows into two buttons on hover, so a
- * notebook with twenty cells doesn't read as twenty rows of controls. */
 .dm-insert {
   position: relative;
   height: 0.8rem;
@@ -287,9 +233,6 @@ html[data-dl-panel-right] .dm-page .dl-crumbs {
   display: flex;
   gap: 0.3rem;
   padding: 0 0.5rem;
-  /* Opaque, always — this patch's job is to occlude .dm-insert-line behind
-   * the buttons. The rest fade lives on .dm-insert-btn instead, so the line
-   * never bleeds through a partly-transparent button. */
   background: var(--dl-bg);
 }
 .dm-insert:hover .dm-insert-line { background: var(--dl-orange); }
@@ -306,9 +249,6 @@ html[data-dl-panel-right] .dm-page .dl-crumbs {
   background: var(--dl-panel-bg);
   color: var(--dl-muted);
   cursor: pointer;
-  /* Faint at rest, not invisible — opacity: 0 meant the only way to learn
-   * this existed was reading the Help panel first. A quiet notebook can
-   * still show its own controls. */
   opacity: 0.4;
   transition: opacity 0.12s ease;
 }
@@ -316,9 +256,6 @@ html[data-dl-panel-right] .dm-page .dl-crumbs {
 .dm-insert:focus-within .dm-insert-btn { opacity: 1; }
 .dm-insert-btn:hover { border-color: var(--dl-orange); color: var(--dl-orange); }
 
-/* A hover that can't happen on a touch screen would hide the only way in —
- * so there, the seam gets real height and its buttons stay visible rather
- * than waiting for a hover event that will never come. */
 @media (hover: none) {
   .dm-insert { height: 2.4rem; }
   .dm-insert-btn { opacity: 0.75; }
@@ -329,11 +266,6 @@ html[data-dl-panel-right] .dm-page .dl-crumbs {
   padding: var(--dm-cell-pad-y) 0;
 }
 
-/* Transparent at rest — reserves the same gutter space so nothing shifts
- * when a rail lights up, but shows no line for an ordinary idle cell. A
- * cell's type is already legible from its pill and its content, so the
- * rail now only earns attention for the two states worth flagging at a
- * glance down a long list of cells: focus and error. */
 .dm-cell-rail {
   flex: none;
   width: 3px;
@@ -357,10 +289,6 @@ html[data-dl-panel-right] .dm-page .dl-crumbs {
   margin-bottom: 0.5rem;
 }
 
-/* The identity pill: a drag handle, the cell's number, and its type,
- * coloured (planning/CELL_IDENTITY.md §2). The pill itself is the drag
- * target — draggable is set here, not on .dm-cell-head — since it
- * already shows exactly what would be picked up. */
 .dm-cell-pill {
   display: inline-flex;
   align-items: center;
@@ -384,22 +312,10 @@ html[data-dl-panel-right] .dm-page .dl-crumbs {
 }
 .dm-cell-pill-type[data-type="python"] { color: var(--dl-type-python); }
 .dm-cell-pill-type[data-type="text"] { color: var(--dl-type-text); }
-/* "web" (the merged HTML+CSS cell, DECISIONS_LOG.md 7.120) keeps HTML's
- * own colour token — one type, one colour, and violet was the more
- * structural of the two the retired separate types had.
- * --dl-type-css stays defined in assets/tutorial-style.css but is no
- * longer used by anything; removing the token itself would touch a file
- * dewmini doesn't otherwise need to for this change. */
 .dm-cell-pill-type[data-type="web"] { color: var(--dl-type-html); }
 .dm-cell-pill-type[data-type="sql"] { color: var(--dl-type-sql); }
 .dm-cell-pill-type[data-type="javascript"] { color: var(--dl-type-js); }
 
-/* An input, not a span, so typing into it works the way typing into a
- * field always does — but it should read as a label sitting on the
- * header, not as a form control, so every bit of an input's usual chrome
- * is stripped back to nothing until it's actually focused. dl-cell-name
- * itself (tutorial-style.css) supplies the colour, size limit and
- * ellipsis; this only undoes what a bare <input> would otherwise add. */
 .dm-cell-name {
   min-width: 3.5rem;
   max-width: 10rem;
@@ -431,18 +347,6 @@ html[data-dl-panel-right] .dm-page .dl-crumbs {
 .dm-cell:hover .dm-cell-header-end,
 .dm-cell:focus-within .dm-cell-header-end { opacity: 1; }
 
-/* A text or web (HTML+CSS) cell renders by default and is meant to be
- * read, not run (planning/CELL_IDENTITY.md §4/§8, DECISIONS_LOG.md
- * 7.115, 7.120) — its pill, Duplicate/Delete/Render, and collapse
- * triangle stay invisible until a reader actually touches the cell, so
- * a rendered note or a rendered web cell reads like part of the page
- * rather than sitting open and code-shaped among cells that are.
- * `opacity: 0; pointer-events: none`, never `display: none`: the
- * elements stay in the tab order, so a keyboard user tabbing onto one
- * reveals it via :focus-within the same moment it receives focus — only
- * a mouse user needs to hover the cell first. A touch device has no
- * hover to reveal anything with, so it gets the chrome on
- * unconditionally. */
 :is(.dm-cell-text, .dm-cell-web) :is(.dm-cell-head, .dm-cell-collapse-col) {
   transition: opacity 0.1s ease;
 }
@@ -477,23 +381,12 @@ html[data-dl-panel-right] .dm-page .dl-crumbs {
 .dm-icon-run:hover { border-color: var(--dl-pass-fg); color: var(--dl-pass-fg); }
 .dm-icon-delete:hover { border-color: var(--dl-error-fg); color: var(--dl-error-fg); }
 
-/* Armed state (one click away from actually deleting the cell) — solid
- * red, not just the hover outline above, so an armed button reads as
- * unmistakably different from a merely-hovered one. */
 .dm-icon-delete.dm-armed {
   background: var(--dl-error-fg);
   border-color: var(--dl-error-fg);
   color: #fff;
 }
 
-/* Run becomes Stop while a cell is running, wherever a genuine interrupt
- * is possible (engine.canStop(), DECISIONS_LOG.md 7.89) — the same
- * button, so there is nothing new to find, just a different label and
- * colour while it means something different. Reuses the error ink
- * rather than a colour of its own, the same convention .dl-btn-run's own
- * .dl-btn-stop state uses site-wide (tutorial-style.css): this is the
- * one button on the page whose whole point is "something is happening
- * that you might want to stop". */
 .dm-icon-run.dm-icon-run-stop {
   background: var(--dl-error-fg);
   border-color: var(--dl-error-fg);
@@ -503,17 +396,6 @@ html[data-dl-panel-right] .dm-page .dl-crumbs {
 
 .dm-icon-btn:disabled { opacity: 0.4; cursor: default; }
 
-/* Every one of these buttons carries a nested .dl-btn-icon/.dl-btn-label
- * pair (iconButton() above), the same shared span classes a tutorial
- * page's own cell chrome uses — so tutorial-style.css's own
- * [data-button-labels] rule (compose/dewmini.html loads that stylesheet
- * too) shows or hides each span identically on both pages without a
- * second copy of that rule here. What that rule can't do on its own is
- * resize the button itself: .dm-icon-btn's fixed square is right for an
- * icon alone, but a label needs room to sit beside it instead of being
- * clipped by a box built for one glyph. Un-fixing the width only in
- * "text"/"both" mode is what keeps "icons" mode exactly as small as it
- * always was. */
 :root:not([data-button-labels="icons"]) .dm-icon-btn {
   width: auto;
   height: auto;
@@ -521,12 +403,6 @@ html[data-dl-panel-right] .dm-page .dl-crumbs {
   gap: 0.35rem;
 }
 
-/* The "⋯" Run-above/Run-below menu (createRunMoreMenu() in dewmini.js) —
- * a popover anchored to its own toggle button rather than two more
- * always-visible icons, see that function's comment for why. Opens
- * upward, not down: the footer bar it lives in sits near the bottom of
- * the cell, right above the output, so a downward popover would land on
- * — or spill past — content that isn't part of this menu at all. */
 .dm-cell-more { position: relative; display: inline-flex; }
 .dm-cell-run-menu {
   position: absolute;
@@ -543,9 +419,6 @@ html[data-dl-panel-right] .dm-page .dl-crumbs {
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
 }
 .dm-cell-run-menu[hidden] { display: none; }
-/* The default right: 0 above grows the menu leftward from the button;
- * openMenu() (dewmini.js) adds this once that would run off the left
- * edge of the viewport, so it grows rightward from the button instead. */
 .dm-cell-run-menu-left { right: auto; left: 0; }
 .dm-cell-run-menu-item {
   display: block;
@@ -567,11 +440,6 @@ html[data-dl-panel-right] .dm-page .dl-crumbs {
   outline: none;
 }
 
-/* The few .dm-icon-btns with a word on them rather than a glyph —
- * "Edit"/"View" (a text cell's rendered/editor toggle) and "Render" (a
- * web cell's own explicit render button, DECISIONS_LOG.md 7.120) — all
- * need more room than the fixed icon square, and no single symbol reads
- * clearly at a glance for either. */
 .dm-icon-preview, .dm-icon-render {
   width: auto;
   padding: 0 0.5rem;
@@ -579,14 +447,6 @@ html[data-dl-panel-right] .dm-page .dl-crumbs {
   font-size: 0.68rem;
 }
 
-/* ------------------------------------------------------ body + collapse
- *
- * Every cell's editable content sits in this row, beside a collapse
- * triangle — code and text alike (planning/CELL_IDENTITY.md §4, widened:
- * there's nothing type-specific about wanting a long cell out of the way
- * without deleting it). The triangle top-aligns with the first line
- * beside it because both are children of this same flex row, not because
- * either was nudged into place with a margin. */
 .dm-cell-body-row { display: flex; align-items: flex-start; gap: 0.5rem; }
 .dm-cell-body-row > .dm-cell-content { flex: 1; min-width: 0; }
 .dm-cell-collapse-col { flex: none; }
@@ -606,9 +466,6 @@ html[data-dl-panel-right] .dm-page .dl-crumbs {
   line-height: 1;
 }
 .dm-collapse-toggle:hover { color: var(--dl-orange); background: var(--dl-cell-bg); }
-/* One glyph, rotated rather than swapped — pointing down while expanded
- * (content is right there, below), rotating back to pointing right, its
- * own resting orientation, once collapsed. */
 .dm-collapse-caret { display: inline-block; transform: rotate(90deg); transition: transform 0.15s ease; }
 .dm-collapse-toggle-collapsed .dm-collapse-caret { transform: rotate(0deg); }
 
@@ -631,9 +488,6 @@ html[data-dl-panel-right] .dm-page .dl-crumbs {
 .dm-cell-collapsed-summary:hover { color: var(--dl-orange); }
 .dm-cell-collapsed-summary[hidden] { display: none; }
 
-/* Code editor. Font/size/cursor/placement are exactly the affordances asked
- * for, so each is its own variable rather than a hard-coded value — the
- * Editor settings section below writes these, nothing else touches them. */
 .dm-editor {
   border-radius: 4px;
   background: var(--dl-cell-bg);
@@ -697,11 +551,6 @@ html[data-dl-panel-right] .dm-page .dl-crumbs {
 .dm-doc-render img { display: block; max-width: 100%; height: auto; border-radius: 6px; margin: 0.4rem 0; }
 .dm-doc-empty { color: var(--dl-muted); font-style: italic; margin: 0; }
 
-/* A web cell's two source panels, stacked rather than side by side
- * (DECISIONS_LOG.md 7.120) — a notebook cell's own column is narrow
- * enough that two side-by-side editors would each be too cramped to
- * read comfortably, the same width constraint that already keeps every
- * other cell type to one editor at a time. */
 .dm-web-split {
   display: flex;
   flex-direction: column;
@@ -716,15 +565,6 @@ html[data-dl-panel-right] .dm-page .dl-crumbs {
   margin-bottom: 0.25rem;
 }
 
-/* A web cell's rendered view (planning/CELL_IDENTITY.md §8) — the
- * iframe itself carries the sandboxing; this is just its frame on the
- * page. resize:vertical, the same affordance .dm-textarea already gives
- * a Text cell's own editor, so a reader can drag it taller for content
- * that needs it rather than the page reaching into a cross-origin frame
- * to measure it. A fixed white background regardless of theme: a
- * reader's own HTML is written assuming a page, not dewlab's own dark
- * mode, the same reason a code editor's syntax theme does not follow
- * dewlab's light/dark toggle for the *page* it is styling. */
 .dm-html-render[hidden] { display: none; }
 .dm-web-split + .dm-html-render { margin-top: 0.5rem; }
 .dm-html-frame {
@@ -795,14 +635,6 @@ html[data-dl-panel-right] .dm-page .dl-crumbs {
 }
 .dm-cell-output img { max-width: 100%; border-radius: 3px; }
 
-/* ---------------------------------------------------------- footer bar
- *
- * Run, clear-output, the "⋯" menu, and the run-line — Python only, since
- * these are the only cells that run against the shared session. Sits
- * between the code and the output, at the bottom-left of the cell
- * (planning/CELL_IDENTITY.md §5): a reader's cursor is at the bottom of
- * what they just wrote, not back up at the top, so that's where the next
- * action should be waiting. */
 .dm-cell-footbar {
   display: flex;
   align-items: center;
@@ -810,9 +642,6 @@ html[data-dl-panel-right] .dm-page .dl-crumbs {
   margin-top: 0.5rem;
 }
 
-/* The run-line itself (planning/CELL_IDENTITY.md §3): order, duration,
- * and staleness folded into one line, rather than the separate stale
- * badge and duration line this replaced. */
 .dm-cell-runline {
   font-family: var(--dl-mono);
   font-size: 0.72rem;
@@ -833,11 +662,6 @@ html[data-dl-panel-right] .dm-page .dl-crumbs {
   font-style: italic;
 }
 
-/* Ticking live while a cell actually runs (startRunLineTicker() in
- * dewmini.js) — a plain setTimeout loop repainting textContent, not an
- * aria-live region: a number changing ten times a second would be noise,
- * not news, to a screen reader. The pulsing dot is the only part that's
- * pure animation, so it's the only part prefers-reduced-motion turns off. */
 .dm-cell-runline.dm-cell-runline-active { color: var(--dl-orange); }
 .dm-cell-runline.dm-cell-runline-active::before {
   content: "";
@@ -857,56 +681,17 @@ html[data-dl-panel-right] .dm-page .dl-crumbs {
   50% { opacity: 1; }
 }
 
-/* dewmini's rails are docked sidebars (the same full-height, edge-flush
- * shape tutorial pages' own panels got, DECISIONS_LOG.md 7.83/7.84), not
- * floating cards — which would be fine to ignore on a reading page with
- * generous margins either side of its column, but not once a reader picks
- * a wide line width in Texture: a panel can then cover a cell's own
- * run/reset/delete buttons, or its output. Reserving room while a panel is
- * open keeps the working area fully visible instead, so a rail behaves
- * like a real side pane the way a student would expect from a desktop IDE.
- *
- * That mechanism is *not* written here any more. tutorial-style.css has
- * carried it since 7.83 — `html[data-dl-panel-left]` and
- * `[data-dl-panel-right]`, each with its own width variable — and dewmini
- * overrode it with a single `data-dl-panel-open` and one `--dl-panel-w`,
- * a fair simplification while both its panels docked to the same right
- * edge, and exactly wrong now that a rail opens on each side: one
- * attribute cannot say which edge to make room on, and one width cannot
- * describe two panels of different widths open at once. Deleting the
- * override is the fix; the shared rule was already right. */
-
-/* -------------------------------------------------------------- panels
- *
- * dm-help reuses .dl-settings' geometry (same edge, same width) but is
- * its own class so opening it never fights the real dl-settings panel
- * for the same DOM node. A docked sidebar, full height, flush to the
- * right edge — the same shape tutorial-style.css's own .dl-settings got
- * in DECISIONS_LOG.md 7.83, ported here in 7.84 rather than left as the
- * older floating-card shape now that .dl-settings next to it looks
- * different. */
-
 .dm-panel {
   position: fixed;
   right: 0;
   top: var(--dl-chrome-h);
   bottom: 0;
   z-index: 50;
-  /* Matches .dl-settings' own default (tutorial-style.css) — Library,
-     Workbench and Settings all open at the same width until a reader
-     drags one, rather than Settings alone starting 3rem narrower
-     (DECISIONS_LOG.md 7.122). */
   width: min(21rem, 100vw);
   min-width: 16rem;
   max-width: min(40rem, 100vw);
   overflow-y: auto;
   overflow-x: hidden;
-  /* No native `resize: horizontal` — its handle would sit exactly on
-     the browser window's own right edge here (flush right, no `left`),
-     with no room on a real screen to drag further right and grow it.
-     makeRightEdgeResizable() (dewmini.js) replaces it with a plain
-     pointer-drag on .dl-panel-resize-handle instead, same fix as
-     .dl-settings' own in tutorial-style.css (DECISIONS_LOG.md 7.84). */
   padding: 1rem 1.1rem 1.1rem;
   border-left: 1px solid var(--dl-cell-border);
   background: var(--dl-panel-bg);
@@ -915,21 +700,11 @@ html[data-dl-panel-right] .dm-page .dl-crumbs {
 }
 .dm-panel[hidden] { display: none; }
 
-/* The left-docked rail — after .dm-panel, since both classes sit on the
- * same element and this has to win. Only the pinned edge, the separating
- * border, and which edge its drag strip sits on differ. A left-docked panel
- * grows rightward, away from the edge it is pinned to and into the page, so
- * its strip goes on the right — the mirror of the right-docked panels above
- * (DECISIONS_LOG.md 7.84, 7.103). */
 .dm-panel-left {
   right: auto;
   left: 0;
   border-left: none;
   border-right: 1px solid var(--dl-cell-border);
-  /* No native `resize: horizontal`, though it would work here: it draws a
-     small corner triangle where the panel on the opposite edge has a
-     full-height strip, and one page should not have two different ways to
-     drag a rail wider. Both use .dl-panel-resize-handle now (7.103). */
 }
 
 .dm-panel-head {
@@ -1004,8 +779,6 @@ kbd {
 }
 .dm-help-entry dd { margin: 0; text-align: right; color: var(--dl-muted); font-size: 0.85rem; }
 
-/* -------------------------------------------------------- settings extras */
-
 .dl-progress-notes {
   width: 100%;
   padding: 0.55rem 0.65rem;
@@ -1042,9 +815,6 @@ kbd {
 }
 .dm-filename-input:focus { outline: none; border-color: var(--dl-orange); }
 
-/* A flat, root-only file list inside Settings' own "Files" section — a
-   plain list a Settings section can hold, not a browsable tree in a
-   panel of its own (DECISIONS_LOG.md 7.88). */
 .dm-filelist {
   list-style: none;
   margin: 0 0 0.5rem;
@@ -1091,20 +861,9 @@ kbd {
   background: var(--dl-error-bg);
 }
 
-/* ---------------------------------------------------------------- loading */
-
 .dm-cell-output .dm-running { color: var(--dl-muted); font-style: italic; }
 
-/* ------------------------------------------------------------- responsive */
-
 @media (max-width: 34rem) {
-  /* Border and shadow come back here — the docked desktop shape above
-     drops both in favour of a single border-left, but a bottom sheet
-     still floats over content below it and reads better with one, same
-     as .dl-settings' own phone breakpoint in tutorial-style.css.
-     width uses !important: makeRightEdgeResizable() (dewmini.js) sets
-     this panel's width as an inline style when dragged on a wider
-     screen, which otherwise beats this media query. */
   .dm-panel {
     top: auto; bottom: 0; left: 0; right: 0; width: auto !important; max-width: none; max-height: 78vh;
     border: 1px solid var(--dl-cell-border); border-bottom: none; border-radius: 8px 8px 0 0;
@@ -1112,10 +871,6 @@ kbd {
     /* A full-width bottom sheet has no meaningful "width" to resize. */
     resize: none;
   }
-  /* Every rail becomes the same bottom sheet, including the left one:
-     below this width there is no room for a side rail of any kind, so
-     the left/right distinction stops meaning anything and both should
-     arrive from the same edge a thumb can reach. */
   .dm-panel-left {
     left: 0; right: 0;
     border-right: 1px solid var(--dl-cell-border);
@@ -1124,13 +879,6 @@ kbd {
   .dm-toolbar-group-end { width: 100%; order: 10; }
   .dm-cell-rail { margin-right: 0.6rem; }
 }
-
-/* ------------------------------------------------------------------ print
- *
- * "Print / Save as PDF" in Settings calls window.print() — this is what a
- * reader actually sees. Chrome, hover affordances and the insert seams have
- * no place on a printed page; code and its output are the whole point, so
- * they get real ink regardless of which theme was on screen. */
 
 @media print {
   .dl-chrome, .dm-toolbar, .dm-status, .dm-panel, .dm-insert, .dm-cell-header-end, .dm-cell-footbar, .dm-subtitle, .dm-subtitle-note, .dm-tabs {
@@ -1153,12 +901,6 @@ kbd {
   a { color: #1b2a4a !important; text-decoration: underline; }
 }
 
-/* ------------------------------------------------------------------ tabs
- *
- * One row of notebooks. Deliberately understated — a tab strip is
- * navigation between things, not a thing itself, and dewmini's whole
- * layout gives the notebook the attention. Hidden entirely by
- * renderTabs() while only one notebook is open. */
 .dm-tabs {
   display: flex;
   flex-wrap: wrap;
@@ -1211,11 +953,6 @@ kbd {
 .dm-tab-close:hover { opacity: 1; color: var(--dl-orange); }
 .dm-tab-active .dm-tab-close { color: #fff; }
 
-/* ------------------------------------------------------- library: reference
- *
- * 251 terms across every tutorial, so search and the kind filters are not
- * a nicety here the way they are on a tutorial page's own dozen — they are
- * the only thing that makes the list navigable at all. */
 .dm-reference-search,
 .dm-data-search {
   width: 100%;
@@ -1231,10 +968,6 @@ kbd {
 }
 .dm-reference-search:focus { outline: none; border-color: var(--dl-orange); }
 
-/* Filter rows. Four of them, all the same chip, because they are the same
-   kind of control answering different questions — a reader learns the
-   affordance once. Chips wrap rather than scroll sideways: a rail is narrow
-   and a hidden chip is a filter nobody knows exists. */
 .dm-filter-row {
   display: flex;
   flex-wrap: wrap;
@@ -1246,11 +979,6 @@ kbd {
 
 .dm-filter-chip {
   font-family: var(--dl-mono);
-  /* max() gives every small control a floor it cannot fall below, whatever
-     the Texture size slider is set to. Without it the smallest setting put
-     these at 10.2px and the "from the web" badge at 9.6px — scaling was
-     working correctly, it was just scaling below legibility. The rem half
-     still governs above the floor, so the slider keeps working upward. */
   font-size: max(0.7rem, 12px);
   padding: 0.2rem 0.5rem;
   border: 1px solid var(--dl-cell-border);
@@ -1268,10 +996,6 @@ kbd {
   color: #fff;
 }
 
-/* The topics disclosure. Expands in the flow of the rail, pushing the term
-   list down rather than floating over it: a menu that covers the list is
-   covering the very thing being filtered, and on a narrow rail there is
-   nowhere for it to go that is not on top of something. */
 .dm-filter-more {
   margin: 0 0 0.5rem;
 }
@@ -1338,7 +1062,6 @@ kbd {
   color: var(--dl-muted);
 }
 
-/* ------------------------------------------------------------ library: data */
 .dm-dataset {
   border: 1px solid var(--dl-cell-border);
   border-radius: 5px;
@@ -1375,11 +1098,6 @@ kbd {
   vertical-align: 0.1em;
 }
 
-/* ------------------------------------------------- workbench: variables
- *
- * A table would be tidier and is wrong: these rows wrap, since a name and
- * a summary can each be long, and a table would either clip them or force
- * the panel wider than a rail should be. */
 .dm-variables-head {
   display: flex;
   align-items: baseline;
@@ -1413,10 +1131,6 @@ kbd {
   margin-top: 0.1rem;
   overflow-wrap: anywhere;
 }
-/* Functions and modules, folded away under their own summary: they are
-   almost always the same names every session (what the page seeded, what
-   a cell imported), so they are furniture next to a student's own data —
-   worth being able to see, not worth being shown by default. */
 .dm-variables-other { margin-top: 0.6rem; }
 .dm-variables-other summary {
   font-family: var(--dl-mono);
@@ -1429,13 +1143,6 @@ kbd {
   padding-top: 0.5rem;
   border-top: 1px solid var(--dl-rule);
 }
-
-/* ----------------------------------------------------------- file view
- *
- * The same notebook shown as one continuous Python document rather than
- * as a list of cells. Deliberately plainer than a cell: no per-cell
- * chrome, one editor, one output area underneath, because the point of
- * the view is that a file is one thing that runs from the top. */
 
 .dm-viewswitch { gap: 0; }
 .dm-viewswitch-btn { border-radius: 0; }
@@ -1480,21 +1187,8 @@ kbd {
 .dm-fileview-output { margin: 0; }
 .dm-fileview-output.dm-empty { display: none; }
 
-/* A site tab (planning/DEWMINI_WORKBENCH.md §10): editors on the left,
- * a live preview on the right, split screen the way an ordinary
- * code-and-preview IDE lays the two out — unlike a Web cell's own
- * Render button, a site is what a reader keeps looking at while they
- * work rather than a one-shot question. Below the same width a panel
- * becomes a bottom sheet at, there isn't room for the split either, so
- * the preview drops beneath the editors instead of beside them. */
 .dm-siteview { display: flex; flex-direction: column; gap: 0.75rem; }
 
-/* Its own class rather than reusing .dm-fileview-note: that one carries
- * flex: 1 1 20rem, meant for a *row* flex parent (.dm-fileview-head) —
- * inside .dm-siteview's *column* flex, the same rule flex-grows the note
- * to absorb the whole column's extra height instead, leaving a few
- * words of text sitting in a box hundreds of pixels tall. Same look,
- * without that. */
 .dm-siteview-note {
   margin: 0;
   font-size: 0.85rem;
@@ -1526,8 +1220,7 @@ kbd {
   min-height: 8rem;
 }
 
-/* The right-hand column: the preview, and under it the console
- * (DECISIONS_LOG.md 7.134). */
+/* The right-hand column: the preview, and under it the console. */
 .dm-siteview-preview {
   flex: 1 1 50%;
   min-width: 0;
@@ -1536,9 +1229,6 @@ kbd {
   gap: 0.5rem;
 }
 
-/* Fixed white background regardless of theme, the same reasoning as a
- * Web cell's own .dm-html-frame: a reader's page is written assuming a
- * page, not dewlab's dark mode. */
 .dm-siteview-frame {
   flex: 1 1 auto;
   width: 100%;
@@ -1549,9 +1239,6 @@ kbd {
   background: #fff;
 }
 
-/* A pane's label row: the label, and for the JavaScript pane its Run
- * button at the other end. The icon-button base is sized for a glyph;
- * Run is a word, so it gets its width back. */
 .dm-siteview-pane-head {
   display: flex;
   align-items: center;
@@ -1561,9 +1248,6 @@ kbd {
 .dm-siteview-pane-head .dm-web-pane-label { margin-bottom: 0; }
 .dm-siteview-run { width: auto; padding: 0 0.6rem; margin-bottom: 0.25rem; }
 
-/* The console: what the site's script printed and every error it raised,
- * in the same .dl-stdout / .dl-error / .dl-error-hint clothes a Python
- * cell's own output wears, so an error reads the same in both places. */
 .dm-siteview-console-output {
   min-height: 1.8rem;
   max-height: 14rem;

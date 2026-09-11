@@ -41,9 +41,6 @@ def run(page, cell_id: str) -> str:
     return page.inner_html(selector)
 
 
-# --------------------------------------------------------------- the shell
-
-
 def test_the_page_loads_its_shared_assets_rather_than_inlining_them(page):
     """DECISIONS.md: shared external CSS/JS, not fully inlined."""
     hrefs = page.eval_on_selector_all(
@@ -82,19 +79,9 @@ def test_every_exec_cell_became_an_editor_with_line_numbers(page):
 
 
 def test_python_started_with_no_console_errors(page):
-    # #dl-status is hidden (setStatus("") on a clean boot sets both) — but
-    # not inner_text() to check that: the template's own whitespace between
-    # #dl-status-text and #dl-boot-dots is real text content, and a hidden
-    # element's innerText isn't reliably "" in every engine (Chromium
-    # headless included) just because it isn't rendered. is_hidden() and
-    # the status text's own emptiness are what setStatus("") actually
-    # promises, and what a screen reader's aria-live region would announce.
     assert page.is_hidden("#dl-status")
     assert page.inner_text("#dl-status-text") == ""
     assert page.problems == []
-
-
-# ------------------------------------------------------- the execution path
 
 
 def test_plain_cell_prints_and_shows_its_last_expression(page):
@@ -184,7 +171,7 @@ def test_html_and_css_panes_are_live_without_pressing_run(page):
 
 
 def test_javascript_does_not_run_until_the_run_button_is_pressed(page):
-    """DECISIONS_LOG.md 7.142 — HTML/CSS are live, JavaScript is a program
+    """HTML/CSS are live, JavaScript is a program
     that runs when asked, the same rule dewmini's own Site tab follows."""
     hero = site_editor(page, "hero")
     frame = page.query_selector(f"{hero} .dl-site-frame").content_frame()
@@ -197,9 +184,6 @@ def test_javascript_does_not_run_until_the_run_button_is_pressed(page):
         arg=f"{hero} .dl-site-console-output",
         timeout=10_000,
     )
-    # A new srcdoc write (run()'s own doing) tears down the old frame and
-    # its document — fetching the handle fresh is what makes the click
-    # land on the frame that is actually showing right now.
     frame = page.query_selector(f"{hero} .dl-site-frame").content_frame()
     frame.click("#go")
     frame.wait_for_function(
@@ -294,9 +278,6 @@ def test_an_error_does_not_stop_the_page(page):
     assert "1024" in output
 
 
-# ------------------------------------------------------- the widget bridge
-
-
 def test_show_and_show_table_and_check_render(page):
     run(page, "pandas-table")
     output = run(page, "tools-show-check")
@@ -309,7 +290,7 @@ def test_show_and_show_table_and_check_render(page):
 
 def test_widgets_give_a_clear_error_on_a_hosted_page(page):
     """Every hosted page now runs Pyodide in a Worker (planning/CELL_CONTROLS.md
-    §2, DECISIONS_LOG.md 7.77), and a Worker has no DOM to hand a widget's
+    §2), and a Worker has no DOM to hand a widget's
     live element back through — text_input/dropdown/button raise rather
     than silently rendering something that does nothing when clicked or
     typed into. Widget-value persistence itself is still covered at the
@@ -329,9 +310,6 @@ def test_rerunning_a_cell_replaces_its_output_rather_than_appending(page):
     first = run(page, "plain-python")
     second = run(page, "plain-python")
     assert first.count("counting: 0") == second.count("counting: 0") == 1
-
-
-# ---------------------------------------------------------- texture panel
 
 
 def keyword_colour(page) -> str:
@@ -448,8 +426,6 @@ def test_texture_choices_survive_a_reload(page, base_url):
     page.wait_for_selector("html[data-theme=dark]", timeout=5_000)
 
 
-# ------------------------------------------------------------- the topic tree
-
 def open_tree(browser, base_url, width=1400):
     context = browser.new_context(viewport={"width": width, "height": 900})
     tab = context.new_page()
@@ -479,14 +455,6 @@ def test_choosing_a_topic_shows_what_it_is_and_lights_its_path(browser, base_url
     assert "WHERE IT TURNS UP" in panel
     assert "NEEDS FIRST" in panel
     assert tab.eval_on_selector_all(".dl-tree-uses li", "e => e.length") >= 2
-    # What it needs and what needs it. Divide and conquer used to hang off the
-    # topic searching was split out of; it now sits beside it, taught inside
-    # searching and inside sorting rather than before or after either — so only
-    # one edge runs backward, to iterating by index. The second lit edge runs
-    # forward: CMPS-LO5 (algorithmic complexity, not yet taught) names
-    # MIT-6.8a as a prerequisite in topics.yaml, and an arrow into an untaught
-    # topic is exactly what the map is for — see topics.yaml's own docstring
-    # on `needs`.
     assert tab.eval_on_selector_all(".dl-tree-edge.is-lit", "e => e.length") == 2
     context.close()
 

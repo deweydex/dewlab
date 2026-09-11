@@ -124,10 +124,6 @@ select { padding: 6px 9px; border: 1px solid var(--dm-border);
 <script>
 "use strict";
 
-/* Everything read from a submission is student-authored data. It is only
-   ever placed into the page as text (textContent), never as markup, so a
-   hostile submission cannot run anything here. */
-
 let scheme = null;
 let submissions = {};   // student number -> submission
 let record = { format_version: 1, exam_code: null, papers: {} };
@@ -146,8 +142,6 @@ function problem(text) {
   const box = el("div", "problem", text);
   $("problems").appendChild(box);
 }
-
-/* ------------------------------------------------ loading the scheme */
 
 function pickFile(accept, handler) {
   const input = document.createElement("input");
@@ -178,12 +172,7 @@ $("load-scheme").addEventListener("click", () => {
   });
 });
 
-/* ------------------------------------------------ loading submissions */
-
 async function readZipStoredEntries(bytes) {
-  /* dewmark submissions are zip files whose entries are stored without
-     compression, so a small reader is enough. A zip that was
-     re-compressed by other software is reported rather than guessed at. */
   const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
   const decoder = new TextDecoder();
   const entries = {};
@@ -279,8 +268,6 @@ $("load-subs").addEventListener("click", async () => {
   });
 });
 
-/* ------------------------------------------------ the marking record */
-
 function paperRecord(number) {
   if (!record.papers[number]) {
     record.papers[number] = { marks: {}, ticks: {}, criteria: {},
@@ -325,8 +312,6 @@ function recordChanged() {
   clearTimeout(autosaveTimer);
   if (dirHandle) autosaveTimer = setTimeout(persistRecord, 1200);
 }
-
-/* ------------------------------------------------ scheme lookups */
 
 function everyAnswerSpace() {
   const spaces = [];
@@ -399,8 +384,6 @@ function markingProgress(number) {
   return { needed, done };
 }
 
-/* ------------------------------------------------ the class list */
-
 function renderClassList() {
   const holder = $("class-table");
   holder.innerHTML = "";
@@ -449,8 +432,6 @@ function renderClassList() {
     picker.appendChild(option);
   }
 }
-
-/* ------------------------------------------------ rendering answers */
 
 function renderStudentAnswer(container, spec, value) {
   /* Show one student answer as plain text, shaped by its type. */
@@ -687,8 +668,6 @@ function renderMarkControls(container, number, spec, onChange) {
   container.appendChild(feedback);
 }
 
-/* ------------------------------------------------ marking one paper */
-
 function openPaper(number) {
   currentNumber = number;
   const sub = submissions[number];
@@ -767,8 +746,6 @@ function openPaper(number) {
   refreshTotal();
 }
 
-/* ------------------------------------------------ marking by question */
-
 $("open-by-question").addEventListener("click", () => {
   const target = $("question-picker").value;
   const view = $("view-question");
@@ -810,8 +787,6 @@ $("open-by-question").addEventListener("click", () => {
     marking: spec.answer.marking });
   view.insertBefore(model, view.children[1]);
 });
-
-/* ------------------------------------------------ exports */
 
 function csvCell(value) {
   const text = String(value === undefined || value === null ? "" : value);
@@ -869,8 +844,6 @@ $("export-csv").addEventListener("click", () => {
   download(scheme.exam_code + "_what_the_columns_mean.csv",
     companion.join("\n"), "text/csv");
 });
-
-/* ------------------------------------------------ the graded paper */
 
 function openGradedPaper(number) {
   const sub = submissions[number];
