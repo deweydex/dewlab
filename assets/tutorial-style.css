@@ -1634,7 +1634,7 @@ p code, li code {
 .dl-reference-search-input[hidden] { display: none; }
 
 /* Same shape as .dl-seg (Settings' own segmented controls), reused here
-   for real ARIA tabs rather than a radiogroup — a plain bordered pair,
+   for real ARIA tabs rather than a radiogroup — a plain bordered row,
    the active one filled navy, nothing else about the panel's look
    changing underneath it. */
 .dl-reference-tabs { display: flex; gap: 0.25rem; margin-top: 0.7rem; }

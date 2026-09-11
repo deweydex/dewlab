@@ -1,0 +1,91 @@
+# Python Basics: plain definitions for Python's own vocabulary and
+# punctuation, independent of any one tutorial or series — read by
+# build.py's load_python_basics() and shown on every page, in the
+# Reference panel's own "Python Basics" tab. Same purpose as
+# math-basics.yaml alongside it: a reader who does not yet have the
+# words for something they are looking at has somewhere to go, on page
+# one as much as page fifty.
+#
+# House rule for this file specifically: one plain sentence (or one verb
+# phrase, for something like print() that is better defined by what it
+# does), no reference to another entry on this list. Unlike
+# math-basics.yaml, an entry here may carry a short `example` — Python's
+# own punctuation and syntax marks are often clearer shown than said, and
+# this file is written as a syntax reference as much as a glossary.
+
+groups:
+  - label: Values
+    entries:
+      - term: String
+        definition: Text, written between quotation marks.
+        example: '"hello"'
+      - term: Integer
+        definition: >-
+          A whole number, with no decimal point. Can be positive,
+          negative, or zero.
+        example: "7"
+      - term: Float
+        definition: A number written with a decimal point.
+        example: "3.14"
+      - term: Boolean
+        definition: A value that is either True or False.
+      - term: None
+        definition: A value that means nothing is there.
+
+  - label: Variables
+    entries:
+      - term: Variable
+        definition: >-
+          A name that stores a value, so the value can be used again
+          later.
+      - term: "="
+        definition: Stores a value in a variable, using a single equals sign.
+        example: "age = 12"
+      - term: "=="
+        definition: Compares two values and gives back True or False.
+        example: "total == 5"
+
+  - label: Functions and arguments
+    entries:
+      - term: Calling a function
+        definition: >-
+          Running a function by writing its name followed by
+          parentheses.
+        example: 'print("hi")'
+      - term: Argument
+        definition: A value placed inside the parentheses when a function is called.
+        example: 'print("hi")'
+      - term: Parameter
+        definition: >-
+          The name a function gives to an argument, inside the
+          function's own definition.
+      - term: Return value
+        definition: The result a function sends back after it finishes running.
+      - term: print()
+        definition: Displays whatever is inside its parentheses.
+        example: 'print("hi")'
+
+  - label: Punctuation and layout
+    entries:
+      - term: Parentheses
+        definition: >-
+          The pair of round brackets after a function's name, holding
+          its arguments.
+        example: 'print("hi")'
+      - term: Quotation marks
+        definition: >-
+          The marks placed around a piece of text to make it a string,
+          rather than a name.
+        example: '"hello"'
+      - term: Comment
+        definition: A line Python ignores completely, marked with a # at the start.
+        example: "# a comment"
+      - term: Indentation
+        definition: >-
+          The spaces at the start of a line, showing which block of
+          code that line belongs to.
+      - term: Colon
+        definition: >-
+          The punctuation mark at the end of a line that starts a new
+          indented block.
+        example: "if x > 0:"
