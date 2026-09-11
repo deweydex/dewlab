@@ -71,10 +71,12 @@ Two pieces are explicitly **not** in this pass:
   publishing) that is genuinely different content from dewlab's own
   Python-and-Pyodide `getting-started` module — not a duplicate to
   reconcile, but not obviously part of "Web Authoring and Databases"
-  either. This is a real open question (§8), not decided by this plan,
-  because it changes how big the ported curriculum is and touches
-  dewlab's front page. Left out of the staging copy-in's first pass;
-  added once Josh has ruled on it.
+  either. **Settled (§8): fold both in whole, copied across rather than
+  rewritten from scratch, filed under the `web-authoring` module** (and,
+  once it exists, `web-dev`) rather than merged into or confused with
+  dewlab's own `getting-started`. Left out of the staging copy-in's first
+  pass only because web-authoring itself hadn't started; part of that
+  module's own scope now.
 
 `javascript` is dewstack's own unwritten module — nothing to port.
 
@@ -134,7 +136,7 @@ Worker). The web-authoring engine's JS pane should share that file or a
 lightly generalised version of it, rather than dewstack's separate JS
 console-relay code being reimplemented a third time.
 
-## 4. dewmini and dewminiweb
+## 4. dewmini and dewmini web
 
 dewlab already decided a version of this question once, for a narrower
 case, in `planning/MINI_IDE_AND_DEWMINI_NEXT.md`: Mini IDE and dewmini
@@ -160,7 +162,8 @@ case") that comes out the other way this time.
   and gains nothing from this merge except, eventually, the `sql cell=`
   tutorial-page fence reusing the same `_run_sql_cell()` it already
   calls.
-- **dewminiweb** (working name, per Josh's own suggestion) is a new,
+- **dewmini web** (named by Josh, 2026-09-11: "we can always change it
+  later") is a new,
   standalone site-authoring workspace, built to the shape of dewstack's
   `dewstack/assets/workspace.js` (multi-file HTML/CSS/JS, a file concept,
   no notebook cells) rather than dewstack's in-tutorial `site-editor.js` —
@@ -168,14 +171,14 @@ case") that comes out the other way this time.
 
 What does carry over from the dewmini precedent is its other half: share
 the engine underneath even when the products stay separate.
-`dewminiweb`'s JS execution reuses `compose/js-cell-engine.js`; if it
+`dewmini web`'s JS execution reuses `compose/js-cell-engine.js`; if it
 ever offers a SQL pane (dewstack's `dewstack/assets/workspace.js` doesn't
 appear to have one — worth confirming before promising it), that reuses
 `pyodide-engine.js`/`tutorial_tools.py` too, the same as dewmini and the
 new tutorial-page SQL cells will.
 
 This is a product-shape call, not an engineering one, and it is Josh's
-to confirm before `dewminiweb` gets built — see §8. Nothing in the
+to confirm before `dewmini web` gets built — see §8. Nothing in the
 staging phase or the data-track work depends on the answer.
 
 ## 5. Staging: what it is, and what it deliberately isn't
@@ -243,9 +246,9 @@ The same bar dewstack already used, since it's dewlab's own bar too:
    descriptors 5N0783 needs to `planning/curriculum/outcomes.yaml`
    (currently absent — `planning/ROADMAP.md` already flags this gap);
    flip the homepage card once the module has run in front of a class.
-3. **Web engine + module.** Resolve the dewmini/dewminiweb question
+3. **Web engine + module.** Resolve the dewmini/dewmini web question
    (§8). Build the site-authoring fence kinds and a new site-runtime.js
-   for tutorial pages; build `dewminiweb` if confirmed. Port the 30 web
+   for tutorial pages; build `dewmini web` if confirmed. Port the 30 web
    pages into a new tutorials/web-authoring/ folder the same way. Flip
    its homepage card.
 4. **Full-stack, later.** Combine dewstack's one page with whatever
@@ -263,24 +266,42 @@ The same bar dewstack already used, since it's dewlab's own bar too:
 
 ## 8. Questions that are Josh's, not this plan's, to settle
 
-1. **`dewminiweb`'s scope and name.** Confirmed direction: a separate
-   product from dewmini, shaped like dewstack's `workspace.js`. Not yet
-   confirmed: the actual name (working name only), and whether it ships
-   in the same pass as the web-authoring tutorial pages or trails them.
-2. **`getting-started`/`reference` from dewstack.** Fold into the ported
-   modules as prerequisite pages, leave linked to the still-live dewstack
-   pages indefinitely (dewstack's own `notes.web` line already does this
-   for WADB_Tutorials), or write new dewlab-native equivalents. Affects
-   scope and the front page, not just these two modules.
-3. **Fence-kind spelling — resolved for SQL, still open for web.** §3
-   now settles the SQL side: `sql exec`, dewlab's own `id:`/`hint:`
+1. **`dewminiweb`'s scope and name — settled 2026-09-11.** Named
+   **"dewmini web"** (working name, Josh: "we can always change it
+   later"). Still a separate product from dewmini, shaped like dewstack's
+   `workspace.js` rather than its in-tutorial `site-editor.js` — the same
+   relationship dewmini has to tutorial Python cells. Whether it ships in
+   the same pass as the web-authoring tutorial pages or trails them is
+   still open, and now mostly an engine-sequencing question rather than a
+   product one: §3's SQL lesson was that the engine has to exist before
+   content can be honestly claimed "ported," so dewmini web likely needs
+   to exist, at least minimally, before the tutorial pages that embed it
+   do.
+2. **`getting-started`/`reference` from dewstack — settled 2026-09-11.**
+   Fold both in whole rather than leaving them linked to dewstack or
+   rewriting them from scratch — Josh: "I think we can literally copy
+   paste there." Filed under the `web-authoring` module (and, once it
+   exists, `web-dev`), not merged into dewlab's own `getting-started`,
+   which teaches a different thing (Python/Pyodide, not a GitHub-Pages
+   authoring workflow). "Copy paste" still means dewlab's own conventions
+   apply on the way in — the plain-language pass, `covers:` frontmatter,
+   dewlab's own frontmatter shape — the same "port in shape, not code"
+   rule §2 already applies to the tutorial content; it is the content
+   itself, not its engineering, that travels unchanged here, since these
+   pages are prose and screenshots rather than cells with a grammar to
+   reconcile.
+3. **Fence-kind spelling — resolved for SQL, now being checked for
+   web.** §3 settled the SQL side: `sql exec`, dewlab's own `id:`/`hint:`
    grammar, one shared `db`, generic `check()` — not dewstack's `sql
    cell=`/`sql check=`, once reading that grammar closely showed it was a
-   different cell-identity model, not just different words. The web
-   fences (`site=`, `html app=`/`css app=`/`js app=`) haven't been read
-   as closely yet — worth checking whether the same thing is true of
-   them before assuming their spelling carries over unchanged, rather
-   than repeating this document's own first mistake on the SQL side.
+   different cell-identity model, not just different words. Josh, on the
+   web side: "let's check and work through it… if we need something new
+   that's okay, that's why we have dewmini web, we can just port the
+   whole thing over." A close read of dewstack's `site=` fence grammar
+   and its relationship to dewlab's existing dewmini Site tab
+   (`compose/dewmini.js`'s `openSiteFile()`, DECISIONS_LOG 7.121) is
+   under way; findings and the resulting engine design go here once
+   done, the same way §3 documents the SQL side's.
 4. **dewstack's eventual fate.** Out of scope for this plan, noted so it
    isn't forgotten: once both modules are live and have run in front of a
    class, does dewstack's repository stay up as a read-only archive
