@@ -6,6 +6,13 @@ module_title: "Web Authoring"
 year: "2026-2027"
 series: first-site
 version: 2026.09.11.1
+covers:
+  why-this-happens:
+    covers: [WA-LO9]
+  naming-with-bem:
+    touches: [WA-LO9]
+  your-turn:
+    touches: [WA-LO9]
 ---
 
 # CSS variables and BEM names

@@ -6,6 +6,15 @@ module_title: "Web Authoring"
 year: "2026-2027"
 series: several-pages
 version: 2026.09.11.1
+covers:
+  an-images-folder:
+    touches: [WA-LO8]
+  choosing-a-format:
+    covers: [WA-LO4]
+  keeping-file-size-down:
+    covers: [WA-LO4]
+  your-turn:
+    touches: [WA-LO2, WA-LO4]
 ---
 
 # Images and file size

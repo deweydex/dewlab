@@ -6,6 +6,9 @@ module_title: "Web Authoring"
 year: "2026-2027"
 series: welcome
 version: 2026.09.11.1
+covers:
+  from-a-change-to-a-published-page:
+    touches: [WA-LO13]
 ---
 
 # How the pieces fit

@@ -6,6 +6,13 @@ module_title: "Web Authoring"
 year: "2026-2027"
 series: several-pages
 version: 2026.09.11.1
+covers:
+  what-readmemd-is-for:
+    covers: [WA-LO6]
+  what-maintenancemd-is-for:
+    covers: [WA-LO11]
+  your-turn:
+    touches: [WA-LO6, WA-LO11, WA-LO14]
 ---
 
 # Documenting what you built

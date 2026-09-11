@@ -15,14 +15,14 @@ so this doubles as a way of finding where anything is taught.
 
 ## Where we stand
 
-**101 of 116** outcomes are in place.
+**112 of 116** outcomes are in place.
 
-- 🟩 **99 taught** — a tutorial section teaches it.
+- 🟩 **110 taught** — a tutorial section teaches it.
 - 🟦 **2 taught in part** — deliberately narrowed, and the narrowed version is written.
 - 🟨 **0 used but not taught** — students meet it in passing without it ever being the subject. These are the quiet gaps: they look covered from a distance.
-- 🟥 **15 not covered** — nothing in dewlab touches it.
+- 🟥 **4 not covered** — nothing in dewlab touches it.
 
-**15 of the 15 outcomes still to write have no proposal**: `DBM-LO1`, `WA-LO1`, `WA-LO10`, `WA-LO11`, `WA-LO12`, `WA-LO13`, `WA-LO14`, `WA-LO2`, `WA-LO3`, `WA-LO4`, `WA-LO5`, `WA-LO6`, `WA-LO7`, `WA-LO8`, `WA-LO9`. These are the ones nobody has decided how to teach yet.
+**4 of the 4 outcomes still to write have no proposal**: `DBM-LO1`, `WA-LO1`, `WA-LO12`, `WA-LO5`. These are the ones nobody has decided how to teach yet.
 
 ### By strand
 
@@ -32,17 +32,17 @@ so this doubles as a way of finding where anything is taught.
 | **algorithms** | 9 | 0 | 0 | 0 | 0 |
 | **calculus** | 2 | 1 | 0 | 0 | 0 |
 | **complexity** | 2 | 0 | 0 | 0 | 0 |
-| **css** | 0 | 0 | 0 | 1 | 0 |
+| **css** | 1 | 0 | 0 | 0 | 0 |
 | **data-entry** | 1 | 0 | 0 | 0 | 0 |
 | **data-import** | 1 | 0 | 0 | 0 | 0 |
 | **data-structures** | 1 | 0 | 0 | 0 | 0 |
 | **database-concepts** | 1 | 0 | 0 | 1 | 0 |
 | **design** | 2 | 0 | 0 | 0 | 0 |
-| **design-principles** | 0 | 0 | 0 | 3 | 0 |
+| **design-principles** | 3 | 0 | 0 | 0 | 0 |
 | **functions** | 3 | 0 | 0 | 0 | 0 |
 | **geometry** | 6 | 0 | 0 | 0 | 0 |
-| **html-tags** | 0 | 0 | 0 | 2 | 0 |
-| **independence** | 0 | 0 | 0 | 1 | 0 |
+| **html-tags** | 2 | 0 | 0 | 0 | 0 |
+| **independence** | 1 | 0 | 0 | 0 | 0 |
 | **linear-algebra** | 1 | 0 | 0 | 0 | 0 |
 | **logic** | 2 | 0 | 0 | 0 | 0 |
 | **modelling** | 2 | 0 | 0 | 0 | 0 |
@@ -50,7 +50,7 @@ so this doubles as a way of finding where anything is taught.
 | **oop** | 4 | 0 | 0 | 0 | 0 |
 | **probability** | 10 | 0 | 0 | 0 | 0 |
 | **problem-solving** | 3 | 0 | 0 | 0 | 0 |
-| **process** | 0 | 0 | 0 | 2 | 0 |
+| **process** | 2 | 0 | 0 | 0 | 0 |
 | **programming** | 18 | 0 | 0 | 0 | 0 |
 | **querying** | 3 | 0 | 0 | 0 | 0 |
 | **reflection** | 2 | 0 | 0 | 0 | 0 |
@@ -58,8 +58,8 @@ so this doubles as a way of finding where anything is taught.
 | **sets** | 3 | 0 | 0 | 0 | 0 |
 | **simulation** | 1 | 0 | 0 | 0 | 0 |
 | **statistics** | 5 | 0 | 0 | 0 | 0 |
-| **testing** | 0 | 0 | 0 | 1 | 0 |
-| **tooling** | 0 | 0 | 0 | 3 | 0 |
+| **testing** | 1 | 0 | 0 | 0 | 0 |
+| **tooling** | 1 | 0 | 0 | 2 | 0 |
 | **trigonometry** | 7 | 0 | 0 | 0 | 0 |
 | **web-history** | 0 | 0 | 0 | 1 | 0 |
 
@@ -69,17 +69,17 @@ graph LR
   algorithms["algorithms<br/>9 of 9 in place"]
   calculus["calculus<br/>3 of 3 in place"]
   complexity["complexity<br/>2 of 2 in place"]
-  css["css<br/>0 of 1 in place"]
+  css["css<br/>1 of 1 in place"]
   data_entry["data-entry<br/>1 of 1 in place"]
   data_import["data-import<br/>1 of 1 in place"]
   data_structures["data-structures<br/>1 of 1 in place"]
   database_concepts["database-concepts<br/>1 of 2 in place"]
   design["design<br/>2 of 2 in place"]
-  design_principles["design-principles<br/>0 of 3 in place"]
+  design_principles["design-principles<br/>3 of 3 in place"]
   functions["functions<br/>3 of 3 in place"]
   geometry["geometry<br/>6 of 6 in place"]
-  html_tags["html-tags<br/>0 of 2 in place"]
-  independence["independence<br/>0 of 1 in place"]
+  html_tags["html-tags<br/>2 of 2 in place"]
+  independence["independence<br/>1 of 1 in place"]
   linear_algebra["linear-algebra<br/>1 of 1 in place"]
   logic["logic<br/>2 of 2 in place"]
   modelling["modelling<br/>2 of 2 in place"]
@@ -87,7 +87,7 @@ graph LR
   oop["oop<br/>4 of 4 in place"]
   probability["probability<br/>10 of 10 in place"]
   problem_solving["problem-solving<br/>3 of 3 in place"]
-  process["process<br/>0 of 2 in place"]
+  process["process<br/>2 of 2 in place"]
   programming["programming<br/>18 of 18 in place"]
   querying["querying<br/>3 of 3 in place"]
   reflection["reflection<br/>2 of 2 in place"]
@@ -95,17 +95,17 @@ graph LR
   sets["sets<br/>3 of 3 in place"]
   simulation["simulation<br/>1 of 1 in place"]
   statistics["statistics<br/>5 of 5 in place"]
-  testing["testing<br/>0 of 1 in place"]
-  tooling["tooling<br/>0 of 3 in place"]
+  testing["testing<br/>1 of 1 in place"]
+  tooling["tooling<br/>1 of 3 in place"]
   trigonometry["trigonometry<br/>7 of 7 in place"]
   web_history["web-history<br/>0 of 1 in place"]
 
   classDef full fill:#edf7f0,stroke:#1f6b3f,color:#1f6b3f;
   classDef part fill:#fdf6ec,stroke:#b5651d,color:#7a4310;
   classDef none fill:#fdf0ef,stroke:#9b2226,color:#9b2226;
-  class algebra,algorithms,calculus,complexity,data_entry,data_import,data_structures,design,functions,geometry,linear_algebra,logic,modelling,number,oop,probability,problem_solving,programming,querying,reflection,reporting,sets,simulation,statistics,trigonometry full;
-  class database_concepts part;
-  class css,design_principles,html_tags,independence,process,testing,tooling,web_history none;
+  class algebra,algorithms,calculus,complexity,css,data_entry,data_import,data_structures,design,design_principles,functions,geometry,html_tags,independence,linear_algebra,logic,modelling,number,oop,probability,problem_solving,process,programming,querying,reflection,reporting,sets,simulation,statistics,testing,trigonometry full;
+  class database_concepts,tooling part;
+  class web_history none;
 ```
 
 ## The series as it stands
@@ -455,19 +455,19 @@ graph TD
 | Outcome | | Where |
 |---|---|---|
 | `WA-LO1` The development of HTML and CSS, through the versions of each standard | 🟥 | — |
-| `WA-LO2` The use, purpose and attributes of a range of HTML tags, and how browsers render them | 🟥 | — |
-| `WA-LO3` Explore available HTML and CSS editors and development tools (the descriptor's own contrast is a WYSIWYG editor against a text editor; dewlab explores its own in-browser site editor against a plain-text editor instead) | 🟥 | — |
-| `WA-LO4` The principles of good website design: target audience, site objectives, navigation, structure, interface and access speed | 🟥 | — |
+| `WA-LO2` The use, purpose and attributes of a range of HTML tags, and how browsers render them | 🟩 | [A page is files — Why this happens](https://deweydex.github.io/dewlab/tutorials/web-authoring/a-page-is-files.html#why-this-happens)<br/>[Headings, paragraphs and emphasis — Why this happens](https://deweydex.github.io/dewlab/tutorials/web-authoring/headings-and-emphasis.html#why-this-happens)<br/>[Images, paths and alt text — Why this happens](https://deweydex.github.io/dewlab/tutorials/web-authoring/images-and-alt-text.html#why-this-happens)<br/>[Navigation — Why this happens](https://deweydex.github.io/dewlab/tutorials/web-authoring/navigation.html#why-this-happens)<br/>[Sections, and the tags that mean something — Why this happens](https://deweydex.github.io/dewlab/tutorials/web-authoring/sections-that-mean-something.html#why-this-happens)<br/>[The skeleton: head and body — Why this happens](https://deweydex.github.io/dewlab/tutorials/web-authoring/the-skeleton.html#why-this-happens)<br/>[Three kinds of link — Why this happens](https://deweydex.github.io/dewlab/tutorials/web-authoring/three-kinds-of-link.html#why-this-happens)<br/>_used in:_ [A form — Why this happens](https://deweydex.github.io/dewlab/tutorials/web-authoring/a-form.html#why-this-happens)<br/>_used in:_ [A rule, and where it lives — Why this happens](https://deweydex.github.io/dewlab/tutorials/web-authoring/a-rule-and-where-it-lives.html#why-this-happens)<br/>_used in:_ [Images and file size — Your turn](https://deweydex.github.io/dewlab/tutorials/web-authoring/images-and-file-size.html#your-turn)<br/>_used in:_ [Keyframe animation and the checkbox hack — Why this happens](https://deweydex.github.io/dewlab/tutorials/web-authoring/keyframes-and-the-checkbox-hack.html#why-this-happens)<br/>_used in:_ [Keyframe animation and the checkbox hack — Your turn](https://deweydex.github.io/dewlab/tutorials/web-authoring/keyframes-and-the-checkbox-hack.html#your-turn)<br/>_used in:_ [Several pages, one navigation — Why this happens](https://deweydex.github.io/dewlab/tutorials/web-authoring/pages-and-navigation.html#why-this-happens)<br/>_used in:_ [Quick reference — HTML](https://deweydex.github.io/dewlab/tutorials/web-authoring/quick-reference.html#html) |
+| `WA-LO3` Explore available HTML and CSS editors and development tools (the descriptor's own contrast is a WYSIWYG editor against a text editor; dewlab explores its own in-browser site editor against a plain-text editor instead) | 🟩 | [An editor — VS Code, the usual choice](https://deweydex.github.io/dewlab/tutorials/web-authoring/an-editor.html#vs-code-the-usual-choice)<br/>[An editor — No installing anything: GitHub's own editor](https://deweydex.github.io/dewlab/tutorials/web-authoring/an-editor.html#no-installing-anything-githubs-own-editor)<br/>_used in:_ [Your copy of the starter — Three ways to open it](https://deweydex.github.io/dewlab/tutorials/web-authoring/your-copy-of-the-starter.html#three-ways-to-open-it) |
+| `WA-LO4` The principles of good website design: target audience, site objectives, navigation, structure, interface and access speed | 🟩 | [Images and file size — Choosing a format](https://deweydex.github.io/dewlab/tutorials/web-authoring/images-and-file-size.html#choosing-a-format)<br/>[Images and file size — Keeping file size down](https://deweydex.github.io/dewlab/tutorials/web-authoring/images-and-file-size.html#keeping-file-size-down)<br/>[Planning a site — Two site maps](https://deweydex.github.io/dewlab/tutorials/web-authoring/planning-a-site.html#two-site-maps)<br/>[Planning a site — Why this happens](https://deweydex.github.io/dewlab/tutorials/web-authoring/planning-a-site.html#why-this-happens)<br/>_used in:_ [Images and file size — Your turn](https://deweydex.github.io/dewlab/tutorials/web-authoring/images-and-file-size.html#your-turn)<br/>_used in:_ [Several pages, one navigation — Why this happens](https://deweydex.github.io/dewlab/tutorials/web-authoring/pages-and-navigation.html#why-this-happens)<br/>_used in:_ [Planning a site — Your turn](https://deweydex.github.io/dewlab/tutorials/web-authoring/planning-a-site.html#your-turn)<br/>_used in:_ [Project ideas — Making any of them easy to read](https://deweydex.github.io/dewlab/tutorials/web-authoring/project-ideas.html#making-any-of-them-easy-to-read) |
 | `WA-LO5` Investigate available web authoring tools, including desktop publishing programs and website management systems (the descriptor's own examples — Dreamweaver, Photoshop, Joomla, WordPress — are commercial GUI tools; dewlab's own equivalent is hand-written HTML and CSS, not yet covered by anything in dewlab) | 🟥 | — |
-| `WA-LO6` Keep evidence of a web authoring project: its own research, requirements, and an evaluation of the finished site | 🟥 | — |
-| `WA-LO7` Plan a design and user interface for a specified website, documenting each stage of the process (the descriptor's own outcome also has the learner selecting an authoring tool; dewlab's own tool is a given, not a choice) | 🟥 | — |
-| `WA-LO8` Use HTML tags to build a standards-conformant page or site to a given design | 🟥 | — |
-| `WA-LO9` Use CSS to style a standards-conformant page or site to a given design | 🟥 | — |
-| `WA-LO10` Test a website's functioning and fix any issues found (the descriptor's own outcome also names cross-browser testing; dewlab teaches diagnosis with a single browser's own developer tools instead) | 🟥 | — |
-| `WA-LO11` Recommend how a website should be upgraded, maintained and tested in future | 🟥 | — |
+| `WA-LO6` Keep evidence of a web authoring project: its own research, requirements, and an evaluation of the finished site | 🟩 | [Documenting what you built — What readme.md is for](https://deweydex.github.io/dewlab/tutorials/web-authoring/documenting-what-you-built.html#what-readmemd-is-for)<br/>_used in:_ [Documenting what you built — Your turn](https://deweydex.github.io/dewlab/tutorials/web-authoring/documenting-what-you-built.html#your-turn) |
+| `WA-LO7` Plan a design and user interface for a specified website, documenting each stage of the process (the descriptor's own outcome also has the learner selecting an authoring tool; dewlab's own tool is a given, not a choice) | 🟩 | [Planning a site — Why this happens](https://deweydex.github.io/dewlab/tutorials/web-authoring/planning-a-site.html#why-this-happens)<br/>_used in:_ [Planning a site — Your turn](https://deweydex.github.io/dewlab/tutorials/web-authoring/planning-a-site.html#your-turn) |
+| `WA-LO8` Use HTML tags to build a standards-conformant page or site to a given design | 🟩 | [A page is files — Your turn](https://deweydex.github.io/dewlab/tutorials/web-authoring/a-page-is-files.html#your-turn)<br/>_used in:_ [A form — Your turn](https://deweydex.github.io/dewlab/tutorials/web-authoring/a-form.html#your-turn)<br/>_used in:_ [Headings, paragraphs and emphasis — Your turn](https://deweydex.github.io/dewlab/tutorials/web-authoring/headings-and-emphasis.html#your-turn)<br/>_used in:_ [Images, paths and alt text — Your turn](https://deweydex.github.io/dewlab/tutorials/web-authoring/images-and-alt-text.html#your-turn)<br/>_used in:_ [Images and file size — An images folder](https://deweydex.github.io/dewlab/tutorials/web-authoring/images-and-file-size.html#an-images-folder)<br/>_used in:_ [Navigation — Your turn](https://deweydex.github.io/dewlab/tutorials/web-authoring/navigation.html#your-turn)<br/>_used in:_ [Several pages, one navigation — Your turn](https://deweydex.github.io/dewlab/tutorials/web-authoring/pages-and-navigation.html#your-turn)<br/>_used in:_ [Project ideas — After you fork the starter](https://deweydex.github.io/dewlab/tutorials/web-authoring/project-ideas.html#after-you-fork-the-starter)<br/>_used in:_ [Sections, and the tags that mean something — Your turn](https://deweydex.github.io/dewlab/tutorials/web-authoring/sections-that-mean-something.html#your-turn)<br/>_used in:_ [The skeleton: head and body — Your turn](https://deweydex.github.io/dewlab/tutorials/web-authoring/the-skeleton.html#your-turn)<br/>_used in:_ [Three kinds of link — Your turn](https://deweydex.github.io/dewlab/tutorials/web-authoring/three-kinds-of-link.html#your-turn) |
+| `WA-LO9` Use CSS to style a standards-conformant page or site to a given design | 🟩 | [A rule, and where it lives — Why this happens](https://deweydex.github.io/dewlab/tutorials/web-authoring/a-rule-and-where-it-lives.html#why-this-happens)<br/>[CSS variables and BEM names — Why this happens](https://deweydex.github.io/dewlab/tutorials/web-authoring/css-variables-and-bem.html#why-this-happens)<br/>[Flexbox first steps — Why this happens](https://deweydex.github.io/dewlab/tutorials/web-authoring/flexbox-first-steps.html#why-this-happens)<br/>[Flexible images — Why this happens](https://deweydex.github.io/dewlab/tutorials/web-authoring/flexible-images.html#why-this-happens)<br/>[States: hover and focus — Why this happens](https://deweydex.github.io/dewlab/tutorials/web-authoring/hover-and-focus.html#why-this-happens)<br/>[Keyframe animation and the checkbox hack — Why this happens](https://deweydex.github.io/dewlab/tutorials/web-authoring/keyframes-and-the-checkbox-hack.html#why-this-happens)<br/>[Media queries — Why this happens](https://deweydex.github.io/dewlab/tutorials/web-authoring/media-queries.html#why-this-happens)<br/>[Named grid areas — Why this happens](https://deweydex.github.io/dewlab/tutorials/web-authoring/named-grid-areas.html#why-this-happens)<br/>[Position, and the sticky header — Why this happens](https://deweydex.github.io/dewlab/tutorials/web-authoring/position-and-the-sticky-header.html#why-this-happens)<br/>[Position, and the sticky header — And the footer](https://deweydex.github.io/dewlab/tutorials/web-authoring/position-and-the-sticky-header.html#and-the-footer)<br/>[Selectors and classes — Why this happens](https://deweydex.github.io/dewlab/tutorials/web-authoring/selectors-and-classes.html#why-this-happens)<br/>[Text and units — Why this happens](https://deweydex.github.io/dewlab/tutorials/web-authoring/text-and-units.html#why-this-happens)<br/>[The box — Why this happens](https://deweydex.github.io/dewlab/tutorials/web-authoring/the-box.html#why-this-happens)<br/>[The container: width and centring — Why this happens](https://deweydex.github.io/dewlab/tutorials/web-authoring/the-container.html#why-this-happens)<br/>[Transitions and transforms — Why this happens](https://deweydex.github.io/dewlab/tutorials/web-authoring/transitions-and-transforms.html#why-this-happens)<br/>[Variables and colour — Why this happens](https://deweydex.github.io/dewlab/tutorials/web-authoring/variables-and-colour.html#why-this-happens)<br/>_used in:_ [A form — Why this happens](https://deweydex.github.io/dewlab/tutorials/web-authoring/a-form.html#why-this-happens)<br/>_used in:_ [A grid gallery — Why this happens](https://deweydex.github.io/dewlab/tutorials/web-authoring/a-grid-gallery.html#why-this-happens)<br/>_used in:_ [A grid gallery — Your turn](https://deweydex.github.io/dewlab/tutorials/web-authoring/a-grid-gallery.html#your-turn)<br/>_used in:_ [Cards in a row — Why this happens](https://deweydex.github.io/dewlab/tutorials/web-authoring/cards-in-a-row.html#why-this-happens)<br/>_used in:_ [Cards in a row — Your turn](https://deweydex.github.io/dewlab/tutorials/web-authoring/cards-in-a-row.html#your-turn)<br/>_used in:_ [CSS variables and BEM names — Naming with BEM](https://deweydex.github.io/dewlab/tutorials/web-authoring/css-variables-and-bem.html#naming-with-bem)<br/>_used in:_ [CSS variables and BEM names — Your turn](https://deweydex.github.io/dewlab/tutorials/web-authoring/css-variables-and-bem.html#your-turn)<br/>_used in:_ [Flexbox first steps — Your turn](https://deweydex.github.io/dewlab/tutorials/web-authoring/flexbox-first-steps.html#your-turn)<br/>_used in:_ [Flexible images — Your turn](https://deweydex.github.io/dewlab/tutorials/web-authoring/flexible-images.html#your-turn)<br/>_used in:_ [States: hover and focus — Your turn](https://deweydex.github.io/dewlab/tutorials/web-authoring/hover-and-focus.html#your-turn)<br/>_used in:_ [Keyframe animation and the checkbox hack — Your turn](https://deweydex.github.io/dewlab/tutorials/web-authoring/keyframes-and-the-checkbox-hack.html#your-turn)<br/>_used in:_ [Media queries — Your turn](https://deweydex.github.io/dewlab/tutorials/web-authoring/media-queries.html#your-turn)<br/>_used in:_ [Named grid areas — Other properties from the same lesson](https://deweydex.github.io/dewlab/tutorials/web-authoring/named-grid-areas.html#other-properties-from-the-same-lesson)<br/>_used in:_ [Named grid areas — Your turn](https://deweydex.github.io/dewlab/tutorials/web-authoring/named-grid-areas.html#your-turn)<br/>_used in:_ [A navigation that works on a phone — Why this happens](https://deweydex.github.io/dewlab/tutorials/web-authoring/navigation-on-a-phone.html#why-this-happens)<br/>_used in:_ [A navigation that works on a phone — Your turn](https://deweydex.github.io/dewlab/tutorials/web-authoring/navigation-on-a-phone.html#your-turn)<br/>_used in:_ [Position, and the sticky header — Your turn](https://deweydex.github.io/dewlab/tutorials/web-authoring/position-and-the-sticky-header.html#your-turn)<br/>_used in:_ [Project ideas — After Flexbox and Grid](https://deweydex.github.io/dewlab/tutorials/web-authoring/project-ideas.html#after-flexbox-and-grid)<br/>_used in:_ [Quick reference — CSS](https://deweydex.github.io/dewlab/tutorials/web-authoring/quick-reference.html#css)<br/>_used in:_ [Selectors and classes — Your turn](https://deweydex.github.io/dewlab/tutorials/web-authoring/selectors-and-classes.html#your-turn)<br/>_used in:_ [Text and units — Your turn](https://deweydex.github.io/dewlab/tutorials/web-authoring/text-and-units.html#your-turn)<br/>_used in:_ [The box — Your turn](https://deweydex.github.io/dewlab/tutorials/web-authoring/the-box.html#your-turn)<br/>_used in:_ [The container: width and centring — Your turn](https://deweydex.github.io/dewlab/tutorials/web-authoring/the-container.html#your-turn)<br/>_used in:_ [Transitions and transforms — Your turn](https://deweydex.github.io/dewlab/tutorials/web-authoring/transitions-and-transforms.html#your-turn)<br/>_used in:_ [Variables and colour — Your turn](https://deweydex.github.io/dewlab/tutorials/web-authoring/variables-and-colour.html#your-turn) |
+| `WA-LO10` Test a website's functioning and fix any issues found (the descriptor's own outcome also names cross-browser testing; dewlab teaches diagnosis with a single browser's own developer tools instead) | 🟩 | [The browser inspector — Elements: the page's actual structure](https://deweydex.github.io/dewlab/tutorials/web-authoring/the-inspector.html#elements-the-pages-actual-structure)<br/>[The browser inspector — Console: where errors show up](https://deweydex.github.io/dewlab/tutorials/web-authoring/the-inspector.html#console-where-errors-show-up)<br/>[Troubleshooting — A page or a style doesn't look right](https://deweydex.github.io/dewlab/tutorials/web-authoring/troubleshooting.html#a-page-or-a-style-doesnt-look-right)<br/>[Troubleshooting — My code has a mistake I can't find](https://deweydex.github.io/dewlab/tutorials/web-authoring/troubleshooting.html#my-code-has-a-mistake-i-cant-find)<br/>_used in:_ [A form — Your turn](https://deweydex.github.io/dewlab/tutorials/web-authoring/a-form.html#your-turn)<br/>_used in:_ [A navigation that works on a phone — Why this happens](https://deweydex.github.io/dewlab/tutorials/web-authoring/navigation-on-a-phone.html#why-this-happens)<br/>_used in:_ [A navigation that works on a phone — Your turn](https://deweydex.github.io/dewlab/tutorials/web-authoring/navigation-on-a-phone.html#your-turn)<br/>_used in:_ [The browser inspector — Opening it](https://deweydex.github.io/dewlab/tutorials/web-authoring/the-inspector.html#opening-it) |
+| `WA-LO11` Recommend how a website should be upgraded, maintained and tested in future | 🟩 | [Documenting what you built — What maintenance.md is for](https://deweydex.github.io/dewlab/tutorials/web-authoring/documenting-what-you-built.html#what-maintenancemd-is-for)<br/>_used in:_ [Documenting what you built — Your turn](https://deweydex.github.io/dewlab/tutorials/web-authoring/documenting-what-you-built.html#your-turn) |
 | `WA-LO12` Use HTML and CSS code generators and judge how well they work (dewlab teaches HTML and CSS by hand instead of a generator — not yet covered by anything in dewlab) | 🟥 | — |
-| `WA-LO13` Work independently to design, build and publish webpages, without needing an ISP's own hosting (dewlab's own equivalent of the descriptor's own phrase is GitHub Pages, free and independent of any commercial host) | 🟥 | — |
-| `WA-LO14` Apply the principles of good website design when building a real page or site | 🟥 | — |
+| `WA-LO13` Work independently to design, build and publish webpages, without needing an ISP's own hosting (dewlab's own equivalent of the descriptor's own phrase is GitHub Pages, free and independent of any commercial host) | 🟩 | [Publish it — Turning it on](https://deweydex.github.io/dewlab/tutorials/web-authoring/publish-it.html#turning-it-on)<br/>[Publish it — Keeping it up to date](https://deweydex.github.io/dewlab/tutorials/web-authoring/publish-it.html#keeping-it-up-to-date)<br/>_used in:_ [A GitHub account — What GitHub actually does](https://deweydex.github.io/dewlab/tutorials/web-authoring/a-github-account.html#what-github-actually-does)<br/>_used in:_ [An editor — No installing anything: GitHub's own editor](https://deweydex.github.io/dewlab/tutorials/web-authoring/an-editor.html#no-installing-anything-githubs-own-editor)<br/>_used in:_ [How the pieces fit — From a change to a published page](https://deweydex.github.io/dewlab/tutorials/web-authoring/how-the-pieces-fit.html#from-a-change-to-a-published-page)<br/>_used in:_ [Publish it — Why the address looks the way it does](https://deweydex.github.io/dewlab/tutorials/web-authoring/publish-it.html#why-the-address-looks-the-way-it-does)<br/>_used in:_ [The two loops — The local loop: save and refresh](https://deweydex.github.io/dewlab/tutorials/web-authoring/the-two-loops.html#the-local-loop-save-and-refresh)<br/>_used in:_ [The two loops — The GitHub loop: commit, push, and wait](https://deweydex.github.io/dewlab/tutorials/web-authoring/the-two-loops.html#the-github-loop-commit-push-and-wait)<br/>_used in:_ [The two loops — Telling the two apart](https://deweydex.github.io/dewlab/tutorials/web-authoring/the-two-loops.html#telling-the-two-apart) |
+| `WA-LO14` Apply the principles of good website design when building a real page or site | 🟩 | [Project ideas — Making any of them easy to read](https://deweydex.github.io/dewlab/tutorials/web-authoring/project-ideas.html#making-any-of-them-easy-to-read)<br/>_used in:_ [Documenting what you built — Your turn](https://deweydex.github.io/dewlab/tutorials/web-authoring/documenting-what-you-built.html#your-turn) |
 
 ## Vocabulary
 

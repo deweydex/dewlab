@@ -6,6 +6,9 @@ module_title: "Web Authoring"
 year: "2026-2027"
 series: welcome
 version: 2026.09.11.1
+covers:
+  three-ways-to-open-it:
+    touches: [WA-LO3]
 ---
 
 # Your copy of the starter

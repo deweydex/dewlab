@@ -6,6 +6,11 @@ module_title: "Web Authoring"
 year: "2026-2027"
 series: several-pages
 version: 2026.09.11.1
+covers:
+  why-this-happens:
+    touches: [WA-LO9, WA-LO10]
+  your-turn:
+    touches: [WA-LO9, WA-LO10]
 ---
 
 # A navigation that works on a phone
