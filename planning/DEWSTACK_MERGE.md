@@ -291,7 +291,7 @@ The same bar dewstack already used, since it's dewlab's own bar too:
 
 | Module | Staged | Engine built | Ported | Live |
 |---|---|---|---|---|
-| `database-methods` (5N0783) | done | done, merged to `main` (`sql exec`, DECISIONS_LOG.md 7.140, PR #172) | done — 12 tutorials, QQI mapping, verified in a real browser (DECISIONS_LOG.md 7.141) | pending PR review |
+| `database-methods` (5N0783) | done | done, merged to `main` (`sql exec`, DECISIONS_LOG.md 7.140, PR #172) | done — 12 tutorials, QQI mapping, verified in a real browser (DECISIONS_LOG.md 7.141) | done — merged to `main`, PR #174 |
 | `web-authoring` (5N1910) | done | not yet | not yet | not yet |
 | `full-stack` | done (reference only) | — | — | — |
 
