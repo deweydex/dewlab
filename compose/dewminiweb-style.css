@@ -1,12 +1,3 @@
-/* dewmini web (DECISIONS_LOG.md 7.143) — the small workspace of several
- * named HTML/CSS/JS sites, kept in this browser. Its own stylesheet
- * because it is a separate product from dewmini (DEWSTACK_MERGE.md §4),
- * not a mode of it — dewmini-style.css is not loaded here, and nothing
- * in this file is `dm-` prefixed for that reason. The editor, preview
- * and console themselves are assets/tutorial-style.css's own
- * `.dl-site-*` rules, unchanged: this page reuses exactly the markup
- * render_site_editor() (build.py) writes for a tutorial page's own site
- * editor, so one set of rules styles both. */
 
 .dl-ws-page main { padding-top: 1.5rem; }
 
@@ -78,10 +69,6 @@
 .dl-ws-width-row input[type="range"] { flex: 1 1 auto; }
 .dl-ws-width-row output { font-family: var(--dl-mono); min-width: 3.5ch; text-align: right; }
 
-/* The preview frame narrows from the left of its own column rather than
- * the page's — the same reason a tutorial page's version of this control
- * (added alongside it, not before it) would centre the frame within
- * .dl-site-preview instead of stretching it full width. */
 .dl-ws-page .dl-site-frame { margin: 0 auto; transition: width 0.15s ease; }
 
 @media (max-width: 40rem) {

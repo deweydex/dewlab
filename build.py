@@ -252,8 +252,8 @@ class Tutorial:
     body_html: str
     has_math: bool = False
     has_sql: bool = False
-    # A page's live HTML/CSS/JS editors, in source order (DEWSTACK_MERGE.md
-    # §3) — usually empty; only the web-authoring module has any yet.
+    # A page's live HTML/CSS/JS editors, in source order — usually empty;
+    # only the web-authoring module has any yet.
     site_editors: list[SiteEditor] = field(default_factory=list)
     anchors: set[str] = field(default_factory=set)
     toc: list = field(default_factory=list)
@@ -618,8 +618,8 @@ def extract_blocks(
     An `exec` fence becomes a cell; a `hint` fence becomes a staged hint
     (planning/CELL_HINTS.md); an `html site`/`css site`/`js site` fence
     becomes one pane of a `SiteEditor`, grouped with any of the same
-    `site:` name immediately before or after it (DEWSTACK_MERGE.md §3);
-    any other fence becomes an illustrative, read-only block. All four
+    `site:` name immediately before or after it; any other fence becomes
+    an illustrative, read-only block. All four
     leave the source before the markdown converter runs, so nothing inside
     any of them can be reinterpreted as markup.
     """
@@ -763,9 +763,8 @@ def render_cell(cell: Cell, number: int, page: str = "", version: str = "") -> s
     `createCellElement()` this never needs recomputing after the fact.
     The pill shows it alongside the cell's type — "Python" or "SQL",
     coloured via the matching `--dl-type-python`/`--dl-type-sql` token
-    dewmini's own pill uses (`planning/CELL_IDENTITY.md` §2, built for
-    this page in 7.113; the SQL fence added in DEWSTACK_MERGE.md §3). No
-    drag handle: authored cells aren't reorderable, so there's nothing
+    dewmini's own pill uses. No drag handle: authored cells aren't
+    reorderable, so there's nothing
     for one to do. `cell.name`, when an author gives one, sits beside the
     pill — the word a reader can point at ("the `filter-evening` cell")
     instead of a number, the same idea dewmini lets a reader give their
