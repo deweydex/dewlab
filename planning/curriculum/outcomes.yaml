@@ -413,3 +413,62 @@ outcomes:
   - code: DBM-LO11
     title: "Use hints, error messages and self-checks to work through an unfamiliar database problem"
     strand: reflection
+
+  # ----------------------------------------------------------------- WA
+  # Web Authoring 5N1910. The descriptor assumes a commercial GUI toolchain
+  # throughout — a WYSIWYG editor beside a text editor, desktop publishing
+  # programs, website management systems (Joomla, Drupal, WordPress), FTP
+  # upload, and HTML/CSS code generators. dewlab teaches the same fourteen
+  # outcomes through hand-written HTML, CSS and JavaScript in its own
+  # in-browser site editor instead, published through GitHub Pages rather
+  # than an ISP's own hosting — WA-LO3, WA-LO5, WA-LO12 and WA-LO13 below are
+  # the clearest cases of the descriptor's own vocabulary and dewlab's
+  # parting ways, not a disagreement about what the outcome means. WA-LO5
+  # (desktop publishing programs and site-management systems) and WA-LO12
+  # (HTML/CSS code generators) have no dewlab equivalent yet and are not
+  # claimed as covered by anything, the same way DBM-LO1 is flagged in the
+  # section above. WA-LO10's "browser compatibility" is dev-tools diagnosis
+  # in one browser, not a multi-browser comparison — see
+  # planning/CURRICULUM_MAP.md for the current state of every code.
+  - code: WA-LO1
+    title: "The development of HTML and CSS, through the versions of each standard"
+    strand: web-history
+  - code: WA-LO2
+    title: "The use, purpose and attributes of a range of HTML tags, and how browsers render them"
+    strand: html-tags
+  - code: WA-LO3
+    title: "Explore available HTML and CSS editors and development tools (the descriptor's own contrast is a WYSIWYG editor against a text editor; dewlab explores its own in-browser site editor against a plain-text editor instead)"
+    strand: tooling
+  - code: WA-LO4
+    title: "The principles of good website design: target audience, site objectives, navigation, structure, interface and access speed"
+    strand: design-principles
+  - code: WA-LO5
+    title: "Investigate available web authoring tools, including desktop publishing programs and website management systems (the descriptor's own examples — Dreamweaver, Photoshop, Joomla, WordPress — are commercial GUI tools; dewlab's own equivalent is hand-written HTML and CSS, not yet covered by anything in dewlab)"
+    strand: tooling
+  - code: WA-LO6
+    title: "Keep evidence of a web authoring project: its own research, requirements, and an evaluation of the finished site"
+    strand: process
+  - code: WA-LO7
+    title: "Plan a design and user interface for a specified website, documenting each stage of the process (the descriptor's own outcome also has the learner selecting an authoring tool; dewlab's own tool is a given, not a choice)"
+    strand: design-principles
+  - code: WA-LO8
+    title: "Use HTML tags to build a standards-conformant page or site to a given design"
+    strand: html-tags
+  - code: WA-LO9
+    title: "Use CSS to style a standards-conformant page or site to a given design"
+    strand: css
+  - code: WA-LO10
+    title: "Test a website's functioning and fix any issues found (the descriptor's own outcome also names cross-browser testing; dewlab teaches diagnosis with a single browser's own developer tools instead)"
+    strand: testing
+  - code: WA-LO11
+    title: "Recommend how a website should be upgraded, maintained and tested in future"
+    strand: process
+  - code: WA-LO12
+    title: "Use HTML and CSS code generators and judge how well they work (dewlab teaches HTML and CSS by hand instead of a generator — not yet covered by anything in dewlab)"
+    strand: tooling
+  - code: WA-LO13
+    title: "Work independently to design, build and publish webpages, without needing an ISP's own hosting (dewlab's own equivalent of the descriptor's own phrase is GitHub Pages, free and independent of any commercial host)"
+    strand: independence
+  - code: WA-LO14
+    title: "Apply the principles of good website design when building a real page or site"
+    strand: design-principles

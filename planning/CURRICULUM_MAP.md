@@ -15,14 +15,14 @@ so this doubles as a way of finding where anything is taught.
 
 ## Where we stand
 
-**101 of 102** outcomes are in place.
+**101 of 116** outcomes are in place.
 
 - 🟩 **99 taught** — a tutorial section teaches it.
 - 🟦 **2 taught in part** — deliberately narrowed, and the narrowed version is written.
 - 🟨 **0 used but not taught** — students meet it in passing without it ever being the subject. These are the quiet gaps: they look covered from a distance.
-- 🟥 **1 not covered** — nothing in dewlab touches it.
+- 🟥 **15 not covered** — nothing in dewlab touches it.
 
-**1 of the 1 outcomes still to write have no proposal**: `DBM-LO1`. These are the ones nobody has decided how to teach yet.
+**15 of the 15 outcomes still to write have no proposal**: `DBM-LO1`, `WA-LO1`, `WA-LO10`, `WA-LO11`, `WA-LO12`, `WA-LO13`, `WA-LO14`, `WA-LO2`, `WA-LO3`, `WA-LO4`, `WA-LO5`, `WA-LO6`, `WA-LO7`, `WA-LO8`, `WA-LO9`. These are the ones nobody has decided how to teach yet.
 
 ### By strand
 
@@ -32,13 +32,17 @@ so this doubles as a way of finding where anything is taught.
 | **algorithms** | 9 | 0 | 0 | 0 | 0 |
 | **calculus** | 2 | 1 | 0 | 0 | 0 |
 | **complexity** | 2 | 0 | 0 | 0 | 0 |
+| **css** | 0 | 0 | 0 | 1 | 0 |
 | **data-entry** | 1 | 0 | 0 | 0 | 0 |
 | **data-import** | 1 | 0 | 0 | 0 | 0 |
 | **data-structures** | 1 | 0 | 0 | 0 | 0 |
 | **database-concepts** | 1 | 0 | 0 | 1 | 0 |
 | **design** | 2 | 0 | 0 | 0 | 0 |
+| **design-principles** | 0 | 0 | 0 | 3 | 0 |
 | **functions** | 3 | 0 | 0 | 0 | 0 |
 | **geometry** | 6 | 0 | 0 | 0 | 0 |
+| **html-tags** | 0 | 0 | 0 | 2 | 0 |
+| **independence** | 0 | 0 | 0 | 1 | 0 |
 | **linear-algebra** | 1 | 0 | 0 | 0 | 0 |
 | **logic** | 2 | 0 | 0 | 0 | 0 |
 | **modelling** | 2 | 0 | 0 | 0 | 0 |
@@ -46,6 +50,7 @@ so this doubles as a way of finding where anything is taught.
 | **oop** | 4 | 0 | 0 | 0 | 0 |
 | **probability** | 10 | 0 | 0 | 0 | 0 |
 | **problem-solving** | 3 | 0 | 0 | 0 | 0 |
+| **process** | 0 | 0 | 0 | 2 | 0 |
 | **programming** | 18 | 0 | 0 | 0 | 0 |
 | **querying** | 3 | 0 | 0 | 0 | 0 |
 | **reflection** | 2 | 0 | 0 | 0 | 0 |
@@ -53,7 +58,10 @@ so this doubles as a way of finding where anything is taught.
 | **sets** | 3 | 0 | 0 | 0 | 0 |
 | **simulation** | 1 | 0 | 0 | 0 | 0 |
 | **statistics** | 5 | 0 | 0 | 0 | 0 |
+| **testing** | 0 | 0 | 0 | 1 | 0 |
+| **tooling** | 0 | 0 | 0 | 3 | 0 |
 | **trigonometry** | 7 | 0 | 0 | 0 | 0 |
+| **web-history** | 0 | 0 | 0 | 1 | 0 |
 
 ```mermaid
 graph LR
@@ -61,13 +69,17 @@ graph LR
   algorithms["algorithms<br/>9 of 9 in place"]
   calculus["calculus<br/>3 of 3 in place"]
   complexity["complexity<br/>2 of 2 in place"]
+  css["css<br/>0 of 1 in place"]
   data_entry["data-entry<br/>1 of 1 in place"]
   data_import["data-import<br/>1 of 1 in place"]
   data_structures["data-structures<br/>1 of 1 in place"]
   database_concepts["database-concepts<br/>1 of 2 in place"]
   design["design<br/>2 of 2 in place"]
+  design_principles["design-principles<br/>0 of 3 in place"]
   functions["functions<br/>3 of 3 in place"]
   geometry["geometry<br/>6 of 6 in place"]
+  html_tags["html-tags<br/>0 of 2 in place"]
+  independence["independence<br/>0 of 1 in place"]
   linear_algebra["linear-algebra<br/>1 of 1 in place"]
   logic["logic<br/>2 of 2 in place"]
   modelling["modelling<br/>2 of 2 in place"]
@@ -75,6 +87,7 @@ graph LR
   oop["oop<br/>4 of 4 in place"]
   probability["probability<br/>10 of 10 in place"]
   problem_solving["problem-solving<br/>3 of 3 in place"]
+  process["process<br/>0 of 2 in place"]
   programming["programming<br/>18 of 18 in place"]
   querying["querying<br/>3 of 3 in place"]
   reflection["reflection<br/>2 of 2 in place"]
@@ -82,13 +95,17 @@ graph LR
   sets["sets<br/>3 of 3 in place"]
   simulation["simulation<br/>1 of 1 in place"]
   statistics["statistics<br/>5 of 5 in place"]
+  testing["testing<br/>0 of 1 in place"]
+  tooling["tooling<br/>0 of 3 in place"]
   trigonometry["trigonometry<br/>7 of 7 in place"]
+  web_history["web-history<br/>0 of 1 in place"]
 
   classDef full fill:#edf7f0,stroke:#1f6b3f,color:#1f6b3f;
   classDef part fill:#fdf6ec,stroke:#b5651d,color:#7a4310;
   classDef none fill:#fdf0ef,stroke:#9b2226,color:#9b2226;
   class algebra,algorithms,calculus,complexity,data_entry,data_import,data_structures,design,functions,geometry,linear_algebra,logic,modelling,number,oop,probability,problem_solving,programming,querying,reflection,reporting,sets,simulation,statistics,trigonometry full;
   class database_concepts part;
+  class css,design_principles,html_tags,independence,process,testing,tooling,web_history none;
 ```
 
 ## The series as it stands
@@ -434,6 +451,23 @@ graph TD
 | `DBM-LO11` Use hints, error messages and self-checks to work through an unfamiliar database problem | 🟩 | [The Tentacular Plushies Quiz — Task 1: a products table](https://deweydex.github.io/dewlab/tutorials/database-methods/the-tentacular-plushies-quiz.html#task-1-a-products-table) |
 
 ### Web Authoring 5N1910
+
+| Outcome | | Where |
+|---|---|---|
+| `WA-LO1` The development of HTML and CSS, through the versions of each standard | 🟥 | — |
+| `WA-LO2` The use, purpose and attributes of a range of HTML tags, and how browsers render them | 🟥 | — |
+| `WA-LO3` Explore available HTML and CSS editors and development tools (the descriptor's own contrast is a WYSIWYG editor against a text editor; dewlab explores its own in-browser site editor against a plain-text editor instead) | 🟥 | — |
+| `WA-LO4` The principles of good website design: target audience, site objectives, navigation, structure, interface and access speed | 🟥 | — |
+| `WA-LO5` Investigate available web authoring tools, including desktop publishing programs and website management systems (the descriptor's own examples — Dreamweaver, Photoshop, Joomla, WordPress — are commercial GUI tools; dewlab's own equivalent is hand-written HTML and CSS, not yet covered by anything in dewlab) | 🟥 | — |
+| `WA-LO6` Keep evidence of a web authoring project: its own research, requirements, and an evaluation of the finished site | 🟥 | — |
+| `WA-LO7` Plan a design and user interface for a specified website, documenting each stage of the process (the descriptor's own outcome also has the learner selecting an authoring tool; dewlab's own tool is a given, not a choice) | 🟥 | — |
+| `WA-LO8` Use HTML tags to build a standards-conformant page or site to a given design | 🟥 | — |
+| `WA-LO9` Use CSS to style a standards-conformant page or site to a given design | 🟥 | — |
+| `WA-LO10` Test a website's functioning and fix any issues found (the descriptor's own outcome also names cross-browser testing; dewlab teaches diagnosis with a single browser's own developer tools instead) | 🟥 | — |
+| `WA-LO11` Recommend how a website should be upgraded, maintained and tested in future | 🟥 | — |
+| `WA-LO12` Use HTML and CSS code generators and judge how well they work (dewlab teaches HTML and CSS by hand instead of a generator — not yet covered by anything in dewlab) | 🟥 | — |
+| `WA-LO13` Work independently to design, build and publish webpages, without needing an ISP's own hosting (dewlab's own equivalent of the descriptor's own phrase is GitHub Pages, free and independent of any commercial host) | 🟥 | — |
+| `WA-LO14` Apply the principles of good website design when building a real page or site | 🟥 | — |
 
 ## Vocabulary
 
