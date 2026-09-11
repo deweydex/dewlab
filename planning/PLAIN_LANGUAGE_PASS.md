@@ -137,6 +137,26 @@ first", "turns... next", "then runs" — naming JavaScript as the actual
 agent throughout (`a-form-that-writes-a-row`). No heading needed changing in
 any of the eight, so no `covers:` frontmatter key changed either.
 
+**Twelve `web-authoring` tutorials ported from dewstack**: the `welcome`
+series (how the pieces fit, a GitHub account, issues and pull requests,
+an editor, your copy of the starter, publish it, the two loops, the
+browser inspector) and the `shelf` series (FAQ, troubleshooting, quick
+reference, project ideas). The prose itself needed little — dewstack
+already writes to this same guide — but the same bold-lead-fragment habit
+the database-methods pass found kept recurring in a different shape: a
+term introduced as "**A username.** This becomes part of…" rather than a
+sentence, the same pattern already fixed once in this module's own recap
+lists. Ten instances across three pages (`a-github-account`'s username,
+email address and password; `project-ideas`'s five project types)
+rewritten into full sentences with the term itself in italics rather
+than bold, matching this guide's own term-introduction convention rather
+than a documentation-style definition list. `DECISIONS_LOG.md` 7.144 has
+the platform-fact corrections this port also needed (dewlab's own
+repository and PR in place of dewstack's, the real save/reset model in
+place of a special case dewlab doesn't have) — a different, adjacent kind
+of accuracy check to the plain-language one, but done in the same pass
+since both mean actually reading the sentence rather than trusting it.
+
 ---
 
 ## Not done — pick up here
@@ -191,6 +211,12 @@ title (*Let's slow down a moment…*), the two Settings rows and their note
 in `assets/shell.html`, and the hint fences themselves in the four
 tutorials that carry them. Each new hint an author writes is a new surface
 for this pass; the docs' own examples are the models.
+
+**`dewmini web`'s page copy.** One new student-facing surface
+(`compose/dewminiweb.html`'s title, subtitle, and note, plus the homepage
+paragraph linking to it), written against §4 as it was added, the same
+way the staged-hints surfaces above were. Its own examples are the model
+for the next new page's copy.
 
 **Bibliographies.** Unrelated to readability but still the largest outstanding
 piece of style work — see section 8 of the style guide.

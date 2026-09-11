@@ -665,6 +665,46 @@ class TestTutorialAssets:
         assert not (repo / "site" / "tutorials" / "computational-methods"
                     / "sample" / "sample.glossary.yaml").exists()
 
+    def test_a_downloadable_sibling_file_is_linked_and_copied(self, repo):
+        """A small standalone .html to take as a starting point, not shown
+        with src= but linked with href= — the same folder, the same
+        one-level-above-itself reach the current release needs for a
+        picture."""
+        write(repo, '<a href="demo.html">demo.html</a>\n')
+        asset(repo, "sample", "demo.html", b"<p>a starter</p>")
+        b.build()
+        assert 'href="sample/demo.html"' in built(repo)
+        copied = repo / "site" / "tutorials" / "computational-methods" / "sample" / "demo.html"
+        assert copied.read_bytes() == b"<p>a starter</p>"
+
+    def test_an_href_naming_a_file_that_is_not_there_is_left_alone(self, repo):
+        """Unlike a missing src=, this does not fail the build: a page links
+        to plenty of things that are not a local asset at all, and
+        resolve_links() already produces a real, already-correct relative
+        href for another tutorial — this must not mistake one for a
+        missing local file."""
+        write(repo, '<a href="not-a-real-file.html">a link</a>\n')
+        b.build()
+        assert 'href="not-a-real-file.html"' in built(repo)
+
+    def test_an_external_href_is_left_alone(self, repo):
+        write(repo, '<a href="https://example.org/demo.html">demo</a>\n')
+        b.build()
+        assert 'href="https://example.org/demo.html"' in built(repo)
+
+    def test_a_src_or_href_shown_as_text_in_a_code_span_is_not_resolved(self, repo):
+        """A tutorial teaching HTML shows `<img src="...">` as a string to
+        read, not markup to run — markdown's own code-span handling leaves
+        the quote alone even though it escapes the angle brackets, so this
+        has to be told apart from a real attribute or a quick-reference
+        table breaks the build over its own example."""
+        write(repo, 'Shown as text: `<img src="not-a-real-file.png">` and '
+                    '`<a href="not-a-real-file.html">`.\n')
+        b.build()
+        page = built(repo)
+        assert 'src="not-a-real-file.png"' in page
+        assert 'href="not-a-real-file.html"' in page
+
 
 class TestFrontmatter:
     def test_a_missing_field_fails_the_build(self, repo):

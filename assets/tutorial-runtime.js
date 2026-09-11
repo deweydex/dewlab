@@ -1736,6 +1736,15 @@ function buildSiteEditors(manifest) {
       });
     }
 
+    const widthInput = host.querySelector(".dl-site-width");
+    const widthOut = host.querySelector(".dl-site-preview-controls output");
+    if (widthInput) {
+      widthInput.addEventListener("input", () => {
+        iframe.style.width = `${widthInput.value}%`;
+        if (widthOut) widthOut.textContent = `${widthInput.value}%`;
+      });
+    }
+
     siteEditors.push(editorState);
     render();
   }

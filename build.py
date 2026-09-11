@@ -1059,9 +1059,19 @@ def render_site_editor(editor: SiteEditor, index: int) -> str:
     broken rather than minimal.
 
     `index` is this editor's plain 1-based position among the page's site
-    editors, the same role `render_cell()`'s `number` plays for cells —
-    shown nowhere yet, kept for the day a report-a-problem panel or a
-    similar per-editor feature needs one, the way cells already do.
+    editors, the same role `render_cell()`'s `number` plays for cells; it
+    also makes the preview-width slider's own `id` unique when a page has
+    more than one editor, so its `<label for=...>` still points at the
+    right control.
+
+    The preview-width slider itself (`.dl-site-preview-controls`, a
+    30%-100% range setting `.dl-site-frame`'s own inline width) is a
+    media-query lesson's actual apparatus, not decoration — a page that
+    asks a reader to "drag the preview narrower" needs a preview that can
+    get narrower, and a fixed-width iframe alone cannot demonstrate that
+    (found porting `media-queries` and three other `web-authoring`
+    tutorials that assume it; `dewminiweb.js` already carries the
+    identical control for its own workspace, wired here the same way).
     """
     safe_name = html.escape(editor.name, quote=True)
     labels = {"html": "HTML", "css": "CSS", "js": "JavaScript"}
@@ -1094,6 +1104,7 @@ def render_site_editor(editor: SiteEditor, index: int) -> str:
             '<div class="dl-site-console-output" aria-live="polite"></div>'
             "</div>"
         )
+    width_id = f"dl-site-width-{index}"
     return (
         f'<div class="dl-site-editor" data-site-name="{safe_name}">'
         '<div class="dl-site-head">'
@@ -1103,6 +1114,13 @@ def render_site_editor(editor: SiteEditor, index: int) -> str:
         '<div class="dl-site-split">'
         f'<div class="dl-site-editors">{"".join(panes_markup)}</div>'
         '<div class="dl-site-preview">'
+        '<div class="dl-site-preview-controls">'
+        f'<label for="{width_id}">Preview width</label>'
+        f'<input type="range" id="{width_id}" class="dl-site-width" '
+        'min="30" max="100" step="5" value="100" '
+        'aria-label="Preview width, as a percentage">'
+        f'<output for="{width_id}">100%</output>'
+        "</div>"
         f'<iframe class="dl-site-frame" sandbox="allow-scripts" '
         f"title=\"{safe_name}'s preview\"></iframe>"
         f"{console_markup}"
@@ -2610,6 +2628,9 @@ def render_index() -> str:
         '<p>Want to try Python with no tutorial attached? Open '
         '<a href="compose/dewmini.html">dewmini</a>, a small workspace '
         "built for exactly that.</p>",
+        '<p>Want to try HTML, CSS and JavaScript instead? Open '
+        '<a href="compose/dewminiweb.html">dewmini web</a>, a workspace '
+        "for building a small web page.</p>",
         "</div>",
     ]
     return "\n".join(out)
@@ -3039,9 +3060,28 @@ NON_ASSET_SUFFIXES = {".md", ".yaml", ".yml"}
 # the same way whatever the medium, so one pattern covers all of them.
 SRC_RE = re.compile(r'src="(?P<url>[^"]*)"')
 
+# href="..." pointing at a downloadable sibling file — a small standalone
+# .html a reader can open or take as a starting point, not a picture and not
+# a link to another page. Deliberately permissive where SRC_RE is strict: by
+# the time this runs, resolve_links() has already turned every authored
+# `tutorial:slug` reference into a real relative href, and some of those
+# come out as a bare filename with no slash too (two tutorials in the same
+# module, `os.path.relpath()` finding no directories between them) — this
+# has to leave those alone rather than mistake them for a local asset.
+HREF_ASSET_RE = re.compile(r'href="(?P<url>[^"]*)"')
+
 # A reference that points somewhere other than this tutorial's own folder:
 # an absolute URL, a root-relative path, a data: URI, or a page anchor.
 EXTERNAL_URL_RE = re.compile(r"^(?:[a-z][a-z0-9+.-]*:|//|/|#)", re.I)
+
+# A tutorial teaching HTML shows `<img src="...">` and `<a href="...">` as
+# text to read, not markup to run — markdown's own code-span handling
+# escapes `<`/`>` there but leaves a literal quote alone, so
+# `src="picture.png"` inside a `<code>` (inline, or a fenced block's
+# `<pre><code>`) still reads, to SRC_RE/HREF_ASSET_RE, exactly like a real
+# attribute. Masking a `<code>`'s contents before those run, then putting
+# them back unchanged, is what keeps a quick-reference table honest.
+CODE_SPAN_RE = re.compile(r"<code[^>]*>.*?</code>", re.S)
 
 
 def tutorial_assets(tutorial: Tutorial) -> list[Path]:
@@ -3060,7 +3100,13 @@ def tutorial_assets(tutorial: Tutorial) -> list[Path]:
 
 def resolve_assets(tutorial: Tutorial, body_html: str) -> str:
     """Point every `src="picture.png"` at the copy this build will write, and
-    fail on one naming a file the tutorial's folder does not hold.
+    fail on one naming a file the tutorial's folder does not hold. Do the
+    same for `href="worksheet.html"` — a downloadable sibling file linked
+    rather than shown — except a name that matches nothing is left exactly
+    as it is rather than failing the build: unlike an image, a page can link
+    to plenty of things that are not a local asset at all, and by this point
+    `resolve_links()` has already turned every `tutorial:slug` reference
+    into a real relative href, some of them a bare filename too.
 
     An author writes the plain file name, the same one they see beside the
     markdown, and it resolves from whichever URL the page ends up at. That
@@ -3080,7 +3126,7 @@ def resolve_assets(tutorial: Tutorial, body_html: str) -> str:
     # into — the same relpath calculation resolve_links() uses for pages.
     prefix = "" if not tutorial.is_default else f"{tutorial.slug}/"
 
-    def one(match: re.Match) -> str:
+    def src(match: re.Match) -> str:
         url = match.group("url")
         if not url or EXTERNAL_URL_RE.match(url):
             return match.group(0)
@@ -3092,7 +3138,23 @@ def resolve_assets(tutorial: Tutorial, body_html: str) -> str:
             )
         return f'src="{prefix}{url}"'
 
-    return SRC_RE.sub(one, body_html)
+    def href(match: re.Match) -> str:
+        url = match.group("url")
+        if not url or EXTERNAL_URL_RE.match(url) or "/" in url or not (folder / url).is_file():
+            return match.group(0)
+        return f'href="{prefix}{url}"'
+
+    # Code spans are masked out before either substitution runs, and put
+    # back untouched afterward — see CODE_SPAN_RE's own comment.
+    code_spans: list[str] = []
+
+    def stash(match: re.Match) -> str:
+        code_spans.append(match.group(0))
+        return f"\x00{len(code_spans) - 1}\x00"
+
+    masked = CODE_SPAN_RE.sub(stash, body_html)
+    resolved = HREF_ASSET_RE.sub(href, SRC_RE.sub(src, masked))
+    return re.sub(r"\x00(\d+)\x00", lambda m: code_spans[int(m.group(1))], resolved)
 
 
 def copy_tutorial_assets(tutorial: Tutorial) -> None:
