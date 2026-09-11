@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>dewmini web — dewlab</title>
+<link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+
+<link rel="stylesheet" href="../assets/vendor/accessible-fonts.css">
+
+<link rel="stylesheet" href="../assets/tutorial-style.css">
+<link rel="stylesheet" href="dewminiweb-style.css">
+
+<script>
+(function () {
+  try {
+    var s = JSON.parse(localStorage.getItem("dewlab:texture") || "{}");
+    var r = document.documentElement;
+    if (s.theme && s.theme !== "system") r.setAttribute("data-theme", s.theme);
+    if (s.font && s.font !== "serif") r.setAttribute("data-font", s.font);
+    if (s.size) r.style.setProperty("--dl-font-size", s.size + "px");
+    if (s.width) r.style.setProperty("--dl-line-width", s.width + "rem");
+    if (s.link) r.style.setProperty("--dl-link", s.link);
+  } catch (e) { /* private mode, blocked storage */ }
+})();
+</script>
+</head>
+<body>
+<div class="dl-page dl-ws-page">
+
+  <div class="dl-chrome" id="dl-chrome">
+    <header class="dl-masthead">
+      <a class="dl-wordmark" href="../index.html">dewlab</a>
+      <span class="dl-crumbs">compose</span>
+    </header>
+  </div>
+
+  <main>
+    <div class="dl-ws-title-row">
+      <h1>dewmini web</h1>
+      <p class="dl-ws-subtitle">
+        This workspace holds HTML, CSS and JavaScript. Keep several
+        pages here, each with its own live preview.
+      </p>
+      <p class="dl-ws-subtitle-note">
+        Everything below is saved to this browser as you go — nothing is
+        sent anywhere. Download a site's files when you want a copy to
+        keep, or to use in a project of your own.
+      </p>
+    </div>
+
+    <div class="dl-ws-toolbar">
+      <ul class="dl-ws-list" role="tablist" aria-label="Open sites"></ul>
+      <div class="dl-ws-actions">
+        <label class="dl-ws-name-label" for="dl-ws-name">Name</label>
+        <input type="text" id="dl-ws-name" class="dl-ws-name" aria-label="This site's name">
+        <button type="button" class="dl-btn dl-ws-new">New site</button>
+        <button type="button" class="dl-btn dl-ws-load">Load files…</button>
+        <input type="file" class="dl-ws-file" accept=".html,.css,.js" multiple hidden>
+        <button type="button" class="dl-btn dl-ws-download">Download these files</button>
+        <button type="button" class="dl-btn dl-ws-delete">Delete this site</button>
+      </div>
+    </div>
+
+    <div class="dl-site-editor" id="dl-ws-editor" data-site-name="site">
+      <div class="dl-site-split">
+        <div class="dl-site-editors">
+          <div class="dl-site-pane" data-lang="html">
+            <div class="dl-site-pane-head"><span class="dl-web-pane-label">HTML</span></div>
+            <div class="dl-editor"></div>
+          </div>
+          <div class="dl-site-pane" data-lang="css">
+            <div class="dl-site-pane-head"><span class="dl-web-pane-label">CSS</span></div>
+            <div class="dl-editor"></div>
+          </div>
+          <div class="dl-site-pane" data-lang="js">
+            <div class="dl-site-pane-head">
+              <span class="dl-web-pane-label">JavaScript</span>
+              <button type="button" class="dl-btn dl-btn-site-run" title="Run this script (Ctrl+Enter or Cmd+Enter in the pane)">
+                <span class="dl-btn-icon" aria-hidden="true">&#9654;</span><span class="dl-btn-label">Run</span>
+              </button>
+            </div>
+            <div class="dl-editor"></div>
+          </div>
+        </div>
+        <div class="dl-site-preview">
+          <div class="dl-ws-width-row">
+            <label for="dl-ws-width">Preview width</label>
+            <input type="range" id="dl-ws-width" min="30" max="100" step="5" value="100"
+                   aria-label="Preview width, as a percentage">
+            <output for="dl-ws-width" id="dl-ws-width-out">100%</output>
+          </div>
+          <iframe class="dl-site-frame" id="dl-ws-frame" sandbox="allow-scripts" title="This site's preview"></iframe>
+          <div class="dl-site-console">
+            <div class="dl-web-pane-label">Console</div>
+            <div class="dl-site-console-output" id="dl-ws-console" aria-live="polite"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+</div>
+
+<script type="module" src="dewminiweb.js"></script>
+</body>
+</html>

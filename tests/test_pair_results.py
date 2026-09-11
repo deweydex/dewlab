@@ -130,9 +130,6 @@ def test_the_same_judgements_give_the_same_report_across_runs(tmp_path):
     processes: this runs the report several times with a different hash seed
     each time, which is what two people on two machines get.
     """
-    # Ten topics, each pointing at three others: enough overlapping loops that
-    # which ones the walk reports depends on the order it meets a topic's
-    # out-edges. A handful of topics with one edge each will not show it.
     rng = random.Random(7)
     codes = list("abcdefghij")
     edges = [(a, b) for a in codes

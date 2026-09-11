@@ -59,10 +59,10 @@ a URL has no space to wrap at:
   that failed — and that message pushed the page to **511px**, 136px of
   sideways scroll.
 
-The second is the one worth dwelling on, because the failures compound.
-A reader on a poor connection is exactly the reader who sees that message,
-and the message itself then made the page unreadable on their screen. One
-problem became two, for precisely the person least able to absorb it.
+The second matters most: a reader on a poor connection is exactly the
+reader who sees that message, and the message then made the page
+unreadable on their screen too — one problem becoming two for the person
+least able to absorb it.
 
 **Fixed** in `assets/tutorial-style.css`: `#dl-body` breaks inside a word
 when a word cannot fit on a line by itself, and `.dl-status` wraps anywhere.

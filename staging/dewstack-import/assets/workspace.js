@@ -1,26 +1,3 @@
-/* The dewstack workspace: the site editor component (assets/site-editor.js)
- * on a page of its own, with several named sites saved in the browser
- * (planning/CONSOLE_AND_WORKSPACE.md, section 5, decided 2026-09-06).
- *
- * What this file owns, and site-editor.js does not: the list of sites and
- * which one is open; saving every edit to localStorage; the name field;
- * New, Delete, and Load files; and the CodeMirror panes it hands the
- * component in place of its textareas. What it does not own: the preview,
- * the Run model, the console — those are the component's, written once
- * for the tutorial pages and reused here unchanged.
- *
- * Saved under one key, `dewstack:workspace:v1`, as {active, sites:[{id,
- * name, html, css, js}]}, the same "this browser, this device" pattern as
- * the SQL cell's persisted table and dewmini's notebooks. localStorage
- * can throw (private mode, a browser told to block site data), so every
- * read and write is guarded, and a failure means this visit does not
- * save, not that the page breaks. The student's fork is where real work
- * lives; the page's own first paragraph says so.
- *
- * CodeMirror comes from assets/vendor/codemirror.bundle.js, built by
- * vendor-src/ and loaded on this page alone (section 7 of the design):
- * tutorial pages keep their textareas, because they are read on phones.
- */
 
 import { createCodeEditor } from "./vendor/codemirror.bundle.js";
 
@@ -36,8 +13,6 @@ const STARTER = {
   css: "body {\n  font-family: sans-serif;\n  padding: 1rem;\n}\n",
   js: 'console.log("The script ran.");\n',
 };
-
-/* ------------------------------------------------------------- storage */
 
 function readState() {
   try {
@@ -85,8 +60,6 @@ function fileBase(name) {
   return base || "site";
 }
 
-/* --------------------------------------------------------------- theme */
-
 const root = document.documentElement;
 const darkQuery = window.matchMedia("(prefers-color-scheme: dark)");
 function isDark() {
@@ -94,8 +67,6 @@ function isDark() {
   if (chosen) return chosen === "dark";
   return darkQuery.matches;
 }
-
-/* ---------------------------------------------------------------- page */
 
 const state = readState();
 const editorEl = document.getElementById("site-editor-workspace");
@@ -112,10 +83,6 @@ function activeSite() {
   return state.sites.find((s) => s.id === state.active) || state.sites[0];
 }
 
-/* A CodeMirror pane in place of the textarea the markup carries, with the
- * same five-method surface site-editor.js's own textareaPane() has. The
- * textarea stays in the document, hidden, so the component's markup is
- * one thing whichever page it is on. */
 function createPane(field, lang) {
   field.hidden = true;
   const host = document.createElement("div");
@@ -190,9 +157,6 @@ newButton.addEventListener("click", () => {
   nameEl.select();
 });
 
-/* Two clicks to delete, the way dewmini settled on: the first arms the
- * button and says so, the second within a few seconds does it. One click
- * on the wrong button should never cost a site. */
 let armedUntil = 0;
 const DELETE_LABEL = "Delete this site";
 function disarmDelete() {

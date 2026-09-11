@@ -150,9 +150,6 @@ def _collect(base_url: str) -> dict[str, dict[str, str]]:
             launch["executable_path"] = candidate
         browser = p.chromium.launch(**launch)
         page = browser.new_page()
-        # Any same-origin document works — content is irrelevant, this only
-        # needs a real origin for the dynamic import() below to resolve
-        # against. Python's directory-listing page is good enough.
         page.goto(base_url)
         result = page.evaluate(
             """async ({names}) => {

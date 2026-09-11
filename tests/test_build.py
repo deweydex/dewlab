@@ -231,7 +231,7 @@ class TestCells:
         b.build()
         page = built(repo)
         # A block, hidden by default and opened by a click (aria-expanded),
-        # not role="tooltip" hover text — DECISIONS_LOG.md's account of why.
+        # not role="tooltip" hover text.
         assert '<div class="dl-hint-text" id="dl-hint-c" hidden>Try this.</div>' in page
         assert 'aria-controls="dl-hint-c"' in page
         assert 'aria-expanded="false"' in page
@@ -245,9 +245,6 @@ class TestCells:
         assert manifest(page)["cells"][0]["name"] == "filter-evening"
 
     def test_a_name_shaped_first_line_of_code_is_not_swallowed_as_a_header(self, repo):
-        # `name: str = "Ada"` is an ordinary type-annotated assignment, not
-        # a `name:` header — the `=` is what tells parse_cell() so, since a
-        # genuine name is a short label, never an expression.
         write(repo, '```python exec\nid: c\nname: str = "Ada"\nprint(name)\n```\n')
         b.build()
         page = built(repo)
@@ -256,9 +253,6 @@ class TestCells:
         assert cell["code"] == 'name: str = "Ada"\nprint(name)'
 
     def test_the_footbar_sits_between_the_editor_and_output(self, repo):
-        # Run sits right where a reader's hand already is — between the
-        # code and its output, not after both (planning/CELL_IDENTITY.md,
-        # matching compose/dewmini.js's own .dm-cell-footbar placement).
         write(repo, CELL)
         b.build()
         page = built(repo)
@@ -329,8 +323,8 @@ console.log("hi");
 
 
 class TestSqlCells:
-    """DEWSTACK_MERGE.md §3 — a sql exec cell shares python exec's header
-    grammar, markup, and manifest shape entirely; only the fence's own
+    """A sql exec cell shares python exec's header grammar, markup, and
+    manifest shape entirely; only the fence's own
     language word and the pill it produces differ."""
 
     def test_a_sql_exec_fence_becomes_a_cell(self, repo):
@@ -360,9 +354,6 @@ class TestSqlCells:
         assert cells == [{"id": "only-sql-cell", "hint": None, "code": "SELECT 1;", "type": "sql"}]
 
     def test_a_plain_python_cell_carries_no_type_key(self, repo):
-        # type is only in the manifest when it isn't the default, matching
-        # how expect/name are already handled — a page with no SQL cells
-        # gets a manifest identical to what it was before this fence existed.
         write(repo, CELL)
         b.build()
         assert "type" not in manifest(built(repo))["cells"][0]
@@ -396,8 +387,8 @@ class TestSqlCells:
 
 
 class TestSiteEditors:
-    """DEWSTACK_MERGE.md §3 — a live HTML/CSS/JS editor. Deliberately not
-    dewstack's own `site=name` spelling: identity lives on an `id:`/`site:`
+    """A live HTML/CSS/JS editor. Deliberately not dewstack's own
+    `site=name` spelling: identity lives on an `id:`/`site:`
     header inside the fence, the same place every other exec-family fence
     puts it, because a name in the info string cannot survive a round trip
     through the Crepe-based authoring editor (it keeps only a fence's first
@@ -664,6 +655,46 @@ class TestTutorialAssets:
         b.build()
         assert not (repo / "site" / "tutorials" / "computational-methods"
                     / "sample" / "sample.glossary.yaml").exists()
+
+    def test_a_downloadable_sibling_file_is_linked_and_copied(self, repo):
+        """A small standalone .html to take as a starting point, not shown
+        with src= but linked with href= — the same folder, the same
+        one-level-above-itself reach the current release needs for a
+        picture."""
+        write(repo, '<a href="demo.html">demo.html</a>\n')
+        asset(repo, "sample", "demo.html", b"<p>a starter</p>")
+        b.build()
+        assert 'href="sample/demo.html"' in built(repo)
+        copied = repo / "site" / "tutorials" / "computational-methods" / "sample" / "demo.html"
+        assert copied.read_bytes() == b"<p>a starter</p>"
+
+    def test_an_href_naming_a_file_that_is_not_there_is_left_alone(self, repo):
+        """Unlike a missing src=, this does not fail the build: a page links
+        to plenty of things that are not a local asset at all, and
+        resolve_links() already produces a real, already-correct relative
+        href for another tutorial — this must not mistake one for a
+        missing local file."""
+        write(repo, '<a href="not-a-real-file.html">a link</a>\n')
+        b.build()
+        assert 'href="not-a-real-file.html"' in built(repo)
+
+    def test_an_external_href_is_left_alone(self, repo):
+        write(repo, '<a href="https://example.org/demo.html">demo</a>\n')
+        b.build()
+        assert 'href="https://example.org/demo.html"' in built(repo)
+
+    def test_a_src_or_href_shown_as_text_in_a_code_span_is_not_resolved(self, repo):
+        """A tutorial teaching HTML shows `<img src="...">` as a string to
+        read, not markup to run — markdown's own code-span handling leaves
+        the quote alone even though it escapes the angle brackets, so this
+        has to be told apart from a real attribute or a quick-reference
+        table breaks the build over its own example."""
+        write(repo, 'Shown as text: `<img src="not-a-real-file.png">` and '
+                    '`<a href="not-a-real-file.html">`.\n')
+        b.build()
+        page = built(repo)
+        assert 'src="not-a-real-file.png"' in page
+        assert 'href="not-a-real-file.html"' in page
 
 
 class TestFrontmatter:
@@ -1264,13 +1295,6 @@ class TestTheDownloadableCopy:
     def test_a_tutorial_without_maths_does_not_carry_them(self, repo_with_assets):
         write(repo_with_assets, "No maths at all.\n")
         b.build(standalone=True)
-        # Not "no base64 font data at all": the two accessible reading
-        # fonts (DECISIONS_LOG.md 7.123) are inlined unconditionally,
-        # maths or not, so that base64 marker alone no longer says
-        # whether KaTeX specifically travelled. ".katex-html" is
-        # katex.min.css's own class, unlike "KaTeX_Main" — that font
-        # family name is also referenced from tutorial-style.css's own
-        # .dl-math fallback rule, present on every page regardless.
         page = self.standalone(repo_with_assets)
         assert ".katex-html" not in page
         assert "data:font/woff2;base64," in page  # the accessible fonts still do
@@ -1679,11 +1703,6 @@ class TestTheStickyChrome:
         write(repo, "Some prose.\n")
         b.build()
         page = built(repo)
-        # A non-greedy match to the first </div> stops working the moment
-        # .dl-chrome has a nested <div> of its own — which it now does, for
-        # .dl-masthead-actions (the toggle buttons' action row) — so this
-        # walks div depth instead of assuming .dl-chrome's own close is the
-        # first one encountered.
         start = page.index('<div class="dl-chrome"')
         depth = 0
         end = start
@@ -1888,9 +1907,6 @@ class TestVersionsOfATutorial:
             f'year: "2026-2027"\nseries: python-fundamentals\nversion: {version}\n'
             f"status: {status}\n---\n\n{body}"
         )
-        # Only a live release is on the route. A draft is not on the site at
-        # all, and a beta is reachable without being part of the course — so
-        # listing either would be the contradiction the order file refuses.
         if status == "live":
             listed = repo / "tutorials" / "computational-methods" / "python-fundamentals.order.yaml"
             already = [l.strip("- ").strip() for l in listed.read_text().splitlines()
@@ -1970,9 +1986,6 @@ class TestVersionsOfATutorial:
                   ["thing", "other"])
         b.build()
         page = self.out(repo, "thing.html").read_text()
-        # The route, rather than the whole page: the beta *is* in the version
-        # list, tagged as a draft, which is the point of having a list. What it
-        # must never be is the next thing a reader is walked into.
         route = "".join(re.findall(r"<nav class=\"dl-nav.*?</nav>", page, re.DOTALL))
         assert "other.html" in route          # next, in the series
         assert "v2026.09.15.1" not in route   # the beta is nowhere in the route
@@ -2584,10 +2597,6 @@ class TestDownloadsDoNotCollide:
         self.two_modules(repo_with_assets)
         b.build(standalone=True)
         pages = list((repo_with_assets / "site" / "tutorials").rglob("*.html"))
-        # dewmini's own index.html/compose/dewmini.html
-        # (write_dewmini_bundle()) are real files under site/download/
-        # too, but not a tutorial's downloadable copy — repo_with_assets
-        # carries the real compose/, so they are always in the mix here.
         copies = [
             p for p in (repo_with_assets / "site" / "download").rglob("*.html")
             if "dewmini" not in p.parts
@@ -2712,7 +2721,7 @@ class TestPagesOfProblems:
         """The two links are distinguishable.
 
         Tutorials did not link back to mixed sets at all until Josh asked for
-        them to (DECISIONS_LOG 7.51). What still has to hold is that a reader
+        them to. What still has to hold is that a reader
         can tell the difference: one page is answerable from this tutorial and
         the other is not."""
         write(repo, "One.\n", slug="one")
@@ -3826,7 +3835,7 @@ def test_no_workbench_folder_is_not_an_error(repo, monkeypatch):
 
 
 class TestFeedbackFooter:
-    """The footer's "three doors" report disclosure — DECISIONS_LOG Phase 8.
+    """The footer's "three doors" report disclosure.
     On by default; planning/feedback.yaml is the kill switch."""
 
     def test_doors_on_a_tutorial_page_by_default(self, repo, monkeypatch):
@@ -3889,9 +3898,6 @@ class TestFeedbackFooter:
         html = b.report_doors_html("a/b", "1")
         assert f"kind={urllib.parse.quote_plus(options[0])}" in html
         assert f"kind={urllib.parse.quote_plus(options[1])}" in html
-        # The third option ("a question, an idea, or something else") is
-        # deliberately not one of the doors' issue links — a question goes
-        # to Discussions instead, which is the whole point of having doors.
         assert options[2] not in html
 
     def test_feedback_enabled_defaults_true_without_a_config_file(self, repo):
@@ -3904,10 +3910,10 @@ class TestFeedbackFooter:
 
 
 class TestCellReportPanel:
-    """The report icon and its panel on an authored cell — DECISIONS_LOG
-    Phase 8, the deferred half of the plan built once the footer doors
-    were live. code/output are filled in by tutorial-runtime.js at open
-    time, not at build time — see updateCellReportLinks() there."""
+    """The report icon and its panel on an authored cell — the deferred
+    half of the plan built once the footer doors were live. code/output
+    are filled in by tutorial-runtime.js at open time, not at build
+    time — see updateCellReportLinks() there."""
 
     def test_report_icon_and_panel_on_a_cell_by_default(self, repo, monkeypatch):
         write(repo, "```python exec\nid: greet\nprint('hi')\n```\n", slug="sample")

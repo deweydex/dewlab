@@ -52,9 +52,6 @@ def cell():
         tt.reset_page_state()
 
 
-# ---------------------------------------------------------------- check()
-
-
 class TestCompare:
     """`check`'s comparison rules, which are where its behaviour actually is."""
 
@@ -144,9 +141,6 @@ class TestCheckRendering:
         assert "&lt;script&gt;" in cell.html
 
 
-# --------------------------------------------------------------- output
-
-
 class TestStreamedOutput:
     def test_print_lands_in_the_output_area(self, cell):
         with streaming():
@@ -231,12 +225,6 @@ class TestOutsideACell:
             tt.check(1, 1)
 
 
-# --------------------------------------------------------------- tables
-
-# Imported at module level rather than through pytest.importorskip, which would
-# skip this whole file — all 61 tests reported as one skip, which reads as a
-# pass. tutorial_tools imports pandas lazily, so everything that does not touch
-# a DataFrame still runs on a machine without it.
 try:
     import pandas as pd
 except ImportError:  # pragma: no cover - exercised only where pandas is absent
@@ -350,7 +338,7 @@ class TestRunQuery:
 @needs_pandas
 class TestRunSqlCell:
     """_run_sql_cell() — the dewmini SQL cell type's own internal
-    plumbing (planning/CELL_IDENTITY.md §8, DECISIONS_LOG.md 7.118),
+    plumbing (planning/CELL_IDENTITY.md §8),
     as opposed to run_query()'s public, one-statement API above."""
 
     @pytest.fixture()
@@ -420,9 +408,6 @@ class TestArrays:
         assert "shape" in detail
 
 
-# -------------------------------------------------------------- widgets
-
-
 class TestWidgetIds:
     """Ids have to be stable across re-runs, or a re-run loses what was typed."""
 
@@ -468,9 +453,6 @@ class TestWidgetMarkup:
         tt.button("Say hello")
         assert "Say hello" in cell.html
         assert "<button" in cell.html
-
-
-# ------------------------------------------------------------ tracebacks
 
 
 class TestTracebackTrimming:
@@ -747,9 +729,6 @@ class TestDescribeGlobalsWithPandas:
         tt._page_globals["lookalike"] = NotPandas()
         entry = next(e for e in tt.describe_globals() if e["name"] == "lookalike")
         assert entry["summary"] == "5 rows x 2 columns"
-
-
-# ------------------------------------------------- run reports for staged hints
 
 
 class TestRunReport:

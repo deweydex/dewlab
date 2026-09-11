@@ -1,4 +1,4 @@
-"""A cell's own report panel, in a real browser — DECISIONS_LOG.md Phase 8.
+"""A cell's own report panel, in a real browser.
 
 The icon and the panel's shell are static, built by build.py's
 render_cell() and covered by tests/test_build.py already. What can only

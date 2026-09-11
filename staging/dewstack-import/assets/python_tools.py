@@ -26,10 +26,6 @@ import io
 import os
 import sys
 
-# Force matplotlib's non-interactive backend before it is ever imported,
-# for the same reason dewlab's tutorial_tools.py does: there is no window
-# for it to open in a browser tab, and importing pyplot first would pick
-# a backend that then fails.
 os.environ.setdefault("MPLBACKEND", "AGG")
 
 _namespaces: dict[str, dict] = {}
@@ -139,11 +135,6 @@ def _is_figure(value) -> bool:
     return mpl is not None and isinstance(value, mpl.Figure)
 
 
-# Ported from dewlab's tutorial_tools.py: one neutral grey for a figure's
-# chrome, legible against both the light and dark page background (about
-# 4.15:1 against each), so a figure drawn before a reader switches theme
-# never becomes wrong — the PNG is baked, and it is not worth keeping
-# every figure open for the life of the page just to repaint it.
 _FIGURE_INK = "#7a7a7a"
 
 

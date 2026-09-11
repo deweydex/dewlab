@@ -1,10 +1,8 @@
 # A cell's own controls: where they sit, and whether "Run" can become "Stop"
 
 Design note covering two shipped changes: the bar's position and the
-hint's behaviour (§1), and — following the finding in §2 below that
-stopped it from being built as a quick addition — the Worker migration
-that made a genuine interrupt possible after all (§2, updated;
-`DECISIONS_LOG.md` 7.77).
+hint's behaviour (§1), and the Worker migration that made a genuine
+interrupt possible (§2; `DECISIONS_LOG.md` 7.77).
 
 ---
 
@@ -40,44 +38,34 @@ The request: while a cell is running, the Run button becomes a Stop
 button, in case a cell runs long enough that a reader wants to give up on
 it rather than wait.
 
-**Now built, on the hosted site — `DECISIONS_LOG.md` 7.77.** The finding
-below, that this could not be built as a small addition, was correct at
-the time and is kept as-written since the reasoning still explains *why*
-the fix had to be the size it was: a full Worker migration
-(`assets/pyodide-worker.js`), not a button. `dewlab.canStop()` reports
-whether the current page actually has it — cross-origin isolation landed
-and a `SharedArrayBuffer` was allocated — and the button only ever offers
-Stop when that is true. The offline, downloadable export deliberately
-keeps the old main-thread path below and has no Stop button: a `file://`
-page cannot load a module Worker, and the export was never going to be
-left running long enough to need one.
+**Built, on the hosted site — `DECISIONS_LOG.md` 7.77.** The fix needed a
+full Worker migration (`assets/pyodide-worker.js`), not a button.
+`dewlab.canStop()` reports whether the current page actually has it —
+cross-origin isolation landed and a `SharedArrayBuffer` was allocated —
+and the button only ever offers Stop when that is true. The offline,
+downloadable export deliberately keeps the old main-thread path and has
+no Stop button: a `file://` page cannot load a module Worker, and the
+export was never going to run long enough to need one.
 
-**This could not be built as asked, not "is hard to build" but genuinely
-could not, given how Pyodide ran here at the time.** `tutorial-runtime.js` loads
-and runs Pyodide directly on the page's own main thread — confirmed by
-reading `boot()` and `runCell()`, and by there being no `Worker` anywhere
-in the codebase (`grep -r Worker assets/` finds nothing). A single Python
+**Why a button alone couldn't do it.** `tutorial-runtime.js` used to load
+and run Pyodide directly on the page's own main thread. A single Python
 statement executing inside Pyodide's WASM runtime is synchronous from the
-browser's point of view: while it runs, the same thread that would need to
-handle a "Stop" button's click event is the thread running the student's
-Python. A genuine infinite loop does not yield back to the browser between
-iterations, so there is no point at which a click handler could even fire
-— the button would be visually present but the browser could not process
-input on it until the loop ends on its own or the browser's own "page
-unresponsive" mechanism intervenes (which already exists today, native to
-every browser, and is the de facto stop button a reader already has for a
-true runaway loop).
+browser's point of view: while it runs, the same thread that would need
+to handle a "Stop" click is the thread running the student's Python. A
+genuine infinite loop never yields back to the browser between
+iterations, so there is no point at which a click handler could even
+fire — the browser's own "page unresponsive" handling was the only
+recourse, and stays so on any page where the fix below hasn't landed.
 
 **What made this possible**: running Pyodide inside a Web Worker instead
 of the main thread, with `pyodide.setInterruptBuffer()` pointed at a
 `SharedArrayBuffer` a "Stop" click writes an interrupt signal into —
-Pyodide's own documented mechanism for exactly this, and the reason it
-works from a Worker and not from the main thread is that writing to the
+Pyodide's own documented mechanism for exactly this. Writing to the
 buffer and running the Python are then two different threads, so the
 click can be handled and acted on regardless of what the Python side is
 doing.
 
-**Why this was a much bigger PR than a button**, not a detail to wave past:
+**Why this was a much bigger change than a button:**
 
 - `SharedArrayBuffer` requires the page to be served with
   `Cross-Origin-Opener-Policy: same-origin` and
@@ -98,11 +86,6 @@ doing.
   already weighed and set aside for Jedi-in-Pyodide: real, documented,
   used elsewhere — and it turned out to be worth its real cost, built
   alongside Jedi rather than instead of it.
-
-**Built: `DECISIONS_LOG.md` 7.77.** The bar/hint change above shipped on
-its own first; the interrupt question was tracked in `QUESTIONS.md` and
-answered there once the Worker migration landed, rather than attempted as
-a quick addition to the UI-layout fix.
 
 ## 3. What a reader gets today
 

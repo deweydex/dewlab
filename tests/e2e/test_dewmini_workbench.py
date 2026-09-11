@@ -1,10 +1,9 @@
 """dewmini's workbench, in a real browser — tabs, the two rails, and the
 variable inspector against live Python.
 
-This is the first e2e coverage dewmini has ever had, and the reason it
-exists is written in `DECISIONS_LOG.md` 7.96 and 7.97: two rounds of
-defects, in code that looked right, none of them catchable without a
-browser. Everything here needs one — a tab strip that re-points a live
+This is the first e2e coverage dewmini has ever had. The reason: two
+rounds of defects, in code that looked right, none of them catchable
+without a browser. Everything here needs one — a tab strip that re-points a live
 array, a rail that reserves page width, and an inspector that reads a
 Python namespace across a worker boundary are all things that either work
 in a browser or do not work at all.
@@ -36,18 +35,12 @@ def dewmini_url(site_dir, base_url) -> str:
     conftest's own fixture does this for the tutorial page by finding its
     runtime `<script>`; dewmini boots through `compose/dewmini.js`, one
     directory down, so the base needs the extra `../` — the same relative
-    depth that produced a real bug in `DECISIONS_LOG.md` 7.89, which is
-    reason enough to write it out rather than assume it.
+    depth that produced a real bug, which is reason enough to write it out
+    rather than assume it.
     """
     page = site_dir / DEWMINI
     assert page.exists(), "build() no longer copies compose/ into the site"
     html = page.read_text()
-    # Match the *assignment*, not the name. This guard used to look for the
-    # bare name anywhere in the document, and a comment added upstream
-    # explaining what the override does contained it — so the injection
-    # silently stopped happening and every test that runs Python failed
-    # against a CDN this sandbox blocks. A guard that prose can satisfy is
-    # not a guard.
     INJECTED = 'window.DEWLAB_PYODIDE_BASE ='
     if INJECTED not in html:
         html = html.replace(
@@ -68,7 +61,7 @@ def dewmini(page, dewmini_url):
     same origin: clearing after dewmini has already read localStorage
     would leave the page showing state this test then thinks is gone.
 
-    Web and SQL default off (DECISIONS_LOG.md 7.122) — seeded on here,
+    Web and SQL default off — seeded on here,
     before the real load reads them, because the great majority of this
     suite is testing something else entirely and would otherwise have to
     turn each on for itself. The default-off behaviour, and the toggle
@@ -100,19 +93,9 @@ def add_python_cell(page, code: str) -> None:
     page.keyboard.insert_text(code)
 
 
-# --------------------------------------------------------------------- tabs
-
-
 def _open_panel(actor, selector: str) -> None:
-    """Reference/Series/Settings' toggles now collapse behind one
-    "Panels" control in the masthead (shell.html's
-    <details class="dl-panels">) rather than always showing — expand it
-    first if it isn't already, then click the actual target. Checked via
-    #dl-panels' own `open` property rather than the target's own
-    visibility, so this never mistakes "already open" for "not open" and
-    toggles it shut again right before the click that was supposed to
-    land. Left expanded once opened (no auto-collapse), so this is only
-    needed once per page load, not before every toggle click."""
+    """Expand the masthead's Panels disclosure first if needed, then
+    click the actual toggle."""
     if not actor.eval_on_selector("#dl-panels", "el => el.open"):
         actor.click("#dl-panels summary")
     actor.click(selector)
@@ -185,9 +168,6 @@ def test_work_saved_before_tabs_is_migrated(page, dewmini_url):
 
     assert page.locator(".dm-cell").count() == 1
     assert "from_before = 1" in page.locator(".cm-content").first.inner_text()
-
-
-# -------------------------------------------------------------------- rails
 
 
 def test_both_rails_can_be_open_at_once(dewmini):
@@ -287,9 +267,6 @@ def test_a_rails_width_survives_a_reload(dewmini, dewmini_url):
     assert abs(dewmini.locator("#dm-library").bounding_box()["width"] - widened) < 2
 
 
-# ---------------------------------------------------------------- reference
-
-
 def test_the_reference_searches_every_tutorials_terms(dewmini):
     """The cross-tutorial index, filtered live."""
     dewmini.click("#dm-library-toggle")
@@ -298,9 +275,6 @@ def test_the_reference_searches_every_tutorials_terms(dewmini):
         timeout=15_000,
     )
     everything = dewmini.locator("#dm-reference-groups dt").count()
-    # The fixture glossary's own entries, across several kinds. Against the
-    # real repository this is 248; here it is however many the fixture
-    # defines, so the assertion is about the pipeline working, not a count.
     assert everything >= 5, "the index should carry the fixture's terms"
 
     dewmini.fill("#dm-reference-search", "cell")
@@ -465,9 +439,6 @@ def test_the_toolbar_offers_openings_not_a_second_way_to_add_a_cell(dewmini):
     assert "import pandas" in dewmini.locator(".dm-cell-python .cm-content").last.inner_text()
 
 
-# --------------------------------------------------------------------- data
-
-
 def test_a_dataset_writes_the_code_to_load_it(dewmini):
     """Picking a dataset adds a runnable cell rather than explaining how."""
     dewmini.click("#dm-library-toggle")
@@ -478,13 +449,10 @@ def test_a_dataset_writes_the_code_to_load_it(dewmini):
     assert "load_csv" in dewmini.locator(".cm-content").first.inner_text()
 
 
-# ----------------------------------------------------------------- running
-
-
 def test_editing_a_run_cell_shows_the_stale_flag_on_the_run_line(dewmini):
-    """DECISIONS_LOG.md 7.105 / planning/CELL_IDENTITY.md §3 — the run-
-    line's "edited since" flag appears the moment a run cell's code
-    changes, and disappears the moment it runs again."""
+    """planning/CELL_IDENTITY.md §3 — the run-line's "edited since" flag
+    appears the moment a run cell's code changes, and disappears the
+    moment it runs again."""
     add_python_cell(dewmini, "6 * 7")  # a bare expression, so it actually prints something
     dewmini.locator(".dm-cell .dm-icon-run").first.click()
     dewmini.wait_for_selector(".dm-cell-output:not(.dm-empty)", timeout=90_000)
@@ -504,7 +472,7 @@ def test_editing_a_run_cell_shows_the_stale_flag_on_the_run_line(dewmini):
 
 
 def test_run_above_resets_the_namespace_first(dewmini):
-    """DECISIONS_LOG.md 7.106 — 'Run above' starts from a clean interpreter,
+    """'Run above' starts from a clean interpreter,
     so running it twice from the same edited cells gives the same answer
     both times rather than an answer that keeps growing."""
     add_python_cell(dewmini, "counter = 1")
@@ -530,14 +498,11 @@ def test_run_above_resets_the_namespace_first(dewmini):
 
 
 def test_run_below_keeps_what_came_before_it(dewmini):
-    """DECISIONS_LOG.md 7.106 — 'Run below' must not reset the namespace:
+    """'Run below' must not reset the namespace:
     its whole point is keeping what an earlier cell already defined."""
     add_python_cell(dewmini, "shared = 100\nshared")
     add_python_cell(dewmini, "shared = shared + 1\nshared")
 
-    # Only the first cell runs on its own — the second cell's own "shared"
-    # exists solely because "Run below" is about to reuse what this left
-    # behind, not because it ran as part of the same batch.
     dewmini.locator(".dm-cell .dm-icon-run").first.click()
     dewmini.wait_for_selector(".dm-cell-output:not(.dm-empty)", timeout=90_000)
 
@@ -555,8 +520,8 @@ def test_run_below_keeps_what_came_before_it(dewmini):
 
 
 def test_restart_and_run_all_reruns_from_a_clean_start(dewmini):
-    """DECISIONS_LOG.md 7.108 — one button, both halves: a real restart,
-    then every cell run again from the top."""
+    """One button, both halves: a real restart, then every cell run again
+    from the top."""
     add_python_cell(dewmini, "value = 6 * 7\nvalue")
     dewmini.once("dialog", lambda dialog: dialog.accept())
     _open_panel(dewmini, "#dl-settings-toggle")
@@ -567,12 +532,9 @@ def test_restart_and_run_all_reruns_from_a_clean_start(dewmini):
     )
 
 
-# -------------------------------------------------------------------- maths
-
-
 def test_a_text_cell_renders_maths(dewmini):
-    """DECISIONS_LOG.md 7.107 — $…$ in a text cell renders through the
-    same lazily-loaded KaTeX bundle a tutorial page uses."""
+    """$…$ in a text cell renders through the same lazily-loaded KaTeX
+    bundle a tutorial page uses."""
     dewmini.locator(".dm-insert-btn", has_text="Text").last.click()
     textarea = dewmini.locator(".dm-textarea").last
     textarea.click()
@@ -596,9 +558,6 @@ def test_maths_survives_a_dollar_sign_that_is_not_maths(dewmini):
     rendered = dewmini.locator(".dm-doc-render").last
     assert "$5 or $6" in rendered.inner_text()
     assert rendered.locator(".dl-math").count() == 0
-
-
-# -------------------------------------------------------- quiet until touched
 
 
 def _quiet_text_cell(page):
@@ -636,9 +595,8 @@ def hover_cell(page, cell):
 
 
 def test_a_rendered_text_cells_chrome_is_invisible_until_touched(dewmini):
-    """DECISIONS_LOG.md 7.115, planning/CELL_IDENTITY.md §4 — a rendered
-    text cell reads like part of the page, not a code widget, until a
-    reader actually touches it."""
+    """planning/CELL_IDENTITY.md §4 — a rendered text cell reads like part
+    of the page, not a code widget, until a reader actually touches it."""
     cell = _quiet_text_cell(dewmini)
     dewmini.mouse.move(5, 5)  # away from the cell entirely
     assert head_opacity(dewmini, cell) == "0"
@@ -673,14 +631,11 @@ def test_a_python_cells_chrome_is_never_hidden(dewmini):
     assert head_opacity(dewmini, cell) == "1"
 
 
-# ---------------------------------------------------------------- web cells
-
-
 def _web_cell(page, html="", css=""):
     """Adds a web (merged HTML+CSS) cell, types into whichever of its two
     editors was given content, and clicks Render if there's anything to
     render — the split-view replacement for the old separate
-    _html_cell()/_css_cell() helpers (DECISIONS_LOG.md 7.120). Both
+    _html_cell()/_css_cell() helpers. Both
     editors are always visible at once, so unlike those helpers there is
     no blur-to-render step; Render is the one explicit trigger."""
     page.locator(".dm-insert-btn", has_text="Web").last.click()
@@ -701,7 +656,7 @@ def test_a_web_cells_two_editors_are_both_always_visible(dewmini):
     """No Edit/View toggle, unlike the read-not-run types that keep one
     — both the HTML and the CSS editor stay visible and editable
     together, the whole point of merging the two old separate cell
-    types (DECISIONS_LOG.md 7.120)."""
+    types."""
     dewmini.locator(".dm-insert-btn", has_text="Web").last.click()
     cell = dewmini.locator(".dm-cell-web").last
     assert cell.locator(".cm-content").count() == 2
@@ -710,7 +665,8 @@ def test_a_web_cells_two_editors_are_both_always_visible(dewmini):
 
 
 def test_a_web_cells_html_renders_in_a_sandboxed_iframe(dewmini):
-    """DECISIONS_LOG.md 7.116/7.120, planning/CELL_IDENTITY.md §8."""
+    """planning/CELL_IDENTITY.md §8 — an HTML cell's markup renders inside
+    a sandboxed iframe, not inline in the page."""
     cell = _web_cell(dewmini, html="<h2>Hello from HTML</h2>")
     frame_el = cell.locator(".dm-html-frame")
     assert frame_el.get_attribute("sandbox") == "allow-scripts"
@@ -738,7 +694,7 @@ def test_a_web_cells_css_styles_its_own_html(dewmini):
     do alone: a CSS rule styling the *same* cell's own markup, not a
     fixed sample page — the pairing the old separate CSS cell's own
     design note explicitly declined to guess at, now not a guess at
-    all (DECISIONS_LOG.md 7.120)."""
+    all."""
     cell = _web_cell(
         dewmini,
         html="<h2>Styled</h2><button>Go</button>",
@@ -755,7 +711,7 @@ def test_a_web_cells_css_styles_its_own_html(dewmini):
 def test_an_empty_html_half_falls_back_to_the_fixed_preview(dewmini):
     """A CSS-only web cell — the old standalone CSS cell's own use case
     — still has something real to style before the reader has written
-    any markup of their own (DECISIONS_LOG.md 7.117/7.120)."""
+    any markup of their own."""
     cell = _web_cell(dewmini, css="h2 { color: rebeccapurple; }")
     frame = cell.locator(".dm-html-frame").content_frame
     assert frame.locator("h2").evaluate("el => getComputedStyle(el).color") == "rgb(102, 51, 153)"
@@ -764,7 +720,7 @@ def test_an_empty_html_half_falls_back_to_the_fixed_preview(dewmini):
 def test_rendering_a_web_cell_only_happens_on_render_click(dewmini):
     """Explicit, not on blur, unlike the two types this replaces — two
     editors both auto-rendering on their own focusout would fire twice
-    for one edit (DECISIONS_LOG.md 7.120)."""
+    for one edit."""
     dewmini.locator(".dm-insert-btn", has_text="Web").last.click()
     cell = dewmini.locator(".dm-cell-web").last
     editor = cell.locator(".cm-content").first
@@ -779,11 +735,6 @@ def test_rendering_a_web_cell_only_happens_on_render_click(dewmini):
 
 def test_a_web_cells_chrome_is_also_quiet_until_touched(dewmini):
     cell = _web_cell(dewmini, html="<p>Hi</p>")
-    # _web_cell() leaves focus inside whichever editor it typed into —
-    # there's no blur-to-render step to do that for it here, unlike the
-    # old _html_cell()/_css_cell() helpers. :focus-within keeps the
-    # chrome visible while focus is still there, correctly, so this has
-    # to move focus away itself before checking quiet-until-touched.
     dewmini.evaluate("document.activeElement.blur()")
     dewmini.mouse.move(5, 5)
     assert head_opacity(dewmini, cell) == "0"
@@ -820,7 +771,7 @@ def test_old_html_and_css_cells_migrate_to_web_cells_on_load(dewmini):
     cell's markup becomes the new cell's HTML half with an empty CSS
     half, and vice versa — never merged into one cell, since guessing
     which HTML an old CSS cell was written to style is exactly the
-    ambiguity DECISIONS_LOG.md 7.120 declines to resolve."""
+    ambiguity this migration leaves unresolved."""
     dewmini.evaluate(
         """() => {
             localStorage.setItem("dewmini:notebooks:v1", JSON.stringify({
@@ -846,9 +797,6 @@ def test_old_html_and_css_cells_migrate_to_web_cells_on_load(dewmini):
 
     second_frame = cells.nth(1).locator(".dm-html-frame").content_frame
     assert second_frame.locator("h2").evaluate("el => getComputedStyle(el).color") == "rgb(102, 51, 153)"
-
-
-# ---------------------------------------------------------------- sql cells
 
 
 def add_sql_cell(page, script: str) -> None:
@@ -903,7 +851,7 @@ def test_a_non_select_sql_statement_reports_rows_affected(dewmini):
 
 def test_a_python_cell_can_read_what_a_sql_cell_wrote(dewmini):
     """The whole reason SQL cells run on Python's own sqlite3 rather than a
-    separate engine (DECISIONS_LOG.md, the sql.js → Python/sqlite3 pivot):
+    separate engine (the sql.js → Python/sqlite3 pivot):
     the shared `db` connection is available to an ordinary Python cell
     under the same name, with no plumbing of its own."""
     add_sql_cell(dewmini, "CREATE TABLE t (id INTEGER, name TEXT);\nINSERT INTO t VALUES (1, 'grace');")
@@ -946,9 +894,6 @@ def test_a_bad_sql_statement_shows_an_error_not_a_silent_failure(dewmini):
     assert "dm-error" in (cell.get_attribute("class") or "")
 
 
-# ----------------------------------------------------------- javascript cells
-
-
 def add_js_cell(page, code: str) -> None:
     """Adds a JavaScript cell and types `code` into it — the JS counterpart
     of add_python_cell()/add_sql_cell() above. Python-shaped chrome, like
@@ -982,7 +927,7 @@ def test_console_log_is_captured_as_the_cells_output(dewmini):
 def test_rerunning_a_let_declaring_cell_does_not_throw(dewmini):
     """The whole reason a JS cell's code runs through indirect eval rather
     than an inserted <script> tag (compose/js-cell-engine.js's own file
-    banner, DECISIONS_LOG.md 7.119): a top-level `let` declared by a
+    banner): a top-level `let` declared by a
     <script> tag joins the realm's one permanent global lexical scope, so
     re-running an edited cell — an entirely ordinary thing to do — would
     throw "Identifier has already been declared" on its second run.
@@ -1085,9 +1030,6 @@ def test_run_all_runs_python_and_javascript_cells_together(dewmini):
     assert any("py ran" in t for t in texts)
 
 
-# ---------------------------------------------------------------- variables
-
-
 def test_the_inspector_shows_what_a_cell_actually_made(dewmini):
     """The inspector against live Python — the part that cannot be faked.
 
@@ -1128,9 +1070,6 @@ def test_the_inspector_folds_away_functions_and_modules(dewmini):
     assert "mine" not in folded.inner_text()
 
 
-# ------------------------------------------------------------------ storage
-
-
 def test_a_full_storage_keeps_the_code_and_says_what_it_dropped(dewmini):
     """When localStorage fills, saveState() gives up outputs rather than
     giving up silently. See "Keeping your work" in docs/DEWMINI.md.
@@ -1165,19 +1104,11 @@ def test_a_full_storage_keeps_the_code_and_says_what_it_dropped(dewmini):
     dewmini.locator(".dm-cell .dm-icon-run").first.click()
     dewmini.wait_for_selector(".dm-cell-output:not(.dm-empty)", timeout=90_000)
 
-    # The reader is told, and told that the code is the part that survived.
-    # The notice, not the status line: a run posts "Ran." to that line the
-    # instant after the save, which is exactly why this has its own place.
     notice = dewmini.locator("#storage-notice")
     notice.wait_for(state="visible", timeout=30_000)
     assert "code is saved" in notice.inner_text()
     assert "run that cell again" in notice.inner_text()
 
-    # The part that actually mattered: work done *after* the oversized
-    # output still gets saved. Under the old empty `catch` every write
-    # from here on failed — the payload always carried that output — so
-    # this second cell would never reach storage and a reload would find
-    # one cell, not two.
     add_python_cell(dewmini, "written_after = 1")
 
     dewmini.reload()
@@ -1199,7 +1130,6 @@ def test_an_ordinary_save_says_nothing_about_storage(dewmini):
         "document.querySelectorAll('.dm-cell').length === 1", timeout=90_000
     )
     assert dewmini.locator("#storage-notice").is_hidden()
-# ------------------------------------------------- the .py round trip
 
 
 def add_text_cell(page, prose: str) -> None:
@@ -1235,11 +1165,6 @@ def export_python(page, tmp_path):
     return written
 
 
-# --------------------------------------------------- outputs in a .ipynb
-
-# A 1x1 transparent PNG. Small enough to write inline, real enough that a
-# browser renders it — so an image can be tested without paying for a
-# matplotlib figure on every run.
 TINY_PNG = (
     "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk"
     "YPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=="
@@ -1408,7 +1333,6 @@ def test_a_leading_comment_from_another_file_is_kept(dewmini, tmp_path):
     assert len(cells) == 2, "the licence header was dropped"
     assert "Copyright 2026 Somebody Else." in cells[0][1]
     assert "MIT licence" in cells[0][1]
-# ------------------------------------------- importing a workspace file
 
 
 def run_first_cell_and_wait(page, index=0):
@@ -1482,9 +1406,6 @@ def test_an_edited_import_is_reported_and_can_be_re_read(dewmini):
     dewmini.click("#reload-stale-imports")
     assert notice.is_hidden()
 
-    # Waiting for the new value rather than for "some output": the old
-    # output is still on screen when the re-run starts, so a check for
-    # non-empty text can read the previous answer and pass by luck.
     dewmini.locator(".dm-cell .dm-icon-run").nth(2).click()
     dewmini.wait_for_function(
         "document.querySelectorAll('.dm-cell-output')[2].innerText.trim() === '110'",
@@ -1640,9 +1561,6 @@ def test_an_error_output_from_a_file_reads_as_an_error(dewmini, tmp_path):
     assert output.locator(".dl-error").count() == 1
 
 
-# --------------------------------------------------------------- file view
-
-
 def switch_view(page, which: str) -> None:
     """Switches between the cells view and the file view."""
     page.locator(f"#dm-view-{which}").click()
@@ -1764,9 +1682,6 @@ def test_running_the_file_runs_the_whole_thing_in_order(dewmini):
     )
 
 
-# ------------------------------------------------------------ file manager
-
-
 def write_workspace_file(page, name: str, text: str) -> None:
     """Writes a file into the workspace from a Python cell, and waits.
 
@@ -1829,16 +1744,10 @@ def test_editing_an_opened_file_writes_back_to_the_workspace(dewmini):
     dewmini.keyboard.press("Control+End")
     dewmini.keyboard.insert_text("\ny = 2\n")
 
-    # The write is debounced, so give it a moment to land. Then read the
-    # file back from a notebook of its own: this tab is showing a file, and
-    # a file view has no insert seams to add a cell through.
     dewmini.wait_for_timeout(1500)
     dewmini.locator("#new-notebook").click()
     add_python_cell(dewmini, "print(open('notes.py').read())")
     shown = run_first_cell_and_wait(dewmini)
-    # Exact, not a substring: the bug this guards against (DECISIONS_LOG.md
-    # 7.125) left "y = 2" present too, just sitting under an unasked-for
-    # "# %%" the file never had before dewmini opened it.
     assert shown == "x = 1\ny = 2"
 
 
@@ -1852,10 +1761,6 @@ def test_a_markerless_file_stays_markerless_after_editing(dewmini):
     dewmini.locator(".dm-filelist-item-name", has_text="plain.py").click()
     dewmini.wait_for_selector(".dm-fileview-editor")
 
-    # The marker must be absent the moment the file is only *opened*,
-    # before any edit — parsePyCells()'s markerless fallback and
-    # cellsToPercentText()'s single-cell case are meant to agree on this,
-    # and the file view seeds itself from the latter.
     assert "# %%" not in dewmini.locator(".dm-fileview-editor .cm-content").inner_text()
 
     editor = dewmini.locator(".dm-fileview-editor .cm-content")
@@ -1954,9 +1859,6 @@ def test_the_project_is_on_the_left_and_the_reference_on_the_right(dewmini):
     assert dewmini.locator("#dm-library #dm-reference-section").count() == 1
 
 
-# --------------------------------------------------------------------- site
-
-
 def test_an_html_file_in_the_workspace_opens_as_a_site(dewmini):
     """A .html opens split-screen: its own editor plus a live preview,
     not as a file view or as cells (planning/DEWMINI_WORKBENCH.md §10)."""
@@ -2024,11 +1926,6 @@ def test_editing_a_sites_html_updates_the_preview_live(dewmini):
     dewmini.keyboard.press("Control+A")
     dewmini.keyboard.insert_text("<p>After</p>")
 
-    # Not el.contentDocument from the parent page's own JS: the sandboxed
-    # iframe has no allow-same-origin, so it is a genuinely different,
-    # opaque origin, and the parent cannot read into it that way (it just
-    # sees null, forever). Playwright's own content_frame reaches inside
-    # via the DevTools protocol instead, which real page script cannot do.
     frame = dewmini.locator(".dm-siteview-frame").content_frame
     expect(frame.locator("p")).to_have_text("After")
 
@@ -2045,10 +1942,6 @@ def test_editing_a_sites_css_writes_back_to_its_own_file(dewmini):
     css_editor.click()
     dewmini.keyboard.insert_text("h1 { color: gold; }")
 
-    # Two debounces stack before this is durable: scheduleWorkspaceWrite()'s
-    # own 600ms, then dewmini-fs.js's internal sync debounce on top of that
-    # (the same reasoning the earlier standalone Site design noted, and
-    # discarded along with it — DECISIONS_LOG.md 7.121).
     dewmini.wait_for_timeout(3000)
 
     dewmini.locator("#new-notebook").click()
@@ -2087,13 +1980,10 @@ def test_the_cell_toolbar_hides_for_a_site_tab(dewmini):
     assert dewmini.locator("#run-all").is_visible()
 
 
-# ---------------------------------------------------------------- cell types
-
-
 def fresh_page(page, dewmini_url):
     """A page with truly empty storage — unlike the `dewmini` fixture,
-    which seeds Web and SQL on for the rest of this suite's convenience
-    (DECISIONS_LOG.md 7.122). The default-off behaviour can only be seen
+    which seeds Web and SQL on for the rest of this suite's convenience.
+    The default-off behaviour can only be seen
     from a page that fixture never touched."""
     page.goto(dewmini_url)
     page.evaluate("localStorage.clear()")
@@ -2152,9 +2042,6 @@ def test_a_cell_type_toggle_survives_a_reload(dewmini, dewmini_url):
     assert "SQL" not in dewmini.locator(".dm-insert-btn").all_inner_texts()
 
 
-# ---------------------------------------------------- settings radiogroups
-
-
 def open_texture_settings(page):
     _open_panel(page, "#dl-settings-toggle")
     page.wait_for_selector('.dl-seg[data-texture="theme"]')
@@ -2162,7 +2049,7 @@ def open_texture_settings(page):
 
 def test_the_theme_group_announces_itself_as_a_radiogroup(dewmini):
     """Every .dl-seg is a mutually-exclusive single-choice group, not a row
-    of independent toggle buttons — DECISIONS_LOG.md 7.130."""
+    of independent toggle buttons."""
     open_texture_settings(dewmini)
     group = dewmini.locator('.dl-seg[data-texture="theme"]')
     expect(group).to_have_attribute("role", "radiogroup")
@@ -2227,9 +2114,6 @@ class TestStatusAnnouncer:
         self.wait_for_status(page, "Ran.")
 
 
-# ------------------------------------------------------ site: console and Run
-
-
 def open_site(page, html: str, js: str, name: str = "page") -> None:
     """A .html with a same-name .js beside it, opened as a site."""
     write_workspace_file(page, f"{name}.js", js)
@@ -2246,7 +2130,7 @@ def site_console_lines(page):
 def test_a_sites_script_logs_and_errors_into_its_console(dewmini):
     """The console under the preview shows what the script printed and
     the error it raised, with the pane line the error came from, and a
-    plain-language second line (DECISIONS_LOG.md 7.134)."""
+    plain-language second line."""
     open_site(dewmini, "<h1>Hi</h1>", 'console.log("start", { a: 1 });\nnope();\nconsole.log("never");')
     lines = site_console_lines(dewmini)
     lines.nth(1).wait_for()

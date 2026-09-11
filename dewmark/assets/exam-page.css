@@ -28,7 +28,6 @@ body {
   line-height: 1.6;
 }
 
-/* ------------------------------------------------ header band */
 .dm-band { background: var(--dm-navy); color: var(--dm-bg); padding: 18px 36px; }
 .dm-band-kind {
   margin: 0; font-family: var(--dm-sans); font-size: 11px;
@@ -40,7 +39,6 @@ body {
 .dm-band-title { margin: 4px 0 2px; font-size: 22px; font-weight: 700; }
 .dm-band-meta { margin: 0; font-family: var(--dm-sans); font-size: 13px; opacity: 0.85; }
 
-/* ------------------------------------------------ cards (start, finish) */
 .dm-card {
   max-width: 640px; margin: 40px auto; background: #ffffff;
   border: 1px solid var(--dm-border); border-radius: 4px;
@@ -75,7 +73,6 @@ button { cursor: pointer; font-family: var(--dm-sans); }
 }
 #dm-start button { margin-top: 12px; margin-right: 10px; }
 
-/* ------------------------------------------------ top bar and layout */
 #dm-topbar {
   position: sticky; top: 0; z-index: 10; display: flex; align-items: center;
   gap: 14px; background: var(--dm-navy); color: var(--dm-bg); padding: 8px 20px;
@@ -115,7 +112,6 @@ button { cursor: pointer; font-family: var(--dm-sans); }
 table { border-collapse: collapse; }
 #dm-paper table td, #dm-paper table th { border: 1px solid var(--dm-border); padding: 5px 10px; }
 
-/* ------------------------------------------------ answer spaces */
 .dm-answer {
   background: #ffffff; border: 1px solid var(--dm-border);
   border-left: 3px solid var(--dm-navy); border-radius: 4px;
@@ -168,7 +164,6 @@ table { border-collapse: collapse; }
 }
 .dm-feature-row { margin: 8px 0; }
 
-/* ------------------------------------------------ python code questions */
 .dm-question-chip {
   font-family: var(--dm-sans); font-size: 11px; font-weight: 700;
   color: var(--dm-muted); background: var(--dm-box-bg);
@@ -267,7 +262,6 @@ table { border-collapse: collapse; }
 .dm-file-row code { font-size: 12.5px; background: var(--dm-box-bg);
   border: 1px solid var(--dm-border); border-radius: 3px; padding: 1px 5px; }
 
-/* ------------------------------------------------ answer key extras */
 .dm-model {
   margin-top: 12px; border-top: 1px dashed var(--dm-border); padding-top: 10px;
   background: #eef2f8; border-radius: 3px; padding: 10px 14px;
@@ -282,12 +276,10 @@ table { border-collapse: collapse; }
   display: inline-block; padding: 2px 8px; margin: 0 0 6px;
 }
 
-/* ------------------------------------------------ finish screen */
 #dm-finish-report ul { font-family: var(--dm-sans); font-size: 14px; line-height: 1.7; }
 .dm-finish-good { color: var(--dm-good); }
 .dm-finish-warn { color: var(--dm-warn); }
 
-/* ------------------------------------------------ printing */
 @media print {
   #dm-topbar button, #dm-panel, .dm-save-pill, #dm-start, #dm-finish-screen { display: none !important; }
   #dm-topbar { position: static; }
