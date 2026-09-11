@@ -6,6 +6,11 @@ module_title: "Web Authoring"
 year: "2026-2027"
 series: shelf
 version: 2026.09.11.1
+covers:
+  a-page-or-a-style-doesnt-look-right:
+    covers: [WA-LO10]
+  my-code-has-a-mistake-i-cant-find:
+    covers: [WA-LO10]
 ---
 
 # Troubleshooting

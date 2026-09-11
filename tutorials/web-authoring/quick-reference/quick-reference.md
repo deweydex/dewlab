@@ -6,6 +6,11 @@ module_title: "Web Authoring"
 year: "2026-2027"
 series: shelf
 version: 2026.09.11.1
+covers:
+  html:
+    touches: [WA-LO2]
+  css:
+    touches: [WA-LO9]
 ---
 
 # Quick reference

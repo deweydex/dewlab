@@ -6,6 +6,13 @@ module_title: "Web Authoring"
 year: "2026-2027"
 series: welcome
 version: 2026.09.11.1
+covers:
+  turning-it-on:
+    covers: [WA-LO13]
+  why-the-address-looks-the-way-it-does:
+    touches: [WA-LO13]
+  keeping-it-up-to-date:
+    covers: [WA-LO13]
 ---
 
 # Publish it

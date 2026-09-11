@@ -3218,3 +3218,40 @@ five new `topic-groups.yaml` groups, the preview-width slider added to
 `.dl-site-split` changed from a side-by-side flex row to a stacked
 column. The module still needs a real QQI descriptor before
 `covers:`/`outcomes.yaml` entries can honestly follow.*
+
+**7.146 — QQI 5N1910 mapped from the real descriptor; a stale DBM-LO6/
+LO7 gap-claim fixed along the way.** Fourteen outcomes added to
+`outcomes.yaml`/`topics.yaml`, paraphrased the way DBM's eleven are,
+honest about where dewlab's approach — a hand-written in-browser site
+editor, GitHub Pages instead of an ISP, no WYSIWYG tool, no CMS, no code
+generator — parts ways with the descriptor's GUI/vendor assumptions. 40
+of the 42 web-authoring pages carry `covers:`/`touches:` frontmatter;
+`faq.md` and `issues-and-pull-requests.md` teach nothing on the list.
+Ten of the fourteen codes land on real content; WA-LO1 (HTML/CSS version
+history), WA-LO5 (desktop publishing/CMS tools) and WA-LO12 (code
+generators) have no dewlab equivalent, the same shape as DBM-LO1.
+
+The database-methods comment block and DBM-LO7's own title still called
+DBM-LO6's data-entry half and DBM-LO7 uncovered — false since "A Form
+That Writes a Row", "Exporting a Query to a File" and "Charting a
+Query's Result" already cover them. Rewritten to match
+`CURRICULUM_MAP.md`, which already showed both green. DBM-LO1 is the one
+real DBM gap left.
+
+`dev/curriculum_map.py`'s `anchor_for()` re-implements Python-Markdown's
+slugify by hand and has no notion of a repeated heading, so
+`keyframes-and-the-checkbox-hack.md`'s second "Why this happens" heading
+(`why-this-happens_1` in the built HTML) can't be addressed on its own —
+its `covers:` frontmatter merges both headings' coverage into the one
+addressable key instead. `strands.yaml` gained WA's eight fine strands:
+`web-history`/`html-tags`/`css` in the `programming` column alongside
+DBM's own; `tooling`/`design-principles`/`process`/`testing`/
+`independence` in `software-development`, the same column
+FOOP-LO5/9/10/11 and PDP-LO7/9/10/12 sit in for the same reason — a
+practice, not a way of writing code.
+
+*Cost to change: the DBM comment/title fix; the WA-LO module block in
+`outcomes.yaml` and matching `topics.yaml` entries; `covers:`/`touches:`
+frontmatter on 40 of 42 web-authoring pages; eight new fine strands in
+`strands.yaml` and the two regenerated static pages that depend on it.
+No engine or build.py change this time.*

@@ -6,6 +6,12 @@ module_title: "Web Authoring"
 year: "2026-2027"
 series: welcome
 version: 2026.09.11.1
+covers:
+  vs-code-the-usual-choice:
+    covers: [WA-LO3]
+  no-installing-anything-githubs-own-editor:
+    covers: [WA-LO3]
+    touches: [WA-LO13]
 ---
 
 # An editor

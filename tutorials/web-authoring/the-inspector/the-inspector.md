@@ -6,6 +6,13 @@ module_title: "Web Authoring"
 year: "2026-2027"
 series: welcome
 version: 2026.09.11.1
+covers:
+  opening-it:
+    touches: [WA-LO10]
+  elements-the-pages-actual-structure:
+    covers: [WA-LO10]
+  console-where-errors-show-up:
+    covers: [WA-LO10]
 ---
 
 # The browser inspector

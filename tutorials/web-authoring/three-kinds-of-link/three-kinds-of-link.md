@@ -6,6 +6,11 @@ module_title: "Web Authoring"
 year: "2026-2027"
 series: first-site
 version: 2026.09.11.1
+covers:
+  why-this-happens:
+    covers: [WA-LO2]
+  your-turn:
+    touches: [WA-LO8]
 ---
 
 # Three kinds of link

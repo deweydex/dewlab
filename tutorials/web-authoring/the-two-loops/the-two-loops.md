@@ -6,6 +6,13 @@ module_title: "Web Authoring"
 year: "2026-2027"
 series: welcome
 version: 2026.09.11.1
+covers:
+  the-local-loop-save-and-refresh:
+    touches: [WA-LO13]
+  the-github-loop-commit-push-and-wait:
+    touches: [WA-LO13]
+  telling-the-two-apart:
+    touches: [WA-LO13]
 ---
 
 # The two loops

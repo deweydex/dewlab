@@ -6,6 +6,13 @@ module_title: "Web Authoring"
 year: "2026-2027"
 series: several-pages
 version: 2026.09.11.1
+covers:
+  two-site-maps:
+    covers: [WA-LO4]
+  why-this-happens:
+    covers: [WA-LO4, WA-LO7]
+  your-turn:
+    touches: [WA-LO4, WA-LO7]
 ---
 
 # Planning a site

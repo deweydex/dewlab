@@ -6,6 +6,14 @@ module_title: "Web Authoring"
 year: "2026-2027"
 series: shelf
 version: 2026.09.11.1
+covers:
+  after-you-fork-the-starter:
+    touches: [WA-LO8]
+  after-flexbox-and-grid:
+    touches: [WA-LO9]
+  making-any-of-them-easy-to-read:
+    covers: [WA-LO14]
+    touches: [WA-LO4]
 ---
 
 # Project ideas

@@ -1724,3 +1724,183 @@ topics:
       - Reading a SQL error message for the exact line and reason it failed.
       - A self-check that says what is still missing, one task at a time.
     needs: []
+
+  # ---------------------------------------------------------------- WA 5N1910
+  WA-LO1:
+    name: The history of HTML and CSS
+    outcome: WA-LO1
+    plain: >
+      How HTML and CSS changed from their first versions to the standards
+      browsers use now, and what a deprecated tag or property is: one a
+      browser still understands, but no longer recommended.
+    uses:
+      - A page still using the `<center>` tag, retired once CSS could align
+        text on its own.
+      - An old tutorial that teaches a way of doing something no browser
+        needs any more.
+    needs: []
+
+  WA-LO2:
+    name: HTML tags and their attributes
+    outcome: WA-LO2
+    plain: >
+      A tag marks what a piece of content is, not how it looks. An
+      attribute adds detail to a tag, written inside its opening angle
+      brackets.
+    uses:
+      - An `<img>` tag's `src` attribute, naming which picture to show.
+      - An `<a>` tag's `href` attribute, naming which page a link goes to.
+    needs: []
+
+  WA-LO3:
+    name: Editors for HTML and CSS
+    outcome: WA-LO3
+    plain: >
+      A code editor for HTML and CSS can run installed on a computer, or
+      directly in a browser with nothing to install. Both write the same
+      plain text; the difference is what has to be set up first.
+    uses:
+      - VS Code, installed once and reused for years.
+      - GitHub's own browser editor, open the moment a repository is open.
+    needs: []
+
+  WA-LO4:
+    name: Principles of website design
+    outcome: WA-LO4
+    plain: >
+      A website's audience, its objectives, its navigation and its
+      structure are all decisions made before any HTML exists. A
+      slow-loading page can lose visitors before they see what it says.
+    uses:
+      - A shop's website, built for customers rather than for the shop's
+        own staff.
+      - A photo gallery kept small enough to load quickly on a phone.
+    needs: [WA-LO2]
+
+  WA-LO5:
+    name: Web authoring tools
+    outcome: WA-LO5
+    plain: >
+      Desktop publishing programs and website management systems are two
+      further kinds of web authoring tool, alongside a code editor.
+    uses:
+      - WordPress, a website management system many blogs and small
+        business sites run on.
+      - A page built entirely inside a desktop publishing program, then
+        exported as HTML.
+    needs: []
+
+  WA-LO6:
+    name: Keeping evidence of a project
+    outcome: WA-LO6
+    plain: >
+      A record of a web authoring project's own research, its
+      requirements, and an honest evaluation of the finished site, kept as
+      the work happens rather than written afterwards from memory.
+    uses:
+      - A short note explaining why a font or a colour was chosen.
+      - A record of what still does not work, alongside what does.
+    needs: [WA-LO4]
+
+  WA-LO7:
+    name: Planning a design and interface
+    outcome: WA-LO7
+    plain: >
+      A site map lists every page a website needs and how they connect. A
+      wireframe sketches what one page's interface will hold, before any
+      CSS exists.
+    uses:
+      - A site map for a five-page portfolio, drawn before writing any
+        HTML.
+      - A wireframe deciding where a photo, a heading and a caption
+        belong.
+    needs: [WA-LO4]
+
+  WA-LO8:
+    name: Building pages with HTML
+    outcome: WA-LO8
+    plain: >
+      Choosing the tag each piece of content actually is, then writing
+      HTML a browser renders correctly and a screen reader can follow.
+    uses:
+      - A recipe's ingredients marked up as a list, rather than as plain
+        paragraphs.
+      - A form built from real form tags, rather than styled to only look
+        like one.
+    needs: [WA-LO2]
+
+  WA-LO9:
+    name: Styling pages with CSS
+    outcome: WA-LO9
+    plain: >
+      Choosing a selector that reaches the right elements, then writing
+      the property and value that changes how they look.
+    uses:
+      - A `.card` class reused on every product on a shop's page.
+      - A media query that rearranges a page's layout on a narrow screen.
+    needs: [WA-LO2]
+
+  WA-LO10:
+    name: Testing a website
+    outcome: WA-LO10
+    plain: >
+      Checking a finished page against what it was meant to do, rather
+      than assuming it works because it looks right on one screen.
+    uses:
+      - A browser's own developer tools, open beside a page to see why one
+        style did not apply.
+      - A form tested by submitting it, not just by reading its code.
+    needs: [WA-LO8, WA-LO9]
+
+  WA-LO11:
+    name: Planning a website's future
+    outcome: WA-LO11
+    plain: >
+      A note for whoever maintains a website next: what to check
+      periodically, and what the site would need if it grew.
+    uses:
+      - A maintenance note listing how to add a new page to an existing
+        site.
+      - A plan for what a five-page site would need to become a
+        fifty-page one.
+    needs: [WA-LO6]
+
+  WA-LO12:
+    name: HTML and CSS code generators
+    outcome: WA-LO12
+    plain: >
+      A tool that writes HTML or CSS from a simpler description, rather
+      than a person typing every tag and property by hand.
+    uses:
+      - A gradient generator, producing the CSS for a colour effect from a
+        few clicks.
+      - A table generator, turning pasted spreadsheet data into an HTML
+        table.
+    needs: []
+
+  WA-LO13:
+    name: Publishing without a host of your own
+    outcome: WA-LO13
+    plain: >
+      A website does not need its own paid host to go online. GitHub
+      Pages publishes a repository's files as a real website, free, at an
+      address GitHub provides.
+    uses:
+      - A student's own portfolio, published this way instead of paying
+        for hosting.
+      - A project's documentation, published straight from the same
+        repository that holds its code.
+    needs: []
+
+  WA-LO14:
+    name: Applying design principles to a real site
+    outcome: WA-LO14
+    plain: >
+      Building an actual website against the principles a design was
+      planned around, rather than treating them as a separate topic from
+      the HTML and CSS that follows.
+    uses:
+      - A portfolio site checked against its own site map once every page
+        exists.
+      - A colour scheme checked for contrast, not just for appearance.
+    needs: [WA-LO7, WA-LO8, WA-LO9]
