@@ -1,0 +1,17 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# Third tutorial of "A database with several tables". Checked against
+# the two tutorials before it in this series -- no overlap. JOIN itself
+# is reused here ("already showed what a JOIN does") rather than
+# re-taught, so it is left out; LEFT JOIN is the genuinely new keyword,
+# even though this tutorial does not mark it with emphasis -- it gets a
+# full explanation in prose and a recap entry of its own.
+entries:
+  - term: "LEFT JOIN"
+    kind: keyword
+    definition: >
+      LEFT JOIN keeps every row from the first table, whether or not a
+      matching row exists in the second. Where there is no match, the
+      second table's columns come back empty instead of the row
+      disappearing.
+    example: "SELECT income_share.country, country_regions.region FROM income_share LEFT JOIN country_regions ON income_share.country = country_regions.country;"

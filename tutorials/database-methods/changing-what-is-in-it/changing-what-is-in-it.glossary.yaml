@@ -1,0 +1,27 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# Third tutorial of "A table of your own" (series: first-database).
+# Checked against a-table-is-a-list-of-rows's and
+# asking-questions-of-a-table's own glossaries -- no overlap. WHERE
+# itself is reused here (every UPDATE and DELETE in this tutorial needs
+# one) but not redefined; this tutorial's new content is what UPDATE and
+# DELETE do with it.
+entries:
+  - term: "UPDATE"
+    kind: keyword
+    definition: >
+      UPDATE changes a value in the rows that its WHERE matches. Leaving
+      WHERE out changes that value in every row of the table.
+    example: "UPDATE dinosaurs SET length_meters = 2.5 WHERE name = 'Velociraptor';"
+
+  - term: "DELETE"
+    kind: keyword
+    definition: >
+      DELETE removes the rows that its WHERE matches. Leaving WHERE out
+      removes every row in the table.
+    example: "DELETE FROM dinosaurs WHERE name = 'Stegosaurus';"
+
+  - term: "SET"
+    kind: keyword
+    definition: "SET names a column and the new value that UPDATE gives it."
+    example: "UPDATE dinosaurs SET length_meters = 2.5 WHERE name = 'Velociraptor';"

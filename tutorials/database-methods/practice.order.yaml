@@ -1,0 +1,7 @@
+# The reading order of this series. Every tutorial in the series has to be
+# listed here, and every slug listed has to exist, or the build stops.
+
+series: Practice
+order:
+  - sql-practice
+  - the-tentacular-plushies-quiz

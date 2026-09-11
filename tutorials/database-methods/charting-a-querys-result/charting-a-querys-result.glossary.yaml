@@ -1,0 +1,25 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# Fourth tutorial of "A database with several tables". Checked against
+# the three tutorials before it in this series -- load_csv and to_sql
+# are reused, not redefined. matplotlib's own calls (plt.plot, plt.
+# legend, plt.xlabel...) are used throughout but never taught from
+# scratch -- treated as prior knowledge from elsewhere, not this
+# series' own vocabulary, so only the two new pandas/SQL-bridging
+# functions this page actually teaches are listed.
+entries:
+  - term: "read_sql()"
+    kind: function
+    definition: >
+      Runs a SQL query against the database and returns the result as a
+      DataFrame. It does the reverse of to_sql(), which writes a
+      DataFrame into the database instead.
+    example: 'result = pd.read_sql("SELECT * FROM income_share", db)'
+
+  - term: "groupby()"
+    kind: function
+    definition: >
+      Splits a table into a smaller table for each distinct value in a
+      column. A loop can then go through each group in turn, working
+      with one country's rows at a time.
+    example: 'for country, rows in result.groupby("country"):'

@@ -1,0 +1,77 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# First tutorial of "A table of your own" (series: first-database). No
+# earlier series feeds it (this module has no series.yaml chaining first-
+# database after anything else), so the cumulative list starts empty here.
+#
+# This module was ported without the usual single-asterisk emphasis
+# convention (PEDAGOGICAL_STYLE_GUIDE.md §4) -- dev/curriculum_map.py's
+# EMPHASIS_RE finds zero marked terms across all four of this series'
+# tutorials. Candidates below came from reading the prose and cells
+# directly, cross-checked against each tutorial's own "What you have now"
+# recap list. Worth a note back to whoever ported this module: the recap
+# lists Table/Row/Column/Statement here but not CREATE TABLE, INSERT,
+# SELECT, PRIMARY KEY, or the column types, even though the tutorial gives
+# each of those its own explanation and the reader is expected to write
+# them in "Your turn" -- likely an oversight if this module later adopts
+# the emphasis convention.
+entries:
+  - term: table
+    kind: concept
+    definition: >
+      A table stores many records in one place. Every record inside it is
+      shaped the same way, with the same columns from one row to the next.
+
+  - term: row
+    kind: concept
+    definition: >
+      A row holds one record in a table, such as one dinosaur or one line
+      in a shopping list.
+
+  - term: column
+    kind: concept
+    definition: >
+      A column holds one property that every row in a table has, such as
+      a dinosaur's name or its diet.
+
+  - term: statement
+    kind: concept
+    definition: >
+      A statement is one instruction to a database. CREATE TABLE, INSERT,
+      and SELECT are all statements, and each one ends with a semicolon.
+
+  - term: "CREATE TABLE"
+    kind: keyword
+    definition: >
+      CREATE TABLE makes a new table. It names the table and lists each
+      column, along with the type of value that column holds.
+    example: "CREATE TABLE dinosaurs (id INTEGER PRIMARY KEY, name TEXT);"
+
+  - term: "INSERT INTO"
+    kind: keyword
+    definition: >
+      INSERT INTO adds one or more rows to a table. Each line inside
+      VALUES is one row, and its values follow the same order as the
+      column names listed after the table's name.
+    example: "INSERT INTO dinosaurs (name, diet) VALUES ('Stegosaurus', 'Herbivore');"
+
+  - term: "SELECT"
+    kind: keyword
+    definition: >
+      SELECT reads rows and columns from a table, without changing
+      anything in it. The table's name always comes right after FROM.
+    example: "SELECT * FROM dinosaurs;"
+
+  - term: "PRIMARY KEY"
+    kind: keyword
+    definition: >
+      PRIMARY KEY marks the column that gives each row in a table its own
+      unique number, filled in automatically when a row is added.
+    example: "id INTEGER PRIMARY KEY"
+
+  - term: "TEXT, REAL, INTEGER"
+    kind: keyword
+    definition: >
+      TEXT, REAL and INTEGER are the three column types this course uses.
+      TEXT holds words, REAL holds a number with a decimal point, and
+      INTEGER holds a whole number.

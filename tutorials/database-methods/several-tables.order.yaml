@@ -1,0 +1,11 @@
+# The reading order of this series. Every tutorial in the series has to be
+# listed here, and every slug listed has to exist, or the build stops.
+
+series: A database with several tables
+order:
+  - designing-a-table-before-you-build-it
+  - loading-a-real-dataset
+  - joining-two-real-tables
+  - charting-a-querys-result
+  - exporting-a-query-to-a-file
+  - a-form-that-writes-a-row

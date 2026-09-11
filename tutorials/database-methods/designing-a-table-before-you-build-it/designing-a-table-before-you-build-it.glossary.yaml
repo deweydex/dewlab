@@ -1,0 +1,22 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# First tutorial of "A database with several tables" (series:
+# several-tables, module: database-methods). No series.yaml exists for
+# this module, so this series' reference accumulates only from itself --
+# it starts empty here, the same as first-database's own first tutorial
+# did.
+#
+# This tutorial leans hard on "A table of your own" (series:
+# first-database) -- CREATE TABLE, PRIMARY KEY, and dinosaurs.id are all
+# referred back to directly ("the way dinosaurs.id did earlier") rather
+# than re-taught, and none of them are marked with emphasis here. Left
+# out on that basis, not because a cumulative list said so. The one
+# genuinely new, emphasised term is one-to-many.
+entries:
+  - term: one-to-many
+    kind: concept
+    definition: >
+      One-to-many is a relationship between two tables where one row in
+      the first table can be linked to many rows in the second. Each row
+      in the second table points back to exactly one row in the first,
+      usually through an id column.
