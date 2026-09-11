@@ -211,8 +211,6 @@ html[data-dl-panel-right] .dm-page .dl-crumbs {
   .dm-pulse { animation: none; }
 }
 
-/* -------------------------------------------------------------------cells */
-
 .dm-cells { display: flex; flex-direction: column; }
 
 .dm-insert {
@@ -1222,8 +1220,7 @@ kbd {
   min-height: 8rem;
 }
 
-/* The right-hand column: the preview, and under it the console
- * (DECISIONS_LOG.md 7.134). */
+/* The right-hand column: the preview, and under it the console. */
 .dm-siteview-preview {
   flex: 1 1 50%;
   min-width: 0;
