@@ -72,5 +72,5 @@ series builds, one page at a time.
   is the sign a table is doing two jobs.
 - **Every column needs a name and a type.** Deciding both, before writing
   `CREATE TABLE`, is what `CREATE TABLE` actually asks for.
-- **One-to-many** is a relationship where one row in one table can be linked
-  to many rows in another, through an id column such as `product_id`.
+- **One-to-many** is a relationship where an id column, such as `product_id`,
+  links one row in one table to many rows in another.

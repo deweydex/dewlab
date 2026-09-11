@@ -99,6 +99,6 @@ would become.
 
 - **`to_csv`.** Turns a DataFrame back into the same plain-text shape a CSV
   file holds.
-- **A query's result is not the same as its text.** The SQL that built a
+- **A query and its result are two different things.** The SQL that built a
   table and the rows it returned are two different things worth keeping
   separately; this page exports the second.

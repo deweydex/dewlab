@@ -50,16 +50,17 @@ a visitor; a database's job starts where a form's ends.
 
 ## What still has to happen for this to be real
 
-Three things, each already covered somewhere on this site, and none of
-them connected to each other yet:
+Three things still have to happen, each already covered somewhere on this
+site, and none of them connected to each other yet:
 
-1. **Reading a form's values.** A page on forms, part of the Web Authoring
-   course once it is here, builds the fields; JavaScript reads what a
-   visitor typed into them.
-2. **Turning those values into SQL.** The `INSERT` above is what that looks
-   like, built with the values a form collected instead of typed directly.
-3. **Running it against a real table.** This series has already done that,
-   on every page with a `sql exec` block.
+1. **JavaScript reads a form's values first.** A page on forms, part of
+   the Web Authoring course once it is here, builds the fields; JavaScript
+   reads what a visitor typed into them.
+2. **JavaScript turns those values into SQL next.** The `INSERT` above is
+   what that looks like, built with the values a form collected instead of
+   typed directly.
+3. **That query then runs against a real table.** This series has already
+   done that, on every page with a `sql exec` block.
 
 The page that puts these three together is the first page of a later
 series, one that brings a website and a database together. It stays small

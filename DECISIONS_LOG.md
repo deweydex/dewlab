@@ -7032,6 +7032,17 @@ at the module's own `database-methods.html` (already built by
 `tutorials/modules.yaml`) and carries the same "Beta" badge as
 `computational-methods` and `fundamentals-of-oop`.
 
+`planning/PLAIN_LANGUAGE_PASS.md` had only the module's first series marked
+done, from a pass run right after porting. The other eight tutorials —
+`several-tables` and `practice` — had been ported but never actually
+checked against the style guide's own rules, which is the gap that tracker
+file exists to catch. A second pass covered them: five were already clean,
+three had small real fixes (a passive one-to-many definition, a table that
+"answers to `SELECT`", a "not x but y" reversal about a query and its
+result, a recap list of fragments rewritten into a marked sequence). No
+heading changed in any of the eight, so no `covers:` key needed updating.
+The tracker now records the whole module as done.
+
 Verified in a real browser, not only by unit test: all 12 pages loaded,
 and every cell this sandbox could reach ran cleanly. The part a rebuild
 can't confirm on its own — that the quiz's five checks actually

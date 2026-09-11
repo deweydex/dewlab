@@ -80,7 +80,7 @@ as a measurement.
 
 ## Into a table
 
-A DataFrame becomes a database table only once it is put into one.
+A DataFrame becomes a database table only once you put it into one.
 `pandas.DataFrame.to_sql` does that, writing into `db`, the same shared
 connection a `` ```sql exec `` block on this page already uses.
 
@@ -95,7 +95,7 @@ are still working out what the table should hold.
 
 ## Querying it as SQL
 
-The table now answers to `SELECT`, the same as any other.
+You can query the table with `SELECT`, the same as any other table.
 
 ```sql exec
 id: query-income-share-by-country
@@ -125,4 +125,4 @@ keep your chosen countries in mind for that.
 - **Cleaning renames columns to plain names, then checks what is missing.**
   Both happen before building a query on top of the data.
 - **`to_sql`.** Writes a table built in Python into the page's shared
-  database connection, so the same data answers to `SELECT`.
+  database connection, so `SELECT` now works on the same data.
