@@ -1,0 +1,90 @@
+/* dewmini web (DECISIONS_LOG.md 7.143) — the small workspace of several
+ * named HTML/CSS/JS sites, kept in this browser. Its own stylesheet
+ * because it is a separate product from dewmini (DEWSTACK_MERGE.md §4),
+ * not a mode of it — dewmini-style.css is not loaded here, and nothing
+ * in this file is `dm-` prefixed for that reason. The editor, preview
+ * and console themselves are assets/tutorial-style.css's own
+ * `.dl-site-*` rules, unchanged: this page reuses exactly the markup
+ * render_site_editor() (build.py) writes for a tutorial page's own site
+ * editor, so one set of rules styles both. */
+
+.dl-ws-page main { padding-top: 1.5rem; }
+
+.dl-ws-title-row { margin: 0.4rem 0 1.6rem; }
+.dl-ws-title-row h1 { margin-bottom: 0.3rem; }
+.dl-ws-subtitle { color: var(--dl-muted); margin: 0; font-size: 0.95rem; }
+.dl-ws-subtitle-note { color: var(--dl-muted); margin: 0.5rem 0 0; font-size: 0.85rem; }
+
+.dl-ws-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 1rem;
+}
+
+.dl-ws-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  flex: 1 1 100%;
+}
+.dl-ws-list button {
+  font: inherit;
+  font-size: 0.85rem;
+  padding: 0.3rem 0.7rem;
+  border: 1px solid var(--dl-cell-border);
+  border-radius: 999px;
+  background: var(--dl-panel-bg);
+  color: var(--dl-fg);
+  cursor: pointer;
+}
+.dl-ws-list button.dl-ws-current {
+  background: var(--dl-navy);
+  border-color: var(--dl-navy);
+  color: #fff;
+}
+
+.dl-ws-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1 1 100%;
+}
+.dl-ws-name-label { font-size: 0.85rem; color: var(--dl-muted); }
+.dl-ws-name {
+  font: inherit;
+  padding: 0.3rem 0.6rem;
+  border: 1px solid var(--dl-cell-border);
+  border-radius: 6px;
+  background: var(--dl-panel-bg);
+  color: var(--dl-fg);
+  min-width: 10rem;
+}
+.dl-ws-delete.dl-ws-armed { border-color: var(--dl-orange); color: var(--dl-orange); }
+
+.dl-ws-width-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: var(--dl-muted);
+  margin-bottom: 0.3rem;
+}
+.dl-ws-width-row input[type="range"] { flex: 1 1 auto; }
+.dl-ws-width-row output { font-family: var(--dl-mono); min-width: 3.5ch; text-align: right; }
+
+/* The preview frame narrows from the left of its own column rather than
+ * the page's — the same reason a tutorial page's version of this control
+ * (added alongside it, not before it) would centre the frame within
+ * .dl-site-preview instead of stretching it full width. */
+.dl-ws-page .dl-site-frame { margin: 0 auto; transition: width 0.15s ease; }
+
+@media (max-width: 40rem) {
+  .dl-ws-actions { flex-direction: column; align-items: stretch; }
+  .dl-ws-name { min-width: 0; }
+}

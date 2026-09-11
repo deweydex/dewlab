@@ -7195,3 +7195,64 @@ fuller design record and §8 records the fence-spelling question as
 resolved. Full unit suite (including the 15 new `TestSiteEditors` cases)
 and the full e2e suite (including dewmini's own 108 Site-tab-adjacent
 tests, unchanged in behaviour) both pass.*
+
+**7.143 — dewmini web: a second product on the same relay engine, built
+to dewstack's `workspace.js` shape.** `DEWSTACK_MERGE.md` §4 had already
+settled the product question — dewmini and a site-authoring workspace
+don't share a purpose, so this is a new product, not an extra tab on
+dewmini — leaving only the build. `compose/dewminiweb.html` /
+`dewminiweb-style.css` / `dewminiweb.js`: several named sites kept in one
+`localStorage` record (`dewminiweb:sites:v1`), each with its own
+HTML/CSS/JS and a live preview, New/Delete/Load files/Download acting on
+whichever site is open. Shaped like dewstack's own `workspace.js`
+(multi-file, no notebook cells) rather than dewmini's own Site tab
+(one file per language, inside a bigger notebook) — the file concept a
+standalone workspace needs is exactly the thing a tutorial's embedded
+editor and dewmini's Python-first Site tab both deliberately don't have.
+
+The engine underneath is the third consumer of `assets/site-relay.js`'s
+`mountSitePreview()`, unchanged from 7.142: the same live-HTML/CSS,
+run-on-demand-JS, friendly-error-hint behaviour a tutorial's site editor
+and dewmini's Site tab already have. What dewmini web does *not* share is
+the console's own DOM-drawing code (one line per message, the "Go to
+line" button, the hint block) — written fresh here rather than imported
+from `tutorial-runtime.js`'s `buildSiteEditors()`, which draws the
+identical-looking thing for a tutorial page. Two independently maintained
+look-alikes, not one shared function, the same relationship `build.py`'s
+`render_cell()` already has with dewmini's own cell markup: worth
+sharing once one drifts from the other, not before.
+
+Two decisions ported in shape from dewstack's `workspace.js` rather than
+copied: a debounced save flushed on `pagehide` (so a tab closed mid-edit
+loses nothing), and two clicks to delete a site (the first arms a
+"click again" state for four seconds, matching the confirmation dewmini
+already settled on for its own notebook list). A reader's first visit
+gets one working site already showing its starter HTML, CSS and console
+line, rather than three empty panes and a blank frame — `openSite()`
+calls `run()`, not `render()`, on every load, including the first.
+
+The homepage gained a paragraph linking to `compose/dewminiweb.html`,
+next to the existing dewmini paragraph in `render_index()`.
+
+Verified in a real browser: a fresh visit shows one site, three panes,
+and the starter already run; CSS updates the preview with no Run click;
+a new site starts from the same starter and the list grows; renaming a
+site updates the download filename it computes; switching sites keeps
+each one's own edits rather than sharing state; delete needs two clicks;
+the width slider resizes the preview frame; Download produces three
+correctly named files from one click; Load files replaces the panes an
+uploaded file's extension names; and a broken script shows the same
+friendly hint and "Go to line" behaviour the tutorial-page editor and
+dewmini's Site tab already have. `tests/e2e/test_dewminiweb.py` covers
+all of this against the repository's own source tree directly — this
+page runs no Python at all, so unlike every other e2e suite here it needs
+no Pyodide and no `build.py` output, only `compose/`'s and `assets/`'s
+real files served as they already sit on disk.
+
+*Cost to change: three new files
+(`compose/dewminiweb.html`/`dewminiweb-style.css`/`dewminiweb.js`), one
+paragraph in `build.py`'s `render_index()`, and
+`tests/e2e/test_dewminiweb.py`. No changes to `assets/site-relay.js`,
+`assets/tutorial-runtime.js`, or `compose/dewmini.js` — this product adds
+a third consumer to an engine already shaped to take one.
+`planning/DEWSTACK_MERGE.md` §7 item 3 and §8 q1 record this as done.*

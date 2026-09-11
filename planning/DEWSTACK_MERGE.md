@@ -329,19 +329,21 @@ The same bar dewstack already used, since it's dewlab's own bar too:
    descriptors 5N0783 needs to `planning/curriculum/outcomes.yaml`
    (currently absent — `planning/ROADMAP.md` already flags this gap);
    flip the homepage card once the module has run in front of a class.
-3. **Web engine — done; module still to come.** The engine half is
-   built and merged: `html site`/`css site`/`js site` fence kinds, and
-   `assets/site-relay.js` as the shared live-preview engine underneath
-   both a tutorial's own site editor and dewmini's Site tab
-   (DECISIONS_LOG.md 7.142). `dewmini web` itself — the standalone
-   workspace, shaped like dewstack's `workspace.js` — is not yet built;
-   §8 q1 still applies (build it, at least minimally, before promising
-   tutorial pages a "open this in the workspace" hand-off the way
-   dewstack's own pages offer one). Still to do: getting-started/reference
+3. **Web engine and `dewmini web` — done; content module still to come.**
+   The engine half is built and merged: `html site`/`css site`/`js site`
+   fence kinds, and `assets/site-relay.js` as the shared live-preview
+   engine underneath a tutorial's own site editor, dewmini's Site tab, and
+   now `dewmini web` too (DECISIONS_LOG.md 7.142, 7.143). `dewmini web`
+   itself — the standalone workspace, shaped like dewstack's
+   `workspace.js` — is built: several named sites, HTML/CSS/JS panes, a
+   live preview, load-files-in and download-files-out, linked from the
+   homepage. §8 q1 is answered: it exists, so the tutorial pages can
+   honestly promise the same "open this in the workspace" hand-off
+   dewstack's own pages offer. Still to do: getting-started/reference
    copied in whole under `web-authoring` (§8 q2), the 30 web pages ported
-   into a new `tutorials/web-authoring` folder through §6's checklist,
-   `dewmini web` itself, and flipping the homepage card once the module
-   has run in front of a class.
+   into a new `tutorials/web-authoring` folder through §6's checklist, and
+   flipping the homepage card once the module has run in front of a
+   class.
 4. **Full-stack, later.** Combine dewstack's one page with whatever
    dewlab's own full-stack concept becomes, once both tracks are live.
    Not scheduled yet.
@@ -357,17 +359,15 @@ The same bar dewstack already used, since it's dewlab's own bar too:
 
 ## 8. Questions that are Josh's, not this plan's, to settle
 
-1. **`dewminiweb`'s scope and name — settled 2026-09-11.** Named
-   **"dewmini web"** (working name, Josh: "we can always change it
-   later"). Still a separate product from dewmini, shaped like dewstack's
-   `workspace.js` rather than its in-tutorial `site-editor.js` — the same
-   relationship dewmini has to tutorial Python cells. Whether it ships in
-   the same pass as the web-authoring tutorial pages or trails them is
-   still open, and now mostly an engine-sequencing question rather than a
-   product one: §3's SQL lesson was that the engine has to exist before
-   content can be honestly claimed "ported," so dewmini web likely needs
-   to exist, at least minimally, before the tutorial pages that embed it
-   do.
+1. **`dewminiweb`'s scope and name — settled 2026-09-11, and built the
+   same day.** Named **"dewmini web"** (working name, Josh: "we can
+   always change it later"). A separate product from dewmini, shaped like
+   dewstack's `workspace.js` rather than its in-tutorial `site-editor.js`
+   — the same relationship dewmini has to tutorial Python cells
+   (DECISIONS_LOG.md 7.143). It shipped ahead of the web-authoring
+   tutorial pages, resolving the sequencing question in the way §3's SQL
+   lesson predicted: the engine — and now the standalone workspace built
+   on it — exists before any tutorial page promises a hand-off into it.
 2. **`getting-started`/`reference` from dewstack — settled 2026-09-11.**
    Fold both in whole rather than leaving them linked to dewstack or
    rewriting them from scratch — Josh: "I think we can literally copy
@@ -409,7 +409,7 @@ The same bar dewstack already used, since it's dewlab's own bar too:
 | Module | Staged | Engine built | Ported | Live |
 |---|---|---|---|---|
 | `database-methods` (5N0783) | done | done, merged to `main` (`sql exec`, DECISIONS_LOG.md 7.140, PR #172) | done — 12 tutorials, QQI mapping, verified in a real browser (DECISIONS_LOG.md 7.141) | done — merged to `main`, PR #174 |
-| `web-authoring` (5N1910) | done | done, merged to `main` (`html site`/`css site`/`js site`, `assets/site-relay.js`, DECISIONS_LOG.md 7.142) | not yet | not yet |
+| `web-authoring` (5N1910) | done | done, merged to `main` (`html site`/`css site`/`js site`, `assets/site-relay.js`, DECISIONS_LOG.md 7.142; `dewmini web` standalone workspace, DECISIONS_LOG.md 7.143) | not yet | not yet |
 | `full-stack` | done (reference only) | — | — | — |
 
 Update this table as each phase in §7 completes.

@@ -192,6 +192,12 @@ in `assets/shell.html`, and the hint fences themselves in the four
 tutorials that carry them. Each new hint an author writes is a new surface
 for this pass; the docs' own examples are the models.
 
+**`dewmini web`'s page copy.** One new student-facing surface
+(`compose/dewminiweb.html`'s title, subtitle, and note, plus the homepage
+paragraph linking to it), written against §4 as it was added, the same
+way the staged-hints surfaces above were. Its own examples are the model
+for the next new page's copy.
+
 **Bibliographies.** Unrelated to readability but still the largest outstanding
 piece of style work — see section 8 of the style guide.
 

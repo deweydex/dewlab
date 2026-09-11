@@ -2553,6 +2553,9 @@ def render_index() -> str:
         '<p>Want to try Python with no tutorial attached? Open '
         '<a href="compose/dewmini.html">dewmini</a>, a small workspace '
         "built for exactly that.</p>",
+        '<p>Want to try HTML, CSS and JavaScript instead? Open '
+        '<a href="compose/dewminiweb.html">dewmini web</a>, a workspace '
+        "for building a small web page.</p>",
         "</div>",
     ]
     return "\n".join(out)

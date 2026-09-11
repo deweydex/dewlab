@@ -168,8 +168,9 @@ this rather than inside it: no Pyodide, no cells, no Python at all — an
 `html site`/`css site`/`js site` fence group becomes a live HTML/CSS/JS
 editor with a sandboxed preview `<iframe>`, mounted through
 `assets/site-relay.js`'s `mountSitePreview()`, the same engine
-`compose/dewmini.js`'s own Site tab mounts (DECISIONS_LOG.md 7.142). A
-page with one of these but no cells never boots Pyodide at all.
+`compose/dewmini.js`'s own Site tab and the standalone `dewmini web`
+workspace (§4) both mount (DECISIONS_LOG.md 7.142, 7.143). A page with
+one of these but no cells never boots Pyodide at all.
 
 What happens when a page loads:
 
@@ -514,6 +515,20 @@ serves the unzipped folder to `localhost` instead, found necessary by
 actually opening a built bundle the way a downloader would, not assumed
 from the code.
 
+**`compose/dewminiweb.html` is a separate product, not another dewmini
+tab.** dewmini is a Python-and-SQL notebook; `dewmini web` is a
+multi-file HTML/CSS/JS workspace with no notebook cells at all, shaped
+like dewstack's own `workspace.js` (`DEWSTACK_MERGE.md` §4,
+`DECISIONS_LOG.md` 7.143). `compose/dewminiweb.js` owns the part that
+differs — several named sites in one `localStorage` record, which one is
+open, New/Delete/Load files/Download — and hands the preview, the Run
+model and the console to `assets/site-relay.js`'s `mountSitePreview()`,
+the same engine a tutorial's own site editor (§2) and dewmini's Site tab
+mount. Its console DOM (one line per message, "Go to line", the friendly
+hint) is written fresh rather than shared with `tutorial-runtime.js`'s
+matching code, the same look-alike-rather-than-coupled relationship
+`render_cell()` has with dewmini's own cell markup.
+
 ---
 
 ## 5. Two build systems, on purpose
@@ -580,8 +595,9 @@ runtime or the editor.
 | What a tutorial's markdown can express (a new frontmatter field, a new fence convention) | `build.py` |
 | What a cell can do (a new tutorial-facing function) | `assets/tutorial_tools.py` |
 | What a cell *looks like*, or the settings panel, save/restore behaviour | `assets/tutorial-runtime.js` |
-| The live HTML/CSS/JS site editor's engine (preview, console, friendly errors) — shared by dewmini's Site tab and a tutorial's own site editor | `assets/site-relay.js` |
+| The live HTML/CSS/JS site editor's engine (preview, console, friendly errors) — shared by dewmini's Site tab, a tutorial's own site editor, and `dewmini web` | `assets/site-relay.js` |
 | A tutorial page's own site editor: mounting, Run/Reset wiring, save/restore | `assets/tutorial-runtime.js`'s `buildSiteEditors()` |
+| `dewmini web`'s own sites: the list, New/Delete/Load files/Download, per-site storage | `compose/dewminiweb.js` |
 | dewmini's file manager, uploads, or storage backend | `compose/dewmini-fs.js` |
 | The Python engine (boot, run a cell, hover/autocomplete, Stop) | `assets/pyodide-engine.js` |
 | dewmini's cells, toolbar, or downloads | `compose/dewmini.js` |
