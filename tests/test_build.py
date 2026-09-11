@@ -3083,6 +3083,104 @@ groups:
         assert b.load_math_basics()
 
 
+class TestPythonBasics:
+    """Python Basics: plain definitions for Python's own vocabulary and
+    punctuation, independent of any one tutorial or series — build.py's
+    load_python_basics(), planning/curriculum/python-basics.yaml. Same
+    shape and same shared validation (_load_basics()) as Math Basics
+    above, so every test here mirrors TestMathBasics, monkeypatching
+    PYTHON_BASICS_DATA directly rather than going through the `repo`
+    fixture's own tutorials/data/assets layout."""
+
+    def _write(self, repo: Path, monkeypatch, text: str) -> Path:
+        path = repo / "planning" / "curriculum" / "python-basics.yaml"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(text)
+        monkeypatch.setattr(b, "PYTHON_BASICS_DATA", path)
+        return path
+
+    def test_a_missing_file_is_fine_not_an_error(self, repo, monkeypatch):
+        monkeypatch.setattr(
+            b, "PYTHON_BASICS_DATA", repo / "planning" / "curriculum" / "python-basics.yaml")
+        assert b.load_python_basics() == []
+
+    def test_a_well_formed_file_loads_its_groups(self, repo, monkeypatch):
+        self._write(repo, monkeypatch, """
+groups:
+  - label: Values
+    entries:
+      - term: String
+        definition: Text, written between quotation marks.
+        example: '"hello"'
+""")
+        assert b.load_python_basics() == [
+            {"label": "Values", "entries": [
+                {"term": "String", "definition": "Text, written between quotation marks.",
+                 "example": '"hello"'},
+            ]},
+        ]
+
+    def test_an_entry_with_no_example_is_fine(self, repo, monkeypatch):
+        self._write(repo, monkeypatch, """
+groups:
+  - label: Values
+    entries:
+      - term: Boolean
+        definition: A value that is either True or False.
+""")
+        assert b.load_python_basics() == [
+            {"label": "Values", "entries": [
+                {"term": "Boolean", "definition": "A value that is either True or False."},
+            ]},
+        ]
+
+    def test_a_group_with_no_label_fails_the_build(self, repo, monkeypatch):
+        self._write(repo, monkeypatch, """
+groups:
+  - entries:
+      - term: String
+        definition: Text.
+""")
+        with pytest.raises(b.BuildError, match="label"):
+            b.load_python_basics()
+
+    def test_a_group_with_no_entries_fails_the_build(self, repo, monkeypatch):
+        self._write(repo, monkeypatch, "groups:\n  - label: Values\n    entries: []\n")
+        with pytest.raises(b.BuildError, match="no entries"):
+            b.load_python_basics()
+
+    def test_an_entry_missing_a_definition_fails_the_build(self, repo, monkeypatch):
+        self._write(repo, monkeypatch, """
+groups:
+  - label: Values
+    entries:
+      - term: String
+""")
+        with pytest.raises(b.BuildError, match="term or a definition"):
+            b.load_python_basics()
+
+    def test_it_reaches_every_pages_own_manifest(self, repo, monkeypatch):
+        self._write(repo, monkeypatch, """
+groups:
+  - label: Values
+    entries:
+      - term: String
+        definition: Text, written between quotation marks.
+""")
+        write(repo, "One.\n", slug="one")
+        b.build()
+        assert manifest(built(repo, "one"))["pythonBasics"] == [
+            {"label": "Values", "entries": [
+                {"term": "String", "definition": "Text, written between quotation marks."},
+            ]},
+        ]
+
+    def test_the_shipped_file_is_itself_well_formed(self):
+        """Not monkeypatched — loads the real file this repo ships, as a
+        guard against a malformed hand-edit of it ever reaching main."""
+        assert b.load_python_basics()
+
+
 class TestNotes:
     """Pedagogical notes — planning/SIDEBAR_CONTENT.md §3/§4: an HTML aside
     in the body, pulled out and surfaced in the reference panel instead

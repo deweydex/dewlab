@@ -1769,6 +1769,32 @@ def origin_of(reader_at: Tutorial, introduced_by: Tutorial, term: str) -> dict:
 
 
 MATH_BASICS_DATA = ROOT / "planning" / "curriculum" / "math-basics.yaml"
+PYTHON_BASICS_DATA = ROOT / "planning" / "curriculum" / "python-basics.yaml"
+
+
+def _load_basics(path: Path, kind: str) -> list[dict]:
+    """Shared loader for the Reference panel's own site-wide "Basics"
+    tabs (Math Basics, Python Basics) — same shape, same validation,
+    only the file and its own house rule differ; see load_math_basics()
+    and load_python_basics() for what each promises its own content
+    follows. Returns `[]`, not an error, when the file does not exist
+    yet: the same "not written yet" tolerance `own_glossary()` gives a
+    missing per-tutorial glossary.
+    """
+    if not path.is_file():
+        return []
+    data = load_yaml_no_duplicate_keys(path.read_text()) or {}
+    groups = data.get("groups") or []
+    for group in groups:
+        if not group.get("label"):
+            fail(path, f"a {kind} group is missing a label.")
+        entries = group.get("entries") or []
+        if not entries:
+            fail(path, f'the group {group.get("label")!r} has no entries.')
+        for entry in entries:
+            if not entry.get("term") or not entry.get("definition"):
+                fail(path, f"a {kind} entry is missing a term or a definition.")
+    return groups
 
 
 def load_math_basics() -> list[dict]:
@@ -1782,26 +1808,21 @@ def load_math_basics() -> list[dict]:
     makes for the (much larger) per-tutorial glossary files it re-reads
     per page; a ~100-line YAML file is not worth memoizing against, and
     not caching it keeps this trivially safe to monkeypatch in tests.
-
-    Returns `[]`, not an error, when the file does not exist yet: the
-    same "not written yet" tolerance `own_glossary()` gives a missing
-    per-tutorial glossary.
     """
-    if not MATH_BASICS_DATA.is_file():
-        return []
-    data = load_yaml_no_duplicate_keys(MATH_BASICS_DATA.read_text()) or {}
-    groups = data.get("groups") or []
-    for group in groups:
-        if not group.get("label"):
-            fail(MATH_BASICS_DATA, "a math-basics group is missing a label.")
-        entries = group.get("entries") or []
-        if not entries:
-            fail(MATH_BASICS_DATA, f'the group {group.get("label")!r} has no entries.')
-        for entry in entries:
-            if not entry.get("term") or not entry.get("definition"):
-                fail(MATH_BASICS_DATA,
-                     "a math-basics entry is missing a term or a definition.")
-    return groups
+    return _load_basics(MATH_BASICS_DATA, "math-basics")
+
+
+def load_python_basics() -> list[dict]:
+    """Python Basics: plain definitions for Python's own vocabulary and
+    punctuation — values, variables, functions and arguments, and the
+    marks that give Python code its shape — independent of any one
+    tutorial or series, the same way load_math_basics() is. See
+    planning/curriculum/python-basics.yaml for the house rule this file
+    is written to; unlike math-basics.yaml, an entry here may carry a
+    short `example`, since Python's own syntax marks are often clearer
+    shown than said.
+    """
+    return _load_basics(PYTHON_BASICS_DATA, "python-basics")
 
 
 def render_toc(tutorial: Tutorial) -> str:
@@ -3530,6 +3551,9 @@ def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "",
     math_basics = load_math_basics()
     if math_basics:
         manifest["mathBasics"] = math_basics
+    python_basics = load_python_basics()
+    if python_basics:
+        manifest["pythonBasics"] = python_basics
 
     tokens = {
         "{{TITLE}}": html.escape(str(tutorial.meta["title"])),
