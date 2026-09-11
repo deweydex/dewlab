@@ -131,6 +131,20 @@ HEADER_RE = re.compile(r"^\s*(id|hint|expect|name)\s*:\s*(.*)$")
 # The only two words that can open an exec fence today. Anything else fails
 # the build with a clear message rather than silently becoming a Python cell.
 CELL_TYPES = {"python", "sql"}
+
+# ```html site / ```css site / ```js site — a live HTML/CSS/JS pane,
+# grouped with the others sharing its `site:` name into one editor
+# (DEWSTACK_MERGE.md §3). Deliberately not dewstack's own `site=name`
+# spelling: that grammar puts a site's identity in the fence's own info
+# string, which dewlab's Crepe-based authoring editor cannot round-trip
+# (it keeps only a fence's first word — ARCHITECTURE.md §3), so every
+# other exec-family fence puts its identity on an `id:` line inside the
+# fence instead, and a site pane does the same. `site:` is the one header
+# key none of the other fence kinds have, since a python/sql exec cell
+# and a staged hint each stand alone rather than needing to be grouped
+# with siblings.
+SITE_LANGS = {"html", "css", "js"}
+SITE_HEADER_RE = re.compile(r"^\s*(id|site)\s*:\s*(.*)$")
 # ```hint — a staged hint (planning/CELL_HINTS.md): a fold that stays hidden
 # until the cell it belongs to has been run, and failed, some number of
 # times. Its header lines follow the exec cell's own `key: value` shape, so
@@ -253,6 +267,29 @@ class CodeBlock:
 
 
 @dataclass
+class SitePane:
+    """One `html site`/`css site`/`js site` fence — see extract_blocks()."""
+
+    id: str
+    site: str
+    language: str
+    code: str
+
+
+@dataclass
+class SiteEditor:
+    """The live HTML/CSS/JS editor one or more consecutive `SitePane`s with
+    the same `site:` name become. `panes` is keyed by language rather than
+    a plain list because a page never has two panes of the same language
+    in one editor (extract_blocks() fails the build if it finds one), and
+    a dict makes "does this editor have a JS pane" a lookup rather than a
+    search — render_site_editor() and the manifest both ask that question."""
+
+    name: str
+    panes: dict[str, SitePane]
+
+
+@dataclass
 class Math:
     tex: str
     display: bool
@@ -295,6 +332,9 @@ class Tutorial:
     # what you use" reasoning as has_math, but for the sqlite3 Pyodide
     # package rather than the KaTeX bundle.
     has_sql: bool = False
+    # A page's live HTML/CSS/JS editors, in source order (DEWSTACK_MERGE.md
+    # §3) — usually empty; only the web-authoring module has any yet.
+    site_editors: list[SiteEditor] = field(default_factory=list)
     anchors: set[str] = field(default_factory=set)
     toc: list = field(default_factory=list)
     notes: list[Note] = field(default_factory=list)
@@ -545,6 +585,32 @@ def parse_cell(body: str, path: Path, cell_type: str = "python") -> Cell:
     )
 
 
+def parse_site_pane(body: str, path: Path, language: str) -> SitePane:
+    """Read `id:`/`site:` off the top of an `html site`/`css site`/`js
+    site` fence. `language` is the fence's own first word; the rest of the
+    fence is the pane's own HTML, CSS or JavaScript, unwrapped — a site
+    pane's code is never Python and never runs through expand_includes(),
+    since {{include: ...}} is a Python-cell convenience (planning/
+    CONTENT_AND_FILE_ARCHITECTURE.md) with nothing to say about a
+    stylesheet."""
+    lines = body.split("\n")
+    header: dict[str, str] = {}
+    while lines:
+        match = SITE_HEADER_RE.match(lines[0])
+        if not match or match.group(1) in header:
+            break
+        header[match.group(1)] = match.group(2).strip()
+        lines.pop(0)
+    if "id" not in header:
+        fail(path, "a site pane has no `id:` line — ids are what saved progress matches on")
+    if "site" not in header:
+        fail(path, "a site pane has no `site:` line naming which editor it belongs to")
+    return SitePane(
+        id=header["id"], site=header["site"], language=language,
+        code="\n".join(lines).strip("\n"),
+    )
+
+
 def parse_trigger(text: str, path: Path) -> str:
     """Turn an `after:` line into the runtime's `key:number` form.
 
@@ -647,28 +713,45 @@ def place_hints(page_html: str, hints: list[StagedHint], maths: list[Math]) -> s
 
 def extract_blocks(
     body: str, path: Path,
-) -> tuple[str, list[Cell], list[CodeBlock], list[StagedHint]]:
+) -> tuple[str, list[Cell], list[CodeBlock], list[StagedHint], list[SiteEditor]]:
     """Pull every fence out, leaving a comment placeholder markdown will keep.
 
     An `exec` fence becomes a cell; a `hint` fence becomes a staged hint
-    (planning/CELL_HINTS.md); any other fence becomes an illustrative,
-    read-only block. All three leave the source before the markdown converter
-    runs, so nothing inside any of them can be reinterpreted as markup.
+    (planning/CELL_HINTS.md); an `html site`/`css site`/`js site` fence
+    becomes one pane of a `SiteEditor`, grouped with any of the same
+    `site:` name immediately before or after it (DEWSTACK_MERGE.md §3);
+    any other fence becomes an illustrative, read-only block. All four
+    leave the source before the markdown converter runs, so nothing inside
+    any of them can be reinterpreted as markup.
     """
     cells: list[Cell] = []
     blocks: list[CodeBlock] = []
     hints: list[StagedHint] = []
+    site_editors: list[SiteEditor] = []
     hints_per_cell: dict[str, int] = {}
+    used_site_names: set[str] = set()
+    # Which SiteEditor the *previous* site-pane fence joined, and where in
+    # `body` that fence ended — together, "is this fence immediately after
+    # that one, with nothing but blank lines between" (dewstack's own
+    # `site=` grammar enforces the same adjacency, and for the same reason
+    # given in its build.py: the source should read as the whole site at a
+    # glance). Neither is reset when a *different* kind of fence comes
+    # between two same-named site fences — the position check below
+    # already catches that, since whatever that other fence is takes up
+    # space that is not blank.
+    current_site: SiteEditor | None = None
+    last_site_pane_end = -1
 
     # re.sub's second argument can be a function instead of a plain
     # replacement string — when it is, that function is called once per
     # match, with the match object, and whatever string it returns takes
     # the match's place. `one` is that function here: for every fenced
-    # code block FENCE_RE finds, it either records a new Cell or a new
-    # CodeBlock (appending to the `cells`/`blocks` lists this closure can
-    # see because it's defined right here, inside extract_blocks), and
-    # returns a placeholder comment in its place.
+    # code block FENCE_RE finds, it either records a new Cell, CodeBlock or
+    # SiteEditor (appending to the lists this closure can see because it's
+    # defined right here, inside extract_blocks), and returns a
+    # placeholder comment in its place.
     def one(match: re.Match) -> str:
+        nonlocal current_site, last_site_pane_end
         info = match.group("info").strip().split()
         indent = match.group("indent")
         if "exec" in info:
@@ -687,6 +770,32 @@ def extract_blocks(
             hints_per_cell[hint.cell] = hint.index + 1
             hints.append(hint)
             return f"{indent}<!--dewlab-hint-{len(hints) - 1}-->"
+        if len(info) >= 2 and info[1] == "site":
+            language = info[0]
+            if language not in SITE_LANGS:
+                fail(path, f"a site pane's fence starts with {language!r}, "
+                           f"not one of {sorted(SITE_LANGS)}")
+            pane = parse_site_pane(match.group("body"), path, language)
+            adjacent = (
+                current_site is not None
+                and current_site.name == pane.site
+                and not body[last_site_pane_end:match.start()].strip()
+            )
+            last_site_pane_end = match.end()
+            if adjacent:
+                if pane.language in current_site.panes:
+                    fail(path, f"the {pane.site!r} site editor has two "
+                               f"{pane.language} panes")
+                current_site.panes[pane.language] = pane
+                return ""
+            if pane.site in used_site_names:
+                fail(path, f"site editor blocks named {pane.site!r} are not "
+                           "consecutive — keep every html/css/js pane for "
+                           "one site together")
+            used_site_names.add(pane.site)
+            current_site = SiteEditor(name=pane.site, panes={pane.language: pane})
+            site_editors.append(current_site)
+            return f"{indent}<!--dewlab-site-{len(site_editors) - 1}-->"
         language = info[0] if info else ""
         blocks.append(CodeBlock(language=language, code=match.group("body").strip("\n")))
         return f"{indent}<!--dewlab-code-{len(blocks) - 1}-->"
@@ -697,13 +806,18 @@ def extract_blocks(
         if cell.id in seen:
             fail(path, f"two exec cells share the id {cell.id!r}")
         seen.add(cell.id)
+    for editor in site_editors:
+        for pane in editor.panes.values():
+            if pane.id in seen:
+                fail(path, f"two cells share the id {pane.id!r}")
+            seen.add(pane.id)
     for hint in hints:
         # Checked here rather than in parse_hint(): a `for:` may name a cell
         # further down the page, which does not exist yet while the fences
         # are being read in order.
         if hint.cell not in seen:
             fail(path, f"a hint names a cell this tutorial does not have: {hint.cell!r}")
-    return rewritten, cells, blocks, hints
+    return rewritten, cells, blocks, hints, site_editors
 
 
 def extract_math(body: str, found: list[Math] | None = None) -> tuple[str, list[Math]]:
@@ -927,6 +1041,77 @@ def render_code_block(block: CodeBlock) -> str:
     return f'<pre class="dl-static"{attr}><code>{html.escape(block.code)}</code></pre>'
 
 
+def render_site_editor(editor: SiteEditor, index: int) -> str:
+    """The markup a live HTML/CSS/JS editor and its preview mount onto.
+
+    Each pane present in `editor.panes` gets an empty `.dl-editor`, the
+    same convention `render_cell()` uses for a Python or SQL cell: the
+    pane's actual starting source travels in the manifest, not the DOM,
+    and `tutorial-runtime.js` fills the editor in and mounts the live
+    preview using `assets/site-relay.js`'s `mountSitePreview()`
+    (DECISIONS_LOG.md 7.142) the moment the page is ready — there is no
+    meaningful no-JavaScript fallback for a live preview the way
+    `render_code_block()`'s escaped `<pre>` is one for a read-only
+    example. A pane absent from `editor.panes` gets no box at all, unlike
+    dewmini's own Site tab, which always shows three regardless — most of
+    dewstack's own web-authoring pages are HTML+CSS only, and an
+    HTML-only page with two permanently empty boxes beside it would look
+    broken rather than minimal.
+
+    `index` is this editor's plain 1-based position among the page's site
+    editors, the same role `render_cell()`'s `number` plays for cells —
+    shown nowhere yet, kept for the day a report-a-problem panel or a
+    similar per-editor feature needs one, the way cells already do.
+    """
+    safe_name = html.escape(editor.name, quote=True)
+    labels = {"html": "HTML", "css": "CSS", "js": "JavaScript"}
+    panes_markup = []
+    for lang in ("html", "css", "js"):
+        if lang not in editor.panes:
+            continue
+        run_markup = (
+            icon_button("dl-btn-site-run", "&#9654;", "Run",
+                        title="Run this script (Ctrl+Enter or Cmd+Enter in the pane)")
+            if lang == "js" else ""
+        )
+        panes_markup.append(
+            f'<div class="dl-site-pane" data-lang="{lang}">'
+            '<div class="dl-site-pane-head">'
+            f'<span class="dl-web-pane-label">{labels[lang]}</span>'
+            f"{run_markup}"
+            "</div>"
+            '<div class="dl-editor"></div>'
+            "</div>"
+        )
+    console_markup = ""
+    if "js" in editor.panes:
+        # A CSS-only or HTML-only editor has no script to log or error from,
+        # so it gets no console — the same "only pay for what you use"
+        # reasoning `render_cell()`'s own optional hint/report markup follows.
+        console_markup = (
+            '<div class="dl-site-console">'
+            '<div class="dl-web-pane-label">Console</div>'
+            '<div class="dl-site-console-output" aria-live="polite"></div>'
+            "</div>"
+        )
+    return (
+        f'<div class="dl-site-editor" data-site-name="{safe_name}">'
+        '<div class="dl-site-head">'
+        + icon_button("dl-btn-site-reset", "&#8635;", "Reset to starter",
+                      title="Put this editor's starter code back, in every pane")
+        + "</div>"
+        '<div class="dl-site-split">'
+        f'<div class="dl-site-editors">{"".join(panes_markup)}</div>'
+        '<div class="dl-site-preview">'
+        f'<iframe class="dl-site-frame" sandbox="allow-scripts" '
+        f"title=\"{safe_name}'s preview\"></iframe>"
+        f"{console_markup}"
+        "</div>"
+        "</div>"
+        "</div>"
+    )
+
+
 def render_math(item: Math) -> str:
     """A marked span. KaTeX replaces its contents in the browser.
 
@@ -973,17 +1158,17 @@ def convert_fold_bodies(page_html: str) -> str:
 
 def place_blocks(
     page_html: str, cells: list[Cell], blocks: list[CodeBlock], maths: list[Math],
-    page: str = "", version: str = "",
+    site_editors: list[SiteEditor] | None = None, page: str = "", version: str = "",
 ) -> str:
-    """Puts cells, illustrative code blocks, and maths back into the page
-    after the Markdown converter has run. `extract_blocks`/`extract_math`
-    earlier in the pipeline replaced each of these with a plain
-    placeholder string before handing the body to the Markdown library —
-    this is the matching second half, swapping each placeholder back out
-    for its real rendered HTML. Doing it this way (rather than rendering
-    cells and maths inline, before Markdown sees them) is what protects
-    their content from Markdown's own text-formatting rules — see
-    `extract_math`'s own comment for a concrete example of what goes
+    """Puts cells, illustrative code blocks, site editors, and maths back
+    into the page after the Markdown converter has run. `extract_blocks`/
+    `extract_math` earlier in the pipeline replaced each of these with a
+    plain placeholder string before handing the body to the Markdown
+    library — this is the matching second half, swapping each placeholder
+    back out for its real rendered HTML. Doing it this way (rather than
+    rendering cells and maths inline, before Markdown sees them) is what
+    protects their content from Markdown's own text-formatting rules —
+    see `extract_math`'s own comment for a concrete example of what goes
     wrong otherwise.
 
     `page` and `version` are only for `render_cell()`'s own report panel
@@ -1000,6 +1185,11 @@ def place_blocks(
         )
     for index, block in enumerate(blocks):
         page_html = page_html.replace(f"<!--dewlab-code-{index}-->", render_code_block(block))
+    for index, editor in enumerate(site_editors or []):
+        placeholder = f"<!--dewlab-site-{index}-->"
+        if placeholder not in page_html:
+            raise BuildError(f"site editor {editor.name!r} was lost during markdown conversion")
+        page_html = page_html.replace(placeholder, render_site_editor(editor, index + 1))
     for index, item in enumerate(maths):
         page_html = page_html.replace(f"dlmath{index}z", render_math(item))
     return page_html
@@ -2874,16 +3064,21 @@ def load(path: Path) -> Tutorial:
     build.py builds starts here.
     """
     meta, body = split_frontmatter(path.read_text(), path)
-    stripped, cells, blocks, hints = extract_blocks(body, path)
+    stripped, cells, blocks, hints, site_editors = extract_blocks(body, path)
     stripped, maths = extract_math(stripped)
     stripped = loosen_tight_lists(stripped)
     converted, toc = to_html(stripped)
     converted = convert_fold_bodies(converted)
     converted = place_hints(converted, hints, maths)
     page = f"{meta.get('module', '')}/{meta.get('slug', '')}"
-    body_html = place_blocks(converted, cells, blocks, maths, page, str(meta.get("version", "")))
+    body_html = place_blocks(converted, cells, blocks, maths, site_editors,
+                              page, str(meta.get("version", "")))
     body_html, notes = extract_notes(body_html, path)
-    anchors = set(ID_RE.findall(body_html)) | {c.id for c in cells}
+    anchors = (
+        set(ID_RE.findall(body_html))
+        | {c.id for c in cells}
+        | {pane.id for editor in site_editors for pane in editor.panes.values()}
+    )
     return Tutorial(
         path=path,
         meta=meta,
@@ -2891,6 +3086,7 @@ def load(path: Path) -> Tutorial:
         body_html=body_html,
         has_math=bool(maths),
         has_sql=any(c.type == "sql" for c in cells),
+        site_editors=site_editors,
         anchors=anchors,
         toc=toc,
         notes=notes,
@@ -3254,6 +3450,24 @@ def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "",
         # going to load — default or declared — only when the page actually
         # has a sql exec cell, same reasoning as `math` above.
         manifest["needsSqlite"] = True
+    if tutorial.site_editors:
+        # Absent rather than an empty list on every other page, the same
+        # "only pay for what you use" signal as `math`/`needsSqlite` —
+        # tutorial-runtime.js only imports assets/site-relay.js when this
+        # key exists. Each pane's starting source travels here, not in the
+        # DOM (render_site_editor()'s own comment says why); a pane not
+        # present in an editor's own `panes` (most pages are html+css
+        # only) is simply absent from this dict too.
+        manifest["siteEditors"] = [
+            {
+                "name": editor.name,
+                "panes": {
+                    lang: {"id": pane.id, "code": pane.code}
+                    for lang, pane in editor.panes.items()
+                },
+            }
+            for editor in tutorial.site_editors
+        ]
     packages = tutorial.meta.get("packages")
     if packages:
         manifest["packages"] = list(packages)

@@ -130,7 +130,7 @@ DECISIONS_LOG 7.121) is exactly this pattern: a sandboxed
 live rebuild with JS on a Run click, a console relayed from inside the
 frame with four plain-language error mappings (`SITE_FRIENDLY`), a
 single-document-in-flight coalescing flush with a watchdog. dewstack's
-`assets/site-editor.js` was ported from it in shape on 2026-09-04
+`dewstack/assets/site-editor.js` was ported from it in shape on 2026-09-04
 (CONSOLIDATION_PLAN §13), including the very bug this document earlier
 mis-attributed — `SITE_FRIENDLY` is dewlab's own constant; dewstack's
 copy is called `FRIENDLY`. More importantly, dewstack's own later
@@ -329,11 +329,19 @@ The same bar dewstack already used, since it's dewlab's own bar too:
    descriptors 5N0783 needs to `planning/curriculum/outcomes.yaml`
    (currently absent — `planning/ROADMAP.md` already flags this gap);
    flip the homepage card once the module has run in front of a class.
-3. **Web engine + module.** Resolve the dewmini/dewmini web question
-   (§8). Build the site-authoring fence kinds and a new site-runtime.js
-   for tutorial pages; build `dewmini web` if confirmed. Port the 30 web
-   pages into a new tutorials/web-authoring/ folder the same way. Flip
-   its homepage card.
+3. **Web engine — done; module still to come.** The engine half is
+   built and merged: `html site`/`css site`/`js site` fence kinds, and
+   `assets/site-relay.js` as the shared live-preview engine underneath
+   both a tutorial's own site editor and dewmini's Site tab
+   (DECISIONS_LOG.md 7.142). `dewmini web` itself — the standalone
+   workspace, shaped like dewstack's `workspace.js` — is not yet built;
+   §8 q1 still applies (build it, at least minimally, before promising
+   tutorial pages a "open this in the workspace" hand-off the way
+   dewstack's own pages offer one). Still to do: getting-started/reference
+   copied in whole under `web-authoring` (§8 q2), the 30 web pages ported
+   into `tutorials/web-authoring/` through §6's checklist, `dewmini web`
+   itself, and flipping the homepage card once the module has run in
+   front of a class.
 4. **Full-stack, later.** Combine dewstack's one page with whatever
    dewlab's own full-stack concept becomes, once both tracks are live.
    Not scheduled yet.
@@ -401,7 +409,7 @@ The same bar dewstack already used, since it's dewlab's own bar too:
 | Module | Staged | Engine built | Ported | Live |
 |---|---|---|---|---|
 | `database-methods` (5N0783) | done | done, merged to `main` (`sql exec`, DECISIONS_LOG.md 7.140, PR #172) | done — 12 tutorials, QQI mapping, verified in a real browser (DECISIONS_LOG.md 7.141) | done — merged to `main`, PR #174 |
-| `web-authoring` (5N1910) | done | not yet | not yet | not yet |
+| `web-authoring` (5N1910) | done | done, merged to `main` (`html site`/`css site`/`js site`, `assets/site-relay.js`, DECISIONS_LOG.md 7.142) | not yet | not yet |
 | `full-stack` | done (reference only) | — | — | — |
 
 Update this table as each phase in §7 completes.

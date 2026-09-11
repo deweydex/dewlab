@@ -7065,3 +7065,133 @@ suite, every check CI runs (`curriculum_map.py --check`,
 `build_topic_game.py --check`, `build_topic_editor.py --check`,
 `pair_results.py`, `check_doc_links.py`), and a full rebuild all pass;
 `planning/DEWSTACK_MERGE.md`'s ledger records this module as ported.*
+
+**7.142 — A live HTML/CSS/JS site editor for tutorial pages, and a shared
+engine underneath both it and dewmini's own Site tab.** `DEWSTACK_MERGE.md`
+§3's original draft assumed dewlab had nothing of this shape and that
+dewstack's `site=name`/`html app=` fence spelling could carry over
+unchanged. Both assumptions were wrong, in opposite directions, and only
+reading both sides closely — the same discipline 7.140 already paid for
+once on the SQL side — caught it before any tutorial content depended on
+a spelling that would need reversing.
+
+What turned out not to be a gap: dewmini's Site tab
+(`compose/dewmini.js`, `openSiteFile()`/`renderSiteView()`, 7.121) already
+had almost all of the mechanics — a sandboxed `srcdoc` iframe, live
+HTML/CSS with JavaScript on Run, a relayed console with friendly error
+hints. dewstack's own `assets/site-editor.js` was ported from it in shape
+on 2026-09-04 (dewstack's `planning/CONSOLIDATION_PLAN.md` §13), and
+dewstack's own later addition — the console and the Run-vs-live split —
+was ported back into dewmini on 2026-09-06 (7.134). The two were already
+near-twins at that layer before this entry did anything.
+
+What was a real, forced gap: `renderSiteView()` is a singleton over
+module state — one `siteEditors`, one `activeNotebook()` — so it can show
+one site at a time, full stop. A tutorial page needs several independent
+live editors on one page (dewstack's own content proves the requirement:
+`position-and-the-sticky-header.md` ships two). And `site=name` puts a
+site's identity in the fence's own info string, which dewlab's
+Crepe-based authoring editor cannot round-trip — it keeps only a fence's
+first word (`ARCHITECTURE.md` §3) — and every other exec-family fence
+survives exactly that by reading its identity off an `id:` line *inside*
+the fence instead. A `site=name` fence has nothing inside it to recover
+from: copied verbatim, every `html site=hero` block edited through
+dewlab's own authoring page would silently come back inert the moment an
+author saved.
+
+**The fence, decided:** `html site`/`css site`/`js site`, each with the
+same `id:` header every exec-family fence already has, plus a `site:`
+line naming the group it joins:
+
+    ```html site
+    id: hero-markup
+    site: hero
+    <button>Hover me</button>
+    ```
+
+    ```css site
+    id: hero-style
+    site: hero
+    .btn { color: red; }
+    ```
+
+Consecutive fences sharing one `site:` value group into one `SiteEditor`
+(`build.py`'s `extract_blocks()`, tracked by fence position in the raw
+source so an *actual* intervening fence — not just a blank line — breaks
+the run, matching the failure dewstack's own consecutive-run check gives
+for the same mistake). Panes are optional: most of dewstack's own 27 web
+pages are HTML+CSS only, and `render_site_editor()` draws only the panes
+an editor actually has, unlike dewmini's Site tab, which always shows
+three regardless. An id collides with a cell's id the same way two cells
+colliding does — one shared namespace, checked once, in `extract_blocks()`'s
+own `seen` set.
+
+**The engine, shared rather than ported a third time.** Within one
+repository, "port in shape, not code" is the wrong rule — that convention
+exists for the boundary between dewlab and dewstack, which share no code
+by design, not for two files in the same repository heading toward the
+same drift a second, unshared copy always eventually causes. The relay
+script, the friendly-error map, the document assembly, and the
+in-flight-coalescing flush (`view.pendingDoc`/`loading`/a two-second
+watchdog, traced against a real Chromium originally for 7.121) all moved
+out of `compose/dewmini.js` into `assets/site-relay.js`, exporting
+`mountSitePreview(iframe, {onReset, onConsole, onError})` — a factory,
+not a singleton, so a tutorial page can call it once per editor.
+`compose/dewmini.js`'s `renderSiteView()` now only builds its own DOM
+(panes, console lines, "Go to line") and calls into that shared mount;
+`assets/tutorial-runtime.js`'s new `buildSiteEditors()` does the tutorial
+page's equivalent, with its own `dl-site-*` chrome rather than dewmini's
+`dm-siteview-*`, matching the pill/output styling `sql exec` already
+established for keeping two products visually consistent without sharing
+a stylesheet. One real, unrelated bug surfaced by putting both copies
+side by side to extract them: dewmini's own `buildSiteDocument()` was
+missing `<base href="about:srcdoc">`, which dewstack's copy had — without
+it, a relative link inside a dewmini site preview navigates the dewmini
+page itself rather than the preview. Fixed in the shared version, so both
+products get the fix at once.
+
+**Persistence follows dewlab's own convention, not dewstack's.**
+dewstack's site editor deliberately saves nothing — "the student's fork
+is where work is kept." dewlab's own promise is the opposite ("your work
+is saved on this device") for every cell on the site, so a tutorial's
+site editor follows dewlab's rule, not dewstack's: each pane's current
+text and whether Run had been pressed travel in the same per-page
+`localStorage` record every cell's code and output already do
+(`saveNow()`/`restoreSaved()`, `assets/tutorial-runtime.js`), keyed by
+each pane's own `id`. A reload that had been run re-runs on load, showing
+the script's effect again rather than a blank one; a fresh page never
+auto-runs JavaScript, matching the stated rule right there in the page
+("JavaScript runs when you press Run") — the two states are told apart by
+one saved boolean per editor, not by re-deriving intent from whatever the
+console happens to hold, since a site's preview and console are cheap
+enough to just rebuild rather than cache.
+
+Verified in a real browser against a real Pyodide-free page (no
+interpreter needed for this feature at all): built the e2e fixture's new
+"Site editor" section (two editors, `hero` with all three panes and
+`quiet` with HTML+CSS only) and drove it directly — the CSS pane updates
+the preview with no Run click; the JS pane's effect does not appear until
+Run is pressed; clicking Run makes the console show the loaded message
+and wires up the button inside the preview; a bad script produces an
+error line, a friendly hint, and a working "Go to line"; Reset restores
+the starter script; and a reload after editing and running restores both
+the edited code and the "already run" state, re-running the script rather
+than leaving the preview blank. `tests/test_build.py`'s `TestSiteEditors`
+covers the fence grammar and its failure modes (unknown language, missing
+`id:`/`site:`, two panes of the same language, non-consecutive reuse, a
+colliding id) at the unit level; four new tests in
+`tests/e2e/test_phase0_golden_path.py` cover the browser-only behaviour a
+unit test cannot reach.
+
+*Cost to change: a new `SitePane`/`SiteEditor` pair in `build.py`, plus
+`parse_site_pane()`, the `extract_blocks()` dispatch branch, and
+`render_site_editor()`; a new file, `assets/site-relay.js`; a refactor
+(not a rewrite) of `compose/dewmini.js`'s `renderSiteView()`/
+`destroySiteEditors()` down to its own DOM-drawing code; a new
+`buildSiteEditors()` plus `saveNow()`/`restoreSaved()` additions in
+`assets/tutorial-runtime.js`; a new CSS section in
+`assets/tutorial-style.css`. `planning/DEWSTACK_MERGE.md` §3 has the
+fuller design record and §8 records the fence-spelling question as
+resolved. Full unit suite (including the 15 new `TestSiteEditors` cases)
+and the full e2e suite (including dewmini's own 108 Site-tab-adjacent
+tests, unchanged in behaviour) both pass.*

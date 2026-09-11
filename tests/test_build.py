@@ -306,6 +306,27 @@ SELECT 1;
 ```
 """
 
+SITE_HTML = """```html site
+id: hero-html
+site: hero
+<button>Hi</button>
+```
+"""
+
+SITE_CSS = """```css site
+id: hero-css
+site: hero
+button { color: red; }
+```
+"""
+
+SITE_JS = """```js site
+id: hero-js
+site: hero
+console.log("hi");
+```
+"""
+
 
 class TestSqlCells:
     """DEWSTACK_MERGE.md §3 — a sql exec cell shares python exec's header
@@ -372,6 +393,110 @@ class TestSqlCells:
         write(repo, "```sql exec\nid: one\nSELECT 1;\n```\n\ntext\n\n```python exec\nid: two\n2\n```\n")
         b.build()
         assert [c["id"] for c in manifest(built(repo))["cells"]] == ["one", "two"]
+
+
+class TestSiteEditors:
+    """DEWSTACK_MERGE.md §3 — a live HTML/CSS/JS editor. Deliberately not
+    dewstack's own `site=name` spelling: identity lives on an `id:`/`site:`
+    header inside the fence, the same place every other exec-family fence
+    puts it, because a name in the info string cannot survive a round trip
+    through the Crepe-based authoring editor (it keeps only a fence's first
+    word)."""
+
+    def test_a_solo_site_pane_becomes_an_editor(self, repo):
+        write(repo, SITE_HTML)
+        b.build()
+        page = built(repo)
+        assert 'class="dl-site-editor" data-site-name="hero"' in page
+        assert 'data-lang="html"' in page
+        assert 'class="dl-editor"' in page
+
+    def test_consecutive_panes_of_the_same_site_share_one_editor(self, repo):
+        write(repo, SITE_HTML + SITE_CSS + SITE_JS)
+        b.build()
+        page = built(repo)
+        assert page.count('data-site-name="hero"') == 1
+        assert page.count('class="dl-site-pane"') == 3
+
+    def test_panes_are_optional_html_and_css_only(self, repo):
+        write(repo, SITE_HTML + SITE_CSS)
+        b.build()
+        page = built(repo)
+        assert 'data-lang="html"' in page and 'data-lang="css"' in page
+        assert 'data-lang="js"' not in page
+
+    def test_a_js_pane_gets_a_run_button_and_a_console(self, repo):
+        write(repo, SITE_HTML + SITE_JS)
+        b.build()
+        page = built(repo)
+        assert "dl-btn-site-run" in page
+        assert "dl-site-console-output" in page
+
+    def test_an_html_and_css_only_editor_gets_no_run_button_or_console(self, repo):
+        write(repo, SITE_HTML + SITE_CSS)
+        b.build()
+        page = built(repo)
+        assert "dl-btn-site-run" not in page
+        assert "dl-site-console-output" not in page
+
+    def test_the_starter_code_travels_in_the_manifest_not_the_dom(self, repo):
+        write(repo, SITE_HTML)
+        b.build()
+        page = built(repo)
+        assert "<button>Hi</button>" not in page  # not embedded as escaped text
+        editors = manifest(page)["siteEditors"]
+        assert editors == [{"name": "hero", "panes": {"html": {"id": "hero-html", "code": "<button>Hi</button>"}}}]
+
+    def test_a_tutorial_with_no_site_editors_carries_no_manifest_key(self, repo):
+        write(repo, CELL)
+        b.build()
+        assert "siteEditors" not in manifest(built(repo))
+
+    def test_an_unknown_pane_language_fails_the_build(self, repo):
+        write(repo, "```php site\nid: c\nsite: hero\n<?php ?>\n```\n")
+        with pytest.raises(b.BuildError, match="not one of"):
+            b.build()
+
+    def test_a_pane_with_no_id_fails_the_build(self, repo):
+        write(repo, "```html site\nsite: hero\n<p>hi</p>\n```\n")
+        with pytest.raises(b.BuildError, match="no `id:` line"):
+            b.build()
+
+    def test_a_pane_with_no_site_name_fails_the_build(self, repo):
+        write(repo, "```html site\nid: c\n<p>hi</p>\n```\n")
+        with pytest.raises(b.BuildError, match="no `site:` line"):
+            b.build()
+
+    def test_two_panes_of_the_same_language_in_one_editor_fails_the_build(self, repo):
+        write(repo, SITE_HTML + "```html site\nid: hero-html-2\nsite: hero\n<p>again</p>\n```\n")
+        with pytest.raises(b.BuildError, match="two html panes"):
+            b.build()
+
+    def test_non_consecutive_panes_of_the_same_site_fail_the_build(self, repo):
+        write(repo, SITE_HTML + "\ntext in between\n\n" + SITE_CSS)
+        with pytest.raises(b.BuildError, match="not consecutive"):
+            b.build()
+
+    def test_a_site_pane_id_cannot_collide_with_a_cell_id(self, repo):
+        write(repo, "```html site\nid: dup\nsite: hero\n<p>hi</p>\n```\n\n"
+                    "```python exec\nid: dup\nprint(1)\n```\n")
+        with pytest.raises(b.BuildError, match="share the id"):
+            b.build()
+
+    def test_two_different_sites_on_one_page_both_render(self, repo):
+        write(repo, SITE_HTML + SITE_CSS + "```html site\nid: aside-html\nsite: aside\n<p>hi</p>\n```\n")
+        b.build()
+        page = built(repo)
+        assert 'data-site-name="hero"' in page
+        assert 'data-site-name="aside"' in page
+        assert [e["name"] for e in manifest(page)["siteEditors"]] == ["hero", "aside"]
+
+    def test_a_cell_between_two_site_editors_does_not_confuse_them(self, repo):
+        write(repo, SITE_HTML + SITE_CSS + CELL + "```html site\nid: aside-html\nsite: aside\n<p>hi</p>\n```\n")
+        b.build()
+        page = built(repo)
+        assert [e["name"] for e in manifest(page)["siteEditors"]] == ["hero", "aside"]
+        assert manifest(page)["cells"][0]["id"] == "only-cell"
 
 
 class TestIncludes:

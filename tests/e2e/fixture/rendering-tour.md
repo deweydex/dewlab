@@ -157,6 +157,48 @@ title: some steps
 Then $t = \sum v$ once it runs.
 ```
 
+## Site editor
+
+A live HTML/CSS/JS editor: `hero`'s two panes are grouped by their shared
+`site:` name.
+
+```html site
+id: site-hero-html
+site: hero
+<button id="go">Click me</button>
+<p id="out">not yet</p>
+```
+
+```css site
+id: site-hero-css
+site: hero
+#go { font-weight: bold; }
+```
+
+```js site
+id: site-hero-js
+site: hero
+document.getElementById("go").addEventListener("click", () => {
+  document.getElementById("out").textContent = "clicked";
+});
+console.log("script loaded");
+```
+
+An HTML+CSS-only editor gets no JavaScript pane, no Run button, and no
+console.
+
+```html site
+id: site-quiet-html
+site: quiet
+<p>No script here.</p>
+```
+
+```css site
+id: site-quiet-css
+site: quiet
+p { color: teal; }
+```
+
 ## Checking your own answer
 
 ```python exec
