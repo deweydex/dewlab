@@ -3002,6 +3002,87 @@ class TestCrossSeriesGlossary:
             b.build()
 
 
+class TestMathBasics:
+    """Math Basics: plain definitions for arithmetic notation and
+    vocabulary, independent of any one tutorial or series — build.py's
+    load_math_basics(), planning/curriculum/math-basics.yaml. Not
+    cumulative and not per-tutorial, so every test here monkeypatches
+    MATH_BASICS_DATA directly rather than going through the `repo`
+    fixture's own tutorials/data/assets layout."""
+
+    def _write(self, repo: Path, monkeypatch, text: str) -> Path:
+        path = repo / "planning" / "curriculum" / "math-basics.yaml"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(text)
+        monkeypatch.setattr(b, "MATH_BASICS_DATA", path)
+        return path
+
+    def test_a_missing_file_is_fine_not_an_error(self, repo, monkeypatch):
+        monkeypatch.setattr(
+            b, "MATH_BASICS_DATA", repo / "planning" / "curriculum" / "math-basics.yaml")
+        assert b.load_math_basics() == []
+
+    def test_a_well_formed_file_loads_its_groups(self, repo, monkeypatch):
+        self._write(repo, monkeypatch, """
+groups:
+  - label: Operations
+    entries:
+      - term: Sum
+        definition: The result of adding numbers together.
+""")
+        assert b.load_math_basics() == [
+            {"label": "Operations", "entries": [
+                {"term": "Sum", "definition": "The result of adding numbers together."},
+            ]},
+        ]
+
+    def test_a_group_with_no_label_fails_the_build(self, repo, monkeypatch):
+        self._write(repo, monkeypatch, """
+groups:
+  - entries:
+      - term: Sum
+        definition: Adding.
+""")
+        with pytest.raises(b.BuildError, match="label"):
+            b.load_math_basics()
+
+    def test_a_group_with_no_entries_fails_the_build(self, repo, monkeypatch):
+        self._write(repo, monkeypatch, "groups:\n  - label: Operations\n    entries: []\n")
+        with pytest.raises(b.BuildError, match="no entries"):
+            b.load_math_basics()
+
+    def test_an_entry_missing_a_definition_fails_the_build(self, repo, monkeypatch):
+        self._write(repo, monkeypatch, """
+groups:
+  - label: Operations
+    entries:
+      - term: Sum
+""")
+        with pytest.raises(b.BuildError, match="term or a definition"):
+            b.load_math_basics()
+
+    def test_it_reaches_every_pages_own_manifest(self, repo, monkeypatch):
+        self._write(repo, monkeypatch, """
+groups:
+  - label: Operations
+    entries:
+      - term: Sum
+        definition: The result of adding numbers together.
+""")
+        write(repo, "One.\n", slug="one")
+        b.build()
+        assert manifest(built(repo, "one"))["mathBasics"] == [
+            {"label": "Operations", "entries": [
+                {"term": "Sum", "definition": "The result of adding numbers together."},
+            ]},
+        ]
+
+    def test_the_shipped_file_is_itself_well_formed(self):
+        """Not monkeypatched — loads the real file this repo ships, as a
+        guard against a malformed hand-edit of it ever reaching main."""
+        assert b.load_math_basics()
+
+
 class TestNotes:
     """Pedagogical notes — planning/SIDEBAR_CONTENT.md §3/§4: an HTML aside
     in the body, pulled out and surfaced in the reference panel instead

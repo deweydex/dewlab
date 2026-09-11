@@ -1,0 +1,96 @@
+# Math Basics: plain definitions for arithmetic notation and vocabulary,
+# independent of any one tutorial or series — read by build.py's
+# load_math_basics() and shown on every page, in the Reference panel's
+# own "Math Basics" tab. Unlike a tutorial's own <slug>.glossary.yaml,
+# nothing here is cumulative and nothing here assumes a reader has met
+# anything else on this list first: it exists so a reader who does not
+# yet have the words for a symbol they are looking at has somewhere to
+# go, on page one as much as page fifty.
+#
+# House rule for this file specifically: one plain sentence, no worked
+# example, no reference to another entry on this list. A definition
+# that only makes sense after reading a different entry first belongs
+# in a tutorial's own glossary instead, where "introduced in" can do
+# that work honestly.
+
+groups:
+  - label: Operations
+    entries:
+      - term: Order of operations
+        definition: >-
+          The order a calculation with more than one operation is worked
+          out in: brackets first, then powers and roots, then
+          multiplication and division, then addition and subtraction.
+      - term: Sum
+        definition: The result of adding numbers together.
+      - term: Difference
+        definition: The result of subtracting one number from another.
+      - term: Product
+        definition: The result of multiplying numbers together.
+      - term: Quotient
+        definition: The result of dividing one number by another.
+
+  - label: Powers and roots
+    entries:
+      - term: Exponent
+        definition: >-
+          A small raised number showing how many times a number is
+          multiplied by itself.
+      - term: Base
+        definition: >-
+          The number being multiplied by itself, when a power is written
+          with an exponent.
+      - term: Power
+        definition: >-
+          A number multiplied by itself a set number of times, written
+          as a base with an exponent.
+      - term: Square
+        definition: A number multiplied by itself once.
+      - term: Cube
+        definition: A number multiplied by itself twice.
+      - term: Square root
+        definition: >-
+          The number that, multiplied by itself, gives a particular
+          result.
+
+  - label: Numbers
+    entries:
+      - term: Negative number
+        definition: A number less than zero, written with a minus sign.
+      - term: Positive number
+        definition: A number greater than zero.
+      - term: Integer
+        definition: >-
+          A whole number — positive, negative, or zero — with no
+          fractional or decimal part.
+      - term: Fraction
+        definition: >-
+          A number written as one number over another, showing a part
+          of a whole.
+      - term: Decimal
+        definition: >-
+          A number written with a decimal point, showing a part of a
+          whole in base ten.
+      - term: Percentage
+        definition: A number out of a hundred, written with a percent sign.
+
+  - label: Expressions and equations
+    entries:
+      - term: Variable
+        definition: >-
+          A letter standing in for a number that can change or is not
+          yet known.
+      - term: Expression
+        definition: >-
+          A combination of numbers, variables, and operations, with no
+          equals sign.
+      - term: Equation
+        definition: >-
+          A statement that two expressions are equal, joined by an
+          equals sign.
+      - term: Coefficient
+        definition: The number multiplying a variable in an expression.
+      - term: Term
+        definition: >-
+          One part of an expression, separated from the others by a
+          plus or minus sign.

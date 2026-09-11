@@ -1768,6 +1768,42 @@ def origin_of(reader_at: Tutorial, introduced_by: Tutorial, term: str) -> dict:
     }
 
 
+MATH_BASICS_DATA = ROOT / "planning" / "curriculum" / "math-basics.yaml"
+
+
+def load_math_basics() -> list[dict]:
+    """Math Basics: plain definitions for arithmetic notation and
+    vocabulary, independent of any one tutorial or series — see
+    planning/curriculum/math-basics.yaml for the house rule this file is
+    written to (one sentence, no worked example, no leaning on another
+    entry). Unlike a tutorial's own accumulated glossary, this is the
+    same list on every page — re-read on every one of write()'s calls
+    rather than cached, the same choice cumulative_glossary() already
+    makes for the (much larger) per-tutorial glossary files it re-reads
+    per page; a ~100-line YAML file is not worth memoizing against, and
+    not caching it keeps this trivially safe to monkeypatch in tests.
+
+    Returns `[]`, not an error, when the file does not exist yet: the
+    same "not written yet" tolerance `own_glossary()` gives a missing
+    per-tutorial glossary.
+    """
+    if not MATH_BASICS_DATA.is_file():
+        return []
+    data = load_yaml_no_duplicate_keys(MATH_BASICS_DATA.read_text()) or {}
+    groups = data.get("groups") or []
+    for group in groups:
+        if not group.get("label"):
+            fail(MATH_BASICS_DATA, "a math-basics group is missing a label.")
+        entries = group.get("entries") or []
+        if not entries:
+            fail(MATH_BASICS_DATA, f'the group {group.get("label")!r} has no entries.')
+        for entry in entries:
+            if not entry.get("term") or not entry.get("definition"):
+                fail(MATH_BASICS_DATA,
+                     "a math-basics entry is missing a term or a definition.")
+    return groups
+
+
 def render_toc(tutorial: Tutorial) -> str:
     """A contents list for one page, nested one level.
 
@@ -3488,6 +3524,12 @@ def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "",
         manifest["notes"] = notes
     if datasets:
         manifest["datasets"] = datasets
+    # Same site-wide content on every page, so write() reads it directly
+    # rather than every one of write()'s many call sites threading it
+    # through as its own parameter.
+    math_basics = load_math_basics()
+    if math_basics:
+        manifest["mathBasics"] = math_basics
 
     tokens = {
         "{{TITLE}}": html.escape(str(tutorial.meta["title"])),
