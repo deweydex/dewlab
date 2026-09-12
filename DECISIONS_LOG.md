@@ -3367,3 +3367,23 @@ tutorial prose changed. `dev/curriculum_map.py`'s vocabulary section is
 unaffected — it tracks italicised emphasis in prose, not glossary
 files, so this pass could not introduce a new "used before it was
 introduced" warning even where it added a disambiguated term.*
+
+**7.150 — the `named-grid-areas.md` forward reference from 7.149 is
+fixed; `quick-reference.md`'s scope is still open.** Of the two things
+7.149 surfaced, one was a plain bug: the page's own prose claimed
+`auto-fit` was "already shown" on `a-grid-gallery`, a page the
+corrected series order actually places later. Reworded to point
+forward — "`a-grid-gallery`, later in this course, covers `auto-fit`
+itself" — instead of claiming a reader has seen something they have
+not yet.
+
+The other, `quick-reference.md` naming syntax no tutorial teaches
+directly, is not a bug in the same sense. Its own page says it is not
+meant to be read start to finish, which argues for a cheat sheet
+reaching past exactly what was taught; nothing else in the repository
+settles whether that is the intended scope or an oversight. Left as is
+until that is decided.
+
+*Cost to change: one sentence in one tutorial, and its glossary file's
+own note updated to match. No frontmatter, no covers:, no test
+affected.*

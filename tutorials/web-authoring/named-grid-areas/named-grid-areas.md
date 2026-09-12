@@ -90,10 +90,11 @@ naming, even without a live demo of their own. `order` changes a flex
 item's visual position without changing where it sits in the HTML. A
 screen reader still follows the HTML order, not the visual one, so a
 reordered page can confuse someone who cannot see the new order. Use
-`order` carefully for that reason. `auto-fill`, alongside the `auto-fit`
-already shown on [a grid gallery](tutorial:a-grid-gallery), fits as many
-columns as `auto-fit` does. It keeps any leftover columns empty, though,
-rather than letting the existing items grow to fill them.
+`order` carefully for that reason. `auto-fill` fits as many columns as
+`auto-fit` does, but keeps any leftover columns empty rather than
+letting the existing items grow to fill them. [A grid
+gallery](tutorial:a-grid-gallery), later in this course, covers
+`auto-fit` itself.
 
 ## Your turn
 
