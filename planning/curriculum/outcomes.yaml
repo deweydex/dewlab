@@ -423,9 +423,8 @@ outcomes:
   # in-browser site editor instead, published through GitHub Pages rather
   # than an ISP's own hosting — WA-LO3, WA-LO5, WA-LO12 and WA-LO13 below are
   # the clearest cases of the descriptor's own vocabulary and dewlab's
-  # parting ways, not a disagreement about what the outcome means. WA-LO5
-  # (desktop publishing programs and site-management systems) and WA-LO12
-  # (HTML/CSS code generators) have no dewlab equivalent yet and are not
+  # parting ways, not a disagreement about what the outcome means. WA-LO12
+  # (HTML/CSS code generators) has no dewlab equivalent yet and is not
   # claimed as covered by anything, the same way DBM-LO1 is flagged in the
   # section above. WA-LO10's "browser compatibility" is dev-tools diagnosis
   # in one browser, not a multi-browser comparison — see
@@ -443,7 +442,7 @@ outcomes:
     title: "The principles of good website design: target audience, site objectives, navigation, structure, interface and access speed"
     strand: design-principles
   - code: WA-LO5
-    title: "Investigate available web authoring tools, including desktop publishing programs and website management systems (the descriptor's own examples — Dreamweaver, Photoshop, Joomla, WordPress — are commercial GUI tools; dewlab's own equivalent is hand-written HTML and CSS, not yet covered by anything in dewlab)"
+    title: "Investigate available web authoring tools, including desktop publishing programs and website management systems (the descriptor's own examples — Dreamweaver, Photoshop, Joomla, WordPress — are commercial GUI tools; dewlab discusses GitHub Pages, WordPress and two modern single-page builders against the hand-written HTML and CSS this course actually teaches)"
     strand: tooling
   - code: WA-LO6
     title: "Keep evidence of a web authoring project: its own research, requirements, and an evaluation of the finished site"
