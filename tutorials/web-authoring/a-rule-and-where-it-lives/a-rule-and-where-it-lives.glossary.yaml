@@ -1,0 +1,20 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# Eighth tutorial of first-site, and the first to teach CSS rather than
+# HTML. Checked against the cumulative glossary so far -- no overlap.
+# `<link>`, the tag connecting a page to its stylesheet, is mentioned
+# but never given its own defining sentence, so it is left out.
+entries:
+  - term: rule
+    kind: concept
+    definition: >
+      A CSS rule is a selector plus one or more declarations. `p {
+      color: darkslateblue; }` is one rule.
+  - term: selector
+    kind: concept
+    definition: "A selector is the part of a rule saying which elements to style."
+  - term: declaration
+    kind: concept
+    definition: >
+      A declaration is a property and a value, inside a rule's braces.
+      `color: darkslateblue;` is one declaration.

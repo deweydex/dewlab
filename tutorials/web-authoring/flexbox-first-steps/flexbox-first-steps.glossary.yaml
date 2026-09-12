@@ -1,0 +1,17 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# Nineteenth tutorial of first-site. Checked against the cumulative
+# glossary so far -- no overlap.
+entries:
+  - term: flex container
+    kind: concept
+    definition: "A flex container is the element with `display: flex` on it."
+  - term: flex item
+    kind: concept
+    definition: "A flex item is one direct child of a flex container."
+  - term: flex-wrap
+    kind: keyword
+    definition: >
+      The `flex-wrap` property lets flex items move to a new row when
+      they no longer fit, rather than overflow or squeeze to force a
+      fit.

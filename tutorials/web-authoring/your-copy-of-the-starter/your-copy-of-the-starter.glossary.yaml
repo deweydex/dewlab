@@ -1,0 +1,15 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# Fifth tutorial of welcome. Checked against the cumulative glossary so
+# far (editor, repository, browser, commit, push, username, issue, pull
+# request) -- no overlap. "Use this template", "Clone it", "Download
+# it" and "Edit it in the browser" are bold because they name buttons
+# and methods to choose between, not technical terms; that leaves
+# "fork" as the one word this page actually defines.
+entries:
+  - term: fork
+    kind: concept
+    definition: >
+      A fork is your own copy of somebody else's repository, made
+      through GitHub. It stays visibly connected to the original and
+      keeps its history, unlike a copy made from a template.

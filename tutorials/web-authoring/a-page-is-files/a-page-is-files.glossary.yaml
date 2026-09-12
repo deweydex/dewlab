@@ -1,0 +1,24 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# First tutorial of first-site, after the whole welcome series. Checked
+# against welcome's cumulative glossary (editor, repository, browser,
+# commit, push, username, issue, pull request, fork, inspector) -- no
+# overlap. `<h1>`, `<p>`, `<strong>` and `<em>` appear only as examples
+# of "tag", already covered by that entry; they get their own entries
+# later, where they are the tutorial's actual subject.
+entries:
+  - term: tag
+    kind: concept
+    definition: >
+      A tag is a marker written in angle brackets, such as `<p>` or
+      `</p>`, that tells a browser what a piece of a page is.
+  - term: element
+    kind: concept
+    definition: >
+      An element is an opening tag, its content, and a matching closing
+      tag, together. `<p>Hello</p>` is one paragraph element.
+  - term: attribute
+    kind: concept
+    definition: >
+      An attribute is extra information carried inside a tag, written
+      as `name="value"`.

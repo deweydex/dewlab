@@ -1,0 +1,28 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# Seventh tutorial of several-pages. Checked against the cumulative
+# glossary so far -- no overlap.
+entries:
+  - term: "images/"
+    kind: concept
+    definition: >
+      An images folder, usually named `images/`, gathers every image
+      in one place, so a file's path says both where it lives and that
+      it is an image.
+  - term: JPEG
+    kind: concept
+    definition: >
+      JPEG is an image format suited to a photograph. It compresses
+      well, at some loss of exact detail a photo rarely needs.
+  - term: PNG
+    kind: concept
+    definition: >
+      PNG is an image format suited to a screenshot, a logo, or
+      anything needing a transparent background. It loses no detail, at
+      a larger file size than a JPEG of the same photo.
+  - term: SVG
+    kind: concept
+    definition: >
+      SVG is an image format suited to a simple icon or a logo made of
+      flat shapes. It describes an image as instructions rather than
+      pixels, so it stays sharp at any size.

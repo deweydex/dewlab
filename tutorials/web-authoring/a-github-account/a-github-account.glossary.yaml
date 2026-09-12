@@ -1,0 +1,13 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# Second tutorial of welcome, after how-the-pieces-fit. Checked against
+# its glossary (editor, repository, browser, commit, push) -- no
+# overlap. "Repo" here is the same word as "repository", already
+# introduced, shortened, not a second term.
+entries:
+  - term: username
+    kind: concept
+    definition: >
+      A username is the name that identifies your GitHub account. It
+      becomes part of your GitHub address and appears next to anything
+      you post there.

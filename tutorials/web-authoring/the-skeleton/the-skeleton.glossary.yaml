@@ -1,0 +1,25 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# Second tutorial of first-site. Checked against the cumulative
+# glossary so far (tag, element, attribute, plus welcome's ten) -- no
+# overlap. `<h1>` is reused here only as a contrast to `<title>`; its
+# own entry (as "heading level") belongs to headings-and-emphasis,
+# where it is actually taught.
+entries:
+  - term: head
+    kind: concept
+    definition: >
+      The head is the part of an HTML page holding information about
+      the page itself, such as its `<title>`, rather than content a
+      visitor sees directly.
+  - term: body
+    kind: concept
+    definition: >
+      The body is the part of an HTML page holding everything a
+      visitor actually sees: headings, paragraphs, images, and the
+      rest.
+  - term: "<title>"
+    kind: keyword
+    definition: >
+      `<title>` sits in the head and sets the text shown in the browser
+      tab, not on the page itself.

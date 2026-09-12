@@ -1,0 +1,22 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# Sixth tutorial of several-pages. Checked against the cumulative
+# glossary so far -- no overlap.
+entries:
+  - term: "for (on <label>)"
+    kind: keyword
+    definition: >
+      A `<label>`'s `for` attribute names the `id` of the field it
+      belongs to. Clicking the label then focuses that field, and a
+      screen reader reads the label aloud when the field gets focus.
+  - term: 'type="email"'
+    kind: keyword
+    definition: >
+      Setting an `<input>`'s `type` to `email` gives a phone a
+      keyboard suited to typing an address, and has the browser check
+      the text has roughly the right shape before the form submits.
+  - term: required
+    kind: keyword
+    definition: >
+      The `required` attribute stops a form submitting while that
+      field is empty.

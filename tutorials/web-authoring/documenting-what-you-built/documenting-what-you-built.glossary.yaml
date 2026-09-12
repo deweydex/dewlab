@@ -1,0 +1,18 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# Eighth tutorial of several-pages, the last before
+# conclusions-and-next-steps (already glossaried). Checked against the
+# cumulative glossary so far -- no overlap.
+entries:
+  - term: readme.md
+    kind: concept
+    definition: >
+      A `readme.md` documents a finished site: what it covers, how its
+      pages connect, the choices made and why, and how it was tested.
+      It is written after building, unlike a planning document.
+  - term: maintenance.md
+    kind: concept
+    definition: >
+      A `maintenance.md` is a short plan for keeping a site current
+      after it is submitted: how a page would be added later, what
+      would be checked periodically, and what would come next.

@@ -1,0 +1,13 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# Second tutorial of shelf. Checked against the cumulative glossary --
+# no overlap. Everything else on this page is a named symptom or a
+# reuse of vocabulary already introduced, not a new term.
+entries:
+  - term: hard refresh
+    kind: concept
+    definition: >
+      A hard refresh reloads a page while ignoring the browser's own
+      saved copy of it, useful when an ordinary refresh still shows an
+      old version.
+    example: "Ctrl+F5 on Windows, Cmd+Shift+R on a Mac"

@@ -1,0 +1,26 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# Sixteenth tutorial of first-site, after hover-and-focus, which
+# already introduced `transition` itself -- not repeated here. Checked
+# against the cumulative glossary so far -- no overlap. `rotate()` is
+# included even though the tutorial's own recap only names
+# `translateY()` and `scale()`; the prose defines what it does in the
+# same sentence as the other two, so it counts as taught here too.
+entries:
+  - term: transform
+    kind: keyword
+    definition: >
+      The `transform` property changes an element's position, size or
+      shape without affecting anything around it.
+  - term: "translateY()"
+    kind: function
+    definition: "Shifts an element up or down."
+    example: "transform: translateY(-15px);"
+  - term: "scale()"
+    kind: function
+    definition: "Grows or shrinks an element."
+    example: "transform: scale(1.2);"
+  - term: "rotate()"
+    kind: function
+    definition: "Turns an element."
+    example: "transform: rotate(8deg);"

@@ -1,0 +1,23 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# Third tutorial of several-pages. Checked against the cumulative
+# glossary so far -- no overlap. `flex-wrap` was already glossaried in
+# first-site's flexbox-first-steps; this tutorial splits the `flex`
+# shorthand's other three numbers out instead.
+entries:
+  - term: flex-basis
+    kind: keyword
+    definition: >
+      An item's flex-basis is its starting size, before any growing or
+      shrinking happens.
+  - term: flex-grow
+    kind: keyword
+    definition: >
+      An item's flex-grow decides whether it claims a share of any
+      space left over once every item has its basis, and how much
+      relative to its neighbours.
+  - term: flex-shrink
+    kind: keyword
+    definition: >
+      An item's flex-shrink decides whether it shrinks below its basis
+      when there is too little space, rather than overflowing.

@@ -1,0 +1,20 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# First tutorial of several-pages, after the whole first-site series.
+# Checked against first-site's cumulative glossary -- no overlap.
+# `planning.md`, the file this tutorial has the reader fill in, is
+# named in "Your turn" but never given its own defining sentence the
+# way readme.md and maintenance.md later are in
+# documenting-what-you-built; this whole tutorial teaches what goes in
+# it instead, so it is left out here.
+entries:
+  - term: site map
+    kind: concept
+    definition: >
+      A site map says what each page of a site is for, and how the
+      pages connect to one another.
+  - term: wireframe
+    kind: concept
+    definition: >
+      A wireframe is a rough sketch of a page's layout, made before any
+      CSS exists, showing roughly where things sit.
