@@ -231,12 +231,6 @@ async function fsMountNative(mountpoint, handle) {
   mountedFs = await pyodide.mountNativeFS(mountpoint, handle);
 }
 
-async function fsMountOpfs(mountpoint) {
-  const opfsRoot = await navigator.storage.getDirectory();
-  pyodide.FS.mkdirTree(mountpoint);
-  mountedFs = await pyodide.mountNativeFS(mountpoint, opfsRoot);
-}
-
 async function fsMountIdbfs(mountpoint) {
   pyodide.FS.mkdirTree(mountpoint);
   pyodide.FS.mount(pyodide.FS.filesystems.IDBFS, {}, mountpoint);
@@ -318,9 +312,6 @@ self.onmessage = async (ev) => {
       respond(describeGlobals());
     } else if (msg.type === "fs-mount-native") {
       await fsMountNative(msg.mountpoint, msg.handle);
-      respond("ok");
-    } else if (msg.type === "fs-mount-opfs") {
-      await fsMountOpfs(msg.mountpoint);
       respond("ok");
     } else if (msg.type === "fs-mount-idbfs") {
       await fsMountIdbfs(msg.mountpoint);
