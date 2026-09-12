@@ -234,7 +234,9 @@ groups:
     intro: >
       Moving from a hand-built example to a real, published dataset: loading
       a CSV into a table, joining it to a second one, charting a query's
-      result, and getting a result back out again.
+      result, and getting a result back out again. Ends with a five-table
+      design of its own — a college timetable, and the query that finds a
+      double-booked room or teacher.
     tutorials:
       - { module: database-methods, slug: designing-a-table-before-you-build-it }
       - { module: database-methods, slug: loading-a-real-dataset }
@@ -242,16 +244,18 @@ groups:
       - { module: database-methods, slug: charting-a-querys-result }
       - { module: database-methods, slug: exporting-a-query-to-a-file }
       - { module: database-methods, slug: a-form-that-writes-a-row }
+      - { module: database-methods, slug: a-college-timetable }
 
   - key: database-practice
     name: Database practice and self-checks
     intro: >
-      Open-ended SQL practice, and a five-task quiz that checks your own
-      database as you build it, one task at a time, with a hint if you get
-      stuck.
+      Open-ended SQL practice, and two self-checked quizzes that build a
+      database task by task, with a hint if you get stuck. The second one
+      adds a many-to-many table of its own, with a different kind of key.
     tutorials:
       - { module: database-methods, slug: sql-practice }
       - { module: database-methods, slug: the-tentacular-plushies-quiz }
+      - { module: database-methods, slug: the-library-loans-quiz }
 
   - key: web-authoring-orientation
     name: A GitHub account, an editor, and a published page

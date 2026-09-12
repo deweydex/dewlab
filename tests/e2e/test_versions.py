@@ -52,6 +52,21 @@ def seed(tab, answers: dict[str, str], version: str = "2026.09.15.1"):
     )
 
 
+def _open_panel(actor, selector: str) -> None:
+    """Reference/Series/Settings' toggles now collapse behind one
+    "Panels" control in the masthead (shell.html's
+    <details class="dl-panels">) rather than always showing — expand it
+    first if it isn't already, then click the actual target. Checked via
+    #dl-panels' own `open` property rather than the target's own
+    visibility, so this never mistakes "already open" for "not open" and
+    toggles it shut again right before the click that was supposed to
+    land. Left expanded once opened (no auto-collapse), so this is only
+    needed once per page load, not before every toggle click."""
+    if not actor.eval_on_selector("#dl-panels", "el => el.open"):
+        actor.click("#dl-panels summary")
+    actor.click(selector)
+
+
 class TestWhenThereIsNothingToChoose:
     def test_a_tutorial_with_one_release_shows_no_picker(self, tab, base_url):
         opened(tab, base_url, ONE_VERSION_PAGE)
@@ -289,7 +304,7 @@ class TestWhichNoticeComesFirst:
 class TestTheSwitchInSettings:
     def test_it_starts_on_where_i_left_off(self, tab, base_url):
         opened(tab, base_url, DEFAULT_PAGE)
-        tab.click("#dl-settings-toggle")
+        _open_panel(tab, "#dl-settings-toggle")
         pressed = tab.eval_on_selector_all(
             "#dl-settings-versions [data-versions-follow] button",
             "els => els.filter(e => e.getAttribute('aria-pressed') === 'true')"
@@ -299,7 +314,7 @@ class TestTheSwitchInSettings:
 
     def test_it_lists_the_releases_too(self, tab, base_url):
         opened(tab, base_url, DEFAULT_PAGE)
-        tab.click("#dl-settings-toggle")
+        _open_panel(tab, "#dl-settings-toggle")
         names = tab.eval_on_selector_all(
             "#dl-versions-settings .dl-version-name",
             "els => els.map(e => e.textContent)",
@@ -314,7 +329,7 @@ class TestTheSwitchInSettings:
         opened(tab, base_url, DEFAULT_PAGE)
         assert tab.url.endswith("v2026.06.02.1.html")
 
-        tab.click("#dl-settings-toggle")
+        _open_panel(tab, "#dl-settings-toggle")
         tab.click("#dl-settings-versions [data-versions-follow] button[data-value=newest]")
         tab.wait_for_function("globalThis.dewlab !== undefined", timeout=30_000)
         assert tab.url.endswith(f"{SLUG}.html")
@@ -323,7 +338,7 @@ class TestTheSwitchInSettings:
         opened(tab, base_url, DEFAULT_PAGE)
         seed(tab, {"shared-one": "print('mine')"}, version="2026.06.02.1")
         opened(tab, base_url, DEFAULT_PAGE)
-        tab.click("#dl-settings-toggle")
+        _open_panel(tab, "#dl-settings-toggle")
         tab.click("#dl-settings-versions [data-versions-follow] button[data-value=newest]")
         tab.wait_for_function("globalThis.dewlab !== undefined", timeout=30_000)
 

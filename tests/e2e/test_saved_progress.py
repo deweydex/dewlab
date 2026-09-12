@@ -47,6 +47,21 @@ def clean_storage(page):
     page.evaluate("localStorage.clear()")
 
 
+def _open_panel(actor, selector: str) -> None:
+    """Reference/Series/Settings' toggles now collapse behind one
+    "Panels" control in the masthead (shell.html's
+    <details class="dl-panels">) rather than always showing — expand it
+    first if it isn't already, then click the actual target. Checked via
+    #dl-panels' own `open` property rather than the target's own
+    visibility, so this never mistakes "already open" for "not open" and
+    toggles it shut again right before the click that was supposed to
+    land. Left expanded once opened (no auto-collapse), so this is only
+    needed once per page load, not before every toggle click."""
+    if not actor.eval_on_selector("#dl-panels", "el => el.open"):
+        actor.click("#dl-panels summary")
+    actor.click(selector)
+
+
 class TestAutosave:
     def test_typing_is_saved_without_being_asked(self, clean_storage):
         page = clean_storage
@@ -158,7 +173,7 @@ class TestStudentNotes:
 
     def test_typing_a_note_is_saved_without_being_asked(self, clean_storage):
         page = clean_storage
-        page.click("#dl-settings-toggle")
+        _open_panel(page, "#dl-settings-toggle")
         page.fill("#dl-progress-notes", "the ISO date trick only works because...")
         page.wait_for_function(
             "globalThis.dewlab.readSaved() !== null", timeout=10_000
@@ -168,17 +183,17 @@ class TestStudentNotes:
 
     def test_a_note_comes_back_after_a_reload(self, clean_storage):
         page = clean_storage
-        page.click("#dl-settings-toggle")
+        _open_panel(page, "#dl-settings-toggle")
         page.fill("#dl-progress-notes", "remember this for later")
         page.wait_for_function("globalThis.dewlab.readSaved() !== null", timeout=10_000)
 
         reload_and_wait(page)
-        page.click("#dl-settings-toggle")
+        _open_panel(page, "#dl-settings-toggle")
         assert page.input_value("#dl-progress-notes") == "remember this for later"
 
     def test_start_again_clears_the_note_too(self, clean_storage):
         page = clean_storage
-        page.click("#dl-settings-toggle")
+        _open_panel(page, "#dl-settings-toggle")
         page.fill("#dl-progress-notes", "throwaway")
         page.wait_for_function("globalThis.dewlab.readSaved() !== null", timeout=10_000)
 
@@ -188,7 +203,7 @@ class TestStudentNotes:
 
     def test_exporting_downloads_the_note_alongside_the_cells(self, clean_storage):
         page = clean_storage
-        page.click("#dl-settings-toggle")
+        _open_panel(page, "#dl-settings-toggle")
         page.fill("#dl-progress-notes", "goes in the export too")
         page.wait_for_function("globalThis.dewlab.readSaved() !== null", timeout=10_000)
         with page.expect_download() as download_info:
@@ -211,21 +226,21 @@ class TestNotesNudge:
 
     def test_a_short_note_gets_no_marker(self, clean_storage):
         page = clean_storage
-        page.click("#dl-settings-toggle")
+        _open_panel(page, "#dl-settings-toggle")
         page.fill("#dl-progress-notes", self.SHORT)
         page.wait_for_function("globalThis.dewlab.readSaved() !== null", timeout=10_000)
         assert "dl-nudge" not in self.export_button_class(page)
 
     def test_a_long_note_gets_a_marker(self, clean_storage):
         page = clean_storage
-        page.click("#dl-settings-toggle")
+        _open_panel(page, "#dl-settings-toggle")
         page.fill("#dl-progress-notes", self.LONG)
         page.wait_for_function("globalThis.dewlab.readSaved() !== null", timeout=10_000)
         assert "dl-nudge" in self.export_button_class(page)
 
     def test_exporting_clears_the_marker(self, clean_storage):
         page = clean_storage
-        page.click("#dl-settings-toggle")
+        _open_panel(page, "#dl-settings-toggle")
         page.fill("#dl-progress-notes", self.LONG)
         page.wait_for_function("globalThis.dewlab.readSaved() !== null", timeout=10_000)
         assert "dl-nudge" in self.export_button_class(page)
@@ -237,12 +252,12 @@ class TestNotesNudge:
         # And it stays gone across a reload — the baseline is stored, not
         # just the in-memory class.
         reload_and_wait(page)
-        page.click("#dl-settings-toggle")
+        _open_panel(page, "#dl-settings-toggle")
         assert "dl-nudge" not in self.export_button_class(page)
 
     def test_writing_more_after_export_marks_it_again(self, clean_storage):
         page = clean_storage
-        page.click("#dl-settings-toggle")
+        _open_panel(page, "#dl-settings-toggle")
         page.fill("#dl-progress-notes", self.SHORT)
         page.wait_for_function("globalThis.dewlab.readSaved() !== null", timeout=10_000)
         with page.expect_download():
@@ -255,7 +270,7 @@ class TestNotesNudge:
 
     def test_the_settings_toggle_turns_the_marker_off(self, clean_storage):
         page = clean_storage
-        page.click("#dl-settings-toggle")
+        _open_panel(page, "#dl-settings-toggle")
         page.fill("#dl-progress-notes", self.LONG)
         page.wait_for_function("globalThis.dewlab.readSaved() !== null", timeout=10_000)
         assert "dl-nudge" in self.export_button_class(page)
@@ -358,7 +373,7 @@ class TestStartingAgain:
         page.wait_for_function("globalThis.dewlab.readSaved() !== null", timeout=10_000)
 
         page.on("dialog", lambda dialog: dialog.accept())
-        page.click("#dl-settings-toggle")
+        _open_panel(page, "#dl-settings-toggle")
         page.click("#dl-progress-clear")
 
         assert "to be cleared" not in editor_text(page, "plain-python")

@@ -52,20 +52,27 @@
       <span class="dl-crumbs">{{CRUMBS}}</span>
 
       <div class="dl-masthead-actions">
-        <button type="button" class="dl-reference-toggle" id="dl-reference-toggle"
-                aria-expanded="false" aria-controls="dl-reference" aria-label="Reference" hidden>
-          <span class="dl-reference-icon" aria-hidden="true"></span><span class="dl-toggle-label">Reference</span>
-        </button>
+        <details class="dl-panels" id="dl-panels">
+          <summary class="dl-panels-toggle">
+            <span class="dl-panels-icon" aria-hidden="true"></span>Panels
+          </summary>
+          <div class="dl-panels-group" id="dl-panels-group">
+            <button type="button" class="dl-reference-toggle" id="dl-reference-toggle"
+                    aria-expanded="false" aria-controls="dl-reference" aria-label="Reference" hidden>
+              <span class="dl-reference-icon" aria-hidden="true"></span><span class="dl-toggle-label">Reference</span>
+            </button>
 
-        <button type="button" class="dl-seriesnav-toggle" id="dl-seriesnav-toggle"
-                aria-expanded="false" aria-controls="dl-seriesnav" aria-label="Series" hidden>
-          <span class="dl-seriesnav-icon" aria-hidden="true"></span><span class="dl-toggle-label">Series</span>
-        </button>
+            <button type="button" class="dl-seriesnav-toggle" id="dl-seriesnav-toggle"
+                    aria-expanded="false" aria-controls="dl-seriesnav" aria-label="Series" hidden>
+              <span class="dl-seriesnav-icon" aria-hidden="true"></span><span class="dl-toggle-label">Series</span>
+            </button>
 
-        <button type="button" class="dl-settings-toggle" id="dl-settings-toggle"
-                aria-expanded="false" aria-controls="dl-settings" aria-label="Settings">
-          <span class="dl-settings-icon" aria-hidden="true"></span><span class="dl-toggle-label">Settings</span>
-        </button>
+            <button type="button" class="dl-settings-toggle" id="dl-settings-toggle"
+                    aria-expanded="false" aria-controls="dl-settings" aria-label="Settings">
+              <span class="dl-settings-icon" aria-hidden="true"></span><span class="dl-toggle-label">Settings</span>
+            </button>
+          </div>
+        </details>
       </div>
     </header>
 

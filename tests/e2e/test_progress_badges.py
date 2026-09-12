@@ -106,6 +106,21 @@ def _seed(page, module: str, slug: str, cells: list[dict]) -> None:
     )
 
 
+def _open_panel(actor, selector: str) -> None:
+    """Reference/Series/Settings' toggles now collapse behind one
+    "Panels" control in the masthead (shell.html's
+    <details class="dl-panels">) rather than always showing — expand it
+    first if it isn't already, then click the actual target. Checked via
+    #dl-panels' own `open` property rather than the target's own
+    visibility, so this never mistakes "already open" for "not open" and
+    toggles it shut again right before the click that was supposed to
+    land. Left expanded once opened (no auto-collapse), so this is only
+    needed once per page load, not before every toggle click."""
+    if not actor.eval_on_selector("#dl-panels", "el => el.open"):
+        actor.click("#dl-panels summary")
+    actor.click(selector)
+
+
 class TestProgressBadges:
     def test_a_tutorial_with_no_saved_record_shows_no_badge(self, site, browser, base_url):
         _tutorial(site, "one", "One")
@@ -179,7 +194,7 @@ class TestProgressBadges:
         page.reload()
         assert page.is_visible(".dl-progress-badge")
 
-        page.click("#dl-settings-toggle")
+        _open_panel(page, "#dl-settings-toggle")
         page.click('[data-progress-badges] button[data-value="off"]')
         page.click("#dl-settings-close")
         assert page.is_hidden(".dl-progress-badge")
@@ -188,7 +203,7 @@ class TestProgressBadges:
         page.reload()
         assert page.is_hidden(".dl-progress-badge")
 
-        page.click("#dl-settings-toggle")
+        _open_panel(page, "#dl-settings-toggle")
         page.click('[data-progress-badges] button[data-value="on"]')
         page.click("#dl-settings-close")
         assert page.is_visible(".dl-progress-badge")

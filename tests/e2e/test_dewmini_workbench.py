@@ -64,6 +64,14 @@ def add_python_cell(page, code: str) -> None:
     page.keyboard.insert_text(code)
 
 
+def _open_panel(actor, selector: str) -> None:
+    """Expand the masthead's Panels disclosure first if needed, then
+    click the actual toggle."""
+    if not actor.eval_on_selector("#dl-panels", "el => el.open"):
+        actor.click("#dl-panels summary")
+    actor.click(selector)
+
+
 def test_a_new_notebook_opens_its_own_tab(dewmini):
     assert dewmini.locator("#dm-tabs").is_hidden(), "one notebook should show no tab strip"
 
@@ -141,7 +149,7 @@ def test_settings_and_the_library_share_an_edge(dewmini):
     dewmini.click("#dm-library-toggle")
     assert dewmini.locator("#dm-library").is_visible()
 
-    dewmini.click("#dl-settings-toggle")
+    _open_panel(dewmini, "#dl-settings-toggle")
     assert dewmini.locator("#dl-settings").is_visible()
     assert dewmini.locator("#dm-library").is_hidden()
 
@@ -437,7 +445,7 @@ def test_run_below_keeps_what_came_before_it(dewmini):
 def test_restart_and_run_all_reruns_from_a_clean_start(dewmini):
     add_python_cell(dewmini, "value = 6 * 7\nvalue")
     dewmini.once("dialog", lambda dialog: dialog.accept())
-    dewmini.click("#dl-settings-toggle")
+    _open_panel(dewmini, "#dl-settings-toggle")
     dewmini.click("#settings-restart-run-all")
     dewmini.wait_for_function(
         "document.querySelector('.dm-cell-output')?.innerText.includes('42')",
@@ -840,12 +848,12 @@ def test_restart_python_tears_down_the_js_session_too(dewmini):
     dewmini.locator(".dm-cell-javascript .dm-icon-run").last.click()
     dewmini.wait_for_timeout(500)
 
-    dewmini.click("#dl-settings-toggle")
+    _open_panel(dewmini, "#dl-settings-toggle")
     dewmini.wait_for_selector("#settings-restart-python")
     dewmini.once("dialog", lambda d: d.accept())
     dewmini.click("#settings-restart-python")
     dewmini.wait_for_timeout(1000)
-    dewmini.click("#dl-settings-toggle")
+    _open_panel(dewmini, "#dl-settings-toggle")
 
     add_js_cell(dewmini, "console.log('survivesRestart is', typeof survivesRestart);")
     cell = dewmini.locator(".dm-cell-javascript").last
@@ -963,12 +971,16 @@ def add_text_cell(page, prose: str) -> None:
 
 
 def export_python(page, tmp_path):
-    page.click("#dl-settings-toggle")
+    """Clicks the .py download and returns the file's text.
+
+    Through the Settings panel, which is where a reader finds it.
+    """
+    _open_panel(page, "#dl-settings-toggle")
     with page.expect_download() as caught:
         page.click("#download-python")
     written = tmp_path / "exported.py"
     caught.value.save_as(written)
-    page.click("#dl-settings-toggle")
+    _open_panel(page, "#dl-settings-toggle")
     return written
 
 
@@ -1091,11 +1103,11 @@ def test_exporting_twice_does_not_grow_the_notebook(dewmini, tmp_path):
     after_one = cell_kinds_and_text(dewmini)
 
     second = tmp_path / "again.py"
-    dewmini.click("#dl-settings-toggle")
+    _open_panel(dewmini, "#dl-settings-toggle")
     with dewmini.expect_download() as caught:
         dewmini.click("#download-python")
     caught.value.save_as(second)
-    dewmini.click("#dl-settings-toggle")
+    _open_panel(dewmini, "#dl-settings-toggle")
     import_file(dewmini, second)
 
     assert cell_kinds_and_text(dewmini) == after_one
@@ -1189,12 +1201,13 @@ def test_an_edited_import_is_reported_and_can_be_re_read(dewmini):
         timeout=120_000,
     )
 def export_ipynb(page, tmp_path, name="exported.ipynb"):
-    page.click("#dl-settings-toggle")
+    """Clicks the .ipynb download and returns the parsed notebook."""
+    _open_panel(page, "#dl-settings-toggle")
     with page.expect_download() as caught:
         page.click("#download-ipynb")
     written = tmp_path / name
     caught.value.save_as(written)
-    page.click("#dl-settings-toggle")
+    _open_panel(page, "#dl-settings-toggle")
     return json.loads(written.read_text())
 
 
@@ -1717,7 +1730,7 @@ def fresh_page(page, dewmini_url):
 
 
 def open_cell_type_settings(page):
-    page.click("#dl-settings-toggle")
+    _open_panel(page, "#dl-settings-toggle")
     page.wait_for_selector("#dl-settings-cell-types")
 
 
@@ -1767,7 +1780,7 @@ def test_a_cell_type_toggle_survives_a_reload(dewmini, dewmini_url):
 
 
 def open_texture_settings(page):
-    page.click("#dl-settings-toggle")
+    _open_panel(page, "#dl-settings-toggle")
     page.wait_for_selector('.dl-seg[data-texture="theme"]')
 
 
