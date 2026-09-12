@@ -2276,14 +2276,14 @@ def render_index() -> str:
         "databases, web development and more — all in your browser, with "
         "nothing to install. Work online, or download a module once and "
         "keep going with no internet at all after that.</p>",
-        '<p>dewlab is a project by two teachers, <strong><a href="https://'
-        'github.com/mcgarry">Sean McGarry</a></strong> and <strong>'
-        '<a href="https://github.com/deweydex">Joshua Aaron</a></strong>, '
-        "at Dublin College — Sean at the "
-        "Blackrock campus, and Joshua at Dundrum. We built it to spare "
-        "students and teachers the install, the permissions and the "
-        "early setup that usually gets in the way before a class even "
-        "begins.</p>",
+        '<p>dewlab is led and maintained by <strong><a href="https://'
+        'github.com/deweydex">Joshua Aaron</a></strong>, who teaches at '
+        "Dublin College, Dundrum. <strong><a href=\"https://github.com/"
+        'mcgarry">Sean McGarry</a></strong>, a teacher at Dublin College, '
+        "Blackrock, collaborates on the project and contributes ideas and "
+        "feedback. The project is designed to spare students and teachers "
+        "the install, the permissions and the early setup that usually gets "
+        "in the way before a class even begins.</p>",
         "<p>Right now we have QQI Level 5's programming and mathematics "
         "modules, in beta. The material should suit anyone learning to "
         "program or wanting to brush up on their maths, done a little "
@@ -4603,11 +4603,11 @@ def write_about_page(shell: str) -> Path:
         "single HTML file, a printed or PDF copy, or your cells saved as a "
         "Jupyter notebook.</p>"
         "<h2>Who we are</h2>"
-        '<p>dewlab is built by two teachers. <strong><a href="https://'
-        'github.com/deweydex">Joshua Aaron</a></strong> teaches at Dublin '
-        'College, Dundrum. <strong><a href="https://github.com/mcgarry">'
-        "Sean McGarry</a></strong> teaches at Dublin College, "
-        "Blackrock.</p>"
+        '<p>dewlab is created and maintained by <strong><a href="https://'
+        'github.com/deweydex">Joshua Aaron</a></strong>, who teaches at '
+        'Dublin College, Dundrum. <strong><a href="https://github.com/mcgarry">'
+        "Sean McGarry</a></strong>, a teacher at Dublin College, Blackrock, "
+        "collaborates on the project and contributes ideas and feedback.</p>"
         "<h2>Helping out</h2>"
         "<p>We welcome help with the material. You can open an issue "
         "with an idea, a request or a comment. You can also send a pull request "
@@ -4620,14 +4620,11 @@ def write_about_page(shell: str) -> Path:
         "github.com/deweydex/dewlab</a></p>"
         "<h2>Contact</h2>"
         "<p>Suggested assessments and exams for any module are available on "
-        "request. Email either of us.</p>"
+        "request. For project questions, email Joshua Aaron.</p>"
         '<p><strong><a href="https://github.com/deweydex">Joshua Aaron</a>'
         ':</strong> <a href="mailto:jsaaron@jsaaron.com">'
         'jsaaron@jsaaron.com</a> or <a href="mailto:joshuaaaron@dcfe.ie">'
         "joshuaaaron@dcfe.ie</a></p>"
-        '<p><strong><a href="https://github.com/mcgarry">Sean McGarry</a>'
-        ':</strong> <a href="mailto:seanmcgarry@bfei.ie">'
-        "seanmcgarry@bfei.ie</a></p>"
     )
     manifest = {"slug": "about", "version": 1, "assetBase": "assets/",
                 "dataBase": "data/", "cells": [], "assetVersions": {}}
