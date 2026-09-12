@@ -1526,6 +1526,7 @@ p code, li code {
 .dl-nav-top {
   grid-template-columns: 1fr auto auto 1fr;
   grid-template-areas: "prev search up next";
+  align-items: center;
 }
 
 .dl-nav-prev { grid-area: prev; justify-self: start; }
