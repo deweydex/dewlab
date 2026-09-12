@@ -761,3 +761,12 @@ already gives a `NameError`), points an aggregate-in-`WHERE` mistake at
 touches the trigger grammar — it is what a SQL cell shows on its own,
 the same house as `_ERROR_HINTS`, not a fourth thing an author's `hint`
 fence waits for.
+
+**The first two live `empty results` folds, DECISIONS_LOG.md 7.154.**
+`asking-questions-of-a-table` and `the-tentacular-plushies-quiz` — the
+two pages named in §8 for exactly this — each got a pair of `hint`
+fences at `2`/`5 empty results`, checked in a real Chromium against the
+self-hosted Pyodide build rather than only through `build.py`'s own
+validation. `test_cell_hints_staged.py` still only drives a `python
+exec` cell's staged hints; a `sql exec` fixture for it is the piece
+still missing.
