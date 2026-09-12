@@ -1,13 +1,4 @@
-"""The in-tutorial "Progress" summary in Settings, in a real browser —
-planning/PROGRESS_INDICATORS.md.
-
-Real cell runs, not seeded state, since the whole point of the `errored`
-capture is that it reads what a real traceback actually rendered
-(tutorial_tools.py's class="dl-error") — a seeded fake risks testing the
-test's own assumption about that shape rather than the real one.
-
-    python3 -m pytest tests/e2e/test_progress_summary.py -q
-"""
+"""Uses real cell runs rather than seeded state, since the `errored` count depends on the real traceback markup a run produces (tutorial_tools.py's class="dl-error")."""
 
 from __future__ import annotations
 

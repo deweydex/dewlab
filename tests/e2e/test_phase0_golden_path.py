@@ -1,15 +1,6 @@
-"""Phase 0's golden path, in a real browser against a real Pyodide.
-
-BUILD_PLAN.md's Phase 0 asks for one thing to be true before anything else is
-built: that the shell template loads the shared assets, that
-`loadPackage(['numpy', 'pandas', 'matplotlib'])` succeeds with no micropip step,
-and that a plain `exec` cell renders its output underneath itself. That is what
-this file checks, plus the widget bridge that was built on top of it.
-
-Slow by nature — one Pyodide boot for the session — so it is one file of
-end-to-end assertions rather than a suite. The fast tests live next door in
-tests/test_tutorial_tools.py.
-"""
+"""One Pyodide boot per session, so this is one file of e2e assertions
+rather than a suite split across modules; fast tests live in
+tests/test_tutorial_tools.py."""
 
 from __future__ import annotations
 
@@ -24,14 +15,12 @@ def output_selector(cell_id: str) -> str:
 
 
 def js_string(text: str) -> str:
-    """A JavaScript string literal. json.dumps quotes and escapes correctly;
-    Python's repr does not, and a selector containing an apostrophe silently
-    becomes a syntax error inside wait_for_function."""
+    """json.dumps, not repr — a selector with an apostrophe would otherwise
+    become a silent syntax error inside wait_for_function."""
     return json.dumps(text)
 
 
 def run(page, cell_id: str) -> str:
-    """Run one cell and return the HTML its output area ended up with."""
     selector = output_selector(cell_id)
     page.evaluate(f"dewlab.runCell({js_string(cell_id)})")
     page.wait_for_function(
@@ -51,7 +40,6 @@ def test_the_page_loads_its_shared_assets_rather_than_inlining_them(page):
     assert any("/assets/tutorial-style.css" in h for h in hrefs)
     assert any("/assets/tutorial-runtime.js" in h for h in hrefs)
 
-    # And the stylesheet actually applied, rather than 404ing quietly.
     background = page.eval_on_selector(
         "body", "el => getComputedStyle(el).backgroundColor"
     )
@@ -65,16 +53,13 @@ def test_version_metadata_is_in_the_page(page):
 
 
 def test_every_exec_cell_became_an_editor_with_line_numbers(page):
-    """One editor per exec cell in the fixture, and no editor without a cell.
-
-    Counted against the fixture rather than a fixed number, so adding a cell to
-    rendering-tour.md does not fail a test that is not about counting."""
+    """Counted against the fixture rather than a fixed number, so adding a
+    cell to rendering-tour.md does not fail a test that isn't about counting."""
     text = FIXTURE.read_text()
     expected = text.count("```python exec") + text.count("```sql exec")
     cells = page.query_selector_all(".dl-cell")
     assert len(cells) == expected
     assert len(page.query_selector_all(".dl-cell .cm-editor")) == expected
-    # Line numbers are one of the affordances DECISIONS.md calls free.
     assert page.query_selector(".dl-cell .cm-lineNumbers") is not None
 
 
@@ -149,13 +134,9 @@ def test_a_site_editors_panes_match_what_the_fixture_declares(page):
 
 
 def test_html_and_css_panes_are_live_without_pressing_run(page):
-    """The preview is a sandboxed iframe (`sandbox="allow-scripts"`, no
-    `allow-same-origin`) with its own opaque-origin document, so this reads
-    *through* Playwright's own frame handle rather than the top page's own
-    JavaScript reaching in — the browser's same-origin policy would refuse
-    that reach-in the same way a reader's own page could never do it either.
-    Reading into the frame, not the editor, is what proves the live rebuild
-    actually reached the page a reader would see."""
+    """The iframe is sandboxed without allow-same-origin, so this reads
+    through Playwright's own frame handle — proving the live rebuild reached
+    the page a reader would actually see, not just the editor's own DOM."""
     hero = site_editor(page, "hero")
     css_pane = f"{hero} .dl-site-pane[data-lang='css'] .cm-content"
     page.click(css_pane)
@@ -243,8 +224,6 @@ def test_a_plot_does_not_leak_matplotlib_object_reprs(page):
 
 
 def test_a_cell_ending_in_check_does_not_print_a_bare_bool(page):
-    """The cell's last line is a failing check. Its verdict is the last thing
-    shown — not a bare `False` underneath saying the same in worse words."""
     run(page, "pandas-table")
     output = run(page, "tools-show-check")
     assert "dl-check-fail" in output
@@ -257,8 +236,7 @@ def test_a_cell_ending_in_check_does_not_print_a_bare_bool(page):
 
 
 def test_cells_share_one_namespace_in_document_order(page):
-    """The notebook model: a later cell sees what an earlier one defined."""
-    run(page, "pandas-table")  # defines df
+    run(page, "pandas-table")
     output = run(page, "tools-show-check")
     assert "<table" in output, "the later cell could not see df"
 
@@ -289,17 +267,10 @@ def test_show_and_show_table_and_check_render(page):
 
 
 def test_widgets_give_a_clear_error_on_a_hosted_page(page):
-    """Every hosted page now runs Pyodide in a Worker (planning/CELL_CONTROLS.md
-    §2), and a Worker has no DOM to hand a widget's
-    live element back through — text_input/dropdown/button raise rather
-    than silently rendering something that does nothing when clicked or
-    typed into. Widget-value persistence itself is still covered at the
-    unit level (tests/test_tutorial_tools.py's TestWidgetMarkup): the
-    _widget_values dict does not care which thread wrote to it, only that
-    a live page can no longer reach it. The standalone/offline export is
-    the one place text_input/dropdown/button still work, since it still
-    runs Pyodide on the main thread — not exercised here, since these e2e
-    fixtures only build hosted pages."""
+    """Hosted pages run Pyodide in a Worker (planning/CELL_CONTROLS.md §2),
+    which has no DOM to hand a widget's element through, so these raise
+    instead of rendering something inert. Standalone export still runs
+    Pyodide on the main thread and keeps working; it isn't built here."""
     run(page, "tools-widgets")
     scope = output_selector("tools-widgets")
     assert page.locator(f"{scope} input[type=text]").count() == 0
@@ -389,8 +360,6 @@ def test_the_contents_list_jumps_to_a_section(page):
 
 
 def test_the_contents_page_never_scrolls_sideways(browser, base_url):
-    """It carries an introduction and a list now, and neither is wide — but the
-    rule is worth holding onto whatever the page contains."""
     for width in (1400, 900, 390):
         context = browser.new_context(viewport={"width": width, "height": 800})
         tab = context.new_page()
@@ -404,7 +373,6 @@ def test_the_contents_page_never_scrolls_sideways(browser, base_url):
 
 
 def test_every_box_on_the_map_is_a_link_to_a_tutorial(browser, base_url):
-    """The tutorial map lives on the tree page now, under the topic tree."""
     context = browser.new_context(viewport={"width": 1400, "height": 900})
     tab = context.new_page()
     tab.goto(f"{base_url}/tree.html")
@@ -598,7 +566,6 @@ def test_a_topic_says_what_it_opens_up(browser, base_url):
     assert "OPENS UP" in panel
     opens = tab.eval_on_selector_all(".dl-tree-opens button", "e => e.map(b => b.textContent)")
     assert "Limits" in opens
-    # And choosing one of them moves the selection, same as a prerequisite does.
     tab.click(".dl-tree-opens button")
     assert tab.evaluate("globalThis.dewlabTree.chosen()") != "MIT-3.2"
     context.close()

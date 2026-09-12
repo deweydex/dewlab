@@ -1,17 +1,6 @@
-"""The version picker, in a browser.
-
-A tutorial with one release is the common case and has no picker at all, so
-everything here runs against `two-takes`, which exists in two releases: a June
-one and a September one, sharing two cells and differing in a third. That
-third cell is the whole point — it makes "how much of your work carries over"
-a number a test can check rather than a phrase it can match.
-
-None of these wait for Pyodide. The picker is built from the manifest at load,
-so it is there long before Python is, and a test that booted a runtime to look
-at a dropdown would cost four minutes to learn nothing.
-
-    python3 -m pytest tests/e2e/test_versions.py -q
-"""
+"""Runs against `two-takes`, a fixture with two releases sharing two cells
+and differing in a third — that third cell is what makes "how much of your
+work carries over" a number these tests can check."""
 
 from __future__ import annotations
 
@@ -34,8 +23,8 @@ def opened(tab, base_url, path):
 
 @pytest.fixture()
 def tab(browser, base_url):
-    """A bare tab. Each test navigates it itself, because half of them are
-    about what happens on the way to a page."""
+    """Bare, not pre-navigated — half these tests are about what happens on
+    the way to a page."""
     context = browser.new_context()
     page = context.new_page()
     try:
@@ -45,10 +34,8 @@ def tab(browser, base_url):
 
 
 def seed(tab, answers: dict[str, str], version: str = "2026.09.15.1"):
-    """Saved work, written straight into storage.
-
-    Directly rather than by typing, because what the counting reads is the
-    record, not the keystrokes that made it."""
+    """Written straight into storage rather than by typing, because what the
+    counting reads is the record, not the keystrokes that made it."""
     record = {
         "tutorial-slug": SLUG,
         "tutorial-module": MODULE,
@@ -67,8 +54,6 @@ def seed(tab, answers: dict[str, str], version: str = "2026.09.15.1"):
 
 class TestWhenThereIsNothingToChoose:
     def test_a_tutorial_with_one_release_shows_no_picker(self, tab, base_url):
-        """Most tutorials, most of the time. A control with one option is
-        furniture, and furniture beside a title is the thing worth avoiding."""
         opened(tab, base_url, ONE_VERSION_PAGE)
         assert tab.locator("#dl-versions").count() == 0
 
@@ -79,8 +64,8 @@ class TestWhenThereIsNothingToChoose:
 
 class TestTheMarkerBesideTheTitle:
     def test_it_is_there_without_being_hovered(self, tab, base_url):
-        """Hover does not exist on a phone. An affordance that only appears on
-        hover is not subtle to a reader on one, it is missing."""
+        """Hover doesn't exist on a phone, so a hover-only affordance is not
+        subtle there — it's missing."""
         opened(tab, base_url, DEFAULT_PAGE)
         assert tab.locator("#dl-versions-toggle").is_visible()
 
@@ -124,9 +109,8 @@ class TestTheMarkerBesideTheTitle:
 
 
 class TestATutorialWithoutATitleHeading:
-    """`prose-only` opens straight into a section and has no cells. Both are
-    legal, and both are awkward for a marker that wants to sit under a title
-    and count answers."""
+    """`prose-only` opens straight into a section and has no cells — both
+    awkward for a marker that wants to sit under a title and count answers."""
 
     PAGE = f"tutorials/{MODULE}/prose-only.html"
 
@@ -148,11 +132,9 @@ class TestATutorialWithoutATitleHeading:
 
 
 class TestSayingWhatWillHappen:
-    """Rather than warning that something might.
-
-    Restore matches on cell id, so which answers survive a move is knowable
-    before the reader makes it. "Best to export just in case" teaches a reader
-    to distrust something that is in fact deterministic."""
+    """Restore matches on cell id, so which answers survive a move is knowable
+    before the reader makes it — a true count, not a vague warning to export
+    just in case."""
 
     def test_it_counts_the_answers_that_carry_over(self, tab, base_url):
         opened(tab, base_url, DEFAULT_PAGE)
@@ -168,8 +150,8 @@ class TestSayingWhatWillHappen:
         assert "2 of your 3 answers carry over" in june.inner_text()
 
     def test_it_says_where_the_third_one_went(self, tab, base_url):
-        """"Lost" would be a lie. The answer stays in storage and comes back
-        the moment the reader returns to a release that has the cell."""
+        """"Lost" would be a lie — the answer stays in storage and comes back
+        once the reader returns to a release that has the cell."""
         opened(tab, base_url, DEFAULT_PAGE)
         seed(tab, {
             "shared-one": "print('mine')",
@@ -183,9 +165,8 @@ class TestSayingWhatWillHappen:
         assert "saved but is not shown there" in june.inner_text()
 
     def test_an_untouched_starter_is_not_an_answer(self, tab, base_url):
-        """Counting the cells a reader happened to have open rather than the
-        ones they wrote in would inflate every number here, and the point of
-        the numbers is that they are true."""
+        """Counting cells a reader happened to have open, rather than ones
+        they wrote in, would inflate every number here."""
         opened(tab, base_url, DEFAULT_PAGE)
         seed(tab, {
             "shared-one": 'print("one")',        # the starter, untouched
@@ -226,16 +207,15 @@ class TestContinuity:
 
     def test_work_saved_against_a_release_is_enough_on_its_own(self, tab, base_url):
         """Somebody who was here before a second release existed never picked
-        anything. Their saved record says which one they were reading, and that
-        is the whole of what a pin needs to be."""
+        anything — their saved record already says which one they were reading."""
         opened(tab, base_url, DEFAULT_PAGE)
         seed(tab, {"shared-one": "print('mine')"}, version="2026.06.02.1")
         opened(tab, base_url, DEFAULT_PAGE)
         assert tab.url.endswith("v2026.06.02.1.html")
 
     def test_it_never_sends_them_away_from_a_release_they_asked_for(self, tab, base_url):
-        """Only ever off the plain URL. Anything else could bounce between two
-        pages, and would override a link somebody was deliberately sent."""
+        """Only off the plain URL — anything else would override a link
+        somebody was deliberately sent."""
         opened(tab, base_url, DEFAULT_PAGE)
         seed(tab, {"shared-one": "print('mine')"}, version="2026.06.02.1")
         opened(tab, base_url, JUNE_PAGE)
@@ -266,10 +246,9 @@ class TestContinuity:
 
 
 class TestWhatTheRestoreNoticeSays:
-    """It used to apologise: your work is back, but "some of it may not line up
-    with the new version". Where a tutorial has releases, that guess can be
-    replaced by the two dates and a true statement about the answers with no
-    cell to go in."""
+    """It used to apologise with a guess ("may not line up with the new
+    version"); with releases, that can be replaced by the two dates and a
+    true statement about which answers have no cell to go in."""
 
     def test_it_names_both_releases(self, tab, base_url):
         opened(tab, base_url, DEFAULT_PAGE)
@@ -294,9 +273,9 @@ class TestWhatTheRestoreNoticeSays:
 class TestWhichNoticeComesFirst:
     def test_the_page_says_which_release_it_is_before_it_talks_about_your_work(
             self, tab, base_url):
-        """Both boxes appear on an older release. Which one you are reading is
-        the thing to know first — what happened to your answers only means
-        anything once you know which version you are looking at."""
+        """Both boxes appear on an older release; which one you're reading has
+        to come first, since what happened to your answers only makes sense
+        once you know that."""
         opened(tab, base_url, DEFAULT_PAGE)
         seed(tab, {"shared-one": "print('mine')"}, version="2026.06.02.1")
         opened(tab, base_url, DEFAULT_PAGE)
@@ -328,8 +307,8 @@ class TestTheSwitchInSettings:
         assert names == ["15 September 2026", "2 June 2026"]
 
     def test_asking_for_the_newest_takes_them_there_now(self, tab, base_url):
-        """Not a preference that applies the next time they visit. Somebody who
-        asks for the newest while reading an older one is asking to be on it."""
+        """Not a preference for next time — asking for the newest while
+        reading an older release is asking to be on it now."""
         opened(tab, base_url, DEFAULT_PAGE)
         seed(tab, {"shared-one": "print('mine')"}, version="2026.06.02.1")
         opened(tab, base_url, DEFAULT_PAGE)

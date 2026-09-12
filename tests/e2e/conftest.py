@@ -1,25 +1,4 @@
-"""Fixtures for the e2e tests: a page built by build.py, and a server for it.
-
-These tests drive a real Chromium against a real Pyodide, because that is the
-only way to know the execution path actually works. They need two things the
-unit tests don't:
-
-  * Playwright with a Chromium (`pip install playwright && playwright install
-    chromium`);
-  * a self-hosted Pyodide in `dev/pyodide/` (`python3 dev/fetch_pyodide.py`).
-
-Missing either, the tests skip with a message saying which. Self-hosting rather
-than using the CDN keeps the suite runnable on a machine with no route to
-jsdelivr, and exercises the same DEWLAB_PYODIDE_BASE override that a
-CDN-blocked school network would need.
-
-The page under test is built by `build.py` from `fixture/rendering-tour.md`,
-which is the point: these tests now exercise the real build rather than a
-stand-in for it, so a change that breaks the markup a student would receive
-fails here. The fixture lives beside the tests rather than in `tutorials/`
-because its cells exist to reach every branch of the output renderer, not to
-teach anything.
-"""
+"""E2E fixtures: build the fixture tutorial with build.py and serve it with a self-hosted Pyodide, so tests run the real build and execution path."""
 
 from __future__ import annotations
 
@@ -51,7 +30,6 @@ UP = "../../"  # from the built page back to the site root
 
 @pytest.fixture(scope="session")
 def site_dir(tmp_path_factory) -> Path:
-    """Build the fixture tutorial with build.py and stage Pyodide beside it."""
     if not (PYODIDE / "pyodide.mjs").exists():
         pytest.skip(
             "no self-hosted Pyodide — run `python3 dev/fetch_pyodide.py` first"
@@ -126,7 +104,8 @@ def site_dir(tmp_path_factory) -> Path:
 
 @pytest.fixture(scope="session")
 def base_url(site_dir: Path):
-    """Serve the built site on a free port for the duration of the session."""
+    # Served over HTTP, not file://, because the runtime's ES module imports
+    # need an origin for the browser's CORS check to approve.
     handler = functools.partial(_QuietHandler, directory=str(site_dir))
     with _QuietServer(("127.0.0.1", 0), handler) as server:
         port = server.server_address[1]
@@ -148,9 +127,7 @@ class _QuietServer(socketserver.TCPServer):
     allow_reuse_address = True
 
     def handle_error(self, request, client_address):
-        """Closing the browser resets connections mid-response. That is normal
-        teardown, not a test failure, and its traceback is pure noise in an
-        otherwise passing run."""
+        """Closing the browser resets connections mid-response — normal teardown, not a failure, so its traceback is suppressed."""
 
 
 @pytest.fixture(scope="session")
@@ -171,7 +148,8 @@ def browser():
 
 
 def _chromium_path() -> str | None:
-    """Use a preinstalled Chromium if one is on this machine."""
+    # Reuses this project's CI/dev Chromium instead of triggering Playwright's
+    # own network-dependent browser download.
     root = Path("/opt/pw-browsers")
     if not root.exists():
         return None

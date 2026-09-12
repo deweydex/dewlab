@@ -1,16 +1,4 @@
-"""The genuine Stop button, in a real browser — planning/CELL_CONTROLS.md §2.
-
-Pyodide runs inside assets/pyodide-worker.js on the hosted site now, so a
-tight, synchronous, no-yields-at-all Python loop can be interrupted from
-outside it — the worst case a runaway cell could produce, and the one
-CELL_CONTROLS.md's own prototype proved works before any of this was built.
-`dewlab.canStop()` (assets/tutorial-runtime.js) is true exactly when cross-
-origin isolation actually landed for this page; every test here waits for it
-first rather than assuming coi-serviceworker.js's own first-visit reload has
-already happened.
-
-    python3 -m pytest tests/e2e/test_stop_button.py -q
-"""
+"""`dewlab.canStop()` is true only once cross-origin isolation has landed for this page, so every test here waits for it rather than assuming coi-serviceworker.js's first-visit reload already happened."""
 
 from __future__ import annotations
 
@@ -34,11 +22,7 @@ def js_string(text: str) -> str:
 
 
 def test_the_page_is_cross_origin_isolated(page):
-    """The precondition every other test here assumes. If this is ever
-    false, coi-serviceworker.js (assets/shell.html) stopped registering —
-    everything below would still "pass" by falling back to a plain,
-    un-stoppable Run, which is the one way this whole feature could go
-    quietly missing without a single test failing to say so."""
+    """Guards the precondition every test below assumes: without it, Stop silently falls back to a plain, un-stoppable Run and nothing else here would catch that."""
     page.wait_for_function("dewlab.canStop()", timeout=30_000)
     assert page.evaluate("window.crossOriginIsolated") is True
     assert page.evaluate("typeof SharedArrayBuffer") == "function"
@@ -71,9 +55,7 @@ def test_stopping_a_genuine_infinite_loop(page):
 
 
 def test_a_stopped_cell_can_be_run_again(page):
-    """The worker itself survives an interrupt — this is not a crash
-    recovered from by rebooting Pyodide, just tutorial_tools.run_cell()
-    catching KeyboardInterrupt the way it catches any other exception."""
+    """The worker survives an interrupt rather than needing a reboot — run_cell() catches KeyboardInterrupt like any other exception."""
     page.wait_for_function("dewlab.canStop()", timeout=30_000)
     cell = cell_content(page, "plain-python")
     cell.click()

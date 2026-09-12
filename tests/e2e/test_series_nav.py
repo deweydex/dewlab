@@ -1,14 +1,6 @@
-"""The series navigation panel, in a real browser — planning/SIDEBAR_CONTENT.md §4b.
-
-A dedicated, tiny site build rather than the shared rendering-tour fixture:
-this needs its own series order, and no self-hosted Pyodide — every fixture
-tutorial here is prose-only, and tutorial-runtime.js's own boot() skips
-loading Pyodide entirely when a page has no cells
-(CONTENT_AND_FILE_ARCHITECTURE.md) — so unlike most of this directory, this
-file runs without `python3 dev/fetch_pyodide.py` first.
-
-    python3 -m pytest tests/e2e/test_series_nav.py -q
-"""
+"""planning/SIDEBAR_CONTENT.md §4b. Every fixture here is prose-only, so
+tutorial-runtime.js never boots Pyodide for these pages — unlike most of
+tests/e2e/, this file runs without `python3 dev/fetch_pyodide.py` first."""
 
 from __future__ import annotations
 
@@ -51,8 +43,7 @@ def _tutorial(root: Path, slug: str, title: str = "A Title") -> None:
 
 
 def _archive(root: Path, slug: str) -> None:
-    """Take a tutorial out of the reading order without deleting it — the
-    one way a tutorial ends up with nowhere in a series to sit."""
+    """The one way a tutorial ends up with nowhere in a series to sit."""
     path = root / "tutorials" / MODULE / f"{slug}.md"
     path.write_text(path.read_text().replace(
         "version: 2026.08.23.1\n", "version: 2026.08.23.1\nstatus: archived\n"))
@@ -65,10 +56,8 @@ def _set_order(root: Path, slugs: list[str]) -> None:
 
 @pytest.fixture()
 def site(tmp_path, monkeypatch):
-    """A real build, real assets, isolated content — ROOT/TUTORIALS/OUT move
-    to tmp_path; ASSETS/SHELL/SETUP/DATA stay pointed at the real repository,
-    read-only, so the page that loads is running the actual runtime and CSS
-    rather than a stand-in for them."""
+    """Only ROOT/TUTORIALS/OUT move to tmp_path; ASSETS/SHELL/SETUP/DATA stay
+    pointed at the real repo, so the page runs the actual runtime and CSS."""
     (tmp_path / "tutorials" / MODULE).mkdir(parents=True)
     monkeypatch.setattr(b, "ROOT", tmp_path)
     monkeypatch.setattr(b, "TUTORIALS", tmp_path / "tutorials")
@@ -194,8 +183,7 @@ class TestOpeningAndClosing:
 
 class TestMutualExclusionWithReference:
     """The reference and series nav are the one pair that still conflicts —
-    they share the same left-anchored corner (PR #65 moved the reference
-    there; the series nav panel joined it). Settings anchors to the right
+    they share the same left-anchored corner. Settings anchors to the right
     and no longer force-closes (or gets force-closed by) either one."""
 
     def test_opening_the_series_nav_closes_the_reference(self, site, browser, base_url):
