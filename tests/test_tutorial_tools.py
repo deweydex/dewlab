@@ -368,6 +368,75 @@ class TestRunSqlCell:
             tt._run_sql_cell(conn, "select * from a_table_that_does_not_exist")
         assert cell.html == ""
 
+    def test_a_select_with_no_matching_rows_marks_the_cell_empty(self, cell, conn):
+        tt._run_sql_cell(conn, "create table t (a)")
+        tt._run_sql_cell(conn, "insert into t values (1)")
+        result = tt._run_sql_cell(conn, "select * from t where a = 2")
+        assert len(result) == 0
+        assert tt._current.last_result_empty is True
+
+    def test_a_select_with_matching_rows_is_not_marked_empty(self, cell, conn):
+        tt._run_sql_cell(conn, "create table t (a)")
+        tt._run_sql_cell(conn, "insert into t values (1)")
+        tt._run_sql_cell(conn, "select * from t")
+        assert tt._current.last_result_empty is False
+
+    def test_a_non_select_last_statement_leaves_empty_unset(self, cell, conn):
+        tt._run_sql_cell(conn, "create table t (a); insert into t values (1)")
+        assert tt._current.last_result_empty is None
+
+    def test_a_typo_d_table_name_gets_a_suggestion(self, cell, conn):
+        conn.execute("create table products (a)")
+        with pytest.raises(sqlite3.OperationalError, match="did you mean 'products'"):
+            tt._run_sql_cell(conn, "select * from prodcuts")
+
+    def test_a_typo_d_column_name_gets_a_suggestion(self, cell, conn):
+        conn.execute("create table products (price)")
+        with pytest.raises(sqlite3.OperationalError, match="did you mean 'price'"):
+            tt._run_sql_cell(conn, "select pricee from products")
+
+    def test_no_close_match_adds_no_suggestion(self, cell, conn):
+        conn.execute("create table products (a)")
+        with pytest.raises(sqlite3.OperationalError) as excinfo:
+            tt._run_sql_cell(conn, "select * from zzz")
+        assert "did you mean" not in str(excinfo.value)
+
+    def test_an_aggregate_in_where_is_pointed_at_having(self, cell, conn):
+        conn.execute("create table t (a)")
+        with pytest.raises(sqlite3.OperationalError, match="HAVING instead"):
+            tt._run_sql_cell(conn, "select a from t where count(*) > 1")
+
+    def test_clauses_out_of_order_get_a_note(self, cell, conn):
+        conn.execute("create table t (a)")
+        with pytest.raises(sqlite3.OperationalError, match="have to come in this order"):
+            tt._run_sql_cell(conn, "select a from t group by a where a > 1")
+
+    def test_an_empty_table_explains_itself(self, cell, conn):
+        conn.execute("create table t (a)")
+        tt._run_sql_cell(conn, "select * from t")
+        assert "t has no rows in it yet" in cell.html
+
+    def test_a_filter_that_matched_nothing_reports_the_tables_row_count(self, cell, conn):
+        conn.execute("create table t (a)")
+        conn.execute("insert into t values (1)")
+        tt._run_sql_cell(conn, "select * from t where a = 2")
+        assert "t has 1 row(s) in it" in cell.html
+        assert "Ignoring uppercase" not in cell.html
+
+    def test_a_case_mismatch_is_caught_alongside_the_row_count(self, cell, conn):
+        conn.execute("create table t (category)")
+        conn.execute("insert into t values ('Octopus')")
+        tt._run_sql_cell(conn, "select * from t where category = 'octopus'")
+        assert "t has 1 row(s) in it" in cell.html
+        assert "Ignoring uppercase and lowercase, 1 row would have matched" in cell.html
+
+    def test_a_non_empty_result_gets_no_extra_notes(self, cell, conn):
+        conn.execute("create table t (a)")
+        conn.execute("insert into t values (1)")
+        tt._run_sql_cell(conn, "select * from t")
+        assert "row(s) in it" not in cell.html
+        assert "Ignoring uppercase" not in cell.html
+
 
 try:
     import numpy as np
@@ -706,7 +775,9 @@ class TestRunReport:
 
     def test_a_clean_run_with_no_checks_and_no_expect(self, cell):
         report = tt._report(True, tt._current, None)
-        assert report == {"ok": True, "error": None, "check": None, "reached": None}
+        assert report == {
+            "ok": True, "error": None, "check": None, "empty": None, "reached": None,
+        }
 
     def test_an_error_is_its_type_and_first_line(self, cell):
         try:
@@ -737,5 +808,9 @@ class TestRunReport:
 
     def test_expect_that_raises_is_not_yet_not_an_error(self, cell):
         assert tt.holds("undefined_name == 1") is False
+
+    def test_a_sql_cells_empty_result_is_reported(self, cell):
+        tt._current.last_result_empty = True
+        assert tt._report(True, tt._current, None)["empty"] is True
         assert tt.holds("1 / 0") is False
         assert tt.holds("this is not python") is False

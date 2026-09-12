@@ -3367,3 +3367,112 @@ tutorial prose changed. `dev/curriculum_map.py`'s vocabulary section is
 unaffected — it tracks italicised emphasis in prose, not glossary
 files, so this pass could not introduce a new "used before it was
 introduced" warning even where it added a disambiguated term.*
+
+**7.150 — A staged hint can now wait for a SQL query that comes back
+empty.** Josh, thinking through what a hint system could do for
+`database-methods` beyond translating a raw sqlite3 message: "maybe we
+can really look at code and help a student when the output is
+unexpectedly empty" — the failure a raw error message can't help with
+at all, since nothing raises. A missing comma between two `SELECT`
+columns doesn't error, it silently becomes an alias; a case-mismatched
+`WHERE` doesn't error, it silently matches nothing. `check_*`-style
+authored checks already catch this on a page that has one; most `sql
+exec` cells don't.
+
+`after: 2 empty results` (also `empty-result:2`) is a new trigger key,
+same shape as `check-fails` and everything else in the grammar
+(`TRIGGER_KEYS`, `build.py`). `_run_sql_cell()`
+(`assets/tutorial_tools.py`) already builds a DataFrame from a `SELECT`
+statement's rows before this — the only new work is recording whether
+that frame came out empty, on the `_CellContext` the same way
+`last_check`/`last_error` already are, and reporting it as `"empty"`
+in `_report()`'s JSON. `assets/tutorial-runtime.js`'s `freshAttempts()`/
+`noteAttempt()`/`triggerHolds()` — the exact machinery `errors`/
+`same-errors`/`checkFails` already use — gained one more counter,
+`emptyResults`, reset on any non-empty result and left untouched by a
+run whose last statement wasn't a query at all (a `CREATE`/`INSERT`
+cell reports `empty: None`, which the counter treats as "no signal
+either way," not as an empty result).
+
+Nothing here inspects *why* a result was empty — that stays the harder,
+not-yet-built idea from the same conversation (relaxed re-runs of a
+`WHERE` clause to spot a case mismatch or a missing row). This is only
+the cheap half: the fact that it came back empty, for an author's own
+hint to react to, the same division of labour every other trigger in
+this system already keeps between "when" (the infrastructure decides)
+and "what" (the author writes).
+
+*Cost to change: one field on `_CellContext`, one line in
+`_run_sql_cell()`, one field in `_report()` (`assets/tutorial_tools.py`);
+one counter in three functions (`assets/tutorial-runtime.js`); two
+entries in `TRIGGER_KEYS` plus the error message they extend
+(`build.py`). Three new tests in `tests/test_tutorial_tools.py`
+(`TestRunSqlCell`, `TestRunReport`), one in `tests/test_build.py`
+(`TestStagedHints`). Full unit suite green; a fresh full-site build
+confirmed clean. No browser end-to-end test yet — the existing
+`tests/e2e/test_cell_hints_staged.py` only exercises a Python exec
+cell; worth extending once a second staged-hints signal needs the same
+proof.*
+
+**7.151 — A SQL cell now looks at the actual schema and data before
+giving up on a plain error message.** Josh: "let's also think through
+the steps a student might make like mistyping a name of a variable or
+not having the right syntax or order for where or another filter."
+Four additions to `assets/tutorial_tools.py`, all inside
+`_run_sql_cell()`'s own path, none touching the trigger/attempts
+machinery 7.150 added:
+
+**A typo gets the same "did you mean" CPython already gives its own
+exceptions.** `no such table: prodcuts` and `no such column: pricee`
+name the mistake and nothing else; sqlite3 has no equivalent of the
+`NameError`/`AttributeError` suggestion Python 3.10+ added natively.
+`_sqlite_typo_suggestion()` reads the real table names from
+`sqlite_master` (and every real column, via `PRAGMA table_info`, when
+the message names a column) and offers `difflib`'s closest match above
+its own default similarity cutoff — silent rather than wrong when
+nothing is close enough to trust.
+
+**An aggregate in `WHERE` gets pointed at `HAVING`.** `misuse of
+aggregate function COUNT()` is accurate and unhelpful — sqlite3 spots
+the mistake but never names the fix, one of §2's own two rows in this
+file's own SQL survey.
+
+**Clauses out of order get a structural note**, checked only once a
+statement has already failed to run: `_clause_order_note()` finds
+which of `SELECT`/`FROM`/`WHERE`/`GROUP BY`/`HAVING`/`ORDER BY` the
+statement actually contains, in what order, and says so when that
+order doesn't match SQL's own — the same regex-not-a-parser
+approximation `_run_sql_cell()`'s `;`-split already makes, and never
+run against a statement that worked, so a keyword inside a string
+literal can only ever add noise to an already-broken query, not to a
+correct one.
+
+**All three fold into the exception's own message**, via a new
+`_execute_sql()` every statement now runs through instead of calling
+`conn.execute()` directly — not a separate block underneath the way
+`_ERROR_HINTS` adds one, because `_describe_error()` only reads a
+message's first line for the `same-errors` trigger, and keeping the
+addition on that same line was the only way to add it without a second
+plumbing path from `_run_sql_cell()` all the way out to
+`render_error()`.
+
+**The empty-results signal 7.150 built now explains itself, immediately,
+whether or not an author staged a hint for it.** `_empty_result_notes()`
+runs once a `SELECT` has already come back empty: it counts the rows in
+the table named after `FROM` (empty table, or a filter that excluded
+real rows — two different problems with the same symptom), and, for a
+`column = 'literal'` comparison, quietly reruns the same query
+case-insensitively and reports how many rows that would have matched.
+Both are facts the database itself confirms, never a guess dressed up
+as one — the case note only appears when the relaxed rerun actually
+found more, and both can appear together (a case mismatch is still a
+row the table really has).
+
+*Cost to change: six new functions and one changed call site in
+`assets/tutorial_tools.py` (`_sqlite_table_names()`,
+`_sqlite_typo_suggestion()`, `_clause_order_note()`,
+`_sqlite_error_note()`, `_execute_sql()`, `_empty_result_notes()`); ten
+new tests in `tests/test_tutorial_tools.py`. No change to `build.py`,
+`tutorial-runtime.js`, or the trigger grammar — this is what a SQL cell
+itself shows, not a new signal for a staged hint to wait on. Full unit
+suite green; a fresh full-site build confirmed clean.*

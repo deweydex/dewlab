@@ -2444,6 +2444,7 @@ function freshAttempts() {
     sameErrors: 0,    // consecutive runs ending in the same error as the one before
     unchanged: 0,     // consecutive runs of code identical to the run before
     checkFails: 0,    // consecutive runs in which a check() failed
+    emptyResults: 0,  // consecutive runs where a SQL query came back with no rows
     firstRunAt: null, // when the first counted run happened, for `minutes`
     lastErrorKey: null,
   };
@@ -2483,6 +2484,7 @@ function noteAttempt(cell, report, previousCode) {
     a.lastErrorKey = null;
   }
   if (report.check) a.checkFails = report.check.passed ? 0 : a.checkFails + 1;
+  a.emptyResults = report.empty === true ? a.emptyResults + 1 : 0;
 }
 
 function triggerHolds(terms, a) {
@@ -2492,6 +2494,7 @@ function triggerHolds(terms, a) {
     "unchanged": a.unchanged,
     "runs": a.runs,
     "check-fails": a.checkFails,
+    "empty-results": a.emptyResults,
     "minutes": a.firstRunAt == null ? 0 : (Date.now() - a.firstRunAt) / 60000,
   };
   return Object.entries(terms).every(([key, count]) => (value[key] ?? 0) >= count);
