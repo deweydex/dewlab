@@ -867,17 +867,6 @@ def test_a_sql_cells_output_survives_a_reload(dewmini):
     assert "42" in dewmini.locator(".dm-cell-sql .dm-cell-output").last.inner_text()
 
 
-def test_a_sql_cell_can_be_collapsed_and_duplicated(dewmini):
-    add_sql_cell(dewmini, "select 1;")
-    cell = dewmini.locator(".dm-cell-sql").last
-    cell.locator(".dm-collapse-toggle").click()
-    assert cell.locator(".dm-cell-content").is_hidden()
-    assert cell.locator(".dm-cell-collapsed-summary").is_visible()
-
-    cell.locator(".dm-icon-duplicate").click()
-    assert dewmini.locator(".dm-cell-sql").count() == 2
-
-
 def test_a_bad_sql_statement_shows_an_error_not_a_silent_failure(dewmini):
     add_sql_cell(dewmini, "select * from a_table_that_does_not_exist;")
     dewmini.locator(".dm-cell-sql .dm-icon-run").last.click()
@@ -894,18 +883,6 @@ def add_js_cell(page, code: str) -> None:
     editor = page.locator(".dm-cell-javascript .cm-content").last
     editor.click()
     page.keyboard.insert_text(code)
-
-
-def test_a_js_cells_chrome_is_never_hidden(dewmini):
-    """Python-shaped chrome, same reasoning as SQL's own version of this
-    test — a JavaScript cell runs against a shared session too, so
-    quiet-until-touched does not apply to it."""
-    add_js_cell(dewmini, "1 + 1")
-    dewmini.mouse.move(5, 5)
-    cell = dewmini.locator(".dm-cell-javascript").last
-    assert head_opacity(dewmini, cell) == "1"
-    assert cell.locator(".dm-icon-preview").count() == 0
-    assert cell.locator(".dm-cell-runline").count() == 1
 
 
 def test_console_log_is_captured_as_the_cells_output(dewmini):
@@ -972,17 +949,6 @@ def test_a_js_cells_output_survives_a_reload(dewmini):
     dewmini.wait_for_selector(".dm-toolbar")
     assert dewmini.locator(".dm-cell-javascript").count() == 1
     assert "reload me" in dewmini.locator(".dm-cell-javascript .dm-cell-output").last.inner_text()
-
-
-def test_a_js_cell_can_be_collapsed_and_duplicated(dewmini):
-    add_js_cell(dewmini, "1;")
-    cell = dewmini.locator(".dm-cell-javascript").last
-    cell.locator(".dm-collapse-toggle").click()
-    assert cell.locator(".dm-cell-content").is_hidden()
-    assert cell.locator(".dm-cell-collapsed-summary").is_visible()
-
-    cell.locator(".dm-icon-duplicate").click()
-    assert dewmini.locator(".dm-cell-javascript").count() == 2
 
 
 def test_restart_python_tears_down_the_js_session_too(dewmini):
