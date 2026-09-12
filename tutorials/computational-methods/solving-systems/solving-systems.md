@@ -23,9 +23,9 @@ covers:
 Two unknowns, solved by substitution, is something you have done since long
 before this series started. This tutorial does two things: shows that the
 inverse from the last tutorial gets the same answer a different way, and then
-scales the method up to three unknowns and beyond — where writing down an
-inverse formula the way we did for 2×2 stops being practical, and something
-else has to take over.
+extends the method to three unknowns and beyond, where writing down an
+inverse formula the way we did for 2×2 stops being practical and something
+else has to replace it.
 
 ## A System You Can Already Solve
 
@@ -80,13 +80,13 @@ $$\begin{cases} x + y + z = 6 \\ 2x - y + z = 3 \\ x + 2y - z = 2 \end{cases}$$
 
 A third unknown means a third column, and the 2×2 inverse formula from the
 last tutorial has nothing to say about a 3×3 matrix — there is a version of
-it, but it gets complicated fast. *Gaussian elimination* sidesteps the
+it, but it gets complicated fast. *Gaussian elimination* avoids the
 question entirely: rather than inverting anything, it simplifies the system
 itself, one row operation at a time, until the answer can be read straight
 off.
 
 Written as an *augmented matrix* — the coefficients, with the right-hand side
-tacked on as one more column — the system above is:
+added as one more column — the system above is:
 
 ```python exec
 id: three-unknowns-row-by-row-1
@@ -171,22 +171,22 @@ This is the same technique that would handle four unknowns, or forty — the
 row operations do not care how many columns are in front of the one being
 cleared. That scalability is the whole reason this is the method computers
 actually use, in preference to computing an inverse: an inverse for a large
-matrix is expensive to compute and can amplify rounding error, and
-elimination sidesteps both problems by never forming one at all.
+matrix is expensive to compute and can make rounding errors worse, and
+elimination avoids both problems by never forming one at all.
 
 ## Reflection
 
 Two routes to the same answer for two unknowns — inverse and elimination —
 and only one route once a third unknown showed up, because the other route
-had already run out of road. That is usually how it goes with a special-case
-tool: useful exactly where it applies, and a general method waiting behind it
+no longer worked. That is usually the pattern with a special-case
+tool: useful exactly where it applies, and a general method waiting
 for everywhere else.
 
 Which part of the elimination felt more like bookkeeping than mathematics —
 tracking which row to subtract from which? That feeling is worth noticing:
 it is exactly the part a computer does without getting tired or making an
-arithmetic slip, which is why this, and not the 2×2 formula, is the version
-that scales.
+arithmetic mistake, which is why this, and not the 2×2 formula, is the version
+that works at any size.
 
 ## Where to Read More
 

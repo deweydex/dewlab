@@ -35,8 +35,8 @@ of a vector with itself tell you?
 $1 + 4 + 9 = 14$.
 
 A vector dotted with itself is the sum of its entries squared — which is the
-square of its length (its *magnitude*), a fact that turns out to matter a
-great deal once vectors represent points or directions rather than lists of
+square of its length (its *magnitude*), a fact that matters
+once vectors represent points or directions rather than lists of
 numbers.
 
 </details>

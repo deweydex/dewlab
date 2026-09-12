@@ -130,9 +130,9 @@ No. $3 + 1 + 2 = 6$ checks out, but $2(3) - 1 + 3(2) = 6 - 1 + 6 = 11$ also
 checks — and $3 + 2(1) - 2 = 3$, not $2$. The third equation fails, so the
 claimed answer is wrong, even though it happens to satisfy the first two.
 
-This is worth sitting with: a solution has to satisfy *every* equation, and
+This is worth noticing: a solution has to satisfy *every* equation, and
 checking only some of them — especially the ones that look easiest — is
-exactly how a wrong answer gets past a quick check. (The actual solution to
+exactly how a wrong answer survives a quick check. (The actual solution to
 this system is the fractional one from problem 2.)
 
 </details>
@@ -150,7 +150,7 @@ correct by construction, and elimination on the resulting matrix has to
 recover $(2, -1, 3)$, because that is the only point where all three
 equations agree.
 
-Working backward like this is a genuinely useful trick — it is how a lot of
-textbook problems with clean answers get written in the first place.
+Working backward like this is a useful technique — it is how many
+textbook problems with clean answers get written.
 
 </details>

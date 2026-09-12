@@ -25,7 +25,7 @@ Give someone a target amount and a handful of token values, and ask for the
 fewest tokens that add up to it. This is one small problem, but there is more
 than one honest way to solve it. Each way makes a different trade-off between
 being fast and being certain. That trade-off is worth understanding on its
-own — it shows up again in far bigger problems than making change.
+own — it appears again in far bigger problems than making change.
 
 ## Trying Every Combination
 
@@ -54,7 +54,7 @@ The idea is the simplest one available. Try every token at every step,
 follow each choice all the way down to zero, and keep whichever path used
 the fewest tokens. This is *brute force*: a strategy that checks every
 possibility rather than reasoning about which ones are worth checking. It
-is slow work, but it is honest work: it can never miss the real answer,
+is slow, but it is reliable: it can never miss the real answer,
 because it never skips a possibility.
 
 ### Your turn
@@ -139,7 +139,7 @@ hint: A fresh cache={} argument is optional -- the function already creates one 
 ## The Greedy Shortcut
 
 There is a third way, and it does not check every possibility at all. At
-every step, hand over the largest token that still fits, and repeat until
+every step, use the largest token that still fits, and repeat until
 nothing is left.
 
 ```python exec
@@ -164,7 +164,7 @@ two `1`s. The cached version above already showed the real fewest is `2`,
 using two `3`s instead. Taking the biggest token first was not wrong
 exactly, but it closed off the one combination that would have won.
 
-The ordinary coins on a till, `1`, `5`, `10`, and `25`, do not have this
+The ordinary coins at a checkout, `1`, `5`, `10`, and `25`, do not have this
 problem. Try the same greedy shortcut against them:
 
 ```python exec
@@ -204,7 +204,7 @@ brute force's guarantee while removing its worst cost, the repeated work
 already done. That is why it is usually the strategy worth building once
 brute force feels too slow.
 
-The greedy shortcut trades that guarantee away entirely. It is the fastest
+The greedy shortcut gives up that guarantee. It is the fastest
 of the three, a single pass with no waiting, but its worst case is not
 slowness. Its worst case is a wrong answer, delivered with just as much
 confidence as a right one.

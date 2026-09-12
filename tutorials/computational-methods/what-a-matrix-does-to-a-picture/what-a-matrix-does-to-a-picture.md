@@ -18,9 +18,9 @@ covers:
 
 # What a Matrix Does to a Picture
 
-Every matrix in the last two tutorials sat still on the page — a grid of
+Every matrix in the last two tutorials was a grid of
 numbers you added, scaled, or multiplied by another grid. A 2×2 matrix has a
-second life that has nothing to do with any of that: it can be read as an
+second use that has nothing to do with any of that: it can be read as an
 instruction for moving every point in a picture somewhere else. This
 tutorial is about watching that happen.
 
@@ -187,8 +187,8 @@ check(multiply(your_guess, square), mystery)
 
 The same handful of numbers, read two ways: as a grid you can add and
 multiply, and as an instruction for moving every point in a picture. Neither
-reading is more "real" than the other — they are the same object, and which
-one is useful depends entirely on what you are trying to do with it.
+reading is more correct than the other. They are the same object, and which
+one is useful depends on what you are trying to do with it.
 
 Which of the five words — stretch, squash, rotate, shear, reflect — matched
 your prediction before you saw the picture, and which one surprised you? The

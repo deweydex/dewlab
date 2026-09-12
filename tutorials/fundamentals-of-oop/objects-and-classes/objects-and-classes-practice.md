@@ -247,7 +247,7 @@ defines `deposit()`. Why?
 
 `SavingsAccount(BankAccount)` inherits everything `BankAccount` defines,
 `deposit()` included. Python looks for `deposit()` on `SavingsAccount`
-first, does not find one, and falls back to `BankAccount`'s own.
+first, does not find one, and uses `BankAccount`'s version instead.
 
 </details>
 

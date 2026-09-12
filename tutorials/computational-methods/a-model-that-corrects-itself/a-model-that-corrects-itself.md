@@ -253,7 +253,7 @@ Rosenblatt, F. (1958). *The Perceptron: A Probabilistic Model for
 Information Storage and Organization in the Brain.* Psychological Review,
 65(6), 386–408. The original paper — this tutorial's `predict()` and
 training loop are a direct, unsimplified descendant of the "perceptron"
-described here, sixty-odd years before this course.
+described here, about sixty years before this course.
 
 Nielsen, M. (2015). *Neural Networks and Deep Learning*.
 <http://neuralnetworksanddeeplearning.com/>. Free online book. Chapter 1

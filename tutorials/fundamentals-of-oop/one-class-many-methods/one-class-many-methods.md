@@ -138,8 +138,8 @@ needed no new parameter for the coefficients, and no care at the call site
 about which polynomial's list to pass. Both already have `self`, and
 `self.coeffs` is right there. This is what "modular, reusable code" means
 for a class. Every new capability is a method that can call on everything
-the object already carries. A stand-alone function has no such luck — it
-needs the same data handed to it all over again.
+the object already carries. A stand-alone function cannot do that — it
+needs the same data given to it every time.
 
 ### Your turn
 

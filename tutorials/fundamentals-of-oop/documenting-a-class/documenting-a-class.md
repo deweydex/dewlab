@@ -256,9 +256,9 @@ In this tutorial:
 - Each method keeps its own docstring too, saying what that one method
   does. `help()` on a class shows all of them together. `help()` on one
   method shows only its own.
-- A docstring is never checked against the code it describes. Keeping one
-  honest, once the code beneath it changes, is a habit a reader has to
-  keep on purpose.
+- A docstring is never checked against the code it describes. Updating one
+  when the code beneath it changes is something a reader has to do on
+  purpose.
 
 ### Reflection
 

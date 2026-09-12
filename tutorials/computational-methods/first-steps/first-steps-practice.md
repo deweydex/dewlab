@@ -11,7 +11,7 @@ version: 2026.08.23.1
 
 # First Steps — Practice
 
-Answers are folded. These are short, and they are mostly about the two things that trip people up in the first hour: what a cell shows you, and what `range` actually produces.
+Answers are folded. These are short, and they are mostly about the two things that confuse people in the first hour: what a cell shows you, and what `range` actually produces.
 
 ## What a Cell Shows
 
@@ -166,7 +166,7 @@ Without one of those it runs correctly and displays nothing, which is question 2
 
 3.5, 3, 1, 49.
 
-`/` always gives a decimal. `//` gives the whole number of times it goes in, and `%` gives what is left over.
+`/` always gives a decimal. `//` rounds the result down to a whole number, and `%` gives what is left over.
 
 </details>
 

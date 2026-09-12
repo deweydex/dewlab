@@ -180,7 +180,7 @@ Wexford, at 15.1.
 
 <details class="dl-answer"><summary>answer</summary>
 
-The mean of the values that are present. pandas skips missing values by default rather than propagating them.
+The mean of the values that are present. pandas skips missing values by default rather than passing them through to the result.
 
 That is convenient and it is a decision made on your behalf. If three of four readings are missing, the mean of the fourth is reported with no warning at all, and `readings["morning"].count()` is how you find out how many went into it.
 

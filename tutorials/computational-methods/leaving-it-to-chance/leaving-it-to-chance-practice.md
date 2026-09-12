@@ -36,7 +36,7 @@ gives a whole number, and includes both 10 and 20 as possibilities.
 Worth knowing about that second one: most Python functions that take a range
 stop *before* the end value — `range(1, 6)` gives you 1 to 5. `randint` is the
 exception and includes both ends, which is exactly what you want for a die
-but catches people out. `random.randrange(10, 20)` is the one that behaves
+but surprises people. `random.randrange(10, 20)` is the one that behaves
 like `range` and stops at 19.
 
 </details>
@@ -265,7 +265,7 @@ run so that the one failure you do eventually see becomes reproducible
 forever; or stop sampling and reason about the code directly, which is where
 this module's problem-solving outcomes come in.
 
-The general shape is worth keeping: simulation is a fine tool for finding
+The general idea is worth keeping: simulation is a good tool for finding
 something that happens often enough, and a poor one for finding something
 rare. Knowing which side of that line you are on is most of the skill.
 

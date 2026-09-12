@@ -20,7 +20,7 @@ covers:
 # When a Queue Never Clears
 
 A print queue, a web server's list of waiting requests, a line of
-customers at a till: every one of them is the same shape. Things arrive
+customers at a checkout: every one of them is the same shape. Things arrive
 at unpredictable moments, something processes them at a fixed rate, and
 a queue builds up in between. This tutorial asks the question that shape
 always raises: does the queue stay under control, or does it grow
@@ -96,8 +96,7 @@ print("queue length at the end:  ", stable[-1])
 ```
 
 Average arrivals here are `2 * 0.3 = 0.6` per step, against a service
-capacity of `1`. The server can clear more than what shows up, on
-average, so the queue never grows for long. It rises after a run of bad
+capacity of `1`. The server can clear more than what arrives, on average, so the queue never grows for long. It rises after a run of bad
 luck, then drains again once arrivals fall back below what the server
 can handle. A queue with this property is *stable*: however bad its
 luck, it never grows forever.
@@ -122,7 +121,7 @@ service capacity of `1`. The server is behind by `0.2` items every step,
 on average — never by much, on any one step, but never caught up either.
 The queue does not wander back down the way the first one did. It
 climbs. That is what makes a queue *unstable*: not that it grows fast,
-but that nothing about it ever turns around.
+but that nothing about it ever goes back down.
 
 ### Your turn
 
