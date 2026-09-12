@@ -324,7 +324,7 @@ The same bar dewstack already used, since it's dewlab's own bar too:
    beside the site editor rather than a third site-pane language, since a
    site editor's sandboxed iframe exists specifically to stop a reader's
    script reaching anything else on the page, and this needed exactly
-   that channel — the page's own shared `db`. `DECISIONS_LOG.md` 7.148
+   that channel — the page's own shared `db`. `DECISIONS_LOG.md` 7.149
    has the design: the `_query_rows()`/`queryRows()` bridge across the
    Worker boundary, why it is a separate cell kind, and two
    authoring-editor round-trip gaps (site fences and app fences both)
@@ -388,6 +388,6 @@ The same bar dewstack already used, since it's dewlab's own bar too:
 |---|---|---|---|---|
 | `database-methods` (5N0783) | done | done, merged to `main` (`sql exec`) | done — 12 tutorials, QQI mapping | done — merged to `main` |
 | `web-authoring` (5N1910) | done | done, merged to `main` (`html site`/`css site`/`js site`, `assets/site-relay.js`; `dewmini web` standalone workspace; preview-width slider + stacked site-editor layout) | done — all 42 pages (`getting-started`/`reference`, `first-site`, `several-pages`); QQI 5N1910 mapping done too | not yet — homepage card stays "Coming soon" until the module has run in front of a class |
-| `full-stack` | done (reference only) | done — `html app`/`css app`/`js app`, `_query_rows()`/`queryRows()` Worker bridge (`DECISIONS_LOG.md` 7.148) | done — 1 of 1 staged page (`a-page-that-reads-from-a-database`), no QQI mapping (none exists for this module) | not yet — no homepage card until the module has run in front of a class |
+| `full-stack` | done (reference only) | done — `html app`/`css app`/`js app`, `_query_rows()`/`queryRows()` Worker bridge (`DECISIONS_LOG.md` 7.149) | done — 1 of 1 staged page (`a-page-that-reads-from-a-database`), no QQI mapping (none exists for this module) | not yet — no homepage card until the module has run in front of a class |
 
 Update this table as each phase in §7 completes.

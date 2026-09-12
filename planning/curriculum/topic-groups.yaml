@@ -348,7 +348,9 @@ groups:
       Planning five pages before writing any HTML, one navigation that
       appears on all of them, cards and a gallery that rearrange
       themselves, a navigation that works on a phone, an accessible
-      form, keeping image files small, and documenting what you built.
+      form, keeping image files small, documenting what you built, and
+      where HTML, CSS and tools like WordPress or Carrd fit next to what
+      you just did by hand.
     tutorials:
       - { module: web-authoring, slug: planning-a-site }
       - { module: web-authoring, slug: pages-and-navigation }
@@ -358,6 +360,7 @@ groups:
       - { module: web-authoring, slug: a-form }
       - { module: web-authoring, slug: images-and-file-size }
       - { module: web-authoring, slug: documenting-what-you-built }
+      - { module: web-authoring, slug: conclusions-and-next-steps }
 
   - key: full-stack-basics
     name: A page joined to its own database

@@ -60,7 +60,7 @@ The pipeline, in order:
    involved), an `AppPane` (the same three languages tagged `app` instead,
    grouped by `app:` name into one `AppCell` — a full-stack module cell
    whose JavaScript can reach the page's own shared `db`, `DECISIONS_LOG.md`
-   7.148), or a `CodeBlock` (anything else). `extract_math()` does the
+   7.149), or a `CodeBlock` (anything else). `extract_math()` does the
    same for `$…$`/`$$…$$`, since Python's `markdown` library doesn't know
    dewlab's conventions and would otherwise read `$a_i + b_j$`'s subscript
    as emphasis.
@@ -151,7 +151,7 @@ Worker round trip (`queryRows()`) on a hosted page, the same fork every
 other dual-path call in this file already makes. A page with an app cell
 but no cells still boots Pyodide, unlike a page with only a site editor,
 since a query needs `sqlite3` running even with nothing to execute.
-`DECISIONS_LOG.md` 7.148 has the full design, including why this is a
+`DECISIONS_LOG.md` 7.149 has the full design, including why this is a
 separate cell kind rather than a third site-pane language.
 
 What happens on load:
