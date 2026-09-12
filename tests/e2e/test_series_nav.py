@@ -86,7 +86,7 @@ class _QuietHandler(http.server.SimpleHTTPRequestHandler):
 
 
 @pytest.fixture()
-def base_url(site):
+def site_url(site):
     server, thread, url = _serve(site / "site")
     try:
         yield url
@@ -106,7 +106,7 @@ def _toggle_shows(actor, selector: str) -> bool:
 
 
 class TestVisibility:
-    def test_a_tutorial_outside_any_series_hides_the_toggle(self, site, browser, base_url):
+    def test_a_tutorial_outside_any_series_hides_the_toggle(self, site, browser, site_url):
         _tutorial(site, "solo", "Solo")
         _tutorial(site, "other", "Other")
         _set_order(site, ["other"])
@@ -114,24 +114,24 @@ class TestVisibility:
         b.build()
         context = browser.new_context()
         page = context.new_page()
-        page.goto(f"{base_url}/tutorials/{MODULE}/solo.html")
+        page.goto(f"{site_url}/tutorials/{MODULE}/solo.html")
         assert not _toggle_shows(page, "#dl-seriesnav-toggle")
         context.close()
 
-    def test_a_tutorial_in_a_series_shows_the_toggle(self, site, browser, base_url):
+    def test_a_tutorial_in_a_series_shows_the_toggle(self, site, browser, site_url):
         _tutorial(site, "one", "One")
         _tutorial(site, "two", "Two")
         _set_order(site, ["one", "two"])
         b.build()
         context = browser.new_context()
         page = context.new_page()
-        page.goto(f"{base_url}/tutorials/{MODULE}/one.html")
+        page.goto(f"{site_url}/tutorials/{MODULE}/one.html")
         assert _toggle_shows(page, "#dl-seriesnav-toggle")
         context.close()
 
 
 class TestOpeningAndClosing:
-    def open_page(self, site, browser, base_url, slug="two"):
+    def open_page(self, site, browser, site_url, slug="two"):
         _tutorial(site, "one", "One")
         _tutorial(site, "two", "Two")
         _tutorial(site, "three", "Three")
@@ -139,43 +139,43 @@ class TestOpeningAndClosing:
         b.build()
         context = browser.new_context()
         page = context.new_page()
-        page.goto(f"{base_url}/tutorials/{MODULE}/{slug}.html")
+        page.goto(f"{site_url}/tutorials/{MODULE}/{slug}.html")
         return context, page
 
-    def test_the_panel_is_closed_by_default(self, site, browser, base_url):
-        context, page = self.open_page(site, browser, base_url)
+    def test_the_panel_is_closed_by_default(self, site, browser, site_url):
+        context, page = self.open_page(site, browser, site_url)
         assert page.is_hidden("#dl-seriesnav")
         context.close()
 
-    def test_clicking_the_toggle_opens_it(self, site, browser, base_url):
-        context, page = self.open_page(site, browser, base_url)
+    def test_clicking_the_toggle_opens_it(self, site, browser, site_url):
+        context, page = self.open_page(site, browser, site_url)
         _open_panel(page, "#dl-seriesnav-toggle")
         assert page.is_visible("#dl-seriesnav")
         context.close()
 
-    def test_escape_closes_it(self, site, browser, base_url):
-        context, page = self.open_page(site, browser, base_url)
+    def test_escape_closes_it(self, site, browser, site_url):
+        context, page = self.open_page(site, browser, site_url)
         _open_panel(page, "#dl-seriesnav-toggle")
         page.keyboard.press("Escape")
         assert page.is_hidden("#dl-seriesnav")
         context.close()
 
-    def test_the_close_button_closes_it(self, site, browser, base_url):
-        context, page = self.open_page(site, browser, base_url)
+    def test_the_close_button_closes_it(self, site, browser, site_url):
+        context, page = self.open_page(site, browser, site_url)
         _open_panel(page, "#dl-seriesnav-toggle")
         page.click("#dl-seriesnav-close")
         assert page.is_hidden("#dl-seriesnav")
         context.close()
 
-    def test_clicking_outside_closes_it(self, site, browser, base_url):
-        context, page = self.open_page(site, browser, base_url)
+    def test_clicking_outside_closes_it(self, site, browser, site_url):
+        context, page = self.open_page(site, browser, site_url)
         _open_panel(page, "#dl-seriesnav-toggle")
         page.click("main#dl-body")
         assert page.is_hidden("#dl-seriesnav")
         context.close()
 
-    def test_opening_the_series_nav_does_not_close_settings(self, site, browser, base_url):
-        context, page = self.open_page(site, browser, base_url)
+    def test_opening_the_series_nav_does_not_close_settings(self, site, browser, site_url):
+        context, page = self.open_page(site, browser, site_url)
         _open_panel(page, "#dl-settings-toggle")
         assert page.is_visible("#dl-settings")
         _open_panel(page, "#dl-seriesnav-toggle")
@@ -183,8 +183,8 @@ class TestOpeningAndClosing:
         assert page.is_visible("#dl-settings")
         context.close()
 
-    def test_opening_settings_does_not_close_the_series_nav(self, site, browser, base_url):
-        context, page = self.open_page(site, browser, base_url)
+    def test_opening_settings_does_not_close_the_series_nav(self, site, browser, site_url):
+        context, page = self.open_page(site, browser, site_url)
         _open_panel(page, "#dl-seriesnav-toggle")
         assert page.is_visible("#dl-seriesnav")
         _open_panel(page, "#dl-settings-toggle")
@@ -198,7 +198,7 @@ class TestMutualExclusionWithReference:
     they share the same left-anchored corner. Settings anchors to the right
     and no longer force-closes (or gets force-closed by) either one."""
 
-    def test_opening_the_series_nav_closes_the_reference(self, site, browser, base_url):
+    def test_opening_the_series_nav_closes_the_reference(self, site, browser, site_url):
         _tutorial(site, "one", "One")
         _tutorial(site, "two", "Two")
         (site / "tutorials" / MODULE / "one.glossary.yaml").write_text(
@@ -208,7 +208,7 @@ class TestMutualExclusionWithReference:
         b.build()
         context = browser.new_context()
         page = context.new_page()
-        page.goto(f"{base_url}/tutorials/{MODULE}/one.html")
+        page.goto(f"{site_url}/tutorials/{MODULE}/one.html")
         _open_panel(page, "#dl-reference-toggle")
         assert page.is_visible("#dl-reference")
         _open_panel(page, "#dl-seriesnav-toggle")
@@ -216,7 +216,7 @@ class TestMutualExclusionWithReference:
         assert page.is_hidden("#dl-reference")
         context.close()
 
-    def test_opening_the_reference_closes_the_series_nav(self, site, browser, base_url):
+    def test_opening_the_reference_closes_the_series_nav(self, site, browser, site_url):
         _tutorial(site, "one", "One")
         _tutorial(site, "two", "Two")
         (site / "tutorials" / MODULE / "one.glossary.yaml").write_text(
@@ -226,7 +226,7 @@ class TestMutualExclusionWithReference:
         b.build()
         context = browser.new_context()
         page = context.new_page()
-        page.goto(f"{base_url}/tutorials/{MODULE}/one.html")
+        page.goto(f"{site_url}/tutorials/{MODULE}/one.html")
         _open_panel(page, "#dl-seriesnav-toggle")
         assert page.is_visible("#dl-seriesnav")
         _open_panel(page, "#dl-reference-toggle")
@@ -236,7 +236,7 @@ class TestMutualExclusionWithReference:
 
 
 class TestContent:
-    def test_it_lists_every_tutorial_in_the_series_in_order(self, site, browser, base_url):
+    def test_it_lists_every_tutorial_in_the_series_in_order(self, site, browser, site_url):
         _tutorial(site, "one", "One")
         _tutorial(site, "two", "Two")
         _tutorial(site, "three", "Three")
@@ -244,21 +244,21 @@ class TestContent:
         b.build()
         context = browser.new_context()
         page = context.new_page()
-        page.goto(f"{base_url}/tutorials/{MODULE}/two.html")
+        page.goto(f"{site_url}/tutorials/{MODULE}/two.html")
         _open_panel(page, "#dl-seriesnav-toggle")
         items = page.eval_on_selector_all(
             "#dl-seriesnav .dl-seriesnav-series li", "els => els.map(e => e.textContent)")
         assert items == ["1. One", "2. Two", "3. Three"]
         context.close()
 
-    def test_the_current_tutorial_is_marked_and_not_a_link(self, site, browser, base_url):
+    def test_the_current_tutorial_is_marked_and_not_a_link(self, site, browser, site_url):
         _tutorial(site, "one", "One")
         _tutorial(site, "two", "Two")
         _set_order(site, ["one", "two"])
         b.build()
         context = browser.new_context()
         page = context.new_page()
-        page.goto(f"{base_url}/tutorials/{MODULE}/two.html")
+        page.goto(f"{site_url}/tutorials/{MODULE}/two.html")
         _open_panel(page, "#dl-seriesnav-toggle")
         current = page.query_selector("#dl-seriesnav .dl-seriesnav-current")
         assert current is not None
@@ -266,40 +266,40 @@ class TestContent:
         assert current.query_selector("a") is None
         context.close()
 
-    def test_other_tutorials_are_links_that_navigate(self, site, browser, base_url):
+    def test_other_tutorials_are_links_that_navigate(self, site, browser, site_url):
         _tutorial(site, "one", "One")
         _tutorial(site, "two", "Two")
         _set_order(site, ["one", "two"])
         b.build()
         context = browser.new_context()
         page = context.new_page()
-        page.goto(f"{base_url}/tutorials/{MODULE}/two.html")
+        page.goto(f"{site_url}/tutorials/{MODULE}/two.html")
         _open_panel(page, "#dl-seriesnav-toggle")
         page.click("#dl-seriesnav .dl-seriesnav-series li a")
-        page.wait_for_url(f"{base_url}/tutorials/{MODULE}/one.html")
+        page.wait_for_url(f"{site_url}/tutorials/{MODULE}/one.html")
         context.close()
 
 
 class TestMobile:
-    def test_the_toggle_is_visible_on_a_phone_sized_viewport(self, site, browser, base_url):
+    def test_the_toggle_is_visible_on_a_phone_sized_viewport(self, site, browser, site_url):
         _tutorial(site, "one", "One")
         _tutorial(site, "two", "Two")
         _set_order(site, ["one", "two"])
         b.build()
         context = browser.new_context(viewport={"width": 375, "height": 700})
         page = context.new_page()
-        page.goto(f"{base_url}/tutorials/{MODULE}/one.html")
+        page.goto(f"{site_url}/tutorials/{MODULE}/one.html")
         assert _toggle_shows(page, "#dl-seriesnav-toggle")
         context.close()
 
-    def test_opening_it_shows_a_sheet_anchored_to_the_bottom_edge(self, site, browser, base_url):
+    def test_opening_it_shows_a_sheet_anchored_to_the_bottom_edge(self, site, browser, site_url):
         _tutorial(site, "one", "One")
         _tutorial(site, "two", "Two")
         _set_order(site, ["one", "two"])
         b.build()
         context = browser.new_context(viewport={"width": 375, "height": 700})
         page = context.new_page()
-        page.goto(f"{base_url}/tutorials/{MODULE}/one.html")
+        page.goto(f"{site_url}/tutorials/{MODULE}/one.html")
         _open_panel(page, "#dl-seriesnav-toggle")
         assert page.is_visible("#dl-seriesnav")
         style = page.eval_on_selector(

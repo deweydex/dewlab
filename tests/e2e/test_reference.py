@@ -151,7 +151,7 @@ class _QuietHandler(http.server.SimpleHTTPRequestHandler):
 
 
 @pytest.fixture()
-def base_url(site):
+def site_url(site):
     server, thread, url = _serve(site / "site")
     try:
         yield url
@@ -176,7 +176,7 @@ def _toggle_shows(actor, selector: str) -> bool:
 
 class TestVisibility:
     def test_no_glossary_anywhere_in_the_series_still_shows_the_basics_tabs(
-            self, site, browser, base_url):
+            self, site, browser, site_url):
         """Math Basics and Python Basics are the same on every page, so the
         toggle shows even when this page and its series have nothing of
         their own yet."""
@@ -185,7 +185,7 @@ class TestVisibility:
         b.build()
         context = browser.new_context()
         page = context.new_page()
-        page.goto(f"{base_url}/tutorials/{MODULE}/one.html")
+        page.goto(f"{site_url}/tutorials/{MODULE}/one.html")
         assert _toggle_shows(page, "#dl-reference-toggle")
         _open_panel(page, "#dl-reference-toggle")
         assert page.is_visible("#dl-reference-nothing-yet")
@@ -195,20 +195,20 @@ class TestVisibility:
         assert page.locator("#dl-python-groups dt").count() > 0
         context.close()
 
-    def test_a_tutorial_with_something_accumulated_shows_the_toggle(self, site, browser, base_url):
+    def test_a_tutorial_with_something_accumulated_shows_the_toggle(self, site, browser, site_url):
         _tutorial(site, "one", "One")
         _glossary(site, "one", [CONCEPT])
         _set_order(site, ["one"])
         b.build()
         context = browser.new_context()
         page = context.new_page()
-        page.goto(f"{base_url}/tutorials/{MODULE}/one.html")
+        page.goto(f"{site_url}/tutorials/{MODULE}/one.html")
         assert _toggle_shows(page, "#dl-reference-toggle")
         context.close()
 
 
 class TestOpeningAndClosing:
-    def open_page(self, site, browser, base_url, slug="two"):
+    def open_page(self, site, browser, site_url, slug="two"):
         _tutorial(site, "one", "One")
         _tutorial(site, "two", "Two")
         _glossary(site, "one", [CONCEPT])
@@ -217,43 +217,43 @@ class TestOpeningAndClosing:
         b.build()
         context = browser.new_context()
         page = context.new_page()
-        page.goto(f"{base_url}/tutorials/{MODULE}/{slug}.html")
+        page.goto(f"{site_url}/tutorials/{MODULE}/{slug}.html")
         return context, page
 
-    def test_the_panel_is_closed_by_default(self, site, browser, base_url):
-        context, page = self.open_page(site, browser, base_url)
+    def test_the_panel_is_closed_by_default(self, site, browser, site_url):
+        context, page = self.open_page(site, browser, site_url)
         assert page.is_hidden("#dl-reference")
         context.close()
 
-    def test_clicking_the_toggle_opens_it(self, site, browser, base_url):
-        context, page = self.open_page(site, browser, base_url)
+    def test_clicking_the_toggle_opens_it(self, site, browser, site_url):
+        context, page = self.open_page(site, browser, site_url)
         _open_panel(page, "#dl-reference-toggle")
         assert page.is_visible("#dl-reference")
         context.close()
 
-    def test_escape_closes_it(self, site, browser, base_url):
-        context, page = self.open_page(site, browser, base_url)
+    def test_escape_closes_it(self, site, browser, site_url):
+        context, page = self.open_page(site, browser, site_url)
         _open_panel(page, "#dl-reference-toggle")
         page.keyboard.press("Escape")
         assert page.is_hidden("#dl-reference")
         context.close()
 
-    def test_the_close_button_closes_it(self, site, browser, base_url):
-        context, page = self.open_page(site, browser, base_url)
+    def test_the_close_button_closes_it(self, site, browser, site_url):
+        context, page = self.open_page(site, browser, site_url)
         _open_panel(page, "#dl-reference-toggle")
         page.click("#dl-reference-close")
         assert page.is_hidden("#dl-reference")
         context.close()
 
-    def test_clicking_outside_closes_it(self, site, browser, base_url):
-        context, page = self.open_page(site, browser, base_url)
+    def test_clicking_outside_closes_it(self, site, browser, site_url):
+        context, page = self.open_page(site, browser, site_url)
         _open_panel(page, "#dl-reference-toggle")
         page.click("main#dl-body")
         assert page.is_hidden("#dl-reference")
         context.close()
 
-    def test_opening_the_reference_does_not_close_settings(self, site, browser, base_url):
-        context, page = self.open_page(site, browser, base_url)
+    def test_opening_the_reference_does_not_close_settings(self, site, browser, site_url):
+        context, page = self.open_page(site, browser, site_url)
         _open_panel(page, "#dl-settings-toggle")
         assert page.is_visible("#dl-settings")
         _open_panel(page, "#dl-reference-toggle")
@@ -261,8 +261,8 @@ class TestOpeningAndClosing:
         assert page.is_visible("#dl-settings")
         context.close()
 
-    def test_opening_settings_does_not_close_the_reference(self, site, browser, base_url):
-        context, page = self.open_page(site, browser, base_url)
+    def test_opening_settings_does_not_close_the_reference(self, site, browser, site_url):
+        context, page = self.open_page(site, browser, site_url)
         _open_panel(page, "#dl-reference-toggle")
         assert page.is_visible("#dl-reference")
         _open_panel(page, "#dl-settings-toggle")
@@ -272,7 +272,7 @@ class TestOpeningAndClosing:
 
 
 class TestContent:
-    def test_a_tutorial_shows_its_own_and_earlier_entries(self, site, browser, base_url):
+    def test_a_tutorial_shows_its_own_and_earlier_entries(self, site, browser, site_url):
         _tutorial(site, "one", "One")
         _tutorial(site, "two", "Two")
         _glossary(site, "one", [CONCEPT])
@@ -281,7 +281,7 @@ class TestContent:
         b.build()
         context = browser.new_context()
         page = context.new_page()
-        page.goto(f"{base_url}/tutorials/{MODULE}/two.html")
+        page.goto(f"{site_url}/tutorials/{MODULE}/two.html")
         _open_panel(page, "#dl-reference-toggle")
         text = page.inner_text("#dl-reference-groups")
         assert "x" in text and "The first thing." in text
@@ -289,7 +289,7 @@ class TestContent:
         assert "f(1)" in text
         context.close()
 
-    def test_a_tutorial_never_shows_a_later_ones_entries(self, site, browser, base_url):
+    def test_a_tutorial_never_shows_a_later_ones_entries(self, site, browser, site_url):
         """The one guarantee that matters more than any other in this
         feature (planning/REFERENCE_PANEL.md §1)."""
         _tutorial(site, "one", "One")
@@ -300,21 +300,21 @@ class TestContent:
         b.build()
         context = browser.new_context()
         page = context.new_page()
-        page.goto(f"{base_url}/tutorials/{MODULE}/one.html")
+        page.goto(f"{site_url}/tutorials/{MODULE}/one.html")
         _open_panel(page, "#dl-reference-toggle")
         text = page.inner_text("#dl-reference-groups")
         assert "x" in text
         assert "f()" not in text
         context.close()
 
-    def test_entries_are_grouped_by_kind(self, site, browser, base_url):
+    def test_entries_are_grouped_by_kind(self, site, browser, site_url):
         _tutorial(site, "one", "One")
         _glossary(site, "one", [CONCEPT, FUNCTION])
         _set_order(site, ["one"])
         b.build()
         context = browser.new_context()
         page = context.new_page()
-        page.goto(f"{base_url}/tutorials/{MODULE}/one.html")
+        page.goto(f"{site_url}/tutorials/{MODULE}/one.html")
         _open_panel(page, "#dl-reference-toggle")
         headings = page.eval_on_selector_all(
             "#dl-reference-groups h3", "els => els.map(e => e.textContent)")
@@ -326,23 +326,23 @@ class TestNotes:
     """Pedagogical notes surfacing in the reference panel —
     planning/SIDEBAR_CONTENT.md §3/§4."""
 
-    def test_a_note_alone_shows_the_toggle(self, site, browser, base_url):
+    def test_a_note_alone_shows_the_toggle(self, site, browser, site_url):
         _tutorial_with_note(site, "one", "why-it-works", "Because reasons.")
         _set_order(site, ["one"])
         b.build()
         context = browser.new_context()
         page = context.new_page()
-        page.goto(f"{base_url}/tutorials/{MODULE}/one.html")
+        page.goto(f"{site_url}/tutorials/{MODULE}/one.html")
         assert _toggle_shows(page, "#dl-reference-toggle")
         context.close()
 
-    def test_opening_the_panel_shows_the_notes_heading_and_content(self, site, browser, base_url):
+    def test_opening_the_panel_shows_the_notes_heading_and_content(self, site, browser, site_url):
         _tutorial_with_note(site, "one", "why-it-works", "Because reasons.")
         _set_order(site, ["one"])
         b.build()
         context = browser.new_context()
         page = context.new_page()
-        page.goto(f"{base_url}/tutorials/{MODULE}/one.html")
+        page.goto(f"{site_url}/tutorials/{MODULE}/one.html")
         _open_panel(page, "#dl-reference-toggle")
         headings = page.eval_on_selector_all(
             "#dl-reference-groups h3", "els => els.map(e => e.textContent)")
@@ -350,7 +350,7 @@ class TestNotes:
         assert "Because reasons." in page.inner_text("#dl-reference-groups")
         context.close()
 
-    def test_the_note_is_not_in_the_page_body(self, site, browser, base_url):
+    def test_the_note_is_not_in_the_page_body(self, site, browser, site_url):
         """It surfaces in the panel instead of staying inline
         (planning/SIDEBAR_CONTENT.md §4's settled answer)."""
         _tutorial_with_note(site, "one", "why-it-works", "Because reasons.")
@@ -358,18 +358,18 @@ class TestNotes:
         b.build()
         context = browser.new_context()
         page = context.new_page()
-        page.goto(f"{base_url}/tutorials/{MODULE}/one.html")
+        page.goto(f"{site_url}/tutorials/{MODULE}/one.html")
         assert "Because reasons." not in page.inner_text("main#dl-body")
         context.close()
 
-    def test_a_note_and_a_glossary_both_appear_with_their_own_headings(self, site, browser, base_url):
+    def test_a_note_and_a_glossary_both_appear_with_their_own_headings(self, site, browser, site_url):
         _tutorial_with_note(site, "one", "why-it-works", "Because reasons.")
         _glossary(site, "one", [CONCEPT])
         _set_order(site, ["one"])
         b.build()
         context = browser.new_context()
         page = context.new_page()
-        page.goto(f"{base_url}/tutorials/{MODULE}/one.html")
+        page.goto(f"{site_url}/tutorials/{MODULE}/one.html")
         _open_panel(page, "#dl-reference-toggle")
         headings = page.eval_on_selector_all(
             "#dl-reference-groups h3", "els => els.map(e => e.textContent)")
@@ -381,7 +381,7 @@ class TestDatasets:
     """Dataset attribution surfacing in the reference panel —
     planning/SIDEBAR_CONTENT.md §2/§4."""
 
-    def test_a_dataset_alone_shows_the_toggle(self, site, browser, base_url, monkeypatch):
+    def test_a_dataset_alone_shows_the_toggle(self, site, browser, site_url, monkeypatch):
         monkeypatch.setattr(b, "DATA", site / "data")
         _dataset_files(site / "data", "life-expectancy", source="World Bank",
                         license="CC-BY-4.0", description="Life expectancy by country.")
@@ -390,12 +390,12 @@ class TestDatasets:
         b.build()
         context = browser.new_context()
         page = context.new_page()
-        page.goto(f"{base_url}/tutorials/{MODULE}/one.html")
+        page.goto(f"{site_url}/tutorials/{MODULE}/one.html")
         assert _toggle_shows(page, "#dl-reference-toggle")
         context.close()
 
     def test_opening_the_panel_shows_the_datasets_heading_and_attribution(
-        self, site, browser, base_url, monkeypatch
+        self, site, browser, site_url, monkeypatch
     ):
         monkeypatch.setattr(b, "DATA", site / "data")
         _dataset_files(site / "data", "life-expectancy", source="World Bank",
@@ -405,7 +405,7 @@ class TestDatasets:
         b.build()
         context = browser.new_context()
         page = context.new_page()
-        page.goto(f"{base_url}/tutorials/{MODULE}/one.html")
+        page.goto(f"{site_url}/tutorials/{MODULE}/one.html")
         _open_panel(page, "#dl-reference-toggle")
         headings = page.eval_on_selector_all(
             "#dl-reference-groups h3", "els => els.map(e => e.textContent)")
@@ -422,25 +422,25 @@ class TestMobile:
     """REFERENCE_PANEL.md §6: on a phone the panel becomes a bottom sheet,
     mirroring .dl-settings' own mobile treatment, rather than staying hidden."""
 
-    def test_the_toggle_is_visible_on_a_phone_sized_viewport(self, site, browser, base_url):
+    def test_the_toggle_is_visible_on_a_phone_sized_viewport(self, site, browser, site_url):
         _tutorial(site, "one", "One")
         _glossary(site, "one", [CONCEPT])
         _set_order(site, ["one"])
         b.build()
         context = browser.new_context(viewport={"width": 375, "height": 700})
         page = context.new_page()
-        page.goto(f"{base_url}/tutorials/{MODULE}/one.html")
+        page.goto(f"{site_url}/tutorials/{MODULE}/one.html")
         assert _toggle_shows(page, "#dl-reference-toggle")
         context.close()
 
-    def test_opening_it_shows_a_sheet_anchored_to_the_bottom_edge(self, site, browser, base_url):
+    def test_opening_it_shows_a_sheet_anchored_to_the_bottom_edge(self, site, browser, site_url):
         _tutorial(site, "one", "One")
         _glossary(site, "one", [CONCEPT])
         _set_order(site, ["one"])
         b.build()
         context = browser.new_context(viewport={"width": 375, "height": 700})
         page = context.new_page()
-        page.goto(f"{base_url}/tutorials/{MODULE}/one.html")
+        page.goto(f"{site_url}/tutorials/{MODULE}/one.html")
         _open_panel(page, "#dl-reference-toggle")
         assert page.is_visible("#dl-reference")
         style = page.eval_on_selector(
@@ -497,7 +497,7 @@ class TestHighlightToLookUp:
     """The property worth protecting is not that the button appears, but that
     it stays away for every selection that isn't a term — most of them."""
 
-    def open_page(self, site, browser, base_url):
+    def open_page(self, site, browser, site_url):
         path = site / "tutorials" / MODULE / "lookup.md"
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(LOOKUP_PROSE)
@@ -506,33 +506,33 @@ class TestHighlightToLookUp:
         b.build()
         context = browser.new_context()
         page = context.new_page()
-        page.goto(f"{base_url}/tutorials/{MODULE}/lookup.html")
+        page.goto(f"{site_url}/tutorials/{MODULE}/lookup.html")
         page.wait_for_selector("#dl-body")
         return context, page
 
-    def test_nothing_is_offered_until_something_is_selected(self, site, browser, base_url):
-        context, page = self.open_page(site, browser, base_url)
+    def test_nothing_is_offered_until_something_is_selected(self, site, browser, site_url):
+        context, page = self.open_page(site, browser, site_url)
         assert page.is_hidden(".dl-lookup")
         context.close()
 
-    def test_selecting_a_term_offers_to_look_it_up(self, site, browser, base_url):
-        context, page = self.open_page(site, browser, base_url)
+    def test_selecting_a_term_offers_to_look_it_up(self, site, browser, site_url):
+        context, page = self.open_page(site, browser, site_url)
         assert page.evaluate(SELECT, "gradient")
         page.wait_for_selector(".dl-lookup:not([hidden])")
         assert "gradient" in page.inner_text(".dl-lookup")
         context.close()
 
     def test_selecting_a_word_the_reference_does_not_know_offers_nothing(
-            self, site, browser, base_url):
+            self, site, browser, site_url):
         """A reader selecting a sentence to copy must not be interrupted."""
-        context, page = self.open_page(site, browser, base_url)
+        context, page = self.open_page(site, browser, site_url)
         assert page.evaluate(SELECT, "serendipity")
         page.wait_for_timeout(200)
         assert page.is_hidden(".dl-lookup")
         context.close()
 
-    def test_using_it_opens_the_panel_filtered_to_that_term(self, site, browser, base_url):
-        context, page = self.open_page(site, browser, base_url)
+    def test_using_it_opens_the_panel_filtered_to_that_term(self, site, browser, site_url):
+        context, page = self.open_page(site, browser, site_url)
         page.evaluate(SELECT, "gradient")
         page.wait_for_selector(".dl-lookup:not([hidden])")
         page.click(".dl-lookup")
@@ -542,9 +542,9 @@ class TestHighlightToLookUp:
         assert shown == ["gradient"]
         context.close()
 
-    def test_the_offer_goes_away_once_it_has_been_used(self, site, browser, base_url):
+    def test_the_offer_goes_away_once_it_has_been_used(self, site, browser, site_url):
         """Otherwise it sits over the reading offering the same lookup again."""
-        context, page = self.open_page(site, browser, base_url)
+        context, page = self.open_page(site, browser, site_url)
         page.evaluate(SELECT, "gradient")
         page.wait_for_selector(".dl-lookup:not([hidden])")
         page.click(".dl-lookup")

@@ -75,7 +75,7 @@ class _QuietHandler(http.server.SimpleHTTPRequestHandler):
 
 
 @pytest.fixture()
-def base_url(site):
+def site_url(site):
     server, thread, url = _serve(site / "site")
     try:
         yield url
@@ -85,26 +85,26 @@ def base_url(site):
 
 
 class TestNotesOnAProseOnlyTutorial:
-    def test_the_work_section_and_notes_field_are_not_removed(self, site, browser, base_url):
+    def test_the_work_section_and_notes_field_are_not_removed(self, site, browser, site_url):
         _tutorial(site, "one", "One")
         _set_order(site, ["one"])
         b.build()
         context = browser.new_context()
         page = context.new_page()
-        page.goto(f"{base_url}/tutorials/{MODULE}/one.html")
+        page.goto(f"{site_url}/tutorials/{MODULE}/one.html")
         assert page.is_hidden("#dl-settings")
         _open_panel(page, "#dl-settings-toggle")
         assert page.is_visible("#dl-settings-work")
         assert page.is_visible("#dl-progress-notes")
         context.close()
 
-    def test_a_note_still_autosaves_with_zero_cells(self, site, browser, base_url):
+    def test_a_note_still_autosaves_with_zero_cells(self, site, browser, site_url):
         _tutorial(site, "one", "One")
         _set_order(site, ["one"])
         b.build()
         context = browser.new_context()
         page = context.new_page()
-        page.goto(f"{base_url}/tutorials/{MODULE}/one.html")
+        page.goto(f"{site_url}/tutorials/{MODULE}/one.html")
         _open_panel(page, "#dl-settings-toggle")
         page.fill("#dl-progress-notes", "worth writing down")
         page.wait_for_function(
@@ -115,14 +115,14 @@ class TestNotesOnAProseOnlyTutorial:
         assert saved["cells"] == []
         context.close()
 
-    def test_the_contents_page_itself_gets_no_notes_field(self, site, browser, base_url):
+    def test_the_contents_page_itself_gets_no_notes_field(self, site, browser, site_url):
         """index/tree/about are not tutorials — NON_TUTORIAL_PAGES."""
         _tutorial(site, "one", "One")
         _set_order(site, ["one"])
         b.build()
         context = browser.new_context()
         page = context.new_page()
-        page.goto(f"{base_url}/index.html")
+        page.goto(f"{site_url}/index.html")
         _open_panel(page, "#dl-settings-toggle")
         assert page.is_hidden("#dl-settings-work")
         context.close()
