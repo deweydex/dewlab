@@ -3303,3 +3303,102 @@ earlier check cell in the module already uses.
 new tutorial folders (`a-college-timetable`, `the-library-loans-quiz`)
 with their own glossary files; both `.order.yaml` files and
 `topic-groups.yaml` updated. No engine or build.py change.*
+
+**7.148 — `full-stack`: a new module, and a new cell kind rather than a
+third site pane.** `planning/DEWSTACK_MERGE.md` §7 left one piece of
+dewstack's own three unscheduled — a page whose own script reads the
+database a `sql exec` cell built. The purpose ports; dewstack's own code
+does not, the standing rule for the boundary between the two
+repositories, and this piece needed more than a rewrite because dewlab's
+architecture genuinely differs on every axis that matters here: dewstack
+runs Pyodide on the main thread with one named `sqlite3` connection per
+`site=name`-style cell, while a hosted dewlab page runs it in a Worker,
+behind a `postMessage` boundary, against one shared `db` every `sql
+exec` cell already reads and writes.
+
+**Why not a third `site` pane language.** A site editor's whole point is
+the opposite of what this needed: its `srcdoc` iframe is sandboxed
+specifically to stop a reader's script reaching anything else on the
+page, `assets/site-relay.js`'s relay is one-directional (console/error
+only), and there is no RPC channel back into the page for a reason. Full
+stack's JavaScript needs exactly the channel the sandbox exists to
+block. Reusing the fence grammar (`id:`/`app:` mirrors `id:`/`site:`
+exactly, for the same reason 7.142 gave that shape to a site pane — the
+authoring editor keeps only a fence's first word) but keeping it a
+separate cell kind, `AppPane`/`AppCell` beside `SitePane`/`SiteEditor`
+in `build.py`, means nothing about loosening a site editor's own sandbox
+can happen by editing the wrong branch of `extract_blocks()` by
+accident.
+
+**The bridge.** `tutorial_tools._query_rows(sql, params)` runs one
+`SELECT` against `_page_globals["db"]` and returns a list of plain
+dicts, column name to value — no Pyodide proxy, no pandas, the same
+JSON-safe shape `describe_globals()` already crosses the Worker boundary
+with. `pyodide-worker.js` gets a matching `"query-rows"` dispatch
+branch; `tutorial-runtime.js`'s `queryRows()` awaits `ensureBooted()`
+and then branches on `currentManifest.standalone` the same way every
+other dual-path call here already does, landing on `queryRowsMT()` for
+a downloaded export or a `workerRequest("query-rows", …)` round trip for
+a hosted page. Unlike `_run_sql_cell()`, `_query_rows()` takes no
+`_require_cell()` — an app cell's JavaScript calls it from outside the
+normal cell-run lifecycle, so a bad query's own `sqlite3.Error` is left
+to propagate rather than rendered into a sink that does not exist here.
+
+**Naming it `dewlabQueryRows` on `globalThis`, only when a page actually
+has an app cell, `dlQuery` only inside the generated wrapper.** A
+reader's own JavaScript pane never sees the long name — the injected
+script wraps their code as `(async function (root, dlQuery) { … })
+(document.getElementById(previewId), window.dewlabQueryRows)`, so `root`
+and `dlQuery` reach it as plain parameters, added to nothing global a
+page-wide name could collide with. The long name on `globalThis` only
+exists for that one wrapper to close over, and is never installed on a
+page with no app cell at all.
+
+**Preview: no iframe, `@scope` instead of a sandbox boundary.** An app
+cell's HTML and CSS render straight into `.dl-app-preview`, and its JS
+pane's code runs as a real `<script>` element appended to the page — the
+one deliberate difference from a site editor, for the reason above. A
+pane's CSS is wrapped in `@scope (#dl-app-preview-N) { … }` on Run
+rather than left unscoped, so one app cell's stylesheet cannot reach
+another cell's preview, or the page around it, the way an ordinary
+`<style>` tag would. HTML/CSS panes are live without pressing Run, the
+same rule a site editor's own panes follow; only the JS pane needs it,
+since only running code can reach the shared database.
+
+**Two authoring-editor round-trip gaps closed together, not one.**
+7.142 designed a site pane's `id:`/`site:` headers specifically so
+`assets/editor.js`'s `restoreExecTag()` could recover a fence's tag on
+save the way every other exec-family fence already does — but never
+actually extended `restoreExecTag()` to do it, so an `html site`/`css
+site`/`js site` fence edited through the authoring editor has silently
+demoted to inert illustrative HTML on save since 7.142 shipped, with no
+tutorial content having used the fence yet to surface it. `restoreExecTag()`
+now recognises both site and app fences, reading whichever of the pair
+of header lines (`id:`/`site:` or `id:`/`app:`) appears in either order,
+since `parse_site_pane()`/`parse_app_pane()` read them as an unordered
+pair rather than a fixed sequence.
+
+**First content: "A page that reads from a database."** One tutorial,
+adapted from `staging/dewstack-import/`'s own reference page in shape
+rather than copied — dewlab's single shared connection drops dewstack's
+`dlQuery(name, sql, params)` first argument entirely, since there is
+only ever one database to name. No `covers:` frontmatter: `full-stack`
+has no QQI descriptor behind it the way `database-methods`/
+`web-authoring` do (`WRITING_TUTORIALS.md` confirms `covers:` is
+optional), so none was invented. `planning/curriculum/topic-groups.yaml`
+still gained one group, `full-stack-basics` — reachability from the
+topics page is enforced separately from QQI mapping
+(`TestTopicGroupsMatchRealTutorials`), the same reason 7.144's
+`getting-started`/`reference` pages have groups of their own with no
+`covers:` behind them.
+
+*Cost to change: `APP_LANGS`/`APP_HEADER_RE`/`AppPane`/`AppCell` and
+their `extract_blocks()`/`render_app_cell()`/manifest-serialisation
+branches in `build.py`; `_query_rows()` in `assets/tutorial_tools.py`;
+a `"query-rows"` branch in `assets/pyodide-worker.js`; `buildAppCells()`/
+`queryRows()`/`queryRowsMT()` and `saveNow()`/`restoreSaved()`
+additions in `assets/tutorial-runtime.js`; the site/app extension to
+`restoreExecTag()` in `assets/editor.js`; a new `.dl-app-*` CSS section;
+one new tutorial folder and its glossary, `full-stack` added to
+`tutorials/modules.yaml`. `planning/DEWSTACK_MERGE.md` §9's ledger row
+for `full-stack` still needs updating to point here.*

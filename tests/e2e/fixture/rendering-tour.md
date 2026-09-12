@@ -199,6 +199,37 @@ site: quiet
 p { color: teal; }
 ```
 
+## Full-stack cell
+
+A `js app` pane reads the page's own shared `db` connection through
+`dlQuery`, the same connection a `sql exec` cell writes to — unlike a
+site editor's sandboxed preview, this one renders straight into the page.
+
+```sql exec
+id: app-seed-readers
+CREATE TABLE readers (name TEXT, age INTEGER);
+INSERT INTO readers VALUES ('Ada', 34), ('Grace', 41);
+```
+
+```html app
+id: app-readers-html
+app: readers
+<ul id="reader-list"></ul>
+```
+
+```css app
+id: app-readers-css
+app: readers
+#reader-list { font-weight: bold; }
+```
+
+```js app
+id: app-readers-js
+app: readers
+const rows = await dlQuery("SELECT name FROM readers ORDER BY name");
+root.querySelector("#reader-list").innerHTML = rows.map((r) => `<li>${r.name}</li>`).join("");
+```
+
 ## Checking your own answer
 
 ```python exec

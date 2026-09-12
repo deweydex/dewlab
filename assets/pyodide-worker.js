@@ -110,6 +110,20 @@ function describeGlobals() {
   }
 }
 
+/* A full-stack cell's own bridge (planning/DEWSTACK_MERGE.md §3, §7
+ * phase 4) — unlike describeGlobals() above, a failure here is a real
+ * bad-query error a reader's cell needs to see, not something to
+ * swallow to an empty result. Left uncaught on purpose: the dispatcher
+ * in self.onmessage already wraps every message type in one try/catch
+ * and reports a thrown error back through the same request/response
+ * protocol every other message type uses. */
+function queryRows(sql, params) {
+  const proxy = tools._query_rows(sql, params || []);
+  const rows = proxy.toJs({ dict_converter: Object.fromEntries });
+  proxy.destroy();
+  return rows;
+}
+
 const JEDI_HELPER_SOURCE = `
 import jedi
 
@@ -316,6 +330,8 @@ self.onmessage = async (ev) => {
       respond(pageNames());
     } else if (msg.type === "describe-globals") {
       respond(describeGlobals());
+    } else if (msg.type === "query-rows") {
+      respond(queryRows(msg.sql, msg.params));
     } else if (msg.type === "fs-mount-native") {
       await fsMountNative(msg.mountpoint, msg.handle);
       respond("ok");

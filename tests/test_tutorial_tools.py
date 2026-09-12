@@ -383,6 +383,58 @@ class TestRunSqlCell:
         assert cell.html == ""
 
 
+class TestQueryRows:
+    """_query_rows() — the Python half of a full-stack cell's bridge to the
+    page's shared `db` connection (planning/DEWSTACK_MERGE.md §3, §7 phase
+    4). Unlike _run_sql_cell(), this is called from an app cell's own
+    JavaScript outside the normal cell-run lifecycle, so every test here
+    runs with no `cell` fixture — a running cell is exactly what it must
+    not require."""
+
+    @pytest.fixture(autouse=True)
+    def _no_stale_db(self):
+        tt._page_globals.pop("db", None)
+        try:
+            yield
+        finally:
+            conn = tt._page_globals.pop("db", None)
+            if conn is not None:
+                conn.close()
+
+    def test_no_connection_yet_raises(self):
+        with pytest.raises(RuntimeError, match="nothing for a query to run against"):
+            tt._query_rows("select 1")
+
+    def test_a_query_returns_rows_as_plain_dicts(self):
+        conn = sqlite3.connect(":memory:")
+        conn.execute("create table t (a, b)")
+        conn.execute("insert into t values (1, 'x'), (2, 'y')")
+        tt._page_globals["db"] = conn
+        assert tt._query_rows("select * from t order by a") == [
+            {"a": 1, "b": "x"},
+            {"a": 2, "b": "y"},
+        ]
+
+    def test_params_bind_rather_than_interpolate(self):
+        conn = sqlite3.connect(":memory:")
+        conn.execute("create table t (name)")
+        conn.execute("insert into t values ('Ada'), ('Grace')")
+        tt._page_globals["db"] = conn
+        assert tt._query_rows("select name from t where name = ?", ["Ada"]) == [{"name": "Ada"}]
+
+    def test_no_active_cell_is_not_required(self):
+        tt._current = None
+        conn = sqlite3.connect(":memory:")
+        tt._page_globals["db"] = conn
+        assert tt._query_rows("select 1 as n") == [{"n": 1}]
+
+    def test_a_bad_query_raises_the_sqlite_error(self):
+        conn = sqlite3.connect(":memory:")
+        tt._page_globals["db"] = conn
+        with pytest.raises(sqlite3.OperationalError):
+            tt._query_rows("select * from a_table_that_does_not_exist")
+
+
 try:
     import numpy as np
 except ImportError:  # pragma: no cover - exercised only where numpy is absent

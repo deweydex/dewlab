@@ -358,3 +358,12 @@ groups:
       - { module: web-authoring, slug: a-form }
       - { module: web-authoring, slug: images-and-file-size }
       - { module: web-authoring, slug: documenting-what-you-built }
+
+  - key: full-stack-basics
+    name: A page joined to its own database
+    intro: >
+      Database Methods built tables. Web Authoring built pages. This is
+      where the two meet — a page whose own script reads a database
+      directly, and shows a visitor's own search back as it happens.
+    tutorials:
+      - { module: full-stack, slug: a-page-that-reads-from-a-database }

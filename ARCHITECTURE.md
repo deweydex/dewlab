@@ -57,7 +57,10 @@ The pipeline, in order:
    each as a `Cell` (`exec`-tagged, with `id`/`hint` parsed off), a
    `SitePane` (an `html`/`css`/`js` fence tagged `site`, grouped by
    `site:` name into one `SiteEditor` — a live preview with no Pyodide
-   involved), or a `CodeBlock` (anything else). `extract_math()` does the
+   involved), an `AppPane` (the same three languages tagged `app` instead,
+   grouped by `app:` name into one `AppCell` — a full-stack module cell
+   whose JavaScript can reach the page's own shared `db`, `DECISIONS_LOG.md`
+   7.148), or a `CodeBlock` (anything else). `extract_math()` does the
    same for `$…$`/`$$…$$`, since Python's `markdown` library doesn't know
    dewlab's conventions and would otherwise read `$a_i + b_j$`'s subscript
    as emphasis.
@@ -134,6 +137,22 @@ mounted through `assets/site-relay.js`'s `mountSitePreview()`, the same
 engine `compose/dewmini.js`'s Site tab and the standalone `dewmini web`
 workspace (§4) both use. A page with one of these but no cells never boots
 Pyodide.
+
+**A full-stack cell (`buildAppCells()`) reuses that fence shape for the
+opposite purpose.** An `html app`/`css app`/`js app` group renders straight
+into the page — no iframe, CSS scoped to its own preview with `@scope`
+rather than a sandbox boundary — because its JavaScript needs exactly what
+a site editor's sandbox exists to block: a route to the page's own shared
+`db`. That route is `dlQuery`, a parameter the runtime closes over when it
+wraps a pane's code as `(async function (root, dlQuery) { … })(…)` before
+running it, backed by `tutorial_tools._query_rows()` on the far side —
+`queryRowsMT()` directly on a downloaded export, or a `"query-rows"`
+Worker round trip (`queryRows()`) on a hosted page, the same fork every
+other dual-path call in this file already makes. A page with an app cell
+but no cells still boots Pyodide, unlike a page with only a site editor,
+since a query needs `sqlite3` running even with nothing to execute.
+`DECISIONS_LOG.md` 7.148 has the full design, including why this is a
+separate cell kind rather than a third site-pane language.
 
 What happens on load:
 
@@ -439,6 +458,8 @@ PR that touches the runtime or the editor.
 | What a cell *looks like*, or the settings panel, save/restore behaviour | `assets/tutorial-runtime.js` |
 | The live HTML/CSS/JS site editor's engine (preview, console, friendly errors) — shared by dewmini's Site tab, a tutorial's own site editor, and `dewmini web` | `assets/site-relay.js` |
 | A tutorial page's own site editor: mounting, Run/Reset wiring, save/restore | `assets/tutorial-runtime.js`'s `buildSiteEditors()` |
+| A full-stack cell: mounting, `@scope`-scoped preview, Run/Reset wiring, save/restore | `assets/tutorial-runtime.js`'s `buildAppCells()` |
+| The full-stack `dlQuery` bridge (Python side, the Worker message, the JS dispatcher) | `tutorial_tools._query_rows()`, `pyodide-worker.js`'s `"query-rows"` branch, `assets/tutorial-runtime.js`'s `queryRows()`/`queryRowsMT()` |
 | `dewmini web`'s own sites: the list, New/Delete/Load files/Download, per-site storage | `compose/dewminiweb.js` |
 | dewmini's file manager, uploads, or storage backend | `compose/dewmini-fs.js` |
 | The Python engine (boot, run a cell, hover/autocomplete, Stop) | `assets/pyodide-engine.js` |
