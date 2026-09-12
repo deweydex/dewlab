@@ -1,0 +1,16 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# Second tutorial of several-pages. Checked against the cumulative
+# glossary so far -- no overlap.
+entries:
+  - term: 'aria-current="page"'
+    kind: keyword
+    definition: >
+      The `aria-current="page"` attribute marks which link in a menu
+      points at the page a visitor is already on.
+  - term: consistent navigation
+    kind: concept
+    definition: >
+      Consistent navigation is the same menu, in the same order, on
+      every page of a site, so a visitor who has found their way around
+      one page already knows where everything is on the next.

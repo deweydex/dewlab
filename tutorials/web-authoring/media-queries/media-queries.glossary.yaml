@@ -1,0 +1,24 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# Seventeenth tutorial of first-site. Checked against the cumulative
+# glossary so far. `max-width` was already glossaried in the-container
+# as an element-sizing property; used inside `@media (...)` it tests
+# the screen instead, a different mechanism sharing the same name, so
+# it gets a disambiguated entry rather than reusing that one.
+entries:
+  - term: media query
+    kind: concept
+    definition: >
+      A media query wraps a block of CSS in a condition based on the
+      screen, most often its width. The rules inside apply only while
+      the condition holds.
+  - term: "max-width (media query)"
+    kind: keyword
+    definition: >
+      Inside `@media (max-width: 350px) { ... }`, `max-width` applies
+      the rules inside only when the screen is that width or narrower.
+  - term: min-width
+    kind: keyword
+    definition: >
+      Inside a media query, `min-width` applies its rules only when the
+      screen is a given width or wider, the opposite of `max-width`.

@@ -1,0 +1,8 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# Seventh tutorial of welcome. `git add`, `git commit` and `git push`
+# appear here as backticked commands, not emphasised prose -- "commit"
+# and "push" are already in the cumulative glossary from
+# how-the-pieces-fit, so this page is reusing them, not introducing
+# them again.
+entries: []

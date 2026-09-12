@@ -1,0 +1,13 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# Third tutorial of shelf. A lookup table by design ("not meant to be
+# read start to finish"), not a narrative tutorial that introduces
+# terms in sequence, so it gets no entries of its own here.
+#
+# Flagging, not fixing: a handful of rows name syntax no earlier
+# web-authoring tutorial actually teaches -- `<table>`/`<tr>`/`<th>`/
+# `<td>`, `line-height`, `gap`, the `em`/`vh`/`vw` units, `:link`/
+# `:visited`/`:active`, `target="_blank"` and `placeholder`. That may
+# be deliberate completeness for a cheat sheet, or it may be genuine
+# gaps nothing else covers; worth a look, not decided here.
+entries: []

@@ -1,0 +1,25 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# Twenty-second and last tutorial of first-site. Checked against the
+# cumulative glossary so far -- no overlap. `:checked` and `for` are
+# explained in prose but folded into the checkbox hack's own entry
+# below, the same way earlier tutorials absorbed a supporting detail
+# into the one term it serves.
+entries:
+  - term: "@keyframes"
+    kind: keyword
+    definition: >
+      `@keyframes` names the stages of an animation as percentages of
+      the way through. The browser fills in every frame between one
+      stage and the next on its own.
+  - term: animation
+    kind: keyword
+    definition: >
+      The `animation` property combines a `@keyframes` name with its
+      duration, speed curve and repeat count in one line.
+  - term: checkbox hack
+    kind: concept
+    definition: >
+      The checkbox hack is a hidden checkbox, a label linked to it with
+      `for`, and a `:checked ~` rule. Together they reveal content only
+      while the checkbox is ticked, with no JavaScript at all.

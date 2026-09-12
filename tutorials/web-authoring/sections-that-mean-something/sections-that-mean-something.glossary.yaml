@@ -1,0 +1,22 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# Fourth tutorial of first-site. Checked against the cumulative
+# glossary so far (tag, element, attribute, head, body, title, heading
+# level, strong, em, plus welcome's ten) -- no overlap. `<nav>`,
+# `<header>` and `<main>` appear only as further examples of "semantic
+# element", already covered by that entry.
+entries:
+  - term: semantic element
+    kind: concept
+    definition: >
+      A semantic element is a tag that names the kind of content it
+      holds, such as `<nav>` or `<section>`, rather than only grouping
+      it.
+  - term: "<section>"
+    kind: keyword
+    definition: "`<section>` marks one meaningful part of a page."
+  - term: "<div>"
+    kind: keyword
+    definition: >
+      `<div>` groups content into a generic container with no meaning
+      of its own.

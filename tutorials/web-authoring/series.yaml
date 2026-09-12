@@ -1,0 +1,16 @@
+# The order this module's series accumulate a reference in, and the order
+# they display in on the module page.
+#
+# Without this file, both fall back to alphabetical order by series key
+# (first-site, several-pages, shelf, welcome) — which put "Welcome" last on
+# the module page and meant `shelf`'s own project-ideas.md could reference
+# flexbox and grid, taught in first-site, before either was ever "used
+# before it was introduced" in the accumulation's own terms. This restores
+# the order a reader actually meets these in: orientation, the main
+# teaching series, the multi-page project, then reference material a
+# reader dips into once everything else is already behind them.
+order:
+  - welcome
+  - first-site
+  - several-pages
+  - shelf

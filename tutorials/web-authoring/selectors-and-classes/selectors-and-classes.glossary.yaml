@@ -1,0 +1,18 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# Twelfth tutorial of first-site. Checked against the cumulative
+# glossary so far (rule, selector, declaration, plus everything
+# earlier) -- no overlap; this tutorial names two specific kinds of
+# selector, not the general term itself.
+entries:
+  - term: class selector
+    kind: concept
+    definition: >
+      A class selector, such as `.highlight`, matches every element
+      carrying that class, wherever it sits on the page.
+  - term: descendant selector
+    kind: concept
+    definition: >
+      A descendant selector is two selectors joined by a space,
+      matching an element nested inside another at any depth, not only
+      as a direct child.

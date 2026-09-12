@@ -1,0 +1,21 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# Fifteenth tutorial of first-site. Checked against the cumulative
+# glossary so far -- no overlap. `transition` is introduced here, not
+# in transitions-and-transforms right after it, which goes deeper into
+# it without redefining it.
+entries:
+  - term: ":hover"
+    kind: keyword
+    definition: "`:hover` matches an element while a pointer sits over it."
+  - term: ":focus"
+    kind: keyword
+    definition: >
+      `:focus` matches whichever element currently has keyboard focus,
+      usually because someone pressed Tab to reach it.
+  - term: transition
+    kind: keyword
+    definition: >
+      The `transition` property makes a change to another property
+      happen smoothly over time, instead of jumping straight to its new
+      value.

@@ -3331,3 +3331,39 @@ it would mean to "employ" one.
 had one, a pre-existing gap this doesn't close); both `.order.yaml` and
 `topic-groups.yaml` updated; two outcomes.yaml corrections. 115 of 116
 outcomes now in place.*
+
+**7.149 — web-authoring's series order, and glossary files for its 42
+pre-existing pages.** Added `tutorials/web-authoring/series.yaml` with
+`order: [welcome, first-site, several-pages, shelf]`. Without it, both
+the module page's display order and the reference panel's cumulative
+accumulation fell back to alphabetical by series key, which put
+"Welcome" — the series a reader is meant to start with — last.
+
+Wrote a `<slug>.glossary.yaml` for every one of the module's other 42
+pages (`conclusions-and-next-steps` already had one from 7.148), read
+in the corrected series order so each file's own new terms build on
+what came before. Two homonyms needed a disambiguated term name to
+avoid colliding with an earlier, unrelated meaning already in the
+reference: "element" (an HTML element, from `a-page-is-files`) versus
+"element (BEM)" (a named part of a block, from
+`css-variables-and-bem`); "max-width" (an element-sizing property, from
+`the-container`) versus "max-width (media query)" (a screen-width
+condition, from `media-queries`).
+
+Two things surfaced worth a look rather than fixed here. `named-grid-
+areas.md`'s own prose says `auto-fill` sits "alongside the auto-fit
+already shown on a grid gallery" — but `a-grid-gallery` is in
+several-pages, which this same series order puts after first-site, so
+the reference runs backward relative to how a reader actually meets the
+two pages. `quick-reference.md`'s tables also name a handful of tags
+and properties — `<table>`/`<tr>`/`<th>`/`<td>`, `line-height`, `gap`,
+the `em`/`vh`/`vw` units, `:link`/`:visited`/`:active`,
+`target="_blank"`, `placeholder` — that no narrative tutorial in the
+module actually teaches; it may be deliberate completeness for a cheat
+sheet, or a real gap.
+
+*Cost to change: one new `series.yaml`; 41 new glossary files, no
+tutorial prose changed. `dev/curriculum_map.py`'s vocabulary section is
+unaffected — it tracks italicised emphasis in prose, not glossary
+files, so this pass could not introduce a new "used before it was
+introduced" warning even where it added a disambiguated term.*

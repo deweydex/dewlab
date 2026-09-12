@@ -1,0 +1,21 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# Ninth tutorial of first-site. Checked against the cumulative glossary
+# so far (rule, selector, declaration, plus everything earlier) -- no
+# overlap.
+entries:
+  - term: CSS variable
+    kind: concept
+    definition: >
+      A CSS variable, also called a custom property, is a value defined
+      once and read back wherever it is used. Change the definition,
+      and everywhere that reads it changes too.
+  - term: ":root"
+    kind: keyword
+    definition: >
+      `:root` is the selector usually holding a page's CSS variable
+      definitions.
+  - term: "var()"
+    kind: function
+    definition: "Reads a CSS variable's value back into a declaration."
+    example: "background: var(--brand-color);"

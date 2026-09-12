@@ -1,0 +1,20 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# Sixth tutorial of first-site. Checked against the cumulative glossary
+# so far -- no overlap. `href` is used throughout but never given its
+# own defining sentence, so it is left for a tutorial that actually
+# teaches it.
+entries:
+  - term: "<a>"
+    kind: keyword
+    definition: "`<a>` marks a link, pointing wherever its `href` attribute says."
+  - term: same-site link
+    kind: concept
+    definition: >
+      A same-site link is a filename in `href`, pointing at another
+      page within your own site rather than somewhere else on the web.
+  - term: "mailto: link"
+    kind: keyword
+    definition: >
+      A mailto: link opens the visitor's email application instead of a
+      page, addressed to whoever follows the colon.

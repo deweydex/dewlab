@@ -1,0 +1,25 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# Fourth tutorial of several-pages. Checked against the cumulative
+# glossary so far -- no overlap. This is where "auto-fit" is actually
+# taught, the tutorial named-grid-areas' own prose (in first-site,
+# read before this one) points to under that exact name -- see the
+# note flagged in named-grid-areas.glossary.yaml about that reference
+# running the wrong way round.
+entries:
+  - term: "display: grid"
+    kind: keyword
+    definition: "Turns a container into a grid."
+  - term: grid-template-columns
+    kind: keyword
+    definition: "Sets how many columns a grid has, and how wide each one is."
+  - term: auto-fit
+    kind: keyword
+    definition: >
+      Used inside `repeat()`, `auto-fit` fits as many columns as the
+      container's current width allows, adding or removing a column as
+      it grows or shrinks.
+  - term: "minmax()"
+    kind: function
+    definition: "Sets a grid column's smallest and largest allowed size."
+    example: "grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));"

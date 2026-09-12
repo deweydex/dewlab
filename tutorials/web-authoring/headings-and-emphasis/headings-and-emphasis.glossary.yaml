@@ -1,0 +1,24 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# Third tutorial of first-site. Checked against the cumulative glossary
+# so far (tag, element, attribute, head, body, title, plus welcome's
+# ten) -- no overlap.
+entries:
+  - term: heading level
+    kind: concept
+    definition: >
+      A heading level is one of `<h1>` through `<h6>`. `<h1>` marks a
+      page's one main heading, and each level below it marks a smaller
+      section heading.
+  - term: "<strong>"
+    kind: keyword
+    definition: >
+      `<strong>` marks text as important. Browsers usually show it in
+      bold, but a screen reader or a search engine reads the meaning
+      too, unlike `<b>`, which only changes how the text looks.
+  - term: "<em>"
+    kind: keyword
+    definition: >
+      `<em>` marks text as emphasised. Browsers usually show it in
+      italics, but a screen reader or a search engine reads the meaning
+      too, unlike `<i>`, which only changes how the text looks.
