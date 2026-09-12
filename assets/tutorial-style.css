@@ -189,9 +189,6 @@ body {
 }
 @media (min-width: 85rem) {
   :root { --dl-panel-gutter: 25rem; }
-  .dl-page {
-    max-width: min(var(--dl-line-width), calc(100vw - 2 * var(--dl-panel-gutter) - 1rem));
-  }
   html[data-dl-panel-left]:not([data-dl-panel-right]) .dl-page {
     max-width: min(
       var(--dl-line-width),
