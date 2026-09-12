@@ -385,6 +385,58 @@ class TestRunSqlCell:
         tt._run_sql_cell(conn, "create table t (a); insert into t values (1)")
         assert tt._current.last_result_empty is None
 
+    def test_a_typo_d_table_name_gets_a_suggestion(self, cell, conn):
+        conn.execute("create table products (a)")
+        with pytest.raises(sqlite3.OperationalError, match="did you mean 'products'"):
+            tt._run_sql_cell(conn, "select * from prodcuts")
+
+    def test_a_typo_d_column_name_gets_a_suggestion(self, cell, conn):
+        conn.execute("create table products (price)")
+        with pytest.raises(sqlite3.OperationalError, match="did you mean 'price'"):
+            tt._run_sql_cell(conn, "select pricee from products")
+
+    def test_no_close_match_adds_no_suggestion(self, cell, conn):
+        conn.execute("create table products (a)")
+        with pytest.raises(sqlite3.OperationalError) as excinfo:
+            tt._run_sql_cell(conn, "select * from zzz")
+        assert "did you mean" not in str(excinfo.value)
+
+    def test_an_aggregate_in_where_is_pointed_at_having(self, cell, conn):
+        conn.execute("create table t (a)")
+        with pytest.raises(sqlite3.OperationalError, match="HAVING instead"):
+            tt._run_sql_cell(conn, "select a from t where count(*) > 1")
+
+    def test_clauses_out_of_order_get_a_note(self, cell, conn):
+        conn.execute("create table t (a)")
+        with pytest.raises(sqlite3.OperationalError, match="have to come in this order"):
+            tt._run_sql_cell(conn, "select a from t group by a where a > 1")
+
+    def test_an_empty_table_explains_itself(self, cell, conn):
+        conn.execute("create table t (a)")
+        tt._run_sql_cell(conn, "select * from t")
+        assert "t has no rows in it yet" in cell.html
+
+    def test_a_filter_that_matched_nothing_reports_the_tables_row_count(self, cell, conn):
+        conn.execute("create table t (a)")
+        conn.execute("insert into t values (1)")
+        tt._run_sql_cell(conn, "select * from t where a = 2")
+        assert "t has 1 row(s) in it" in cell.html
+        assert "Ignoring uppercase" not in cell.html
+
+    def test_a_case_mismatch_is_caught_alongside_the_row_count(self, cell, conn):
+        conn.execute("create table t (category)")
+        conn.execute("insert into t values ('Octopus')")
+        tt._run_sql_cell(conn, "select * from t where category = 'octopus'")
+        assert "t has 1 row(s) in it" in cell.html
+        assert "Ignoring uppercase and lowercase, 1 row would have matched" in cell.html
+
+    def test_a_non_empty_result_gets_no_extra_notes(self, cell, conn):
+        conn.execute("create table t (a)")
+        conn.execute("insert into t values (1)")
+        tt._run_sql_cell(conn, "select * from t")
+        assert "row(s) in it" not in cell.html
+        assert "Ignoring uppercase" not in cell.html
+
 
 try:
     import numpy as np

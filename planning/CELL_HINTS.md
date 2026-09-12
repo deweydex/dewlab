@@ -745,7 +745,19 @@ could ever see them. `after: 2 empty results` fires the same way
 last statement was a query and came back with zero rows. It says only
 that the result was empty, not why — an author's own hint still does
 the diagnosing, the same split between "when" and "what" every other
-trigger in this file keeps. The harder version — the runtime itself
-re-running a relaxed variant of the query to guess *why* it came back
-empty — is a different, bigger idea from the same conversation, not
-attempted here.
+trigger in this file keeps.
+
+**The harder version was tried too, DECISIONS_LOG.md 7.149 — as a fact
+the cell shows immediately, not a second trigger.** `_run_sql_cell()`
+now counts the rows in the table an empty `SELECT` queried, and quietly
+reruns a `column = 'literal'` comparison case-insensitively, reporting
+either as a plain line under the (empty) table when the database itself
+confirms something worth saying. Separately, every statement now runs
+through `_execute_sql()` rather than `conn.execute()` directly, which
+folds a "did you mean" suggestion into a typo'd table/column name's own
+message (`difflib` against the real schema, the same help CPython
+already gives a `NameError`), points an aggregate-in-`WHERE` mistake at
+`HAVING`, and names a clause that came out of order. None of this
+touches the trigger grammar — it is what a SQL cell shows on its own,
+the same house as `_ERROR_HINTS`, not a fourth thing an author's `hint`
+fence waits for.

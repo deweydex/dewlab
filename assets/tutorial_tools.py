@@ -28,12 +28,14 @@ from __future__ import annotations
 
 import asyncio
 import base64
+import difflib
 import html
 import json
 import io
 import linecache
 import math
 import os
+import re
 import sys
 import traceback
 import warnings
@@ -1345,6 +1347,145 @@ def run_query(conn_or_path, sql: str, params=None, max_rows: int = 20, caption: 
     return frame
 
 
+def _sqlite_table_names(conn) -> list[str]:
+    return [row[0] for row in conn.execute(
+        "select name from sqlite_master where type = 'table'"
+    ).fetchall()]
+
+
+def _sqlite_typo_suggestion(conn, message: str) -> str | None:
+    """A close-spelling guess for a 'no such table'/'no such column'
+    message — the same "did you mean" help CPython's own `NameError` and
+    `AttributeError` already give, which sqlite3's message never does.
+    Only offered above difflib's own similarity cutoff (0.6 by default):
+    a wrong guess would be worse than none."""
+    table_match = re.match(r"no such table: (.+)", message)
+    if table_match:
+        close = difflib.get_close_matches(table_match.group(1), _sqlite_table_names(conn), n=1)
+        return f"did you mean {close[0]!r}?" if close else None
+
+    column_match = re.match(r"no such column: (.+)", message)
+    if column_match:
+        # A message can qualify the name ("t.pricee"); only the column's
+        # own spelling is being matched, so a table prefix is dropped.
+        wrong = column_match.group(1).rsplit(".", 1)[-1]
+        real: list[str] = []
+        for table in _sqlite_table_names(conn):
+            import sqlite3  # noqa: PLC0415 - deliberately lazy, mirrors load_csv's pandas import
+            try:
+                real.extend(row[1] for row in conn.execute(f"PRAGMA table_info({table})").fetchall())
+            except sqlite3.Error:
+                continue
+        close = difflib.get_close_matches(wrong, real, n=1)
+        return f"did you mean {close[0]!r}?" if close else None
+
+    return None
+
+
+# The order SQL's own clauses have to appear in. Checked only once a
+# statement has already failed to run — a reader who put GROUP BY before
+# WHERE gets a syntax error with no clue why; sqlite3's own message never
+# names the clause it choked on, only the token.
+_CLAUSE_ORDER = ("select", "from", "where", "group by", "having", "order by", "limit")
+
+
+def _clause_order_note(statement: str) -> str | None:
+    lowered = statement.lower()
+    found = sorted((lowered.index(clause), clause) for clause in _CLAUSE_ORDER if clause in lowered)
+    seen = [clause for _, clause in found]
+    expected = [clause for clause in _CLAUSE_ORDER if clause in seen]
+    if seen != expected:
+        return ("SQL clauses have to come in this order: SELECT, FROM, WHERE, "
+                "GROUP BY, HAVING, ORDER BY — two of those look swapped here")
+    return None
+
+
+def _sqlite_error_note(conn, message: str, statement: str) -> str | None:
+    """A plain-English addition to a raw sqlite3 message, tried in order
+    from most to least specific. Returns None for the many failures that
+    are genuinely just a mistake in the SQL and where a guess would be
+    noise — the same restraint `_hint_for()` above uses for a Python
+    traceback."""
+    suggestion = _sqlite_typo_suggestion(conn, message)
+    if suggestion:
+        return suggestion
+    if "misuse of aggregate function" in message:
+        return ("an aggregate like COUNT()/SUM()/AVG() can't go in WHERE — put "
+                "that condition in HAVING instead, after GROUP BY")
+    return _clause_order_note(statement)
+
+
+def _execute_sql(conn, statement: str):
+    """`conn.execute()`, with a plain-English addition folded into a
+    recognised failure's own message — the same "did you mean" shape
+    CPython already gives some of its own exceptions natively. Folded into
+    the message itself, not a separate block underneath: `_describe_error()`
+    only ever reads a message's first line, so this still groups repeated
+    identical mistakes as the same error, and there is nowhere else in the
+    call chain between here and the traceback that could add a second
+    block after it."""
+    import sqlite3  # noqa: PLC0415 - deliberately lazy, mirrors load_csv's pandas import
+
+    try:
+        return conn.execute(statement)
+    except sqlite3.OperationalError as exc:
+        note = _sqlite_error_note(conn, str(exc), statement)
+        if note:
+            raise sqlite3.OperationalError(f"{exc} — {note}") from exc
+        raise
+
+
+_SQL_FROM_TABLE_RE = re.compile(r"\bfrom\s+([A-Za-z_][A-Za-z0-9_]*)", re.IGNORECASE)
+_SQL_WHERE_STRING_EQ_RE = re.compile(
+    r"\bwhere\b.*?\b([A-Za-z_][A-Za-z0-9_]*)\s*=\s*('[^']*')", re.IGNORECASE | re.DOTALL,
+)
+
+
+def _empty_result_notes(conn, statement: str) -> list[str]:
+    """Plain facts about a query that came back with no rows, checked only
+    once it already has — never a guess shown as if it were the answer,
+    only what the database itself can confirm: how many rows the table
+    named after FROM actually holds, and, for a `column = 'literal'`
+    comparison, how many rows the same query would match ignoring case.
+    Regex over the statement text, not a real SQL parser — the same
+    approximation `_run_sql_cell()`'s own `;`-split already makes, good
+    enough for a first table name and a first string comparison."""
+    import sqlite3  # noqa: PLC0415 - deliberately lazy, mirrors load_csv's pandas import
+
+    notes = []
+    table_match = _SQL_FROM_TABLE_RE.search(statement)
+    if table_match:
+        table = table_match.group(1)
+        try:
+            count = conn.execute(f"select count(*) from {table}").fetchone()[0]
+        except sqlite3.Error:
+            count = None
+        if count == 0:
+            notes.append(f"{table} has no rows in it yet — that on its own would explain this.")
+        elif count is not None:
+            notes.append(f"{table} has {count} row(s) in it, so the condition above is what left this empty.")
+
+    where_match = _SQL_WHERE_STRING_EQ_RE.search(statement)
+    if where_match:
+        column, literal = where_match.group(1), where_match.group(2)
+        relaxed = (
+            statement[:where_match.start(1)]
+            + f"LOWER({column}) = LOWER({literal})"
+            + statement[where_match.end(2):]
+        )
+        try:
+            count = conn.execute(f"select count(*) from ({relaxed})").fetchone()[0]
+        except sqlite3.Error:
+            count = 0
+        if count:
+            noun = "row" if count == 1 else "rows"
+            notes.append(
+                f"Ignoring uppercase and lowercase, {count} {noun} would have "
+                f"matched — check how {column} is actually stored."
+            )
+    return notes
+
+
 def _run_sql_cell(conn, script: str, max_rows: int = 20):
     """dewmini's own SQL cell type (planning/CELL_IDENTITY.md §8) —
     internal plumbing a generated cell call reaches, not something a
@@ -1356,10 +1497,14 @@ def _run_sql_cell(conn, script: str, max_rows: int = 20):
     shape of a SQL *cell* (`CREATE TABLE` here, `INSERT` there,
     `SELECT` at the end), where `run_query()` only ever runs one
     statement. Only the *last* statement's own result renders: if it
-    returned rows (a `SELECT`), as a table; otherwise, how many rows it
-    touched, the way a database console reports a `CREATE`/`INSERT`/
-    `UPDATE`/`DELETE`. Every statement commits at the end, same
-    friendlier default `run_query()` already made.
+    returned rows (a `SELECT`), as a table, plus `_empty_result_notes()`
+    if the table came back empty; otherwise, how many rows it touched,
+    the way a database console reports a `CREATE`/`INSERT`/`UPDATE`/
+    `DELETE`. Every statement commits at the end, same friendlier
+    default `run_query()` already made. `_execute_sql()`, not
+    `conn.execute()` directly, on every statement — a recognised
+    failure gets `_sqlite_error_note()`'s own plain-English addition,
+    the same way `run_cell()`'s traceback gets `_ERROR_HINTS`'.
 
     The split is a bare `;`, not a real SQL parser — a semicolon inside
     a string literal would split somewhere it shouldn't. Good enough
@@ -1375,15 +1520,18 @@ def _run_sql_cell(conn, script: str, max_rows: int = 20):
         return None
 
     for statement in statements[:-1]:
-        conn.execute(statement)
+        _execute_sql(conn, statement)
 
-    cursor = conn.execute(statements[-1])
+    cursor = _execute_sql(conn, statements[-1])
     columns = [description[0] for description in cursor.description or []]
     frame = None
     if columns:
         frame = pd.DataFrame(cursor.fetchall(), columns=columns)
         cell.sink.append_html(_table_html(frame, max_rows=max_rows))
         cell.last_result_empty = len(frame) == 0
+        if cell.last_result_empty:
+            for note in _empty_result_notes(conn, statements[-1]):
+                cell.sink.append_html(f'<pre class="dl-repr">{html.escape(note)}</pre>')
     elif cursor.rowcount >= 0:
         noun = "row" if cursor.rowcount == 1 else "rows"
         cell.sink.append_html(f'<pre class="dl-repr">{cursor.rowcount} {noun} affected.</pre>')
