@@ -134,6 +134,31 @@ nothing less" → "and only that"; "follow along?" → removed trailing idiom;
 "valuable" → "useful"; "core loop" → "main pattern"; "translate" → "turn it
 into".
 
+**The remaining 30 `web-authoring` tutorials** (`first-site`'s 22 and
+`several-pages`' 9, `conclusions-and-next-steps` included), plus a
+re-check of the 12 already covered above — `web-authoring` is now the
+second fully-passed module, after `database-methods`. Far fewer fixes
+than that first pass needed, since this content was written or ported
+against the guide already; eight genuine violations across seven files,
+not the systemic patterns the earlier passes found:
+
+Two "not X but Y" reversals in `planning-a-site.md` ("not a list of
+files, but a list of jobs and connections" → "a list of jobs and
+connections, not a list of files"; "Not its topic alone, but its job"
+→ "Its job, not only its topic"). One em dash holding a term's whole
+definition in `conclusions-and-next-steps.md` ("a *living standard* —
+a document updated..." → a comma, no dash). One meaning-after-the-dash
+sentence in `issues-and-pull-requests.md`, reordered so the reason
+(the issues are public) comes first and the conclusion (no permission
+needed) follows. One verbless opening fragment in `project-ideas.md`
+("Ideas for something to build..." → "These are ideas for..."). Two
+idioms — "know your way around a terminal" → "already know how to use
+a terminal" (`your-copy-of-the-starter.md`); "straight off a phone" →
+"taken directly on a phone" (`images-and-file-size.md`). One stray
+authorial reference to "this part of the older course" in
+`named-grid-areas.md`, meaningless to a student who never read
+dewstack, cut rather than reworded.
+
 **All computational-methods tutorial body prose** — both tutorial and
 practice pages across all six series (python-fundamentals, matrices,
 text-generation, simulation, algorithms, problem-solving). Recurring
@@ -196,16 +221,17 @@ it yet, including the ones already done for sentence architecture. A
 mechanical first pass (flagging words outside a common two-thousand-word
 list) is possible, but still needs a human read afterward.
 
-**Tutorial body prose.** database-methods, computational-methods and
-fundamentals-of-oop are done — see "Done" above. The remaining modules
-(web-authoring beyond the ported pages, and any future modules) are
-untouched. Worth doing tutorial by tutorial rather than in a sweep.
+**Tutorial body prose.** `database-methods`, `web-authoring`,
+`computational-methods` and `fundamentals-of-oop` are all done — see
+"Done" above. `mit-pdp-maths-prog-integration` is still untouched.
+Worth doing tutorial by tutorial rather than in a sweep.
 
 **A vocabulary sweep, against the ninth rule.** The documentation pages,
 the contents and About pages, the first tutorial's opening, and the full
-tutorial body prose for computational-methods and fundamentals-of-oop
-have been swept (see above). The remaining surfaces — topic descriptions,
-glossary definitions, and tutorial prose in other modules — have not. A mechanical first pass is possible — a list of the
+tutorial body prose for web-authoring, computational-methods and
+fundamentals-of-oop have been swept (see above). The remaining surfaces
+— topic descriptions, glossary definitions, and tutorial prose in other
+modules — have not. A mechanical first pass is possible — a list of the
 roughly two thousand most common English words, flagged the way
 `tools/measure_sentences.py` (dewstack) flags a sentence over the limit — but
 it still needs reading afterward, the same way that script's own docstring

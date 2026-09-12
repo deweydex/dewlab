@@ -31,9 +31,9 @@ Tell us." Choose "It gives an error" or "The page is wrong, or I could
 not follow it." GitHub opens a new issue in this repository, with the
 page and its version already filled in. An *issue* is just that: one
 report, with a title, a description, and a place for anyone to reply.
-Opening one does not need permission from anyone. Reading one does not
-either — [the open issues](https://github.com/deweydex/dewlab/issues)
-are public, same as everything else here.
+[The open issues](https://github.com/deweydex/dewlab/issues) are
+public, the same as everything else here, so opening one and reading
+one both need no permission from anyone.
 
 ## A pull request is a proposed change
 

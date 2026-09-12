@@ -864,6 +864,12 @@ kbd {
 .dm-cell-output .dm-running { color: var(--dl-muted); font-style: italic; }
 
 @media (max-width: 34rem) {
+  /* A cell's header carries the pill, an optional name field, and up to
+   * three labelled buttons (Duplicate, Save, Delete) -- too many to fit
+   * on one line on the narrowest phones without wrapping. */
+  .dm-cell-head { flex-wrap: wrap; row-gap: 0.35rem; }
+  .dm-cell-header-end { flex-wrap: wrap; }
+
   .dm-panel {
     top: auto; bottom: 0; left: 0; right: 0; width: auto !important; max-width: none; max-height: 78vh;
     border: 1px solid var(--dl-cell-border); border-bottom: none; border-radius: 8px 8px 0 0;

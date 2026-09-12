@@ -3476,3 +3476,48 @@ new tests in `tests/test_tutorial_tools.py`. No change to `build.py`,
 `tutorial-runtime.js`, or the trigger grammar — this is what a SQL cell
 itself shows, not a new signal for a staged hint to wait on. Full unit
 suite green; a fresh full-site build confirmed clean.*
+
+**7.152 — the `named-grid-areas.md` forward reference from 7.149 is
+fixed; `quick-reference.md`'s scope is still open.** Of the two things
+7.149 surfaced, one was a plain bug: the page's own prose claimed
+`auto-fit` was "already shown" on `a-grid-gallery`, a page the
+corrected series order actually places later. Reworded to point
+forward — "`a-grid-gallery`, later in this course, covers `auto-fit`
+itself" — instead of claiming a reader has seen something they have
+not yet.
+
+The other, `quick-reference.md` naming syntax no tutorial teaches
+directly, is not a bug in the same sense. Its own page says it is not
+meant to be read start to finish, which argues for a cheat sheet
+reaching past exactly what was taught; nothing else in the repository
+settles whether that is the intended scope or an oversight. Left as is
+until that is decided.
+
+*Cost to change: one sentence in one tutorial, and its glossary file's
+own note updated to match. No frontmatter, no covers:, no test
+affected.*
+
+**7.153 — `web-authoring` is the second module through the full
+plain-language pass.** `planning/PLAIN_LANGUAGE_PASS.md` records
+`database-methods` as fully checked against
+`PEDAGOGICAL_STYLE_GUIDE.md` §4; every other module, `web-authoring`
+included, had only had the sentence-length and metaphor rules run over
+it, if that. Ran the complete nine-point check over all 43 tutorials
+(welcome's 8, first-site's 22, several-pages' 9, shelf's 4), series by
+series in `series.yaml`'s reading order.
+
+Eight genuine violations across seven files, not the systemic patterns
+`database-methods`'s own pass found — this content was written or
+ported against the guide already, so the pass mostly confirmed rather
+than rewrote. Two "not X but Y" reversals, one em dash holding a
+term's whole definition, one meaning-after-the-dash sentence
+reordered, one verbless opening fragment, two idioms, and one stray
+reference to "the older course" a student reading only dewlab would
+have no way to parse. `planning/PLAIN_LANGUAGE_PASS.md`'s own "Done"
+section has the full list, sentence by sentence.
+
+*Cost to change: eight one- or two-sentence edits across seven
+tutorial files; no cell code, no frontmatter, no covers: touched.
+`dev/curriculum_map.py`'s vocabulary section is unaffected — none of
+the eight edits touched an italicised term. Full unit suite green; a
+fresh full-site build confirmed clean.*

@@ -63,7 +63,7 @@ class _QuietHandler(http.server.SimpleHTTPRequestHandler):
 
 
 @pytest.fixture()
-def base_url(site):
+def site_url(site):
     handler = functools.partial(_QuietHandler, directory=str(site / "site"))
     server = socketserver.TCPServer(("127.0.0.1", 0), handler)
     thread = threading.Thread(target=server.serve_forever, daemon=True)
@@ -87,11 +87,11 @@ def _phone(browser):
 
 
 class TestNothingScrollsSideways:
-    def test_a_tutorial_fits_the_screen(self, site, browser, base_url):
+    def test_a_tutorial_fits_the_screen(self, site, browser, site_url):
         _build(site)
         context = _phone(browser)
         page = context.new_page()
-        page.goto(f"{base_url}/tutorials/{MODULE}/narrow.html")
+        page.goto(f"{site_url}/tutorials/{MODULE}/narrow.html")
         page.wait_for_selector("#dl-body")
         widths = page.evaluate("""() => ({
           scroll: document.documentElement.scrollWidth,
@@ -101,11 +101,11 @@ class TestNothingScrollsSideways:
             f"page scrolls sideways: {widths['scroll']} > {widths['client']}")
         context.close()
 
-    def test_the_contents_page_fits_the_screen(self, site, browser, base_url):
+    def test_the_contents_page_fits_the_screen(self, site, browser, site_url):
         _build(site)
         context = _phone(browser)
         page = context.new_page()
-        page.goto(f"{base_url}/index.html")
+        page.goto(f"{site_url}/index.html")
         widths = page.evaluate("""() => ({
           scroll: document.documentElement.scrollWidth,
           client: document.documentElement.clientWidth,
@@ -114,12 +114,12 @@ class TestNothingScrollsSideways:
         context.close()
 
     def test_a_failure_message_wraps_instead_of_widening_the_page(
-            self, site, browser, base_url):
+            self, site, browser, site_url):
         """Guards against a compounding failure: a network error's text carries a URL, which must not also widen the page."""
         _build(site)
         context = _phone(browser)
         page = context.new_page()
-        page.goto(f"{base_url}/tutorials/{MODULE}/narrow.html")
+        page.goto(f"{site_url}/tutorials/{MODULE}/narrow.html")
         page.wait_for_selector("#dl-body")
         overflow = page.evaluate("""() => {
           const status = document.getElementById('dl-status');
