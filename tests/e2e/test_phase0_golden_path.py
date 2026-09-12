@@ -5,6 +5,8 @@ tests/test_tutorial_tools.py."""
 from __future__ import annotations
 
 import json
+
+from conftest import _open_panel
 from pathlib import Path
 
 FIXTURE = Path(__file__).resolve().parent / "fixture" / "rendering-tour.md"
@@ -28,14 +30,6 @@ def run(page, cell_id: str) -> str:
         timeout=60_000,
     )
     return page.inner_html(selector)
-
-
-def _open_panel(actor, selector: str) -> None:
-    """Expand the masthead's Panels disclosure first if needed, then
-    click the actual toggle."""
-    if not actor.eval_on_selector("#dl-panels", "el => el.open"):
-        actor.click("#dl-panels summary")
-    actor.click(selector)
 
 
 def test_the_page_loads_its_shared_assets_rather_than_inlining_them(page):

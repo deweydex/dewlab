@@ -12,6 +12,8 @@ import threading
 from pathlib import Path
 
 import pytest
+
+from conftest import _open_panel
 import yaml
 
 DEWLAB = Path(__file__).resolve().parents[2]
@@ -160,21 +162,6 @@ def base_url(site):
 
 CONCEPT = {"term": "x", "kind": "concept", "definition": "The first thing."}
 FUNCTION = {"term": "f()", "kind": "function", "definition": "Does a thing.", "example": "f(1)"}
-
-
-def _open_panel(actor, selector: str) -> None:
-    """Reference/Series/Settings' toggles now collapse behind one
-    "Panels" control in the masthead (shell.html's
-    <details class="dl-panels">) rather than always showing — expand it
-    first if it isn't already, then click the actual target. Checked via
-    #dl-panels' own `open` property rather than the target's own
-    visibility, so this never mistakes "already open" for "not open" and
-    toggles it shut again right before the click that was supposed to
-    land. Left expanded once opened (no auto-collapse), so this is only
-    needed once per page load, not before every toggle click."""
-    if not actor.eval_on_selector("#dl-panels", "el => el.open"):
-        actor.click("#dl-panels summary")
-    actor.click(selector)
 
 
 def _toggle_shows(actor, selector: str) -> bool:

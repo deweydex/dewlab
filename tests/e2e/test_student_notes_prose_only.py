@@ -11,6 +11,8 @@ from pathlib import Path
 
 import pytest
 
+from conftest import _open_panel
+
 DEWLAB = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(DEWLAB))
 
@@ -80,21 +82,6 @@ def base_url(site):
     finally:
         server.shutdown()
         thread.join(timeout=5)
-
-
-def _open_panel(actor, selector: str) -> None:
-    """Reference/Series/Settings' toggles now collapse behind one
-    "Panels" control in the masthead (shell.html's
-    <details class="dl-panels">) rather than always showing — expand it
-    first if it isn't already, then click the actual target. Checked via
-    #dl-panels' own `open` property rather than the target's own
-    visibility, so this never mistakes "already open" for "not open" and
-    toggles it shut again right before the click that was supposed to
-    land. Left expanded once opened (no auto-collapse), so this is only
-    needed once per page load, not before every toggle click."""
-    if not actor.eval_on_selector("#dl-panels", "el => el.open"):
-        actor.click("#dl-panels summary")
-    actor.click(selector)
 
 
 class TestNotesOnAProseOnlyTutorial:

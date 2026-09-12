@@ -68,8 +68,10 @@ the tutorials' own `covers:` frontmatter.
 from `vendor-src/` and fails on any difference. The bundle is committed on
 purpose, so that neither the build nor an author previewing locally needs a Node
 toolchain — which also means it can go stale the moment anyone edits the
-runtime. If you change a pinned version in `vendor-src/package.json`, rebuild
-with `npm install && npm run build` inside `vendor-src/` and commit the result.
+runtime. If you change a pinned version in `vendor-src/package.json`, or edit
+`assets/tutorial-runtime.js` (bundled directly into `standalone.bundle.js`),
+rebuild with `npm install && npm run build` inside `vendor-src/` and commit
+the result.
 
 `publish` (`.github/workflows/deploy.yml`) builds the site and deploys it to
 GitHub Pages on a push to `main`.
