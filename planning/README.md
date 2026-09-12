@@ -62,6 +62,9 @@ written before the thing it describes was built.
   keep: never show a reader a term they have not met.
 - **[`SIDEBAR_CONTENT.md`](./SIDEBAR_CONTENT.md)** — datasets,
   author-written pedagogical notes, and what earns a panel of its own.
+- **[`DOT_DOCK.md`](./DOT_DOCK.md)** — exploring the masthead's orange dot
+  as a replacement for the Panels disclosure, up to six panels fanning
+  into three zones. Design note; nothing here is built.
 - **[`STUDENT_NOTES.md`](./STUDENT_NOTES.md)** — a reader's own free-text
   notes, and encouraging a copy that outlives the browser. Not the same
   "notes" as the pedagogical ones above; §0 says why.
