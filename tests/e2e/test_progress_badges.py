@@ -115,7 +115,7 @@ class TestProgressBadges:
         b.build()
         context = browser.new_context()
         page = context.new_page()
-        page.goto(f"{site_url}/index.html")
+        page.goto(f"{site_url}/all-tutorials.html")
         assert page.is_hidden(".dl-progress-badge")
         context.close()
 
@@ -126,7 +126,7 @@ class TestProgressBadges:
         b.build()
         context = browser.new_context()
         page = context.new_page()
-        page.goto(f"{site_url}/index.html")
+        page.goto(f"{site_url}/all-tutorials.html")
         _seed(page, MODULE, "one", [
             {"task_id": "one-1", "student_code": "x = 1", "output_html": "", "errored": False},
         ])
@@ -140,7 +140,7 @@ class TestProgressBadges:
         b.build()
         context = browser.new_context()
         page = context.new_page()
-        page.goto(f"{site_url}/index.html")
+        page.goto(f"{site_url}/all-tutorials.html")
         _seed(page, MODULE, "one", [
             {"task_id": "one-1", "student_code": "", "output_html": "<pre>hello</pre>", "errored": False},
             {"task_id": "one-2", "student_code": "", "output_html": "", "errored": False},
@@ -157,7 +157,7 @@ class TestProgressBadges:
         b.build()
         context = browser.new_context()
         page = context.new_page()
-        page.goto(f"{site_url}/index.html")
+        page.goto(f"{site_url}/all-tutorials.html")
         _seed(page, MODULE, "one", [
             {"task_id": "one-1", "student_code": "", "output_html": "<pre>hello</pre>", "errored": False},
             {"task_id": "one-2", "student_code": "", "output_html": '<pre class="dl-error">boom</pre>', "errored": True},
@@ -174,7 +174,7 @@ class TestProgressBadges:
         b.build()
         context = browser.new_context()
         page = context.new_page()
-        page.goto(f"{site_url}/index.html")
+        page.goto(f"{site_url}/all-tutorials.html")
         _seed(page, MODULE, "one", [
             {"task_id": "one-1", "student_code": "", "output_html": "<pre>hello</pre>", "errored": False},
         ])
