@@ -1,0 +1,27 @@
+entries:
+  - term: "full stack"
+    kind: concept
+    definition: >
+      A full-stack page is a page whose own HTML shows a database's real
+      rows, rather than a copy of them typed in by hand. Its script reads
+      the database directly and writes the result into the page.
+  - term: query
+    kind: concept
+    definition: >
+      A query is the request a page's own script sends to a database.
+      Most full-stack pages build a fresh one each time something on the
+      page changes, rather than writing one query for good.
+  - term: "result set"
+    kind: concept
+    definition: >
+      A result set is what a query hands back: one row for every match,
+      each row a plain object whose fields are the column names the
+      query asked for.
+  - term: placeholder
+    kind: concept
+    definition: >
+      A placeholder is a `?` inside a query, filled in by a value passed
+      separately rather than pasted into the query's own text. It keeps
+      a value that came from a reader from ever becoming part of the
+      query itself.
+    example: 'dlQuery("SELECT name FROM products WHERE name LIKE ?", ["%bag%"])'

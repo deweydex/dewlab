@@ -956,6 +956,87 @@ p code, li code {
 }
 .dl-site-goto:hover { border-color: var(--dl-orange); color: var(--dl-orange); }
 
+/* A full-stack cell (`html app`/`css app`/`js app`) — see build.py's
+ * render_app_cell() for the markup this styles. Deliberately close to
+ * .dl-site-editor above: same stacked-column shape, same pane styling,
+ * same button. The one real difference is .dl-app-preview, which has no
+ * iframe to size — its HTML and CSS render straight into the page, so
+ * there's no .dl-site-frame equivalent here at all. */
+.dl-app-cell { margin: 1.25rem 0; }
+
+.dl-app-head { display: flex; justify-content: flex-end; gap: 0.4rem; margin-bottom: 0.4rem; }
+
+.dl-app-split {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.dl-app-panes {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.dl-app-pane .dl-editor {
+  border: 1px solid var(--dl-cell-border);
+  border-radius: 6px;
+  overflow: hidden;
+  min-height: 8rem;
+}
+
+.dl-app-pane-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.dl-app-result {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* A reader's HTML and CSS render inside this box, at this page's own font
+ * and colours rather than a fixed white background — the point of a
+ * full-stack cell is showing a query's result as part of the page, not a
+ * miniature site preview (that's .dl-site-frame's job). The @scope block
+ * a reader's `css app` pane compiles to (assets/tutorial-runtime.js's
+ * buildAppCells()) keeps that CSS from leaking past this element. */
+.dl-app-preview {
+  min-height: 4rem;
+  padding: 0.7rem 0.85rem;
+  border: 1px solid var(--dl-cell-border);
+  border-radius: 6px;
+  background: var(--dl-output-bg);
+}
+.dl-app-preview:empty {
+  display: flex;
+  align-items: center;
+  color: var(--dl-muted);
+  font-family: var(--dl-mono);
+  font-size: 0.82rem;
+}
+.dl-app-preview:empty::before { content: "Run this cell to see its page here."; }
+
+.dl-app-error {
+  margin: 0;
+  color: var(--dl-error-fg);
+  background: var(--dl-error-bg);
+  border-left: 3px solid var(--dl-error-fg);
+  padding: 0.5rem 0.7rem;
+  border-radius: 0 3px 3px 0;
+  font-family: var(--dl-mono);
+  font-size: 0.82rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.dl-app-error:empty { display: none; padding: 0; border: 0; }
+
+.dl-btn-app-run { width: auto; padding: 0 0.6rem; margin-bottom: 0.25rem; }
+.dl-btn-app-reset { width: auto; padding: 0 0.6rem; margin-bottom: 0.25rem; }
+
 .dl-widget {
   display: flex;
   flex-wrap: wrap;

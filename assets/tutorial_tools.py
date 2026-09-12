@@ -1383,6 +1383,40 @@ def _run_sql_cell(conn, script: str, max_rows: int = 20):
     return frame
 
 
+def _query_rows(sql: str, params: list | None = None) -> list[dict]:
+    """The Python half of a full-stack cell's own bridge
+    (planning/DEWSTACK_MERGE.md §3, §7 phase 4) — internal plumbing an
+    app cell's generated JavaScript calls, not something a reader is
+    expected to call by name themselves, the same relationship
+    `_run_sql_cell()` has to a SQL cell.
+
+    Runs one `SELECT` against the page's own shared `db` connection —
+    the same one every `sql exec` cell reads and writes — and returns
+    its rows as a list of dicts, column name to value: a plain,
+    JSON-safe shape that crosses the worker's postMessage boundary the
+    same way `describe_globals()`'s own result does, with no Pyodide
+    proxy machinery on the far side. `params` fills in any `?`
+    placeholders in `sql`, so a value that came from a reader — typed
+    into a search box, say — is bound as one value rather than pasted
+    into the query's own text, where a stray quote could change what
+    the query does.
+
+    Unlike `_run_sql_cell()`, this needs no `_require_cell()`: an app
+    cell's JavaScript calls it directly, outside the normal cell-run
+    lifecycle, so there is no cell sink for it to render into and
+    nothing here tries to — a bad query's own `sqlite3.Error` is left
+    to propagate, for the calling JavaScript to catch and show.
+    """
+    conn = _page_globals.get("db")
+    if conn is None:
+        raise RuntimeError(
+            "No database connection yet — this page has nothing for a query to run against."
+        )
+    cursor = conn.execute(sql, params or [])
+    columns = [description[0] for description in cursor.description or []]
+    return [dict(zip(columns, row)) for row in cursor.fetchall()]
+
+
 _SUMMARY_LIMIT = 80
 
 

@@ -112,7 +112,20 @@ export function parseCells(body) {
 }
 
 export function restoreExecTag(markdown) {
-  return markdown.replace(/^```(python|sql)\n(?=id:\s*\S)/gm, "```$1 exec\n");
+  // Every exec-family fence keeps its tag on a round trip through the
+  // Crepe-based authoring editor, which otherwise keeps only the first word
+  // of a fence's info string (ARCHITECTURE.md §3, "The authoring editor").
+  // `python exec`/`sql exec` recover from a lone `id:` header line; a site
+  // editor or full-stack cell's `html`/`css`/`js` pane needs two header
+  // lines — `id:` plus `site:` or `app:` — since the grouping key is what
+  // a bare `html`/`css`/`js` fence would otherwise lose. Order between the
+  // two header lines isn't fixed (build.py's parse_site_pane/parse_app_pane
+  // read them as an unordered pair), so both orders are matched.
+  const two = (key) => `(?=(?:id|${key}):\\s*\\S[^\\n]*\\n(?:id|${key}):\\s*\\S[^\\n]*\\n)`;
+  return markdown
+    .replace(/^```(python|sql)\n(?=id:\s*\S)/gm, "```$1 exec\n")
+    .replace(new RegExp("^```(html|css|js)\\n" + two("site"), "gm"), "```$1 site\n")
+    .replace(new RegExp("^```(html|css|js)\\n" + two("app"), "gm"), "```$1 app\n");
 }
 
 function withoutFences(body) {

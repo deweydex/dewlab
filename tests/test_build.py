@@ -299,6 +299,27 @@ console.log("hi");
 ```
 """
 
+APP_HTML = """```html app
+id: reader-html
+app: reader
+<p>Loading…</p>
+```
+"""
+
+APP_CSS = """```css app
+id: reader-css
+app: reader
+p { color: red; }
+```
+"""
+
+APP_JS = """```js app
+id: reader-js
+app: reader
+console.log("hi");
+```
+"""
+
 
 class TestSqlCells:
     """A sql exec cell shares python exec's header grammar and manifest shape;
@@ -462,6 +483,114 @@ class TestSiteEditors:
         page = built(repo)
         assert [e["name"] for e in manifest(page)["siteEditors"]] == ["hero", "aside"]
         assert manifest(page)["cells"][0]["id"] == "only-cell"
+
+
+class TestAppCells:
+    """A full-stack cell (`html app`/`css app`/`js app`): a site editor's
+    fence grammar and grouping rule, reused for a different purpose — its
+    HTML/CSS render straight into the page rather than a sandboxed iframe,
+    and its JS pane can read the page's own shared SQL connection. See
+    build.py's render_app_cell() and planning/DEWSTACK_MERGE.md §3, §7
+    phase 4."""
+
+    def test_a_solo_js_pane_becomes_a_cell(self, repo):
+        write(repo, APP_JS)
+        b.build()
+        page = built(repo)
+        assert 'class="dl-app-cell" data-app-name="reader"' in page
+        assert 'data-lang="js"' in page
+        assert 'class="dl-editor"' in page
+
+    def test_consecutive_panes_of_the_same_app_share_one_cell(self, repo):
+        write(repo, APP_HTML + APP_CSS + APP_JS)
+        b.build()
+        page = built(repo)
+        assert page.count('data-app-name="reader"') == 1
+        assert page.count('class="dl-app-pane"') == 3
+
+    def test_html_and_css_panes_are_optional(self, repo):
+        write(repo, APP_JS)
+        b.build()
+        page = built(repo)
+        assert 'data-lang="html"' not in page
+        assert 'data-lang="css"' not in page
+        assert 'data-lang="js"' in page
+
+    def test_every_app_cell_gets_a_run_and_a_reset_button(self, repo):
+        write(repo, APP_JS)
+        b.build()
+        page = built(repo)
+        assert "dl-btn-app-run" in page
+        assert "dl-btn-app-reset" in page
+
+    def test_a_cell_with_no_js_pane_fails_the_build(self, repo):
+        write(repo, APP_HTML + APP_CSS)
+        with pytest.raises(b.BuildError, match="has no js pane"):
+            b.build()
+
+    def test_the_starter_code_travels_in_the_manifest_not_the_dom(self, repo):
+        write(repo, APP_JS)
+        b.build()
+        page = built(repo)
+        assert 'console.log("hi")' not in page  # not embedded as escaped text
+        cells = manifest(page)["appCells"]
+        assert cells == [{"name": "reader", "panes": {"js": {"id": "reader-js", "code": 'console.log("hi");'}}}]
+
+    def test_a_tutorial_with_no_app_cells_carries_no_manifest_key(self, repo):
+        write(repo, CELL)
+        b.build()
+        assert "appCells" not in manifest(built(repo))
+
+    def test_an_unknown_pane_language_fails_the_build(self, repo):
+        write(repo, "```php app\nid: c\napp: reader\n<?php ?>\n```\n")
+        with pytest.raises(b.BuildError, match="not one of"):
+            b.build()
+
+    def test_a_pane_with_no_id_fails_the_build(self, repo):
+        write(repo, "```js app\napp: reader\nconsole.log(1);\n```\n")
+        with pytest.raises(b.BuildError, match="no `id:` line"):
+            b.build()
+
+    def test_a_pane_with_no_app_name_fails_the_build(self, repo):
+        write(repo, "```js app\nid: c\nconsole.log(1);\n```\n")
+        with pytest.raises(b.BuildError, match="no `app:` line"):
+            b.build()
+
+    def test_two_panes_of_the_same_language_in_one_cell_fails_the_build(self, repo):
+        write(repo, APP_JS + "```js app\nid: reader-js-2\napp: reader\nconsole.log(2);\n```\n")
+        with pytest.raises(b.BuildError, match="two js panes"):
+            b.build()
+
+    def test_non_consecutive_panes_of_the_same_app_fail_the_build(self, repo):
+        write(repo, APP_HTML + "\ntext in between\n\n" + APP_JS)
+        with pytest.raises(b.BuildError, match="not consecutive"):
+            b.build()
+
+    def test_an_app_pane_id_cannot_collide_with_a_cell_id(self, repo):
+        write(repo, "```js app\nid: dup\napp: reader\nconsole.log(1);\n```\n\n"
+                    "```python exec\nid: dup\nprint(1)\n```\n")
+        with pytest.raises(b.BuildError, match="share the id"):
+            b.build()
+
+    def test_two_different_apps_on_one_page_both_render(self, repo):
+        write(repo, APP_JS + "```js app\nid: aside-js\napp: aside\nconsole.log(2);\n```\n")
+        b.build()
+        page = built(repo)
+        assert 'data-app-name="reader"' in page
+        assert 'data-app-name="aside"' in page
+        assert [c["name"] for c in manifest(page)["appCells"]] == ["reader", "aside"]
+
+    def test_a_cell_between_two_app_cells_does_not_confuse_them(self, repo):
+        write(repo, APP_JS + CELL + "```js app\nid: aside-js\napp: aside\nconsole.log(2);\n```\n")
+        b.build()
+        page = built(repo)
+        assert [c["name"] for c in manifest(page)["appCells"]] == ["reader", "aside"]
+        assert manifest(page)["cells"][0]["id"] == "only-cell"
+
+    def test_an_app_cell_needs_sqlite_even_with_no_sql_cell(self, repo):
+        write(repo, APP_JS)
+        b.build()
+        assert manifest(built(repo))["needsSqlite"] is True
 
 
 class TestIncludes:
