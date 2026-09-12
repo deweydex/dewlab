@@ -81,7 +81,7 @@ class _QuietHandler(http.server.SimpleHTTPRequestHandler):
 
 
 @pytest.fixture()
-def base_url(site):
+def site_url(site):
     handler = functools.partial(_QuietHandler, directory=str(site / "site"))
     server = socketserver.TCPServer(("127.0.0.1", 0), handler)
     thread = threading.Thread(target=server.serve_forever, daemon=True)
@@ -94,10 +94,10 @@ def base_url(site):
 
 
 @pytest.mark.parametrize("scheme", ["light", "dark"])
-def test_a_link_meets_aa_against_its_own_background(browser, base_url, scheme):
+def test_a_link_meets_aa_against_its_own_background(browser, site_url, scheme):
     page = browser.new_page(color_scheme=scheme)
     try:
-        page.goto(f"{base_url}/tutorials/{MODULE}/contrast.html")
+        page.goto(f"{site_url}/tutorials/{MODULE}/contrast.html")
         page.wait_for_selector('a[href="https://example.org"]')
         measured = page.evaluate(
             """() => {

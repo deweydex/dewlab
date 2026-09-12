@@ -2091,6 +2091,12 @@ p code, li code {
 .dl-math-error { color: var(--dl-error-fg); background: var(--dl-error-bg); }
 
 @media (max-width: 34rem) {
+  /* A custom cell's header carries three labelled buttons (Duplicate,
+   * Save, Delete) rather than an authored cell's one or two — too many
+   * to fit beside the pill on the narrowest phones without wrapping. */
+  .dl-cell-head { flex-wrap: wrap; row-gap: 0.35rem; }
+  .dl-cell-header-end { flex-wrap: wrap; }
+
   .dl-settings,
   .dl-reference,
   .dl-seriesnav {
