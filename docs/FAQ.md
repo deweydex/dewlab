@@ -20,8 +20,8 @@ start.
 
 ## Does getting something wrong count against me?
 
-No. Nothing here is scored, and nobody sees your answers. A wrong answer is
-information about a method, not a mark against you. That is as true of the
+No. Nothing here is scored, and nobody sees your answers. A wrong answer
+tells you something about the method, not about you. That is as true of the
 practice-page problems as it is of the tutorials themselves.
 
 ## What if I do not finish a tutorial in one sitting?
@@ -40,7 +40,7 @@ keep, Settings has an export button that saves one to a file.
 ## Can I skip ahead, or go back to something earlier?
 
 Yes. A series is written to be read in order, and that is the easiest way
-through it. Nothing stops you jumping ahead or going back. The topic tree
+through it. Nothing stops you from jumping ahead or going back. The topic tree
 shows what a tutorial usually expects first, if you want to check before
 skipping.
 
@@ -54,7 +54,7 @@ want it.
 ## I found a mistake in a tutorial. What do I do?
 
 Please say something — you do not need to be certain it is a mistake first.
-The quickest way is the line at the foot of the page itself, "Something
+The quickest way is the line at the bottom of the page itself, "Something
 wrong on this page? Tell us." [`REPORTING_A_PROBLEM.md`](REPORTING_A_PROBLEM.md)
 says where to send it without that line, and what is useful to include
 either way.

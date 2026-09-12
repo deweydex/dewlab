@@ -6,7 +6,7 @@ can try an idea out in the same place you are reading about it.
 
 You do not need to install anything, and you do not need an account. The Python
 runs on your own computer, inside the browser tab. Nothing you write is sent
-anywhere, nothing is marked, and nobody is watching how you get on.
+anywhere, nothing is marked, and nobody is watching how you do.
 
 ---
 
@@ -74,15 +74,15 @@ there is genuinely something to show you.
 
 Anything in the Reference you met in an earlier tutorial also says where you
 met it, with a link straight back to that section. Coming back to a tutorial
-after a while, half recognising a word, is an ordinary way to read, and this
-is the way back.
+after a while, not quite remembering a word, is a normal part of learning.
+The Reference shows where you first met it.
 
 ---
 
 ## Settings
 
 Every page has a **Settings** button in the bar at the top, and that bar follows
-you down the page, so it is always one tap away. It opens as a panel docked down
+you down the page, so it is always one tap away. It opens as a panel fixed to
 the right-hand side of the screen, full height, and it stays open while you read
 and run cells — you do not have to close it to get back to the page. Drag its
 left edge to make it wider or narrower.
@@ -110,9 +110,9 @@ default is uncomfortable to read, change it — that is what it is for.
 ## Finding your way around
 
 The bar at the top carries three buttons: **Reference**, **Series** and
-**Settings**. Each opens a panel docked down one side of the screen, full
+**Settings**. Each opens a panel fixed to one side of the screen, full
 height, meant to be left open beside what you are reading rather than closed
-again straight away. On a narrow screen the labels drop away and you get the
+again right after. On a narrow screen the labels drop away and you get the
 icons alone, so they still fit one row.
 
 **Reference** is the definitions, functions and formulas this tutorial — and
@@ -123,13 +123,13 @@ does not appear at all.
 **Series** is every tutorial in this one's series, so you can jump to any of
 them from wherever you are, not only to the one immediately before or after.
 
-Reference and Series both dock to the left, so opening one closes the other.
+Reference and Series both open on the left, so opening one closes the other.
 Settings docks to the right and is independent of both. Whichever you leave
-open stays open as you page through a series, so opening the Reference once is
+open stays open as you move through a series, so opening the Reference once is
 enough — you do not have to reopen it on every tutorial.
 
 All three can be made wider or narrower: Settings by dragging its left edge,
-Reference and Series by the grip in their bottom corner. The page moves over to
+Reference and Series by the handle in their bottom corner. The page moves over to
 make room rather than being covered up.
 
 On a phone, all three open as a sheet across the bottom of the screen instead,
@@ -141,11 +141,10 @@ one section also has a **Contents** list, closed until you open it, showing the
 page's headings with sub-headings nested underneath.
 
 The contents page lists everything in teaching order and has a search box. Two
-other pages cut across that order. The **topic tree** shows every topic in the
+other pages organise things differently. The **topic tree** shows every topic in the
 course and what each one needs before it; you can drag to move around it, scroll
 to zoom, and choose any topic to read what it is and where it turns up. Topics
-that are not taught here yet are drawn with a dashed outline, so the tree is
-straight with you about its gaps. **Browse by topic** gathers everything on one
+that are not taught here yet are drawn with a dashed outline, so you can see where it has gaps. **Browse by topic** gathers everything on one
 subject in one place, which is the better page when you already know what you
 want to practise.
 
@@ -178,9 +177,9 @@ page and from the end of the tutorial. Some pages are mixed sets that draw on
 several tutorials at once, for when you want to practise across a few topics
 rather than one.
 
-Problems come with two folds, in that order. The first fold is a hint: a few
-steps, something to think about, and a related problem to try. The second
-fold is the full answer, with every step shown.
+Each problem has two hidden sections you can open. The first is a hint: a
+few steps, something to think about, and a related problem to try. The second
+is the full answer, with every step shown.
 
 Try the hint first. Getting an answer wrong along the way is a normal part of
 trying, not a failure. It usually teaches you more than reading the answer
@@ -205,7 +204,7 @@ someone else, who can load it into their copy of the same page.
 
 Settings offers a few ways to keep a copy.
 
-**Download to keep** gives you one HTML file — on a memory stick, in your
+**Download to keep** gives you one HTML file — on a USB drive, in your
 downloads folder, wherever you like — that you open by double-clicking. The
 reading, the cells, the editor and the mathematics are all inside it, and it
 behaves like the page you downloaded it from. One thing worth knowing: the
@@ -219,8 +218,7 @@ rather than failing quietly.
 added yourself, as a `.ipynb` file you can open elsewhere.
 
 The contents page also offers **Download all N as single files** for a whole
-series at once, as a zip. That is the one to use if you are filling a memory
-stick or taking a set of tutorials home.
+series at once, as a zip. That is the one to use if you are filling a USB drive or taking a set of tutorials home.
 
 ---
 
@@ -228,10 +226,9 @@ stick or taking a set of tutorials home.
 
 **[dewmini](DEWMINI.md)** comes with dewlab for when you just want somewhere
 to write code: a blank page, add a cell, run it. Good for testing an idea,
-working a problem away from the tutorial it came from, or a project that
-grows past a few cells — a file manager, a real SQL database, importing a
-notebook or a `.py` file, and a Stop button that can interrupt code that has
-got stuck all come with it too.
+working a problem on its own, or a project that needs more than a few cells.
+It comes with a file manager, a real SQL database, a way to import a notebook
+or a `.py` file, and a Stop button that can interrupt code that is stuck.
 
 ---
 
@@ -239,7 +236,7 @@ got stuck all come with it too.
 
 If a tutorial has a mistake in it, or something on the site does not work,
 please tell us. You do not need to be certain it is a bug to say something.
-Most pages carry a line at the foot for exactly this, "Something wrong on
+Most pages carry a link at the bottom for exactly this, "Something wrong on
 this page? Tell us." Click it and pick the one that fits: a question, an
 error, or something wrong or hard to follow. A cell giving trouble has its
 own small circle for the same three choices, in its own bar. Pick that one

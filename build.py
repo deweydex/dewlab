@@ -1929,15 +1929,15 @@ def render_index(
         "run it. The result appears just underneath.</li>",
         "<li><strong>First we explore, then we name what we found.</strong> A "
         "tutorial usually opens with a problem or an idea to try out. Then we "
-        "look at the general principle behind it. Then we learn the name "
+        "look at the general idea behind it. Then we learn the name "
         "people give it, so that we can talk to other people about the same "
         "idea.</li>",
-        "<li><strong>Practice problems run all the way through.</strong> Most "
+        "<li><strong>Practice problems appear throughout.</strong> Most "
         "tutorials have a page of them as well, linked as <em>practice</em> "
         "beside the title. The answer usually sits right below each problem. "
         "We are not trying to hide the right answer. What we are learning is "
         "the steps that get us there. The first problems are small. Later ones "
-        "take several steps. Later ones again are more abstract.</li>",
+        "take several steps. Later ones again are more open-ended.</li>",
         "<li><strong>Getting something wrong costs nothing.</strong> An error "
         "message is usually telling us something useful. Nothing here is "
         "scored. Nothing you write leaves your browser.</li>",
@@ -3974,7 +3974,7 @@ def write_about_page(shell: str) -> Path:
         "<p>It began for one classroom, and it is free for anyone who wants to "
         "use it. There is no account, and nothing is scored. What you write "
         "stays on your own device, and a wrong answer here is information "
-        "about a method, not a mark against you.</p>"
+        "about a method, not about you.</p>"
         "<h2>What's here</h2>"
         "<p>The tutorials are listed in the order the course teaches them. That "
         "is the main way in, and a series is meant to be read from the top.</p>"
@@ -4003,11 +4003,11 @@ def write_about_page(shell: str) -> Path:
         "single HTML file, a printed or PDF copy, or your cells saved as a "
         "Jupyter notebook.</p>"
         "<h2>Helping out</h2>"
-        "<p>We would be glad of help with the material. You can open an issue "
+        "<p>We welcome help with the material. You can open an issue "
         "with an idea, a request or a comment. You can also send a pull request "
         "with a change of your own.</p>"
-        "<p>If you have found a mistake, the quickest way is the line at the "
-        "foot of the page it is on. Without that, opening a GitHub issue "
+        "<p>If you have found a mistake, the quickest way is the link at the "
+        "bottom of the page it is on. Without that, opening a GitHub issue "
         "works too. If you would rather fix it yourself, send a pull "
         "request and we will review it and merge it.</p>"
         '<p><strong>Project repository:</strong> <a href="https://github.com/deweydex/dewlab">'

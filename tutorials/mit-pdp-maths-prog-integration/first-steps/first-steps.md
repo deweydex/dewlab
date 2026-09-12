@@ -19,14 +19,14 @@ covers:
 
 **Programming Design Principles / Maths for IT**
 
-Welcome. Over the coming weeks we are going to learn to program and to think mathematically, and we are going to discover that these two activities are much more closely related than most people realise. A program is just an algorithm written precisely enough for a computer to follow. A mathematical formula is just an algorithm written precisely enough for a person to follow. Same idea, different audience.
+Welcome. Over the coming weeks we are going to learn to program and to think about maths, and we are going to find that these two things are much closer together than most people expect. A program is a set of clear steps, written precisely enough for a computer to follow. A formula is much the same thing, written for a person instead. Same idea, different audience.
 
-This first tutorial is about getting comfortable with the tools and the way of thinking. We will take it a step at a time, and everyone who can do this had a first week too.
+This first tutorial is about getting comfortable with the tools and the way of thinking. We will take it a step at a time. Everyone starts here.
 
 ## How this page works
 
 You are looking at a page you can run. Most of it is ordinary reading — like
-this paragraph. Interleaved with the reading are *cells*: small boxes of Python
+this paragraph. Set into the reading are *cells*: small boxes of Python
 that you can edit and run, with the result appearing directly underneath.
 
 The Python runs inside this browser tab, on the machine in front of you.
@@ -80,19 +80,19 @@ An *algorithm* is a sequence of clear, unambiguous steps that accomplish a task.
 5. Wait a few minutes
 6. Remove the tea bag
 
-This example has all the hallmarks of a good algorithm: it starts from a known state (you have a kettle, water, a cup, and a tea bag), the steps are in a specific order, and it terminates (you end up with tea). It even has a *loop* in step 3 -- "while the water has not boiled, wait" repeats the waiting until a condition is met.
+This example shows what makes a good algorithm: it starts from a known state (you have a kettle, water, a cup, and a tea bag), the steps are in a clear order, and it finishes (you end up with tea). It even has a *loop* in step 3 -- "while the water has not boiled, wait" repeats the waiting until a condition is met.
 
-Programming is the art of writing algorithms precisely enough that a computer can follow them. The computer is very fast but not very clever -- it will do exactly what you tell it, nothing more and nothing less. This means we need to be precise about our instructions.
+Programming is the art of writing algorithms precisely enough that a computer can follow them. The computer is very fast but not very smart -- it will do exactly what you tell it, and only that. This means we need to be precise about our instructions.
 
 ### Your turn
 
-What is a simple everyday task you could write out as a numbered sequence of steps? Making breakfast, getting to college, logging into a computer -- anything you like. How specific would it have to be for someone who had never done it before to follow along?
+What is a simple everyday task you could write out as a numbered sequence of steps? Making breakfast, getting to college, logging into a computer -- anything you like. How detailed would the steps need to be for someone who had never done it before?
 
 Double-click this cell and write your algorithm below:
 
 ## Pseudocode: Planning Before Coding
 
-Before we write actual Python, it helps to plan what we want to do in plain English (or a mix of English and code-like structure). This is called *pseudocode*, and it is one of the most valuable habits you can develop.
+Before we write actual Python, it helps to plan what we want to do in plain English (or a mix of English and code-like structure). This is called *pseudocode*, and it is one of the most useful habits you can build.
 
 Here is an example. Suppose we want to convert a temperature from Celsius to Fahrenheit. The formula is: multiply by 9, divide by 5, then add 32.
 
@@ -115,7 +115,7 @@ fahrenheit = celsius * 9 / 5 + 32
 print(fahrenheit)
 ```
 
-That is the core loop of programming: think about what you want to do, write it in pseudocode, then translate to Python. The pseudocode step might feel unnecessary for simple problems, but as things get more complex it becomes essential. We will use it throughout these tutorials.
+That is the main pattern in programming: think about what you want to do, write it in pseudocode, then turn it into Python. The pseudocode step might feel unnecessary for simple problems, but as things get more complex it becomes essential. We will use it throughout these tutorials.
 
 ### Your turn
 
