@@ -881,6 +881,24 @@ function initSeriesNav() {
   });
 }
 
+function initPanelsDisclosure() {
+  const panels = document.getElementById("dl-panels");
+  const summary = panels && panels.querySelector(".dl-panels-toggle");
+  const group = panels && panels.querySelector("#dl-panels-group");
+  if (!panels || !summary || !group) return;
+
+  // A disclosure earns the extra click only when it has a choice to disclose.
+  // Root-level pages usually have Settings alone; leave the details open and
+  // hide its summary there so Settings is the direct control it was before the
+  // three panel buttons were grouped. Tutorial pages have Reference and/or
+  // Series as well, so they keep the compact Panels disclosure.
+  const available = [...group.querySelectorAll("button")]
+    .filter((button) => !button.hidden);
+  const hasChoice = available.length > 1;
+  panels.open = !hasChoice;
+  summary.hidden = !hasChoice;
+}
+
 function setSegChecked(btn, checked) {
   btn.setAttribute("aria-checked", String(checked));
 }
@@ -3724,6 +3742,7 @@ initSettingsPanel();
 initReference(currentManifest);
 initReferenceLookup(currentManifest);
 initSeriesNav();
+initPanelsDisclosure();
 watchPanelOverlap();
 restoreSidebarState();
 initProgressBadgesToggle();

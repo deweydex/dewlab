@@ -207,6 +207,43 @@ class TestVisibility:
         context.close()
 
 
+class TestPanelsDisclosure:
+    def test_a_closed_disclosure_does_not_reserve_its_hidden_buttons(
+            self, site, browser, site_url):
+        _tutorial(site, "one", "One")
+        _set_order(site, ["one"])
+        b.build()
+        context = browser.new_context(viewport={"width": 1200, "height": 800})
+        page = context.new_page()
+        page.goto(f"{site_url}/tutorials/{MODULE}/one.html")
+
+        assert not page.eval_on_selector("#dl-panels", "el => el.open")
+        assert page.is_hidden("#dl-panels-group")
+        assert page.eval_on_selector(
+            "#dl-panels-group", "el => el.getBoundingClientRect().width"
+        ) == 0
+
+        page.click("#dl-panels summary")
+        assert page.is_visible("#dl-reference-toggle")
+        assert page.is_visible("#dl-seriesnav-toggle")
+        assert page.is_visible("#dl-settings-toggle")
+        context.close()
+
+    def test_settings_is_direct_when_it_is_the_only_panel(
+            self, site, browser, site_url):
+        _tutorial(site, "one", "One")
+        _set_order(site, ["one"])
+        b.build()
+        context = browser.new_context()
+        page = context.new_page()
+        page.goto(f"{site_url}/index.html")
+
+        assert page.is_hidden("#dl-panels summary")
+        assert page.is_visible("#dl-settings-toggle")
+        page.click("#dl-settings-toggle")
+        assert page.is_visible("#dl-settings")
+        context.close()
+
 class TestOpeningAndClosing:
     def open_page(self, site, browser, site_url, slug="two"):
         _tutorial(site, "one", "One")
