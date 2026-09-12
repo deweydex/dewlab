@@ -3,7 +3,7 @@
 **Generated — do not edit by hand.** `python3 dev/curriculum_map.py`
 rebuilds it from three files, and CI fails if this one is out of date:
 
-- `planning/curriculum/outcomes.yaml` — every learning outcome in the two
+- `planning/curriculum/outcomes.yaml` — every learning outcome in the
   QQI module descriptors.
 - each tutorial's `covers:` frontmatter — which outcome each section
   teaches, and which it only uses.

@@ -175,11 +175,12 @@ folds can't go stale.
       `mixed-trigonometry.md`, `mixed-data.md`.
 
 ### Curriculum coverage (`CURRICULUM_MAP.md`)
-**All 91 learning outcomes across all four accredited modules are
+**115 of 116 learning outcomes across all six accredited modules are
 written, mapped, and tested** — *Mathematics for IT (5N18396)*,
-*Programming and Design Principles (5N2927)*, *Fundamentals of Object
-Oriented Programming (5N0541)*, and *Computational Methods and Problem
-Solving (5N0554)*. No gaps in any descriptor. `CURRICULUM_MAP.md` is
+*Programming and Design Principles (5N2927)*, *Computational Methods and
+Problem Solving (5N0554)*, *Fundamentals of Object Oriented Programming
+(5N0541)*, *Database Methods (5N0783)*, and *Web Authoring (5N1910)*. One
+gap remains, `WA-LO12`, with no proposal yet. `CURRICULUM_MAP.md` is
 regenerated from the tutorials themselves and is the source of truth;
 this file only narrates it.
 

@@ -163,6 +163,7 @@ own:
   | `2 unchanged runs` | the reader has run the very same code twice more |
   | `8 runs` | the cell has run eight times |
   | `3 failed checks` | a `check()` in the cell has failed on three runs in a row |
+  | `2 empty results` | a `sql exec` cell's query has come back with no rows, two runs in a row |
   | `2 minutes` | two minutes have passed since the first run |
 
   Join several with a comma or `and`: `3 identical errors and 2 minutes`.

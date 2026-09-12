@@ -41,14 +41,15 @@ changed; the built site was byte-identical afterwards.
   phases that have all shipped.
 - Of the three empty module folders under `tutorials/`, two
   (`mathematics-for-it`, `programming-design-principles`) are gone now that
-  the integrated module covers them. `database-methods` stays, empty, until
-  its tutorials are written.
+  the integrated module covers them. `database-methods` is no longer
+  empty either — it shipped as its own module (`DECISIONS_LOG.md` 7.147).
 
 ## Phase 2 — Write the remaining tutorials — **done**
 
 All five Computational Methods strands are written. `CURRICULUM_MAP.md`
-reports 91 of 91 outcomes in place across all four accredited modules.
-`planning/STATUS.md` §2 has the per-outcome detail.
+now reports 115 of 116 outcomes in place across all six accredited
+modules, the one gap being `WA-LO12` in the since-added Web Authoring
+module. `planning/STATUS.md` §2 has the per-outcome detail.
 
 **Left undone, on purpose — not blocking, but real:**
 

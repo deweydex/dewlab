@@ -5,7 +5,7 @@
 
 Two files decide what the map says, and neither is the map:
 
-  * `planning/curriculum/outcomes.yaml` — every learning outcome in the two QQI
+  * `planning/curriculum/outcomes.yaml` — every learning outcome in the QQI
     module descriptors.
   * each tutorial's `covers:` frontmatter — which of those outcomes each section
     of that tutorial teaches (`covers`) or merely uses (`touches`).
@@ -133,7 +133,7 @@ def outcomes_of(topic: dict) -> list[str]:
 
 def load_outcomes() -> tuple[dict[str, Outcome], dict]:
     """Reads `planning/curriculum/outcomes.yaml` — every learning outcome
-    the two QQI module descriptors define — into a lookup dict keyed by
+    the QQI module descriptors define — into a lookup dict keyed by
     outcome code, plus the raw per-module metadata (titles, section
     names) the report also needs. Raises `MapError` if the same outcome
     code appears twice, since that would silently make one of the two
@@ -712,7 +712,7 @@ def render() -> str:
         "**Generated — do not edit by hand.** `python3 dev/curriculum_map.py`",
         "rebuilds it from three files, and CI fails if this one is out of date:",
         "",
-        "- `planning/curriculum/outcomes.yaml` — every learning outcome in the two",
+        "- `planning/curriculum/outcomes.yaml` — every learning outcome in the",
         "  QQI module descriptors.",
         "- each tutorial's `covers:` frontmatter — which outcome each section",
         "  teaches, and which it only uses.",

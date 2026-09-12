@@ -721,8 +721,43 @@ through `to_html()` on its own, the same way, right after the page's
 main markdown conversion and before `place_hints()` sees it —
 DECISIONS_LOG.md 7.139.
 
-**dewstack** stays as designed in its own note, not yet built.
+**dewstack** built its own version for `sql-check` blocks (its
+DECISIONS_LOG.md, this session), then dewstack itself was folded into
+dewlab as `database-methods` (DECISIONS_LOG.md 7.140/7.141): a `sql
+exec` fence, not a port of dewstack's `sql cell=`/`sql-check` grammar,
+sharing this same staged-hints system rather than a second one — a `for:`
+naming a `sql exec` cell's id needs nothing extra, since it wraps
+`_run_sql_cell()` and reports through the same `run_cell_report()` every
+`python exec` cell uses.
 
 **What §13 asked about the run report** was decided (a):
 `run_cell_report()` returns a JSON report; `run_cell()` keeps its
 boolean for dewmini.
+
+**A query that comes back empty is now a trigger too, DECISIONS_LOG.md
+7.150.** Raised while thinking through what a SQL-aware hint could
+catch that a raw sqlite3 message can't: the most common real mistakes
+— a missing comma read as a column alias, a `WHERE` that compares
+against the wrong case — never raise at all, so no error-keyed hint
+could ever see them. `after: 2 empty results` fires the same way
+`check-fails` does, from a new `empty` field `_report()` reads off
+`_CellContext.last_result_empty`, set by `_run_sql_cell()` whenever its
+last statement was a query and came back with zero rows. It says only
+that the result was empty, not why — an author's own hint still does
+the diagnosing, the same split between "when" and "what" every other
+trigger in this file keeps.
+
+**The harder version was tried too, DECISIONS_LOG.md 7.151 — as a fact
+the cell shows immediately, not a second trigger.** `_run_sql_cell()`
+now counts the rows in the table an empty `SELECT` queried, and quietly
+reruns a `column = 'literal'` comparison case-insensitively, reporting
+either as a plain line under the (empty) table when the database itself
+confirms something worth saying. Separately, every statement now runs
+through `_execute_sql()` rather than `conn.execute()` directly, which
+folds a "did you mean" suggestion into a typo'd table/column name's own
+message (`difflib` against the real schema, the same help CPython
+already gives a `NameError`), points an aggregate-in-`WHERE` mistake at
+`HAVING`, and names a clause that came out of order. None of this
+touches the trigger grammar — it is what a SQL cell shows on its own,
+the same house as `_ERROR_HINTS`, not a fourth thing an author's `hint`
+fence waits for.

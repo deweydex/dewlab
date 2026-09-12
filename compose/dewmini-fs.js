@@ -14,7 +14,7 @@ const HANDLE_KEY = "native-dir-handle";
 // the origin's one shared OPFS root. Two tools doing that on the same
 // origin would see and could overwrite each other's files, invisibly,
 // the moment both existed. dewmini mounts its own named subdirectory of
-// that shared root instead (see mountOpfs() below) before handing
+// that shared root instead (see mountOpfsIfSupported() below) before handing
 // *that* handle to the same engine.mountNative() real-folder mounting
 // already uses — OPFS mounting and real-folder mounting are the same
 // operation as far as the engine is concerned, just with a different

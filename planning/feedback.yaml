@@ -6,4 +6,4 @@
 #
 # Read by build.py's feedback_enabled(). Missing this file, or missing
 # `enabled:` inside it, both mean on. See DECISIONS_LOG.md, Phase 8.
-enabled: false
+enabled: true
