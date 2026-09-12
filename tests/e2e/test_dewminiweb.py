@@ -1,13 +1,4 @@
-"""dewmini web (compose/dewminiweb.html), in a real browser.
-
-No Pyodide involved anywhere in this page — it runs no Python at all — so
-unlike test_phase0_golden_path.py and test_dewmini_workbench.py, these
-tests need no self-hosted Pyodide and serve the repository's own source
-tree directly rather than a build.py output: compose/dewminiweb.html's
-own links (`../assets/...`, `dewminiweb.js`) already resolve against the
-real assets/ folder, the same files site/ would otherwise just copy in
-unchanged (build.py's `shutil.copytree(COMPOSE, OUT / "compose")`).
-"""
+"""dewmini web runs no Python, so these serve the repo's source tree directly rather than a build.py output — compose/dewminiweb.html's links already resolve against the real assets/ folder."""
 from __future__ import annotations
 
 import functools
@@ -41,15 +32,7 @@ def dewminiweb_url():
 
 @pytest.fixture()
 def page(browser, dewminiweb_url):
-    """A page with dewmini web loaded and its starter site already run.
-
-    Exposes the same ``page.problems`` list conftest.py's own ``page``
-    fixture does, for the same reason: one test here deliberately breaks
-    a pane's script to check the friendly-hint path, so a page-wide "no
-    problems" assertion belongs to the tests that expect a clean run, not
-    to teardown (test_phase0_golden_path.py's own
-    test_python_started_with_no_console_errors is the same shape).
-    """
+    """Exposes ``page.problems`` like conftest.py's fixture does: one test here deliberately breaks a pane's script, so "no problems" is a per-test assertion, not a teardown check."""
     context = browser.new_context()
     tab = context.new_page()
 
@@ -83,8 +66,6 @@ def test_a_fresh_visit_shows_one_site_with_all_three_panes(page):
 
 
 def test_the_starter_script_has_already_run(page):
-    """A reader opening dewmini web for the first time should see the
-    starter working, not three empty boxes and a blank preview."""
     f = frame(page)
     f.wait_for_selector("h1", timeout=10_000)
     assert f.inner_text("h1") == "Hello"

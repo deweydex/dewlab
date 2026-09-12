@@ -1,13 +1,4 @@
-"""Staged hints, in a real browser — planning/CELL_HINTS.md.
-
-The fixture's `staged-hints` cell fails with a NameError as written. Its
-first hint waits for two identical errors, its second for three errors in
-all, and neither appears once the cell's `expect:` (`total == 6`) holds.
-The counters and the revealed folds travel in the saved-work record, so a
-reload keeps a hint the reader had just been shown.
-
-    python3 -m pytest tests/e2e/test_cell_hints_staged.py -q
-"""
+"""The fixture's `staged-hints` cell fails as written: its first hint needs two identical errors, its second three, and neither appears once `expect:` holds — the counters and revealed folds persist in the saved-work record."""
 
 from __future__ import annotations
 

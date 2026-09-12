@@ -1,15 +1,4 @@
-"""The contents page's per-tutorial progress badge, in a real browser —
-planning/PROGRESS_INDICATORS.md.
-
-Same shape as test_reference.py: a dedicated, tiny site build, and no
-self-hosted Pyodide needed — every test here only ever navigates to
-index.html, which always has zero cells of its own (write_index()'s own
-manifest) regardless of what the tutorials it links to contain. Progress is
-seeded directly into localStorage rather than by actually running a cell,
-since what the badge reads is the saved record, not a live interpreter.
-
-    python3 -m pytest tests/e2e/test_progress_badges.py -q
-"""
+"""Progress is seeded directly into localStorage rather than by running a cell, since what the badge reads is the saved record, not a live interpreter."""
 
 from __future__ import annotations
 
@@ -103,8 +92,7 @@ def base_url(site):
 
 
 def _seed(page, module: str, slug: str, cells: list[dict]) -> None:
-    """A saved-progress record, written straight into localStorage the way
-    PROGRESS_PREFIX/saveNow() would have — no cell run required."""
+    """A saved-progress record written straight into localStorage, as saveNow() would, without a cell run."""
     record = {
         "tutorial-slug": slug,
         "tutorial-module": module,
@@ -145,8 +133,7 @@ class TestProgressBadges:
         context.close()
 
     def test_a_saved_record_with_nothing_run_shows_no_badge(self, site, browser, base_url):
-        """A cell that was only edited, never run, has no output_html —
-        seeding an entry with an empty one should count as untouched."""
+        """A cell only edited, never run, has no output_html, so an empty one here must count as untouched."""
         _tutorial(site, "one", "One")
         _set_order(site, ["one"])
         b.build()

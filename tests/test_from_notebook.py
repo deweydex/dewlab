@@ -1,12 +1,6 @@
-"""Unit tests for dev/from_notebook.py.
-
-Every notebook here is built in the test itself. The converter has to be
-testable without the real teaching notebooks — they live in another repository,
-and a test that needs them is a test that stops running the moment someone
-clones this one on its own.
-
-    python3 -m pytest tests/test_from_notebook.py -q
-"""
+"""Every notebook here is built in the test itself: the real teaching
+notebooks live in another repository, so a test needing them would stop
+running the moment this one is cloned on its own."""
 
 from __future__ import annotations
 
@@ -22,13 +16,9 @@ import from_notebook as fn  # noqa: E402
 
 
 def notebook(*cells: tuple[str, str]) -> dict:
-    """A notebook in the shape nbformat actually stores one.
-
-    `source` is a list of lines that keep their trailing newlines — everything
-    but possibly the last. Splitting them off instead produces a file that
-    looks plausible and parses into one run-on line, which is a fixture bug
-    that reads like a converter bug.
-    """
+    # Keep trailing newlines on source lines (nbformat's own shape) — drop
+    # them and the fixture parses into one run-on line, a fixture bug that
+    # reads like a converter bug.
     return {
         "cells": [
             {
@@ -92,8 +82,6 @@ class TestFrontmatter:
         assert "module: mit-pdp" in text
         assert "series: maths" in text
         assert 'year: "2027-2028"' in text
-        # Dated today: a converted notebook is being released for the first
-        # time on the day it is converted.
         assert f"version: {fn.today_release()}" in text
 
     def test_a_quote_in_the_title_does_not_break_the_frontmatter(self, tmp_path):
@@ -101,7 +89,7 @@ class TestFrontmatter:
         text, _ = convert(path)
         title_line = next(l for l in text.split("\n") if l.startswith("title:"))
         assert title_line == 'title: "The \'Big\' Idea"'
-        assert "# The \"Big\" Idea" in text  # the heading itself is untouched
+        assert "# The \"Big\" Idea" in text
 
 
 class TestCells:
@@ -259,10 +247,8 @@ class TestTheOutputActuallyBuilds:
 
 
 class TestTheReport:
-    """`--out` is a documented option and may point anywhere. Reporting through
-    `relative_to` alone wrote every file and then crashed on the line saying so,
-    which is the worst order to fail in: the work is done and the run looks like
-    it failed."""
+    """`--out` may point outside the repo; `relative_to` alone crashed on such
+    a path after the files were already written, the worst order to fail in."""
 
     def test_a_path_inside_the_repository_is_shown_relative(self):
         inside = fn.ROOT / "tutorials" / "somewhere" / "a-tutorial.md"

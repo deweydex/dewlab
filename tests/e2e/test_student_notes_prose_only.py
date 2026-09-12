@@ -1,13 +1,4 @@
-"""planning/STUDENT_NOTES.md §2's own point: notes work on a prose-only
-tutorial too, not just one with cells — the "Your work" section used to be
-removed entirely wherever cells.length === 0, which included this case.
-
-Self-contained, no Pyodide needed, same reasoning test_reference.py
-already established: a prose-only tutorial's own boot() never loads
-Pyodide at all.
-
-    python3 -m pytest tests/e2e/test_student_notes_prose_only.py -q
-"""
+"""Regression check: the "Your work" section used to be removed entirely whenever cells.length === 0, which also hid notes on a prose-only tutorial."""
 
 from __future__ import annotations
 

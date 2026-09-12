@@ -515,17 +515,18 @@ runtime.js`'s `createCustomCellElement()` (a reader's own cells, built
 entirely client-side, never through `render_cell()`) got the same three
 rows by hand, so a reader's own cell and the tutorial's stay one shape.
 
-**A same-shaped button did two different things.** The tutorial's Reset
-puts a cell's *code* back to its starter and throws the rest away;
+**A same-shaped button did two different things.** The tutorial's single
+Reset put a cell's *code* back to its starter and threw the rest away;
 dewmini's own footbar button only clears a cell's *output*, no code
 touched. Both were reasonable choices on their own — a tutorial's cell
 has starter code worth returning to, a dewmini cell doesn't — but
 nothing about how the two buttons *looked* said so, and the more
 dangerous of the two sat in the position a reader's muscle memory would
-already trust from the other page. `.dl-btn-reset` now carries its own
-icon, a clockwise ↻ (`&#8635;`), and a resting red-ish border
-(`tutorial-style.css`); dewmini's own clear-output button keeps its
-original counterclockwise ↺ (`&#8634;`) rather than drifting to match.
+already trust from the other page. A tutorial cell now carries both:
+`.dl-btn-reset` clears output only, sharing dewmini's own counterclockwise
+↺ (`&#8634;`) icon and meaning; `.dl-btn-clear` is the one that still
+touches code, kept behind a confirmation dialog, with its own clockwise
+↻ (`&#8635;`) icon and resting red-ish border (`tutorial-style.css`).
 
 **Icon-only on one page, text-only on the other.** A tutorial page's
 buttons were plain words (`Run`, `Reset`, `duplicate`); dewmini's were

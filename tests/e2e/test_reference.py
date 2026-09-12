@@ -1,15 +1,6 @@
-"""The reference panel, in a real browser — planning/REFERENCE_PANEL.md.
-
-A dedicated, tiny site build rather than the shared rendering-tour fixture
-the rest of tests/e2e/ uses: this needs its own glossary files and series
-order. It also needs no self-hosted Pyodide and none of the wait that comes
-with one — every fixture tutorial here is prose-only, and
-tutorial-runtime.js's own boot() skips loading Pyodide entirely when a page
-has no cells (CONTENT_AND_FILE_ARCHITECTURE.md) — so unlike most of this
-directory, this file runs without `python3 dev/fetch_pyodide.py` first.
-
-    python3 -m pytest tests/e2e/test_reference.py -q
-"""
+"""Every fixture here is prose-only, so tutorial-runtime.js never boots
+Pyodide for these pages — unlike most of tests/e2e/, this file runs without
+`python3 dev/fetch_pyodide.py` first."""
 
 from __future__ import annotations
 
@@ -130,10 +121,8 @@ def _set_order(root: Path, slugs: list[str]) -> None:
 
 @pytest.fixture()
 def site(tmp_path, monkeypatch):
-    """A real build, real assets, isolated content — ROOT/TUTORIALS/OUT move
-    to tmp_path; ASSETS/SHELL/SETUP/DATA stay pointed at the real repository,
-    read-only, so the page that loads is running the actual runtime and CSS
-    rather than a stand-in for them."""
+    """Only ROOT/TUTORIALS/OUT move to tmp_path; ASSETS/SHELL/SETUP/DATA stay
+    pointed at the real repo, so the page runs the actual runtime and CSS."""
     (tmp_path / "tutorials" / MODULE).mkdir(parents=True)
     monkeypatch.setattr(b, "ROOT", tmp_path)
     monkeypatch.setattr(b, "TUTORIALS", tmp_path / "tutorials")
@@ -201,11 +190,9 @@ def _toggle_shows(actor, selector: str) -> bool:
 class TestVisibility:
     def test_no_glossary_anywhere_in_the_series_still_shows_the_basics_tabs(
             self, site, browser, base_url):
-        """Math Basics and Python Basics (build.py's load_math_basics()/
-        load_python_basics()) are the same on every page, so the toggle
-        no longer hides just because this page and its series have
-        nothing of their own yet — only the Reference tab itself says
-        so."""
+        """Math Basics and Python Basics are the same on every page, so the
+        toggle shows even when this page and its series have nothing of
+        their own yet."""
         _tutorial(site, "one", "One")
         _set_order(site, ["one"])
         b.build()
@@ -353,8 +340,6 @@ class TestNotes:
     planning/SIDEBAR_CONTENT.md §3/§4."""
 
     def test_a_note_alone_shows_the_toggle(self, site, browser, base_url):
-        """No glossary at all — a note by itself is enough reason to show
-        the panel."""
         _tutorial_with_note(site, "one", "why-it-works", "Because reasons.")
         _set_order(site, ["one"])
         b.build()
@@ -447,10 +432,8 @@ class TestDatasets:
 
 
 class TestMobile:
-    """Planning/REFERENCE_PANEL.md's §6 mobile note, settled in
-    QUESTIONS.md: the panel becomes a bottom sheet on a
-    phone, mirroring .dl-settings' own existing mobile treatment, rather
-    than staying hidden."""
+    """REFERENCE_PANEL.md §6: on a phone the panel becomes a bottom sheet,
+    mirroring .dl-settings' own mobile treatment, rather than staying hidden."""
 
     def test_the_toggle_is_visible_on_a_phone_sized_viewport(self, site, browser, base_url):
         _tutorial(site, "one", "One")
@@ -524,13 +507,8 @@ SELECT = """(word) => {
 
 
 class TestHighlightToLookUp:
-    """Selecting a word the reference knows offers to look it up —
-    planning/ROADMAP.md Phase 5.
-
-    The property worth protecting is not that the button appears; it is that
-    it *stays away* for every selection that is not a term, which is most of
-    them.
-    """
+    """The property worth protecting is not that the button appears, but that
+    it stays away for every selection that isn't a term — most of them."""
 
     def open_page(self, site, browser, base_url):
         path = site / "tutorials" / MODULE / "lookup.md"
@@ -559,8 +537,7 @@ class TestHighlightToLookUp:
 
     def test_selecting_a_word_the_reference_does_not_know_offers_nothing(
             self, site, browser, base_url):
-        """The whole reason this is not annoying. A reader selecting a
-        sentence to copy must not be interrupted."""
+        """A reader selecting a sentence to copy must not be interrupted."""
         context, page = self.open_page(site, browser, base_url)
         assert page.evaluate(SELECT, "serendipity")
         page.wait_for_timeout(200)
