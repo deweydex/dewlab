@@ -8,6 +8,8 @@ from __future__ import annotations
 import json
 
 import pytest
+
+from conftest import _open_panel
 from playwright.sync_api import expect
 
 DEWMINI = "compose/dewmini.html"
@@ -62,16 +64,6 @@ def add_python_cell(page, code: str) -> None:
     editor = page.locator(".dm-cell-python .cm-content").last
     editor.click()
     page.keyboard.insert_text(code)
-
-
-def _open_panel(actor, selector: str) -> None:
-    """Expand the masthead's Panels disclosure first if needed, then
-    click the actual toggle. dewmini has no such disclosure -- its own
-    settings toggle is a plain, always-visible button -- so this is a
-    no-op there."""
-    if actor.locator("#dl-panels").count() and not actor.eval_on_selector("#dl-panels", "el => el.open"):
-        actor.click("#dl-panels summary")
-    actor.click(selector)
 
 
 def test_a_new_notebook_opens_its_own_tab(dewmini):

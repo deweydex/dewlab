@@ -14,8 +14,10 @@ python3 -m pytest                        # ~420 tests, under a minute
 ```
 
 `site/` is gitignored and rebuilt every time. Never edit it. If you change
-anything under `vendor-src/`, rebuild `assets/vendor/` with
-`npm ci && npm run build` in `vendor-src/` and commit the result, or CI fails.
+anything under `vendor-src/`, or `assets/tutorial-runtime.js` (bundled
+directly into `assets/vendor/standalone.bundle.js`), rebuild `assets/vendor/`
+with `npm ci && npm run build` in `vendor-src/` and commit the result, or CI
+fails.
 
 ## Before you write a word a student will read
 
@@ -93,7 +95,7 @@ update it when you finish one.
 is not finished until the document describing that behaviour describes the new
 behaviour. A stale comment is worse than no comment.
 
-## Two traps
+## Three traps
 
 **Section numbers in the style guide are referenced from elsewhere** — the two
 skills above, several planning documents, and `DECISIONS_LOG.md` all cite it as
@@ -102,3 +104,9 @@ skills above, several planning documents, and `DECISIONS_LOG.md` all cite it as
 **Cell ids are a contract.** Once a tutorial has been in front of a class, a
 cell id is the key somebody's saved work lives under. Renaming one throws that
 work away.
+
+**Editing `assets/tutorial-runtime.js` without rebuilding the vendor bundle
+looks harmless until CI catches it.** `standalone-bundle-is-current` rebuilds
+`assets/vendor/standalone.bundle.js` from scratch and fails on any difference
+from the committed copy — the one CI check that a plain "the tests passed"
+locally will not have run, since it needs Node, not just Python.
