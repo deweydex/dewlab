@@ -1768,16 +1768,10 @@ class TestTheKnowledgeMap:
 
 
 class TestAssetVersions:
-    """A page that has been visited before must not be served an old stylesheet.
-
-    Without a version in the URL, a browser keeps the copy it downloaded the
-    first time however many times the site is published — and the result does
-    not look like a caching problem, it looks like the page is broken, only for
-    people who have been here before.
-
-    Against the real assets, because a version of a file that is not there
-    proves nothing.
-    """
+    """Cache-busting: without a version in the URL a browser keeps an old
+    stylesheet forever, and the bug looks like page breakage rather than
+    caching. Tested against the real assets, since a version of a file that
+    is not there proves nothing."""
 
     def urls(self, repo) -> str:
         return built(repo) + (repo / "site" / "index.html").read_text()
@@ -1842,12 +1836,10 @@ class TestTheExportFailsLoudly:
 
 
 class TestVersionsOfATutorial:
-    """A version is a release, not a save: the version students could first see
-    it, and one they can go back to. `planning/VERSIONS.md`."""
+    """A version is a release, not a save (planning/VERSIONS.md)."""
 
     def release(self, repo, slug: str, version: str, status: str = "live",
                 body: str = "Prose.\n") -> Path:
-        """One release of a tutorial, in the folder its versions share."""
         folder = repo / "tutorials" / "computational-methods" / slug
         folder.mkdir(parents=True, exist_ok=True)
         path = folder / f"v{version}.md"
