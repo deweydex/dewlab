@@ -78,8 +78,8 @@ something to show you.
 
 Anything in the Reference you met in an earlier tutorial also says where you
 met it, with a link back to that section. Coming back to a tutorial after a
-while, not quite remembering a word, is a normal way to read, and this is the
-way back to where you first saw it.
+while, not quite remembering a word, is a normal part of learning. The
+Reference shows where you first met it.
 
 ---
 
@@ -116,7 +116,7 @@ default is uncomfortable to read, change it — that is what it is for.
 The bar at the top carries three buttons: **Reference**, **Series** and
 **Settings**. Each opens a panel on one side of the screen, full height,
 meant to be left open beside what you are reading rather than closed again
-straight away. On a narrow screen the labels drop away and you get the icons
+right after. On a narrow screen the labels drop away and you get the icons
 alone, so they still fit one row.
 
 **Reference** is the definitions, functions and formulas this tutorial — and
@@ -133,7 +133,7 @@ open stays open as you move through a series, so opening the Reference once is
 enough — you do not have to reopen it on every tutorial.
 
 All three can be made wider or narrower: Settings by dragging its left edge,
-Reference and Series by the grip in their bottom corner. The page moves over to
+Reference and Series by the handle in their bottom corner. The page moves over to
 make room rather than being covered up.
 
 On a phone, all three open as a sheet across the bottom of the screen instead,
@@ -145,13 +145,13 @@ than one section also has a **Contents** list, closed until you open it,
 showing the page's headings with sub-headings underneath.
 
 The contents page lists everything in teaching order and has a search box. Two
-other pages go across that order. The **topic tree** shows every topic in the
-course and what each one needs before it; you can drag to move around it, scroll
-to zoom, and choose any topic to read what it is and where it turns up. Topics
-that are not taught here yet are drawn with a dashed outline, so the tree is
-honest about its gaps. **Browse by topic** gathers everything on one subject in
-one place, which is the better page when you already know what you want to
-practise.
+other pages organise things differently. The **topic tree** shows every topic
+in the course and what each one needs before it; you can drag to move around
+it, scroll to zoom, and choose any topic to read what it is and where it turns
+up. Topics that are not taught here yet are drawn with a dashed outline, so
+you can see where it has gaps. **Browse by topic** gathers everything on one
+subject in one place, which is the better page when you already know what you
+want to practise.
 
 On the contents page, a small badge next to a tutorial you have opened shows
 how many of its cells you have run, turning red only if a cell's last run
@@ -188,9 +188,9 @@ page and from the end of the tutorial. Some pages are mixed sets that draw on
 several tutorials at once, for when you want to practise across a few topics
 rather than one.
 
-Problems come with two folds, in that order. The first fold is a hint: a few
-steps, something to think about, and a related problem to try. The second
-fold is the full answer, with every step shown.
+Each problem has two hidden sections you can open. The first is a hint: a
+few steps, something to think about, and a related problem to try. The second
+is the full answer, with every step shown.
 
 We are not trying to hide the right answer. What we are learning is the steps
 that get us there. Try the hint first. Getting an answer wrong along the way
@@ -218,7 +218,7 @@ to someone else, who can load it into their copy of the same page.
 
 Settings offers a few ways to keep a copy.
 
-**Download to keep** gives you one HTML file — on a memory stick, in your
+**Download to keep** gives you one HTML file — on a USB drive, in your
 downloads folder, wherever you like — that you open by double-clicking. The
 reading, the cells, the editor and the mathematics are all inside it, and it
 behaves like the page you downloaded it from. One thing worth knowing: the
@@ -232,8 +232,7 @@ rather than failing quietly.
 added yourself, as a `.ipynb` file you can open elsewhere.
 
 The contents page also offers **Download all N as single files** for a whole
-series at once, as a zip. That is the one to use if you are filling a memory
-stick or taking a set of tutorials home.
+series at once, as a zip. That is the one to use if you are filling a USB drive or taking a set of tutorials home.
 
 ---
 
@@ -241,10 +240,9 @@ stick or taking a set of tutorials home.
 
 **[dewmini](DEWMINI.md)** comes with dewlab for when you just want somewhere
 to write code: a blank page, add a cell, run it. Good for testing an idea,
-working a problem away from the tutorial it came from, or a project that
-grows past a few cells — a file manager, a real SQL database, importing a
-notebook or a `.py` file, and a Stop button that can interrupt code that has
-got stuck all come with it too.
+working a problem on its own, or a project that needs more than a few cells.
+It comes with a file manager, a real SQL database, a way to import a notebook
+or a `.py` file, and a Stop button that can interrupt code that is stuck.
 
 ---
 
@@ -252,7 +250,7 @@ got stuck all come with it too.
 
 If a tutorial has a mistake in it, or something on the site does not work,
 please tell us. You do not need to be certain it is a bug to say something.
-Most pages carry a line at the foot for exactly this, "Something wrong on
+Most pages carry a link at the bottom for exactly this, "Something wrong on
 this page? Tell us." Click it and pick the one that fits: a question, an
 error, or something wrong or hard to follow.
 

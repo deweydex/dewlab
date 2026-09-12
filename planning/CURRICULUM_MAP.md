@@ -15,14 +15,14 @@ so this doubles as a way of finding where anything is taught.
 
 ## Where we stand
 
-**113 of 116** outcomes are in place.
+**115 of 116** outcomes are in place.
 
-- 🟩 **111 taught** — a tutorial section teaches it.
+- 🟩 **113 taught** — a tutorial section teaches it.
 - 🟦 **2 taught in part** — deliberately narrowed, and the narrowed version is written.
 - 🟨 **0 used but not taught** — students meet it in passing without it ever being the subject. These are the quiet gaps: they look covered from a distance.
-- 🟥 **3 not covered** — nothing in dewlab touches it.
+- 🟥 **1 not covered** — nothing in dewlab touches it.
 
-**3 of the 3 outcomes still to write have no proposal**: `WA-LO1`, `WA-LO12`, `WA-LO5`. These are the ones nobody has decided how to teach yet.
+**1 of the 1 outcomes still to write have no proposal**: `WA-LO12`. These are the ones nobody has decided how to teach yet.
 
 ### By strand
 
@@ -59,9 +59,9 @@ so this doubles as a way of finding where anything is taught.
 | **simulation** | 1 | 0 | 0 | 0 | 0 |
 | **statistics** | 5 | 0 | 0 | 0 | 0 |
 | **testing** | 1 | 0 | 0 | 0 | 0 |
-| **tooling** | 1 | 0 | 0 | 2 | 0 |
+| **tooling** | 2 | 0 | 0 | 1 | 0 |
 | **trigonometry** | 7 | 0 | 0 | 0 | 0 |
-| **web-history** | 0 | 0 | 0 | 1 | 0 |
+| **web-history** | 1 | 0 | 0 | 0 | 0 |
 
 ```mermaid
 graph LR
@@ -96,16 +96,15 @@ graph LR
   simulation["simulation<br/>1 of 1 in place"]
   statistics["statistics<br/>5 of 5 in place"]
   testing["testing<br/>1 of 1 in place"]
-  tooling["tooling<br/>1 of 3 in place"]
+  tooling["tooling<br/>2 of 3 in place"]
   trigonometry["trigonometry<br/>7 of 7 in place"]
-  web_history["web-history<br/>0 of 1 in place"]
+  web_history["web-history<br/>1 of 1 in place"]
 
   classDef full fill:#edf7f0,stroke:#1f6b3f,color:#1f6b3f;
   classDef part fill:#fdf6ec,stroke:#b5651d,color:#7a4310;
   classDef none fill:#fdf0ef,stroke:#9b2226,color:#9b2226;
-  class algebra,algorithms,calculus,complexity,css,data_entry,data_import,data_structures,database_concepts,design,design_principles,functions,geometry,html_tags,independence,linear_algebra,logic,modelling,number,oop,probability,problem_solving,process,programming,querying,reflection,reporting,sets,simulation,statistics,testing,trigonometry full;
+  class algebra,algorithms,calculus,complexity,css,data_entry,data_import,data_structures,database_concepts,design,design_principles,functions,geometry,html_tags,independence,linear_algebra,logic,modelling,number,oop,probability,problem_solving,process,programming,querying,reflection,reporting,sets,simulation,statistics,testing,trigonometry,web_history full;
   class tooling part;
-  class web_history none;
 ```
 
 ## The series as it stands
@@ -454,11 +453,11 @@ graph TD
 
 | Outcome | | Where |
 |---|---|---|
-| `WA-LO1` The development of HTML and CSS, through the versions of each standard | 🟥 | — |
+| `WA-LO1` The development of HTML and CSS, through the versions of each standard | 🟩 | [Conclusions and Next Steps — How HTML and CSS got here](https://deweydex.github.io/dewlab/tutorials/web-authoring/conclusions-and-next-steps.html#how-html-and-css-got-here) |
 | `WA-LO2` The use, purpose and attributes of a range of HTML tags, and how browsers render them | 🟩 | [A page is files — Why this happens](https://deweydex.github.io/dewlab/tutorials/web-authoring/a-page-is-files.html#why-this-happens)<br/>[Headings, paragraphs and emphasis — Why this happens](https://deweydex.github.io/dewlab/tutorials/web-authoring/headings-and-emphasis.html#why-this-happens)<br/>[Images, paths and alt text — Why this happens](https://deweydex.github.io/dewlab/tutorials/web-authoring/images-and-alt-text.html#why-this-happens)<br/>[Navigation — Why this happens](https://deweydex.github.io/dewlab/tutorials/web-authoring/navigation.html#why-this-happens)<br/>[Sections, and the tags that mean something — Why this happens](https://deweydex.github.io/dewlab/tutorials/web-authoring/sections-that-mean-something.html#why-this-happens)<br/>[The skeleton: head and body — Why this happens](https://deweydex.github.io/dewlab/tutorials/web-authoring/the-skeleton.html#why-this-happens)<br/>[Three kinds of link — Why this happens](https://deweydex.github.io/dewlab/tutorials/web-authoring/three-kinds-of-link.html#why-this-happens)<br/>_used in:_ [A form — Why this happens](https://deweydex.github.io/dewlab/tutorials/web-authoring/a-form.html#why-this-happens)<br/>_used in:_ [A rule, and where it lives — Why this happens](https://deweydex.github.io/dewlab/tutorials/web-authoring/a-rule-and-where-it-lives.html#why-this-happens)<br/>_used in:_ [Images and file size — Your turn](https://deweydex.github.io/dewlab/tutorials/web-authoring/images-and-file-size.html#your-turn)<br/>_used in:_ [Keyframe animation and the checkbox hack — Why this happens](https://deweydex.github.io/dewlab/tutorials/web-authoring/keyframes-and-the-checkbox-hack.html#why-this-happens)<br/>_used in:_ [Keyframe animation and the checkbox hack — Your turn](https://deweydex.github.io/dewlab/tutorials/web-authoring/keyframes-and-the-checkbox-hack.html#your-turn)<br/>_used in:_ [Several pages, one navigation — Why this happens](https://deweydex.github.io/dewlab/tutorials/web-authoring/pages-and-navigation.html#why-this-happens)<br/>_used in:_ [Quick reference — HTML](https://deweydex.github.io/dewlab/tutorials/web-authoring/quick-reference.html#html) |
 | `WA-LO3` Explore available HTML and CSS editors and development tools (the descriptor's own contrast is a WYSIWYG editor against a text editor; dewlab explores its own in-browser site editor against a plain-text editor instead) | 🟩 | [An editor — VS Code, the usual choice](https://deweydex.github.io/dewlab/tutorials/web-authoring/an-editor.html#vs-code-the-usual-choice)<br/>[An editor — No installing anything: GitHub's own editor](https://deweydex.github.io/dewlab/tutorials/web-authoring/an-editor.html#no-installing-anything-githubs-own-editor)<br/>_used in:_ [Your copy of the starter — Three ways to open it](https://deweydex.github.io/dewlab/tutorials/web-authoring/your-copy-of-the-starter.html#three-ways-to-open-it) |
 | `WA-LO4` The principles of good website design: target audience, site objectives, navigation, structure, interface and access speed | 🟩 | [Images and file size — Choosing a format](https://deweydex.github.io/dewlab/tutorials/web-authoring/images-and-file-size.html#choosing-a-format)<br/>[Images and file size — Keeping file size down](https://deweydex.github.io/dewlab/tutorials/web-authoring/images-and-file-size.html#keeping-file-size-down)<br/>[Planning a site — Two site maps](https://deweydex.github.io/dewlab/tutorials/web-authoring/planning-a-site.html#two-site-maps)<br/>[Planning a site — Why this happens](https://deweydex.github.io/dewlab/tutorials/web-authoring/planning-a-site.html#why-this-happens)<br/>_used in:_ [Images and file size — Your turn](https://deweydex.github.io/dewlab/tutorials/web-authoring/images-and-file-size.html#your-turn)<br/>_used in:_ [Several pages, one navigation — Why this happens](https://deweydex.github.io/dewlab/tutorials/web-authoring/pages-and-navigation.html#why-this-happens)<br/>_used in:_ [Planning a site — Your turn](https://deweydex.github.io/dewlab/tutorials/web-authoring/planning-a-site.html#your-turn)<br/>_used in:_ [Project ideas — Making any of them easy to read](https://deweydex.github.io/dewlab/tutorials/web-authoring/project-ideas.html#making-any-of-them-easy-to-read) |
-| `WA-LO5` Investigate available web authoring tools, including desktop publishing programs and website management systems (the descriptor's own examples — Dreamweaver, Photoshop, Joomla, WordPress — are commercial GUI tools; dewlab's own equivalent is hand-written HTML and CSS, not yet covered by anything in dewlab) | 🟥 | — |
+| `WA-LO5` Investigate available web authoring tools, including desktop publishing programs and website management systems (the descriptor's own examples — Dreamweaver, Photoshop, Joomla, WordPress — are commercial GUI tools; dewlab discusses GitHub Pages, WordPress and two modern single-page builders against the hand-written HTML and CSS this course actually teaches) | 🟩 | [Conclusions and Next Steps — Other ways to build a website](https://deweydex.github.io/dewlab/tutorials/web-authoring/conclusions-and-next-steps.html#other-ways-to-build-a-website)<br/>_used in:_ [Conclusions and Next Steps — Give it a try](https://deweydex.github.io/dewlab/tutorials/web-authoring/conclusions-and-next-steps.html#give-it-a-try) |
 | `WA-LO6` Keep evidence of a web authoring project: its own research, requirements, and an evaluation of the finished site | 🟩 | [Documenting what you built — What readme.md is for](https://deweydex.github.io/dewlab/tutorials/web-authoring/documenting-what-you-built.html#what-readmemd-is-for)<br/>_used in:_ [Documenting what you built — Your turn](https://deweydex.github.io/dewlab/tutorials/web-authoring/documenting-what-you-built.html#your-turn) |
 | `WA-LO7` Plan a design and user interface for a specified website, documenting each stage of the process (the descriptor's own outcome also has the learner selecting an authoring tool; dewlab's own tool is a given, not a choice) | 🟩 | [Planning a site — Why this happens](https://deweydex.github.io/dewlab/tutorials/web-authoring/planning-a-site.html#why-this-happens)<br/>_used in:_ [Planning a site — Your turn](https://deweydex.github.io/dewlab/tutorials/web-authoring/planning-a-site.html#your-turn) |
 | `WA-LO8` Use HTML tags to build a standards-conformant page or site to a given design | 🟩 | [A page is files — Your turn](https://deweydex.github.io/dewlab/tutorials/web-authoring/a-page-is-files.html#your-turn)<br/>_used in:_ [A form — Your turn](https://deweydex.github.io/dewlab/tutorials/web-authoring/a-form.html#your-turn)<br/>_used in:_ [Headings, paragraphs and emphasis — Your turn](https://deweydex.github.io/dewlab/tutorials/web-authoring/headings-and-emphasis.html#your-turn)<br/>_used in:_ [Images, paths and alt text — Your turn](https://deweydex.github.io/dewlab/tutorials/web-authoring/images-and-alt-text.html#your-turn)<br/>_used in:_ [Images and file size — An images folder](https://deweydex.github.io/dewlab/tutorials/web-authoring/images-and-file-size.html#an-images-folder)<br/>_used in:_ [Navigation — Your turn](https://deweydex.github.io/dewlab/tutorials/web-authoring/navigation.html#your-turn)<br/>_used in:_ [Several pages, one navigation — Your turn](https://deweydex.github.io/dewlab/tutorials/web-authoring/pages-and-navigation.html#your-turn)<br/>_used in:_ [Project ideas — After you fork the starter](https://deweydex.github.io/dewlab/tutorials/web-authoring/project-ideas.html#after-you-fork-the-starter)<br/>_used in:_ [Sections, and the tags that mean something — Your turn](https://deweydex.github.io/dewlab/tutorials/web-authoring/sections-that-mean-something.html#your-turn)<br/>_used in:_ [The skeleton: head and body — Your turn](https://deweydex.github.io/dewlab/tutorials/web-authoring/the-skeleton.html#your-turn)<br/>_used in:_ [Three kinds of link — Your turn](https://deweydex.github.io/dewlab/tutorials/web-authoring/three-kinds-of-link.html#your-turn) |

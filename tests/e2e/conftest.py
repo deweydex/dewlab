@@ -28,6 +28,20 @@ PAGE = f"tutorials/{MODULE}/{SLUG}.html"
 UP = "../../"  # from the built page back to the site root
 
 
+def _open_panel(actor, selector: str) -> None:
+    """Expand the masthead's Panels disclosure first if the page has one
+    (dewmini's own page doesn't -- its settings toggle is a plain,
+    always-visible button, not folded behind one), then click the
+    actual toggle. Checked via #dl-panels' own `open` property rather
+    than the target's own visibility, so this never mistakes "already
+    open" for "not open" and toggles it shut again right before the
+    click that was supposed to land."""
+    has_panels = actor.locator("#dl-panels").count() > 0
+    if has_panels and not actor.eval_on_selector("#dl-panels", "el => el.open"):
+        actor.click("#dl-panels summary")
+    actor.click(selector)
+
+
 @pytest.fixture(scope="session")
 def site_dir(tmp_path_factory) -> Path:
     if not (PYODIDE / "pyodide.mjs").exists():

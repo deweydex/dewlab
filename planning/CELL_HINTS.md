@@ -735,7 +735,7 @@ naming a `sql exec` cell's id needs nothing extra, since it wraps
 boolean for dewmini.
 
 **A query that comes back empty is now a trigger too, DECISIONS_LOG.md
-7.148.** Raised while thinking through what a SQL-aware hint could
+7.149.** Raised while thinking through what a SQL-aware hint could
 catch that a raw sqlite3 message can't: the most common real mistakes
 — a missing comma read as a column alias, a `WHERE` that compares
 against the wrong case — never raise at all, so no error-keyed hint
@@ -747,7 +747,7 @@ that the result was empty, not why — an author's own hint still does
 the diagnosing, the same split between "when" and "what" every other
 trigger in this file keeps.
 
-**The harder version was tried too, DECISIONS_LOG.md 7.149 — as a fact
+**The harder version was tried too, DECISIONS_LOG.md 7.150 — as a fact
 the cell shows immediately, not a second trigger.** `_run_sql_cell()`
 now counts the rows in the table an empty `SELECT` queried, and quietly
 reruns a `column = 'literal'` comparison case-insensitively, reporting

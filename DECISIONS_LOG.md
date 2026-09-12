@@ -3304,7 +3304,35 @@ new tutorial folders (`a-college-timetable`, `the-library-loans-quiz`)
 with their own glossary files; both `.order.yaml` files and
 `topic-groups.yaml` updated. No engine or build.py change.*
 
-**7.148 — A staged hint can now wait for a SQL query that comes back
+**7.148 — "Conclusions and Next Steps" closes WA-LO1 and WA-LO5, leaving
+WA-LO12 as the module's one real gap.** A new last page in
+`several-pages`, after `documenting-what-you-built`: a short history of
+HTML and CSS (Tim Berners-Lee's original ~18 tags in 1993, HTML2 through
+HTML4.01, the 2004 WHATWG split that produced HTML5, and HTML5's own
+shift to a living standard with no successor number; CSS1 through
+CSS2.1, then CSS3's split into independently-released modules — flexbox
+and grid, both already taught, are two of them), then GitHub Pages named
+plainly as the website management system this course has used the whole
+time, alongside WordPress, Carrd and Solo as three different trade-offs
+against hand-writing HTML and CSS. Every date and product claim checked
+against a live search before writing it, not reconstructed from memory.
+
+Closing WA-LO5 surfaced the same stale-title bug DBM-LO7 had: its own
+`outcomes.yaml` title still said "not yet covered by anything in
+dewlab" after the page covering it existed. Fixed the same way, and
+trimmed WA-LO5 out of the WA module comment's own list of uncovered
+codes, leaving WA-LO12 (code generators) as the only one left — dewlab
+teaches HTML and CSS by hand throughout, and a generator's output has
+nowhere honest to sit next to that without a real decision about what
+it would mean to "employ" one.
+
+*Cost to change: one new tutorial folder with its own glossary file
+(the first in web-authoring — the module's other 42 pages have never
+had one, a pre-existing gap this doesn't close); both `.order.yaml` and
+`topic-groups.yaml` updated; two outcomes.yaml corrections. 115 of 116
+outcomes now in place.*
+
+**7.149 — A staged hint can now wait for a SQL query that comes back
 empty.** Josh, thinking through what a hint system could do for
 `database-methods` beyond translating a raw sqlite3 message: "maybe we
 can really look at code and help a student when the output is
@@ -3350,13 +3378,13 @@ confirmed clean. No browser end-to-end test yet — the existing
 cell; worth extending once a second staged-hints signal needs the same
 proof.*
 
-**7.149 — A SQL cell now looks at the actual schema and data before
+**7.150 — A SQL cell now looks at the actual schema and data before
 giving up on a plain error message.** Josh: "let's also think through
 the steps a student might make like mistyping a name of a variable or
 not having the right syntax or order for where or another filter."
 Four additions to `assets/tutorial_tools.py`, all inside
 `_run_sql_cell()`'s own path, none touching the trigger/attempts
-machinery 7.148 added:
+machinery 7.149 added:
 
 **A typo gets the same "did you mean" CPython already gives its own
 exceptions.** `no such table: prodcuts` and `no such column: pricee`
@@ -3392,7 +3420,7 @@ addition on that same line was the only way to add it without a second
 plumbing path from `_run_sql_cell()` all the way out to
 `render_error()`.
 
-**The empty-results signal 7.148 built now explains itself, immediately,
+**The empty-results signal 7.149 built now explains itself, immediately,
 whether or not an author staged a hint for it.** `_empty_result_notes()`
 runs once a `SELECT` has already come back empty: it counts the rows in
 the table named after `FROM` (empty table, or a filter that excluded

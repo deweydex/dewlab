@@ -96,6 +96,44 @@ doesn't have) — a different, adjacent kind of accuracy check to the
 plain-language one, but done in the same pass since both mean actually
 reading the sentence rather than trusting it.
 
+**An idiom and vocabulary sweep across the documentation pages and the
+first tutorial's opening** (`docs/FOR_STUDENTS.md`, `docs/FAQ.md`,
+`write_about_page()` and `render_index()` in `build.py`, and the opening
+sections of `first-steps.md`). This is the first pass against rule 9
+(vocabulary, dialect-neutral idiom) on any surface.
+
+Changes in `docs/FOR_STUDENTS.md`: "how you get on" → "how you do"; "docked"
+→ "fixed to" (three occurrences); "straight away" → "right after"; "dock to"
+→ "open on"; "page through" → "move through"; "grip" → "handle"; "cut across
+that order" → "organise things differently"; "straight with you about its
+gaps" → "you can see where it has gaps"; "half recognising" → "not quite
+remembering"; "two folds" → "two hidden sections you can open"; "memory stick"
+→ "USB drive" (two occurrences); "has got stuck" → "is stuck"; the long
+em-dash sentence about dewmini split into two; "at the foot" → "at the
+bottom".
+
+Changes in `docs/FAQ.md`: "a mark against you" → "tells you something about
+the method, not about you"; "Nothing stops you jumping" → "Nothing stops you
+from jumping"; "at the foot of" → "at the bottom of".
+
+Changes in `build.py` (About page): "a mark against you" → "not about you";
+"glad of help" → "welcome help"; "at the foot of" → "at the bottom of".
+
+Changes in `build.py` (contents page): "general principle" → "general idea";
+"run all the way through" → "appear throughout"; "more abstract" → "more
+open-ended".
+
+Changes in `first-steps.md`: opening paragraph rewritten to remove three uses
+of "algorithm" before the word is defined (at "What is an Algorithm?", fifty
+lines later), following the project's own discover-then-name principle;
+"mathematically" → "about maths"; "everyone who can do this had a first week
+too" → "Everyone starts here" (removes an implied comparison a B1 reader
+would need to unpack); "Interleaved" → "Set into"; "hallmarks" → "shows what
+makes"; "terminates" → "finishes"; "clever" → "smart"; "nothing more and
+nothing less" → "and only that"; "follow along?" → removed trailing idiom;
+"valuable" → "useful"; "core loop" → "main pattern"; "translate" → "turn it
+into".
+
 ---
 
 ## Not done — pick up here
@@ -125,6 +163,16 @@ list) is possible, but still needs a human read afterward.
 flattening would cost the most. The whole database-methods module is done —
 see "Done" above — every other module untouched. Worth doing tutorial by
 tutorial rather than in a sweep.
+
+**A vocabulary sweep, against the ninth rule.** The documentation pages
+(`FOR_STUDENTS.md`, `FAQ.md`), the About page, the contents page and the
+first tutorial's opening have been swept (see above). The remaining surfaces
+— tutorial body prose beyond the opening, topic descriptions, glossary
+definitions — have not. A mechanical first pass is possible — a list of the
+roughly two thousand most common English words, flagged the way
+`tools/measure_sentences.py` (dewstack) flags a sentence over the limit — but
+it still needs reading afterward, the same way that script's own docstring
+says of itself.
 
 **A tracked pass for the struggle/self-efficacy framing (section 11), if it
 turns out to need one.** For now it's added opportunistically wherever a
