@@ -521,7 +521,7 @@ p code, li code {
 }
 .dl-btn-run.dl-btn-stop:hover:not(:disabled) { opacity: 0.85; }
 
-.dl-btn-reset { border-color: var(--dl-error-fg); color: var(--dl-error-fg); }
+.dl-btn-clear, .dl-btn-site-clear { border-color: var(--dl-error-fg); color: var(--dl-error-fg); }
 
 .dl-hint-icon {
   width: 1.15rem; height: 1.15rem;

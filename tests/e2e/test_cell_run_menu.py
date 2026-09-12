@@ -94,6 +94,30 @@ class TestRunLine:
         assert run_line_text(page, "plain-python") == "Not yet run this session"
 
 
+class TestClear:
+    def test_cancelling_the_confirmation_leaves_the_edit_in_place(self, clean_storage):
+        page = clean_storage
+        page.click(".dl-cell[data-cell-id='plain-python'] .cm-content")
+        page.keyboard.press("Control+End")
+        page.keyboard.insert_text("\n# a harmless edit")
+
+        page.once("dialog", lambda dialog: dialog.dismiss())
+        page.click(".dl-cell[data-cell-id='plain-python'] .dl-btn-clear")
+        assert "# a harmless edit" in cell(page, "plain-python").locator(".cm-content").inner_text()
+
+    def test_confirming_puts_the_starter_code_back_and_clears_the_run_line(self, clean_storage):
+        page = clean_storage
+        run_cell(page, "plain-python")
+        page.click(".dl-cell[data-cell-id='plain-python'] .cm-content")
+        page.keyboard.press("Control+End")
+        page.keyboard.insert_text("\n# a harmless edit")
+
+        page.once("dialog", lambda dialog: dialog.accept())
+        page.click(".dl-cell[data-cell-id='plain-python'] .dl-btn-clear")
+        assert "# a harmless edit" not in cell(page, "plain-python").locator(".cm-content").inner_text()
+        assert run_line_text(page, "plain-python") == "Not yet run this session"
+
+
 class TestRunMenu:
     def test_run_above_runs_this_cell_and_everything_before_it_only(self, clean_storage):
         page = clean_storage
