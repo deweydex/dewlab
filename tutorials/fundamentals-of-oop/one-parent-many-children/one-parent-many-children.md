@@ -297,7 +297,7 @@ the same way, rather than five separate numbers. `SavingsAccount` and
 is, for the same reason the loop in the last section did not.
 
 This is a different relationship from inheritance. `SavingsAccount`
-*is a* `BankAccount`, one field and method short of it. `Bank` *has*
+*is a* `BankAccount` with one extra field and one extra method. `Bank` *has*
 accounts; it is not a kind of account itself, and does not extend
 `BankAccount` the way `SavingsAccount` does. Building one class out of
 objects of another, rather than by inheriting from it, is called

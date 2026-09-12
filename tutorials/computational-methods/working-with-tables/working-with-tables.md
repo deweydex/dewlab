@@ -12,7 +12,7 @@ version: 2026.08.23.1
 
 A single number is rarely what you are working with. This tutorial introduces
 the *DataFrame* — a table of rows and columns, which is how pandas, a library
-for handling tabular data, holds a dataset in memory.
+for working with data in tables, holds a dataset in memory.
 
 ## The shared table
 
@@ -26,7 +26,7 @@ id: setup
 readings
 ```
 
-A DataFrame renders as a table rather than as text, which makes it much easier
+A DataFrame appears as a table rather than as text, which makes it much easier
 to see what you have.
 
 ## Asking a question of the table

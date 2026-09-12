@@ -11,7 +11,7 @@ version: 2026.08.30.1
 
 # Counting Darts — Practice
 
-Every problem here is the same three steps in a different costume: throw
+Every problem here uses the same three steps, with different details: throw
 points at a region you can measure, decide which ones land in the part you
 cannot, and multiply the fraction by the area you started with.
 
@@ -37,8 +37,7 @@ from $(-1, -1)$ to $(1, 1)$ and counted those inside the *whole* unit circle?
 
 <details class="dl-answer"><summary>answer</summary>
 
-By 4 again — but for a different reason, and the difference is worth having
-straight.
+By 4 again — but for a different reason, and the difference is worth understanding clearly.
 
 That square has area $2 \times 2 = 4$. The whole circle has area $\pi$. So
 the fraction inside is $\pi/4$, and the estimate is $4 \times$ the fraction.
@@ -83,8 +82,8 @@ rule predicts and no better.
 
 This one has a name — *Monte Carlo integration* — and it is the reason the
 method matters. Nobody needs it for $x^2$, where calculus gives $1/3$ exactly
-in one line. But swap in a function with no closed-form integral and the
-calculus stops working while this code carries on unchanged.
+in one line. But use a function with no closed-form integral and the calculus stops
+working while this code continues unchanged.
 
 </details>
 
@@ -116,8 +115,7 @@ print(math.pi * 1 * 0.5 / 4)     # 0.39270
 
 Close to three decimal places, this time — better than the last problem got,
 from the same number of darts. That is not because ellipses are easier. It is
-the same unreliable accuracy the tutorial's table showed, landing well on
-this particular run.
+the same unreliable accuracy the tutorial's table showed, giving a good result on this particular run.
 
 </details>
 
@@ -139,8 +137,8 @@ minutes of the tab doing nothing else, to compute a number already known to
 fifty trillion digits by better methods.
 
 Which is the honest conclusion, and worth stating plainly: for π, this method
-is a toy. It earns its keep on questions where the alternative is not a
-better algorithm but no algorithm at all.
+is a toy. It is most useful for questions where the alternative is not a better
+algorithm but no algorithm at all.
 
 </details>
 
@@ -176,7 +174,7 @@ as every other one.
 
 Worth noticing what this measurement is *not*: it says nothing about whether
 the answer is any good. Time and accuracy are separate questions here, and
-running longer buys you the second only in the unreliable, square-root way
+running longer gives you the second only in the unreliable, square-root way
 the tutorial showed.
 
 </details>
@@ -239,7 +237,7 @@ one thousandth of the rectangle, then 999 darts in every thousand tell you
 nothing, and you need a thousand times as many to reach any given accuracy.
 
 The rectangle should be the smallest one you are certain contains the shape.
-"Certain" is doing the work in that sentence — when unsure, take the larger
+"Certain" is the important word in that sentence — when unsure, take the larger
 one and pay in time rather than in a wrong answer nobody spots.
 
 </details>
@@ -287,6 +285,6 @@ sets out to measure.
 
 Until then, the practical habit: two people comparing simulation results
 should compare seeds first. Identical seeds and different answers is a real
-bug. Different seeds and different answers is Tuesday.
+bug. Different seeds and different answers is normal.
 
 </details>

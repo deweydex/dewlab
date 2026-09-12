@@ -12,8 +12,8 @@ version: 2026.08.23.1
 
 Everything on this page runs in your own browser. Nothing installs, nothing is
 submitted, and nothing you type here leaves the machine you are sitting at. If
-you break a cell beyond repair, the **reset** button puts the author's version
-back.
+you break a cell and cannot fix it, the **reset** button puts the author's
+version back.
 
 ## Running your first cell
 
@@ -72,7 +72,7 @@ what an error message is actually telling you, line by line.
 
 If none of the three explain it, click the small circle beside a cell's
 hint. It opens a report with your code and the cell's last output already
-included, nothing to copy. The line at the foot of every page does the same
+included, nothing to copy. The line at the bottom of every page does the same
 for the page as a whole, rather than one cell.
 
 ## Where to go next

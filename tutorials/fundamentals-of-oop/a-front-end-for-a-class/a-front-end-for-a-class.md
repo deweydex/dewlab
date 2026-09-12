@@ -62,7 +62,7 @@ print(bank.total_balance())
 Opening an account here means calling `bank.open_account(...)` by hand,
 with the right arguments in the right order. Someone who has never
 written Python has no way to use this `Bank` at all. The program works
-fine — the problem is that using it currently means editing its own
+fine — the problem is that using it means editing its own
 source code.
 
 ## A Menu Loop
@@ -289,7 +289,7 @@ In this tutorial:
 - Separating "what a choice means" (`run_choice()`) from "asking for the
   choice" (`input()`) makes the first part testable on its own. A list of
   choices can stand in for a person typing them.
-- A front end has to handle input nobody expected, gracefully, since the
+- A front end has to handle input nobody expected, without breaking, since the
   person using it has never seen the code behind the menu.
 
 ### Reflection

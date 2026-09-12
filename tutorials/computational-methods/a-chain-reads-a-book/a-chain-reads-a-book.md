@@ -21,7 +21,7 @@ covers:
 *Words That Follow Words*, in *Where Chains Lead*, built a chain from one
 repeated sentence, ten words long. This tutorial builds the same kind of
 chain from an entire novel instead, H. G. Wells's *The Time Machine*, and
-immediately hits a real technical problem the ten-word version never had.
+immediately meets a real technical problem the ten-word version never had.
 
 ## Loading a Real Book
 
@@ -38,7 +38,7 @@ print(raw[:300])
 
 The text you just loaded includes more than *The Time Machine* itself.
 Project Gutenberg, the library this copy comes from, adds its own header
-to the top of every file it distributes, and a long licence to the bottom.
+to the top of every file it distributes, and a long license to the bottom.
 Look near the top of what printed above: a few lines down sits
 `*** START OF THIS PROJECT GUTENBERG EBOOK THE TIME MACHINE ***`.
 Everything from there up to the matching `*** END OF...` line, further down
@@ -114,7 +114,7 @@ print(len(next_words["Weena"]), "different words follow 'Weena' somewhere in the
 
 `"Weena"` is the one companion the Time Traveller names in the whole book,
 a good word to ask about because it appears often enough in the story to
-have many neighbours already, without being one of the handful of words
+have many neighbours already, without being one of the few words
 ("the", "and", "I") whose dictionaries grow huge from sheer repetition.
 
 Each inner dictionary's values are plain counts, not probabilities — how

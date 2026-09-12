@@ -68,7 +68,7 @@ print("area after stretch:", polygon_area(transformed))
 
 The area doubled. Is that because of the numbers 2 and 0 in `stretch`, and if
 so, which arithmetic on them gives 2? Try `shear = [[1, 1], [0, 1]]` — the
-one that looked most dramatically different in the last tutorial's
+one that looked most different in the last tutorial's
 gallery — and measure its area too.
 
 ```python exec
@@ -86,10 +86,10 @@ id: measuring-the-square-4
 hint: For stretch, a=2, b=0, c=0, d=1. For shear, a=1, b=1, c=0, d=1.
 ```
 
-The determinant of a matrix is exactly the factor by which it scales area.
+The determinant of a matrix is the signed factor by which it scales area — a negative determinant means the matrix also flips the orientation of the shape.
 `shear` looked like the most extreme transformation in the gallery, and it
 changed the area not at all — a fact the picture alone does not make obvious,
-and the determinant states outright.
+and the determinant states directly.
 
 ## When the Square Collapses
 
@@ -188,10 +188,10 @@ id: which-ones-can-be-undone-2
 ## Reflection
 
 One number, computed from four entries, and it answers a question a picture
-can only illustrate: whether a matrix loses information. `ad - bc` is not an
-arbitrary formula picked to make examples come out neatly — it is the area
+can only illustrate: whether a matrix loses information. `ad - bc` is not a
+formula chosen to make examples work out neatly — it is the area
 scale factor, and a factor of zero means area disappears, which means two
-different starting shapes could land on the same flattened result, which
+different starting shapes could end up as the same flattened result, which
 means there is no way back.
 
 Did any of the five candidates surprise you — one that looked like it should

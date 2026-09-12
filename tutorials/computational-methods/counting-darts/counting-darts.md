@@ -45,8 +45,7 @@ without a formula for its area, and without knowing π in the first place.
 
 The only thing needed is a way to tell whether a point is inside the curve.
 A point $(x, y)$ is inside a circle of radius 1 centred on the origin exactly
-when $x^2 + y^2 \le 1$ — which is Pythagoras, doing the only work anyone asks
-of it here.
+when $x^2 + y^2 \le 1$ — which is Pythagoras, used here and nowhere else in the method.
 
 ```python exec
 id: a-question-you-can-answer-by-throwing-things-1
@@ -71,8 +70,8 @@ hint: 0.36 + 0.64. The answer is exactly on the boundary, which is why this part
 ## One Dart at a Time
 
 Now the throwing. Each dart is a pair of random numbers between 0 and 1 —
-which is precisely what `random.random()` hands over, so a dart costs two
-calls and nothing else.
+which is exactly what `random.random()` gives, so a dart costs two calls
+and nothing else.
 
 ```python exec
 id: one-dart-at-a-time-1
@@ -96,13 +95,13 @@ def estimate_pi(n, seed=0):
 print(estimate_pi(100))
 ```
 
-3.04, from a hundred darts and no mathematics beyond a square root that never
-even got taken.
+The result is 3.04, from a hundred darts and no mathematics beyond a square
+root that was never even computed.
 
 It is also wrong in the second decimal place, which is worth sitting with
 rather than hurrying past. The method has not made an error. There is no bug
 to find. A hundred darts genuinely does not contain enough information to
-pin π down further than that, and no amount of care in the code would change
+find π more exactly than that, and no amount of care in the code would change
 it.
 
 ### Your turn
@@ -174,8 +173,8 @@ hint: Look at the shape of the settling rather than the particular wiggles. The 
 
 ## More Is Not Reliably Better
 
-Here is the result that makes this method honest, and it comes out of a
-table rather than an argument.
+Here is the result that shows this method's real limits, and it comes out
+of a table rather than an argument.
 
 ```python exec
 id: more-is-not-reliably-better-1
@@ -196,8 +195,7 @@ thousand*.
 That is not a mistake in the code and it is not a bad seed. Ten times the
 work bought a slightly worse answer on this particular run, and that is a
 completely ordinary thing for this method to do. Run it with another seed and
-the numbers will differ; the pattern of a stubbornly slow, unreliable
-improvement will not.
+the numbers will differ; the pattern of a slow, unreliable improvement will not.
 
 ```python exec
 id: more-is-not-reliably-better-3
@@ -223,8 +221,7 @@ the typical error shrinks in proportion to $1/\sqrt{n}$. Squeezing one more
 decimal place out of the answer means about **a hundred times** the darts.
 Two more decimal places means ten thousand times. This is why nobody computes
 π this way — there are far better methods — and why it is still the first
-example everyone is shown: the arithmetic is trivial, so the behaviour is
-what you notice.
+example everyone is shown: the arithmetic is simple, so the behaviour is what you notice.
 
 ### Your turn
 
@@ -244,19 +241,17 @@ The method in this tutorial has no formula for π in it anywhere. It does not
 know what π is. It counts a proportion, and π falls out of the geometry of
 the question being asked.
 
-That is the move worth carrying forward, because it generalises far past
-circles. Any quantity that can be written as "the fraction of cases where
+That is the idea worth remembering, because it goes far past circles. Any quantity that can be written as "the fraction of cases where
 something is true" can be estimated by generating cases and counting — and
 plenty of real questions have that shape while having no formula at all. What
 fraction of delivery routes finish before 5pm? How often does this design
-fail under load? Those are not solvable on paper, and they are exactly as
-easy to throw darts at as a quarter-circle is.
+fail under load? Those need simulation to solve, and they are exactly as easy to throw
+darts at as a quarter-circle is.
 
 Was the wandering estimate uncomfortable to look at? Most of the mathematics
 you have met so far produces an answer that is simply correct, and a method
 whose answer is *approximately* right, by an amount you can only describe
-statistically, asks for a different kind of trust. That discomfort is the
-right instinct — it is what the next tutorial is for.
+statistically, asks for a different kind of trust. That discomfort is the right reaction — it is what the next tutorial is for.
 
 ## Where to Read More
 
@@ -274,6 +269,5 @@ tutorial's argument applied to real data.
 Robert, C. P. and Casella, G. (2004). *Monte Carlo Statistical Methods*
 (2nd ed.). Springer. The standard graduate reference, well past this course's
 level — listed because Chapter 1's opening pages make the same argument this
-tutorial does, that the method earns its place on problems where no formula
-is available, and it is worth seeing that stated by the people who use it in
-earnest.
+tutorial does, that the method is most useful on problems where no formula is available,
+and it is worth seeing that stated by the people who use it for real work.

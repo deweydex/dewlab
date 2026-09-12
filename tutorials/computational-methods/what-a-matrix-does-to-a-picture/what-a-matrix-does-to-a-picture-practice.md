@@ -65,7 +65,7 @@ result = multiply([[-1, 0], [0, 1]], square)
 
 Only the $x$-coordinates flip sign; every $y$-coordinate stays exactly where
 it was. That is a reflection across the $y$-axis — the square's mirror
-image, folded left-to-right rather than upside down.
+image, flipped left-to-right rather than upside down.
 
 </details>
 
@@ -180,7 +180,7 @@ Yes: $\begin{bmatrix} 0 & 0 \\ 0 & 0 \end{bmatrix}$, the zero matrix.
 
 Both columns are $(0,0)$, so both $(1,0)$ and $(0,1)$ collapse to the origin
 — and everything else made of them collapses along with them. This is the
-most extreme version of a matrix that cannot be undone: not merely flattened
+most extreme version of a matrix that cannot be undone: not just flattened
 to a line, but flattened all the way to a point, which the next tutorial's
 determinant will mark as exactly as broken as the line case.
 
@@ -198,7 +198,7 @@ column, where $(0,1)$ lands, is completely free.
 
 $\begin{bmatrix} 2 & 0 \\ 0 & 1 \end{bmatrix}$ and
 $\begin{bmatrix} 2 & 5 \\ 0 & 3 \end{bmatrix}$ both send $(1,0)$ to $(2,0)$
-and disagree everywhere else. Reading a matrix off a picture, as in problems
+and differ everywhere else. Reading a matrix off a picture, as in problems
 3 through 5, only works because those problems gave you *both* columns'
 worth of information, not one.
 

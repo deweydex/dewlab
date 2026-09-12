@@ -26,10 +26,9 @@ simulating a queue, testing a design against a thousand scenarios nobody
 wrote down — all of it starts there.
 
 So it is worth spending one tutorial on that instruction alone, before
-building anything on top of it. Partly because it is the foundation, and
-partly because the machine is not doing what it appears to be doing, and the
-gap between those two things turns out to be useful rather than
-disappointing.
+building anything on top of it. It is the foundation of every simulation in
+this series. And the machine is not doing what it appears to be doing — but
+the gap between the two turns out to be useful rather than disappointing.
 
 ## Asking the Machine for a Number
 
@@ -85,8 +84,7 @@ print([random.randint(1, 6) for _ in range(5)])
 Run that cell again. And again.
 
 The same five numbers, every time. Change the `42` to any other whole number
-and you get a different five — but those five will then repeat just as
-stubbornly.
+and you get a different five — but those five also repeat every time.
 
 ### Your turn
 
@@ -102,28 +100,28 @@ Here is what is happening. The numbers were never random. `random.random()`
 runs an algorithm — an entirely ordinary, deterministic piece of arithmetic —
 that takes its current internal state, scrambles it thoroughly, and returns a
 number derived from the result. The scrambling is good enough that the output
-passes the statistical tests we would apply to genuine randomness: no
-detectable pattern, every value equally likely, no correlation between one
-number and the next.
+passes the statistical tests we would apply to real randomness: no pattern
+anyone can find, every value equally likely, no connection between one number
+and the next.
 
 But it is a calculation, and a calculation given the same starting point
 produces the same answer. `random.seed(42)` sets that starting point by hand.
-Without it, Python picks one from the system clock and some operating-system
-entropy, which is why the numbers usually look different each run.
+Without it, Python picks one from the operating system, which is why the
+numbers usually look different each run.
 
-Numbers produced this way are called *pseudo-random*: not random, but
-indistinguishable from random by any test that matters for our purposes.
+Numbers produced this way are called *pseudo-random*: not random, but so
+close to random that no test we use can tell the difference.
 
 ## What Random Is Good Enough For
 
 The obvious reaction is that pseudo-random is a compromise, a second-best
-because true randomness is hard to come by. For one field that is exactly
+because true randomness is hard to get. For one field that is exactly
 right, and for ours it is almost the reverse.
 
 Think about what you just did to find a seed giving a 6. You ran an
 experiment, and you could run it again and get the same result. Now imagine
 the simulation in tutorial 4 of this series produces a bizarre result — a
-queue that never clears — and you want to know why. With genuinely random
+queue that never clears — and you want to know why. With truly random
 numbers, that specific run is gone forever. You cannot reproduce it, cannot
 step through it, cannot show it to anyone else. With a seed, you write down
 one integer and the entire run comes back exactly.
@@ -146,8 +144,8 @@ for seed in [1, 2, 3]:
 print("seed 2, again:", one_experiment(2))
 ```
 
-The one place this genuinely is a compromise is security. If an attacker can
-work out your seed, they can produce every "random" number you will ever
+The one place where this really is a compromise is security. If an attacker
+can find your seed, they can produce every "random" number you will ever
 generate — which for a session token or a password reset link is a complete
 failure. That is what Python's `secrets` module is for, and it is a different
 tool for a different job. For simulation, where nobody is trying to predict
@@ -213,20 +211,21 @@ names = ["Aoife", "Brendan", "Ciara", "Dara", "Eimear", "Fionn", "Gráinne"]
 
 ## Reflection
 
-The word *random* did a lot of work in this tutorial, and by the end it meant
+The word *random* changed its meaning over this tutorial. By the end it meant
 something narrower than it did at the start: not unpredictable in principle,
-but unpredictable to anyone not holding the seed, and statistically
-well-behaved enough that the difference does not show up in the answer.
+but unpredictable to anyone who does not know the seed, and regular enough
+that the difference does not show up in the answer.
 
 Was the discovery that the numbers repeat a disappointment when you first ran
-that cell, or did the reason for it land before the explanation did? Both are
-common, and the second is worth trusting — the argument for reproducibility
-is one you can reconstruct yourself from a single afternoon of debugging.
+that cell, or did the reason for it make sense before the explanation did?
+Both are common, and the second is worth trusting — the argument for
+reproducibility is one you can build yourself from a single afternoon of
+debugging.
 
 Where else have you met something that is technically not what it claims to
-be, but close enough that the difference never surfaces? Computing is
-unusually full of these, and noticing them is most of what it means to
-understand a system rather than only use it.
+be, but close enough that the difference never matters? Computing has many
+examples like this, and noticing them is most of what it means to understand
+a system rather than only use it.
 
 ## Where to Read More
 

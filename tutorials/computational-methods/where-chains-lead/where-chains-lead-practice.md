@@ -114,7 +114,7 @@ The chain never actually reaches `[1, 0]` exactly in a finite number of
 steps, but it gets arbitrarily close — every visit to state 2 carries a 30%
 chance of being swallowed by state 1 forever, so eventually it is a near
 certainty. This is why absorbing states are sometimes what a Markov chain is
-*for*: modelling a process that is only interesting until it stops, like a
+*for*: modeling a process that is only interesting until it stops, like a
 gambler's ruin or a customer who eventually unsubscribes.
 
 </details>
@@ -176,7 +176,7 @@ concentrated those pages' own outgoing links are.
 Page A ranked highest because both other pages link to it, and one of them
 (B) links to *nothing else at all* — every single visit to B sends its full
 weight straight back to A. A page's own out-degree only ever splits its
-existing weight among its neighbours; it has no bearing on how much weight
+existing weight among the pages it links to; it has no bearing on how much weight
 that page has to split in the first place.
 
 </details>

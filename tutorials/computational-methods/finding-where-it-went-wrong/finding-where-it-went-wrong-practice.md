@@ -113,8 +113,8 @@ the tutorial's own example.
 **4.** A website feels slow. One developer adds a loading spinner so the
 wait feels less noticeable. Another profiles the code and finds a database
 query running once per item instead of once overall, then fixes that
-query. Which developer practised pragmatic problem-solving, and which
-practised semantic analysis?
+query. Which developer used pragmatic problem-solving, and which
+used semantic analysis?
 
 <details class="dl-answer"><summary>answer</summary>
 

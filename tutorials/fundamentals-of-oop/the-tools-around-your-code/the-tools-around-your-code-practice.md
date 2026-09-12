@@ -136,8 +136,7 @@ never ends. What in dewmini stops it without closing the tab?
 <details class="dl-answer"><summary>answer</summary>
 
 The **Stop** button next to that cell. It interrupts the runaway cell
-right away, rather than waiting for it to finish. Stuck in a loop that
-never ends, it never would.
+right away, rather than waiting for it to finish on its own.
 
 </details>
 

@@ -132,7 +132,7 @@ assert account.balance == 0.0, "withdrawing the full balance should leave 0.0"
 Run the cell above. `AssertionError: withdrawing the full balance should
 leave 0.0` names exactly what went wrong, on the exact line that checks it.
 Compare that to *A Bug That Hides in Another Class*, where the same bug
-left nothing behind but a quietly wrong number. The message after the
+produced only a quietly wrong number. The message after the
 comma is not decoration. It is what tells you, later, what the assertion
 was actually checking, once the code around it has slipped from memory.
 

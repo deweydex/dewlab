@@ -37,7 +37,7 @@ print(len(raw) - len(book))
 ```
 
 19,377 — roughly how many characters of Project Gutenberg's own header and
-licence text sat around the real novel, on both ends of the file. Nothing
+license text sat around the real novel, on both ends of the file. Nothing
 in that difference is H. G. Wells's writing.
 
 </details>
@@ -207,7 +207,7 @@ shorter piece of text, or one cleaned differently, could easily end on a
 word that never appears anywhere else in it, and without that check
 `generate()` would crash instead of simply stopping.
 
-There is a small, honest wrinkle even in `words[-1]`, the very last word.
+There is a small complication even in `words[-1]`, the very last word.
 It reads `"Wells"`, not from the novel itself, but from Project
 Gutenberg's own closing line, `"...by H. G. Wells"`, which sits inside the
 `*** END OF... ***` marker along with the real text. `"Wells"` also
@@ -245,6 +245,6 @@ chain from it, and generate 25 words.
 
 **Think about:** does this book's dense vocabulary size (distinct words
 squared) turn out bigger or smaller than *The Time Machine*'s? Bigger or
-smaller than *Pride and Prejudice*'s from the tutorial's own numbers?
+smaller than *Pride and Prejudice*'s?
 
 </details>

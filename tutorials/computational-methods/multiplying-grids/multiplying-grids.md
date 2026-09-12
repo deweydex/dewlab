@@ -83,7 +83,7 @@ $$c_{ij} = \sum_{k} a_{ik} \, b_{kj}$$
 
 That is the whole rule. The columns of $B$ are the awkward part to get at in
 a plain list of lists — but you already wrote something that turns columns
-into rows: `transpose`, from the last tutorial. Each page here starts fresh,
+into rows: `transpose`, from the last tutorial. Each page here begins with no code from previous pages,
 so here it is again, exactly as before.
 
 ```python exec
@@ -129,9 +129,8 @@ If your `dot` from the last section checks lengths, this raises a
 not raise anything and instead returns a $2\times2$ result that quietly threw
 away the third column of `A3`, that is the exact silent failure from the
 dot-product section, one level up. It is worth going back and adding the
-check now if you skipped it, because a matrix multiplication that fails
-loudly is vastly easier to debug than one that returns a plausible wrong
-answer.
+check now if you skipped it, because a matrix multiplication that fails loudly is much easier to debug than
+one that returns a wrong answer that looks right.
 
 The rule this demonstrates: to multiply an $m \times n$ matrix by an
 $n \times p$ matrix, the *inner* dimensions — the $n$'s — have to match. The
@@ -148,8 +147,8 @@ print("BA =", multiply(B, A))
 `AB` and `BA` are both defined here — both matrices are 2×2 — and they are
 not the same matrix. Order genuinely matters for matrix multiplication, which
 is not true of multiplying ordinary numbers, and it is one of the first
-places the analogy between "multiplication of numbers" and "multiplication
-of matrices" breaks down.
+places the comparison between "multiplication of numbers" and "multiplication
+of matrices" stops working.
 
 ### Your turn
 
@@ -185,7 +184,7 @@ check(multiply(C, I3), C)
 ```
 
 This matrix is called the *identity matrix*, usually written $I$, and every
-square shape has its own: $I_2$, $I_3$, and so on. It comes up constantly —
+square shape has its own: $I_2$, $I_3$, and so on. It appears often —
 whenever a formula needs "no change", the identity matrix is what "no
 change" looks like for a matrix.
 
@@ -195,11 +194,11 @@ Two tutorials in, and you have built five operations — add, scale, transpose,
 dot product, and now full matrix multiplication — out of nothing but nested
 Python lists. The multiplication rule in particular is one that almost nobody
 finds obvious on first meeting it, and building it out of the dot product,
-one row-column pair at a time, is the only way it stops feeling arbitrary.
+one row-column pair at a time, is the only way it starts to make sense.
 
 Was the non-commutativity — `AB` not equal to `BA` — surprising, or did you
 expect it once you saw how the rule actually works? What made the connection
-between transpose and "getting at the columns of B" click, if it did?
+between transpose and "getting at the columns of B" clear, if it did?
 
 ## Where to Read More
 
