@@ -84,7 +84,7 @@ class _QuietHandler(http.server.SimpleHTTPRequestHandler):
 
 
 @pytest.fixture()
-def base_url(site):
+def site_url(site):
     server, thread, url = _serve(site / "site")
     try:
         yield url
@@ -109,24 +109,24 @@ def _seed(page, module: str, slug: str, cells: list[dict]) -> None:
 
 
 class TestProgressBadges:
-    def test_a_tutorial_with_no_saved_record_shows_no_badge(self, site, browser, base_url):
+    def test_a_tutorial_with_no_saved_record_shows_no_badge(self, site, browser, site_url):
         _tutorial(site, "one", "One")
         _set_order(site, ["one"])
         b.build()
         context = browser.new_context()
         page = context.new_page()
-        page.goto(f"{base_url}/index.html")
+        page.goto(f"{site_url}/index.html")
         assert page.is_hidden(".dl-progress-badge")
         context.close()
 
-    def test_a_saved_record_with_nothing_run_shows_no_badge(self, site, browser, base_url):
+    def test_a_saved_record_with_nothing_run_shows_no_badge(self, site, browser, site_url):
         """A cell only edited, never run, has no output_html, so an empty one here must count as untouched."""
         _tutorial(site, "one", "One")
         _set_order(site, ["one"])
         b.build()
         context = browser.new_context()
         page = context.new_page()
-        page.goto(f"{base_url}/index.html")
+        page.goto(f"{site_url}/index.html")
         _seed(page, MODULE, "one", [
             {"task_id": "one-1", "student_code": "x = 1", "output_html": "", "errored": False},
         ])
@@ -134,13 +134,13 @@ class TestProgressBadges:
         assert page.is_hidden(".dl-progress-badge")
         context.close()
 
-    def test_a_run_cell_shows_a_fraction_badge(self, site, browser, base_url):
+    def test_a_run_cell_shows_a_fraction_badge(self, site, browser, site_url):
         _tutorial(site, "one", "One")
         _set_order(site, ["one"])
         b.build()
         context = browser.new_context()
         page = context.new_page()
-        page.goto(f"{base_url}/index.html")
+        page.goto(f"{site_url}/index.html")
         _seed(page, MODULE, "one", [
             {"task_id": "one-1", "student_code": "", "output_html": "<pre>hello</pre>", "errored": False},
             {"task_id": "one-2", "student_code": "", "output_html": "", "errored": False},
@@ -151,13 +151,13 @@ class TestProgressBadges:
         assert "dl-progress-badge-errored" not in (badge.get_attribute("class") or "")
         context.close()
 
-    def test_an_errored_cell_gives_the_badge_the_error_colour(self, site, browser, base_url):
+    def test_an_errored_cell_gives_the_badge_the_error_colour(self, site, browser, site_url):
         _tutorial(site, "one", "One")
         _set_order(site, ["one"])
         b.build()
         context = browser.new_context()
         page = context.new_page()
-        page.goto(f"{base_url}/index.html")
+        page.goto(f"{site_url}/index.html")
         _seed(page, MODULE, "one", [
             {"task_id": "one-1", "student_code": "", "output_html": "<pre>hello</pre>", "errored": False},
             {"task_id": "one-2", "student_code": "", "output_html": '<pre class="dl-error">boom</pre>', "errored": True},
@@ -168,13 +168,13 @@ class TestProgressBadges:
         assert "dl-progress-badge-errored" in badge.get_attribute("class")
         context.close()
 
-    def test_the_settings_toggle_hides_and_restores_badges(self, site, browser, base_url):
+    def test_the_settings_toggle_hides_and_restores_badges(self, site, browser, site_url):
         _tutorial(site, "one", "One")
         _set_order(site, ["one"])
         b.build()
         context = browser.new_context()
         page = context.new_page()
-        page.goto(f"{base_url}/index.html")
+        page.goto(f"{site_url}/index.html")
         _seed(page, MODULE, "one", [
             {"task_id": "one-1", "student_code": "", "output_html": "<pre>hello</pre>", "errored": False},
         ])
