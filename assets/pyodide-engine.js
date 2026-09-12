@@ -333,12 +333,6 @@ async function fsMountNativeMT(mountpoint, handle) {
   mountedFsMT = await pyodideMT.mountNativeFS(mountpoint, handle);
 }
 
-async function fsMountOpfsMT(mountpoint) {
-  const opfsRoot = await navigator.storage.getDirectory();
-  pyodideMT.FS.mkdirTree(mountpoint);
-  mountedFsMT = await pyodideMT.mountNativeFS(mountpoint, opfsRoot);
-}
-
 async function fsMountIdbfsMT(mountpoint) {
   pyodideMT.FS.mkdirTree(mountpoint);
   pyodideMT.FS.mount(pyodideMT.FS.filesystems.IDBFS, {}, mountpoint);
@@ -510,12 +504,6 @@ export async function describeGlobals() {
 export async function mountNative(mountpoint, handle) {
   if (mode === "main-thread") return fsMountNativeMT(mountpoint, handle);
   return workerRequest("fs-mount-native", { mountpoint, handle });
-}
-
-/* Mounts the OPFS fallback (private browser storage) at `mountpoint`. */
-export async function mountOpfs(mountpoint) {
-  if (mode === "main-thread") return fsMountOpfsMT(mountpoint);
-  return workerRequest("fs-mount-opfs", { mountpoint });
 }
 
 /* Mounts the IDBFS last-resort fallback at `mountpoint`. */
