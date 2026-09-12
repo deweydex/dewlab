@@ -1,0 +1,33 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# Twentieth tutorial of first-site. Checked against the cumulative
+# glossary so far -- no overlap.
+#
+# Flagging, not fixing: this tutorial's own prose says `auto-fill` sits
+# "alongside the auto-fit already shown on a grid gallery" -- but
+# a-grid-gallery is in several-pages, the series after first-site in
+# series.yaml's order, so a reader reaches this page before that one,
+# not after. That looks like a real forward reference left over from
+# however these pages were first sequenced; worth a look, not touched
+# here since fixing a tutorial's prose isn't this file's job.
+entries:
+  - term: grid-template-areas
+    kind: keyword
+    definition: >
+      `grid-template-areas` names each area of a grid as a small map,
+      one quoted line per row of the grid.
+  - term: grid-area
+    kind: keyword
+    definition: "Assigns an element to one of the named areas set by `grid-template-areas`."
+  - term: auto-fill
+    kind: keyword
+    definition: >
+      `auto-fill` fits as many grid columns as will hold at the given
+      minimum width, but leaves any spare columns empty rather than
+      growing the existing ones to fill the row.
+  - term: order
+    kind: keyword
+    definition: >
+      The `order` property changes a flex item's visual position
+      without changing its position in the HTML. A screen reader still
+      follows the HTML order, not the visual one.

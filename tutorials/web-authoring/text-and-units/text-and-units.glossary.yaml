@@ -1,0 +1,21 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# Eleventh tutorial of first-site. Checked against the cumulative
+# glossary so far -- no overlap.
+entries:
+  - term: px
+    kind: keyword
+    definition: >
+      `px` (pixel) is a fixed unit. `16px` is always 16 pixels, whatever
+      else on the page changes.
+  - term: rem
+    kind: keyword
+    definition: >
+      `rem` is a unit relative to the root font size, the one set on
+      `<html>`. It scales automatically if a reader has changed their
+      own browser's font size.
+  - term: text-align
+    kind: keyword
+    definition: >
+      The `text-align` property sets how text sits within its element:
+      `left`, `right`, `center` or `justify`.

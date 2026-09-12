@@ -3332,7 +3332,43 @@ had one, a pre-existing gap this doesn't close); both `.order.yaml` and
 `topic-groups.yaml` updated; two outcomes.yaml corrections. 115 of 116
 outcomes now in place.*
 
-**7.149 — A staged hint can now wait for a SQL query that comes back
+**7.149 — web-authoring's series order, and glossary files for its 42
+pre-existing pages.** Added `tutorials/web-authoring/series.yaml` with
+`order: [welcome, first-site, several-pages, shelf]`. Without it, both
+the module page's display order and the reference panel's cumulative
+accumulation fell back to alphabetical by series key, which put
+"Welcome" — the series a reader is meant to start with — last.
+
+Wrote a `<slug>.glossary.yaml` for every one of the module's other 42
+pages (`conclusions-and-next-steps` already had one from 7.148), read
+in the corrected series order so each file's own new terms build on
+what came before. Two homonyms needed a disambiguated term name to
+avoid colliding with an earlier, unrelated meaning already in the
+reference: "element" (an HTML element, from `a-page-is-files`) versus
+"element (BEM)" (a named part of a block, from
+`css-variables-and-bem`); "max-width" (an element-sizing property, from
+`the-container`) versus "max-width (media query)" (a screen-width
+condition, from `media-queries`).
+
+Two things surfaced worth a look rather than fixed here. `named-grid-
+areas.md`'s own prose says `auto-fill` sits "alongside the auto-fit
+already shown on a grid gallery" — but `a-grid-gallery` is in
+several-pages, which this same series order puts after first-site, so
+the reference runs backward relative to how a reader actually meets the
+two pages. `quick-reference.md`'s tables also name a handful of tags
+and properties — `<table>`/`<tr>`/`<th>`/`<td>`, `line-height`, `gap`,
+the `em`/`vh`/`vw` units, `:link`/`:visited`/`:active`,
+`target="_blank"`, `placeholder` — that no narrative tutorial in the
+module actually teaches; it may be deliberate completeness for a cheat
+sheet, or a real gap.
+
+*Cost to change: one new `series.yaml`; 41 new glossary files, no
+tutorial prose changed. `dev/curriculum_map.py`'s vocabulary section is
+unaffected — it tracks italicised emphasis in prose, not glossary
+files, so this pass could not introduce a new "used before it was
+introduced" warning even where it added a disambiguated term.*
+
+**7.150 — A staged hint can now wait for a SQL query that comes back
 empty.** Josh, thinking through what a hint system could do for
 `database-methods` beyond translating a raw sqlite3 message: "maybe we
 can really look at code and help a student when the output is
@@ -3378,13 +3414,13 @@ confirmed clean. No browser end-to-end test yet — the existing
 cell; worth extending once a second staged-hints signal needs the same
 proof.*
 
-**7.150 — A SQL cell now looks at the actual schema and data before
+**7.151 — A SQL cell now looks at the actual schema and data before
 giving up on a plain error message.** Josh: "let's also think through
 the steps a student might make like mistyping a name of a variable or
 not having the right syntax or order for where or another filter."
 Four additions to `assets/tutorial_tools.py`, all inside
 `_run_sql_cell()`'s own path, none touching the trigger/attempts
-machinery 7.149 added:
+machinery 7.150 added:
 
 **A typo gets the same "did you mean" CPython already gives its own
 exceptions.** `no such table: prodcuts` and `no such column: pricee`
@@ -3420,7 +3456,7 @@ addition on that same line was the only way to add it without a second
 plumbing path from `_run_sql_cell()` all the way out to
 `render_error()`.
 
-**The empty-results signal 7.149 built now explains itself, immediately,
+**The empty-results signal 7.150 built now explains itself, immediately,
 whether or not an author staged a hint for it.** `_empty_result_notes()`
 runs once a `SELECT` has already come back empty: it counts the rows in
 the table named after `FROM` (empty table, or a filter that excluded

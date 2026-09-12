@@ -1,0 +1,37 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# First tutorial of the welcome series, and the first glossary file in
+# web-authoring (the 42-page port never wrote one, so there is no
+# cumulative list yet to check this file's own terms against). GitHub
+# and GitHub Pages are proper nouns, not glossaried here, the same
+# reasoning conclusions-and-next-steps later gives for WordPress, Carrd
+# and Solo.
+entries:
+  - term: editor
+    kind: concept
+    definition: >
+      An editor is a program for changing text files. Some editors run
+      on your own computer; GitHub also has one built into its website.
+  - term: repository
+    kind: concept
+    definition: >
+      A repository is a project's folder on GitHub, holding its files
+      and every change ever saved to them. People often shorten it to
+      "repo".
+  - term: browser
+    kind: concept
+    definition: >
+      A browser is the program that shows you a web page, whether it
+      comes from a file on your own computer or a site published
+      online.
+  - term: commit
+    kind: concept
+    definition: >
+      A commit is a saved, named set of changes to files in a
+      repository. Every commit stays in the repository, so you can look
+      back at an earlier one.
+  - term: push
+    kind: concept
+    definition: >
+      A push sends commits you saved on your own computer up to GitHub,
+      so the changes appear in the repository there too.

@@ -1,0 +1,23 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# Seventh tutorial of first-site. Checked against the cumulative
+# glossary so far -- no overlap. `<section>` and `id` are reused from
+# earlier tutorials, not reintroduced.
+entries:
+  - term: "<nav>"
+    kind: keyword
+    definition: >
+      `<nav>` is a semantic tag wrapping a set of links, so a screen
+      reader can announce "navigation" on reaching one.
+  - term: anchor link
+    kind: concept
+    definition: >
+      An anchor link is an `href` starting with `#` instead of a
+      filename. Clicking it jumps the browser straight to whichever
+      element on the same page carries the matching `id`.
+  - term: aria-label
+    kind: keyword
+    definition: >
+      The `aria-label` attribute names an element for a screen reader
+      to read out, useful once a page has more than one of the same
+      kind of element.

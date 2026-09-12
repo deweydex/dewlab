@@ -1,0 +1,23 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# Tenth tutorial of first-site. Checked against the cumulative glossary
+# so far -- no overlap. `border-radius` is mentioned but not one of the
+# three layers the tutorial actually names and defines.
+entries:
+  - term: padding
+    kind: concept
+    definition: >
+      Padding is the space between an element's content and its
+      border. It takes on the element's own background colour, the way
+      the space inside a picture frame does.
+  - term: border
+    kind: concept
+    definition: >
+      A border is the edge of a box. It can be visible, with a colour
+      and a style, or invisible, with no width at all.
+  - term: margin
+    kind: concept
+    definition: >
+      Margin is the space outside an element's border. It is always
+      transparent, and it pushes neighbouring boxes away rather than
+      changing this box's own size.

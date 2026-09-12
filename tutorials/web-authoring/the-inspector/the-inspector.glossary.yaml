@@ -1,0 +1,15 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# Eighth and last tutorial of welcome. Checked against the full
+# cumulative glossary of the series -- no overlap. "Elements" and
+# "Console" are bold because they name actual tabs in the browser's own
+# interface, the same convention as "Settings" and "Run" in
+# how-the-pieces-fit; not glossaried.
+entries:
+  - term: inspector
+    kind: concept
+    definition: >
+      The inspector is a tool built into every browser that shows the
+      HTML and CSS actually running a page, on your own site or anyone
+      else's. Opening it is usually the fastest way to find out why
+      something looks wrong.

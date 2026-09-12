@@ -1,0 +1,15 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# Eighteenth tutorial of first-site. `max-width: 100%` here is a reuse
+# of the property already glossaried in the-container, applied to an
+# image, not a new meaning, so it is not repeated. Checked against the
+# cumulative glossary so far -- no other overlap.
+entries:
+  - term: "height: auto"
+    kind: keyword
+    definition: >
+      `height: auto` keeps an image's proportions as it shrinks, so it
+      is not squashed out of shape.
+  - term: aspect ratio
+    kind: concept
+    definition: "The relationship between an element's width and its height."

@@ -1,0 +1,21 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# Fourteenth tutorial of first-site. Checked against the cumulative
+# glossary so far -- no overlap. `margin-top: auto` here is the
+# flexbox version of the same leftover-space idea behind "auto margin"
+# in the-container (`margin: 0 auto`, which centres sideways); related,
+# but a different mechanism, so it gets its own entry rather than
+# reusing that one.
+entries:
+  - term: "position: sticky"
+    kind: keyword
+    definition: >
+      `position: sticky` keeps an element in place once scrolling would
+      otherwise carry it past a given point, such as the top of the
+      screen. Until then, it scrolls with everything else.
+  - term: "margin-top: auto"
+    kind: keyword
+    definition: >
+      On a flex child, `margin-top: auto` pulls all the leftover space
+      above it, pushing the element itself to the far side of its
+      container.

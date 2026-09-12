@@ -1,0 +1,11 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# Fifth tutorial of several-pages. Checked against the cumulative
+# glossary so far -- no overlap.
+entries:
+  - term: "flex-direction: column"
+    kind: keyword
+    definition: >
+      `flex-direction: column` switches a flex container from laying
+      its items out in a row, the default, to stacking them in a
+      column instead.

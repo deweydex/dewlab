@@ -1,0 +1,22 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# Thirteenth tutorial of first-site. Checked against the cumulative
+# glossary so far -- no overlap.
+entries:
+  - term: max-width
+    kind: keyword
+    definition: >
+      The `max-width` property caps how wide an element is allowed to
+      grow, but lets it stay narrower when there is less room, unlike
+      `width`, which sets one fixed size.
+  - term: auto margin
+    kind: concept
+    definition: >
+      An auto margin, written `margin: 0 auto`, centres a width-capped
+      element by splitting the leftover space evenly between its left
+      and right sides.
+  - term: container
+    kind: concept
+    definition: >
+      A container is the element on a page whose width and centring
+      most of the rest of the page sits inside.

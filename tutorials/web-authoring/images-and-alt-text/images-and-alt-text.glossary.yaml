@@ -1,0 +1,25 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# Fifth tutorial of first-site. No italicised terms at all, but the
+# whole page teaches these three attributes by name, the same reason
+# computational-methods glossaries include a function like zip() even
+# where it only ever appears in backticks. Checked against the
+# cumulative glossary so far -- no overlap.
+entries:
+  - term: "<img>"
+    kind: keyword
+    definition: >
+      `<img>` places an image on a page. It has no closing tag and no
+      content between tags; the whole element is one tag with
+      attributes.
+  - term: src
+    kind: keyword
+    definition: >
+      The `src` attribute on an `<img>` holds the address of the image
+      file, either a path within your own site or a full web address.
+  - term: alt
+    kind: keyword
+    definition: >
+      The `alt` attribute describes an image in words, for a screen
+      reader to read aloud, or for a visitor to see if the image fails
+      to load.

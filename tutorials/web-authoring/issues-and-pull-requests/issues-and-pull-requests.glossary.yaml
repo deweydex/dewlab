@@ -1,0 +1,18 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# Third tutorial of welcome. Checked against the cumulative glossary so
+# far (editor, repository, browser, commit, push, username) -- no
+# overlap.
+entries:
+  - term: issue
+    kind: concept
+    definition: >
+      An issue is a single report filed in a repository, made up of a
+      title, a description, and a place for anyone to reply. Anyone can
+      open one, and anyone can read one in a public repository.
+  - term: pull request
+    kind: concept
+    definition: >
+      A pull request is a set of edits sent to a repository for someone
+      to review. It shows the exact lines that changed, a conversation
+      about them, and a decision at the end.

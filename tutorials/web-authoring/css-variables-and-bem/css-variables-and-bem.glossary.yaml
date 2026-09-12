@@ -1,0 +1,42 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# Twenty-first tutorial of first-site. "CSS custom property" here is
+# the same idea as "CSS variable" from variables-and-colour, given its
+# more formal, official CSS name now that the reader already knows it
+# informally -- kept as its own entry, not a rewrite of that one. Its
+# own "element" is BEM's element, a named part of a block, joined with
+# `__`; a different thing from the HTML element glossaried in
+# a-page-is-files, so its term is written "element (BEM)" to keep the
+# two apart in the reference.
+entries:
+  - term: CSS custom property
+    kind: concept
+    definition: >
+      A CSS custom property is a value declared once, most often on
+      `:root`, and read back anywhere with `var()`.
+  - term: scoped override
+    kind: concept
+    definition: >
+      A scoped override sets a custom property again on a more specific
+      rule, changing its value for that rule and its children only.
+  - term: BEM
+    kind: concept
+    definition: >
+      BEM, short for Block, Element, Modifier, is a class-naming
+      pattern where a class name says on its own which block it
+      belongs to and which variant it is.
+  - term: block
+    kind: concept
+    definition: "In BEM, a block is a self-contained piece of a page, styled on its own."
+  - term: "element (BEM)"
+    kind: concept
+    definition: >
+      In BEM, an element is a named part of a block, joined to the
+      block's name with two underscores, such as `button__icon`.
+  - term: modifier
+    kind: concept
+    definition: >
+      In BEM, a modifier is joined to a block's name with two hyphens.
+      It changes how the block looks without replacing its base rule,
+      and is always added beside the block's own class, never used
+      alone.
