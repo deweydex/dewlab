@@ -18,9 +18,9 @@ covers:
 
 # Project ideas
 
-Ideas for something to build once you have a skill and want to practise
-it on a topic of your own choosing. Each one names what it needs first, so
-pick one that matches what you have already done.
+These are ideas for something to build once you have a skill and want
+to practise it on a topic of your own choosing. Each one names what it
+needs first, so pick one that matches what you have already done.
 
 ## After you fork the starter
 

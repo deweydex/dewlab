@@ -85,8 +85,8 @@ Nothing about the HTML changes, only which map applies.
 
 ## Other properties from the same lesson
 
-Two related properties from this part of the older course are worth
-naming, even without a live demo of their own. `order` changes a flex
+Two related properties are worth naming here, even without a live demo
+of their own. `order` changes a flex
 item's visual position without changing where it sits in the HTML. A
 screen reader still follows the HTML order, not the visual one, so a
 reordered page can confuse someone who cannot see the new order. Use

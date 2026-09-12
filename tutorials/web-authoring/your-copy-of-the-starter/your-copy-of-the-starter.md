@@ -46,7 +46,7 @@ change.
 Once you have your copy, there are three ways to start editing it, and
 none is more correct than the others.
 
-**Clone it**, if you have Git installed and know your way around a
+**Clone it**, if you have Git installed and already know how to use a
 terminal. This downloads the repository to your computer, so you edit
 locally and push changes back up when ready.
 
