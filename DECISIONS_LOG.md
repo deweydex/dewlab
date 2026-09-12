@@ -3255,3 +3255,51 @@ practice, not a way of writing code.
 frontmatter on 40 of 42 web-authoring pages; eight new fine strands in
 `strands.yaml` and the two regenerated static pages that depend on it.
 No engine or build.py change this time.*
+
+**7.147 — DBM-LO1 closed with an intro, plus a two-part addition: a
+five-table capstone and a many-to-many practice quiz.** `a-table-is-a-list-of-rows.md`
+gained a short "Where databases already show up" section — the module's
+only remaining outcome with no dewlab content, closed the way its own
+`topics.yaml` entry always said it could be: a discussion, not a build.
+DBM is now the first fully-mapped module, all eleven outcomes covered.
+
+**"A College Timetable"**, the last page of `several-tables`, is a
+five-table design (`programmes`, `teachers`, `rooms`, `modules`,
+`sessions`) built around one real problem a flat list can't answer: has
+anyone been double-booked. A real gotcha surfaced while writing it —
+`session_date` started as a weekday name (`'Monday'`) until the page's
+own `ORDER BY` sorted Friday before Monday, alphabetically; switched to
+an actual ISO date, which sorts the same way as text or as a calendar
+date, and folded the reasoning into the design section itself rather
+than quietly fixing it. The centrepiece is a self-join: two made-up
+sessions worked by hand first (does each one start before the other
+ends), then the same rule as SQL, comparing `sessions` against itself
+with `s1.id < s2.id` ruling out a row matching itself or a pair
+reported twice. A parallel teacher-clash query is left for the reader,
+with a hint and a worked answer.
+
+**"The Library Loans Quiz"**, a third page in `practice` after
+`sql-practice` and `the-tentacular-plushies-quiz`, pushes past
+one-to-many into many-to-many: a `book_authors` junction table with a
+composite primary key, `PRIMARY KEY (book_id, author_id)`, checked by
+reading `PRAGMA table_info`'s own `pk` column rather than trusting
+column names alone. Same six-task, check-cell-per-task shape as the
+plushies quiz.
+
+Two real bugs found only by running every cell in a real browser
+against a self-hosted Pyodide, not by reasoning about the SQL in the
+abstract: `find-teacher-clashes`'s stub comment had a semicolon in its
+own prose ("adapting find-room-clashes; the answer") that
+`_run_sql_cell`'s bare-`;` statement splitter — documented as "not a
+real SQL parser" — read as a statement boundary, breaking the comment
+into a syntax error; reworded to drop the semicolon. Three of the
+library quiz's check cells (tasks 4-6) queried `authors`/`books`/
+`loans` directly with no existence guard, so running them before the
+earlier tasks were done raised a raw Python traceback instead of a
+plain-language message — given the same `PRAGMA table_info` guard every
+earlier check cell in the module already uses.
+
+*Cost to change: one new section in `a-table-is-a-list-of-rows.md`; two
+new tutorial folders (`a-college-timetable`, `the-library-loans-quiz`)
+with their own glossary files; both `.order.yaml` files and
+`topic-groups.yaml` updated. No engine or build.py change.*
