@@ -3521,3 +3521,44 @@ tutorial files; no cell code, no frontmatter, no covers: touched.
 `dev/curriculum_map.py`'s vocabulary section is unaffected — none of
 the eight edits touched an italicised term. Full unit suite green; a
 fresh full-site build confirmed clean.*
+
+**7.154 — Two `database-methods` pages carry the first live `empty
+results` staged hints.** 7.150 and 7.151 built the machinery and the
+on-page facts; nothing had actually used either in front of a student.
+`asking-questions-of-a-table`'s WHERE section, right where the prose
+already invites a reader to try their own condition, now carries two
+folds on `query-carnivores`: the first, at `2 empty results`, asks
+whether the text after `WHERE diet =` matches the table's own spelling
+letter for letter; the second, at `5 empty results`, gives the steps —
+`SELECT DISTINCT diet FROM dinosaurs;`, then compare. A case mismatch
+there is also exactly what 7.151's own case-insensitive fact already
+names on the page, so the fold and the fact now point at the same
+thing from two directions.
+
+**The tentacular plushies quiz** binds its pair to `quiz-workspace`,
+the one `sql exec` cell every task reuses, rather than to a dedicated
+query cell — Task 5 is where a filter is most likely to come back
+empty, but the counter tracks the whole box across all five tasks, so
+the fold's own wording had to stay true regardless of which task is
+open: it points the reader at the row-count note 7.151 already prints
+under the empty result, rather than re-describing what might be wrong,
+since by Task 5 an empty result is exactly as likely to mean "the
+table still has no matching data" as "the filter is wrong."
+
+Checked in a real Chromium against the self-hosted Pyodide build,
+scripted rather than by hand — the fixture harness `test_cell_hint.py`
+and `test_cell_hints_staged.py` use only drives one `python exec`
+cell, so this ran the actual built pages instead: two empty-result
+runs on `query-carnivores` (`WHERE diet = 'carnivore'` against a table
+storing `'Carnivore'`) surfaced both 7.151 facts and the first fold;
+two on `quiz-workspace` against a real one-row `products` table did
+the same. No end-to-end test committed yet for a `sql exec` cell's
+staged hints — `test_cell_hints_staged.py` still only exercises the
+Python path — so this is still checked by hand each time rather than
+in CI.
+
+*Cost to change: prose and two `hint` fences in each of two tutorial
+files, no cell id renamed, no frontmatter or `covers:` touched, no
+`version:` bump since no cell's own code changed. Full unit suite
+green; a fresh full-site build confirmed clean; manual Chromium
+verification above, not yet a committed e2e test.*

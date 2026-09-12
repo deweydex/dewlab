@@ -198,6 +198,38 @@ first of the three.
 
 </details>
 
+```hint
+for: quiz-workspace
+after: 2 empty results
+
+Two queries in a row in the box above came back with no rows.
+
+Look under the result: the page adds a note whenever this happens,
+naming how many rows the table you queried actually holds. What does
+that note say about your table?
+```
+
+```hint
+for: quiz-workspace
+after: 5 empty results
+title: some steps
+
+1. Read the note under the empty result. It already counts the rows in
+   the table you asked about, or names the closest table or column it
+   can find to the one you typed.
+2. If the note says the table has no rows, it still needs data. Go back
+   and finish Task 3 or Task 4 first.
+3. If the note says the table already has rows, run `SELECT * FROM
+   products;` (or `transactions`) on its own, and compare every value
+   in a row against the condition you wrote.
+
+**Think about:** a filter that matches nothing is not always a mistake
+in the filter. Sometimes the data does not hold what you expected yet.
+
+**Try this next:** try the same filter with a smaller number, such as
+`price > 10`, to check whether any rows come back at all.
+```
+
 This check looks at whether your data can answer the first two of
 these, not at the queries themselves. There is more than one correct
 way to write a `SELECT`.
