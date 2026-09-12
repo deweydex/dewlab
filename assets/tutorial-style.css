@@ -307,13 +307,14 @@ body {
 }
 
 .dl-panels-icon {
-  width: 0.32em;
-  height: 0.32em;
-  background: currentColor;
-  box-shadow:
-    0.5em 0 currentColor,
-    0 0.5em currentColor,
-    0.5em 0.5em currentColor;
+  width: 0.82em;
+  height: 0.82em;
+  flex: none;
+  background:
+    linear-gradient(currentColor 0 0) 0 0 / 0.32em 0.32em no-repeat,
+    linear-gradient(currentColor 0 0) 100% 0 / 0.32em 0.32em no-repeat,
+    linear-gradient(currentColor 0 0) 0 100% / 0.32em 0.32em no-repeat,
+    linear-gradient(currentColor 0 0) 100% 100% / 0.32em 0.32em no-repeat;
 }
 
 .dl-panels-group {
